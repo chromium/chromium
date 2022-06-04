@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuil
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -50,7 +49,6 @@ import java.util.List;
 public class ShareDelegateImpl implements ShareDelegate {
     static final String CANONICAL_URL_RESULT_HISTOGRAM = "Mobile.CanonicalURLResult";
 
-    private final BottomSheetController mBottomSheetController;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Supplier<Tab> mTabProvider;
     private final Supplier<TabModelSelector> mTabModelSelectorProvider;
@@ -61,7 +59,6 @@ public class ShareDelegateImpl implements ShareDelegate {
     /**
      * Constructs a new {@link ShareDelegateImpl}.
      *
-     * @param controller The BottomSheetController for the current activity.
      * @param lifecycleDispatcher Dispatcher for activity lifecycle events, e.g. configuration
      * changes.
      * @param tabProvider Supplier for the current activity tab.
@@ -70,11 +67,9 @@ public class ShareDelegateImpl implements ShareDelegate {
      * @param delegate The ShareSheetDelegate for the current activity.
      * @param isCustomTab This share delegate is associated with a CCT.
      */
-    public ShareDelegateImpl(BottomSheetController controller,
-            ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
+    public ShareDelegateImpl(ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
             Supplier<TabModelSelector> tabModelSelectorProvider, ShareSheetDelegate delegate,
             boolean isCustomTab) {
-        mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mTabProvider = tabProvider;
         mTabModelSelectorProvider = tabModelSelectorProvider;
@@ -89,7 +84,7 @@ public class ShareDelegateImpl implements ShareDelegate {
         if (mShareStartTime == 0L) {
             mShareStartTime = System.currentTimeMillis();
         }
-        mDelegate.share(params, chromeShareExtras, mBottomSheetController, mLifecycleDispatcher,
+        mDelegate.share(params, chromeShareExtras, mLifecycleDispatcher,
                 mTabProvider, mTabModelSelectorProvider, this::printTab, shareOrigin,
                 mShareStartTime, isSharingHubEnabled());
         mShareStartTime = 0;
@@ -273,7 +268,7 @@ public class ShareDelegateImpl implements ShareDelegate {
          * Trigger the share action for the specified params.
          */
         void share(ShareParams params, ChromeShareExtras chromeShareExtras,
-                BottomSheetController controller, ActivityLifecycleDispatcher lifecycleDispatcher,
+                ActivityLifecycleDispatcher lifecycleDispatcher,
                 Supplier<Tab> tabProvider, Supplier<TabModelSelector> tabModelSelectorSupplier,
                 Callback<Tab> printCallback, @ShareOrigin int shareOrigin, long shareStartTime,
                 boolean sharingHubEnabled) {
@@ -292,9 +287,9 @@ public class ShareDelegateImpl implements ShareDelegate {
                 ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.CHROME_SHARE_SHEET);
                 boolean isIncognito = tabModelSelectorSupplier.hasValue()
                         && tabModelSelectorSupplier.get().isIncognitoSelected();
-                ShareSheetCoordinator coordinator = new ShareSheetCoordinator(controller,
+                ShareSheetCoordinator coordinator = new ShareSheetCoordinator(
                         lifecycleDispatcher, tabProvider,
-                        new ShareSheetPropertyModelBuilder(controller,
+                        new ShareSheetPropertyModelBuilder(
                                 ContextUtils.getApplicationContext().getPackageManager(), profile),
                         printCallback, new LargeIconBridge(Profile.getLastUsedRegularProfile()),
                         isIncognito, AppHooks.get().getImageEditorModuleProvider(),

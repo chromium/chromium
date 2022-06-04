@@ -6,12 +6,12 @@ package org.chromium.chrome.browser.compositor.layouts;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Handler;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabSwitchMetrics;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -94,7 +93,6 @@ public class StaticLayout extends Layout {
     private TabContentManager mTabContentManager;
 
     private final CompositorAnimationHandler mAnimationHandler;
-    private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
 
     private boolean mIsActive;
 
@@ -113,16 +111,14 @@ public class StaticLayout extends Layout {
      * @param tabModelSelector {@link TabModelSelector} instance.
      * @param tabContentManager {@link TabContentsManager} instance.
      * @param browserControlsStateProvider A {@link BrowserControlsStateProvider}.
-     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public StaticLayout(Context context, LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
             LayoutManagerHost viewHost,
             CompositorModelChangeProcessor.FrameRequestSupplier requestSupplier,
             TabModelSelector tabModelSelector, TabContentManager tabContentManager,
-            BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider) {
         this(context, updateHost, renderHost, viewHost, requestSupplier, tabModelSelector,
-                tabContentManager, browserControlsStateProvider, topUiThemeColorProvider, null);
+                tabContentManager, browserControlsStateProvider, null);
     }
 
     /** Protected constructor for testing, allows specifying a custom SceneLayer. */
@@ -132,7 +128,6 @@ public class StaticLayout extends Layout {
             CompositorModelChangeProcessor.FrameRequestSupplier requestSupplier,
             TabModelSelector tabModelSelector, TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
             StaticTabSceneLayer testSceneLayer) {
         super(context, updateHost, renderHost);
         mContext = context;
@@ -159,7 +154,6 @@ public class StaticLayout extends Layout {
                          .build();
 
         mAnimationHandler = updateHost.getAnimationHandler();
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
 
         mHandler = new Handler();
         mUnstallRunnable = new UnstallRunnable();
@@ -337,9 +331,8 @@ public class StaticLayout extends Layout {
     private void updateStaticTab(Tab tab) {
         if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
 
-        TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
-        mModel.set(LayoutTab.BACKGROUND_COLOR, topUiTheme.getBackgroundColor(tab));
-        mModel.set(LayoutTab.TOOLBAR_BACKGROUND_COLOR, topUiTheme.getSceneLayerBackground(tab));
+        mModel.set(LayoutTab.BACKGROUND_COLOR, Color.WHITE);
+        mModel.set(LayoutTab.TOOLBAR_BACKGROUND_COLOR, Color.WHITE);
         mModel.set(LayoutTab.TEXT_BOX_ALPHA, getTextBoxAlphaForToolbarBackground(tab));
         mModel.set(LayoutTab.SHOULD_STALL, shouldStall(tab));
         mModel.set(LayoutTab.TEXT_BOX_BACKGROUND_COLOR, getToolbarTextBoxBackgroundColor(tab));
@@ -357,18 +350,12 @@ public class StaticLayout extends Layout {
             return sToolbarTextBoxBackgroundColorForTesting;
         }
 
-        return ThemeUtils.getTextBoxColorForToolbarBackground(mContext, tab,
-                mTopUiThemeColorProvider.get().calculateColor(tab, tab.getThemeColor()));
-    }
-
-    @VisibleForTesting
-    void setTextBoxBackgroundColorForTesting(Integer color) {
-        sToolbarTextBoxBackgroundColorForTesting = color;
+        return ThemeUtils.getTextBoxColorForToolbarBackground(mContext, tab, Color.BLUE);
     }
 
     private float getTextBoxAlphaForToolbarBackground(Tab tab) {
         if (sToolbarTextBoxAlphaForTesting != null) return sToolbarTextBoxAlphaForTesting;
-        return mTopUiThemeColorProvider.get().getTextBoxBackgroundAlpha(tab);
+        return 0.5f;
     }
 
     @VisibleForTesting

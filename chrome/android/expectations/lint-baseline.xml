@@ -2665,17 +2665,6 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 27 (current min is 23): `setNavigationBarScrimFraction`"
-        errorLine1="                        controller.setNavigationBarScrimFraction(scrimFraction);"
-        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java"
-            line="590"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="NewApi"
         message="Call requires API level 27 (current min is 23): `destroy`"
         errorLine1="        if (mNavigationBarColorController != null) mNavigationBarColorController.destroy();"
         errorLine2="                                                                                 ~~~~~~~">

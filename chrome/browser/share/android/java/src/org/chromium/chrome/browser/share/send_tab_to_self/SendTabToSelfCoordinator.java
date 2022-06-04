@@ -16,28 +16,13 @@ import org.chromium.ui.base.WindowAndroid;
 public class SendTabToSelfCoordinator {
 
     private final Context mContext;
-    private final WindowAndroid mWindowAndroid;
-    private final String mUrl;
-    private final String mTitle;
-    private final BottomSheetController mController;
 
-    public SendTabToSelfCoordinator(Context context, WindowAndroid windowAndroid, String url,
-            String title, BottomSheetController controller) {
+    public SendTabToSelfCoordinator(Context context) {
         mContext = context;
-        mWindowAndroid = windowAndroid;
-        mUrl = url;
-        mTitle = title;
-        mController = controller;
     }
 
     public void show() {
         Toast.makeText(mContext, "SendTabToSelfCoordinator", Toast.LENGTH_SHORT).show();
     }
 
-    private void showDeviceList() {
-    }
-
-    private boolean shouldOfferSignInPromo() {
-        return false;
-    }
 }

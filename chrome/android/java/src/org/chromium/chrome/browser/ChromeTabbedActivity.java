@@ -41,7 +41,6 @@ import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.UsedByReflection;
-import org.chromium.base.jank_tracker.JankTrackerImpl;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -51,7 +50,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.task.PostTask;
-import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler.IntentHandlerDelegate;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
@@ -123,7 +121,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
-import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
@@ -146,7 +143,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvi
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
-import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -154,8 +150,6 @@ import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
-import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
-import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
@@ -241,7 +235,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private HistoricalTabModelObserver mHistoricalTabModelObserver;
 
-    private BrowserControlsVisibilityDelegate mVrBrowserControlsVisibilityDelegate;
     private TabModalLifetimeHandler mTabModalHandler;
 
     private boolean mUIWithNativeInitialized;
@@ -275,10 +268,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // This is the cached value of mIntentHandler#shouldIgnoreIntent and shouldn't be read directly.
     // Use #shouldIgnoreIntent instead.
     private Boolean mShouldIgnoreIntent;
-    /*
-     *  Listens to FrameMetrics and records jank metrics.
-     */
-    private JankTrackerImpl mJankTracker;
 
     // Time at which an intent was received and handled.
     private long mIntentHandlingTimeMs;
@@ -556,8 +545,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // clang-format off
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
                     mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
-                    mOverviewModeBehaviorSupplier,
-                    mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker);
+                    mOverviewModeBehaviorSupplier);
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
             mOverviewModeController = mLayoutManager;
@@ -581,8 +569,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mLayoutManager = new LayoutManagerChromeTablet(compositorViewHolder, mContentContainer,
                     mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
                     mOverviewModeBehaviorSupplier,
-                    mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker,
-                    mRootUiCoordinator.getScrimCoordinator(),
                     getLifecycleDispatcher());
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
@@ -764,7 +750,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             // TODO(jinsukkim): Let these classes handle the registration by themselves.
             mCompositorViewHolder = getCompositorViewHolderSupplier().get();
-            getTabObscuringHandler().addObserver(mCompositorViewHolder);
 
             ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
             if (isTablet()) ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
@@ -1400,10 +1385,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void performPreInflationStartup() {
-        // Create JankTracker before invoking super, because the parent class will invoke
-        // createRootUiCoordinator(...), which in our case requires the JankTracker to already have
-        // been created.
-        mJankTracker = new JankTrackerImpl(this);
 
         super.performPreInflationStartup();
 
@@ -1423,30 +1404,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
 
         mStartupPaintPreviewHelperSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
-    }
-
-    @Override
-    protected RootUiCoordinator createRootUiCoordinator() {
-        return new TabbedRootUiCoordinator(this, this::onOmniboxFocusChanged,
-                getShareDelegateSupplier(), getActivityTabProvider(), mTabModelProfileSupplier,
-                getContextualSearchManagerSupplier(),
-                getTabModelSelectorSupplier(), mStartSurfaceSupplier,
-                mStartSurfaceParentTabSupplier, getBrowserControlsManager(), getWindowAndroid(),
-                mJankTracker, getLifecycleDispatcher(), getLayoutManagerSupplier(),
-                /* menuOrKeyboardActionController= */ this, this::getActivityThemeColor,
-                getModalDialogManagerSupplier(),
-                this::supportsAppMenu, this::supportsFindInPage,
-                getTabCreatorManagerSupplier(), getFullscreenManager(),
-                getCompositorViewHolderSupplier(), getTabContentManagerSupplier(),
-                this::getSnackbarManager, getActivityType(), this::shouldShowOverviewPageOnStart,
-                this::isWarmOnResume,
-                /* statusBarColorProvider= */ this, mEphemeralTabCoordinatorSupplier,
-                getIntentRequestTracker(),
-                mInsetObserverViewSupplier, this::backShouldCloseTab,
-                getTabReparentingControllerSupplier(),
-                // TODO(sinansahin): This currently only checks for incognito extras in the intent.
-                // We should make it more robust by using more signals.
-                IntentHandler.hasAnyIncognitoExtra(getIntent().getExtras()));
     }
 
     @Override
@@ -1610,17 +1567,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private TabDelegateFactory getTabDelegateFactory() {
         if (mTabDelegateFactory == null) {
             mTabDelegateFactory = new TabbedModeTabDelegateFactory(this,
-                    getAppBrowserControlsVisibilityDelegate(), getShareDelegateSupplier(),
+                    getShareDelegateSupplier(),
                     mEphemeralTabCoordinatorSupplier,
-                    ((TabbedRootUiCoordinator) mRootUiCoordinator)::onContextMenuCopyLink,
-                    mRootUiCoordinator.getBottomSheetController(),
                     /* ChromeActivityNativeDelegate */ this,
                     getBrowserControlsManager(), getFullscreenManager(),
                     /* TabCreatorManager */ this, getTabModelSelectorSupplier(),
                     getCompositorViewHolderSupplier(), getModalDialogManagerSupplier(),
-                    this::getSnackbarManager, getBrowserControlsManager(), getActivityTabProvider(),
-                    getLifecycleDispatcher(), getWindowAndroid(), this::getLastUserInteractionTime,
-                    this::hadWarmStart, mJankTracker);
+                    this::getSnackbarManager);
         }
         return mTabDelegateFactory;
     }
@@ -1760,14 +1713,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return true;
         }
 
-        // TODO(1091411): Find a better mechanism for back-press handling for features.
-        if (mRootUiCoordinator.getBottomSheetController().handleBackPress()) return true;
-
         if (mTabModalHandler.handleBackPress()) return true;
 
         final Tab currentTab = getActivityTab();
         if (currentTab == null) {
             moveTaskToBack(true);
+            return true;
+        }
+        if (currentTab.canGoBack()) {
+            currentTab.goBack();
             return true;
         }
 
@@ -2098,17 +2052,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mStartupPaintPreviewHelperSupplier.destroy();
         }
 
-        if (mJankTracker != null) {
-            mJankTracker.destroy();
-            mJankTracker = null;
-        }
-
         IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);
-
-        TabObscuringHandler tabObscuringHandler = getTabObscuringHandler();
-        if (tabObscuringHandler != null) {
-            getTabObscuringHandler().removeObserver(mCompositorViewHolder);
-        }
 
         if (isTablet()) ChromeAccessibilityUtil.get().removeObserver(mCompositorViewHolder);
         ChromeAccessibilityUtil.get().removeObserver(this);
@@ -2182,23 +2126,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return (LayoutManagerChrome) getCompositorViewHolderSupplier().get().getLayoutManager();
     }
 
-    @VisibleForTesting
-    public StartSurface getStartSurface() {
-        return mStartSurfaceSupplier.get();
-    }
-
-    private ComposedBrowserControlsVisibilityDelegate getAppBrowserControlsVisibilityDelegate() {
-        // TODO(jinsukkim): Move this to RootUiCoordinator.
-        return ((TabbedRootUiCoordinator) mRootUiCoordinator)
-                .getAppBrowserControlsVisibilityDelegate();
-    }
-
     @Override
     protected ModalDialogManager createModalDialogManager() {
         ModalDialogManager manager = super.createModalDialogManager();
         // TODO(crbug.com/1157310): Transition this::method refs to dedicated suppliers.
         mTabModalHandler = new TabModalLifetimeHandler(this, getLifecycleDispatcher(), manager,
-                this::getAppBrowserControlsVisibilityDelegate, this::getTabObscuringHandler,
                 getContextualSearchManagerSupplier(),
                 getTabModelSelectorSupplier(), this::getBrowserControlsManager,
                 this::getFullscreenManager);
@@ -2243,26 +2175,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 currentStandardTab != null
                         && UrlUtilitiesJni.get().isGoogleSearchUrl(
                                 currentStandardTab.getUrl().getSpec()));
-    }
-
-    @Override
-    public void onEnterVr() {
-        super.onEnterVr();
-        if (mVrBrowserControlsVisibilityDelegate == null) {
-            mVrBrowserControlsVisibilityDelegate =
-                    new BrowserControlsVisibilityDelegate(BrowserControlsState.BOTH);
-            getAppBrowserControlsVisibilityDelegate().addDelegate(
-                    mVrBrowserControlsVisibilityDelegate);
-        }
-        mVrBrowserControlsVisibilityDelegate.set(BrowserControlsState.HIDDEN);
-    }
-
-    @Override
-    public void onExitVr() {
-        super.onExitVr();
-        if (mVrBrowserControlsVisibilityDelegate != null) {
-            mVrBrowserControlsVisibilityDelegate.set(BrowserControlsState.BOTH);
-        }
     }
 
     @Override

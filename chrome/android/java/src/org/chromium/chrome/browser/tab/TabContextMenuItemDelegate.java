@@ -39,6 +39,7 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 
 /**
  * A default {@link ContextMenuItemDelegate} that supports the context menu functionality in Tab.
@@ -47,7 +48,6 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     private final TabImpl mTab;
     private final TabModelSelector mTabModelSelector;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
-    private final Runnable mContextMenuCopyLinkObserver;
     private final Supplier<SnackbarManager> mSnackbarManager;
 
     /**
@@ -55,11 +55,10 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      */
     public TabContextMenuItemDelegate(Tab tab, TabModelSelector tabModelSelector,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            Runnable contextMenuCopyLinkObserver, Supplier<SnackbarManager> snackbarManager) {
+            Supplier<SnackbarManager> snackbarManager) {
         mTab = (TabImpl) tab;
         mTabModelSelector = tabModelSelector;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
-        mContextMenuCopyLinkObserver = contextMenuCopyLinkObserver;
         mSnackbarManager = snackbarManager;
     }
 
@@ -106,10 +105,6 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     @Override
     public void onSaveToClipboard(String text, int clipboardType) {
         Clipboard.getInstance().setText(text);
-        if (clipboardType == ClipboardType.LINK_URL) {
-            // TODO(crbug/1150090): Find a better way of passing event for IPH.
-            mContextMenuCopyLinkObserver.run();
-        }
     }
 
     @Override

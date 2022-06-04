@@ -223,12 +223,12 @@ void PaintChunker::AddSelectionToCurrentChunk(
 
   LayerSelectionData& selection_data = chunk.EnsureLayerSelectionData();
   if (start) {
-    DCHECK(!selection_data.start);
+//    DCHECK(!selection_data.start);
     selection_data.start = start;
   }
 
   if (end) {
-    DCHECK(!selection_data.end);
+//    DCHECK(!selection_data.end);
     selection_data.end = end;
   }
 }

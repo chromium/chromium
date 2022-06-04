@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.compositor.layouts;
 
 import android.view.ViewGroup;
 
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
@@ -19,7 +17,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -42,20 +39,15 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param startSurface An interface to talk to the Grid Tab Switcher.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
-     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
-     * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
      */
     public LayoutManagerChromeTablet(LayoutManagerHost host, ViewGroup contentContainer,
             StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker,
-            ScrimCoordinator scrimCoordinator,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         super(host, contentContainer,
                 TabUiFeatureUtilities.isGridTabSwitcherEnabled(host.getContext()), startSurface,
-                tabContentManagerSupplier, overviewModeBehaviorSupplier, topUiThemeColorProvider,
-                jankTracker, scrimCoordinator);
+                tabContentManagerSupplier, overviewModeBehaviorSupplier);
 
         mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), this,
                 mHost.getLayoutRenderHost(), () -> mLayerTitleCache, lifecycleDispatcher);
@@ -99,9 +91,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
 
     @Override
     public void init(TabModelSelector selector, TabCreatorManager creator,
-            DynamicResourceLoader dynamicResourceLoader,
-            TopUiThemeColorProvider topUiColorProvider) {
-        super.init(selector, creator, dynamicResourceLoader, topUiColorProvider);
+            DynamicResourceLoader dynamicResourceLoader) {
+        super.init(selector, creator, dynamicResourceLoader);
 
         if (DeviceClassManager.enableLayerDecorationCache()) {
             mLayerTitleCache = new LayerTitleCache(mHost.getContext(), getResourceManager());

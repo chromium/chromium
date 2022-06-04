@@ -20,8 +20,6 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-import org.chromium.chrome.browser.ui.TabObscuringHandler;
-import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -60,9 +58,6 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
     private Activity mActivity;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final ModalDialogManager mManager;
-    private final Supplier<ComposedBrowserControlsVisibilityDelegate>
-            mAppVisibilityDelegateSupplier;
-    private final Supplier<TabObscuringHandler> mTabObscuringHandlerSupplier;
     private final Supplier<ContextualSearchManager> mContextualSearchManagerSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<BrowserControlsVisibilityManager>
@@ -78,9 +73,6 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
      * @param activity The {@link Activity} that this handler is attached to.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the activity.
      * @param manager The {@link ModalDialogManager} that this handler handles.
-     * @param appVisibilityDelegateSupplier Supplies the delegate that handles the application
-     *                                      browser controls visibility.
-     * @param tabObscuringHandlerSupplier Supplies the {@link TabObscuringHandler} object.
      * @param contextualSearchManagerSupplier Supplies the {@link ContextualSearchManager} object.
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector} object.
      * @param browserControlsVisibilityManagerSupplier Supplies the
@@ -89,8 +81,6 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
      */
     public TabModalLifetimeHandler(Activity activity,
             ActivityLifecycleDispatcher activityLifecycleDispatcher, ModalDialogManager manager,
-            Supplier<ComposedBrowserControlsVisibilityDelegate> appVisibilityDelegateSupplier,
-            Supplier<TabObscuringHandler> tabObscuringHandlerSupplier,
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<BrowserControlsVisibilityManager> browserControlsVisibilityManagerSupplier,
@@ -99,8 +89,6 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
         mManager = manager;
-        mAppVisibilityDelegateSupplier = appVisibilityDelegateSupplier;
-        mTabObscuringHandlerSupplier = tabObscuringHandlerSupplier;
         mTabModalSuspendedToken = TokenHolder.INVALID_TOKEN;
         mFullscreenManagerSupplier = fullscreenManagerSupplier;
         mBrowserControlsVisibilityManagerSupplier = browserControlsVisibilityManagerSupplier;
@@ -134,13 +122,10 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         assert mBrowserControlsVisibilityManagerSupplier.hasValue();
         assert mFullscreenManagerSupplier.hasValue();
-        mPresenter = new ChromeTabModalPresenter(mActivity, mTabObscuringHandlerSupplier,
+        mPresenter = new ChromeTabModalPresenter(mActivity,
                 mContextualSearchManagerSupplier,
                 mFullscreenManagerSupplier.get(), mBrowserControlsVisibilityManagerSupplier.get(),
                 tabModelSelector);
-        assert mAppVisibilityDelegateSupplier.hasValue();
-        mAppVisibilityDelegateSupplier.get().addDelegate(
-                mPresenter.getBrowserControlsVisibilityDelegate());
         mManager.registerPresenter(mPresenter, ModalDialogType.TAB);
 
         handleTabChanged(tabModelSelector.getCurrentTab());

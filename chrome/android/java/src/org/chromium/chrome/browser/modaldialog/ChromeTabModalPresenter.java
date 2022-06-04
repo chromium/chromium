@@ -26,12 +26,10 @@ import org.chromium.chrome.browser.tab.TabAttributeKeys;
 import org.chromium.chrome.browser.tab.TabAttributes;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.TokenHolder;
 
 /**
  * This presenter creates tab modality by blocking interaction with select UI elements while a
@@ -41,7 +39,6 @@ public class ChromeTabModalPresenter
         extends TabModalPresenter implements BrowserControlsStateProvider.Observer {
     /** The activity displaying the dialogs. */
     private final Activity mActivity;
-    private final Supplier<TabObscuringHandler> mTabObscuringHandlerSupplier;
     private final Supplier<ContextualSearchManager> mContextualSearchManagerSupplier;
     private final FullscreenManager mFullscreenManager;
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
@@ -73,32 +70,25 @@ public class ChromeTabModalPresenter
     private int mBottomControlsHeight;
     private boolean mShouldUpdateContainerLayoutParams;
 
-    /** A token held while the dialog manager is obscuring all tabs. */
-    private int mTabObscuringToken;
-
     /**
      * Constructor for initializing dialog container.
      * @param activity The activity displaying the dialogs.
-     * @param tabObscuringHandlerSupplier Supplies the {@link TabObscuringHandler} object.
      * @param contextualSearchManagerSupplier Supplies the {@link ContextualSearchManager} object.
      * @param fullscreenManager The {@link FullscreenManager} object, used to exit full screen.
      * @param browserControlsVisibilityManager The {@link BrowserControlsVisibilityManager} object.
      * @param tabModelSelector The {@link TabModelSelector} object.
      */
     public ChromeTabModalPresenter(Activity activity,
-            Supplier<TabObscuringHandler> tabObscuringHandlerSupplier,
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             FullscreenManager fullscreenManager,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TabModelSelector tabModelSelector) {
         super(activity);
         mActivity = activity;
-        mTabObscuringHandlerSupplier = tabObscuringHandlerSupplier;
         mFullscreenManager = fullscreenManager;
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mBrowserControlsVisibilityManager.addObserver(this);
         mVisibilityDelegate = new TabModalBrowserControlsVisibilityDelegate();
-        mTabObscuringToken = TokenHolder.INVALID_TOKEN;
         mContextualSearchManagerSupplier = contextualSearchManagerSupplier;
         mTabModelSelector = tabModelSelector;
     }
@@ -171,8 +161,6 @@ public class ChromeTabModalPresenter
         } else {
             mRunEnterAnimationOnCallback = true;
         }
-        assert mTabObscuringToken == TokenHolder.INVALID_TOKEN;
-        mTabObscuringToken = mTabObscuringHandlerSupplier.get().obscureAllTabs();
     }
 
     @Override
@@ -182,8 +170,6 @@ public class ChromeTabModalPresenter
     @Override
     protected void removeDialogView(PropertyModel model) {
         mRunEnterAnimationOnCallback = false;
-        mTabObscuringHandlerSupplier.get().unobscureAllTabs(mTabObscuringToken);
-        mTabObscuringToken = TokenHolder.INVALID_TOKEN;
         super.removeDialogView(model);
     }
 

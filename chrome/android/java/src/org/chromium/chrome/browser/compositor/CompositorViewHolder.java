@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
@@ -106,8 +105,6 @@ public class CompositorViewHolder extends FrameLayout
          * @param layoutManager             A {@link LayoutManagerImpl} instance.  This class is
          *                                  responsible for driving all high level screen content
          * and determines which {@link Layout} is shown when.
-         * @param urlBar                    The {@link View} representing the URL bar (must be
-         *                                  focusable) or {@code null} if none exists.
          * @param contentContainer          A {@link ViewGroup} that can have content attached by
          *                                  {@link Layout}s.
          */
@@ -195,8 +192,6 @@ public class CompositorViewHolder extends FrameLayout
      * active gesture, this is null.
      */
     private @Nullable MotionEvent mLastActiveTouchEvent;
-
-    private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     /**
      * This view is created on demand to display debugging information.
@@ -458,13 +453,6 @@ public class CompositorViewHolder extends FrameLayout
      */
     public void setRootView(View view) {
         mCompositorView.setRootView(view);
-    }
-
-    /**
-     * @param themeColorProvider {@link ThemeColorProvider} for top UI part.
-     */
-    public void setTopUiThemeColorProvider(TopUiThemeColorProvider themeColorProvider) {
-        mTopUiThemeColorProvider = themeColorProvider;
     }
 
     /**
@@ -1285,8 +1273,7 @@ public class CompositorViewHolder extends FrameLayout
             TabModelSelector tabModelSelector, TabCreatorManager tabCreatorManager) {
         assert mLayoutManager != null;
         mLayoutManager.init(tabModelSelector, tabCreatorManager,
-                mCompositorView.getResourceManager().getDynamicResourceLoader(),
-                mTopUiThemeColorProvider);
+                mCompositorView.getResourceManager().getDynamicResourceLoader());
 
         mTabModelSelector = tabModelSelector;
         tabModelSelector.addObserver(new TabModelSelectorObserver() {

@@ -21,10 +21,6 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarUiItem;
@@ -201,12 +197,6 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
      */
     private @Nullable IPHInfoBarSupport mIPHSupport;
 
-    /** A {@link BottomSheetObserver} so this view knows when to show/hide. */
-    private @Nullable BottomSheetObserver mBottomSheetObserver;
-
-    /** */
-    private BottomSheetController mBottomSheetController;
-
     public static InfoBarContainer from(Tab tab) {
         InfoBarContainer container = get(tab);
         if (container == null) {
@@ -222,15 +212,6 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
     @Nullable
     public static InfoBarContainer get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
-    }
-
-    @VisibleForTesting
-    public static void removeInfoBarContainerForTesting(Tab tab) {
-        InfoBarContainer container = get(tab);
-        if (container != null) {
-            tab.getUserDataHost().removeUserData(USER_DATA_KEY);
-            container.destroy();
-        }
     }
 
     private InfoBarContainer(Tab tab) {
@@ -473,22 +454,6 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
                 new View.OnAttachStateChangeListener() {
                     @Override
                     public void onViewAttachedToWindow(View view) {
-                        if (mBottomSheetObserver == null) {
-                            mBottomSheetObserver = new EmptyBottomSheetObserver() {
-                                @Override
-                                public void onSheetStateChanged(int sheetState, int reason) {
-                                    if (mTab.isHidden()) return;
-                                    mInfoBarContainerView.setVisibility(
-                                            sheetState == BottomSheetController.SheetState.FULL
-                                                    ? View.INVISIBLE
-                                                    : View.VISIBLE);
-                                }
-                            };
-                            mBottomSheetController =
-                                    BottomSheetControllerProvider.from(mTab.getWindowAndroid());
-                            mBottomSheetController.addObserver(mBottomSheetObserver);
-                        }
-
                         for (InfoBarContainer.InfoBarContainerObserver observer : mObservers) {
                             observer.onInfoBarContainerAttachedToWindow(!mInfoBars.isEmpty());
                         }
@@ -525,11 +490,6 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
             mInfoBarContainerView = null;
         }
 
-        Activity activity = getActivity(mTab);
-        if (activity != null && mBottomSheetObserver != null) {
-            mBottomSheetController.removeObserver(mBottomSheetObserver);
-        }
-
         mTab.getWindowAndroid().getKeyboardDelegate().removeKeyboardVisibilityListener(this);
 
         if (mTabView != null) {
@@ -551,14 +511,6 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
     public boolean isAnimating() {
         assert mInfoBarContainerView != null;
         return mInfoBarContainerView.isAnimating();
-    }
-
-    /**
-     * @return The {@link InfoBarContainerView} this class holds.
-     */
-    @VisibleForTesting
-    public InfoBarContainerView getContainerViewForTesting() {
-        return mInfoBarContainerView;
     }
 
     @NativeMethods

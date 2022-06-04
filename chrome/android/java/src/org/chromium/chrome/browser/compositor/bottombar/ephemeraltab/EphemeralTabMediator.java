@@ -12,7 +12,6 @@ import androidx.annotation.DrawableRes;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -33,7 +32,6 @@ public class EphemeralTabMediator {
     /** The delay (four video frames) after which the hide progress will be hidden. */
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = (1000 / 60) * 4;
 
-    private final BottomSheetController mBottomSheetController;
     private final EphemeralTabCoordinator.FaviconLoader mFaviconLoader;
     private final int mTopControlsHeightDp;
 
@@ -46,9 +44,7 @@ public class EphemeralTabMediator {
     /**
      * Constructor.
      */
-    public EphemeralTabMediator(BottomSheetController bottomSheetController,
-            EphemeralTabCoordinator.FaviconLoader faviconLoader, int topControlsHeightDp) {
-        mBottomSheetController = bottomSheetController;
+    public EphemeralTabMediator(EphemeralTabCoordinator.FaviconLoader faviconLoader, int topControlsHeightDp) {
         mFaviconLoader = faviconLoader;
         mTopControlsHeightDp = topControlsHeightDp;
     }
@@ -75,7 +71,6 @@ public class EphemeralTabMediator {
     void requestShowContent(GURL url, String title) {
         loadUrl(url);
         mSheetContent.updateTitle(title);
-        mBottomSheetController.requestShowContent(mSheetContent, true);
     }
 
     private void loadUrl(GURL url) {
@@ -105,7 +100,6 @@ public class EphemeralTabMediator {
                     // page. If there is no previous page, i.e. previous page is NTP, the preview
                     // tab will be closed.
                     if (mIsOnErrorPage && UrlUtilities.isNTPUrl(url)) {
-                        mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
                         mCurrentUrl = null;
                         return;
                     }
@@ -132,7 +126,6 @@ public class EphemeralTabMediator {
                         Toast.makeText(ContextUtils.getApplicationContext(),
                                      R.string.ephemeral_tab_sheet_not_viewable, Toast.LENGTH_SHORT)
                                 .show();
-                        mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
                     }
                 }
             }

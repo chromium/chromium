@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.layouts;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.SystemClock;
@@ -19,7 +20,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
-import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
@@ -41,7 +40,6 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
-import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -56,7 +54,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -162,9 +159,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     /** A map of {@link SceneOverlay} to its position relative to the others. */
     private Map<Class, Integer> mOverlayOrderMap = new HashMap<>();
 
-    /** The supplier of {@link ThemeColorProvider} for top UI. */
-    private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
-
     /**
      * Protected class to handle {@link TabModelObserver} related tasks. Extending classes will
      * need to override any related calls to add new functionality
@@ -249,15 +243,12 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public LayoutManagerImpl(LayoutManagerHost host, ViewGroup contentContainer,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mHost = host;
         mPxToDp = 1.f / mHost.getContext().getResources().getDisplayMetrics().density;
         mTabContentManagerSupplier = tabContentManagerSupplier;
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
         mContext = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
 
@@ -265,9 +256,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         // Overlays are ordered back (closest to the web content) to front.
         Class[] overlayOrder = new Class[] {
                 HistoryNavigationCoordinator.getSceneOverlayClass(),
-                ContinuousSearchContainerCoordinator.getSceneOverlayClass(),
                 StripLayoutHelperManager.class,
-                StatusIndicatorCoordinator.getSceneOverlayClass(),
                 ContextualSearchPanel.class};
         // clang-format on
 
@@ -450,19 +439,16 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * @param selector                 A {@link TabModelSelector} instance.
      * @param creator                  A {@link TabCreatorManager} instance.
      * @param dynamicResourceLoader    A {@link DynamicResourceLoader} instance.
-     * @param topUiColorProvider       A theme color provider for the top browser controls.
      */
     public void init(TabModelSelector selector, TabCreatorManager creator,
-            DynamicResourceLoader dynamicResourceLoader,
-            TopUiThemeColorProvider topUiColorProvider) {
+            DynamicResourceLoader dynamicResourceLoader) {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
         mBrowserControlsStateProvider = mHost.getBrowserControlsManager();
 
         // Build Layouts
         mStaticLayout = new StaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
-                selector, mTabContentManagerSupplier.get(), mBrowserControlsStateProvider,
-                mTopUiThemeColorProvider);
+                selector, mTabContentManagerSupplier.get(), mBrowserControlsStateProvider);
 
         setNextLayout(null, true);
 
@@ -764,12 +750,11 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         boolean canUseLiveTexture = tab.getWebContents() != null && !SadTab.isShowing(tab)
                 && !isNativePage && !tab.isHidden();
 
-        TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
-        layoutTab.initFromHost(topUiTheme.getBackgroundColor(tab), shouldStall(tab),
-                canUseLiveTexture, topUiTheme.getSceneLayerBackground(tab),
+        layoutTab.initFromHost(Color.WHITE, shouldStall(tab),
+                canUseLiveTexture, tab.getThemeColor(),
                 ThemeUtils.getTextBoxColorForToolbarBackground(
-                        mContext, tab, topUiTheme.calculateColor(tab, tab.getThemeColor())),
-                topUiTheme.getTextBoxBackgroundAlpha(tab));
+                        mContext, tab, Color.BLUE),
+                0.5f);
 
         mHost.requestRender();
     }
@@ -935,15 +920,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * @return The layout implementation for the provided type.
      */
     protected Layout getLayoutForType(@LayoutType int layoutType) {
-        // TODO(1248073): Register these types and look them up in a map rather than overriding this
-        //                method in multiple places.
-        // Use the static layout by default or if explicitly specified.
-        if (layoutType == LayoutType.NONE || layoutType == LayoutType.BROWSING) {
-            return mStaticLayout;
-        }
-
-        assert false : "Unsupported layout type: " + layoutType;
-        return null;
+        return mStaticLayout;
     }
 
     /**
@@ -956,8 +933,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * @param animate Whether or not {@code layout} should animate as it shows.
      */
     protected void startShowing(Layout layout, boolean animate) {
-        assert layout != null : "Can't show a null layout.";
-
         // This can happen in some cases where the start surface may not have been created yet.
         if (layout == null) return;
 

@@ -43,10 +43,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
 import org.chromium.content_public.browser.WebContents;
@@ -94,7 +90,6 @@ class ManualFillingMediator extends EmptyTabObserver
     private ChromeActivity mActivity; // Used to control the keyboard.
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private DropdownPopupWindow mPopup;
-    private BottomSheetController mBottomSheetController;
     private ManualFillingComponent.SoftKeyboardDelegate mSoftKeyboardDelegate;
     private ConfirmationDialogHelper mConfirmationHelper;
 
@@ -120,13 +115,6 @@ class ManualFillingMediator extends EmptyTabObserver
                 }
             };
 
-    private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
-        @Override
-        public void onSheetStateChanged(@SheetState int newState, int reason) {
-            mModel.set(SUPPRESSED_BY_BOTTOM_SHEET, newState != SheetState.HIDDEN);
-        }
-    };
-
     /** Default constructor */
     ManualFillingMediator() {
         mViewportInsetSupplier.set(0);
@@ -134,14 +122,12 @@ class ManualFillingMediator extends EmptyTabObserver
 
     void initialize(KeyboardAccessoryCoordinator keyboardAccessory,
             AccessorySheetCoordinator accessorySheet, WindowAndroid windowAndroid,
-            BottomSheetController sheetController,
             ManualFillingComponent.SoftKeyboardDelegate keyboardDelegate,
             ConfirmationDialogHelper confirmationHelper) {
         mActivity = (ChromeActivity) windowAndroid.getActivity().get();
         assert mActivity != null;
         mWindowAndroid = windowAndroid;
         mKeyboardAccessory = keyboardAccessory;
-        mBottomSheetController = sheetController;
         mSoftKeyboardDelegate = keyboardDelegate;
         mConfirmationHelper = confirmationHelper;
         mModel.set(PORTRAIT_ORIENTATION, hasPortraitOrientation());
@@ -169,7 +155,6 @@ class ManualFillingMediator extends EmptyTabObserver
             }
         };
         mActivity.getFullscreenManager().addObserver(mFullscreenObserver);
-        mBottomSheetController.addObserver(mBottomSheetObserver);
         ensureObserverRegistered(getActiveBrowserTab());
         refreshTabs();
     }
@@ -266,7 +251,6 @@ class ManualFillingMediator extends EmptyTabObserver
         for (Tab tab : mObservedTabs) tab.removeObserver(mTabObserver);
         mObservedTabs.clear();
         mActivity.getFullscreenManager().removeObserver(mFullscreenObserver);
-        mBottomSheetController.removeObserver(mBottomSheetObserver);
         mWindowAndroid = null;
         mActivity = null;
     }

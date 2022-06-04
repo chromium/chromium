@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -912,38 +911,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     @Override
     protected void updateStatusBar() {
-        float maxBrightness = getMaxBasePageBrightness();
-        float minBrightness = getMinBasePageBrightness();
-        float basePageBrightness = getBasePageBrightness();
-        // Compute Status Bar alpha based on the base-page brightness range applied by the Overlay.
-        // TODO(donnd): Create a full-screen sized view and apply the black_alpha_65 color to get
-        // an exact match between the scrim and the status bar colors instead of adjusting the
-        // status bar alpha to approximate the native overlay brightness filter.
-        // Details in https://crbug.com/848922.
-        float statusBarAlpha =
-                (maxBrightness - basePageBrightness) / (maxBrightness - minBrightness);
-        if (statusBarAlpha == 0.0) {
-            if (mScrimCoordinator != null) mScrimCoordinator.hideScrim(false);
-            mScrimProperties = null;
-            mScrimCoordinator = null;
-            return;
 
-        } else {
-            mScrimCoordinator = mManagementDelegate.getScrimCoordinator();
-            if (mScrimProperties == null) {
-                mScrimProperties =
-                        new PropertyModel.Builder(ScrimProperties.REQUIRED_KEYS)
-                                .with(ScrimProperties.TOP_MARGIN, 0)
-                                .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
-                                .with(ScrimProperties.ANCHOR_VIEW, mCompositorViewHolder)
-                                .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                                .with(ScrimProperties.VISIBILITY_CALLBACK, null)
-                                .with(ScrimProperties.CLICK_DELEGATE, null)
-                                .build();
-                mScrimCoordinator.showScrim(mScrimProperties);
-            }
-            mScrimCoordinator.setAlpha(statusBarAlpha);
-        }
     }
 
     // ============================================================================================

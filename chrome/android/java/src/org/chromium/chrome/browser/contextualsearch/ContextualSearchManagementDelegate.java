@@ -10,7 +10,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 
 /**
  * Provides an interface to allow external objects like the {@link ContextualSearchPanel} to drive
@@ -94,11 +93,6 @@ public interface ContextualSearchManagementDelegate {
      *                          Panel.
      */
     void onRelatedSearchesSuggestionClicked(int suggestionIndex, boolean isInBarSuggestion);
-
-    /**
-     * @return A {@link ScrimCoordinator} to fade the status bar in and out.
-     */
-    ScrimCoordinator getScrimCoordinator();
 
     /**
      * Returns whether the Delayed Intelligence Feature is currently active for the current user.

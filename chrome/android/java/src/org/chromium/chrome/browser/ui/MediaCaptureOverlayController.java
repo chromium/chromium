@@ -33,7 +33,7 @@ public class MediaCaptureOverlayController implements UnownedUserData {
     private final CaptureOverlayTabObserver mTabObserver = new CaptureOverlayTabObserver();
 
     private View mOverlayView;
-    private SparseArray<Tab> mCapturedTabs = new SparseArray<Tab>();
+    private final SparseArray<Tab> mCapturedTabs = new SparseArray<Tab>();
     private Tab mVisibleTab;
 
     private class CaptureOverlayTabObserver extends EmptyTabObserver {
@@ -169,11 +169,6 @@ public class MediaCaptureOverlayController implements UnownedUserData {
         mOverlayView.setLayoutParams(params);
     }
 
-    /**
-     * Called by the {@link RootUiCoordinator}/owner of this object, when it should no longer be
-     * used or queryable. Any overlays will be immediately hidden, and all tracked tabs will be
-     * unsubscribed from.
-     */
     public void destroy() {
         for (int i = 0; i < mCapturedTabs.size(); i++) {
             mCapturedTabs.valueAt(i).removeObserver(mTabObserver);

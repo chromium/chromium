@@ -1,3 +1,0 @@
-include_rules = [
-  "+chrome/browser/user_education/java/src/org/chromium/chrome/browser/user_education",
-]

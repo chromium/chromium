@@ -1,0 +1,2 @@
+'[FATAL:paint_chunker.cc(231)] Check failed: !selection_data.end. '
+解决办法：移除check

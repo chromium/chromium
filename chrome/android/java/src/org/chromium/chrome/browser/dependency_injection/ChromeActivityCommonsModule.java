@@ -4,12 +4,6 @@
 
 package org.chromium.chrome.browser.dependency_injection;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_TYPE;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.DECOR_VIEW;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.IS_PROMOTABLE_TO_TAB_BOOLEAN;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
@@ -39,8 +33,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.system.StatusBarColorController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -52,13 +44,18 @@ import javax.inject.Named;
 import dagger.Module;
 import dagger.Provides;
 
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_TYPE;
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.DECOR_VIEW;
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.IS_PROMOTABLE_TO_TAB_BOOLEAN;
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
+
 /**
  * Module for common dependencies in {@link ChromeActivity}.
  */
 @Module
 public class ChromeActivityCommonsModule {
     private final AppCompatActivity mActivity;
-    private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final BrowserControlsManager mBrowserControlsManager;
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
@@ -74,7 +71,6 @@ public class ChromeActivityCommonsModule {
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<TabCreator> mTabCreatorSupplier;
     private final Supplier<Boolean> mIsPromotableToTabSupplier;
-    private final StatusBarColorController mStatusBarColorController;
     private final ScreenOrientationProvider mScreenOrientationProvider;
     private final Supplier<NotificationManagerProxy> mNotificationManagerProxySupplier;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
@@ -93,7 +89,6 @@ public class ChromeActivityCommonsModule {
     /** See {@link ModuleFactoryOverrides} */
     public interface Factory {
         ChromeActivityCommonsModule create(AppCompatActivity activity,
-                Supplier<BottomSheetController> bottomSheetControllerSupplier,
                 Supplier<TabModelSelector> tabModelSelectorSupplier,
                 BrowserControlsManager browserControlsManager,
                 BrowserControlsVisibilityManager browserControlsVisibilityManager,
@@ -106,7 +101,6 @@ public class ChromeActivityCommonsModule {
                 Supplier<CompositorViewHolder> compositorViewHolderSupplier,
                 TabCreatorManager tabCreatorManager, Supplier<TabCreator> tabCreatorSupplier,
                 Supplier<Boolean> isPromotableToTabSupplier,
-                StatusBarColorController statusBarColorController,
                 ScreenOrientationProvider screenOrientationProvider,
                 Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
                 ObservableSupplier<TabContentManager> tabContentManagerSupplier,
@@ -122,7 +116,6 @@ public class ChromeActivityCommonsModule {
     }
 
     public ChromeActivityCommonsModule(AppCompatActivity activity,
-            Supplier<BottomSheetController> bottomSheetControllerSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             BrowserControlsManager browserControlsManager,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
@@ -135,7 +128,6 @@ public class ChromeActivityCommonsModule {
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             TabCreatorManager tabCreatorManager, Supplier<TabCreator> tabCreatorSupplier,
             Supplier<Boolean> isPromotableToTabSupplier,
-            StatusBarColorController statusBarColorController,
             ScreenOrientationProvider screenOrientationProvider,
             Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
@@ -149,7 +141,6 @@ public class ChromeActivityCommonsModule {
             Supplier<ShareDelegate> shareDelegateSupplier, TabModelInitializer tabModelInitializer,
             @ActivityType int activityType) {
         mActivity = activity;
-        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mBrowserControlsManager = browserControlsManager;
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
@@ -165,7 +156,6 @@ public class ChromeActivityCommonsModule {
         mTabCreatorManager = tabCreatorManager;
         mTabCreatorSupplier = tabCreatorSupplier;
         mIsPromotableToTabSupplier = isPromotableToTabSupplier;
-        mStatusBarColorController = statusBarColorController;
         mScreenOrientationProvider = screenOrientationProvider;
         mNotificationManagerProxySupplier = notificationManagerProxySupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
@@ -179,11 +169,6 @@ public class ChromeActivityCommonsModule {
         mShareDelegateSupplier = shareDelegateSupplier;
         mTabModelInitializer = tabModelInitializer;
         mActivityType = activityType;
-    }
-
-    @Provides
-    public BottomSheetController provideBottomSheetController() {
-        return mBottomSheetControllerSupplier.get();
     }
 
     @Provides
@@ -302,11 +287,6 @@ public class ChromeActivityCommonsModule {
     @Named(IS_PROMOTABLE_TO_TAB_BOOLEAN)
     public boolean provideIsPromotableToTab() {
         return !mIsPromotableToTabSupplier.get();
-    }
-
-    @Provides
-    public StatusBarColorController provideStatusBarColorController() {
-        return mStatusBarColorController;
     }
 
     @Provides

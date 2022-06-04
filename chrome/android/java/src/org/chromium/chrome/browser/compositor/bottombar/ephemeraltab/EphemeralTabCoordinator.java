@@ -25,9 +25,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -61,7 +58,6 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private final View mLayoutView;
     private final ActivityTabProvider mTabProvider;
     private final Supplier<TabCreator> mTabCreator;
-    private final BottomSheetController mBottomSheetController;
     private final boolean mCanPromoteToNewTab;
 
     private EphemeralTabMediator mMediator;
@@ -83,21 +79,18 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      * @param layoutView The {@link View} to listen layout change on.
      * @param tabProvider Provider of the current activity tab.
      * @param tabCreator Supplier for {@link TabCreator} handling a new tab creation.
-     * @param bottomSheetController {@link BottomSheetController} as the container of the tab.
      * @param canPromoteToNewTab Whether the tab can be promoted to a normal tab.
      */
     @Inject
     public EphemeralTabCoordinator(@Named(ACTIVITY_CONTEXT) Context context,
             ActivityWindowAndroid window, @Named(DECOR_VIEW) View layoutView,
             ActivityTabProvider tabProvider, Supplier<TabCreator> tabCreator,
-            BottomSheetController bottomSheetController,
             @Named(IS_PROMOTABLE_TO_TAB_BOOLEAN) boolean canPromoteToNewTab) {
         mContext = context;
         mWindow = window;
         mLayoutView = layoutView;
         mTabProvider = tabProvider;
         mTabCreator = tabCreator;
-        mBottomSheetController = bottomSheetController;
         mCanPromoteToNewTab = canPromoteToNewTab;
     }
 
@@ -127,8 +120,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         mUrl = url;
         Profile profile = getProfile(isIncognito);
         if (mMediator == null) {
-            mMediator = new EphemeralTabMediator(
-                    mBottomSheetController, new FaviconLoader(mContext), 0);
+            mMediator = new EphemeralTabMediator(new FaviconLoader(mContext), 0);
         }
         if (mWebContents == null) {
             assert mSheetContent == null;
@@ -144,19 +136,6 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
 
                 @Override
                 public void onSheetStateChanged(int newState, int reason) {
-                    if (mSheetContent == null) return;
-                    switch (newState) {
-                        case SheetState.PEEK:
-                            if (!mPeeked) {
-                                mPeeked = true;
-                            }
-                            break;
-                        case SheetState.FULL:
-                            if (!mFullyOpened) {
-                                mFullyOpened = true;
-                            }
-                            break;
-                    }
                 }
 
                 @Override
@@ -165,7 +144,6 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                     if (mCanPromoteToNewTab) mSheetContent.showOpenInNewTabButton(heightFraction);
                 }
             };
-            mBottomSheetController.addObserver(mSheetObserver);
             IntentRequestTracker intentRequestTracker = mWindow.getIntentRequestTracker();
             assert intentRequestTracker
                     != null : "ActivityWindowAndroid must have a IntentRequestTracker.";
@@ -221,32 +199,24 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         if (mMediator != null) mMediator.destroyContent();
 
         mLayoutView.removeOnLayoutChangeListener(this);
-        if (mSheetObserver != null) mBottomSheetController.removeObserver(mSheetObserver);
     }
 
     private void openInNewTab() {
         if (mCanPromoteToNewTab && mUrl != null) {
-            mBottomSheetController.hideContent(
-                    mSheetContent, /* animate= */ true, StateChangeReason.PROMOTE_TAB);
             mTabCreator.get().createNewTab(new LoadUrlParams(mUrl.getSpec(), PageTransition.LINK),
                     TabLaunchType.FROM_LINK, mTabProvider.get());
         }
     }
 
     private void onToolbarClick() {
-        int state = mBottomSheetController.getSheetState();
-        if (state == SheetState.PEEK) {
-            mBottomSheetController.expandSheet();
-        } else if (state == SheetState.FULL) {
-            mBottomSheetController.collapseSheet(true);
-        }
+
     }
 
     /**
      * Close the ephemeral tab.
      */
     public void close() {
-        mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
+
     }
 
     @Override

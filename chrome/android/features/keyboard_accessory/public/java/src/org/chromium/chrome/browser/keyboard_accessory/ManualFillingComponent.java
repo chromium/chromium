@@ -95,7 +95,7 @@ public interface ManualFillingComponent {
      * @param sheetStub The {@link ViewStub} used to inflate the keyboard accessory bottom
      *         sheet.
      */
-    void initialize(WindowAndroid windowAndroid, BottomSheetController sheetController,
+    void initialize(WindowAndroid windowAndroid,
             SoftKeyboardDelegate keyboardDelegate, ViewStub barStub, ViewStub sheetStub);
 
     /**

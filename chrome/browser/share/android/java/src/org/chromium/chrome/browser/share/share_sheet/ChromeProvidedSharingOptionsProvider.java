@@ -5,10 +5,7 @@
 package org.chromium.chrome.browser.share.share_sheet;
 
 import android.app.Activity;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
@@ -45,7 +42,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -358,8 +354,7 @@ public class ChromeProvidedSharingOptionsProvider {
                 .setFeatureNameForMetrics("SharingHubAndroid.SendTabToSelfSelected")
                 .setOnClickCallback((view) -> {
                     SendTabToSelfCoordinator sttsCoordinator =
-                            new SendTabToSelfCoordinator(mActivity, mWindowAndroid, mUrl,
-                                    mShareParams.getTitle(), mBottomSheetController);
+                            new SendTabToSelfCoordinator(mActivity);
                     sttsCoordinator.show();
                 })
                 .build();

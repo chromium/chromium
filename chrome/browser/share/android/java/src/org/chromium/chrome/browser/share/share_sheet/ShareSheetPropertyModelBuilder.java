@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -89,14 +88,11 @@ public class ShareSheetPropertyModelBuilder {
                     "com.yahoo.mail.ui.activities.ComposeActivity",
                     "org.telegram.ui.LaunchActivity", "com.tencent.mm.ui.tools.ShareImgUI"));
 
-    private final BottomSheetController mBottomSheetController;
     private final PackageManager mPackageManager;
     private final Profile mProfile;
 
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
-    public ShareSheetPropertyModelBuilder(BottomSheetController bottomSheetController,
-            PackageManager packageManager, Profile profile) {
-        mBottomSheetController = bottomSheetController;
+    public ShareSheetPropertyModelBuilder(PackageManager packageManager, Profile profile) {
         mPackageManager = packageManager;
         mProfile = profile;
     }
@@ -232,7 +228,6 @@ public class ShareSheetPropertyModelBuilder {
         if (saveLastUsed) {
             ShareHelper.setLastShareComponentName(mProfile, component);
         }
-        mBottomSheetController.hideContent(bottomSheet, true);
         // Fire intent through ShareHelper.
         ShareHelper.shareDirectly(params, component);
     }

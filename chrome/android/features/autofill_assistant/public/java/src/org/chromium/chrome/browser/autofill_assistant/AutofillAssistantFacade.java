@@ -5,30 +5,23 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Function;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.directactions.DirectActionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.autofill_assistant.AssistantFeatures;
 import org.chromium.components.autofill_assistant.AutofillAssistantMetrics;
-import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryProvider;
 import org.chromium.components.autofill_assistant.TriggerContext;
 import org.chromium.components.autofill_assistant.metrics.DropOutReason;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
 import org.chromium.content_public.browser.WebContents;
 
@@ -92,24 +85,6 @@ public class AutofillAssistantFacade {
         AutofillAssistantMetrics.recordDropOut(DropOutReason.AA_START, intent);
         waitForTab((ChromeActivity) activity,
                 tab -> { AutofillAssistantTabHelper.get(tab).start(triggerContext); });
-    }
-
-    /**
-     * Returns a {@link DirectActionHandler} for making dynamic actions available under Android Q.
-     *
-     * <p>This should only be called if {@link
-     * AssistantDependencyUtilsChrome#areDirectActionsAvailable} returns true. This method can also
-     * return null if autofill assistant is not available for some other reasons.
-     */
-    public static DirectActionHandler createDirectActionHandler(Context context,
-            BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, View rootView,
-            ActivityTabProvider activityTabProvider) {
-        Supplier<WebContents> webContentsSupplier = () -> getWebContents(activityTabProvider);
-
-        return new AutofillAssistantDirectActionHandler(context, bottomSheetController,
-                browserControls, rootView, activityTabProvider, webContentsSupplier,
-                AutofillAssistantModuleEntryProvider.INSTANCE);
     }
 
     /** Provides the callback with a tab, waits if necessary. */

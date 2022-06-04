@@ -8,30 +8,22 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.SystemClock;
-import android.view.ContextThemeWrapper;
-import android.view.InflateException;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
-import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.LayoutInflaterUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -116,55 +108,6 @@ public class WarmupManager {
     private WarmupManager() {
         mDnsRequestsInFlight = new HashSet<>();
         mPendingPreconnectWithProfile = new HashMap<>();
-    }
-
-    /**
-     * Inflates and constructs the view hierarchy that the app will use.
-     * @param baseContext The base context to use for creating the ContextWrapper.
-     * @param toolbarContainerId Id of the toolbar container.
-     * @param toolbarId The toolbar's layout ID.
-     */
-    public void initializeViewHierarchy(Context baseContext, int toolbarContainerId,
-            int toolbarId) {
-        ThreadUtils.assertOnUiThread();
-        if (mMainView != null && mToolbarContainerId == toolbarContainerId) return;
-        mMainView = inflateViewHierarchy(baseContext, toolbarContainerId, toolbarId);
-        mToolbarContainerId = toolbarContainerId;
-    }
-
-    /**
-     * Inflates and constructs the view hierarchy that the app will use.
-     * Calls to this are not restricted to the UI thread.
-     * @param baseContext The base context to use for creating the ContextWrapper.
-     * @param toolbarContainerId Id of the toolbar container.
-     * @param toolbarId The toolbar's layout ID.
-     */
-    public static ViewGroup inflateViewHierarchy(
-            Context baseContext, int toolbarContainerId, int toolbarId) {
-        try (TraceEvent e = TraceEvent.scoped("WarmupManager.inflateViewHierarchy")) {
-            ContextThemeWrapper context =
-                    new ContextThemeWrapper(baseContext, ActivityUtils.getThemeId());
-            FrameLayout contentHolder = new FrameLayout(context);
-            ViewGroup mainView =
-                    (ViewGroup) LayoutInflaterUtils.inflate(context, R.layout.main, contentHolder);
-            if (toolbarContainerId != ActivityUtils.NO_RESOURCE_ID) {
-                ViewStub stub = (ViewStub) mainView.findViewById(R.id.control_container_stub);
-                stub.setLayoutResource(toolbarContainerId);
-                stub.inflate();
-            }
-            return mainView;
-        } catch (InflateException e) {
-            // Warmup manager is only a performance improvement. If inflation failed, it will be
-            // redone when the CCT is actually launched using an activity context. So, swallow
-            // exceptions here to improve resilience. See https://crbug.com/606715.
-            Log.e(TAG, "Inflation exception.", e);
-            // An exception caught here may indicate a real bug in production code. We report the
-            // exceptions to monitor any spikes or stacks that point to Chrome code.
-            Throwable throwable = new Throwable(
-                    "This is not a crash. See https://crbug.com/1259276 for details.", e);
-            ChromePureJavaExceptionReporter.postReportJavaException(throwable);
-            return null;
-        }
     }
 
     /**

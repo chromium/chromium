@@ -39,7 +39,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     public ManualFillingCoordinator() {}
 
     @Override
-    public void initialize(WindowAndroid windowAndroid, BottomSheetController sheetController,
+    public void initialize(WindowAndroid windowAndroid,
             SoftKeyboardDelegate keyboardDelegate, ViewStub barStub, ViewStub sheetStub) {
         if (barStub == null || sheetStub == null) return; // The manual filling isn't needed.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
@@ -49,15 +49,15 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         }
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
         initialize(windowAndroid, new KeyboardAccessoryCoordinator(mMediator, barStub),
-                new AccessorySheetCoordinator(sheetStub), sheetController, keyboardDelegate,
+                new AccessorySheetCoordinator(sheetStub), keyboardDelegate,
                 new ConfirmationDialogHelper(windowAndroid.getContext()));
     }
 
     @VisibleForTesting
     void initialize(WindowAndroid windowAndroid, KeyboardAccessoryCoordinator accessoryBar,
-            AccessorySheetCoordinator accessorySheet, BottomSheetController sheetController,
+            AccessorySheetCoordinator accessorySheet,
             SoftKeyboardDelegate keyboardDelegate, ConfirmationDialogHelper confirmationHelper) {
-        mMediator.initialize(accessoryBar, accessorySheet, windowAndroid, sheetController,
+        mMediator.initialize(accessoryBar, accessorySheet, windowAndroid,
                 keyboardDelegate, confirmationHelper);
     }
 
