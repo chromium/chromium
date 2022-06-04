@@ -108,6 +108,7 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
 
   {
     chrome_screen_ai::LineBox* line_0 = annotation.add_lines();
+    line_0->set_direction(chrome_screen_ai::Direction::RIGHT_TO_LEFT);
 
     chrome_screen_ai::WordBox* word_0_0 = line_0->add_words();
     chrome_screen_ai::Rect* box_0_0 = word_0_0->mutable_bounding_box();
@@ -121,6 +122,7 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
     word_0_0->set_estimate_color_success(true);
     word_0_0->set_background_rgb_value(50000);
     word_0_0->set_foreground_rgb_value(25000);
+    word_0_0->set_direction(chrome_screen_ai::Direction::RIGHT_TO_LEFT);
 
     chrome_screen_ai::WordBox* word_0_1 = line_0->add_words();
     chrome_screen_ai::Rect* box_0_1 = word_0_1->mutable_bounding_box();
@@ -134,6 +136,7 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
     word_0_1->set_estimate_color_success(true);
     word_0_1->set_background_rgb_value(50000);
     word_0_1->set_foreground_rgb_value(25000);
+    word_0_1->set_direction(chrome_screen_ai::Direction::RIGHT_TO_LEFT);
 
     chrome_screen_ai::Rect* box_0 = line_0->mutable_bounding_box();
     box_0->set_x(100);
@@ -162,6 +165,7 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
     box_2->set_height(-5);
     line_2->set_block_id(2);
     line_2->set_order_within_block(0);
+    line_2->set_direction(chrome_screen_ai::Direction::UNSPECIFIED);
   }
 
   {
@@ -177,14 +181,14 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
         "  id=6 staticText (0, 0)-(5, 0) name_from=contents text_direction=ltr "
         "name=\n"
         "  id=7 staticText offset_container_id=5 (100, 100)-(500, 20) "
-        "name_from=contents text_direction=ltr name=Hello world language=en "
+        "name_from=contents text_direction=rtl name=Hello world language=en "
         "child_ids=8,9\n"
         "    id=8 inlineTextBox offset_container_id=7 (100, 100)-(250, 20) "
         "name_from=contents background_color=&C350 color=&61A8 "
-        "text_direction=ltr name=Hello \n"
+        "text_direction=rtl name=Hello \n"
         "    id=9 inlineTextBox offset_container_id=7 (350, 100)-(250, 20) "
         "name_from=contents background_color=&C350 color=&61A8 "
-        "text_direction=ltr name=world\n");
+        "text_direction=rtl name=world\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 }

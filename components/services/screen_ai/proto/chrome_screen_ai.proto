@@ -297,7 +297,7 @@ message LineBox {
   // Index within the block that this line belongs to.
   int32 order_within_block = 7;
 
-  // The direction of the script contained in the word. Directed by the enum
+  // The direction of the script contained in the line. Directed by the enum
   // Direction defined above.
   int32 direction = 8;
 

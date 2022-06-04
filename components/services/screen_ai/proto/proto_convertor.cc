@@ -99,42 +99,35 @@ void SerializeBoundingBox(const chrome_screen_ai::Rect& bounding_box,
   }
 }
 
-void SerializeDirection(const chrome_screen_ai::Orientation& direction,
+void SerializeDirection(const chrome_screen_ai::Direction& direction,
                         ui::AXNodeData& out_data) {
-  if (!chrome_screen_ai::Orientation_IsValid(direction)) {
+  if (!chrome_screen_ai::Direction_IsValid(direction)) {
     NOTREACHED() << "Unrecognized chrome_screen_ai::Direction value: "
                  << direction;
     return;
   }
-  // TODO(accessibility): Why is writing direction represented using the
-  // orientation enum whose values are in part non-sensical for use as a writing
-  // direction? E.g., what does `ORIENTATION_ROTATED_HORIZONTAL` mean?
   switch (direction) {
-    case chrome_screen_ai::Orientation::ORIENTATION_DEFAULT:
-    case chrome_screen_ai::Orientation::ORIENTATION_HORIZONTAL:
+    case chrome_screen_ai::Direction::UNSPECIFIED:
+    // We assume that LEFT_TO_RIGHT is the default direction.
+    case chrome_screen_ai::Direction::LEFT_TO_RIGHT:
       out_data.AddIntAttribute(
           ax::mojom::IntAttribute::kTextDirection,
           static_cast<int32_t>(ax::mojom::WritingDirection::kLtr));
       break;
-    case chrome_screen_ai::Orientation::ORIENTATION_VERTICAL:
-      out_data.AddIntAttribute(
-          ax::mojom::IntAttribute::kTextDirection,
-          static_cast<int32_t>(ax::mojom::WritingDirection::kTtb));
-      break;
-    case chrome_screen_ai::Orientation::ORIENTATION_ROTATED_HORIZONTAL:
+    case chrome_screen_ai::Direction::RIGHT_TO_LEFT:
       out_data.AddIntAttribute(
           ax::mojom::IntAttribute::kTextDirection,
           static_cast<int32_t>(ax::mojom::WritingDirection::kRtl));
       break;
-    case chrome_screen_ai::Orientation::ORIENTATION_ROTATED_VERTICAL:
+    case chrome_screen_ai::Direction::TOP_TO_BOTTOM:
       out_data.AddIntAttribute(
           ax::mojom::IntAttribute::kTextDirection,
-          static_cast<int32_t>(ax::mojom::WritingDirection::kBtt));
+          static_cast<int32_t>(ax::mojom::WritingDirection::kTtb));
       break;
     case google::protobuf::kint32min:
     case google::protobuf::kint32max:
       // Ordinarily, a default case should have been added to permit future
-      // additions to `chrome_screen_ai::Orientation`. However, in this
+      // additions to `chrome_screen_ai::Direction`. However, in this
       // case, both the screen_ai library and this code should always be in
       // sync.
       NOTREACHED() << "Unrecognized chrome_screen_ai::Direction value: "
@@ -236,7 +229,7 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
                                   word_box.foreground_rgb_value());
   }
   SerializeDirection(
-      static_cast<chrome_screen_ai::Orientation>(word_box.direction()),
+      static_cast<chrome_screen_ai::Direction>(word_box.direction()),
       word_box_node);
   parent_node.child_ids.push_back(word_box_node.id);
 }
@@ -289,7 +282,7 @@ void SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
                                      line_box.language());
   }
   SerializeDirection(
-      static_cast<chrome_screen_ai::Orientation>(line_box.direction()),
+      static_cast<chrome_screen_ai::Direction>(line_box.direction()),
       line_box_node);
   parent_node.child_ids.push_back(line_box_node.id);
 }
