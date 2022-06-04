@@ -11,10 +11,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/view.h"
 
-namespace ash {
-class PillButton;
-}  // namespace ash
-
 // View displaying the 3 possible options to finish edit mode.
 //
 // These actions refer to what the user can do wrt customized key-bindings, they
@@ -39,7 +35,7 @@ class EditFinishView : public views::View {
  public:
   static std::unique_ptr<EditFinishView> BuildView(
       DisplayOverlayController* display_overlay_controller,
-      gfx::Point position);
+      const gfx::Size& parent_size);
 
   explicit EditFinishView(DisplayOverlayController* display_overlay_controller);
 
@@ -48,15 +44,17 @@ class EditFinishView : public views::View {
   ~EditFinishView() override;
 
  private:
-  void Init(gfx::Point position);
+  class ChildButton;
 
+  void Init(const gfx::Size& parent_size);
+  int CalculateWidth();
   void OnResetButtonPressed();
   void OnSaveButtonPressed();
   void OnCancelButtonPressed();
 
-  raw_ptr<ash::PillButton> reset_button_ = nullptr;
-  raw_ptr<ash::PillButton> save_button_ = nullptr;
-  raw_ptr<ash::PillButton> cancel_button_ = nullptr;
+  raw_ptr<ChildButton> reset_button_ = nullptr;
+  raw_ptr<ChildButton> save_button_ = nullptr;
+  raw_ptr<ChildButton> cancel_button_ = nullptr;
 
   // DisplayOverlayController owns |this| class, no need to deallocate.
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;

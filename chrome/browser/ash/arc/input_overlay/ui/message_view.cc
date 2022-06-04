@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/input_overlay/ui/error_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 
 #include "ash/ambient/util/ambient_util.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -23,9 +23,9 @@ constexpr SkColor kTextColor = gfx::kGoogleRed300;
 
 }  // namespace
 
-ErrorView::ErrorView(DisplayOverlayController* controller,
-                     ActionView* view,
-                     base::StringPiece text)
+MessageView::MessageView(DisplayOverlayController* controller,
+                         ActionView* view,
+                         base::StringPiece text)
     : views::Label(base::UTF8ToUTF16(text)),
       display_overlay_controller_(controller) {
   DCHECK(display_overlay_controller_);
@@ -56,9 +56,9 @@ ErrorView::ErrorView(DisplayOverlayController* controller,
   SetSize(preferred_size);
 }
 
-ErrorView::~ErrorView() = default;
+MessageView::~MessageView() = default;
 
-gfx::Size ErrorView::CalculatePreferredSize() const {
+gfx::Size MessageView::CalculatePreferredSize() const {
   auto size = Label::CalculatePreferredSize();
   size.set_width(size.width() + kWidthPadding);
   size.set_height(std::max(size.height(), kMinHeight));

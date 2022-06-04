@@ -36,8 +36,6 @@ namespace {
 // UI specs.
 constexpr int kMenuEntrySize = 56;
 constexpr int kMenuEntrySideMargin = 24;
-constexpr int kEditFinishWidth = 140;
-constexpr int kEditFinishHeight = 184;
 constexpr SkColor kMenuEntryBgColor = SkColorSetA(SK_ColorWHITE, 0x99);
 constexpr int kCornerRadius = 8;
 constexpr int kNudgeVerticalAlign = 8;
@@ -236,10 +234,8 @@ void DisplayOverlayController::AddEditFinishView(
   auto* parent_view = overlay_widget->GetContentsView();
   DCHECK(parent_view);
 
-  // TODO(djacobo): Undefined vertical position, reusing whatever |entry_menu_|
-  // uses for now.
   edit_finish_view_ = parent_view->AddChildView(
-      EditFinishView::BuildView(this, CalculateEditFinishPosition()));
+      EditFinishView::BuildView(this, parent_view->size()));
 }
 
 void DisplayOverlayController::RemoveEditFinishView() {
@@ -292,19 +288,6 @@ gfx::Point DisplayOverlayController::CalculateMenuEntryPosition() {
   return gfx::Point(
       std::max(0, view->width() - kMenuEntrySize - kMenuEntrySideMargin),
       std::max(0, view->height() / 2 - kMenuEntrySize / 2));
-}
-
-gfx::Point DisplayOverlayController::CalculateEditFinishPosition() {
-  auto* overlay_widget = GetOverlayWidget();
-  if (!overlay_widget)
-    return gfx::Point();
-  auto* view = overlay_widget->GetContentsView();
-  if (!view || view->bounds().IsEmpty())
-    return gfx::Point();
-
-  return gfx::Point(
-      std::max(0, view->width() - kEditFinishWidth - kMenuEntrySideMargin),
-      std::max(0, view->height() / 2 - kEditFinishHeight / 2));
 }
 
 views::View* DisplayOverlayController::GetParentView() {

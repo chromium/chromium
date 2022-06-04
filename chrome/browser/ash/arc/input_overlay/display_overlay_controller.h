@@ -114,7 +114,6 @@ class DisplayOverlayController : public ui::EventHandler {
 
   views::Widget* GetOverlayWidget();
   gfx::Point CalculateMenuEntryPosition();
-  gfx::Point CalculateEditFinishPosition();
   views::View* GetParentView();
   bool HasMenuView() const;
   void SetInputMappingVisible(bool visible);

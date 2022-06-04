@@ -25,7 +25,7 @@ constexpr int kSideInset = 6;
 constexpr gfx::Size kLabelSize(32, 32);
 constexpr int kCornerRadiusView = 6;
 constexpr int kIconSize = 20;
-constexpr char kFontSytle[] = "Google Sans";
+constexpr char kFontStyle[] = "Google Sans";
 constexpr int kFontSize = 16;
 
 // About colors.
@@ -269,7 +269,7 @@ bool ActionLabel::ClearFocus() {
 void ActionLabel::SetToViewMode() {
   ClearFocus();
   SetInstallFocusRingOnFocus(false);
-  label()->SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL, kFontSize,
+  label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,
                                      gfx::Font::Weight::BOLD));
   SetEnabledTextColors(kViewTextColor);
 
@@ -316,7 +316,7 @@ void ActionLabel::SetToEditMode() {
 }
 
 void ActionLabel::SetToEditDefault() {
-  label()->SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL, kFontSize,
+  label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,
                                      gfx::Font::Weight::BOLD));
   views::FocusRing::Get(this)->SetColor(absl::nullopt);
   if (IsUnbound()) {
@@ -333,7 +333,7 @@ void ActionLabel::SetToEditHover() {
 }
 
 void ActionLabel::SetToEditFocus() {
-  label()->SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL, kFontSize,
+  label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,
                                      gfx::Font::Weight::BOLD));
   SetPreferredSize(CalculatePreferredSize());
   if (IsUnbound()) {

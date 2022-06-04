@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 
-#include "ash/style/pill_button.h"
+#include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -12,31 +12,76 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/view_class_properties.h"
+#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace arc {
 namespace input_overlay {
 
 namespace {
-// General sizes.
-constexpr int kMenuWidth = 140;
-constexpr int kMenuHeight = 184;
-
-// Individual entry size.
-constexpr int kButtonHeight = 56;
-
-// Spaces in between and misc.
+// About the whole view.
+constexpr int kViewHeight = 184;
+constexpr int kSideMargin = 24;
+// Space between children.
 constexpr int kSpaceRow = 8;
+
+// About button.
+constexpr int kButtonHeight = 56;
+constexpr int kButtonSideInset = 20;
+constexpr int kButtonCornerRadius = 16;
+constexpr SkColor kButtonTextColor = gfx::kGoogleGrey200;
+constexpr SkColor kSaveButtonBackgroundColor = gfx::kGoogleBlue300;
+constexpr SkColor kSaveButtonTextColor = gfx::kGoogleGrey900;
+constexpr char kFontStyle[] = "Google Sans";
+constexpr int kFontSize = 16;
+
+// About focus ring.
+// Gap between focus ring outer edge to label.
+constexpr float kHaloInset = -6;
+// Thickness of focus ring.
+constexpr float kHaloThickness = 4;
+constexpr SkColor kFocusRingColor = gfx::kGoogleBlue300;
 }  // namespace
+
+class EditFinishView::ChildButton : public views::LabelButton {
+ public:
+  explicit ChildButton(PressedCallback callback,
+                       int text_source_id,
+                       SkColor background_color,
+                       SkColor text_color)
+      : LabelButton(callback, l10n_util::GetStringUTF16(text_source_id)) {
+    label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL,
+                                       kFontSize, gfx::Font::Weight::MEDIUM));
+    SetEnabledTextColors(text_color);
+    SetAccessibleName(l10n_util::GetStringUTF16(text_source_id));
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kButtonSideInset)));
+    SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    SetMinSize(gfx::Size(0, kButtonHeight));
+    SetBackground(views::CreateRoundedRectBackground(background_color,
+                                                     kButtonCornerRadius));
+
+    // Set states.
+    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                  kButtonCornerRadius);
+    auto* focus_ring = views::FocusRing::Get(this);
+    focus_ring->SetHaloInset(kHaloInset);
+    focus_ring->SetHaloThickness(kHaloThickness);
+    focus_ring->SetColor(kFocusRingColor);
+    ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                          /*highlight_on_hover=*/true,
+                                          /*highlight_on_focus=*/true);
+    SetHasInkDropActionOnClick(true);
+  }
+  ~ChildButton() override = default;
+};
 
 // static
 std::unique_ptr<EditFinishView> EditFinishView::BuildView(
     DisplayOverlayController* display_overlay_controller,
-    gfx::Point position) {
+    const gfx::Size& parent_size) {
   auto menu_view_ptr =
       std::make_unique<EditFinishView>(display_overlay_controller);
-  menu_view_ptr->Init(position);
+  menu_view_ptr->Init(parent_size);
 
   return menu_view_ptr;
 }
@@ -47,45 +92,42 @@ EditFinishView::EditFinishView(
 
 EditFinishView::~EditFinishView() {}
 
-void EditFinishView::Init(gfx::Point position) {
-  // TODO(djacobo): Set proper fonts, also check if states needs to be manually
-  // tuned or if whatever its done by default works fine.
+void EditFinishView::Init(const gfx::Size& parent_size) {
   DCHECK(display_overlay_controller_);
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetDefault(views::kMarginsKey, gfx::Insets::VH(kSpaceRow, 0));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(), kSpaceRow));
   SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  SetSize(gfx::Size(kMenuWidth, kMenuHeight));
 
-  reset_button_ = AddChildView(std::make_unique<ash::PillButton>(
+  reset_button_ = AddChildView(std::make_unique<ChildButton>(
       base::BindRepeating(&EditFinishView::OnResetButtonPressed,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MODE_RESET),
-      ash::PillButton::Type::kIconless,
-      /*icon=*/nullptr));
-  reset_button_->SetSize(gfx::Size(kMenuWidth, kButtonHeight));
-  reset_button_->SetButtonTextColor(gfx::kGoogleGrey200);
+      IDS_INPUT_OVERLAY_EDIT_MODE_RESET, SK_ColorTRANSPARENT,
+      kButtonTextColor));
 
-  save_button_ = AddChildView(std::make_unique<ash::PillButton>(
+  save_button_ = AddChildView(std::make_unique<ChildButton>(
       base::BindRepeating(&EditFinishView::OnSaveButtonPressed,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MODE_SAVE),
-      ash::PillButton::Type::kIconless,
-      /*icon=*/nullptr));
-  save_button_->SetSize(gfx::Size(kMenuWidth, kButtonHeight));
-  save_button_->SetBackgroundColor(gfx::kGoogleBlue300);
-  save_button_->SetButtonTextColor(gfx::kGoogleGrey900);
+      IDS_INPUT_OVERLAY_EDIT_MODE_SAVE, kSaveButtonBackgroundColor,
+      kSaveButtonTextColor));
 
-  cancel_button_ = AddChildView(std::make_unique<ash::PillButton>(
+  cancel_button_ = AddChildView(std::make_unique<ChildButton>(
       base::BindRepeating(&EditFinishView::OnCancelButtonPressed,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MODE_CANCEL),
-      ash::PillButton::Type::kIconless,
-      /*icon=*/nullptr));
-  cancel_button_->SetSize(gfx::Size(kMenuWidth, kButtonHeight));
-  cancel_button_->SetButtonTextColor(gfx::kGoogleGrey200);
+      IDS_INPUT_OVERLAY_EDIT_MODE_CANCEL, SK_ColorTRANSPARENT,
+      kButtonTextColor));
 
-  SetPosition(position);
+  const int width = CalculateWidth();
+  SetSize(gfx::Size(width, kViewHeight));
+  SetPosition(
+      gfx::Point(std::max(0, parent_size.width() - width - kSideMargin),
+                 std::max(0, (parent_size.height() - kViewHeight) / 2)));
+}
+
+int EditFinishView::CalculateWidth() {
+  int width = std::max(reset_button_->GetPreferredSize().width(),
+                       save_button_->GetPreferredSize().width());
+  width = std::max(width, cancel_button_->GetPreferredSize().width());
+  return width;
 }
 
 void EditFinishView::OnResetButtonPressed() {
