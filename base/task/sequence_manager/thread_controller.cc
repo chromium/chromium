@@ -14,7 +14,7 @@ namespace internal {
 ThreadController::RunLevelTracker::RunLevelTracker() = default;
 ThreadController::RunLevelTracker::~RunLevelTracker() {
   // There shouldn't be any remaining |run_levels_| by the time this unwinds.
-  DCHECK(run_levels_.empty());
+  DCHECK_EQ(run_levels_.size(), 0u);
 }
 
 void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state) {

@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_for_ui.h"
@@ -38,20 +39,95 @@ namespace base {
 
 namespace {
 
+// On most platforms, the MessagePump impl controls when native work (e.g.
+// handling input messages) gets its turn. Tests below verify that by expecting
+// OnBeginWorkItem() calls that cover native work. In some configurations
+// however, the platform owns the message loop and is the one yielding to
+// Chrome's MessagePump to DoWork(). Under those configurations, it is not
+// possible to precisely account for OnBeginWorkItem() calls as they can occur
+// nondeterministically. For example, on some versions of iOS, the native loop
+// can surprisingly go through multiple cycles of
+// kCFRunLoopAfterWaiting=>kCFRunLoopBeforeWaiting before invoking Chrome's
+// RunWork() for the first time, triggering multiple  ScopedDoWorkItem 's for
+// potential native work before the first
+constexpr bool ChromeControlsNativeEventProcessing(MessagePumpType pump_type) {
+#if BUILDFLAG(IS_MAC)
+  return pump_type == MessagePumpType::UI;
+#elif BUILDFLAG(IS_IOS)
+  return true;
+#else
+  return false;
+#endif
+}
+
 class MockMessagePumpDelegate : public MessagePump::Delegate {
  public:
-  MockMessagePumpDelegate() = default;
+  explicit MockMessagePumpDelegate(MessagePumpType pump_type)
+      : check_work_items_(!ChromeControlsNativeEventProcessing(pump_type)),
+        native_work_item_accounting_is_on_(
+            ChromeControlsNativeEventProcessing(pump_type)) {}
+
+  ~MockMessagePumpDelegate() override { ValidateNoOpenWorkItems(); }
 
   MockMessagePumpDelegate(const MockMessagePumpDelegate&) = delete;
   MockMessagePumpDelegate& operator=(const MockMessagePumpDelegate&) = delete;
 
-  // MessagePump::Delegate:
   void BeforeWait() override {}
   MOCK_METHOD0(DoWork, MessagePump::Delegate::NextWorkInfo());
   MOCK_METHOD0(DoIdleWork, bool());
 
-  MOCK_METHOD0(OnBeginWorkItem, void(void));
-  MOCK_METHOD0(OnEndWorkItem, void(void));
+  // Functions invoked directly by the message pump.
+  void OnBeginWorkItem() override {
+    any_work_begun_ = true;
+
+    if (check_work_items_) {
+      MockOnBeginWorkItem();
+    }
+
+    ++work_item_count_;
+  }
+
+  void OnEndWorkItem() override {
+    if (check_work_items_) {
+      MockOnEndWorkItem();
+    }
+
+    --work_item_count_;
+
+    // It's not possible to close more scopes than there are open ones.
+    EXPECT_GE(work_item_count_, 0);
+  }
+
+  void ValidateNoOpenWorkItems() {
+    // Upon exiting there cannot be any open scopes.
+    EXPECT_EQ(work_item_count_, 0);
+
+    if (native_work_item_accounting_is_on_) {
+// Tests should trigger work beginning at least once except on iOS where
+// they need a call to MessagePumpUIApplication::Attach() to do so when on
+// the UI thread.
+#if !BUILDFLAG(IS_IOS)
+      EXPECT_TRUE(any_work_begun_);
+#endif
+    }
+  }
+
+  // Mock functions for asserting.
+  MOCK_METHOD0(MockOnBeginWorkItem, void(void));
+  MOCK_METHOD0(MockOnEndWorkItem, void(void));
+
+  // If native events are covered in the current configuration it's not
+  // possible to precisely test all assertions related to work items. This is
+  // because a number of speculative WorkItems are created during execution of
+  // such loops and it's not possible to determine their number before the
+  // execution of the test. In such configurations the functioning of the
+  // message pump is still verified by looking at the counts of opened and
+  // closed WorkItems.
+  const bool check_work_items_;
+  const bool native_work_item_accounting_is_on_;
+
+  int work_item_count_ = 0;
+  bool any_work_begun_ = false;
 };
 
 class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
@@ -65,14 +141,14 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
     if (GetParam() == MessagePumpType::UI) {
       // The Windows MessagePumpForUI may do native work from ::PeekMessage()
       // and labels itself as such.
-      EXPECT_CALL(delegate, OnBeginWorkItem);
-      EXPECT_CALL(delegate, OnEndWorkItem);
+      EXPECT_CALL(delegate, MockOnBeginWorkItem);
+      EXPECT_CALL(delegate, MockOnEndWorkItem);
 
       // If the above event was MessagePumpForUI's own kMsgHaveWork internal
       // event, it will process another event to replace it (ref.
       // ProcessPumpReplacementMessage).
-      EXPECT_CALL(delegate, OnBeginWorkItem).Times(AtMost(1));
-      EXPECT_CALL(delegate, OnEndWorkItem).Times(AtMost(1));
+      EXPECT_CALL(delegate, MockOnBeginWorkItem).Times(AtMost(1));
+      EXPECT_CALL(delegate, MockOnEndWorkItem).Times(AtMost(1));
     }
 #endif  // BUILDFLAG(IS_WIN)
   }
@@ -86,8 +162,8 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
          std::is_same<MessagePumpForIO, MessagePumpLibevent>::value)) {
       // MessagePumpLibEvent checks for native notifications once after
       // processing a DoWork().
-      EXPECT_CALL(delegate, OnBeginWorkItem);
-      EXPECT_CALL(delegate, OnEndWorkItem);
+      EXPECT_CALL(delegate, MockOnBeginWorkItem);
+      EXPECT_CALL(delegate, MockOnEndWorkItem);
     }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
   }
@@ -99,7 +175,7 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
 
 TEST_P(MessagePumpTest, QuitStopsWork) {
   testing::InSequence sequence;
-  testing::StrictMock<MockMessagePumpDelegate> delegate;
+  testing::StrictMock<MockMessagePumpDelegate> delegate(GetParam());
 
   AddPreDoWorkExpectations(delegate);
 
@@ -117,8 +193,8 @@ TEST_P(MessagePumpTest, QuitStopsWork) {
 
 TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
   testing::InSequence sequence;
-  testing::StrictMock<MockMessagePumpDelegate> delegate;
-  testing::StrictMock<MockMessagePumpDelegate> nested_delegate;
+  testing::StrictMock<MockMessagePumpDelegate> delegate(GetParam());
+  testing::StrictMock<MockMessagePumpDelegate> nested_delegate(GetParam());
 
   AddPreDoWorkExpectations(delegate);
 
@@ -160,8 +236,9 @@ TEST_P(MessagePumpTest, YieldToNativeRequestedSmokeTest) {
   // implemented on the MessagePumpForUI on android. However since we inject a
   // fake one for testing this is hard to test. This test ensures that setting
   // this boolean doesn't cause any MessagePump to explode.
+  testing::StrictMock<MockMessagePumpDelegate> delegate(GetParam());
+
   testing::InSequence sequence;
-  testing::StrictMock<MockMessagePumpDelegate> delegate;
 
   // Return an immediate task with |yield_to_native| set.
   AddPreDoWorkExpectations(delegate);
@@ -274,7 +351,7 @@ TEST_P(MessagePumpTest, TimerSlackWithLongDelays) {
 
 TEST_P(MessagePumpTest, RunWithoutScheduleWorkInvokesDoWork) {
   testing::InSequence sequence;
-  testing::StrictMock<MockMessagePumpDelegate> delegate;
+  testing::StrictMock<MockMessagePumpDelegate> delegate(GetParam());
 
   AddPreDoWorkExpectations(delegate);
 
@@ -290,8 +367,8 @@ TEST_P(MessagePumpTest, RunWithoutScheduleWorkInvokesDoWork) {
 
 TEST_P(MessagePumpTest, NestedRunWithoutScheduleWorkInvokesDoWork) {
   testing::InSequence sequence;
-  testing::StrictMock<MockMessagePumpDelegate> delegate;
-  testing::StrictMock<MockMessagePumpDelegate> nested_delegate;
+  testing::StrictMock<MockMessagePumpDelegate> delegate(GetParam());
+  testing::StrictMock<MockMessagePumpDelegate> nested_delegate(GetParam());
 
   AddPreDoWorkExpectations(delegate);
 

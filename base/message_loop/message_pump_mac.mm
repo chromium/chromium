@@ -15,10 +15,13 @@
 #include "base/mac/call_with_eh_frame.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/message_loop/timer_slack.h"
+#include "base/metrics/histogram_samples.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_IOS)
 #import <AppKit/AppKit.h>
@@ -86,6 +89,7 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
     CFRunLoopAddSource(loop, owner_->idle_work_source_, mode());
     CFRunLoopAddSource(loop, owner_->nesting_deferred_work_source_, mode());
     CFRunLoopAddObserver(loop, owner_->pre_wait_observer_, mode());
+    CFRunLoopAddObserver(loop, owner_->after_wait_observer_, mode());
     CFRunLoopAddObserver(loop, owner_->pre_source_observer_, mode());
     CFRunLoopAddObserver(loop, owner_->enter_exit_observer_, mode());
   }
@@ -98,6 +102,7 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
     CFRunLoopRemoveObserver(loop, owner_->enter_exit_observer_, mode());
     CFRunLoopRemoveObserver(loop, owner_->pre_source_observer_, mode());
     CFRunLoopRemoveObserver(loop, owner_->pre_wait_observer_, mode());
+    CFRunLoopRemoveObserver(loop, owner_->after_wait_observer_, mode());
     CFRunLoopRemoveSource(loop, owner_->nesting_deferred_work_source_, mode());
     CFRunLoopRemoveSource(loop, owner_->idle_work_source_, mode());
     CFRunLoopRemoveSource(loop, owner_->work_source_, mode());
@@ -250,6 +255,12 @@ MessagePumpCFRunLoopBase::MessagePumpCFRunLoopBase(int initial_mode_mask)
                                                0,     // priority
                                                PreWaitObserver,
                                                &observer_context);
+  after_wait_observer_ =
+      CFRunLoopObserverCreate(NULL,  // allocator
+                              kCFRunLoopAfterWaiting,
+                              true,  // repeat
+                              0,     // priority
+                              AfterWaitObserver, &observer_context);
   pre_source_observer_ = CFRunLoopObserverCreate(NULL,  // allocator
                                                  kCFRunLoopBeforeSources,
                                                  true,  // repeat
@@ -274,11 +285,26 @@ MessagePumpCFRunLoopBase::~MessagePumpCFRunLoopBase() {
   CFRelease(enter_exit_observer_);
   CFRelease(pre_source_observer_);
   CFRelease(pre_wait_observer_);
+  CFRelease(after_wait_observer_);
   CFRelease(nesting_deferred_work_source_);
   CFRelease(idle_work_source_);
   CFRelease(work_source_);
   CFRelease(delayed_work_timer_);
   CFRelease(run_loop_);
+}
+
+void MessagePumpCFRunLoopBase::OnAttach() {
+  CHECK_EQ(nesting_level_, 0);
+  // On iOS: the MessagePump is attached while it's already running.
+  nesting_level_ = 1;
+
+  // There could be some native work done after attaching to the loop and before
+  // |work_source_| is invoked.
+  PushWorkItemScope();
+}
+
+void MessagePumpCFRunLoopBase::OnDetach() {
+  CHECK_EQ(nesting_level_, 0);
 }
 
 void MessagePumpCFRunLoopBase::SetDelegate(Delegate* delegate) {
@@ -321,6 +347,30 @@ int MessagePumpCFRunLoopBase::GetModeMask() const {
   return mask;
 }
 
+void MessagePumpCFRunLoopBase::PopWorkItemScope() {
+  // A WorkItemScope should never have been pushed unless the loop was entered.
+  DCHECK_NE(nesting_level_, 0);
+  // If no WorkItemScope was pushed it cannot be popped.
+  DCHECK_GT(stack_.size(), 0u);
+
+  stack_.pop();
+}
+
+void MessagePumpCFRunLoopBase::PushWorkItemScope() {
+  // A WorkItemScope should never be pushed unless the loop was entered.
+  DCHECK_NE(nesting_level_, 0);
+
+  // See RunWork() comments on why the size of |stack| is never bigger than
+  // |nesting_level_| even in nested loops.
+  DCHECK_LT(stack_.size(), static_cast<size_t>(nesting_level_));
+
+  if (delegate_) {
+    stack_.push(delegate_->BeginWorkItem());
+  } else {
+    stack_.push(absl::nullopt);
+  }
+}
+
 // Called from the run loop.
 // static
 void MessagePumpCFRunLoopBase::RunDelayedWorkTimer(CFRunLoopTimerRef timer,
@@ -361,7 +411,14 @@ bool MessagePumpCFRunLoopBase::RunWork() {
   // released promptly even in the absence of UI events.
   MessagePumpScopedAutoreleasePool autorelease_pool(this);
 
+  // Pop the current work item scope as it captures any native work happening
+  // *between* DoWork()'s. This DoWork() happens in sequence to that native
+  // work, not nested within it.
+  PopWorkItemScope();
   Delegate::NextWorkInfo next_work_info = delegate_->DoWork();
+  // DoWork() (and its own work item coverage) is over so push a new scope to
+  // cover any native work that could possibly happen before the next RunWork().
+  PushWorkItemScope();
 
   if (next_work_info.is_immediate()) {
     CFRunLoopSourceSignal(work_source_);
@@ -435,6 +492,9 @@ void MessagePumpCFRunLoopBase::RunNestingDeferredWork() {
 }
 
 void MessagePumpCFRunLoopBase::BeforeWait() {
+  // Current work item tracking needs to go away since execution will stop.
+  PopWorkItemScope();
+
   if (!delegate_) {
     // This point can be reached with a nullptr |delegate_| if Run is not on the
     // stack but foreign code is spinning the CFRunLoop.
@@ -480,6 +540,19 @@ void MessagePumpCFRunLoopBase::PreWaitObserver(CFRunLoopObserverRef observer,
 
 // Called from the run loop.
 // static
+void MessagePumpCFRunLoopBase::AfterWaitObserver(CFRunLoopObserverRef observer,
+                                                 CFRunLoopActivity activity,
+                                                 void* info) {
+  MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
+  base::mac::CallWithEHFrame(^{
+    // Emerging from sleep, any work happening after this (outside of a
+    // RunWork()) should be considered native work.
+    self->PushWorkItemScope();
+  });
+}
+
+// Called from the run loop.
+// static
 void MessagePumpCFRunLoopBase::PreSourceObserver(CFRunLoopObserverRef observer,
                                                  CFRunLoopActivity activity,
                                                  void* info) {
@@ -505,6 +578,10 @@ void MessagePumpCFRunLoopBase::EnterExitObserver(CFRunLoopObserverRef observer,
   switch (activity) {
     case kCFRunLoopEntry:
       ++self->nesting_level_;
+
+      // There could be some native work done after entering the loop and before
+      // the next observer.
+      self->PushWorkItemScope();
       if (self->nesting_level_ > self->deepest_nesting_level_) {
         self->deepest_nesting_level_ = self->nesting_level_;
       }
@@ -530,6 +607,10 @@ void MessagePumpCFRunLoopBase::EnterExitObserver(CFRunLoopObserverRef observer,
       base::mac::CallWithEHFrame(^{
         self->MaybeScheduleNestingDeferredWork();
       });
+
+      // Current work item tracking needs to go away since execution will stop.
+      self->PopWorkItemScope();
+
       --self->nesting_level_;
       break;
 
@@ -648,8 +729,11 @@ bool MessagePumpUIApplication::DoQuit() {
 void MessagePumpUIApplication::Attach(Delegate* delegate) {
   DCHECK(!run_loop_);
   run_loop_ = new RunLoop();
+
   CHECK(run_loop_->BeforeRun());
   SetDelegate(delegate);
+
+  OnAttach();
 }
 
 void MessagePumpUIApplication::Detach() {
@@ -657,6 +741,8 @@ void MessagePumpUIApplication::Detach() {
   run_loop_->AfterRun();
   SetDelegate(nullptr);
   run_loop_ = nullptr;
+
+  OnDetach();
 }
 
 #else
