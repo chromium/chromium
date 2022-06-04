@@ -44,6 +44,11 @@ class UnifiedSystemTrayTest : public AshTestBase {
   UnifiedSystemTrayTest& operator=(const UnifiedSystemTrayTest&) = delete;
   ~UnifiedSystemTrayTest() override = default;
 
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kCalendarView);
+    AshTestBase::SetUp();
+  }
+
  protected:
   const std::string AddNotification() {
     const std::string id = base::NumberToString(id_++);
@@ -108,6 +113,7 @@ class UnifiedSystemTrayTest : public AshTestBase {
 
  private:
   int id_ = 0;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(UnifiedSystemTrayTest, ShowVolumeSliderBubble) {
@@ -447,9 +453,6 @@ TEST_F(UnifiedSystemTrayTest, TimeInQuickSettingsMetric) {
 // Tests that pressing the TOGGLE_CALENDAR accelerator once results in the
 // calendar view showing.
 TEST_F(UnifiedSystemTrayTest, PressCalendarAccelerator) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kCalendarView);
-
   ShellTestApi().PressAccelerator(
       ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
 
@@ -459,9 +462,6 @@ TEST_F(UnifiedSystemTrayTest, PressCalendarAccelerator) {
 // Tests that pressing the TOGGLE_CALENDAR accelerator twice results in a hidden
 // QuickSettings bubble.
 TEST_F(UnifiedSystemTrayTest, ToggleCalendarViewAccelerator) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kCalendarView);
-
   ShellTestApi().PressAccelerator(
       ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
 
@@ -474,9 +474,6 @@ TEST_F(UnifiedSystemTrayTest, ToggleCalendarViewAccelerator) {
 // Tests that showing the calendar view by the TOGGLE_CALENDAR accelerator
 // results in the CalendarDateCellView being focused.
 TEST_F(UnifiedSystemTrayTest, CalendarAcceleratorFocusesDateCell) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kCalendarView);
-
   ShellTestApi().PressAccelerator(
       ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
 
