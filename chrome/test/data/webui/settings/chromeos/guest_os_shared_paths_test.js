@@ -55,7 +55,7 @@ suite('SharedPaths', function() {
 
   setup(function() {
     guestOsBrowserProxy = new TestGuestOsBrowserProxy();
-    GuestOsBrowserProxyImpl.instance_ = guestOsBrowserProxy;
+    GuestOsBrowserProxyImpl.setInstance(guestOsBrowserProxy);
     PolymerTest.clearBody();
     page = document.createElement('settings-guest-os-shared-paths');
     page.guestOsType = 'pluginVm';
@@ -75,10 +75,10 @@ suite('SharedPaths', function() {
     assertFalse(page.$.guestOsInstructionsRemove.hidden);
     assertFalse(page.$.guestOsList.hidden);
     assertTrue(page.$.guestOsListEmpty.hidden);
-    assertTrue(!!page.$$('.list-item cr-icon-button'));
+    assertTrue(!!page.shadowRoot.querySelector('.list-item cr-icon-button'));
 
     // Remove first shared path, still one left.
-    page.$$('.list-item cr-icon-button').click();
+    page.shadowRoot.querySelector('.list-item cr-icon-button').click();
     {
       const [vmName, path] =
           await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
@@ -91,7 +91,7 @@ suite('SharedPaths', function() {
 
     // Remove remaining shared path, none left.
     guestOsBrowserProxy.resetResolver('removeGuestOsSharedPath');
-    page.$$(`${rows} cr-icon-button`).click();
+    page.shadowRoot.querySelector(`${rows} cr-icon-button`).click();
     {
       const [vmName, path] =
           await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
@@ -111,19 +111,21 @@ suite('SharedPaths', function() {
 
     // Remove shared path fails.
     guestOsBrowserProxy.removeSharedPathResult = false;
-    page.$$('.list-item cr-icon-button').click();
+    page.shadowRoot.querySelector('.list-item cr-icon-button').click();
 
     await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
     flush();
-    assertTrue(page.$$('#removeSharedPathFailedDialog').open);
+    assertTrue(
+        page.shadowRoot.querySelector('#removeSharedPathFailedDialog').open);
 
     // Click retry and make sure 'removeGuestOsSharedPath' is called
     // and dialog is closed/removed.
     guestOsBrowserProxy.removeSharedPathResult = true;
-    page.$$('#removeSharedPathFailedDialog')
+    page.shadowRoot.querySelector('#removeSharedPathFailedDialog')
         .querySelector('.action-button')
         .click();
     await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
-    assertFalse(!!page.$$('#removeSharedPathFailedDialog'));
+    assertFalse(
+        !!page.shadowRoot.querySelector('#removeSharedPathFailedDialog'));
   });
 });

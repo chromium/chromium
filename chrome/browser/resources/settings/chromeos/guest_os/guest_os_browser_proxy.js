@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @typedef {{guid: string,
@@ -47,8 +45,23 @@ export class GuestOsBrowserProxy {
   setGuestOsUsbDeviceShared(vmName, guid, shared) {}
 }
 
-/** @implements {GuestOsBrowserProxy} */
+/** @type {?GuestOsBrowserProxy} */
+let instance = null;
+
+/**
+ * @implements {GuestOsBrowserProxy}
+ */
 export class GuestOsBrowserProxyImpl {
+  /** @return {!GuestOsBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new GuestOsBrowserProxyImpl());
+  }
+
+  /** @param {!GuestOsBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   getGuestOsSharedPathsDisplayText(paths) {
     return sendWithPromise('getGuestOsSharedPathsDisplayText', paths);
@@ -69,7 +82,3 @@ export class GuestOsBrowserProxyImpl {
     return chrome.send('setGuestOsUsbDeviceShared', [vmName, guid, shared]);
   }
 }
-
-// The singleton instance_ can be replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(GuestOsBrowserProxyImpl);

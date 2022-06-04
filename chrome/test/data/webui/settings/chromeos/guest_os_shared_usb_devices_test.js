@@ -64,7 +64,7 @@ suite('SharedUsbDevices', function() {
         promptBeforeSharing: true
       },
     ];
-    GuestOsBrowserProxyImpl.instance_ = guestOsBrowserProxy;
+    GuestOsBrowserProxyImpl.setInstance(guestOsBrowserProxy);
     PolymerTest.clearBody();
     page = document.createElement('settings-guest-os-shared-usb-devices');
     page.guestOsType = 'pluginVm';
@@ -81,8 +81,8 @@ suite('SharedUsbDevices', function() {
   });
 
   test('USB shared state is updated by toggling', async function() {
-    assertTrue(!!page.$$('.toggle'));
-    page.$$('.toggle').click();
+    assertTrue(!!page.shadowRoot.querySelector('.toggle'));
+    page.shadowRoot.querySelector('.toggle').click();
 
     await flushTasks();
     flush();
@@ -110,34 +110,36 @@ suite('SharedUsbDevices', function() {
     assertEquals(3, items.length);
 
     // Clicking on item[2] should show dialog.
-    assertFalse(!!page.$$('#reassignDialog'));
+    assertFalse(!!page.shadowRoot.querySelector('#reassignDialog'));
     items[2].click();
     flush();
-    assertTrue(page.$$('#reassignDialog').open);
+    assertTrue(page.shadowRoot.querySelector('#reassignDialog').open);
 
     // Clicking cancel will close the dialog.
-    page.$$('#cancel').click();
+    page.shadowRoot.querySelector('#cancel').click();
     flush();
-    assertFalse(!!page.$$('#reassignDialog'));
+    assertFalse(!!page.shadowRoot.querySelector('#reassignDialog'));
 
     // Pressing escape will close the dialog, but it's not possible to trigger
     // this with a fake keypress, so we instead send the 'cancel' event directly
     // to the native <dialog> element.
     items[2].click();
     flush();
-    assertTrue(page.$$('#reassignDialog').open);
+    assertTrue(page.shadowRoot.querySelector('#reassignDialog').open);
     const e = new CustomEvent('cancel', {cancelable: true});
-    page.$$('#reassignDialog').getNative().dispatchEvent(e);
+    page.shadowRoot.querySelector('#reassignDialog')
+        .getNative()
+        .dispatchEvent(e);
     flush();
-    assertFalse(!!page.$$('#reassignDialog'));
+    assertFalse(!!page.shadowRoot.querySelector('#reassignDialog'));
 
     // Clicking continue will call the proxy and close the dialog.
     items[2].click();
     flush();
-    assertTrue(page.$$('#reassignDialog').open);
-    page.$$('#continue').click();
+    assertTrue(page.shadowRoot.querySelector('#reassignDialog').open);
+    page.shadowRoot.querySelector('#continue').click();
     flush();
-    assertFalse(!!page.$$('#reassignDialog'));
+    assertFalse(!!page.shadowRoot.querySelector('#reassignDialog'));
     const args =
         await guestOsBrowserProxy.whenCalled('setGuestOsUsbDeviceShared');
     assertEquals('PvmDefault', args[0]);
