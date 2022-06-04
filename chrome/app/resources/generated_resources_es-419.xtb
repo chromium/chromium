@@ -7022,7 +7022,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7903925330883316394">Utilidad: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Haz que los puertos de Linux estén disponibles para otros dispositivos en tu red.</translation>
 <translation id="7907837847548254634">Destacar brevemente el objeto enfocado</translation>
-<translation id="7908378463497120834">Lo sentimos, al menos una partición en tu dispositivo de almacenamiento externo no se pudo montar.</translation>
+<translation id="7908378463497120834">Lo sentimos, no se pudo activar al menos una partición en tu dispositivo de almacenamiento externo.</translation>
 <translation id="7909324225945368569">Cambia el nombre de tu perfil</translation>
 <translation id="7909969815743704077">Descargado en el modo de navegación de incógnito</translation>
 <translation id="7909986151924474987">Es posible que no puedas volver a instalar este perfil</translation>
