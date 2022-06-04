@@ -304,16 +304,16 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
       options_.stream_type, request_metadata.content_order);
 
   FeedNetwork& network = stream_.GetNetwork();
-
-  if (options_.stream_type.IsWebFeed() &&
-      !GetFeedConfig().use_feed_query_requests_for_web_feeds) {
+  const bool force_feed_query = GetFeedConfig().use_feed_query_requests;
+  if (options_.stream_type.IsWebFeed() && !force_feed_query) {
     // Special case: web feed that is not using Feed Query requests go to
     // WebFeedListContentsDiscoverApi.
     network.SendApiRequest<WebFeedListContentsDiscoverApi>(
         std::move(request), account_info, std::move(request_metadata),
         base::BindOnce(&LoadStreamTask::QueryApiRequestComplete, GetWeakPtr()));
   } else if (options_.stream_type.IsForYou() &&
-             base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
+             base::FeatureList::IsEnabled(kDiscoFeedEndpoint) &&
+             !force_feed_query) {
     // Special case: For You feed using the DiscoFeedEndpoint call
     // Query*FeedDiscoverApi.
     switch (options_.load_type) {
