@@ -3225,6 +3225,13 @@ IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
 class WizardControllerThemeSelectionDefaultSettingsTest
     : public WizardControllerTest {
  public:
+  WizardControllerThemeSelectionDefaultSettingsTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kEnableOobeThemeSelection,
+                               chromeos::features::kDarkLightMode});
+  }
+
  protected:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
@@ -3250,9 +3257,10 @@ class WizardControllerThemeSelectionEnabledTest
     : public WizardControllerThemeSelectionDefaultSettingsTest {
  public:
   WizardControllerThemeSelectionEnabledTest() {
-    feature_list_.InitWithFeatures({features::kEnableOobeThemeSelection,
-                                    chromeos::features::kDarkLightMode},
-                                   {});
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kEnableOobeThemeSelection,
+                              chromeos::features::kDarkLightMode},
+        /*disabled_features=*/{});
   }
 
   base::test::ScopedFeatureList feature_list_;
