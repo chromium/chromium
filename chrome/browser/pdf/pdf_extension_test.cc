@@ -4436,7 +4436,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityNavigationTest,
   action_data.action = ax::mojom::Action::kDoDefault;
   action_data.target_node_id = link_node->GetData().id;
   link_node->AccessibilityPerformAction(action_data);
-  event_waiter.WaitForNotification();
+  ASSERT_TRUE(event_waiter.WaitForNotification());
 
   // Test that navigation occurred correctly.
   const GURL& expected_url = GetActiveWebContents()->GetLastCommittedURL();
