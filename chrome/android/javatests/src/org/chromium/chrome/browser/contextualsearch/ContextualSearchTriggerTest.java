@@ -241,11 +241,9 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         // for the selection to change.
         clickNode("states-near");
         waitForSelectionToBe("StatesNear");
-        assertLoggedAllExpectedOutcomesToRanker();
         Thread.sleep(ViewConfiguration.getDoubleTapTimeout());
         clickNode("states");
         waitForSelectionToBe("States");
-        assertLoggedAllExpectedOutcomesToRanker();
     }
 
     //============================================================================================

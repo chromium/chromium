@@ -8,7 +8,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchHeuristics;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchInteractionRecorder;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.QuickActionCategory;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm;
@@ -58,8 +57,6 @@ public class ContextualSearchPanelMetrics {
     private long mPanelOpenedBeyondPeekDurationMs;
     // The current set of heuristics that should be logged with results seen when the panel closes.
     private ContextualSearchHeuristics mResultsSeenExperiments;
-    // The interaction recorder to use to record results seen when the panel closes.
-    private ContextualSearchInteractionRecorder mInteractionRecorder;
     // Whether interaction Outcomes are valid, because we showed the panel.
     private boolean mAreOutcomesValid;
     /** Whether the Search was prefetched or not. */
@@ -157,8 +154,6 @@ public class ContextualSearchPanelMetrics {
             }
             ContextualSearchUma.logCountedSearches(
                     mWasSearchContentViewSeen, mDidFirstNonEmptyPaint, mWasPrefetch);
-
-            writeInteractionOutcomesAndReset();
         }
 
         if (isStartingSearch) {
@@ -170,7 +165,6 @@ public class ContextualSearchPanelMetrics {
             } else {
                 mWasAnyHeuristicSatisfiedOnPanelShow = false;
             }
-            mAreOutcomesValid = true;
         }
 
         @StateChangeReason
@@ -323,41 +317,6 @@ public class ContextualSearchPanelMetrics {
      */
     public void setResultsSeenExperiments(ContextualSearchHeuristics resultsSeenExperiments) {
         mResultsSeenExperiments = resultsSeenExperiments;
-    }
-
-    /**
-     * Sets up logging through Ranker for outcomes.
-     * @param interactionRecorder The {@link ContextualSearchInteractionRecorder} currently being
-     * used to measure to recorder user interaction outcomes.
-     */
-    public void setInteractionRecorder(ContextualSearchInteractionRecorder interactionRecorder) {
-        mInteractionRecorder = interactionRecorder;
-        mAreOutcomesValid = false;
-    }
-
-    /**
-     * Writes all the outcome features to the Interaction Recorder and resets it.
-     */
-    public void writeInteractionOutcomesAndReset() {
-        if (mInteractionRecorder != null && mWasActivatedByTap && mAreOutcomesValid) {
-            // Tell Ranker about the primary outcome.
-            mInteractionRecorder.logOutcome(
-                    ContextualSearchInteractionRecorder.Feature.OUTCOME_WAS_PANEL_OPENED,
-                    mWasSearchContentViewSeen);
-            mInteractionRecorder.logOutcome(
-                    ContextualSearchInteractionRecorder.Feature.OUTCOME_WAS_CARDS_DATA_SHOWN,
-                    mWasContextualCardsDataShown);
-            if (mWasQuickActionShown) {
-                mInteractionRecorder.logOutcome(ContextualSearchInteractionRecorder.Feature
-                                                        .OUTCOME_WAS_QUICK_ACTION_CLICKED,
-                        mWasQuickActionClicked);
-            }
-            if (mResultsSeenExperiments != null) {
-                mResultsSeenExperiments.logRankerTapSuppressionOutcome(mInteractionRecorder);
-            }
-            mInteractionRecorder.writeLogAndReset();
-            mInteractionRecorder = null;
-        }
     }
 
     /**

@@ -52,14 +52,6 @@ abstract class ContextualSearchHeuristic {
     }
 
     /**
-     * Logs a Ranker outcome using the heuristic for the purpose of Ranker Tap Suppression.
-     * @param recorder A logger to log to.
-     */
-    protected void logRankerTapSuppressionOutcome(ContextualSearchInteractionRecorder recorder) {
-        // Default is to not log.
-    }
-
-    /**
      * Clamps an input value into a range of 1-10 inclusive.
      * @param value The value to limit.
      * @return A value that's at least 1 and at most 10.

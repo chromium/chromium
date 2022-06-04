@@ -42,8 +42,6 @@ class ContextualSearchFakeServer
     private static final String SIMPLE_SERP_URL =
             "/chrome/test/data/android/contextualsearch/simple_serp.html";
 
-    static final long LOGGED_EVENT_ID = 1L << 50; // Arbitrary value larger than 32 bits.
-
     private final ContextualSearchPolicy mPolicy;
 
     private final ContextualSearchTestHost mTestHost;
@@ -690,9 +688,7 @@ class ContextualSearchFakeServer
         // Register a fake tap search that will fake a logged event ID from the server, when
         // a fake tap is done on the intelligence-logged-event-id element in the test file.
         ResolvedSearchTerm searchTermWithId =
-                new ResolvedSearchTerm.Builder(false, 200, "Intelligence", "Intelligence")
-                        .setLoggedEventId(LOGGED_EVENT_ID)
-                        .build();
+                new ResolvedSearchTerm.Builder(false, 200, "Intelligence", "Intelligence").build();
         FakeResolveSearch loggedIdFakeTapSearch =
                 new FakeResolveSearch("intelligence-logged-event-id", searchTermWithId);
         registerFakeResolveSearch(loggedIdFakeTapSearch);

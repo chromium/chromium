@@ -62,14 +62,4 @@ public class ContextualSearchHeuristics {
         }
         return false;
     }
-
-    /**
-     * Logs all the heuristics that want to provide outcomes to Ranker to the given recorder.
-     * @param recorder The logger to log to.
-     */
-    public void logRankerTapSuppressionOutcome(ContextualSearchInteractionRecorder recorder) {
-        for (ContextualSearchHeuristic heuristic : mHeuristics) {
-            heuristic.logRankerTapSuppressionOutcome(recorder);
-        }
-    }
 }

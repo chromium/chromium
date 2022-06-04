@@ -56,7 +56,6 @@ struct ResolvedSearchTerm {
                      const std::string& caption,
                      const std::string& quick_action_uri,
                      const QuickActionCategory& quick_action_category,
-                     int64_t logged_event_id,
                      const std::string& search_url_full,
                      const std::string& search_url_preload,
                      int coca_card_tag,
@@ -84,7 +83,6 @@ struct ResolvedSearchTerm {
   const std::string caption;
   const std::string quick_action_uri;
   const QuickActionCategory quick_action_category;
-  const int64_t logged_event_id;  // Often 0.
   const std::string search_url_full;
   const std::string search_url_preload;
   const int coca_card_tag;

@@ -444,10 +444,8 @@ public class ContextualSearchSelectionController {
      * or #handleNonSuppressedTap() after a possible delay.
      * This should be called when the context is fully built (by gathering surrounding text
      * if needed, etc) but before showing any UX.
-     * @param interactionRecorder The {@link ContextualSearchInteractionRecorder} currently being
-     * used to measure or suppress the UI by Ranker.
      */
-    void handleShouldSuppressTap(ContextualSearchInteractionRecorder interactionRecorder) {
+    void handleShouldSuppressTap() {
         int x = (int) mX;
         int y = (int) mY;
 

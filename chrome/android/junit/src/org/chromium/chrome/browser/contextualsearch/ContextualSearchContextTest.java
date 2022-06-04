@@ -84,13 +84,13 @@ public class ContextualSearchContextTest {
 
     private void setupResolvingTapInBarak() {
         setupTapInBarack();
-        mContext.setResolveProperties(HOME_COUNTRY, true, 0, 0, "", "");
+        mContext.setResolveProperties(HOME_COUNTRY, true, "", "");
     }
 
     private void setupResolvingTapInObama() {
         int obamaBeforeMOffset = "Now Barack Oba".length();
         mContext.setSurroundingText(SAMPLE_TEXT, obamaBeforeMOffset, obamaBeforeMOffset);
-        mContext.setResolveProperties(HOME_COUNTRY, true, 0, 0, "", "");
+        mContext.setResolveProperties(HOME_COUNTRY, true, "", "");
     }
 
     @Test

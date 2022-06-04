@@ -237,7 +237,6 @@ class ContextualSearchDelegateTest : public testing::Test {
   std::string caption() { return caption_; }
   std::string quick_action_uri() { return quick_action_uri_; }
   QuickActionCategory quick_action_category() { return quick_action_category_; }
-  int64_t logged_event_id() { return logged_event_id_; }
   std::string search_url_full() { return search_url_full_; }
   std::string search_url_preload() { return search_url_preload_; }
   int coca_card_tag() { return coca_card_tag_; }
@@ -265,7 +264,6 @@ class ContextualSearchDelegateTest : public testing::Test {
     caption_ = resolved_search_term.caption;
     quick_action_uri_ = resolved_search_term.quick_action_uri;
     quick_action_category_ = resolved_search_term.quick_action_category;
-    logged_event_id_ = resolved_search_term.logged_event_id;
     search_url_full_ = resolved_search_term.search_url_full;
     search_url_preload_ = resolved_search_term.search_url_preload;
     coca_card_tag_ = resolved_search_term.coca_card_tag;
@@ -294,7 +292,6 @@ class ContextualSearchDelegateTest : public testing::Test {
   std::string caption_;
   std::string quick_action_uri_;
   QuickActionCategory quick_action_category_;
-  int64_t logged_event_id_;
   std::string search_url_full_;
   std::string search_url_preload_;
   int coca_card_tag_;
@@ -566,7 +563,6 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
       "\"info_text\":\"44th U.S. President\","
       "\"display_text\":\"Barack Obama\", \"mentions\":[0,15],"
       "\"selected_text\":\"obama\", \"resolved_term\":\"barack obama\","
-      "\"logged_event_id\":\"1234567890123456789\","
       "\"search_url_full\":\"https://www.google.com/"
       "search?q=define+obscure&ctxs=2\","
       "\"search_url_preload\":\"https://www.google.com/"
@@ -586,7 +582,6 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
   std::string thumbnail_url;
   std::string caption;
   std::string quick_action_uri;
-  int64_t logged_event_id;
   QuickActionCategory quick_action_category = QUICK_ACTION_CATEGORY_NONE;
   std::string search_url_full;
   std::string search_url_preload;
@@ -597,7 +592,7 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
       json_with_escape, &search_term, &display_text, &alternate_term, &mid,
       &prevent_preload, &mention_start, &mention_end, &context_language,
       &thumbnail_url, &caption, &quick_action_uri, &quick_action_category,
-      &logged_event_id, &search_url_full, &search_url_preload, &coca_card_tag,
+      &search_url_full, &search_url_preload, &coca_card_tag,
       &related_searches_json);
 
   EXPECT_EQ("obama", search_term);
@@ -612,7 +607,6 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
   EXPECT_EQ("", caption);
   EXPECT_EQ("", quick_action_uri);
   EXPECT_EQ(QUICK_ACTION_CATEGORY_NONE, quick_action_category);
-  EXPECT_EQ(1234567890123456789, logged_event_id);
   EXPECT_EQ("https://www.google.com/search?q=define+obscure&ctxs=2",
             search_url_full);
   EXPECT_EQ("https://www.google.com/search?q=define+obscure&ctxs=2&pf=c&sns=1",

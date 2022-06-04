@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -1069,32 +1068,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> activity2.getCurrentTabModel().closeAllTabs());
         ApplicationTestUtils.finishActivity(activity2);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"ContextualSearch"})
-    // TODO(donnd): Investigate support for logging user interactions for Long-press.
-    public void testLoggedEventId() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_NONE);
-        mFakeServer.reset();
-        simulateResolveSearch("intelligence-logged-event-id");
-        expandPanelAndAssert();
-        closePanel();
-        // Now the event and outcome should be in local storage.
-        simulateResolveSearch("search");
-        // Check that we sent the logged event ID and outcome with the request.
-        Assert.assertEquals(ContextualSearchFakeServer.LOGGED_EVENT_ID,
-                mManager.getContext().getPreviousEventId());
-        closePanel();
-        // Now that we've sent them to the server, the local storage should be clear.
-        simulateResolveSearch("search");
-        Assert.assertEquals(0, mManager.getContext().getPreviousEventId());
-        closePanel();
-        // Make sure a duration was recorded in bucket 0 (due to 0 days duration running this test).
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Search.ContextualSearch.OutcomesDuration", 0));
     }
 
     // --------------------------------------------------------------------------------------------

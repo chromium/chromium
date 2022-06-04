@@ -166,7 +166,10 @@ public class ContextualSearchFieldTrial {
          * conversational search) is disabled.
          */
         int IS_PAGE_CONTENT_NOTIFICATION_DISABLED = 16;
-        /** Whether logging for Machine Learning is disabled. */
+        /**
+         * @deprecated
+         * Whether logging for Machine Learning is disabled.
+         */
         int IS_UKM_RANKER_LOGGING_DISABLED = 17;
         /**
          * @deprecated

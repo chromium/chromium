@@ -166,22 +166,6 @@ public final class ChromePreferenceKeys {
     public static final String CONTENT_SUGGESTIONS_SHOWN = "content_suggestions_shown";
 
     /**
-     * An encoded set of outcomes of user interaction with Contextual Search, stored as an int.
-     */
-    public static final String CONTEXTUAL_SEARCH_PREVIOUS_INTERACTION_ENCODED_OUTCOMES =
-            "contextual_search_previous_interaction_encoded_outcomes";
-    /**
-     * A user interaction event ID for interaction with Contextual Search, stored as a long.
-     */
-    public static final String CONTEXTUAL_SEARCH_PREVIOUS_INTERACTION_EVENT_ID =
-            "contextual_search_previous_interaction_event_id";
-    /**
-     * A timestamp indicating when we updated the user interaction with Contextual Search, stored
-     * as a long, with resolution in days.
-     */
-    public static final String CONTEXTUAL_SEARCH_PREVIOUS_INTERACTION_TIMESTAMP =
-            "contextual_search_previous_interaction_timestamp";
-    /**
      * The number of times a tap gesture caused a Contextual Search Quick Answer to be shown since
      * the last time the panel was opened.  Note legacy string value without "open".
      */

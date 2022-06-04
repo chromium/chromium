@@ -668,17 +668,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Logs a duration since the outcomes (and associated timestamp) were saved in persistent
-     * storage.
-     * @param durationMs The duration to log, in milliseconds.
-     */
-    public static void logOutcomesTimestamp(long durationMs) {
-        int durationInDays = (int) (durationMs / DateUtils.DAY_IN_MILLIS);
-        RecordHistogram.recordCount100Histogram(
-                "Search.ContextualSearch.OutcomesDuration", durationInDays);
-    }
-
-    /**
      * Logs whether Contextual Cards data was shown. Should be logged on tap if Contextual
      * Cards integration is enabled.
      * @param shown Whether Contextual Cards data was shown in the Bar.
@@ -758,31 +747,6 @@ public class ContextualSearchUma {
         }
         RecordHistogram.recordEnumeratedHistogram(
                 "Search.ContextualSearch.CardTag", cardTagEnum, CardTag.NUM_ENTRIES);
-    }
-
-    /** Logs that Ranker recorded a set of outcomes for training or inference. */
-    public static void logRecordedOutcomesToRanker() {
-        logRecordedToRanker(true);
-    }
-
-    /**
-     * Logs that Ranker recorded some data for training or inference.
-     * @param areOutcomes Whether the data are outcomes.
-     */
-    private static void logRecordedToRanker(boolean areOutcomes) {
-        RecordHistogram.recordBooleanHistogram(
-                "Search.ContextualSearch.Ranker.Recorded", areOutcomes);
-    }
-
-    /**
-     * Logs that features or outcomes are available to record to Ranker.
-     * This data can be used to correlate with #logRecordedToRanker to validate that everything that
-     * should be recorded is actually being recorded.
-     * @param areOutcomes Whether the features available are outcomes.
-     */
-    static void logRankerFeaturesAvailable(boolean areOutcomes) {
-        RecordHistogram.recordBooleanHistogram(
-                "Search.ContextualSearch.Ranker.FeaturesAvailable", areOutcomes);
     }
 
     /**

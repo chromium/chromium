@@ -154,7 +154,7 @@ public class ContextualSearchInstrumentationBase {
                 String selection, boolean isExactResolve, ContextualSearchContext searchContext) {
             // Skip native calls and immediately "resolve" the search term.
             onSearchTermResolutionResponse(true, 200, selection, selection, "", "", false, 0, 10,
-                    "", "", "", "", QuickActionCategory.NONE, 0, "", "", 0, "");
+                    "", "", "", "", QuickActionCategory.NONE, "", "", 0, "");
         }
 
         /**
@@ -554,25 +554,6 @@ public class ContextualSearchInstrumentationBase {
     void triggerPanelPeek() throws Exception {
         // TODO(donnd): is it better to use the resolve or non-resolve implementation?
         simulateResolveSearch(SEARCH_NODE);
-    }
-
-    /**
-     * Gets the name of the given outcome when it's expected to be logged.
-     *
-     * @param feature A feature whose name we want.
-     * @return The name of the outcome if the give parameter is an outcome, or {@code null} if it's
-     * not.
-     */
-    private static final String expectedOutcomeName(
-            @ContextualSearchInteractionRecorder.Feature int feature) {
-        switch (feature) {
-            // We don't log whether the quick action was clicked unless we actually have a
-            // quick action.
-            case ContextualSearchInteractionRecorder.Feature.OUTCOME_WAS_QUICK_ACTION_CLICKED:
-                return null;
-            default:
-                return ContextualSearchRankerLoggerImpl.outcomeName(feature);
-        }
     }
 
     protected interface ThrowingRunnable {
@@ -1490,27 +1471,6 @@ public class ContextualSearchInstrumentationBase {
      */
     protected void waitForSelectActionBarVisible() {
         assertWaitForSelectActionBarVisible(true);
-    }
-
-    /**
-     * Gets the Ranker Logger and asserts if we can't.
-     **/
-    private ContextualSearchRankerLoggerImpl getRankerLogger() {
-        ContextualSearchRankerLoggerImpl rankerLogger =
-                (ContextualSearchRankerLoggerImpl) mManager.getRankerLogger();
-        Assert.assertNotNull(rankerLogger);
-        return rankerLogger;
-    }
-
-    /** Asserts that all the expected outcomes have been logged to Ranker. **/
-    protected void assertLoggedAllExpectedOutcomesToRanker() {
-        for (int feature = 0; feature < ContextualSearchInteractionRecorder.Feature.NUM_ENTRIES;
-                feature++) {
-            if (expectedOutcomeName(feature) != null) {
-                Assert.assertNotNull("Expected this outcome to be logged: " + feature,
-                        getRankerLogger().getOutcomesLogged().get(feature));
-            }
-        }
     }
 
     /**
