@@ -36,7 +36,7 @@ cr-button.secondary:hover {
 cr-icon-button:focus-visible,
 cr-button:focus-visible {
   box-shadow: none;
-  outline: 2px solid rgba(var(--cros-focus-ring-color), 0.8);
+  outline: 2px solid rgba(var(--cros-focus-ring-color-rgb), 0.8);
 }
 
 cr-icon-button:hover,
