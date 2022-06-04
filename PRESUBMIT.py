@@ -2237,7 +2237,7 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
     # We rely on Gerrit's code-owners to check approvals.
     # input_api.gerrit is always set for Chromium, but other projects
     # might not use Gerrit.
-    if not input_api.gerrit:
+    if not input_api.gerrit or input_api.no_diffs:
         return []
     if (input_api.change.issue and input_api.gerrit.IsOwnersOverrideApproved(
             input_api.change.issue)):
@@ -5631,7 +5631,7 @@ def CheckStableMojomChanges(input_api, output_api):
         include_deletes=True,
         file_filter=lambda f: f.LocalPath().endswith(('.mojom')))
 
-    if not changed_mojoms:
+    if not changed_mojoms or input_api.no_diffs:
         return []
 
     delta = []
