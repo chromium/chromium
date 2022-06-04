@@ -1399,7 +1399,12 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
 void CaptureModeController::OnProjectorContainerFolderCreated(
     const CaptureParams& capture_params,
     const base::FilePath& file_path_no_extension) {
-  DCHECK(IsActive());
+  if (!IsActive()) {
+    // This function gets called asynchronously, and until it gets called, the
+    // session could end due e.g. locking the screen, suspending, or switching
+    // users.
+    return;
+  }
 
   // An empty path is sent to indicate an error.
   if (file_path_no_extension.empty()) {
@@ -1415,11 +1420,16 @@ void CaptureModeController::BeginVideoRecording(
     const CaptureParams& capture_params,
     bool for_projector,
     const base::FilePath& video_file_path) {
-  DCHECK(IsActive());
   DCHECK_EQ(capture_mode_session_->is_in_projector_mode(), for_projector);
-  DCHECK(GetCaptureParams());
   DCHECK(!video_file_path.empty());
   DCHECK(video_file_path.MatchesExtension(".webm"));
+
+  if (!IsActive()) {
+    // This function gets called asynchronously, and until it gets called, the
+    // session could end due to e.g. locking the screen, suspending, or
+    // switching users.
+    return;
+  }
 
   base::AutoReset<bool> initializing_resetter(&is_initializing_recording_,
                                               true);
@@ -1476,9 +1486,14 @@ void CaptureModeController::InterruptVideoRecording() {
 
 void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
     bool proceed) {
-  DCHECK(IsActive());
-
   pending_dlp_check_ = false;
+
+  if (!IsActive()) {
+    // This function gets called asynchronously, and until it gets called, the
+    // session could end due to e.g. locking the screen, suspending, or
+    // switching users.
+    return;
+  }
 
   // We don't need to bring capture mode UIs back if `proceed` is false or if
   // `type_` is `CaptureModeType::kImage`, since the session is about to
@@ -1518,9 +1533,14 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
 
 void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
     bool proceed) {
-  DCHECK(IsActive());
-
   pending_dlp_check_ = false;
+
+  if (!IsActive()) {
+    // This function gets called asynchronously, and until it gets called, the
+    // session could end due to e.g. locking the screen, suspending, or
+    // switching users.
+    return;
+  }
 
   // We don't need to bring back capture mode UIs on 3-second count down
   // finished, since the session is about to shutdown anyways for starting the
