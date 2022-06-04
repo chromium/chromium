@@ -443,7 +443,7 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Sets the focus to the correct view when a drag ends. Focus is on the app
   // list item view during the drag.
-  virtual void SetFocusAfterEndDrag() = 0;
+  virtual void SetFocusAfterEndDrag(AppListItem* drag_item) = 0;
 
   // Calculates the index range of the visible item views.
   virtual absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()

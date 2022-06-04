@@ -664,9 +664,12 @@ bool PagedAppsGridView::MaybeAutoScroll() {
   return false;
 }
 
-void PagedAppsGridView::SetFocusAfterEndDrag() {
+void PagedAppsGridView::SetFocusAfterEndDrag(AppListItem* drag_item) {
   // Leave focus on the dragged item. Pressing tab or an arrow key will
   // highlight that item.
+  AppListItemView* drag_view = GetItemViewAt(GetModelIndexOfItem(drag_item));
+  if (drag_view)
+    drag_view->SilentlyRequestFocus();
 }
 
 void PagedAppsGridView::RecordAppMovingTypeMetrics(AppListAppMovingType type) {

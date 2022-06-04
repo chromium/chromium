@@ -731,6 +731,11 @@ class AppsGridViewNonBubbleTest : public AppsGridViewTest {
   AppsGridViewNonBubbleTest() { is_productivity_launcher_enabled_ = false; }
 };
 
+class AppsGridViewBubbleTest : public AppsGridViewTest {
+ public:
+  AppsGridViewBubbleTest() { is_productivity_launcher_enabled_ = true; }
+};
+
 // Test suite for clamshell mode, parameterized by feature ProductivityLauncher.
 class AppsGridViewClamshellTest : public AppsGridViewTest,
                                   public testing::WithParamInterface<bool> {
@@ -5331,6 +5336,90 @@ TEST_P(AppsGridViewDragNonBubbleTest,
 
   EndDrag(paged_apps_grid_view_, false /*cancel*/);
   EXPECT_EQ(2, GetHapticTickEventsCount());
+}
+
+TEST_F(AppsGridViewBubbleTest, DragItemVisibleAfterDragInScrolledView) {
+  const int kRootGridItems = 39;
+  model_->PopulateApps(kRootGridItems);
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Start dragging the first item in the grid.
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
+                                     apps_grid_view_);
+
+  // Scroll the bubble launcher apps grid so the last item is visible.
+  test_api_->GetViewAtIndex(GridIndex(0, kRootGridItems - 1))
+      ->ScrollViewToVisible();
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Calculate the coordinates for the drop point - the drop point is the first
+  // empty slot in the root apps grid.
+  gfx::Point drop_point =
+      test_api_->GetItemTileRectAtVisualIndex(0, kRootGridItems).CenterPoint();
+
+  UpdateDrag(AppsGridView::MOUSE, drop_point, apps_grid_view_, /*steps=*/5);
+
+  EndDrag(apps_grid_view_, /*cancel=*/false);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+
+  // Verify that the dragged item was dropped into the last slot in the grid,
+  // and that it's within the visible apps grid bounds.
+  AppListItemView* dropped_view =
+      test_api_->GetViewAtIndex(GridIndex(0, kRootGridItems - 1));
+  ASSERT_TRUE(dropped_view);
+  EXPECT_EQ("Item 0", dropped_view->item()->id());
+  EXPECT_TRUE(apps_grid_view_->GetWidget()->GetWindowBoundsInScreen().Contains(
+      dropped_view->GetBoundsInScreen()));
+}
+
+TEST_F(AppsGridViewBubbleTest, DragItemVisibleAfterReparentDragInScrolledView) {
+  model_->CreateAndPopulateFolderWithApps(2);
+  const int kRootGridItems = 41;
+  model_->PopulateApps(kRootGridItems - 1);
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Open the folder view.
+  test_api_->PressItemAt(0);
+
+  // Drag the first folder child out of the folder.
+  AppListItemView* drag_view = InitiateDragForItemAtCurrentPageAt(
+      AppsGridView::MOUSE, 0, 0, folder_apps_grid_view());
+  ASSERT_EQ("Item 0", drag_view->item()->id());
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+  gfx::Point point_outside_folder =
+      app_list_folder_view()->GetLocalBounds().bottom_center() +
+      gfx::Vector2d(0, drag_view->height());
+  UpdateDrag(AppsGridView::MOUSE, point_outside_folder, folder_apps_grid_view(),
+             10 /*steps*/);
+  // Fire the reparent timer that should be started when an item is dragged out
+  // of folder bounds.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+
+  // Scroll the bubble launcher apps grid so the last item is visible.
+  test_api_->GetViewAtIndex(GridIndex(0, kRootGridItems - 1))
+      ->ScrollViewToVisible();
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Calculate the coordinates for the drop point - the drop point is the first
+  // empty slot in the root apps grid.
+  gfx::Point drop_point =
+      GetItemRectOnCurrentPageAt(0, kRootGridItems).CenterPoint();
+  views::View::ConvertPointToTarget(apps_grid_view_, folder_apps_grid_view(),
+                                    &drop_point);
+  UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
+             5 /*steps*/);
+  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+
+  // Verify that the dragged item was dropped into the last slot in the grid,
+  // and that it's within the visible apps grid bounds.
+  AppListItemView* dropped_view =
+      test_api_->GetViewAtIndex(GridIndex(0, kRootGridItems));
+  ASSERT_TRUE(dropped_view);
+  EXPECT_EQ("Item 0", dropped_view->item()->id());
+  EXPECT_TRUE(apps_grid_view_->GetWidget()->GetWindowBoundsInScreen().Contains(
+      dropped_view->GetBoundsInScreen()));
 }
 
 TEST_P(AppsGridViewCardifiedStateTest, AppsGridIsCardifiedDuringDrag) {

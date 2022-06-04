@@ -261,7 +261,7 @@ void ScrollableAppsGridView::HandleScrollFromParentView(
   scroll_view_->vertical_scroll_bar()->OnScroll(/*dx=*/0, offset.y());
 }
 
-void ScrollableAppsGridView::SetFocusAfterEndDrag() {
+void ScrollableAppsGridView::SetFocusAfterEndDrag(AppListItem* drag_item) {
   auto* focus_manager = GetFocusManager();
   if (!focus_manager)  // Does not exist during widget close.
     return;

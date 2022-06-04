@@ -767,7 +767,7 @@ void AppsGridView::EndDrag(bool cancel) {
   // within |apps_grid_view_|.
   BeginHideCurrentGhostImageView();
   if (was_dragging)
-    SetFocusAfterEndDrag();  // Maybe focus the search box.
+    SetFocusAfterEndDrag(drag_item);  // Maybe focus the search box.
 
   AnimateDragIconToTargetPosition(drag_item, target_folder_id);
 }
@@ -2019,7 +2019,7 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
   // Hide the |current_ghost_view_| after completed drag from within
   // folder to |apps_grid_view_|.
   BeginHideCurrentGhostImageView();
-  SetFocusAfterEndDrag();  // Maybe focus the search box.
+  SetFocusAfterEndDrag(drag_item);  // Maybe focus the search box.
 
   AnimateDragIconToTargetPosition(drag_item, target_folder_id);
 }
@@ -2506,7 +2506,6 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
     if (item == drag_item_) {
       drag_view_ = view;
       drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
-      drag_view_->RequestFocus();
     }
     view->InitializeIconLoader();
   }
