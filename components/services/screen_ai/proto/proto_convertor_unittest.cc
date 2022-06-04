@@ -55,6 +55,7 @@ using ProtoConvertorTest = testing::Test;
 
 TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
   chrome_screen_ai::VisualAnnotation annotation;
+  gfx::Rect snapshot_bounds(800, 900);
 
   {
     chrome_screen_ai::UIComponent* component_0 = annotation.add_ui_component();
@@ -97,11 +98,11 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
   {
     std::string serialized_annotation;
     ASSERT_TRUE(annotation.SerializeToString(&serialized_annotation));
-    const ui::AXTreeUpdate update =
-        ScreenAIVisualAnnotationToAXTreeUpdate(serialized_annotation);
+    const ui::AXTreeUpdate update = ScreenAIVisualAnnotationToAXTreeUpdate(
+        serialized_annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "id=1 dialog (0, 0)-(0, 0) child_ids=2\n");
+        "id=1 dialog (0, 0)-(800, 900) child_ids=2\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 
@@ -166,12 +167,13 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
   {
     std::string serialized_annotation;
     ASSERT_TRUE(annotation.SerializeToString(&serialized_annotation));
-    const ui::AXTreeUpdate update =
-        ScreenAIVisualAnnotationToAXTreeUpdate(serialized_annotation);
+    const ui::AXTreeUpdate update = ScreenAIVisualAnnotationToAXTreeUpdate(
+        serialized_annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "id=3 dialog (0, 0)-(0, 0) child_ids=4\n"
-        "id=5 region (0, 0)-(0, 0) is_page_breaking_object=true child_ids=6,7\n"
+        "id=3 dialog (0, 0)-(800, 900) child_ids=4\n"
+        "id=5 region (0, 0)-(800, 900) is_page_breaking_object=true "
+        "child_ids=6,7\n"
         "  id=6 staticText (0, 0)-(5, 0) name_from=contents text_direction=ltr "
         "name=\n"
         "  id=7 staticText offset_container_id=5 (100, 100)-(500, 20) "

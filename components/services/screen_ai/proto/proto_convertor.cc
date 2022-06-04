@@ -26,6 +26,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -312,7 +313,8 @@ void AddSubTree(const std::vector<ui::AXNodeData>& nodes,
 namespace screen_ai {
 
 ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
-    const std::string& serialized_proto) {
+    const std::string& serialized_proto,
+    const gfx::Rect& image_rect) {
   ui::AXTreeUpdate update;
 
   chrome_screen_ai::VisualAnnotation visual_annotation;
@@ -367,8 +369,7 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
     ui::AXNodeData& rootnode = nodes[index++];
     rootnode.role = ax::mojom::Role::kDialog;
     rootnode.id = GetNextNodeID();
-    // TODO(nektar): Set the bounding box of `rootnode` to the bounding box of
-    // the screen snapshot.
+    rootnode.relative_bounds.bounds = gfx::RectF(image_rect);
     for (const auto& ui_component : visual_annotation.ui_component())
       SerializeUIComponent(ui_component, index++, rootnode, nodes);
   }
@@ -380,8 +381,7 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
     page_node.id = GetNextNodeID();
     page_node.AddBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject,
                                true);
-    // TODO(nektar): Set the bounding box of `page_node` to the bounding box of
-    // the captured image.
+    page_node.relative_bounds.bounds = gfx::RectF(image_rect);
     for (const auto& block_to_lines_pair : blocks_to_lines_map) {
       for (const auto& line_sequence_number_to_index_pair :
            block_to_lines_pair.second) {

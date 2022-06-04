@@ -8,6 +8,7 @@
 #include "components/services/screen_ai/proto/proto_convertor.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace screen_ai {
 
@@ -50,7 +51,7 @@ void ScreenAIService::BindMainContentExtractor(
 
 void ScreenAIService::Annotate(const SkBitmap& image,
                                AnnotationCallback callback) {
-  ui::AXTreeUpdate updates;
+  ui::AXTreeUpdate update;
 
   VLOG(2) << "Screen AI library starting to process " << image.width() << "x"
           << image.height() << " snapshot.";
@@ -59,12 +60,14 @@ void ScreenAIService::Annotate(const SkBitmap& image,
   // TODO(https://crbug.com/1278249): Consider adding a signature that
   // verifies the data integrity and source.
   if (annotate_function_(image, annotation_text)) {
-    updates = ScreenAIVisualAnnotationToAXTreeUpdate(annotation_text);
+    gfx::Rect image_rect(image.width(), image.height());
+    update =
+        ScreenAIVisualAnnotationToAXTreeUpdate(annotation_text, image_rect);
   } else {
     VLOG(1) << "Screen AI library could not process snapshot.";
   }
 
-  std::move(callback).Run(updates);
+  std::move(callback).Run(update);
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
