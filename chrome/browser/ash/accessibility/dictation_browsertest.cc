@@ -346,7 +346,7 @@ class DictationTest
         browser()->tab_strip_model()->GetActiveWebContents(),
         ui::kAXModeComplete, ax::mojom::Event::kValueChanged);
     SendFinalResultAndWait(result);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     WaitForTextAreaValue(value);
   }
 
@@ -359,7 +359,7 @@ class DictationTest
     content::BoundingBoxUpdateWaiter bounding_box_waiter(web_contents);
     SendFinalResultAndWait(result);
     bounding_box_waiter.Wait();
-    selection_waiter.WaitForNotification();
+    ASSERT_TRUE(selection_waiter.WaitForNotification());
   }
 
   void SendFinalResultAndWaitForCaretBoundsChanged(const std::string& result) {
@@ -370,7 +370,7 @@ class DictationTest
         browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
     SendFinalResultAndWait(result);
     caret_waiter.Wait();
-    selection_waiter.WaitForNotification();
+    ASSERT_TRUE(selection_waiter.WaitForNotification());
   }
 
   void SendFinalResultAndWaitForClipboardChanged(const std::string& result) {
