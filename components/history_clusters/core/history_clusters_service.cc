@@ -170,26 +170,35 @@ HistoryClustersService::QueryClusters(
       continuation_params, std::move(callback));
 }
 
-bool HistoryClustersService::DoesQueryMatchAnyCluster(
-    const std::string& query) {
+absl::optional<history::ClusterKeywordData>
+HistoryClustersService::DoesQueryMatchAnyCluster(const std::string& query) {
   if (!IsJourneysEnabled())
-    return false;
+    return absl::nullopt;
 
   // We don't want any omnibox jank for low-end devices.
   if (base::SysInfo::IsLowEndDevice())
-    return false;
+    return absl::nullopt;
 
   StartKeywordCacheRefresh();
 
   // Early exit for single-character queries, even if it's an exact match.
   // We still want to allow for two-character exact matches like "uk".
   if (query.length() <= 1)
-    return false;
+    return absl::nullopt;
 
   auto query_lower = base::i18n::ToLower(base::UTF8ToUTF16(query));
 
-  return short_keyword_cache_.find(query_lower) != short_keyword_cache_.end() ||
-         all_keywords_cache_.find(query_lower) != all_keywords_cache_.end();
+  auto short_it = short_keyword_cache_.find(query_lower);
+  if (short_it != short_keyword_cache_.end()) {
+    return short_it->second;
+  }
+
+  auto it = all_keywords_cache_.find(query_lower);
+  if (it != all_keywords_cache_.end()) {
+    return it->second;
+  }
+
+  return absl::nullopt;
 }
 
 bool HistoryClustersService::DoesURLMatchAnyCluster(
@@ -242,7 +251,7 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
                        /*begin_time=*/base::Time(),
-                       std::make_unique<KeywordSet>(),
+                       std::make_unique<KeywordMap>(),
                        std::make_unique<URLKeywordSet>(), &all_keywords_cache_,
                        &all_url_keywords_cache_));
   } else if ((base::Time::Now() - all_keywords_cache_timestamp_).InSeconds() >
@@ -260,7 +269,7 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
                        all_keywords_cache_timestamp_,
-                       std::make_unique<KeywordSet>(),
+                       std::make_unique<KeywordMap>(),
                        std::make_unique<URLKeywordSet>(), &short_keyword_cache_,
                        &short_url_keywords_cache_));
   }
@@ -269,9 +278,9 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
 void HistoryClustersService::PopulateClusterKeywordCache(
     base::ElapsedTimer total_latency_timer,
     base::Time begin_time,
-    std::unique_ptr<KeywordSet> keyword_accumulator,
+    std::unique_ptr<KeywordMap> keyword_accumulator,
     std::unique_ptr<URLKeywordSet> url_keyword_accumulator,
-    KeywordSet* cache,
+    KeywordMap* cache,
     URLKeywordSet* url_cache,
     std::vector<history::Cluster> clusters,
     QueryClustersContinuationParams continuation_params) {
@@ -293,8 +302,12 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     // Lowercase the keywords for case insensitive matching while adding to the
     // accumulator.
     if (keyword_accumulator->size() < max_keyword_phrases) {
-      for (const auto& keyword_data : cluster.keyword_to_data_map) {
-        keyword_accumulator->insert(base::i18n::ToLower(keyword_data.first));
+      for (const auto& keyword_data_p : cluster.keyword_to_data_map) {
+        auto keyword = base::i18n::ToLower(keyword_data_p.first);
+        if (keyword_accumulator->find(keyword) == keyword_accumulator->end()) {
+          keyword_accumulator->insert(
+              std::make_pair(keyword, keyword_data_p.second));
+        }
       }
     }
 
@@ -349,9 +362,9 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   *url_cache = std::move(*url_keyword_accumulator);
   if (ShouldNotifyDebugMessage()) {
     NotifyDebugMessage("Cache construction complete; keyword cache:");
-    NotifyDebugMessage(GetDebugJSONForKeywordSet(*cache));
+    NotifyDebugMessage(GetDebugJSONForKeywordMap(*cache));
     NotifyDebugMessage("Url cache:");
-    NotifyDebugMessage(GetDebugJSONForKeywordSet(*url_cache));
+    NotifyDebugMessage(GetDebugJSONForUrlKeywordSet(*url_cache));
   }
 
   // Record keyword phrase & keyword counts for the appropriate cache.

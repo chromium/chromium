@@ -53,7 +53,9 @@ int TopRelevance(const AutocompleteResult& result, bool search) {
 
 }  // namespace
 
-HistoryClustersAction::HistoryClustersAction(const std::string& query)
+HistoryClustersAction::HistoryClustersAction(
+    const std::string& query,
+    const history::ClusterKeywordData& matched_keyword_data)
     : OmniboxAction(
           OmniboxAction::LabelStrings(
               IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
@@ -62,8 +64,8 @@ HistoryClustersAction::HistoryClustersAction(const std::string& query)
               IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
           GURL(base::StringPrintf(
               "chrome://history/journeys?q=%s",
-              base::EscapeQueryParamValue(query, /*use_plus=*/false)
-                  .c_str()))) {
+              base::EscapeQueryParamValue(query, /*use_plus=*/false).c_str()))),
+      matched_keyword_data_(matched_keyword_data) {
 #if BUILDFLAG(IS_ANDROID)
     CreateOrUpdateJavaObject(query);
 #endif
@@ -166,8 +168,11 @@ void AttachHistoryClustersActions(
 
     if (AutocompleteMatch::IsSearchType(match.type)) {
       std::string query = base::UTF16ToUTF8(match.contents);
-      if (service->DoesQueryMatchAnyCluster(query)) {
-        match.action = base::MakeRefCounted<HistoryClustersAction>(query);
+      absl::optional<history::ClusterKeywordData> matched_keyword_data =
+          service->DoesQueryMatchAnyCluster(query);
+      if (matched_keyword_data) {
+        match.action = base::MakeRefCounted<HistoryClustersAction>(
+            query, std::move(matched_keyword_data.value()));
       }
     } else if (GetConfig().omnibox_action_on_urls) {
       // We do the URL stripping here, because we need it to both execute the
@@ -176,7 +181,8 @@ void AttachHistoryClustersActions(
       std::string url_keyword =
           history_clusters::ComputeURLKeywordForLookup(match.destination_url);
       if (service->DoesURLMatchAnyCluster(url_keyword)) {
-        match.action = base::MakeRefCounted<HistoryClustersAction>(url_keyword);
+        match.action = base::MakeRefCounted<HistoryClustersAction>(
+            url_keyword, history::ClusterKeywordData());
       }
     }
 

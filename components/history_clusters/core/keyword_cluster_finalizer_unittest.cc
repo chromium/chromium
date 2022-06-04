@@ -23,7 +23,7 @@ class KeywordClusterFinalizerTest : public ::testing::Test {
   void SetUp() override {
     optimization_guide::EntityMetadata github_md;
     github_md.human_readable_aliases = {"git hub", "github llc"};
-    github_md.collections = {"/collection/computer"};
+    github_md.collections = {"/collection/computer", "/collection/programming"};
     base::flat_map<std::string, optimization_guide::EntityMetadata>
         entity_metadata_map;
     entity_metadata_map["github"] = github_md;
@@ -89,10 +89,12 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
   EXPECT_THAT(cluster.GetKeywords(),
               UnorderedElementsAre(u"github", u"otherentity"));
   ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"github"));
-  EXPECT_EQ(cluster.keyword_to_data_map.at(u"github"),
-            history::ClusterKeywordData(
-                history::ClusterKeywordData::kEntity, 1,
-                std::vector<std::string>{"/collection/computer"}));
+  EXPECT_EQ(
+      cluster.keyword_to_data_map.at(u"github"),
+      history::ClusterKeywordData(
+          history::ClusterKeywordData::kEntity, 1,
+          std::vector<std::string>{
+              "/collection/computer"} /*keep only top one entity collection*/));
   ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"otherentity"));
   EXPECT_EQ(
       cluster.keyword_to_data_map.at(u"otherentity"),

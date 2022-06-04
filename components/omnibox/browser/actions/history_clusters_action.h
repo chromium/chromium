@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_HISTORY_CLUSTERS_ACTION_H_
 
 #include "build/build_config.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 
 class AutocompleteResult;
@@ -22,7 +23,9 @@ class HistoryClustersService;
 // Made public for testing.
 class HistoryClustersAction : public OmniboxAction {
  public:
-  explicit HistoryClustersAction(const std::string& query);
+  HistoryClustersAction(
+      const std::string& query,
+      const history::ClusterKeywordData& matched_keyword_data);
 
   void RecordActionShown(size_t position, bool executed) const override;
   int32_t GetID() const override;
@@ -37,6 +40,10 @@ class HistoryClustersAction : public OmniboxAction {
 
  private:
   ~HistoryClustersAction() override;
+
+  // Additional data of the matching keyword from the history clustering
+  // service.
+  history::ClusterKeywordData matched_keyword_data_;
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;

@@ -149,11 +149,11 @@ void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
             /*entity_collections=*/{});
       }
 
-      // Add entity collections to keyword data.
+      // Add the top one entity collection to keyword data.
       const auto it = entity_metadata_map_.find(entity.id);
-      if (it != entity_metadata_map_.end()) {
-        keyword_to_data_map[keyword_u16str].entity_collections =
-            it->second.collections;
+      if (it != entity_metadata_map_.end() && !it->second.collections.empty()) {
+        keyword_to_data_map[keyword_u16str].entity_collections = {
+            it->second.collections[0]};
       }
 
       if (GetConfig().keyword_filter_on_entity_aliases) {
@@ -169,13 +169,14 @@ void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
             auto alias_it = keyword_to_data_map.find(alias);
             if (alias_it == keyword_to_data_map.end()) {
               keyword_to_data_map[alias] = history::ClusterKeywordData(
-                  history::ClusterKeywordData::kEntityAlias, entity_score,
-                  it->second.collections);
+                  history::ClusterKeywordData::kEntityAlias, entity_score, {});
             } else {
               alias_it->second.score += entity_score;
               alias_it->second.MaybeUpdateKeywordType(
                   history::ClusterKeywordData::kEntityAlias);
             }
+            keyword_to_data_map[alias].entity_collections =
+                keyword_to_data_map[keyword_u16str].entity_collections;
           }
         }
       }

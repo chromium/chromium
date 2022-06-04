@@ -95,7 +95,8 @@ class HistClustersActionTest : public testing::Test {
     history_clusters_service_test_api_ =
         std::make_unique<HistoryClustersServiceTestApi>(
             history_clusters_service_.get(), history_service_.get());
-    history_clusters_service_test_api_->SetAllKeywordsCache({u"keyword"});
+    history_clusters_service_test_api_->SetAllKeywordsCache(
+        {{u"keyword", history::ClusterKeywordData()}});
     history_clusters_service_test_api_->SetAllUrlKeywordsCache(
         {"http://keyword/"});
   }
