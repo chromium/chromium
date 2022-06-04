@@ -1631,6 +1631,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_credential.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_credentials_container.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_credentials_container.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_crop_target.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_crypto.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_crypto.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.cc",

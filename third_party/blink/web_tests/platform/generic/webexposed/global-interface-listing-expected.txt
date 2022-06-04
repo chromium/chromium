@@ -1366,6 +1366,10 @@ interface CredentialsContainer
     method get
     method preventSilentAccess
     method store
+interface CropTarget
+    static method fromElement
+    attribute @@toStringTag
+    method constructor
 interface Crypto
     attribute @@toStringTag
     getter subtle
