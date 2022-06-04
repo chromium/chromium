@@ -4,11 +4,14 @@
       "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF"
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [712, 8, 80, 20]
+      ]
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='test'",
-      "bounds": [100, 100],
+      "name": "LayoutFlexibleBox (positioned) NAV class='nav-bar'",
+      "bounds": [200, 600],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 1
@@ -21,7 +24,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [0, 60, 0, 1]
+        [8, 0, 0, 1]
       ]
     }
   ]

@@ -2043,6 +2043,15 @@ crbug.com/904592 [ Win ] virtual/scalefactor200/css3/filters/backdrop-filter-svg
 
 crbug.com/280342 http/tests/media/progress-events-generated-correctly.html [ Failure Pass ]
 
+# This test is flaky when FixedElementsDontOverscroll is enabled.
+crbug.com/585766 fast/table/frame-and-rules.html [ Failure Pass Timeout ]
+
+# This test needs a new reference when FixedElementsDontOverscroll is enabled.
+crbug.com/585766 [ Mac11 ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-option-arbitrary-content-displayed.tentative.html [ Failure Pass Timeout ]
+crbug.com/585766 [ Mac11-arm64 ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-option-arbitrary-content-displayed.tentative.html [ Failure Pass Timeout ]
+crbug.com/585766 [ Mac12 ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-option-arbitrary-content-displayed.tentative.html [ Failure Pass Timeout ]
+crbug.com/585766 [ Mac12-arm64 ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-option-arbitrary-content-displayed.tentative.html [ Failure Pass Timeout ]
+
 crbug.com/520736 [ Win7 ] media/W3C/video/networkState/networkState_during_progress.html [ Failure Pass ]
 crbug.com/520736 [ Linux ] media/W3C/video/networkState/networkState_during_progress.html [ Failure Pass ]
 crbug.com/909095 [ Mac ] media/W3C/video/networkState/networkState_during_progress.html [ Failure Pass ]

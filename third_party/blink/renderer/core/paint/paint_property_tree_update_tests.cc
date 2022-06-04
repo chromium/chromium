@@ -1103,9 +1103,8 @@ TEST_P(PaintPropertyTreeUpdateTest, WillTransformChangeAboveFixed) {
   To<Element>(container->GetNode())
       ->setAttribute(html_names::kStyleAttr, "will-change: top");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(
-      &GetLayoutView().FirstFragment().LocalBorderBoxProperties().Transform(),
-      &fixed->FirstFragment().LocalBorderBoxProperties().Transform());
+  EXPECT_EQ(fixed->FirstFragment().PaintProperties()->PaintOffsetTranslation(),
+            &fixed->FirstFragment().LocalBorderBoxProperties().Transform());
 
   To<Element>(container->GetNode())
       ->setAttribute(html_names::kStyleAttr, "will-change: transform");
@@ -1690,7 +1689,9 @@ TEST_P(PaintPropertyTreeUpdateTest, FixedPositionCompositing) {
     <div id="fixed" style="position: fixed; top: 50px; left: 60px">Fixed</div>
   )HTML");
 
-  EXPECT_FALSE(PaintPropertiesForElement("fixed"));
+  // Still paint properties because we composite fixed-position elements to
+  // avoid overscroll.
+  EXPECT_TRUE(PaintPropertiesForElement("fixed"));
 
   auto* space = GetDocument().getElementById("space");
   space->setAttribute(html_names::kStyleAttr, "height: 2000px");
@@ -1705,7 +1706,7 @@ TEST_P(PaintPropertyTreeUpdateTest, FixedPositionCompositing) {
 
   space->setAttribute(html_names::kStyleAttr, "height: 100px");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(PaintPropertiesForElement("fixed"));
+  EXPECT_TRUE(PaintPropertiesForElement("fixed"));
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, InlineFilterReferenceBoxChange) {

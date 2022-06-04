@@ -2,19 +2,30 @@
   "layers": [
     {
       "name": "Scrolling background of LayoutView #document",
-      "bounds": [1200, 900],
+      "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [1068, 12, 120, 30]
+        [712, 8, 80, 20]
       ]
     },
     {
       "name": "LayoutNGFlexibleBox (positioned) NAV class='nav-bar'",
-      "position": [12, 0],
-      "bounds": [300, 900],
+      "bounds": [200, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#008000"
+      "backgroundColor": "#008000",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 0, 0, 1]
+      ]
     }
   ]
 }

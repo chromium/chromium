@@ -37,10 +37,10 @@ Even though the fixed-position element's container is nonscrollable, it should s
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
-      "position": [10, 100],
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "backgroundColor": "#00FF00"
+      "backgroundColor": "#00FF00",
+      "transform": 2
     }
   ],
   "transforms": [
@@ -51,6 +51,15 @@ Even though the fixed-position element's container is nonscrollable, it should s
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [8, 68, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [10, 100, 0, 1]
       ]
     }
   ]
