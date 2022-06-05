@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/android/build_info.h"
+#include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
@@ -29,13 +30,23 @@
 namespace chromecast {
 namespace media {
 
+namespace {
+
+bool IsSingleVolumeDevice() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_VolumeControl_isSingleVolumeDevice(env);
+}
+
+}  // namespace
+
 VolumeControlAndroid& GetVolumeControl() {
   static base::NoDestructor<VolumeControlAndroid> volume_control;
   return *volume_control;
 }
 
 VolumeControlAndroid::VolumeControlAndroid()
-    : thread_("VolumeControl"),
+    : is_single_volume_(IsSingleVolumeDevice()),
+      thread_("VolumeControl"),
       initialize_complete_event_(
           base::WaitableEvent::ResetPolicy::MANUAL,
           base::WaitableEvent::InitialState::NOT_SIGNALED) {
@@ -187,16 +198,16 @@ void VolumeControlAndroid::InitializeOnThread() {
               << " mute=" << muted_[type];
   }
 
-#if !BUILDFLAG(IS_SINGLE_VOLUME)
-  // The kOther content type should not have any type-wide volume control or
-  // mute (volume control for kOther is per-stream only). Therefore, ensure
-  // that the global volume and mute state fo kOther is initialized correctly
-  // (100% volume, and not muted).
-  SetVolumeOnThread(VolumeChangeSource::kAutomatic, AudioContentType::kOther,
-                    1.0f, false /* from_android */);
-  SetMutedOnThread(VolumeChangeSource::kAutomatic, AudioContentType::kOther,
-                   false, false /* from_android */);
-#endif
+  if (!is_single_volume_) {
+    // The kOther content type should not have any type-wide volume control or
+    // mute (volume control for kOther is per-stream only). Therefore, ensure
+    // that the global volume and mute state fo kOther is initialized correctly
+    // (100% volume, and not muted).
+    SetVolumeOnThread(VolumeChangeSource::kAutomatic, AudioContentType::kOther,
+                      1.0f, false /* from_android */);
+    SetMutedOnThread(VolumeChangeSource::kAutomatic, AudioContentType::kOther,
+                     false, false /* from_android */);
+  }
 
   initialize_complete_event_.Signal();
 }
@@ -270,15 +281,13 @@ void VolumeControlAndroid::SetMutedOnThread(VolumeChangeSource source,
 void VolumeControlAndroid::ReportVolumeChangeOnThread(AudioContentType type,
                                                       float level) {
   DCHECK(thread_.task_runner()->BelongsToCurrentThread());
-#if !BUILDFLAG(IS_SINGLE_VOLUME)
-  if (type == AudioContentType::kOther) {
+  if (!is_single_volume_ && type == AudioContentType::kOther) {
     // Volume for AudioContentType::kOther should stay at 1.0.
     Java_VolumeControl_setVolume(base::android::AttachCurrentThread(),
                                  j_volume_control_, static_cast<int>(type),
                                  1.0f);
     return;
   }
-#endif
 
   SetVolumeOnThread(VolumeChangeSource::kUser, type, level,
                     true /* from android */);
@@ -287,15 +296,13 @@ void VolumeControlAndroid::ReportVolumeChangeOnThread(AudioContentType type,
 void VolumeControlAndroid::ReportMuteChangeOnThread(AudioContentType type,
                                                     bool muted) {
   DCHECK(thread_.task_runner()->BelongsToCurrentThread());
-#if !BUILDFLAG(IS_SINGLE_VOLUME)
-  if (type == AudioContentType::kOther) {
+  if (!is_single_volume_ && type == AudioContentType::kOther) {
     // Mute state for AudioContentType::kOther should always be false.
     Java_VolumeControl_setMuted(base::android::AttachCurrentThread(),
                                 j_volume_control_, static_cast<int>(type),
                                 false);
     return;
   }
-#endif
 
   SetMutedOnThread(VolumeChangeSource::kUser, type, muted,
                    true /* from_android */);

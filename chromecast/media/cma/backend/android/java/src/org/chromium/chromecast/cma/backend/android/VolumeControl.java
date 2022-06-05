@@ -13,8 +13,7 @@ import android.os.Build;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 
-import androidx.annotation.RequiresApi;
-
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -37,7 +36,6 @@ import org.chromium.chromecast.media.AudioContentType;
  * intents and reports detected changes back to the native volume controller code.
  */
 @JNINamespace("chromecast::media")
-@RequiresApi(Build.VERSION_CODES.M)
 class VolumeControl {
     /**
      * Helper class storing settings and reading/writing volume and mute settings from/to Android's
@@ -147,6 +145,13 @@ class VolumeControl {
 
     // Mapping from Cast's AudioContentType to their respective Settings instance.
     private SparseArray<Settings> mSettings;
+
+    @CalledByNative
+    private static boolean isSingleVolumeDevice() {
+        // Android TV devices map all stream types to STREAM_MUSIC, so they functionally have only
+        // one volume stream.
+        return BuildInfo.getInstance().isTV;
+    }
 
     /** Construction */
     @CalledByNative

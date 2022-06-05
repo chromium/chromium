@@ -73,6 +73,7 @@ class VolumeControlAndroid : SystemVolumeTableAccessApi {
                                           AudioContentType to_type,
                                           float level);
 
+  const bool is_single_volume_;
   base::android::ScopedJavaGlobalRef<jobject> j_volume_control_;
 
   std::map<AudioContentType, std::unique_ptr<VolumeCache>> volume_cache_;
