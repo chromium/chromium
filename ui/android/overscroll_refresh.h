@@ -40,7 +40,7 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   // from.
   enum { kDefaultNavigationEdgeWidth = 24 };
 
-  OverscrollRefresh(OverscrollRefreshHandler* handler, float edge_width);
+  OverscrollRefresh(OverscrollRefreshHandler* handler);
 
   OverscrollRefresh(const OverscrollRefresh&) = delete;
   OverscrollRefresh& operator=(const OverscrollRefresh&) = delete;
@@ -107,7 +107,6 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   float viewport_width_;
   float scroll_begin_x_;
   float scroll_begin_y_;
-  const float edge_width_;  // in px
   gfx::Vector2dF cumulative_scroll_;
   const raw_ptr<OverscrollRefreshHandler> handler_;
 };

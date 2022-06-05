@@ -23,13 +23,11 @@ const float kWeightAngle30 = 1.73f;
 
 }  // namespace
 
-OverscrollRefresh::OverscrollRefresh(OverscrollRefreshHandler* handler,
-                                     float edge_width)
+OverscrollRefresh::OverscrollRefresh(OverscrollRefreshHandler* handler)
     : scrolled_to_top_(true),
       top_at_scroll_start_(true),
       overflow_y_hidden_(false),
       scroll_consumption_state_(DISABLED),
-      edge_width_(edge_width),
       handler_(handler) {
   DCHECK(handler);
 }
@@ -38,7 +36,6 @@ OverscrollRefresh::OverscrollRefresh()
     : scrolled_to_top_(true),
       overflow_y_hidden_(false),
       scroll_consumption_state_(DISABLED),
-      edge_width_(kDefaultNavigationEdgeWidth * 1.f),
       handler_(nullptr) {}
 
 OverscrollRefresh::~OverscrollRefresh() {
@@ -81,9 +78,7 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
       return;
     }
     type = OverscrollAction::PULL_TO_REFRESH;
-  } else if (in_x_direction &&
-             (scroll_begin_x_ < edge_width_ ||
-              viewport_width_ - scroll_begin_x_ < edge_width_)) {
+  } else if (in_x_direction) {
     // Swipe-to-navigate. Check overscroll-behavior-x
     if (behavior.x != cc::OverscrollBehavior::Type::kAuto) {
       Reset();

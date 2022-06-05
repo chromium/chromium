@@ -512,7 +512,6 @@ chrome_java_resources = [
   "java/res/layout/managed_by_menu_item.xml",
   "java/res/layout/material_tooltip.xml",
   "java/res/layout/multiline_spinner_item.xml",
-  "java/res/layout/navigation_bubble.xml",
   "java/res/layout/os_version_unsupported_text.xml",
   "java/res/layout/other_forms_of_history_dialog.xml",
   "java/res/layout/password_generation_popup_explanation.xml",

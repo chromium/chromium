@@ -2479,7 +2479,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideBridge.java",
     "java/src/org/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideServiceFactory.java",
     "java/src/org/chromium/chrome/browser/flags/BadFlagsSnackbarManager.java",
-    "java/src/org/chromium/chrome/browser/gesturenav/OverscrollSceneLayer.java",
     "java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
     "java/src/org/chromium/chrome/browser/history/HistoryDeletionBridge.java",
     "java/src/org/chromium/chrome/browser/history/HistoryDeletionInfo.java",
