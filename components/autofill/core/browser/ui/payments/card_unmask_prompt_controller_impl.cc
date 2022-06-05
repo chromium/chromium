@@ -235,7 +235,7 @@ bool CardUnmaskPromptControllerImpl::GetStoreLocallyStartState() const {
 
 #if BUILDFLAG(IS_ANDROID)
 int CardUnmaskPromptControllerImpl::GetGooglePayImageRid() const {
-  return IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER;
+  return 0;
 }
 
 bool CardUnmaskPromptControllerImpl::ShouldOfferWebauthn() const {

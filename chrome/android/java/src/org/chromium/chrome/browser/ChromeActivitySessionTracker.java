@@ -26,8 +26,6 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.metrics.UmaUtils;
-import org.chromium.chrome.browser.metrics.VariationsSession;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLifecycleHelper;
@@ -59,9 +57,6 @@ public class ChromeActivitySessionTracker {
     private final Map<Activity, Supplier<TabModelSelector>> mTabModelSelectorSuppliers =
             new HashMap<>();
 
-    // Used to trigger variation changes (such as seed fetches) upon application foregrounding.
-    private VariationsSession mVariationsSession;
-
     private boolean mIsInitialized;
     private boolean mIsStarted;
 
@@ -80,7 +75,7 @@ public class ChromeActivitySessionTracker {
      * @see #getInstance()
      */
     protected ChromeActivitySessionTracker() {
-        mVariationsSession = AppHooks.get().createVariationsSession();
+
     }
 
     /**
@@ -107,7 +102,7 @@ public class ChromeActivitySessionTracker {
      * @param callback Callback that will be called with the param value when available.
      */
     public void getVariationsRestrictModeValue(Callback<String> callback) {
-        mVariationsSession.getRestrictModeValue(callback);
+
     }
 
     /**
@@ -115,7 +110,7 @@ public class ChromeActivitySessionTracker {
      */
     @Nullable
     public String getVariationsLatestCountry() {
-        return mVariationsSession.getLatestCountry();
+        return null;
     }
 
     /**
@@ -128,7 +123,6 @@ public class ChromeActivitySessionTracker {
         mIsInitialized = true;
         assert !mIsStarted;
 
-        mVariationsSession.initializeWithNative();
         ApplicationStatus.registerApplicationStateListener(createApplicationStateListener());
     }
 
@@ -159,12 +153,10 @@ public class ChromeActivitySessionTracker {
     private void onForegroundSessionStart() {
         try (TraceEvent te = TraceEvent.scoped(
                      "ChromeActivitySessionTracker.onForegroundSessionStart")) {
-            UmaUtils.recordForegroundStartTime();
             updatePasswordEchoState();
             FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile())
                     .onSystemFontScaleChanged();
             updateAcceptLanguages();
-            mVariationsSession.start();
             mPowerBroadcastReceiver.onForegroundSessionStart();
             AppHooks.get().getChimeDelegate().startSession();
             PasswordManagerLifecycleHelper.getInstance().onStartForegroundSession();
@@ -184,7 +176,6 @@ public class ChromeActivitySessionTracker {
      */
     private void onForegroundSessionEnd() {
         if (!mIsStarted) return;
-        UmaUtils.recordBackgroundTime();
         ProfileManagerUtils.flushPersistentDataForAllProfiles();
         mIsStarted = false;
         mPowerBroadcastReceiver.onForegroundSessionEnd();

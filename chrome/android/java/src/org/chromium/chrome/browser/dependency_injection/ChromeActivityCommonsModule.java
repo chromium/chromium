@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -74,8 +73,6 @@ public class ChromeActivityCommonsModule {
     private final ScreenOrientationProvider mScreenOrientationProvider;
     private final Supplier<NotificationManagerProxy> mNotificationManagerProxySupplier;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-    private final Supplier<ActivityTabStartupMetricsTracker>
-            mActivityTabStartupMetricsTrackerSupplier;
     private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
@@ -104,7 +101,6 @@ public class ChromeActivityCommonsModule {
                 ScreenOrientationProvider screenOrientationProvider,
                 Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
                 ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-                Supplier<ActivityTabStartupMetricsTracker> activityTabStartupMetricsTrackerSupplier,
                 CompositorViewHolder.Initializer compositorViewHolderInitializer,
                 ChromeActivityNativeDelegate chromeActivityNativeDelegate,
                 Supplier<ModalDialogManager> modalDialogManagerSupplier,
@@ -131,7 +127,6 @@ public class ChromeActivityCommonsModule {
             ScreenOrientationProvider screenOrientationProvider,
             Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<ActivityTabStartupMetricsTracker> activityTabStartupMetricsTrackerSupplier,
             CompositorViewHolder.Initializer compositorViewHolderInitializer,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
@@ -159,7 +154,6 @@ public class ChromeActivityCommonsModule {
         mScreenOrientationProvider = screenOrientationProvider;
         mNotificationManagerProxySupplier = notificationManagerProxySupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
-        mActivityTabStartupMetricsTrackerSupplier = activityTabStartupMetricsTrackerSupplier;
         mCompositorViewHolderInitializer = compositorViewHolderInitializer;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
@@ -302,11 +296,6 @@ public class ChromeActivityCommonsModule {
     @Provides
     public ObservableSupplier<TabContentManager> provideTabContentManagerSupplier() {
         return mTabContentManagerSupplier;
-    }
-
-    @Provides
-    public ActivityTabStartupMetricsTracker provideActivityTabStartupMetricsTracker() {
-        return mActivityTabStartupMetricsTrackerSupplier.get();
     }
 
     @Provides

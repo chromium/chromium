@@ -89,11 +89,7 @@ void CardNameFixFlowControllerImpl::OnDismissed() {
 }
 
 int CardNameFixFlowControllerImpl::GetIconId() const {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER;
-#else
   return 0;
-#endif
 }
 
 std::u16string CardNameFixFlowControllerImpl::GetCancelButtonLabel() const {

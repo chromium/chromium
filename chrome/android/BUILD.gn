@@ -240,7 +240,6 @@ android_resources("chrome_app_java_resources") {
     "//components/media_router/browser/android:java_resources",
     "//components/messages/android:java_resources",
     "//components/omnibox/browser:java_resources",
-    "//components/payments/content/android:java_resources",
     "//components/permissions/android:java_resources",
     "//components/policy:app_restrictions_resources",
     "//components/strings:components_locale_settings_grd",
@@ -1437,7 +1436,6 @@ android_library("browser_java_test_support") {
 static_library("browser_test_support") {
   testonly = true
   sources = [
-    "../browser/android/servicification_background_service_jni.cc",
     "../browser/android/ssl/mock_cert_verifier_rule_android.cc",
     "../browser/android/ssl/mock_cert_verifier_rule_android.h",
     "../browser/offline_pages/android/offline_test_util_jni.cc",
@@ -1587,7 +1585,6 @@ android_library("base_module_java") {
     "java/src/org/chromium/chrome/browser/incognito/IncognitoNotificationService.java",
     "java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationService.java",
     "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationControllerServices.java",
-    "java/src/org/chromium/chrome/browser/metrics/UmaUtils.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationJobService.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationService.java",
     "java/src/org/chromium/chrome/browser/omaha/OmahaClient.java",
@@ -2512,11 +2509,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/media/MediaCaptureDevicesDispatcherAndroid.java",
     "java/src/org/chromium/chrome/browser/media/PictureInPictureActivity.java",
     "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
-    "java/src/org/chromium/chrome/browser/metrics/LaunchMetrics.java",
-    "java/src/org/chromium/chrome/browser/metrics/PageLoadMetrics.java",
-    "java/src/org/chromium/chrome/browser/metrics/UmaSessionStats.java",
-    "java/src/org/chromium/chrome/browser/metrics/UmaUtils.java",
-    "java/src/org/chromium/chrome/browser/metrics/VariationsSession.java",
     "java/src/org/chromium/chrome/browser/mojo/ChromeInterfaceRegistrar.java",
     "java/src/org/chromium/chrome/browser/navigation_predictor/NavigationPredictorBridge.java",
     "java/src/org/chromium/chrome/browser/net/nqe/NetworkQualityProvider.java",

@@ -78,26 +78,3 @@ source_set("browser_tests") {
     deps += [ "//ash/public/cpp/external_arc:external_arc" ]
   }
 }
-
-source_set("unittests") {
-  testonly = true
-
-  sources = [ "payment_handler_permission_context_unittest.cc" ]
-
-  deps = [
-    "//chrome/test:test_support",
-    "//components/content_settings/core/test:test_support",
-    "//components/infobars/content",
-    "//components/permissions:permissions",
-  ]
-
-  if (is_android) {
-    sources += [ "android/payment_app_service_bridge_unittest.cc" ]
-
-    deps += [
-      "//components/payments/content",
-      "//components/payments/content:utils",
-      "//components/payments/content/android",
-    ]
-  }
-}

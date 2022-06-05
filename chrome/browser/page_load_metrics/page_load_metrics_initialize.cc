@@ -53,9 +53,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/page_load_metrics/observers/android_page_load_metrics_observer.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/page_load_metrics/observers/session_restore_page_load_metrics_observer.h"
 #endif
 
@@ -170,9 +168,6 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     if (portal_observer)
       tracker->AddObserver(std::move(portal_observer));
 
-#if BUILDFLAG(IS_ANDROID)
-    tracker->AddObserver(std::make_unique<AndroidPageLoadMetricsObserver>());
-#endif  // BUILDFLAG(IS_ANDROID)
     std::unique_ptr<page_load_metrics::PageLoadMetricsObserver>
         loading_predictor_observer =
             LoadingPredictorPageLoadMetricsObserver::CreateIfNeeded(

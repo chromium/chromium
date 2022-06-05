@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_ANDROID)

@@ -22,7 +22,6 @@
 #include "chrome/android/chrome_jni_headers/TabImpl_jni.h"
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
-#include "chrome/browser/android/metrics/uma_utils.h"
 #include "chrome/browser/android/tab_printer.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/android/url_param_filter/cross_otr_observer_android.h"

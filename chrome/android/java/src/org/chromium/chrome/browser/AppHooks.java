@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
-import org.chromium.chrome.browser.metrics.VariationsSession;
 import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
 import org.chromium.chrome.browser.omaha.RequestGenerator;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
@@ -121,13 +120,6 @@ public abstract class AppHooks {
      */
     public RevenueStats createRevenueStatsInstance() {
         return new RevenueStats();
-    }
-
-    /**
-     * Returns a new instance of VariationsSession.
-     */
-    public VariationsSession createVariationsSession() {
-        return new VariationsSession();
     }
 
     /** Returns the singleton instance of GooglePlayWebApkInstallDelegate. */

@@ -41,7 +41,6 @@ import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.UsedByReflection;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -93,9 +92,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
-import org.chromium.chrome.browser.metrics.LaunchMetrics;
-import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
 import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -109,7 +105,6 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
@@ -143,7 +138,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvi
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
-import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
@@ -220,7 +214,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // Count histogram used to track number of tabs when we show the Overview on Return to Chrome.
     private static final String TAB_COUNT_ON_RETURN = "Tabs.TabCountOnStartScreenShown";
 
-    private final MainIntentBehaviorMetrics mMainIntentMetrics;
     private @Nullable MultiInstanceManager mMultiInstanceManager;
 
     private UndoBarController mUndoBarPopupController;
@@ -385,7 +378,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      * Constructs a ChromeTabbedActivity.
      */
     public ChromeTabbedActivity() {
-        mMainIntentMetrics = new MainIntentBehaviorMetrics();
 
         // AppLaunchDrawBlocker may block drawing the Activity content until the initial tab is
         // available.
@@ -807,7 +799,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onStartWithNative() {
-        mMainIntentMetrics.logLaunchBehavior();
         super.onStartWithNative();
 
         // Don't call setInitialOverviewState if we're waiting for the tab's creation or we risk
@@ -820,16 +811,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 || ConditionalTabStripUtils.getOptOutIndicator()) {
             ConditionalTabStripUtils.updateFeatureExpiration(
                     mInactivityTracker.getLastBackgroundedTimeMs());
-        }
-
-        Bundle savedInstanceState = getSavedInstanceState();
-        if (savedInstanceState != null
-                && savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false)) {
-            // This will be executed only once since SavedInstanceState will be reset a few lines
-            // later.
-            AndroidSessionDurationsServiceState.restoreNativeFromSerialized(savedInstanceState,
-                    getCurrentTabModel().getProfile().getPrimaryOTRProfile(
-                            /* createIfNeeded= */ true));
         }
 
         resetSavedInstanceState();
@@ -883,21 +864,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    private void setTrackColdStartupMetrics(boolean shouldTrackColdStartupMetrics) {
-        assert getActivityTabStartupMetricsTracker() != null;
-
-        if (shouldTrackColdStartupMetrics) {
-            getActivityTabStartupMetricsTracker().trackStartupMetrics(STARTUP_UMA_HISTOGRAM_SUFFIX);
-        } else {
-            getActivityTabStartupMetricsTracker().cancelTrackingStartupMetrics();
-        }
-
-        // Paint Preview should follow the same logic as startup UMA histograms as the feature
-        // should only run on cold startup of Chrome when the user is unable to interact before
-        // entering a tab.
-        StartupPaintPreviewHelper.setShouldShowOnRestore(shouldTrackColdStartupMetrics);
-    }
-
     private void setInitialOverviewState() {
         if (mHasDeterminedOverviewStateForCurrentSession) return;
 
@@ -914,9 +880,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         getOnCreateTimestampMs());
             }
             mOverviewShownOnStart = true;
-            // Cancel recording cold startup metrics if an overview is shown as they expect a tab to
-            // be the first thing shown after startup.
-            setTrackColdStartupMetrics(false);
             showOverview(StartSurfaceState.SHOWING_START);
             mAppLaunchDrawBlocker.onOverviewPageAvailable(
                     mOverviewShownOnStart && !isInstantStartEnabled());
@@ -925,9 +888,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (getActivityTab() == null && !isOverviewVisible) {
             mOverviewShownOnStart = true;
-            // Cancel recording cold startup metrics if an overview is shown as they expect a tab to
-            // be the first thing shown after startup.
-            setTrackColdStartupMetrics(false);
             showOverview(StartSurfaceState.SHOWING_START);
         }
 
@@ -969,15 +929,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         }));
             }
         }
-
-        mMainIntentMetrics.onMainIntentWithNative(
-                mInactivityTracker.getTimeSinceLastBackgroundedMs());
-    }
-
-    /** Access the main intent metrics for test validation. */
-    @VisibleForTesting
-    public MainIntentBehaviorMetrics getMainIntentBehaviorMetricsForTesting() {
-        return mMainIntentMetrics;
     }
 
     @VisibleForTesting
@@ -1208,7 +1159,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     }
                     int shortcutSource = intent.getIntExtra(
                             WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
-                    LaunchMetrics.recordHomeScreenLaunchIntoTab(url, shortcutSource);
                     if (fromAppWidget && url.startsWith(UrlConstants.CHROME_DINO_URL)) {
                         RecordUserAction.record("QuickActionSearchWidget.StartDinoGame");
                     }
@@ -1388,17 +1338,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         super.performPreInflationStartup();
 
-        // Decide whether to record startup UMA histograms. This is done  early in the main
-        // Activity.onCreate() to avoid recording navigation delays when they require user input to
-        // proceed. For example, FRE (First Run Experience) happens before the activity is created,
-        // and triggers initialization of the native library.
-        //
-        // An uninitialized native library is an indication of an application start that is followed
-        // by navigation immediately without user input.
-        if (!LibraryLoader.getInstance().isInitialized()) {
-            setTrackColdStartupMetrics(true);
-        }
-
         supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
 
         IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
@@ -1439,7 +1378,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
         TabUsageTracker.initialize(this.getLifecycleDispatcher(), tabModelSelector);
 
-        assert getActivityTabStartupMetricsTracker() != null;
         boolean shouldShowOverviewPageOnStart = shouldShowOverviewPageOnStart();
         if (shouldShowOverviewPageOnStart) {
             StartSurfaceUserData.getInstance().setUnusedTabRestoredAtStartup(true);
@@ -1449,7 +1387,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     getWindowAndroid(), getOnCreateTimestampMs(), getBrowserControlsManager(),
                     getTabModelSelector(), shouldShowOverviewPageOnStart);
             mStartupPaintPreviewHelperSupplier.set(paintPreviewHelper);
-            getActivityTabStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
         }
     }
 
@@ -2005,12 +1942,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIndexForWindow(this));
         Boolean is_incognito = getCurrentTabModel().isIncognito();
         outState.putBoolean(IS_INCOGNITO_SELECTED, is_incognito);
-        // If it's Incognito and native is initialized and profile exists, serialize duration
-        // service state.
-        if (is_incognito && ProfileManager.isInitialized()) {
-            AndroidSessionDurationsServiceState.serializeFromNative(
-                    outState, getCurrentTabModel().getProfile());
-        }
     }
 
     @Override

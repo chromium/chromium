@@ -89,8 +89,7 @@ void AutofillProgressDialogViewAndroid::ShowDialog() {
       env, java_object_, ConvertUTF16ToJavaString(env, controller_->GetTitle()),
       ConvertUTF16ToJavaString(env, controller_->GetLoadingMessage()),
       ConvertUTF16ToJavaString(env, controller_->GetCancelButtonLabel()),
-      ResourceMapper::MapToJavaDrawableId(
-          IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER));
+      ResourceMapper::MapToJavaDrawableId(0));
 }
 
 void AutofillProgressDialogViewAndroid::ShowConfirmation(

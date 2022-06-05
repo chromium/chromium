@@ -29,7 +29,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -180,8 +179,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             boolean isDynamicColorAvailable = DynamicColors.isDynamicColorAvailable();
             RecordHistogram.recordBooleanHistogram(
                     "Android.DynamicColors.IsAvailable", isDynamicColorAvailable);
-            UmaSessionStats.registerSyntheticFieldTrial(
-                    "IsDynamicColorAvailable", isDynamicColorAvailable ? "Enabled" : "Disabled");
         });
 
         // Try to enable browser overscroll when content overscroll is enabled for consistency. This

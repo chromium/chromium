@@ -25,7 +25,6 @@ import android.view.Display.Mode;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -113,9 +112,6 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentFact
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.media.PictureInPictureController;
-import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
-import org.chromium.chrome.browser.metrics.LaunchMetrics;
-import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
@@ -234,7 +230,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             new ObservableSupplierImpl<>();
     private TabContentManager mTabContentManager;
 
-    private UmaSessionStats mUmaSessionStats;
     private ContextReporter mContextReporter;
 
     private boolean mPartnerBrowserRefreshNeeded;
@@ -272,8 +267,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /** Whether or not a PolicyChangeListener was added. */
     private boolean mDidAddPolicyChangeListener;
-
-    private ActivityTabStartupMetricsTracker mActivityTabStartupMetricsTracker;
 
     /** A means of providing the foreground tab of the activity to different features. */
     private ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
@@ -438,7 +431,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         getWindowAndroid(), mCompositorViewHolderSupplier, this,
                         this::getCurrentTabCreator, this::isCustomTab,
                         ScreenOrientationProvider.getInstance(), this::getNotificationManagerProxy,
-                        getTabContentManagerSupplier(), this::getActivityTabStartupMetricsTracker,
+                        getTabContentManagerSupplier(),
                         /* CompositorViewHolder.Initializer */ this,
                         /* ChromeActivityNativeDelegate */ this, getModalDialogManagerSupplier(),
                         getBrowserControlsManager(), this::getSavedInstanceState,
@@ -453,7 +446,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         getTabContentManager(), getWindowAndroid(), mCompositorViewHolderSupplier,
                         this, this::getCurrentTabCreator, this::isCustomTab,
                         ScreenOrientationProvider.getInstance(), this::getNotificationManagerProxy,
-                        getTabContentManagerSupplier(), this::getActivityTabStartupMetricsTracker,
+                        getTabContentManagerSupplier(),
                         /* CompositorViewHolder.Initializer */ this,
                         /* ChromeActivityNativeDelegate */ this, getModalDialogManagerSupplier(),
                         getBrowserControlsManager(), this::getSavedInstanceState,
@@ -589,12 +582,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 ChromeActivitySessionTracker.getInstance();
         chromeActivitySessionTracker.registerTabModelSelectorSupplier(
                 this, mTabModelSelectorSupplier);
-        mActivityTabStartupMetricsTracker =
-                new ActivityTabStartupMetricsTracker(mTabModelSelectorSupplier);
-    }
-
-    public ActivityTabStartupMetricsTracker getActivityTabStartupMetricsTracker() {
-        return mActivityTabStartupMetricsTracker;
     }
 
     @Override
@@ -759,8 +746,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected StartupTabPreloader getStartupTabPreloader() {
         if (mStartupTabPreloader == null) {
             mStartupTabPreloader = new StartupTabPreloader(this::getIntent,
-                    getLifecycleDispatcher(), getWindowAndroid(), this, mIntentHandler,
-                    getActivityTabStartupMetricsTracker());
+                    getLifecycleDispatcher(), getWindowAndroid(), this, mIntentHandler);
         }
         return mStartupTabPreloader;
     }
@@ -920,30 +906,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     public void onResumeWithNative() {
-        // TODO(b/182286787): Clean-up once fixed session resume order is verified.
-        final boolean useFixedUmaSessionResumeOrder =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.FIXED_UMA_SESSION_RESUME_ORDER);
-        if (useFixedUmaSessionResumeOrder) {
-            // First, update the activity type in order to have it properly captured in
-            // markSessionResume; stage the activity type value such that it can be picked up when
-            // the new UMA record is opened as a part of the subsequent session resume.
-            //
-            // TODO(b/182286787): Move this inside markSessionResume, plumb through to UMA session
-            // resumption.
-            ChromeSessionState.setActivityType(getActivityType());
-
-            // Close the current UMA record and start a new UMA one.
-            markSessionResume();
-
-            // Inform the actity lifecycle observers. Among other things, the observers record
-            // metrics pertaining to the "resumed" activity. This needs to happens after
-            // markSessionResume has closed the old UMA record, pertaining to the previous
-            // (backgrounded) activity, and opened a new one pertaining to the "resumed" activity.
-            super.onResumeWithNative();
-        } else {
-            super.onResumeWithNative();
-            markSessionResume();
-        }
+        super.onResumeWithNative();
 
         // Resume the ChromeActivity...
 
@@ -953,15 +916,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         Tab tab = getActivityTab();
         if (tab != null) {
             WebContents webContents = tab.getWebContents();
-            LaunchMetrics.commitLaunchMetrics(webContents);
 
             // For picture-in-picture mode / auto-darken web contents.
             if (webContents != null) webContents.notifyRendererPreferenceUpdate();
-        }
-
-        // TODO(b/182286787): Remove once fixed session resume order is verified.
-        if (!useFixedUmaSessionResumeOrder) {
-            ChromeSessionState.setActivityType(getActivityType());
         }
 
         ChromeSessionState.setIsInMultiWindowMode(
@@ -1302,11 +1259,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mBrowserControlsManagerSupplier.get().destroy();
         }
         mBrowserControlsManagerSupplier.destroy();
-
-        if (mActivityTabStartupMetricsTracker != null) {
-            mActivityTabStartupMetricsTracker.destroy();
-            mActivityTabStartupMetricsTracker = null;
-        }
 
         destroyTabModels();
 
@@ -1862,19 +1814,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // initialized, so do not call here to avoid crashing. See https://crbug.com/797921.
         if (mNativeInitialized) {
             recordMultiWindowModeChanged(isInMultiWindowMode, /* isDeferredStartup= */ false);
-
-            if (!isInMultiWindowMode
-                    && ApplicationStatus.getStateForActivity(this) == ActivityState.RESUMED) {
-                // Start a new UMA session when exiting multi-window mode if the activity is
-                // currently resumed. When entering multi-window Android recents gains focus, so
-                // ChromeActivity will get a call to onPauseWithNative(), ending the current UMA
-                // session. When exiting multi-window, however, if ChromeActivity is resumed it
-                // stays in that state.
-                markSessionEnd();
-                markSessionResume();
-                ChromeSessionState.setIsInMultiWindowMode(
-                        MultiWindowUtils.getInstance().isInMultiWindowMode(this));
-            }
         }
 
         super.onMultiWindowModeChanged(isInMultiWindowMode);
@@ -2007,27 +1946,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return false;
     }
 
-    private void markSessionResume() {
-        // Start new session for UMA.
-        if (mUmaSessionStats == null) {
-            mUmaSessionStats = new UmaSessionStats(this);
-        }
-
-        UmaSessionStats.updateMetricsServiceState();
-        mUmaSessionStats.startNewSession(getTabModelSelector(), getWindowAndroid());
-    }
-
     /**
      * Mark that the UMA session has ended.
      */
     private void markSessionEnd() {
-        if (mUmaSessionStats == null) {
-            // If you hit this assert, please update crbug.com/172653 on how you got there.
-            assert false;
-            return;
-        }
-        // Record session metrics.
-        mUmaSessionStats.logAndEndSession();
+
     }
 
     public final void postDeferredStartupIfNeeded() {

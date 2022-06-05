@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.ui.TabObscuringHandlerSupplier;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.autofill_assistant.AssistantAccessTokenUtil;
 import org.chromium.components.autofill_assistant.AssistantDependencies;
-import org.chromium.components.autofill_assistant.AssistantEditorFactory;
 import org.chromium.components.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.components.autofill_assistant.AssistantProfileImageUtil;
 import org.chromium.components.autofill_assistant.AssistantSettingsUtil;
@@ -127,11 +126,6 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
     public AssistantProfileImageUtil createProfileImageUtilOrNull(
             Context context, @DimenRes int imageSizeRedId) {
         return null;
-    }
-
-    @Override
-    public AssistantEditorFactory createEditorFactory() {
-        return new AssistantEditorFactoryChrome();
     }
 
     @NativeMethods

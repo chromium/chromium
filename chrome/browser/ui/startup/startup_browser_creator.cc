@@ -81,7 +81,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1066,8 +1065,6 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
 
   // If we don't want to launch a new browser window or tab we are done here.
   if (silent_launch) {
-    if (process_startup == chrome::startup::IsProcessStartup::kYes)
-      startup_metric_utils::SetNonBrowserUIDisplayed();
     return true;
   }
 

@@ -21,9 +21,6 @@
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY" file="autofill/cc-generic.png" />
     </else>
   </if>
-  <if expr="is_android">
-    <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER" file="autofill/cc-generic.png" />
-  </if>
 
   <if expr="not is_android and _google_chrome">
     <structure type="chrome_scaled_image" name="IDR_AUTOFILL_MIGRATION_DIALOG_HEADER" file="google_chrome/autofill/migration_header.png" />

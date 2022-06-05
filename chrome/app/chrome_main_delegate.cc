@@ -142,7 +142,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/java_exception_reporter.h"
 #include "base/android/library_loader/library_loader_hooks.h"
-#include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_descriptors.h"
 #include "components/crash/android/pure_java_exception_handler.h"
@@ -480,30 +479,6 @@ void InitLogging(const std::string& process_type) {
 
 void RecordMainStartupMetrics(base::TimeTicks application_start_time) {
   const base::TimeTicks now = base::TimeTicks::Now();
-
-#if BUILDFLAG(IS_WIN)
-  DCHECK(!application_start_time.is_null());
-  startup_metric_utils::RecordApplicationStartTime(application_start_time);
-#elif BUILDFLAG(IS_ANDROID)
-  // On Android the main entry point time is the time when the Java code starts.
-  // This happens before the shared library containing this code is even loaded.
-  // The Java startup code has recorded that time, but the C++ code can't fetch
-  // it from the Java side until it has initialized the JNI. See
-  // ChromeMainDelegateAndroid.
-#else
-  // On other platforms, |application_start_time| == |now| since the application
-  // starts with ChromeMain().
-  startup_metric_utils::RecordApplicationStartTime(now);
-#endif
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  // Record the startup process creation time on supported platforms. On Android
-  // this is recorded in ChromeMainDelegateAndroid.
-  startup_metric_utils::RecordStartupProcessCreationTime(
-      base::Process::Current().CreationTime());
-#endif
-
   startup_metric_utils::RecordChromeMainEntryTime(now);
 }
 
@@ -621,10 +596,6 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
     if (record)
       chrome_content_browser_client_->startup_data()->RecordCoreSystemProfile();
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  UmaSessionStats::OnStartup();
-#endif
 
 #if BUILDFLAG(IS_MAC)
   chrome::CacheChannelInfo();

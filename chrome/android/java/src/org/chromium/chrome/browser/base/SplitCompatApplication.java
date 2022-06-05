@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.crash.ApplicationStatusTracker;
 import org.chromium.chrome.browser.crash.FirebaseConfig;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.components.crash.PureJavaExceptionHandler;
 import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionReporter;
 import org.chromium.components.embedder_support.application.FontPreloadingWorkaround;
@@ -125,7 +124,6 @@ public class SplitCompatApplication extends Application {
                 ContextUtils.getProcessName(), isIsolatedProcess);
 
         if (isBrowserProcess) {
-            UmaUtils.recordMainEntryPointTime();
             performBrowserProcessPreloading(context);
         }
 

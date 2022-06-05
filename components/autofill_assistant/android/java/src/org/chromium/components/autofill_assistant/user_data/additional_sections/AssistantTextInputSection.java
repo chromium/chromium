@@ -236,8 +236,6 @@ public class AssistantTextInputSection implements AssistantAdditionalSection {
     private ViewGroup createInputContainer() {
         LinearLayout inputContainer = new LinearLayout(mContext, null);
         inputContainer.setOrientation(LinearLayout.VERTICAL);
-        inputContainer.setBackgroundColor(
-                mContext.getColor(R.color.payments_section_edit_background));
         return inputContainer;
     }
 }

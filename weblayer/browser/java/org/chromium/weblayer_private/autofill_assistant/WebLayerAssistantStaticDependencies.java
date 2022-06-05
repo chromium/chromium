@@ -16,8 +16,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.autofill_assistant.AssistantAccessTokenUtil;
 import org.chromium.components.autofill_assistant.AssistantDependencies;
-import org.chromium.components.autofill_assistant.AssistantEditorFactory;
-import org.chromium.components.autofill_assistant.AssistantFeedbackUtil;
 import org.chromium.components.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.components.autofill_assistant.AssistantProfileImageUtil;
 import org.chromium.components.autofill_assistant.AssistantSettingsUtil;
@@ -117,15 +115,6 @@ public class WebLayerAssistantStaticDependencies implements AssistantStaticDepen
     public AssistantProfileImageUtil createProfileImageUtilOrNull(
             Context context, @DimenRes int imageSizeRedId) {
         // TODO(b/222671580): Implement
-        return null;
-    }
-
-    @Override
-    @Nullable
-    public AssistantEditorFactory createEditorFactory() {
-        // This factory should not be used in a WebLayer context. All code paths leading to the
-        // use of this factory point to a misconfiguration. For WebLayer, the external editors
-        // should be used.
         return null;
     }
 

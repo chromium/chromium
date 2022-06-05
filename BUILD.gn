@@ -217,7 +217,6 @@ group("gn_all") {
     if (is_android) {
       deps += [
         "//weblayer/browser/android/javatests:weblayer_instrumentation_test_apk",
-        "//weblayer/browser/java:weblayer_junit_tests",
       ]
     }
   }

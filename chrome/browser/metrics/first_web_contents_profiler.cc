@@ -64,16 +64,9 @@ void FirstWebContentsProfiler::RecordFinishReason(
 
 void FirstWebContentsProfiler::RecordNavigationFinished(
     base::TimeTicks navigation_start) {
-  startup_metric_utils::RecordFirstWebContentsMainNavigationStart(
-      navigation_start);
-  startup_metric_utils::RecordFirstWebContentsMainNavigationFinished(
-      base::TimeTicks::Now());
 }
 
 void FirstWebContentsProfiler::RecordFirstNonEmptyPaint() {
-  startup_metric_utils::RecordFirstWebContentsNonEmptyPaint(
-      base::TimeTicks::Now(),
-      web_contents()->GetMainFrame()->GetProcess()->GetLastInitTime());
 }
 
 bool FirstWebContentsProfiler::WasStartupInterrupted() {

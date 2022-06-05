@@ -8,19 +8,10 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.task.PostTask;
-import org.chromium.components.autofill_assistant.AssistantAddressEditorGms;
-import org.chromium.components.autofill_assistant.AssistantContactEditorAccount;
-import org.chromium.components.autofill_assistant.AssistantEditor.AssistantAddressEditor;
-import org.chromium.components.autofill_assistant.AssistantEditor.AssistantContactEditor;
-import org.chromium.components.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
-import org.chromium.components.autofill_assistant.AssistantEditorFactory;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.AddressModel;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.ContactModel;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
-import org.chromium.components.autofill_assistant.AssistantPaymentInstrumentEditorGms;
 import org.chromium.components.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataModel.LoginChoiceModel;
 import org.chromium.components.autofill_assistant.user_data.additional_sections.AssistantAdditionalSection.Delegate;
@@ -64,8 +55,6 @@ class AssistantCollectUserDataBinder
         private final ViewGroup mGenericUserInterfaceContainerAppended;
         private final Object mDividerTag;
         private final Activity mActivity;
-        @Nullable
-        private final AssistantEditorFactory mEditorFactory;
         private final WindowAndroid mWindowAndroid;
 
         public ViewHolder(View rootView, AssistantVerticalExpanderAccordion accordion,
@@ -81,8 +70,7 @@ class AssistantCollectUserDataBinder
                 AssistantDataOriginNotice dataOriginNotice,
                 ViewGroup genericUserInterfaceContainerPrepended,
                 ViewGroup genericUserInterfaceContainerAppended, Object dividerTag,
-                Activity activity, @Nullable AssistantEditorFactory editorFactory,
-                WindowAndroid windowAndroid) {
+                Activity activity, WindowAndroid windowAndroid) {
             mRootView = rootView;
             mPaymentRequestExpanderAccordion = accordion;
             mSectionToSectionPadding = sectionPadding;
@@ -101,7 +89,6 @@ class AssistantCollectUserDataBinder
             mDataOriginNotice = dataOriginNotice;
             mDividerTag = dividerTag;
             mActivity = activity;
-            mEditorFactory = editorFactory;
             mWindowAndroid = windowAndroid;
         }
     }
@@ -347,10 +334,6 @@ class AssistantCollectUserDataBinder
         } else if (propertyKey == AssistantCollectUserDataModel.ACCOUNT_EMAIL) {
             view.mDataOriginNotice.setAccountEmail(
                     model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL));
-            return true;
-        } else if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
-            view.mTermsAsCheckboxSection.useBackgroundlessPrivacyNotice();
-            view.mTermsSection.useBackgroundlessPrivacyNotice();
             return true;
         }
 
@@ -605,7 +588,6 @@ class AssistantCollectUserDataBinder
                 && propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE
                 && propertyKey != AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS
                 && propertyKey != AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES
-                && propertyKey != AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS
                 && propertyKey != AssistantCollectUserDataModel.ACCOUNT_EMAIL
                 && propertyKey != AssistantCollectUserDataModel.ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN
                 && propertyKey
@@ -622,101 +604,16 @@ class AssistantCollectUserDataBinder
             return true;
         }
 
-        if (shouldShowContactDetails(model)) {
-            updateContactEditor(model, view, webContents);
-        }
         updatePhoneNumberEditor(model, view);
-        updateAddressEditor(model, view, webContents);
-        updatePaymentEditor(model, view, webContents);
 
         return true;
     }
 
-    private void updateContactEditor(
-            AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
-        AssistantContactEditor editor = null;
-        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
-            view.mContactDetailsSection.setRequestReloadOnChange(true);
-            editor = new AssistantContactEditorAccount(view.mActivity, view.mWindowAndroid,
-                    model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
-                    model.get(AssistantCollectUserDataModel.REQUEST_EMAIL),
-                    /* requestPhone= */ false);
-        } else {
-            view.mContactDetailsSection.setRequestReloadOnChange(false);
-            // All flows reaching here must have access to Chrome dependent editors. Otherwise the
-            // flow was configured wrongly.
-            assert view.mEditorFactory != null;
-            editor = view.mEditorFactory.createContactEditor(webContents, view.mActivity,
-                    model.get(AssistantCollectUserDataModel.REQUEST_NAME),
-                    model.get(AssistantCollectUserDataModel.REQUEST_PHONE),
-                    model.get(AssistantCollectUserDataModel.REQUEST_EMAIL),
-                    model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES));
-        }
-
-        view.mContactDetailsSection.setEditor(editor);
-    }
-
     private void updatePhoneNumberEditor(AssistantCollectUserDataModel model, ViewHolder view) {
-        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
-            view.mPhoneNumberSection.setRequestReloadOnChange(true);
-            view.mPhoneNumberSection.setEditor(new AssistantContactEditorAccount(view.mActivity,
-                    view.mWindowAndroid, model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
-                    /* requestEmail= */ false, /* requestPhone= */ true));
-        } else {
-            view.mPhoneNumberSection.setRequestReloadOnChange(false);
-            // Separate phone number section is only supposed to be used with backend data, we
-            // do not offer an Autofill editor in this case.
-            view.mPhoneNumberSection.setEditor(null);
-        }
+        view.mPhoneNumberSection.setRequestReloadOnChange(false);
+        // Separate phone number section is only supposed to be used with backend data, we
+        // do not offer an Autofill editor in this case.
+        view.mPhoneNumberSection.setEditor(null);
     }
 
-    private void updateAddressEditor(
-            AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
-        AssistantAddressEditor editor = null;
-        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
-            view.mShippingAddressSection.setRequestReloadOnChange(true);
-            byte[] initializeAddressCollectionParams =
-                    model.get(AssistantCollectUserDataModel.INITIALIZE_ADDRESS_COLLECTION_PARAMS);
-            if (initializeAddressCollectionParams != null
-                    && initializeAddressCollectionParams.length > 0) {
-                editor = new AssistantAddressEditorGms(view.mActivity, view.mWindowAndroid,
-                        model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
-                        initializeAddressCollectionParams);
-            }
-        } else {
-            view.mShippingAddressSection.setRequestReloadOnChange(false);
-            // All flows reaching here must have access to Chrome dependent editors. Otherwise the
-            // flow was configured wrongly.
-            assert view.mEditorFactory != null;
-            editor = view.mEditorFactory.createAddressEditor(webContents, view.mActivity,
-                    model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES));
-        }
-
-        view.mShippingAddressSection.setEditor(editor);
-    }
-
-    private void updatePaymentEditor(
-            AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
-        AssistantPaymentInstrumentEditor editor = null;
-        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
-            view.mPaymentMethodSection.setRequestReloadOnChange(true);
-            byte[] addInstrumentActionToken =
-                    model.get(AssistantCollectUserDataModel.ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN);
-            if (addInstrumentActionToken != null && addInstrumentActionToken.length > 0) {
-                editor = new AssistantPaymentInstrumentEditorGms(view.mActivity,
-                        view.mWindowAndroid, model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
-                        addInstrumentActionToken);
-            }
-        } else {
-            view.mPaymentMethodSection.setRequestReloadOnChange(false);
-            // All flows reaching here must have access to Chrome dependent editors. Otherwise the
-            // flow was configured wrongly.
-            assert view.mEditorFactory != null;
-            editor = view.mEditorFactory.createPaymentInstrumentEditor(webContents, view.mActivity,
-                    model.get(AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS),
-                    model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES));
-        }
-
-        view.mPaymentMethodSection.setEditor(editor);
-    }
 }

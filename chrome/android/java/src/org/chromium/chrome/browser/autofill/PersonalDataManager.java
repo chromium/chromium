@@ -139,13 +139,6 @@ public class PersonalDataManager {
         }
     }
 
-    /**
-     * Autofill address information.
-     * The creation and/or modification of an AutofillProfile is assumed to involve the user (e.g.
-     * data reviewed by the user in the {@link
-     * org.chromium.chrome.browser.autofill.settings.AddressEditor}), therefore all new values gain
-     * {@link VerificationStatus.USER_VERIFIED} status.
-     */
     public static class AutofillProfile {
         private String mGUID;
         private String mOrigin;

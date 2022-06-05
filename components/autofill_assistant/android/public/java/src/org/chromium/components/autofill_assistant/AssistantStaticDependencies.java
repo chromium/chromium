@@ -66,7 +66,4 @@ public interface AssistantStaticDependencies {
     @Nullable
     AssistantProfileImageUtil createProfileImageUtilOrNull(
             Context context, @DimenRes int imageSizeRedId);
-
-    @Nullable
-    AssistantEditorFactory createEditorFactory();
 }

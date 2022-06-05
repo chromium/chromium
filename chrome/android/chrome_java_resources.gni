@@ -498,8 +498,6 @@ chrome_java_resources = [
   "java/res/layout/distilled_page_font_family_spinner.xml",
   "java/res/layout/distilled_page_prefs_view.xml",
   "java/res/layout/divider_line_menu_item.xml",
-  "java/res/layout/editable_option_editor_footer.xml",
-  "java/res/layout/editable_option_editor_icons.xml",
   "java/res/layout/empty_accessory_sheet.xml",
   "java/res/layout/fullscreen_notification.xml",
   "java/res/layout/infobar_control_url_ellipsizer.xml",

@@ -46,8 +46,6 @@ volatile bool g_main_window_startup_interrupted = false;
 
 base::TimeTicks g_process_creation_ticks;
 
-base::TimeTicks g_application_start_ticks;
-
 base::TimeTicks g_chrome_main_entry_ticks;
 
 base::TimeTicks g_message_loop_start_ticks;
@@ -240,21 +238,6 @@ void UmaHistogramWithTemperature(
   }
 }
 
-void UmaHistogramWithTraceAndTemperature(
-    void (*histogram_function)(const std::string& name, base::TimeDelta),
-    const char* histogram_basename,
-    base::TimeTicks begin_ticks,
-    base::TimeTicks end_ticks) {
-  UmaHistogramWithTemperature(histogram_function, histogram_basename,
-                              end_ticks - begin_ticks);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "startup", histogram_basename, TRACE_ID_WITH_SCOPE(histogram_basename, 0),
-      begin_ticks, "Temperature", g_startup_temperature);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "startup", histogram_basename, TRACE_ID_WITH_SCOPE(histogram_basename, 0),
-      end_ticks);
-}
-
 // On Windows, records the number of hard-faults that have occurred in the
 // current chrome.exe process since it was started. This is a nop on other
 // platforms.
@@ -401,9 +384,7 @@ void RecordStartupProcessCreationTime(base::TimeTicks ticks) {
 }
 
 void RecordApplicationStartTime(base::TimeTicks ticks) {
-  DCHECK(g_application_start_ticks.is_null());
-  g_application_start_ticks = ticks;
-  DCHECK(!g_application_start_ticks.is_null());
+
 }
 
 void RecordChromeMainEntryTime(base::TimeTicks ticks) {
@@ -420,7 +401,6 @@ void RecordMessageLoopStartTicks(base::TimeTicks ticks) {
 
 void RecordBrowserMainMessageLoopStart(base::TimeTicks ticks,
                                        bool is_first_run) {
-  DCHECK(!g_application_start_ticks.is_null());
 
   RecordMessageLoopStartTicks(ticks);
 
@@ -429,55 +409,11 @@ void RecordBrowserMainMessageLoopStart(base::TimeTicks ticks,
   // |g_startup_temperature|.
   RecordHardFaultHistogram();
 
-  // Record timing of the browser message-loop start time.
-  if (is_first_run) {
-    UmaHistogramWithTraceAndTemperature(
-        &base::UmaHistogramLongTimes100,
-        "Startup.BrowserMessageLoopStartTime.FirstRun",
-        g_application_start_ticks, ticks);
-  } else {
-    UmaHistogramWithTraceAndTemperature(&base::UmaHistogramLongTimes100,
-                                        "Startup.BrowserMessageLoopStartTime",
-                                        g_application_start_ticks, ticks);
-  }
-
   AddStartupEventsForTelemetry();
-
-  // Record values stored prior to startup temperature evaluation.
-  if (ShouldLogStartupHistogram() &&
-      !g_browser_window_display_ticks.is_null()) {
-    UmaHistogramWithTraceAndTemperature(
-        &base::UmaHistogramLongTimes, "Startup.BrowserWindowDisplay",
-        g_application_start_ticks, g_browser_window_display_ticks);
-  }
-
-  // Process creation to application start. See comment above
-  // RecordApplicationStart().
-  if (!g_process_creation_ticks.is_null()) {
-    UmaHistogramWithTraceAndTemperature(
-        &base::UmaHistogramLongTimes,
-        "Startup.LoadTime.ProcessCreateToApplicationStart",
-        g_process_creation_ticks, g_application_start_ticks);
-
-    // Application start to ChromeMain().
-    DCHECK(!g_chrome_main_entry_ticks.is_null());
-    UmaHistogramWithTraceAndTemperature(
-        &base::UmaHistogramLongTimes,
-        "Startup.LoadTime.ApplicationStartToChromeMain",
-        g_application_start_ticks, g_chrome_main_entry_ticks);
-  }
 }
 
 void RecordBrowserMainLoopFirstIdle(base::TimeTicks ticks) {
-  DCHECK(!g_application_start_ticks.is_null());
-  AssertFirstCallInSession(__LINE__);
 
-  if (!ShouldLogStartupHistogram())
-    return;
-
-  UmaHistogramWithTraceAndTemperature(&base::UmaHistogramLongTimes100,
-                                      "Startup.BrowserMessageLoopFirstIdle",
-                                      g_application_start_ticks, ticks);
 }
 
 void RecordBrowserWindowDisplay(base::TimeTicks ticks) {
@@ -499,15 +435,10 @@ void RecordBrowserWindowDisplay(base::TimeTicks ticks) {
 void RecordFirstWebContentsNonEmptyPaint(
     base::TimeTicks now,
     base::TimeTicks render_process_host_init_time) {
-  DCHECK(!g_application_start_ticks.is_null());
   AssertFirstCallInSession(__LINE__);
 
   if (!ShouldLogStartupHistogram())
     return;
-
-  UmaHistogramWithTraceAndTemperature(&base::UmaHistogramLongTimes100,
-                                      "Startup.FirstWebContents.NonEmptyPaint3",
-                                      g_application_start_ticks, now);
 
   UmaHistogramWithTemperature(
       &base::UmaHistogramLongTimes100,
@@ -521,44 +452,13 @@ void RecordFirstWebContentsNonEmptyPaint(
 }
 
 void RecordFirstWebContentsMainNavigationStart(base::TimeTicks ticks) {
-  DCHECK(!g_application_start_ticks.is_null());
-  AssertFirstCallInSession(__LINE__);
 
-  if (!ShouldLogStartupHistogram())
-    return;
-
-  UmaHistogramWithTraceAndTemperature(
-      &base::UmaHistogramLongTimes100,
-      "Startup.FirstWebContents.MainNavigationStart", g_application_start_ticks,
-      ticks);
 }
 
 void RecordFirstWebContentsMainNavigationFinished(base::TimeTicks ticks) {
-  DCHECK(!g_application_start_ticks.is_null());
-  AssertFirstCallInSession(__LINE__);
-
-  if (!ShouldLogStartupHistogram())
-    return;
-
-  UmaHistogramWithTraceAndTemperature(
-      &base::UmaHistogramLongTimes100,
-      "Startup.FirstWebContents.MainNavigationFinished",
-      g_application_start_ticks, ticks);
 }
 
 void RecordBrowserWindowFirstPaint(base::TimeTicks ticks) {
-  DCHECK(!g_application_start_ticks.is_null());
-
-  static bool is_first_call = true;
-  if (!is_first_call || ticks.is_null())
-    return;
-  is_first_call = false;
-  if (!ShouldLogStartupHistogram())
-    return;
-
-  UmaHistogramWithTraceAndTemperature(&base::UmaHistogramLongTimes100,
-                                      "Startup.BrowserWindow.FirstPaint",
-                                      g_application_start_ticks, ticks);
 }
 
 base::TimeTicks MainEntryPointTicks() {
@@ -568,17 +468,6 @@ base::TimeTicks MainEntryPointTicks() {
 void RecordExternalStartupMetric(const char* histogram_name,
                                  base::TimeTicks completion_ticks,
                                  bool set_non_browser_ui_displayed) {
-  DCHECK(!g_application_start_ticks.is_null());
-
-  if (!ShouldLogStartupHistogram())
-    return;
-
-  UmaHistogramWithTraceAndTemperature(&base::UmaHistogramMediumTimes,
-                                      histogram_name, g_application_start_ticks,
-                                      completion_ticks);
-
-  if (set_non_browser_ui_displayed)
-    SetNonBrowserUIDisplayed();
 }
 
 }  // namespace startup_metric_utils

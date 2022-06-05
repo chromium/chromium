@@ -42,7 +42,6 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     private Tab mTab;
     private StartupPaintPreviewMetrics mMetricsHelper;
     private TabbedPaintPreview mTabbedPaintPreview;
-    private Runnable mOnDismissed;
     private SnackbarManager.SnackbarController mSnackbarController;
     private TabObserver mStartupTabObserver;
     private Callback<Long> mVisibleContentCallback;
@@ -106,12 +105,10 @@ public class StartupPaintPreview implements PlayerManager.Listener {
 
     /**
      * Shows a Paint Preview for the provided tab if it exists. Should only be called once.
-     * @param onDismissed The callback for when the Paint Preview is dismissed.
      */
-    public void show(@Nullable Runnable onDismissed) {
+    public void show() {
         assert mState != State.SHOWING;
 
-        mOnDismissed = onDismissed;
         boolean hasCapture = false;
         if (mState == State.READY) {
             hasCapture = mTabbedPaintPreview.maybeShow(this);
@@ -120,10 +117,6 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         }
 
         if (!hasCapture) {
-            if (mOnDismissed != null) {
-                mOnDismissed.run();
-                mOnDismissed = null;
-            }
             mTab.removeObserver(mStartupTabObserver);
         }
     }
@@ -145,8 +138,6 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     }
 
     private void remove(@ExitCause int exitCause) {
-        if (mOnDismissed != null) mOnDismissed.run();
-        mOnDismissed = null;
         mTab.removeObserver(mStartupTabObserver);
 
         @State

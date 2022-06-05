@@ -26,7 +26,6 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -219,8 +218,6 @@ void MaybeShowInvalidUserDataDirWarningDialog() {
   const base::FilePath& user_data_dir = GetInvalidSpecifiedUserDataDir();
   if (user_data_dir.empty())
     return;
-
-  startup_metric_utils::SetNonBrowserUIDisplayed();
 
   // Ensure the ResourceBundle is initialized for string resource access.
   bool cleanup_resource_bundle = false;

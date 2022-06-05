@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
-import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -73,16 +72,9 @@ public class ServiceTabLauncher {
         WebPlatformNotificationMetrics.getInstance().onNewTabLaunched();
 
         // Open popup window in custom tab.
-        // Note that this is used by PaymentRequestEvent.openWindow().
         if (disposition == WindowOpenDisposition.NEW_POPUP) {
-            WebContents paymentHandlerWebContent =
-                    PaymentRequestService.openPaymentHandlerWindow(url);
-            if (paymentHandlerWebContent != null) {
-                onWebContentsForRequestAvailable(requestId, paymentHandlerWebContent);
-            } else {
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                        () -> onWebContentsForRequestAvailable(requestId, null));
-            }
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                    () -> onWebContentsForRequestAvailable(requestId, null));
             return;
         }
 

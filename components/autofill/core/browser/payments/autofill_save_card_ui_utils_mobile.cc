@@ -10,8 +10,7 @@
 namespace autofill {
 
 int GetSaveCardIconId(bool is_google_pay_branding_enabled) {
-  return is_google_pay_branding_enabled ? IDR_AUTOFILL_GOOGLE_PAY
-                                        : IDR_INFOBAR_AUTOFILL_CC;
+  return IDR_INFOBAR_AUTOFILL_CC;
 }
 
 }  // namespace autofill

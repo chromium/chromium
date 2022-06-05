@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 
 // static
 MacStartupProfiler* MacStartupProfiler::GetInstance() {
@@ -24,16 +23,7 @@ void MacStartupProfiler::Profile(Location location) {
 }
 
 void MacStartupProfiler::RecordMetrics() {
-  const base::TimeTicks main_entry_ticks =
-      startup_metric_utils::MainEntryPointTicks();
-  DCHECK(!main_entry_ticks.is_null());
-  DCHECK(!recorded_metrics_);
-
   recorded_metrics_ = true;
-
-  for (const std::pair<const Location, base::TimeTicks>& entry :
-       profiled_ticks_)
-    RecordHistogram(entry.first, entry.second - main_entry_ticks);
 }
 
 const std::string MacStartupProfiler::HistogramName(Location location) {

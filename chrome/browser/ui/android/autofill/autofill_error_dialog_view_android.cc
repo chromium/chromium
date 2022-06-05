@@ -68,8 +68,7 @@ void AutofillErrorDialogViewAndroid::Show() {
       env, java_object_, ConvertUTF16ToJavaString(env, controller_->GetTitle()),
       ConvertUTF16ToJavaString(env, controller_->GetDescription()),
       ConvertUTF16ToJavaString(env, controller_->GetButtonLabel()),
-      ResourceMapper::MapToJavaDrawableId(
-          IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER));
+      ResourceMapper::MapToJavaDrawableId(0));
 }
 
 }  // namespace autofill

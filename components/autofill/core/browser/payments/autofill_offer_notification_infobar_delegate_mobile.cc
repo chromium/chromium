@@ -57,7 +57,7 @@ void AutofillOfferNotificationInfoBarDelegateMobile::OnOfferDeepLinkClicked(
 }
 
 int AutofillOfferNotificationInfoBarDelegateMobile::GetIconId() const {
-  return IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER;
+  return 0;
 }
 
 std::u16string AutofillOfferNotificationInfoBarDelegateMobile::GetMessageText()

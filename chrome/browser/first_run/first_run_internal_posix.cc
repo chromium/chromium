@@ -14,7 +14,6 @@
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #error "Chrome OS should use first_run_internal_chromeos.cc."
@@ -89,7 +88,6 @@ void DoPostImportPlatformSpecificTasks(Profile* profile) {
     std::move(GetBeforeShowFirstRunDialogHookForTesting()).Run();
 
   ShowFirstRunDialog(profile);
-  startup_metric_utils::SetNonBrowserUIDisplayed();
 }
 
 bool ShowPostInstallEULAIfNeeded(installer::InitialPreferences* install_prefs) {

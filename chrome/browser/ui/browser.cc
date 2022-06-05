@@ -184,7 +184,6 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/user_manager/user_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -1509,8 +1508,6 @@ void Browser::OnWindowDidShow() {
   if (window_has_shown_)
     return;
   window_has_shown_ = true;
-
-  startup_metric_utils::RecordBrowserWindowDisplay(base::TimeTicks::Now());
 
   // Nothing to do for non-tabbed windows.
   if (!is_type_normal())

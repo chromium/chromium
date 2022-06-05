@@ -24,14 +24,12 @@ public interface PrivacyPreferencesManager extends CrashReportingPermissionManag
     void syncUsageAndCrashReportingPrefs();
 
     /**
-     * Sets whether this client is in-sample for usage metrics and crash reporting. See
-     * {@link org.chromium.chrome.browser.metrics.UmaUtils#isClientInMetricsSample} for details.
+     * Sets whether this client is in-sample for usage metrics and crash reporting.
      */
     void setClientInMetricsSample(boolean inSample);
 
     /**
-     * Checks whether this client is in-sample for usage metrics and crash reporting. See
-     * {@link org.chromium.chrome.browser.metrics.UmaUtils#isClientInMetricsSample} for details.
+     * Checks whether this client is in-sample for usage metrics and crash reporting.
      *
      * @returns boolean Whether client is in-sample.
      */

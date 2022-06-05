@@ -41,7 +41,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
@@ -297,9 +296,7 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
 
     metrics::StartupVisibility startup_visibility;
 #if BUILDFLAG(IS_ANDROID)
-    startup_visibility = UmaSessionStats::HasVisibleActivity()
-                             ? metrics::StartupVisibility::kForeground
-                             : metrics::StartupVisibility::kBackground;
+    startup_visibility = metrics::StartupVisibility::kBackground;
     base::UmaHistogramEnumeration("UMA.StartupVisibility", startup_visibility);
 #else
     startup_visibility = metrics::StartupVisibility::kForeground;

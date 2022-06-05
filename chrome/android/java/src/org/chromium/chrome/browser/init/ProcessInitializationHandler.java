@@ -47,18 +47,13 @@ import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProv
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
-import org.chromium.chrome.browser.metrics.LaunchMetrics;
-import org.chromium.chrome.browser.metrics.PackageMetrics;
-import org.chromium.chrome.browser.metrics.WebApkUninstallUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 import org.chromium.chrome.browser.offlinepages.measurements.OfflineMeasurementsBackgroundTask;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
-import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.photo_picker.DecoderService;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -78,7 +73,6 @@ import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
 import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.signin.AccountManagerFacadeImpl;
@@ -301,17 +295,6 @@ public class ProcessInitializationHandler {
 
                 AfterStartupTaskUtils.setStartupComplete();
 
-                PartnerBrowserCustomizations.getInstance().setOnInitializeAsyncFinished(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                String homepageUrl = HomepageManager.getHomepageUri();
-                                LaunchMetrics.recordHomePageLaunchMetrics(
-                                        HomepageManager.isHomepageEnabled(),
-                                        UrlUtilities.isNTPUrl(homepageUrl), homepageUrl);
-                            }
-                        });
-
                 ShareImageFileUtils.clearSharedImages();
 
                 SelectFileDialog.clearCapturedCameraFiles();
@@ -395,7 +378,6 @@ public class ProcessInitializationHandler {
         deferredStartupHandler.addDeferredTask(
                 ChromeApplicationImpl.getComponent()
                         .resolveTwaClearDataDialogRecorder()::makeDeferredRecordings);
-        deferredStartupHandler.addDeferredTask(WebApkUninstallUmaTracker::recordDeferredUma);
 
         deferredStartupHandler.addDeferredTask(
                 () -> IncognitoTabLauncher.updateComponentEnabledState());
@@ -465,8 +447,6 @@ public class ProcessInitializationHandler {
                     // Warm up all web app shared prefs. This must be run after the WebappRegistry
                     // instance is initialized.
                     WebappRegistry.warmUpSharedPrefs();
-
-                    PackageMetrics.recordPackageStats();
                     return null;
                 } finally {
                     TraceEvent.end("ChromeBrowserInitializer.onDeferredStartup.doInBackground");

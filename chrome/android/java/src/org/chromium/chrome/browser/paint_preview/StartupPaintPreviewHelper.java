@@ -14,8 +14,6 @@ import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.browser.metrics.PageLoadMetrics;
-import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.PaintPreviewMetricsObserver;
@@ -24,7 +22,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -151,21 +148,11 @@ public class StartupPaintPreviewHelper {
                 progressSimulatorCallback, progressPreventionCallback);
         startupPaintPreview.setActivityCreationTimestampMs(
                 paintPreviewHelper.mActivityCreationTime);
-        startupPaintPreview.setShouldRecordFirstPaint(
-                () -> UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground());
         startupPaintPreview.setIsOfflinePage(() -> OfflinePageUtils.isOfflinePage(tab));
         for (PaintPreviewMetricsObserver observer : paintPreviewHelper.mMetricsObservers) {
             startupPaintPreview.addMetricsObserver(observer);
         }
-        PageLoadMetrics.Observer observer = new PageLoadMetrics.Observer() {
-            @Override
-            public void onFirstMeaningfulPaint(WebContents webContents, long navigationId,
-                    long navigationStartMicros, long firstMeaningfulPaintMs) {
-                startupPaintPreview.onWebContentsFirstMeaningfulPaint(webContents);
-            }
-        };
-        PageLoadMetrics.addObserver(observer);
-        startupPaintPreview.show(() -> PageLoadMetrics.removeObserver(observer));
+        startupPaintPreview.show();
     }
 
     /**

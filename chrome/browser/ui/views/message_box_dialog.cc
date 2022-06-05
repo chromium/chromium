@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/message_box_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -107,7 +106,6 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
     return ShowSync(parent, title, message, type, yes_text, no_text,
                     checkbox_text);
 
-  startup_metric_utils::SetNonBrowserUIDisplayed();
   if (chrome::internal::g_should_skip_message_box_for_test) {
     std::move(callback).Run(chrome::MESSAGE_BOX_RESULT_YES);
     return chrome::MESSAGE_BOX_RESULT_DEFERRED;

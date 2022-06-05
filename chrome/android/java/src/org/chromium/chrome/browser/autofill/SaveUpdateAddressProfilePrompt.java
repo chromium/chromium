@@ -19,10 +19,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
-import org.chromium.chrome.browser.autofill.settings.AddressEditor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -42,8 +39,6 @@ public class SaveUpdateAddressProfilePrompt {
     private final ModalDialogManager mModalDialogManager;
     private final PropertyModel mDialogModel;
     private final View mDialogView;
-    private final EditorDialog mEditorDialog;
-    private final AddressEditor mAddressEditor;
     private boolean mEditorClosingPending;
 
     /**
@@ -70,17 +65,6 @@ public class SaveUpdateAddressProfilePrompt {
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
         mDialogModel = builder.build();
-
-        mEditorDialog = new EditorDialog(activity, /*deleteRunnable=*/null, browserProfile);
-        mEditorDialog.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);
-        mAddressEditor = new AddressEditor(AddressEditor.Purpose.AUTOFILL_SETTINGS,
-                /*saveToDisk=*/false);
-        mAddressEditor.setEditorDialog(mEditorDialog);
-        AutofillAddress autofillAddress = new AutofillAddress(activity, autofillProfile);
-        mDialogView.findViewById(R.id.edit_button).setOnClickListener(v -> {
-            mAddressEditor.edit(autofillAddress, /*doneCallback=*/this::onEdited,
-                    /*cancelCallback=*/unused -> {});
-        });
     }
 
     /**
@@ -127,8 +111,6 @@ public class SaveUpdateAddressProfilePrompt {
         mDialogModel.set(ModalDialogProperties.TITLE, title);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText);
         mDialogModel.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeButtonText);
-        // The text in the editor should match the text in the dialog.
-        mAddressEditor.setCustomDoneButtonText(positiveButtonText);
     }
 
     /**
@@ -166,15 +148,7 @@ public class SaveUpdateAddressProfilePrompt {
      */
     @CalledByNative
     private void dismiss() {
-        // Do not dismiss the editor if closing is pending to not abort the animation.
-        if (!mEditorClosingPending && mEditorDialog.isShowing()) mEditorDialog.dismiss();
         mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
-    }
-
-    private void onEdited(AutofillAddress autofillAddress) {
-        mEditorClosingPending = true;
-        mController.onUserEdited(autofillAddress.getProfile());
-        mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
     }
 
     private void onDismiss(@DialogDismissalCause int dismissalCause) {

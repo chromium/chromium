@@ -14,11 +14,9 @@
 #include "base/path_service.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/chrome_startup_flags.h"
-#include "chrome/browser/android/metrics/uma_utils.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "components/policy/core/common/android/android_combined_policy_provider.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_main_runner.h"
 
 #if BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
@@ -28,10 +26,6 @@
 
 namespace {
 using safe_browsing::SafeBrowsingApiHandler;
-
-// Whether to use the process start time for startup metrics.
-const base::Feature kUseProcessStartTimeForMetrics{
-    "UseProcessStartTimeForMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace
 
 // ChromeMainDelegateAndroid is created when the library is loaded. It is always
@@ -95,19 +89,6 @@ ChromeMainDelegateAndroid::RunProcess(
   // Also only record the start time the first time round, since this is the
   // start time of the application, and will be same for all requests.
   if (!browser_runner_) {
-    base::TimeTicks process_start_time = chrome::android::GetProcessStartTime();
-    base::TimeTicks application_start_time =
-        chrome::android::GetApplicationStartTime();
-    if (!process_start_time.is_null()) {
-      startup_metric_utils::RecordStartupProcessCreationTime(
-          process_start_time);
-      // TODO(crbug.com/1127482): Perf bots should add support for measuring
-      // Startup.LoadTime.ProcessCreateToApplicationStart, then the
-      // kUseProcessStartTimeForMetrics feature can be removed.
-      if (base::FeatureList::IsEnabled(kUseProcessStartTimeForMetrics))
-        application_start_time = process_start_time;
-    }
-    startup_metric_utils::RecordApplicationStartTime(application_start_time);
     browser_runner_ = content::BrowserMainRunner::Create();
   }
 

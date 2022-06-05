@@ -12,10 +12,8 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.metrics.BrowserServicesTimingMetrics;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
-import org.chromium.chrome.browser.metrics.WebApkUninstallUmaTracker;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.version_info.VersionInfo;
-import org.chromium.components.webapk.lib.common.WebApkConstants;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -104,16 +102,6 @@ public class ClientAppBroadcastReceiver extends BroadcastReceiver {
         if (uid == -1) return;
 
         boolean uninstalled = Intent.ACTION_PACKAGE_FULLY_REMOVED.equals(intent.getAction());
-
-        if (uninstalled && intent.getData() != null) {
-            String packageName = intent.getData().getSchemeSpecificPart();
-            if (packageName != null
-                    && packageName.startsWith(WebApkConstants.WEBAPK_PACKAGE_PREFIX)) {
-                // Native is likely not loaded. Defer recording UMA and UKM till the next browser
-                // launch.
-                WebApkUninstallUmaTracker.deferRecordWebApkUninstalled(packageName);
-            }
-        }
 
         try (BrowserServicesTimingMetrics.TimingMetric unused =
                         BrowserServicesTimingMetrics.getClientAppDataLoadTimingContext()) {
