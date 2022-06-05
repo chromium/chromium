@@ -239,15 +239,7 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
   }
 
   if (menu_type == apps::mojom::MenuType::kShelf) {
-    // TODO(crbug.com/1203992): We cannot use InstanceRegistry with lacros yet,
-    // because InstanceRegistry updates for lacros isn't implemented yet, so we
-    // need to check BrowserAppInstanceRegistry directly. Remove this when
-    // InstanceRegistry updates are implemented.
-    bool app_running =
-        web_app::IsWebAppsCrosapiEnabled()
-            ? proxy_->BrowserAppInstanceRegistry()->IsAppRunning(app_id)
-            : proxy_->InstanceRegistry().ContainsAppId(app_id);
-    if (app_running) {
+    if (proxy_->InstanceRegistry().ContainsAppId(app_id)) {
       apps::AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
                            &menu_items);
     }
