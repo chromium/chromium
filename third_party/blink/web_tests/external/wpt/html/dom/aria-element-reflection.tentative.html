@@ -730,6 +730,54 @@
     }, "Adopting element keeps references.");
   </script>
 
+  <div id="cachingInvariantMain"></div>
+  <div id="cachingInvariantElement1"></div>
+  <div id="cachingInvariantElement2"></div>
+  <div id="cachingInvariantElement3"></div>
+  <div id="cachingInvariantElement4"></div>
+  <div id="cachingInvariantElement5"></div>
+
+  <script>
+    test(function(t) {
+      cachingInvariantMain.ariaControlsElements = [cachingInvariantElement1, cachingInvariantElement2];
+      cachingInvariantMain.ariaDescribedByElements = [cachingInvariantElement3, cachingInvariantElement4];
+      cachingInvariantMain.ariaDetailsElements = [cachingInvariantElement5];
+      cachingInvariantMain.ariaFlowToElements = [cachingInvariantElement1, cachingInvariantElement3];
+      cachingInvariantMain.ariaLabelledByElements = [cachingInvariantElement2, cachingInvariantElement4];
+      cachingInvariantMain.ariaOwnsElements = [cachingInvariantElement1, cachingInvariantElement2, cachingInvariantElement3];
+
+      let ariaControlsElementsArray = cachingInvariantMain.ariaControlsElements;
+      let ariaDescribedByElementsArray = cachingInvariantMain.ariaDescribedByElements;
+      let ariaDetailsElementsArray = cachingInvariantMain.ariaDetailsElements;
+      let ariaFlowToElementsArray = cachingInvariantMain.ariaFlowToElements;
+      let ariaLabelledByElementsArray = cachingInvariantMain.ariaLabelledByElements;
+      let ariaOwnsElementsArray = cachingInvariantMain.ariaOwnsElements;
+
+      assert_equals(ariaControlsElementsArray, cachingInvariantMain.ariaControlsElements, "Caching invariant for ariaControlsElements");
+      assert_equals(ariaDescribedByElementsArray, cachingInvariantMain.ariaDescribedByElements, "Caching invariant for ariaDescribedByElements");
+      assert_equals(ariaDetailsElementsArray, cachingInvariantMain.ariaDetailsElements, "Caching invariant for ariaDetailsElements");
+      assert_equals(ariaFlowToElementsArray, cachingInvariantMain.ariaFlowToElements, "Caching invariant for ariaFlowToElements");
+      assert_equals(ariaLabelledByElementsArray, cachingInvariantMain.ariaLabelledByElements, "Caching invariant for ariaLabelledByElements");
+      assert_equals(ariaOwnsElementsArray, cachingInvariantMain.ariaOwnsElements, "Caching invariant for ariaOwnsElements");
+    }, "Caching invariant different attributes.");
+  </script>
+
+  <div id="cachingInvariantMain1"></div>
+  <div id="cachingInvariantMain2"></div>
+
+  <script>
+    test(function(t) {
+      cachingInvariantMain1.ariaDescribedByElements = [cachingInvariantElement1, cachingInvariantElement2];
+      cachingInvariantMain2.ariaDescribedByElements = [cachingInvariantElement3, cachingInvariantElement4];
+
+      let ariaDescribedByElementsArray1 = cachingInvariantMain1.ariaDescribedByElements;
+      let ariaDescribedByElementsArray2 = cachingInvariantMain2.ariaDescribedByElements;
+
+      assert_equals(ariaDescribedByElementsArray1, cachingInvariantMain1.ariaDescribedByElements, "Caching invariant for ariaDescribedByElements in one elemnt");
+      assert_equals(ariaDescribedByElementsArray2, cachingInvariantMain2.ariaDescribedByElements, "Caching invariant for ariaDescribedByElements in onother elemnt");
+    }, "Caching invariant different elements.");
+  </script>
+
   <!-- TODO(chrishall): add additional GC test covering:
        if an element is in an invalid scope but attached to the document, it's
        not GC'd;
