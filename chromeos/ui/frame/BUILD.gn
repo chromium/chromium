@@ -45,6 +45,8 @@ source_set("frame") {
     "immersive/immersive_revealed_lock.h",
     "interior_resize_handler_targeter.cc",
     "interior_resize_handler_targeter.h",
+    "multitask_menu/multitask_menu.cc",
+    "multitask_menu/multitask_menu.h",
   ]
 
   deps = [

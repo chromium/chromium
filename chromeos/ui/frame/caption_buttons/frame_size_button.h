@@ -10,9 +10,12 @@
 #include "base/component_export.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "ui/views/window/frame_caption_button.h"
 
 namespace chromeos {
+
+class MultitaskMenu;
 
 // The maximize/restore button.
 // When the mouse is pressed over the size button or the size button is touched:
@@ -97,6 +100,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   int set_buttons_to_snap_mode_delay_ms_;
 
   base::OneShotTimer set_buttons_to_snap_mode_timer_;
+
+  std::unique_ptr<MultitaskMenu> multitask_menu_;
 
   // Whether the buttons adjacent to the size button snap the window left and
   // right.
