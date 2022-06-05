@@ -39,7 +39,6 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCheckboxId);
 
 }  // namespace
 
-// }
 // static
 void ShowBlockedActionDialogView(Browser* browser,
                                  const extensions::ExtensionId& extension_id,
