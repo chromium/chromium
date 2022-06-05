@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -732,10 +733,9 @@ TEST_F(MediaDevicesTest, ProduceCropIdUnsupportedOnAndroid) {
   )HTML");
 
   Document& document = GetDocument();
-  auto div = V8UnionHTMLDivElementOrHTMLIFrameElement(
-      reinterpret_cast<HTMLDivElement*>(document.getElementById("test-div")));
+  Element* const div = document.getElementById("test-div");
   const ScriptPromise div_promise = media_devices->produceCropId(
-      scope.GetScriptState(), &div, scope.GetExceptionState());
+      scope.GetScriptState(), div, scope.GetExceptionState());
   platform()->RunUntilIdle();
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(scope.GetExceptionState().HadException());
@@ -757,22 +757,42 @@ TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
   )HTML");
 
   Document& document = GetDocument();
-  auto div = V8UnionHTMLDivElementOrHTMLIFrameElement(
-      reinterpret_cast<HTMLDivElement*>(document.getElementById("test-div")));
+  Element* const div = document.getElementById("test-div");
   const ScriptPromise div_promise = media_devices->produceCropId(
-      scope.GetScriptState(), &div, scope.GetExceptionState());
+      scope.GetScriptState(), div, scope.GetExceptionState());
   platform()->RunUntilIdle();
   EXPECT_FALSE(div_promise.IsEmpty());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  auto iframe = V8UnionHTMLDivElementOrHTMLIFrameElement(
-      reinterpret_cast<HTMLIFrameElement*>(
-          document.getElementById("test-iframe")));
+  Element* const iframe = document.getElementById("test-iframe");
   const ScriptPromise iframe_promise = media_devices->produceCropId(
-      scope.GetScriptState(), &iframe, scope.GetExceptionState());
+      scope.GetScriptState(), iframe, scope.GetExceptionState());
   platform()->RunUntilIdle();
   EXPECT_FALSE(iframe_promise.IsEmpty());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
+TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfUnsupportedElementType) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
+  ASSERT_TRUE(media_devices);
+
+  // At the moment, buttons are unsupported by Region Capture.
+  SetBodyContent(R"HTML(
+    <button id='test-button'>Click!</button>
+  )HTML");
+
+  Document& document = GetDocument();
+  Element* const button = document.getElementById("test-button");
+  const ScriptPromise button_promise = media_devices->produceCropId(
+      scope.GetScriptState(), button, scope.GetExceptionState());
+  platform()->RunUntilIdle();
+  EXPECT_TRUE(button_promise.IsEmpty());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kNotSupportedError);
+  EXPECT_EQ(scope.GetExceptionState().Message(),
+            String("Support for this subtype is not yet implemented."));
 }
 
 TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfDifferentWindow) {
@@ -787,10 +807,9 @@ TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfDifferentWindow) {
   )HTML");
 
   Document& document = GetDocument();
-  auto element = V8UnionHTMLDivElementOrHTMLIFrameElement(
-      reinterpret_cast<HTMLDivElement*>(document.getElementById("test-div")));
+  Element* const div = document.getElementById("test-div");
   const ScriptPromise element_promise = media_devices->produceCropId(
-      scope.GetScriptState(), &element, scope.GetExceptionState());
+      scope.GetScriptState(), div, scope.GetExceptionState());
   platform()->RunUntilIdle();
   EXPECT_TRUE(element_promise.IsEmpty());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
@@ -813,10 +832,9 @@ TEST_F(MediaDevicesTest, ProduceCropIdDuplicate) {
   )HTML");
 
   Document& document = GetDocument();
-  auto div = V8UnionHTMLDivElementOrHTMLIFrameElement(
-      reinterpret_cast<HTMLDivElement*>(document.getElementById("test-div")));
+  Element* const div = document.getElementById("test-div");
   const ScriptPromise first_promise = media_devices->produceCropId(
-      scope.GetScriptState(), &div, scope.GetExceptionState());
+      scope.GetScriptState(), div, scope.GetExceptionState());
   ScriptPromiseTester first_tester(scope.GetScriptState(), first_promise);
   first_tester.WaitUntilSettled();
   EXPECT_TRUE(first_tester.IsFulfilled());
@@ -824,7 +842,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdDuplicate) {
 
   // The second call to |produceCropId| should return the same ID.
   const ScriptPromise second_promise = media_devices->produceCropId(
-      scope.GetScriptState(), &div, scope.GetExceptionState());
+      scope.GetScriptState(), div, scope.GetExceptionState());
   ScriptPromiseTester second_tester(scope.GetScriptState(), second_promise);
   second_tester.WaitUntilSettled();
   EXPECT_TRUE(second_tester.IsFulfilled());
@@ -846,12 +864,11 @@ TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
   )HTML");
 
   Document& document = GetDocument();
-  auto div = V8UnionHTMLDivElementOrHTMLIFrameElement(
-      reinterpret_cast<HTMLDivElement*>(document.getElementById("test-div")));
+  Element* const div = document.getElementById("test-div");
   dispatcher_host().SetNextCropId(
       String(base::GUID::GenerateRandomV4().AsLowercaseString()));
   const ScriptPromise promise = media_devices->produceCropId(
-      scope.GetScriptState(), &div, scope.GetExceptionState());
+      scope.GetScriptState(), div, scope.GetExceptionState());
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());

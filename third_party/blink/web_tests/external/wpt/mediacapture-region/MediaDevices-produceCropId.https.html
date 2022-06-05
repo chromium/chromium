@@ -56,9 +56,9 @@
     }, "rejects an invalid element with a TypeError");
 
     promise_test(function (t) {
-      return promise_rejects_js(t, TypeError,
+      return promise_rejects_dom(t, "NotSupportedError",
         navigator.mediaDevices.produceCropId(document.getElementById("test-a")));
-    }, "rejects an incorrectly typed element with a TypeError");
+    }, "rejects an incorrectly typed element with a NotSupportedError");
 
     promise_test(async () => {
       const div_id = await navigator.mediaDevices.produceCropId(

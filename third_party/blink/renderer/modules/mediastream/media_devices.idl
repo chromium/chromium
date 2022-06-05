@@ -49,6 +49,5 @@
     [
       CallWith = ScriptState, RaisesException, MeasureAs = RegionCapture,
       RuntimeEnabled = RegionCapture
-    ] Promise<DOMString>
-    produceCropId((HTMLDivElement or HTMLIFrameElement) target);
+    ] Promise<DOMString> produceCropId(Element target);
 };
