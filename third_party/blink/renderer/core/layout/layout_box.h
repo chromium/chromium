@@ -2093,6 +2093,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // scrolling.
   bool IsFixedToView() const;
 
+  // Returns true if the overflow property should be respected. Otherwise
+  // HasNonVisibleOverflow() will be false and we won't create scrollable area
+  // for this object even if overflow is non-visible.
+  virtual bool RespectsCSSOverflow() const {
+    NOT_DESTROYED();
+    return false;
+  }
+
  protected:
   ~LayoutBox() override;
 

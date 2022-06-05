@@ -943,6 +943,20 @@ void LayoutBox::UpdateFromStyle() {
   SetHasReflection(style_to_use.BoxReflect());
   // LayoutTable and LayoutTableCell will overwrite this flag if needed.
   SetHasNonCollapsedBorderDecoration(style_to_use.HasBorderDecoration());
+
+  bool should_clip_overflow = (!StyleRef().IsOverflowVisibleAlongBothAxes() ||
+                               ShouldApplyPaintContainment()) &&
+                              RespectsCSSOverflow();
+  if (should_clip_overflow != HasNonVisibleOverflow()) {
+    if (GetScrollableArea())
+      GetScrollableArea()->InvalidateAllStickyConstraints();
+    // The overflow clip paint property depends on whether overflow clip is
+    // present so we need to update paint properties if this changes.
+    SetNeedsPaintPropertyUpdate();
+    if (Layer())
+      Layer()->SetNeedsCompositingInputsUpdate();
+  }
+  SetHasNonVisibleOverflow(should_clip_overflow);
 }
 
 void LayoutBox::LayoutSubtreeRoot() {
@@ -7811,9 +7825,18 @@ PhysicalRect LayoutBox::DebugRect() const {
 
 OverflowClipAxes LayoutBox::ComputeOverflowClipAxes() const {
   NOT_DESTROYED();
-  return (ShouldApplyPaintContainment() || HasControlClip())
-             ? kOverflowClipBothAxis
-             : kNoOverflowClip;
+  if (ShouldApplyPaintContainment() || HasControlClip())
+    return kOverflowClipBothAxis;
+
+  if (!RespectsCSSOverflow() || !HasNonVisibleOverflow())
+    return kNoOverflowClip;
+
+  if (IsScrollContainer())
+    return kOverflowClipBothAxis;
+  return (StyleRef().OverflowX() == EOverflow::kVisible ? kNoOverflowClip
+                                                        : kOverflowClipX) |
+         (StyleRef().OverflowY() == EOverflow::kVisible ? kNoOverflowClip
+                                                        : kOverflowClipY);
 }
 
 void LayoutBox::MutableForPainting::SavePreviousOverflowData() {

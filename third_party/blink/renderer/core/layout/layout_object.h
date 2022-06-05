@@ -1737,6 +1737,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     // Always check HasNonVisibleOverflow() in case the object is not allowed to
     // have non-visible overflow.
+#if DCHECK_IS_ON()
+    const auto* element = DynamicTo<Element>(GetNode());
+    DCHECK(!element || !element->IsReplacedElementRespectingCSSOverflow() ||
+           !StyleRef().IsScrollContainer())
+        << "Replaced elements forbid scrolling " << element;
+#endif
     return HasNonVisibleOverflow() && StyleRef().IsScrollContainer();
   }
 

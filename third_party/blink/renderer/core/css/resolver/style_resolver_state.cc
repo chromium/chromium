@@ -231,6 +231,11 @@ Element* StyleResolverState::GetAnimatingElement() const {
   return pseudo_element_;
 }
 
+PseudoElement* StyleResolverState::GetPseudoElement() const {
+  return element_type_ == ElementType::kPseudoElement ? pseudo_element_
+                                                      : nullptr;
+}
+
 const CSSValue& StyleResolverState::ResolveLightDarkPair(
     const CSSValue& value) {
   if (const auto* pair = DynamicTo<CSSLightDarkValuePair>(value)) {

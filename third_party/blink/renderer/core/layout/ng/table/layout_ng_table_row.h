@@ -71,7 +71,7 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGBlock,
     return false;
   }
 
-  bool AllowsNonVisibleOverflow() const override {
+  bool RespectsCSSOverflow() const override {
     NOT_DESTROYED();
     return false;
   }

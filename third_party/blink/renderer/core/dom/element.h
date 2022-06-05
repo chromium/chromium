@@ -1145,6 +1145,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // TODO(crbug.com/1332641): Remove this after adding support for all subtypes.
   virtual bool IsSupportedByRegionCapture() const { return false; }
 
+  bool IsReplacedElementRespectingCSSOverflow() const;
+
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();

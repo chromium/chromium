@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/layout_table_section.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
@@ -56,6 +57,7 @@
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/svg_root_painter.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
@@ -1847,6 +1849,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
   }
 }
 
+// The clipping behaviour for replaced elements is defined by overflow,
+// overflow-clip-margin and paint containment. See resolution at:
+// https://github.com/w3c/csswg-drafts/issues/7144#issuecomment-1090933632
+static bool ReplacedElementAlwaysClipsToContentBox(
+    const LayoutReplaced& replaced) {
+  return !replaced.RespectsCSSOverflow();
+}
+
 // TODO(wangxianzhu): Combine the logic by overriding LayoutBox::
 // ComputeOverflowClipAxes() in LayoutReplaced and subclasses and remove
 // this function.
@@ -1874,8 +1884,10 @@ static bool NeedsOverflowClipForReplacedContents(
 }
 
 static bool NeedsOverflowClip(const LayoutObject& object) {
-  if (const auto* replaced = DynamicTo<LayoutReplaced>(object))
-    return NeedsOverflowClipForReplacedContents(*replaced);
+  if (const auto* replaced = DynamicTo<LayoutReplaced>(object)) {
+    if (ReplacedElementAlwaysClipsToContentBox(*replaced))
+      return NeedsOverflowClipForReplacedContents(*replaced);
+  }
 
   if (object.IsSVGViewportContainer() &&
       SVGLayoutSupport::IsOverflowHidden(object))
@@ -1952,12 +1964,16 @@ bool FragmentPaintPropertyTreeBuilder::NeedsOverflowControlsClip() const {
 }
 
 static bool NeedsInnerBorderRadiusClip(const LayoutObject& object) {
-  // Replaced elements don't have scrollbars thus needs no separate clip
-  // for the padding box (InnerBorderRadiusClip) and the client box (padding
-  // box minus scrollbar, OverflowClip).
-  // Furthermore, replaced elements clip to the content box instead,
-  if (object.IsLayoutReplaced())
+  // If a replaced element always clips to its content box then the border
+  // radius clip is applied by OverflowClip node. So we don't need to create an
+  // additional clip node for the border radius.
+  // If the replaced element respects `overflow` property and can have visible
+  // overflow, we use a separate node for the border-radius. This is consistent
+  // with other elements which respect `overflow`.
+  if (object.IsLayoutReplaced() &&
+      ReplacedElementAlwaysClipsToContentBox(To<LayoutReplaced>(object))) {
     return false;
+  }
 
   return object.StyleRef().HasBorderRadius() && object.IsBox() &&
          NeedsOverflowClip(object);
@@ -2076,7 +2092,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
       ClipPaintPropertyNode::State state(context_.current.transform,
                                          gfx::RectF(), FloatRoundedRect());
 
-      if (object_.IsLayoutReplaced()) {
+      if (object_.IsLayoutReplaced() &&
+          ReplacedElementAlwaysClipsToContentBox(To<LayoutReplaced>(object_))) {
         const auto& replaced = To<LayoutReplaced>(object_);
 
         // Videos need to be pre-snapped so that they line up with the

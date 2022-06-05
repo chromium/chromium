@@ -50,7 +50,7 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGBlock,
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
 
-  bool AllowsNonVisibleOverflow() const override {
+  bool RespectsCSSOverflow() const override {
     NOT_DESTROYED();
     return false;
   }

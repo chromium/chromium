@@ -1777,6 +1777,9 @@ crbug.com/1147859 virtual/css-highlight-overlay-painting/* [ Skip ]
 
 crbug.com/1303102 external/wpt/css/css-images/object-view-box* [ Skip ]
 
+crbug.com/1321217 virtual/document-transition/wpt_internal/document-transition/old-content-with-overflow.html [ Skip ]
+crbug.com/1321217 virtual/document-transition/wpt_internal/document-transition/new-content-with-overflow.html [ Skip ]
+
 # only NGHighlightPainter has the ability to paint decorations added by ::target-text
 crbug.com/1223918 wpt_internal/css/css-pseudo/target-text-001.html [ Failure ]
 crbug.com/1223918 virtual/css-highlight-inheritance/wpt_internal/css/css-pseudo/target-text-001.html [ Failure ]

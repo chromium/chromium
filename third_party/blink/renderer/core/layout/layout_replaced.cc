@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/replaced_painter.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
@@ -182,6 +183,19 @@ void LayoutReplaced::RecalcVisualOverflow() {
   ClearVisualOverflow();
   LayoutObject::RecalcVisualOverflow();
   AddVisualEffectOverflow();
+
+  // Replaced elements clip the content to the element's content-box by default.
+  // But if the CSS overflow property is respected, the content may paint
+  // outside the element's bounds as ink overflow (with overflow:visible for
+  // example). So we add |ReplacedContentRect()|, which provides the element's
+  // painting rectangle relative to it's bounding box in its visual overflow if
+  // the overflow property is respected.
+  // Note that |overflow_| is meant to track the maximum potential ink overflow.
+  // The actual painted overflow (based on the values for overflow,
+  // overflow-clip-margin and paint containment) is computed in
+  // LayoutBox::VisualOverflowRect.
+  if (RespectsCSSOverflow())
+    AddContentsVisualOverflow(ReplacedContentRect());
 }
 
 void LayoutReplaced::ComputeIntrinsicSizingInfoForReplacedContent(
@@ -1214,6 +1228,11 @@ PhysicalRect LayoutReplaced::LocalSelectionVisualRect() const {
   }
   return PhysicalRect(new_logical_top, LayoutUnit(), root.SelectionHeight(),
                       Size().Height());
+}
+
+bool LayoutReplaced::RespectsCSSOverflow() const {
+  const Element* element = DynamicTo<Element>(GetNode());
+  return element && element->IsReplacedElementRespectingCSSOverflow();
 }
 
 }  // namespace blink

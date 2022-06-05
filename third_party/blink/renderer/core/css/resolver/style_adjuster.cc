@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -521,7 +522,14 @@ void StyleAdjuster::AdjustOverflow(ComputedStyle& style, Element* element) {
   DCHECK(style.OverflowX() != EOverflow::kVisible ||
          style.OverflowY() != EOverflow::kVisible);
 
-  if (style.IsDisplayTableBox()) {
+  if (element && element->IsReplacedElementRespectingCSSOverflow()) {
+    // Replaced elements support only 2 overflow configs: visible and clip. All
+    // values other than visible map to clip.
+    if (style.OverflowX() != EOverflow::kVisible)
+      style.SetOverflowX(EOverflow::kClip);
+    if (style.OverflowY() != EOverflow::kVisible)
+      style.SetOverflowY(EOverflow::kClip);
+  } else if (style.IsDisplayTableBox()) {
     // Tables only support overflow:hidden and overflow:visible and ignore
     // anything else, see https://drafts.csswg.org/css2/visufx.html#overflow. As
     // a table is not a block container box the rules for resolving conflicting
@@ -554,8 +562,10 @@ void StyleAdjuster::AdjustOverflow(ComputedStyle& style, Element* element) {
     else if (style.OverflowY() == EOverflow::kClip)
       style.SetOverflowY(EOverflow::kHidden);
   }
-  if (element && (style.OverflowX() == EOverflow::kClip ||
-                  style.OverflowY() == EOverflow::kClip)) {
+
+  if (element && !element->IsPseudoElement() &&
+      (style.OverflowX() == EOverflow::kClip ||
+       style.OverflowY() == EOverflow::kClip)) {
     UseCounter::Count(element->GetDocument(),
                       WebFeature::kOverflowClipAlongEitherAxis);
   }
@@ -837,7 +847,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   if (style.OverflowX() != EOverflow::kVisible ||
       style.OverflowY() != EOverflow::kVisible)
-    AdjustOverflow(style, element);
+    AdjustOverflow(style, element ? element : state.GetPseudoElement());
 
   // Highlight pseudos propagate decorations with inheritance only.
   if (StopPropagateTextDecorations(style, element) || state.IsForHighlight())

@@ -118,6 +118,10 @@ class CORE_EXPORT StyleResolverState {
 
   Element* GetAnimatingElement() const;
 
+  // Returns the pseudo element if the style resolution is targeting a pseudo
+  // element, null otherwise.
+  PseudoElement* GetPseudoElement() const;
+
   void SetParentStyle(scoped_refptr<const ComputedStyle>);
   const ComputedStyle* ParentStyle() const { return parent_style_.get(); }
 

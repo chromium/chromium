@@ -121,6 +121,8 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // CSS properties like 'zoom' or 'image-orientation'.
   virtual void IntrinsicSizeChanged();
 
+  bool RespectsCSSOverflow() const override;
+
  protected:
   virtual bool CanApplyObjectViewBox() const {
     NOT_DESTROYED();

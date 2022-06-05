@@ -8393,4 +8393,17 @@ bool Element::IsDocumentElement() const {
   return this == GetDocument().documentElement();
 }
 
+bool Element::IsReplacedElementRespectingCSSOverflow() const {
+  // TODO(khushalsagar): Add the following elements:
+  // 1) SVGElement
+  // 2) HTMLFrameOwnerElement
+  // 3) HTMLImageElement
+  // 4) HTMLVideoElement
+  // 5) HTMLCanvasElement
+  // See https://github.com/w3c/csswg-drafts/issues/7144 for details on enabling
+  // ink overflow for replaced elements.
+  return GetPseudoId() == kPseudoIdPageTransitionIncomingImage ||
+         GetPseudoId() == kPseudoIdPageTransitionOutgoingImage;
+}
+
 }  // namespace blink

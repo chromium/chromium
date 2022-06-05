@@ -295,24 +295,7 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
   }
 }
 
-void LayoutBlock::UpdateFromStyle() {
-  NOT_DESTROYED();
-  LayoutBox::UpdateFromStyle();
-
-  bool should_clip_overflow = (!StyleRef().IsOverflowVisibleAlongBothAxes() ||
-                               ShouldApplyPaintContainment()) &&
-                              AllowsNonVisibleOverflow();
-  if (should_clip_overflow != HasNonVisibleOverflow()) {
-    if (GetScrollableArea())
-      GetScrollableArea()->InvalidateAllStickyConstraints();
-    // The overflow clip paint property depends on whether overflow clip is
-    // present so we need to update paint properties if this changes.
-    SetNeedsPaintPropertyUpdate();
-  }
-  SetHasNonVisibleOverflow(should_clip_overflow);
-}
-
-bool LayoutBlock::AllowsNonVisibleOverflow() const {
+bool LayoutBlock::RespectsCSSOverflow() const {
   NOT_DESTROYED();
   // If overflow has been propagated to the viewport, it has no effect here.
   return GetNode() != GetDocument().ViewportDefiningElement();
@@ -533,21 +516,6 @@ void LayoutBlock::AddLayoutOverflowFromChildren() {
     To<LayoutBlockFlow>(this)->AddLayoutOverflowFromInlineChildren();
   else
     AddLayoutOverflowFromBlockChildren();
-}
-
-OverflowClipAxes LayoutBlock::ComputeOverflowClipAxes() const {
-  const OverflowClipAxes layout_box_clip_axes =
-      LayoutBox::ComputeOverflowClipAxes();
-  if (layout_box_clip_axes != kNoOverflowClip)
-    return layout_box_clip_axes;
-  if (!HasNonVisibleOverflow())
-    return kNoOverflowClip;
-  if (IsScrollContainer())
-    return kOverflowClipBothAxis;
-  return (StyleRef().OverflowX() == EOverflow::kVisible ? kNoOverflowClip
-                                                        : kOverflowClipX) |
-         (StyleRef().OverflowY() == EOverflow::kVisible ? kNoOverflowClip
-                                                        : kOverflowClipY);
 }
 
 void LayoutBlock::ComputeVisualOverflow(bool) {
