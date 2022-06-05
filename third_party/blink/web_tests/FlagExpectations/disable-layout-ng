@@ -921,6 +921,7 @@ crbug.com/591099 external/wpt/css/css-writing-modes/vertical-alignment-009.xht [
 
 ### external/wpt/css/cssom-view/
 crbug.com/997705 external/wpt/css/cssom-view/getBoundingClientRect-empty-inline.html [ Failure ]
+crbug.com/638177 external/wpt/css/cssom-view/offsetParent-block-in-inline.html [ Failure ]
 crbug.com/953479 external/wpt/css/cssom-view/offsetTopLeft-empty-inline.html [ Failure ]
 crbug.com/953479 external/wpt/css/cssom-view/offsetTopLeft-leading-space-inline.html [ Failure ]
 
