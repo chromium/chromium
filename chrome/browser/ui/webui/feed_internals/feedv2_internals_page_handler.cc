@@ -64,7 +64,8 @@ void FeedV2InternalsPageHandler::GetGeneralProperties(
       offline_pages::prefetch_prefs::IsEnabled(pref_service_);
   properties->is_web_feed_follow_intro_debug_enabled =
       IsWebFeedFollowIntroDebugEnabled();
-  properties->use_feed_query_requests = ShouldUseFeedQueryRequests();
+  properties->use_feed_query_requests_for_web_feeds =
+      ShouldUseFeedQueryRequestsForWebFeeds();
   if (debug_data.fetch_info)
     properties->feed_fetch_url = debug_data.fetch_info->base_request_url;
   if (debug_data.upload_info)
@@ -156,13 +157,13 @@ void FeedV2InternalsPageHandler::SetWebFeedFollowIntroDebugEnabled(
                             enabled);
 }
 
-bool FeedV2InternalsPageHandler::ShouldUseFeedQueryRequests() {
-  return feed::GetFeedConfig().use_feed_query_requests;
+bool FeedV2InternalsPageHandler::ShouldUseFeedQueryRequestsForWebFeeds() {
+  return feed::GetFeedConfig().use_feed_query_requests_for_web_feeds;
 }
 
-void FeedV2InternalsPageHandler::SetUseFeedQueryRequests(
+void FeedV2InternalsPageHandler::SetUseFeedQueryRequestsForWebFeeds(
     const bool use_legacy) {
-  feed::SetUseFeedQueryRequests(use_legacy);
+  feed::SetUseFeedQueryRequestsForWebFeeds(use_legacy);
 }
 
 feed_internals::mojom::FeedOrder

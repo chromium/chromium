@@ -31,8 +31,9 @@ struct Properties {
   // Whether debugging the WebFeed follow intro is enabled.
   bool is_web_feed_follow_intro_debug_enabled;
 
-  // Whether the legacy feed endpoint should be used.
-  bool use_feed_query_requests;
+  // Whether the legacy feed endpoint should be used for Web Feed content
+  // fetches.
+  bool use_feed_query_requests_for_web_feeds;
 
   // Last load stream status, human readable.
   string load_stream_status;
@@ -116,7 +117,7 @@ interface PageHandler {
 
   // Sets whether the legacy feed endpoint should be used for Web Feed content
   // fetches.
-  SetUseFeedQueryRequests(bool use_legacy);
+  SetUseFeedQueryRequestsForWebFeeds(bool use_legacy);
 
   // Sets the Following feed order in local preferences.
   SetFollowingFeedOrder(FeedOrder order);
