@@ -14,7 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"

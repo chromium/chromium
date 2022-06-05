@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "chrome/browser/apps/platform_apps/api/webstore_widget_private/app_installer.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/apps/platform_apps/api/webstore_widget_private.h"
 #include "extensions/browser/extension_function_constants.h"

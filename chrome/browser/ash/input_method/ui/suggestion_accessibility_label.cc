@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/input_method/ui/suggestion_accessibility_label.h"
 
+#include "ui/accessibility/ax_enums.mojom.h"
+
 namespace ui {
 namespace ime {
 
