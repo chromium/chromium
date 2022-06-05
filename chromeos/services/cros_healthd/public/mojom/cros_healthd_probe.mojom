@@ -27,7 +27,7 @@ enum CpuArchitectureEnum {
 // An enumeration of each category of information that cros_healthd can report.
 //
 // NextMinVersion: 1, NextIndex: 20
-[Extensible]
+[Stable, Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 16,
   kBattery = 0,
@@ -58,7 +58,7 @@ enum ProbeCategoryEnum {
 // probing telemetry information.
 //
 // NextMinVersion: 1, NextIndex: 5
-[Extensible]
+[Stable, Extensible]
 enum ErrorType {
   [Default] kUnknown = 4,
   // An error reading a system file.
@@ -74,6 +74,7 @@ enum ErrorType {
 // Structure that contains error information for a telemetry probe.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct ProbeError {
   // The type of error that occurred.
   ErrorType type@0;
@@ -85,7 +86,7 @@ struct ProbeError {
 // An enumeration of states a process can be in.
 //
 // NextMinVersion: 1, NextIndex: 8
-[Extensible]
+[Stable, Extensible]
 enum ProcessState {
   [Default] kUnknown = 7,
   // The process is running.
@@ -106,16 +107,23 @@ enum ProcessState {
 
 // Process probe result. Can either be populated with the ProcessInfo or an
 // error retrieving the information.
+//
+// NextMinVersion: 2, NextIndex: 3
+[Stable, Extensible]
 union ProcessResult {
+  // The required field for backwards compatibility. The unrecognized Mojo
+  // field will deserialize to this field. It should not be used.
+  [MinVersion=1, Default] bool unmapped_field@2;
   // Valid ProcessInfo.
-  ProcessInfo process_info;
+  ProcessInfo process_info@0;
   // The error that occurred attempting to retrieve the ProcessInfo.
-  ProbeError error;
+  ProbeError error@1;
 };
 
 // Information related to a particular process.
 //
 // NextMinVersion: 1, NextIndex: 16
+[Stable]
 struct ProcessInfo {
   // Command which started the process.
   string command@0;
