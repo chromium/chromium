@@ -3763,6 +3763,35 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollWithRoundedRect) {
             rounded_box_properties->OverflowClip()->Parent());
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollWithSubpixelBorder) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        #scroller {
+          width: 200px;
+          height: 201.594px;
+          border: 2.8px solid blue;
+          overflow: scroll;
+        }
+        #content {
+          width: 600px;
+          height: 201.594px;
+        }
+      </style>
+      <div id="scroller">
+        <div id="content"></div>
+      </div>
+    )HTML");
+
+  PaintLayer* paint_layer = GetPaintLayerByElementId("scroller");
+  ASSERT_FALSE(paint_layer->GetScrollableArea()->HasVerticalOverflow());
+
+  // When there is no vertical overflow, the contents height should not be
+  // larger than the container height.
+  const auto* properties = PaintPropertiesForElement("scroller");
+  const auto* scroll = properties->Scroll();
+  EXPECT_EQ(scroll->ContentsRect().height(), scroll->ContainerRect().height());
+}
+
 TEST_P(PaintPropertyTreeBuilderTest, CssClipContentsTreeState) {
   // This test verifies the tree builder correctly computes and records the
   // property tree context for a (pseudo) stacking context that is scrolled by a

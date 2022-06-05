@@ -2288,13 +2288,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       PaintLayerScrollableArea* scrollable_area = box.GetScrollableArea();
       ScrollPaintPropertyNode::State state;
 
-      // The container bounds are snapped to integers to match the equivalent
-      // bounds on cc::ScrollNode. The offset is snapped to match the current
-      // integer offsets used in CompositedLayerMapping.
-      state.container_rect = ToPixelSnappedRect(
-          box.OverflowClipRect(context_.current.paint_offset));
-      state.contents_size = scrollable_area->PixelSnappedContentsSize(
-          context_.current.paint_offset);
+      PhysicalRect clip_rect =
+          box.OverflowClipRect(context_.current.paint_offset);
+      state.container_rect = ToPixelSnappedRect(clip_rect);
+      state.contents_size =
+          scrollable_area->PixelSnappedContentsSize(clip_rect.offset);
 
       state.user_scrollable_horizontal =
           scrollable_area->UserInputScrollable(kHorizontalScrollbar);
