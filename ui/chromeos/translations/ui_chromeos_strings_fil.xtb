@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Walang network</translation>
 <translation id="1060368002126861100">Para makapagbukas ng mga file gamit ang <ph name="APP_NAME" />, ilipat muna ang mga ito sa folder ng mga Windows file.</translation>
 <translation id="1062407476771304334">Palitan</translation>
-<translation id="1119069657431255176">Archive na tar na Bzip2 compressed</translation>
 <translation id="1119447706177454957">Panloob na error</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">English (US) na may Programmer Dvorak keyboard</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">Kapag nag-format ng drive, made-delete ang lahat ng data na naka-store doon. Hindi puwedeng i-undo ang pagkilos na ito.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">Archive na RAR</translation>
-<translation id="2036414735548252477">LZMA compressed tar archive</translation>
 <translation id="2037845485764049925">Russian</translation>
 <translation id="2044023416777079300">Hindi nakarehistro ang modem</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">Invalid na character: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portuguese na may US International PC keyboard</translation>
 <translation id="2198315389084035571">Simplified Chinese</translation>
-<translation id="2208158072373999562">Zip archive</translation>
 <translation id="22085916256174561">Korean</translation>
 <translation id="2208919847696382164">I-install gamit ang Linux</translation>
 <translation id="2225536596944493418">Sigurado ka bang gusto mong i-delete ang <ph name="NUMBER_OF_ITEMS" /> (na) item?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
 <translation id="4880214202172289027">Slider ng volume</translation>
 <translation id="4881695831933465202">Buksan</translation>
-<translation id="4886199584824489598">Bzip2 compressed archive</translation>
 <translation id="4900532980794411603">Ibahagi sa Parallels Desktop</translation>
 <translation id="4902546322522096650">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Kumonekta</translation>
 <translation id="4905417359854579806">Handa nang i-back up ang <ph name="FILE_COUNT" /></translation>
@@ -590,7 +586,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> item</translation>
 <translation id="5957366693331451795">Mga Chromebox</translation>
 <translation id="5982621672636444458">Mga opsyon sa pag-uuri</translation>
-<translation id="5985041959109124139">Z compressed tar archive</translation>
 <translation id="6007237601604674381">Nabigo ang paglipat. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet network</translation>
 <translation id="60357267506638014">Czech QWERTY</translation>
@@ -650,7 +645,6 @@
 <translation id="6509122719576673235">Norwegian</translation>
 <translation id="6528513914570774834">Payagan ang iba pang user ng device na ito na gamitin ang network na ito</translation>
 <translation id="653019979737152879">Sini-sync ang <ph name="FILE_NAME" />...</translation>
-<translation id="6530595303336443929">Zstandard compressed tar archive</translation>
 <translation id="6549689063733911810">Kamakailan</translation>
 <translation id="6558280019477628686">Nagka-error. Maaaring may ilang item na hindi na-delete.</translation>
 <translation id="656398493051028875">Tinatanggal ang "<ph name="FILENAME" />"...</translation>
@@ -675,7 +669,6 @@
 <translation id="6806699711453372963">Pamahalaan ang pagbabahagi ng Linux</translation>
 <translation id="6806796368146926706">Alphanumeric na may Japanese keyboard</translation>
 <translation id="6808193438228982088">Fox</translation>
-<translation id="6820687829547641339">Archive na tar na Gzip compressed</translation>
 <translation id="6823166707458800069">Awtomatikong na-back up online ang lahat ng file na na-save sa folder na ito.</translation>
 <translation id="6825883775269213504">Russian</translation>
 <translation id="6847101934483209767">Inalis ang <ph name="ENTRY_NAME" /> sa pagpipilian.</translation>
@@ -824,7 +817,6 @@
 <translation id="7925686952655276919">Huwag gumamit ng data sa mobile para sa pag-sync</translation>
 <translation id="7928710562641958568">I-eject ang device</translation>
 <translation id="7943385054491506837">US Colemak</translation>
-<translation id="7948417415021769876">7z archive</translation>
 <translation id="7953739707111622108">Hindi mabuksan ang device na ito dahil hindi nakilala ang filesystem nito.</translation>
 <translation id="7969525169268594403">Slovenian</translation>
 <translation id="7972920761225148017">French (Switzerland)</translation>
@@ -866,7 +858,6 @@
 <translation id="8297012244086013755">Hangul 3 Set (Walang Shift)</translation>
 <translation id="8299269255470343364">Japanese</translation>
 <translation id="8300849813060516376">Nabigo ang OTASP</translation>
-<translation id="8308481408797647857">XZ compressed tar archive</translation>
 <translation id="8312871300878166382">I-paste sa loob ng folder</translation>
 <translation id="8329978297633540474">Plain text</translation>
 <translation id="8335587457941836791">I-unpin mula sa shelf</translation>
@@ -888,7 +879,6 @@
 <translation id="8461467696380332069">Mag-right click sa isang file, at piliin ang "I-pin sa shelf" para sa mabilis na pag-access sa iyong mga file sa shelf.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamese VIQR</translation>
-<translation id="8466234950814670489">Archive na Tar</translation>
 <translation id="8475647382427415476">Hindi na-sync ng Google Drive ang "<ph name="FILENAME" />" sa ngayon. Susubukang muli ng Google Drive sa ibang pagkakataon.</translation>
 <translation id="8477649328507734757">Spin</translation>
 <translation id="8484284835977497781">Pumili sa iyong mga kamakailang larawan.</translation>
@@ -977,7 +967,6 @@
 <translation id="943972244133411984">Binago ni</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="947144732524271678">Pumili ng hanay ng <ph name="ENTRY_COUNT" /> (na) entry mula sa <ph name="FROM_ENTRY_NAME" /> hanggang <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">Gzip compressed archive</translation>
 <translation id="965477715979482472">English (South Africa)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Mayroon nang file na may pangalang "<ph name="FILE_NAME" />." Gusto mo ba itong palitan?</translation>

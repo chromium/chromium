@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Aucun réseau</translation>
 <translation id="1060368002126861100">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, déplacez-les d'abord dans le dossier des fichiers Windows.</translation>
 <translation id="1062407476771304334">Remplacer</translation>
-<translation id="1119069657431255176">Archive tar compressée avec bzip2</translation>
 <translation id="1119447706177454957">Erreur interne</translation>
 <translation id="1120073797882051782">Hangûl romaja</translation>
 <translation id="112387589102719461">Anglais (É.-U.) avec clavier Dvorak pour développeurs</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">Le formatage d'un lecteur effacera toutes les données qu'il contient. Cette action est irréversible.</translation>
 <translation id="2025955442973426285">Tigrina</translation>
 <translation id="2028997212275086731">Archive RAR</translation>
-<translation id="2036414735548252477">Archive tar compressée LZMA</translation>
 <translation id="2037845485764049925">Russe</translation>
 <translation id="2044023416777079300">Modem non enregistré</translation>
 <translation id="2046702855113914483">Nouille ramen</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">Caractère incorrect : <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugais avec clavier international américain (PC)</translation>
 <translation id="2198315389084035571">Chinois simplifié</translation>
-<translation id="2208158072373999562">Archive ZIP</translation>
 <translation id="22085916256174561">Coréen</translation>
 <translation id="2208919847696382164">Installer avec Linux</translation>
 <translation id="2225536596944493418">Voulez-vous vraiment supprimer <ph name="NUMBER_OF_ITEMS" /> éléments?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> octets</translation>
 <translation id="4880214202172289027">Curseur de volume</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
-<translation id="4886199584824489598">Archive compressée Bzip2</translation>
 <translation id="4900532980794411603">Partager avec Parallels Desktop</translation>
 <translation id="4902546322522096650">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, connexion</translation>
 <translation id="4905417359854579806">Prêt à sauvegarder <ph name="FILE_COUNT" /></translation>
@@ -591,7 +587,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> éléments</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Options de tri</translation>
-<translation id="5985041959109124139">Archive tar compressée Z</translation>
 <translation id="6007237601604674381">Le déplacement a échoué. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Réseau Ethernet</translation>
 <translation id="60357267506638014">QWERTY tchèque</translation>
@@ -651,7 +646,6 @@
 <translation id="6509122719576673235">Norvégien</translation>
 <translation id="6528513914570774834">Autoriser d'autres utilisateurs de cet appareil à utiliser ce réseau</translation>
 <translation id="653019979737152879">Synchronisation de <ph name="FILE_NAME" /> en cours...</translation>
-<translation id="6530595303336443929">Archive tar compressée Zstandard</translation>
 <translation id="6549689063733911810">Récent</translation>
 <translation id="6558280019477628686">Une erreur s'est produite. Il est possible que certains éléments n'aient pas été supprimés.</translation>
 <translation id="656398493051028875">Suppression de « <ph name="FILENAME" /> » en cours...</translation>
@@ -676,7 +670,6 @@
 <translation id="6806699711453372963">Gérer le partage Linux</translation>
 <translation id="6806796368146926706">Alphanumérique avec clavier japonais</translation>
 <translation id="6808193438228982088">Renard</translation>
-<translation id="6820687829547641339">Archive tar compressée avec gzip</translation>
 <translation id="6823166707458800069">Tous les fichiers enregistrés dans ce dossier sont automatiquement sauvegardés en ligne.</translation>
 <translation id="6825883775269213504">Russe</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> retiré de la sélection.</translation>
@@ -825,7 +818,6 @@
 <translation id="7925686952655276919">Ne pas utiliser les données mobiles pour la synchronisation</translation>
 <translation id="7928710562641958568">Éjecter l'appareil</translation>
 <translation id="7943385054491506837">Colemak américain</translation>
-<translation id="7948417415021769876">Archive 7z</translation>
 <translation id="7953739707111622108">Impossible d'ouvrir cet appareil, car son système de fichiers n'est pas reconnu.</translation>
 <translation id="7969525169268594403">Slovène</translation>
 <translation id="7972920761225148017">Français (Suisse)</translation>
@@ -867,7 +859,6 @@
 <translation id="8297012244086013755">Hangûl sebeol-sik (no-shift)</translation>
 <translation id="8299269255470343364">Japonais</translation>
 <translation id="8300849813060516376">Échec de l'opération OTASP</translation>
-<translation id="8308481408797647857">Archive tar compressée XZ</translation>
 <translation id="8312871300878166382">Coller dans le dossier</translation>
 <translation id="8329978297633540474">Texte brut</translation>
 <translation id="8335587457941836791">Retirer de l'étagère</translation>
@@ -889,7 +880,6 @@
 <translation id="8461467696380332069">Faites un clic droit sur un fichier et sélectionnez « Épingler sur l'étagère » afin d'accéder rapidement à vos fichiers sur l'étagère.</translation>
 <translation id="8461914792118322307">Mandataire</translation>
 <translation id="8463494891489624050">Vietnamien (VIQR)</translation>
-<translation id="8466234950814670489">Archive TAR</translation>
 <translation id="8475647382427415476">Google Disque ne peut pas synchroniser le fichier « <ph name="FILENAME" /> » pour le moment. Google Disque réessayera plus tard.</translation>
 <translation id="8477649328507734757">Cercles concentriques</translation>
 <translation id="8484284835977497781">Choisissez parmi vos photos récentes.</translation>
@@ -978,7 +968,6 @@
 <translation id="943972244133411984">Modifié par</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="947144732524271678">Vous avez sélectionné une plage de <ph name="ENTRY_COUNT" /> entrées, de <ph name="FROM_ENTRY_NAME" /> à <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">Archive compressée Gzip</translation>
 <translation id="965477715979482472">Anglais (Afrique du Sud)</translation>
 <translation id="981121421437150478">Hors ligne</translation>
 <translation id="988685240266037636">Un fichier nommé « <ph name="FILE_NAME" /> » existe déjà. Voulez-vous le remplacer?</translation>

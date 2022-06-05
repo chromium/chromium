@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">துவக்கி</translation>
 <translation id="1512982610995527443">இன்னும் 5 நிமிடங்களில் சாதனம் ஷட் டவுன் ஆகும்</translation>
 <translation id="1522984060396982789">ரிப்பேர் வெற்றிகரமாக நிறைவடைந்தது. நீங்கள் சாதனத்தை ஷட் டவுன் செய்யலாம் அல்லது சில கூடுதல் நடவடிக்கைகளை எடுக்கலாம்.</translation>
+<translation id="1526389707933164996">ஸ்கிரீன் சேவர் அனிமேஷன்</translation>
 <translation id="152892567002884378">ஒலியளவை அதிகரிக்கும்</translation>
 <translation id="1555130319947370107">நீலம்</translation>
 <translation id="155865706765934889">டச்பேட்</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">பெயர்</translation>
 <translation id="3865414814144988605">தெளிவு</translation>
 <translation id="387301095347517405">உங்கள் பேட்டரி முழுமையாகச் சார்ஜ் செய்யப்பட்ட எண்ணிக்கை</translation>
+<translation id="3885327323343477505">ஸ்கிரீன் சேவரை மாற்றும்</translation>
 <translation id="3923184630988645767">டேட்டா உபயோகம்</translation>
 <translation id="3924044641767672375">சரிசெய்யும் செயலாக்கத்தை எளிதாக்க வைஃபையுடன் இணைக்குமாறு பரிந்துரைக்கிறோம். உங்கள் நெட்வொர்க் சேமிக்கப்படும்.</translation>
 <translation id="3932043219784172185">சாதனம் எதுவும் இணைக்கப்படவில்லை</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">புதிய கடவுச்சொல்லை உடனே தேர்ந்தெடுக்கவும்</translation>
 <translation id="4891842000192098784">ஸ்டிரெஸ்</translation>
 <translation id="4897058166682006107">இடதுபக்க இயர்பட் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4905998861748258752">ஸ்கிரீன் சேவர் விருப்பங்களைத் தேர்ந்தெடுக்க அம்சத்தை இயக்கவும்</translation>
 <translation id="4908030561598728899">நிலைபொருளை நிறுவுகிறது...</translation>
 <translation id="4915052247106771211">இது ஆரம்பநிலை அமைப்புகளுக்குச் சாதனத்தை மீட்டமைக்கும் (பவர்வாஷ்).</translation>
 <translation id="4917385247580444890">வலிமையானது</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">சாதனத்தின் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">அதிர்வெண்</translation>
 <translation id="9025198690966128418">தனிப்பட்ட சாதனமாகப் பயன்படுத்து</translation>
+<translation id="9028832514430399253">ஸ்கிரீன் சேவர் விருப்பங்களைத் தேர்ந்தெடுக்க நிலைமாற்றும் பட்டனை இயக்கவும்</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ரெசல்யூஷனில் அதிகளவு தாமதம் ஏற்படுகிறது</translation>
 <translation id="9063121522582193837">சில காம்பனென்ட்டுகளைச் சரிசெய்ய முடியவில்லை</translation>

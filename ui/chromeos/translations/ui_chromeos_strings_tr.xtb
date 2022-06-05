@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Ağ yok</translation>
 <translation id="1060368002126861100">Dosyaları <ph name="APP_NAME" /> ile açmak için önce dosyaları Windows dosyaları klasörüne taşıyın.</translation>
 <translation id="1062407476771304334">Değiştir</translation>
-<translation id="1119069657431255176">Bzip2 sıkıştırılmış tar arşivi</translation>
 <translation id="1119447706177454957">Dahili hata</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Programmer Dvorak klavye ile İngilizce (ABD)</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">Bir sürücünün biçimlendirilmesi, üzerinde depolanan tüm verileri siler. Bu işlem geri alınamaz.</translation>
 <translation id="2025955442973426285">Tigrinya dili</translation>
 <translation id="2028997212275086731">RAR arşivi</translation>
-<translation id="2036414735548252477">LZMA sıkıştırılmış tar arşivi</translation>
 <translation id="2037845485764049925">Rusça</translation>
 <translation id="2044023416777079300">Modem kayıtlı değil</translation>
 <translation id="2046702855113914483">Japon eriştesi</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">Geçersiz karakter: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">ABD Uluslararası PC klavyesi ile Portekizce</translation>
 <translation id="2198315389084035571">Basitleştirilmiş Çince</translation>
-<translation id="2208158072373999562">Zip arşivi</translation>
 <translation id="22085916256174561">Korece</translation>
 <translation id="2208919847696382164">Linux ile yükle</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> öğeyi silmek istediğiniz emin misiniz?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bayt</translation>
 <translation id="4880214202172289027">Ses kaydırma çubuğu</translation>
 <translation id="4881695831933465202">Aç</translation>
-<translation id="4886199584824489598">Bzip2 sıkıştırılmış arşivi</translation>
 <translation id="4900532980794411603">Parallels Desktop ile paylaş</translation>
 <translation id="4902546322522096650">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Bağlan</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> yedeklenmeye hazır</translation>
@@ -590,7 +586,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> öğe</translation>
 <translation id="5957366693331451795">Chromebox'lar</translation>
 <translation id="5982621672636444458">Sıralama seçenekleri</translation>
-<translation id="5985041959109124139">Z sıkıştırılmış tar arşivi</translation>
 <translation id="6007237601604674381">Taşıma başarısız oldu. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet ağı</translation>
 <translation id="60357267506638014">Çekçe QWERTY</translation>
@@ -650,7 +645,6 @@
 <translation id="6509122719576673235">Norveççe</translation>
 <translation id="6528513914570774834">Bu cihazın diğer kullanıcılarının bu ağı kullanmalarına izin verin</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> senkronize ediliyor...</translation>
-<translation id="6530595303336443929">Zstandard sıkıştırılmış tar arşivi</translation>
 <translation id="6549689063733911810">En son</translation>
 <translation id="6558280019477628686">Bir hata oluştu. Bazı öğeler silinmemiş olabilir.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" siliniyor...</translation>
@@ -675,7 +669,6 @@
 <translation id="6806699711453372963">Linux paylaşımını yönet</translation>
 <translation id="6806796368146926706">Alfasayısal giriş (Japonca klavye)</translation>
 <translation id="6808193438228982088">Tilki</translation>
-<translation id="6820687829547641339">Gzip sıkıştırılmış tar arşivi</translation>
 <translation id="6823166707458800069">Bu klasöre kaydedilen tüm dosyalar otomatik olarak web üzerinde yedeklenir.</translation>
 <translation id="6825883775269213504">Rusça</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> seçimden kaldırıldı.</translation>
@@ -824,7 +817,6 @@
 <translation id="7925686952655276919">Senkronizasyon için mobil veri kullanma</translation>
 <translation id="7928710562641958568">Cihazı çıkar</translation>
 <translation id="7943385054491506837">ABD Colemak</translation>
-<translation id="7948417415021769876">7z arşivi</translation>
 <translation id="7953739707111622108">Bu cihaz, dosya sistemi tanınmadığından açılamıyor.</translation>
 <translation id="7969525169268594403">Slovence</translation>
 <translation id="7972920761225148017">Fransızca (İsviçre)</translation>
@@ -866,7 +858,6 @@
 <translation id="8297012244086013755">Hangul 3 Grubu (Üst Karakter Yok)</translation>
 <translation id="8299269255470343364">Japonca</translation>
 <translation id="8300849813060516376">OTASP başarısız oldu</translation>
-<translation id="8308481408797647857">XZ sıkıştırılmış tar arşivi</translation>
 <translation id="8312871300878166382">Klasörünün içine yapıştır</translation>
 <translation id="8329978297633540474">Düz metin</translation>
 <translation id="8335587457941836791">Raftaki sabitlemeyi kaldır</translation>
@@ -888,7 +879,6 @@
 <translation id="8461467696380332069">Raftaki dosyalarınıza hızlı erişim için dosyayı sağ tıklayıp "Rafa sabitle"yi seçin.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamca VIQR</translation>
-<translation id="8466234950814670489">Tar arşivi</translation>
 <translation id="8475647382427415476">Google Drive, "<ph name="FILENAME" />" dosyasını şu anda senkronize edemedi. Google Drive senkronize etme işlemini daha sonra tekrar deneyecek.</translation>
 <translation id="8477649328507734757">Dönme</translation>
 <translation id="8484284835977497781">Son fotoğraflarınızdan seçin.</translation>
@@ -977,7 +967,6 @@
 <translation id="943972244133411984">Değiştiren:</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> - <ph name="TO_ENTRY_NAME" /> arasında <ph name="ENTRY_COUNT" /> giriş seçildi.</translation>
-<translation id="961973045258256291">Gzip sıkıştırılmış arşivi</translation>
 <translation id="965477715979482472">İngilizce (Güney Afrika)</translation>
 <translation id="981121421437150478">Çevrimdışı</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" adlı bir dosya zaten var. Değiştirmek istiyor musunuz?</translation>

@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">ما من شبكات</translation>
 <translation id="1060368002126861100">‏لفتح الملفات باستخدام <ph name="APP_NAME" />، يُرجى نقلها أولاً إلى مجلد ملفات نظام التشغيل Windows.</translation>
 <translation id="1062407476771304334">استبدال</translation>
-<translation id="1119069657431255176">‏أرشيف tar مضغوط ببرنامج Bzip2</translation>
 <translation id="1119447706177454957">خطأ داخلي</translation>
 <translation id="1120073797882051782">الهانغولية روماجا</translation>
 <translation id="112387589102719461">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح المطوّر الأمريكية Dvorak</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">سيؤدي تنسيق محرك أقراص إلى حذف جميع البيانات المخزّنة عليه. لا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="2025955442973426285">التغرينية</translation>
 <translation id="2028997212275086731">‏أرشيف RAR</translation>
-<translation id="2036414735548252477">‏ملف أرشيف tar مضغوط ببرنامج LZMA</translation>
 <translation id="2037845485764049925">الروسية</translation>
 <translation id="2044023416777079300">المودم غير مسجَّل.</translation>
 <translation id="2046702855113914483">رامن</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">حرف غير صالح: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">البرتغالية باستخدام لوحة مفاتيح الكمبيوتر الشخصي الأمريكية الدولية</translation>
 <translation id="2198315389084035571">الصينية المبسطة</translation>
-<translation id="2208158072373999562">‏أرشيف Zip</translation>
 <translation id="22085916256174561">الكورية</translation>
 <translation id="2208919847696382164">‏تثبيت باستخدام نظام التشغيل Linux</translation>
 <translation id="2225536596944493418">هل تريد بالتأكيد حذف <ph name="NUMBER_OF_ITEMS" /> من العناصر؟</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> بايت</translation>
 <translation id="4880214202172289027">شريط تمرير مستوى الصوت</translation>
 <translation id="4881695831933465202">فتح</translation>
-<translation id="4886199584824489598">‏ملف أرشيف مضغوط ببرنامج Bzip2</translation>
 <translation id="4900532980794411603">‏المشاركة مع نظام Parallels Desktop</translation>
 <translation id="4902546322522096650">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، الاتصال</translation>
 <translation id="4905417359854579806">جاهز للاحتفاظ بنسخة احتياطية من <ph name="FILE_COUNT" /></translation>
@@ -591,7 +587,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> من العناصر</translation>
 <translation id="5957366693331451795">‏أجهزة Chromebox</translation>
 <translation id="5982621672636444458">خيارات التصنيف</translation>
-<translation id="5985041959109124139">‏ملف أرشيف tar مضغوط ببرنامج Z</translation>
 <translation id="6007237601604674381">تعذّر النقل. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">شبكة إيثرنت</translation>
 <translation id="60357267506638014">‏تخطيط QWERTY للتشيكية</translation>
@@ -651,7 +646,6 @@
 <translation id="6509122719576673235">النرويجية</translation>
 <translation id="6528513914570774834">السماح للمستخدمين الآخرين لهذا الجهاز باستخدام هذه الشبكة</translation>
 <translation id="653019979737152879">جارٍ مزامنة <ph name="FILE_NAME" />...</translation>
-<translation id="6530595303336443929">‏ملف أرشيف tar مضغوط ببرنامج Zstandard</translation>
 <translation id="6549689063733911810">الأحدث</translation>
 <translation id="6558280019477628686">حدث خطأ ما. ربما لم يتمّ حذف بعض العناصر.</translation>
 <translation id="656398493051028875">جارٍ حذف "<ph name="FILENAME" />"...</translation>
@@ -676,7 +670,6 @@
 <translation id="6806699711453372963">‏إدارة المشاركة في Linux</translation>
 <translation id="6806796368146926706">الأبجدية الرقمية باستخدام لوحة المفاتيح اليابانية</translation>
 <translation id="6808193438228982088">ثعلب</translation>
-<translation id="6820687829547641339">‏أرشيف tar مضغوط ببرنامج Gzip</translation>
 <translation id="6823166707458800069">يتم الاحتفاظ بنسخة احتياطية من جميع الملفات المحفوظة في هذا المجلد تلقائيًا على الإنترنت.</translation>
 <translation id="6825883775269213504">الروسية</translation>
 <translation id="6847101934483209767">تمت إزالة <ph name="ENTRY_NAME" /> من الاختيار.</translation>
@@ -825,7 +818,6 @@
 <translation id="7925686952655276919">عدم استخدام بيانات الجوال للمزامنة</translation>
 <translation id="7928710562641958568">إخراج الجهاز</translation>
 <translation id="7943385054491506837">‏الأمريكية Colemak</translation>
-<translation id="7948417415021769876">‏أرشيف 7z</translation>
 <translation id="7953739707111622108">لا يمكن فتح الجهاز لعدم التعرف على نظام الملفات.</translation>
 <translation id="7969525169268594403">السلوفينية</translation>
 <translation id="7972920761225148017">الفرنسية (سويسرا)</translation>
@@ -867,7 +859,6 @@
 <translation id="8297012244086013755">المجموعة رقم 3 الهانغولية (عدم التبديل)</translation>
 <translation id="8299269255470343364">اليابانية</translation>
 <translation id="8300849813060516376">‏تعذّرت OTASP</translation>
-<translation id="8308481408797647857">‏ملف أرشيف tar مضغوط ببرنامج XZ</translation>
 <translation id="8312871300878166382">لصق في مجلد</translation>
 <translation id="8329978297633540474">نص عادي</translation>
 <translation id="8335587457941836791">إزالة التثبيت من الرف</translation>
@@ -889,7 +880,6 @@
 <translation id="8461467696380332069">يُرجى النقر بزر الماوس الأيمن على ملف واختيار "تثبيت في الرف" للوصول السريع إلى الملفات في الرف.</translation>
 <translation id="8461914792118322307">الخادم الوكيل</translation>
 <translation id="8463494891489624050">‏الفيتنامية باستخدام لوحة مفاتيح VIQR</translation>
-<translation id="8466234950814670489">‏أرشيف Tar</translation>
 <translation id="8475647382427415476">‏تعذر على Google Drive مزامنة "<ph name="FILENAME" />" في الوقت الحالي. وسيعيد Google Drive المحاولة لاحقًا.</translation>
 <translation id="8477649328507734757">دوران</translation>
 <translation id="8484284835977497781">اختَر صورة مِن بين صورك الأخيرة.</translation>
@@ -978,7 +968,6 @@
 <translation id="943972244133411984">تم التعديل بواسطة</translation>
 <translation id="945522503751344254">إرسال تعليقات</translation>
 <translation id="947144732524271678">تم اختيار مجموعة من <ph name="ENTRY_COUNT" /> إدخال من <ph name="FROM_ENTRY_NAME" /> إلى <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">‏ملف أرشيف مضغوط ببرنامج Gzip</translation>
 <translation id="965477715979482472">الإنجليزية (جنوب أفريقيا)</translation>
 <translation id="981121421437150478">بلا اتصال</translation>
 <translation id="988685240266037636">يتوفَّر ملف باسم "<ph name="FILE_NAME" />" مسبقًا. هل تريد استبداله؟</translation>

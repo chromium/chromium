@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Cap xarxa</translation>
 <translation id="1060368002126861100">Per obrir fitxers amb <ph name="APP_NAME" />, primer mou-los a la carpeta de fitxers de Windows.</translation>
 <translation id="1062407476771304334">Substitueix</translation>
-<translation id="1119069657431255176">Arxiu tar comprimit Bzip2</translation>
 <translation id="1119447706177454957">Error intern</translation>
 <translation id="1120073797882051782">Romaja de hangul</translation>
 <translation id="112387589102719461">Anglès (EUA) amb teclat Dvorak per a programadors</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">En formatar una unitat, se'n suprimeixen totes les dades que s'hi hagin emmagatzemat. Aquesta acció no es pot desfer.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">Arxiu RAR</translation>
-<translation id="2036414735548252477">Arxiu comprimit LZMA</translation>
 <translation id="2037845485764049925">Rus</translation>
 <translation id="2044023416777079300">Mòdem no registrat</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">Caràcter no vàlid: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portuguès amb teclat internacional dels EUA (PC)</translation>
 <translation id="2198315389084035571">Xinès simplificat</translation>
-<translation id="2208158072373999562">Fitxer zip</translation>
 <translation id="22085916256174561">Coreà</translation>
 <translation id="2208919847696382164">Instal·la per a Linux</translation>
 <translation id="2225536596944493418">Confirmes que vols suprimir <ph name="NUMBER_OF_ITEMS" /> elements?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
 <translation id="4880214202172289027">Control lliscant de volum</translation>
 <translation id="4881695831933465202">Obre</translation>
-<translation id="4886199584824489598">Arxiu comprimit BZIP2</translation>
 <translation id="4900532980794411603">Comparteix amb Parallels Desktop</translation>
 <translation id="4902546322522096650">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, connecta</translation>
 <translation id="4905417359854579806">A punt per afegir <ph name="FILE_COUNT" /> a la còpia de seguretat</translation>
@@ -590,7 +586,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elements</translation>
 <translation id="5957366693331451795">dispositius Chromebox</translation>
 <translation id="5982621672636444458">Ordena les opcions</translation>
-<translation id="5985041959109124139">Arxiu comprimit tar Z</translation>
 <translation id="6007237601604674381">El trasllat ha fallat. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Xarxa Ethernet</translation>
 <translation id="60357267506638014">QWERTY txec</translation>
@@ -650,7 +645,6 @@
 <translation id="6509122719576673235">Noruec</translation>
 <translation id="6528513914570774834">Permet que els altres usuaris d'aquest dispositiu facin servir aquesta xarxa</translation>
 <translation id="653019979737152879">S'està sincronitzant <ph name="FILE_NAME" />...</translation>
-<translation id="6530595303336443929">Arxiu comprimit tar Zstandard</translation>
 <translation id="6549689063733911810">Recent</translation>
 <translation id="6558280019477628686">S'ha produït un error. És possible que alguns elements no s'hagin suprimit.</translation>
 <translation id="656398493051028875">S'està suprimint "<ph name="FILENAME" />"...</translation>
@@ -675,7 +669,6 @@
 <translation id="6806699711453372963">Gestiona les opcions per compartir amb Linux</translation>
 <translation id="6806796368146926706">Alfanumèric amb teclat japonès</translation>
 <translation id="6808193438228982088">Guineu</translation>
-<translation id="6820687829547641339">Arxiu tar comprimit Gzip</translation>
 <translation id="6823166707458800069">Es crea automàticament una còpia de seguretat en línia de tots els fitxers desats en aquesta carpeta.</translation>
 <translation id="6825883775269213504">Rus</translation>
 <translation id="6847101934483209767">S'ha suprimit <ph name="ENTRY_NAME" /> de la selecció.</translation>
@@ -824,7 +817,6 @@
 <translation id="7925686952655276919">No utilitzis les dades mòbils per a la sincronització</translation>
 <translation id="7928710562641958568">Expulsa el dispositiu</translation>
 <translation id="7943385054491506837">Colemak nord-americà</translation>
-<translation id="7948417415021769876">Arxiu 7z</translation>
 <translation id="7953739707111622108">Aquest dispositiu no es pot obrir perquè el seu sistema de fitxers no s'ha reconegut.</translation>
 <translation id="7969525169268594403">Eslovè</translation>
 <translation id="7972920761225148017">Francès (Suïssa)</translation>
@@ -866,7 +858,6 @@
 <translation id="8297012244086013755">Configuració 3 de hangul (sense majúscules)</translation>
 <translation id="8299269255470343364">Japonès</translation>
 <translation id="8300849813060516376">Error d'OTASP</translation>
-<translation id="8308481408797647857">Arxiu comprimit XZ</translation>
 <translation id="8312871300878166382">Enganxa a la carpeta</translation>
 <translation id="8329978297633540474">Text sense format</translation>
 <translation id="8335587457941836791">Deixa de fixar al prestatge</translation>
@@ -888,7 +879,6 @@
 <translation id="8461467696380332069">Fes clic amb el botó dret sobre un fitxer i selecciona Fixa al prestatge per accedir ràpidament als fitxers d'un prestatge.</translation>
 <translation id="8461914792118322307">Servidor intermediari</translation>
 <translation id="8463494891489624050">Vietnamita (VIQR)</translation>
-<translation id="8466234950814670489">Arxiu tar</translation>
 <translation id="8475647382427415476">En aquest moment, Google Drive no ha pogut sincronitzar "<ph name="FILENAME" />". Ho tornarà a provar més tard.</translation>
 <translation id="8477649328507734757">Cercles concèntrics</translation>
 <translation id="8484284835977497781">Tria de les teves fotos recents.</translation>
@@ -977,7 +967,6 @@
 <translation id="943972244133411984">Modificat per</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="947144732524271678">S'ha seleccionat un interval de <ph name="ENTRY_COUNT" /> entrades, de l'entrada <ph name="FROM_ENTRY_NAME" /> a <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">Arxiu comprimit GZIP</translation>
 <translation id="965477715979482472">Anglès (Sud-àfrica)</translation>
 <translation id="981121421437150478">Sense connexió</translation>
 <translation id="988685240266037636">El nom de fitxer "<ph name="FILE_NAME" />" ja existeix. El vols substituir?</translation>

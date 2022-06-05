@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">啟動器</translation>
 <translation id="1512982610995527443">裝置將於 5 秒內關機</translation>
 <translation id="1522984060396982789">已成功完成維修程序。你可以將裝置關機或採取其他額外動作。</translation>
+<translation id="1526389707933164996">螢幕保護程式動畫</translation>
 <translation id="152892567002884378">調高音量</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="155865706765934889">觸控板</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3865414814144988605">解析度</translation>
 <translation id="387301095347517405">電池經過的完整充電循環次數</translation>
+<translation id="3885327323343477505">變更螢幕保護程式</translation>
 <translation id="3923184630988645767">數據用量</translation>
 <translation id="3924044641767672375">建議連線至 Wi-Fi，這樣可簡化維修程序。系統將儲存你的網路。</translation>
 <translation id="3932043219784172185">未連線到任何裝置</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">立即選擇新密碼</translation>
 <translation id="4891842000192098784">壓力</translation>
 <translation id="4897058166682006107">裝置的左側無線耳機電池電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
+<translation id="4905998861748258752">開啟這項功能即可選取螢幕保護程式選項</translation>
 <translation id="4908030561598728899">正在安裝韌體...</translation>
 <translation id="4915052247106771211">這項操作會將裝置恢復原廠設定 (Powerwash)。</translation>
 <translation id="4917385247580444890">強</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">裝置電池電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="9003704114456258138">頻率</translation>
 <translation id="9025198690966128418">做為個人裝置使用</translation>
+<translation id="9028832514430399253">將切換按鈕設為「開啟」即可選取螢幕保護程式選項</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS 解析延遲時間過長</translation>
 <translation id="9063121522582193837">無法校正部分元件</translation>

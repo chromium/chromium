@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Nuk ka rrjete</translation>
 <translation id="1060368002126861100">Për të hapur skedarët me <ph name="APP_NAME" />, në fillim zhvendosi në dosjen e skedarëve të Windows.</translation>
 <translation id="1062407476771304334">Zëvendëso</translation>
-<translation id="1119069657431255176">Arkivi i ngjeshur i mbledhjes së Bzip2</translation>
 <translation id="1119447706177454957">Gabim i brendshëm</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Anglisht (SHBA) me tastierën Programmer Dvorak</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">Formatimi i një disku do të fshijë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
 <translation id="2028997212275086731">Arkiv RAR</translation>
-<translation id="2036414735548252477">Arkivë e ngjeshur LZMA</translation>
 <translation id="2037845485764049925">Rusisht</translation>
 <translation id="2044023416777079300">Modemi nuk është regjistruar</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">Karakter i pavlefshëm: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugalisht me tastierë amerikane ndërkombëtare për PC</translation>
 <translation id="2198315389084035571">Kinezishte e thjeshtuar</translation>
-<translation id="2208158072373999562">Arkivi i ngjeshur</translation>
 <translation id="22085916256174561">Koreanisht</translation>
 <translation id="2208919847696382164">Instalo me Linux</translation>
 <translation id="2225536596944493418">Je i sigurt që dëshiron të fshish <ph name="NUMBER_OF_ITEMS" /> artikuj?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bajtë</translation>
 <translation id="4880214202172289027">Rrëshqitësi i volumit</translation>
 <translation id="4881695831933465202">Hap</translation>
-<translation id="4886199584824489598">Arkivë e ngjeshur bzip2</translation>
 <translation id="4900532980794411603">Ndaj me Parallels Desktop</translation>
 <translation id="4902546322522096650">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, lidhu</translation>
 <translation id="4905417359854579806">Gati për të rezervuar <ph name="FILE_COUNT" /></translation>
@@ -589,7 +585,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> artikuj</translation>
 <translation id="5957366693331451795">Pajisjet Chromebox</translation>
 <translation id="5982621672636444458">Opsionet e renditjes</translation>
-<translation id="5985041959109124139">Arkiv i ngjeshur tar Z</translation>
 <translation id="6007237601604674381">Lëvizja dështoi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rrjeti i eternetit</translation>
 <translation id="60357267506638014">Tastierë çeke QWERTY</translation>
@@ -649,7 +644,6 @@
 <translation id="6509122719576673235">Norvegjisht</translation>
 <translation id="6528513914570774834">Lejo që përdoruesit e tjerë të kësaj pajisjeje të përdorin këtë rrjet</translation>
 <translation id="653019979737152879">Po sinkronizon <ph name="FILE_NAME" />...</translation>
-<translation id="6530595303336443929">Arkivi i ngjeshur tar Zstandard</translation>
 <translation id="6549689063733911810">Të fundit</translation>
 <translation id="6558280019477628686">Ndodhi një gabim. Disa artikuj mund të mos jenë fshirë.</translation>
 <translation id="656398493051028875">Po fshin "<ph name="FILENAME" />"...</translation>
@@ -674,7 +668,6 @@
 <translation id="6806699711453372963">Menaxho ndarjen në Linux</translation>
 <translation id="6806796368146926706">Alfanumerike me tastierë japoneze</translation>
 <translation id="6808193438228982088">Dhelpër</translation>
-<translation id="6820687829547641339">Arkivi i ngjeshur Gzip</translation>
 <translation id="6823166707458800069">Të gjithë skedarët e ruajtur në këtë dosje rezervohen automatikisht në linjë.</translation>
 <translation id="6825883775269213504">Rusisht</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> u hoq nga zgjedhja.</translation>
@@ -823,7 +816,6 @@
 <translation id="7925686952655276919">Mos përdor të dhëna celulare për sinkronizim</translation>
 <translation id="7928710562641958568">Nxirr pajisjen</translation>
 <translation id="7943385054491506837">Colemak amerikane</translation>
-<translation id="7948417415021769876">Arkiva 7z</translation>
 <translation id="7953739707111622108">Kjo pajisje nuk mund të hapet, sepse sistemi i saj i skedarëve nuk u njoh.</translation>
 <translation id="7969525169268594403">Sllovenisht</translation>
 <translation id="7972920761225148017">Frëngjisht (Zvicër)</translation>
@@ -865,7 +857,6 @@
 <translation id="8297012244086013755">Kompleti 3 Hangul (pa zhvendosje)</translation>
 <translation id="8299269255470343364">Japonisht</translation>
 <translation id="8300849813060516376">OTASP dështoi</translation>
-<translation id="8308481408797647857">Arkivë e ngjeshur tar XZ</translation>
 <translation id="8312871300878166382">Ngjite në dosje</translation>
 <translation id="8329978297633540474">Tekst i thjeshtë</translation>
 <translation id="8335587457941836791">Zhgozhdo nga rafti</translation>
@@ -887,7 +878,6 @@
 <translation id="8461467696380332069">Kliko me të djathtin te një skedar dhe zgjidh "Gozhdo te rafti" për qasje të shpejtë te skedarët e tu në raft.</translation>
 <translation id="8461914792118322307">Përfaqësues</translation>
 <translation id="8463494891489624050">Vietnamisht VIQR</translation>
-<translation id="8466234950814670489">Arkivi i mbledhjes</translation>
 <translation id="8475647382427415476">"Disku i Google" nuk mund ta sinkronizonte "<ph name="FILENAME" />" për momentin. "Disku i Google" do të provojë përsëri më vonë.</translation>
 <translation id="8477649328507734757">Rrotullim</translation>
 <translation id="8484284835977497781">Zgjidh nga fotografitë e tua të fundit.</translation>
@@ -976,7 +966,6 @@
 <translation id="943972244133411984">Modifikuar nga</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="947144732524271678">U zgjodh një gamë prej <ph name="ENTRY_COUNT" /> regjistrimesh nga <ph name="FROM_ENTRY_NAME" /> në <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">Arkivë e ngjeshur gzip</translation>
 <translation id="965477715979482472">Anglisht (Afrika e Jugut)</translation>
 <translation id="981121421437150478">Jashtë linje</translation>
 <translation id="988685240266037636">Skedari me emrin "<ph name="FILE_NAME" />" ekziston. Dëshiron ta zëvendësosh?</translation>

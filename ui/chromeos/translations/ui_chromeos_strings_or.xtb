@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ ଫାଇଲଗୁଡ଼ିକ ଖୋଲିବାକୁ, ପ୍ରଥମେ ସେଗୁଡ଼ିକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରକୁ ମୁଭ୍ କରନ୍ତୁ।</translation>
 <translation id="1062407476771304334">ପ୍ରତିସ୍ଥାପନ କରନ୍ତୁ</translation>
-<translation id="1119069657431255176">Bzip2 ସଙ୍କୁଚିତ ଟାର୍ ଆରକାଇଭ୍</translation>
 <translation id="1119447706177454957">ଇଣ୍ଟର୍ନଲ୍‌ ତ୍ରୁଟି</translation>
 <translation id="1120073797882051782">ହଂଗୁଲ୍ ରୋମାଜା</translation>
 <translation id="112387589102719461">ପ୍ରୋଗାମର୍ ଡିଭୋରାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">କୌଣସି ଡ୍ରାଇଭ୍‍କୁ ଡିଲିଟ୍ କରିବା ଦ୍ୱାରା ଏଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଡିଲିଟ୍ ହୋଇଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2025955442973426285">ଟାଇଗ୍ରିନ୍ୟା</translation>
 <translation id="2028997212275086731">ରାର୍‌ ଆର୍କାଇଭ୍‌</translation>
-<translation id="2036414735548252477">LZMAରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା tar ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="2037845485764049925">ଋଷୀୟ</translation>
 <translation id="2044023416777079300">ମୋଡେମ୍ ପଞ୍ଜିକୃତ ହୋଇନାହିଁ</translation>
 <translation id="2046702855113914483">ରାମେନ୍</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">ଅବୈଧ ବର୍ଣ୍ଣ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">US ଆନ୍ତର୍ଜାତୀୟ PC କୀବୋର୍ଡ ସହ ପର୍ତ୍ତୁଗୀଜ୍</translation>
 <translation id="2198315389084035571">ସରଳୀକୃତ ଚାଇନିଜ୍</translation>
-<translation id="2208158072373999562">Zip ଆର୍କାଇଭ୍‍</translation>
 <translation id="22085916256174561">କୋରୀୟ</translation>
 <translation id="2208919847696382164">Linux ସହିତ ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="2225536596944493418">ଆପଣ କ'ଣ ନିଶ୍ଚିତ ରୂପେ <ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ଡିଲିଟ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ବାଇଟ୍</translation>
 <translation id="4880214202172289027">ଭଲ୍ୟୁମ୍‍ ସ୍ଲାଇଡର୍‍</translation>
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
-<translation id="4886199584824489598">Bzip2ରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="4900532980794411603">Parallels Desktop ସହ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ସିଗ୍‌ନାଲ୍‌ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" />ର ବ୍ୟାକ୍‌ଅପ୍ ନେବାକୁ ପ୍ରସ୍ତୁତ ଅଛି</translation>
@@ -584,7 +580,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ସଜାଇବା ବିକଳ୍ପଗୁଡ଼ିକ</translation>
-<translation id="5985041959109124139">Zରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା tar ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="6007237601604674381">ଘୁଞ୍ଚାଇବା ବିଫଳ ହେଲା। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ଇଥର୍‌ନେଟ୍ ନେଟ୍‍ୱାର୍କ</translation>
 <translation id="60357267506638014">ଚେକ୍ QWERTY</translation>
@@ -644,7 +639,6 @@
 <translation id="6509122719576673235">ନରୱେଜିଆନ୍</translation>
 <translation id="6528513914570774834">ଏହି ଡିଭାଇସ୍‌ର ଅନ୍ୟ ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ଏହି ନେଟ୍‌ୱର୍କ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ସିଙ୍କ୍ ହେଉଛି...</translation>
-<translation id="6530595303336443929">Zstandardରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା tar ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="6549689063733911810">ବର୍ତ୍ତମାନ</translation>
 <translation id="6558280019477628686">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା। କିଛି ଆଇଟମ୍‍କୁ ଡିଲିଟ୍ ହୋଇନପାରେ।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ଡିଲିଟ୍‌ ହେଉଛି...</translation>
@@ -669,7 +663,6 @@
 <translation id="6806699711453372963">Linux ସେୟାରିଂ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6806796368146926706">ଆଲ୍ଫାନ୍ୟୁମେରିକ୍, ଜାପାନିଜ କୀବୋର୍ଡ ସହିତ</translation>
 <translation id="6808193438228982088">ଶିଆଳ</translation>
-<translation id="6820687829547641339">Gzip ଟାର୍ ଆର୍କାଇଭ୍‌କୁ ଛୋଟ କରିଦେଇଛି</translation>
 <translation id="6823166707458800069">ଏହି ଫୋଲ୍ଡରରେ ସେଭ୍ କରାଯାଇଥିବା ସମସ୍ତ ଫାଇଲର ସ୍ୱଚାଳିତରୂପେ ଅନଲାଇନରେ ବ୍ୟାକଅପ୍ ନିଆଯାଏ।</translation>
 <translation id="6825883775269213504">ଋଷିଆନ୍</translation>
 <translation id="6847101934483209767">ଚୟନରୁ <ph name="ENTRY_NAME" /> କାଢ଼ି ଦିଆଯାଇଛି।</translation>
@@ -818,7 +811,6 @@
 <translation id="7925686952655276919">ସିଙ୍କ୍‍ କରିବା ପାଇଁ ମୋବାଇଲ୍‌ ଡାଟା ବ୍ୟବହାର କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="7928710562641958568">ଡିଭାଇସ୍‌କୁ ବାହାର କରନ୍ତୁ</translation>
 <translation id="7943385054491506837">US କୋଲ୍‌ମାର୍କ</translation>
-<translation id="7948417415021769876">7z ଆର୍କାଇଭ</translation>
 <translation id="7953739707111622108">ଏହି ଡିଭାଇସ୍‌ ଖୋଲାଯାଇପାରିବ ନାହିଁ କାରଣ ଏହାର ଫାଇଲ୍‌ସିଷ୍ଟମ୍‌କୁ ଚିହ୍ନଟ କରାଯାଇପାରିନଥିଲା।</translation>
 <translation id="7969525169268594403">ସ୍ଲୋଭେନିଆନ୍</translation>
 <translation id="7972920761225148017">ଫରାସୀ (ସ୍ୱିଜରଲ୍ୟାଣ୍ଡ)</translation>
@@ -860,7 +852,6 @@
 <translation id="8297012244086013755">ହଂଗୁଲ୍ 3 ସେଟ୍ (କୌଣସି ସିଫ୍ଟ ନାହିଁ)</translation>
 <translation id="8299269255470343364">ଜାପାନୀ</translation>
 <translation id="8300849813060516376">OTASP ବିଫଳ ହେଲା</translation>
-<translation id="8308481408797647857">XZରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା tar ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="8312871300878166382">ଫୋଲ୍ଡର୍‌ରେ ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="8329978297633540474">କେବଳ ଟେକ୍ସଟ୍</translation>
 <translation id="8335587457941836791">ସେଲ୍ଫରୁ ଅନପିନ୍ କରନ୍ତୁ</translation>
@@ -882,7 +873,6 @@
 <translation id="8461467696380332069">ସେଲ୍ଫରେ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ଦ୍ରୁତ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଏକ ଫାଇଲରେ ଡାହାଣ-କ୍ଲିକ୍ କରନ୍ତୁ ଏବଂ "ସେଲ୍ଫରେ ପିନ୍ କରନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="8461914792118322307">ପ୍ରକ୍ସି</translation>
 <translation id="8463494891489624050">ଭିଏତନାମିଜ୍ VIQR</translation>
-<translation id="8466234950814670489">ଟାର୍ ଆରକାଇଭ୍</translation>
 <translation id="8475647382427415476">Google ଡ୍ରାଇଭ୍ ଏହିକ୍ଷଣି "<ph name="FILENAME" />"କୁ ସିଙ୍କ କରିପାରିଲା ନାହିଁ। Google ଡ୍ରାଇଭ୍ ପୁଣି ପରେ ଚେଷ୍ଟା କରିବ।</translation>
 <translation id="8477649328507734757">ସ୍ପିନ୍‌</translation>
 <translation id="8484284835977497781">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଫଟୋଗୁଡ଼ିକରୁ ବାଛନ୍ତୁ।</translation>
@@ -971,7 +961,6 @@
 <translation id="943972244133411984">ଏହାଙ୍କ ଦ୍ୱାରା ସଂଶୋଧନ କରାଗଲା</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ରୁ <ph name="TO_ENTRY_NAME" /> ମଧ୍ୟରେ <ph name="ENTRY_COUNT" />ଟି ଫାଇଲ୍‌ର ଏକ ପରିସର ବଛାଯାଇଛି।</translation>
-<translation id="961973045258256291">Gzipରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="965477715979482472">ଇଂରାଜୀ (ଦକ୍ଷିଣ ଆଫ୍ରିକା)</translation>
 <translation id="981121421437150478">ଅଫ୍‍ଲାଇନ୍</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" ନାମକ ଗୋଟିଏ ଫାଇଲ୍ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଆପଣ ଏହାକୁ ପ୍ରତିସ୍ଥାପନ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>

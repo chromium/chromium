@@ -516,7 +516,6 @@
 <translation id="1494349716233667318">Сайти можуть запитувати дозвіл на використання шрифтів, установлених на пристрої</translation>
 <translation id="1495677929897281669">Назад на вкладку</translation>
 <translation id="1500297251995790841">Невідомий пристрій [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
-<translation id="1503881256180274819">Докладніше про непідтримувані додатки Chrome</translation>
 <translation id="150411034776756821">Видалити дані сайту <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Спільні папки у Windows доступні за шляхом <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Пошукова система</translation>
@@ -1808,7 +1807,6 @@
 <translation id="2673135533890720193">Переглядати історію веб-перегляду</translation>
 <translation id="2674764818721168631">Вимкнено</translation>
 <translation id="2678063897982469759">Знову ввімкнути</translation>
-<translation id="267978143066552517">{NUM_APPS,plural, =1{Видалити 1 додаток, який не підтримується}one{Видалити # додаток, який не підтримується}few{Видалити # додатки, які не підтримуються}many{Видалити # додатків, які не підтримуються}other{Видалити # додатка, які не підтримуються}}</translation>
 <translation id="268053382412112343">Іс&amp;торія</translation>
 <translation id="2681124317993121768">Гостьові профілі не підтримуються</translation>
 <translation id="2682498795777673382">Батьки змінили налаштування</translation>
@@ -2505,7 +2503,6 @@
 <translation id="3378627645871606983">Дозволи, надані Steam, застосовуються до всіх ігор і додатків, установлених через Steam.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> буде встановлено.</translation>
 <translation id="3380365263193509176">Невідома помилка</translation>
-<translation id="3380850890226973980">Запитати наступного разу</translation>
 <translation id="3382073616108123819">На жаль, системі не вдалося визначити ідентифікатори цього пристрою.</translation>
 <translation id="3382200254148930874">Вимкнення батьківського контролю…</translation>
 <translation id="338323348408199233">Блокувати трафік, коли немає підключення до VPN</translation>
@@ -2986,7 +2983,6 @@
 <translation id="3834728400518755610">Щоб зміни в доступах до мікрофона почали діяти, потрібно завершити роботу Linux. Зробіть це, щоб продовжити.</translation>
 <translation id="3834775135533257713">Не вдалося додати додаток <ph name="TO_INSTALL_APP_NAME" /> через конфлікт із додатком <ph name="INSTALLED_APP_NAME" />.</translation>
 <translation id="3835904559946595746">Не вдалося відновити резервні копії Linux</translation>
-<translation id="3836093801854521982">Ваш адміністратор установив розширення Chrome <ph name="EXTENSION_NAME" />, але воно більше не підтримується. Зв’яжіться з адміністратором, щоб вилучити це розширення.</translation>
 <translation id="383669374481694771">Це загальна інформація про цей пристрій і його використання (як-от дані про рівень заряду акумулятора, систему, історію додатків та помилки). Ці відомості використовуватимуться, щоб покращити Android, а деякі зведені дані корисні для додатків і партнерів Google, як-от розробників Android.</translation>
 <translation id="3838085852053358637">Не вдалося завантажити розширення</translation>
 <translation id="3838486795898716504">Інші <ph name="PAGE_TITLE" /></translation>
@@ -3125,7 +3121,6 @@
 <translation id="3955321697524543127">Заборонити сайтам підключатися до пристроїв USB</translation>
 <translation id="3955896417885489542">Перегляньте параметри Google Play після налаштування</translation>
 <translation id="3957079323242030166">Резервні копії даних не займають простір на Диску.</translation>
-<translation id="3957149833646341246">{NUM_APPS,plural, =1{1 ваш додаток більше не підтримується.}one{# ваш додаток більше не підтримується.}few{# ваші додатки більше не підтримуються.}many{# ваших додатків більше не підтримуються.}other{# вашого додатка більше не підтримуються.}}</translation>
 <translation id="3957844511978444971">Натисніть "Прийняти", щоб підтвердити вибір цих налаштувань для сервісів Google.</translation>
 <translation id="3958088479270651626">Імпорт закладок і налаштувань</translation>
 <translation id="3960566196862329469">ONC</translation>
@@ -4333,7 +4328,6 @@
 <translation id="5185500136143151980">Немає Інтернету</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190187232518914472">Пориньте в улюблені спогади. Щоб додати або змінити альбом, перейдіть у <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
-<translation id="5190316321948122159">{NUM_APPS,plural, =1{Видалити додаток}one{Видалити додатки}few{Видалити додатки}many{Видалити додатки}other{Видалити додатки}}</translation>
 <translation id="5190926251776387065">Активувати порт</translation>
 <translation id="5191094172448199359">Введені PIN-коди не збігаються</translation>
 <translation id="5191251636205085390">Дізнайтеся про нові технології, що приходять на зміну стороннім файлам cookie, і як ними керувати</translation>
@@ -4496,7 +4490,6 @@
 <translation id="5345916423802287046">Запускати додаток, коли ви входите в обліковий запис</translation>
 <translation id="5350293332385664455">Вимкнути Google Асистента</translation>
 <translation id="535123479159372765">Текст скопійовано з іншого пристрою</translation>
-<translation id="5351654190191249261"><ph name="EXTENSION_NAME" /> потрібно оновити</translation>
 <translation id="5352033265844765294">Встановлення позначки часу</translation>
 <translation id="5353252989841766347">Експортувати паролі з Chrome</translation>
 <translation id="5355099869024327351">Дозволити Асистенту показувати сповіщення</translation>
@@ -5088,7 +5081,6 @@
 <translation id="5946591249682680882">Ідентифікатор звіту: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Підключіть клавіатуру чи мишу або продовжте налаштування за допомогою сенсорного екрана. Якщо ви користуєтеся пристроями з Bluetooth, переконайтеся, що вони готові до підключення.</translation>
 <translation id="5949544233750246342">Не вдається виконати синтаксичний аналіз файлу</translation>
-<translation id="5950039854561387265">Запитати наступного разу</translation>
 <translation id="5950819593680344519">Веб-переглядач Chrome не виявив шкідливого програмного забезпечення на вашому комп'ютері • Перевірено вчора</translation>
 <translation id="5951303645598168883">Сайт <ph name="ORIGIN" /> хоче використовувати збережені на пристрої шрифти</translation>
 <translation id="5951624318208955736">Монітор</translation>
@@ -5356,7 +5348,6 @@
 <translation id="6218058416316985984">Пристрій <ph name="DEVICE_TYPE" /> офлайн. Підключіть його до Інтернету та повторіть спробу.</translation>
 <translation id="6220413761270491930">Не вдалося завантажити розширення</translation>
 <translation id="6223447490656896591">Спеціальне зображення:</translation>
-<translation id="62236885217374510">{NUM_APPS,plural, =1{Видалити додаток}one{Видалити додатки}few{Видалити додатки}many{Видалити додатки}other{Видалити додатки}}</translation>
 <translation id="6224481128663248237">Форматування успішно завершено.</translation>
 <translation id="622537739776246443">Профіль буде видалено</translation>
 <translation id="6225475702458870625">Передавання даних доступне через пристрій <ph name="PHONE_NAME" /></translation>
@@ -5415,7 +5406,6 @@
 <translation id="6270391203985052864">Сайти можуть просити дозвіл надсилати сповіщення</translation>
 <translation id="6270770586500173387">Надсилати <ph name="BEGIN_LINK1" />інформацію про систему й додатки<ph name="END_LINK1" />, а також <ph name="BEGIN_LINK2" />показники<ph name="END_LINK2" /></translation>
 <translation id="6271348838875430303">виправлення відмінено</translation>
-<translation id="6271780480930459892">Щоб отримати останню версію, зверніться до адміністратора.</translation>
 <translation id="6272643420381259437">Під час завантаження плагіна сталася помилка (<ph name="ERROR" />)</translation>
 <translation id="6273677812470008672">Якість</translation>
 <translation id="6274202259872570803">Скрінкаст</translation>
@@ -7295,7 +7285,6 @@
 <translation id="8102139037507939978">Вилучити ідентифікаційну інформацію з файлу system_logs.txt.</translation>
 <translation id="8104088837833760645">Завантажити профіль eSIM-карти</translation>
 <translation id="8105368624971345109">Вимкнути</translation>
-<translation id="8105541061909542455">{NUM_APPS,plural, =1{Непідтримуваний додаток}one{Непідтримувані додатки}few{Непідтримувані додатки}many{Непідтримувані додатки}other{Непідтримувані додатки}}</translation>
 <translation id="8107015733319732394">Встановлення додатка Google Play Store на ваш <ph name="DEVICE_TYPE" />. Це може зайняти кілька хвилин.</translation>
 <translation id="810728361871746125">Роздільна здатність дисплея</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Немає файлів cookie третіх сторін}=1{Заблоковано 1 файл cookie третіх сторін}one{Заблоковано # файл cookie третіх сторін}few{Заблоковано # файли cookie третіх сторін}many{Заблоковано # файлів cookie третіх сторін}other{Заблоковано # файлу cookie третіх сторін}}</translation>

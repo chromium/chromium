@@ -119,6 +119,7 @@
 <translation id="1270502636509132238">पिकअप का तरीका</translation>
 <translation id="1281476433249504884">स्टैकर 1</translation>
 <translation id="1285320974508926690">कभी भी इस साइट का अनुवाद न करें</translation>
+<translation id="1288548991597756084">कार्ड को सुरक्षित तरीके से सेव करें</translation>
 <translation id="1292571435393770077">ट्रे 16</translation>
 <translation id="1292701964462482250">"आपके कंप्यूटर पर मौजूद सॉफ़्टवेयर Chrome को सुरक्षित रूप से वेब से कनेक्ट होने से रोक रहा है" (केवल Windows कंप्यूटर)</translation>
 <translation id="1294154142200295408">अलग-अलग तरह की कमांड-लाइन</translation>
@@ -223,6 +224,7 @@
     &lt;p&gt;गड़बड़ी ठीक करने के लिए, उस पेज पर &lt;strong&gt;कनेक्ट करें&lt;/strong&gt; को क्लिक करें, जिसे आप खोलने की कोशिश कर रहे हैं.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">लैंडस्केप डिज़ाइन</translation>
 <translation id="1513706915089223971">इतिहास एंट्री की सूची</translation>
+<translation id="1516097932025103760">कार्ड को एन्क्रिप्ट (सुरक्षित) किया जाएगा और उसे सुरक्षित तरीके से सेव किया जाएगा. हालांकि, कार्ड वेरिफ़िकेशन कोड (सीवीसी) को कभी भी सेव नहीं किया जाता है.</translation>
 <translation id="1517433312004943670">फ़ोन नंबर आवश्यक है</translation>
 <translation id="1519264250979466059">बिल्ड तारीख</translation>
 <translation id="1521159554480556801">फ़ाइबर और टेक्सटाइल आर्ट</translation>
@@ -1416,6 +1418,7 @@
 <translation id="483241715238664915">सुरक्षा चेतावनियां चालू करें</translation>
 <translation id="4834250788637067901">Google Pay का इस्तेमाल करने वाले पैसे चुकाने के तरीके, ऑफ़र, और पते</translation>
 <translation id="4838327282952368871">ख्वाब जैसा</translation>
+<translation id="4839087176073128681">Google की बेहतरीन सुरक्षा सेवाओं की मदद से, अपने कार्ड को सुरक्षित रखें और अगली बार तेज़ी से पैसे चुकाएं.</translation>
 <translation id="4840250757394056958">अपना 'Chrome इतिहास' देखें</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> और कई अन्य पर छूट पाएं</translation>

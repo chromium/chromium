@@ -369,7 +369,6 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{မဖတ်ရသေးသော <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> မျက်နှာ}other{မဖတ်ရသေးသော <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> မျက်နှာ}}</translation>
 <translation id="2961210776189273067">ဂုဏ်ပုဒ်</translation>
 <translation id="2979025552038692506">ရွေးချယ်ထားသည့် ကိုယ်ဖျောက်တဘ်</translation>
-<translation id="2979448359891869301">ဖန်သားပြင်ဓာတ်ပုံကို ချဲ့၍မရပါ။ သင့်ဖုန်း အလုပ်မများချိန်တွင် ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2979639724566107830">ဝင်းဒိုးအသစ်တွင် ဖွင့်ပါ</translation>
 <translation id="2981364137500752533">ဝင်းဒိုး ၅ ခုအထိ ဖွင့်နိုင်သည်။</translation>
 <translation id="2984978667043170458">Google ရှာဖွေမှုများတွင် ဝန်းကျင်ရှိစာသားကို ထည့်သွင်းရန်</translation>
@@ -1528,6 +1527,7 @@
 <translation id="9209888181064652401">ဖုန်းခေါ်၍ မရပါ</translation>
 <translation id="9212845824145208577">အောက်သို့ထပ်နှိမ့်၍ မရပါ။ စာမျက်နှာ၏ အောက်ဘက်ခပ်ဝေးဝေးမှ စကြည့်ပါ။</translation>
 <translation id="9219103736887031265">ပုံများ</translation>
+<translation id="9219582468404818260">ပိုကောင်းသည့် ဝဘ်တစ်ခုတည်ဆောက်ရန် ကူညီပါ</translation>
 <translation id="92381315203627188">ဝဘ်ဆိုက်က ၎င်းတို့၏ စာမျက်နှာတွင် လင့်ခ်များကို သီးသန့် ကြိုဖွင့်ရန် မေးပါက Chrome သည် Google ဆာဗာများမှတစ်ဆင့် ကွတ်ကီးများ မပါဘဲ စာမျက်နှာများကို အသွင်ဝှက်ပြီး ကြိုဖွင့်ပေးပါသည်။ ၎င်းက ကြိုဖွင့်ထားသော ဝဘ်ဆိုက်မှ သင့်အထောက်အထားကို ဖျောက်ပေးသည်။</translation>
 <translation id="926205370408745186">'ဒစ်ဂျစ်တယ် အာရောဂျံ' မှနေ၍ သင်၏ Chrome လုပ်ဆောင်ချက်ကို ဖယ်ရှားခြင်း</translation>
 <translation id="927968626442779827">Google Chrome တွင် အပေါ့စားမုဒ် သုံးရန်</translation>

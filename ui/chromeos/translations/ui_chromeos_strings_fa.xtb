@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">شبکه‌ای وجود ندارد</translation>
 <translation id="1060368002126861100">‏برای باز کردن فایل‌ها با <ph name="APP_NAME" />، ابتدا آن‌ها را به پوشه فایل‌های Windows منتقل کنید.</translation>
 <translation id="1062407476771304334">جایگزینی</translation>
-<translation id="1119069657431255176">‏بایگانی نوار فشرده Bzip2</translation>
 <translation id="1119447706177454957">خطای داخلی</translation>
 <translation id="1120073797882051782">هانگول روماجا</translation>
 <translation id="112387589102719461">‏انگلیسی (آمریکایی) با صفحه‌کلید «برنامه‌نویس Dvorak»</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">با قالب‌بندی درایو همه داده‌های ذخیره‌شده در آن حذف خواهد شد. این کنش واگردشدنی نیست.</translation>
 <translation id="2025955442973426285">تیگرینیا</translation>
 <translation id="2028997212275086731">‏بایگانی RAR</translation>
-<translation id="2036414735548252477">‏بایگانی نواری فشرده LZMA</translation>
 <translation id="2037845485764049925">روسی</translation>
 <translation id="2044023416777079300">مودم ثبت نشده است</translation>
 <translation id="2046702855113914483">رامن</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">نویسه نامعتبر: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">پرتغالی با صفحه‌کلید بین‌المللی آمریکایی رایانه</translation>
 <translation id="2198315389084035571">چینی ساده</translation>
-<translation id="2208158072373999562">فایل بایگانی زیپ</translation>
 <translation id="22085916256174561">کره‌ای</translation>
 <translation id="2208919847696382164">‏نصب با Linux</translation>
 <translation id="2225536596944493418">مطمئنید می‌خواهید <ph name="NUMBER_OF_ITEMS" /> مورد را حذف کنید؟</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> بایت</translation>
 <translation id="4880214202172289027">اسلایدر میزان صدا</translation>
 <translation id="4881695831933465202">باز کردن</translation>
-<translation id="4886199584824489598">‏بایگانی فشرده Bzip2</translation>
 <translation id="4900532980794411603">‏هم‌رسانی با Parallels Desktop</translation>
 <translation id="4902546322522096650">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />, قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، اتصال</translation>
 <translation id="4905417359854579806">آماده پشتیبان گرفتن از <ph name="FILE_COUNT" /> مورد</translation>
@@ -590,7 +586,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> مورد</translation>
 <translation id="5957366693331451795">‏دستگاه‌های Chromebox</translation>
 <translation id="5982621672636444458">گزینه‌های مرتب‌سازی</translation>
-<translation id="5985041959109124139">‏بایگانی نواری فشرده Z</translation>
 <translation id="6007237601604674381">انتقال انجام نشد. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">شبکه اترنت</translation>
 <translation id="60357267506638014">‏QWERTY چکی</translation>
@@ -650,7 +645,6 @@
 <translation id="6509122719576673235">نروژی</translation>
 <translation id="6528513914570774834">به سایر کاربران این دستگاه اجازه داده شود از این شبکه استفاده کنند</translation>
 <translation id="653019979737152879">در حال همگام‌سازی <ph name="FILE_NAME" />...</translation>
-<translation id="6530595303336443929">‏بایگانی نواری فشرده Zstandard</translation>
 <translation id="6549689063733911810">اخیر</translation>
 <translation id="6558280019477628686">خطایی روی داد. ممکن است بعضی از موارد حذف نشده باشند.</translation>
 <translation id="656398493051028875">در حال حذف «<ph name="FILENAME" />»...</translation>
@@ -675,7 +669,6 @@
 <translation id="6806699711453372963">‏مدیریت هم‌رسانی با Linux</translation>
 <translation id="6806796368146926706">حرفی‌عددی با صفحه‌کلید ژاپنی</translation>
 <translation id="6808193438228982088">روباه</translation>
-<translation id="6820687829547641339">‏بایگانی نوار فشرده Gzip</translation>
 <translation id="6823166707458800069">از همه فایل‌های ذخیره‌شده در این پوشه به‌طور خودکار و آنلاین پشتیبان‌گیری شده است.</translation>
 <translation id="6825883775269213504">روسی</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> از موارد انتخابی برداشته شد.</translation>
@@ -824,7 +817,6 @@
 <translation id="7925686952655276919">از داده‌های تلفن همراه برای همگام‌سازی استفاده نشود</translation>
 <translation id="7928710562641958568">خارج کردن دستگاه</translation>
 <translation id="7943385054491506837">کلماک آمریکایی</translation>
-<translation id="7948417415021769876">‏بایگانی 7z</translation>
 <translation id="7953739707111622108">این دستگاه باز نمی‌شود زیرا سیستم فایل‌ آن شناسایی نشد.</translation>
 <translation id="7969525169268594403">اسلوونیایی</translation>
 <translation id="7972920761225148017">فرانسوی (سوئیس)</translation>
@@ -866,7 +858,6 @@
 <translation id="8297012244086013755">‏مجموعه هانگول ۳ (بدون Shift)</translation>
 <translation id="8299269255470343364">ژاپنی</translation>
 <translation id="8300849813060516376">‏OTASP انجام نشد</translation>
-<translation id="8308481408797647857">‏بایگانی نواری فشرده XZ</translation>
 <translation id="8312871300878166382">جای‌گذاری در پوشه</translation>
 <translation id="8329978297633540474">نوشتار ساده</translation>
 <translation id="8335587457941836791">برداشتن سنجاق از راه‌انداز</translation>
@@ -888,7 +879,6 @@
 <translation id="8461467696380332069">برای دسترسی سریع به فایل‌ها در قفسه، روی فایلی کلیک راست کنید و «سنجاق کردن به قفسه» را انتخاب کنید.</translation>
 <translation id="8461914792118322307">پراکسی</translation>
 <translation id="8463494891489624050">‏ویتنامی (VIQR)</translation>
-<translation id="8466234950814670489">تار نوار</translation>
 <translation id="8475647382427415476">‏Google Drive نتوانست در این لحظه «<ph name="FILENAME" />» را همگام‌سازی کند. Google Drive بعداً دوباره امتحان می‌کند.</translation>
 <translation id="8477649328507734757">اسپینینگ</translation>
 <translation id="8484284835977497781">از عکس‌های اخیرتان انتخاب کنید.</translation>
@@ -977,7 +967,6 @@
 <translation id="943972244133411984">اصلاح‌شده توسط</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="947144732524271678">مجموعه‌ای از <ph name="ENTRY_COUNT" /> ورودی، از <ph name="FROM_ENTRY_NAME" /> تا <ph name="TO_ENTRY_NAME" /> انتخاب شد.</translation>
-<translation id="961973045258256291">‏بایگانی فشرده Gzip</translation>
 <translation id="965477715979482472">انگلیسی (آفریقای جنوبی)</translation>
 <translation id="981121421437150478">آفلاین</translation>
 <translation id="988685240266037636">فایلی با نام «<ph name="FILE_NAME" />» ازقبل وجود دارد. می‌خواهید آن را جایگزین کنید؟</translation>

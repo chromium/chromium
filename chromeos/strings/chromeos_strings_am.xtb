@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">ማስጀመሪያ</translation>
 <translation id="1512982610995527443">መሣሪያው በ5 ሴኮንዶች ውስጥ ይዘጋል</translation>
 <translation id="1522984060396982789">ጥገናዎ ስኬታማ ሆኗል። መሣሪያውን መዝጋት ወይም አንዳንድ ተጨማሪ እርምጃዎችን መውሰድ ይችላሉ።</translation>
+<translation id="1526389707933164996">የማያ ገጽ አሳራፊ እነማ</translation>
 <translation id="152892567002884378">ድምጽ ጨምር</translation>
 <translation id="1555130319947370107">ሰማያዊ</translation>
 <translation id="155865706765934889">ተችፓድ</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">ስም</translation>
 <translation id="3865414814144988605">የምስል ጥራት</translation>
 <translation id="387301095347517405">ባትሪዎ ሙሉ የኃይል መሙያ ዑደት ውስጥ ያለፈበት ጊዜ ብዛት</translation>
+<translation id="3885327323343477505">የማያ ገጽ አሳራፊን ቀይር</translation>
 <translation id="3923184630988645767">የውሂብ አጠቃቀም</translation>
 <translation id="3924044641767672375">የጥገና ሂደቱን ቀላል ለማድረግ ከWi-Fi ጋር መገናኘት ይመከራል። አውታረ መረብዎ ይቀመጣል።</translation>
 <translation id="3932043219784172185">ምንም መሣሪያ አልተገናኘም</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">ወዲያውኑ አዲስ ይምረጡ</translation>
 <translation id="4891842000192098784">ጭንቀት</translation>
 <translation id="4897058166682006107">መሣሪያ <ph name="BATTERY_PERCENTAGE" />% የግራ ጆሮ ማዳመጫ ባትሪ አለው።</translation>
+<translation id="4905998861748258752">የማያ ገጽ አሳራፊ አማራጮችን ለመምረጥ ባህሪውን ያብሩት</translation>
 <translation id="4908030561598728899">ፊርምዌር በመጫን ላይ...</translation>
 <translation id="4915052247106771211">ይህ መሣሪያውን ወደ የፋብሪካ ቅንብሮች (Powerwash) ዳግም ያስጀምረዋል።</translation>
 <translation id="4917385247580444890">ጠንካራ</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">መሣሪያ <ph name="BATTERY_PERCENTAGE" />% ባትሪ አለው።</translation>
 <translation id="9003704114456258138">ተደጋጋሚነት</translation>
 <translation id="9025198690966128418">እንደ የግል መሣሪያ ተጠቀም</translation>
+<translation id="9028832514430399253">የማያ ገጽ አሳራፊ አማራጮችን ለመምረጥ መቀያየሪያውን ያብሩ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">የዲኤንኤስ ጥራት ከፍተኛ የስርዓተ ምላሽ ጊዜ አለው</translation>
 <translation id="9063121522582193837">አንዳንድ ክፍለ አካሎችን ማስተካከል አልተቻለም</translation>

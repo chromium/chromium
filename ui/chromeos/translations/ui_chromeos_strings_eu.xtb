@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Sarerik ez</translation>
 <translation id="1060368002126861100">Fitxategiak <ph name="APP_NAME" /> aplikazioarekin irekitzeko, lehenik eraman itzazu Windows-eko fitxategien karpetara.</translation>
 <translation id="1062407476771304334">Ordeztu</translation>
-<translation id="1119069657431255176">Bzip2 bidez konprimatutako .tar artxiboa</translation>
 <translation id="1119447706177454957">Barneko errorea</translation>
 <translation id="1120073797882051782">Hangul romaja</translation>
 <translation id="112387589102719461">Ingelesa (AEB), Programmer Dvorak teklatuarekin</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">Unitatea formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza hori.</translation>
 <translation id="2025955442973426285">Tigrinyarra</translation>
 <translation id="2028997212275086731">RAR fitxategia</translation>
-<translation id="2036414735548252477">LZMA bidez konprimatutako .tar artxiboa</translation>
 <translation id="2037845485764049925">Errusiarra</translation>
 <translation id="2044023416777079300">Modema ez dago erregistratuta</translation>
 <translation id="2046702855113914483">Ramen-a</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">Karaktere honek ez du balio: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugaldarra, nazioarteko teklatu estatubatuarrarekin (ordenagailurako)</translation>
 <translation id="2198315389084035571">Idazkera txinatar sinplifikatua</translation>
-<translation id="2208158072373999562">ZIP artxiboa</translation>
 <translation id="22085916256174561">Korearra</translation>
 <translation id="2208919847696382164">Instalatu Linux-ekin</translation>
 <translation id="2225536596944493418">Ziur <ph name="NUMBER_OF_ITEMS" /> elementu ezabatu nahi dituzula?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
 <translation id="4880214202172289027">Bolumen-graduatzailea</translation>
 <translation id="4881695831933465202">Ireki</translation>
-<translation id="4886199584824489598">Bzip2 bidez konprimatutako artxiboa</translation>
 <translation id="4900532980794411603">Partekatu Parallels Desktop aplikazioarekin</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="SECURITY_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Konektatu.</translation>
 <translation id="4905417359854579806">Hauen babeskopia egiteko prest: <ph name="FILE_COUNT" /></translation>
@@ -589,7 +585,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementu</translation>
 <translation id="5957366693331451795">Chromebox-ak</translation>
 <translation id="5982621672636444458">Ordenatzeko aukerak</translation>
-<translation id="5985041959109124139">Z bidez konprimatutako .tar artxiboa</translation>
 <translation id="6007237601604674381">Ezin izan da eraman. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet sarea</translation>
 <translation id="60357267506638014">QWERTY txekiarra</translation>
@@ -649,7 +644,6 @@
 <translation id="6509122719576673235">Norvegiarra</translation>
 <translation id="6528513914570774834">Baimendu sare hau erabiltzea gailu hau darabiltenei</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> sinkronizatzen…</translation>
-<translation id="6530595303336443929">Zstandard bidez konprimatutako .tar artxiboa</translation>
 <translation id="6549689063733911810">Azkenak</translation>
 <translation id="6558280019477628686">Errore bat gertatu da. Agian ez dira ezabatu elementu batzuk.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ezabatzen…</translation>
@@ -674,7 +668,6 @@
 <translation id="6806699711453372963">Kudeatu Linux-ekin partekatzeko aukera</translation>
 <translation id="6806796368146926706">Alfanumerikoa, teklatu japoniarrarekin</translation>
 <translation id="6808193438228982088">Azeria</translation>
-<translation id="6820687829547641339">Gzip bidez konprimatutako .tar artxiboa</translation>
 <translation id="6823166707458800069">Automatikoki egingo da karpeta honetan gordetako fitxategi guztien babeskopia.</translation>
 <translation id="6825883775269213504">Errusiarra</translation>
 <translation id="6847101934483209767">Kendu da <ph name="ENTRY_NAME" /> hautapenetik.</translation>
@@ -823,7 +816,6 @@
 <translation id="7925686952655276919">Ez erabili datu-konexioa sinkronizatzeko</translation>
 <translation id="7928710562641958568">Kanporatu gailua</translation>
 <translation id="7943385054491506837">Colemak estatubatuarra</translation>
-<translation id="7948417415021769876">7z artxiboa</translation>
 <translation id="7953739707111622108">Ezin da ireki gailua bere fitxategi-sistema ezezaguna delako.</translation>
 <translation id="7969525169268594403">Esloveniarra</translation>
 <translation id="7972920761225148017">Frantsesa (Suitza)</translation>
@@ -865,7 +857,6 @@
 <translation id="8297012244086013755">3. hangul-karaktere sorta (balio bikoitzeko teklarik gabe)</translation>
 <translation id="8299269255470343364">Japoniarra</translation>
 <translation id="8300849813060516376">OTASP zerbitzuak huts egin du</translation>
-<translation id="8308481408797647857">XZ bidez konprimatutako .tar artxiboa</translation>
 <translation id="8312871300878166382">Itsatsi karpetan</translation>
 <translation id="8329978297633540474">Testu arrunta</translation>
 <translation id="8335587457941836791">Desainguratu apaletik</translation>
@@ -887,7 +878,6 @@
 <translation id="8461467696380332069">Egin klik eskuineko botoiarekin fitxategi batean eta hautatu "Ainguratu apalean"; horrela, apalean dauden fitxategietarako sarbide bizkorra izango duzu.</translation>
 <translation id="8461914792118322307">Proxya</translation>
 <translation id="8463494891489624050">Vietnamdarra (VIQR)</translation>
-<translation id="8466234950814670489">Tar artxiboa</translation>
 <translation id="8475647382427415476">Google Drive-k ezin izan du sinkronizatu "<ph name="FILENAME" />". Berriro saiatuko da geroago.</translation>
 <translation id="8477649328507734757">Zirkuluak</translation>
 <translation id="8484284835977497781">Aukeratu azkenaldiko argazki bat.</translation>
@@ -976,7 +966,6 @@
 <translation id="943972244133411984">Aldaketaren egilea:</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="947144732524271678">Hautatu da <ph name="ENTRY_COUNT" /> sarrerako barruti bat, <ph name="FROM_ENTRY_NAME" /> sarreratik <ph name="TO_ENTRY_NAME" /> sarrerara.</translation>
-<translation id="961973045258256291">Gzip bidez konprimatutako artxiboa</translation>
 <translation id="965477715979482472">Ingelesa (Hegoafrika)</translation>
 <translation id="981121421437150478">Konexiorik gabekoak</translation>
 <translation id="988685240266037636">Badago "<ph name="FILE_NAME" />" izeneko fitxategi bat. Ordeztu egin nahi duzu?</translation>

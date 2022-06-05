@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Няма мрежи</translation>
 <translation id="1060368002126861100">За да отваряте файлове с(ъс) <ph name="APP_NAME" />, първо ги преместете в папката с файлове на Windows.</translation>
 <translation id="1062407476771304334">Замяна</translation>
-<translation id="1119069657431255176">Tar архив, компресиран във формат Bzip2</translation>
 <translation id="1119447706177454957">Вътрешна грешка</translation>
 <translation id="1120073797882051782">Хангъл, ромаджа</translation>
 <translation id="112387589102719461">Английски (САЩ) с клавиатура за програмисти (Дворак)</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">При форматирането на устройство ще бъдат изтрити всички съхранявани на него данни. Това действие не може да бъде отменено.</translation>
 <translation id="2025955442973426285">Тигриня</translation>
 <translation id="2028997212275086731">RAR архив</translation>
-<translation id="2036414735548252477">Tar архив, компресиран във формат LZMA</translation>
 <translation id="2037845485764049925">Руски</translation>
 <translation id="2044023416777079300">Модемът не е регистриран</translation>
 <translation id="2046702855113914483">Супа „Рамен“</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">Невалиден знак: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Португалски с американската международна клавиатура (PC)</translation>
 <translation id="2198315389084035571">опростен китайски</translation>
-<translation id="2208158072373999562">Компресиран архивен файл</translation>
 <translation id="22085916256174561">Корейски</translation>
 <translation id="2208919847696382164">Инсталиране с Linux</translation>
 <translation id="2225536596944493418">Наистина ли искате да изтриете <ph name="NUMBER_OF_ITEMS" /> елемента?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> байта</translation>
 <translation id="4880214202172289027">Плъзгач за силата на звука</translation>
 <translation id="4881695831933465202">Отваряне</translation>
-<translation id="4886199584824489598">Архив, компресиран във формат Bzip2</translation>
 <translation id="4900532980794411603">Споделяне с Parallels Desktop</translation>
 <translation id="4902546322522096650">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, свързване</translation>
 <translation id="4905417359854579806">Готови сме да създадем резервно копие на <ph name="FILE_COUNT" /></translation>
@@ -590,7 +586,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> елемента</translation>
 <translation id="5957366693331451795">Устройствата Chromebox</translation>
 <translation id="5982621672636444458">Опции за сортиране</translation>
-<translation id="5985041959109124139">Tar архив, компресиран във формат Z</translation>
 <translation id="6007237601604674381">Преместването не бе успешно. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet мрежа</translation>
 <translation id="60357267506638014">Чешка (QWERTY) клавиатура</translation>
@@ -650,7 +645,6 @@
 <translation id="6509122719576673235">норвежки</translation>
 <translation id="6528513914570774834">Разрешаване на другите потребители на устройството да използват тази мрежа</translation>
 <translation id="653019979737152879">„<ph name="FILE_NAME" />“ се синхронизира...</translation>
-<translation id="6530595303336443929">Tar архив, компресиран във формат Zstandard</translation>
 <translation id="6549689063733911810">Скорошни</translation>
 <translation id="6558280019477628686">Възникна грешка. Някои елементи може да не са изтрити.</translation>
 <translation id="656398493051028875">„<ph name="FILENAME" />“ се изтрива...</translation>
@@ -675,7 +669,6 @@
 <translation id="6806699711453372963">Управление на споделянето с Linux</translation>
 <translation id="6806796368146926706">Букви, цифри и символи с японска клавиатура</translation>
 <translation id="6808193438228982088">Лисица</translation>
-<translation id="6820687829547641339">Tar архив, компресиран във формат Gzip</translation>
 <translation id="6823166707458800069">За файловете в тази папка автоматично се създават резервни копия онлайн.</translation>
 <translation id="6825883775269213504">руски</translation>
 <translation id="6847101934483209767">Премахнахте <ph name="ENTRY_NAME" /> от избраните.</translation>
@@ -824,7 +817,6 @@
 <translation id="7925686952655276919">Без използване на мобилни данни за синхронизиране</translation>
 <translation id="7928710562641958568">Изваждане на устройството</translation>
 <translation id="7943385054491506837">Американска (Коулмак) клавиатура</translation>
-<translation id="7948417415021769876">7z архивен файл</translation>
 <translation id="7953739707111622108">Това устройство не може да бъде отворено, защото файловата му система не бе разпозната.</translation>
 <translation id="7969525169268594403">словенски</translation>
 <translation id="7972920761225148017">Френски (Швейцария)</translation>
@@ -866,7 +858,6 @@
 <translation id="8297012244086013755">Хангъл, 3 набора (без „Shift“)</translation>
 <translation id="8299269255470343364">японски</translation>
 <translation id="8300849813060516376">Безжичното осигуряване на услуга не бе успешно</translation>
-<translation id="8308481408797647857">Tar архив, компресиран във формат XZ</translation>
 <translation id="8312871300878166382">Поставяне в папка</translation>
 <translation id="8329978297633540474">Неформатиран текст</translation>
 <translation id="8335587457941836791">Освобождаване от лавицата</translation>
@@ -888,7 +879,6 @@
 <translation id="8461467696380332069">Кликнете с десния бутон върху даден файл и изберете „Фиксиране в лавицата“, за да имате бърз достъп до него в лавицата.</translation>
 <translation id="8461914792118322307">Прокси сървър</translation>
 <translation id="8463494891489624050">Виетнамски (VIQR)</translation>
-<translation id="8466234950814670489">Tar архив</translation>
 <translation id="8475647382427415476">Google Диск не можа да синхронизира „<ph name="FILENAME" />“. По-късно ще се извърши повторен опит.</translation>
 <translation id="8477649328507734757">Кръгове</translation>
 <translation id="8484284835977497781">Изберете от скорошните си снимки.</translation>
@@ -977,7 +967,6 @@
 <translation id="943972244133411984">Променено от</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="947144732524271678">Избрахте <ph name="ENTRY_COUNT" /> елемента – от <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">Архив, компресиран във формат Gzip</translation>
 <translation id="965477715979482472">английски (Южна Африка)</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Вече съществува файл с име „<ph name="FILE_NAME" />“. Искате ли да го замените?</translation>

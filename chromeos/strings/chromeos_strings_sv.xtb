@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Startprogram</translation>
 <translation id="1512982610995527443">Enheten stängs av om fem sekunder</translation>
 <translation id="1522984060396982789">Reparationen lyckades. Du kan stänga av enheten eller vidta ytterligare åtgärder.</translation>
+<translation id="1526389707933164996">Animation för skärmsläckaren</translation>
 <translation id="152892567002884378">Höj volymen</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="155865706765934889">Styrplatta</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3865414814144988605">Upplösning</translation>
 <translation id="387301095347517405">Antalet gånger som batteriet har laddats hela sin kapacitet</translation>
+<translation id="3885327323343477505">Ändra skärmsläckare</translation>
 <translation id="3923184630988645767">Dataanvändning</translation>
 <translation id="3924044641767672375">Vi rekommenderar att du ansluter till wifi för att göra reparationsprocessen enklare. Nätverket sparas.</translation>
 <translation id="3932043219784172185">Det finns ingen ansluten enhet</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Välj ett nytt omedelbart</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Batterinivån för vänster hörsnäcka på enheten är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4905998861748258752">Aktivera funktionen om du vill välja alternativ för skärmsläckaren</translation>
 <translation id="4908030561598728899">Installerar firmware …</translation>
 <translation id="4915052247106771211">Det här återställer enheten till standardinställningarna (Powerwash).</translation>
 <translation id="4917385247580444890">Stark</translation>
@@ -861,6 +864,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8997710128084572139">Enhetens batterinivå är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="9025198690966128418">Använd som personlig enhet</translation>
+<translation id="9028832514430399253">Aktivera inställningen om du vill välja alternativ för skärmsläckaren</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-upplösningen har hög fördröjning</translation>
 <translation id="9063121522582193837">Det gick inte att kalibrera vissa komponenter</translation>

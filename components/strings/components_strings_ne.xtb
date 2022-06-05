@@ -119,6 +119,7 @@
 <translation id="1270502636509132238">पिकअपको विधि</translation>
 <translation id="1281476433249504884">स्ट्याकर १</translation>
 <translation id="1285320974508926690">यो साइट कहिले पनि अनुवाद नगर्नुहोस्</translation>
+<translation id="1288548991597756084">कार्ड सुरक्षित रूपमा सेभ गर्नुहोस्</translation>
 <translation id="1292571435393770077">ट्रे १६</translation>
 <translation id="1292701964462482250">"तपाईंको कम्प्युटरमा रहेको सफ्टवेयरले Chrome लाई सुरक्षित रूपमा वेबमा जडान हुनबाट रोकिरहेको छ" (Windows कम्प्युटरहरू मात्र)</translation>
 <translation id="1294154142200295408">कमान्ड लाइनसम्बन्धी विविधताहरू</translation>
@@ -223,6 +224,7 @@
     &lt;p&gt;त्रुटि समाधान गर्न, तपाईंले खोल्ने प्रयास गर्नुभएको पृष्ठमा &lt;strong&gt;कनेक्ट गर्नुहोस्&lt;/strong&gt; मा क्लिक गर्नुहोस्‌।&lt;/p&gt;</translation>
 <translation id="1507780850870535225">ल्यान्डस्केप डिजाइन</translation>
 <translation id="1513706915089223971">इतिहाससम्बन्धी प्रविष्टिहरूको सूची</translation>
+<translation id="1516097932025103760">यो कार्ड इन्क्रिप्ट तथा सुरक्षित रूपमा सेभ गरिने छ तर CVC भने कहिले पनि भण्डारण गरिँदैन।</translation>
 <translation id="1517433312004943670">फोन नम्बर आवश्यक छ</translation>
 <translation id="1519264250979466059">निर्माण मिति</translation>
 <translation id="1521159554480556801">फाइबर तथा वस्त्र कलाहरू</translation>
@@ -1412,6 +1414,7 @@
 <translation id="483241715238664915">चेतावनी देखाउने सुविधा अन गर्नुहोस्</translation>
 <translation id="4834250788637067901">Google Pay प्रयोग गर्दा इम्पोर्ट गरिने भुक्तानी विधि, अफर र ठेगानाहरू</translation>
 <translation id="4838327282952368871">स्वप्निल</translation>
+<translation id="4839087176073128681">अर्को पटक छिटो भुक्तानी गर्नुहोस् र Google को सूचना प्रविधि उद्योगकै सर्वोत्कृष्ट सुरक्षा उपाय अपनाएर आफ्नो कार्ड सुरक्षित राख्नुहोस्।</translation>
 <translation id="4840250757394056958">Chrome को ब्राउजिङ इतिहास हेर्नुहोस्</translation>
 <translation id="484462545196658690">स्वतः</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> र अन्य स्टोरहरूमा छुट प्राप्त गर्नुहोस्</translation>

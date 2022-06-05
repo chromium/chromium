@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Pelancar</translation>
 <translation id="1512982610995527443">Peranti akan dimatikan dalam masa 5 saat</translation>
 <translation id="1522984060396982789">Pembaikan anda berjaya. Anda boleh mematikan peranti atau mengambil beberapa tindakan tambahan.</translation>
+<translation id="1526389707933164996">Animasi penyelamat skrin</translation>
 <translation id="152892567002884378">Tambah kelantangan</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="155865706765934889">Pad sentuh</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3865414814144988605">Peleraian</translation>
 <translation id="387301095347517405">Bilangan kali bateri anda telah melalui kitaran pengecasan penuh</translation>
+<translation id="3885327323343477505">Tukar penyelamat skrin</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
 <translation id="3924044641767672375">Anda disyorkan supaya menyambung kepada Wi-Fi untuk memudahkan lagi proses pembaikan. Rangkaian anda akan disimpan.</translation>
 <translation id="3932043219784172185">Tiada peranti disambungkan</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Pilih kata laluan baharu secepat mungkin</translation>
 <translation id="4891842000192098784">Tekanan</translation>
 <translation id="4897058166682006107">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% paras bateri kiri.</translation>
+<translation id="4905998861748258752">Hidupkan ciri ini untuk membuat pilihan penyelamat skrin</translation>
 <translation id="4908030561598728899">Memasang perisian tegar...</translation>
 <translation id="4915052247106771211">Tindakan ini akan menetapkan semula peranti kepada tetapan kilang (Powerwash).</translation>
 <translation id="4917385247580444890">Kuat</translation>
@@ -861,6 +864,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8997710128084572139">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% bateri.</translation>
 <translation id="9003704114456258138">Frekuensi</translation>
 <translation id="9025198690966128418">Gunakan sebagai peranti peribadi</translation>
+<translation id="9028832514430399253">Hidupkan togol untuk membuat pilihan penyelamat skrin</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Peleraian DNS mempunyai kependaman tinggi</translation>
 <translation id="9063121522582193837">Tidak dapat menentukur sesetengah komponen</translation>

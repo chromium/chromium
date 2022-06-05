@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">नेटवर्क नाहीत</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> सोबत फाइल उघडण्यासाठी, प्रथम त्या Windows फाइल फोल्डरमध्ये हलवा.</translation>
 <translation id="1062407476771304334">पुनर्स्थित करा</translation>
-<translation id="1119069657431255176">Bzip2 संकीर्ण tar संग्रहण</translation>
 <translation id="1119447706177454957">अंतर्गत एरर</translation>
 <translation id="1120073797882051782">हँगल Romaja</translation>
 <translation id="112387589102719461">ड्वोझॅक प्रोग्रामर कीबोर्डसह इंग्रजी (यूएस)</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">ड्राइव्ह फॉरमॅट त्यावर स्टोअर केलेला डेटा हटवेल. ही क्रिया पहिल्यासारखी केली जाऊ शकत नाही.</translation>
 <translation id="2025955442973426285">टिग्रीन्या</translation>
 <translation id="2028997212275086731">RAR संग्रहण</translation>
-<translation id="2036414735548252477">LZMA काँप्रेस केलेले tar संग्रहण</translation>
 <translation id="2037845485764049925">रशियन</translation>
 <translation id="2044023416777079300">मोडेमची नोंदणी केलेली नाही</translation>
 <translation id="2046702855113914483">रामेन</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">चुकीचा वर्ण: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">यूएस आंतरराष्ट्रीय पीसी कीबोर्डसह पोर्तुगीज</translation>
 <translation id="2198315389084035571">सरलीकृत चीनी</translation>
-<translation id="2208158072373999562">झीप संग्रहण करा</translation>
 <translation id="22085916256174561">कोरियन</translation>
 <translation id="2208919847696382164">Linux सह इंस्टॉल करा</translation>
 <translation id="2225536596944493418">तुम्हाला नक्की <ph name="NUMBER_OF_ITEMS" /> आयटम हटवायचे आहेत का?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> बाइट</translation>
 <translation id="4880214202172289027">व्हॉल्यूम स्लायडर</translation>
 <translation id="4881695831933465202">उघडा</translation>
-<translation id="4886199584824489598">Bzip2 काँप्रेस केलेले संग्रहण</translation>
 <translation id="4900532980794411603">Parallels Desktop सोबत शेअर करा</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करा</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> चा बॅकअप घेण्यास तयार</translation>
@@ -590,7 +586,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> आयटम</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">क्रमवारी पर्याय</translation>
-<translation id="5985041959109124139">Z काँप्रेस केलेले tar संग्रहण</translation>
 <translation id="6007237601604674381">हलविणे अयशस्वी. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">इथरनेट नेटवर्क</translation>
 <translation id="60357267506638014">झेक QWERTY</translation>
@@ -650,7 +645,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6509122719576673235">नॉर्वेजियन</translation>
 <translation id="6528513914570774834">या डिव्हाइसच्या इतर वापरकर्त्यांना हे नेटवर्क वापरण्याची परवानगी द्या</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> संकालित करत आहे...</translation>
-<translation id="6530595303336443929">Zstandard काँप्रेस केलेले tar संग्रहण</translation>
 <translation id="6549689063733911810">अलीकडील</translation>
 <translation id="6558280019477628686">एक एरर आली. काही आयटम हटवता आले नाहीत.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" हटवत आहे...</translation>
@@ -675,7 +669,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6806699711453372963">Linux शेअरिंग व्यवस्थापित करा</translation>
 <translation id="6806796368146926706">जपानी कीबोर्डसह वर्णांक</translation>
 <translation id="6808193438228982088">कोल्हा</translation>
-<translation id="6820687829547641339">Gzip संकीर्ण tar संग्रहण</translation>
 <translation id="6823166707458800069">या फोल्डरमध्ये सेव्ह केलेल्या सर्व फाइलचा आपोआप ऑनलाइन बॅकअप घेतला जातो.</translation>
 <translation id="6825883775269213504">रशियन</translation>
 <translation id="6847101934483209767">निवडीमधून <ph name="ENTRY_NAME" /> काढून टाकली/ले.</translation>
@@ -824,7 +817,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7925686952655276919">समक्रमणासाठी मोबाइल डेटा वापरु नका</translation>
 <translation id="7928710562641958568">डिव्हाइस काढून टाका</translation>
 <translation id="7943385054491506837">यूएस कोलमॅक</translation>
-<translation id="7948417415021769876">7z संग्रहण</translation>
 <translation id="7953739707111622108">हे डिव्हाइस उघडले जाऊ शकत नाही कारण त्याचे फाइलसिस्टम ओळखीचे नाही.</translation>
 <translation id="7969525169268594403">स्लोव्हेनियन</translation>
 <translation id="7972920761225148017">फ्रेंच (स्वित्झर्लंड)</translation>
@@ -866,7 +858,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8297012244086013755">हानगुल 3 संच (Shift नाही)</translation>
 <translation id="8299269255470343364">जपानी</translation>
 <translation id="8300849813060516376">OTASP बिघडले</translation>
-<translation id="8308481408797647857">XZ काँप्रेस केलेले tar संग्रहण</translation>
 <translation id="8312871300878166382">फोल्डरमध्ये पेस्ट करा</translation>
 <translation id="8329978297633540474">साधा मजकूर</translation>
 <translation id="8335587457941836791">शेल्फपासून अनपिन करा</translation>
@@ -888,7 +879,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8461467696380332069">शेल्फमधील तुमच्या फाइल झटपट अ‍ॅक्सेस करण्यासाठी फाइलवर राइट क्लिक करा आणि "शेल्फवर पिन करा" निवडा.</translation>
 <translation id="8461914792118322307">प्रॉक्सी</translation>
 <translation id="8463494891489624050">व्हिएतनामी VIQR</translation>
-<translation id="8466234950814670489">Tar संग्रहण</translation>
 <translation id="8475647382427415476">आत्ता "<ph name="FILENAME" />" संकालित करण्यात Google ड्राइव्ह अक्षम होते. Google ड्राइव्ह नंतर पुन्हा प्रयत्न करेल.</translation>
 <translation id="8477649328507734757">फिरवणे</translation>
 <translation id="8484284835977497781">तुमच्या अलीकडील फोटोमधून निवडा.</translation>
@@ -977,7 +967,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="943972244133411984">ने सुधारित केली</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ते <ph name="TO_ENTRY_NAME" /> मधील <ph name="ENTRY_COUNT" /> नोंदींची रेंज निवडली आहे.</translation>
-<translation id="961973045258256291">Gzip काँप्रेस केलेले संग्रहण</translation>
 <translation id="965477715979482472">इंग्रजी (दक्षिण आफ्रिका)</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" नावाची फाइल आधीच अस्तित्वात आहे. तुम्हाला ती बदलायची आहे का?</translation>

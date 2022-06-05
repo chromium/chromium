@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Стартер</translation>
 <translation id="1512982610995527443">Уредот ќе се исклучи за 5 секунди</translation>
 <translation id="1522984060396982789">Поправката беше успешна. Можете да го исклучите уредот или да преземете дополнителни дејства.</translation>
+<translation id="1526389707933164996">Анимација за заштитникот на екранот</translation>
 <translation id="152892567002884378">Зголемете ја јачината на звукот</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="155865706765934889">Подлога за допир</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Име</translation>
 <translation id="3865414814144988605">Резолуција</translation>
 <translation id="387301095347517405">Колку пати батеријата поминала низ целосен циклус на полнење</translation>
+<translation id="3885327323343477505">Променете го заштитникот на екранот</translation>
 <translation id="3923184630988645767">Интернет</translation>
 <translation id="3924044641767672375">Се препорачува да се поврзете на Wi-Fi за да го олесните процесот на поправка. Вашата мрежа ќе биде зачувана.</translation>
 <translation id="3932043219784172185">Нема поврзан уред</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Веднаш изберете нова</translation>
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4897058166682006107">Нивото на батерија на левата слушалка е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4905998861748258752">Вклучете ја функцијата за да ги изберете опциите за заштитникот на екранот</translation>
 <translation id="4908030561598728899">Се инсталира фирмвер…</translation>
 <translation id="4915052247106771211">Ова ќе го ресетира уредот на фабрички поставки (Фабричко ресетирање).</translation>
 <translation id="4917385247580444890">Силен</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">Нивото на батерија на уредот е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Зачестеност</translation>
 <translation id="9025198690966128418">Користете го како личен уред</translation>
+<translation id="9028832514430399253">Вклучете го копчето за да ги изберете опциите за заштитникот на екранот</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Одредување со DNS има висока латенција</translation>
 <translation id="9063121522582193837">Не можеше да се калибрираат некои компоненти</translation>

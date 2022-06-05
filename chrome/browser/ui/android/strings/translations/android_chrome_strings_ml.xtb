@@ -369,7 +369,6 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{വായിക്കാത്ത <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> പേജ്}other{വായിക്കാത്ത <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> പേജുകൾ}}</translation>
 <translation id="2961210776189273067">ശീർഷകം</translation>
 <translation id="2979025552038692506">തിരഞ്ഞെടുത്ത അദൃശ്യ ടാബ്</translation>
-<translation id="2979448359891869301">സ്ക്രീന്‍ഷോട്ട് കൂടുതൽ നീട്ടാനാകില്ല. നിങ്ങളുടെ ഫോണിന്റെ ഉപയോഗം കുറഞ്ഞിരിക്കുമ്പോൾ വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2979639724566107830">പുതിയ വിന്‍ഡോയില്‍ തുറക്കുക</translation>
 <translation id="2981364137500752533">നിങ്ങൾക്ക് 5 വിൻഡോകൾ വരെ തുറക്കാനാകും.</translation>
 <translation id="2984978667043170458">Google തിരയലുകളിൽ ചുറ്റുമുള്ള ടെക്സ്റ്റ് ഉൾപ്പെടുത്തുക</translation>
@@ -1529,6 +1528,7 @@
 <translation id="9209888181064652401">കോളുകൾ ചെയ്യാനാവില്ല</translation>
 <translation id="9212845824145208577">താഴേക്ക് പോകാനാകില്ല. പേജിന്റെ കുറച്ച് കൂടെ താഴെ നിന്ന് ആരംഭിക്കാൻ ശ്രമിക്കൂ.</translation>
 <translation id="9219103736887031265">Images</translation>
+<translation id="9219582468404818260">മെച്ചപ്പെട്ട വെബ് നിർമ്മിക്കാൻ ഞങ്ങളെ സഹായിക്കൂ</translation>
 <translation id="92381315203627188">ഒരു സൈറ്റ് അവരുടെ പേജിലെ ലിങ്കുകൾ സ്വകാര്യമായി മുൻകൂട്ടി ലോഡ് ചെയ്യാൻ ആവശ്യപ്പെടുമ്പോൾ, കുക്കികളില്ലാതെ Google സെർവറുകൾ മുഖേന പേജുകൾ Chrome എൻക്രിപ്റ്റും മുൻകൂട്ടി ലോഡും ചെയ്യുന്നു. മുൻകൂട്ടി ലോഡ് ചെയ്ത സൈറ്റിൽ നിന്ന് ഇത് നിങ്ങളുടെ ഐഡന്റിറ്റി മറയ്ക്കുന്നു.</translation>
 <translation id="926205370408745186">ഡിജിറ്റൽ ആരോഗ്യത്തിൽ നിന്ന് നിങ്ങളുടെ Chrome ആക്റ്റിവിറ്റി നീക്കം ചെയ്യുക</translation>
 <translation id="927968626442779827">Google Chrome-ൽ ലൈറ്റ് മോഡ് ഉപയോഗിക്കൂ</translation>

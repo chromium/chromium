@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Nenhuma rede</translation>
 <translation id="1060368002126861100">Para abrir ficheiros com a app <ph name="APP_NAME" />, mova-os primeiro para a pasta de ficheiros do Windows.</translation>
 <translation id="1062407476771304334">Substituir</translation>
-<translation id="1119069657431255176">Arquivo tar comprimido Bzip2</translation>
 <translation id="1119447706177454957">Erro interno</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Inglês (EUA) com teclado Dvorak de programador</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">Ao formatar uma unidade, todos os dados aí armazenados são eliminados. Não é possível anular esta ação.</translation>
 <translation id="2025955442973426285">Tigrínia</translation>
 <translation id="2028997212275086731">Arquivo RAR</translation>
-<translation id="2036414735548252477">Arquivo tar comprimido LZMA</translation>
 <translation id="2037845485764049925">Russo</translation>
 <translation id="2044023416777079300">Modem não registado</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">Caráter inválido: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Português com teclado de PC americano internacional</translation>
 <translation id="2198315389084035571">Chinês Simplificado</translation>
-<translation id="2208158072373999562">Ficheiro zip</translation>
 <translation id="22085916256174561">Coreano</translation>
 <translation id="2208919847696382164">Instalar com o Linux</translation>
 <translation id="2225536596944493418">Tem a certeza de que pretende eliminar <ph name="NUMBER_OF_ITEMS" /> itens?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
 <translation id="4880214202172289027">Controlo de deslize do volume</translation>
 <translation id="4881695831933465202">Abrir</translation>
-<translation id="4886199584824489598">Arquivo comprimido Bzip2</translation>
 <translation id="4900532980794411603">Partilhar com o Parallels Desktop</translation>
 <translation id="4902546322522096650">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, ligar</translation>
 <translation id="4905417359854579806">Pronto para fazer uma cópia de segurança de <ph name="FILE_COUNT" />.</translation>
@@ -590,7 +586,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> itens</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Opções de ordenação</translation>
-<translation id="5985041959109124139">Arquivo tar comprimido Z</translation>
 <translation id="6007237601604674381">Falha ao mover. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rede Ethernet</translation>
 <translation id="60357267506638014">Checo QWERTY</translation>
@@ -650,7 +645,6 @@
 <translation id="6509122719576673235">Norueguês</translation>
 <translation id="6528513914570774834">Permitir que outros utilizadores deste dispositivo utilizem esta rede</translation>
 <translation id="653019979737152879">A sincronizar <ph name="FILE_NAME" />…</translation>
-<translation id="6530595303336443929">Arquivo tar comprimido Zstandard</translation>
 <translation id="6549689063733911810">Recente</translation>
 <translation id="6558280019477628686">Ocorreu um erro. É possível que alguns itens não tenham sido eliminados.</translation>
 <translation id="656398493051028875">A eliminar "<ph name="FILENAME" />"...</translation>
@@ -675,7 +669,6 @@
 <translation id="6806699711453372963">Gerir partilha do Linux</translation>
 <translation id="6806796368146926706">Teclado alfanumérico com teclado japonês</translation>
 <translation id="6808193438228982088">Raposa</translation>
-<translation id="6820687829547641339">Arquivo tar comprimido Gzip</translation>
 <translation id="6823166707458800069">Será feita automaticamente uma cópia de segurança online de todos os ficheiros guardados nesta pasta.</translation>
 <translation id="6825883775269213504">Russo</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> foi removido da seleção.</translation>
@@ -824,7 +817,6 @@
 <translation id="7925686952655276919">Não utilizar dados móveis para sincronização</translation>
 <translation id="7928710562641958568">Ejetar aparelho</translation>
 <translation id="7943385054491506837">EUA Colemak</translation>
-<translation id="7948417415021769876">Arquivo 7z</translation>
 <translation id="7953739707111622108">Não é possível abrir este aparelho porque o sistema de ficheiros não foi reconhecido.</translation>
 <translation id="7969525169268594403">Esloveno</translation>
 <translation id="7972920761225148017">Francês (Suíça)</translation>
@@ -866,7 +858,6 @@
 <translation id="8297012244086013755">Hangul 3 Set (sem Shift)</translation>
 <translation id="8299269255470343364">Japonês</translation>
 <translation id="8300849813060516376">O OTASP falhou</translation>
-<translation id="8308481408797647857">Arquivo tar comprimido XZ</translation>
 <translation id="8312871300878166382">Colar numa pasta</translation>
 <translation id="8329978297633540474">Texto simples</translation>
 <translation id="8335587457941836791">Soltar da prateleira</translation>
@@ -888,7 +879,6 @@
 <translation id="8461467696380332069">Clique com o botão direito do rato num ficheiro e selecione "Fixar na prateleira" para um acesso rápido aos seus ficheiros na prateleira.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">VIQR vietnamita</translation>
-<translation id="8466234950814670489">Arquivo tar</translation>
 <translation id="8475647382427415476">O Google Drive não conseguiu sincronizar "<ph name="FILENAME" />" de momento e vai tentar novamente mais tarde.</translation>
 <translation id="8477649328507734757">Círculo</translation>
 <translation id="8484284835977497781">Escolha a partir das suas fotos recentes.</translation>
@@ -977,7 +967,6 @@
 <translation id="943972244133411984">Modificado por</translation>
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="947144732524271678">Selecionou um intervalo de <ph name="ENTRY_COUNT" /> entradas de <ph name="FROM_ENTRY_NAME" /> a <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">Arquivo comprimido Gzip</translation>
 <translation id="965477715979482472">Inglês (África do Sul)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Já existe um ficheiro com o nome "<ph name="FILE_NAME" />". Pretende substituí-lo?</translation>

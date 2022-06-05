@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">ບໍ່ມີເຄືອຂ່າຍ</translation>
 <translation id="1060368002126861100">ເພື່ອເປີດໄຟລ໌ດ້ວຍ <ph name="APP_NAME" />, ກະລຸນາຍ້າຍພວກມັນໄປໃສ່ໂຟນເດີໄຟລ໌ຂອງ Windows ກ່ອນ.</translation>
 <translation id="1062407476771304334">​ປ່ຽນ​ແທນ​</translation>
-<translation id="1119069657431255176">ບ່ອນເກັບມ້ຽນຢາງອັດແໜ້ນ Bzip2</translation>
 <translation id="1119447706177454957">ຜິດພາດພາຍໃນ</translation>
 <translation id="1120073797882051782">ຮາງກຸລ ໂຣມາຈາ</translation>
 <translation id="112387589102719461">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Dvorak ສຳລັບຜູ້ສ້າງໂປຣແກຣມ</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">ການຟໍແມັດໄດຣຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
 <translation id="2025955442973426285">ພາສາທິກຣິນຢາ</translation>
 <translation id="2028997212275086731">ເຄື່ອງເກັບມ້ຽນ RAR</translation>
-<translation id="2036414735548252477">ແຟ້ມຈັດເກັບ Tar LZMA ທີ່ບີບອັດໄວ້</translation>
 <translation id="2037845485764049925">ພາສາຣັດເຊຍ</translation>
 <translation id="2044023416777079300">ບໍ່ໄດ້ລົງທະບຽນໂມເດັມ</translation>
 <translation id="2046702855113914483">ຣາເມັງ</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">ຕົວອັກສອນໃຊ້ບໍ່ໄດ້: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">ພາສາປໍຕຸຍກິສທີ່ໃຊ້ແປ້ນພິມຄອມພິວເຕີສະຫະລັດແບບສາກົນ</translation>
 <translation id="2198315389084035571">ພາສາຈີນຕົວຫຍໍ້</translation>
-<translation id="2208158072373999562">ຄັງເກັບໄຟລ໌ຊິບ</translation>
 <translation id="22085916256174561">ພາສາເກົາຫຼີ</translation>
 <translation id="2208919847696382164">ຕິດຕັ້ງດ້ວຍ Linux</translation>
 <translation id="2225536596944493418">ທ່ານ​ແນ່​ໃຈບໍ່ວ່​າ ​ທ່ານ​ຕ້ອງ​ການ​ລຶບ <ph name="NUMBER_OF_ITEMS" /> ລາຍ​ການ​?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ໄບຕ໌</translation>
 <translation id="4880214202172289027">​ແຖບ​ເລື່ອນປັບ​ລະດັບ​ສຽງ</translation>
 <translation id="4881695831933465202">ເປີດ</translation>
-<translation id="4886199584824489598">ແຟ້ມຈັດເກັບ Bzip2 ທີ່ບີບອັດໄວ້</translation>
 <translation id="4900532980794411603">ແບ່ງປັນກັບ Parallels Desktop</translation>
 <translation id="4902546322522096650">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ເຊື່ອມຕໍ່</translation>
 <translation id="4905417359854579806">ພ້ອມສຳຮອງ <ph name="FILE_COUNT" /> ໄວ້ແລ້ວ</translation>
@@ -589,7 +585,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ລາຍການ</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">ລຽງ​ລຳ​ດັບ​ທາງ​ເລືອກ</translation>
-<translation id="5985041959109124139">ແຟ້ມຈັດເກັບ tar ທີ່ບີບອັດໂດຍ Z</translation>
 <translation id="6007237601604674381">ຍ້າຍບໍ່ສໍາເລັດ. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ເຄືອຂ່າຍອີເທີເນັດ</translation>
 <translation id="60357267506638014">QWERTY ພາ​ສາ​ເຊັກ</translation>
@@ -649,7 +644,6 @@
 <translation id="6509122719576673235">ພາສານັອກແວ</translation>
 <translation id="6528513914570774834">ອະນຸຍາດໃຫ້ຜູ້ໃຊ້ອື່ນຂອງອຸປະກອນນີ້ໃຊ້ເຄືອຂ່າຍນີ້</translation>
 <translation id="653019979737152879">ກໍາລັງຊິງຄ໌ <ph name="FILE_NAME" />...</translation>
-<translation id="6530595303336443929">ແຟ້ມຈັດເກັບ tar ທີ່ບີບອັດໂດຍ Zstandard</translation>
 <translation id="6549689063733911810">ບໍ່ດົນມານີ້</translation>
 <translation id="6558280019477628686">ເກີດຄວາມຜິດພາດຂຶ້ນ. ບາງລາຍການອາດຈະບໍ່ຖືກລຶບ.</translation>
 <translation id="656398493051028875">ກໍາລັງລຶບ "<ph name="FILENAME" />"...</translation>
@@ -674,7 +668,6 @@
 <translation id="6806699711453372963">ຈັດການການແບ່ງປັນ Linux</translation>
 <translation id="6806796368146926706">ຕົວອັກສອນ ແລະ ຕົວເລກທີ່ໃຊ້ແປ້ນພິມພາສາຍີ່ປຸ່ນ</translation>
 <translation id="6808193438228982088">ໝາຈອກ</translation>
-<translation id="6820687829547641339">ບ່ອນເກັບມ້ຽນຢາງອັດແໜ້ນ Gzip</translation>
 <translation id="6823166707458800069">ທຸກໄຟລ໌ທີ່ບັນທຶກຢູ່ໃນໂຟນເດີນີ້ຖືກສຳຮອງຂໍ້ມູນແບບອອນລາຍໂດຍອັດຕະໂນມັດແລ້ວ.</translation>
 <translation id="6825883775269213504">ພາສາລັດເຊຍ</translation>
 <translation id="6847101934483209767">ລຶບ <ph name="ENTRY_NAME" /> ອອກຈາກການເລືອກແລ້ວ.</translation>
@@ -823,7 +816,6 @@
 <translation id="7925686952655276919">ຢ່າໃຊ້ຂໍ້ມູນມືຖືສໍາລັບການຊິງຄ໌</translation>
 <translation id="7928710562641958568">ບີບອຸ​ປະ​ກອນອອກ</translation>
 <translation id="7943385054491506837">Colemak ສະຫະລັດ</translation>
-<translation id="7948417415021769876">ແຟ້ມຈັດເກັບ 7z</translation>
 <translation id="7953739707111622108">ບໍ່ສາມາດເປີດອຸປະກອນນີ້ໄດ້ ເພາະວ່າລະບົບໄຟລ໌ຂອງມັນບໍ່ຖືກຮັບຮູ້.</translation>
 <translation id="7969525169268594403">ພາສາສະໂລວາເນຍ</translation>
 <translation id="7972920761225148017">ພາສາຝຣັ່ງ (ສະວິດເຊີແລນ)</translation>
@@ -865,7 +857,6 @@
 <translation id="8297012244086013755">ຮາງກຸລ 3 ຊຸດ (​ບໍ່​ໃຊ້ປຸ່ມ  shift)</translation>
 <translation id="8299269255470343364">ພາສາຍີ່ປຸ່ນ</translation>
 <translation id="8300849813060516376">OTASP ລົ້ມເຫຼວ</translation>
-<translation id="8308481408797647857">ແຟ້ມຈັດເກັບ Tar XZ ທີ່ບີບອັດໄວ້</translation>
 <translation id="8312871300878166382">ແປະໃສ່ໃນໂຟລເດີ</translation>
 <translation id="8329978297633540474">ຂໍ້ຄວາມທໍາມະດາ</translation>
 <translation id="8335587457941836791">ຖອນປັກໝຸດຈາກຖ້ານ</translation>
@@ -887,7 +878,6 @@
 <translation id="8461467696380332069">ຄລິກຂວາໃສ່ໄຟລ໌ ແລ້ວເລືອກ "ປັກໝຸດໃສ່ຖ້ານ" ເພື່ອເຂົ້າເຖິງໄຟລ໌ໃນຖ້ານໄດ້ຢ່າງວ່ອງໄວ.</translation>
 <translation id="8461914792118322307">ພຣັອກຊີ</translation>
 <translation id="8463494891489624050">ພາສາຫວຽດນາມ (VIQR)</translation>
-<translation id="8466234950814670489">ຄັງເກັບຂໍ້ມູນທາ</translation>
 <translation id="8475647382427415476">Google Drive ບໍ່​ສາ​ມາດ​ຊິງ​ຄ໌ "<ph name="FILENAME" />" ໄດ້​ໃນ​ເວ​ລາ​ນີ້. Google Drive ຈະ​ລອງ​ໃໝ່​ພາຍ​ຫຼັງ.</translation>
 <translation id="8477649328507734757">ໝຸນ</translation>
 <translation id="8484284835977497781">ເລືອກຈາກຮູບຫຼ້າສຸດຂອງທ່ານ.</translation>
@@ -976,7 +966,6 @@
 <translation id="943972244133411984">ແກ້ໄຂໂດຍ</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 <translation id="947144732524271678">ເລືອກລາຍການທັງໝົດ <ph name="ENTRY_COUNT" /> ລາຍການ ຕັ້ງແຕ່ <ph name="FROM_ENTRY_NAME" /> ຈົນເຖິງ <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">ແຟ້ມຈັດເກັບ Gzip ທີ່ບີບອັດໄວ້</translation>
 <translation id="965477715979482472">ອັງກິດ (ອາຟຣິກາໃຕ້)</translation>
 <translation id="981121421437150478">ອອຟລາຍນ໌</translation>
 <translation id="988685240266037636">ມີໄຟລ໌ຊື່ "<ph name="FILE_NAME" />" ຢູ່ແລ້ວ. ທ່ານຕ້ອງການປ່ຽນແທນມັນບໍ?</translation>

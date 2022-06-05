@@ -119,6 +119,7 @@
 <translation id="1270502636509132238">Начин на подигнување</translation>
 <translation id="1281476433249504884">Фиока за складирање 1</translation>
 <translation id="1285320974508926690">Никогаш не преведувај ја оваа локација</translation>
+<translation id="1288548991597756084">Безбедно зачувајте ја картичката</translation>
 <translation id="1292571435393770077">Фиока 16</translation>
 <translation id="1292701964462482250">„Софтверот на вашиот компјутер го спречува Chrome безбедно да се поврзе на интернет“ (само за компјутери со Windows)</translation>
 <translation id="1294154142200295408">Варијации на линијата за наредби</translation>
@@ -223,6 +224,7 @@
     &lt;p&gt;За да ја поправите грешката, кликнете &lt;strong&gt;Поврзи&lt;/strong&gt; на страницата што се обидувате да ја отворите.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Пејзажен дизајн</translation>
 <translation id="1513706915089223971">Список со записи во историјата</translation>
+<translation id="1516097932025103760">Ќе биде шифрирана и безбедно зачувана, а CVC никогаш не се складира.</translation>
 <translation id="1517433312004943670">Потребен е телефонски број</translation>
 <translation id="1519264250979466059">Датум на комплетна верзија</translation>
 <translation id="1521159554480556801">Ткаенина и текстилна уметност</translation>
@@ -1416,6 +1418,7 @@
 <translation id="483241715238664915">Вклучи опомени</translation>
 <translation id="4834250788637067901">Начини на плаќање, понуди и адреси преку Google Pay</translation>
 <translation id="4838327282952368871">Нереален</translation>
+<translation id="4839087176073128681">Платете побрзо следниот пат, а вашата картичка заштитете ја со најнова технологија за безбедност од Google.</translation>
 <translation id="4840250757394056958">Прикажи ја историјата на Chrome</translation>
 <translation id="484462545196658690">Автоматски</translation>
 <translation id="484671803914931257">Добијте попуст од <ph name="MERCHANT_NAME" /> и други</translation>

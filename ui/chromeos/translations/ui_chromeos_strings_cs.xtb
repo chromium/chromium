@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Žádné sítě</translation>
 <translation id="1060368002126861100">Pokud soubory chcete otevřít pomocí aplikace <ph name="APP_NAME" />, nejdříve je přesuňte do složky souborů Windows.</translation>
 <translation id="1062407476771304334">Nahradit</translation>
-<translation id="1119069657431255176">Archiv ve formátu Tar komprimovaný metodou Bzip2</translation>
 <translation id="1119447706177454957">Interní chyba</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">angličtina (USA) s klávesnicí Programmer Dvorak</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">Naformátováním jednotky smažete všechna na ní uložená data. Tuto akci nelze vrátit zpět.</translation>
 <translation id="2025955442973426285">tigrinijština</translation>
 <translation id="2028997212275086731">Archiv ve formátu RAR</translation>
-<translation id="2036414735548252477">Archiv ve formátu Tar komprimovaný metodou LZMA</translation>
 <translation id="2037845485764049925">ruština</translation>
 <translation id="2044023416777079300">Modem není zaregistrován</translation>
 <translation id="2046702855113914483">Polévka ramen</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">Neplatný znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">portugalština s klávesnicí USA – mezinárodní (PC)</translation>
 <translation id="2198315389084035571">Zjednodušená čínština</translation>
-<translation id="2208158072373999562">Archiv ZIP</translation>
 <translation id="22085916256174561">korejština</translation>
 <translation id="2208919847696382164">Instalovat aplikaci pro Linux</translation>
 <translation id="2225536596944493418">Opravdu chcete tyto položky (<ph name="NUMBER_OF_ITEMS" />) smazat?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> B</translation>
 <translation id="4880214202172289027">Posuvník hlasitosti</translation>
 <translation id="4881695831933465202">Otevřít</translation>
-<translation id="4886199584824489598">Komprimovaný archiv Bzip2</translation>
 <translation id="4900532980794411603">Sdílet s nástrojem Parallels Desktop</translation>
 <translation id="4902546322522096650">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, připojit</translation>
 <translation id="4905417359854579806">Připraveno k zálohování: <ph name="FILE_COUNT" /></translation>
@@ -589,7 +585,6 @@
 <translation id="5955954492236143329">Počet položek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Možnosti řazení</translation>
-<translation id="5985041959109124139">Archiv ve formátu Tar komprimovaný metodou Z</translation>
 <translation id="6007237601604674381">Přesun se nezdařil. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Síť Ethernet</translation>
 <translation id="60357267506638014">Česká klávesnice QWERTY</translation>
@@ -649,7 +644,6 @@
 <translation id="6509122719576673235">norština</translation>
 <translation id="6528513914570774834">Povolit ostatním uživatelům tohoto zařízení používat tuto síť</translation>
 <translation id="653019979737152879">Synchronizace souboru <ph name="FILE_NAME" />...</translation>
-<translation id="6530595303336443929">Archiv ve formátu Tar komprimovaný metodou Zstandard</translation>
 <translation id="6549689063733911810">Poslední</translation>
 <translation id="6558280019477628686">Došlo k chybě. Některé položky možná nebyly smazány.</translation>
 <translation id="656398493051028875">Mazání souboru <ph name="FILENAME" />...</translation>
@@ -674,7 +668,6 @@
 <translation id="6806699711453372963">Spravovat sdílení v systému Linux</translation>
 <translation id="6806796368146926706">alfanumerické znaky s japonskou klávesnicí</translation>
 <translation id="6808193438228982088">Liška</translation>
-<translation id="6820687829547641339">Archiv ve formátu Tar komprimovaný metodou Gzip</translation>
 <translation id="6823166707458800069">Všechny soubory uložené v této složce se automaticky zálohují online.</translation>
 <translation id="6825883775269213504">ruština</translation>
 <translation id="6847101934483209767">Položka <ph name="ENTRY_NAME" /> byla odebrána z výběru.</translation>
@@ -823,7 +816,6 @@
 <translation id="7925686952655276919">Nepoužívat k synchronizaci mobilní datové přenosy</translation>
 <translation id="7928710562641958568">Vysunout zařízení</translation>
 <translation id="7943385054491506837">Americká klávesnice Colemak</translation>
-<translation id="7948417415021769876">Archiv 7z</translation>
 <translation id="7953739707111622108">Toto zařízení nelze otevřít, protože jeho systém souborů nebyl rozpoznán.</translation>
 <translation id="7969525169268594403">slovinština</translation>
 <translation id="7972920761225148017">francouzština (Švýcarsko)</translation>
@@ -865,7 +857,6 @@
 <translation id="8297012244086013755">Hangul – 3 sady (bez klávesy Shift)</translation>
 <translation id="8299269255470343364">japonština</translation>
 <translation id="8300849813060516376">Selhání OTASP</translation>
-<translation id="8308481408797647857">Archiv ve formátu Tar komprimovaný metodou XZ</translation>
 <translation id="8312871300878166382">Vložit do složky</translation>
 <translation id="8329978297633540474">Prostý text</translation>
 <translation id="8335587457941836791">Uvolnit z poličky</translation>
@@ -887,7 +878,6 @@
 <translation id="8461467696380332069">Klikněte pravým tlačítkem na soubor a výběrem možnosti Připnout k poličce umožněte rychlý přístup k souborům na poličce.</translation>
 <translation id="8461914792118322307">Proxy server</translation>
 <translation id="8463494891489624050">vietnamština VIQR</translation>
-<translation id="8466234950814670489">Archiv ve formátu Tar</translation>
 <translation id="8475647382427415476">Soubor <ph name="FILENAME" /> teď nebylo možné synchronizovat. Disk Google to zkusí znovu později.</translation>
 <translation id="8477649328507734757">Otáčení</translation>
 <translation id="8484284835977497781">Vyberte ze svých posledních fotek.</translation>
@@ -976,7 +966,6 @@
 <translation id="943972244133411984">Upravil(a)</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="947144732524271678">Vybrali jste položky <ph name="FROM_ENTRY_NAME" /> až <ph name="TO_ENTRY_NAME" /> (celkem <ph name="ENTRY_COUNT" />).</translation>
-<translation id="961973045258256291">Komprimovaný archiv Gzip</translation>
 <translation id="965477715979482472">angličtina (Jižní Afrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Soubor s názvem „<ph name="FILE_NAME" />“ již existuje. Chcete jej nahradit?</translation>

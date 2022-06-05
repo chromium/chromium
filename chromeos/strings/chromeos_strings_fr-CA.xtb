@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Lanceur</translation>
 <translation id="1512982610995527443">L'appareil s'éteindra au bout de cinq secondes</translation>
 <translation id="1522984060396982789">Votre réparation a réussi. Vous pouvez éteindre l'appareil ou prendre d'autres mesures.</translation>
+<translation id="1526389707933164996">Animation de l'écran de veille</translation>
 <translation id="152892567002884378">Augmenter le volume</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3865414814144988605">Résolution</translation>
 <translation id="387301095347517405">Le nombre de cycles de recharge complets effectués par la pile de votre appareil</translation>
+<translation id="3885327323343477505">Changer l'écran de veille</translation>
 <translation id="3923184630988645767">Utilisation de données</translation>
 <translation id="3924044641767672375">Il est recommandé de se connecter au réseau Wi-Fi pour faciliter le processus de réparation. Votre réseau sera enregistré.</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Choisissez-en un immédiatement</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Le niveau de la pile de l'écouteur gauche est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4905998861748258752">Activez la fonctionnalité pour sélectionner les options de l'écran de veille</translation>
 <translation id="4908030561598728899">Installation du micrologiciel en cours…</translation>
 <translation id="4915052247106771211">L'appareil sera réinitialisé aux paramètres par défaut (Powerwash).</translation>
 <translation id="4917385247580444890">Fort</translation>
@@ -861,6 +864,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8997710128084572139">Le niveau de la pile de l'appareil est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Fréquence</translation>
 <translation id="9025198690966128418">Utiliser comme un appareil personnel</translation>
+<translation id="9028832514430399253">Activez le commutateur pour sélectionner les options de l'écran de veille</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">La résolution DNS présente une latence élevée</translation>
 <translation id="9063121522582193837">Impossible de calibrer certains composants</translation>

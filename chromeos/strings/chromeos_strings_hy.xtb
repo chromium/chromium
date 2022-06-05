@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Գործարկիչ</translation>
 <translation id="1512982610995527443">Սարքը 5 վայրկյանից կանջատվի</translation>
 <translation id="1522984060396982789">Նորոգումն ավարտված է։ Դուք կարող անջատել սարքը կամ կատարել լրացուցիչ գործողություններ։</translation>
+<translation id="1526389707933164996">Էրանապահի համար շարժանկար</translation>
 <translation id="152892567002884378">Բարձրացնել ձայնը</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
 <translation id="155865706765934889">Հպահարթակ</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="3865414814144988605">Լուծաչափ</translation>
 <translation id="387301095347517405">Քանի անգամ է ձեր մարտկոցն ամբողջությամբ լիցքավորվել</translation>
+<translation id="3885327323343477505">Փոխել էկրանապահը</translation>
 <translation id="3923184630988645767">Թրաֆիկի օգտագործում</translation>
 <translation id="3924044641767672375">Վերականգնման գործընթացը հեշտացնելու համար խորհուրդ է տրվում միանալ Wi-Fi-ին։ Ձեր ցանցի տվյալները կպահվեն։</translation>
 <translation id="3932043219784172185">Միացած սարքեր չկան</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Հնարավորինս արագ փոխեք գաղտնաբառը</translation>
 <translation id="4891842000192098784">Ծանրաբեռնվածություն</translation>
 <translation id="4897058166682006107">Ձախ ականջակալի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
+<translation id="4905998861748258752">Միացրեք գործառույթը՝ էկրանապահի պարամետրեր ընտրելու համար</translation>
 <translation id="4908030561598728899">Ներկառուցված ծրագիրը տեղադրվում է…</translation>
 <translation id="4915052247106771211">Կվերականգնվեն սարքի գործարանային կարգավորումները (Powerwash)։</translation>
 <translation id="4917385247580444890">Ուժեղ</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">Սարքի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="9003704114456258138">Հաճախականություն</translation>
 <translation id="9025198690966128418">Օգտագործել որպես անձնական սարք</translation>
+<translation id="9028832514430399253">Էկրանապահի տարբերակներն ընտրելու համար միացրեք փոխանջատիչը</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-ի փոխակերպումն ունի բարձր հապաղում</translation>
 <translation id="9063121522582193837">Չհաջողվեց չափաբերել որոշ բաղադրիչներ</translation>

@@ -369,7 +369,6 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> μη αναγνωσμένη σελίδα}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> μη αναγνωσμένες σελίδες}}</translation>
 <translation id="2961210776189273067">Τίτλος</translation>
 <translation id="2979025552038692506">Επιλεγμένη καρτέλα ανώνυμης περιήγησης</translation>
-<translation id="2979448359891869301">Δεν είναι δυνατή η επέκταση του στιγμιότυπου οθόνης. Δοκιμάστε ξανά όταν το τηλέφωνό σας δεν είναι απασχολημένο.</translation>
 <translation id="2979639724566107830">Άνοιγμα σε νέο παράθυρο</translation>
 <translation id="2981364137500752533">Μπορείτε να έχετε έως 5 παράθυρα.</translation>
 <translation id="2984978667043170458">Συμπερίληψη περιβάλλοντος κειμένου στις αναζητήσεις Google</translation>
@@ -1529,6 +1528,7 @@
 <translation id="9209888181064652401">Δεν είναι δυνατή η πραγματοποίηση κλήσεων</translation>
 <translation id="9212845824145208577">Δεν είναι δυνατή η μετάβαση χαμηλότερα. Δοκιμάστε να ξεκινήσετε από ακόμη πιο χαμηλά στη σελίδα.</translation>
 <translation id="9219103736887031265">Εικόνες</translation>
+<translation id="9219582468404818260">Συμβάλετε στις προσπάθειές μας για έναν καλύτερο ιστό</translation>
 <translation id="92381315203627188">Όταν ένας ιστότοπος ζητήσει να προφορτώσει ιδιωτικά συνδέσμους στη σελίδα του, το Chrome κρυπτογραφεί και προφορτώνει τις σελίδες μέσω των διακομιστών της Google χωρίς cookie. Με αυτόν τον τρόπο, αποκρύπτεται η ταυτότητά σας από τον προφορτωμένο ιστότοπο.</translation>
 <translation id="926205370408745186">Κατάργηση της δραστηριότητάς σας στο Chrome από το Digital Wellbeing</translation>
 <translation id="927968626442779827">Χρησιμοποιήστε τη λειτουργία Lite στο Google Chrome.</translation>

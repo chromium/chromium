@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Dim rhwydweithiau</translation>
 <translation id="1060368002126861100">Er mwyn agor ffeiliau gyda <ph name="APP_NAME" />, symudwch nhw yn gyntaf i'r ffolder ffeiliau Windows.</translation>
 <translation id="1062407476771304334">Disodli</translation>
-<translation id="1119069657431255176">Archif tar cywasgedig Bzip2</translation>
 <translation id="1119447706177454957">Gwall mewnol</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Saesneg (UDA) gyda bysellfwrdd Rhaglennydd Dvorak</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">Bydd fformatio gyriant yn dileu'r holl ddata sydd wedi'u cadw arno. Ni ellir dadwneud y weithred hon.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">Archif RAR</translation>
-<translation id="2036414735548252477">Archif tar cywasgedig LZMA</translation>
 <translation id="2037845485764049925">Rwsieg</translation>
 <translation id="2044023416777079300">Modem heb ei gofrestru</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">Nod annilys: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portiwgaleg gyda bysellfwrdd PC Rhyngwladol UDA</translation>
 <translation id="2198315389084035571">Tsieinëeg Syml</translation>
-<translation id="2208158072373999562">Archif Zip</translation>
 <translation id="22085916256174561">Corëeg</translation>
 <translation id="2208919847696382164">Gosod gyda Linux</translation>
 <translation id="2225536596944493418">Ydych chi'n siŵr eich bod chi am ddileu <ph name="NUMBER_OF_ITEMS" /> eitem?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> beit</translation>
 <translation id="4880214202172289027">Llithrydd sain</translation>
 <translation id="4881695831933465202">Agor</translation>
-<translation id="4886199584824489598">Archif cywasgedig Bzip2</translation>
 <translation id="4900532980794411603">Rhannu gyda Parallels Desktop</translation>
 <translation id="4902546322522096650">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Cysylltu</translation>
 <translation id="4905417359854579806">Yn barod i wneud copi wrth gefn o <ph name="FILE_COUNT" /></translation>
@@ -589,7 +585,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> eitem</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Dewisiadau trefnu</translation>
-<translation id="5985041959109124139">Archif tar cywasgedig Z</translation>
 <translation id="6007237601604674381">Methwyd â symud. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rhwydwaith ether-rwyd</translation>
 <translation id="60357267506638014">QWERTY Tsieceg</translation>
@@ -649,7 +644,6 @@
 <translation id="6509122719576673235">Norwyeg</translation>
 <translation id="6528513914570774834">Caniatáu i ddefnyddwyr eraill y ddyfais hon ddefnyddio'r rhwydwaith hwn</translation>
 <translation id="653019979737152879">Wrthi'n cysoni <ph name="FILE_NAME" />...</translation>
-<translation id="6530595303336443929">Archif tar cywasgedig Zstandard</translation>
 <translation id="6549689063733911810">Diweddar</translation>
 <translation id="6558280019477628686">Bu gwall. Mae'n bosib na fydd rhai eitemau wedi'u dileu.</translation>
 <translation id="656398493051028875">Wrthi'n dileu "<ph name="FILENAME" />"...</translation>
@@ -674,7 +668,6 @@
 <translation id="6806699711453372963">Rheoli rhannu ar Linux</translation>
 <translation id="6806796368146926706">Alffaniwmerig gyda bysellfwrdd Japaneg</translation>
 <translation id="6808193438228982088">Llwynog</translation>
-<translation id="6820687829547641339">Archif tar cywasgedig Gzip</translation>
 <translation id="6823166707458800069">Gwneir copi wrth gefn o'r holl ffeiliau a gedwir yn y ffolder hon ar-lein yn awtomatig.</translation>
 <translation id="6825883775269213504">Rwsieg</translation>
 <translation id="6847101934483209767">Wedi tynnu <ph name="ENTRY_NAME" /> o'r dewisiad.</translation>
@@ -823,7 +816,6 @@
 <translation id="7925686952655276919">Peidio â defnyddio data symudol ar gyfer cysoni</translation>
 <translation id="7928710562641958568">Bwrw'r ddyfais allan</translation>
 <translation id="7943385054491506837">Colemak UDA</translation>
-<translation id="7948417415021769876">Archif 7z</translation>
 <translation id="7953739707111622108">Nid oes modd agor y ddyfais hon gan na chafodd ei system ffeiliau ei hadnabod.</translation>
 <translation id="7969525169268594403">Slofenia</translation>
 <translation id="7972920761225148017">Ffrangeg (Y Swistir)</translation>
@@ -865,7 +857,6 @@
 <translation id="8297012244086013755">Set Hangul 3 (Dim Sifft)</translation>
 <translation id="8299269255470343364">Japaneg</translation>
 <translation id="8300849813060516376">OTASP wedi methu</translation>
-<translation id="8308481408797647857">Archif tar cywasgedig XZ</translation>
 <translation id="8312871300878166382">Gludo i'r ffolder</translation>
 <translation id="8329978297633540474">Testun plaen</translation>
 <translation id="8335587457941836791">Dadosod o'r silff</translation>
@@ -887,7 +878,6 @@
 <translation id="8461467696380332069">De-gliciwch ffeil, a dewiswch "Pinio i'r silff" i gael mynediad cyflym at eich ffeiliau yn y silff.</translation>
 <translation id="8461914792118322307">Dirprwy weinydd</translation>
 <translation id="8463494891489624050">VIQR Fietnameg</translation>
-<translation id="8466234950814670489">Archif Tar</translation>
 <translation id="8475647382427415476">Ni all Google Drive gysoni "<ph name="FILENAME" />" ar hyn o bryd. Bydd Google Drive yn rhoi cynnig arall arni'n nes ymlaen.</translation>
 <translation id="8477649328507734757">Troelli</translation>
 <translation id="8484284835977497781">Dewiswch o'ch lluniau diweddar.</translation>
@@ -976,7 +966,6 @@
 <translation id="943972244133411984">Addaswyd gan</translation>
 <translation id="945522503751344254">Danfon adborth</translation>
 <translation id="947144732524271678">Wedi dewis ystod o <ph name="ENTRY_COUNT" /> o gofnodion o <ph name="FROM_ENTRY_NAME" /> i <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">Archif cywasgedig Gzip</translation>
 <translation id="965477715979482472">Saesneg (De Affrica)</translation>
 <translation id="981121421437150478">All-lein</translation>
 <translation id="988685240266037636">Mae ffeil o'r enw "<ph name="FILE_NAME" />" eisoes yn bodoli. Ydych chi am ei ddisodli?</translation>

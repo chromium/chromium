@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Няма сетак</translation>
 <translation id="1060368002126861100">Каб адкрываць файлы ў праграме "<ph name="APP_NAME" />", спачатку перамясціце іх у папку файлаў Windows.</translation>
 <translation id="1062407476771304334">Замяніць</translation>
-<translation id="1119069657431255176">Архіў TAR, сціснуты праграмай Bzip2</translation>
 <translation id="1119447706177454957">Унутраная памылка</translation>
 <translation id="1120073797882051782">Карэйскі алфавіт (хангыль), рэжым Romaja</translation>
 <translation id="112387589102719461">Англійская (ЗША) з раскладкай Дворака для праграмістаў</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">Фармаціраванне дыска прывядзе да выдалення ўсіх захаваных на ім даных. Гэта дзеянне нельга адрабіць.</translation>
 <translation id="2025955442973426285">Тыгрынья</translation>
 <translation id="2028997212275086731">Архіў RAR</translation>
-<translation id="2036414735548252477">Сціснуты архіў LZMA у фармаце TAR</translation>
 <translation id="2037845485764049925">Руская</translation>
 <translation id="2044023416777079300">Мадэм не зарэгістраваны</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">Недапушчальны сімвал: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Партугальская з міжнароднай клавіятурай ЗША для ПК</translation>
 <translation id="2198315389084035571">Кітайская (спрошчаная)</translation>
-<translation id="2208158072373999562">Архіў ZIP</translation>
 <translation id="22085916256174561">Карэйская</translation>
 <translation id="2208919847696382164">Усталюйце пакет Linux</translation>
 <translation id="2225536596944493418">Сапраўды выдаліць гэтыя элементы (<ph name="NUMBER_OF_ITEMS" />)?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> Б</translation>
 <translation id="4880214202172289027">Рэгулятар гучнасці</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
-<translation id="4886199584824489598">Сціснуты архіў Bzip2</translation>
 <translation id="4900532980794411603">Абагуліць з Parallels Desktop</translation>
 <translation id="4902546322522096650">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падключыцца</translation>
 <translation id="4905417359854579806">Файлы (<ph name="FILE_COUNT" />) гатовыя да рэзервовага капіравання</translation>
@@ -589,7 +585,6 @@
 <translation id="5955954492236143329">Элементаў: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Параметры сартавання</translation>
-<translation id="5985041959109124139">Сціснуты архіў Z у фармаце TAR</translation>
 <translation id="6007237601604674381">Не ўдалося перамясціць. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Сетка Ethernet</translation>
 <translation id="60357267506638014">Чэшская QWERTY</translation>
@@ -649,7 +644,6 @@
 <translation id="6509122719576673235">Нарвежская</translation>
 <translation id="6528513914570774834">Дазволіць іншым карыстальнікам прылады выкарыстоўваць гэту сетку</translation>
 <translation id="653019979737152879">Ідзе сінхранізацыя файла "<ph name="FILE_NAME" />"...</translation>
-<translation id="6530595303336443929">Сціснуты архіў Zstandard у фармаце TAR</translation>
 <translation id="6549689063733911810">Нядаўнія</translation>
 <translation id="6558280019477628686">Адбылася памылка. Некаторыя элементы маглі не выдаліцца.</translation>
 <translation id="656398493051028875">Ідзе выдаленне файла "<ph name="FILENAME" />"...</translation>
@@ -674,7 +668,6 @@
 <translation id="6806699711453372963">Кіраваць абагульваннем з Linux</translation>
 <translation id="6806796368146926706">Літарна-лічбавы ўвод з японскай клавіятурай</translation>
 <translation id="6808193438228982088">Ліса</translation>
-<translation id="6820687829547641339">Архіў TAR, сціснуты праграмай Gzip</translation>
 <translation id="6823166707458800069">Для ўсіх файлаў, захаваных у гэтай папцы, аўтаматычна ствараюцца рэзервовыя копіі ў інтэрнэце.</translation>
 <translation id="6825883775269213504">Руская</translation>
 <translation id="6847101934483209767">Выдалена з выбранага: <ph name="ENTRY_NAME" />.</translation>
@@ -823,7 +816,6 @@
 <translation id="7925686952655276919">Не выкарыстоўваць мабільную перадачу даных для сінхранізацыі</translation>
 <translation id="7928710562641958568">Адключыць прыладу</translation>
 <translation id="7943385054491506837">ЗША (Colemak)</translation>
-<translation id="7948417415021769876">7z-архіў</translation>
 <translation id="7953739707111622108">Не ўдалося адкрыць прыладу: файлавая сістэма не распазнана.</translation>
 <translation id="7969525169268594403">Славенская</translation>
 <translation id="7972920761225148017">Французская (Швейцарыя)</translation>
@@ -865,7 +857,6 @@
 <translation id="8297012244086013755">Карэйскі алфавіт (хангыль), рэжым 3 Set (без клавішы Shift)</translation>
 <translation id="8299269255470343364">Японская</translation>
 <translation id="8300849813060516376">Памылка OTASP</translation>
-<translation id="8308481408797647857">Сціснуты архіў XZ у фармаце TAR</translation>
 <translation id="8312871300878166382">Уставіць у папку</translation>
 <translation id="8329978297633540474">Звычайны тэкст</translation>
 <translation id="8335587457941836791">Адмацаваць з паліцы</translation>
@@ -887,7 +878,6 @@
 <translation id="8461467696380332069">Каб атрымаць хуткі доступ да файла праз паліцу, націсніце на яго правай кнопкай мышы і выберыце пункт "Замацаваць на паліцы".</translation>
 <translation id="8461914792118322307">Проксі-сервер</translation>
 <translation id="8463494891489624050">В'етнамская (раскладка VIQR)</translation>
-<translation id="8466234950814670489">Архіў .tar</translation>
 <translation id="8475647382427415476">Google Дыску зараз не ўдалося сінхранізаваць "<ph name="FILENAME" />". Спроба сінхранізацыі будзе паўторана пазней.</translation>
 <translation id="8477649328507734757">Кручэнне</translation>
 <translation id="8484284835977497781">Выбірайце са сваіх нядаўніх фота.</translation>
@@ -976,7 +966,6 @@
 <translation id="943972244133411984">Зменена карыстальнікам</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="947144732524271678">Выбраны элементы з <ph name="FROM_ENTRY_NAME" /> да <ph name="TO_ENTRY_NAME" />, колькасць элементаў – <ph name="ENTRY_COUNT" />.</translation>
-<translation id="961973045258256291">Сціснуты архіў Gzip</translation>
 <translation id="965477715979482472">Англійская (Паўднёва-Афрыканская Рэспубліка)</translation>
 <translation id="981121421437150478">Па-за сеткай</translation>
 <translation id="988685240266037636">Файл пад назвай "<ph name="FILE_NAME" />" ужо існуе. Замяніць яго?</translation>

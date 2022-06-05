@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">लन्चर</translation>
 <translation id="1512982610995527443">डिभाइस ५ सेकेन्डपछि सट डाउन हुने छ</translation>
 <translation id="1522984060396982789">तपाईंको डिभाइस मर्मत गर्ने प्रक्रिया पूरा भयो। तपाईं यो डिभाइस सट डाउन गर्न वा केही अतिरिक्त कारबाहीहरू गर्न सक्नुहुन्छ।</translation>
+<translation id="1526389707933164996">स्क्रिन सेभरको एनिमेसन</translation>
 <translation id="152892567002884378">भोल्युम बढाउनुहोस्</translation>
 <translation id="1555130319947370107">निलो</translation>
 <translation id="155865706765934889">टचप्याड</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3865414814144988605">रिजोलुसन</translation>
 <translation id="387301095347517405">तपाईंको डिभाइसको ब्याट्री पूर्ण रूपमा चार्ज गरिएको सङ्ख्या</translation>
+<translation id="3885327323343477505">स्क्रिन सेभर बदल्नुहोस्</translation>
 <translation id="3923184630988645767">डेटा प्रयोग</translation>
 <translation id="3924044641767672375">सजिलैसँग मर्मत गर्न सकियोस् भन्नाका लागि Wi-Fi मा कनेक्ट गर्न सिफारिस गरिन्छ। तपाईंको नेटवर्क सेभ गरिने छ।</translation>
 <translation id="3932043219784172185">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">तुरुन्तै एउटा नयाँ पासवर्ड राख्नुहोस्</translation>
 <translation id="4891842000192098784">स्ट्रेस</translation>
 <translation id="4897058166682006107">यो डिभाइसको बायाँपट्टिको बडमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
+<translation id="4905998861748258752">स्क्रिन सेभरसम्बन्धी विकल्पहरू चयन गर्न यो सुविधा अन गर्नुहोस्</translation>
 <translation id="4908030561598728899">फर्मवेयर इन्स्टल गरिँदै छ...</translation>
 <translation id="4915052247106771211">तपाईंले यो विकल्प रोज्नुभयो भने डिभाइस रिसेट गरी पूर्वनिर्धारित सेटिङ लागू गरिने छ (पावरवास)।</translation>
 <translation id="4917385247580444890">बलियो</translation>
@@ -860,6 +863,7 @@
 <translation id="8997710128084572139">यो डिभाइसमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="9003704114456258138">फ्रिक्वेन्सी</translation>
 <translation id="9025198690966128418">व्यक्तिगत डिभाइसका रूपमा प्रयोग गर्नुहोस्</translation>
+<translation id="9028832514430399253">तपाईं स्क्रिन सेभरका विकल्पहरू चयन गर्न चाहनुहुन्छ भने टगल अन गर्नुहोस्</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS रिजोल्युसनमा उच्च विलम्बता छ</translation>
 <translation id="9063121522582193837">केही कम्पोनेन्टहरू क्यालिब्रेट गर्न सकिएन</translation>

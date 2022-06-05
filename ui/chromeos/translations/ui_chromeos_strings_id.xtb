@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Jaringan nihil</translation>
 <translation id="1060368002126861100">Untuk membuka file dengan <ph name="APP_NAME" />, pindahkan ke folder file Windows terlebih dulu.</translation>
 <translation id="1062407476771304334">Ganti</translation>
-<translation id="1119069657431255176">Arsip tar terkompresi Bzip2</translation>
 <translation id="1119447706177454957">Kesalahan internal</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Inggris (AS) dengan keyboard Programmer Dvorak</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">Memformat drive akan menghapus semua data yang tersimpan di dalamnya. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">Arsip RAR</translation>
-<translation id="2036414735548252477">Arsip tar terkompresi LZMA</translation>
 <translation id="2037845485764049925">Rusia</translation>
 <translation id="2044023416777079300">Modem tidak terdaftar</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">Karakter tidak valid: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugis dengan keyboard International PC AS</translation>
 <translation id="2198315389084035571">China Aksara Sederhana</translation>
-<translation id="2208158072373999562">Arsip Zip</translation>
 <translation id="22085916256174561">Korea</translation>
 <translation id="2208919847696382164">Instal dengan Linux</translation>
 <translation id="2225536596944493418">Yakin ingin menghapus <ph name="NUMBER_OF_ITEMS" /> item?</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
 <translation id="4880214202172289027">Pengatur volume</translation>
 <translation id="4881695831933465202">Buka</translation>
-<translation id="4886199584824489598">Arsip terkompresi Bzip2</translation>
 <translation id="4900532980794411603">Bagikan ke Parallels Desktop</translation>
 <translation id="4902546322522096650">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Sambungkan</translation>
 <translation id="4905417359854579806">Siap untuk mencadangkan <ph name="FILE_COUNT" /></translation>
@@ -590,7 +586,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> item</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Sortir opsi</translation>
-<translation id="5985041959109124139">Arsip tar terkompresi Z</translation>
 <translation id="6007237601604674381">Pemindahan gagal. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Jaringan ethernet</translation>
 <translation id="60357267506638014">QWERTY Ceko</translation>
@@ -650,7 +645,6 @@
 <translation id="6509122719576673235">Norsk</translation>
 <translation id="6528513914570774834">Izinkan pengguna lain di perangkat ini untuk menggunakan jaringan ini</translation>
 <translation id="653019979737152879">Menyinkronkan <ph name="FILE_NAME" />...</translation>
-<translation id="6530595303336443929">Arsip tar terkompresi Zstandard</translation>
 <translation id="6549689063733911810">Terkini</translation>
 <translation id="6558280019477628686">Terjadi error. Beberapa item mungkin belum dihapus.</translation>
 <translation id="656398493051028875">Menghapus "<ph name="FILENAME" />"...</translation>
@@ -675,7 +669,6 @@
 <translation id="6806699711453372963">Kelola fitur berbagi Linux</translation>
 <translation id="6806796368146926706">Alfanumerik dengan keyboard bahasa Jepang</translation>
 <translation id="6808193438228982088">Rubah</translation>
-<translation id="6820687829547641339">Arsip tar terkompresi Gzip</translation>
 <translation id="6823166707458800069">Semua file yang disimpan dalam folder ini otomatis dicadangkan secara online.</translation>
 <translation id="6825883775269213504">Rusia</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> dihapus dari pilihan.</translation>
@@ -824,7 +817,6 @@
 <translation id="7925686952655276919">Jangan gunakan data seluler untuk sinkronisasi</translation>
 <translation id="7928710562641958568">Keluarkan perangkat</translation>
 <translation id="7943385054491506837">Colemak AS</translation>
-<translation id="7948417415021769876">Arsip 7z</translation>
 <translation id="7953739707111622108">Perangkat ini tidak dapat dibuka karena sistem berkasnya tidak dikenali.</translation>
 <translation id="7969525169268594403">Slovenia</translation>
 <translation id="7972920761225148017">Prancis (Swiss)</translation>
@@ -866,7 +858,6 @@
 <translation id="8297012244086013755">3 Himpunan Hangul (Tanpa Shift)</translation>
 <translation id="8299269255470343364">Jepang</translation>
 <translation id="8300849813060516376">OTASP gagal</translation>
-<translation id="8308481408797647857">Arsip tar terkompresi XZ</translation>
 <translation id="8312871300878166382">Tempelkan ke folder</translation>
 <translation id="8329978297633540474">Teks biasa</translation>
 <translation id="8335587457941836791">Lepaskan pin dari rak</translation>
@@ -888,7 +879,6 @@
 <translation id="8461467696380332069">Klik kanan file, lalu pilih "Sematkan ke Rak" untuk mendapatkan akses cepat ke file Anda di rak.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">VIQR Vietnam</translation>
-<translation id="8466234950814670489">Arsip Tar</translation>
 <translation id="8475647382427415476">Saat ini Google Drive tidak dapat menyinkronkan "<ph name="FILENAME" />". Google Drive akan mencoba lagi nanti.</translation>
 <translation id="8477649328507734757">Putaran</translation>
 <translation id="8484284835977497781">Pilih dari foto terbaru Anda.</translation>
@@ -977,7 +967,6 @@
 <translation id="943972244133411984">Diubah oleh</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="947144732524271678">Rentang <ph name="ENTRY_COUNT" /> entri dari <ph name="FROM_ENTRY_NAME" /> ke <ph name="TO_ENTRY_NAME" /> dipilih.</translation>
-<translation id="961973045258256291">Arsip terkompresi Gzip</translation>
 <translation id="965477715979482472">Inggris (Afrika Selatan)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">File bernama "<ph name="FILE_NAME" />" sudah ada. Ingin menggantinya?</translation>

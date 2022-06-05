@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">なし</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルを移動してください。</translation>
 <translation id="1062407476771304334">置換</translation>
-<translation id="1119069657431255176">bzip2 で圧縮された tar アーカイブ</translation>
 <translation id="1119447706177454957">内部エラー</translation>
 <translation id="1120073797882051782">ハングル（ローマ字式）</translation>
 <translation id="112387589102719461">英語（アメリカ）（Programmer Dvorak）キーボード</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが削除されます。この操作は元に戻せません。</translation>
 <translation id="2025955442973426285">チグリヤナ語</translation>
 <translation id="2028997212275086731">RAR アーカイブ</translation>
-<translation id="2036414735548252477">LZMA で圧縮された tar アーカイブ</translation>
 <translation id="2037845485764049925">ロシア語</translation>
 <translation id="2044023416777079300">モデムが登録されていません</translation>
 <translation id="2046702855113914483">ラーメン</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">「<ph name="CHARACTER_NAME" />」は無効な文字です。</translation>
 <translation id="2184934335987813305">ポルトガル語（US インターナショナル PC）キーボード</translation>
 <translation id="2198315389084035571">中国語（簡体字）</translation>
-<translation id="2208158072373999562">Zip アーカイブ</translation>
 <translation id="22085916256174561">韓国語</translation>
 <translation id="2208919847696382164">Linux でのインストール</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを削除してもよろしいですか？</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> バイト</translation>
 <translation id="4880214202172289027">音量スライダー</translation>
 <translation id="4881695831933465202">開く</translation>
-<translation id="4886199584824489598">Bzip2 で圧縮されたアーカイブ</translation>
 <translation id="4900532980794411603">Parallels Desktop と共有</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、接続</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" />をバックアップできます</translation>
@@ -590,7 +586,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 個のアイテム</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">並べ替え方法</translation>
-<translation id="5985041959109124139">Z で圧縮された tar アーカイブ</translation>
 <translation id="6007237601604674381">移動できませんでした。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">イーサネット ネットワーク</translation>
 <translation id="60357267506638014">チェコ語 QWERTY 配列</translation>
@@ -650,7 +645,6 @@
 <translation id="6509122719576673235">ノルウェー語</translation>
 <translation id="6528513914570774834">このデバイスの他のユーザーにこのネットワークの使用を許可する</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> を同期しています...</translation>
-<translation id="6530595303336443929">Zstandard で圧縮された tar アーカイブ</translation>
 <translation id="6549689063733911810">最近使用したアイテム</translation>
 <translation id="6558280019477628686">エラーが発生しました。一部の項目が削除されていない可能性があります。</translation>
 <translation id="656398493051028875">「<ph name="FILENAME" />」を削除しています...</translation>
@@ -675,7 +669,6 @@
 <translation id="6806699711453372963">Linux との共有を管理</translation>
 <translation id="6806796368146926706">英数字（日本語）キーボード</translation>
 <translation id="6808193438228982088">キツネ</translation>
-<translation id="6820687829547641339">gzip で圧縮された tar アーカイブ</translation>
 <translation id="6823166707458800069">このフォルダに保存されているすべてのファイルが自動的にオンラインにバックアップされます。</translation>
 <translation id="6825883775269213504">ロシア語</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> を選択範囲から削除しました。</translation>
@@ -824,7 +817,6 @@
 <translation id="7925686952655276919">モバイル データを使用して同期しない</translation>
 <translation id="7928710562641958568">デバイスの取り出し</translation>
 <translation id="7943385054491506837">US Colemak 配列</translation>
-<translation id="7948417415021769876">7z アーカイブ</translation>
 <translation id="7953739707111622108">ファイルシステムが認識されなかったため、このデバイスを開くことはできません。</translation>
 <translation id="7969525169268594403">スロベニア語</translation>
 <translation id="7972920761225148017">フランス語（スイス）</translation>
@@ -866,7 +858,6 @@
 <translation id="8297012244086013755">ハングル（3 ボル式、Shift なし）</translation>
 <translation id="8299269255470343364">日本語</translation>
 <translation id="8300849813060516376">OTASP に失敗しました</translation>
-<translation id="8308481408797647857">XZ で圧縮された tar アーカイブ</translation>
 <translation id="8312871300878166382">フォルダに貼り付け</translation>
 <translation id="8329978297633540474">テキスト</translation>
 <translation id="8335587457941836791">シェルフの固定解除</translation>
@@ -888,7 +879,6 @@
 <translation id="8461467696380332069">ファイルを右クリックして、[シェルフに固定] を選択すると、シェルフからファイルに簡単にアクセスできます。</translation>
 <translation id="8461914792118322307">プロキシ</translation>
 <translation id="8463494891489624050">ベトナム語（VIQR）</translation>
-<translation id="8466234950814670489">tar アーカイブ</translation>
 <translation id="8475647382427415476">Google ドライブでは「<ph name="FILENAME" />」を直ちに同期できませんでした。時間を置いて再試行します。</translation>
 <translation id="8477649328507734757">スピン</translation>
 <translation id="8484284835977497781">最近撮影した写真をピックアップ。</translation>
@@ -977,7 +967,6 @@
 <translation id="943972244133411984">更新者</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> 項目を選択しました。範囲の先頭は <ph name="FROM_ENTRY_NAME" />、末尾は <ph name="TO_ENTRY_NAME" /> です。</translation>
-<translation id="961973045258256291">Gzip で圧縮されたアーカイブ</translation>
 <translation id="965477715979482472">英語（南アフリカ）</translation>
 <translation id="981121421437150478">オフライン</translation>
 <translation id="988685240266037636">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。置き換えますか？</translation>

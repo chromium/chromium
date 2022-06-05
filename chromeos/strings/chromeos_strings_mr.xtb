@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">लाँचर</translation>
 <translation id="1512982610995527443">डिव्हाइस पाच सेकंदात बंद होईल</translation>
 <translation id="1522984060396982789">तुमची दुरुस्ती यशस्वी झाली. तुम्ही डिव्हाइस बंद करू शकता किंवा काही अतिरिक्त कृती करू शकता.</translation>
+<translation id="1526389707933164996">स्क्रीन सेव्हर अ‍ॅनिमेशन</translation>
 <translation id="152892567002884378">आवाज मोठा करा</translation>
 <translation id="1555130319947370107">निळा</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">नाव</translation>
 <translation id="3865414814144988605">रिझोल्युशन</translation>
 <translation id="387301095347517405">तुमची बॅटरी किती वेळा पूर्ण चार्ज झाली त्याची संख्या</translation>
+<translation id="3885327323343477505">स्क्रीन सेव्हर बदला</translation>
 <translation id="3923184630988645767">डेटा वापर</translation>
 <translation id="3924044641767672375">दुरुस्तीची प्रक्रिया सोपी करण्यासाठी, वाय-फायशी कनेक्ट करण्याची शिफारस केली जाते. तुमचे नेटवर्क सेव्ह केले जाईल.</translation>
 <translation id="3932043219784172185">कोणतेही डिव्हाइस कनेक्ट केले नाही</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">तत्काळ नवीन निवडा</translation>
 <translation id="4891842000192098784">ताण</translation>
 <translation id="4897058166682006107">डिव्हाइसच्या डाव्या बडच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
+<translation id="4905998861748258752">स्क्रीन सेव्हर पर्याय निवडण्यासाठी वैशिष्‍ट्य सुरू करा</translation>
 <translation id="4908030561598728899">फर्मवेअर इंस्टॉल करत आहे…</translation>
 <translation id="4915052247106771211">यामुळे डिव्हाइस फॅक्टरी सेटिंग्जवर रीसेट केले जाईल (Powerwash).</translation>
 <translation id="4917385247580444890">मजबूत</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">डिव्हाइसच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
 <translation id="9003704114456258138">वारंवारता</translation>
 <translation id="9025198690966128418">वैयक्तिक डिव्हाइस म्हणून वापरा</translation>
+<translation id="9028832514430399253">स्क्रीन सेव्हर पर्याय निवडण्यासाठी टॉगल सुरू करा</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS रिझोल्यूशनची लेटन्सी जास्त आहे</translation>
 <translation id="9063121522582193837">काही घटक कॅलिब्रेट करता आले नाहीत</translation>

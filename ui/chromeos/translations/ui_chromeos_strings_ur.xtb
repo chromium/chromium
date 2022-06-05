@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">نیٹ ورک نہیں</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> کے ساتھ فائلز کو کھولنے کیلئے، پہلے انہیں ونڈوز فائلز فولڈر میں منتقل کریں۔</translation>
 <translation id="1062407476771304334">بدلیں</translation>
-<translation id="1119069657431255176">‏Bzip2 کمپریسڈ tar آرکائیو</translation>
 <translation id="1119447706177454957">داخلی خرابی</translation>
 <translation id="1120073797882051782">ہنگول روماجا</translation>
 <translation id="112387589102719461">پروگرامر ڈوراک کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
@@ -126,7 +125,6 @@
 <translation id="2009067268969781306">ڈرائیو کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا حذف ہو جائے گا۔ اس کارروائی کو کالعدم نہیں کیا جا سکتا۔</translation>
 <translation id="2025955442973426285">تگرینی</translation>
 <translation id="2028997212275086731">‏RAR آرکائیو</translation>
-<translation id="2036414735548252477">‏LZMA کمپریسڈ tar آرکائیو</translation>
 <translation id="2037845485764049925">روسی</translation>
 <translation id="2044023416777079300">موڈیم رجسٹرڈ نہیں ہے</translation>
 <translation id="2046702855113914483">رامین</translation>
@@ -145,7 +143,6 @@
 <translation id="2163152940313951844">غلط حرف: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">‏امریکی بین الاقوامی PC کی بورڈ کے ساتھ پرتگالی</translation>
 <translation id="2198315389084035571">آسان کردہ چینی</translation>
-<translation id="2208158072373999562">‏Zip آرکائیو</translation>
 <translation id="22085916256174561">کوریائی</translation>
 <translation id="2208919847696382164">‏Linux کے ساتھ انسٹال کریں</translation>
 <translation id="2225536596944493418">‏کیا آپ واقعی ‎<ph name="NUMBER_OF_ITEMS" /> آئٹمز حذف کرنا چاہتے ہیں؟</translation>
@@ -450,7 +447,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> بائٹس</translation>
 <translation id="4880214202172289027">والیوم سلائیڈر</translation>
 <translation id="4881695831933465202">کھولیں</translation>
-<translation id="4886199584824489598">‏Bzip2 کمپریسڈ آرکائیو</translation>
 <translation id="4900532980794411603">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کریں</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، منسلک کریں</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> بیک اپ لینے کیلئے تیار</translation>
@@ -589,7 +585,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> آئٹمز</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ترتیب دینے کے اختیارات</translation>
-<translation id="5985041959109124139">‏Z کمپریسڈ tar آرکائیو</translation>
 <translation id="6007237601604674381">منتقل کرنا ناکام ہوگیا۔ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ایتھرنیٹ نیٹ ورک</translation>
 <translation id="60357267506638014">Czech QWERTY</translation>
@@ -649,7 +644,6 @@
 <translation id="6509122719576673235">نارويجين</translation>
 <translation id="6528513914570774834">اس آلہ کے دیگر صارفین کو یہ نیٹ ورک استعمال کرنے کی اجازت دیں</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> کی مطابقت پذیری ہو رہی ہے…</translation>
-<translation id="6530595303336443929">‏Zstandard کمپریسڈ tar آرکائیو</translation>
 <translation id="6549689063733911810">حالیہ</translation>
 <translation id="6558280019477628686">ایک خرابی پیش آ گئی۔ ہو سکتا ہے کچھ آئٹمز حذف نہ ہوئے ہوں۔</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" کو حذف کیا جا رہا ہے…</translation>
@@ -674,7 +668,6 @@
 <translation id="6806699711453372963">‏Linux کے اشتراک کا نظم کریں</translation>
 <translation id="6806796368146926706">جاپانی کی بورڈ کے ساتھ الفانیومیرک</translation>
 <translation id="6808193438228982088">لومڑی</translation>
-<translation id="6820687829547641339">‏Gzip کمپریس کردہ tar آرکائیو</translation>
 <translation id="6823166707458800069">اس فولڈر میں محفوظ کردہ سبھی فائلوں کا خودکار طور پر آن لائن بیک اپ لیا جاتا ہے۔</translation>
 <translation id="6825883775269213504">روسی</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> کو انتخاب سے ہٹا دیا گیا۔</translation>
@@ -823,7 +816,6 @@
 <translation id="7925686952655276919">مطابقت پذیری کیلئے موبائل ڈیٹا کا استعمال نہ کریں</translation>
 <translation id="7928710562641958568">آلے کو خارج کریں</translation>
 <translation id="7943385054491506837">‏US کولمیک</translation>
-<translation id="7948417415021769876">‏7z آرکائیو</translation>
 <translation id="7953739707111622108">اس آلہ کو نہیں کھولا جا سکتا ہے کیونکہ اس کے فائل سسٹم کی شناخت نہیں ہوئی۔</translation>
 <translation id="7969525169268594403">سلوينی</translation>
 <translation id="7972920761225148017">فرانسیسی (سوئٹزر لینڈ)</translation>
@@ -865,7 +857,6 @@
 <translation id="8297012244086013755">‏Hangul 3 سیٹ (کوئی شفٹ نہیں)</translation>
 <translation id="8299269255470343364">جاپانی</translation>
 <translation id="8300849813060516376">‏OTASP ناکام ہوگیا</translation>
-<translation id="8308481408797647857">‏XZ کمپریسڈ آرکائیو</translation>
 <translation id="8312871300878166382">فولڈر میں پیسٹ کریں</translation>
 <translation id="8329978297633540474">سادہ متن</translation>
 <translation id="8335587457941836791">شیلف سے پن ہٹائیں</translation>
@@ -887,7 +878,6 @@
 <translation id="8461467696380332069">شیلف میں اپنی فائلز تک فوری رسائی کے ليے فائل پر دائیں طرف کلک کریں اور 'شیلف میں پن کریں' کو منتخب کریں۔</translation>
 <translation id="8461914792118322307">پراکسی</translation>
 <translation id="8463494891489624050">‏ویتنامی VIQR</translation>
-<translation id="8466234950814670489">‏Tar آرکائیو</translation>
 <translation id="8475647382427415476">‏Google Drive اس وقت "<ph name="FILENAME" />" کی مطابقت پذیری نہیں کر سکا۔ Google Drive بعد میں دوبارہ کوشش کرے گا۔</translation>
 <translation id="8477649328507734757">گردش</translation>
 <translation id="8484284835977497781">اپنی حالیہ تصاویر سے منتخب کریں۔</translation>
@@ -976,7 +966,6 @@
 <translation id="943972244133411984">ترمیم کنندہ</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> سے <ph name="TO_ENTRY_NAME" /> تک <ph name="ENTRY_COUNT" /> اندراجات کی رینج کا انتخاب کیا گیا۔</translation>
-<translation id="961973045258256291">‏Gzip کمپریسڈ آرکائیو</translation>
 <translation id="965477715979482472">انگریزی (جنوبی افریقہ)</translation>
 <translation id="981121421437150478">آف لائن</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" نام کی فائل پہلے سے موجود ہے۔ کیا آپ اسے تبدیل کرنا چاہتے ہیں؟</translation>
