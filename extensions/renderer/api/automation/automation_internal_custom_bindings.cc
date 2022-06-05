@@ -1806,6 +1806,7 @@ void AutomationInternalCustomBindings::StartCachingAccessibilityTrees(
 
 void AutomationInternalCustomBindings::StopCachingAccessibilityTrees(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
+  message_filter_->Detach();
   message_filter_.reset();
   tree_change_observers_.clear();
   tree_id_to_tree_wrapper_map_.clear();
