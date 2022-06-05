@@ -1871,6 +1871,68 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoNameAvailable) {
 }
 #endif
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+TEST_F(CreditCardSaveManagerTest,
+       AttemptToOfferCardUploadSave_SaveCardUiExperimentEnabled) {
+  // Setting the flag and params for the save card ui experiment.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillSaveCardUiExperiment,
+      {{"autofill_save_card_ui_experiment_selector_in_number", "2"}});
+
+  // Set up our credit card form data.
+  FormData credit_card_form;
+  CreateTestCreditCardFormData(&credit_card_form, CreditCardFormOptions());
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+
+  // Edit the data, and submit.
+  credit_card_form.fields[0].value = u"Flo Master";
+  credit_card_form.fields[1].value = u"4111111111111111";
+  credit_card_form.fields[2].value = ASCIIToUTF16(test::NextMonth());
+  credit_card_form.fields[3].value = ASCIIToUTF16(test::NextYear());
+  credit_card_form.fields[4].value = u"123";
+  FormSubmitted(credit_card_form);
+
+  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
+
+  // Confirm that active experiments vector has the correct value.
+  std::vector<const char*> active_experiments_in_request =
+      payments_client_->active_experiments_in_request();
+  EXPECT_THAT(
+      active_experiments_in_request,
+      testing::Contains(testing::StrEq("AutofillSaveCardUiExperiment")));
+}
+
+TEST_F(CreditCardSaveManagerTest,
+       AttemptToOfferCardUploadSave_SaveCardUiExperimentDisabled) {
+  // Disabling the flag for the save card ui experiment.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillSaveCardUiExperiment);
+
+  FormData credit_card_form;
+  CreateTestCreditCardFormData(&credit_card_form, CreditCardFormOptions());
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+
+  credit_card_form.fields[0].value = u"Flo Master";
+  credit_card_form.fields[1].value = u"4111111111111111";
+  credit_card_form.fields[2].value = ASCIIToUTF16(test::NextMonth());
+  credit_card_form.fields[3].value = ASCIIToUTF16(test::NextYear());
+  credit_card_form.fields[4].value = u"123";
+  FormSubmitted(credit_card_form);
+
+  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
+
+  std::vector<const char*> active_experiments_in_request =
+      payments_client_->active_experiments_in_request();
+  EXPECT_THAT(active_experiments_in_request,
+              testing::Not(testing::Contains(
+                  testing::StrEq("AutofillSaveCardUiExperiment"))));
+}
+#endif
+
 // TODO(crbug.com/1113034): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
