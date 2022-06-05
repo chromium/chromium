@@ -54,29 +54,30 @@
   }
 
   Array.from(document.getElementById('popups').children).forEach(popup => {
-    test(() => {
+    test((t) => {
       assertIsFunctionalPopup(popup);
     }, `The .showPopup() and .hidePopup() work on a popup, for ${popup.outerHTML}.`);
   });
 
   Array.from(document.getElementById('nonpopups').children).forEach(nonPopup => {
-    test(() => {
+    test((t) => {
       assertNotAPopup(nonPopup);
     }, `The .showPopup() and .hidePopup() do NOT work on elements without a 'popup' attribute, ${nonPopup.outerHTML}.`);
   });
 
-  function createPopup() {
+  function createPopup(t) {
     const popup = document.createElement('div');
     document.body.appendChild(popup);
+    t.add_cleanup(() => popup.remove());
     popup.setAttribute('popup','auto');
     return popup;
   }
 
-  test(() => {
+  test((t) => {
     // YOU CAN set the attribute to anything.
     // Setting IDL to something sets the content attribute to exactly that, always.
     // GETTING the IDL only gets valid values.
-    const popup = createPopup();
+    const popup = createPopup(t);
     assert_equals(popup.popup,'auto');
     popup.setAttribute('popup','hint');
     assert_equals(popup.popup,'hint');
@@ -114,8 +115,8 @@
     assert_equals(popup.popup,null,'undefined should map to null in IDL');
   },'IDL attribute reflection');
 
-  test(() => {
-    const popup = createPopup();
+  test((t) => {
+    const popup = createPopup(t);
     assertIsFunctionalPopup(popup);
     popup.removeAttribute('popup');
     assertNotAPopup(popup);
@@ -133,8 +134,8 @@
     assertNotAPopup(popup);
   },'Popup attribute value should be case insensitive');
 
-  test(() => {
-    const popup = createPopup();
+  test((t) => {
+    const popup = createPopup(t);
     assertIsFunctionalPopup(popup);
     popup.setAttribute('popup','hint'); // Change popup type
     assertIsFunctionalPopup(popup);
@@ -146,8 +147,8 @@
     assertNotAPopup(popup);
   },'Changing attribute values for popup should work');
 
-  test(() => {
-    const popup = createPopup();
+  test((t) => {
+    const popup = createPopup(t);
     popup.showPopup();
     assert_true(popup.matches(':top-layer'));
     popup.setAttribute('popup','hint'); // Change popup type
@@ -162,10 +163,18 @@
     assert_false(popup.matches(':top-layer'));
   },'Changing attribute values should close open popups');
 
+  function modalPseudoSupported() {
+    try {
+      document.createElement('dialog').matches(':modal');
+      return true; // No exception means :modal is supported.
+    } catch(e) {
+      return false;
+    }
+  }
 
   ["auto","hint","async"].forEach(type => {
-    test(() => {
-      const popup = createPopup();
+    test((t) => {
+      const popup = createPopup(t);
       popup.setAttribute('popup',type);
       popup.showPopup();
       assert_true(popup.matches(':top-layer'));
@@ -174,5 +183,16 @@
       document.body.appendChild(popup);
       assert_false(popup.matches(':top-layer'));
     },`Removing a visible popup=${type} element from the document should close the popup`);
+
+    if (modalPseudoSupported()) {
+      test((t) => {
+        const popup = createPopup(t);
+        popup.setAttribute('popup',type);
+        popup.showPopup();
+        assert_true(popup.matches(':top-layer'));
+        assert_false(popup.matches(':modal'));
+        popup.hidePopup();
+      },`A showing popup=${type} does not match :modal`);
+    }
   });
 </script>
