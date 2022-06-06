@@ -20,7 +20,6 @@
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
-#include "components/reporting/client/report_queue_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
