@@ -531,17 +531,17 @@ def main() -> int:
 
   mojom_file_name = "vulkan_types.mojom"
   mojom_file = open(
-      os.path.join(output_dir, mojom_file_name), 'w')
+      os.path.join(output_dir, mojom_file_name), 'w', newline='')
   GenerateMojom(mojom_file)
   mojom_file.close()
   ClangFormat(mojom_file.name)
 
   traits_header_file_name = "vulkan_types_mojom_traits.h"
   traits_header_file = \
-      open(os.path.join(output_dir, traits_header_file_name), 'w')
+      open(os.path.join(output_dir, traits_header_file_name), 'w', newline='')
   traits_source_file_name = "vulkan_types_mojom_traits.cc"
   traits_source_file = \
-      open(os.path.join(output_dir, traits_source_file_name), 'w')
+      open(os.path.join(output_dir, traits_source_file_name), 'w', newline='')
   GenerateTraitsFile(traits_header_file, traits_source_file)
   traits_header_file.close()
   ClangFormat(traits_header_file.name)
@@ -550,7 +550,7 @@ def main() -> int:
 
   typemap_file_name = "generated_vulkan_type_mappings.gni"
   typemap_file = open(
-      os.path.join(output_dir, typemap_file_name), 'w')
+      os.path.join(output_dir, typemap_file_name), 'w', newline='')
   GenerateTypemapFile(typemap_file)
   typemap_file.close()
 
