@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <limits>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -140,6 +141,23 @@ void RecordUmaSnapshotInterval(base::TimeDelta interval,
 constexpr base::Feature HeapProfilerController::kHeapProfilerReporting{
     "HeapProfilerReporting", base::FEATURE_ENABLED_BY_DEFAULT};
 
+HeapProfilerController::SnapshotParams::SnapshotParams(
+    base::TimeDelta mean_interval,
+    bool use_random_interval,
+    scoped_refptr<StoppedFlag> stopped)
+    : mean_interval(mean_interval),
+      use_random_interval(use_random_interval),
+      stopped(std::move(stopped)) {}
+
+HeapProfilerController::SnapshotParams::~SnapshotParams() = default;
+
+HeapProfilerController::SnapshotParams::SnapshotParams(SnapshotParams&& other) =
+    default;
+
+HeapProfilerController::SnapshotParams&
+HeapProfilerController::SnapshotParams::operator=(SnapshotParams&& other) =
+    default;
+
 HeapProfilerController::HeapProfilerController(version_info::Channel channel)
     : profiling_enabled_(DecideIfCollectionIsEnabled(channel)),
       stopped_(base::MakeRefCounted<StoppedFlag>()) {}
@@ -159,9 +177,10 @@ void HeapProfilerController::Start() {
   base::SamplingHeapProfiler::Get()->Start();
   const int interval = kCollectionIntervalMinutes.Get();
   DCHECK_GT(interval, 0);
-  ScheduleNextSnapshot(
-      stopped_, {.interval = base::Minutes(interval),
-                 .use_random_interval = !suppress_randomness_for_testing_});
+  SnapshotParams params(
+      /*mean_interval=*/base::Minutes(interval),
+      /*use_random_interval=*/!suppress_randomness_for_testing_, stopped_);
+  ScheduleNextSnapshot(std::move(params));
 }
 
 void HeapProfilerController::SuppressRandomnessForTesting() {
@@ -169,31 +188,26 @@ void HeapProfilerController::SuppressRandomnessForTesting() {
 }
 
 // static
-void HeapProfilerController::ScheduleNextSnapshot(
-    scoped_refptr<StoppedFlag> stopped,
-    CollectionInterval heap_collection_interval) {
-  base::TimeDelta interval =
-      heap_collection_interval.use_random_interval
-          ? RandomInterval(heap_collection_interval.interval)
-          : heap_collection_interval.interval;
+void HeapProfilerController::ScheduleNextSnapshot(SnapshotParams params) {
+  base::TimeDelta interval = params.use_random_interval
+                                 ? RandomInterval(params.mean_interval)
+                                 : params.mean_interval;
   RecordUmaSnapshotInterval(interval, "Scheduled");
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&HeapProfilerController::TakeSnapshot, std::move(stopped),
-                     heap_collection_interval, /*previous_interval=*/interval),
+      base::BindOnce(&HeapProfilerController::TakeSnapshot, std::move(params),
+                     /*previous_interval=*/interval),
       interval);
 }
 
 // static
-void HeapProfilerController::TakeSnapshot(
-    scoped_refptr<StoppedFlag> stopped,
-    CollectionInterval heap_collection_interval,
-    base::TimeDelta previous_interval) {
-  if (stopped->data.IsSet())
+void HeapProfilerController::TakeSnapshot(SnapshotParams params,
+                                          base::TimeDelta previous_interval) {
+  if (params.stopped->data.IsSet())
     return;
   RecordUmaSnapshotInterval(previous_interval, "Taken");
   RetrieveAndSendSnapshot();
-  ScheduleNextSnapshot(std::move(stopped), heap_collection_interval);
+  ScheduleNextSnapshot(std::move(params));
 }
 
 // static

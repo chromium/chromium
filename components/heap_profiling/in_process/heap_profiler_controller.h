@@ -70,19 +70,38 @@ class HeapProfilerController {
  private:
   using StoppedFlag = base::RefCountedData<base::AtomicFlag>;
 
-  struct CollectionInterval {
-    base::TimeDelta interval;
-    bool use_random_interval = false;
-  };
-  static void ScheduleNextSnapshot(scoped_refptr<StoppedFlag> stopped,
-                                   CollectionInterval heap_collection_interval);
+  // Parameters to control the snapshot sampling and reporting. This is
+  // move-only so that it can be safely passed between threads to the static
+  // snapshot functions.
+  struct SnapshotParams {
+    SnapshotParams(base::TimeDelta mean_interval,
+                   bool use_random_interval,
+                   scoped_refptr<StoppedFlag> stopped);
+    ~SnapshotParams();
 
-  // Takes a heap snapshot unless the `stopped` flag is set.
-  // `heap_collection_interval` is used to schedule the next snapshot.
+    // Move-only.
+    SnapshotParams(const SnapshotParams& other) = delete;
+    SnapshotParams& operator=(const SnapshotParams& other) = delete;
+    SnapshotParams(SnapshotParams&& other);
+    SnapshotParams& operator=(SnapshotParams&& other);
+
+    // Mean interval until the next snapshot.
+    base::TimeDelta mean_interval;
+
+    // If true, generate a random time centered around `mean_interval`.
+    // Otherwise use `mean_interval` exactly.
+    bool use_random_interval = false;
+
+    // Atomic flag to signal that no more snapshots should be taken.
+    scoped_refptr<StoppedFlag> stopped;
+  };
+
+  static void ScheduleNextSnapshot(SnapshotParams params);
+
+  // Takes a heap snapshot unless the `params.stopped` flag is set.
   // `previous_interval` is the time since the previous snapshot, which is used
   // to log metrics about snapshot frequency.
-  static void TakeSnapshot(scoped_refptr<StoppedFlag> stopped,
-                           CollectionInterval heap_collection_interval,
+  static void TakeSnapshot(SnapshotParams params,
                            base::TimeDelta previous_interval);
 
   static void RetrieveAndSendSnapshot();
@@ -91,6 +110,10 @@ class HeapProfilerController {
   // and the probability parameters of the HeapProfilerReporting feature.
   const bool profiling_enabled_;
 
+  // This flag is set when the HeapProfilerController is torn down, to stop
+  // profiling. It is the only member that should be referenced by the static
+  // functions, to be sure that they can run on the thread pool while
+  // HeapProfilerController is deleted on the main thread.
   scoped_refptr<StoppedFlag> stopped_;
   bool suppress_randomness_for_testing_ = false;
 };
