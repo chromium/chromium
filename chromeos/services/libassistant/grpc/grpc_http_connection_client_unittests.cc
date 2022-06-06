@@ -219,8 +219,9 @@ class GrpcHttpConnectionClientTest : public testing::Test {
   void SetUp() override {
     client_ = std::make_unique<GrpcHttpConnectionClient>(
         &http_connection_factory_,
-        /*server_address=*/"localhost");
+        /*server_address=*/"unix:///tmp/test.socket");
     service_ = std::make_unique<TestGrpcHttpConnectionService>(client_.get());
+    client_->Start();
   }
 
  protected:
@@ -414,27 +415,6 @@ TEST_F(GrpcHttpConnectionClientTest, ReceiveOnNetworkError) {
   EXPECT_CALL(service_->writer(), Write(SerializedProtoEquals(request)));
   service_->SetWriteAvailable();
   connection->SendOnNetworkError(error_code, message);
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(GrpcHttpConnectionClientTest, ReceiveOnConnectionDestroyed) {
-  StreamHttpConnectionRequest request;
-  request.set_command(StreamHttpConnectionRequest::REGISTER);
-  EXPECT_CALL(service_->writer(), Write(SerializedProtoEquals(request)));
-  // Will trigger registering client.
-  service_->SetWriteAvailable();
-
-  service_->SendCreateCommand();
-  auto* connection = http_connection();
-  ASSERT_TRUE(connection);
-  EXPECT_CALL(*connection, Close());
-
-  request.Clear();
-  request.set_id(1);
-  request.set_command(StreamHttpConnectionRequest::HANDLE_CONNECTION_DESTROYED);
-  EXPECT_CALL(service_->writer(), Write(SerializedProtoEquals(request)));
-  service_->SetWriteAvailable();
-  connection->SendOnConnectionDestroyed();
   base::RunLoop().RunUntilIdle();
 }
 

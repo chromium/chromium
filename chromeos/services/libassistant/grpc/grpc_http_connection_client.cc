@@ -86,10 +86,12 @@ GrpcHttpConnectionClient::~GrpcHttpConnectionClient() {
 
   CleanUp();
 
-  // Request the server to prepare for shutdown.
-  StreamHttpConnectionRequest request;
-  request.set_command(StreamHttpConnectionRequest::UNREGISTER);
-  write_queue_->ScheduleWrite(std::move(request));
+  if (write_queue_) {
+    // Request the server to prepare for shutdown.
+    StreamHttpConnectionRequest request;
+    request.set_command(StreamHttpConnectionRequest::UNREGISTER);
+    write_queue_->ScheduleWrite(std::move(request));
+  }
 
   if (call_) {
     call_->TryCancel();
