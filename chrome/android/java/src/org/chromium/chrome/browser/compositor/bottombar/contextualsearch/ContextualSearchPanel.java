@@ -198,9 +198,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
         super.getUpdatedSceneOverlayTree(viewport, visibleViewport, resourceManager, yOffset);
-        mSceneLayer.update(resourceManager, this, getSearchBarControl(), getBarBannerControl(),
-                getPromoControl(), getRelatedSearchesInBarControl(),
-                getRelatedSearchesInContentControl(), getImageControl());
+        mSceneLayer.update(resourceManager, this, getSearchBarControl(), getPromoControl(),
+                getRelatedSearchesInBarControl(), getRelatedSearchesInContentControl(),
+                getImageControl());
 
         return mSceneLayer;
     }
@@ -245,14 +245,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
         mPanelMetrics.onPanelStateChanged(
                 fromState, toState, reason, Profile.getLastUsedRegularProfile());
-
-        if (toState == PanelState.PEEKED
-                && (fromState == PanelState.CLOSED || fromState == PanelState.UNDEFINED)) {
-            // If the Bar Banner is visible, it should animate when the SearchBar peeks.
-            if (getBarBannerControl().isVisible()) {
-                getBarBannerControl().animateAppearance();
-            }
-        }
 
         if (toState == PanelState.CLOSED || toState == PanelState.UNDEFINED) {
             mManagementDelegate.onPanelFinishedShowing();
@@ -386,7 +378,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         destroyPromoControl();
         destroyInBarRelatedSearchesControl();
         destroyInContentRelatedSearchesControl();
-        destroyBarBannerControl();
         destroySearchBarControl();
     }
 
@@ -443,12 +434,12 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     @Override
     public float getBarContainerHeight() {
-        return getBarHeight() + getBarBannerControl().getHeightPx();
+        return getBarHeight();
     }
 
     @Override
     protected float getPeekedHeight() {
-        return getBarHeight() + getBarBannerControl().getHeightPeekingPx() * mPxToDp;
+        return getBarHeight();
     }
 
     @Override
@@ -533,28 +524,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     public void clearRelatedSearches() {
         getRelatedSearchesInBarControl().hide();
         getRelatedSearchesInContentControl().hide();
-    }
-
-    /**
-     * Shows the Bar Banner.
-     */
-    public void showBarBanner() {
-        getBarBannerControl().show();
-    }
-
-    /**
-     * Hides the Bar Banner.
-     */
-    public void hideBarBanner() {
-        getBarBannerControl().hide();
-    }
-
-    /**
-     * @return Whether the Bar Banner is visible.
-     */
-    @VisibleForTesting
-    public boolean isBarBannerVisible() {
-        return getBarBannerControl().isVisible();
     }
 
     /**
@@ -855,7 +824,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         getPromoControl().onUpdateFromCloseToPeek(percentage);
         getRelatedSearchesInBarControl().onUpdateFromCloseToPeek(percentage);
         getRelatedSearchesInContentControl().onUpdateFromCloseToPeek(percentage);
-        getBarBannerControl().onUpdateFromCloseToPeek(percentage);
         getSearchBarControl().onUpdateFromCloseToPeek(percentage);
         mDidStartCollapsing = false;
     }
@@ -874,7 +842,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         getPromoControl().onUpdateFromPeekToExpand(percentage);
         getRelatedSearchesInBarControl().onUpdateFromPeekToExpand(percentage);
         getRelatedSearchesInContentControl().onUpdateFromPeekToExpand(percentage);
-        getBarBannerControl().onUpdateFromPeekToExpand(percentage);
         getSearchBarControl().onUpdateFromPeekToExpand(percentage);
     }
 
@@ -885,7 +852,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         getPromoControl().onUpdateFromExpandToMaximize(percentage);
         getRelatedSearchesInBarControl().onUpdateFromExpandToMaximize(percentage);
         getRelatedSearchesInContentControl().onUpdateFromExpandToMaximize(percentage);
-        getBarBannerControl().onUpdateFromExpandToMaximize(percentage);
         getSearchBarControl().onUpdateFromExpandToMaximize(percentage);
     }
 
@@ -899,9 +865,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         }
         if (getRelatedSearchesInContentControl().isVisible()) {
             getRelatedSearchesInContentControl().invalidate(true);
-        }
-        if (getBarBannerControl().isVisible()) {
-            getBarBannerControl().onResized(this);
         }
 
         // NOTE(pedrosimonetti): We cannot tell where the selection will be after the
@@ -1023,33 +986,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      */
     public ContextualSearchImageControl getImageControl() {
         return getSearchBarControl().getImageControl();
-    }
-
-    // ============================================================================================
-    // Bar Banner
-    // ============================================================================================
-
-    private ContextualSearchBarBannerControl mBarBannerControl;
-
-    /**
-     * Creates the ContextualSearchBarBannerControl, if needed.
-     */
-    private ContextualSearchBarBannerControl getBarBannerControl() {
-        if (mBarBannerControl == null) {
-            mBarBannerControl = new ContextualSearchBarBannerControl(
-                    this, mContext, mContainerView, mResourceLoader);
-        }
-        return mBarBannerControl;
-    }
-
-    /**
-     * Destroys the ContextualSearchBarBannerControl.
-     */
-    private void destroyBarBannerControl() {
-        if (mBarBannerControl != null) {
-            mBarBannerControl.destroy();
-            mBarBannerControl = null;
-        }
     }
 
     // ============================================================================================
