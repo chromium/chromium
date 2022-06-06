@@ -39,7 +39,7 @@ namespace enterprise_signals {
 namespace {
 
 constexpr wchar_t kSecureBootRegPath[] =
-    L"SOFTWARE\\CurrentControlSet\\Control\\SecureBoot\\State";
+    L"SYSTEM\\CurrentControlSet\\Control\\SecureBoot\\State";
 constexpr wchar_t kSecureBootRegKey[] = L"UEFISecureBootEnabled";
 
 // Possible results of the "System.Volume.BitLockerProtection" shell property.
