@@ -68,8 +68,7 @@ void RecordPrimaryMainFrameNavigation(
     bool is_off_the_record,
     profile_metrics::BrowserProfileType profile_type) {
   Scheme scheme = GetScheme(url);
-  UMA_HISTOGRAM_ENUMERATION("Navigation.MainFrameScheme2", scheme,
-                            Scheme::COUNT);
+  UMA_HISTOGRAM_ENUMERATION(kMainFrameScheme, scheme, Scheme::COUNT);
   if (!is_same_document) {
     UMA_HISTOGRAM_ENUMERATION("Navigation.MainFrameSchemeDifferentPage2",
                               scheme, Scheme::COUNT);
