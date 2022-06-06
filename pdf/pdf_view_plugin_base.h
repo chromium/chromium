@@ -141,12 +141,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Gets the accessibility doc info based on the information from `engine_`.
   AccessibilityDocInfo GetAccessibilityDocInfo() const;
 
-  bool UnsupportedFeatureIsReportedForTesting(const std::string& feature) const;
-
-  bool GetNotifiedBrowserAboutUnsupportedFeatureForTesting() const {
-    return notified_browser_about_unsupported_feature_;
-  }
-
   void InitializeEngineForTesting(std::unique_ptr<PDFiumEngine> engine);
 
   void set_full_frame_for_testing(bool full_frame) { full_frame_ = full_frame; }

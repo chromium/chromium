@@ -625,6 +625,63 @@ TEST_F(PdfViewWebPluginFullFrameTest, DocumentLoadFailed) {
             plugin_->document_load_state_for_testing());
 }
 
+TEST_F(PdfViewWebPluginTest, DocumentHasUnsupportedFeature) {
+  EXPECT_CALL(*client_ptr_, RecordComputedAction).Times(AnyNumber());
+  EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature1"));
+  EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature2"));
+
+  // `HasUnsupportedFeature()` is not called if the viewer is not full-frame.
+  EXPECT_CALL(pdf_service_, HasUnsupportedFeature).Times(0);
+
+  plugin_->DocumentHasUnsupportedFeature("feature1");
+  plugin_->DocumentHasUnsupportedFeature("feature2");
+
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginTest, DocumentHasUnsupportedFeatureWithRepeatedFeature) {
+  // Metrics should only be recorded once per feature.
+  EXPECT_CALL(*client_ptr_, RecordComputedAction).Times(AnyNumber());
+  EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature"));
+
+  // `HasUnsupportedFeature()` is not called if the viewer is not full-frame.
+  EXPECT_CALL(pdf_service_, HasUnsupportedFeature).Times(0);
+
+  plugin_->DocumentHasUnsupportedFeature("feature");
+  plugin_->DocumentHasUnsupportedFeature("feature");
+
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginFullFrameTest, DocumentHasUnsupportedFeature) {
+  EXPECT_CALL(*client_ptr_, RecordComputedAction).Times(AnyNumber());
+  EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature1"));
+  EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature2"));
+
+  // `HasUnsupportedFeature()` is called once for all features.
+  EXPECT_CALL(pdf_service_, HasUnsupportedFeature);
+
+  plugin_->DocumentHasUnsupportedFeature("feature1");
+  plugin_->DocumentHasUnsupportedFeature("feature2");
+
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginFullFrameTest,
+       DocumentHasUnsupportedFeatureWithRepeatedFeature) {
+  // Metrics should only be recorded once per feature.
+  EXPECT_CALL(*client_ptr_, RecordComputedAction).Times(AnyNumber());
+  EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature"));
+
+  // `HasUnsupportedFeature()` is called once for all features.
+  EXPECT_CALL(pdf_service_, HasUnsupportedFeature);
+
+  plugin_->DocumentHasUnsupportedFeature("feature");
+  plugin_->DocumentHasUnsupportedFeature("feature");
+
+  pdf_receiver_.FlushForTesting();
+}
+
 TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {
   EXPECT_CALL(*engine_ptr_, ZoomUpdated(2.0f));
   TestUpdateGeometrySetsPluginRect(

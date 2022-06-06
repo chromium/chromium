@@ -17,7 +17,6 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -600,11 +599,6 @@ AccessibilityDocInfo PdfViewPluginBase::GetAccessibilityDocInfo() const {
       engine()->HasPermission(DocumentPermission::kCopyAccessible);
   doc_info.text_copyable = engine()->HasPermission(DocumentPermission::kCopy);
   return doc_info;
-}
-
-bool PdfViewPluginBase::UnsupportedFeatureIsReportedForTesting(
-    const std::string& feature) const {
-  return base::Contains(unsupported_features_reported_, feature);
 }
 
 void PdfViewPluginBase::InitializeEngineForTesting(

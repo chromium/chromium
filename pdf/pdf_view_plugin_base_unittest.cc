@@ -346,66 +346,6 @@ TEST_F(PdfViewPluginBaseWithoutDocInfoTest,
             fake_plugin_.sent_messages()[0]);
 }
 
-TEST_F(PdfViewPluginBaseTest, DocumentHasUnsupportedFeatureInFullFrame) {
-  fake_plugin_.set_full_frame_for_testing(true);
-  ASSERT_TRUE(fake_plugin_.full_frame());
-
-  // Arbitrary feature names and their matching metric names.
-  static constexpr char kFeature1[] = "feature1";
-  static constexpr char kMetric1[] = "PDF_Unsupported_feature1";
-  static constexpr char kFeature2[] = "feature2";
-  static constexpr char kMetric2[] = "PDF_Unsupported_feature2";
-
-  // Find unsupported `kFeature1` for the first time.
-  EXPECT_FALSE(fake_plugin_.UnsupportedFeatureIsReportedForTesting(kMetric1));
-  EXPECT_FALSE(
-      fake_plugin_.GetNotifiedBrowserAboutUnsupportedFeatureForTesting());
-  EXPECT_CALL(fake_plugin_, NotifyUnsupportedFeature());
-  EXPECT_CALL(fake_plugin_, UserMetricsRecordAction(kMetric1));
-
-  fake_plugin_.DocumentHasUnsupportedFeature(kFeature1);
-  EXPECT_TRUE(fake_plugin_.UnsupportedFeatureIsReportedForTesting(kMetric1));
-  EXPECT_TRUE(
-      fake_plugin_.GetNotifiedBrowserAboutUnsupportedFeatureForTesting());
-
-  // Find unsupported `kFeature2` for the first time.
-  EXPECT_FALSE(fake_plugin_.UnsupportedFeatureIsReportedForTesting(kMetric2));
-  EXPECT_CALL(fake_plugin_, UserMetricsRecordAction(kMetric2));
-
-  fake_plugin_.DocumentHasUnsupportedFeature(kFeature2);
-  EXPECT_TRUE(fake_plugin_.UnsupportedFeatureIsReportedForTesting(kMetric2));
-  EXPECT_TRUE(
-      fake_plugin_.GetNotifiedBrowserAboutUnsupportedFeatureForTesting());
-
-  // Find unsupported `kFeature1` for the second time.
-  fake_plugin_.DocumentHasUnsupportedFeature(kFeature1);
-  EXPECT_TRUE(fake_plugin_.UnsupportedFeatureIsReportedForTesting(kMetric1));
-  EXPECT_TRUE(
-      fake_plugin_.GetNotifiedBrowserAboutUnsupportedFeatureForTesting());
-}
-
-TEST_F(PdfViewPluginBaseTest, DocumentHasUnsupportedFeatureWithoutFullFrame) {
-  ASSERT_FALSE(fake_plugin_.full_frame());
-
-  // An arbitrary feature name and its matching metric name.
-  static constexpr char kFeature[] = "feature";
-  static constexpr char kMetric[] = "PDF_Unsupported_feature";
-
-  EXPECT_FALSE(fake_plugin_.UnsupportedFeatureIsReportedForTesting(kMetric));
-  EXPECT_FALSE(
-      fake_plugin_.GetNotifiedBrowserAboutUnsupportedFeatureForTesting());
-
-  // NotifyUnsupportedFeature() should never be called if the viewer doesn't
-  // occupy the whole frame, but the metrics should still be recorded.
-  EXPECT_CALL(fake_plugin_, NotifyUnsupportedFeature()).Times(0);
-  EXPECT_CALL(fake_plugin_, UserMetricsRecordAction(kMetric));
-
-  fake_plugin_.DocumentHasUnsupportedFeature(kFeature);
-  EXPECT_TRUE(fake_plugin_.UnsupportedFeatureIsReportedForTesting(kMetric));
-  EXPECT_FALSE(
-      fake_plugin_.GetNotifiedBrowserAboutUnsupportedFeatureForTesting());
-}
-
 TEST_F(PdfViewPluginBaseWithEngineTest, HandleInputEvent) {
   auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
   EXPECT_CALL(*engine, HandleInputEvent)
