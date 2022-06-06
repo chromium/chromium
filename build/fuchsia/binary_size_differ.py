@@ -27,6 +27,7 @@ from binary_sizes import GetPackageSizes, ReadPackageBlobsJson
 from binary_sizes import PACKAGES_SIZE_FILE
 
 _MAX_DELTA_BYTES = 12 * 1024  # 12 KiB
+_TRYBOT_DOC = 'https://chromium.googlesource.com/chromium/src/+/main/docs/speed/binary_size/fuchsia_binary_size_trybot.md'
 
 
 def GetPackageBlobsFromFile(blob_file_path):
@@ -53,14 +54,16 @@ def ComputePackageDiffs(before_blobs_file, after_blobs_file):
         after_blobs[package_name].uncompressed -
         before_blobs[package_name].uncompressed)
     if growth['compressed'][package_name] >= _MAX_DELTA_BYTES:
-      if status_code == 1:
-        summary = 'Failed! '
+      if status_code == 1 and not summary:
+        summary = 'Size check failed! The following package(s) are affected:\n'
       status_code = 1
-      summary += ('%s grew by %d bytes' %
+      summary += ('- %s grew by %d bytes\n' %
                   (package_name, growth['compressed'][package_name]))
 
   growth['status_code'] = status_code
-  growth['summary'] = summary
+  summary += ('\nSee the following document for more information about'
+              ' this trybot:\n%s' % _TRYBOT_DOC)
+  growth['summary'] = summary.replace('\n', '<br>')
 
   # TODO(crbug.com/1266085): Investigate using these fields.
   growth['archive_filenames'] = []
