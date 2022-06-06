@@ -200,25 +200,13 @@ public class TabSwitcherCoordinator
         mSnackbarManager = snackbarManager;
         mModalDialogManager = modalDialogManager;
 
-        mTabSwitcherCustomViewManager =
-                new TabSwitcherCustomViewManager(new TabSwitcherCustomViewManager.Delegate() {
-                    @Override
-                    public void addCustomView(@NonNull View customView) {
-                        // TODO(crbug.com/1227656): Show this custom view in the tab switcher
-                        // content area.
-                    }
-
-                    @Override
-                    public void removeCustomView(@NonNull View customView) {
-                        // TODO(crbug.com/1227656): Release this custom view from the tab switcher
-                        // content area and show the previously showed contents.
-                    }
-                });
         PropertyModel containerViewModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
         mMediator = new TabSwitcherMediator(activity, this, containerViewModel, tabModelSelector,
                 browserControls, container, tabContentManager, this, this,
                 multiWindowModeStateDispatcher, mode);
+
+        mTabSwitcherCustomViewManager = new TabSwitcherCustomViewManager(mMediator);
 
         mMultiThumbnailCardProvider =
                 new MultiThumbnailCardProvider(activity, tabContentManager, tabModelSelector);

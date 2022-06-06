@@ -18,8 +18,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -75,7 +77,8 @@ import java.util.List;
  */
 class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView.VisibilityListener,
                                      TabListMediator.GridCardOnClickListenerProvider,
-                                     PriceMessageService.PriceWelcomeMessageReviewActionProvider {
+                                     PriceMessageService.PriceWelcomeMessageReviewActionProvider,
+                                     TabSwitcherCustomViewManager.Delegate {
     private static final String TAG = "TabSwitcherMediator";
 
     // This should be the same as TabListCoordinator.GRID_LAYOUT_SPAN_COUNT for the selected tab
@@ -855,6 +858,31 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     public void setSnackbarParentView(ViewGroup parentView) {
         if (mSnackbarManager == null) return;
         mSnackbarManager.setParentView(parentView);
+    }
+
+    /**
+     * A method to handle signal from outside world that a client is requesting to show a custom
+     * view inside the tab switcher.
+     *
+     * @param customView A {@link View} view that needs to be shown.
+     */
+    @Override
+    public void addCustomView(@NonNull View customView) {
+        mContainerView.addView(customView);
+    }
+
+    /**
+     * A method to handle signal from outside world that a client is requesting to remove the custom
+     * view from the tab switcher.
+     *
+     * TODO(crbug.com/1227656): Transitions needs to be handled correctly to not leak the Incognito
+     * content.
+     *
+     * @param customView A {@link View} view that needs to be removed.
+     */
+    @Override
+    public void removeCustomView(@NonNull View customView) {
+        mContainerView.removeView(customView);
     }
 
     /**
