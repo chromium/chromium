@@ -777,7 +777,6 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
     client_security_state = network::mojom::ClientSecurityState::New();
   }
 
-  // TODO(crbug.com/1231019): Tag CL with this bug.
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           rph, origin,
