@@ -190,6 +190,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   // Sends a metric to the platform side when the Diagnostics app is launched.
   void SendMetricOnLaunchDiagnostics();
 
+  // Sends a metric to the platform side when an OS update is requested.
+  void SendMetricOnUpdateOs();
+
  private:
   using TransitionStateCallback =
       base::OnceCallback<void(mojom::State, bool, bool, rmad::RmadErrorCode)>;

@@ -362,6 +362,8 @@ void ShimlessRmaService::UpdateOs(UpdateOsCallback callback) {
     return;
   }
   std::move(callback).Run(version_updater_.UpdateOs());
+
+  SendMetricOnUpdateOs();
 }
 
 void ShimlessRmaService::UpdateOsSkipped(UpdateOsSkippedCallback callback) {
@@ -1065,6 +1067,16 @@ void ShimlessRmaService::SendMetricOnLaunchDiagnostics() {
   rmad::RecordBrowserActionMetricRequest request;
   request.set_diagnostics(true);
   request.set_os_update(false);
+
+  RmadClient::Get()->RecordBrowserActionMetric(
+      request, base::BindOnce(&ShimlessRmaService::OnMetricsReply,
+                              weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ShimlessRmaService::SendMetricOnUpdateOs() {
+  rmad::RecordBrowserActionMetricRequest request;
+  request.set_diagnostics(false);
+  request.set_os_update(true);
 
   RmadClient::Get()->RecordBrowserActionMetric(
       request, base::BindOnce(&ShimlessRmaService::OnMetricsReply,

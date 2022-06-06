@@ -131,10 +131,12 @@ bool VersionUpdater::UpdateOs() {
     return false;
   }
 
-  if (!IsUpdateEngineIdle()) {
-    LOG(ERROR) << "Tried to start update when UpdateEngine not IDLE.";
-    return false;
-  }
+  // TODO(swifton): Find out if we need to add an observer to the update engine
+  // client.
+
+  // TODO(swifton): Find out how the state of the engine client should be
+  // checked after using RequestUpdateCheckWithoutApplying.
+
   // RequestUpdateCheck will check if an update is available and install it.
   DBusThreadManager::Get()->GetUpdateEngineClient()->RequestUpdateCheck(
       base::BindOnce(&VersionUpdater::OnRequestUpdateCheck,

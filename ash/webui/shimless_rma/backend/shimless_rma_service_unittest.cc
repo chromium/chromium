@@ -3280,6 +3280,56 @@ TEST_F(ShimlessRmaServiceTest, LaunchDiagnosticsSendsMetric) {
   EXPECT_FALSE(fake_rmad_client_()->GetMetricOsUpdate());
 }
 
+TEST_F(ShimlessRmaServiceTest, OsUpdateSendsMetric) {
+  // Connect to wifi so that we can skip the network page.
+  SetupWiFiNetwork(kDefaultWifiGuid);
+
+  // Since OS Update is only a mojo state, and not an rmad state, we have
+  // to start at the landing page, and skip two pages to get to OS Update.
+  const std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+
+  base::RunLoop run_loop_1;
+
+  // Initialize current state
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kWelcomeScreen);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop_1.RunUntilIdle();
+
+  // Move to the next page. This should be the OS Update page.
+  shimless_rma_provider_->BeginFinalization(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_exit, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kUpdateOs);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop_1.Quit();
+      }));
+  run_loop_1.Run();
+
+  // Now, actually test the OS Update page.
+  base::RunLoop run_loop_2;
+
+  fake_rmad_client_()->SetRecordBrowserActionMetricReply(rmad::RMAD_ERROR_OK);
+
+  EXPECT_EQ(0u, fake_rmad_client_()->GetRecordBrowserActionMetricCount());
+
+  shimless_rma_provider_->UpdateOs(
+      base::BindLambdaForTesting([&](bool update_started) {
+        EXPECT_TRUE(update_started);
+        run_loop_2.Quit();
+      }));
+  run_loop_2.Run();
+
+  EXPECT_EQ(1u, fake_rmad_client_()->GetRecordBrowserActionMetricCount());
+  EXPECT_TRUE(fake_rmad_client_()->GetMetricOsUpdate());
+  EXPECT_FALSE(fake_rmad_client_()->GetMetricDiagnostics());
+}
+
 class FakeErrorObserver : public mojom::ErrorObserver {
  public:
   void OnError(rmad::RmadErrorCode error) override {
