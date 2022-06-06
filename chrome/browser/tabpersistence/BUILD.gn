@@ -12,6 +12,7 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//chrome/browser/android/crypto:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//components/version_info/android:version_constants_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

@@ -9,10 +9,13 @@ import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -222,7 +225,13 @@ public class TabStateFileManager {
         }
     }
 
-    public static byte[] getContentStateByteArray(ByteBuffer buffer) {
+    public static byte[] getContentStateByteArray(final ByteBuffer passedBuffer) {
+        ByteBuffer buffer = passedBuffer;
+        // Use local ByteBuffer (backed by same byte[] to mitigate crbug.com/1297894)
+        if (FeatureList.isInitialized()
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA)) {
+            buffer = buffer.asReadOnlyBuffer();
+        }
         byte[] contentsStateBytes = new byte[buffer.limit()];
         buffer.rewind();
         buffer.get(contentsStateBytes);
