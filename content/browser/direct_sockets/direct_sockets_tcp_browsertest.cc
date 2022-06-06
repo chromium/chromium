@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -39,6 +40,7 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
 
 // The tests in this file use the Network Service implementation of
@@ -274,7 +276,6 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
   void SetUp() override {
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(embedded_test_server()->Start());
-
     ContentBrowserTest::SetUp();
   }
 
@@ -291,6 +292,9 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
     return shell()->web_contents()->GetBrowserContext();
   }
 
+ private:
+  test::IsolatedAppContentBrowserClient client_;
+  ScopedContentBrowserClientSetting setting{&client_};
   base::test::ScopedFeatureList feature_list_;
   mojo::Remote<network::mojom::MdnsResponder> mdns_responder_;
   mojo::Remote<network::mojom::TCPServerSocket> tcp_server_socket_;

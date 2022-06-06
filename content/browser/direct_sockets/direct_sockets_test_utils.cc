@@ -195,6 +195,25 @@ std::string AsyncJsRunner::MakeScriptSendResultToDomQueue(
       script.c_str(), token_.ToString().c_str()));
 }
 
+bool IsolatedAppContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
+    BrowserContext* browser_context,
+    const GURL& url) {
+  return true;
+}
+
+blink::ParsedPermissionsPolicy
+IsolatedAppContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
+    content::BrowserContext* browser_context,
+    const url::Origin& app_origin) {
+  blink::ParsedPermissionsPolicy out;
+  blink::ParsedPermissionsPolicyDeclaration decl(
+      blink::mojom::PermissionsPolicyFeature::kDirectSockets,
+      /*values=*/{app_origin},
+      /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
+  out.push_back(decl);
+  return out;
+}
+
 // misc
 std::string WrapAsync(const std::string& script) {
   DCHECK(!script.empty());

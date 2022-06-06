@@ -24,6 +24,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -276,6 +277,10 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
 
     command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins, origin_list);
   }
+
+ private:
+  test::IsolatedAppContentBrowserClient client_;
+  ScopedContentBrowserClientSetting setting{&client_};
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_Success_Hostname) {

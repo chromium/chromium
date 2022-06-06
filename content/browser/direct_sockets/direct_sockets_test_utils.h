@@ -192,6 +192,18 @@ class AsyncJsRunner : public WebContentsObserver {
 
 std::string WrapAsync(const std::string& script);
 
+// Mock ContentBrowserClient that enableds direct sockets via permissions policy
+// for isolated apps.
+class IsolatedAppContentBrowserClient : public ContentBrowserClient {
+ public:
+  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
+                                             const GURL& url) override;
+
+  blink::ParsedPermissionsPolicy GetPermissionsPolicyForIsolatedApp(
+      content::BrowserContext* browser_context,
+      const url::Origin& app_origin) override;
+};
+
 }  // namespace content::test
 
 #endif  // CONTENT_BROWSER_DIRECT_SOCKETS_DIRECT_SOCKETS_TEST_UTILS_H_

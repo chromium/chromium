@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -107,6 +108,8 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
     return shell()->web_contents()->GetBrowserContext();
   }
 
+  test::IsolatedAppContentBrowserClient client_;
+  ScopedContentBrowserClientSetting setting{&client_};
   base::test::ScopedFeatureList feature_list_;
   mojo::Remote<network::mojom::UDPSocket> server_socket_;
 };
