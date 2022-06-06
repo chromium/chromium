@@ -12,8 +12,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -129,7 +127,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns the AppIds and URLs of apps externally installed from
   // |install_source|.
-  base::flat_map<AppId, base::flat_set<GURL>> GetExternallyInstalledApps(
+  std::map<AppId, GURL> GetExternallyInstalledApps(
       ExternalInstallSource install_source) const;
 
   // Returns the app id for |install_url| if the WebAppRegistrar is aware of an

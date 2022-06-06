@@ -115,14 +115,13 @@ bool ExternallyInstalledWebAppPrefs::HasAppIdWithInstallSource(
 }
 
 // static
-base::flat_map<AppId, base::flat_set<GURL>>
-ExternallyInstalledWebAppPrefs::BuildAppIdsMap(
+std::map<AppId, GURL> ExternallyInstalledWebAppPrefs::BuildAppIdsMap(
     const PrefService* pref_service,
     ExternalInstallSource install_source) {
   const base::Value* urls_to_dicts =
       pref_service->GetDictionary(prefs::kWebAppsExtensionIDs);
 
-  base::flat_map<AppId, base::flat_set<GURL>> ids_to_urls;
+  std::map<AppId, GURL> ids_to_urls;
 
   if (!urls_to_dicts) {
     return ids_to_urls;
@@ -148,7 +147,7 @@ ExternallyInstalledWebAppPrefs::BuildAppIdsMap(
 
     GURL url(it.first);
     DCHECK(url.is_valid() && !url.is_empty());
-    ids_to_urls[v->GetString()] = {url};
+    ids_to_urls[v->GetString()] = url;
   }
 
   return ids_to_urls;
@@ -191,6 +190,14 @@ absl::optional<AppId> ExternallyInstalledWebAppPrefs::LookupAppId(
     }
   }
   return absl::nullopt;
+}
+
+bool ExternallyInstalledWebAppPrefs::HasNoApps() const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  const base::Value* dict =
+      pref_service_->GetDictionary(prefs::kWebAppsExtensionIDs);
+  return dict->DictEmpty();
 }
 
 absl::optional<AppId> ExternallyInstalledWebAppPrefs::LookupPlaceholderAppId(

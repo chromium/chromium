@@ -4,10 +4,7 @@
 
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 
-#include <vector>
-
 #include "base/notreached.h"
-#include "chrome/common/chrome_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -40,9 +37,6 @@ std::string TestProfileTypeToString(
 #endif
   }
 
-  if (info.param.external_pref_migration_enabled)
-    result += "External_Pref_Migration_Enabled";
-
   return result;
 }
 
@@ -60,25 +54,17 @@ void ConfigureCommandLineForGuestMode(base::CommandLine* command_line) {
 
 void InitCrosapiFeaturesForParam(
     web_app::test::CrosapiParam crosapi_state,
-    base::test::ScopedFeatureList* scoped_feature_list,
-    bool external_pref_migration_enabled) {
-  std::vector<base::Feature> enabled_features;
-  std::vector<base::Feature> disabled_features;
-  if (external_pref_migration_enabled)
-    enabled_features.push_back(features::kUseWebAppDBInsteadOfExternalPrefs);
-  else
-    disabled_features.push_back(features::kUseWebAppDBInsteadOfExternalPrefs);
+    base::test::ScopedFeatureList* scoped_feature_list) {
   if (crosapi_state == web_app::test::CrosapiParam::kEnabled) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    enabled_features.push_back(features::kWebAppsCrosapi);
+    scoped_feature_list->InitAndEnableFeature(features::kWebAppsCrosapi);
 #else
     NOTREACHED();
 #endif
   } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    disabled_features.push_back(features::kWebAppsCrosapi);
-    disabled_features.push_back(chromeos::features::kLacrosPrimary);
+    scoped_feature_list->InitWithFeatures(
+        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
 #endif
   }
-  scoped_feature_list->InitWithFeatures(enabled_features, disabled_features);
 }

@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -171,10 +172,13 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
       return;
     }
 
+    // This app id isn't guaranteed to be installed,
+    // it's only guaranteed to have been installed in the past.
     absl::optional<AppId> app_id =
-        registrar()->LookupExternalAppId(install_options.install_url);
+        ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+            .LookupAppId(install_options.install_url);
 
-    // If the URL is not in web_app registrar,
+    // If the URL is not in ExternallyInstalledWebAppPrefs,
     // then no external source has installed it.
     if (!app_id.has_value()) {
       StartInstallationTask(std::move(front));

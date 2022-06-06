@@ -16,8 +16,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
@@ -1588,12 +1586,12 @@ std::string WebAppPublisherHelper::GetPolicyId(const WebApp& web_app) {
   GURL install_url;
   if (registrar().HasExternalAppWithInstallSource(
           web_app.app_id(), ExternalInstallSource::kExternalPolicy)) {
-    base::flat_map<AppId, base::flat_set<GURL>> installed_apps =
+    std::map<AppId, GURL> installed_apps =
         registrar().GetExternallyInstalledApps(
             ExternalInstallSource::kExternalPolicy);
-    if (base::Contains(installed_apps, web_app.app_id())) {
-      DCHECK(installed_apps[web_app.app_id()].size() > 0);
-      install_url = *installed_apps[web_app.app_id()].begin();
+    auto it = installed_apps.find(web_app.app_id());
+    if (it != installed_apps.end()) {
+      install_url = it->second;
     }
   }
   return install_url.spec();

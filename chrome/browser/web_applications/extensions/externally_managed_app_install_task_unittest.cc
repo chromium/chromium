@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
@@ -166,12 +167,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
                                     source,
                                     callback = std::move(callback)]() mutable {
           auto web_app = test::CreateWebApp(url, WebAppManagement::kPolicy);
-          // This has to be done because the test does not use the actual
-          // ExternalAppManager, it mocks the install by writing to the
-          // registry, even though kWriteDataFailed is explicitly set in the
-          // test.
-          if (code != webapps::InstallResultCode::kWriteDataFailed)
-            web_app->AddExternalSourceInformation(source, url, is_placeholder);
+          web_app->AddExternalSourceInformation(source, url, is_placeholder);
           RegisterApp(std::move(web_app));
           std::move(callback).Run(app_id, code, OsHooksErrors());
         }));
@@ -424,7 +420,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
                 base::BindLambdaForTesting(
                     [&](ExternallyManagedAppManager::InstallResult result) {
                       absl::optional<AppId> id =
-                          registrar()->LookupExternalAppId(kWebAppUrl);
+                          ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+                              .LookupAppId(kWebAppUrl);
 
                       EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
                                 result.code);
@@ -464,7 +461,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallFails) {
       base::BindLambdaForTesting(
           [&](ExternallyManagedAppManager::InstallResult result) {
             absl::optional<AppId> id =
-                registrar()->LookupExternalAppId(kWebAppUrl);
+                ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+                    .LookupAppId(kWebAppUrl);
 
             EXPECT_EQ(webapps::InstallResultCode::kGetWebAppInstallInfoFailed,
                       result.code);
@@ -851,7 +849,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
               EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
                         result.code);
               EXPECT_EQ(result.app_id,
-                        *registrar()->LookupExternalAppId(kWebAppUrl));
+                        *ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+                             .LookupAppId(kWebAppUrl));
 
               EXPECT_TRUE(ui_manager()->DidUninstallAndReplace("app1", app_id));
               EXPECT_TRUE(ui_manager()->DidUninstallAndReplace("app2", app_id));
@@ -967,7 +966,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
       base::BindLambdaForTesting(
           [&](ExternallyManagedAppManager::InstallResult result) {
             absl::optional<AppId> id =
-                registrar()->LookupExternalAppId(kWebAppUrl);
+                ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+                    .LookupAppId(kWebAppUrl);
             EXPECT_EQ(webapps::InstallResultCode::kSuccessOfflineOnlyInstall,
                       result.code);
             EXPECT_TRUE(result.app_id.has_value());
@@ -1015,7 +1015,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
                base::BindLambdaForTesting(
                    [&](ExternallyManagedAppManager::InstallResult result) {
                      absl::optional<AppId> id =
-                         registrar()->LookupExternalAppId(kWebAppUrl);
+                         ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+                             .LookupAppId(kWebAppUrl);
 
                      EXPECT_EQ(webapps::InstallResultCode::kWriteDataFailed,
                                result.code);

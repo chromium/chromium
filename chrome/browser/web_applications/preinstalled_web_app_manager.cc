@@ -242,14 +242,10 @@ absl::optional<std::string> GetDisableReason(
   if (options.gate_on_feature_or_installed &&
       !IsPreinstalledAppInstallFeatureEnabled(
           *options.gate_on_feature_or_installed, *profile)) {
-    // Check if the app is currently installed as a preinstalled app or whether
-    // it was previously preinstalled, but no longer installed.
-    absl::optional<AppId> app_id_from_registry =
-        registrar->LookupExternalAppId(options.install_url);
-    absl::optional<AppId> app_id_uninstalled =
-        UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
-            .LookUpAppIdByInstallUrl(options.install_url);
-    if (!app_id_from_registry.has_value() && !app_id_uninstalled.has_value()) {
+    absl::optional<AppId> app_id =
+        ExternallyInstalledWebAppPrefs(profile->GetPrefs())
+            .LookupAppId(options.install_url);
+    if (!app_id.has_value()) {
       base::UmaHistogramEnumeration(
           kHistogramMigrationDisabledReason,
           DisabledReason::kGatedFeatureNotEnabledAndAppNotInstalled);
@@ -279,10 +275,9 @@ absl::optional<std::string> GetDisableReason(
   // installed previously.
   if (options.only_for_new_users && !is_new_user) {
     bool was_previously_installed =
-        UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
-            .LookUpAppIdByInstallUrl(options.install_url)
-            .has_value() ||
-        registrar->LookupExternalAppId(options.install_url).has_value();
+        ExternallyInstalledWebAppPrefs(profile->GetPrefs())
+            .LookupAppId(options.install_url)
+            .has_value();
     if (!was_previously_installed) {
       base::UmaHistogramEnumeration(
           kHistogramMigrationDisabledReason,
@@ -295,7 +290,8 @@ absl::optional<std::string> GetDisableReason(
   // Remove if was not previously preinstalled.
   if (options.only_if_previously_preinstalled) {
     absl::optional<AppId> app_id =
-        registrar->LookupExternalAppId(options.install_url);
+        ExternallyInstalledWebAppPrefs(profile->GetPrefs())
+            .LookupAppId(options.install_url);
 
     bool was_previously_preinstalled = false;
     if (app_id.has_value()) {

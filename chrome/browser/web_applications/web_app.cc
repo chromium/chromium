@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -419,19 +418,6 @@ void WebApp::AddExternalSourceInformation(WebAppManagement::Type type,
                                           bool is_placeholder) {
   AddInstallURLToManagementExternalConfigMap(type, install_url);
   AddPlaceholderInfoToManagementExternalConfigMap(type, is_placeholder);
-}
-
-bool WebApp::RemoveInstallUrlForSource(WebAppManagement::Type type,
-                                       GURL install_url) {
-  if (!management_to_external_config_map_.count(type))
-    return false;
-
-  bool removed =
-      management_to_external_config_map_[type].install_urls.erase(install_url);
-  if (management_to_external_config_map_[type].install_urls.empty()) {
-    management_to_external_config_map_.erase(type);
-  }
-  return removed;
 }
 
 WebApp::ClientData::ClientData() = default;

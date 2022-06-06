@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -130,21 +129,10 @@ void ExpectInitialManifestFieldsFromBasicWebApp(
 }  // namespace
 
 class PreinstalledWebAppManagerBrowserTest
-    : virtual public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : virtual public InProcessBrowserTest {
  public:
   PreinstalledWebAppManagerBrowserTest() {
-    bool enable_migration = GetParam();
-    if (enable_migration) {
-      feature_list_.InitWithFeatures(
-          {features::kUseWebAppDBInsteadOfExternalPrefs,
-           features::kRecordWebAppDebugInfo},
-          {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {features::kRecordWebAppDebugInfo},
-          {features::kUseWebAppDBInsteadOfExternalPrefs});
-    }
+    feature_list_.InitAndEnableFeature(features::kRecordWebAppDebugInfo);
     PreinstalledWebAppManager::SkipStartupForTesting();
   }
 
@@ -288,7 +276,7 @@ class PreinstalledWebAppManagerBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        LaunchQueryParamsBasic) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -322,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
       launch_url);
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        LaunchQueryParamsDuplicate) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -358,7 +346,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
       start_url);
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        LaunchQueryParamsMultiple) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -391,7 +379,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
       launch_url);
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        LaunchQueryParamsComplex) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -448,7 +436,7 @@ class PreinstalledWebAppManagerExtensionBrowserTest
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerExtensionBrowserTest,
                        UninstallAndReplace) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -483,13 +471,9 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerExtensionBrowserTest,
       uninstall_observer.WaitForExtensionUninstalled();
   EXPECT_EQ(app, uninstalled_app.get());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PreinstalledWebAppManagerExtensionBrowserTest,
-                         ::testing::Bool());
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PreinstalledAppsPrefInstall) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -507,7 +491,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
             webapps::InstallResultCode::kSuccessNewInstall);
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PreinstalledAppsPrefNoinstall) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -536,7 +520,7 @@ const char kOnlyIfPreviouslyPreinstalled_NextConfig[] = R"({
   "only_if_previously_preinstalled": true
 })";
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PRE_OnlyIfPreviouslyPreinstalled_AppPreserved) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   InitUrlLoaderInterceptor();
@@ -555,7 +539,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
   EXPECT_TRUE(registrar().IsInstalled(app_id));
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        OnlyIfPreviouslyPreinstalled_AppPreserved) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   InitUrlLoaderInterceptor();
@@ -574,7 +558,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
   EXPECT_TRUE(registrar().IsInstalled(app_id));
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PRE_OnlyIfPreviouslyPreinstalled_NoAppPreinstalled) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   InitUrlLoaderInterceptor();
@@ -592,7 +576,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
   EXPECT_FALSE(registrar().IsInstalled(app_id));
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        OnlyIfPreviouslyPreinstalled_NoAppPreinstalled) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   InitUrlLoaderInterceptor();
@@ -620,7 +604,7 @@ const char kFeatureNameOrInstalledConfig[] = R"({
 
 // When the "feature_name_or_installed" feature is enabled, the app should be
 // installed.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        GateOnFeatureNameOrInstalled_InstallWhenEnabled) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -640,7 +624,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
 
 // When the "feature_name_or_installed" feature is disabled, the app should not
 // be installed.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        GateOnFeatureNameOrInstalled_IgnoreWhenDisabled) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -656,7 +640,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
 
 // When the "feature_name_or_installed" feature is disabled, any existing
 // preinstalled app should not be uninstalled.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PreinstalledWebAppManagerBrowserTest,
     GateOnFeatureNameOrInstalled_DoNotUninstallWhenDisabled) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
@@ -685,7 +669,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Preinstalled apps which are user uninstalled are not included
 // in the config passed to the ExternallyManagedAppInstallManager.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        DisableForPreinstalledAppsInConfig) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -721,7 +705,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
 // Preinstalled apps which are user uninstalled are included
 // in the config passed to the ExternallyManagedAppInstallManager if
 // |override_previous_user_uninstall| is true.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PreinstalledAppsUninstallOverride) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   PreinstalledWebAppManager::OverridePreviousUserUninstallConfigForTesting();
@@ -756,7 +740,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
 
 // Check that offline fallback installs work offline.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        OfflineFallbackManifestSiteOffline) {
   constexpr char kAppInstallUrl[] = "https://offline-site.com/install.html";
   constexpr char kAppName[] = "Offline app name";
@@ -803,7 +787,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
 }
 
 // Check that offline fallback installs attempt fetching the install_url.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        OfflineFallbackManifestSiteOnline) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -853,7 +837,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
 }
 
 // Check that offline only installs work offline.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        OfflineOnlyManifestSiteOffline) {
   constexpr char kAppInstallUrl[] = "https://offline-site.com/install.html";
   constexpr char kAppName[] = "Offline app name";
@@ -901,7 +885,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
 }
 
 // Check that offline only installs don't fetch from the install_url.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        OfflineOnlyManifestSiteOnline) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -968,7 +952,7 @@ const char kOnlyForNewUsersConfig[] = R"({
     }
   })";
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PRE_OnlyForNewUsersWithNewUser) {
   // Install a policy app first to check that it doesn't interfere.
   {
@@ -992,7 +976,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
             webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        OnlyForNewUsersWithNewUser) {
   // App should persist after user stops being a new user.
   EXPECT_EQ(SyncPreinstalledAppConfig(GURL(kOnlyForNewUsersInstallUrl),
@@ -1000,12 +984,12 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
             webapps::InstallResultCode::kSuccessAlreadyInstalled);
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PRE_OnlyForNewUsersWithOldUser) {
   // Simulate running Chrome without the configs present.
   SyncEmptyConfigs();
 }
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        OnlyForNewUsersWithOldUser) {
   // This instance of Chrome should be considered not a new user after the
   // previous PRE_ launch and sync.
@@ -1015,7 +999,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1059,7 +1043,7 @@ ui::TouchscreenDevice CreateTouchDevice(ui::InputDeviceType type,
 
 // Note that SetTouchscreenDevices() does not update the device list
 // if the number of displays don't change.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        DisableIfTouchscreenWithStylusNotSupported) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1116,7 +1100,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Disabled due to test flakiness. https://crbug.com/1267164.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        DISABLED_UninstallFromTwoItemAppListFolder) {
   GURL preinstalled_app_start_url("https://example.org/");
   GURL user_app_start_url("https://test.org/");
@@ -1189,7 +1173,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
 
 // Check that offline only installs don't overwrite fresh online manifest
 // obtained via sync install.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        OfflineOnlyManifest_SiteAlreadyInstalledFromSync) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1248,9 +1232,5 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerBrowserTest,
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PreinstalledWebAppManagerBrowserTest,
-                         ::testing::Bool());
 
 }  // namespace web_app

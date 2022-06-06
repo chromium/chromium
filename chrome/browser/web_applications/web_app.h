@@ -395,8 +395,6 @@ class WebApp {
                                     GURL install_url,
                                     bool is_placeholder);
 
-  bool RemoveInstallUrlForSource(WebAppManagement::Type type, GURL install_url);
-
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
   bool operator!=(const WebApp&) const;
