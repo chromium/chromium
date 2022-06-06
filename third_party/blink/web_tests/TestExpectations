@@ -5209,6 +5209,7 @@ crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/event
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-ctrl.html [ Failure Timeout ]
 
 # fast/scrolling
+crbug.com/1330011 virtual/main-threaded-percent-based-scrolling/fast/scrolling/overflow-scrollability.html [ Failure Pass ]
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/wheel-and-touch-scroll-use-count.html [ Failure ]
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/fractional-scroll-offset-document.html [ Failure ]
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/scroll-animation-on-by-default.html [ Failure ]
