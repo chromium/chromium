@@ -331,16 +331,26 @@
         {integrity: sha256}
       )
 
-      // This is an acceptable failure
       SRIPreloadTest(
         true,
         true,
-        `[Tentative] Same-origin ${destination} with matching digest does not reuse preload with matching but stronger digest.`,
+        `Same-origin ${destination} with matching digest does not reuse preload with matching but stronger digest.`,
         2,
         destination,
         same_origin_prefix + destination + ext + `?${token()}`,
         {integrity: sha384},
         {integrity: sha256},
+      )
+
+      SRIPreloadTest(
+        true,
+        false,
+        `Same-origin ${destination} with wrong digest does not reuse preload with correct and stronger digest.`,
+        2,
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: sha384},
+        {integrity: "sha256-deadbeefQ15RYHFvsYdWumweeFAw0hJDTFt9seErghA="}
       )
 
       SRIPreloadTest(
