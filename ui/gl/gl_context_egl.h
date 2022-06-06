@@ -11,11 +11,10 @@
 #include "ui/gl/gl_export.h"
 
 typedef void* EGLContext;
-typedef void* EGLDisplay;
 typedef void* EGLConfig;
 
 namespace gl {
-
+class GLDisplayEGL;
 class GLSurface;
 
 // Encapsulates an EGL OpenGL ES context.
@@ -47,7 +46,7 @@ class GL_EXPORT GLContextEGL : public GLContextReal {
   void ReleaseYUVToRGBConvertersAndBackpressureFences();
 
   EGLContext context_ = nullptr;
-  EGLDisplay display_ = nullptr;
+  GLDisplayEGL* gl_display_ = nullptr;
   EGLConfig config_ = nullptr;
   unsigned int graphics_reset_status_ = 0;  // GL_NO_ERROR;
   bool unbind_fbo_on_makecurrent_ = false;
