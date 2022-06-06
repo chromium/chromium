@@ -24,14 +24,14 @@ suite('KerberosPageTests', function() {
     Router.resetInstanceForTesting(new Router(routes));
 
     browserProxy = new TestKerberosAccountsBrowserProxy();
-    KerberosAccountsBrowserProxyImpl.instance_ = browserProxy;
+    KerberosAccountsBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
   });
 
   teardown(function() {
     kerberosPage.remove();
     Router.getInstance().resetRouteForTesting();
-    KerberosAccountsBrowserProxyImpl.instance_ = undefined;
+    KerberosAccountsBrowserProxyImpl.setInstance(undefined);
   });
 
   test('Kerberos Section contains a link to Kerberos Accounts', () => {

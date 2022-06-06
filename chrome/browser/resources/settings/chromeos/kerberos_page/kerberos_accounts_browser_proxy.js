@@ -2,29 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-// clang-format on
-
 /**
  * @fileoverview A helper object used from the "Kerberos Accounts" subsection of
  * the "Kerberos" section of Settings, to interact with the browser. Chrome OS
  * only.
  */
 
-  /**
-   * Information for a Chrome OS Kerberos account.
-   * @typedef {{
-   *   principalName: string,
-   *   config: string,
-   *   isSignedIn: boolean,
-   *   isActive: boolean,
-   *   isManaged: boolean,
-   *   passwordWasRemembered: boolean,
-   *   pic: string,
-   *   validForDuration: string
-   * }}
-   */
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+
+/**
+ * Information for a Chrome OS Kerberos account.
+ * @typedef {{
+ *   principalName: string,
+ *   config: string,
+ *   isSignedIn: boolean,
+ *   isActive: boolean,
+ *   isManaged: boolean,
+ *   passwordWasRemembered: boolean,
+ *   pic: string,
+ *   validForDuration: string
+ * }}
+ */
 export let KerberosAccount;
 
 /**
@@ -131,10 +129,23 @@ export class KerberosAccountsBrowserProxy {
   setAsActiveAccount(account) {}
 }
 
+/** @type {?KerberosAccountsBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {KerberosAccountsBrowserProxy}
  */
 export class KerberosAccountsBrowserProxyImpl {
+  /** @return {!KerberosAccountsBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new KerberosAccountsBrowserProxyImpl());
+  }
+
+  /** @param {!KerberosAccountsBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   getAccounts() {
     return sendWithPromise('getKerberosAccounts');
@@ -162,5 +173,3 @@ export class KerberosAccountsBrowserProxyImpl {
     chrome.send('setAsActiveKerberosAccount', [account.principalName]);
   }
 }
-
-addSingletonGetter(KerberosAccountsBrowserProxyImpl);
