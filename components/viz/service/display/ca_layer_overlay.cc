@@ -136,6 +136,10 @@ gfx::CALayerResult FromRenderPassQuad(
   ca_layer_overlay->rpdq = quad;
   ca_layer_overlay->contents_rect = gfx::RectF(0, 0, 1, 1);
 
+  // For RenderPassDrawQuad, the opacity is applied when its ddl is recorded, so
+  // the content already is with opacity applied.
+  ca_layer_overlay->opacity = 1.0;
+
   return gfx::kCALayerSuccess;
 }
 
@@ -187,7 +191,7 @@ gfx::CALayerResult FromTextureQuad(DisplayResourceProvider* resource_provider,
     if (quad->vertex_opacity[i] != quad->vertex_opacity[0])
       return gfx::kCALayerFailedDifferentVertexOpacities;
   }
-  ca_layer_overlay->shared_state->opacity *= quad->vertex_opacity[0];
+  ca_layer_overlay->opacity *= quad->vertex_opacity[0];
   ca_layer_overlay->filter = quad->nearest_neighbor ? GL_NEAREST : GL_LINEAR;
   if (quad->is_video_frame)
     ca_layer_overlay->protected_video_type = quad->protected_video_type;
@@ -331,14 +335,13 @@ class CALayerOverlayProcessorInternal {
       most_recent_overlay_shared_state_->rounded_corner_bounds =
           quad->shared_quad_state->mask_filter_info.rounded_corner_bounds();
 
-      most_recent_overlay_shared_state_->opacity =
-          quad->shared_quad_state->opacity;
       most_recent_overlay_shared_state_->transform =
           quad->shared_quad_state->quad_to_target_transform;
     }
     ca_layer_overlay->shared_state = most_recent_overlay_shared_state_;
 
     ca_layer_overlay->bounds_rect = gfx::RectF(quad->rect);
+    ca_layer_overlay->opacity = quad->shared_quad_state->opacity;
 
     *render_pass_draw_quad =
         quad->material == DrawQuad::Material::kAggregatedRenderPass;

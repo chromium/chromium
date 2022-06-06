@@ -504,9 +504,6 @@ void OutputPresenterGL::ScheduleOverlays(
               overlay.is_solid_color));
     }
 #elif BUILDFLAG(IS_APPLE)
-    // For RenderPassDrawQuad the ddl is not nullptr, and the opacity is applied
-    // when the ddl is recorded, so the content already is with opacity applied.
-    float opacity = overlay.ddl ? 1.0 : overlay.shared_state->opacity;
     gl_surface_->ScheduleCALayer(ui::CARendererLayerParams(
         overlay.shared_state->is_clipped,
         gfx::ToEnclosingRect(overlay.shared_state->clip_rect),
@@ -514,8 +511,8 @@ void OutputPresenterGL::ScheduleOverlays(
         overlay.shared_state->sorting_context_id,
         gfx::Transform(overlay.shared_state->transform), gl_image,
         overlay.contents_rect, gfx::ToEnclosingRect(overlay.bounds_rect),
-        overlay.background_color, overlay.edge_aa_mask, opacity, overlay.filter,
-        overlay.protected_video_type));
+        overlay.background_color, overlay.edge_aa_mask, overlay.opacity,
+        overlay.filter, overlay.protected_video_type));
 #endif
   }
 #endif  //  BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
