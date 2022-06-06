@@ -118,6 +118,7 @@ try_.compilator_builder(
 
 try_.orchestrator_builder(
     name = "mac11-arm64-rel",
+    check_for_flakiness = True,
     compilator = "mac11-arm64-rel-compilator",
     mirrors = [
         "ci/mac-arm64-rel",
@@ -131,6 +132,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "mac11-arm64-rel-compilator",
+    check_for_flakiness = True,
     main_list_view = "try",
     os = os.MAC_DEFAULT,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
