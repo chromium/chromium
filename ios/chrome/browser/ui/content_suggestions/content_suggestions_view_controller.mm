@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_module_container.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
@@ -41,6 +42,17 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+// The width of the modules.
+const int kModuleWidth = 343;
+
+// The height of the modules;
+const int kModuleHeight = 139;
+
+// The spacing between the modules.
+const float kModuleVerticalSpacing = 16.0f;
+}  // namespace
 
 @interface ContentSuggestionsViewController () <
     UIGestureRecognizerDelegate,
@@ -88,32 +100,65 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = ntp_home::kNTPBackgroundColor();
+  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+    self.view.backgroundColor = [UIColor clearColor];
+  } else {
+    self.view.backgroundColor = ntp_home::kNTPBackgroundColor();
+  }
   self.view.accessibilityIdentifier = kContentSuggestionsCollectionIdentifier;
 
   self.verticalStackView = [[UIStackView alloc] init];
   self.verticalStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+    self.verticalStackView.spacing = kModuleVerticalSpacing;
+  }
   self.verticalStackView.axis = UILayoutConstraintAxisVertical;
   // A centered alignment will ensure the views are centered.
   self.verticalStackView.alignment = UIStackViewAlignmentCenter;
   // A fill distribution allows for the custom spacing between elements and
   // height/width configurations for each row.
   self.verticalStackView.distribution = UIStackViewDistributionFill;
-  [self.view addSubview:_verticalStackView];
-  AddSameConstraints(self.view, _verticalStackView);
+  [self.view addSubview:self.verticalStackView];
+  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+    // Add bottom spacing to last module by applying it after
+    // `_verticalStackView`.
+    [NSLayoutConstraint activateConstraints:@[
+      [self.verticalStackView.leadingAnchor
+          constraintEqualToAnchor:self.view.leadingAnchor],
+      [self.verticalStackView.trailingAnchor
+          constraintEqualToAnchor:self.view.trailingAnchor],
+      [self.verticalStackView.topAnchor
+          constraintEqualToAnchor:self.view.topAnchor],
+      [self.verticalStackView.bottomAnchor
+          constraintEqualToAnchor:self.view.bottomAnchor
+                         constant:-kModuleVerticalSpacing]
+    ]];
+  } else {
+    AddSameConstraints(self.view, self.verticalStackView);
+  }
 
   CGFloat horizontalSpacing =
       ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
   if (self.returnToRecentTabTile) {
-    [self addUIElement:self.returnToRecentTabTile
-        withCustomBottomSpacing:content_suggestions::
-                                    kReturnToRecentTabSectionBottomMargin];
+    UIView* parentView = self.returnToRecentTabTile;
+    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+      ContentSuggestionsModuleContainer* returnToRecentTabContainer =
+          [[ContentSuggestionsModuleContainer alloc]
+              initWithContentView:self.returnToRecentTabTile
+                       moduleType:
+                           ContentSuggestionsModuleTypeReturnToRecentTab];
+      parentView = returnToRecentTabContainer;
+      [self.verticalStackView addArrangedSubview:returnToRecentTabContainer];
+    } else {
+      [self addUIElement:self.returnToRecentTabTile
+          withCustomBottomSpacing:content_suggestions::
+                                      kReturnToRecentTabSectionBottomMargin];
+    }
     CGFloat cardWidth = content_suggestions::searchFieldWidth(
         self.view.bounds.size.width, self.traitCollection);
     [NSLayoutConstraint activateConstraints:@[
-      [self.returnToRecentTabTile.widthAnchor
-          constraintEqualToConstant:cardWidth],
-      [self.returnToRecentTabTile.heightAnchor
+      [parentView.widthAnchor constraintEqualToConstant:cardWidth],
+      [parentView.heightAnchor
           constraintEqualToConstant:kReturnToRecentTabSize.height]
     ]];
   }
@@ -128,31 +173,55 @@
       [self.whatsNewView.heightAnchor constraintEqualToConstant:size.height]
     ]];
   }
-  if (self.mostVisitedViews) {
+  if (IsContentSuggestionsUIModuleRefreshEnabled() || self.mostVisitedViews) {
     self.mostVisitedStackView = [[UIStackView alloc] init];
     self.mostVisitedStackView.axis = UILayoutConstraintAxisHorizontal;
-    self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
     self.mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
     self.mostVisitedStackView.spacing = horizontalSpacing;
-    [self addUIElement:self.mostVisitedStackView
-        withCustomBottomSpacing:kMostVisitedBottomMargin];
+
+    UIView* parentView = self.mostVisitedStackView;
+    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+      self.mostVisitedStackView.backgroundColor =
+          ntp_home::kNTPBackgroundColor();
+      self.mostVisitedStackView.alignment = UIStackViewAlignmentCenter;
+      ContentSuggestionsModuleContainer* mostVisitedContainer =
+          [[ContentSuggestionsModuleContainer alloc]
+              initWithContentView:self.mostVisitedStackView
+                       moduleType:ContentSuggestionsModuleTypeMostVisited];
+      parentView = mostVisitedContainer;
+      [self.verticalStackView addArrangedSubview:mostVisitedContainer];
+    } else {
+      self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
+      [self addUIElement:self.mostVisitedStackView
+          withCustomBottomSpacing:kMostVisitedBottomMargin];
+    }
     CGFloat width =
-        MostVisitedTilesContentHorizontalSpace(self.traitCollection);
-    CGSize size =
-        MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory);
+        IsContentSuggestionsUIModuleRefreshEnabled()
+            ? kModuleWidth
+            : MostVisitedTilesContentHorizontalSpace(self.traitCollection);
+    CGFloat height =
+        IsContentSuggestionsUIModuleRefreshEnabled()
+            ? kModuleHeight
+            : MostVisitedCellSize(
+                  self.traitCollection.preferredContentSizeCategory)
+                  .height;
     [NSLayoutConstraint activateConstraints:@[
-      [self.mostVisitedStackView.widthAnchor constraintEqualToConstant:width],
-      [self.mostVisitedStackView.heightAnchor
-          constraintEqualToConstant:size.height]
+      [parentView.widthAnchor constraintEqualToConstant:width],
+      [parentView.heightAnchor constraintEqualToConstant:height]
     ]];
     [self populateMostVisitedModule];
   }
   if (self.shortcutsViews) {
     self.shortcutsStackView = [[UIStackView alloc] init];
     self.shortcutsStackView.axis = UILayoutConstraintAxisHorizontal;
-    self.shortcutsStackView.alignment = UIStackViewAlignmentTop;
     self.shortcutsStackView.distribution = UIStackViewDistributionFillEqually;
     self.shortcutsStackView.spacing = horizontalSpacing;
+    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+      self.shortcutsStackView.alignment = UIStackViewAlignmentCenter;
+      self.shortcutsStackView.backgroundColor = ntp_home::kNTPBackgroundColor();
+    } else {
+      self.shortcutsStackView.alignment = UIStackViewAlignmentTop;
+    }
     NSUInteger index = 0;
     for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
       view.accessibilityIdentifier = [NSString
@@ -168,16 +237,31 @@
       index++;
     }
 
-    [self addUIElement:self.shortcutsStackView
-        withCustomBottomSpacing:kMostVisitedBottomMargin];
+    UIView* parentView = self.shortcutsStackView;
+    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+      ContentSuggestionsModuleContainer* shortcutsContainer =
+          [[ContentSuggestionsModuleContainer alloc]
+              initWithContentView:self.shortcutsStackView
+                       moduleType:ContentSuggestionsModuleTypeShortcuts];
+      parentView = shortcutsContainer;
+      [self.verticalStackView addArrangedSubview:shortcutsContainer];
+    } else {
+      [self addUIElement:self.shortcutsStackView
+          withCustomBottomSpacing:kMostVisitedBottomMargin];
+    }
     CGFloat width =
-        MostVisitedTilesContentHorizontalSpace(self.traitCollection);
-    CGSize size =
-        MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory);
+        IsContentSuggestionsUIModuleRefreshEnabled()
+            ? kModuleWidth
+            : MostVisitedTilesContentHorizontalSpace(self.traitCollection);
+    CGFloat height =
+        IsContentSuggestionsUIModuleRefreshEnabled()
+            ? kModuleHeight
+            : MostVisitedCellSize(
+                  self.traitCollection.preferredContentSizeCategory)
+                  .height;
     [NSLayoutConstraint activateConstraints:@[
-      [self.shortcutsStackView.widthAnchor constraintEqualToConstant:width],
-      [self.shortcutsStackView.heightAnchor
-          constraintEqualToConstant:size.height]
+      [parentView.widthAnchor constraintEqualToConstant:width],
+      [parentView.heightAnchor constraintEqualToConstant:height]
     ]];
   }
 }
@@ -214,18 +298,29 @@
   // If the Content Suggestions is already shown, add the Return to Recent Tab
   // tile to the StackView.
   if ([[self.verticalStackView arrangedSubviews] count]) {
-    [self.verticalStackView insertArrangedSubview:self.returnToRecentTabTile
-                                          atIndex:0];
-    [self.verticalStackView
-        setCustomSpacing:content_suggestions::
-                             kReturnToRecentTabSectionBottomMargin
-               afterView:self.returnToRecentTabTile];
+    UIView* parentView = self.returnToRecentTabTile;
+    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+      ContentSuggestionsModuleContainer* returnToRecentTabContainer =
+          [[ContentSuggestionsModuleContainer alloc]
+              initWithContentView:self.returnToRecentTabTile
+                       moduleType:
+                           ContentSuggestionsModuleTypeReturnToRecentTab];
+      parentView = returnToRecentTabContainer;
+      [self.verticalStackView insertArrangedSubview:returnToRecentTabContainer
+                                            atIndex:0];
+    } else {
+      [self.verticalStackView insertArrangedSubview:self.returnToRecentTabTile
+                                            atIndex:0];
+      [self.verticalStackView
+          setCustomSpacing:content_suggestions::
+                               kReturnToRecentTabSectionBottomMargin
+                 afterView:self.returnToRecentTabTile];
+    }
     CGFloat cardWidth = content_suggestions::searchFieldWidth(
         self.view.bounds.size.width, self.traitCollection);
     [NSLayoutConstraint activateConstraints:@[
-      [self.returnToRecentTabTile.widthAnchor
-          constraintEqualToConstant:cardWidth],
-      [self.returnToRecentTabTile.heightAnchor
+      [parentView.widthAnchor constraintEqualToConstant:cardWidth],
+      [parentView.heightAnchor
           constraintEqualToConstant:kReturnToRecentTabSize.height]
     ]];
     [self.audience returnToRecentTabWasAdded];
@@ -241,8 +336,13 @@
 }
 
 - (void)hideReturnToRecentTabTile {
+  UIView* moduleView = [self.returnToRecentTabTile superview];
   [self.returnToRecentTabTile removeFromSuperview];
   self.returnToRecentTabTile = nil;
+  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+    // Remove module container.
+    [moduleView removeFromSuperview];
+  }
 }
 
 - (void)showWhatsNewViewWithConfig:(ContentSuggestionsWhatsNewItem*)config {
@@ -325,20 +425,29 @@
 - (CGFloat)contentSuggestionsHeight {
   CGFloat height = 0;
   if ([self.mostVisitedViews count] > 0) {
-    height += MostVisitedCellSize(
-                  UIApplication.sharedApplication.preferredContentSizeCategory)
-                  .height +
-              kMostVisitedBottomMargin;
+    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+      height += kModuleHeight + kModuleVerticalSpacing;
+    } else {
+      height +=
+          MostVisitedCellSize(
+              UIApplication.sharedApplication.preferredContentSizeCategory)
+              .height +
+          kMostVisitedBottomMargin;
+    }
   }
   if ([self.shortcutsViews count] > 0) {
-    height += MostVisitedCellSize(
-                  UIApplication.sharedApplication.preferredContentSizeCategory)
-                  .height +
-              kMostVisitedBottomMargin;
+    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+      height += kModuleHeight + kModuleVerticalSpacing;
+    } else {
+      height +=
+          MostVisitedCellSize(
+              UIApplication.sharedApplication.preferredContentSizeCategory)
+              .height +
+          kMostVisitedBottomMargin;
+    }
   }
   if (self.returnToRecentTabTile) {
-    height += (kReturnToRecentTabSize.height +
-               content_suggestions::kReturnToRecentTabSectionBottomMargin);
+    height += (kReturnToRecentTabSize.height + kModuleVerticalSpacing);
   }
   if (self.whatsNewView) {
     height += MostVisitedCellSize(
@@ -424,7 +533,8 @@
 - (void)populateMostVisitedModule {
   // If viewDidLoad has been called before the first valid Most Visited Tiles
   // are available, construct |mostVisitedStackView|.
-  if (self.verticalStackView && !self.mostVisitedStackView) {
+  if (!IsContentSuggestionsUIModuleRefreshEnabled() && self.verticalStackView &&
+      !self.mostVisitedStackView) {
     self.mostVisitedStackView = [[UIStackView alloc] init];
     self.mostVisitedStackView.axis = UILayoutConstraintAxisHorizontal;
     self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
