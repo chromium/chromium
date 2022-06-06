@@ -315,7 +315,7 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
   // ongoing_navigation_.
   if (ongoing_navigation_) {
     ongoing_navigation_->NotifyAboutTheCommittedToEntry(
-        entries_[current_entry_index_]);
+        entries_[current_entry_index_], type);
   }
 
   auto* init = NavigationCurrentEntryChangeEventInit::Create();
@@ -421,7 +421,7 @@ void NavigationApi::updateCurrentEntry(
   if (exception_state.HadException())
     return;
 
-  current_entry->SetAndSaveState(serialized_state.get());
+  current_entry->SetAndSaveState(std::move(serialized_state));
 
   auto* init = NavigationCurrentEntryChangeEventInit::Create();
   init->setFrom(current_entry);
@@ -574,9 +574,6 @@ NavigationResult* NavigationApi::PerformNonTraverseNavigation(
     return EarlyErrorResult(script_state, DOMExceptionCode::kAbortError,
                             "Navigation was aborted");
   }
-
-  if (SerializedScriptValue* state = navigation->TakeSerializedState())
-    currentEntry()->SetAndSaveState(state);
   return navigation->GetNavigationResult();
 }
 

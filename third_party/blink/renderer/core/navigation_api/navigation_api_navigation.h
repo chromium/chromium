@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_NAVIGATION_API_NAVIGATION_API_NAVIGATION_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -29,7 +30,8 @@ class NavigationApiNavigation final
                           const String& key,
                           scoped_refptr<SerializedScriptValue> state = nullptr);
 
-  void NotifyAboutTheCommittedToEntry(NavigationHistoryEntry*);
+  void NotifyAboutTheCommittedToEntry(NavigationHistoryEntry*,
+                                      WebFrameLoadType);
   void ResolveFinishedPromise();
   void RejectFinishedPromise(const ScriptValue& value);
   void CleanupForWillNeverSettle();
@@ -42,9 +44,6 @@ class NavigationApiNavigation final
   const ScriptValue& GetInfo() const { return info_; }
   const String& GetKey() const { return key_; }
 
-  SerializedScriptValue* TakeSerializedState() {
-    return serialized_state_.release();
-  }
   SerializedScriptValue* GetSerializedState() const {
     return serialized_state_.get();
   }

@@ -66,11 +66,12 @@ ScriptValue NavigationHistoryEntry::getState() const {
   return ScriptValue(isolate, state_->Deserialize(isolate));
 }
 
-void NavigationHistoryEntry::SetAndSaveState(SerializedScriptValue* state) {
+void NavigationHistoryEntry::SetAndSaveState(
+    scoped_refptr<SerializedScriptValue> state) {
   DCHECK_EQ(this, NavigationApi::navigation(*DomWindow())->currentEntry());
   state_ = state;
   DomWindow()->document()->Loader()->GetHistoryItem()->SetNavigationApiState(
-      state);
+      state_.get());
   // Force the new state object to be synced to the browser process immediately.
   // The state object needs to be available as soon as possible in case a
   // new navigation commits soon, so that browser has the best chance of having

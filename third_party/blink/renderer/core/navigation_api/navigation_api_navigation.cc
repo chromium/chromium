@@ -51,9 +51,13 @@ NavigationApiNavigation::NavigationApiNavigation(
 }
 
 void NavigationApiNavigation::NotifyAboutTheCommittedToEntry(
-    NavigationHistoryEntry* entry) {
+    NavigationHistoryEntry* entry,
+    WebFrameLoadType type) {
   DCHECK_EQ(committed_to_entry_, nullptr);
   committed_to_entry_ = entry;
+
+  if (type != WebFrameLoadType::kBackForward)
+    committed_to_entry_->SetAndSaveState(std::move(serialized_state_));
 
   committed_resolver_->Resolve(committed_to_entry_);
 }

@@ -41,7 +41,7 @@ class CORE_EXPORT NavigationHistoryEntry final
 
   ScriptValue getState() const;
   SerializedScriptValue* GetSerializedState() { return state_.get(); }
-  void SetAndSaveState(SerializedScriptValue* state);
+  void SetAndSaveState(scoped_refptr<SerializedScriptValue> state);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(dispose, kDispose)
 
