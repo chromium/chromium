@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.accessibility;
 
 import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.AVAILABLE_ZOOM_FACTORS;
+import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE;
 import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.convertZoomFactorToSeekBarValue;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,7 @@ public class PageZoomMediator {
         mModel.set(PageZoomProperties.DECREASE_ZOOM_CALLBACK, this::handleDecreaseClicked);
         mModel.set(PageZoomProperties.INCREASE_ZOOM_CALLBACK, this::handleIncreaseClicked);
         mModel.set(PageZoomProperties.SEEKBAR_CHANGE_CALLBACK, this::handleSeekBarValueChanged);
+        mModel.set(PageZoomProperties.MAXIMUM_SEEK_VALUE, PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
     }
 
     /**

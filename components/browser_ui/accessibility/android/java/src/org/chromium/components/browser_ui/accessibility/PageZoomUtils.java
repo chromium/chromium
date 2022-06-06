@@ -29,10 +29,10 @@ import org.chromium.content_public.browser.HostZoomMap;
  *
  *        string        factor      level      seek value
  *          25%     |   -7.6    |   0.25    |      0      |
- *          50%     |   -3.8    |   0.50    |      5      |
- *         100%     |    0.0    |   1.00    |     16      |
- *         250%     |   5.03    |   2.50    |     47      |
- *         500%     |   8.83    |   5.00    |    100      |
+ *          50%     |   -3.8    |   0.50    |     25      |
+ *         100%     |    0.0    |   1.00    |    125      |
+ *         250%     |   5.03    |   2.50    |    275      |
+ *         500%     |   8.83    |   5.00    |    475      |
  *
  */
 public class PageZoomUtils {
@@ -44,6 +44,9 @@ public class PageZoomUtils {
 
     // The default value for zoom that user can change in the accessibility settings page.
     public static final int PAGE_ZOOM_DEFAULT_SEEK_VALUE = convertZoomFactorToSeekBarValue(0.0);
+
+    // The max value for the seek bar to help with rounding effects (not shown to user).
+    public static final int PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE = 475;
 
     // The minimum and maximum zoom values as a percentage (e.g. 25% = 0.25, 500% = 5.0)
     private static final float PAGE_ZOOM_MINIMUM_ZOOM_LEVEL = 0.25f;
@@ -71,7 +74,7 @@ public class PageZoomUtils {
     public static double convertSeekBarValueToZoomFactor(int newValue) {
         // Zoom levels are from |PAGE_ZOOM_MINIMUM_ZOOM_LEVEL| to |PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL|,
         // and these should map linearly to the seekbar's 0 - 100 range.
-        float seekbarPercent = (float) newValue / 100.0f;
+        float seekbarPercent = (float) newValue / PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE;
         float chosenZoomLevel = PAGE_ZOOM_MINIMUM_ZOOM_LEVEL
                 + ((PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL) * seekbarPercent);
 
@@ -99,7 +102,7 @@ public class PageZoomUtils {
         double zoomLevelPercent = (double) (zoomLevel - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL)
                 / (PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL);
 
-        return (int) (100 * zoomLevelPercent);
+        return (int) (PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE * zoomLevelPercent);
     }
 
     /**
@@ -111,7 +114,7 @@ public class PageZoomUtils {
     public static double convertSeekBarValueToZoomLevel(int newValue) {
         return PAGE_ZOOM_MINIMUM_ZOOM_LEVEL
                 + ((PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL)
-                        * ((float) newValue / 100.0f));
+                        * ((float) newValue / PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE));
     }
 
     /**

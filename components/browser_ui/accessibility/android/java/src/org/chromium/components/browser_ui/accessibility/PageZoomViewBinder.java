@@ -18,6 +18,9 @@ class PageZoomViewBinder {
         if (PageZoomProperties.CURRENT_SEEK_VALUE == propertyKey) {
             ((SeekBar) view.findViewById(R.id.page_zoom_slider))
                     .setProgress(model.get(PageZoomProperties.CURRENT_SEEK_VALUE));
+        } else if (PageZoomProperties.MAXIMUM_SEEK_VALUE == propertyKey) {
+            ((SeekBar) view.findViewById(R.id.page_zoom_slider))
+                    .setMax(model.get(PageZoomProperties.MAXIMUM_SEEK_VALUE));
         } else if (PageZoomProperties.DECREASE_ZOOM_CALLBACK == propertyKey) {
             view.findViewById(R.id.page_zoom_decrease_zoom_button)
                     .setOnClickListener(v

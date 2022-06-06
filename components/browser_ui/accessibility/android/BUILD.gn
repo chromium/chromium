@@ -64,6 +64,7 @@ android_resources("java_resources") {
     "java/res/layout/page_zoom_preference.xml",
     "java/res/layout/page_zoom_view.xml",
     "java/res/layout/preference_text_scale.xml",
+    "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
     "java/res/xml/accessibility_preferences.xml",
   ]
