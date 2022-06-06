@@ -29,10 +29,16 @@ source_set("test_support") {
   sources = [
     "com_fakes.cc",
     "com_fakes.h",
+    "mock_wmi_client.cc",
+    "mock_wmi_client.h",
+    "mock_wsc_client.cc",
+    "mock_wsc_client.h",
   ]
 
   deps = [
+    ":win",
     "//base",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]

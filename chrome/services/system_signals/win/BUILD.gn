@@ -11,8 +11,27 @@ source_set("win") {
 
   public_deps = [
     "//components/device_signals/core/common/mojom",
+    "//components/device_signals/core/common/win",
     "//mojo/public/mojom/base",
   ]
 
   deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "win_system_signals_service_unittest.cc" ]
+
+  deps = [
+    ":win",
+    "//base",
+    "//base/test:test_support",
+    "//components/device_signals/core/common/mojom",
+    "//components/device_signals/core/common/win",
+    "//components/device_signals/core/common/win:test_support",
+    "//mojo/public/mojom/base",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
 }

@@ -165,6 +165,7 @@ static_library("utility") {
       deps += [
         "//chrome/services/system_signals/win",
         "//chrome/services/util_win:lib",
+        "//components/device_signals/core/common/mojom",
       ]
     }
   }

@@ -18,13 +18,13 @@
 
 namespace system_signals {
 
-SystemSignalsServiceHost::SystemSignalsServiceHost() = default;
-SystemSignalsServiceHost::~SystemSignalsServiceHost() = default;
+SystemSignalsServiceHostImpl::SystemSignalsServiceHostImpl() = default;
+SystemSignalsServiceHostImpl::~SystemSignalsServiceHostImpl() = default;
 
 #if BUILDFLAG(IS_WIN)
 
 device_signals::mojom::SystemSignalsService*
-SystemSignalsServiceHost::GetService() {
+SystemSignalsServiceHostImpl::GetService() {
   // To prevent any impact on Chrome's stability and memory footprint, run
   // this service in its own process on Windows (since it interacts with, e.g.,
   // WMI).
@@ -42,7 +42,7 @@ SystemSignalsServiceHost::GetService() {
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 device_signals::mojom::SystemSignalsService*
-SystemSignalsServiceHost::GetService() {
+SystemSignalsServiceHostImpl::GetService() {
   if (!local_service_) {
 #if BUILDFLAG(IS_MAC)
     local_service_ = std::make_unique<MacSystemSignalsService>();

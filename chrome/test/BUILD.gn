@@ -8141,6 +8141,10 @@ test("unit_tests") {
     ]
   }
 
+  if (is_win) {
+    deps += [ "../services/system_signals/win:unit_tests" ]
+  }
+
   if (enable_pdf) {
     sources += [ "../common/pdf_util_unittest.cc" ]
     deps += [ "//pdf:content_restriction" ]

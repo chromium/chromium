@@ -41,7 +41,7 @@
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "chrome/services/util_win/util_read_icon.h"
 #include "chrome/services/util_win/util_win_impl.h"
-#include "components/device_signals/core/common/mojom/system_signals.mojom.h"
+#include "components/device_signals/core/common/mojom/system_signals.mojom.h"  // nogncheck
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"  // nogncheck
 #include "components/services/quarantine/quarantine_impl.h"  // nogncheck
 #include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"

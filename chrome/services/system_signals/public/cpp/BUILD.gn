@@ -5,12 +5,13 @@
 import("//build/config/features.gni")
 
 source_set("cpp") {
-  public = [ "system_signals_service_host.h" ]
+  public = [ "system_signals_service_host_impl.h" ]
 
-  sources = [ "system_signals_service_host.cc" ]
+  sources = [ "system_signals_service_host_impl.cc" ]
 
   public_deps = [
     "//build",
+    "//components/device_signals/core/common",
     "//components/device_signals/core/common/mojom",
     "//mojo/public/mojom/base",
   ]
