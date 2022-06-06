@@ -10713,7 +10713,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReportingAndNEL.NumberOfLoadedNELPolicies"
-    units="policy count" expires_after="2022-06-25">
+    units="policy count" expires_after="2023-06-25">
   <owner>yhirano@chromium.org</owner>
   <owner>src/net/reporting/OWNERS</owner>
   <summary>
@@ -10724,7 +10724,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReportingAndNEL.NumberOfLoadedNELPolicies2"
-    units="policy count" expires_after="2022-06-25">
+    units="policy count" expires_after="2023-06-25">
   <owner>yhirano@chromium.org</owner>
   <owner>src/net/reporting/OWNERS</owner>
   <summary>
