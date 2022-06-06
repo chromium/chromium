@@ -4,17 +4,74 @@
 
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/modules/mediastream/media_devices.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
 CropTarget::CropTarget() = default;
 
-ScriptPromise CropTarget::fromElement(ExecutionContext* execution_context,
+ScriptPromise CropTarget::fromElement(ScriptState* script_state,
                                       Element* element,
                                       ExceptionState& exception_state) {
-  // TODO(crbug.com/1291140): Continue implementation.
+  DCHECK(IsMainThread());
+
+#if BUILDFLAG(IS_ANDROID)
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Unsupported.");
   return ScriptPromise();
+#else
+  if (!script_state || !script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid state.");
+    return ScriptPromise();
+  }
+
+  if (!element || !element->IsSupportedByRegionCapture()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Invalid state.");
+    return ScriptPromise();
+  }
+
+  ExecutionContext* const context = ExecutionContext::From(script_state);
+
+  if (!context || !context->IsWindow() || context->IsContextDestroyed() ||
+      element->GetExecutionContext() != context) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid state.");
+    return ScriptPromise();
+  }
+
+  LocalDOMWindow* const window = To<LocalDOMWindow>(context);
+  if (!window || !window->GetFrame() || !window->isSecureContext()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid state.");
+    return ScriptPromise();
+  }
+
+  Navigator* const navigator = window->navigator();
+  if (!navigator) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid state.");
+    return ScriptPromise();
+  }
+
+  MediaDevices* const media_devices = MediaDevices::mediaDevices(*navigator);
+  if (!media_devices) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid state.");
+    return ScriptPromise();
+  }
+
+  // TODO(crbug.com/1332628): Perform the following clean-up steps:
+  // 1. Stop Web-exposing produceCropId.
+  // 2. Rename it to clarify that it's not Web-exposed (uppercase first letter).
+  // 3. Move some of the error-testing here, leaving MediaDevices with DCHECKs.
+  return media_devices->produceCropId(script_state, element, exception_state);
+#endif
 }
 
 }  // namespace blink

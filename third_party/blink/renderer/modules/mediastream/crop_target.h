@@ -6,18 +6,19 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_CROP_TARGET_H_
 
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
-class ExecutionContext;
+class ScriptState;
 
 class MODULES_EXPORT CropTarget final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ScriptPromise fromElement(ExecutionContext* execution_context,
+  static ScriptPromise fromElement(ScriptState* script_state,
                                    Element* element,
                                    ExceptionState& exception_state);
 
