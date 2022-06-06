@@ -7,19 +7,19 @@
   colors: {
     bg_color: {
       light: "$white",
-      dark: "rgba($google_grey_900_rgb, 0.7)",
+      dark: "rgba($google_grey_900.rgb, 0.7)",
       generate_inverted: true,
     },
     toggle_color: {
-      light: "rgba($google_grey_900_rgb, 0.1)",
-      dark: "rgba($black_rgb, $reference_opacity)",
+      light: "rgba($google_grey_900.rgb, 0.1)",
+      dark: "rgba($black.rgb, $reference_opacity)",
       debug: "$white",
       generate_per_mode: true,
     },
     toast_color: "$bg_color_inverted",
     composite_color: {
-      light: "rgba($toggle_color_dark_rgb, 0.3)",
-      dark: "rgba($bg_color_inverted_rgb, $disabled_opacity)",
+      light: "rgba($toggle_color_dark.rgb, 0.3)",
+      dark: "rgba($bg_color_inverted.rgb, $disabled_opacity)",
       generate_inverted: true,
     }
   },

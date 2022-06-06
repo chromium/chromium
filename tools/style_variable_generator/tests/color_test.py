@@ -29,8 +29,8 @@ class ColorTest(unittest.TestCase):
         self.assertEqual(c.b, 123)
         self.assertEqual(c.opacity.a, 1)
 
-        c = Color('rgb($some_color_rgb)')
-        self.assertEqual(c.rgb_var, 'some_color_rgb')
+        c = Color('rgb($some_color.rgb)')
+        self.assertEqual(c.rgb_var, 'some_color.rgb')
         self.assertEqual(c.opacity.a, 1)
 
     def testRGBAColors(self):
@@ -40,8 +40,13 @@ class ColorTest(unittest.TestCase):
         self.assertEqual(c.b, 123)
         self.assertEqual(c.opacity.a, 0.5)
 
+        c = Color('rgba($some_color_400.rgb, 0.1)')
+        self.assertEqual(c.rgb_var, 'some_color_400.rgb')
+        self.assertEqual(c.opacity.a, 0.1)
+
+    def testLegacyRGBRef(self):
         c = Color('rgba($some_color_400_rgb, 0.1)')
-        self.assertEqual(c.rgb_var, 'some_color_400_rgb')
+        self.assertEqual(c.rgb_var, 'some_color_400.rgb')
         self.assertEqual(c.opacity.a, 0.1)
 
     def testBlendColors(self):
@@ -60,10 +65,10 @@ class ColorTest(unittest.TestCase):
         self.assertEqual(c1.opacity.a, 1)
 
         # Some color 6% over Grey 900 60%.
-        c = Color('blend(rgba($some_color_rgb, 0.06), rgba(32, 33, 36, 0.6))')
+        c = Color('blend(rgba($some_color.rgb, 0.06), rgba(32, 33, 36, 0.6))')
         self.assertEqual(len(c.blended_colors), 2)
         c0 = c.blended_colors[0]
-        self.assertEqual(c0.rgb_var, 'some_color_rgb')
+        self.assertEqual(c0.rgb_var, 'some_color.rgb')
         self.assertEqual(c0.opacity.a, 0.06)
         c1 = c.blended_colors[1]
         self.assertEqual(c1.r, 32)
@@ -79,13 +84,13 @@ class ColorTest(unittest.TestCase):
         c = Color('$white')
         self.assertEqual((c.r, c.g, c.b, c.opacity.a), (255, 255, 255, 1))
 
-        c = Color('rgba($white_rgb, 0.5)')
+        c = Color('rgba($white.rgb, 0.5)')
         self.assertEqual((c.r, c.g, c.b, c.opacity.a), (255, 255, 255, 0.5))
 
         c = Color('$black')
         self.assertEqual((c.r, c.g, c.b, c.opacity.a), (0, 0, 0, 1))
 
-        c = Color('rgba($black_rgb, 0.5)')
+        c = Color('rgba($black.rgb, 0.5)')
         self.assertEqual((c.r, c.g, c.b, c.opacity.a), (0, 0, 0, 0.5))
 
     def testMalformedColors(self):
@@ -121,11 +126,11 @@ class ColorTest(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             # Color reference points to rgb reference.
-            Color('$some_color_rgb')
+            Color('$some_color.rgb')
 
         with self.assertRaises(ValueError):
             # Variable reference with accidental space.
-            print(Color('$some_color_rgb '))
+            print(Color('$some_color.rgb '))
 
         with self.assertRaises(ValueError):
             # Variable reference with accidental space.

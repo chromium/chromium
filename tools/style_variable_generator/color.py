@@ -37,13 +37,13 @@ class Color:
     - rgba(r, g, b, a)
     - rgba(r, g, b, $named_opacity)
     - $other_color
-    - rgb($other_color_rgb)
-    - rgba($other_color_rgb, a)
-    - rgba($other_color_rgb, $named_opacity)
+    - rgb($other_color.rgb)
+    - rgba($other_color.rgb, a)
+    - rgba($other_color.rgb, $named_opacity)
     - blend(color1, color2)
 
     NB: The color components that refer to other colors' RGB values must end
-    with '_rgb'.
+    with '.rgb'.
     '''
 
     def __init__(self, value_str=None):
@@ -60,6 +60,9 @@ class Color:
         self.opacity = None
 
         if value_str is not None:
+            # Legacy support for old '_rgb'-style RGB refs.
+            value_str = re.sub(r'_rgb\b', '.rgb', value_str)
+
             self.Parse(value_str)
             if not self.var and not self.blended_colors and not self.opacity:
                 raise ValueError(repr(self))
@@ -84,18 +87,18 @@ class Color:
         return False
 
     def _ParseRGBRef(self, rgb_ref):
-        match = re.match('^\$([a-z0-9_]+)_rgb$', rgb_ref)
+        match = re.match('^\$([a-z0-9_]+)\.rgb$', rgb_ref)
         if not match:
             raise ValueError('Expected a reference to an RGB variable')
 
         rgb_var = match.group(1)
 
         if not self._ParseWhiteBlack(rgb_var):
-            self.rgb_var = rgb_var + '_rgb'
+            self.rgb_var = rgb_var + '.rgb'
 
     def RGBVarToVar(self):
         assert (self.rgb_var)
-        return self.rgb_var.replace('_rgb', '')
+        return self.rgb_var.replace('.rgb', '')
 
     def Parse(self, value):
         def ParseHex(value):
@@ -174,7 +177,7 @@ class Color:
                 self.opacity = Opacity(1)
                 return True
 
-            if value.endswith('_rgb'):
+            if value.endswith('.rgb'):
                 raise ValueError(
                     'color reference cannot resolve to an rgb reference')
 

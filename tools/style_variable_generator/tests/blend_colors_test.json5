@@ -10,8 +10,8 @@
       dark: "$google_grey_900",
     },
     highlight_color_hover: {
-      light: "rgba($black_rgb, 0.2)",
-      dark: "rgba($white_rgb, 0.2)",
+      light: "rgba($black.rgb, 0.2)",
+      dark: "rgba($white.rgb, 0.2)",
     },
     foo_color: {
       light: "blend($highlight_color_hover, $bg_color)",

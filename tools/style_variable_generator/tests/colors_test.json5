@@ -15,13 +15,13 @@
       debug: "$toggle_color",
     },
     toggle_color: {
-      light: "rgba($text_color_primary_rgb, 0.1)",
-      dark: "rgba($text_color_primary_rgb, $disabled_opacity)",
+      light: "rgba($text_color_primary.rgb, 0.1)",
+      dark: "rgba($text_color_primary.rgb, $disabled_opacity)",
       debug: "$white",
     },
     bg_color_elevation_1: {
       light: "$white",
-      dark: "blend(rgba($white_rgb, 0.04), $google_grey_900)",
+      dark: "blend(rgba($white.rgb, 0.04), $google_grey_900)",
     }
   },
   opacities: {

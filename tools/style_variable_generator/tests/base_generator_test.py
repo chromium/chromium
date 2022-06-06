@@ -178,7 +178,7 @@ class BaseGeneratorTest(unittest.TestCase):
 {
   colors: {
     expect_color_white: "blend($white, #202124)",
-    expect_color_lighter: "blend(rgba($white_rgb, 0.06), rgba(32, 33, 36, 0.6))"
+    expect_color_lighter: "blend(rgba($white.rgb, 0.06), rgba(32, 33, 36, 0.6))"
   }
 }
         ''')
@@ -192,7 +192,7 @@ class BaseGeneratorTest(unittest.TestCase):
 {
   colors: {
     google_grey_900: "#202124",
-    bg_color_elevation_3: "blend(rgba($white_rgb, 0.08), $google_grey_900)",
+    bg_color_elevation_3: "blend(rgba($white.rgb, 0.08), $google_grey_900)",
   }
 }
         ''')
@@ -203,9 +203,9 @@ class BaseGeneratorTest(unittest.TestCase):
         self.generator.AddJSONToModel('''
 {
   colors: {
-    color_a: "blend(rgba($white_rgb, 0.5), $black)",
-    color_b: "blend(rgba($color_a_rgb, 0.5), rgba($black_rgb, 0.5))",
-    color_c: "blend($color_a, blend(rgba($color_b_rgb, 0.5), $white))",
+    color_a: "blend(rgba($white.rgb, 0.5), $black)",
+    color_b: "blend(rgba($color_a.rgb, 0.5), rgba($black.rgb, 0.5))",
+    color_c: "blend($color_a, blend(rgba($color_b.rgb, 0.5), $white))",
   }
 }
         ''')
@@ -225,8 +225,8 @@ class BaseGeneratorTest(unittest.TestCase):
       dark: "$google_blue_300",
     },
     color_prominent_dull: {
-      light: "blend(rgba($white_rgb, 0.08), $color_prominent)",
-      dark: "blend(rgba($black_rgb, 0.08), $color_prominent)",
+      light: "blend(rgba($white.rgb, 0.08), $color_prominent)",
+      dark: "blend(rgba($black.rgb, 0.08), $color_prominent)",
     },
   }
 }
