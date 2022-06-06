@@ -527,7 +527,7 @@ void CronetContext::NetworkTasks::Initialize(
         context_config_->network_thread_priority.value());
   base::DisallowBlocking();
   effective_experimental_options_ =
-      base::Value(context_config_->effective_experimental_options);
+      context_config_->effective_experimental_options.Clone();
 
   const net::NetworkChangeNotifier::NetworkHandle default_network =
       net::NetworkChangeNotifier::kInvalidNetworkHandle;
@@ -872,7 +872,7 @@ base::Value CronetContext::NetworkTasks::GetNetLogInfo() const {
   for (auto& iter : contexts_)
     net_info.Set(base::NumberToString(iter.first),
                  net::GetNetInfo(iter.second.get()));
-  if (!effective_experimental_options_.DictEmpty()) {
+  if (!effective_experimental_options_.empty()) {
     net_info.Set("cronetExperimentalParams",
                  effective_experimental_options_.Clone());
   }

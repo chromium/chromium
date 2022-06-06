@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "base/values.h"
 #include "components/prefs/json_pref_store.h"
 #include "net/base/network_change_notifier.h"
 #include "net/nqe/effective_connection_type.h"
@@ -343,7 +344,7 @@ class CronetContext {
     std::unique_ptr<URLRequestContextConfig> context_config_;
 
     // Effective experimental options. Kept for NetLog.
-    base::Value effective_experimental_options_;
+    base::Value::Dict effective_experimental_options_;
 
     // A queue of tasks that need to be run after context has been initialized.
     base::queue<base::OnceClosure> tasks_waiting_for_context_;
