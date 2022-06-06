@@ -28,9 +28,6 @@ const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2{
 const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3{
     &kLensStandalone, "use-menu-item-alt-text-3", false};
 
-const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText4{
-    &kLensStandalone, "use-menu-item-alt-text-4", true};
-
 const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
     &kLensStandalone, "region-search-enable-ukm-logging", true};
 
@@ -77,6 +74,21 @@ int GetMaxPixelsForImageSearch() {
 
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
+}
+
+bool UseRegionSearchMenuItemAltText1() {
+  return base::FeatureList::IsEnabled(kLensStandalone) &&
+         kRegionSearchUseMenuItemAltText1.Get();
+}
+
+bool UseRegionSearchMenuItemAltText2() {
+  return base::FeatureList::IsEnabled(kLensStandalone) &&
+         kRegionSearchUseMenuItemAltText2.Get();
+}
+
+bool UseRegionSearchMenuItemAltText3() {
+  return base::FeatureList::IsEnabled(kLensStandalone) &&
+         kRegionSearchUseMenuItemAltText3.Get();
 }
 
 bool IsLensFullscreenSearchEnabled() {

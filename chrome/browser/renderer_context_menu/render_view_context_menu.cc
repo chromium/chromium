@@ -289,6 +289,7 @@ using extensions::MenuManager;
 
 namespace {
 
+constexpr char16_t kGoogle[] = u"Google";
 constexpr char16_t kGoogleLens[] = u"Google Lens";
 
 constexpr char kOpenLinkAsProfileHistogram[] =
@@ -2122,21 +2123,25 @@ void RenderViewContextMenu::AppendSharedClipboardItem() {
 }
 
 void RenderViewContextMenu::AppendRegionSearchItem() {
-  int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
-  if (lens::features::kRegionSearchUseMenuItemAltText1.Get()) {
+  // IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT4 is the currently launched
+  // string for the regions search menu item.
+  int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT4;
+  std::u16string provider_name = std::u16string(kGoogleLens);
+  if (lens::features::UseRegionSearchMenuItemAltText1()) {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
-  } else if (lens::features::kRegionSearchUseMenuItemAltText2.Get()) {
+  } else if (lens::features::UseRegionSearchMenuItemAltText2()) {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT2;
-  } else if (lens::features::kRegionSearchUseMenuItemAltText3.Get()) {
-    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT3;
-  } else if (lens::features::kRegionSearchUseMenuItemAltText4.Get()) {
-    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT4;
+  } else if (lens::features::UseRegionSearchMenuItemAltText3() ||
+             lens::features::IsLensFullscreenSearchEnabled()) {
+    // Default text for fullscreen search when enabled. Uses `Google` instead of
+    // `Google Lens` like the first alternative string.
+    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
+    provider_name = std::u16string(kGoogle);
   }
 
   if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
-    menu_model_.AddItem(
-        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
-        l10n_util::GetStringFUTF16(resource_id, std::u16string(kGoogleLens)));
+    menu_model_.AddItem(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
+                        l10n_util::GetStringFUTF16(resource_id, provider_name));
   } else {
     TemplateURLService* service =
         TemplateURLServiceFactory::GetForProfile(GetProfile());
