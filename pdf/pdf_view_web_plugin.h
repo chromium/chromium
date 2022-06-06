@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -275,6 +276,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   std::vector<SearchStringResult> SearchString(const char16_t* string,
                                                const char16_t* term,
                                                bool case_sensitive) override;
+  void DocumentHasUnsupportedFeature(const std::string& feature) override;
   bool IsPrintPreview() const override;
   SkColor GetBackgroundColor() const override;
   void CaretChanged(const gfx::Rect& caret_rect) override;
@@ -344,7 +346,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                               int left_height,
                               const gfx::PointF& right,
                               int right_height) override;
-  void NotifyUnsupportedFeature() override;
   void UserMetricsRecordAction(const std::string& action) override;
   gfx::Vector2d plugin_offset_in_frame() const override;
 
@@ -500,6 +501,14 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // Only instantiated when not print previewing.
   std::unique_ptr<MetricsHandler> metrics_handler_;
+
+  // Keeps track of which unsupported features have been reported to avoid
+  // spamming the metrics if a feature shows up many times per document.
+  base::flat_set<std::string> unsupported_features_reported_;
+
+  // Indicates whether the browser has been notified about an unsupported
+  // feature once, which helps prevent the infobar from going up more than once.
+  bool notified_browser_about_unsupported_feature_ = false;
 
   // The metafile in which to save the printed output. Assigned a value only
   // between `PrintBegin()` and `PrintEnd()` calls.

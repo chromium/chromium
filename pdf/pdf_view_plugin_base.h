@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
@@ -112,7 +111,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void Print() override;
   void DocumentLoadComplete() override;
   void DocumentLoadFailed() override;
-  void DocumentHasUnsupportedFeature(const std::string& feature) override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
   void FormFieldFocusChange(PDFEngine::FocusFieldType type) override;
   void SetIsSelecting(bool is_selecting) override;
@@ -313,10 +311,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
                                       int left_height,
                                       const gfx::PointF& right,
                                       int right_height) = 0;
-
-  // Notifies the user about unsupported feature if the PDF Viewer occupies the
-  // full frame.
-  virtual void NotifyUnsupportedFeature() = 0;
 
   // Records user actions.
   virtual void UserMetricsRecordAction(const std::string& action) = 0;
@@ -520,14 +514,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // The next accessibility page index, used to track interprocess calls when
   // reconstructing the tree for new document layouts.
   int32_t next_accessibility_page_index_ = 0;
-
-  // Keeps track of which unsupported features have been reported to avoid
-  // spamming the metrics if a feature shows up many times per document.
-  base::flat_set<std::string> unsupported_features_reported_;
-
-  // Indicates whether the browser has been notified about an unsupported
-  // feature once, which helps prevent the infobar from going up more than once.
-  bool notified_browser_about_unsupported_feature_ = false;
 
   // Assigned a value only between `PrintBegin()` and `PrintEnd()` calls.
   absl::optional<blink::WebPrintParams> print_params_;

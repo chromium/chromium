@@ -24,6 +24,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -744,6 +745,20 @@ PdfViewWebPlugin::SearchString(const char16_t* string,
   return results;
 }
 
+void PdfViewWebPlugin::DocumentHasUnsupportedFeature(
+    const std::string& feature) {
+  DCHECK(!feature.empty());
+  std::string metric = base::StrCat({"PDF_Unsupported_", feature});
+  if (unsupported_features_reported_.insert(metric).second)
+    client_->RecordComputedAction(metric);
+
+  if (!full_frame() || notified_browser_about_unsupported_feature_)
+    return;
+
+  notified_browser_about_unsupported_feature_ = true;
+  pdf_service_->HasUnsupportedFeature();
+}
+
 bool PdfViewWebPlugin::IsPrintPreview() const {
   return is_print_preview_;
 }
@@ -1040,11 +1055,7 @@ void PdfViewWebPlugin::NotifySelectionChanged(const gfx::PointF& left,
   pdf_service_->SelectionChanged(left, left_height, right, right_height);
 }
 
-void PdfViewWebPlugin::NotifyUnsupportedFeature() {
-  DCHECK(full_frame());
-  pdf_service_->HasUnsupportedFeature();
-}
-
+// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
 void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
   client_->RecordComputedAction(action);
 }

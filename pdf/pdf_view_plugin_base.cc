@@ -358,21 +358,6 @@ void PdfViewPluginBase::DocumentLoadFailed() {
   paint_manager_.InvalidateRect(gfx::Rect(plugin_rect_.size()));
 }
 
-void PdfViewPluginBase::DocumentHasUnsupportedFeature(
-    const std::string& feature) {
-  DCHECK(!feature.empty());
-  const std::string metric = "PDF_Unsupported_" + feature;
-  bool inserted = unsupported_features_reported_.insert(metric).second;
-  if (inserted)
-    UserMetricsRecordAction(metric);
-
-  if (!full_frame() || notified_browser_about_unsupported_feature_)
-    return;
-
-  NotifyUnsupportedFeature();
-  notified_browser_about_unsupported_feature_ = true;
-}
-
 void PdfViewPluginBase::DocumentLoadProgress(uint32_t available,
                                              uint32_t doc_size) {
   double progress = 0.0;
