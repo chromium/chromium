@@ -390,6 +390,8 @@ source_set("browser_sources") {
     "url_data_source.h",
     "url_loader_request_interceptor.h",
     "url_loader_throttles.h",
+    "usb_chooser.cc",
+    "usb_chooser.h",
     "video_capture_device_launcher.cc",
     "video_capture_device_launcher.h",
     "video_capture_service.h",

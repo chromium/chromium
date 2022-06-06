@@ -28,6 +28,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/usb_chooser.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -117,7 +118,7 @@ class FakeUsbChooser : public WebUsbChooser {
   }
 };
 
-std::unique_ptr<WebUsbChooser> RunChooser(
+std::unique_ptr<content::UsbChooser> RunChooser(
     RenderFrameHost& frame,
     std::vector<device::mojom::UsbDeviceFilterPtr> filters,
     blink::mojom::WebUsbService::GetPermissionCallback callback) {

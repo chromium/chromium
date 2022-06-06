@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "content/public/browser/usb_chooser.h"
+
 namespace content {
 class RenderFrameHost;
 }
@@ -15,7 +17,7 @@ class UsbChooserController;
 
 // This interface can be used by a webpage to request permission from user
 // to access a certain device.
-class WebUsbChooser {
+class WebUsbChooser : public content::UsbChooser {
  public:
   static std::unique_ptr<WebUsbChooser> Create(
       content::RenderFrameHost* frame,
@@ -24,7 +26,7 @@ class WebUsbChooser {
   WebUsbChooser(const WebUsbChooser&) = delete;
   WebUsbChooser& operator=(const WebUsbChooser&) = delete;
 
-  virtual ~WebUsbChooser();
+  ~WebUsbChooser() override;
 
  protected:
   WebUsbChooser();

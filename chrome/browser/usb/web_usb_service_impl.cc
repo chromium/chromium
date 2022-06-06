@@ -17,6 +17,7 @@
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
 #include "chrome/browser/usb/usb_tab_helper.h"
+#include "chrome/browser/usb/web_usb_chooser.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/mojo/mojom/remoting_common.mojom.h"
@@ -74,7 +75,7 @@ bool IsDevicePermissionAutoGranted(
   return false;
 }
 
-std::unique_ptr<WebUsbChooser> RunChooser(
+std::unique_ptr<content::UsbChooser> RunChooser(
     content::RenderFrameHost& frame,
     std::vector<device::mojom::UsbDeviceFilterPtr> filters,
     WebUsbServiceImpl::GetPermissionCallback callback) {

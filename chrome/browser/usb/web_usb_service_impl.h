@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
-#include "chrome/browser/usb/web_usb_chooser.h"
+#include "content/public/browser/usb_chooser.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -40,7 +40,7 @@ class WebUsbServiceImpl
       public UsbChooserContext::DeviceObserver {
  public:
   using ChooserFactoryCallback =
-      base::RepeatingCallback<std::unique_ptr<WebUsbChooser>(
+      base::RepeatingCallback<std::unique_ptr<content::UsbChooser>(
           content::RenderFrameHost&,
           std::vector<device::mojom::UsbDeviceFilterPtr>,
           WebUsbServiceImpl::GetPermissionCallback)>;
@@ -55,7 +55,7 @@ class WebUsbServiceImpl
   void BindReceiver(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
 
-  // Allow tests to define and create the WebUsbChooser.
+  // Allow tests to define and create the UsbChooser.
   void SetChooserFactoryForTesting(ChooserFactoryCallback chooser_factory);
 
  private:
@@ -99,7 +99,7 @@ class WebUsbServiceImpl
   void OnConnectionError();
 
   const raw_ptr<content::RenderFrameHost> render_frame_host_;
-  std::unique_ptr<WebUsbChooser> usb_chooser_;
+  std::unique_ptr<content::UsbChooser> usb_chooser_;
   raw_ptr<UsbChooserContext> chooser_context_;
   url::Origin origin_;
 
