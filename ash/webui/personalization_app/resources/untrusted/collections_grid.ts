@@ -468,6 +468,10 @@ export class CollectionsGrid extends PolymerElement {
       elem.removeAttribute('hidden');
     }
   }
+
+  private getAriaIndex_(index: number): number {
+    return index + 1;
+  }
 }
 
 customElements.define(CollectionsGrid.is, CollectionsGrid);

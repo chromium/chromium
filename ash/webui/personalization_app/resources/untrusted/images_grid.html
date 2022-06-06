@@ -9,10 +9,13 @@
     <template>
       <div class="photo-container">
         <template is="dom-if" if="[[isLoadingTile_(item)]]">
-          <div tabindex$="[[tabIndex]]" role="button"
+          <div tabindex$="[[tabIndex]]"
+              role="option"
               class="photo-inner-container placeholder"
               style$="[[getLoadingPlaceholderAnimationDelay_(index)]]"
-              aria-label="$i18n{ariaLabelLoading}" aria-disabled="true"></div>
+              aria-posinset$="[[getAriaIndex_(index)]]"
+              aria-label="$i18n{ariaLabelLoading}"
+              aria-disabled="true"></div>
         </template>
         <template is="dom-if" if="[[isImageTile_(item)]]">
           <div class="photo-inner-container" tabindex$="[[tabIndex]]"
