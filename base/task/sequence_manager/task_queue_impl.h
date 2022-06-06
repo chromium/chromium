@@ -501,11 +501,6 @@ class BASE_EXPORT TaskQueueImpl {
   void MoveReadyImmediateTasksToImmediateWorkQueueLocked()
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
 
-  // Records the delay for some tasks in the main thread pseudorandomly in a
-  // histogram. The |delay| will be different than the delay passed to
-  // PostDelayedTask for cross-thread delayed tasks.
-  void RecordTaskDelay(TimeDelta delay);
-
   // LazilyDeallocatedDeque use TimeTicks to figure out when to resize.  We
   // should use real time here always.
   using TaskDeque =
