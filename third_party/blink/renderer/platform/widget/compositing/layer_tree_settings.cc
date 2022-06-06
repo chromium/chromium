@@ -448,6 +448,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     settings.scrollbar_thinning_duration =
         ui::kOverlayScrollbarThinningDuration;
     settings.scrollbar_flash_after_any_scroll_update = true;
+    settings.enable_fluent_scrollbar = ui::IsFluentScrollbarEnabled();
   }
 
   // If there's over 4GB of RAM, increase the working set size to 256MB for both

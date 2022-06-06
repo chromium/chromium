@@ -55,6 +55,7 @@ ScrollbarAnimationController::ScrollbarAnimationController(
       opacity_(initial_opacity),
       show_scrollbars_on_scroll_gesture_(false),
       need_thinning_animation_(false),
+      need_fade_animation_(true),
       is_mouse_down_(false),
       tickmarks_showing_(false) {}
 
@@ -75,6 +76,7 @@ ScrollbarAnimationController::ScrollbarAnimationController(
       opacity_(initial_opacity),
       show_scrollbars_on_scroll_gesture_(true),
       need_thinning_animation_(true),
+      need_fade_animation_(!client->IsFluentScrollbar()),
       is_mouse_down_(false),
       tickmarks_showing_(false) {
   vertical_controller_ = SingleScrollbarAnimationControllerThinning::Create(
@@ -119,6 +121,14 @@ void ScrollbarAnimationController::StopAnimation() {
 
 void ScrollbarAnimationController::PostDelayedAnimation(
     AnimationChange animation_change) {
+  // In contrast to Aura overlay scrollbars, Fluent overlay scrollbars
+  // should not fade out completely. After the initial paint, they remain on the
+  // screen in the minimal (thin) mode by default and can expand/transition to
+  // the full (thick) mode. The minimal <-> full mode thinning animation is
+  // controlled by SingleScrollbarAnimationControllerThinning.
+  if (!need_fade_animation_)
+    return;
+
   animation_change_ = animation_change;
   delayed_scrollbar_animation_.Cancel();
   delayed_scrollbar_animation_.Reset(

@@ -208,6 +208,10 @@ class CC_EXPORT LayerTreeSettings {
   // even if the layer is not drawn. For example, if the layer is occluded it is
   // still considered drawn and will not be impacted by this feature.
   bool release_tile_resources_for_hidden_layers = false;
+
+  // Whether Fluent scrollbar is enabled. Please check https://crbug.com/1292117
+  // to find the link to the Fluent Scrollbar spec and related CLs.
+  bool enable_fluent_scrollbar = false;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {

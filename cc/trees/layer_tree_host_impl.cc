@@ -4360,6 +4360,10 @@ ScrollbarSet LayerTreeHostImpl::ScrollbarsFor(ElementId id) const {
   return active_tree_->ScrollbarsFor(id);
 }
 
+bool LayerTreeHostImpl::IsFluentScrollbar() const {
+  return settings().enable_fluent_scrollbar;
+}
+
 void LayerTreeHostImpl::AddVideoFrameController(
     VideoFrameController* controller) {
   bool was_empty = video_frame_controllers_.empty();
