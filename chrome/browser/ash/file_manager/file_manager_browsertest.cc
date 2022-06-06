@@ -496,6 +496,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("zipExtractCheckDuplicates").ExtractArchive().FilesSwa(),
         TestCase("zipExtractCheckEncodings").ExtractArchive().FilesSwa(),
         TestCase("zipExtractNotEnoughSpace").ExtractArchive().FilesSwa(),
+        TestCase("zipExtractFromReadOnly").ExtractArchive().FilesSwa(),
         TestCase("zipExtractShowPanel").ExtractArchive().FilesSwa(),
         TestCase("zipExtractSelectionMenus").ExtractArchive().FilesSwa()));
 

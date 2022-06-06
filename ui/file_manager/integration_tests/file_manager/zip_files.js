@@ -5,7 +5,7 @@
 import {addEntries, ENTRIES, expectHistogramTotalCount, getCaller, pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {BASIC_ZIP_ENTRY_SET} from './test_data.js';
 
 /**
@@ -710,4 +710,61 @@ testcase.zipExtractNotEnoughSpace = async () => {
 
   // Check: a extract archive status histogram value should have been recorded.
   await expectHistogramTotalCount(ExtractArchiveStatusHistogramName, 1);
+};
+
+/**
+ * Tests that extraction of a ZIP archive from a read only volume succeeds.
+ */
+testcase.zipExtractFromReadOnly = async () => {
+  const entry = ENTRIES.readOnlyZipFile;
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
+
+  // Navigate to Shared with me.
+  await remoteCall.callRemoteTestUtil(
+      'fakeMouseClick', appId, ['[volume-type-icon=\'drive_shared_with_me\']']);
+
+  // Wait for the navigation to complete.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');
+
+  // Make sure read-only indicator on toolbar is visible.
+  await remoteCall.waitForElement(appId, '#read-only-indicator:not([hidden])');
+
+  // Select the ZIP file.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'selectFile', appId, [entry.nameText]));
+
+  // Right-click the selected file.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, ['.table-row[selected]']),
+      'fakeMouseRightClick failed');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Click the 'Extract all' menu command.
+  const extract = '[command="#extract-all"]';
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
+      'fakeMouseClick failed');
+
+  // Navigate to My Files.
+  await navigateWithDirectoryTree(appId, '/My files');
+
+  const directoryQuery =
+      '#file-list [file-name="' + entry.nameText.split('.')[0] + '"]';
+  // Check: the extract directory should appear.
+  await remoteCall.waitForElement(appId, directoryQuery);
+
+  // Double click the created directory to open it.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseDoubleClick', appId, [directoryQuery]),
+      'fakeMouseDoubleClick failed');
+
+  // Check: File content in the ZIP should appear.
+  await remoteCall.waitForElement(appId, '#file-list [file-name="folder"]');
+  await remoteCall.waitForElement(appId, '#file-list [file-name="text.txt"]');
+  await remoteCall.waitForElement(appId, '#file-list [file-name="image.png"]');
 };

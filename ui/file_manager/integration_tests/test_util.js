@@ -1357,6 +1357,27 @@ export const ENTRIES = {
     },
   }),
 
+  // A ZIP file that can't be renamed or deleted, but can be copied and
+  // shared.
+  readOnlyZipFile: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'archive.zip',
+    targetPath: 'archive.zip',
+    mimeType: 'application/x-zip',
+    lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
+    nameText: 'archive.zip',
+    sharedOption: SharedOption.SHARED,
+    sizeText: '743 bytes',
+    typeText: 'ZIP archive',
+    capabilities: {
+      canCopy: true,
+      canAddChildren: false,
+      canRename: false,
+      canDelete: false,
+      canShare: true
+    },
+  }),
+
   // A regular file that can't be renamed, but can be deleted.
   deletableFile: new TestEntryInfo({
     type: EntryType.FILE,
