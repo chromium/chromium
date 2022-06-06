@@ -6247,10 +6247,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAppManagementAppDetailsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAppManagementAppDetails)},
 
-    {"arc-ghost-window", flag_descriptions::kArcGhostWindowName,
-     flag_descriptions::kArcGhostWindowDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(full_restore::features::kArcGhostWindow)},
-
     {"arc-window-predictor", flag_descriptions::kArcWindowPredictorName,
      flag_descriptions::kArcWindowPredictorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(full_restore::features::kArcWindowPredictor)},

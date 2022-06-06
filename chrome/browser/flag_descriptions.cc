@@ -5349,11 +5349,6 @@ const char kReleaseNotesNotificationAllChannelsName[] =
 const char kReleaseNotesNotificationAllChannelsDescription[] =
     "Enables the release notes notification for all ChromeOS channels";
 
-const char kArcGhostWindowName[] = "Enable ARC ghost window";
-const char kArcGhostWindowDescription[] =
-    "Enables the pre-load app window for "
-    "ARC++ app during ARCVM booting stage on full restore process";
-
 const char kArcWindowPredictorName[] = "Enable ARC window predictor";
 const char kArcWindowPredictorDescription[] =
     "Enables the window state and bounds predictor for ARC task windows";

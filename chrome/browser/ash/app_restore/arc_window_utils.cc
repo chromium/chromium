@@ -43,8 +43,7 @@ namespace ash {
 namespace full_restore {
 
 bool IsArcGhostWindowEnabled() {
-  if (!::full_restore::features::IsArcGhostWindowEnabled() ||
-      !exo::WMHelper::HasInstance()) {
+  if (!exo::WMHelper::HasInstance()) {
     return false;
   }
 

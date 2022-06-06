@@ -818,15 +818,9 @@ void ArcAppLaunchHandler::RecordArcGhostWindowLaunch(bool is_arc_ghost_window) {
   base::UmaHistogramBoolean(kArcGhostWindowLaunchHistogram,
                             is_arc_ghost_window);
 
-  if (!is_arc_ghost_window) {
-    if (!::full_restore::features::IsArcGhostWindowEnabled()) {
-      base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
-                                    NoGhostWindowReason::kFlagDisabled);
-    }
-    if (!exo::WMHelper::HasInstance()) {
-      base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
-                                    NoGhostWindowReason::kNoExoHelper);
-    }
+  if (!is_arc_ghost_window && !exo::WMHelper::HasInstance()) {
+    base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
+                                  NoGhostWindowReason::kNoExoHelper);
   }
 }
 

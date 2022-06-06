@@ -216,11 +216,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "arc-ghost-window",
-    "owners": [ "sstan" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "arc-input-overlay",
     "owners": [ "cuicuiruan@google.com", "arc-gaming@google.com" ],
     "expiry_milestone": 110
