@@ -31,9 +31,7 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
                                public ExecutionContextLifecycleObserver {
  public:
   // Creates promise to execute Clipboard API functions off the main thread.
-  static ScriptPromise CreateForRead(ExecutionContext*,
-                                     ScriptState*,
-                                     ClipboardItemOptions*);
+  static ScriptPromise CreateForRead(ExecutionContext*, ScriptState*);
   static ScriptPromise CreateForReadText(ExecutionContext*, ScriptState*);
   static ScriptPromise CreateForWrite(ExecutionContext*,
                                       ScriptState*,
@@ -70,7 +68,7 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   void WriteNextRepresentation();
 
   // Checks Read/Write permission (interacting with PermissionService).
-  void HandleRead(ClipboardItemOptions*);
+  void HandleRead();
   void HandleReadText();
   void HandleWrite(HeapVector<Member<ClipboardItem>>*);
   void HandleWriteText(const String&);

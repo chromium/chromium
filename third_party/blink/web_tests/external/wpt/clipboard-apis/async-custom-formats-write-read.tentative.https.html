@@ -14,26 +14,19 @@
 promise_test(async t => {
   await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
   await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
-  const format1 = 'application/x-custom-format-clipboard-test-format-1';
-  const format2 = 'application/x-custom-format-clipboard-test-format-2';
+  const format1 = 'web application/x-custom-format-clipboard-test-format-1';
+  const format2 = 'web application/x-custom-format-clipboard-test-format-2';
   const blobInput1 = new Blob(['input data 1'], {type: format1});
   const blobInput2 = new Blob(['input data 2'], {type: format2});
   const clipboardItemInput = new ClipboardItem(
-      {[format1]: blobInput1, [format2]: blobInput2},
-      {unsanitized: [format1, format2]});
+      {[format1]: blobInput1, [format2]: blobInput2});
   await waitForUserActivation();
   await navigator.clipboard.write([clipboardItemInput]);
-
-  // Items may not be readable on the sanitized clipboard after custom format
-  // write.
-  await promise_rejects_dom(t, 'DataError',
-      navigator.clipboard.read());
 
   // Items should be readable on a custom format clipboard after custom format
   // write.
   await waitForUserActivation();
-  const clipboardItems = await navigator.clipboard.read(
-    {unsanitized: [format1, format2]});
+  const clipboardItems = await navigator.clipboard.read();
   assert_equals(clipboardItems.length, 1);
   const clipboardItem = clipboardItems[0];
   assert_true(clipboardItem instanceof ClipboardItem);
@@ -58,15 +51,44 @@ promise_test(async t => {
   const customFormatArray = [];
   const customFormatMap = {};
   for (let i = 0; i <= 100; i++) {
-    customFormatArray.push("CustomFormat" + i);
+    customFormatArray.push("web text/CustomFormat" + i);
     const blobInput = new Blob(['input data'], {type: customFormatArray[i]});
     customFormatMap[customFormatArray[i]] = blobInput;
   }
-  const clipboardItemInput = new ClipboardItem(customFormatMap,
-      {unsanitized: customFormatArray});
+  const clipboardItemInput = new ClipboardItem(customFormatMap);
   await waitForUserActivation();
   await promise_rejects_dom(t, 'NotAllowedError',
       navigator.clipboard.write([clipboardItemInput]));
 }, 'navigator.clipboard.write() fails for more than 100 custom formats');
+
+promise_test(async t => {
+  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
+  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+
+  const format1 = 'application/x-custom-format-clipboard-test-format-1';
+  const format2 = 'application/x-custom-format-clipboard-test-format-2';
+  const blobInput1 = new Blob(['input data 1'], {type: format1});
+  const blobInput2 = new Blob(['input data 2'], {type: format2});
+  const clipboardItemInput = new ClipboardItem(
+      {[format1]: blobInput1, [format2]: blobInput2});
+  await waitForUserActivation();
+  await promise_rejects_dom(t, 'NotAllowedError',
+      navigator.clipboard.write([clipboardItemInput]));
+}, 'navigator.clipboard.write() fails for custom formats without web prefix');
+
+promise_test(async t => {
+  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
+  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+
+  const format1 = 'web ';
+  const format2 = 'web a';
+  const blobInput1 = new Blob(['input data 1'], {type: format1});
+  const blobInput2 = new Blob(['input data 2'], {type: format2});
+  const clipboardItemInput = new ClipboardItem(
+      {[format1]: blobInput1, [format2]: blobInput2});
+  await waitForUserActivation();
+  await promise_rejects_dom(t, 'NotAllowedError',
+      navigator.clipboard.write([clipboardItemInput]));
+}, 'navigator.clipboard.write() fails for custom formats with web prefix, but invalid MIME types');
 
 </script>

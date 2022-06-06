@@ -8,8 +8,7 @@
   SecureContext,
   Exposed=Window
 ] interface ClipboardItem {
-  [RaisesException] constructor(record<DOMString, Promise<Blob>> items,
-              optional ClipboardItemOptions options = {});
+  [RaisesException] constructor(record<DOMString, Promise<Blob>> items);
   readonly attribute FrozenArray<DOMString> types;
 
   [

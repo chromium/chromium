@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_writer.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
@@ -305,12 +306,14 @@ class ClipboardCustomFormatReader final : public ClipboardReader {
 // static
 ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
-                                         ClipboardPromise* promise,
-                                         bool is_custom_format_type) {
-  DCHECK(ClipboardWriter::IsValidType(mime_type, is_custom_format_type));
-  // If this is a custom format then read the unsanitized version.
-  if (is_custom_format_type &&
-      RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled()) {
+                                         ClipboardPromise* promise) {
+  DCHECK(ClipboardWriter::IsValidType(mime_type));
+  // If this is a web custom format then read the unsanitized version.
+  if (RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() &&
+      !Clipboard::ParseWebCustomFormat(mime_type).IsNull()) {
+    // We read the custom MIME type that has the "web " prefix.
+    // These MIME types are found in the web custom format map written by
+    // native applications.
     return MakeGarbageCollected<ClipboardCustomFormatReader>(
         system_clipboard, promise, mime_type);
   }

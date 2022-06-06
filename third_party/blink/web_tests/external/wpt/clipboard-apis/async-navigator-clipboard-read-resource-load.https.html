@@ -7,7 +7,9 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/user-activation.js"></script>
 
+<body>Body needed for test_driver.click()
 <p><button id="button">Put payload in the clipboard</button></p>
 <div id="output"></div>
 
@@ -27,6 +29,7 @@ promise_test(async test => {
   await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
   await test_driver.click(button);
 
+  await waitForUserActivation();
   const items = await navigator.clipboard.read();
   const htmlBlob = await items[0].getType("text/html");
   const html = await htmlBlob.text();
@@ -38,3 +41,4 @@ promise_test(async test => {
   assert_false(loadObserved, 'Should not observe resource loading');
 });
 </script>
+</body>

@@ -14,9 +14,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "net/base/mime_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -151,8 +154,20 @@ std::map<std::string, std::string> Clipboard::ExtractCustomPlatformNames(
       if (json_val.has_value()) {
         for (const auto it : json_val->DictItems()) {
           const std::string* custom_format_name = it.second.GetIfString();
-          if (custom_format_name)
-            custom_format_names.emplace(it.first, *custom_format_name);
+          if (custom_format_name) {
+            // Prepend "web " prefix to the custom format.
+            std::string web_top_level_mime_type;
+            std::string web_mime_sub_type;
+            std::string web_format = it.first;
+            if (net::ParseMimeTypeWithoutParameter(
+                    web_format, &web_top_level_mime_type, &web_mime_sub_type)) {
+              std::string web_custom_format_string = base::StrCat(
+                  {kWebClipboardFormatPrefix, web_top_level_mime_type, "/",
+                   web_mime_sub_type});
+              custom_format_names.emplace(std::move(web_custom_format_string),
+                                          *custom_format_name);
+            }
+          }
         }
       }
     }

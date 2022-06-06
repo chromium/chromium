@@ -107,7 +107,6 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.idl",
           "//third_party/blink/renderer/modules/clipboard/clipboard.idl",
           "//third_party/blink/renderer/modules/clipboard/clipboard_item.idl",
-          "//third_party/blink/renderer/modules/clipboard/clipboard_item_options.idl",
           "//third_party/blink/renderer/modules/clipboard/navigator_clipboard.idl",
           "//third_party/blink/renderer/modules/compression/compression_stream.idl",
           "//third_party/blink/renderer/modules/compression/decompression_stream.idl",

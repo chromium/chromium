@@ -1734,6 +1734,12 @@ _CONFIG = [
             'base::Value',
         ],
     },
+    {
+        'paths': ['third_party/blink/renderer/modules/clipboard/'],
+        'allowed': [
+            'net::ParseMimeTypeWithoutParameter',
+        ],
+    },
 ]
 
 

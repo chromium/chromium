@@ -47,5 +47,6 @@ const char kMimeTypeImageURI[] = "image-uri";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const int kMaxRegisteredClipboardFormats = 100;
+const char kWebClipboardFormatPrefix[] = "web ";
 
 }  // namespace ui

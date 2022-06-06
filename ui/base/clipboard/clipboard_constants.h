@@ -97,6 +97,10 @@ extern const char kMimeTypeImageURI[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern const int kMaxRegisteredClipboardFormats;
 
+// Web prefix for web custom format types.
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
+extern const char kWebClipboardFormatPrefix[];
+
 }  // namespace ui
 
 #endif  // UI_BASE_CLIPBOARD_CLIPBOARD_CONSTANTS_H_
