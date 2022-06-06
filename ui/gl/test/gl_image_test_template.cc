@@ -143,7 +143,7 @@ GLImageTestDelegateBase::GetPreferedGLImplementation() const {
   return absl::nullopt;
 }
 
-bool GLImageTestDelegateBase::SkipTest(GLDisplay*) const {
+bool GLImageTestDelegateBase::SkipTest() const {
   return false;
 }
 

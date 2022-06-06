@@ -33,8 +33,10 @@ void rgb_to_yuv(uint8_t r, uint8_t g, uint8_t b, T* y, T* u, T* v) {
 }
 }  // namespace
 
+GLDisplay* GLImageTestSupport::display_ = nullptr;
+
 // static
-GLDisplay* GLImageTestSupport::InitializeGL(
+void GLImageTestSupport::InitializeGL(
     absl::optional<GLImplementationParts> prefered_impl) {
 #if defined(USE_OZONE)
   ui::OzonePlatform::InitParams params;
@@ -50,19 +52,17 @@ GLDisplay* GLImageTestSupport::InitializeGL(
       prefered_impl ? *prefered_impl : allowed_impls[0];
   DCHECK(impl.IsAllowed(allowed_impls));
 
-  GLDisplay* display =
-      GLSurfaceTestSupport::InitializeOneOffImplementation(impl, true);
+  display_ = GLSurfaceTestSupport::InitializeOneOffImplementation(impl, true);
 #if defined(USE_OZONE)
   // Make sure all the tasks posted to the current task runner by the
   // initialization functions are run before running the tests.
   base::RunLoop().RunUntilIdle();
 #endif
-  return display;
 }
 
 // static
-void GLImageTestSupport::CleanupGL(GLDisplay* display) {
-  GLSurfaceTestSupport::ShutdownGL(display);
+void GLImageTestSupport::CleanupGL() {
+  GLSurfaceTestSupport::ShutdownGL(display_);
 }
 
 // static
@@ -286,4 +286,5 @@ void GLImageTestSupport::SetBufferDataToColor(int width,
   }
   NOTREACHED();
 }
+
 }  // namespace gl

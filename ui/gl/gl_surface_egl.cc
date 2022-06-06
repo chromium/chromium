@@ -998,14 +998,14 @@ GLDisplayEGL* GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform native_display,
       GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
   if (display->GetDisplay() == EGL_NO_DISPLAY) {
     // Must be called before InitializeDisplay().
-    g_driver_egl.ext.InitializeClientExtensionSettings();
+    g_driver_egl.InitializeClientExtensionBindings();
 
     display = InitializeDisplay(native_display, system_device_id);
     if (display->GetDisplay() == EGL_NO_DISPLAY)
       return nullptr;
 
     // Must be called after InitializeDisplay().
-    g_driver_egl.ext.InitializeExtensionSettings(display);
+    g_driver_egl.InitializeExtensionBindings();
 
     InitializeOneOffCommon(display);
   }
@@ -1014,11 +1014,11 @@ GLDisplayEGL* GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform native_display,
 
 // static
 GLDisplayEGL* GLSurfaceEGL::InitializeOneOffForTesting() {
-  g_driver_egl.ext.InitializeClientExtensionSettings();
+  g_driver_egl.InitializeClientExtensionBindings();
   GLDisplayEGL* display =
       GLDisplayManagerEGL::GetInstance()->GetDisplay(GpuPreference::kDefault);
   display->SetDisplay(eglGetCurrentDisplay());
-  g_driver_egl.ext.InitializeExtensionSettings(display);
+  g_driver_egl.InitializeExtensionBindings();
   InitializeOneOffCommon(display);
   return display;
 }
@@ -1170,7 +1170,7 @@ bool GLSurfaceEGL::InitializeExtensionSettingsOneOff(GLDisplayEGL* display) {
   DCHECK(display);
   if (display->GetDisplay() == EGL_NO_DISPLAY)
     return false;
-  g_driver_egl.ext.UpdateConditionalExtensionSettings(display);
+  g_driver_egl.UpdateConditionalExtensionBindings();
   display->egl_client_extensions =
       eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);
   display->egl_extensions =
