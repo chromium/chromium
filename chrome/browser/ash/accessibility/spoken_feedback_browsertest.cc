@@ -805,7 +805,14 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxFindInPage) {
+// TODO(https://crbug.com/1333373): Flaky on Linux ChromiumOS MSan.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ChromeVoxFindInPage DISABLED_ChromeVoxFindInPage
+#else
+#define MAYBE_ChromeVoxFindInPage ChromeVoxFindInPage
+#endif
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, MAYBE_ChromeVoxFindInPage) {
   EnableChromeVox();
 
   sm_.Call([this]() {

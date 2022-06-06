@@ -129,7 +129,15 @@ TEST_F('ChromeVoxPanelTest', 'FormControlsMenu', async function() {
   this.assertActiveMenuItem('panel_menu_form_controls', 'Cancel Button');
 });
 
-TEST_F('ChromeVoxPanelTest', 'SearchMenu', async function() {
+
+// TODO(https://crbug.com/1333375): Flaky on MSAN builders.
+GEN('#if defined(MEMORY_SANITIZER)');
+GEN('#define MAYBE_SearchMenu DISABLED_SearchMenu');
+GEN('#else');
+GEN('#define MAYBE_SearchMenu SearchMenu');
+GEN('#endif');
+
+TEST_F('ChromeVoxPanelTest', 'MAYBE_SearchMenu', async function() {
   const mockFeedback = this.createMockFeedback();
   await this.runWithLoadedTree(this.linksDoc);
   new PanelCommand(PanelCommandType.OPEN_MENUS).send();
