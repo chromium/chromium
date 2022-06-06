@@ -15,19 +15,24 @@ class POLICY_EXPORT MockPreferences : public MacPreferences {
   MockPreferences();
   ~MockPreferences() override;
 
-  Boolean AppSynchronize(CFStringRef applicationID) override;
-
+  // MacPreferences
+  Boolean AppSynchronize(CFStringRef application_id) override;
   CFPropertyListRef CopyAppValue(CFStringRef key,
-                                 CFStringRef applicationID) override;
-
-  Boolean AppValueIsForced(CFStringRef key, CFStringRef applicationID) override;
+                                 CFStringRef application_id) override;
+  Boolean AppValueIsForced(CFStringRef key,
+                           CFStringRef application_id) override;
+  Boolean IsManagedPolicyAvailableForMachineScope(CFStringRef key) override;
 
   // Adds a preference item with the given info to the test set.
-  void AddTestItem(CFStringRef key, CFPropertyListRef value, bool is_forced);
+  void AddTestItem(CFStringRef key,
+                   CFPropertyListRef value,
+                   bool is_forced,
+                   bool is_machine);
 
  private:
   base::ScopedCFTypeRef<CFMutableDictionaryRef> values_;
   base::ScopedCFTypeRef<CFMutableSetRef> forced_;
+  base::ScopedCFTypeRef<CFMutableSetRef> machine_;
 };
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_PREFERENCES_MOCK_MAC_H_

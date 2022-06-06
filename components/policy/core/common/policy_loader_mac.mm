@@ -6,11 +6,12 @@
 
 #include <utility>
 
+#include <Foundation/Foundation.h>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/enterprise_util.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
@@ -20,7 +21,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/external_data_fetcher.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/mac_util.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_load_status.h"
@@ -128,11 +128,16 @@ std::unique_ptr<PolicyBundle> PolicyLoaderMac::Load() {
     bool forced = preferences_->AppValueIsForced(name, application_id_);
     PolicyLevel level =
         forced ? POLICY_LEVEL_MANDATORY : POLICY_LEVEL_RECOMMENDED;
-    // TODO(joaodasilva): figure the policy scope.
+    PolicyScope scope = POLICY_SCOPE_USER;
+    if (forced) {
+      scope = preferences_->IsManagedPolicyAvailableForMachineScope(name)
+                  ? POLICY_SCOPE_MACHINE
+                  : POLICY_SCOPE_USER;
+    }
     std::unique_ptr<base::Value> policy = PropertyToValue(value);
     if (policy) {
-      chrome_policy.Set(it.key(), level, POLICY_SCOPE_MACHINE,
-                        POLICY_SOURCE_PLATFORM, std::move(*policy), nullptr);
+      chrome_policy.Set(it.key(), level, scope, POLICY_SOURCE_PLATFORM,
+                        std::move(*policy), nullptr);
     } else {
       status.Add(POLICY_LOAD_STATUS_PARSE_ERROR);
     }
@@ -226,9 +231,15 @@ void PolicyLoaderMac::LoadPolicyForComponent(
     bool forced = preferences_->AppValueIsForced(pref_name, bundle_id);
     PolicyLevel level =
         forced ? POLICY_LEVEL_MANDATORY : POLICY_LEVEL_RECOMMENDED;
+    PolicyScope scope = POLICY_SCOPE_USER;
+    if (forced) {
+      scope = preferences_->IsManagedPolicyAvailableForMachineScope(pref_name)
+                  ? POLICY_SCOPE_MACHINE
+                  : POLICY_SCOPE_USER;
+    }
     std::unique_ptr<base::Value> policy_value = PropertyToValue(value);
     if (policy_value) {
-      policy->Set(it.key(), level, POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+      policy->Set(it.key(), level, scope, POLICY_SOURCE_PLATFORM,
                   std::move(*policy_value), nullptr);
     }
   }

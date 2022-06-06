@@ -333,8 +333,8 @@ source_set("internal") {
       sources += [
         "policy_loader_mac.h",
         "policy_loader_mac.mm",
-        "preferences_mac.cc",
         "preferences_mac.h",
+        "preferences_mac.mm",
       ]
       frameworks += [ "SystemConfiguration.framework" ]
     }
