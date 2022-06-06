@@ -119,14 +119,14 @@ public final class ShareSheetCoordinatorTest {
                 .thenReturn(thirdPartyPropertyModels);
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(anyString()))
                 .thenReturn(JUnitTestGURLs.getGURL(MOCK_URL));
-        Profile.setLastUsedProfileForTesting(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
 
         mParams = new ShareParams.Builder(mWindow, "title", MOCK_URL)
                           .setCallback(mTargetChosenCallback)
                           .build();
         mShareSheetCoordinator = new ShareSheetCoordinator(mController, mLifecycleDispatcher,
-                mTabProvider, mPropertyModelBuilder, null, null, false, null, null);
+                mTabProvider, mPropertyModelBuilder, null, null, false, null, null, mProfile);
+        mShareSheetCoordinator.setShouldUseUsageRankingForTesting(false);
     }
 
     @Test

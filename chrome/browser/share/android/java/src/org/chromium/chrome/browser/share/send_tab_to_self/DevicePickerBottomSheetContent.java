@@ -41,10 +41,11 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
     private static final int ACCOUNT_AVATAR_SIZE_DP = 24;
 
     public DevicePickerBottomSheetContent(Context context, String url, String title,
-            BottomSheetController controller, List<TargetDeviceInfo> targetDevices) {
+            BottomSheetController controller, List<TargetDeviceInfo> targetDevices,
+            Profile profile) {
         mContext = context;
         mController = controller;
-        mProfile = Profile.getLastUsedRegularProfile();
+        mProfile = profile;
         mAdapter = new DevicePickerBottomSheetAdapter(targetDevices);
         mUrl = url;
         mTitle = title;

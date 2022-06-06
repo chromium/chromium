@@ -89,7 +89,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
         View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             DevicePickerBottomSheetContent sheetContent =
                     new DevicePickerBottomSheetContent(getActivity(), JUnitTestGURLs.HTTP_URL,
-                            "Title", mBottomSheetController, devices);
+                            "Title", mBottomSheetController, devices, mProfile);
             getActivity().setContentView(sheetContent.getContentView());
             return sheetContent.getContentView();
         });

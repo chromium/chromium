@@ -124,7 +124,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         mJniMocker.mock(
                 SendTabToSelfAndroidBridgeJni.TEST_HOOKS, mSendTabToSelfAndroidBridgeNatives);
-        Profile.setLastUsedProfileForTesting(mProfile);
         Mockito.when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
         Mockito.when(mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(
                              any(), anyString()))
@@ -479,7 +478,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 /*shareStartTime=*/0, mShareSheetCoordinator,
                 /*imageEditorModuleProvider*/ null, mTracker, URL, linkGenerationStatus,
                 new LinkToggleMetricsDetails(
-                        LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED));
+                        LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED),
+                mProfile);
     }
 
     private boolean propertyModelsContain(List<PropertyModel> propertyModels, int labelId) {

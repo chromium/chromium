@@ -87,10 +87,12 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private final BottomSheetObserver mBottomSheetObserver;
     private final LargeIconBridge mIconBridge;
     private final Tracker mFeatureEngagementTracker;
+    private final Profile mProfile;
 
     private long mShareStartTime;
     private boolean mExcludeFirstParty;
     private boolean mIsMultiWindow;
+    private boolean mShouldUseUsageRanking;
     private Set<Integer> mContentTypes;
     private Activity mActivity;
     private ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -124,13 +126,15 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
      * @param modelBuilder The {@link ShareSheetPropertyModelBuilder} for the share sheet.
      * @param isIncognito Whether the share sheet was opened in incognito mode or not.
      * @param imageEditorModuleProvider Image Editor module entry point if present in the APK.
+     * @param profile The most recent profile of the User.
      */
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
     public ShareSheetCoordinator(BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
             ShareSheetPropertyModelBuilder modelBuilder, Callback<Tab> printTab,
             LargeIconBridge iconBridge, boolean isIncognito,
-            ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker) {
+            ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
+            Profile profile) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
@@ -167,6 +171,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mBottomSheetController.addObserver(mBottomSheetObserver);
         mIconBridge = iconBridge;
         mFeatureEngagementTracker = featureEngagementTracker;
+        mProfile = profile;
+        mShouldUseUsageRanking = mProfile != null;
     }
 
     protected void destroy() {
@@ -305,15 +311,6 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         }
     }
 
-    private Profile getCurrentProfile() {
-        if (mTabProvider != null && mTabProvider.get() != null
-                && mTabProvider.get().getWebContents() != null) {
-            return Profile.fromWebContents(mTabProvider.get().getWebContents());
-        } else {
-            return null;
-        }
-    }
-
     // Used by first party features to share with only non-chrome apps.
     @Override
     public void showThirdPartyShareSheet(
@@ -334,7 +331,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 getUrlToShare(shareParams, chromeShareExtras,
                         mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec()
                                                            : ""),
-                mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails);
+                mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails, mProfile);
         mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -355,9 +352,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 (shareParams)
                         -> {
                     recordShareMetrics("SharingHubAndroid.MoreSelected",
-                            mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails);
+                            mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails, mProfile);
                     mBottomSheetController.hideContent(mBottomSheet, true);
-                    ShareHelper.showDefaultShareUi(params, getCurrentProfile(), saveLastUsed);
+                    ShareHelper.showDefaultShareUi(params, mProfile, saveLastUsed);
                     // Reset callback to prevent cancel() being called when the custom sheet is
                     // closed. The callback will be called by ShareHelper on actions from the
                     // default share UI.
@@ -366,8 +363,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 /*displayNew*/ false);
     }
 
-    private boolean shouldUseUsageRanking() {
-        return getCurrentProfile() != null;
+    @VisibleForTesting
+    void setShouldUseUsageRankingForTesting(boolean shouldUseUsageRanking) {
+        mShouldUseUsageRanking = shouldUseUsageRanking;
     }
 
     /**
@@ -391,7 +389,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             return;
         }
 
-        if (shouldUseUsageRanking()) {
+        if (mShouldUseUsageRanking) {
             createThirdPartyPropertyModelsFromUsageRanking(
                     activity, params, contentTypes, saveLastUsed, callback);
             return;
@@ -415,9 +413,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private void createThirdPartyPropertyModelsFromUsageRanking(Activity activity,
             ShareParams params, Set<Integer> contentTypes, boolean saveLastUsed,
             Callback<List<PropertyModel>> callback) {
-        Profile profile = getCurrentProfile();
-
-        assert profile != null;
+        assert mProfile != null;
 
         String type = contentTypesToTypeForRanking(contentTypes);
 
@@ -457,10 +453,10 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
 
         // TODO(ellyjones): Does !saveLastUsed always imply that we shouldn't incorporate the share
         // into our ranking?
-        boolean persist = !profile.isOffTheRecord() && saveLastUsed;
+        boolean persist = !mProfile.isOffTheRecord() && saveLastUsed;
 
         ShareRankingBridge.rank(
-                profile, type, availableActivities, fold, length, persist, ranking -> {
+                mProfile, type, availableActivities, fold, length, persist, ranking -> {
                     onThirdPartyShareTargetsReceived(
                             callback, resolveInfos, activity, params, saveLastUsed, ranking);
                 });
@@ -530,26 +526,27 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     }
 
     static void recordShareMetrics(String featureName, @LinkGeneration int linkGenerationStatus,
-            LinkToggleMetricsDetails linkToggleMetricsDetails, long shareStartTime) {
-        recordShareMetrics(featureName, linkGenerationStatus, linkToggleMetricsDetails);
+            LinkToggleMetricsDetails linkToggleMetricsDetails, long shareStartTime,
+            Profile profile) {
+        recordShareMetrics(featureName, linkGenerationStatus, linkToggleMetricsDetails, profile);
         recordTimeToShare(shareStartTime);
     }
 
-    private static void recordSharedHighlightingUsage() {
-        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+    private static void recordSharedHighlightingUsage(Profile profile) {
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.notifyEvent(EventConstants.IPH_SHARED_HIGHLIGHTING_USED);
     }
 
     private static void recordShareMetrics(String featureName,
             @LinkGeneration int linkGenerationStatus,
-            LinkToggleMetricsDetails linkToggleMetricsDetails) {
+            LinkToggleMetricsDetails linkToggleMetricsDetails, Profile profile) {
         RecordUserAction.record(featureName);
         LinkToTextMetricsHelper.recordSharedHighlightStateMetrics(linkGenerationStatus);
 
         if (linkGenerationStatus == LinkGeneration.LINK
                 || linkGenerationStatus == LinkGeneration.TEXT) {
             // Record usage for Shared Highlighting promo
-            recordSharedHighlightingUsage();
+            recordSharedHighlightingUsage(profile);
         }
 
         ShareSheetLinkToggleMetricsHelper.recordLinkToggleSharedStateMetric(

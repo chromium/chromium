@@ -39,6 +39,7 @@ public class SendTabToSelfCoordinator {
         private final BottomSheetController mBottomSheetController;
         private final String mUrl;
         private final Runnable mGotDeviceListCallback;
+        private final Profile mProfile;
 
         /**
          * Note there's no need for a notion for a failure callback because in that case the
@@ -46,10 +47,11 @@ public class SendTabToSelfCoordinator {
          * show any other bottom sheet).
          */
         public TargetDeviceListWaiter(BottomSheetController bottomSheetController, String url,
-                Runnable gotDeviceListCallback) {
+                Runnable gotDeviceListCallback, Profile profile) {
             mBottomSheetController = bottomSheetController;
             mUrl = url;
             mGotDeviceListCallback = gotDeviceListCallback;
+            mProfile = profile;
 
             SyncService.get().addSyncStateChangedListener(this);
             mBottomSheetController.addObserver(this);
@@ -74,8 +76,7 @@ public class SendTabToSelfCoordinator {
 
         private void notifyAndDestroyIfDone() {
             Optional</*@EntryPointDisplayReason*/ Integer> displayReason =
-                    SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
-                            Profile.getLastUsedRegularProfile(), mUrl);
+                    SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, mUrl);
             // The model is starting up, keep waiting.
             if (!displayReason.isPresent()) return;
 
@@ -95,9 +96,12 @@ public class SendTabToSelfCoordinator {
     /** Performs sign-in for the promo shown to signed-out users. */
     private static class SendTabToSelfAccountPickerDelegate implements AccountPickerDelegate {
         private final Runnable mOnSignInCompleteCallback;
+        private final Profile mProfile;
 
-        public SendTabToSelfAccountPickerDelegate(Runnable onSignInCompleteCallback) {
+        public SendTabToSelfAccountPickerDelegate(
+                Runnable onSignInCompleteCallback, Profile profile) {
             mOnSignInCompleteCallback = onSignInCompleteCallback;
+            mProfile = profile;
         }
 
         @Override
@@ -106,8 +110,7 @@ public class SendTabToSelfCoordinator {
         @Override
         public void signIn(
                 String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
-            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                    Profile.getLastUsedRegularProfile());
+            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
             Account account = AccountUtils.createAccountFromName(accountEmail);
             signinManager.signin(account, new SigninManager.SignInCallback() {
                 @Override
@@ -134,20 +137,21 @@ public class SendTabToSelfCoordinator {
     private final String mUrl;
     private final String mTitle;
     private final BottomSheetController mController;
+    private final Profile mProfile;
 
     public SendTabToSelfCoordinator(Context context, WindowAndroid windowAndroid, String url,
-            String title, BottomSheetController controller) {
+            String title, BottomSheetController controller, Profile profile) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mUrl = url;
         mTitle = title;
         mController = controller;
+        mProfile = profile;
     }
 
     public void show() {
-        Profile profile = Profile.getLastUsedRegularProfile();
         Optional</*@EntryPointDisplayReason*/ Integer> displayReason =
-                SendTabToSelfAndroidBridge.getEntryPointDisplayReason(profile, mUrl);
+                SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, mUrl);
         if (!displayReason.isPresent()) {
             // This must be the old behavior where the entry point is shown even in states where
             // no promo is shown.
@@ -165,21 +169,22 @@ public class SendTabToSelfCoordinator {
                 // TODO(crbug.com/1219434): Merge with INFORM_NO_TARGET_DEVICE, just let the UI
                 // differentiate between the 2 by checking the device list size.
                 List<TargetDeviceInfo> targetDevices =
-                        SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(profile);
-                mController.requestShowContent(new DevicePickerBottomSheetContent(mContext, mUrl,
-                                                       mTitle, mController, targetDevices),
+                        SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(mProfile);
+                mController.requestShowContent(
+                        new DevicePickerBottomSheetContent(
+                                mContext, mUrl, mTitle, mController, targetDevices, mProfile),
                         true);
                 return;
             case EntryPointDisplayReason.OFFER_SIGN_IN: {
                 new AccountPickerBottomSheetCoordinator(mWindowAndroid, mController,
-                        new SendTabToSelfAccountPickerDelegate(this::onSignInComplete));
+                        new SendTabToSelfAccountPickerDelegate(this::onSignInComplete, mProfile));
                 return;
             }
         }
     }
 
     private void onSignInComplete() {
-        new TargetDeviceListWaiter(mController, mUrl, this::onTargetDeviceListReady);
+        new TargetDeviceListWaiter(mController, mUrl, this::onTargetDeviceListReady, mProfile);
     }
 
     private void onTargetDeviceListReady() {

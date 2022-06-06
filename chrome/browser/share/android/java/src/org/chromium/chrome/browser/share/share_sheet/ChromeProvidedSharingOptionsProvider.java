@@ -82,6 +82,7 @@ public class ChromeProvidedSharingOptionsProvider {
     private final Tracker mFeatureEngagementTracker;
     private final @LinkGeneration int mLinkGenerationStatusForMetrics;
     private final LinkToggleMetricsDetails mLinkToggleMetricsDetails;
+    private final Profile mProfile;
 
     /**
      * Constructs a new {@link ChromeProvidedSharingOptionsProvider}.
@@ -105,6 +106,7 @@ public class ChromeProvidedSharingOptionsProvider {
      * generation, sharing text from successful link-to-text generation, or sharing link-to-text.
      * @param linkToggleMetricsDetails {@link LinkToggleMetricsDetails} for recording the final
      *         toggle state.
+     * @param profile The most recent profile of the User.
      */
     ChromeProvidedSharingOptionsProvider(Activity activity, WindowAndroid windowAndroid,
             Supplier<Tab> tabProvider, BottomSheetController bottomSheetController,
@@ -113,7 +115,7 @@ public class ChromeProvidedSharingOptionsProvider {
             ChromeOptionShareCallback chromeOptionShareCallback,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
             String url, @LinkGeneration int linkGenerationStatusForMetrics,
-            LinkToggleMetricsDetails linkToggleMetricsDetails) {
+            LinkToggleMetricsDetails linkToggleMetricsDetails, Profile profile) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mTabProvider = tabProvider;
@@ -129,6 +131,7 @@ public class ChromeProvidedSharingOptionsProvider {
         mUrl = url;
         mLinkGenerationStatusForMetrics = linkGenerationStatusForMetrics;
         mLinkToggleMetricsDetails = linkToggleMetricsDetails;
+        mProfile = profile;
         mOrderedFirstPartyOptions = new ArrayList<>();
         initializeFirstPartyOptionsInOrder();
     }
@@ -239,7 +242,7 @@ public class ChromeProvidedSharingOptionsProvider {
                     mIconContentDescription, (view) -> {
                         ShareSheetCoordinator.recordShareMetrics(mFeatureNameForMetrics,
                                 mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails,
-                                mShareStartTime);
+                                mShareStartTime, mProfile);
                         if (mHideBottomSheetContentOnTap) {
                             mBottomSheetController.hideContent(mBottomSheetContent, true);
                         }
@@ -303,8 +306,7 @@ public class ChromeProvidedSharingOptionsProvider {
         mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
         Optional<Integer> sendTabToSelfDisplayReason =
-                SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
-                        Profile.getLastUsedRegularProfile(), mUrl);
+                SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, mUrl);
         if (sendTabToSelfDisplayReason.isPresent()
                 || !ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO)) {
             mOrderedFirstPartyOptions.add(createSendTabToSelfFirstPartyOption());
@@ -312,9 +314,7 @@ public class ChromeProvidedSharingOptionsProvider {
         if (!mIsIncognito) {
             mOrderedFirstPartyOptions.add(createQrCodeFirstPartyOption());
         }
-        if (mTabProvider.hasValue()
-                && UserPrefs.get(Profile.getLastUsedRegularProfile())
-                           .getBoolean(Pref.PRINTING_ENABLED)) {
+        if (mTabProvider.hasValue() && UserPrefs.get(mProfile).getBoolean(Pref.PRINTING_ENABLED)) {
             mOrderedFirstPartyOptions.add(createPrintingFirstPartyOption());
         }
         mOrderedFirstPartyOptions.add(createSaveImageFirstPartyOption());
@@ -450,7 +450,7 @@ public class ChromeProvidedSharingOptionsProvider {
                 .setOnClickCallback((view) -> {
                     SendTabToSelfCoordinator sttsCoordinator =
                             new SendTabToSelfCoordinator(mActivity, mWindowAndroid, mUrl,
-                                    mShareParams.getTitle(), mBottomSheetController);
+                                    mShareParams.getTitle(), mBottomSheetController, mProfile);
                     sttsCoordinator.show();
                 })
                 .build();

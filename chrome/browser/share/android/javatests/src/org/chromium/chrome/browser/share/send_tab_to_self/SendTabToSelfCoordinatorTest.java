@@ -129,7 +129,8 @@ public class SendTabToSelfCoordinatorTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SendTabToSelfCoordinator coordinator =
                     new SendTabToSelfCoordinator(activity, windowAndroid, HTTP_URL, "Page",
-                            BottomSheetControllerProvider.from(windowAndroid));
+                            BottomSheetControllerProvider.from(windowAndroid),
+                            Profile.getLastUsedRegularProfile());
             coordinator.show();
         });
     }

@@ -263,7 +263,7 @@ public class ShareDelegateImpl implements ShareDelegate {
             if (chromeShareExtras.shareDirectly()) {
                 ShareHelper.shareWithLastUsedComponent(params);
             } else if (sharingHubEnabled && !chromeShareExtras.sharingTabGroup()
-                    && tabProvider.get() != null) {
+                    && tabProvider.get() != null && tabProvider.get().getWebContents() != null) {
                 // TODO(crbug.com/1085078): Sharing hub is suppressed for tab group sharing.
                 // Re-enable it when tab group sharing is supported by sharing hub.
                 RecordHistogram.recordEnumeratedHistogram(
@@ -275,9 +275,9 @@ public class ShareDelegateImpl implements ShareDelegate {
                         lifecycleDispatcher, tabProvider,
                         new ShareSheetPropertyModelBuilder(controller,
                                 ContextUtils.getApplicationContext().getPackageManager(), profile),
-                        printCallback, new LargeIconBridge(Profile.getLastUsedRegularProfile()),
-                        isIncognito, AppHooks.get().getImageEditorModuleProvider(),
-                        TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile()));
+                        printCallback, new LargeIconBridge(profile), isIncognito,
+                        AppHooks.get().getImageEditorModuleProvider(),
+                        TrackerFactory.getTrackerForProfile(profile), profile);
                 // TODO(crbug/1009124): open custom share sheet.
                 coordinator.showInitialShareSheet(params, chromeShareExtras, shareStartTime);
             } else {
