@@ -320,7 +320,7 @@ class TestResultsFetcher(object):
             raise Exception(
                 'build %s on builder %s expected to have at least one web test '
                 'step, instead has none' %
-                (build.builder_number, build.builder_name))
+                (build.build_number, build.builder_name))
         return suites
 
     @memoized

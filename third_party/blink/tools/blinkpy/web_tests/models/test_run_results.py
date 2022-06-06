@@ -339,9 +339,16 @@ def summarize_results(port_obj,
                 test_dict.update(
                     _interpret_test_failures(retry_result.failures))
 
+        # crbug/1328703: 'full_results.json' has become too large to upload to
+        # the test results server, so we exclude some artifacts that are not
+        # necessary for rebaselining. These artifacts are still uploaded to
+        # ResultDB.
+        skipped_artifacts = {'command', 'stderr'}
         for test_result, _ in merged_results:
             for artifact_name, artifacts in \
-                test_result.artifacts.artifacts.items():
+                    test_result.artifacts.artifacts.items():
+                if artifact_name in skipped_artifacts:
+                    continue
                 artifact_dict = test_dict.setdefault('artifacts', {})
                 artifact_dict.setdefault(artifact_name, []).extend(artifacts)
 
