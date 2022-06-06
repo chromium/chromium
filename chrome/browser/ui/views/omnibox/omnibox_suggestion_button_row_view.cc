@@ -69,6 +69,9 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
                                  host->theme_state_);
         },
         this));
+    SetAnimationDuration(base::TimeDelta());
+    views::InkDrop::Get(this)->GetInkDrop()->SetHoverHighlightFadeDuration(
+        base::TimeDelta());
 
     views::FocusRing::Get(this)->SetHasFocusPredicate([=](View* view) {
       return view->GetVisible() &&

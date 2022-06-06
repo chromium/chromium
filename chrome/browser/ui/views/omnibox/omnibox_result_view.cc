@@ -41,6 +41,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/focus_ring.h"
@@ -63,6 +64,10 @@ class OmniboxRemoveSuggestionButton : public views::ImageButton {
   explicit OmniboxRemoveSuggestionButton(PressedCallback callback)
       : ImageButton(std::move(callback)) {
     views::ConfigureVectorImageButton(this);
+
+    SetAnimationDuration(base::TimeDelta());
+    views::InkDrop::Get(this)->GetInkDrop()->SetHoverHighlightFadeDuration(
+        base::TimeDelta());
 
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   }
