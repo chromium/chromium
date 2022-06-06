@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "chrome/browser/vr/test/vr_gl_test_suite.h"
+#include "ui/gl/gl_display.h"
 
 int main(int argc, char** argv) {
   vr::VrGlTestSuite test_suite(argc, argv);

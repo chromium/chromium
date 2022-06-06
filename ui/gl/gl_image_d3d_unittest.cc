@@ -31,7 +31,7 @@ class GLImageD3DTestDelegate : public GLImageTestDelegateBase {
         GLImplementationParts(ANGLEImplementation::kD3D11));
   }
 
-  bool SkipTest() const override { return !d3d11_device_; }
+  bool SkipTest(GLDisplay*) const override { return !d3d11_device_; }
 
   scoped_refptr<GLImageD3D> CreateImage(const gfx::Size& size) const {
     D3D11_TEXTURE2D_DESC desc;

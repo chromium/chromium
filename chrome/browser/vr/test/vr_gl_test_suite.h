@@ -7,6 +7,10 @@
 
 #include "chrome/browser/vr/test/vr_test_suite.h"
 
+namespace gl {
+class GLDisplay;
+}  // namespace gl
+
 namespace vr {
 
 class VrGlTestSuite : public VrTestSuite {
@@ -14,6 +18,9 @@ class VrGlTestSuite : public VrTestSuite {
   VrGlTestSuite(int argc, char** argv);
   void Initialize() override;
   void Shutdown() override;
+
+ private:
+  gl::GLDisplay* display_ = nullptr;
 };
 
 }  // namespace vr

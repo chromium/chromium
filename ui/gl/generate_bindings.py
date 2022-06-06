@@ -2791,6 +2791,46 @@ EGL_FUNCTIONS = [
   'arguments': 'EGLDisplay dpy, EGLSyncKHR sync, EGLint flags' },
 ]
 
+# EGL client extensions that may not add a function but are still queried.
+EGL_CLIENT_EXTENSIONS_EXTRA = [
+  'EGL_ANGLE_display_power_preference',
+  'EGL_ANGLE_platform_angle',
+  'EGL_ANGLE_platform_angle_d3d',
+  'EGL_ANGLE_platform_angle_device_id',
+  'EGL_ANGLE_platform_angle_device_type_egl_angle',
+  'EGL_ANGLE_platform_angle_device_type_swiftshader',
+  'EGL_ANGLE_platform_angle_metal',
+  'EGL_ANGLE_platform_angle_null',
+  'EGL_ANGLE_platform_angle_opengl',
+  'EGL_ANGLE_platform_angle_vulkan',
+  'EGL_EXT_platform_device',
+  'EGL_MESA_platform_surfaceless',
+]
+
+# EGL extensions that may not add a function but are still queried.
+EGL_EXTENSIONS_EXTRA = [
+  'EGL_ANDROID_create_native_client_buffer',
+  'EGL_ANDROID_front_buffer_auto_refresh',
+  'EGL_ANGLE_display_semaphore_share_group',
+  'EGL_ANGLE_display_texture_share_group',
+  'EGL_ANGLE_context_virtualization',
+  'EGL_ANGLE_create_context_client_arrays',
+  'EGL_ANGLE_create_context_webgl_compatibility',
+  'EGL_ANGLE_external_context_and_surface',
+  'EGL_ANGLE_surface_orientation',
+  'EGL_ANGLE_window_fixed_size',
+  'EGL_CHROMIUM_create_context_bind_generates_resource',
+  'EGL_EXT_create_context_robustness',
+  'EGL_EXT_gl_colorspace_display_p3',
+  'EGL_EXT_gl_colorspace_display_p3_passthrough',
+  'EGL_EXT_pixel_format_float',
+  'EGL_IMG_context_priority',
+  'EGL_KHR_gl_colorspace',
+  'EGL_KHR_no_config_context',
+  'EGL_KHR_surfaceless_context',
+  'EGL_NV_robustness_video_memory_purge',
+]
+
 GLX_FUNCTIONS = [
 { 'return_type': 'void',
   'names': ['glXBindTexImageEXT'],
@@ -3075,8 +3115,10 @@ def GenerateHeader(file, functions, set_name,
 namespace gl {
 
 class GLContext;
-
 """ % {'name': set_name.upper()})
+
+  if set_name == 'egl':
+    file.write("class GLDisplayEGL;\n")
 
   # Write typedefs for function pointer types. Always use the GL name for the
   # typedef.
@@ -3087,11 +3129,27 @@ class GLContext;
 
   # Write declarations for booleans indicating which extensions are available.
   file.write('\n')
-  file.write("struct Extensions%s {\n" % set_name.upper())
+  if set_name == 'egl':
+    file.write('struct GL_EXPORT ExtensionsEGL {\n')
+  else:
+    file.write("struct Extensions%s {\n" % set_name.upper())
   for extension in sorted(used_client_extensions):
     file.write('  bool b_%s;\n' % extension)
   for extension in sorted(used_extensions):
     file.write('  bool b_%s;\n' % extension)
+  if set_name == 'egl':
+    file.write(
+"""
+
+  void InitializeClientExtensionSettings();
+  void InitializeExtensionSettings(GLDisplayEGL* display);
+  void UpdateConditionalExtensionSettings(GLDisplayEGL* display);
+
+  static std::string GetPlatformExtensions(GLDisplayEGL* display);
+
+ private:
+  static std::string GetClientExtensions();
+""")
   file.write('};\n')
   file.write('\n')
 
@@ -3254,6 +3312,8 @@ def GenerateSource(file, functions, set_name, used_extensions,
                    'ui/gl/gl_implementation.h',
                    'ui/gl/gl_version_info.h',
                    set_header_name ]
+  if set_name == 'egl':
+    include_list.append('ui/gl/gl_display.h')
 
   includes_string = "\n".join(["#include \"{0}\"".format(h)
                                for h in sorted(include_list)])
@@ -3311,6 +3371,10 @@ namespace gl {
   for func in functions:
     if 'static_binding' in func:
       WriteFuncBinding(file, func['known_as'], func['static_binding'])
+    elif set_name == 'egl':
+      assert len(func['versions']) == 1
+      version = func['versions'][0]
+      WriteFuncBinding(file, func['known_as'], version['name'])
 
   def GetGLVersionCondition(gl_version):
     if GLVersionBindAlways(gl_version):
@@ -3373,7 +3437,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
 """)
   elif set_name == 'egl':
     file.write("""\
-void DriverEGL::InitializeClientExtensionBindings() {
+void ExtensionsEGL::InitializeClientExtensionSettings() {
   std::string client_extensions(GetClientExtensions());
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(client_extensions));
@@ -3388,38 +3452,45 @@ void Driver%s::InitializeExtensionBindings() {
 
 """ % (set_name.upper(),))
 
-  def OutputExtensionBindings(extension_var, extensions, extension_funcs):
+  def OutputExtensionSettings(extension_var, extensions, struct_qualifier):
     # Extra space at the end of the extension name is intentional,
     # it is used as a separator
     for extension in extensions:
-      file.write('  ext.b_%s = gfx::HasExtension(%s, "%s");\n' %
-                 (extension, extension_var, extension))
+      file.write('  %sb_%s = gfx::HasExtension(%s, "%s");\n' %
+                 (struct_qualifier, extension, extension_var, extension))
 
+  def OutputExtensionBindings(extension_funcs):
     for func in extension_funcs:
       if not 'static_binding' in func:
         file.write('\n')
         WriteConditionalFuncBinding(file, func)
 
-  OutputExtensionBindings(
+  OutputExtensionSettings(
     'extensions',
     sorted(used_client_extensions),
-    [ f for f in functions if IsClientExtensionFunc(f) ])
+    '' if set_name == 'egl' else 'ext.')
+  if set_name == 'gl' or set_name == 'glx':
+    OutputExtensionBindings(
+      [ f for f in functions if IsClientExtensionFunc(f) ])
 
   if set_name == 'egl':
     file.write("""\
 }
 
-void DriverEGL::InitializeExtensionBindings() {
-  std::string platform_extensions(GetPlatformExtensions());
+void ExtensionsEGL::InitializeExtensionSettings(GLDisplayEGL* display) {
+  std::string platform_extensions(GetPlatformExtensions(display));
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(platform_extensions));
 
 """)
 
-  OutputExtensionBindings(
+  OutputExtensionSettings(
     'extensions',
     sorted(used_extensions),
-    [ f for f in functions if not IsClientExtensionFunc(f) ])
+    '' if set_name == 'egl' else 'ext.')
+  if set_name == 'gl' or set_name == 'glx':
+    OutputExtensionBindings(
+      [ f for f in functions if not IsClientExtensionFunc(f) ])
   file.write('}\n')
 
   # Write function to clear all function pointers.
@@ -4076,6 +4147,10 @@ def main(argv):
                          for h in extension_headers]
     used_extensions, used_client_extensions = FillExtensionsFromHeaders(
         functions, extension_headers, extensions)
+
+    if set_name == 'egl':
+      used_extensions.update(EGL_EXTENSIONS_EXTRA)
+      used_client_extensions.update(EGL_CLIENT_EXTENSIONS_EXTRA)
 
     header_file = open(
         os.path.join(directory, 'gl_bindings_autogen_%s.h' % set_name), 'w')

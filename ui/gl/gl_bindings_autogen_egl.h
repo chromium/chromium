@@ -16,6 +16,7 @@
 namespace gl {
 
 class GLContext;
+class GLDisplayEGL;
 
 typedef EGLBoolean(GL_BINDING_CALL* eglBindAPIProc)(EGLenum api);
 typedef EGLBoolean(GL_BINDING_CALL* eglBindTexImageProc)(EGLDisplay dpy,
@@ -313,39 +314,80 @@ typedef EGLint(GL_BINDING_CALL* eglWaitSyncKHRProc)(EGLDisplay dpy,
                                                     EGLSyncKHR sync,
                                                     EGLint flags);
 
-struct ExtensionsEGL {
+struct GL_EXPORT ExtensionsEGL {
+  bool b_EGL_ANGLE_display_power_preference;
   bool b_EGL_ANGLE_feature_control;
+  bool b_EGL_ANGLE_platform_angle;
+  bool b_EGL_ANGLE_platform_angle_d3d;
+  bool b_EGL_ANGLE_platform_angle_device_id;
+  bool b_EGL_ANGLE_platform_angle_device_type_egl_angle;
+  bool b_EGL_ANGLE_platform_angle_device_type_swiftshader;
+  bool b_EGL_ANGLE_platform_angle_metal;
+  bool b_EGL_ANGLE_platform_angle_null;
+  bool b_EGL_ANGLE_platform_angle_opengl;
+  bool b_EGL_ANGLE_platform_angle_vulkan;
   bool b_EGL_EXT_device_base;
   bool b_EGL_EXT_device_enumeration;
   bool b_EGL_EXT_device_query;
+  bool b_EGL_EXT_platform_device;
   bool b_EGL_KHR_debug;
+  bool b_EGL_MESA_platform_surfaceless;
   bool b_EGL_ANDROID_blob_cache;
+  bool b_EGL_ANDROID_create_native_client_buffer;
+  bool b_EGL_ANDROID_front_buffer_auto_refresh;
   bool b_EGL_ANDROID_get_frame_timestamps;
   bool b_EGL_ANDROID_get_native_client_buffer;
   bool b_EGL_ANDROID_native_fence_sync;
+  bool b_EGL_ANGLE_context_virtualization;
+  bool b_EGL_ANGLE_create_context_client_arrays;
+  bool b_EGL_ANGLE_create_context_webgl_compatibility;
   bool b_EGL_ANGLE_d3d_share_handle_client_buffer;
+  bool b_EGL_ANGLE_display_semaphore_share_group;
+  bool b_EGL_ANGLE_display_texture_share_group;
+  bool b_EGL_ANGLE_external_context_and_surface;
   bool b_EGL_ANGLE_power_preference;
   bool b_EGL_ANGLE_query_surface_pointer;
   bool b_EGL_ANGLE_stream_producer_d3d_texture;
   bool b_EGL_ANGLE_surface_d3d_texture_2d_share_handle;
+  bool b_EGL_ANGLE_surface_orientation;
   bool b_EGL_ANGLE_sync_control_rate;
   bool b_EGL_ANGLE_vulkan_image;
+  bool b_EGL_ANGLE_window_fixed_size;
+  bool b_EGL_CHROMIUM_create_context_bind_generates_resource;
   bool b_EGL_CHROMIUM_sync_control;
+  bool b_EGL_EXT_create_context_robustness;
+  bool b_EGL_EXT_gl_colorspace_display_p3;
+  bool b_EGL_EXT_gl_colorspace_display_p3_passthrough;
   bool b_EGL_EXT_image_dma_buf_import_modifiers;
   bool b_EGL_EXT_image_flush_external;
+  bool b_EGL_EXT_pixel_format_float;
+  bool b_EGL_IMG_context_priority;
   bool b_EGL_KHR_fence_sync;
+  bool b_EGL_KHR_gl_colorspace;
   bool b_EGL_KHR_gl_texture_2D_image;
   bool b_EGL_KHR_image;
   bool b_EGL_KHR_image_base;
+  bool b_EGL_KHR_no_config_context;
   bool b_EGL_KHR_stream;
   bool b_EGL_KHR_stream_consumer_gltexture;
+  bool b_EGL_KHR_surfaceless_context;
   bool b_EGL_KHR_swap_buffers_with_damage;
   bool b_EGL_KHR_wait_sync;
   bool b_EGL_MESA_image_dma_buf_export;
   bool b_EGL_NV_post_sub_buffer;
+  bool b_EGL_NV_robustness_video_memory_purge;
   bool b_EGL_NV_stream_consumer_gltexture_yuv;
   bool b_GL_CHROMIUM_egl_android_native_fence_sync_hack;
   bool b_GL_CHROMIUM_egl_khr_fence_sync_hack;
+
+  void InitializeClientExtensionSettings();
+  void InitializeExtensionSettings(GLDisplayEGL* display);
+  void UpdateConditionalExtensionSettings(GLDisplayEGL* display);
+
+  static std::string GetPlatformExtensions(GLDisplayEGL* display);
+
+ private:
+  static std::string GetClientExtensions();
 };
 
 struct ProcsEGL {

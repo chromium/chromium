@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
@@ -50,10 +51,10 @@ class EGLApiTest : public testing::Test {
     if (disabled_extensions) {
       SetDisabledExtensionsEGL(disabled_extensions);
     }
-    g_driver_egl.InitializeClientExtensionBindings();
+    g_driver_egl.ext.InitializeClientExtensionSettings();
     display_ = GLSurfaceEGL::InitializeDisplay(
         EGLDisplayPlatform(EGL_DEFAULT_DISPLAY), /*system_device_id=*/0);
-    g_driver_egl.InitializeExtensionBindings();
+    g_driver_egl.ext.InitializeExtensionSettings(display_);
   }
 
   void SetFakeExtensionString(const char* fake_string,
@@ -109,7 +110,7 @@ class EGLApiTest : public testing::Test {
   static const char* fake_extension_string_;
   static const char* fake_client_extension_string_;
 
-  GLDisplay* display_ = nullptr;
+  GLDisplayEGL* display_ = nullptr;
   std::unique_ptr<RealEGLApi> api_;
 };
 
