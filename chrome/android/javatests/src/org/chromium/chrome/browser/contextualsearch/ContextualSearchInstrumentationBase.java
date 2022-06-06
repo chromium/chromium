@@ -320,31 +320,43 @@ public class ContextualSearchInstrumentationBase {
 
     //--------------------------------------------------------------------------------------------
     // Feature maps that we use for parameterized tests.
+    // NOTE: We want to test all Features under development both on and off, regardless of whether
+    // they are enabled in fieldtrial_testing_config.json, to catch regressions during rollout.
     //--------------------------------------------------------------------------------------------
 
-    /** This represents the current fully-launched configuration, with no other Features. */
-    protected static final ImmutableMap<String, Boolean> ENABLE_NONE = ImmutableMap.of();
-
-    /** This is the helper-test Feature. */
-    private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true);
+    /**
+     * This represents the current fully-launched configuration, with no other Features.
+     */
+    protected static final ImmutableMap<String, Boolean> ENABLE_NONE = ImmutableMap.of(
+            // All false
+            ChromeFeatureList.RELATED_SEARCHES, false, ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
+            false, ChromeFeatureList.RELATED_SEARCHES_UI, false,
+            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false,
+            ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, false);
 
     /** This is the Related Searches Feature in the MVP configuration. */
     private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES = ImmutableMap.of(
+            // Related Searches needs these 3:
             ChromeFeatureList.RELATED_SEARCHES, true, ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
-            true, ChromeFeatureList.RELATED_SEARCHES_UI, true);
+            true, ChromeFeatureList.RELATED_SEARCHES_UI, true,
+            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false,
+            ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, false);
+
+    /** This is the helper-test Feature. */
+    private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION = ImmutableMap.of(
+            ChromeFeatureList.RELATED_SEARCHES, false, ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
+            false, ChromeFeatureList.RELATED_SEARCHES_UI, false,
+            // Just this one enabled:
+            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true,
+            ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, false);
 
     /** This is the contextual triggers feature set that alters tap to show selection handles. */
-    private static final ImmutableMap<String, Boolean> ENABLE_CONTEXTUAL_TRIGGERS =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, true);
-
-    /**
-     * This is the contextual triggers feature set that alters tap to show handles and shows the
-     * context menu.
-     */
-    private static final ImmutableMap<String, Boolean> ENABLE_CONTEXTUAL_TRIGGERS_MENU =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, true,
-                    ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_MENU, true);
+    private static final ImmutableMap<String, Boolean> ENABLE_CONTEXTUAL_TRIGGERS = ImmutableMap.of(
+            ChromeFeatureList.RELATED_SEARCHES, false, ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
+            false, ChromeFeatureList.RELATED_SEARCHES_UI, false,
+            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false,
+            // Just this one enabled:
+            ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, true);
 
     //--------------------------------------------------------------------------------------------
     // Feature maps that we use for individual tests.
@@ -376,7 +388,7 @@ public class ContextualSearchInstrumentationBase {
 
     @IntDef({EnabledFeature.NONE, EnabledFeature.TRANSLATIONS, EnabledFeature.PRIVACY_NEUTRAL,
             EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES,
-            EnabledFeature.CONTEXTUAL_TRIGGERS, EnabledFeature.CONTEXTUAL_TRIGGERS_MENU})
+            EnabledFeature.CONTEXTUAL_TRIGGERS})
     @Retention(RetentionPolicy.SOURCE)
     @interface EnabledFeature {
         int NONE = 0;
@@ -384,7 +396,6 @@ public class ContextualSearchInstrumentationBase {
         int PRIVACY_NEUTRAL = 2;
         int PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES = 3;
         int CONTEXTUAL_TRIGGERS = 4;
-        int CONTEXTUAL_TRIGGERS_MENU = 5;
     }
 
     // Tracks whether a long-press triggering experiment is active.
@@ -467,9 +478,6 @@ public class ContextualSearchInstrumentationBase {
                 break;
             case EnabledFeature.CONTEXTUAL_TRIGGERS:
                 whichFeature = ENABLE_CONTEXTUAL_TRIGGERS;
-                break;
-            case EnabledFeature.CONTEXTUAL_TRIGGERS_MENU:
-                whichFeature = ENABLE_CONTEXTUAL_TRIGGERS_MENU;
                 break;
         }
         Assert.assertNotNull(
