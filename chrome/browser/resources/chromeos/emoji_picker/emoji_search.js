@@ -274,9 +274,13 @@ export class EmojiSearch extends PolymerElement {
   }
 
   onResultClick(ev) {
-    ev.currentTarget.querySelector('emoji-button')
-        .shadowRoot.querySelector('button')
-        .click();
+    // If the click is on elements except emoji-button, trigger the click on
+    // the emoji-button.
+    if (ev.target.nodeName !== 'EMOJI-BUTTON') {
+      ev.currentTarget.querySelector('emoji-button')
+          .shadowRoot.querySelector('button')
+          .click();
+    }
   }
 
   /**
