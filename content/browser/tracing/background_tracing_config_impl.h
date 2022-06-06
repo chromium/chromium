@@ -118,7 +118,6 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
   std::string enabled_data_sources_;
 
   bool requires_anonymized_data_ = false;
-  bool trace_browser_process_only_ = false;
 
   // The default memory overhead of running background tracing for various
   // scenarios. These are configurable by experiments.
