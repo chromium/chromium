@@ -577,9 +577,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.ImeSwitch" enum="IMESwitchType"
-    expires_after="2022-04-24">
+    expires_after="2023-07-01">
   <owner>dvallet@chromium.org</owner>
-  <owner>shuchen@chromium.org</owner>
+  <owner>timloh@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>The trigger type of input method switches by user.</summary>
 </histogram>
