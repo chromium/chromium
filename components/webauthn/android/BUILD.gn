@@ -25,7 +25,6 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/GetAssertionResponseCallback.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/IsUvpaaResponseCallback.java",
-    "java/src/org/chromium/components/webauthn/ListCredentials.java",
     "java/src/org/chromium/components/webauthn/MakeCredentialResponseCallback.java",
     "java/src/org/chromium/components/webauthn/WebAuthnBrowserBridge.java",
     "java/src/org/chromium/components/webauthn/WebAuthnCredentialDetails.java",
