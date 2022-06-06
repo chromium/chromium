@@ -919,17 +919,11 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
   EXPECT_EQ(32, anchor_offset);
 }
 
-// TODO(crbug.com/1330903): Flaky Crash on Android
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_CursorControlOnInput DISABLED_CursorControlOnInput
-#else
-#define MAYBE_CursorControlOnInput CursorControlOnInput
-#endif
 // Perform a horizontal swipe over an input element from right to left.
 // Ensure the swipe is interpreted as a cursor control movement, rather than a
 // scroll, and changes the selection.
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
-                       MAYBE_CursorControlOnInput) {
+                       CursorControlOnInput) {
   if (!::features::IsSwipeToMoveCursorEnabled())
     return;
   // input size larger than the text size, not horizontally scrollable.
