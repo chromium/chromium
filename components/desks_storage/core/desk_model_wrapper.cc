@@ -148,6 +148,18 @@ bool DeskModelWrapper::IsSyncing() const {
   return GetDeskTemplateModel()->IsSyncing();
 }
 
+ash::DeskTemplate* DeskModelWrapper::FindOtherEntryWithName(
+    const std::u16string& name,
+    ash::DeskTemplateType type,
+    const base::GUID& uuid) const {
+  if (type == ash::DeskTemplateType::kTemplate) {
+    return GetDeskTemplateModel()->FindOtherEntryWithName(name, type, uuid);
+  } else {
+    return save_and_recall_desks_model_->FindOtherEntryWithName(name, type,
+                                                                uuid);
+  }
+}
+
 desks_storage::DeskSyncBridge* DeskModelWrapper::GetDeskTemplateModel() const {
   DCHECK(desk_template_model_);
   return desk_template_model_;

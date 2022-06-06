@@ -1058,15 +1058,6 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
   entry->set_template_name(
       base::CollapseWhitespace(new_entry->template_name(), true));
 
-  // While we still find duplicate names iterate the duplicate number. i.e.
-  // if there are 4 duplicates of some template name then this iterates until
-  // the current template will be named 5.
-  while (HasUserTemplateWithName(entry->template_name())) {
-    entry->set_template_name(
-        desk_template_util::AppendDuplicateNumberToDuplicateName(
-            entry->template_name()));
-  }
-
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
@@ -1201,6 +1192,16 @@ bool DeskSyncBridge::IsReady() const {
 
 bool DeskSyncBridge::IsSyncing() const {
   return change_processor()->IsTrackingMetadata();
+}
+
+// TODO(zhumatthew): Once desk sync bridge supports save and recall desk type,
+// update this method to search the correct cache for the entry.
+ash::DeskTemplate* DeskSyncBridge::FindOtherEntryWithName(
+    const std::u16string& name,
+    ash::DeskTemplateType type,
+    const base::GUID& uuid) const {
+  return desk_template_util::FindOtherEntryWithName(name, uuid,
+                                                    desk_template_entries_);
 }
 
 sync_pb::WorkspaceDeskSpecifics DeskSyncBridge::ToSyncProto(

@@ -95,7 +95,8 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   // so, remove auto added number.
   void MaybeRemoveNameNumber();
   // Show replace dialog when found a name duplication.
-  void MaybeShowReplaceDialog(SavedDeskItemView* saved_desk_to_replace);
+  void MaybeShowReplaceDialog(ash::DeskTemplateType type,
+                              const base::GUID& uuid);
   // Rename current saved desk with new name, delete old saved desk with same
   // name by uuid. Used for callback functions for Replace Dialog.
   void ReplaceTemplate(const std::string& uuid);
@@ -129,11 +130,6 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
 
  private:
   friend class SavedDeskItemViewTestApi;
-
-  // Return the duplicated saved desk item if there is a name duplication in
-  // saved desks.
-  SavedDeskItemView* FindOtherTemplateWithName(
-      const std::u16string& name) const;
 
   void OnDeleteTemplate();
   void OnDeleteButtonPressed();

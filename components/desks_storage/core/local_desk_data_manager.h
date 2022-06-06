@@ -70,6 +70,10 @@ class LocalDeskDataManager : public DeskModel {
   std::vector<base::GUID> GetAllEntryUuids() const override;
   bool IsReady() const override;
   bool IsSyncing() const override;
+  ash::DeskTemplate* FindOtherEntryWithName(
+      const std::u16string& name,
+      ash::DeskTemplateType type,
+      const base::GUID& uuid) const override;
 
   static void SetDisableMaxTemplateLimitForTesting(bool disabled);
   static void SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(
@@ -134,11 +138,6 @@ class LocalDeskDataManager : public DeskModel {
       std::unique_ptr<std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>>
           entries_ptr,
       DeskModel::DeleteEntryCallback callback);
-
-  // Returns true if the storage model has an entry of desk type `type` with the
-  // file name `name`.
-  bool HasEntryWithName(const std::u16string& name,
-                        ash::DeskTemplateType type) const;
 
   // Returns the desk type of the `uuid`.
   ash::DeskTemplateType GetDeskTypeOfUuid(const base::GUID uuid) const;

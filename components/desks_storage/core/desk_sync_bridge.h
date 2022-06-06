@@ -29,6 +29,7 @@ class WorkspaceDeskSpecifics;
 
 namespace ash {
 class DeskTemplate;
+enum class DeskTemplateType;
 }  // namespace ash
 
 namespace desks_storage {
@@ -83,6 +84,11 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   // still allows user to save desk templates locally when users disable syncing
   // for Workspace Desk model type.
   bool IsSyncing() const override;
+
+  ash::DeskTemplate* FindOtherEntryWithName(
+      const std::u16string& name,
+      ash::DeskTemplateType type,
+      const base::GUID& uuid) const override;
 
   // Other helper methods.
 

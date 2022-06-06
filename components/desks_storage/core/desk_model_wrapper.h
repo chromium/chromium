@@ -51,6 +51,10 @@ class DeskModelWrapper : public DeskModel {
   std::vector<base::GUID> GetAllEntryUuids() const override;
   bool IsReady() const override;
   bool IsSyncing() const override;
+  ash::DeskTemplate* FindOtherEntryWithName(
+      const std::u16string& name,
+      ash::DeskTemplateType type,
+      const base::GUID& uuid) const override;
 
   // Setter method to set `desk_template_model_` to the correct `bridge`.
   void SetDeskSyncBridge(desks_storage::DeskSyncBridge* bridge) {

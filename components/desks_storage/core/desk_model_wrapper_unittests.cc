@@ -48,8 +48,6 @@ namespace {
 constexpr char kTemplateFileNameFormat[] = "%s.saveddesk";
 constexpr char kUuidFormat[] = "1c186d5a-502e-49ce-9ee1-00000000000%d";
 constexpr char kTemplateNameFormat[] = "desk_%d";
-constexpr char kDeskOneTemplateDuplicateExpectedName[] = "desk_01 (1)";
-constexpr char kDeskOneTemplateDuplicateTwoExpectedName[] = "desk_01 (2)";
 const std::string kTestUuid1 = base::StringPrintf(kUuidFormat, 1);
 const std::string kTestUuid2 = base::StringPrintf(kUuidFormat, 2);
 const std::string kTestUuid3 = base::StringPrintf(kUuidFormat, 3);
@@ -71,7 +69,7 @@ const std::string kPolicyWithOneTemplate =
     "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"window_id\":0,"
     "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}]";
 
-// Search |entry_list| for |entry_query| as a uuid and returns true if
+// Search `entry_list` for `uuid_query` as a uuid and returns true if
 // found, false if not.
 bool FindUuidInUuidList(
     const std::string& uuid_query,
@@ -85,20 +83,6 @@ bool FindUuidInUuidList(
   }
 
   return false;
-}
-
-// Takes in a vector of DeskTemplate pointers and a uuid, returns a pointer to
-// the DeskTemplate with matching uuid if found in vector, nullptr if not.
-const ash::DeskTemplate* FindEntryInEntryList(
-    const std::string& uuid_string,
-    const std::vector<const ash::DeskTemplate*>& entries) {
-  base::GUID uuid = base::GUID::ParseLowercase(uuid_string);
-  auto found_entry = std::find_if(entries.begin(), entries.end(),
-                                  [&uuid](const ash::DeskTemplate* entry) {
-                                    return uuid == entry->uuid();
-                                  });
-
-  return found_entry != entries.end() ? *found_entry : nullptr;
 }
 
 // Verifies that the status passed into it is kOk
@@ -410,7 +394,7 @@ TEST_F(DeskModelWrapperTest, GetAllEntriesIncludesPolicyValues) {
   model_wrapper_->SetPolicyDeskTemplates("");
 }
 
-TEST_F(DeskModelWrapperTest, CanMarkDuplicateEntryNames) {
+TEST_F(DeskModelWrapperTest, CanDetectDuplicateEntryNames) {
   InitializeBridge();
 
   model_wrapper_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
@@ -429,30 +413,30 @@ TEST_F(DeskModelWrapperTest, CanMarkDuplicateEntryNames) {
   model_wrapper_->AddOrUpdateEntry(std::move(second_dupe_desk_template),
                                    base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  base::RunLoop loop;
-  model_wrapper_->GetAllEntries(base::BindLambdaForTesting(
-      [&](DeskModel::GetAllEntriesStatus status,
-          const std::vector<const ash::DeskTemplate*>& entries) {
-        EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
-        EXPECT_EQ(entries.size(), 3ul);
-        EXPECT_TRUE(FindUuidInUuidList(kTestUuid1, entries));
-        EXPECT_TRUE(FindUuidInUuidList(dupe_template_uuid, entries));
-        EXPECT_TRUE(FindUuidInUuidList(second_dupe_template_uuid, entries));
-        const ash::DeskTemplate* duplicate_one =
-            FindEntryInEntryList(dupe_template_uuid, entries);
-        EXPECT_NE(duplicate_one, nullptr);
-        EXPECT_EQ(base::UTF16ToUTF8(duplicate_one->template_name()),
-                  kDeskOneTemplateDuplicateExpectedName);
+  EXPECT_TRUE(model_wrapper_->FindOtherEntryWithName(
+      base::UTF8ToUTF16(std::string("desk_01")),
+      ash::DeskTemplateType::kTemplate,
+      base::GUID::ParseCaseInsensitive(dupe_template_uuid)));
+}
 
-        const ash::DeskTemplate* duplicate_two =
-            FindEntryInEntryList(second_dupe_template_uuid, entries);
-        EXPECT_NE(duplicate_two, nullptr);
-        EXPECT_EQ(base::UTF16ToUTF8(duplicate_two->template_name()),
-                  kDeskOneTemplateDuplicateTwoExpectedName);
+TEST_F(DeskModelWrapperTest, CanDetectNoDuplicateEntryNames) {
+  InitializeBridge();
 
-        loop.Quit();
-      }));
-  loop.Run();
+  model_wrapper_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                   base::BindOnce(&VerifyEntryAddedCorrectly));
+  auto dupe_template_uuid = base::StringPrintf(kUuidFormat, 6);
+
+  auto second_template_uuid = base::StringPrintf(kUuidFormat, 7);
+  auto second_desk_template =
+      MakeTestDeskTemplate(second_template_uuid, ash::DeskTemplateSource::kUser,
+                           "desk_02", base::Time::Now());
+  model_wrapper_->AddOrUpdateEntry(std::move(second_desk_template),
+                                   base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  EXPECT_TRUE(model_wrapper_->FindOtherEntryWithName(
+      base::UTF8ToUTF16(std::string("desk_01")),
+      ash::DeskTemplateType::kTemplate,
+      base::GUID::ParseCaseInsensitive(dupe_template_uuid)));
 }
 
 TEST_F(DeskModelWrapperTest, CanGetDeskTemplateEntryByUuid) {

@@ -42,6 +42,12 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   size_t GetEntryCount(DeskTemplateType type) const;
   size_t GetMaxEntryCount(DeskTemplateType type) const;
 
+  // Finds an entry of type `type` with the name `name` that is not the entry
+  // identified by `uuid`. Returns nullptr if not found.
+  ash::DeskTemplate* FindOtherEntryWithName(const std::u16string& name,
+                                            ash::DeskTemplateType type,
+                                            const base::GUID& uuid) const;
+
   // Update the buttons of the desks templates UI and the visibility of the
   // templates grid. The grid contents are not updated. Updates
   // `should_show_templates_ui_`.
@@ -128,6 +134,13 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   void AddOrUpdateUIEntries(
       const std::vector<const DeskTemplate*>& new_entries);
   void RemoveUIEntries(const std::vector<std::string>& uuids);
+
+  // Returns a copy of a duplicated name to be stored.  This function works by
+  // taking the name to be duplicated and adding a "(1)" to it. If the name
+  // already has "(1)" then the number inside of the parenthesis will be
+  // incremented.
+  std::u16string AppendDuplicateNumberToDuplicateName(
+      const std::u16string& duplicate_name_u16);
 
   // Pointer to the session which owns `this`.
   OverviewSession* const overview_session_;

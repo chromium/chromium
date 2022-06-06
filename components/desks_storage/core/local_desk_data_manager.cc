@@ -253,16 +253,6 @@ void LocalDeskDataManager::AddOrUpdateEntry(
     return;
   }
 
-  // While we still find duplicate names iterate the duplicate number.  i.e.
-  // if there are 4 duplicates of some template name then this iterates
-  // until the current template will be named 5. Perform the conversion to
-  // base::Value here so that AppRegistryCache doesn't run on the IO thread.
-  while (HasEntryWithName(new_entry->template_name(), new_entry->type())) {
-    new_entry->set_template_name(
-        desk_template_util::AppendDuplicateNumberToDuplicateName(
-            new_entry->template_name()));
-  }
-
   apps::AppRegistryCache* cache =
       apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
   DCHECK(cache);
@@ -414,6 +404,14 @@ bool LocalDeskDataManager::IsReady() const {
 bool LocalDeskDataManager::IsSyncing() const {
   // Local storage backend never syncs to server.
   return false;
+}
+
+ash::DeskTemplate* LocalDeskDataManager::FindOtherEntryWithName(
+    const std::u16string& name,
+    ash::DeskTemplateType type,
+    const base::GUID& uuid) const {
+  return desk_template_util::FindOtherEntryWithName(name, uuid,
+                                                    saved_desks_list_.at(type));
 }
 
 // static
@@ -618,18 +616,6 @@ void LocalDeskDataManager::OnDeleteEntry(
     MoveEntriesIntoCache(std::move(entries_ptr));
   }
   std::move(callback).Run(*status_ptr);
-}
-
-bool LocalDeskDataManager::HasEntryWithName(const std::u16string& name,
-                                            ash::DeskTemplateType type) const {
-  return std::find_if(
-             saved_desks_list_.at(type).begin(),
-             saved_desks_list_.at(type).end(),
-             [&name](
-                 const std::pair<const base::GUID,
-                                 std::unique_ptr<ash::DeskTemplate>>& entry) {
-               return entry.second->template_name() == name;
-             }) != saved_desks_list_.at(type).end();
 }
 
 ash::DeskTemplateType LocalDeskDataManager::GetDeskTypeOfUuid(

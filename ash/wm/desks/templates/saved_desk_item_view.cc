@@ -289,12 +289,13 @@ bool SavedDeskItemView::IsNameBeingModified() const {
 void SavedDeskItemView::MaybeRemoveNameNumber() {
   // When there are existing matched Desk name and Template name (ie.
   // "Desk 1"), creating a new template from "Desk 1" will get auto generated
-  // template name from backend as "Desk 1 (1)", to prevent template
+  // template name from the frontend as "Desk 1 (1)", to prevent template
   // duplication, we show the template view name to be "Desk 1" by removing name
   // number, save template under such name will call out template replace
   // dialog.
-  if (FindOtherTemplateWithName(
-          DesksController::Get()->active_desk()->name())) {
+  if (saved_desk_util::GetSavedDeskPresenter()->FindOtherEntryWithName(
+          DesksController::Get()->active_desk()->name(), desk_template().type(),
+          uuid())) {
     // Replace the name number.
     name_view_->SetTemporaryName(DesksController::Get()->active_desk()->name());
     name_view_->SetViewName(DesksController::Get()->active_desk()->name());
@@ -487,29 +488,30 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
   // still being activated. In this case, we don't want to show the dialog and
   // activate its associated widget until after the desks bar widget is finished
   // activating. See https://crbug.com/1301759.
-  auto* template_to_replace = FindOtherTemplateWithName(name_view_->GetText());
+  auto* template_to_replace =
+      saved_desk_util::GetSavedDeskPresenter()->FindOtherEntryWithName(
+          name_view_->GetText(), desk_template().type(), uuid());
   if (template_to_replace) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SavedDeskItemView::MaybeShowReplaceDialog,
-                       weak_ptr_factory_.GetWeakPtr(), template_to_replace));
+        FROM_HERE, base::BindOnce(&SavedDeskItemView::MaybeShowReplaceDialog,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  template_to_replace->type(),
+                                  template_to_replace->uuid()));
     return;
   }
 
   UpdateTemplateName();
 }
 
-void SavedDeskItemView::MaybeShowReplaceDialog(
-    SavedDeskItemView* template_to_replace) {
+void SavedDeskItemView::MaybeShowReplaceDialog(DeskTemplateType type,
+                                               const base::GUID& uuid) {
   // Show replace template dialog. If accepted, replace old template and commit
   // name change.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   saved_desk_util::GetSavedDeskDialogController()->ShowReplaceDialog(
-      root_window, name_view_->GetText(),
-      template_to_replace->desk_template_->type(),
-      base::BindOnce(
-          &SavedDeskItemView::ReplaceTemplate, weak_ptr_factory_.GetWeakPtr(),
-          template_to_replace->desk_template_->uuid().AsLowercaseString()),
+      root_window, name_view_->GetText(), type,
+      base::BindOnce(&SavedDeskItemView::ReplaceTemplate,
+                     weak_ptr_factory_.GetWeakPtr(), uuid.AsLowercaseString()),
       base::BindOnce(&SavedDeskItemView::RevertTemplateName,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -635,22 +637,6 @@ views::View* SavedDeskItemView::TargetForRect(views::View* root,
     return name_view_;
   }
   return views::ViewTargeterDelegate::TargetForRect(root, rect);
-}
-
-SavedDeskItemView* SavedDeskItemView::FindOtherTemplateWithName(
-    const std::u16string& name) const {
-  const auto templates_grid_view_items =
-      static_cast<const SavedDeskGridView*>(parent())->grid_items();
-
-  auto iter = std::find_if(
-      templates_grid_view_items.begin(), templates_grid_view_items.end(),
-      [this, name](const SavedDeskItemView* d) {
-        // Name duplication is allowed if one of the templates is an admin
-        // template.
-        return (d != this && d->desk_template_->template_name() == name &&
-                d->desk_template_->source() != DeskTemplateSource::kPolicy);
-      });
-  return iter == templates_grid_view_items.end() ? nullptr : *iter;
 }
 
 void SavedDeskItemView::OnDeleteTemplate() {

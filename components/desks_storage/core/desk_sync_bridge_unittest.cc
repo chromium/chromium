@@ -1052,7 +1052,7 @@ TEST_F(DeskSyncBridgeTest, AddEntryShouldFailWhenBridgeIsNotReady) {
   loop.Run();
 }
 
-TEST_F(DeskSyncBridgeTest, AppendsDuplicateMarkingsCorrectly) {
+TEST_F(DeskSyncBridgeTest, CanDetectDuplicateName) {
   InitializeBridge();
 
   AddTwoTemplates();
@@ -1063,16 +1063,23 @@ TEST_F(DeskSyncBridgeTest, AppendsDuplicateMarkingsCorrectly) {
 
   // The two duplicated templates should be added.
   EXPECT_EQ(4ul, bridge()->GetAllEntryUuids().size());
+  EXPECT_TRUE(bridge()->FindOtherEntryWithName(
+      bridge()->GetUserEntryByUUID(kTestUuid9)->template_name(),
+      bridge()->GetUserEntryByUUID(kTestUuid9)->type(),
+      bridge()->GetUserEntryByUUID(kTestUuid9)->uuid()));
+}
 
-  // Template 8 should be renamed to avoid name collision.
-  EXPECT_EQ("template 1 (1)",
-            base::UTF16ToUTF8(
-                bridge()->GetUserEntryByUUID(kTestUuid8)->template_name()));
+TEST_F(DeskSyncBridgeTest, CanDetectNoDuplicateName) {
+  InitializeBridge();
 
-  // Template 9 should be renamed twice to avoid name collision.
-  EXPECT_EQ("template 1 (2)",
-            base::UTF16ToUTF8(
-                bridge()->GetUserEntryByUUID(kTestUuid9)->template_name()));
+  AddTwoTemplates();
+
+  EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
+
+  EXPECT_FALSE(bridge()->FindOtherEntryWithName(
+      bridge()->GetUserEntryByUUID(kTestUuid1)->template_name(),
+      bridge()->GetUserEntryByUUID(kTestUuid1)->type(),
+      bridge()->GetUserEntryByUUID(kTestUuid1)->uuid()));
 }
 
 TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldSucceed) {

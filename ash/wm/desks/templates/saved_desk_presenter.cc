@@ -28,6 +28,8 @@
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/time/time.h"
+#include "components/desks_storage/core/desk_template_util.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -38,6 +40,13 @@ namespace {
 constexpr char kMaximumDeskLaunchTemplateToastName[] =
     "MaximumDeskLaunchTemplateToast";
 constexpr char kTemplateTooLargeToastName[] = "TemplateTooLargeToast";
+
+// Duplicate value format.
+constexpr char kDuplicateNumberFormat[] = "(%d)";
+// Initial duplicate number value.
+constexpr char kInitialDuplicateNumberValue[] = " (1)";
+// Regex used in determining if duplicate name should be incremented.
+constexpr char kDuplicateNumberRegex[] = "\\(([0-9]+)\\)$";
 
 // Helper to get the desk model from the shell delegate. Should always return a
 // usable desk model, either from chrome sync, or a local storage.
@@ -76,6 +85,13 @@ size_t SavedDeskPresenter::GetMaxEntryCount(DeskTemplateType type) const {
   return type == DeskTemplateType::kTemplate
              ? model->GetMaxDeskTemplateEntryCount()
              : model->GetMaxSaveAndRecallDeskEntryCount();
+}
+
+ash::DeskTemplate* SavedDeskPresenter::FindOtherEntryWithName(
+    const std::u16string& name,
+    ash::DeskTemplateType type,
+    const base::GUID& uuid) const {
+  return GetDeskModel()->FindOtherEntryWithName(name, type, uuid);
 }
 
 void SavedDeskPresenter::UpdateDesksTemplatesUI() {
@@ -183,6 +199,16 @@ void SavedDeskPresenter::SaveOrUpdateDeskTemplate(
     desk_template->set_updated_time(base::Time::Now());
   else
     RecordWindowAndTabCountHistogram(*desk_template);
+
+  // While we still find duplicate names iterate the duplicate number. i.e.
+  // if there are 4 duplicates of some template name then this iterates until
+  // the current template will be named 5.
+  while (GetDeskModel()->FindOtherEntryWithName(desk_template->template_name(),
+                                                desk_template->type(),
+                                                desk_template->uuid())) {
+    desk_template->set_template_name(
+        AppendDuplicateNumberToDuplicateName(desk_template->template_name()));
+  }
 
   // Clone the desk template so one can be sent to the model, and the other as
   // part of the callback.
@@ -449,6 +475,23 @@ void SavedDeskPresenter::RemoveUIEntries(
 
   if (on_update_ui_closure_for_testing_)
     std::move(on_update_ui_closure_for_testing_).Run();
+}
+
+std::u16string SavedDeskPresenter::AppendDuplicateNumberToDuplicateName(
+    const std::u16string& duplicate_name_u16) {
+  std::string duplicate_name = base::UTF16ToUTF8(duplicate_name_u16);
+  int found_duplicate_number;
+
+  if (RE2::PartialMatch(duplicate_name, kDuplicateNumberRegex,
+                        &found_duplicate_number)) {
+    RE2::Replace(
+        &duplicate_name, kDuplicateNumberRegex,
+        base::StringPrintf(kDuplicateNumberFormat, found_duplicate_number + 1));
+  } else {
+    duplicate_name.append(kInitialDuplicateNumberValue);
+  }
+
+  return base::UTF8ToUTF16(duplicate_name);
 }
 
 }  // namespace ash
