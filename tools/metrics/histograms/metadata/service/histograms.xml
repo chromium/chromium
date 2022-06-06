@@ -221,16 +221,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.CookieChangeEvent.Time" units="ms"
-    expires_after="M85">
-  <owner>pwnall@chromium.org</owner>
-  <summary>
-    The time taken between dispatching a CookieChangeEvent to a Service Worker
-    and receiving a message that it finished handling the event. Includes the
-    time for the waitUntil() promise to settle.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.Database.DestroyDatabaseResult"
     enum="ServiceWorkerDatabaseStatus" expires_after="2022-10-11">
   <owner>bashi@chromium.org</owner>
