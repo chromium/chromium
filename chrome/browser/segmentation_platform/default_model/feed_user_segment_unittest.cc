@@ -78,7 +78,7 @@ TEST_F(FeedUserModelTest, ExecuteModelWithInput) {
   ExpectInitAndFetchModel();
   ASSERT_TRUE(fetched_metadata_);
 
-  std::vector<float> input(9, 0);
+  std::vector<float> input(13, 0);
 
   absl::optional<float> result = ExpectExecutionWithInput(input);
   ASSERT_TRUE(result);
@@ -104,12 +104,11 @@ TEST_F(FeedUserModelTest, ExecuteModelWithInput) {
       FeedUserSegment::GetSubsegmentName(metadata_utils::ConvertToDiscreteScore(
           "feed_user_segment_subsegment", *result, *fetched_metadata_)));
 
-  input[0] = 1;
-  input[2] = 2;
+  input[10] = 3;
   result = ExpectExecutionWithInput(input);
   ASSERT_TRUE(result);
   EXPECT_EQ(
-      "ActiveOnFeedAndNtpFeatures",
+      "NtpAndFeedEngagedSimple",
       FeedUserSegment::GetSubsegmentName(metadata_utils::ConvertToDiscreteScore(
           "feed_user_segment_subsegment", *result, *fetched_metadata_)));
 

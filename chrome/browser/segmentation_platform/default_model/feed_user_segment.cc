@@ -30,28 +30,42 @@ constexpr int64_t kFeedUserResultTTL = 1;
 
 // Discrete mapping parameters.
 constexpr char kFeedUserDiscreteMappingKey[] = "feed_user_segment";
-constexpr float kFeedUserDiscreteMappingMinResult = 1;
+constexpr float kFeedUserDiscreteMappingMinResult = 0.8;
 constexpr int64_t kFeedUserDiscreteMappingRank = 1;
 constexpr std::pair<float, int> kDiscreteMappings[] = {
     {kFeedUserDiscreteMappingMinResult, kFeedUserDiscreteMappingRank}};
 
-static constexpr std::array<std::pair<float, /*FeedUserSubsegment*/ int>, 8>
+#define RANK(x) static_cast<int>(FeedUserSubsegment::x)
+
+static constexpr std::array<std::pair<float, /*FeedUserSubsegment*/ int>, 16>
     kFeedUserScoreToSubGroup = {{
-        {1.0, static_cast<int>(FeedUserSubsegment::kActiveOnFeedOnly)},
-        {0.8,
-         static_cast<int>(FeedUserSubsegment::kActiveOnFeedAndNtpFeatures)},
-        {0.7, static_cast<int>(FeedUserSubsegment::kNoFeedAndNtpFeatures)},
-        {0.5, static_cast<int>(FeedUserSubsegment::kMvtOnly)},
-        {0.4, static_cast<int>(FeedUserSubsegment::kReturnToCurrentTabOnly)},
-        {0.2, static_cast<int>(FeedUserSubsegment::kUsedNtpWithoutModules)},
-        {0.1, static_cast<int>(FeedUserSubsegment::kNoNTPOrHomeOpened)},
-        {0.0, static_cast<int>(FeedUserSubsegment::kUnknown)},
+        {1.0, RANK(kDeprecatedActiveOnFeedOnly)},
+        {0.98, RANK(kNtpAndFeedEngaged)},
+        {0.96, RANK(kNtpAndFeedEngagedSimple)},
+        {0.94, RANK(kNtpAndFeedScrolled)},
+        {0.92, RANK(kNtpAndFeedInteracted)},
+        {0.90, RANK(kNoNtpAndFeedEngaged)},
+        {0.88, RANK(kNoNtpAndFeedEngagedSimple)},
+        {0.86, RANK(kNoNtpAndFeedScrolled)},
+        {0.84, RANK(kNoNtpAndFeedInteracted)},
+        {0.8, RANK(kDeprecatedActiveOnFeedAndNtpFeatures)},
+        {0.7, RANK(kNoFeedAndNtpFeatures)},
+        {0.5, RANK(kMvtOnly)},
+        {0.4, RANK(kReturnToCurrentTabOnly)},
+        {0.2, RANK(kUsedNtpWithoutModules)},
+        {0.1, RANK(kNoNTPOrHomeOpened)},
+        {0.0, RANK(kUnknown)},
     }};
 
 // InputFeatures.
-// Any updates to these strings need to also update the field trials allowlist
-// in go/segmentation-field-trials-map.
-constexpr std::array<MetadataWriter::UMAFeature, 9> kFeedUserUMAFeatures = {
+
+// The enum values are based on feed::FeedEngagementType.
+constexpr std::array<int32_t, 1> kFeedEngagementEngaged{0};
+constexpr std::array<int32_t, 1> kFeedEngagementSimple{1};
+constexpr std::array<int32_t, 1> kFeedEngagementInteracted{2};
+constexpr std::array<int32_t, 1> kFeedEngagementScrolled{4};
+
+constexpr std::array<MetadataWriter::UMAFeature, 13> kFeedUserUMAFeatures = {
     MetadataWriter::UMAFeature::FromUserAction(
         "ContentSuggestions.Feed.CardAction.Open",
         14),
@@ -67,7 +81,28 @@ constexpr std::array<MetadataWriter::UMAFeature, 9> kFeedUserUMAFeatures = {
     MetadataWriter::UMAFeature::FromUserAction("MobileMenuRecentTabs", 14),
     MetadataWriter::UMAFeature::FromUserAction("MobileMenuHistory", 14),
     MetadataWriter::UMAFeature::FromUserAction("MobileTabReturnedToCurrentTab",
-                                               14)};
+                                               14),
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "ContentSuggestions.Feed.EngagementType",
+        14,
+        kFeedEngagementEngaged.data(),
+        kFeedEngagementEngaged.size()),
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "ContentSuggestions.Feed.EngagementType",
+        14,
+        kFeedEngagementSimple.data(),
+        kFeedEngagementSimple.size()),
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "ContentSuggestions.Feed.EngagementType",
+        14,
+        kFeedEngagementInteracted.data(),
+        kFeedEngagementInteracted.size()),
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "ContentSuggestions.Feed.EngagementType",
+        14,
+        kFeedEngagementScrolled.data(),
+        kFeedEngagementScrolled.size()),
+};
 
 float GetScoreForSubsegment(FeedUserSubsegment subgroup) {
   for (const auto& score_and_type : kFeedUserScoreToSubGroup) {
@@ -79,15 +114,17 @@ float GetScoreForSubsegment(FeedUserSubsegment subgroup) {
   return 0;
 }
 
+// Any updates to these strings need to also update the field trials allowlist
+// in go/segmentation-field-trials-map.
 std::string FeedUserSubsegmentToString(FeedUserSubsegment feed_group) {
   switch (feed_group) {
     case FeedUserSubsegment::kUnknown:
       return "Unknown";
     case FeedUserSubsegment::kOther:
       return "Other";
-    case FeedUserSubsegment::kActiveOnFeedOnly:
+    case FeedUserSubsegment::kDeprecatedActiveOnFeedOnly:
       return "ActiveOnFeedOnly";
-    case FeedUserSubsegment::kActiveOnFeedAndNtpFeatures:
+    case FeedUserSubsegment::kDeprecatedActiveOnFeedAndNtpFeatures:
       return "ActiveOnFeedAndNtpFeatures";
     case FeedUserSubsegment::kNoFeedAndNtpFeatures:
       return "NoFeedAndNtpFeatures";
@@ -99,6 +136,22 @@ std::string FeedUserSubsegmentToString(FeedUserSubsegment feed_group) {
       return "UsedNtpWithoutModules";
     case FeedUserSubsegment::kNoNTPOrHomeOpened:
       return "NoNTPOrHomeOpened";
+    case FeedUserSubsegment::kNtpAndFeedEngaged:
+      return "NtpAndFeedEngaged";
+    case FeedUserSubsegment::kNtpAndFeedEngagedSimple:
+      return "NtpAndFeedEngagedSimple";
+    case FeedUserSubsegment::kNtpAndFeedScrolled:
+      return "NtpAndFeedScrolled";
+    case FeedUserSubsegment::kNtpAndFeedInteracted:
+      return "NtpAndFeedInteracted";
+    case FeedUserSubsegment::kNoNtpAndFeedEngaged:
+      return "NoNtpAndFeedEngaged";
+    case FeedUserSubsegment::kNoNtpAndFeedEngagedSimple:
+      return "NoNtpAndFeedEngagedSimple";
+    case FeedUserSubsegment::kNoNtpAndFeedScrolled:
+      return "NoNtpAndFeedScrolled";
+    case FeedUserSubsegment::kNoNtpAndFeedInteracted:
+      return "NoNtpAndFeedInteracted";
   }
 }
 
@@ -108,8 +161,8 @@ FeedUserSegment::FeedUserSegment() : ModelProvider(kFeedUserSegmentId) {}
 
 absl::optional<std::string> FeedUserSegment::GetSubsegmentName(
     int subsegment_rank) {
-  DCHECK(static_cast<int>(FeedUserSubsegment::kUnknown) <= subsegment_rank &&
-         subsegment_rank <= static_cast<int>(FeedUserSubsegment::kMaxValue));
+  DCHECK(RANK(kUnknown) <= subsegment_rank &&
+         subsegment_rank <= RANK(kMaxValue));
   FeedUserSubsegment subgroup =
       static_cast<FeedUserSubsegment>(subsegment_rank);
   return FeedUserSubsegmentToString(subgroup);
@@ -155,18 +208,29 @@ void FeedUserSegment::ExecuteModelWithInput(const std::vector<float>& inputs,
 
   FeedUserSubsegment segment = FeedUserSubsegment::kNoNTPOrHomeOpened;
 
-  const bool feed_opened = (inputs[0] + inputs[1] + inputs[2]) >= 2;
+  const bool feed_engaged = inputs[9] >= 2;
+  const bool feed_engaged_simple = inputs[10] >= 2;
+  const bool feed_interacted = inputs[11] >= 2;
+  const bool feed_scrolled = inputs[12] >= 2;
+
   const bool mv_tiles_used = inputs[3] >= 2;
   const bool return_to_tab_used = inputs[8] >= 2;
-  const bool home_or_ntp_used = (inputs[4] + inputs[5]) >= 4;
+  const bool ntp_used = mv_tiles_used || return_to_tab_used;
+  const bool home_or_ntp_opened = (inputs[4] + inputs[5]) >= 4;
 
-  if (feed_opened) {
-    if (mv_tiles_used || return_to_tab_used) {
-      segment = FeedUserSubsegment::kActiveOnFeedAndNtpFeatures;
-    } else {
-      segment = FeedUserSubsegment::kActiveOnFeedOnly;
-    }
-  } else if (home_or_ntp_used) {
+  if (feed_engaged) {
+    segment = ntp_used ? FeedUserSubsegment::kNtpAndFeedEngaged
+                       : FeedUserSubsegment::kNoNtpAndFeedEngaged;
+  } else if (feed_engaged_simple) {
+    segment = ntp_used ? FeedUserSubsegment::kNtpAndFeedEngagedSimple
+                       : FeedUserSubsegment::kNoNtpAndFeedEngagedSimple;
+  } else if (feed_interacted) {
+    segment = ntp_used ? FeedUserSubsegment::kNtpAndFeedInteracted
+                       : FeedUserSubsegment::kNoNtpAndFeedInteracted;
+  } else if (feed_scrolled) {
+    segment = ntp_used ? FeedUserSubsegment::kNtpAndFeedScrolled
+                       : FeedUserSubsegment::kNoNtpAndFeedScrolled;
+  } else if (home_or_ntp_opened) {
     if (mv_tiles_used && return_to_tab_used) {
       segment = FeedUserSubsegment::kNoFeedAndNtpFeatures;
     } else if (mv_tiles_used) {

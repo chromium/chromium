@@ -13,14 +13,28 @@ namespace segmentation_platform {
 enum class FeedUserSubsegment {
   kUnknown = 0,
   kOther = 1,
-  kActiveOnFeedOnly = 2,
-  kActiveOnFeedAndNtpFeatures = 3,
+
+  // Legacy groups, split into feed engagement types below.
+  kDeprecatedActiveOnFeedOnly = 2,
+  kDeprecatedActiveOnFeedAndNtpFeatures = 3,
+
+  // Recorded when no feed usage was observed.
   kNoFeedAndNtpFeatures = 4,
   kMvtOnly = 5,
   kReturnToCurrentTabOnly = 6,
   kUsedNtpWithoutModules = 7,
   kNoNTPOrHomeOpened = 8,
-  kMaxValue = kNoNTPOrHomeOpened
+
+  // Feed engagement combined with NTP features.
+  kNtpAndFeedEngaged = 9,
+  kNtpAndFeedEngagedSimple = 10,
+  kNtpAndFeedScrolled = 11,
+  kNtpAndFeedInteracted = 12,
+  kNoNtpAndFeedEngaged = 13,
+  kNoNtpAndFeedEngagedSimple = 14,
+  kNoNtpAndFeedScrolled = 15,
+  kNoNtpAndFeedInteracted = 16,
+  kMaxValue = kNoNtpAndFeedInteracted
 };
 
 // Segmentation Chrome Feed user model provider. Provides a default model and
