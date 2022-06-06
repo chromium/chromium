@@ -37,8 +37,6 @@ class Sampler;
 class MetricReportingManager : public policy::ManagedSessionService::Observer,
                                public ::ash::DeviceSettingsService::Observer {
  public:
-  static const base::Feature kEnableNetworkTelemetryReporting;
-
   // Delegate class for dependencies and behaviors that need to be overridden
   // for testing purposes.
   class Delegate {

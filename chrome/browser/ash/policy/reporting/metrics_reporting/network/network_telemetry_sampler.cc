@@ -129,9 +129,6 @@ void NetworkTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
 void NetworkTelemetrySampler::HandleNetworkTelemetryResult(
     OptionalMetricCallback callback,
     ::chromeos::cros_healthd::mojom::TelemetryInfoPtr result) {
-  bool full_telemetry_reporting_enabled = base::FeatureList::IsEnabled(
-      MetricReportingManager::kEnableNetworkTelemetryReporting);
-
   if (result.is_null() || result->network_interface_result.is_null()) {
     DVLOG(1) << "cros_healthd: Error getting network result, result is null.";
   } else if (result->network_interface_result->is_error()) {
@@ -165,46 +162,41 @@ void NetworkTelemetrySampler::HandleNetworkTelemetryResult(
       continue;
     }
 
-    bool item_reported = full_telemetry_reporting_enabled;
-    NetworkTelemetry* network_telemetry = nullptr;
-    if (full_telemetry_reporting_enabled) {
-      if (network->IsOnline()) {
-        should_collect_latency = true;
-      }
+    should_report = true;
+    if (network->IsOnline()) {
+      should_collect_latency = true;
+    }
 
-      network_telemetry = metric_data.mutable_telemetry_data()
-                              ->mutable_networks_telemetry()
-                              ->add_network_telemetry();
+    NetworkTelemetry* const network_telemetry =
+        metric_data.mutable_telemetry_data()
+            ->mutable_networks_telemetry()
+            ->add_network_telemetry();
 
-      network_telemetry->set_guid(network->guid());
+    network_telemetry->set_guid(network->guid());
 
-      network_telemetry->set_connection_state(
-          GetNetworkConnectionState(network));
+    network_telemetry->set_type(GetNetworkType(type));
 
-      if (!network->device_path().empty()) {
-        network_telemetry->set_device_path(network->device_path());
-      }
+    network_telemetry->set_connection_state(GetNetworkConnectionState(network));
 
-      if (!network->GetIpAddress().empty()) {
-        network_telemetry->set_ip_address(network->GetIpAddress());
-      }
+    if (!network->device_path().empty()) {
+      network_telemetry->set_device_path(network->device_path());
+    }
 
-      if (!network->GetGateway().empty()) {
-        network_telemetry->set_gateway(network->GetGateway());
-      }
+    if (!network->GetIpAddress().empty()) {
+      network_telemetry->set_ip_address(network->GetIpAddress());
+    }
+
+    if (!network->GetGateway().empty()) {
+      network_telemetry->set_gateway(network->GetGateway());
     }
 
     if (type.Equals(::ash::NetworkTypePattern::WiFi())) {
+      network_telemetry->set_signal_strength(network->signal_strength());
+
       const auto& network_interface_info =
           GetWifiNetworkInterfaceInfo(network->device_path(), result);
       if (!network_interface_info.is_null() &&
           !network_interface_info->get_wireless_interface_info().is_null()) {
-        item_reported = true;
-        if (!network_telemetry) {
-          network_telemetry = metric_data.mutable_telemetry_data()
-                                  ->mutable_networks_telemetry()
-                                  ->add_network_telemetry();
-        }
         const auto& wireless_info =
             network_interface_info->get_wireless_interface_info();
 
@@ -228,14 +220,6 @@ void NetworkTelemetrySampler::HandleNetworkTelemetryResult(
           network_telemetry->set_link_quality(wireless_link_info->link_quality);
         }
       }
-      if (item_reported) {
-        network_telemetry->set_signal_strength(network->signal_strength());
-      }
-    }
-
-    if (item_reported) {
-      network_telemetry->set_type(GetNetworkType(type));
-      should_report = true;
     }
   }
 

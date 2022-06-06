@@ -114,12 +114,7 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
 
   void TearDown() override { ash::cros_healthd::FakeCrosHealthd::Shutdown(); }
 
-  void SetNetworkData(const std::vector<FakeNetworkData>& networks_data,
-                      bool enable_full_network_telemetry_reporting = true) {
-    scoped_feature_list_.InitWithFeatureState(
-        MetricReportingManager::kEnableNetworkTelemetryReporting,
-        enable_full_network_telemetry_reporting);
-
+  void SetNetworkData(const std::vector<FakeNetworkData>& networks_data) {
     auto* const service_client = network_handler_test_helper_.service_test();
     auto* const device_client = network_handler_test_helper_.device_test();
     auto* const ip_config_client =
@@ -503,69 +498,6 @@ TEST_F(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
   EXPECT_FALSE(result.networks_telemetry()
                    .network_telemetry(1)
                    .has_power_management_enabled());
-}
-
-TEST_F(NetworkTelemetrySamplerTest, FullNetworkTelemetryReportingDisabled) {
-  const std::vector<FakeNetworkData> networks_data = {
-      {"guid1", shill::kStateReady, shill::kTypeWifi, 10 /* signal_strength */,
-       "wlan0", "192.168.86.25" /* ip_address */, "192.168.86.1" /* gateway */,
-       false /* is_portal */, true /* is_visible */, true /* is_configured */},
-      {"guid2", shill::kStateOnline, shill::kTypeWifi, kSignalStrength,
-       kInterfaceName, "192.168.86.26" /* ip_address */,
-       "192.168.86.2" /* gateway */, false /* is_portal */,
-       true /* is_visible */, true /* is_configured */},
-      {"guid3", shill::kStateReady, shill::kTypeWifi, 10 /* signal_strength */,
-       "wlan1", "192.168.86.27" /* ip_address */, "192.168.86.3" /* gateway */,
-       false /* is_portal */, true /* is_visible */, true /* is_configured */}};
-
-  SetNetworkData(networks_data,
-                 /*enable_full_network_telemetry_reporting=*/false);
-  NetworkTelemetrySampler network_telemetry_sampler(
-      https_latency_sampler_.get());
-  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
-  network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
-  const absl::optional<MetricData> optional_result =
-      metric_collect_event.result();
-
-  ASSERT_TRUE(optional_result.has_value());
-  ASSERT_TRUE(optional_result->has_telemetry_data());
-  const TelemetryData& result = optional_result->telemetry_data();
-  ASSERT_TRUE(result.has_networks_telemetry());
-
-  // Flag is disabled, no latency data should be collected
-  EXPECT_FALSE(result.networks_telemetry().has_https_latency_data());
-
-  // Only cros healhd wifi interface data should be collected.
-  ASSERT_THAT(result.networks_telemetry().network_telemetry(),
-              ::testing::SizeIs(1));
-
-  EXPECT_FALSE(result.networks_telemetry().network_telemetry(0).has_guid());
-  EXPECT_FALSE(
-      result.networks_telemetry().network_telemetry(0).has_connection_state());
-  EXPECT_FALSE(
-      result.networks_telemetry().network_telemetry(0).has_device_path());
-  EXPECT_FALSE(
-      result.networks_telemetry().network_telemetry(0).has_ip_address());
-  EXPECT_FALSE(result.networks_telemetry().network_telemetry(0).has_gateway());
-
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).type(),
-            NetworkType::WIFI);
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).signal_strength(),
-            kSignalStrength);
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).tx_bit_rate_mbps(),
-            kTxBitRateMbps);
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).rx_bit_rate_mbps(),
-            kRxBitRateMbps);
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).tx_power_dbm(),
-            kTxPowerDbm);
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).encryption_on(),
-            kEncryptionOn);
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).link_quality(),
-            kLinkQuality);
-  EXPECT_EQ(result.networks_telemetry()
-                .network_telemetry(0)
-                .power_management_enabled(),
-            kPowerManagementOn);
 }
 
 TEST_F(NetworkTelemetrySamplerTest, WifiNotConnected) {
