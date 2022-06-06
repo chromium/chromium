@@ -260,10 +260,7 @@ void GrammarManager::OnGrammarCheckDone(
       corrected_results.emplace_back(
           gfx::Range(fragment.range.start() + sentence.original_range.start(),
                      fragment.range.end() + sentence.original_range.start()),
-          fragment.suggestion,
-          base::UTF16ToUTF8(current_text_.substr(
-              fragment.range.start() + sentence.original_range.start(),
-              fragment.range.length())));
+          fragment.suggestion);
     }
   }
 
