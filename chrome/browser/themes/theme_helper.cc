@@ -327,6 +327,10 @@ SkColor ThemeHelper::GetDefaultColor(
   };
   switch (id) {
     case TP::COLOR_BOOKMARK_BAR_BACKGROUND:
+    case TP::COLOR_DOWNLOAD_SHELF:
+    case TP::COLOR_INFOBAR:
+    case TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE:
+    case TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE:
       return GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier);
     case TP::COLOR_BOOKMARK_FAVICON: {
       SkColor color;

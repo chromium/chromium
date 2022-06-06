@@ -920,31 +920,12 @@ TEST_F(BrowserThemePackTest, TestWindowControlButtonBGColor_ButtonBGImage) {
   }
 }
 
-// Ensure that specified 'toolbar' color is propagated to other 'bar' and
-// 'shelf' colors.
+// Ensure that specified 'toolbar' button and foreground colors are propagated
+// correctly to their dependent colors
 TEST_F(BrowserThemePackTest, TestFrameAndToolbarColorPropagation) {
   scoped_refptr<BrowserThemePack> pack(
       new BrowserThemePack(CustomThemeSupplier::ThemeType::EXTENSION));
   BuildTestExtensionTheme("theme_test_toolbar_color_no_image", pack.get());
-
-  // Toolbar colors.
-  SkColor infobar_color;
-  SkColor download_shelf_color;
-  SkColor tab_background_color;
-  SkColor tab_background_color_inactive;
-
-  EXPECT_TRUE(pack->GetColor(TP::COLOR_INFOBAR, &infobar_color));
-  EXPECT_TRUE(pack->GetColor(TP::COLOR_DOWNLOAD_SHELF, &download_shelf_color));
-  EXPECT_TRUE(pack->GetColor(TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
-                             &tab_background_color));
-  EXPECT_TRUE(pack->GetColor(TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE,
-                             &tab_background_color_inactive));
-
-  constexpr SkColor kExpectedToolbarColor = SkColorSetRGB(0, 255, 0);
-  EXPECT_EQ(infobar_color, kExpectedToolbarColor);
-  EXPECT_EQ(download_shelf_color, kExpectedToolbarColor);
-  EXPECT_EQ(tab_background_color, kExpectedToolbarColor);
-  EXPECT_EQ(tab_background_color_inactive, kExpectedToolbarColor);
 
   // Toolbar button icon colors.
   SkColor toolbar_button_icon_hovered_color;

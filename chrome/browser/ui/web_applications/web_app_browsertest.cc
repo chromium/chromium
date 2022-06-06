@@ -457,9 +457,9 @@ IN_PROC_BROWSER_TEST_P(BackgroundColorChangeWebAppBrowserTest,
   }
   content::AwaitDocumentOnLoadCompleted(web_contents);
 
-  // Changing background color should update download shelf theme unless a
-  // system web app prefers manifest background colors over web contents
-  // background colors.
+  // Changing background color should update the toolbar color unless a system
+  // web app prefers manifest background colors over web contents background
+  // colors.
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
     EXPECT_TRUE(content::ExecuteScript(
@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundColorChangeWebAppBrowserTest,
                   : SK_ColorCYAN);
     SkColor download_shelf_color;
     app_browser->app_controller()->GetThemeSupplier()->GetColor(
-        ThemeProperties::COLOR_DOWNLOAD_SHELF, &download_shelf_color);
+        ThemeProperties::COLOR_TOOLBAR, &download_shelf_color);
     EXPECT_EQ(download_shelf_color,
               PreferManifestBackgroundColor()
                   ? (is_dark_mode_state ? SK_ColorBLACK : SK_ColorWHITE)

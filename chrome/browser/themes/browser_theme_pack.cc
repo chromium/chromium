@@ -97,7 +97,7 @@ constexpr int kTallestFrameHeight = kTallestTabHeight + 19;
 // changed default theme assets, if you need themes to recreate their generated
 // images (which are cached), if you changed how missing values are
 // generated, or if you changed any constants.
-const int kThemePackVersion = 99;
+const int kThemePackVersion = 100;
 
 // IDs that are in the DataPack won't clash with the positive integer
 // uint16_t. kHeaderID should always have the maximum value because we want the
@@ -262,17 +262,18 @@ constexpr size_t kOverwritableColorTableLength =
 
 // Colors generated based on the theme, but not overwritable in the theme file.
 constexpr int kNonOverwritableColorTable[] = {
+    TP::COLOR_NTP_LOGO,
+    TP::COLOR_NTP_SECTION_BORDER,
+    TP::COLOR_NTP_SHORTCUT,
+    TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE,
+    TP::COLOR_TAB_THROBBER_SPINNING,
+    TP::COLOR_TAB_THROBBER_WAITING,
+    TP::COLOR_TOOLBAR_BUTTON_ICON_HOVERED,
+    TP::COLOR_TOOLBAR_BUTTON_ICON_PRESSED,
     TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE,
     TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE,
     TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_ACTIVE,
-    TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_INACTIVE,
-    TP::COLOR_INFOBAR,
-    TP::COLOR_DOWNLOAD_SHELF,
-    TP::COLOR_TOOLBAR_BUTTON_ICON_HOVERED,
-    TP::COLOR_TOOLBAR_BUTTON_ICON_PRESSED,
-    TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
-    TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE,
-    TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE
+    TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_INACTIVE
 
     // /!\ If you make any changes here, you must also increment
     // kThemePackVersion above, or else themes will display incorrectly.
@@ -1095,10 +1096,8 @@ void BrowserThemePack::AddColorMixers(
   } kThemePropertiesMap[] = {
       {TP::COLOR_BOOKMARK_TEXT, kColorBookmarkBarForeground},
       {TP::COLOR_CONTROL_BUTTON_BACKGROUND, kColorCaptionButtonBackground},
-      {TP::COLOR_DOWNLOAD_SHELF, kColorDownloadShelfBackground},
       {TP::COLOR_FRAME_ACTIVE, ui::kColorFrameActive},
       {TP::COLOR_FRAME_INACTIVE, ui::kColorFrameInactive},
-      {TP::COLOR_INFOBAR, kColorInfoBarBackground},
       {TP::COLOR_NTP_BACKGROUND, kColorNewTabPageBackground},
       {TP::COLOR_NTP_HEADER, kColorNewTabPageHeader},
       {TP::COLOR_NTP_LINK, kColorNewTabPageLink},
@@ -1108,10 +1107,6 @@ void BrowserThemePack::AddColorMixers(
       {TP::COLOR_NTP_TEXT, kColorNewTabPageText},
       {TP::COLOR_OMNIBOX_TEXT, kColorOmniboxText},
       {TP::COLOR_OMNIBOX_BACKGROUND, kColorOmniboxBackground},
-      {TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
-       kColorTabBackgroundActiveFrameActive},
-      {TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE,
-       kColorTabBackgroundActiveFrameInactive},
       {TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE,
        kColorTabBackgroundInactiveFrameActive},
       {TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE,
@@ -1131,19 +1126,10 @@ void BrowserThemePack::AddColorMixers(
       {TP::COLOR_TOOLBAR_BUTTON_ICON_HOVERED, kColorToolbarButtonIconHovered},
       {TP::COLOR_TOOLBAR_BUTTON_ICON_PRESSED, kColorToolbarButtonIconPressed},
       {TP::COLOR_TOOLBAR_TEXT, kColorToolbarText},
-      /* Tab Group Colors */
-      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_GREY, kColorTabGroupContextMenuGrey},
-      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_BLUE, kColorTabGroupContextMenuBlue},
-      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_RED, kColorTabGroupContextMenuRed},
-      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_YELLOW,
-       kColorTabGroupContextMenuYellow},
-      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_GREEN, kColorTabGroupContextMenuGreen},
-      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_PINK, kColorTabGroupContextMenuPink},
-      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_PURPLE,
-       kColorTabGroupContextMenuPurple},
-      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_CYAN, kColorTabGroupContextMenuCyan},
-      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_ORANGE,
-       kColorTabGroupContextMenuOrange},
+      {TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE,
+       kColorWindowControlButtonBackgroundActive},
+      {TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE,
+       kColorWindowControlButtonBackgroundInactive},
   };
 
   for (const auto& entry : kThemePropertiesMap) {
@@ -1575,11 +1561,6 @@ void BrowserThemePack::SetFrameAndToolbarRelatedColors() {
   // Propagate the user-specified toolbar color to similar elements.
   SkColor toolbar_color;
   if (GetColor(TP::COLOR_TOOLBAR, &toolbar_color)) {
-    SetColor(TP::COLOR_INFOBAR, toolbar_color);
-    SetColor(TP::COLOR_DOWNLOAD_SHELF, toolbar_color);
-    SetColor(TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE, toolbar_color);
-    SetColor(TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE, toolbar_color);
-
     // If the toolbar color is set but the text color is not, ensure it has
     // sufficient contrast.
     SkColor toolbar_text_color =
