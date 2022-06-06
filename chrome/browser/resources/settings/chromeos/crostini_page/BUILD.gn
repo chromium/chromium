@@ -14,6 +14,7 @@ js_type_check("closure_compile_module") {
     ":crostini_arc_adb_confirmation_dialog",
     ":crostini_browser_proxy",
     ":crostini_confirmation_dialog",
+    ":crostini_container_select",
     ":crostini_disk_resize_confirmation_dialog",
     ":crostini_disk_resize_dialog",
     ":crostini_export_import",
@@ -66,9 +67,16 @@ js_library("crostini_browser_proxy") {
 
 js_library("crostini_confirmation_dialog") {
   deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:load_time_data.m",
+    ":crostini_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("crostini_container_select") {
+  deps = [
+    ":crostini_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -144,6 +152,7 @@ js_library("crostini_page") {
 js_library("crostini_port_forwarding") {
   deps = [
     ":crostini_browser_proxy",
+    ":crostini_container_select",
     ":crostini_port_forwarding_add_port_dialog",
     "..:metrics_recorder",
     "..:prefs_behavior",
@@ -164,6 +173,7 @@ js_library("crostini_port_forwarding") {
 js_library("crostini_port_forwarding_add_port_dialog") {
   deps = [
     ":crostini_browser_proxy",
+    ":crostini_container_select",
     "..:metrics_recorder",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -231,6 +241,7 @@ html_to_js("web_components") {
     "crostini_arc_adb_confirmation_dialog.js",
     "crostini_arc_adb.js",
     "crostini_confirmation_dialog.js",
+    "crostini_container_select.js",
     "crostini_disk_resize_confirmation_dialog.js",
     "crostini_disk_resize_dialog.js",
     "crostini_export_import.js",

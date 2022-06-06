@@ -444,6 +444,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/crostini_page/crostini_arc_adb.js",
     "chromeos/crostini_page/crostini_arc_adb_confirmation_dialog.js",
     "chromeos/crostini_page/crostini_confirmation_dialog.js",
+    "chromeos/crostini_page/crostini_container_select.js",
     "chromeos/crostini_page/crostini_disk_resize_confirmation_dialog.js",
     "chromeos/crostini_page/crostini_disk_resize_dialog.js",
     "chromeos/crostini_page/crostini_export_import.js",

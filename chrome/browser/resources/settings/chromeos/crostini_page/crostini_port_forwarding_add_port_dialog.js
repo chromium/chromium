@@ -13,121 +13,142 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '//resources/cr_elements/cr_input/cr_input.m.js';
 import '//resources/cr_elements/md_select_css.m.js';
 import '../../settings_shared_css.js';
+import './crostini_container_select.js';
 
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, microTask, PolymerElement, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContainerId, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+import {ContainerId, ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CONTAINER_ID, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-crostini-add-port-dialog',
+/** @polymer */
+class CrostiniPortForwardingAddPortDialog extends PolymerElement {
+  static get is() {
+    return 'settings-crostini-add-port-dialog';
+  }
 
-  properties: {
-    /**
-     * @private {?number}
-     */
-    inputPortNumber_: {
-      type: Number,
-      value: null,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * @private {string}
-     */
-    inputPortLabel_: {
-      type: String,
-      value: '',
-    },
 
-    /**
-     * @private {number}
-     */
-    inputProtocolIndex_: {
-      type: Number,
-      value: 0,  // Default: TCP
-    },
-
-    /**
-     * @private {!PortState}
-     */
-    portState_: {
-      type: String,
-      value: PortState.VALID,
-    },
-
-    /**
-     * @private {!ContainerId}
-     */
-    containerId_: {
-      type: Object,
-      value: {
-        vm_name: DEFAULT_CROSTINI_VM,
-        container_name: DEFAULT_CROSTINI_CONTAINER,
+  static get properties() {
+    return {
+      /**
+       * @private {?number}
+       */
+      inputPortNumber_: {
+        type: Number,
+        value: null,
       },
-    },
 
-    /**
-     * List of ports that are already stored in the settings.
-     * @type {!Array<!CrostiniPortSetting>}
-     */
-    allPorts: {
-      type: Array,
-      value() {
-        return [];
+      /**
+       * @private {string}
+       */
+      inputPortLabel_: {
+        type: String,
+        value: '',
       },
-    },
-  },
 
-  observers: [
-    'onPortStateChanged_(portState_)',
-  ],
+      /**
+       * @private {number}
+       */
+      inputProtocolIndex_: {
+        type: Number,
+        value: 0,  // Default: TCP
+      },
+
+      /**
+       * @private {!PortState}
+       */
+      portState_: {
+        type: String,
+        value: PortState.VALID,
+      },
+
+      /**
+       * @type {!ContainerId}
+       */
+      containerId_: {
+        type: Object,
+        value() {
+          return DEFAULT_CONTAINER_ID;
+        },
+      },
+
+      /**
+       * List of ports that are already stored in the settings.
+       * @type {!Array<!CrostiniPortSetting>}
+       */
+      allPorts: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      /**
+       * List of containers that are already stored in the settings.
+       * @type {!Array<!ContainerInfo>}
+       */
+      allContainers: {
+        type: Array,
+        value: [],
+      },
+
+    };
+  }
+
+  static get observers() {
+    return [
+      'onPortStateChanged_(portState_)',
+    ];
+  }
 
   /** @override */
-  attached: function() {
+  connectedCallback() {
+    super.connectedCallback();
     this.$.dialog.showModal();
-    this.async(() => {
+    microTask.run(() => {
       this.$.portNumberInput.focus();
-    }, 1);
-  },
+    });
+  }
 
-  resetInputs_: function() {
+  resetInputs_() {
     this.inputPortLabel_ = '';
     this.inputPortNumber_ = null;
     this.inputProtocolIndex_ = 0;
     this.portState_ = PortState.VALID;
-  },
+  }
 
   /**
    * @return {!CrInputElement} input for the port number.
    */
   get portNumberInput() {
     return /** @type{!CrInputElement} */ (this.$.portNumberInput);
-  },
+  }
 
   /**
    * @return {!CrInputElement} input for the optional port label.
    */
   get portLabelInput() {
     return /** @type{!CrInputElement} */ (this.$.portLabelInput);
-  },
+  }
 
   /**
    * @param {string} input The port input to verify.
    * @return {?boolean} if the input string is a valid port number.
    */
-  isValidPortNumber: function(input) {
+  isValidPortNumber(input) {
     const numberRegex = /^[0-9]+$/;
     return input.match(numberRegex) && Number(input) >= MIN_VALID_PORT_NUMBER &&
         Number(input) <= MAX_VALID_PORT_NUMBER;
-  },
+  }
 
   /**
    * @return {!PortState}
    * @private
    */
-  computePortState_: function() {
+  computePortState_() {
     if (!this.isValidPortNumber(this.$.portNumberInput.value)) {
       return PortState.INVALID;
     }
@@ -138,25 +159,25 @@ Polymer({
       return PortState.DUPLICATE;
     }
     return PortState.VALID;
-  },
+  }
 
   /**
    * @param {!Event} e
    * @private
    */
-  onSelectProtocol_: function(e) {
+  onSelectProtocol_(e) {
     this.inputProtocolIndex_ = e.target.selectedIndex;
     this.portState_ = this.computePortState_();
-  },
+  }
 
   /** @private */
-  onCancelTap_: function() {
+  onCancelTap_() {
     this.$.dialog.close();
     this.resetInputs_();
-  },
+  }
 
   /** @private */
-  onAddTap_: function() {
+  onAddTap_() {
     this.portState_ = this.computePortState_();
     if (this.portState_ !== PortState.VALID) {
       return;
@@ -173,15 +194,15 @@ Polymer({
           this.$.dialog.close();
         });
     this.resetInputs_();
-  },
+  }
 
   /** @private */
-  onBlur_: function() {
+  onBlur_() {
     this.portState_ = this.computePortState_();
-  },
+  }
 
   /** @private */
-  onPortStateChanged_: function() {
+  onPortStateChanged_() {
     if (this.portState_ === PortState.VALID) {
       this.$.portNumberInput.invalid = false;
       this.$.continue.disabled = false;
@@ -190,4 +211,17 @@ Polymer({
     this.$.portNumberInput.invalid = true;
     this.$.continue.disabled = true;
   }
-});
+
+  /**
+   * @param {!Array<!ContainerInfo>} allContainers
+   * @return boolean
+   * @private
+   */
+  showContainerSelect_(allContainers) {
+    return allContainers.length > 1;
+  }
+}
+
+customElements.define(
+    CrostiniPortForwardingAddPortDialog.is,
+    CrostiniPortForwardingAddPortDialog);
