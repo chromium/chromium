@@ -73,7 +73,7 @@ class CameraRollDownloadManagerImpl
       const base::FilePath& file_path,
       int64_t file_size_bytes,
       CreatePayloadFilesCallback payload_files_callback,
-      secure_channel::mojom::PayloadFilesPtr payload_files);
+      absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files);
   int CalculateItemTransferRate(const DownloadItem& download_item) const;
 
   const base::FilePath download_path_;

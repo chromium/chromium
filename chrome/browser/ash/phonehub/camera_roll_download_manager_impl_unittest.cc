@@ -237,6 +237,28 @@ TEST_F(CameraRollDownloadManagerImplTest,
       GetDownloadPath().Append("IMG_0001 (1).jpeg")));
 }
 
+TEST_F(CameraRollDownloadManagerImplTest,
+       CreatePayloadFilesWithFilePathCollision) {
+  proto::CameraRollItemMetadata item_metadata;
+  item_metadata.set_file_name("IMG_0001.jpeg");
+  item_metadata.set_file_size_bytes(1000);
+
+  // Delete the file for this payload after it has been added to holding space.
+  // If CreatePayloadFiles is called for the same item again, it will create the
+  // file at the same path. However adding the new payload to holding space will
+  // fail because the first payload already exists in the model with the same
+  // path.
+  CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
+  base::FilePath file_path = GetDownloadPath().Append("IMG_0001.jpeg");
+  EXPECT_TRUE(GetHoldingSpaceModel()->ContainsItem(
+      HoldingSpaceItem::Type::kPhoneHubCameraRoll, file_path));
+  EXPECT_TRUE(base::DeleteFile(file_path));
+
+  CreatePayloadFilesResult error =
+      CreatePayloadFilesAndGetError(/*payload_id=*/-5678, item_metadata);
+  EXPECT_EQ(CreatePayloadFilesResult::kNotUniqueFilePath, error);
+}
+
 TEST_F(CameraRollDownloadManagerImplTest, UpdateDownloadProgress) {
   proto::CameraRollItemMetadata item_metadata;
   item_metadata.set_file_name("IMG_0001.jpeg");

@@ -33,7 +33,10 @@ class CameraRollDownloadManager {
     kPayloadAlreadyExists,
     // The payload files cannot be created because there is not enough free disk
     // space for the item requested.
-    kInsufficientDiskSpace
+    kInsufficientDiskSpace,
+    // The payload files cannot be created because a file already exists at the
+    // target path, likely a result of some race conditions.
+    kNotUniqueFilePath,
   };
 
   // Creates payload files that can be used to receive an incoming file transfer
