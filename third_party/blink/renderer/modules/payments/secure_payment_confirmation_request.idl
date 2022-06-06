@@ -27,5 +27,5 @@ dictionary SecurePaymentConfirmationRequest {
     required USVString rpId;
 
     // Whether or not to show an opt-out flow in the SPC UX.
-    [RuntimeEnabled=SecurePaymentConfirmationOptOut] boolean showOptOut;
+    [RuntimeEnabled=SecurePaymentConfirmationOptOut, MeasureAs=SecurePaymentConfirmationOptOut] boolean showOptOut;
 };

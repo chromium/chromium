@@ -3575,6 +3575,7 @@ enum WebFeature {
   kCrossOriginOpenerPolicyRestrictProperties = 4254,
   kCrossOriginOpenerPolicyRestrictPropertiesReportOnly = 4255,
   kEventTimingInteractionId = 4256,
+  kSecurePaymentConfirmationOptOut = 4257,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
