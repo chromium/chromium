@@ -243,6 +243,8 @@ target(partition_alloc_target_type, "partition_alloc") {
   if (is_apple) {
     # Apple-specific utilities
     sources += [
+      "partition_alloc_base/mac/foundation_util.h",
+      "partition_alloc_base/mac/foundation_util.mm",
       "partition_alloc_base/mac/mac_util.h",
       "partition_alloc_base/mac/mac_util.mm",
       "partition_alloc_base/mac/scoped_cftyperef.h",

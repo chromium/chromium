@@ -5,15 +5,6 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MIGRATION_ADAPTER_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MIGRATION_ADAPTER_H_
 
-#include <cstdint>
-#include <string>
-
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_MAC)
-#include <CoreFoundation/CoreFoundation.h>
-#endif
-
 namespace base {
 
 class LapTimer;
@@ -24,25 +15,6 @@ class LazyInstance;
 template <typename Type>
 struct LazyInstanceTraitsBase;
 
-#if BUILDFLAG(IS_ANDROID)
-template <typename CharT, typename Traits>
-class BasicStringPiece;
-using StringPiece = BasicStringPiece<char, std::char_traits<char>>;
-#endif
-
-#if BUILDFLAG(IS_MAC)
-
-namespace mac {
-
-template <typename T>
-T CFCast(const CFTypeRef& cf_val);
-template <typename T>
-T CFCastStrict(const CFTypeRef& cf_val);
-
-}  // namespace mac
-
-#endif  // BUILDFLAG(IS_MAC)
-
 }  // namespace base
 
 namespace partition_alloc::internal::base {
@@ -52,14 +24,6 @@ namespace partition_alloc::internal::base {
 using ::base::LapTimer;
 using ::base::LazyInstance;
 using ::base::LazyInstanceTraitsBase;
-
-#if BUILDFLAG(IS_MAC)
-namespace mac {
-
-using ::base::mac::CFCast;
-
-}  // namespace mac
-#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace partition_alloc::internal::base
 

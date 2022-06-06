@@ -12,6 +12,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include <stdlib.h>
+
+#include <array>
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace partition_alloc {
