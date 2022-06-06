@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "hb-ot.h"
 #include "hb.h"
@@ -43,6 +44,24 @@
 #endif
 
 namespace blink {
+namespace {
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Getting the system font render style takes a significant amount of time on
+// Linux because looking up fonts using fontconfig can be very slow. We fetch
+// the render style for each font family and text size, while it's very
+// unlikely that different text sizes for the same font family will have
+// different render styles. In addition, sometimes the font family name is not
+// normalized, so we may look up both "Arial" and "arial" which causes an
+// additional fontconfig lookup. This feature enables normalizing the font
+// family name and not using the text size for looking up the system render
+// style, which will hopefully result in a large decrease in the number of slow
+// fontconfig lookups.
+const base::Feature kOptimizeLinuxFonts{"OptimizeLinuxFonts",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
+}  // namespace
 
 FontPlatformData::FontPlatformData(WTF::HashTableDeletedValueType)
     : is_hash_table_deleted_value_(true) {}
@@ -99,10 +118,21 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
       orientation_(orientation) {
 #if !BUILDFLAG(IS_MAC)
   style_ = WebFontRenderStyle::GetDefault();
-  auto system_style =
 #if !BUILDFLAG(IS_WIN)
-      QuerySystemRenderStyle(family_, text_size_, typeface_->fontStyle(),
-                             text_rendering);
+  WebFontRenderStyle system_style;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  bool override_font_name_and_size =
+      base::FeatureList::IsEnabled(kOptimizeLinuxFonts);
+#else
+  bool override_font_name_and_size = false;
+#endif
+  if (override_font_name_and_size) {
+    system_style = QuerySystemRenderStyle(
+        FontFamilyName().Utf8(), 0, typeface_->fontStyle(), text_rendering);
+  } else {
+    system_style = QuerySystemRenderStyle(
+        family, text_size, typeface_->fontStyle(), text_rendering);
+  }
 
   // In web tests, ignore system preference for subpixel positioning,
   // or explicitly disable if requested.
@@ -113,7 +143,7 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
             : 0;
   }
 #else
-     QuerySystemForRenderStyle();
+  auto system_style = QuerySystemForRenderStyle();
 #endif
   style_.OverrideWith(system_style);
 #endif
