@@ -1232,24 +1232,19 @@ android_library("chrome_unit_test_util_java") {
   testonly = true
 
   sources = [
-    "javatests/src/org/chromium/chrome/browser/download/MockDownloadNotificationService.java",
     "javatests/src/org/chromium/chrome/browser/homepage/HomepageTestRule.java",
     "javatests/src/org/chromium/chrome/browser/tabmodel/TestTabModelDirectory.java",
   ]
 
   deps = [
     "//base:base_java",
-    "//chrome/android:chrome_java",
     "//chrome/browser/preferences:java",
-    "//chrome/browser/profiles/android:java",
-    "//components/offline_items_collection/core:core_java",
     "//components/policy/android:policy_java",
     "//components/policy/android:policy_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit:junit",
-    "//url:gurl_java",
   ]
 }
 
@@ -1279,7 +1274,6 @@ android_library("chrome_test_util_java") {
     "//chrome/android:chrome_java",
     "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/test/android:chrome_java_integration_test_support",
@@ -1309,8 +1303,6 @@ android_library("chrome_unit_test_java") {
   resources_package = "org.chromium.chrome.test"
   sources = [
     "javatests/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulatorTest.java",
-    "javatests/src/org/chromium/chrome/browser/download/DownloadForegroundServiceManagerTest.java",
-    "javatests/src/org/chromium/chrome/browser/download/DownloadNotificationServiceTest.java",
     "javatests/src/org/chromium/chrome/browser/tab/WebContentsStateBridgeTest.java",
     "javatests/src/org/chromium/chrome/browser/tabmodel/AsyncTabCreationParamsManagerTest.java",
     "javatests/src/org/chromium/chrome/browser/tabmodel/RestoreMigrateTest.java",
@@ -1335,12 +1327,10 @@ android_library("chrome_unit_test_java") {
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/test/android:chrome_java_unit_test_support",
-    "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/embedder_support/android:context_menu_java",
     "//components/embedder_support/android:util_java",
     "//components/externalauth/android:java",
-    "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
     "//components/search_engines/android:java",
     "//components/security_state/content/android:java",
@@ -1348,7 +1338,6 @@ android_library("chrome_unit_test_java") {
     "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
-    "//third_party/android_sdk:android_test_base_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public:blink_headers_java",
