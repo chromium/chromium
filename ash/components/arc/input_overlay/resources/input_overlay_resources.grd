@@ -43,6 +43,9 @@
        <include name="IDR_IO_COM_STACK_BALL_CRUSH" file="com.stack.ball.crush.json" type="BINDATA" />
        <include name="IDR_IO_COM_ELEGANT_STACK_BALL_BLAST_CRUSH" file="com.elegant.stack.ball.blast.crush.json" type="BINDATA" />
        <include name="IDR_IO_COM_STELLAR_STACKFALL" file="com.Stellar.StackFall.json" type="BINDATA" />
+       <include name="IDR_IO_COM_TOHSOFT_ARASHI_NINJA_SHADOW" file="com.tohsoft.arashi.ninja.shadow.json" type="BINDATA" />
+       <include name="IDR_IO_COM_GAMEHIVECORP_TAPTITANS2" file="com.gamehivecorp.taptitans2.json" type="BINDATA" />
+       <include name="IDR_IO_COM_ODDROK_POWERHOVER" file="com.oddrok.powerhover.json" type="BINDATA" />
     </includes>
   </release>
 </grit>

@@ -44,6 +44,9 @@ absl::optional<int> GetInputOverlayResourceId(const std::string& package_name) {
       {"com.stack.ball.crush", IDR_IO_COM_STACK_BALL_CRUSH},
       {"com.elegant.stack.ball.blast.crush", IDR_IO_COM_ELEGANT_STACK_BALL_BLAST_CRUSH},
       {"com.Stellar.StackFall", IDR_IO_COM_STELLAR_STACKFALL},
+      {"com.tohsoft.arashi.ninja.shadow", IDR_IO_COM_TOHSOFT_ARASHI_NINJA_SHADOW},
+      {"com.gamehivecorp.taptitans2", IDR_IO_COM_GAMEHIVECORP_TAPTITANS2},
+      {"com.oddrok.powerhover", IDR_IO_COM_ODDROK_POWERHOVER},
   };
 
   auto it = resource_id_map.find(package_name);
