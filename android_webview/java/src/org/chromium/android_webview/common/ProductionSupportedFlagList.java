@@ -336,6 +336,8 @@ public final class ProductionSupportedFlagList {
                             + " scanner."),
             Flag.baseFeature(BaseFeatures.RUN_TASKS_BY_BATCHES,
                     "Run tasks in queue for 8ms before before sending a system message."),
+            Flag.baseFeature(BlinkFeatures.OFFSET_PARENT_NEW_SPEC_BEHAVIOR,
+                    "Enables new HTMLElement.offsetParent behavior to match other browsers."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

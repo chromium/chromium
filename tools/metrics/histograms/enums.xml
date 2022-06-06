@@ -56199,6 +56199,7 @@ from previous Chrome versions.
   <int value="-1151615978" label="BorealisBigGl:disabled"/>
   <int value="-1151476162" label="LacrosMergeIcuDataFile:disabled"/>
   <int value="-1151014496" label="NearbySharingDeviceContacts:disabled"/>
+  <int value="-1149544733" label="OffsetparentNewSpecBehavior:enabled"/>
   <int value="-1146814438" label="TabbedAppOverflowMenuIcons:enabled"/>
   <int value="-1146310028" label="HardwareSecureDecryptionFallback:enabled"/>
   <int value="-1145905507" label="SendTabToSelfWhenSignedIn:disabled"/>
@@ -57770,6 +57771,7 @@ from previous Chrome versions.
   <int value="-92116820" label="InlineUpdateFlow:enabled"/>
   <int value="-91767554" label="enable-de-jelly"/>
   <int value="-91370149" label="UseSerialBusEnumerator:enabled"/>
+  <int value="-90799024" label="OffsetparentNewSpecBehavior:disabled"/>
   <int value="-90521375" label="PDFTwoUpView:enabled"/>
   <int value="-90032223" label="BuiltInModuleInfra:disabled"/>
   <int value="-89690053" label="MaterialDesignUserManager:enabled"/>
