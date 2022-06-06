@@ -25,28 +25,28 @@ class ClipboardRestrictionServiceTest : public testing::Test {
   void SetPolicy(absl::optional<std::vector<std::string>> enable_patterns,
                  absl::optional<std::vector<std::string>> disable_patterns,
                  int min_data_size = 100) {
-    base::Value::DictStorage pref_storage;
+    base::Value::Dict pref_dict;
 
     if (enable_patterns) {
-      base::Value::ListStorage enable_storage;
-      for (const auto& p : *enable_patterns) {
-        enable_storage.push_back(base::Value(p));
+      base::Value::List enable_list;
+      for (auto& p : *enable_patterns) {
+        enable_list.Append(std::move(p));
       }
-      pref_storage["enable"] = base::Value(enable_storage);
+      pref_dict.Set("enable", std::move(enable_list));
     }
 
     if (disable_patterns) {
-      base::Value::ListStorage disable_storage;
-      for (const auto& p : *disable_patterns) {
-        disable_storage.push_back(base::Value(p));
+      base::Value::List disable_list;
+      for (auto& p : *disable_patterns) {
+        disable_list.Append(std::move(p));
       }
-      pref_storage["disable"] = base::Value(disable_storage);
+      pref_dict.Set("disable", std::move(disable_list));
     }
 
-    pref_storage["minimum_data_size"] = base::Value(min_data_size);
+    pref_dict.Set("minimum_data_size", min_data_size);
 
     pref_service_.SetManagedPref(enterprise::content::kCopyPreventionSettings,
-                                 std::make_unique<base::Value>(pref_storage));
+                                 base::Value(std::move(pref_dict)));
   }
 
   void CreateService() {
