@@ -594,13 +594,18 @@ void PersonalizationAppWallpaperProviderImpl::GetDailyRefreshCollectionId(
 
 void PersonalizationAppWallpaperProviderImpl::UpdateDailyRefreshWallpaper(
     UpdateDailyRefreshWallpaperCallback callback) {
-  if (pending_update_daily_refresh_wallpaper_callback_)
+  if (pending_update_daily_refresh_wallpaper_callback_) {
     std::move(pending_update_daily_refresh_wallpaper_callback_)
         .Run(/*success=*/false);
+  }
+
   pending_update_daily_refresh_wallpaper_callback_ = std::move(callback);
 
-  WallpaperControllerClientImpl::Get()->RecordWallpaperSourceUMA(
-      ash::WallpaperType::kDaily);
+  auto* client = WallpaperControllerClientImpl::Get();
+  ash::WallpaperInfo info = client->GetActiveUserWallpaperInfo();
+  DCHECK(info.type == WallpaperType::kDaily ||
+         info.type == WallpaperType::kDailyGooglePhotos);
+  client->RecordWallpaperSourceUMA(info.type);
 
   WallpaperController::Get()->UpdateDailyRefreshWallpaper(base::BindOnce(
       &PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperUpdated,
@@ -848,10 +853,27 @@ void PersonalizationAppWallpaperProviderImpl::SendGooglePhotosAttribution(
     const GURL& wallpaper_data_url,
     mojo::StructPtr<ash::personalization_app::mojom::GooglePhotosPhoto> photo,
     bool success) {
+  // If the fetch for |photo| succeeded but |photo| does not exist, that means
+  // it has been removed from the user's library. When this occurs, the user's
+  // wallpaper should be either (a) reset to default or (b) updated to a new
+  // photo from the same collection depending on whether daily refresh is
+  // enabled.
+  if (success && !photo) {
+    if (info.type == WallpaperType::kOnceGooglePhotos) {
+      SelectDefaultImage(/*callback=*/base::DoNothing());
+    } else if (info.type == WallpaperType::kDailyGooglePhotos) {
+      UpdateDailyRefreshWallpaper(/*callback=*/base::DoNothing());
+    } else {
+      NOTREACHED();
+    }
+    return;
+  }
+
   std::vector<std::string> attribution;
   if (!photo.is_null()) {
     attribution.push_back(photo->name);
   }
+
   // NOTE: Old clients may not support |dedup_key| when setting Google Photos
   // wallpaper, so use |location| in such cases for backwards compatibility.
   NotifyWallpaperChanged(ash::personalization_app::mojom::CurrentWallpaper::New(
