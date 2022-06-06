@@ -423,7 +423,7 @@ void NativeWidgetNSWindowBridge::StackAbove(uint64_t sibling_id) {
 }
 
 void NativeWidgetNSWindowBridge::StackAtTop() {
-  [window_ setOrderedIndex:0];
+  [window_ orderWindow:NSWindowAbove relativeTo:0];
 }
 
 void NativeWidgetNSWindowBridge::ShowEmojiPanel() {
@@ -1528,11 +1528,7 @@ void NativeWidgetNSWindowBridge::OrderChildren() {
     } else {
       if (child_window.parentWindow == window)
         continue;
-      // Attaching a window to be a child window resets the window level, so
-      // restore the window level afterwards.
-      NSInteger level = child_window.level;
       [window addChildWindow:child_window ordered:NSWindowAbove];
-      child_window.level = level;
     }
   }
 }
