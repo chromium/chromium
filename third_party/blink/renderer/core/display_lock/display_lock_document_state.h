@@ -172,6 +172,16 @@ class CORE_EXPORT DisplayLockDocumentState final
 
   void NotifyPrintingOrPreviewChanged();
   void UnlockShapingDeferredElements();
+  // Unlock shaping-deferred elements so that |target| can return the precise
+  // value of |property_id|.
+  void UnlockShapingDeferredElements(const Node& target,
+                                     CSSPropertyID property_id);
+  // Unlock shaping-deferred elements so that |object| can return the precise
+  // width.
+  void UnlockToDetermineWidth(const LayoutObject& object);
+  // Unlock shaping-deferred elements so that |object| can return the precise
+  // height.
+  void UnlockToDetermineHeight(const LayoutObject& object);
 
   base::TimeTicks GetLockUpdateTimestamp();
 
@@ -189,6 +199,8 @@ class CORE_EXPORT DisplayLockDocumentState final
   // one of the contexts skips its descendants, this return true. Otherwise, it
   // returns false.
   bool MarkAncestorContextsHaveTopLayerElement(Element*);
+
+  void UnlockShapingDeferredInclusiveDescendants(const LayoutObject& ancestor);
 
   Member<Document> document_;
 

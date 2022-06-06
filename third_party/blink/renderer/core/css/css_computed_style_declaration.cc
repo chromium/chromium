@@ -247,7 +247,8 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
         CSSProperty::Get(property_name->Id()).IsLayoutDependentProperty();
     if (is_for_layout_dependent_property) {
       auto& owner_doc = owner->GetDocument();
-      owner_doc.GetDisplayLockDocumentState().UnlockShapingDeferredElements();
+      owner_doc.GetDisplayLockDocumentState().UnlockShapingDeferredElements(
+          *styled_node, property_name->Id());
       owner_doc.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
       // The style recalc could have caused the styled node to be discarded or
       // replaced if it was a PseudoElement so we need to update it.
@@ -272,7 +273,8 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutIfNeeded(
     auto& doc = styled_node->GetDocument();
     // EditingStyle uses this class with DisallowTransitionScope.
     if (!doc.Lifecycle().StateTransitionDisallowed()) {
-      doc.GetDisplayLockDocumentState().UnlockShapingDeferredElements();
+      doc.GetDisplayLockDocumentState().UnlockShapingDeferredElements(
+          *styled_node, property->PropertyID());
       doc.UpdateStyleAndLayoutForNode(styled_node,
                                       DocumentUpdateReason::kJavaScript);
     }

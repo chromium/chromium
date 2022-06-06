@@ -480,6 +480,34 @@ TEST_F(DeferredShapingTest, ElementGeometryContainingDeferred) {
   EXPECT_FALSE(IsLocked("target-child"));
 }
 
+TEST_F(DeferredShapingTest, ElementGeometryMinimumUnlock) {
+  SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
+<p id="previous">Previous IFC</p>
+<p id="ancestor">IFC
+<span id="inline_target">inline</span>
+</p>
+<div id="block_target"><p id="inner">IFC</p></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("previous"));
+  EXPECT_TRUE(IsLocked("previous"));
+  EXPECT_TRUE(IsDefer("ancestor"));
+  EXPECT_TRUE(IsLocked("ancestor"));
+  EXPECT_TRUE(IsDefer("inner"));
+  EXPECT_TRUE(IsLocked("inner"));
+
+  To<HTMLElement>(GetElementById("inline_target"))->offsetWidthForBinding();
+  EXPECT_TRUE(IsDefer("previous"));
+  EXPECT_TRUE(IsLocked("previous"));
+  EXPECT_FALSE(IsDefer("ancestor"));
+  EXPECT_FALSE(IsLocked("ancestor"));
+
+  To<HTMLElement>(GetElementById("block_target"))->offsetHeightForBinding();
+  EXPECT_TRUE(IsDefer("previous"));
+  EXPECT_TRUE(IsLocked("previous"));
+  EXPECT_FALSE(IsDefer("inner"));
+  EXPECT_FALSE(IsLocked("inner"));
+}
+
 TEST_F(DeferredShapingTest, RangeGetClientRects) {
   SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
 <p id="ancestor">IFC

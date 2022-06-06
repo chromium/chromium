@@ -930,6 +930,12 @@ bool DisplayLockContext::IsShapingDeferred() const {
   return false;
 }
 
+bool DisplayLockContext::IsInclusiveDescendantOf(
+    const LayoutObject& ancestor) const {
+  const LayoutObject* object = element_ ? element_->GetLayoutObject() : nullptr;
+  return object && object->IsDescendantOf(&ancestor);
+}
+
 void DisplayLockContext::ScheduleAnimation() {
   DCHECK(element_);
   if (!ConnectedToView() || !document_ || !document_->GetPage())

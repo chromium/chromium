@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
@@ -396,6 +398,177 @@ void DisplayLockDocumentState::UnlockShapingDeferredElements() {
     return;
   for (auto& context : display_lock_contexts_) {
     if (context->HasElement() && context->IsShapingDeferred())
+      context->SetRequestedState(EContentVisibility::kVisible);
+  }
+}
+
+void DisplayLockDocumentState::UnlockShapingDeferredElements(
+    const Node& target,
+    CSSPropertyID property_id) {
+  if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
+    return;
+  if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+    return;
+  // Need to update layout tree because we access the tree and style.
+  target.GetDocument().UpdateStyleAndLayoutTreeForNode(&target);
+  LayoutObject* target_object = target.GetLayoutObject();
+  if (!target_object)
+    return;
+
+  UnlockShapingDeferredInclusiveDescendants(*target_object);
+  if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+    return;
+
+  const ComputedStyle& style = target_object->StyleRef();
+  switch (property_id) {
+    case CSSPropertyID::kTop:
+      if (!style.Top().IsFixed())
+        UnlockToDetermineHeight(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kBottom:
+      if (!style.Bottom().IsFixed())
+        UnlockToDetermineHeight(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kLeft:
+      if (!style.Left().IsFixed())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kRight:
+      if (!style.Right().IsFixed())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kHeight:
+      if (!style.Height().IsFixed())
+        UnlockToDetermineHeight(*target_object);
+      return;
+    case CSSPropertyID::kWidth:
+      if (!style.Width().IsFixed())
+        UnlockToDetermineWidth(*target_object);
+      return;
+
+    case CSSPropertyID::kPaddingTop:
+      if (!style.PaddingTop().IsFixed())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kPaddingBottom:
+      if (!style.PaddingBottom().IsFixed())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kPaddingLeft:
+      if (!style.PaddingLeft().IsFixed())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kPaddingRight:
+      if (!style.PaddingRight().IsFixed())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+
+    case CSSPropertyID::kMarginTop:
+      if (style.MarginTop().IsPercent())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      else if (style.MarginTop().IsAuto())
+        UnlockToDetermineHeight(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kMarginBottom:
+      if (style.MarginBottom().IsPercent())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      else if (style.MarginBottom().IsAuto())
+        UnlockToDetermineHeight(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kMarginLeft:
+      if (style.MarginLeft().IsPercent() || style.MarginLeft().IsAuto())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kMarginRight:
+      if (style.MarginRight().IsPercent() || style.MarginRight().IsAuto())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+
+    default:
+      // No optimization.  Unlock everything.
+      for (auto& context : display_lock_contexts_) {
+        if (context->HasElement() && context->IsShapingDeferred())
+          context->SetRequestedState(EContentVisibility::kVisible);
+      }
+  }
+}
+
+void DisplayLockDocumentState::UnlockToDetermineWidth(
+    const LayoutObject& object) {
+  if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
+    return;
+  if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+    return;
+
+  if (object.IsInline()) {
+    UnlockShapingDeferredInclusiveDescendants(*object.ContainingBlock());
+    return;
+  }
+
+  const ComputedStyle& style = object.StyleRef();
+  if (style.BoxSizing() == EBoxSizing::kContentBox) {
+    if (style.Width().IsFixed())
+      return;
+  } else {
+    if (style.Width().IsFixed() && style.PaddingLeft().IsFixed() &&
+        style.PaddingRight().IsFixed())
+      return;
+    if ((style.PaddingLeft().IsPercent() || style.PaddingRight().IsPercent()) &&
+        object.ContainingBlock()) {
+      UnlockToDetermineWidth(*object.ContainingBlock());
+      return;
+    }
+  }
+  LayoutBlock* cb = object.ContainingBlock();
+  if (style.Left().IsAuto() || style.Right().IsAuto() || !cb) {
+    UnlockShapingDeferredInclusiveDescendants(object);
+    return;
+  }
+  UnlockToDetermineWidth(*cb);
+}
+
+void DisplayLockDocumentState::UnlockToDetermineHeight(
+    const LayoutObject& object) {
+  if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
+    return;
+  if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+    return;
+
+  if (object.IsInline()) {
+    UnlockShapingDeferredInclusiveDescendants(*object.ContainingBlock());
+    return;
+  }
+
+  const ComputedStyle& style = object.StyleRef();
+  if (style.BoxSizing() == EBoxSizing::kContentBox) {
+    if (style.Height().IsFixed())
+      return;
+  } else {
+    if (style.Height().IsFixed() && style.PaddingTop().IsFixed() &&
+        style.PaddingBottom().IsFixed())
+      return;
+    if ((style.PaddingTop().IsPercent() || style.PaddingBottom().IsPercent()) &&
+        object.ContainingBlock()) {
+      UnlockToDetermineWidth(*object.ContainingBlock());
+      if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+        return;
+    }
+  }
+  LayoutBlock* cb = object.ContainingBlock();
+  if (style.Top().IsAuto() || style.Bottom().IsAuto() || !cb) {
+    UnlockShapingDeferredInclusiveDescendants(object);
+    return;
+  }
+  UnlockToDetermineHeight(*cb);
+}
+
+void DisplayLockDocumentState::UnlockShapingDeferredInclusiveDescendants(
+    const LayoutObject& ancestor) {
+  DCHECK(RuntimeEnabledFeatures::DeferredShapingEnabled());
+  DCHECK_NE(LockedDisplayLockCount(), DisplayLockBlockingAllActivationCount());
+  for (auto& context : display_lock_contexts_) {
+    if (context->IsShapingDeferred() &&
+        context->IsInclusiveDescendantOf(ancestor))
       context->SetRequestedState(EContentVisibility::kVisible);
   }
 }

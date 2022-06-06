@@ -218,6 +218,7 @@ class CORE_EXPORT DisplayLockContext final
   void ScheduleTopLayerCheck();
 
   bool IsShapingDeferred() const;
+  bool IsInclusiveDescendantOf(const LayoutObject& ancestor) const;
 
  private:
   // Give access to |NotifyForcedUpdateScopeStarted()| and

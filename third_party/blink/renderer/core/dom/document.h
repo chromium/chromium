@@ -719,6 +719,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // data, otherwise use one of the |UpdateStyleAndLayout...| methods above.
   void EnsurePaintLocationDataValidForNode(const Node*,
                                            DocumentUpdateReason reason);
+  void EnsurePaintLocationDataValidForNode(const Node*,
+                                           DocumentUpdateReason reason,
+                                           CSSPropertyID property_id);
 
   // Returns true if page box (margin boxes and page borders) is visible.
   bool IsPageBoxVisible(uint32_t page_index);

@@ -2673,6 +2673,35 @@ void Document::EnsurePaintLocationDataValidForNode(
   UpdateStyleAndLayout(reason);
 }
 
+void Document::EnsurePaintLocationDataValidForNode(const Node* node,
+                                                   DocumentUpdateReason reason,
+                                                   CSSPropertyID property_id) {
+  DCHECK(node);
+  if (!node->InActiveDocument())
+    return;
+
+  if (RuntimeEnabledFeatures::DeferredShapingEnabled()) {
+    auto& state = GetDisplayLockDocumentState();
+    if (state.LockedDisplayLockCount() !=
+        state.DisplayLockBlockingAllActivationCount()) {
+      UpdateStyleAndLayoutTree();
+      if (node->GetLayoutObject()) {
+        if (property_id == CSSPropertyID::kWidth)
+          state.UnlockToDetermineWidth(*node->GetLayoutObject());
+        else
+          state.UnlockToDetermineHeight(*node->GetLayoutObject());
+      }
+    }
+  }
+
+  DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
+      node, DisplayLockContext::ForcedPhase::kLayout);
+
+  // For all nodes we must have up-to-date style and have performed layout to do
+  // any location-based calculation.
+  UpdateStyleAndLayout(reason);
+}
+
 bool Document::IsPageBoxVisible(uint32_t page_index) {
   return StyleForPage(page_index)->Visibility() !=
          EVisibility::kHidden;  // display property doesn't apply to @page.
