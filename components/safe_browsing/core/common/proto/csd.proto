@@ -109,6 +109,18 @@ message ChromeUserPopulation {
   // Note: This field is set as repeated to support tokens from multiple
   // sources.
   repeated PageLoadToken page_load_tokens = 14;
+
+  // The current state of account-level enhanced safe browsing (A-ESB) as is
+  // known by the client. This is an optional field and represents the state of
+  // A-ESB as the client has observed it to be. This value will be set for sync
+  // users as well as signed-in users. The state on the server may be
+  // different from the value that the client has when setting this field.
+  // See: go/esb-mms-integration-dd.
+  optional bool is_aesb_enabled = 15;
+
+  // The time when the account-level enhanced safe browsing (A-ESB) bit state
+  // was last sent updated on the client. This is an optional field.
+  optional int64 aesb_last_update_time_windows_epoch_micros = 16;
 }
 
 message ClientPhishingRequest {
