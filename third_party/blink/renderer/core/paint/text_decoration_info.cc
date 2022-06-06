@@ -6,14 +6,23 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset_base.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 namespace {
+
+inline float GetAscent(const ComputedStyle& style, const Font* font_override) {
+  const Font& font = font_override ? *font_override : style.GetFont();
+  if (const SimpleFontData* primary_font = font.PrimaryFont())
+    return primary_font->GetFontMetrics().FloatAscent();
+  return 0.f;
+}
 
 static ResolvedUnderlinePosition ResolveUnderlinePosition(
     const ComputedStyle& style,
@@ -44,6 +53,17 @@ static ResolvedUnderlinePosition ResolveUnderlinePosition(
   if (style.TextUnderlinePosition() & kTextUnderlinePositionRight)
     return ResolvedUnderlinePosition::kOver;
   return ResolvedUnderlinePosition::kUnder;
+}
+
+inline bool ShouldUseDecoratingBox(const ComputedStyle& style) {
+  // Disable the decorating box for styles not in the tree, because they can't
+  // find the decorating box. For example, |NGHighlightPainter| creates a
+  // |kPseudoIdHighlight| pseudo style on the fly.
+  const PseudoId pseudo_id = style.StyleType();
+  if (pseudo_id == kPseudoIdSelection || pseudo_id == kPseudoIdTargetText ||
+      pseudo_id == kPseudoIdHighlight)
+    return false;
+  return true;
 }
 
 static bool ShouldSetDecorationAntialias(const ComputedStyle& style) {
@@ -132,6 +152,7 @@ TextDecorationInfo::TextDecorationInfo(
     absl::optional<FontBaseline> baseline_type_override,
     const ComputedStyle* decorating_box_style)
     : target_style_(target_style),
+      inline_context_(inline_context),
       selection_text_decoration_(selection_text_decoration),
       font_override_(font_override && font_override != &target_style.GetFont()
                          ? font_override
@@ -140,7 +161,13 @@ TextDecorationInfo::TextDecorationInfo(
       baseline_type_override_(baseline_type_override),
       local_origin_(local_origin),
       width_(width),
+      target_ascent_(GetAscent(target_style, font_override)),
       scaling_factor_(scaling_factor),
+      use_decorating_box_(RuntimeEnabledFeatures::TextDecoratingBoxEnabled() &&
+                          inline_context && !font_override_ &&
+                          !decorating_box_style_override_ &&
+                          !baseline_type_override_ &&
+                          ShouldUseDecoratingBox(target_style)),
       minimum_thickness_is_one_(minimum_thickness1),
       antialias_(ShouldSetDecorationAntialias(target_style)) {
   UpdateForDecorationIndex();
@@ -170,10 +197,29 @@ void TextDecorationInfo::UpdateForDecorationIndex() {
   // |decorating_box_style_override_| is intentionally ignored, as it is used
   // only by the legacy, and the legacy uses it only when computing thickness.
   // See |ComputeThickness|.
-  //
-  // TODO(crbug.com/1008951): Using |&target_style_| doesn't take decoration box
-  // into account.
-  const ComputedStyle* decorating_box_style = &target_style_;
+  const ComputedStyle* decorating_box_style;
+  if (use_decorating_box_) {
+    DCHECK(inline_context_);
+    DCHECK_EQ(inline_context_->DecoratingBoxes().size(),
+              target_style_.AppliedTextDecorations().size());
+    decorating_box_ = &inline_context_->DecoratingBoxes()[decoration_index_];
+    decorating_box_style = &decorating_box_->Style();
+
+    // Disable the decorating box when the baseline is central, because the
+    // decorating box doesn't produce the ideal position.
+    // https://drafts.csswg.org/css-text-decor-3/#:~:text=text%20is%20not%20aligned%20to%20the%20alphabetic%20baseline
+    // TODO(kojii): The vertical flow in alphabetic baseline may want to use the
+    // decorating box. It needs supporting the rotated coordinate system text
+    // painters use when painting vertical text.
+    if (UNLIKELY(!decorating_box_style->IsHorizontalWritingMode())) {
+      use_decorating_box_ = false;
+      decorating_box_ = nullptr;
+      decorating_box_style = &target_style_;
+    }
+  } else {
+    DCHECK(!decorating_box_);
+    decorating_box_style = &target_style_;
+  }
   DCHECK(decorating_box_style);
   if (decorating_box_style != decorating_box_style_) {
     decorating_box_style_ = decorating_box_style;
@@ -203,7 +249,7 @@ void TextDecorationInfo::UpdateForDecorationIndex() {
     const SimpleFontData* font_data = font->PrimaryFont();
     if (font_data != font_data_) {
       font_data_ = font_data;
-      baseline_ = font_data ? font_data->GetFontMetrics().FloatAscent() : 0;
+      ascent_ = font_data ? font_data->GetFontMetrics().FloatAscent() : 0;
     }
   }
 
@@ -258,6 +304,20 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
   }
 }
 
+// Returns the offset of the target text/box (|local_origin_|) from the
+// decorating box.
+LayoutUnit TextDecorationInfo::OffsetFromDecoratingBox() const {
+  DCHECK(use_decorating_box_);
+  DCHECK(inline_context_);
+  DCHECK(decorating_box_);
+  // Compute the paint offset of the decorating box. The |local_origin_| is
+  // already adjusted to the paint offset.
+  const LayoutUnit decorating_box_paint_offset =
+      decorating_box_->ContentOffsetInContainer().top +
+      inline_context_->PaintOffset().top;
+  return decorating_box_paint_offset - local_origin_.top;
+}
+
 void TextDecorationInfo::SetUnderlineLineData(
     const TextDecorationOffsetBase& decoration_offset) {
   DCHECK(HasUnderline());
@@ -265,9 +325,13 @@ void TextDecorationInfo::SetUnderlineLineData(
   const Length line_offset = UNLIKELY(flip_underline_and_overline_)
                                  ? Length()
                                  : applied_text_decoration_->UnderlineOffset();
-  const int paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
+  float paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
       FlippedUnderlinePosition(), ComputedFontSize(), FontData(), line_offset,
       ResolvedThickness());
+  if (use_decorating_box_) {
+    // The offset is for the decorating box. Convert it for the target text/box.
+    paint_underline_offset += OffsetFromDecoratingBox();
+  }
   SetLineData(TextDecorationLine::kUnderline, paint_underline_offset);
 }
 
@@ -294,8 +358,7 @@ void TextDecorationInfo::SetLineThroughLineData() {
   // For increased line thickness, the line-through decoration needs to grow
   // in both directions from its origin, subtract half the thickness to keep
   // it centered at the same origin.
-  const float line_through_offset =
-      2 * Baseline() / 3 - ResolvedThickness() / 2;
+  const float line_through_offset = 2 * Ascent() / 3 - ResolvedThickness() / 2;
   SetLineData(TextDecorationLine::kLineThrough, line_through_offset);
 }
 

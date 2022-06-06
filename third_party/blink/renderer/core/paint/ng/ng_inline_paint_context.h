@@ -25,9 +25,15 @@ class CORE_EXPORT NGInlinePaintContext {
   void SetLineBox(const NGFragmentItem& line_item);
   void ClearLineBox() { line_item_ = nullptr; }
 
+  const PhysicalOffset& PaintOffset() const { return paint_offset_; }
+  void SetPaintOffset(const PhysicalOffset& paint_offset) {
+    paint_offset_ = paint_offset;
+  }
+
  private:
   DecoratingBoxList decorating_boxes_;
   const NGFragmentItem* line_item_ = nullptr;
+  PhysicalOffset paint_offset_;
 };
 
 inline void NGInlinePaintContext::PushDecoratingBox(

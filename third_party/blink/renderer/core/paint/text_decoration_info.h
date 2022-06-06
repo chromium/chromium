@@ -23,6 +23,7 @@ namespace blink {
 
 class ComputedStyle;
 class Font;
+class NGDecoratingBox;
 class NGInlinePaintContext;
 class SimpleFontData;
 class TextDecorationOffsetBase;
@@ -74,12 +75,13 @@ class CORE_EXPORT TextDecorationInfo {
   }
 
   // Set the decoration to use when painting and returning values.
-  // Must be set before calling any other method, and can be called
-  // again at any time. This object will use the most recently given
-  // index for any computation that uses data from an
-  // AppliedTextDecoration object. The index must be a valid index
-  // the AppliedTextDecorations contained within the style passed
-  // at construction.
+  //
+  // This is set to 0 when constructed, and can be called again at any time.
+  // This object will use the most recently given index for any computation that
+  // uses data from an AppliedTextDecoration object or a decorating box.
+  //
+  // The index must be a valid index the AppliedTextDecorations contained within
+  // the style passed at construction.
   void SetDecorationIndex(int decoration_index);
 
   // Set data for one of the text decoration lines: over, under or
@@ -91,29 +93,30 @@ class CORE_EXPORT TextDecorationInfo {
   void SetLineThroughLineData();
   void SetSpellingOrGrammarErrorLineData(const TextDecorationOffsetBase&);
 
-  // These methods do not depend on SetDecorationIndex
+  // These methods do not depend on |SetDecorationIndex|.
   LayoutUnit Width() const { return width_; }
-  float Baseline() const { return baseline_; }
   const ComputedStyle& TargetStyle() const { return target_style_; }
-  float ComputedFontSize() const { return computed_font_size_; }
-  const SimpleFontData* FontData() const { return font_data_; }
+  float TargetAscent() const { return target_ascent_; }
   // Returns the scaling factor for the decoration.
   // It can be different from NGFragmentItem::SvgScalingFactor() if the
   // text works as a resource.
   float ScalingFactor() const { return scaling_factor_; }
+  bool ShouldAntialias() const { return antialias_; }
+  float InkSkipClipUpper(float bounds_upper) const {
+    return -TargetAscent() + bounds_upper - local_origin_.top.ToFloat();
+  }
+
+  // |SetDecorationIndex| may change the results of these methods.
+  float ComputedFontSize() const { return computed_font_size_; }
+  const SimpleFontData* FontData() const { return font_data_; }
+  float Ascent() const { return ascent_; }
+  ETextDecorationStyle DecorationStyle() const;
   ResolvedUnderlinePosition FlippedUnderlinePosition() const {
     return flipped_underline_position_;
   }
   ResolvedUnderlinePosition OriginalUnderlinePosition() const {
     return original_underline_position_;
   }
-  bool ShouldAntialias() const { return antialias_; }
-  float InkSkipClipUpper(float bounds_upper) const {
-    return -baseline_ + bounds_upper - local_origin_.top.ToFloat();
-  }
-
-  // SetDecorationIndex must be called before using these methods.
-  ETextDecorationStyle DecorationStyle() const;
   Color LineColor() const;
   float ResolvedThickness() const { return resolved_thickness_; }
   enum StrokeStyle StrokeStyle() const;
@@ -133,6 +136,7 @@ class CORE_EXPORT TextDecorationInfo {
 
  private:
   bool Has(TextDecorationLine line) const { return EnumHasFlags(lines_, line); }
+  LayoutUnit OffsetFromDecoratingBox() const;
   float ComputeThickness() const;
   float ComputeUnderlineThickness(
       const TextDecorationThickness& applied_decoration_thickness,
@@ -160,6 +164,8 @@ class CORE_EXPORT TextDecorationInfo {
   const ComputedStyle* decorating_box_style_ = nullptr;
 
   // Decorating box properties for the current |decoration_index_|.
+  const NGInlinePaintContext* const inline_context_ = nullptr;
+  const NGDecoratingBox* decorating_box_ = nullptr;
   const AppliedTextDecoration* applied_text_decoration_ = nullptr;
   const absl::optional<AppliedTextDecoration> selection_text_decoration_;
   const Font* font_ = nullptr;
@@ -177,7 +183,8 @@ class CORE_EXPORT TextDecorationInfo {
   const LayoutUnit width_;
 
   // Cached properties for the current |decoration_index_|.
-  float baseline_ = 0.f;
+  const float target_ascent_ = 0.f;
+  float ascent_ = 0.f;
   float computed_font_size_ = 0.f;
   float resolved_thickness_ = 0.f;
   const float scaling_factor_;
@@ -193,6 +200,7 @@ class CORE_EXPORT TextDecorationInfo {
   bool has_underline_ = false;
   bool has_overline_ = false;
   bool flip_underline_and_overline_ = false;
+  bool use_decorating_box_ = false;
   const bool minimum_thickness_is_one_ = false;
   const bool antialias_ = false;
 

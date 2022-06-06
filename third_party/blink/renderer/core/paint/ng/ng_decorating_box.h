@@ -17,20 +17,26 @@ class ComputedStyle;
 // [decorating box]: https://drafts.csswg.org/css-text-decor-3/#decorating-box
 class CORE_EXPORT NGDecoratingBox {
  public:
-  NGDecoratingBox(const PhysicalOffset& offset_in_container,
+  NGDecoratingBox(const PhysicalOffset& content_offset_in_container,
                   const ComputedStyle& style)
-      : offset_in_container_(offset_in_container), style_(style) {}
-  NGDecoratingBox(const NGFragmentItem& inline_box, const ComputedStyle& style)
-      : NGDecoratingBox(inline_box.OffsetInContainerFragment(), style) {
-    DCHECK(inline_box.IsInlineBox());
-    DCHECK_EQ(&inline_box.Style(), &style_);
+      : content_offset_in_container_(content_offset_in_container),
+        style_(&style) {}
+  NGDecoratingBox(const NGFragmentItem& item, const ComputedStyle& style)
+      : NGDecoratingBox(item.ContentOffsetInContainerFragment(), style) {
+    // DCHECK(inline_box.IsInlineBox());
+    DCHECK_EQ(&item.Style(), &style);
   }
+  explicit NGDecoratingBox(const NGFragmentItem& item)
+      : NGDecoratingBox(item, item.Style()) {}
 
-  const ComputedStyle& Style() const { return style_; }
+  const PhysicalOffset& ContentOffsetInContainer() const {
+    return content_offset_in_container_;
+  }
+  const ComputedStyle& Style() const { return *style_; }
 
  private:
-  PhysicalOffset offset_in_container_;
-  const ComputedStyle& style_;
+  PhysicalOffset content_offset_in_container_;
+  const ComputedStyle* style_;
 };
 
 }  // namespace blink
