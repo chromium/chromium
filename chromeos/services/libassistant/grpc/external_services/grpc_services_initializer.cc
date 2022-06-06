@@ -7,11 +7,14 @@
 #include <memory>
 
 #include "base/time/time.h"
+#include "chromeos/assistant/internal/internal_constants.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_service.grpc.pb.h"
 #include "chromeos/services/libassistant/grpc/external_services/action_service.h"
 #include "chromeos/services/libassistant/grpc/external_services/customer_registration_client.h"
 #include "chromeos/services/libassistant/grpc/external_services/heartbeat_event_handler_driver.h"
+#include "chromeos/services/libassistant/grpc/grpc_http_connection_client.h"
 #include "chromeos/services/libassistant/grpc/grpc_libassistant_client.h"
 #include "chromeos/services/libassistant/grpc/grpc_util.h"
 #include "third_party/grpc/src/include/grpc/grpc_security_constants.h"
@@ -190,6 +193,13 @@ void GrpcServicesInitializer::InitLibassistGrpcClient() {
 
   libassistant_client_ =
       std::make_unique<chromeos::libassistant::GrpcLibassistantClient>(channel);
+}
+
+void GrpcServicesInitializer::StartGrpcHttpConnectionClient(
+    assistant_client::HttpConnectionFactory* factory) {
+  http_connection_client_ = std::make_unique<GrpcHttpConnectionClient>(
+      factory, assistant::kHttpConnectionServiceAddress);
+  http_connection_client_->Start();
 }
 
 void GrpcServicesInitializer::InitAssistantGrpcServer() {

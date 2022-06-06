@@ -29,10 +29,15 @@ class SpeakerIdEnrollmentEventHandlerInterface;
 }  // namespace api
 }  // namespace assistant
 
+namespace assistant_client {
+class HttpConnectionFactory;
+}  // namespace assistant_client
+
 namespace chromeos {
 namespace libassistant {
 
 class ActionService;
+class GrpcHttpConnectionClient;
 class GrpcLibassistantClient;
 
 // Component responsible for:
@@ -51,6 +56,8 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
   // before this method is called. Client functionality is not impacted by this
   // call. Returns false if the attempt to start a gRPC server failed.
   bool Start();
+
+  void StartGrpcHttpConnectionClient(assistant_client::HttpConnectionFactory*);
 
   // Add observer for each handler driver.
   void AddAlarmTimerEventObserver(
@@ -153,6 +160,9 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
   std::unique_ptr<EventHandlerDriver<
       ::assistant::api::SpeakerIdEnrollmentEventHandlerInterface>>
       speaker_id_enrollment_event_handler_driver_;
+
+  std::unique_ptr<chromeos::libassistant::GrpcHttpConnectionClient>
+      http_connection_client_;
 };
 
 }  // namespace libassistant

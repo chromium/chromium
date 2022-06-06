@@ -32,6 +32,9 @@ bool FakeAssistantClient::StartGrpcServices() {
   return true;
 }
 
+void FakeAssistantClient::StartGrpcHttpConnectionClient(
+    assistant_client::HttpConnectionFactory*) {}
+
 void FakeAssistantClient::AddExperimentIds(
     const std::vector<std::string>& exp_ids) {}
 

@@ -34,7 +34,6 @@ source_set("assistant_client") {
 
 source_set("grpc_client") {
   sources = [
-    "grpc_client_cq_tag.h",
     "grpc_client_thread.cc",
     "grpc_client_thread.h",
     "grpc_state.h",
@@ -47,6 +46,7 @@ source_set("grpc_client") {
 
   deps = [
     "//base",
+    "//chromeos/assistant/internal",
     "//third_party/protobuf:protobuf_lite",
   ]
 
@@ -112,16 +112,44 @@ source_set("libassistant_client") {
   all_dependent_configs = [ "//third_party/grpc:grpc_config" ]
 }
 
+source_set("http_connection_client") {
+  sources = [
+    "grpc_http_connection_client.cc",
+    "grpc_http_connection_client.h",
+    "grpc_http_connection_delegate.cc",
+    "grpc_http_connection_delegate.h",
+  ]
+
+  public_deps = [
+    "//chromeos/assistant/internal/proto:assistant",
+    "//chromeos/assistant/internal/proto:assistant_grpc",
+  ]
+
+  deps = [
+    ":grpc_client",
+    "//base",
+    "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal:libassistant_shared_headers",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "assistant_client_v1_unittests.cc" ]
+  sources = [
+    "assistant_client_v1_unittests.cc",
+    "grpc_http_connection_client_unittests.cc",
+  ]
 
   deps = [
     ":assistant_client",
     ":grpc_service",
+    ":http_connection_client",
     "//base/test:test_support",
+    "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/assistant/internal:test_support",
     "//chromeos/assistant/internal/proto:assistant",
+    "//chromeos/assistant/internal/proto:assistant_grpc",
     "//testing/gmock",
     "//testing/gtest",
   ]

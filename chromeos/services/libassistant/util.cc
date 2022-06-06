@@ -189,10 +189,13 @@ std::string CreateLibAssistantConfig(
 
   // Enables Libassistant gRPC server for V2.
   if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    const std::string server_addresses =
+        std::string(assistant::kLibassistantServiceAddress) + "," +
+        assistant::kHttpConnectionServiceAddress;
     Value libas_server(Type::DICTIONARY);
-    libas_server.SetKey("libas_server_address",
-                        Value(assistant::kLibassistantServiceAddress));
+    libas_server.SetKey("libas_server_address", Value(server_addresses));
     libas_server.SetKey("enable_display_service", Value(true));
+    libas_server.SetKey("enable_http_connection_service", Value(true));
     config.SetKey("libas_server", std::move(libas_server));
   }
 

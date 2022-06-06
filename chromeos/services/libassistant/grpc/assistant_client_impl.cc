@@ -104,6 +104,11 @@ bool AssistantClientImpl::StartGrpcServices() {
   return grpc_services_.Start();
 }
 
+void AssistantClientImpl::StartGrpcHttpConnectionClient(
+    assistant_client::HttpConnectionFactory* factory) {
+  grpc_services_.StartGrpcHttpConnectionClient(factory);
+}
+
 void AssistantClientImpl::AddExperimentIds(
     const std::vector<std::string>& exp_ids) {
   ::assistant::api::UpdateExperimentIdsRequest request;

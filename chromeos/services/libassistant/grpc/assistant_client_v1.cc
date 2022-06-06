@@ -355,6 +355,11 @@ bool AssistantClientV1::StartGrpcServices() {
   return true;
 }
 
+void AssistantClientV1::StartGrpcHttpConnectionClient(
+    assistant_client::HttpConnectionFactory*) {
+  NOTIMPLEMENTED();
+}
+
 void AssistantClientV1::AddExperimentIds(
     const std::vector<std::string>& exp_ids) {
   assistant_manager_internal()->AddExtraExperimentIds(exp_ids);

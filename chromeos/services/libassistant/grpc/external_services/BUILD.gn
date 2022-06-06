@@ -25,6 +25,7 @@ source_set("grpc_services_initializer") {
     "//chromeos/services/libassistant/grpc:grpc_client",
     "//chromeos/services/libassistant/grpc:grpc_service",
     "//chromeos/services/libassistant/grpc:grpc_util",
+    "//chromeos/services/libassistant/grpc:http_connection_client",
     "//chromeos/services/libassistant/grpc:libassistant_client",
     "//third_party/grpc:grpc++",
   ]

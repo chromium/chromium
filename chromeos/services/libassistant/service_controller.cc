@@ -126,9 +126,14 @@ void ServiceController::Initialize(
 
   auto assistant_manager = libassistant_factory_.CreateAssistantManager(
       ToLibassistantConfig(*config));
-  auto* assistant_manager_internal =
-      libassistant_factory_.UnwrapAssistantManagerInternal(
-          assistant_manager.get());
+  assistant_client::AssistantManagerInternal* assistant_manager_internal =
+      nullptr;
+
+  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    assistant_manager_internal =
+        libassistant_factory_.UnwrapAssistantManagerInternal(
+            assistant_manager.get());
+  }
 
   assistant_client_ = AssistantClient::Create(std::move(assistant_manager),
                                               assistant_manager_internal);
@@ -285,6 +290,14 @@ void ServiceController::OnAllServicesReady() {
 
 void ServiceController::OnServicesBootingUp() {
   DVLOG(1) << "Started Libassistant service";
+
+  // We set one precondition of BootupState to reach `INITIALIZING_INTERNAL`
+  // is to wait for the gRPC HttpConnection be ready. Only after the BootupState
+  // meets the state, can AssistantManager start.
+  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    assistant_client_->StartGrpcHttpConnectionClient(
+        chromium_api_delegate_->GetHttpConnectionFactory());
+  }
 
   // The Libassistant BootupState goes to `RUNNING` right after
   // `SETTING_UP_ESSENTIAL_SERVICES` if AssistantManager::Start() is called
