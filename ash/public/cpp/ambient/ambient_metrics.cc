@@ -107,5 +107,12 @@ void RecordAmbientModeAnimationSmoothness(int smoothness,
       smoothness);
 }
 
+void RecordAmbientModePhotoOrientationMatch(int percentage_match,
+                                            AmbientAnimationTheme theme) {
+  base::UmaHistogramPercentage(
+      base::StrCat({"Ash.AmbientMode.PhotoOrientationMatch.", ToString(theme)}),
+      percentage_match);
+}
+
 }  // namespace ambient
 }  // namespace ash

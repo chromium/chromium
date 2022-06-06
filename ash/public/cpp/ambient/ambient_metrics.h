@@ -47,6 +47,10 @@ ASH_PUBLIC_EXPORT void RecordAmbientModeAnimationSmoothness(
     int smoothness,
     AmbientAnimationTheme theme);
 
+ASH_PUBLIC_EXPORT void RecordAmbientModePhotoOrientationMatch(
+    int percentage_match,
+    AmbientAnimationTheme theme);
+
 }  // namespace ambient
 }  // namespace ash
 
