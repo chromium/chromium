@@ -9,7 +9,7 @@ from pathlib import Path
 if len(Path(__file__).parents) > 2:
     sys.path += [str(Path(__file__).parents[2])]
 
-from style_variable_generator.base_generator import BaseGenerator, VariableType, Modes
+from style_variable_generator.base_generator import BaseGenerator, Modes
 import unittest
 
 
@@ -18,13 +18,12 @@ class BaseGeneratorTest(unittest.TestCase):
         self.generator = BaseGenerator()
 
     def ResolveOpacity(self, name, mode=Modes.LIGHT):
-        opacity_model = self.generator.model[VariableType.OPACITY]
+        opacity_model = self.generator.model.opacities
         opacity = opacity_model.Resolve(name, mode)
         return opacity_model.ResolveOpacity(opacity, mode).a
 
     def ResolveRGBA(self, name, mode=Modes.LIGHT):
-        return repr(self.generator.model[VariableType.COLOR].ResolveToRGBA(
-            name, mode))
+        return repr(self.generator.model.colors.ResolveToRGBA(name, mode))
 
     def testMissingColor(self):
         # google_grey_900 is missing.
@@ -38,7 +37,7 @@ class BaseGeneratorTest(unittest.TestCase):
   },
 }
         ''')
-        self.assertRaises(ValueError, self.generator.Validate)
+        self.assertRaises(ValueError, self.generator.model.Validate)
 
         # Add google_grey_900.
         self.generator.AddJSONToModel('''
@@ -48,7 +47,7 @@ class BaseGeneratorTest(unittest.TestCase):
   }
 }
         ''')
-        self.generator.Validate()
+        self.generator.model.Validate()
 
     def testMissingDefaultModeColor(self):
         # google_grey_900 is missing in the default mode (light).
@@ -59,7 +58,7 @@ class BaseGeneratorTest(unittest.TestCase):
   }
 }
         ''')
-        self.assertRaises(ValueError, self.generator.Validate)
+        self.assertRaises(ValueError, self.generator.model.Validate)
 
     def testDuplicateKeys(self):
         self.generator.AddJSONToModel('''
@@ -69,7 +68,7 @@ class BaseGeneratorTest(unittest.TestCase):
   }
 }
         ''')
-        self.generator.Validate()
+        self.generator.model.Validate()
 
         # Add google_grey_900's dark mode as if in a separate file. This counts
         # as a redefinition/conflict and causes an error.
@@ -92,15 +91,6 @@ class BaseGeneratorTest(unittest.TestCase):
   }
 }
         ''')
-        # Add a bad opacity name.
-        self.assertRaises(
-            ValueError, self.generator.AddJSONToModel, '''
-{
-  opacities: {
-    disabled_things: 0.4,
-  }
-}
-        ''')
 
     def testSimpleOpacity(self):
         # Reference a missing opacity.
@@ -118,7 +108,7 @@ class BaseGeneratorTest(unittest.TestCase):
         self.assertEqual(self.ResolveRGBA('google_grey_900'),
                          'rgba(255, 255, 255, 0.5)')
 
-        self.generator.Validate()
+        self.generator.model.Validate()
 
     def testReferenceOpacity(self):
         # Add a reference opacity.
@@ -152,7 +142,7 @@ class BaseGeneratorTest(unittest.TestCase):
   },
 }
         ''')
-        self.assertRaises(ValueError, self.generator.Validate)
+        self.assertRaises(ValueError, self.generator.model.Validate)
 
         self.generator.AddJSONToModel('''
 {
@@ -161,7 +151,7 @@ class BaseGeneratorTest(unittest.TestCase):
   },
 }
         ''')
-        self.generator.Validate()
+        self.generator.model.Validate()
 
     def testSelfReferenceColor(self):
         self.generator.AddJSONToModel('''
@@ -171,7 +161,7 @@ class BaseGeneratorTest(unittest.TestCase):
   }
 }
         ''')
-        self.assertRaises(ValueError, self.generator.Validate)
+        self.assertRaises(ValueError, self.generator.model.Validate)
 
     def testSelfReferenceOpacity(self):
         self.generator.AddJSONToModel('''
@@ -181,7 +171,7 @@ class BaseGeneratorTest(unittest.TestCase):
   }
 }
         ''')
-        self.assertRaises(ValueError, self.generator.Validate)
+        self.assertRaises(ValueError, self.generator.model.Validate)
 
     def testBlend(self):
         self.generator.AddJSONToModel('''
@@ -265,7 +255,7 @@ class BaseGeneratorTest(unittest.TestCase):
   }
 }
         ''')
-        self.assertRaises(ValueError, self.generator.Validate)
+        self.assertRaises(ValueError, self.generator.model.Validate)
 
     def testInvertedColors(self):
         # Add an inverted color.
@@ -304,7 +294,7 @@ class BaseGeneratorTest(unittest.TestCase):
   }
 }
         ''')
-        self.assertRaises(ValueError, self.generator.Validate)
+        self.assertRaises(ValueError, self.generator.model.Validate)
 
     def testPerModeColors(self):
         # Add a per-mode color.

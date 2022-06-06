@@ -5,8 +5,9 @@
 import os
 import math
 import re
-from style_variable_generator.base_generator import Color, Modes, VariableType
+from style_variable_generator.color import Color
 from style_variable_generator.css_generator import CSSStyleGenerator
+from style_variable_generator.model import Modes, VariableType
 
 
 class ViewsStyleGenerator(CSSStyleGenerator):
@@ -18,7 +19,7 @@ class ViewsStyleGenerator(CSSStyleGenerator):
     def GetParameters(self):
         return {
             'colors': self._CreateColorList(),
-            'opacities': self.model[VariableType.OPACITY],
+            'opacities': self.model.opacities,
         }
 
     def GetFilters(self):
@@ -37,7 +38,7 @@ class ViewsStyleGenerator(CSSStyleGenerator):
             'out_file_path': None,
             'namespace_name': None,
             'header_file': None,
-            'in_files': sorted(self.in_file_to_context.keys()),
+            'in_files': self.GetInputFiles(),
             'css_color_var': self.CSSColorVar,
         }
         if self.out_file_path:
@@ -52,7 +53,7 @@ class ViewsStyleGenerator(CSSStyleGenerator):
 
     def _CreateColorList(self):
         color_list = []
-        for name, mode_values in self.model[VariableType.COLOR].items():
+        for name, mode_values in self.model.colors.items():
             color_list.append({'name': name, 'mode_values': mode_values})
 
         return color_list
@@ -96,11 +97,7 @@ class ViewsCCStyleGenerator(ViewsStyleGenerator):
     def GetName():
         return 'ViewsCC'
 
-    def GetContextKey(self):
-        return ViewsStyleGenerator.GetName()
-
     def Render(self):
-        self.Validate()
         return self.ApplyTemplate(self, 'templates/views_generator_cc.tmpl',
                                   self.GetParameters())
 
@@ -110,10 +107,6 @@ class ViewsHStyleGenerator(ViewsStyleGenerator):
     def GetName():
         return 'ViewsH'
 
-    def GetContextKey(self):
-        return ViewsStyleGenerator.GetName()
-
     def Render(self):
-        self.Validate()
         return self.ApplyTemplate(self, 'templates/views_generator_h.tmpl',
                                   self.GetParameters())

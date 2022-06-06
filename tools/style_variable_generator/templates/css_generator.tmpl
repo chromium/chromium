@@ -34,16 +34,20 @@ html:not(body) {
 
 }
 
-{%- if typography.font_families or typography.typefaces %}
+{%- if font_families %}
 
 html {
   /* font families */
-{%-   for name, value in typography.font_families.items() %}
+{%-   for name, value in font_families.items() %}
   {{name | to_css_var_name}}: {{value}};
 {%-     endfor %}
 
+{%- endif %}
+
+{%- if typefaces %}
+
   /* typefaces */
-{%-   for name, typeface in typography.typefaces.items() %}
+{%-   for name, typeface in typefaces.items() %}
   {{name | to_css_var_name}}-font: {{typeface.font_weight}} {{typeface.font_size}}px/{{typeface.line_height}}px {{typeface.font_family | process_simple_ref}};
   {{name | to_css_var_name}}-font-family: {{typeface.font_family | process_simple_ref}};
   {{name | to_css_var_name}}-font-size: {{typeface.font_size}}px;
@@ -57,12 +61,9 @@ html {
 {%- if untyped_css %}
 
 html {
-{%-   for group_name, vars in untyped_css.items() %}
-  /* {{group_name}} */
-{%-     for name, value in vars.items() %}
+{%-   for name, value in untyped_css.items() %}
   {{name | to_css_var_name}}: {{value}};
-{%-     endfor %}
-{%   endfor %}
+{%-   endfor %}
 }
 {%- endif %}
 

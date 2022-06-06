@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import re
 import collections
 from style_variable_generator.color import Color
 from style_variable_generator.opacity import Opacity
-import copy
+from abc import ABC, abstractmethod
 
 
 class Modes:
@@ -22,44 +23,79 @@ class Modes:
 class VariableType:
     COLOR = 'color'
     OPACITY = 'opacity'
-    TYPOGRAPHY = 'typography'
     UNTYPED_CSS = 'untyped_css'
-    ALL = [
-        COLOR,
-        OPACITY,
-        TYPOGRAPHY,
-        UNTYPED_CSS,
-    ]
+    TYPEFACE = 'typeface'
+    FONT_FAMILY = 'font_family'
 
 
-class ModeKeyedModel(object):
-    def __init__(self, generator):
-        self.variables = collections.OrderedDict()
-        self.generator = generator
+class StyleVariable(object):
+    '''An intermediate representation of a single variable that the generator
+       knows about.
 
+       Some JSON entries will generate multiple StyleVariables (e.g when
+       generate_per_mode is true), and different Generators may create multiple
+       per-platform variables (e.g CSS generates an var and var-rgb).
+    '''
+
+    def __init__(self, variable_type, name, json_value, context):
+        if not re.match('^[a-z0-9_]+$', name):
+            raise ValueError(name + ' is not a valid variable name ' +
+                             '(lower case, 0-9, _)')
+        self.variable_type = variable_type
+        self.name = name
+        self.json_value = json_value
+        self.context = context or {}
+
+
+class Submodel(ABC):
+    '''Abstract Base Class for all Submodels.'''
+
+    @abstractmethod
     def Add(self, name, value_obj, context):
-        self.generator.SetVariableContext(name, context)
-        if name not in self.variables:
-            self.variables[name] = {}
+        '''Adds the a variable represented by |value_obj| to the submodel.
+        Returns a list of |StyleVariable| objects representing the variables
+        added.
+        '''
+        assert False
+
+    # Submodels are expected to provide dict-like interfaces.
+    @abstractmethod
+    def keys(self):
+        assert False
+
+    @abstractmethod
+    def items(self):
+        assert False
+
+    @abstractmethod
+    def __getitem__(self, key):
+        assert False
+
+
+class ModeKeyedModel(collections.OrderedDict, Submodel):
+    def Add(self, name, value_obj, context):
+        if name not in self:
+            self[name] = {}
 
         if isinstance(value_obj, dict):
             for mode in value_obj:
                 value = self._CreateValue(value_obj[mode])
                 if mode == 'default':
                     mode = Modes.DEFAULT
-                assert mode in Modes.ALL and mode not in self.variables[name]
-                self.variables[name][mode] = value
+                assert mode in Modes.ALL and mode not in self[name]
+                self[name][mode] = value
         else:
-            self.variables[name][Modes.DEFAULT] = self._CreateValue(value_obj)
+            self[name][Modes.DEFAULT] = self._CreateValue(value_obj)
+        return [StyleVariable(self.variable_type, name, value_obj, context)]
 
     # Returns the value that |name| will have in |mode|. Resolves to the default
     # mode's value if the a value for |mode| isn't specified. Always returns a
     # value.
     def Resolve(self, name, mode):
-        if mode in self.variables[name]:
-            return self.variables[name][mode]
+        if mode in self[name]:
+            return self[name][mode]
 
-        return self.variables[name][Modes.DEFAULT]
+        return self[name][Modes.DEFAULT]
 
     def Flatten(self, resolve_missing=False):
         '''Builds a name to variable dictionary for each mode.
@@ -78,23 +114,14 @@ class ModeKeyedModel(object):
 
         return flattened
 
-    def keys(self):
-        return self.variables.keys()
-
-    def items(self):
-        return self.variables.items()
-
-    def __getitem__(self, key):
-        return self.variables[key]
-
 
 class OpacityModel(ModeKeyedModel):
     '''A dictionary of opacity names to their values in each mode.
        e.g OpacityModel['disabled_opacity'][Modes.LIGHT] = Opacity(...)
     '''
 
-    def __init__(self, generator):
-        super(OpacityModel, self).__init__(generator)
+    def __init__(self):
+        self.variable_type = VariableType.OPACITY
 
     # Returns a float from 0-1 representing the concrete value of |opacity|.
     def ResolveOpacity(self, opacity, mode):
@@ -112,11 +139,12 @@ class ColorModel(ModeKeyedModel):
        e.g ColorModel['blue'][Modes.LIGHT] = Color(...)
     '''
 
-    def __init__(self, generator, opacity_model):
-        super(ColorModel, self).__init__(generator)
+    def __init__(self, opacity_model):
         self.opacity_model = opacity_model
+        self.variable_type = VariableType.COLOR
 
     def Add(self, name, value_obj, context):
+        added = []
         # If a color has generate_per_mode set, a separate variable will be
         # created for each mode, suffixed by mode name.
         # (e.g my_color_light, my_color_debug)
@@ -139,21 +167,22 @@ class ColorModel(ModeKeyedModel):
         if generate_per_mode or generate_inverted:
             for mode, value in value_obj.items():
                 per_mode_name = name + '_' + mode
-                ModeKeyedModel.Add(self, per_mode_name, value,
-                                   generated_context)
+                added += ModeKeyedModel.Add(self, per_mode_name, value,
+                                            generated_context)
                 value_obj[mode] = '$' + per_mode_name
         if generate_inverted:
             if Modes.LIGHT not in value_obj or Modes.DARK not in value_obj:
                 raise ValueError(
                     'generate_inverted requires both dark and light modes to be'
                     ' set')
-            ModeKeyedModel.Add(
+            added += ModeKeyedModel.Add(
                 self, name + '_inverted', {
                     Modes.LIGHT: '$' + name + '_dark',
                     Modes.DARK: '$' + name + '_light'
                 }, generated_context)
 
-        ModeKeyedModel.Add(self, name, value_obj, context)
+        added += ModeKeyedModel.Add(self, name, value_obj, context)
+        return added
 
     # Returns a Color that is the final RGBA value for |name| in |mode|.
     def ResolveToRGBA(self, name, mode):
@@ -178,6 +207,21 @@ class ColorModel(ModeKeyedModel):
 
         (result.r, result.g, result.b) = (rgb.r, rgb.g, rgb.b)
         return result
+
+    def _ResolveBlendedColors(self):
+        # Calculate the final RGBA for all blended colors because the
+        # generator's subclasses can't blend yet.
+        temp_model = {}
+        for name, value in self.items():
+            for mode, color in value.items():
+                if color.blended_colors:
+                    assert len(color.blended_colors) == 2
+                    if name not in temp_model:
+                        temp_model[name] = {}
+                    temp_model[name][mode] = self.ResolveToRGBA(name, mode)
+        for name, value in temp_model.items():
+            for mode, color in value.items():
+                self[name][mode] = temp_model[name][mode]
 
     # Returns a Color that is the final RGBA value for |color_a| over |color_b|
     # in |mode|.
@@ -209,18 +253,125 @@ class ColorModel(ModeKeyedModel):
         return Color(value)
 
 
-class TypographyModel(object):
+class SimpleModel(collections.OrderedDict, Submodel):
+    def __init__(self, variable_type, check_func=None):
+        self.variable_type = variable_type
+        self.check_func = check_func
+
+    def Add(self, name, value_obj, context):
+        if self.check_func:
+            self.check_func(name, value_obj, context)
+        self[name] = value_obj
+        return [StyleVariable(self.variable_type, name, value_obj, context)]
+
+
+class Model(object):
     def __init__(self):
-        self.font_families = collections.OrderedDict()
-        self.typefaces = collections.OrderedDict()
+        # A map of all variables to their |StyleVariable| object.
+        self.variable_map = dict()
 
-    def AddFontFamily(self, name, value):
-        assert name.startswith('font_family_')
-        self.font_families[name] = value
+        # A map of |VariableType| to its underlying model.
+        self.submodels = dict()
 
-    def AddTypeface(self, name, value_obj):
-        assert value_obj['font_family']
-        assert value_obj['font_size']
-        assert value_obj['font_weight']
-        assert value_obj['line_height']
-        self.typefaces[name] = value_obj
+        self.opacities = OpacityModel()
+        self.submodels[VariableType.OPACITY] = self.opacities
+
+        self.colors = ColorModel(self.opacities)
+        self.submodels[VariableType.COLOR] = self.colors
+
+        self.untyped_css = SimpleModel(VariableType.UNTYPED_CSS)
+        self.submodels[VariableType.UNTYPED_CSS] = self.untyped_css
+
+        def CheckTypeFace(name, value_obj, context):
+            assert value_obj['font_family']
+            assert value_obj['font_size']
+            assert value_obj['font_weight']
+            assert value_obj['line_height']
+
+        self.typefaces = SimpleModel(VariableType.TYPEFACE, CheckTypeFace)
+        self.submodels[VariableType.TYPEFACE] = self.typefaces
+
+        def CheckFontFamily(name, value_obj, context):
+            assert name.startswith('font_family_')
+
+        self.font_families = SimpleModel(VariableType.FONT_FAMILY,
+                                         CheckFontFamily)
+        self.submodels[VariableType.FONT_FAMILY] = self.font_families
+
+    def Add(self, variable_type, name, value_obj, context):
+        '''Adds a new variable to the submodel for |variable_type|.
+        '''
+        try:
+            added = self.submodels[variable_type].Add(name, value_obj, context)
+        except ValueError as err:
+            raise ValueError(
+                f'Error parsing {variable_type} "{name}": {value_obj}\n  {err}'
+            )
+
+        for var in added:
+            if var.name in self.variable_map:
+                raise ValueError('Variable name "%s" is reused' % name)
+            self.variable_map[var.name] = var
+
+    def PostProcess(self):
+        '''Called after all variables have been added to perform operations that
+           require a complete worldview.
+        '''
+        # Resolve blended colors after all the files are added because some
+        # color dependencies are between different files.
+        self.colors._ResolveBlendedColors()
+
+        self.Validate()
+
+    def Validate(self):
+        colors = self.colors
+        color_names = set(colors.keys())
+        opacities = self.opacities
+        opacity_names = set(opacities.keys())
+
+        def CheckColorReference(name, referrer):
+            if name == referrer:
+                raise ValueError("{0} refers to itself".format(name))
+            if name not in color_names:
+                raise ValueError("Cannot find color %s referenced by %s" %
+                                 (name, referrer))
+
+        def CheckOpacityReference(name, referrer):
+            if name == referrer:
+                raise ValueError("{0} refers to itself".format(name))
+            if name not in opacity_names:
+                raise ValueError("Cannot find opacity %s referenced by %s" %
+                                 (name, referrer))
+
+        RESERVED_SUFFIXES = ['_' + s for s in Modes.ALL + ['rgb', 'inverted']]
+
+        # Check all colors in all modes refer to colors that exist in the
+        # default mode.
+        for name, mode_values in colors.items():
+            for suffix in RESERVED_SUFFIXES:
+                if not self.variable_map[name].context.get(
+                        'generated') and name.endswith(suffix):
+                    raise ValueError(
+                        'Variable name "%s" uses a reserved suffix: %s' %
+                        (name, suffix))
+            if Modes.DEFAULT not in mode_values:
+                raise ValueError("Color %s not defined for default mode" %
+                                 name)
+            for mode, color in mode_values.items():
+                if color.var:
+                    CheckColorReference(color.var, name)
+                if color.rgb_var:
+                    CheckColorReference(color.RGBVarToVar(), name)
+                if color.opacity and color.opacity.var:
+                    CheckOpacityReference(color.opacity.var, name)
+                if color.blended_colors:
+                    assert len(color.blended_colors) == 2
+                    CheckColorReference(color.blended_colors[0], name)
+                    CheckColorReference(color.blended_colors[1], name)
+
+        for name, mode_values in opacities.items():
+            for mode, opacity in mode_values.items():
+                if opacity.var:
+                    CheckOpacityReference(opacity.var, name)
+
+        # TODO(b/206887565): Check for circular references.

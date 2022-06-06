@@ -13,7 +13,6 @@ class TSStyleGenerator(CSSStyleGenerator):
         return 'TS'
 
     def Render(self):
-        self.Validate()
         return self.ApplyTemplate(self, 'templates/ts_generator.tmpl',
                                   self.GetParameters())
 

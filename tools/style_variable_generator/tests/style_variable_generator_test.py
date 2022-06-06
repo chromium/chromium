@@ -10,7 +10,7 @@ from pathlib import Path
 if len(Path(__file__).parents) > 2:
     sys.path += [str(Path(__file__).parents[2])]
 
-from style_variable_generator.base_generator import Modes
+from style_variable_generator.model import Modes
 from style_variable_generator.css_generator import CSSStyleGenerator
 from style_variable_generator.proto_generator import ProtoStyleGenerator, ProtoJSONStyleGenerator
 from style_variable_generator.views_generator import ViewsHStyleGenerator, ViewsCCStyleGenerator
