@@ -74,7 +74,7 @@ bool CssSelectorFragmentAnchor::InvokeSelector() {
   return true;
 }
 
-void CssSelectorFragmentAnchor::PerformPreRafActions() {}
+void CssSelectorFragmentAnchor::PerformScriptableActions() {}
 
 void CssSelectorFragmentAnchor::Installed() {}
 

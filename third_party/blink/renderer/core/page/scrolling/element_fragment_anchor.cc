@@ -160,7 +160,7 @@ void ElementFragmentAnchor::Trace(Visitor* visitor) const {
   FragmentAnchor::Trace(visitor);
 }
 
-void ElementFragmentAnchor::PerformPreRafActions() {
+void ElementFragmentAnchor::PerformScriptableActions() {
   ApplyFocusIfNeeded();
 }
 

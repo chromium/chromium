@@ -2070,7 +2070,7 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
       WTF::BindRepeating([](WebLocalFrameImpl* local_frame) {
         if (LocalFrameView* view = local_frame->GetFrameView()) {
           if (FragmentAnchor* anchor = view->GetFragmentAnchor())
-            anchor->PerformPreRafActions();
+            anchor->PerformScriptableActions();
         }
       }));
 

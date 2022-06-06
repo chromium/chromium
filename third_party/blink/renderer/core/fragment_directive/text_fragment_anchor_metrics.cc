@@ -27,10 +27,6 @@ void TextFragmentAnchorMetrics::DidFindMatch() {
   ++matches_count_;
 }
 
-void TextFragmentAnchorMetrics::ResetMatchCount() {
-  matches_count_ = 0;
-}
-
 void TextFragmentAnchorMetrics::DidFindAmbiguousMatch() {
   ambiguous_match_ = true;
 }

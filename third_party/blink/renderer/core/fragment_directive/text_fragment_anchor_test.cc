@@ -1284,8 +1284,6 @@ TEST_F(TextFragmentAnchorTest, TargetStaysInView) {
   EXPECT_TRUE(GetDocument().IsLoadCompleted());
   EXPECT_TRUE(GetDocument().HasFinishedParsing());
 
-  RunAsyncMatchingTasks();
-  Compositor().BeginFrame();
   Compositor().BeginFrame();
 
   // Ensure the target text is still in view and stayed centered
