@@ -94,16 +94,24 @@ void MimeHandlerViewEmbedder::ReadyToCommitNavigation(
     content::NavigationHandle* handle) {
   if (handle->GetFrameTreeNodeId() != frame_tree_node_id_)
     return;
+  if (render_frame_host_)
+    return;
+
+  // It's possible for the navigation to the template HTML document to fail
+  // (e.g. attempting to load a PDF in a fenced frame).
+  if (handle->GetNetErrorCode() != net::OK) {
+    DestroySelf();
+    return;
+  }
+
   // We should've deleted the MimeHandlerViewEmbedder at this point if the frame
   // is sandboxed.
   DCHECK_EQ(network::mojom::WebSandboxFlags::kNone,
             handle->SandboxFlagsToCommit() &
                 network::mojom::WebSandboxFlags::kPlugins);
 
-  if (!render_frame_host_) {
-    render_frame_host_ = handle->GetRenderFrameHost();
-    GetContainerManager()->SetInternalId(internal_id_);
-  }
+  render_frame_host_ = handle->GetRenderFrameHost();
+  GetContainerManager()->SetInternalId(internal_id_);
 }
 
 void MimeHandlerViewEmbedder::DidFinishNavigation(

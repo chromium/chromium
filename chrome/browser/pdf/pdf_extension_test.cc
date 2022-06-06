@@ -4621,11 +4621,24 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
       GetActiveWebContents(), embedded_test_server()->GetURL("/empty.html")));
 
   // Create a fenced frame and try to navigate to a PDF.
-  EXPECT_NE(nullptr,
-            fenced_frame_helper().CreateFencedFrame(
-                GetActiveWebContents()->GetMainFrame(),
-                embedded_test_server()->GetURL("/pdf/test-fenced-frame.pdf"),
-                net::Error::ERR_BLOCKED_BY_CLIENT));
+  EXPECT_TRUE(fenced_frame_helper().CreateFencedFrame(
+      GetActiveWebContents()->GetMainFrame(),
+      embedded_test_server()->GetURL("/pdf/test-fenced-frame.pdf"),
+      net::Error::ERR_BLOCKED_BY_CLIENT));
+  EXPECT_EQ(CountPDFProcesses(), 0);
+}
+
+// Like `LoadPdfInFencedFrame`, but without Supports-Loading-Mode headers set.
+IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
+                       LoadPdfInFencedFrameWithoutFencedFrameOptIn) {
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  // Create a fenced frame and try to navigate to a PDF.
+  EXPECT_TRUE(fenced_frame_helper().CreateFencedFrame(
+      GetActiveWebContents()->GetMainFrame(),
+      embedded_test_server()->GetURL("/pdf/test.pdf"),
+      net::Error::ERR_BLOCKED_BY_RESPONSE));
   EXPECT_EQ(CountPDFProcesses(), 0);
 }
 
