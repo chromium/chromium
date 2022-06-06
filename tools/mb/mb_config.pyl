@@ -644,6 +644,7 @@
     },
 
     'chromium.reclient.fyi': {
+      'Linux Builder (reclient compare)': 'gpu_tests_release_bot_reclient',
       'Linux Builder reclient staging': 'gpu_tests_release_bot_reclient',
       'Linux Builder reclient test': 'gpu_tests_release_bot_reclient',
       'Simple Chrome Builder reclient staging': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',

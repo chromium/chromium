@@ -866,6 +866,34 @@ ci.builder(
     schedule = "triggered",
 )
 
+ci.builder(
+    name = "Linux Builder (reclient compare)",
+    builder_spec = builder_config.copy_from(
+        "ci/Linux Builder",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = ["reclient_test"],
+            ),
+            build_gs_bucket = None,
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "re",
+    ),
+    cores = 32,
+    goma_backend = None,
+    reclient_rewrapper_env = {
+        "RBE_compare": "true",
+    },
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_ensure_verified = True,
+    os = os.LINUX_DEFAULT,
+    execution_timeout = 14 * time.hour,
+)
+
 # Start - Reclient migration, phase 2, block 1 shadow builders
 ci.builder(
     name = "Linux CFI (reclient shadow)",
