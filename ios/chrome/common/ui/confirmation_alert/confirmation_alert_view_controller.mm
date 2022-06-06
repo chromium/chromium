@@ -617,7 +617,10 @@ constexpr CGFloat kFaviconBadgeSideLength = 24;
 
 // Helper to create the gradient view.
 - (GradientView*)createGradientView {
-  GradientView* gradientView = [[GradientView alloc] init];
+  GradientView* gradientView = [[GradientView alloc]
+      initWithTopColor:[[UIColor colorNamed:kPrimaryBackgroundColor]
+                           colorWithAlphaComponent:0]
+           bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
   gradientView.translatesAutoresizingMaskIntoConstraints = NO;
   return gradientView;
 }

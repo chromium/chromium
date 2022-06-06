@@ -209,6 +209,7 @@ source_set("ntp_internal") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/ntp_tile",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",

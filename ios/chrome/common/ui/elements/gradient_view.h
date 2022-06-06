@@ -12,7 +12,9 @@
 // system background color.
 @interface GradientView : UIView
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTopColor:(UIColor*)topColor
+                     bottomColor:(UIColor*)bottomColor
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 

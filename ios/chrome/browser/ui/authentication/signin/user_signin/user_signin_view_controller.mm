@@ -376,7 +376,10 @@ enum AuthenticationButtonType {
 
 - (UIView*)gradientView {
   if (!_gradientView) {
-    _gradientView = [[GradientView alloc] init];
+    _gradientView = [[GradientView alloc]
+        initWithTopColor:[[UIColor colorNamed:kPrimaryBackgroundColor]
+                             colorWithAlphaComponent:0]
+             bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
   }
   return _gradientView;
 }

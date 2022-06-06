@@ -30,6 +30,8 @@
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ui/base/device_form_factor.h"
 
@@ -143,7 +145,16 @@
     self.contentSuggestionsLayout.omniboxPositioner = self;
   }
 
-  self.view.backgroundColor = ntp_home::kNTPBackgroundColor();
+  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+    GradientView* gradientView = [[GradientView alloc]
+        initWithTopColor:[UIColor colorNamed:kBackgroundColor]
+             bottomColor:[UIColor colorNamed:kGrey50Color]];
+    gradientView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:gradientView];
+    AddSameConstraints(self.view, gradientView);
+  } else {
+    self.view.backgroundColor = ntp_home::kNTPBackgroundColor();
+  }
 
   [self registerNotifications];
 
