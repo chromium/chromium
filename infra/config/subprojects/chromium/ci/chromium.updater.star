@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os")
+load("//lib/builders.star", "cpu", "goma", "os")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 
@@ -71,6 +71,44 @@ ci.builder(
         short_name = "bld",
     ),
     cores = None,
+    os = os.MAC_ANY,
+)
+
+ci.builder(
+    name = "mac-updater-builder-arm64-dbg",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|mac",
+        short_name = "bld",
+    ),
+    cores = None,
+    cpu = cpu.ARM64,
+    os = os.MAC_ANY,
+)
+
+ci.builder(
+    name = "mac-updater-builder-arm64-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "release|mac",
+        short_name = "bld",
+    ),
+    cores = None,
+    cpu = cpu.ARM64,
     os = os.MAC_ANY,
 )
 
@@ -212,7 +250,7 @@ ci.thin_tester(
         category = "debug|mac",
         short_name = "11.0 arm64",
     ),
-    triggered_by = ["mac-updater-builder-dbg"],
+    triggered_by = ["mac-updater-builder-arm64-dbg"],
 )
 
 ci.thin_tester(
@@ -236,7 +274,7 @@ ci.thin_tester(
         category = "release|mac",
         short_name = "11.0 arm64",
     ),
-    triggered_by = ["mac-updater-builder-rel"],
+    triggered_by = ["mac-updater-builder-arm64-rel"],
 )
 
 ci.builder(
