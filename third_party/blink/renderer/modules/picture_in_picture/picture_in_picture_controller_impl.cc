@@ -383,6 +383,12 @@ bool PictureInPictureControllerImpl::IsExitAutoPictureInPictureAllowed() const {
   return (picture_in_picture_element_ == AutoPictureInPictureElement());
 }
 
+// While this API returns a Promise to the calling website, it is actually
+// currently synchronous since it uses the |window.open()| API to open the PiP
+// window. We still want the document PiP API to be asynchronous though,
+// because:
+// 1) We may eventually make this an asynchronous call to the browsser
+// 2) Other UAs may want to implement the API in an asynchronous way
 void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     ScriptState* script_state,
     LocalDOMWindow& opener,
@@ -390,8 +396,8 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     ScriptPromiseResolver* resolver,
     ExceptionState& exception_state) {
   WebPictureInPictureWindowOptions web_options;
-  web_options.size = gfx::Size(options->width(), options->height());
-  web_options.constrain_aspect_ratio = options->constrainAspectRatio();
+  web_options.initial_aspect_ratio = options->initialAspectRatio();
+  web_options.lock_aspect_ratio = options->lockAspectRatio();
 
   auto* dom_window = opener.openPictureInPictureWindow(
       script_state->GetIsolate(), web_options, exception_state);
@@ -406,11 +412,12 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
   auto* local_dom_window = dom_window->ToLocalDOMWindow();
   DCHECK(local_dom_window);
 
-  // TODO(https://crbug.com/1253970): Use the real size returned by the browser
-  // side when we get one.
+  // TODO(https://crbug.com/1329638): Return a type specific to document pip
+  // instead of a shared interface between the two APIs.
   picture_in_picture_window_ = MakeGarbageCollected<PictureInPictureWindow>(
-      GetExecutionContext(), web_options.size, local_dom_window->document());
+      GetExecutionContext(), gfx::Size(), local_dom_window->document());
 
+  // TODO(https://crbug.com/1329698): Resolve this in a posted task instead.
   resolver->Resolve(picture_in_picture_window_);
 }
 

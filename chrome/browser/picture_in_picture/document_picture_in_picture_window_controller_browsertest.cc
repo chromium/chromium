@@ -207,9 +207,8 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(true, EvalJs(active_web_contents,
-                         "window.requestPictureInPictureWindow("
-                         "  {width: 200, height: 200}"
-                         ").then(w => true)"));
+                         "window.requestPictureInPictureWindow()"
+                         ".then(w => true)"));
   base::RunLoop().RunUntilIdle();
 
   // The first WebContents should be destroyed.

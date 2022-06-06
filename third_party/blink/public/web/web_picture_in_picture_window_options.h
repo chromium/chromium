@@ -10,8 +10,8 @@
 namespace blink {
 
 struct WebPictureInPictureWindowOptions {
-  gfx::Size size;
-  bool constrain_aspect_ratio = false;
+  float initial_aspect_ratio = 0.0;
+  bool lock_aspect_ratio = false;
 };
 
 }  // namespace blink

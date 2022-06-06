@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 dictionary PictureInPictureWindowOptions {
-  long width;
-  long height;
-  boolean constrainAspectRatio = false;
+  float initialAspectRatio = 0.0;
+  boolean lockAspectRatio = false;
 };
