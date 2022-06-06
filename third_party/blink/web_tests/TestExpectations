@@ -5299,7 +5299,6 @@ crbug.com/1159661 external/wpt/html/interaction/focus/document-level-focus-apis/
 crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-failure.https.html [ Timeout ]
 crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-serviceworker-failure.https.html [ Timeout ]
 crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-sharedworker-failure.https.html [ Timeout ]
-crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-domain-failure.https.sub.html [ Failure Timeout ]
 crbug.com/1317079 [ Linux ] external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html [ Failure ]
 crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/broadcastchannel-success.https.html [ Timeout ]
 crbug.com/1223883 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/location-set-and-document-open.html [ Timeout ]

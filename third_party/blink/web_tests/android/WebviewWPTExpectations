@@ -2662,7 +2662,6 @@ crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-da
 crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/serialization-via-idb.any.worker.html [ Failure ]
 crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/serialization-via-notifications-api.any.html [ Failure ]
 crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/serialization-via-notifications-api.any.worker.html [ Failure ]
-crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-domain-failure.https.sub.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-failure.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-messagechannel-success.https.html [ Failure ]
 crbug.com/1050754 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-serviceworker-failure.https.html [ Failure ]
