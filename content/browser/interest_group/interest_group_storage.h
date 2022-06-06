@@ -121,6 +121,10 @@ class CONTENT_EXPORT InterestGroupStorage {
   // then apply to all origins.
   void DeleteInterestGroupData(
       const base::RepeatingCallback<bool(const url::Origin&)>& origin_matcher);
+  // Update the interest group priority.
+  void SetInterestGroupPriority(const url::Origin& owner,
+                                const std::string& name,
+                                double priority);
 
   std::vector<StorageInterestGroup> GetAllInterestGroupsUnfilteredForTesting();
 

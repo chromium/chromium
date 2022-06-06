@@ -142,6 +142,9 @@ std::string MakeBidScript(const url::Origin& seller,
         throw new Error("wrong interestGroupName");
       if (interestGroup.owner !== interestGroupOwner)
         throw new Error("wrong interestGroupOwner");
+      // The actual priority should be hidden from the worklet.
+      if (interestGroup.priority !== undefined)
+        throw new Error("wrong priority: " + interestGroup.priority);
       // None of these tests set a dailyUpdateUrl. Non-empty values are tested
       // by browser tests.
       if ("dailyUpdateUrl" in interestGroup)
@@ -904,6 +907,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
                /*has_bidding_signals_data_version=*/false,
                debug_loss_report_url,
                /*debug_win_report_url=*/absl::nullopt,
+               /*set_priority=*/0,
+               /*has_set_priority=*/false,
                /*errors=*/std::vector<std::string>());
       return;
     }
@@ -914,6 +919,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
              bidding_signals_data_version.value_or(0),
              bidding_signals_data_version.has_value(), debug_loss_report_url,
              debug_win_report_url,
+             /*set_priority=*/0,
+             /*has_set_priority=*/false,
              /*errors=*/std::vector<std::string>());
   }
 
@@ -1685,7 +1692,7 @@ class AuctionRunnerTest : public testing::Test,
 
     StorageInterestGroup storage_group;
     storage_group.interest_group = blink::InterestGroup(
-        base::Time::Max(), std::move(owner), std::move(name), /*priority=*/0.0,
+        base::Time::Max(), std::move(owner), std::move(name), /*priority=*/1.0,
         std::move(bidding_url),
         /*bidding_wasm_helper_url=*/absl::nullopt,
         /*update_url=*/absl::nullopt, std::move(trusted_bidding_signals_url),

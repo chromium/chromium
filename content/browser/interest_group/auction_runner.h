@@ -586,6 +586,8 @@ class CONTENT_EXPORT AuctionRunner {
         bool has_bidding_signals_data_version,
         const absl::optional<GURL>& debug_loss_report_url,
         const absl::optional<GURL>& debug_win_report_url,
+        double set_priority,
+        bool has_set_priority,
         const std::vector<std::string>& errors);
 
     // True if all bid results and the seller script load are complete.
@@ -818,6 +820,11 @@ class CONTENT_EXPORT AuctionRunner {
     // least one interest group. These owners will have their interest groups
     // updated after a successful auction, barring rate-limiting.
     std::vector<url::Origin> post_auction_update_owners_;
+
+    // A list of all interest groups that need to have their priority adjusted.
+    // The new rates will be committed after a successful auction.
+    std::vector<std::pair<InterestGroupKey, double>>
+        post_auction_priority_updates_;
 
     // The highest scoring bid so far. Null if no bid has been accepted yet.
     std::unique_ptr<ScoredBid> top_bid_;

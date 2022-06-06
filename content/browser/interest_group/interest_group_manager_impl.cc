@@ -449,6 +449,14 @@ void InterestGroupManagerImpl::set_max_active_report_requests_for_testing(
   max_active_report_requests_ = max_active_report_requests;
 }
 
+void InterestGroupManagerImpl::SetInterestGroupPriority(
+    const url::Origin& owner,
+    const std::string& name,
+    double priority) {
+  impl_.AsyncCall(&InterestGroupStorage::SetInterestGroupPriority)
+      .WithArgs(owner, name, priority);
+}
+
 void InterestGroupManagerImpl::set_max_report_queue_length_for_testing(
     int max_queue_length) {
   max_report_queue_length_ = max_queue_length;

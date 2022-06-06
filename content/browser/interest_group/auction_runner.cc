@@ -647,6 +647,7 @@ void AuctionRunner::Auction::OnInterestGroupRead(
         continue;
       if (bidder.interest_group.ads->empty())
         continue;
+      bidder.interest_group.priority.reset();
       bid_states_.emplace_back(BidState());
       bid_states_.back().bidder = std::move(bidder);
     }
@@ -873,6 +874,8 @@ void AuctionRunner::Auction::OnBidderWorkletGenerateBidFatalError(
         /*has_bidding_signals_data_version=*/false,
         /*debug_loss_report_url=*/absl::nullopt,
         /*debug_win_report_url=*/absl::nullopt,
+        /*set_priority=*/0,
+        /*has_set_priority=*/false,
         {base::StrCat({bid_state->bidder.interest_group.bidding_url->spec(),
                        " crashed while trying to run generateBid()."})});
     return;
@@ -884,7 +887,8 @@ void AuctionRunner::Auction::OnBidderWorkletGenerateBidFatalError(
                         /*bidding_signals_data_version=*/0,
                         /*has_bidding_signals_data_version=*/false,
                         /*debug_loss_report_url=*/absl::nullopt,
-                        /*debug_win_report_url=*/absl::nullopt, errors);
+                        /*debug_win_report_url=*/absl::nullopt,
+                        /*set_priority=*/0, /*has_set_priority=*/false, errors);
 }
 
 void AuctionRunner::Auction::OnGenerateBidComplete(
@@ -894,6 +898,8 @@ void AuctionRunner::Auction::OnGenerateBidComplete(
     bool has_bidding_signals_data_version,
     const absl::optional<GURL>& debug_loss_report_url,
     const absl::optional<GURL>& debug_win_report_url,
+    double set_priority,
+    bool has_set_priority,
     const std::vector<std::string>& errors) {
   DCHECK(!state->made_bid);
   DCHECK_GT(num_bids_not_sent_to_seller_worklet_, 0);
@@ -905,6 +911,12 @@ void AuctionRunner::Auction::OnGenerateBidComplete(
   absl::optional<uint32_t> maybe_bidding_signals_data_version;
   if (has_bidding_signals_data_version)
     maybe_bidding_signals_data_version = bidding_signals_data_version;
+
+  if (has_set_priority) {
+    interest_group_manager_->SetInterestGroupPriority(
+        state->bidder.interest_group.owner, state->bidder.interest_group.name,
+        set_priority);
+  }
 
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 

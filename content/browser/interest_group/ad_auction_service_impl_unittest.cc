@@ -528,6 +528,15 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     return 0;
   }
 
+  double GetPriority(const url::Origin& owner, const std::string& name) {
+    for (const auto& interest_group : GetInterestGroupsForOwner(owner)) {
+      if (interest_group.interest_group.name == name) {
+        return interest_group.interest_group.priority.value();
+      }
+    }
+    return 0;
+  }
+
   absl::optional<GURL> ConvertFencedFrameURNToURL(const GURL& urn_url) {
     TestFencedFrameURLMappingResultObserver observer;
     FencedFrameURLMapping& fenced_frame_urls_map =
@@ -4867,6 +4876,51 @@ TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsMissingGuid) {
 
   FinalizeAdAndExpectPipeClosed(
       /*guid=*/std::string(), config);
+}
+
+TEST_F(AdAuctionServiceImplTest, SetPriorityAdjustsPriority) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  if (interestGroup.priority !== undefined)
+    throw new Error("Priority should not be in worklet");
+  setPriority(99);
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+)";
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.priority = 2;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(2, GetPriority(kOriginA, kInterestGroupName));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  absl::optional<GURL> auction_result =
+      RunAdAuctionAndFlush(std::move(auction_config));
+  ASSERT_NE(auction_result, absl::nullopt);
+  EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
+            GURL("https://example.com/render"));
+  EXPECT_EQ(99, GetPriority(kOriginA, kInterestGroupName));
 }
 
 class AdAuctionServiceImplNumAuctionLimitTest

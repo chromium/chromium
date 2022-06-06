@@ -186,6 +186,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const url::Origin& frame_origin,
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  // Update the interest group priority.
+  void SetInterestGroupPriority(const url::Origin& owner,
+                                const std::string& name,
+                                double priority);
 
   // Clears the InterestGroupPermissionsChecker's cache of the results of
   // .well-known fetches.

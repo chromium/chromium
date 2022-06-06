@@ -1349,6 +1349,28 @@ bool DoDeleteInterestGroupData(
   return transaction.Commit();
 }
 
+bool DoSetInterestGroupPriority(sql::Database& db,
+                                const url::Origin& owner,
+                                const std::string& name,
+                                double priority) {
+  // clang-format off
+  sql::Statement set_priority_sql(
+      db.GetCachedStatement(SQL_FROM_HERE,
+          "UPDATE interest_groups "
+          "SET priority=? "
+          "WHERE owner=? AND name=?"));
+  // clang-format on
+  if (!set_priority_sql.is_valid()) {
+    DLOG(ERROR) << "SetPriority SQL statement did not compile.";
+    return false;
+  }
+  set_priority_sql.Reset(true);
+  set_priority_sql.BindDouble(0, priority);
+  set_priority_sql.BindString(1, Serialize(owner));
+  set_priority_sql.BindString(2, name);
+  return set_priority_sql.Run();
+}
+
 bool DeleteOldJoins(sql::Database& db, base::Time cutoff) {
   sql::Statement del_join_history(db.GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM join_history WHERE join_time <= ?"));
@@ -1829,6 +1851,19 @@ void InterestGroupStorage::DeleteInterestGroupData(
 
   if (!DoDeleteInterestGroupData(*db_, origin_matcher)) {
     DLOG(ERROR) << "Could not delete interest group data: "
+                << db_->GetErrorMessage();
+  }
+}
+
+void InterestGroupStorage::SetInterestGroupPriority(const url::Origin& owner,
+                                                    const std::string& name,
+                                                    double priority) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized())
+    return;
+
+  if (!DoSetInterestGroupPriority(*db_, owner, name, priority)) {
+    DLOG(ERROR) << "Could not set interest group priority: "
                 << db_->GetErrorMessage();
   }
 }

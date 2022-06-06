@@ -201,6 +201,7 @@ class BidderWorklet : public mojom::BidderWorklet {
         absl::optional<uint32_t> bidding_signals_data_version,
         absl::optional<GURL> debug_loss_report_url,
         absl::optional<GURL> debug_win_report_url,
+        absl::optional<double> set_priority,
         std::vector<std::string> error_msgs)>;
     using ReportWinCallbackInternal =
         base::OnceCallback<void(absl::optional<GURL> report_url,
@@ -314,6 +315,7 @@ class BidderWorklet : public mojom::BidderWorklet {
       absl::optional<uint32_t> bidding_signals_data_version,
       absl::optional<GURL> debug_loss_report_url,
       absl::optional<GURL> debug_win_report_url,
+      absl::optional<double> set_priority,
       std::vector<std::string> error_msgs);
 
   // Invokes the `callback` of `task` with the provided values, and removes

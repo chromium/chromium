@@ -154,6 +154,13 @@ interface BidderWorklet {
   //  interim reporting API that will be replaced with standardized reporting
   //  APIs once available. It must be a valid HTTPS URL.
   //
+  // `set_priority` The value of the updated priority for this interest group.
+  //  This priority should be applied to the interest group after the auction.
+  //
+  // `has_set_priority` True to indicate the worklet has requested the an
+  //  update to the interest group priority.
+  //  TODO(https://crbug.com/657632): Update when optional integers supported.
+  //
   // `errors` The various error messages to be used for debugging. These are too
   //  sensitive for the renderer to see. There may be errors even when a bid
   //  is offered, and there may be no errors when there's no bid. Includes
@@ -173,6 +180,8 @@ interface BidderWorklet {
           bool has_bidding_signals_data_version,
           url.mojom.Url? debug_loss_report_url,
           url.mojom.Url? debug_win_report_url,
+          double set_priority,
+          bool has_set_priority,
           array<string> errors);
 
   // Sends pending bidding signals URL requests, if any. Unlike with
