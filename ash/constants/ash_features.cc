@@ -327,12 +327,6 @@ const base::Feature kClipboardHistoryNudgeSessionReset{
 const base::Feature kClipboardHistoryReorder{"ClipboardHistoryReorder",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables cloud game features. A separate flag "LauncherGameSearch" controls
-// launcher-only cloud gaming features, since they can also be enabled on
-// non-cloud-gaming devices.
-const base::Feature kCloudGamingDevice{"CloudGamingDevice",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled and account falls under the new deal, will be allowed to toggle
 // auto updates.
 const base::Feature kConsumerAutoUpdateToggleAllowed{
@@ -1732,10 +1726,6 @@ bool IsClipboardHistoryNudgeSessionResetEnabled() {
 
 bool IsClipboardHistoryReorderEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryReorder);
-}
-
-bool IsCloudGamingDevice() {
-  return base::FeatureList::IsEnabled(kCloudGamingDevice);
 }
 
 bool IsDesksCloseAllEnabled() {

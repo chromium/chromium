@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -27,6 +26,7 @@
 #include "base/version.h"
 #include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "content/public/browser/browser_thread.h"
@@ -145,7 +145,7 @@ void AppProvisioningComponentInstallerPolicy::UpdateAppMetadataOnUI(
 
 void RegisterAppProvisioningComponent(component_updater::ComponentUpdateService* cus) {
   if (!base::FeatureList::IsEnabled(features::kAppProvisioningStatic) ||
-      !ash::features::IsCloudGamingDevice()) {
+      !chromeos::features::IsCloudGamingDeviceEnabled()) {
     return;
   }
 

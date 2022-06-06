@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/constants/chromeos_features.h"
+#include "base/feature_list.h"
 
 namespace chromeos {
 
@@ -16,6 +17,12 @@ namespace features {
 // Enables or disables more filtering out of phones from the Bluetooth UI.
 const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables cloud game features. A separate flag "LauncherGameSearch" controls
+// launcher-only cloud gaming features, since they can also be enabled on
+// non-cloud-gaming devices.
+const base::Feature kCloudGamingDevice{"CloudGamingDevice",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables dark/light mode feature.
 const base::Feature kDarkLightMode{"DarkLightMode",
@@ -43,6 +50,10 @@ const base::Feature kQuickAnswersAlwaysTriggerForSingleWord{
 // Enables Quick Answers for more locales.
 const base::Feature kQuickAnswersForMoreLocales{
     "QuickAnswersForMoreLocales", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsCloudGamingDeviceEnabled() {
+  return base::FeatureList::IsEnabled(kCloudGamingDevice);
+}
 
 bool IsDarkLightModeEnabled() {
   return base::FeatureList::IsEnabled(kDarkLightMode);
