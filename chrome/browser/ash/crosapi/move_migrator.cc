@@ -438,7 +438,7 @@ MoveMigrator::TaskResult MoveMigrator::SetupAshSplitDir(
   // Ash and Lacros.
   const base::FilePath original_indexed_db_dir = original_profile_dir.Append(
       browser_data_migrator_util::kIndexedDBFilePath);
-  if (base::PathExists(original_profile_dir)) {
+  if (base::PathExists(original_indexed_db_dir)) {
     const base::FilePath split_indexed_db_dir =
         tmp_split_dir.Append(browser_data_migrator_util::kIndexedDBFilePath);
     if (!base::CreateDirectory(split_indexed_db_dir)) {
