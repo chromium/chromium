@@ -3195,20 +3195,6 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
       request->common_params().should_replace_current_entry,
       request->force_new_browsing_instance(), reason);
 
-  TRACE_EVENT_INSTANT(
-      "navigation",
-      "RenderFrameHostManager::GetSiteInstanceForNavigationRequest_Result",
-      ChromeTrackEvent::kSiteInstance,
-      *static_cast<SiteInstanceImpl*>(dest_site_instance.get()),
-      ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
-      [&](perfetto::EventContext ctx) {
-        auto rvh = frame_tree_node_->frame_tree()->GetRenderViewHost(
-            static_cast<SiteInstanceImpl*>(dest_site_instance.get())->group());
-        if (rvh) {
-          auto* event = ctx.event<ChromeTrackEvent>();
-          rvh->WriteIntoTrace(ctx.Wrap(event->set_render_view_host()));
-        }
-      });
   // If the NavigationRequest's dest_site_instance was present but incorrect,
   // then ensure no sensitive state is kept on the request. This can happen for
   // cross-process redirects, error pages, etc.
