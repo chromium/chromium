@@ -11835,73 +11835,70 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="Shutdown.browser_exit.time2" units="units" expires_after="M81">
-  <owner>hashimoto@chromium.org</owner>
+<histogram name="Shutdown.BrowserExit.Time" units="ms" expires_after="M107">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>
     Time for shutdown initiated by the browser exit menu command.
   </summary>
 </histogram>
 
-<histogram name="Shutdown.browser_exit.time_per_process" units="units"
-    expires_after="M77">
-  <owner>hashimoto@chromium.org</owner>
-  <summary>
-    Time for shutdown initiated by the browser exit menu command per renderer
-    process.
-  </summary>
-</histogram>
-
-<histogram name="Shutdown.end_session.time2" units="units" expires_after="M78">
-  <owner>hashimoto@chromium.org</owner>
+<histogram name="Shutdown.EndSession.Time" units="ms" expires_after="M107">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>
     Time for shutdown initiated by an end session (user logs off, shuts down or
     reboots without explicitly exiting).
   </summary>
 </histogram>
 
-<histogram name="Shutdown.end_session.time_per_process" units="units"
-    expires_after="M77">
-  <owner>hashimoto@chromium.org</owner>
+<histogram name="Shutdown.NotValid.Time" units="ms" expires_after="M107">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>
-    Time for shutdown initiated by an end session (user logs off, shuts down or
-    reboots without explicitly exiting) per renderer process.
+    Time for shutdown for a not valid exit. This situation happen when a chrome
+    process is already running and the process is terminated after the process
+    singleton rendez-vous.
   </summary>
 </histogram>
 
-<histogram name="Shutdown.renderers.slow" units="units" expires_after="M77">
-  <owner>hashimoto@chromium.org</owner>
+<histogram name="Shutdown.Renderers.Slow" units="renderers"
+    expires_after="M107">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>
     The number of renderer processes that couldn't be shutdown quickly due to
     onbeforeunload or onunload listeners.
   </summary>
 </histogram>
 
-<histogram name="Shutdown.renderers.total" units="units" expires_after="M77">
-  <owner>hashimoto@chromium.org</owner>
+<histogram name="Shutdown.Renderers.Total" units="renderers"
+    expires_after="M107">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>
     The number of renderer processes running when shutdown was called.
   </summary>
 </histogram>
 
 <histogram name="Shutdown.ShutdownType" enum="ShutdownType"
-    expires_after="2020-04-19">
-  <owner>hashimoto@chromium.org</owner>
+    expires_after="M107">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>The type of the last shutdown.</summary>
 </histogram>
 
-<histogram name="Shutdown.window_close.time2" units="ms" expires_after="M77">
-  <owner>hashimoto@chromium.org</owner>
-  <summary>
-    Time for shutdown initiated by the last browser window being closed.
-  </summary>
+<histogram name="Shutdown.SilentExit.Time" units="ms" expires_after="M107">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>Time for shutdown for a silent exit.</summary>
 </histogram>
 
-<histogram name="Shutdown.window_close.time_per_process" units="units"
-    expires_after="M77">
-  <owner>hashimoto@chromium.org</owner>
+<histogram name="Shutdown.WindowClose.Time" units="ms" expires_after="M107">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>
-    Time for shutdown initiated by the last browser window being closed per
-    renderer process.
+    Time for shutdown initiated by the last browser window being closed.
   </summary>
 </histogram>
 
