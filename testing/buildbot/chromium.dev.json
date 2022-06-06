@@ -302,7 +302,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11"
+              "os": "Mac-11|Mac-12"
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
@@ -320,7 +320,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11"
+              "os": "Mac-11|Mac-12"
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
@@ -338,7 +338,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11"
+              "os": "Mac-11|Mac-12"
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
@@ -356,7 +356,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11"
+              "os": "Mac-11|Mac-12"
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
@@ -374,7 +374,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11"
+              "os": "Mac-11|Mac-12"
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
@@ -392,7 +392,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11"
+              "os": "Mac-11|Mac-12"
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
