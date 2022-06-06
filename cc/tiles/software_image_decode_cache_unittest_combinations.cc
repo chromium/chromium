@@ -83,7 +83,7 @@ class N32Cache : public virtual BaseTest {
   std::unique_ptr<SoftwareImageDecodeCache> CreateCache() override {
     return std::make_unique<SoftwareImageDecodeCache>(
         kN32_SkColorType, kLockedMemoryLimitBytes,
-        PaintImage::kDefaultGeneratorClientId);
+        PaintImage::GetNextGeneratorClientId());
   }
 };
 
@@ -92,7 +92,7 @@ class RGBA4444Cache : public virtual BaseTest {
   std::unique_ptr<SoftwareImageDecodeCache> CreateCache() override {
     return std::make_unique<SoftwareImageDecodeCache>(
         kARGB_4444_SkColorType, kLockedMemoryLimitBytes,
-        PaintImage::kDefaultGeneratorClientId);
+        PaintImage::GetNextGeneratorClientId());
   }
 };
 
@@ -101,7 +101,7 @@ class RGBA_F16Cache : public virtual BaseTest {
   std::unique_ptr<SoftwareImageDecodeCache> CreateCache() override {
     return std::make_unique<SoftwareImageDecodeCache>(
         kRGBA_F16_SkColorType, kLockedMemoryLimitBytes,
-        PaintImage::kDefaultGeneratorClientId);
+        PaintImage::GetNextGeneratorClientId());
   }
 };
 

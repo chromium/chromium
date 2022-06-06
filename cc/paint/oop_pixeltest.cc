@@ -141,7 +141,7 @@ class OopPixelTest : public testing::Test,
     oop_image_cache_ = std::make_unique<GpuImageDecodeCache>(
         raster_context_provider_.get(), true, kRGBA_8888_SkColorType,
         kWorkingSetSize, raster_max_texture_size,
-        PaintImage::kDefaultGeneratorClientId, nullptr);
+        PaintImage::GetNextGeneratorClientId(), nullptr);
   }
 
   class RasterOptions {

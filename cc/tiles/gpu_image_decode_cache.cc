@@ -991,6 +991,7 @@ GpuImageDecodeCache::GpuImageDecodeCache(
       max_working_set_bytes_(max_working_set_bytes),
       max_working_set_items_(kMaxItemsInWorkingSet),
       dark_mode_filter_(dark_mode_filter) {
+  DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
   // Note that to compute |allow_accelerated_jpeg_decodes_| and
   // |allow_accelerated_webp_decodes_|, the last thing we check is the feature
   // flag. That's because we want to ensure that we're in OOP-R mode and the

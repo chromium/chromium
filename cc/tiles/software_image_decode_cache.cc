@@ -149,6 +149,7 @@ SoftwareImageDecodeCache::SoftwareImageDecodeCache(
       color_type_(color_type),
       generator_client_id_(generator_client_id),
       max_items_in_cache_(kNormalMaxItemsInCacheForSoftware) {
+  DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
   // In certain cases, ThreadTaskRunnerHandle isn't set (Android Webview).
   // Don't register a dump provider in these cases.
   if (base::ThreadTaskRunnerHandle::IsSet()) {

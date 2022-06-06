@@ -29,7 +29,7 @@ class TestSoftwareImageDecodeCache : public SoftwareImageDecodeCache {
   TestSoftwareImageDecodeCache()
       : SoftwareImageDecodeCache(kN32_SkColorType,
                                  kLockedMemoryLimitBytes,
-                                 PaintImage::kDefaultGeneratorClientId) {}
+                                 PaintImage::GetNextGeneratorClientId()) {}
 };
 
 SkM44 CreateMatrix(const SkSize& scale, bool is_decomposable) {
