@@ -45,9 +45,9 @@ class PrintingOAuth2AuthorizationZoneTest : public testing::Test {
 
   // Simulates Registration Request described in rfc7591, section 3.
   void ProcessRegistrationRequest(const std::string& client_id) {
-    base::flat_map<std::string, base::Value> fields;
+    base::Value::Dict fields;
     EXPECT_EQ("", server_.ReceivePOSTWithJSON(registration_uri_, fields));
-    fields["client_id"] = base::Value(client_id);
+    fields.Set("client_id", client_id);
     server_.ResponseWithJSON(net::HttpStatusCode::HTTP_CREATED, fields);
   }
 

@@ -38,12 +38,12 @@ class PrintingOAuth2AuthorizationServerSessionTest : public testing::Test {
       const std::string& access_token,
       const std::string& refresh_token = "") {
     base::flat_map<std::string, std::string> params;
-    base::flat_map<std::string, base::Value> fields;
+    base::Value::Dict fields;
     EXPECT_EQ("", server_.ReceivePOSTWithURLParams(url_, params));
-    fields["access_token"] = base::Value(access_token);
-    fields["token_type"] = base::Value("bearer");
+    fields.Set("access_token", access_token);
+    fields.Set("token_type", "bearer");
     if (!refresh_token.empty()) {
-      fields["refresh_token"] = base::Value(refresh_token);
+      fields.Set("refresh_token", refresh_token);
     }
     server_.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, fields);
   }
@@ -111,10 +111,10 @@ TEST_F(PrintingOAuth2AuthorizationServerSessionTest, FirstTokenRequest) {
   EXPECT_EQ(params["code_verifier"], "code_verifier_P2s&");
 
   // Prepare and send the response.
-  base::flat_map<std::string, base::Value> fields;
-  fields["access_token"] = base::Value("access_token_@(#a");
-  fields["token_type"] = base::Value("bearer");
-  fields["refresh_token"] = base::Value("refresh_token_X)(@K");
+  base::Value::Dict fields;
+  fields.Set("access_token", "access_token_@(#a");
+  fields.Set("token_type", "bearer");
+  fields.Set("refresh_token", "refresh_token_X)(@K");
   server_.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, fields);
 
   // Verify the response.
@@ -136,11 +136,11 @@ TEST_F(PrintingOAuth2AuthorizationServerSessionTest, FirstTokenRequestError) {
   EXPECT_EQ(params["code_verifier"], "c");
 
   // Prepare and send the response.
-  base::flat_map<std::string, base::Value> fields;
-  fields["access_token"] = base::Value("access_token_1");
+  base::Value::Dict fields;
+  fields.Set("access_token", "access_token_1");
   // The field "token_type" is wrong.
-  fields["token_type"] = base::Value("bearer_WRONG");
-  fields["refresh_token"] = base::Value("refresh_token_2");
+  fields.Set("token_type", "bearer_WRONG");
+  fields.Set("refresh_token", "refresh_token_2");
   server_.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, fields);
 
   // Verify the response.
@@ -172,9 +172,9 @@ TEST_F(PrintingOAuth2AuthorizationServerSessionTest, NextTokenRequest) {
   EXPECT_EQ(params["refresh_token"], "refresh_token_X)(@K");
 
   // Prepare and send the response.
-  base::flat_map<std::string, base::Value> fields;
-  fields["access_token"] = base::Value("new_access_token_123");
-  fields["token_type"] = base::Value("bearer");
+  base::Value::Dict fields;
+  fields.Set("access_token", "new_access_token_123");
+  fields.Set("token_type", "bearer");
   server_.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, fields);
 
   // Verify the response.
@@ -200,8 +200,8 @@ TEST_F(PrintingOAuth2AuthorizationServerSessionTest, NextTokenRequestError) {
   base::flat_map<std::string, std::string> params;
   ASSERT_EQ("", server_.ReceivePOSTWithURLParams(url_, params));
   EXPECT_EQ(params["refresh_token"], "refresh_token_X)(@K");
-  base::flat_map<std::string, base::Value> fields;
-  fields["token_type"] = base::Value("bearer");
+  base::Value::Dict fields;
+  fields.Set("token_type", "bearer");
   // The field "access_token" is missing.
   server_.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, fields);
 
@@ -246,8 +246,8 @@ TEST_F(PrintingOAuth2AuthorizationServerSessionTest, InvalidRefreshToken) {
   base::flat_map<std::string, std::string> params;
   ASSERT_EQ("", server_.ReceivePOSTWithURLParams(url_, params));
   EXPECT_EQ(params["refresh_token"], "refresh_token_X)@K");
-  base::flat_map<std::string, base::Value> fields;
-  fields["error"] = base::Value("invalid_grant");
+  base::Value::Dict fields;
+  fields.Set("error", "invalid_grant");
   server_.ResponseWithJSON(net::HttpStatusCode::HTTP_BAD_REQUEST, fields);
 
   // Verify the response.

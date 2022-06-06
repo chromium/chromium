@@ -92,11 +92,11 @@ TEST_F(PrintingOAuth2IppEndpointTokenFetcherTest, TokenExchangeRequest) {
             "urn:ietf:params:oauth:token-type:access_token");
 
   // Prepare and send the response.
-  base::flat_map<std::string, base::Value> fields;
-  fields["access_token"] = base::Value("endpoint_access_token_swD");
-  fields["issued_token_type"] =
-      base::Value("urn:ietf:params:oauth:token-type:access_token");
-  fields["token_type"] = base::Value("bearer");
+  base::Value::Dict fields;
+  fields.Set("access_token", "endpoint_access_token_swD");
+  fields.Set("issued_token_type",
+             "urn:ietf:params:oauth:token-type:access_token");
+  fields.Set("token_type", "bearer");
   server_.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, fields);
 
   // Verify the response.
@@ -113,10 +113,10 @@ TEST_F(PrintingOAuth2IppEndpointTokenFetcherTest, TokenExchangeRequestError) {
   // Receive the request and send the response.
   base::flat_map<std::string, std::string> params;
   ASSERT_EQ("", server_.ReceivePOSTWithURLParams(token_url_, params));
-  base::flat_map<std::string, base::Value> fields;
-  fields["access_token"] = base::Value("endpoint_access_token_swD");
-  fields["issued_token_type"] =
-      base::Value("urn:ietf:params:oauth:token-type:access_token");
+  base::Value::Dict fields;
+  fields.Set("access_token", "endpoint_access_token_swD");
+  fields.Set("issued_token_type",
+             "urn:ietf:params:oauth:token-type:access_token");
   // Missing field "token_type".
   server_.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, fields);
 
@@ -135,8 +135,8 @@ TEST_F(PrintingOAuth2IppEndpointTokenFetcherTest, InvalidAccessToken) {
   // Receive the request and send the response.
   base::flat_map<std::string, std::string> params;
   ASSERT_EQ("", server_.ReceivePOSTWithURLParams(token_url_, params));
-  base::flat_map<std::string, base::Value> fields;
-  fields["error"] = base::Value("invalid_grant");
+  base::Value::Dict fields;
+  fields.Set("error", "invalid_grant");
   server_.ResponseWithJSON(net::HttpStatusCode::HTTP_BAD_REQUEST, fields);
 
   // Verify the response.
