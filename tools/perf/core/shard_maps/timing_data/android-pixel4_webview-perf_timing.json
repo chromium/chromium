@@ -1117,10 +1117,6 @@
     },
     {
         "duration": "7.0",
-        "name": "blink_perf.parser/html-parser-threaded.html"
-    },
-    {
-        "duration": "7.0",
         "name": "blink_perf.parser/html-parser.html"
     },
     {

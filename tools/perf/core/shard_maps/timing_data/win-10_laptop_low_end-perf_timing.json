@@ -1116,10 +1116,6 @@
         "name": "blink_perf.parser/declarative-shadow-dom.html"
     },
     {
-        "duration": "7.0",
-        "name": "blink_perf.parser/html-parser-threaded.html"
-    },
-    {
         "duration": "8.0",
         "name": "blink_perf.parser/html-parser.html"
     },
