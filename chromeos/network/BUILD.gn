@@ -185,7 +185,7 @@ source_set("test_support") {
   public_deps = [
     ":network",
     "//chromeos/components/onc",
-    "//chromeos/dbus/hermes:hermes_fakes",
+    "//chromeos/dbus/hermes",
     "//dbus",
   ]
   deps = [
@@ -193,7 +193,6 @@ source_set("test_support") {
     "//chromeos:test_utils",
     "//chromeos/components/onc:test_support",
     "//chromeos/dbus:test_support",
-    "//chromeos/dbus/hermes:hermes_clients",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
     "//components/onc",
@@ -248,8 +247,7 @@ source_set("unit_tests") {
     "//chromeos/components/onc",
     "//chromeos/components/onc:test_support",
     "//chromeos/dbus:test_support",
-    "//chromeos/dbus/hermes:hermes_clients",
-    "//chromeos/dbus/hermes:hermes_fakes",
+    "//chromeos/dbus/hermes",
     "//chromeos/dbus/permission_broker",
     "//chromeos/login/login_state",
     "//components/onc",
