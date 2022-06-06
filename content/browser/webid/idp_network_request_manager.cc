@@ -142,12 +142,14 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
   auto target_origin = url::Origin::Create(target_url);
   auto site_for_cookies = net::SiteForCookies::FromOrigin(target_origin);
   AddCsrfHeader(resource_request.get());
-  // We set the initiator to the target origin so that this request is
-  // considered first-party. We want to send first-party cookies because
-  // this is not a real third-party request as it is mediated by the browser,
-  // and third-party cookies will be going away with 3pc deprecation, but we
-  // still need to send cookies in these requests.
-  resource_request->request_initiator = target_origin;
+  // We set the initiator to nullopt to denote browser-initiated so that this
+  // request is considered first-party. We want to send first-party cookies
+  // because this is not a real third-party request as it is mediated by the
+  // browser, and third-party cookies will be going away with 3pc deprecation,
+  // but we still need to send cookies in these requests.
+  // We use nullopt instead of target_origin because we want to send a
+  // `Sec-Fetch-Site: none` header instead of `Sec-Fetch-Site: same-origin`.
+  resource_request->request_initiator = absl::nullopt;
   resource_request->url = target_url;
   resource_request->site_for_cookies = site_for_cookies;
   if (send_referrer) {
