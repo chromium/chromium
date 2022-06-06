@@ -5627,7 +5627,7 @@
   {
     "name": "smart-lock-ui-revamp",
     "owners": [ "cclem", "better-together-dev@google.com" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 105
   },
   {
     "name": "smart-sorting-new-overflow-menu",
