@@ -37,10 +37,9 @@ export class InputController {
    */
   initialize_() {
     // Listen for IME focus changes.
-    chrome.input.ime.onFocus.addListener(
-        (context) => this.onImeFocus_(context));
+    chrome.input.ime.onFocus.addListener(context => this.onImeFocus_(context));
     chrome.input.ime.onBlur.addListener(
-        (contextId) => this.onImeBlur_(contextId));
+        contextId => this.onImeBlur_(contextId));
   }
 
   /**
@@ -60,7 +59,7 @@ export class InputController {
   connect(callback) {
     this.onConnectCallback_ = callback;
     chrome.inputMethodPrivate.getCurrentInputMethod(
-        (method) => this.saveCurrentInputMethodAndStart_(method));
+        method => this.saveCurrentInputMethodAndStart_(method));
   }
 
   /**

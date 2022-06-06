@@ -31,6 +31,9 @@ export class Dictation {
     /** @private {SpeechParser} */
     this.speechParser_ = null;
 
+    /** @private {HiddenMacroManager} */
+    this.hiddenMacroManager_ = null;
+
     /** @private {string} */
     this.localePref_ = '';
 
@@ -86,6 +89,7 @@ export class Dictation {
     if (this.localePref_) {
       this.speechParser_.initialize(this.localePref_);
     }
+    this.hiddenMacroManager_ = new HiddenMacroManager(this.inputController_);
 
     // Set default speech recognition properties. Locale will be updated when
     // `updateFromPrefs_` is called.
@@ -471,7 +475,7 @@ export class Dictation {
 
   /** @param {!MacroName} name The macro to run. */
   runHiddenMacroForTesting(name) {
-    HiddenMacroManager.runMacroForTesting(name);
+    this.hiddenMacroManager_.runMacroForTesting(name);
   }
 }
 

@@ -1186,6 +1186,51 @@ IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, StopListening) {
   WaitForRecognitionStopped();
 }
 
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, DeletePrevWordSimple) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("This is a test", "This is a test");
+  RunHiddenMacro(/*DELETE_PREV_WORD*/ 17);
+  WaitForTextAreaValue("This is a ");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, DeletePrevWordExtraSpace) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("This is a test ", "This is a test ");
+  RunHiddenMacro(/*DELETE_PREV_WORD*/ 17);
+  WaitForTextAreaValue("This is a ");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, DeletePrevWordNewLine) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("This is a test\n\n",
+                                         "This is a test\n\n");
+  RunHiddenMacro(/*DELETE_PREV_WORD*/ 17);
+  WaitForTextAreaValue("This is a test\n");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, DeletePrevWordPunctuation) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("This.is.a.test. ",
+                                         "This.is.a.test. ");
+  RunHiddenMacro(/*DELETE_PREV_WORD*/ 17);
+  WaitForTextAreaValue("This.is.a.test");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, DeletePrevWordMiddleOfWord) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("This is a test.", "This is a test.");
+  // Move the text caret into the middle of the word "test".
+  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
+  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
+  RunHiddenMacro(/*DELETE_PREV_WORD*/ 17);
+  WaitForTextAreaValue("This is a t.");
+}
+
 // Tests behavior of Dictation and installation of Pumpkin.
 class DictationPumpkinInstallTest : public DictationTest {
  protected:

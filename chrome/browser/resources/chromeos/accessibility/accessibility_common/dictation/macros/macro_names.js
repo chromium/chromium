@@ -70,5 +70,8 @@ export const MacroName = {
   // Stops dictation.
   STOP_LISTENING: 16,
 
+  // Delete one word.
+  DELETE_PREV_WORD: 17,
+
   // Any new actions should match with Voice Access's semantic tags.
 };
