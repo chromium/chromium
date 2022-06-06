@@ -4449,7 +4449,88 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelection(LONG selection_index,
 IFACEMETHODIMP
 AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
                                   LONG* nSelections) {
-  return E_NOTIMPL;
+  COM_OBJECT_VALIDATE_2_ARGS(selections, nSelections);
+
+  AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
+
+  AXTree::Selection unignored_selection =
+      GetDelegate()->GetUnignoredSelection();
+
+  AXNodeID anchor_id = unignored_selection.anchor_object_id;
+  AXPlatformNodeWin* anchor_node =
+      static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(anchor_id));
+  if (!anchor_node)
+    return E_FAIL;
+
+  // If the selection endpoint is inside this object and therefore, at least
+  // from this side, we do not need to crop the selection. Simply convert
+  // selection anchor/focus offset to a hypertext offset within anchor/focus
+  // object. Otherwise per the IA2 Spec, we need to crop the selection to be
+  // within this object. `AXPlatformNodeBase::GetHypertextOffsetFromEndpoint`
+  // can correctly handle endpoint offsets that are outside this object by
+  // returning either 0 or hypertext length; see the related comment in
+  // the method's declaration.
+
+  int anchor_offset = unignored_selection.anchor_offset;
+  if (anchor_node->IsDescendant(this)) {
+    anchor_offset =
+        anchor_node->GetHypertextOffsetFromEndpoint(anchor_node, anchor_offset);
+  } else {
+    anchor_offset = GetHypertextOffsetFromEndpoint(anchor_node, anchor_offset);
+    anchor_node = this;
+  }
+  DCHECK_GE(anchor_offset, 0)
+      << "This value is unexpected here, since we have already determined in "
+         "this method that anchor_object is in the accessibility tree.";
+
+  AXNodeID focus_id = unignored_selection.focus_object_id;
+  AXPlatformNodeWin* focus_node =
+      static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(focus_id));
+  if (!focus_node)
+    return E_FAIL;
+
+  int focus_offset = unignored_selection.focus_offset;
+  if (focus_node->IsDescendant(this)) {
+    focus_offset =
+        focus_node->GetHypertextOffsetFromEndpoint(focus_node, focus_offset);
+  } else {
+    focus_offset = GetHypertextOffsetFromEndpoint(focus_node, focus_offset);
+    focus_node = this;
+  }
+  DCHECK_GE(focus_offset, 0)
+      << "This value is unexpected here, since we have already determined in "
+         "this method that focus_object is in the accessibility tree.";
+
+  if (anchor_node == focus_node && anchor_offset == focus_offset)
+    return S_FALSE;  // No selection within this subtree.
+
+  Microsoft::WRL::ComPtr<IAccessibleText> anchor_text_node;
+  if (FAILED(anchor_node->QueryInterface(IID_PPV_ARGS(&anchor_text_node))))
+    return E_FAIL;
+
+  Microsoft::WRL::ComPtr<IAccessibleText> focus_text_node;
+  if (FAILED(focus_node->QueryInterface(IID_PPV_ARGS(&focus_text_node))))
+    return E_FAIL;
+
+  *selections = reinterpret_cast<IA2TextSelection*>(
+      CoTaskMemAlloc(sizeof(IA2TextSelection)));
+
+  if (unignored_selection.is_backward) {
+    selections[0]->startObj = focus_text_node.Detach();
+    selections[0]->startOffset = focus_offset;
+    selections[0]->endObj = anchor_text_node.Detach();
+    selections[0]->endOffset = anchor_offset;
+    selections[0]->startIsActive = true;
+  } else {
+    selections[0]->startObj = anchor_text_node.Detach();
+    selections[0]->startOffset = anchor_offset;
+    selections[0]->endObj = focus_text_node.Detach();
+    selections[0]->endOffset = focus_offset;
+    selections[0]->startIsActive = false;
+  }
+
+  *nSelections = 1;
+  return S_OK;
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::setSelections(LONG nSelections,
