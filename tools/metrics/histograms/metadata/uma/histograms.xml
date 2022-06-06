@@ -133,20 +133,26 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.CleanExitBeacon.MonitoringStage"
     enum="BeaconMonitoringStage" expires_after="2022-10-04">
+  <obsolete>
+    Removed in M104.
+  </obsolete>
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The stage during which Chrome was monitoring for browser crashes via the
-    CleanExitBeacon when Chrome failed to exit cleanly. For Extended Variations
-    Safe Mode experiment group clients, Chrome monitors earlier than for control
-    group clients. This metric allows early crashes detected due to the
-    experiment to be distinguished from crashes that the status quo code can
+    CleanExitBeacon when Chrome failed to exit cleanly. As a result of the
+    Extended Variations Safe Mode work, Chrome monitors earlier on in startup
+    for crashes. This metric allows early crashes detected due to this work to
+    be distinguished from crashes that the original Variations Safe Mode could
     detect. Emitted during startup when the CleanExitBeacon is initialized.
 
     Note that the status quo monitoring stage refers to when crash monitoring
     would start in the absence of the new Extended Variations Safe Mode
-    experiment behavior, which (a) is later on in startup and (b) depends on the
-    platform.
+    behavior, which (a) is later on in startup and (b) depends on the platform.
+
+    As of M102 for desktop and iOS and M103 for Android Chrome, any client may
+    emit this metric. Prior to this, the metric was emitted by only clients in
+    an enabled group that used the beacon file.
   </summary>
 </histogram>
 

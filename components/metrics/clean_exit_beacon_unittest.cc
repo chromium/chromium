@@ -40,26 +40,9 @@ using ::variations::SetUpExtendedSafeModeExperiment;
 const wchar_t kDummyWindowsRegistryKey[] = L"";
 
 // Creates and returns well-formed beacon file contents with the given values.
-std::string CreateWellFormedBeaconFileContents(
-    bool exited_cleanly,
-    int crash_streak,
-    absl::optional<BeaconMonitoringStage> stage = absl::nullopt) {
+std::string CreateWellFormedBeaconFileContents(bool exited_cleanly,
+                                               int crash_streak) {
   const std::string exited_cleanly_str = exited_cleanly ? "true" : "false";
-  if (stage) {
-    const std::string stage_str =
-        base::NumberToString(static_cast<int>(stage.value()));
-    return base::StringPrintf(
-        "{\n"
-        "  \"monitoring_stage\": %s,\n"
-        "  \"user_experience_metrics.stability.exited_cleanly\": %s,\n"
-        "  \"variations_crash_streak\": %s\n"
-        "}",
-        stage_str.data(), exited_cleanly_str.data(),
-        base::NumberToString(crash_streak).data());
-  }
-  // The monitoring stage was added to the beacon file in a later milestone,
-  // so beacon files of clients running older Chrome versions may not always
-  // have it.
   return base::StringPrintf(
       "{\n"
       "  \"user_experience_metrics.stability.exited_cleanly\": %s,\n"
@@ -142,22 +125,6 @@ class BeaconFileAndPlatformBeaconConsistencyTest
 // UMA.CleanExitBeacon.BeaconFileConsistency histogram.
 class BeaconFileConsistencyTest
     : public testing::WithParamInterface<BeaconConsistencyTestParams>,
-      public CleanExitBeaconTest {};
-
-struct MonitoringStageTestParams {
-  const std::string test_name;
-  const std::string experiment_group;
-  bool exited_cleanly;
-  bool is_extended_safe_mode;
-  absl::optional<BeaconMonitoringStage> stage;
-};
-
-class MonitoringStageMetricTest
-    : public testing::WithParamInterface<MonitoringStageTestParams>,
-      public CleanExitBeaconTest {};
-
-class MonitoringStageWritingTest
-    : public testing::WithParamInterface<MonitoringStageTestParams>,
       public CleanExitBeaconTest {};
 
 // Verify that the crash streak metric is 0 when default pref values are used.
@@ -458,174 +425,92 @@ TEST_P(BeaconFileConsistencyTest, BeaconConsistency) {
       1);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MonitoringStageMetricTest,
-    ::testing::Values(
-        // Verify that UMA.CleanExitBeacon.MonitoringStage is not emitted when
-        // Chrome exited cleanly.
-        MonitoringStageTestParams{.test_name = "ControlGroup_CleanExit",
-                                  .experiment_group = variations::kControlGroup,
-                                  .exited_cleanly = true,
-                                  .stage = absl::nullopt},
-        MonitoringStageTestParams{.test_name = "ExperimentGroup_CleanExit",
-                                  .experiment_group = variations::kEnabledGroup,
-                                  .exited_cleanly = true,
-                                  .stage = absl::nullopt},
-        // Verify that BeaconMonitoringStage::kMissing is emitted when the
-        // beacon file does not have a monitoring stage. This can happen because
-        // the monitoring stage was added in a later milestone.
-        MonitoringStageTestParams{
-            .test_name = "ExperimentGroup_DirtyExit_Missing",
-            .experiment_group = variations::kEnabledGroup,
-            .exited_cleanly = false,
-            .stage = BeaconMonitoringStage::kMissing},
-        // Verify that BeaconMonitoringStage::kExtended is emitted when the
-        // beacon file's monitoring stage indicates that the unclean exit was
-        // detected due to the Extended Variations Safe Mode experiment.
-        MonitoringStageTestParams{
-            .test_name = "ExperimentGroup_DirtyExit_Extended",
-            .experiment_group = variations::kEnabledGroup,
-            .exited_cleanly = false,
-            .stage = BeaconMonitoringStage::kExtended},
-        // Verify that BeaconMonitoringStage::kStatusQuo is emitted when the
-        // unclean exit was detected as a result of the status quo monitoring
-        // code.
-        MonitoringStageTestParams{
-            .test_name = "ControlGroup_DirtyExit_StatusQuo",
-            .experiment_group = variations::kControlGroup,
-            .exited_cleanly = false,
-            .stage = BeaconMonitoringStage::kStatusQuo},
-        MonitoringStageTestParams{
-            .test_name = "ExperimentGroup_DirtyExit_StatusQuo",
-            .experiment_group = variations::kControlGroup,
-            .exited_cleanly = false,
-            .stage = BeaconMonitoringStage::kStatusQuo}),
-    [](const ::testing::TestParamInfo<MonitoringStageTestParams>& params) {
-      return params.param.test_name;
-    });
-
-TEST_P(MonitoringStageMetricTest, CheckMonitoringStageMetric) {
-  MonitoringStageTestParams params = GetParam();
-  SetUpExtendedSafeModeExperiment(params.experiment_group);
-
-  // |crash_streak|'s value is arbitrary and not important. We specify it since
-  // well-formed beacon files include the streak and set it in Local State to be
-  // consistent.
-  const int crash_streak = 1;
-  // Set up Local State prefs. If the control group behavior is under test, then
-  // Local State is used and the beacon file is ignored.
-  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_,
-                                                       params.exited_cleanly);
-  prefs_.SetInteger(variations::prefs::kVariationsCrashStreak, crash_streak);
-  // Set up the beacon file. If the experiment group behavior is under test,
-  // then the beacon file is used and Local State is ignored.
+TEST_F(CleanExitBeaconTest, WriteBeaconValueWhenNotExitingCleanly) {
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
-  const base::FilePath temp_beacon_file_path =
+  const base::FilePath beacon_file_path =
       user_data_dir_path.Append(variations::kVariationsFilename);
-  ASSERT_LT(0, base::WriteFile(temp_beacon_file_path,
-                               CreateWellFormedBeaconFileContents(
-                                   /*exited_cleanly=*/params.exited_cleanly,
-                                   /*crash_streak=*/crash_streak,
-                                   /*stage=*/params.stage)
-                                   .data()));
+  ASSERT_FALSE(base::PathExists(beacon_file_path));
 
-  // Create and initialize the CleanExitBeacon.
+  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
+  clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
+                                     /*is_extended_safe_mode=*/true);
 
-  if (params.exited_cleanly) {
-    ASSERT_TRUE(clean_exit_beacon.exited_cleanly());
-    // Verify that the metric is not emitted when Chrome exited cleanly.
-    histogram_tester_.ExpectTotalCount("UMA.CleanExitBeacon.MonitoringStage",
-                                       0);
-  } else {
-    ASSERT_FALSE(clean_exit_beacon.exited_cleanly());
-    // Verify that the expected BeaconMonitoringStage is emitted.
-    histogram_tester_.ExpectUniqueSample("UMA.CleanExitBeacon.MonitoringStage",
-                                         params.stage.value(), 1);
-  }
+  // Verify that the beacon file exists and has well-formed contents after
+  // updating the beacon value.
+  EXPECT_TRUE(base::PathExists(beacon_file_path));
+  std::string beacon_file_contents1;
+  ASSERT_TRUE(base::ReadFileToString(beacon_file_path, &beacon_file_contents1));
+  EXPECT_EQ(beacon_file_contents1,
+            "{\"user_experience_metrics.stability.exited_cleanly\":false,"
+            "\"variations_crash_streak\":0}");
+  // Verify that the BeaconFileWrite metric was emitted.
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.ExtendedSafeMode.BeaconFileWrite", 1, 1);
+
+  // Write the beacon value again. This is done because it is possible for
+  // WriteBeaconValue() to be called twice during startup or shutdown with the
+  // same value for |exited_cleanly|.
+  clean_exit_beacon.WriteBeaconValue(/*exited_cleanly*/ false,
+                                     /*is_extended_safe_mode=*/false);
+
+  // Verify that the beacon file exists and has well-formed contents after
+  // updating the beacon value.
+  EXPECT_TRUE(base::PathExists(beacon_file_path));
+  std::string beacon_file_contents2;
+  ASSERT_TRUE(base::ReadFileToString(beacon_file_path, &beacon_file_contents2));
+  EXPECT_EQ(beacon_file_contents2,
+            "{\"user_experience_metrics.stability.exited_cleanly\":false,"
+            "\"variations_crash_streak\":0}");
+  // Verify that the BeaconFileWrite metric was not emitted a second time. The
+  // beacon file should not have been written again since the beacon value did
+  // not change.
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.ExtendedSafeMode.BeaconFileWrite", 1, 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MonitoringStageWritingTest,
-    ::testing::Values(
-        // Verify that the beacon file is not written for control group clients.
-        MonitoringStageTestParams{.test_name = "ControlGroup_CleanExit",
-                                  .experiment_group = variations::kControlGroup,
-                                  .exited_cleanly = true,
-                                  .is_extended_safe_mode = false},
-        MonitoringStageTestParams{.test_name = "ControlGroup_DirtyExit",
-                                  .experiment_group = variations::kControlGroup,
-                                  .exited_cleanly = false,
-                                  .is_extended_safe_mode = false},
-        // Verify that signaling that Chrome should stop watching for crashes
-        // for experiment group clients results in a beacon file with the
-        // kNotMonitoring stage.
-        MonitoringStageTestParams{
-            .test_name = "ExperimentGroup_CleanExit_AsynchronousWrite",
-            .experiment_group = variations::kEnabledGroup,
-            .exited_cleanly = true,
-            .is_extended_safe_mode = false,
-            .stage = BeaconMonitoringStage::kNotMonitoring},
-        // Verify that signaling that Chrome should watch for crashes with
-        // |is_extended_safe_mode| set to true for experiment group clients
-        // results in a beacon file with the kExtended stage.
-        MonitoringStageTestParams{
-            .test_name = "ExperimentGroup_DirtyExit_SynchronousWrite",
-            .experiment_group = variations::kEnabledGroup,
-            .exited_cleanly = false,
-            .is_extended_safe_mode = true,
-            .stage = BeaconMonitoringStage::kExtended},
-        // Verify that signaling that Chrome should watch for crashes with
-        // |is_extended_safe_mode| set to false for experiment group clients
-        // results in a beacon file with the kStatusQuo stage.
-        MonitoringStageTestParams{
-            .test_name = "ExperimentGroup_DirtyExit_AsynchronousWrite",
-            .experiment_group = variations::kEnabledGroup,
-            .exited_cleanly = false,
-            .is_extended_safe_mode = false,
-            .stage = BeaconMonitoringStage::kStatusQuo}),
-    [](const ::testing::TestParamInfo<MonitoringStageTestParams>& params) {
-      return params.param.test_name;
-    });
-
-TEST_P(MonitoringStageWritingTest, CheckMonitoringStage) {
-  MonitoringStageTestParams params = GetParam();
-  const std::string group = params.experiment_group;
-  SetUpExtendedSafeModeExperiment(group);
-
+TEST_F(CleanExitBeaconTest, WriteBeaconValueWhenExitingCleanly) {
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
-  const base::FilePath expected_beacon_file_path =
+  const base::FilePath beacon_file_path =
       user_data_dir_path.Append(variations::kVariationsFilename);
-  ASSERT_FALSE(base::PathExists(expected_beacon_file_path));
+  ASSERT_FALSE(base::PathExists(beacon_file_path));
 
-  // Create and initialize the CleanExitBeacon.
+  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
+  clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/true,
+                                     /*is_extended_safe_mode=*/false);
 
-  clean_exit_beacon.WriteBeaconValue(params.exited_cleanly,
-                                     params.is_extended_safe_mode);
+  // Verify that the beacon file exists and has well-formed contents after
+  // updating the beacon value.
+  EXPECT_TRUE(base::PathExists(beacon_file_path));
+  std::string beacon_file_contents1;
+  ASSERT_TRUE(base::ReadFileToString(beacon_file_path, &beacon_file_contents1));
+  EXPECT_EQ(beacon_file_contents1,
+            "{\"user_experience_metrics.stability.exited_cleanly\":true,"
+            "\"variations_crash_streak\":0}");
+  // Verify that the BeaconFileWrite metric was emitted.
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.ExtendedSafeMode.BeaconFileWrite", 1, 1);
 
-  // Check that experiment group clients have a beacon file and that control
-  // group clients do not.
-  EXPECT_EQ(group == variations::kEnabledGroup,
-            base::PathExists(expected_beacon_file_path));
+  // Write the beacon value again. This is done because it is possible for
+  // WriteBeaconValue() to be called twice during startup or shutdown with the
+  // same value for |exited_cleanly|.
+  clean_exit_beacon.WriteBeaconValue(/*exited_cleanly*/ true,
+                                     /*is_extended_safe_mode=*/false);
 
-  if (group == variations::kEnabledGroup) {
-    // For experiment group clients, check the beacon file contents.
-    std::string beacon_file_contents;
-    ASSERT_TRUE(base::ReadFileToString(expected_beacon_file_path,
-                                       &beacon_file_contents));
-
-    const std::string expected_stage =
-        "monitoring_stage\":" +
-        base::NumberToString(static_cast<int>(params.stage.value()));
-    const std::string exited_cleanly = params.exited_cleanly ? "true" : "false";
-    const std::string expected_beacon_value =
-        "exited_cleanly\":" + exited_cleanly;
-    EXPECT_TRUE(base::Contains(beacon_file_contents, expected_stage));
-    EXPECT_TRUE(base::Contains(beacon_file_contents, expected_beacon_value));
-  }
+  // Verify that the beacon file exists and has well-formed contents after
+  // updating the beacon value.
+  EXPECT_TRUE(base::PathExists(beacon_file_path));
+  std::string beacon_file_contents2;
+  ASSERT_TRUE(base::ReadFileToString(beacon_file_path, &beacon_file_contents2));
+  EXPECT_EQ(beacon_file_contents2,
+            "{\"user_experience_metrics.stability.exited_cleanly\":true,"
+            "\"variations_crash_streak\":0}");
+  // Verify that the BeaconFileWrite metric was not emitted a second time. The
+  // beacon file should not have been written again since the beacon value did
+  // not change.
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.ExtendedSafeMode.BeaconFileWrite", 1, 1);
 }
 
 // Verify that attempting to write synchronously DCHECKs for clients that do not

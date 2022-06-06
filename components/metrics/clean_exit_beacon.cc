@@ -43,40 +43,10 @@ using ::variations::kEnabledGroup;
 using ::variations::kExtendedSafeModeTrial;
 using ::variations::prefs::kVariationsCrashStreak;
 
-const char kMonitoringStageKey[] = "monitoring_stage";
-
 // Denotes whether Chrome should perform clean shutdown steps: signaling that
 // Chrome is exiting cleanly and then CHECKing that is has shutdown cleanly.
 // This may be modified by SkipCleanShutdownStepsForTesting().
 bool g_skip_clean_shutdown_steps = false;
-
-// Records the monitoring stage in which a previous session failed to exit
-// cleanly.
-void RecordMonitoringStage(base::Value* beacon_file_contents) {
-  BeaconMonitoringStage stage;
-  if (beacon_file_contents) {
-    base::Value* beacon_file_stage = beacon_file_contents->FindKeyOfType(
-        kMonitoringStageKey, base::Value::Type::INTEGER);
-    if (beacon_file_stage) {
-      stage = static_cast<BeaconMonitoringStage>(beacon_file_stage->GetInt());
-    } else {
-      // The beacon file of Extended Variations Safe Mode experiment group
-      // clients may not include the monitoring stage as this info was not added
-      // until M100.
-      stage = BeaconMonitoringStage::kMissing;
-    }
-  } else {
-    DCHECK_NE(base::FieldTrialList::FindFullName(kExtendedSafeModeTrial),
-              kEnabledGroup);
-    // Clients that are not in the experiment group always emit kStatusQuo.
-    stage = BeaconMonitoringStage::kStatusQuo;
-  }
-  // The metric should not be emitted when Chrome exited cleanly, i.e. when
-  // Chrome was not monitoring for crashes.
-  DCHECK_NE(stage, BeaconMonitoringStage::kNotMonitoring);
-  UMA_STABILITY_HISTOGRAM_ENUMERATION("UMA.CleanExitBeacon.MonitoringStage",
-                                      stage);
-}
 
 // Records the the combined state of two distinct beacons' values in the given
 // histogram.
@@ -179,9 +149,6 @@ void RecordBeaconFileState(BeaconFileState file_state) {
 // never write a beacon file. Third, it is possible for a user to delete the
 // file or to switch groups by resetting their variations state. Finally,
 // clients also switch groups when the FieldTrial name is updated.
-//
-// Note that not all beacon files are expected to have a monitoring stage as
-// this info was added in M100.
 std::unique_ptr<base::Value> MaybeGetFileContents(
     const base::FilePath& beacon_file_path) {
   if (beacon_file_path.empty())
@@ -340,8 +307,6 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
   bool did_previous_session_exit_cleanly =
       use_beacon_file ? beacon_file_beacon_value.value_or(true)
                       : local_state_beacon_value.value_or(true);
-  if (!did_previous_session_exit_cleanly)
-    RecordMonitoringStage(use_beacon_file ? beacon_file_contents : nullptr);
 
 #if BUILDFLAG(IS_IOS)
   // For the time being, this is a no-op to avoid interference with the Extended
@@ -360,71 +325,60 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
     return;
 
   UpdateLastLiveTimestamp();
+#if BUILDFLAG(IS_ANDROID)
+  if (!extended_monitoring_stage_start_time_.is_null()) {
+    // The time exists, so this is the transition from the extended browser
+    // crash monitoring stage to the status quo stage.
+    //
+    // TODO(crbug/1321989): Clean up this metric and
+    // |extended_monitoring_stage_start_time_| once Android Chrome
+    // stakeholders have enough data on the duration.
+    base::UmaHistogramLongTimes(
+        "UMA.CleanExitBeacon.ExtendedMonitoringStageDuration",
+        base::TimeTicks::Now() - extended_monitoring_stage_start_time_);
+    extended_monitoring_stage_start_time_ = base::TimeTicks();  // Null time.
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  if (has_exited_cleanly_ && has_exited_cleanly_.value() == exited_cleanly) {
+    // It is possible to call WriteBeaconValue() with the same value for
+    // |exited_cleanly| twice during startup and shutdown on some platforms. If
+    // the current beacon value matches |exited_cleanly|, then return here to
+    // skip redundantly updating Local State, writing a beacon file, and on
+    // Windows and iOS, writing to platform-specific locations.
+    return;
+  }
 
   const std::string group_name =
       base::FieldTrialList::FindFullName(kExtendedSafeModeTrial);
 
   if (is_extended_safe_mode) {
+    // Only enabled-group clients should extend Variations Safe Mode.
     DCHECK_EQ(group_name, kEnabledGroup);
+    // |has_exited_cleanly_| should always be unset before starting to watch for
+    // browser crashes.
+    DCHECK(!has_exited_cleanly_);
+    // When starting to watch for browser crashes in the code covered by
+    // Extended Variations Safe Mode, the only valid value for |exited_cleanly|
+    // is `false`. `true` signals that Chrome should stop watching for crashes.
     DCHECK(!exited_cleanly);
-
 #if BUILDFLAG(IS_ANDROID)
     extended_monitoring_stage_start_time_ = base::TimeTicks::Now();
 #endif
 
-    // The beacon value is written to disk synchronously twice during
-    // startup for clients in the Extended Variations Safe Mode experiment
-    // group. The first time is via
-    // VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(). This is
-    // when Chrome begins monitoring for crashes, i.e. |exited_cleanly| is
-    // false. This is the only point at which (a) the WritePrefsTime metric is
-    // emitted and (b) the kExtended monitoring stage is written.
-    //
-    // Later on in startup, such clients call CleanExitBeacon::WriteBeaconFile()
-    // again with |exited_cleanly| and |is_extended_safe_mode| set to false via
-    // MetricsService::LogNeedForCleanShutdown() for desktop and
-    // MetricsService::OnAppEnterForeground() for mobile, which is the status
-    // quo point at which Chrome monitors for crashes. At this point, a
-    // different monitoring stage is written to the beacon file.
-    //
-    // For Android, note that Chrome does not monitor for crashes in background
-    // sessions. See VariationsFieldTrialCreator::SetUpFieldTrials() and
-    // MetricsService::InitializeMetricsState().
-    WriteBeaconFile(exited_cleanly, BeaconMonitoringStage::kExtended);
+    WriteBeaconFile(exited_cleanly);
   } else {
     local_state_->SetBoolean(prefs::kStabilityExitedCleanly, exited_cleanly);
 #if BUILDFLAG(IS_ANDROID)
-    // Schedule a Local State write on Android Chrome, WebLayer, and WebView
-    // only as this write is expensive, and other platforms use the beacon file
-    // as the source of truth.
+    // Schedule a Local State write on Android for WebLayer and WebView. Other
+    // platforms use the beacon file as the source of truth.
     local_state_->CommitPendingWrite();
-    if (!extended_monitoring_stage_start_time_.is_null()) {
-      // The time exists, so this is the transition from the extended browser
-      // crash monitoring stage to the status quo stage. Only Extended
-      // Variations Safe Mode enabled-group clients have the extended monitoring
-      // stage.
-      // TODO(crbug/1321989): Clean up this metric and
-      // |extended_monitoring_stage_start_time_| once Android Chrome
-      // stakeholders have enough data on the duration.
-      base::UmaHistogramLongTimes(
-          "UMA.CleanExitBeacon.ExtendedMonitoringStageDuration",
-          base::TimeTicks::Now() - extended_monitoring_stage_start_time_);
-      extended_monitoring_stage_start_time_ = base::TimeTicks();  // Null time.
-    }
 #endif  // BUILDFLAG(IS_ANDROID)
     if (group_name == kEnabledGroup) {
       // Clients in this group write to the Variations Safe Mode file whenever
       // |kStabilityExitedCleanly| is updated. The file is kept in sync with the
       // pref because the file is used in the next session.
-      //
-      // If |exited_cleanly| is true, then Chrome is not monitoring for crashes,
-      // so the kNotMonitoringStage is used. Otherwise, kStatusQuo is written
-      // because startup has reached the point at which the status quo
-      // Variations-Safe-Mode-related code begins watching for crashes. See the
-      // comment in the above if block for more details.
-      WriteBeaconFile(exited_cleanly,
-                      exited_cleanly ? BeaconMonitoringStage::kNotMonitoring
-                                     : BeaconMonitoringStage::kStatusQuo);
+      WriteBeaconFile(exited_cleanly);
     }
   }
 
@@ -438,6 +392,8 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
 #elif BUILDFLAG(IS_IOS)
   SetUserDefaultsBeacon(exited_cleanly);
 #endif  // BUILDFLAG(IS_WIN)
+
+  has_exited_cleanly_ = absl::make_optional(exited_cleanly);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
@@ -511,16 +467,13 @@ void CleanExitBeacon::SkipCleanShutdownStepsForTesting() {
   g_skip_clean_shutdown_steps = true;
 }
 
-void CleanExitBeacon::WriteBeaconFile(
-    bool exited_cleanly,
-    BeaconMonitoringStage monitoring_stage) const {
+void CleanExitBeacon::WriteBeaconFile(bool exited_cleanly) const {
   DCHECK_EQ(base::FieldTrialList::FindFullName(kExtendedSafeModeTrial),
             kEnabledGroup);
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetBoolKey(prefs::kStabilityExitedCleanly, exited_cleanly);
   dict.SetIntKey(kVariationsCrashStreak,
                  local_state_->GetInteger(kVariationsCrashStreak));
-  dict.SetIntKey(kMonitoringStageKey, static_cast<int>(monitoring_stage));
 
   std::string json_string;
   JSONStringValueSerializer serializer(&json_string);

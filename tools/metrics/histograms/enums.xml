@@ -10663,6 +10663,9 @@ Called by update_bad_message_reasons.py.-->
 </enum>
 
 <enum name="BeaconMonitoringStage">
+  <obsolete>
+    Removed in M104.
+  </obsolete>
   <int value="0" label="Missing"/>
   <int value="1" label="Not monitoring">Not emitted</int>
   <int value="2" label="Early monitoring"/>
