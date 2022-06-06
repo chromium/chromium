@@ -3672,6 +3672,16 @@ test("base_unittests") {
       "allocator/partition_allocator/starscan/state_bitmap_unittest.cc",
       "allocator/partition_allocator/thread_cache_unittest.cc",
     ]
+
+    if ((is_android || is_linux) && target_cpu == "arm64") {
+      cflags = [
+        "-Xclang",
+        "-target-feature",
+        "-Xclang",
+        "+mte",
+      ]
+    }
+
     if (is_android) {
       sources += [
         "allocator/partition_allocator/partition_alloc_base/files/file_path_pa_unittest.cc",

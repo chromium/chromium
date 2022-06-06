@@ -15,6 +15,7 @@
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
@@ -33,7 +34,7 @@
 
 #include "base/allocator/partition_allocator/arm_bti_test_functions.h"
 
-#if defined(__ARM_FEATURE_MEMORY_TAGGING)
+#if defined(PA_HAS_MEMORY_TAGGING)
 #include <arm_acle.h>
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #define MTE_KILLED_BY_SIGNAL_AVAILABLE
