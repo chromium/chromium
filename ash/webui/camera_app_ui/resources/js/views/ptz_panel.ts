@@ -63,7 +63,15 @@ function detectHoldGesture({
       interval.stop();
     }
     handlePress();
-    interval = new DelayInterval(handleHold, pressTimeout, holdInterval);
+    interval = new DelayInterval(() => {
+      if (button.disabled) {
+        // Releasing the hold if the button is disabled, since disabled button
+        // might not get onkeyup event.
+        release();
+        return;
+      }
+      handleHold();
+    }, pressTimeout, holdInterval);
   }
 
   function release() {
