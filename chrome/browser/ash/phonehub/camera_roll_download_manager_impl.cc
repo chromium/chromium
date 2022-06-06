@@ -176,23 +176,29 @@ void CameraRollDownloadManagerImpl::UpdateDownloadProgress(
   }
 
   const DownloadItem& download_item = it->second;
-  const bool is_complete =
-      update->status == secure_channel::mojom::FileTransferStatus::kSuccess;
-  holding_space_keyed_service_->UpdateItem(download_item.holding_space_item_id)
-      ->SetProgress(ash::HoldingSpaceProgress(update->bytes_transferred,
-                                              update->total_bytes, is_complete))
-      .SetInvalidateImage(is_complete);
+  const std::string holding_space_item_id = download_item.holding_space_item_id;
 
   switch (update->status) {
     case secure_channel::mojom::FileTransferStatus::kInProgress:
+      holding_space_keyed_service_->UpdateItem(holding_space_item_id)
+          ->SetProgress(ash::HoldingSpaceProgress(update->bytes_transferred,
+                                                  update->total_bytes,
+                                                  /*complete=*/false));
       return;
     case secure_channel::mojom::FileTransferStatus::kFailure:
     case secure_channel::mojom::FileTransferStatus::kCanceled:
       // Delete files created for failed and canceled items, in addition to
       // removing the DownloadItem objects.
+      holding_space_keyed_service_->RemoveItem(holding_space_item_id);
       DeleteFile(update->payload_id);
       return;
     case secure_channel::mojom::FileTransferStatus::kSuccess:
+      holding_space_keyed_service_
+          ->UpdateItem(download_item.holding_space_item_id)
+          ->SetProgress(ash::HoldingSpaceProgress(update->bytes_transferred,
+                                                  update->total_bytes,
+                                                  /*complete=*/true))
+          .SetInvalidateImage(true);
       base::UmaHistogramCounts100000(
           "PhoneHub.CameraRoll.DownloadItem.TransferRate",
           CalculateItemTransferRate(download_item));

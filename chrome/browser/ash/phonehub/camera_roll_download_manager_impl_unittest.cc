@@ -357,7 +357,6 @@ TEST_F(CameraRollDownloadManagerImplTest, CleanupFailedItem) {
   CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
 
   base::FilePath expected_path = GetDownloadPath().Append("IMG_0001.jpeg");
-  EXPECT_TRUE(base::PathExists(expected_path));
   base::RunLoop delete_file_run_loop;
   base::FilePathWatcher watcher;
   watcher.Watch(expected_path, base::FilePathWatcher::Type::kNonRecursive,
@@ -365,6 +364,16 @@ TEST_F(CameraRollDownloadManagerImplTest, CleanupFailedItem) {
                     [&](const base::FilePath& file_path, bool error) {
                       delete_file_run_loop.Quit();
                     }));
+  camera_roll_download_manager()->UpdateDownloadProgress(
+      secure_channel::mojom::FileTransferUpdate::New(
+          /*payload_id=*/1234,
+          secure_channel::mojom::FileTransferStatus::kInProgress,
+          /*total_bytes=*/1000,
+          /*bytes_transferred=*/200));
+
+  EXPECT_TRUE(GetHoldingSpaceModel()->ContainsItem(
+      HoldingSpaceItem::Type::kPhoneHubCameraRoll, expected_path));
+  EXPECT_TRUE(base::PathExists(expected_path));
 
   camera_roll_download_manager()->UpdateDownloadProgress(
       secure_channel::mojom::FileTransferUpdate::New(
@@ -374,6 +383,8 @@ TEST_F(CameraRollDownloadManagerImplTest, CleanupFailedItem) {
           /*bytes_transferred=*/200));
   delete_file_run_loop.Run();
 
+  EXPECT_FALSE(GetHoldingSpaceModel()->ContainsItem(
+      HoldingSpaceItem::Type::kPhoneHubCameraRoll, expected_path));
   EXPECT_FALSE(base::PathExists(expected_path));
 }
 
