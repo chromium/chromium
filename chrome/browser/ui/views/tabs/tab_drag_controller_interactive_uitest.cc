@@ -1829,8 +1829,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(controller->IsEnabled());
 
   // Forcively reveal the tabstrip immediately.
-  std::unique_ptr<ImmersiveRevealedLock> lock(
-      controller->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_NO));
+  std::unique_ptr<ImmersiveRevealedLock> lock =
+      controller->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_NO);
 
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());

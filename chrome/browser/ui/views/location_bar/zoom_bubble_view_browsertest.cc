@@ -208,9 +208,9 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ImmersiveFullscreen) {
   EXPECT_FALSE(zoom_bubble->GetAnchorView());
 
   // An immersive reveal should hide the zoom bubble.
-  std::unique_ptr<ImmersiveRevealedLock> immersive_reveal_lock(
+  std::unique_ptr<ImmersiveRevealedLock> immersive_reveal_lock =
       immersive_controller->GetRevealedLock(
-          ImmersiveModeController::ANIMATE_REVEAL_NO));
+          ImmersiveModeController::ANIMATE_REVEAL_NO);
   ASSERT_TRUE(immersive_controller->IsRevealed());
   EXPECT_EQ(NULL, ZoomBubbleView::zoom_bubble_);
 

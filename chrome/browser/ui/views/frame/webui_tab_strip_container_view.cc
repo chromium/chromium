@@ -694,9 +694,9 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
     if (web_view_->GetWebContents()->IsCrashed())
       InitializeWebView();
 
-    immersive_revealed_lock_.reset(
+    immersive_revealed_lock_ =
         browser_view_->immersive_mode_controller()->GetRevealedLock(
-            ImmersiveModeController::ANIMATE_REVEAL_YES));
+            ImmersiveModeController::ANIMATE_REVEAL_YES);
 
     SetVisible(true);
     PreferredSizeChanged();

@@ -1111,9 +1111,9 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest, TopViewInset) {
   EXPECT_EQ(0, window->GetProperty(aura::client::kTopViewInset));
 
   // An immersive reveal shows the top of the frame.
-  std::unique_ptr<ImmersiveRevealedLock> revealed_lock(
+  std::unique_ptr<ImmersiveRevealedLock> revealed_lock =
       immersive_mode_controller->GetRevealedLock(
-          ImmersiveModeController::ANIMATE_REVEAL_NO));
+          ImmersiveModeController::ANIMATE_REVEAL_NO);
   EXPECT_TRUE(immersive_mode_controller->IsRevealed());
   EXPECT_EQ(0, window->GetProperty(aura::client::kTopViewInset));
 
@@ -1258,9 +1258,9 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   EXPECT_EQ(0, window->GetProperty(aura::client::kTopViewInset));
 
   // An immersive reveal shows the top of the frame.
-  std::unique_ptr<ImmersiveRevealedLock> revealed_lock(
+  std::unique_ptr<ImmersiveRevealedLock> revealed_lock =
       immersive_mode_controller->GetRevealedLock(
-          ImmersiveModeController::ANIMATE_REVEAL_NO));
+          ImmersiveModeController::ANIMATE_REVEAL_NO);
   EXPECT_TRUE(immersive_mode_controller->IsRevealed());
   EXPECT_EQ(0, window->GetProperty(aura::client::kTopViewInset));
 

@@ -113,10 +113,11 @@ int ImmersiveModeControllerChromeos::GetTopContainerVerticalOffset(
                           (visible_fraction_ - 1));
 }
 
-ImmersiveRevealedLock* ImmersiveModeControllerChromeos::GetRevealedLock(
-    AnimateReveal animate_reveal) {
-  return new ImmersiveRevealedLockChromeos(controller_.GetRevealedLock(
-      ToImmersiveFullscreenControllerAnimateReveal(animate_reveal)));
+std::unique_ptr<ImmersiveRevealedLock>
+ImmersiveModeControllerChromeos::GetRevealedLock(AnimateReveal animate_reveal) {
+  return std::make_unique<ImmersiveRevealedLockChromeos>(
+      controller_.GetRevealedLock(
+          ToImmersiveFullscreenControllerAnimateReveal(animate_reveal)));
 }
 
 void ImmersiveModeControllerChromeos::OnFindBarVisibleBoundsChanged(

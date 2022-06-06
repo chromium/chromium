@@ -81,9 +81,9 @@ IN_PROC_BROWSER_TEST_F(WebAppAshInteractiveUITest,
   chrome::ToggleFullscreenMode(browser());
   waiter.Wait();
 
-  std::unique_ptr<ImmersiveRevealedLock> revealed_lock(
+  std::unique_ptr<ImmersiveRevealedLock> revealed_lock =
       controller_->GetRevealedLock(
-          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO));
+          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO);
 
   CheckWebAppMenuClickable();
 }

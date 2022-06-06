@@ -106,8 +106,8 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
   // Attempt revealing the top-of-window views.
   void AttemptReveal() {
     if (!revealed_lock_.get()) {
-      revealed_lock_.reset(controller_->GetRevealedLock(
-          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO));
+      revealed_lock_ = controller_->GetRevealedLock(
+          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO);
     }
   }
 
@@ -384,9 +384,9 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   // Reveal the header. The anchor should exist since the app menu button is now
   // visible.
   {
-    std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock(
+    std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock =
         immersive_mode_controller->GetRevealedLock(
-            ImmersiveModeController::ANIMATE_REVEAL_YES));
+            ImmersiveModeController::ANIMATE_REVEAL_YES);
     EXPECT_TRUE(immersive_mode_controller->IsRevealed());
     EXPECT_TRUE(bubble_dialog->GetAnchorView());
   }

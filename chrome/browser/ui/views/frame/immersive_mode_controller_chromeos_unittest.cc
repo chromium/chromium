@@ -88,8 +88,8 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
   // Attempt revealing the top-of-window views.
   void AttemptReveal() {
     if (!revealed_lock_.get()) {
-      revealed_lock_.reset(controller_->GetRevealedLock(
-          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO));
+      revealed_lock_ = controller_->GetRevealedLock(
+          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO);
     }
   }
 

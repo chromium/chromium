@@ -473,9 +473,9 @@ void BrowserTabStripController::OnStartedDragging(bool dragging_window) {
     // tabs in immersive fullscreen. The top-of-window views may not be already
     // revealed if the user is attempting to attach a tab to a tabstrip
     // belonging to an immersive fullscreen window.
-    immersive_reveal_lock_.reset(
+    immersive_reveal_lock_ =
         browser_view_->immersive_mode_controller()->GetRevealedLock(
-            ImmersiveModeController::ANIMATE_REVEAL_NO));
+            ImmersiveModeController::ANIMATE_REVEAL_NO);
   }
 
   browser_view_->frame()->SetTabDragKind(dragging_window ? TabDragKind::kAllTabs

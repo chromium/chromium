@@ -42,7 +42,7 @@ class ImmersiveModeControllerChromeos
   bool IsRevealed() const override;
   int GetTopContainerVerticalOffset(
       const gfx::Size& top_container_size) const override;
-  [[nodiscard]] ImmersiveRevealedLock* GetRevealedLock(
+  std::unique_ptr<ImmersiveRevealedLock> GetRevealedLock(
       AnimateReveal animate_reveal) override;
   void OnFindBarVisibleBoundsChanged(
       const gfx::Rect& new_visible_bounds_in_screen) override;

@@ -387,10 +387,10 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   // keep it revealed. |location_bar_view_| can be nullptr in unit tests.
   std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock;
   if (location_bar_view_) {
-    focus_reveal_lock.reset(
+    focus_reveal_lock =
         BrowserView::GetBrowserViewForBrowser(location_bar_view_->browser())
             ->immersive_mode_controller()
-            ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES));
+            ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
 
   const bool omnibox_already_focused = HasFocus();

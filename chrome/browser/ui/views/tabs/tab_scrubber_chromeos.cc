@@ -252,8 +252,8 @@ void TabScrubberChromeOS::BeginScrub(BrowserView* browser_view,
   ImmersiveModeController* immersive_controller =
       browser_view->immersive_mode_controller();
   if (immersive_controller->IsEnabled()) {
-    immersive_reveal_lock_.reset(immersive_controller->GetRevealedLock(
-        ImmersiveModeController::ANIMATE_REVEAL_YES));
+    immersive_reveal_lock_ = immersive_controller->GetRevealedLock(
+        ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
 
   tab_strip_->AddObserver(this);

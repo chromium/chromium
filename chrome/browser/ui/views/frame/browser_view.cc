@@ -1917,11 +1917,11 @@ void BrowserView::ResetToolbarTabState(content::WebContents* contents) {
 void BrowserView::FocusToolbar() {
   // Temporarily reveal the top-of-window views (if not already revealed) so
   // that the toolbar is visible and is considered focusable. If the
-  // toolbar gains focus, |immersive_mode_controller_| will keep the
+  // toolbar gains focus, `immersive_mode_controller_` will keep the
   // top-of-window views revealed.
-  std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock(
+  std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock =
       immersive_mode_controller_->GetRevealedLock(
-          ImmersiveModeController::ANIMATE_REVEAL_YES));
+          ImmersiveModeController::ANIMATE_REVEAL_YES);
 
   // Start the traversal within the main toolbar. SetPaneFocus stores
   // the current focused view before changing focus.
@@ -2537,9 +2537,9 @@ void BrowserView::ShowAppMenu() {
     return;
 
   // Keep the top-of-window views revealed as long as the app menu is visible.
-  std::unique_ptr<ImmersiveRevealedLock> revealed_lock(
+  std::unique_ptr<ImmersiveRevealedLock> revealed_lock =
       immersive_mode_controller_->GetRevealedLock(
-          ImmersiveModeController::ANIMATE_REVEAL_NO));
+          ImmersiveModeController::ANIMATE_REVEAL_NO);
 
   toolbar_button_provider_->GetAppMenuButton()
       ->menu_button_controller()
@@ -3396,9 +3396,9 @@ void BrowserView::RevealTabStripIfNeeded() {
   if (!immersive_mode_controller_->IsEnabled())
     return;
 
-  std::unique_ptr<ImmersiveRevealedLock> revealer(
+  std::unique_ptr<ImmersiveRevealedLock> revealer =
       immersive_mode_controller_->GetRevealedLock(
-          ImmersiveModeController::ANIMATE_REVEAL_YES));
+          ImmersiveModeController::ANIMATE_REVEAL_YES);
   auto delete_revealer = base::BindOnce(
       [](std::unique_ptr<ImmersiveRevealedLock>) {}, std::move(revealer));
   constexpr auto kDefaultDelay = base::Seconds(1);
