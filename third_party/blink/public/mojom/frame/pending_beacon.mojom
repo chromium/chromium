@@ -39,4 +39,8 @@ interface PendingBeacon {
   // Deactivates the pending beacon. After this call it will not be sent.
   Deactivate();
 
+  // Sets data for the pending beacon. `content_type` should be the content type
+  // for `data` if applicable.
+  SetData(string data);
+
 };

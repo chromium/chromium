@@ -61,4 +61,8 @@ Beacon::Beacon(const GURL& url,
 
 Beacon::~Beacon() = default;
 
+void Beacon::SetData(const std::string& data) {
+  beacon_data_ = data;
+}
+
 }  // namespace content

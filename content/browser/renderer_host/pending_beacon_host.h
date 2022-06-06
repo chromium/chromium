@@ -70,7 +70,9 @@ class Beacon : public blink::mojom::PendingBeacon {
          PendingBeaconHost* beacon_host,
          mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver);
   ~Beacon() override;
+
   void Deactivate() override;
+  void SetData(const std::string& data) override;
 
  private:
   mojo::Receiver<blink::mojom::PendingBeacon> receiver_;
@@ -81,6 +83,11 @@ class Beacon : public blink::mojom::PendingBeacon {
   const GURL url_;
   [[maybe_unused]] const blink::mojom::BeaconMethod method_;
   [[maybe_unused]] const base::TimeDelta timeout_;
+
+  // A string containing the bytes for the data of the beacon. This will be
+  // either used as the body of the beacon request for POST beacons, or
+  // appended to the URL for GET beacons.
+  std::string beacon_data_;
 };
 
 }  // namespace content

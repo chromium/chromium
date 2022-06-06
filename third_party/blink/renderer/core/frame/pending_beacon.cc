@@ -7,7 +7,11 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_beacon_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_beacon_state.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_formdata_readablestream_urlsearchparams_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/forms/form_data.h"
+#include "third_party/blink/renderer/core/url/url_search_params.h"
+#include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -118,7 +122,25 @@ void PendingBeacon::setPageHideTimeout(int32_t pageHideTimeout) {
 
 void PendingBeacon::setData(
     const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data) {
-  // TODO: Implement passing data to the PendingBeaconHost.
+  switch (data->GetContentType()) {
+    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
+        kUSVString: {
+      auto string_data = data->GetAsUSVString();
+      remote_->SetData(string_data);
+      return;
+    }
+    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
+        kArrayBuffer:
+    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
+        kArrayBufferView:
+    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::kFormData:
+    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
+        kURLSearchParams:
+    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::kBlob:
+    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
+        kReadableStream: {
+    }
+  }
   NOTIMPLEMENTED();
 }
 
