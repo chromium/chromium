@@ -51,6 +51,7 @@ import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/metrics_reporting.mojom";
 import "chromeos/crosapi/mojom/native_theme.mojom";
 import "chromeos/crosapi/mojom/networking_attributes.mojom";
+import "chromeos/crosapi/mojom/networking_private.mojom";
 import "chromeos/crosapi/mojom/power.mojom";
 import "chromeos/crosapi/mojom/network_settings_service.mojom";
 import "chromeos/crosapi/mojom/prefs.mojom";
@@ -110,8 +111,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 80
-// Next method id: 83
+// Next version: 81
+// Next method id: 84
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -259,6 +260,11 @@ interface Crosapi {
   // to get and set system properties. Implemented in Ash.
   [MinVersion=72] BindExtensionInfoPrivate@75(
       pending_receiver<ExtensionInfoPrivate> receiver);
+
+  // NetworkingPrivate is a service that allows users to modify
+  // network settings in Lacros. Implemented in Ash.
+  [MinVersion=80] BindNetworkingPrivate@83(
+      pending_receiver<NetworkingPrivate> receiver);
 
   // Binds the extension publisher service, which allows Lacros to connect its
   // extensions to the app service.

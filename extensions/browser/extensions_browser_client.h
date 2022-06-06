@@ -151,6 +151,11 @@ class ExtensionsBrowserClient {
       content::BrowserContext* context) = 0;
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns if a browser |context| belongs to the main profile or not.
+  virtual bool IsFromMainProfile(content::BrowserContext* context) = 0;
+#endif
+
   // Returns true if |context| corresponds to a guest session.
   virtual bool IsGuestSession(content::BrowserContext* context) const = 0;
 

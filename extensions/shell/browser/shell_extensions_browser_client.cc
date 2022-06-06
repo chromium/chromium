@@ -101,6 +101,14 @@ std::string ShellExtensionsBrowserClient::GetUserIdHashFromContext(
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ShellExtensionsBrowserClient::IsFromMainProfile(
+    content::BrowserContext* context) {
+  // AppShell only supports single context.
+  return true;
+}
+#endif
+
 bool ShellExtensionsBrowserClient::IsGuestSession(
     BrowserContext* context) const {
   return false;

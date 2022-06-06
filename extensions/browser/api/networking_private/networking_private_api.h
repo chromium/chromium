@@ -51,7 +51,7 @@ class NetworkingPrivateGetPropertiesFunction : public ExtensionFunction {
 
  private:
   void Result(absl::optional<base::Value> result,
-              absl::optional<std::string> error);
+              const absl::optional<std::string>& error);
 };
 
 // Implements the chrome.networkingPrivate.getManagedProperties method.
@@ -75,7 +75,7 @@ class NetworkingPrivateGetManagedPropertiesFunction : public ExtensionFunction {
 
  private:
   void Result(absl::optional<base::Value> result,
-              absl::optional<std::string> error);
+              const absl::optional<std::string>& error);
 };
 
 // Implements the chrome.networkingPrivate.getState method.

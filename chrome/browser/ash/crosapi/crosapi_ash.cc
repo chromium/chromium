@@ -62,6 +62,7 @@
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
 #include "chrome/browser/ash/crosapi/network_settings_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
+#include "chrome/browser/ash/crosapi/networking_private_ash.h"
 #include "chrome/browser/ash/crosapi/policy_service_ash.h"
 #include "chrome/browser/ash/crosapi/power_ash.h"
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
@@ -191,6 +192,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
           g_browser_process->metrics_service())),
       native_theme_service_ash_(std::make_unique<NativeThemeServiceAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
+      networking_private_ash_(std::make_unique<NetworkingPrivateAsh>()),
       network_settings_service_ash_(std::make_unique<NetworkSettingsServiceAsh>(
           g_browser_process->local_state())),
       policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
@@ -691,6 +693,11 @@ void CrosapiAsh::BindEchoPrivate(
 void CrosapiAsh::BindExtensionInfoPrivate(
     mojo::PendingReceiver<mojom::ExtensionInfoPrivate> receiver) {
   extension_info_private_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindNetworkingPrivate(
+    mojo::PendingReceiver<mojom::NetworkingPrivate> receiver) {
+  networking_private_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindStructuredMetricsService(

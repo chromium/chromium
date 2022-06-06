@@ -372,7 +372,7 @@ void NetworkingPrivateChromeOS::SetProperties(
   } else {
     std::string user_id_hash;
     std::string error;
-    // Do not allow changing a non-shared network from a secondary users.
+    // Do not allow changing a non-shared network from secondary users.
     if (!GetPrimaryUserIdHash(browser_context_, &user_id_hash, &error)) {
       std::move(failure_callback).Run(error);
       return;

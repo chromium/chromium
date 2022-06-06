@@ -68,6 +68,9 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::string GetUserIdHashFromContext(
       content::BrowserContext* context) override;
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsFromMainProfile(content::BrowserContext* context) override;
+#endif
   bool IsGuestSession(content::BrowserContext* context) const override;
   bool IsExtensionIncognitoEnabled(
       const std::string& extension_id,
