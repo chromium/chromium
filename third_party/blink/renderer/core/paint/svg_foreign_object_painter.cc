@@ -17,6 +17,12 @@
 
 namespace blink {
 
+SVGForeignObjectPainter::SVGForeignObjectPainter(
+    const LayoutBlockFlow& layout_svg_foreign_object)
+    : layout_svg_foreign_object_(layout_svg_foreign_object) {
+  DCHECK(layout_svg_foreign_object.IsSVGForeignObjectIncludingNG());
+}
+
 void SVGForeignObjectPainter::PaintLayer(const PaintInfo& paint_info) {
   if (paint_info.phase != PaintPhase::kForeground &&
       paint_info.phase != PaintPhase::kSelectionDragImage)
