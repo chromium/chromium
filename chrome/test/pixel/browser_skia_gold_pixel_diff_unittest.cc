@@ -50,10 +50,17 @@ class BrowserSkiaGoldPixelDiffTest : public views::test::WidgetTest {
   BrowserSkiaGoldPixelDiffTest(const BrowserSkiaGoldPixelDiffTest&) = delete;
   BrowserSkiaGoldPixelDiffTest& operator=(const BrowserSkiaGoldPixelDiffTest&) =
       delete;
+
+  views::View* AddChildViewToWidget(views::Widget* widget) {
+    auto view_unique_ptr = std::make_unique<views::View>();
+    if (widget->client_view())
+      return widget->client_view()->AddChildView(std::move(view_unique_ptr));
+
+    return widget->SetContentsView(std::move(view_unique_ptr));
+  }
 };
 
 TEST_F(BrowserSkiaGoldPixelDiffTest, CompareScreenshotByView) {
-  views::View view;
   MockBrowserSkiaGoldPixelDiffMockUpload mock_pixel;
   EXPECT_CALL(
       mock_pixel,
@@ -62,8 +69,9 @@ TEST_F(BrowserSkiaGoldPixelDiffTest, CompareScreenshotByView) {
       .Times(1)
       .WillOnce(Return(true));
   views::Widget* widget = CreateTopLevelNativeWidget();
-  mock_pixel.Init(widget, "Prefix");
-  bool ret = mock_pixel.CompareScreenshot("Demo", &view);
+  views::View* child_view = AddChildViewToWidget(widget);
+  mock_pixel.Init("Prefix");
+  bool ret = mock_pixel.CompareScreenshot("Demo", child_view);
   EXPECT_TRUE(ret);
   widget->CloseNow();
 }
@@ -72,12 +80,12 @@ TEST_F(BrowserSkiaGoldPixelDiffTest, BypassSkiaGoldFunctionality) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       "bypass-skia-gold-functionality");
 
-  views::View view;
   MockBrowserSkiaGoldPixelDiff mock_pixel;
   EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(0);
   views::Widget* widget = CreateTopLevelNativeWidget();
-  mock_pixel.Init(widget, "Prefix");
-  bool ret = mock_pixel.CompareScreenshot("Demo", &view);
+  views::View* child_view = AddChildViewToWidget(widget);
+  mock_pixel.Init("Prefix");
+  bool ret = mock_pixel.CompareScreenshot("Demo", child_view);
   EXPECT_TRUE(ret);
   widget->CloseNow();
 }

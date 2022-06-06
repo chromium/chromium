@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
@@ -30,14 +29,6 @@ BrowserSkiaGoldPixelDiff::BrowserSkiaGoldPixelDiff() = default;
 
 BrowserSkiaGoldPixelDiff::~BrowserSkiaGoldPixelDiff() = default;
 
-void BrowserSkiaGoldPixelDiff::Init(views::Widget* widget,
-                                    const std::string& screenshot_prefix,
-                                    const std::string& corpus) {
-  SkiaGoldPixelDiff::Init(screenshot_prefix, corpus);
-  DCHECK(widget);
-  widget_ = widget;
-}
-
 bool BrowserSkiaGoldPixelDiff::GrabWindowSnapshotInternal(
     gfx::NativeWindow window,
     const gfx::Rect& snapshot_bounds,
@@ -56,16 +47,17 @@ bool BrowserSkiaGoldPixelDiff::GrabWindowSnapshotInternal(
 
 bool BrowserSkiaGoldPixelDiff::CompareScreenshot(
     const std::string& screenshot_name,
-    const views::View* view,
+    views::View* view,
     const ui::test::SkiaGoldMatchingAlgorithm* algorithm) const {
   DCHECK(Initialized()) << "Initialize the class before using this method.";
   gfx::Rect rc = view->GetBoundsInScreen();
-  gfx::Rect bounds_in_screen = widget_->GetRootView()->GetBoundsInScreen();
-  gfx::Rect bounds = widget_->GetRootView()->bounds();
+  views::Widget* widget = view->GetWidget();
+  gfx::Rect bounds_in_screen = widget->GetRootView()->GetBoundsInScreen();
+  gfx::Rect bounds = widget->GetRootView()->bounds();
   rc.Offset(bounds.x() - bounds_in_screen.x(),
             bounds.y() - bounds_in_screen.y());
   gfx::Image image;
-  bool ret = GrabWindowSnapshotInternal(widget_->GetNativeWindow(), rc, &image);
+  bool ret = GrabWindowSnapshotInternal(widget->GetNativeWindow(), rc, &image);
   if (!ret) {
     LOG(ERROR) << "Grab screenshot failed.";
     return false;

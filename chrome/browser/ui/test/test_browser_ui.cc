@@ -100,7 +100,7 @@ bool TestBrowserUi::VerifyPixelUi(views::View* view,
   ui::DrawWaiterForTest::WaitForCompositingEnded(compositor);
 
   BrowserSkiaGoldPixelDiff pixel_diff;
-  pixel_diff.Init(view->GetWidget(), screenshot_prefix);
+  pixel_diff.Init(screenshot_prefix);
   return pixel_diff.CompareScreenshot(screenshot_name, view,
                                       GetPixelMatchAlgorithm());
 }

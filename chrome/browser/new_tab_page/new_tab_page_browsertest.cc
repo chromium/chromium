@@ -171,9 +171,7 @@ class NewTabPageTest : public InProcessBrowserTest,
       return true;
     }
     BrowserSkiaGoldPixelDiff pixel_diff;
-    pixel_diff.Init(views::Widget::GetWidgetForNativeWindow(
-                        browser()->window()->GetNativeWindow()),
-                    screenshot_prefix);
+    pixel_diff.Init(screenshot_prefix);
     return pixel_diff.CompareScreenshot(screenshot_name,
                                         browser_view_->contents_web_view());
 #else

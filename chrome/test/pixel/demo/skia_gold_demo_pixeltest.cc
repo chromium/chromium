@@ -24,9 +24,7 @@ class SkiaGoldDemoPixelTest : public InProcessBrowserTest {
 
     // Initialize the class here. Follow the best practice to use
     // the class name as the screenshot prefix.
-    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-        browser()->window()->GetNativeWindow());
-    ASSERT_NO_FATAL_FAILURE(pixel_diff_.Init(widget, "SkiaGoldDemoPixelTest"));
+    ASSERT_NO_FATAL_FAILURE(pixel_diff_.Init("SkiaGoldDemoPixelTest"));
   }
 
   const BrowserSkiaGoldPixelDiff& GetPixelDiff() const { return pixel_diff_; }

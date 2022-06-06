@@ -13,7 +13,6 @@
 
 namespace views {
 class View;
-class Widget;
 }  // namespace views
 
 namespace gfx {
@@ -30,6 +29,9 @@ class SkiaGoldPixelDiff;
 
 // This is the utility class for Skia Gold pixeltest.
 // For an example on how to write pixeltests, please refer to the demo.
+// NOTE: this class has to be initialized before using. A screenshot prefix and
+// a corpus string are required for initialization. Check
+// `SkiaGoldPixelDiff::Init()` for more details.
 class BrowserSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
  public:
   BrowserSkiaGoldPixelDiff();
@@ -38,43 +40,27 @@ class BrowserSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
   BrowserSkiaGoldPixelDiff& operator=(const BrowserSkiaGoldPixelDiff&) = delete;
 
   ~BrowserSkiaGoldPixelDiff() override;
-  // Call Init method before using this class.
-  // Args:
-  // widget The instance you plan to take screenshots with.
-  // screenshot_prefix The prefix for your screenshot name on GCS.
-  //   For every screenshot you take, it should have a unique name
-  //   across Chromium, because all screenshots (aka golden images) stores
-  //   in one bucket on GCS. The standard convention is to use the browser
-  //   test class name as the prefix. The name will be
-  //   |screenshot_prefix| + "_" + |screenshot_name|.'
-  //   E.g. 'ToolbarTest_BackButtonHover'.
-  // corpus The corpus (i.e. result group) that will be used to store the
-  //   result in Gold. If omitted, will default to the generic corpus for
-  //   results from gtest-based tests.
-  void Init(views::Widget* widget,
-            const std::string& screenshot_prefix,
-            const std::string& corpus = std::string());
 
-  // Take a screenshot, upload to Skia Gold and compare with the remote
-  // golden image. Returns true if the screenshot is the same as the golden
-  // image (compared with hashcode).
-  // Args:
-  // screenshot_name Make sure |screenshot_prefix| + "_" + |screenshot_name|
-  //                 is unique.
-  // view The view you want to take screenshot. If the screen is not what
-  //      you want, you can use the other method.
+  // Takes a screenshot then uploads to Skia Gold and compares it with the
+  // remote golden image. Returns true if the screenshot is the same as the
+  // golden image (compared with hashcode).
+  // `screenshot_name` specifies the name of the screenshot to be taken. For
+  // every screenshot you take, it should have a unique name across Chromium,
+  // because all screenshots (aka golden images) stores in one bucket on GCS.
+  // The standard convention is to use the browser test class name as the
+  // prefix. The name will be `screenshot_prefix` + "_" + `screenshot_name`.
+  // E.g. 'ToolbarTest_BackButtonHover'. Here `screenshot_prefix` is passed as
+  // an argument during initialization.
+  // `view` is the view you want to take screenshot.
   bool CompareScreenshot(
       const std::string& screenshot_name,
-      const views::View* view,
+      views::View* view,
       const ui::test::SkiaGoldMatchingAlgorithm* algorithm = nullptr) const;
 
  protected:
   virtual bool GrabWindowSnapshotInternal(gfx::NativeWindow window,
                                           const gfx::Rect& snapshot_bounds,
                                           gfx::Image* image) const;
-
- private:
-  raw_ptr<views::Widget> widget_ = nullptr;
 };
 
 #endif  // CHROME_TEST_PIXEL_BROWSER_SKIA_GOLD_PIXEL_DIFF_H_
