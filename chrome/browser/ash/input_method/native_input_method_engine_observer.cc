@@ -622,6 +622,7 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
   UpdateCandidatesWindow(nullptr);
   ui::ime::InputMethodMenuManager::GetInstance()
       ->SetCurrentInputMethodMenuItemList({});
+  assistive_suggester_->OnActivate(engine_id);
 
   // TODO(b/181077907): Always launch the IME service and let IME service decide
   // whether it should shutdown or not.
@@ -643,8 +644,6 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     ime_base_observer_->OnActivate(engine_id);
   } else if (ShouldRouteToNativeMojoEngine(engine_id)) {
     ConnectToImeService(mojom::ConnectionTarget::kDecoder, engine_id);
-    // Inform the assistive suggester of the new engine activation.
-    assistive_suggester_->OnActivate(engine_id);
   } else {
     // Release the IME service.
     // TODO(b/147709499): A better way to cleanup all.
