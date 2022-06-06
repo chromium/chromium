@@ -719,7 +719,7 @@ const base::FeatureParam<int> kCacheCodeOnIdleDelayParam{&kCacheCodeOnIdle,
 // TODO(crbug.com/920069): Remove this once the feature has
 // landed and no compat issues are reported.
 const base::Feature kOffsetParentNewSpecBehavior{
-    "OffsetParentNewSpecBehavior", base::FEATURE_ENABLED_BY_DEFAULT};
+    "OffsetParentNewSpecBehavior", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Makes form elements cancel previous form submissions made by the same form
 // when the default event handler schedules a form submission.
