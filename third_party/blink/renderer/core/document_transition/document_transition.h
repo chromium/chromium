@@ -28,7 +28,6 @@
 namespace blink {
 
 class Document;
-class DocumentTransitionSetElementOptions;
 class Element;
 class ExceptionState;
 class LayoutObject;
@@ -61,17 +60,10 @@ class CORE_EXPORT DocumentTransition
   // can be started.
   bool StartNewTransition();
 
-  // JavaScript API implementation.
-  void setElement(ScriptState*,
-                  Element*,
-                  const AtomicString&,
-                  const DocumentTransitionSetElementOptions*,
-                  ExceptionState&);
   ScriptPromise start(ScriptState*, ExceptionState&);
   ScriptPromise start(ScriptState*,
                       V8DocumentTransitionCallback* callback,
                       ExceptionState&);
-  void ignoreCSSTaggedElements(ScriptState*, ExceptionState&);
   void abandon(ScriptState*, ExceptionState&);
 
   // This uses std::move semantics to take the request from this object.

@@ -9,19 +9,12 @@
     Exposed=Window,
     RuntimeEnabled=DocumentTransition
 ] interface DocumentTransition {
-  // Set or unset (if tag is null) an element that will participate in the next
-  // transition, whether as a part of captureAndHold or start phases.
-  [CallWith=ScriptState, RaisesException] void setElement(Element element, DOMString? tag, optional DocumentTransitionSetElementOptions options = {});
-
   // Starts the transition with the captured elements.
   // |callback| is used to asynchronously initialize the new DOM for the
   // transition. Animations are started when this callback returns.
   // The returned promise is resolved when all animations for this transition
   // are finished.
   [CallWith=ScriptState, RaisesException] Promise<void> start(optional DocumentTransitionCallback callback);
-
-  // Ignores CSS tagged elements
-  [CallWith=ScriptState, RaisesException] void ignoreCSSTaggedElements();
 
   // Abandons the transition.
   [CallWith=ScriptState, RaisesException] void abandon();

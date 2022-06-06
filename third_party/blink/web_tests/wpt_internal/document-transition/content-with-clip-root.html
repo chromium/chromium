@@ -26,6 +26,7 @@
   width: 10px;
   height: 10px;
   background: grey;
+  page-transition-tag: hidden;
 }
 
 body {
@@ -63,14 +64,10 @@ html::page-transition-incoming-image(root) { animation: unset; opacity: 1; heigh
 <script>
 async function runTest() {
   let t = document.createDocumentTransition();
-  t.setElement(hidden, "hidden");
-
   t.start(() => {
-    t.setElement(hidden, "hidden");
-
     // Add a shared element to ensure its bounds don't expand the root snapshot
     // size.
-    t.setElement(target2, "target2");
+    target2.style = "page-transition-tag: target2";
 
     requestAnimationFrame(() => requestAnimationFrame(() => 
       requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))

@@ -8,6 +8,7 @@ div {
   height: 100px;
   background-color: blue;
   contain: paint;
+  page-transition-tag: shared;
 }
 html::page-transition-outgoing-image(shared) {
   opacity: 1;
@@ -33,9 +34,7 @@ async function doTransition() {
   let elem = document.getElementsByTagName("div")[0];
 
   let t = document.createDocumentTransition();
-  t.setElement(elem, "shared");
   await t.start(() => {
-    t.setElement(elem, "shared");
     elem.style.backgroundColor = "red";
   });
   if (window.testRunner) {

@@ -54,11 +54,12 @@ html::page-transition { background: lightpink; }
 <script>
 async function runTest() {
   let t = document.createDocumentTransition();
-  t.setElement(hidden, "hidden");
-  t.setElement(before, "before");
+  hidden.style.pageTransitionTag = "hidden";
+  before.style.pageTransitionTag = "before";
   t.start(() => {
     before.remove();
-    t.setElement(after, "after");
+    hidden.style.pageTransitionTag = "";
+    after.style.pageTransitionTag = "after";
 
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))
   });

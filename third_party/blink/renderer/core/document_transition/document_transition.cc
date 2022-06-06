@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_set_element_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -118,24 +117,6 @@ bool DocumentTransition::StartNewTransition() {
   return true;
 }
 
-void DocumentTransition::setElement(
-    ScriptState* script_state,
-    Element* element,
-    const AtomicString& tag,
-    const DocumentTransitionSetElementOptions* opts,
-    ExceptionState& exception_state) {
-  if (!style_tracker_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Transition is aborted.");
-    return;
-  }
-
-  if (tag.IsNull())
-    style_tracker_->RemoveSharedElement(element);
-  else
-    style_tracker_->AddSharedElement(element, tag);
-}
-
 ScriptPromise DocumentTransition::start(ScriptState* script_state,
                                         ExceptionState& exception_state) {
   return start(script_state, nullptr, exception_state);
@@ -208,9 +189,6 @@ ScriptPromise DocumentTransition::start(ScriptState* script_state,
 
   return start_promise_resolver_->Promise();
 }
-
-void DocumentTransition::ignoreCSSTaggedElements(ScriptState*,
-                                                 ExceptionState&) {}
 
 void DocumentTransition::abandon(ScriptState*, ExceptionState&) {
   CancelPendingTransition(kAbortedFromScript);

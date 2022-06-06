@@ -117,7 +117,6 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/css/css_try_rule.idl",
           "//third_party/blink/renderer/core/document_transition/document_transition.idl",
           "//third_party/blink/renderer/core/document_transition/document_transition_callback.idl",
-          "//third_party/blink/renderer/core/document_transition/document_transition_set_element_options.idl",
           "//third_party/blink/renderer/core/document_transition/document_transition_supplement.idl",
           "//third_party/blink/renderer/core/dom/abort_controller.idl",
           "//third_party/blink/renderer/core/dom/abort_signal.idl",

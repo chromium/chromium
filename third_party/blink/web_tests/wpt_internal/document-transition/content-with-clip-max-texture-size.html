@@ -31,7 +31,9 @@
   width: 10px;
   height: 10px;
   background: grey;
+  page-transition-tag: hidden;
 }
+#target1 { page-transition-tag: target1; }
 
 html::page-transition-container(hidden) { animation-duration: 300s; }
 html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
@@ -56,14 +58,7 @@ async function runTest() {
   scrollblue.scrollIntoView();
 
   let t = document.createDocumentTransition();
-  t.setElement(hidden, "hidden");
-
-  t.setElement(target1, "target1");
   t.start(() => {
-    t.setElement(hidden, "hidden");
-
-    t.setElement(target1, "target1");
-
     requestAnimationFrame(() => requestAnimationFrame(() => 
       requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))
     ));

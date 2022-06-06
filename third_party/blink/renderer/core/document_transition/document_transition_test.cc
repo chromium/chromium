@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_callback.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_set_element_options.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
@@ -267,6 +266,8 @@ TEST_P(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       div { width: 100px; height: 100px; contain: paint }
+      #e1 { page-transition-tag: e1; }
+      #e3 { page-transition-tag: e3; }
     </style>
 
     <div id=e1></div>
@@ -294,8 +295,6 @@ TEST_P(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
   EXPECT_FALSE(ShouldCompositeForDocumentTransition(e2));
   EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
 
-  transition->setElement(script_state, e1, "e1", nullptr, exception_state);
-  transition->setElement(script_state, e3, "e3", nullptr, exception_state);
   transition->start(script_state, document_transition_callback,
                     exception_state);
 
@@ -328,9 +327,9 @@ TEST_P(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
 TEST_P(DocumentTransitionTest, UncontainedElementsAreCleared) {
   SetHtmlInnerHTML(R"HTML(
     <style>#e1 { width: 100px; height: 100px; contain: paint }</style>
-    <div id=e1></div>
-    <div id=e2></div>
-    <div id=e3></div>
+    <div id=e1 style="page-transition-tag: e1"></div>
+    <div id=e2 style="page-transition-tag: e2"></div>
+    <div id=e3 style="page-transition-tag: e3"></div>
   )HTML");
 
   auto* e1 = GetDocument().getElementById("e1");
@@ -353,23 +352,15 @@ TEST_P(DocumentTransitionTest, UncontainedElementsAreCleared) {
   EXPECT_FALSE(ShouldCompositeForDocumentTransition(e2));
   EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
 
-  transition->setElement(script_state, e1, "e1", nullptr, exception_state);
-  transition->setElement(script_state, e2, "e2", nullptr, exception_state);
-  transition->setElement(script_state, e3, "e3", nullptr, exception_state);
   transition->start(script_state, document_transition_callback,
                     exception_state);
 
   EXPECT_TRUE(ShouldCompositeForDocumentTransition(e1));
-  EXPECT_TRUE(ShouldCompositeForDocumentTransition(e2));
-  EXPECT_TRUE(ShouldCompositeForDocumentTransition(e3));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e2));
+  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
 
   // Update the lifecycle while keeping the transition active.
   UpdateAllLifecyclePhasesForTest();
-
-  // Since only the first element is contained, the rest should be cleared.
-  EXPECT_TRUE(ShouldCompositeForDocumentTransition(e1));
-  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e2));
-  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
 
   EXPECT_TRUE(ElementIsComposited("e1"));
   EXPECT_FALSE(ElementIsComposited("e2"));
@@ -378,6 +369,9 @@ TEST_P(DocumentTransitionTest, UncontainedElementsAreCleared) {
 
 TEST_P(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
   SetHtmlInnerHTML(R"HTML(
+    <style>
+      div { contain: paint; width: 100px; height: 100px; background: blue; }
+    </style>
     <div id=e1></div>
     <div id=e2></div>
     <div id=e3></div>
@@ -396,43 +390,48 @@ TEST_P(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
   ExceptionState& exception_state = v8_scope.GetExceptionState();
 
   // Set two of the elements to be shared.
-  transition->setElement(script_state, e1, "e1", nullptr, exception_state);
-  transition->setElement(script_state, e3, "e3", nullptr, exception_state);
+  e1->setAttribute(html_names::kStyleAttr, "page-transition-tag: e1");
+  e3->setAttribute(html_names::kStyleAttr, "page-transition-tag: e3");
 
   struct Data {
     STACK_ALLOCATED();
 
    public:
-    Data(DocumentTransition* transition,
+    Data(Document& document,
+         DocumentTransition* transition,
          ScriptState* script_state,
          ExceptionState& exception_state,
          Element* e1,
          Element* e2)
-        : transition(transition),
+        : document(document),
+          transition(transition),
           script_state(script_state),
           exception_state(exception_state),
           e1(e1),
           e2(e2) {}
 
+    Document& document;
     DocumentTransition* transition;
     ScriptState* script_state;
     ExceptionState& exception_state;
     Element* e1;
     Element* e2;
   };
-  Data data(transition, script_state, exception_state, e1, e2);
+  Data data(GetDocument(), transition, script_state, exception_state, e1, e2);
 
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
         auto* data =
             static_cast<Data*>(info.Data().As<v8::External>()->Value());
-
-        // Set two different elements as shared.
-        data->transition->setElement(data->script_state, data->e1, "e1",
-                                     nullptr, data->exception_state);
-        data->transition->setElement(data->script_state, data->e2, "e2",
-                                     nullptr, data->exception_state);
+        data->document.getElementById("e1")->setAttribute(
+            html_names::kStyleAttr, "");
+        data->document.getElementById("e3")->setAttribute(
+            html_names::kStyleAttr, "");
+        data->e1->setAttribute(html_names::kStyleAttr,
+                               "page-transition-tag: e1");
+        data->e2->setAttribute(html_names::kStyleAttr,
+                               "page-transition-tag: e2");
       };
   auto start_setup_callback =
       v8::Function::New(v8_scope.GetContext(), start_setup_lambda,
@@ -452,12 +451,6 @@ TEST_P(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
 
   EXPECT_TRUE(ShouldCompositeForDocumentTransition(e1));
   EXPECT_TRUE(ShouldCompositeForDocumentTransition(e2));
-  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
-
-  UpdateAllLifecyclePhasesAndFinishDirectives();
-
-  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e1));
-  EXPECT_FALSE(ShouldCompositeForDocumentTransition(e2));
   EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
 }
 
@@ -642,17 +635,13 @@ TEST_P(DocumentTransitionTest, Abandon) {
 TEST_P(DocumentTransitionTest, DocumentTransitionPseudoTree) {
   SetHtmlInnerHTML(R"HTML(
     <style>
-      div { width: 100px; height: 100px; contain: paint }
+      div { width: 100px; height: 100px; contain: paint; background: blue }
     </style>
 
-    <div id=e1></div>
-    <div id=e2></div>
-    <div id=e3></div>
+    <div id=e1 style="page-transition-tag: e1"></div>
+    <div id=e2 style="page-transition-tag: e2"></div>
+    <div id=e3 style="page-transition-tag: e3"></div>
   )HTML");
-
-  auto* e1 = GetDocument().getElementById("e1");
-  auto* e2 = GetDocument().getElementById("e2");
-  auto* e3 = GetDocument().getElementById("e3");
 
   auto* transition =
       DocumentTransitionSupplement::EnsureDocumentTransition(GetDocument());
@@ -661,10 +650,6 @@ TEST_P(DocumentTransitionTest, DocumentTransitionPseudoTree) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
-
-  transition->setElement(script_state, e1, "e1", nullptr, exception_state);
-  transition->setElement(script_state, e2, "e2", nullptr, exception_state);
-  transition->setElement(script_state, e3, "e3", nullptr, exception_state);
 
   struct Data {
     STACK_ALLOCATED();
@@ -688,21 +673,7 @@ TEST_P(DocumentTransitionTest, DocumentTransitionPseudoTree) {
 
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_lambda =
-      [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-        auto* data =
-            static_cast<Data*>(info.Data().As<v8::External>()->Value());
-
-        auto* e1 = data->document.getElementById("e1");
-        auto* e2 = data->document.getElementById("e2");
-        auto* e3 = data->document.getElementById("e3");
-
-        data->transition->setElement(data->script_state, e1, "e1", nullptr,
-                                     data->exception_state);
-        data->transition->setElement(data->script_state, e2, "e2", nullptr,
-                                     data->exception_state);
-        data->transition->setElement(data->script_state, e3, "e3", nullptr,
-                                     data->exception_state);
-      };
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
   auto start_setup_callback =
       v8::Function::New(v8_scope.GetContext(), start_setup_lambda,
                         v8::External::New(v8_scope.GetIsolate(), &data))
@@ -726,9 +697,9 @@ TEST_P(DocumentTransitionTest, DocumentTransitionPseudoTree) {
       div { width: 200px; height: 200px; contain: paint }
     </style>
 
-    <div id=e1></div>
-    <div id=e2></div>
-    <div id=e3></div>
+    <div id=e1 style="page-transition-tag: e1"></div>
+    <div id=e2 style="page-transition-tag: e2"></div>
+    <div id=e3 style="page-transition-tag: e3"></div>
   )HTML");
   test::RunPendingTasks();
   EXPECT_EQ(GetState(transition), State::kStarted);

@@ -17,6 +17,7 @@
   height: 10px;
   background: red;
   contain: paint;
+  page-transition-tag: hide;
 }
 #first {
   width: 10px;
@@ -54,9 +55,7 @@ async function runTest() {
 
   document.documentElement.scrollTop = 500;
   let t = document.createDocumentTransition();
-  t.setElement(hide, "hide");
   t.start(() => {
-    t.setElement(hide, "hide");
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
 }

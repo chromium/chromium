@@ -47,9 +47,10 @@ html::page-transition { background: lightpink; }
 <script>
 async function runTest() {
   const t = document.createDocumentTransition();
-  t.setElement(source, "shared");
+  source.style = "page-transition-tag: shared";
   t.start(() => {
-    t.setElement(target, "shared");
+    source.style = "";
+    target.style = "page-transition-tag: shared";
 
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))
   });

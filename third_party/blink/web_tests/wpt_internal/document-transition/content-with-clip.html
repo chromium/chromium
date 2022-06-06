@@ -26,6 +26,7 @@
   width: 10px;
   height: 10px;
   background: grey;
+  page-transition-tag: hidden;
 }
 
 /* Makes sure the viewport height is consistent for scrollbars to align */
@@ -45,7 +46,7 @@ html::page-transition-incoming-image(target2) { animation: unset; opacity: 1; }
 
 </style>
 
-<div id="target1" class="target">
+<div id="target1" class="target" style="page-transition-tag: target1">
   <div class="embedded" style="background: green;"></div>
   <div class="embedded" style="background: blue"></div>
 </div>
@@ -58,14 +59,9 @@ html::page-transition-incoming-image(target2) { animation: unset; opacity: 1; }
 <script>
 async function runTest() {
   let t = document.createDocumentTransition();
-  t.setElement(hidden, "hidden");
-
-  t.setElement(target1, "target1");
   t.start(() => {
-    t.setElement(hidden, "hidden");
-
-    t.setElement(target2, "target2");
-
+    target1.style = "";
+    target2.style = "page-transition-tag: target2";
     requestAnimationFrame(() => requestAnimationFrame(() => 
       requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))
     ));

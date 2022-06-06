@@ -39,9 +39,10 @@ function setAnimation() {
 
 async function runTest() {
   let t = document.createDocumentTransition();
-  t.setElement(document.getElementById("first"), "first");
+  first.style.pageTransitionTag = "first";
   t.start(() => {
-    t.setElement(document.getElementById("second"), "second");
+    first.style.pageTransitionTag = "";
+    second.style.pageTransitionTag = "second";
     requestAnimationFrame(setAnimation);
   });
 }

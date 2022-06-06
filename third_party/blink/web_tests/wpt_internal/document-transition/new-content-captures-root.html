@@ -23,6 +23,7 @@
   width: 100px;
   height: 100px;
   background: red;
+  page-transition-tag: shared;
 }
 
 div.dst { background: lightgreen; }
@@ -38,9 +39,7 @@ html::page-transition-incoming-image(root) { animation-duration: 0s; opacity: 1 
 <script>
 async function runTest() {
   let t = document.createDocumentTransition();
-  t.setElement(shared, "shared");
   t.start(() => {
-    t.setElement(shared, "shared");
     e1.classList.add("dst");
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });

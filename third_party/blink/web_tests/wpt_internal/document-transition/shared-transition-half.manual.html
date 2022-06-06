@@ -45,7 +45,7 @@ let classes = ["top", "bottom"]
 let i = 0;
 async function runAnimation() {
   let t = document.createDocumentTransition();
-  t.setElement(target, "target");
+  target.style.pageTransitionTag = "target";
   await t.start(() => {
     target.classList.remove(classes[i]);
     i = (i + 1) % classes.length;
