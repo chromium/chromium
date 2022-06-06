@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/version.h"
 
+using DWORD = unsigned long;  // NOLINT(runtime/int)
 using HANDLE = void*;
 struct _OSVERSIONINFOEXW;
 struct _SYSTEM_INFO;
@@ -183,7 +184,7 @@ class BASE_EXPORT OSInfo {
 
   OSInfo(const _OSVERSIONINFOEXW& version_info,
          const _SYSTEM_INFO& system_info,
-         int os_type);
+         DWORD os_type);
   ~OSInfo();
 
   // Returns a Version value for a given OS version tuple.

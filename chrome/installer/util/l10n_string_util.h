@@ -15,6 +15,8 @@
 
 #include <string>
 
+using UINT = unsigned int;
+
 namespace installer {
 
 class TranslationDelegate {
@@ -36,11 +38,11 @@ void SetTranslationDelegate(TranslationDelegate* delegate);
 // mapped to a variant that is specific to the current install mode (e.g.,
 // IDS_INBOUND_MDNS_RULE_NAME is mapped to IDS_INBOUND_MDNS_RULE_NAME_CANARY for
 // canary Chrome).
-std::wstring GetLocalizedString(int base_message_id);
+std::wstring GetLocalizedString(UINT base_message_id);
 
 // Returns the localized version of a string (obtained from GetLocalizedString)
 // with $1 replaced with |a|. Additionally, $$ is replaced by $.
-std::wstring GetLocalizedStringF(int base_message_id, const std::wstring& a);
+std::wstring GetLocalizedStringF(UINT base_message_id, const std::wstring& a);
 
 // Given the system language, return a url that points to the localized eula.
 // The empty string is returned on failure.

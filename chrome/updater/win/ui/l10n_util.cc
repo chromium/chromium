@@ -47,10 +47,11 @@ const base::win::i18n::LanguageSelector& GetLanguageSelector() {
 
 }  // namespace
 
-std::wstring GetLocalizedString(int base_message_id) {
+std::wstring GetLocalizedString(UINT base_message_id) {
   // Map `base_message_id` to the base id for the current install mode.
   std::wstring localized_string;
-  int message_id = base_message_id + GetLanguageSelector().offset();
+  UINT message_id =
+      static_cast<UINT>(base_message_id + GetLanguageSelector().offset());
   const ATLSTRINGRESOURCEIMAGE* image =
       AtlGetStringResourceImage(_AtlBaseModule.GetModuleInstance(), message_id);
   if (image) {
@@ -61,13 +62,13 @@ std::wstring GetLocalizedString(int base_message_id) {
   return localized_string;
 }
 
-std::wstring GetLocalizedStringF(int base_message_id,
+std::wstring GetLocalizedStringF(UINT base_message_id,
                                  const std::wstring& replacement) {
   return GetLocalizedStringF(base_message_id,
                              std::vector<std::wstring>{replacement});
 }
 
-std::wstring GetLocalizedStringF(int base_message_id,
+std::wstring GetLocalizedStringF(UINT base_message_id,
                                  std::vector<std::wstring> replacements) {
   // Replacements start at index 1 because the implementation of
   // ReplaceStringPlaceholders does i+1, so the first placeholder would be `$1`.

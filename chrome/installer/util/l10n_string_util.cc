@@ -62,7 +62,7 @@ void SetTranslationDelegate(TranslationDelegate* delegate) {
   g_translation_delegate = delegate;
 }
 
-std::wstring GetLocalizedString(int base_message_id) {
+std::wstring GetLocalizedString(UINT base_message_id) {
   // Map |base_message_id| to the base id for the current install mode.
   base_message_id = GetBaseMessageIdForMode(base_message_id);
 
@@ -71,7 +71,8 @@ std::wstring GetLocalizedString(int base_message_id) {
 
   std::wstring localized_string;
 
-  int message_id = base_message_id + GetLanguageSelector().offset();
+  UINT message_id =
+      static_cast<UINT>(base_message_id + GetLanguageSelector().offset());
   const ATLSTRINGRESOURCEIMAGE* image =
       AtlGetStringResourceImage(_AtlBaseModule.GetModuleInstance(), message_id);
   if (image) {
@@ -83,7 +84,7 @@ std::wstring GetLocalizedString(int base_message_id) {
   return localized_string;
 }
 
-std::wstring GetLocalizedStringF(int base_message_id, const std::wstring& a) {
+std::wstring GetLocalizedStringF(UINT base_message_id, const std::wstring& a) {
   return base::ReplaceStringPlaceholders(GetLocalizedString(base_message_id),
                                          std::vector<std::wstring>(1, a),
                                          nullptr);

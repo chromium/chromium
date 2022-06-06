@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
@@ -53,8 +54,8 @@ bool GrantAccessToPath(const FilePath& path,
   }
 
   PACL new_dacl = nullptr;
-  error = ::SetEntriesInAcl(access_entries.size(), access_entries.data(), dacl,
-                            &new_dacl);
+  error = ::SetEntriesInAcl(checked_cast<ULONG>(access_entries.size()),
+                            access_entries.data(), dacl, &new_dacl);
   if (error != ERROR_SUCCESS) {
     ::SetLastError(error);
     DPLOG(ERROR) << "Failed adding ACEs to DACL for path \"" << path.value()

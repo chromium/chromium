@@ -16,7 +16,9 @@ namespace internal {
 // Copies |length| bytes from |source| to |destination|, temporarily setting
 // |destination| to writable. Returns a Windows error code or NO_ERROR if
 // successful.
-BASE_EXPORT DWORD ModifyCode(void* destination, const void* source, int length);
+BASE_EXPORT DWORD ModifyCode(void* destination,
+                             const void* source,
+                             size_t length);
 
 }  // namespace internal
 }  // namespace win

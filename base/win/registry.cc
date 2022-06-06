@@ -32,7 +32,7 @@ namespace {
 // RegEnumValue() reports the number of characters from the name that were
 // written to the buffer, not how many there are. This constant is the maximum
 // name size, such that a buffer with this size should read any name.
-const DWORD MAX_REGISTRY_NAME_SIZE = 16384;
+constexpr DWORD MAX_REGISTRY_NAME_SIZE = 16384;
 
 // Registry values are read as BYTE* but can have wchar_t* data whose last
 // wchar_t is truncated. This function converts the reported |byte_size| to
@@ -42,7 +42,9 @@ inline DWORD to_wchar_size(DWORD byte_size) {
 }
 
 // Mask to pull WOW64 access flags out of REGSAM access.
-const REGSAM kWow64AccessMask = KEY_WOW64_32KEY | KEY_WOW64_64KEY;
+constexpr REGSAM kWow64AccessMask = KEY_WOW64_32KEY | KEY_WOW64_64KEY;
+
+constexpr DWORD kInvalidIterValue = static_cast<DWORD>(-1);
 
 }  // namespace
 
@@ -257,7 +259,7 @@ DWORD RegKey::GetValueCount() const {
   return (result == ERROR_SUCCESS) ? count : 0;
 }
 
-LONG RegKey::GetValueNameAt(int index, std::wstring* name) const {
+LONG RegKey::GetValueNameAt(DWORD index, std::wstring* name) const {
   wchar_t buf[256];
   DWORD bufsize = std::size(buf);
   LONG r = ::RegEnumValue(key_, index, buf, &bufsize, nullptr, nullptr, nullptr,
@@ -564,11 +566,12 @@ DWORD RegistryValueIterator::ValueCount() const {
 }
 
 bool RegistryValueIterator::Valid() const {
-  return key_ != nullptr && index_ >= 0;
+  return key_ != nullptr && index_ != kInvalidIterValue;
 }
 
 void RegistryValueIterator::operator++() {
-  --index_;
+  if (index_ != kInvalidIterValue)
+    --index_;
   Read();
 }
 
@@ -642,11 +645,12 @@ DWORD RegistryKeyIterator::SubkeyCount() const {
 }
 
 bool RegistryKeyIterator::Valid() const {
-  return key_ != nullptr && index_ >= 0;
+  return key_ != nullptr && index_ != kInvalidIterValue;
 }
 
 void RegistryKeyIterator::operator++() {
-  --index_;
+  if (index_ != kInvalidIterValue)
+    --index_;
   Read();
 }
 

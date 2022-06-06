@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/process/memory.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
@@ -320,7 +321,7 @@ SAFEARRAY* VariantVector::CreateAndPopulateSafearray() {
   DCHECK(!Empty());
 
   ScopedSafearray scoped_safearray(
-      SafeArrayCreateVector(ElementVartype, 0, Size()));
+      SafeArrayCreateVector(ElementVartype, 0, checked_cast<ULONG>(Size())));
   if (!scoped_safearray.Get()) {
     constexpr size_t kElementSize =
         sizeof(typename internal::VariantUtil<ElementVartype>::Type);
