@@ -1765,6 +1765,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "enable-cros-language-settings-update-japanese",
+    "owners": [ "keithlee", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-cros-multilingual-typing",
     "owners": [ "tranbaoduy", "essential-inputs-team@google.com" ],
     "expiry_milestone": 105

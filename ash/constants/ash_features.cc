@@ -348,6 +348,9 @@ const base::Feature kDesksCloseAll{"DesksCloseAll",
 const base::Feature kContextualNudges{"ContextualNudges",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kCrosLanguageSettingsUpdateJapanese{
+    "CrosLanguageSettingsUpdateJapanese", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables Crosh System Web App. When enabled, crosh (ChromeOS
 // Shell) will run as a tabbed System Web App rather than a normal browser tab.
 const base::Feature kCroshSWA{"CroshSWA", base::FEATURE_DISABLED_BY_DEFAULT};

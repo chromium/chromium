@@ -143,6 +143,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDesksCloseAll;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kContextualNudges;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kCroshSWA;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kCrosLanguageSettingsUpdateJapanese;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCrostiniBullseyeUpgrade;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDesksTemplates;

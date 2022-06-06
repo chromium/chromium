@@ -2547,6 +2547,9 @@ extern const char kCroshSWADescription[];
 extern const char kCrosLanguageSettingsUpdate2Name[];
 extern const char kCrosLanguageSettingsUpdate2Description[];
 
+extern const char kCrosLanguageSettingsUpdateJapaneseName[];
+extern const char kCrosLanguageSettingsUpdateJapaneseDescription[];
+
 extern const char kCrosOnDeviceGrammarCheckName[];
 extern const char kCrosOnDeviceGrammarCheckDescription[];
 

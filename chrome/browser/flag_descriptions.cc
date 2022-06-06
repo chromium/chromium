@@ -4458,6 +4458,11 @@ const char kCrosLanguageSettingsUpdate2Description[] =
     "Enables the second language settings update. Requires "
     "#enable-cros-language-settings-update to be enabled.";
 
+const char kCrosLanguageSettingsUpdateJapaneseName[] =
+    "Language Settings Update Japanese";
+const char kCrosLanguageSettingsUpdateJapaneseDescription[] =
+    "Replace the japanese extension settings page with one built into the UI.";
+
 const char kCrosOnDeviceGrammarCheckName[] = "On-device Grammar Check";
 const char kCrosOnDeviceGrammarCheckDescription[] =
     "Enable new on-device grammar check component.";

@@ -4794,6 +4794,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrosLanguageSettingsUpdate2Name,
      flag_descriptions::kCrosLanguageSettingsUpdate2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kLanguageSettingsUpdate2)},
+    {"enable-cros-language-settings-update-japanese",
+     flag_descriptions::kCrosLanguageSettingsUpdateJapaneseName,
+     flag_descriptions::kCrosLanguageSettingsUpdateJapaneseDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kCrosLanguageSettingsUpdateJapanese)},
     {"enable-cros-multilingual-typing",
      flag_descriptions::kMultilingualTypingName,
      flag_descriptions::kMultilingualTypingDescription, kOsCrOS,
