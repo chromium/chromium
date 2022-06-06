@@ -294,12 +294,6 @@ interface CommandBufferClient {
   // destroyed for some reason.
   OnDestroyed(ContextLostReason reason, Error error);
 
-  // Tells the browser that SwapBuffers returned.
-  OnSwapBuffersCompleted(SwapBuffersCompleteParams params);
-
-  // Tells the browser a buffer has been presented on screen.
-  OnBufferPresented(uint64 swap_id, gfx.mojom.PresentationFeedback feedback);
-
   // Returns a block of data from the GPU process to the client.
   // This contains server->client messages produced by dawn_wire and is used to
   // remote WebGPU.

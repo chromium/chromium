@@ -397,28 +397,12 @@ void GLES2CommandBufferStub::DidCreateAcceleratedSurfaceChildWindow(
 }
 #endif
 
-void GLES2CommandBufferStub::DidSwapBuffersComplete(
-    SwapBuffersCompleteParams params,
-    gfx::GpuFenceHandle release_fence) {
-  DCHECK(release_fence.is_null());
-  params.swap_response.swap_id = pending_swap_completed_params_.front().swap_id;
-  pending_swap_completed_params_.pop_front();
-  client().OnSwapBuffersCompleted(params);
-}
-
 const gles2::FeatureInfo* GLES2CommandBufferStub::GetFeatureInfo() const {
   return context_group_->feature_info();
 }
 
 const GpuPreferences& GLES2CommandBufferStub::GetGpuPreferences() const {
   return context_group_->gpu_preferences();
-}
-
-void GLES2CommandBufferStub::BufferPresented(
-    const gfx::PresentationFeedback& feedback) {
-  SwapBufferParams params = pending_presented_params_.front();
-  pending_presented_params_.pop_front();
-  client().OnBufferPresented(params.swap_id, feedback);
 }
 
 viz::GpuVSyncCallback GLES2CommandBufferStub::GetGpuVSyncCallback() {
@@ -503,9 +487,6 @@ void GLES2CommandBufferStub::GetGpuFenceHandle(
   std::move(callback).Run(std::move(handle));
 }
 
-void GLES2CommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {
-  pending_swap_completed_params_.push_back({swap_id, flags});
-  pending_presented_params_.push_back({swap_id, flags});
-}
+void GLES2CommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}
 
 }  // namespace gpu

@@ -243,16 +243,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // All arguments correspond to their CALayer properties.
   virtual bool ScheduleCALayer(const ui::CARendererLayerParams& params);
 
-  struct GL_EXPORT CALayerInUseQuery {
-    CALayerInUseQuery();
-    explicit CALayerInUseQuery(const CALayerInUseQuery&);
-    ~CALayerInUseQuery();
-    unsigned texture = 0;
-    scoped_refptr<GLImage> image;
-  };
-  virtual void ScheduleCALayerInUseQuery(
-      std::vector<CALayerInUseQuery> queries);
-
   virtual bool ScheduleDCLayer(
       std::unique_ptr<ui::DCRendererLayerParams> params);
 

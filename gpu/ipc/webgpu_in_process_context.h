@@ -41,13 +41,10 @@ class WebGPUInProcessContext {
   // |attrib_list| must be null or a NONE-terminated list of attribute/value
   // pairs. |gpu_channel_manager| should be non-null when used in the GPU
   // process.
-  ContextResult Initialize(
-      CommandBufferTaskExecutor* task_executor,
-      const ContextCreationAttribs& attribs,
-      const SharedMemoryLimits& memory_limits,
-      GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      ImageFactory* image_factory,
-      GpuChannelManagerDelegate* gpu_channel_manager_delegate);
+  ContextResult Initialize(CommandBufferTaskExecutor* task_executor,
+                           const ContextCreationAttribs& attribs,
+                           const SharedMemoryLimits& memory_limits,
+                           ImageFactory* image_factory);
 
   const Capabilities& GetCapabilities() const;
   const GpuFeatureInfo& GetGpuFeatureInfo() const;

@@ -105,18 +105,15 @@ void WebGPUTest::Initialize(const Options& options) {
   attributes.enable_gles2_interface = false;
   attributes.context_type = CONTEXT_TYPE_WEBGPU;
 
-  static constexpr GpuMemoryBufferManager* memory_buffer_manager = nullptr;
 #if BUILDFLAG(IS_MAC)
   ImageFactory* image_factory = &image_factory_;
 #else
   static constexpr ImageFactory* image_factory = nullptr;
 #endif
-  static constexpr GpuChannelManagerDelegate* channel_manager = nullptr;
   context_ = std::make_unique<WebGPUInProcessContext>();
   ContextResult result =
       context_->Initialize(gpu_service_holder_->task_executor(), attributes,
-                           options.shared_memory_limits, memory_buffer_manager,
-                           image_factory, channel_manager);
+                           options.shared_memory_limits, image_factory);
   ASSERT_EQ(result, ContextResult::kSuccess);
 
   cmd_helper_ = std::make_unique<webgpu::WebGPUCmdHelper>(

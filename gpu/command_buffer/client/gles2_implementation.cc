@@ -387,10 +387,6 @@ void GLES2Implementation::OnGpuControlErrorMessage(const char* message,
   SendErrorMessage(message, id);
 }
 
-void GLES2Implementation::OnGpuControlSwapBuffersCompleted(
-    const SwapBuffersCompleteParams& params,
-    gfx::GpuFenceHandle release_fence) {}
-
 void GLES2Implementation::OnGpuSwitched(
     gl::GpuPreference active_gpu_heuristic) {
   gpu_switched_ = true;
@@ -434,10 +430,6 @@ void GLES2Implementation::CallDeferredErrorCallbacks() {
     error_message_callback_.Run(c.message.c_str(), c.id);
   }
 }
-
-void GLES2Implementation::OnSwapBufferPresented(
-    uint64_t swap_id,
-    const gfx::PresentationFeedback& feedback) {}
 
 void GLES2Implementation::OnGpuControlReturnData(
     base::span<const uint8_t> data) {

@@ -63,10 +63,7 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   bool CreateHintSessionFactory(
       base::flat_set<base::PlatformThreadId> thread_ids,
       base::RepeatingClosure* wake_up_closure) override;
-  void CreateFrameSinkManager(
-      viz::mojom::FrameSinkManagerParamsPtr params) override;
   void CreateFrameSinkManager(viz::mojom::FrameSinkManagerParamsPtr params,
-                              gpu::CommandBufferTaskExecutor* task_executor,
                               viz::GpuServiceImpl* gpu_service) override;
 
  private:

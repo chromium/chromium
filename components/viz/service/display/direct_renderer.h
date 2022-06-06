@@ -23,7 +23,6 @@
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/viz_service_export.h"
-#include "gpu/command_buffer/common/texture_in_use_response.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/delegated_ink_metadata.h"
@@ -111,8 +110,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   virtual void SwapBuffersSkipped() {}
   virtual void SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {}
   virtual void BuffersPresented() {}
-  virtual void DidReceiveTextureInUseResponses(
-      const gpu::TextureInUseResponses& responses) {}
   virtual void DidReceiveReleasedOverlays(
       const std::vector<gpu::Mailbox>& released_overlays) {}
 

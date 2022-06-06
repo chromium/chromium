@@ -85,11 +85,6 @@ class PepperVideoEncoderHost : public ppapi::host::ResourceHost,
   void OnGpuControlLostContext() final;
   void OnGpuControlLostContextMaybeReentrant() final;
   void OnGpuControlErrorMessage(const char* msg, int id) final {}
-  void OnGpuControlSwapBuffersCompleted(
-      const gpu::SwapBuffersCompleteParams& params,
-      gfx::GpuFenceHandle release_fence) final {}
-  void OnSwapBufferPresented(uint64_t swap_id,
-                             const gfx::PresentationFeedback& feedback) final {}
   void OnGpuControlReturnData(base::span<const uint8_t> data) final;
 
   int32_t OnHostMsgGetSupportedProfiles(

@@ -581,18 +581,6 @@ void RasterImplementation::OnGpuControlErrorMessage(const char* message,
     error_message_callback_.Run(message, id);
 }
 
-void RasterImplementation::OnGpuControlSwapBuffersCompleted(
-    const SwapBuffersCompleteParams& params,
-    gfx::GpuFenceHandle release_fence) {
-  NOTREACHED();
-}
-
-void RasterImplementation::OnSwapBufferPresented(
-    uint64_t swap_id,
-    const gfx::PresentationFeedback& feedback) {
-  NOTREACHED();
-}
-
 void RasterImplementation::OnGpuControlReturnData(
     base::span<const uint8_t> data) {
   NOTIMPLEMENTED();

@@ -380,12 +380,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   void OnGpuControlLostContext() final;
   void OnGpuControlLostContextMaybeReentrant() final;
   void OnGpuControlErrorMessage(const char* message, int32_t id) final;
-  void OnGpuControlSwapBuffersCompleted(
-      const SwapBuffersCompleteParams& params,
-      gfx::GpuFenceHandle release_fence) final;
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) final;
-  void OnSwapBufferPresented(uint64_t swap_id,
-                             const gfx::PresentationFeedback& feedback) final;
   void OnGpuControlReturnData(base::span<const uint8_t> data) final;
 
   void SendErrorMessage(std::string message, int32_t id);

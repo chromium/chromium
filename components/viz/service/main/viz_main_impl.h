@@ -17,8 +17,6 @@
 #include "components/viz/common/buildflags.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/service/main/viz_compositor_thread_runner_impl.h"
-#include "gpu/ipc/gpu_in_process_thread_service.h"
-#include "gpu/ipc/in_process_command_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -51,8 +49,7 @@ namespace viz {
 class InfoCollectionGpuServiceImpl;
 #endif
 
-class VizMainImpl : public mojom::VizMain,
-                    public gpu::GpuInProcessThreadServiceDelegate {
+class VizMainImpl : public mojom::VizMain {
  public:
   class Delegate {
    public:
@@ -139,10 +136,6 @@ class VizMainImpl : public mojom::VizMain,
   void StopDebugStream() override;
 #endif
 
-  // gpu::GpuInProcessThreadServiceDelegate implementation:
-  scoped_refptr<gpu::SharedContextState> GetSharedContextState() override;
-  scoped_refptr<gl::GLShareGroup> GetShareGroup() override;
-
   GpuServiceImpl* gpu_service() { return gpu_service_.get(); }
   const GpuServiceImpl* gpu_service() const { return gpu_service_.get(); }
 
@@ -180,22 +173,19 @@ class VizMainImpl : public mojom::VizMain,
   std::unique_ptr<InfoCollectionGpuServiceImpl> info_collection_gpu_service_;
 #endif
 
-  // Allows the display compositor to use InProcessCommandBuffer to send GPU
-  // commands to the GPU thread from the compositor thread. This must outlive
-  // |viz_compositor_thread_runner_|.
-  std::unique_ptr<gpu::CommandBufferTaskExecutor> task_executor_;
-
   // If the gpu service is not yet ready then we stash pending
   // FrameSinkManagerParams.
   mojom::FrameSinkManagerParamsPtr pending_frame_sink_manager_params_;
+
+  bool has_created_frame_sink_manager_ = false;
 
   // Runs the VizCompositorThread for the display compositor.
   std::unique_ptr<VizCompositorThreadRunnerImpl>
       viz_compositor_thread_runner_impl_;
   // Note under Android WebView where VizCompositorThreadRunner is not created
   // and owned by this, Viz does not interact with other objects in this class,
-  // such as GpuServiceImpl or CommandBufferTaskExecutor. Code should take care
-  // to avoid introducing such assumptions.
+  // such as GpuServiceImpl. Code should take care to avoid introducing such
+  // assumptions.
   raw_ptr<VizCompositorThreadRunner> viz_compositor_thread_runner_ = nullptr;
 
   const scoped_refptr<base::SingleThreadTaskRunner> gpu_thread_task_runner_;

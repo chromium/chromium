@@ -106,7 +106,6 @@ class InProcessContextProvider
   gpu::ContextResult bind_result_;
 
   gpu::ContextCreationAttribs attribs_;
-  raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   raw_ptr<gpu::ImageFactory> image_factory_;
 
   base::Lock context_lock_;

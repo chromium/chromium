@@ -92,11 +92,6 @@ class PPB_Graphics3D_Impl : public ppapi::PPB_Graphics3D_Shared,
   void OnGpuControlLostContext() final;
   void OnGpuControlLostContextMaybeReentrant() final;
   void OnGpuControlErrorMessage(const char* msg, int id) final;
-  void OnGpuControlSwapBuffersCompleted(
-      const gpu::SwapBuffersCompleteParams& params,
-      gfx::GpuFenceHandle release_fence) final;
-  void OnSwapBufferPresented(uint64_t swap_id,
-                             const gfx::PresentationFeedback& feedback) final {}
   void OnGpuControlReturnData(base::span<const uint8_t> data) final;
 
   // Other notifications from the GPU process.

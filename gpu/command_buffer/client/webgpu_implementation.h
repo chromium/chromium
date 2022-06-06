@@ -85,11 +85,6 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   void OnGpuControlLostContext() final;
   void OnGpuControlLostContextMaybeReentrant() final;
   void OnGpuControlErrorMessage(const char* message, int32_t id) final;
-  void OnGpuControlSwapBuffersCompleted(
-      const SwapBuffersCompleteParams& params,
-      gfx::GpuFenceHandle release_fence) final;
-  void OnSwapBufferPresented(uint64_t swap_id,
-                             const gfx::PresentationFeedback& feedback) final;
   void OnGpuControlReturnData(base::span<const uint8_t> data) final;
 
   // WebGPUInterface implementation

@@ -991,9 +991,6 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
     DCHECK(damage_of_current_buffer_);
   }
 
-  // texture_in_use_responses is used for GLRenderer only.
-  DCHECK(params.texture_in_use_responses.empty());
-
   if (!params.ca_layer_params.is_empty)
     client_->DidReceiveCALayerParams(params.ca_layer_params);
   client_->DidReceiveSwapBuffersAck(params.swap_response.timings,

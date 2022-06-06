@@ -25,16 +25,10 @@
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/display_embedder/software_output_surface.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
-#include "gpu/command_buffer/service/image_factory.h"
-#include "gpu/command_buffer/service/mailbox_manager_factory.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "gpu/ipc/command_buffer_task_executor.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/scheduler_sequence.h"
-#include "gpu/ipc/service/gpu_channel_manager_delegate.h"
-#include "gpu/ipc/service/image_transport_surface.h"
 #include "ui/base/ui_base_switches.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -63,26 +57,14 @@ namespace viz {
 
 OutputSurfaceProviderImpl::OutputSurfaceProviderImpl(
     GpuServiceImpl* gpu_service_impl,
-    gpu::CommandBufferTaskExecutor* task_executor,
-    gpu::GpuChannelManagerDelegate* gpu_channel_manager_delegate,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    gpu::ImageFactory* image_factory,
     bool headless)
     : gpu_service_impl_(gpu_service_impl),
-      task_executor_(task_executor),
-      gpu_channel_manager_delegate_(gpu_channel_manager_delegate),
-      gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
-      image_factory_(image_factory),
       task_runner_(base::ThreadTaskRunnerHandle::Get()),
       headless_(headless) {}
 
 OutputSurfaceProviderImpl::OutputSurfaceProviderImpl(bool headless)
     : OutputSurfaceProviderImpl(
           /*gpu_service_impl=*/nullptr,
-          /*task_executor=*/nullptr,
-          /*gpu_channel_manager_delegate=*/nullptr,
-          /*gpu_memory_buffer_manager=*/nullptr,
-          /*image_factory=*/nullptr,
           headless) {}
 
 OutputSurfaceProviderImpl::~OutputSurfaceProviderImpl() = default;

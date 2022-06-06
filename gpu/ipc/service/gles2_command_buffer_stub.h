@@ -52,11 +52,8 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
       SurfaceHandle parent_window,
       SurfaceHandle child_window) override;
 #endif
-  void DidSwapBuffersComplete(SwapBuffersCompleteParams params,
-                              gfx::GpuFenceHandle release_fence) override;
   const gles2::FeatureInfo* GetFeatureInfo() const override;
   const GpuPreferences& GetGpuPreferences() const override;
-  void BufferPresented(const gfx::PresentationFeedback& feedback) override;
   viz::GpuVSyncCallback GetGpuVSyncCallback() override;
   base::TimeDelta GetGpuBlockedTimeSinceLastSwap() override;
 
@@ -77,15 +74,6 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
   // Keep a more specifically typed reference to the decoder to avoid
   // unnecessary casts. Owned by parent class.
   raw_ptr<gles2::GLES2Decoder> gles2_decoder_;
-
-  // Params pushed each time we call OnSwapBuffers, and popped when a buffer
-  // is presented or a swap completed.
-  struct SwapBufferParams {
-    uint64_t swap_id;
-    uint32_t flags;
-  };
-  base::circular_deque<SwapBufferParams> pending_presented_params_;
-  base::circular_deque<SwapBufferParams> pending_swap_completed_params_;
 
   base::WeakPtrFactory<GLES2CommandBufferStub> weak_ptr_factory_{this};
 };

@@ -290,16 +290,6 @@ void WebGPUImplementation::OnGpuControlErrorMessage(const char* message,
                                                     int32_t id) {
   NOTIMPLEMENTED();
 }
-void WebGPUImplementation::OnGpuControlSwapBuffersCompleted(
-    const SwapBuffersCompleteParams& params,
-    gfx::GpuFenceHandle release_fence) {
-  NOTIMPLEMENTED();
-}
-void WebGPUImplementation::OnSwapBufferPresented(
-    uint64_t swap_id,
-    const gfx::PresentationFeedback& feedback) {
-  NOTIMPLEMENTED();
-}
 void WebGPUImplementation::OnGpuControlReturnData(
     base::span<const uint8_t> data) {
   if (lost_) {

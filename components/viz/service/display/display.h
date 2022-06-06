@@ -35,7 +35,6 @@
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/service/viz_service_export.h"
-#include "gpu/command_buffer/common/texture_in_use_response.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/swap_result.h"
@@ -161,8 +160,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void SetNeedsRedrawRect(const gfx::Rect& damage_rect) override;
   void DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
                                 gfx::GpuFenceHandle release_fence) override;
-  void DidReceiveTextureInUseResponses(
-      const gpu::TextureInUseResponses& responses) override;
   void DidReceiveCALayerParams(
       const gfx::CALayerParams& ca_layer_params) override;
   void DidSwapWithSize(const gfx::Size& pixel_size) override;

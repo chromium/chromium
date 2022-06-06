@@ -102,7 +102,6 @@ source_set("common_sources") {
     "swap_buffers_complete_params.cc",
     "swap_buffers_complete_params.h",
     "swap_buffers_flags.h",
-    "texture_in_use_response.h",
     "thread_local.h",
     "time.h",
   ]

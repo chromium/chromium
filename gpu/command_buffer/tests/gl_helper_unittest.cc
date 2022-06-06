@@ -72,16 +72,8 @@ class GLHelperTest : public testing::Test {
 
     context_ = std::make_unique<GLInProcessContext>();
     auto result = context_->Initialize(
-        viz::TestGpuServiceHolder::GetInstance()->task_executor(),
-        nullptr,            /* surface */
-        true,               /* offscreen */
-        kNullSurfaceHandle, /* window */
-        attributes, SharedMemoryLimits(),
-        nullptr, /* gpu_memory_buffer_manager */
-        nullptr, /* image_factory */
-        nullptr, /* gpu_task_scheduler */
-        nullptr, /* display_compositor_memory_and_task_controller_on_gpu */
-        base::ThreadTaskRunnerHandle::Get());
+        viz::TestGpuServiceHolder::GetInstance()->task_executor(), attributes,
+        SharedMemoryLimits(), /*image_factory=*/nullptr);
     DCHECK_EQ(result, ContextResult::kSuccess);
     gl_ = context_->GetImplementation();
     ContextSupport* support = context_->GetImplementation();

@@ -1055,12 +1055,6 @@ void Display::DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
   }
 }
 
-void Display::DidReceiveTextureInUseResponses(
-    const gpu::TextureInUseResponses& responses) {
-  if (renderer_)
-    renderer_->DidReceiveTextureInUseResponses(responses);
-}
-
 void Display::DidReceiveCALayerParams(
     const gfx::CALayerParams& ca_layer_params) {
   if (client_)

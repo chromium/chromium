@@ -11,7 +11,6 @@
 #include "base/memory/ref_counted.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/resources/returned_resource.h"
-#include "gpu/command_buffer/common/texture_in_use_response.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 

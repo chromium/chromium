@@ -21,7 +21,6 @@ include_rules = [
   "+gpu/command_buffer/common/shared_image_trace_utils.h",
   "+gpu/command_buffer/common/shared_image_usage.h",
   "+gpu/command_buffer/common/sync_token.h",
-  "+gpu/command_buffer/common/texture_in_use_response.h",
   "+gpu/config/gpu_feature_info.h",
   "+gpu/config/gpu_finch_features.h",
   "+gpu/config/gpu_info.h",

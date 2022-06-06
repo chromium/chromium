@@ -51,13 +51,11 @@ class HistogramBase;
 
 namespace gfx {
 struct GpuFenceHandle;
-struct PresentationFeedback;
 }
 
 namespace gpu {
 struct ContextCreationAttribs;
 struct Mailbox;
-struct SwapBuffersCompleteParams;
 struct SyncToken;
 }
 
@@ -152,12 +150,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
 
   bool EnsureBackbuffer();
 
-  using UpdateVSyncParametersCallback =
-      base::RepeatingCallback<void(base::TimeTicks timebase,
-                                   base::TimeDelta interval)>;
-  void SetUpdateVSyncParametersCallback(
-      const UpdateVSyncParametersCallback& callback);
-
   int32_t route_id() const { return route_id_; }
 
   const scoped_refptr<GpuChannelHost>& channel() const { return channel_; }
@@ -193,9 +185,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
   void OnDestroyed(gpu::error::ContextLostReason reason,
                    gpu::error::Error error) override;
-  void OnSwapBuffersCompleted(const SwapBuffersCompleteParams& params) override;
-  void OnBufferPresented(uint64_t swap_id,
-                         const gfx::PresentationFeedback& feedback) override;
   void OnReturnData(const std::vector<uint8_t>& data) override;
   void OnSignalAck(uint32_t id, const CommandBuffer::State& state) override;
 
@@ -294,8 +283,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   SignalTaskMap signal_tasks_;
 
   gpu::Capabilities capabilities_;
-
-  UpdateVSyncParametersCallback update_vsync_parameters_completion_callback_;
 
   // Cache pointer to EnsureWorkVisibleDuration custom UMA histogram.
   raw_ptr<base::HistogramBase> uma_histogram_ensure_work_visible_duration_ =

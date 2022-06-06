@@ -38,7 +38,8 @@ class DelegatedInkPointRenderer;
 
 namespace gpu {
 class SharedImageRepresentationFactory;
-}
+struct SwapBuffersCompleteParams;
+}  // namespace gpu
 
 namespace viz {
 

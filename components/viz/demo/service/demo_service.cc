@@ -22,7 +22,7 @@ DemoService::DemoService(
   params->frame_sink_manager = std::move(receiver);
   params->frame_sink_manager_client = std::move(client);
   runner_ = std::make_unique<viz::VizCompositorThreadRunnerImpl>();
-  runner_->CreateFrameSinkManager(std::move(params));
+  runner_->CreateFrameSinkManager(std::move(params), /*gpu_service=*/nullptr);
 }
 
 DemoService::~DemoService() = default;

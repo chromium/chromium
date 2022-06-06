@@ -164,11 +164,6 @@ bool GLSurface::ScheduleCALayer(const ui::CARendererLayerParams& params) {
   return false;
 }
 
-void GLSurface::ScheduleCALayerInUseQuery(
-    std::vector<CALayerInUseQuery> queries) {
-  NOTIMPLEMENTED();
-}
-
 bool GLSurface::ScheduleDCLayer(
     std::unique_ptr<ui::DCRendererLayerParams> params) {
   NOTIMPLEMENTED();
@@ -601,10 +596,5 @@ scoped_refptr<GLSurface> InitializeGLSurfaceWithFormat(
 scoped_refptr<GLSurface> InitializeGLSurface(scoped_refptr<GLSurface> surface) {
   return InitializeGLSurfaceWithFormat(surface, GLSurfaceFormat());
 }
-
-GLSurface::CALayerInUseQuery::CALayerInUseQuery() = default;
-GLSurface::CALayerInUseQuery::CALayerInUseQuery(const CALayerInUseQuery&) =
-    default;
-GLSurface::CALayerInUseQuery::~CALayerInUseQuery() = default;
 
 }  // namespace gl

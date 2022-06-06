@@ -52,9 +52,7 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
   bool CreateHintSessionFactory(
       base::flat_set<base::PlatformThreadId> thread_ids,
       base::RepeatingClosure* wake_up_closure) override;
-  void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params) override;
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params,
-                              gpu::CommandBufferTaskExecutor* task_executor,
                               GpuServiceImpl* gpu_service) override;
 
  private:
@@ -65,7 +63,6 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
   void WakeUpOnCompositorThread();
   void CreateFrameSinkManagerOnCompositorThread(
       mojom::FrameSinkManagerParamsPtr params,
-      gpu::CommandBufferTaskExecutor* task_executor,
       GpuServiceImpl* gpu_service);
   void TearDownOnCompositorThread();
 
