@@ -1135,8 +1135,6 @@
 <translation id="7720410380936703141">ПАЎТАРЫЦЬ СПРОБУ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 апавяшчэнне}one{# апавяшчэнне}few{# апавяшчэнні}many{# апавяшчэнняў}other{# апавяшчэння}}</translation>
 <translation id="7724603315864178912">Выразаць</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Паказаць праграмы на паліцы</translation>
 <translation id="7749443890790263709">Дасягнута максімальная колькасць сталоў.</translation>
 <translation id="7749640678855296659">Ваш мікрафон зараз выключаны</translation>
@@ -1190,7 +1188,6 @@
 <translation id="8030169304546394654">Адключана</translation>
 <translation id="8036504271468642248">Папярэдні сказ</translation>
 <translation id="8042893070933512245">Адкрыць меню налад спецыяльных магчымасцей</translation>
-<translation id="8042925093898452104">Закрыць падрабязныя звесткі</translation>
 <translation id="8044457332620420407">Падсветка клавіятуры выключана</translation>
 <translation id="8048123526339889627">Налады Bluetooth</translation>
 <translation id="8051716679295756675">Ужо існуе шаблон з назвай "<ph name="DESK_TEMPLATE_NAME" />"</translation>

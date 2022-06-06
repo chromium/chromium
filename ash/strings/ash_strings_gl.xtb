@@ -1136,8 +1136,6 @@ Nova instalación</translation>
 <translation id="7720410380936703141">TENTAR DE NOVO</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificacións}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-<ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Mostrar as aplicacións do estante</translation>
 <translation id="7749443890790263709">Alcanzouse o número máximo de escritorios.</translation>
 <translation id="7749640678855296659">Tes o micrófono desactivado</translation>
@@ -1191,7 +1189,6 @@ Nova instalación</translation>
 <translation id="8030169304546394654">Desconectado</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menú da configuración de accesibilidade</translation>
-<translation id="8042925093898452104">Pechar información detallada</translation>
 <translation id="8044457332620420407">A luz traseira do teclado está apagada</translation>
 <translation id="8048123526339889627">Configuración de Bluetooth</translation>
 <translation id="8051716679295756675">Xa existe un modelo chamado <ph name="DESK_TEMPLATE_NAME" /></translation>

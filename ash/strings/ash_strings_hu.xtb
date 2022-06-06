@@ -1136,8 +1136,6 @@ Frissen telepítve</translation>
 <translation id="7720410380936703141">ÚJRA</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 értesítés}other{# értesítés}}</translation>
 <translation id="7724603315864178912">Kivágás</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">A polcon található alkalmazások megjelenítése</translation>
 <translation id="7749443890790263709">Elérte az asztalok maximális számát.</translation>
 <translation id="7749640678855296659">A mikrofonja jelenleg ki van kapcsolva</translation>
@@ -1191,7 +1189,6 @@ Frissen telepítve</translation>
 <translation id="8030169304546394654">Nincs kapcsolat</translation>
 <translation id="8036504271468642248">Előző mondat</translation>
 <translation id="8042893070933512245">A kisegítő lehetőségekhez tartozó beállítások menüjének megnyitása</translation>
-<translation id="8042925093898452104">A részletes adatok bezárása</translation>
 <translation id="8044457332620420407">Billentyűzet háttérvilágítása kikapcsolva</translation>
 <translation id="8048123526339889627">Bluetooth-beállítások</translation>
 <translation id="8051716679295756675">A(z) <ph name="DESK_TEMPLATE_NAME" /> nevű sablon már létezik.</translation>

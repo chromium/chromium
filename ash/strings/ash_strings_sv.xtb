@@ -1135,8 +1135,6 @@ Nyligen installerad</translation>
 <translation id="7720410380936703141">FÖRSÖK IGEN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 avisering}other{# aviseringar}}</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Visa appar på hyllan</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
 <translation id="7749640678855296659">Mikrofonen är för närvarande inaktiverad</translation>
@@ -1190,7 +1188,6 @@ Nyligen installerad</translation>
 <translation id="8030169304546394654">Frånkopplad</translation>
 <translation id="8036504271468642248">Föregående mening</translation>
 <translation id="8042893070933512245">Öppna menyn med tillgänglighetsinställningar</translation>
-<translation id="8042925093898452104">Stäng detaljvyn</translation>
 <translation id="8044457332620420407">Tangentbordets bakgrundsbelysning är av</translation>
 <translation id="8048123526339889627">Bluetooth-inställningar</translation>
 <translation id="8051716679295756675">Det finns redan en mall som heter <ph name="DESK_TEMPLATE_NAME" /></translation>

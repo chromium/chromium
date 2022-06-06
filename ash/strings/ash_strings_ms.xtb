@@ -1136,8 +1136,6 @@ Pemasangan baharu</translation>
 <translation id="7720410380936703141">CUBA LAGI</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 pemberitahuan}other{# pemberitahuan}}</translation>
 <translation id="7724603315864178912">Potong</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Tunjukkan apl dalam rak</translation>
 <translation id="7749443890790263709">Bilangan maksimum meja dicapai.</translation>
 <translation id="7749640678855296659">Mikrofon anda dimatikan pada masa ini</translation>
@@ -1191,7 +1189,6 @@ Pemasangan baharu</translation>
 <translation id="8030169304546394654">Diputuskan sambungan</translation>
 <translation id="8036504271468642248">Ayat sebelumnya</translation>
 <translation id="8042893070933512245">Buka menu tetapan kebolehaksesan</translation>
-<translation id="8042925093898452104">Tutup maklumat terperinci</translation>
 <translation id="8044457332620420407">Cahaya belakang papan kekunci dimatikan</translation>
 <translation id="8048123526339889627">Tetapan Bluetooth</translation>
 <translation id="8051716679295756675">Templat yang bernama <ph name="DESK_TEMPLATE_NAME" /> sudah wujud</translation>

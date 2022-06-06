@@ -1135,8 +1135,6 @@ Novo instaliranje</translation>
 <translation id="7720410380936703141">PROBAJ PONOVO</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 obaveštenje}one{# obaveštenje}few{# obaveštenja}other{# obaveštenja}}</translation>
 <translation id="7724603315864178912">Iseci</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Prikaži aplikacije na polici</translation>
 <translation id="7749443890790263709">Dostigli ste maksimalan broj radnih površina.</translation>
 <translation id="7749640678855296659">Mikrofon je trenutno isključen</translation>
@@ -1190,7 +1188,6 @@ Novo instaliranje</translation>
 <translation id="8030169304546394654">Veza je prekinuta</translation>
 <translation id="8036504271468642248">Prethodna rečenica</translation>
 <translation id="8042893070933512245">Otvori meni podešavanja pristupačnosti</translation>
-<translation id="8042925093898452104">Zatvorite detaljne informacije</translation>
 <translation id="8044457332620420407">Pozadinsko osvetljenje tastature je isključeno</translation>
 <translation id="8048123526339889627">Podešavanja Bluetooth-a</translation>
 <translation id="8051716679295756675">Šablon pod naslovom <ph name="DESK_TEMPLATE_NAME" /> već postoji</translation>

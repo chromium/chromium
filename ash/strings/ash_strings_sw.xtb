@@ -1136,8 +1136,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7720410380936703141">JARIBU TENA</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Arifa 1}other{Arifa #}}</translation>
 <translation id="7724603315864178912">Kata</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Onyesha programu kwenye rafu</translation>
 <translation id="7749443890790263709">Umefikia idadi ya juu zaidi ya violesura.</translation>
 <translation id="7749640678855296659">Maikrofoni yako imezimwa</translation>
@@ -1191,7 +1189,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8030169304546394654">Hujaunganishwa</translation>
 <translation id="8036504271468642248">Sentensi iliyotangulia</translation>
 <translation id="8042893070933512245">Fungua menyu ya mipangilio ya ufikivu</translation>
-<translation id="8042925093898452104">Funga sehemu ya maelezo</translation>
 <translation id="8044457332620420407">Mwangaza wa kibodi umezimwa</translation>
 <translation id="8048123526339889627">Mipangilio ya Bluetooth</translation>
 <translation id="8051716679295756675">Kiolezo kiitwacho <ph name="DESK_TEMPLATE_NAME" /> tayari kipo</translation>

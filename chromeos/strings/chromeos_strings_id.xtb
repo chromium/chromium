@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Peluncur</translation>
 <translation id="1512982610995527443">Perangkat akan dimatikan dalam 5 detik</translation>
 <translation id="1522984060396982789">Perbaikan Anda berhasil. Anda dapat mematikan perangkat atau melakukan beberapa tindakan tambahan.</translation>
+<translation id="1526389707933164996">Animasi screensaver</translation>
 <translation id="152892567002884378">Mengeraskan volume</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3865414814144988605">Resolusi</translation>
 <translation id="387301095347517405">Frekuensi baterai melalui siklus pengisian daya penuh</translation>
+<translation id="3885327323343477505">Ubah screensaver</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
 <translation id="3924044641767672375">Sebaiknya hubungkan ke Wi-Fi untuk mempermudah proses perbaikan. Jaringan Anda akan disimpan.</translation>
 <translation id="3932043219784172185">Tidak ada perangkat yang terhubung</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Segera pilih satu sandi baru</translation>
 <translation id="4891842000192098784">Tegangan</translation>
 <translation id="4897058166682006107">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kiri.</translation>
+<translation id="4905998861748258752">Aktifkan fitur untuk memilih opsi screensaver</translation>
 <translation id="4908030561598728899">Menginstal firmware ...</translation>
 <translation id="4915052247106771211">Memilih opsi ini akan mereset perangkat ke setelan pabrik (Powerwash).</translation>
 <translation id="4917385247580444890">Kuat</translation>
@@ -861,6 +864,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8997710128084572139">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai.</translation>
 <translation id="9003704114456258138">Frekuensi</translation>
 <translation id="9025198690966128418">Gunakan sebagai perangkat pribadi</translation>
+<translation id="9028832514430399253">Aktifkan tombol untuk memilih opsi screensaver</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Resolusi DNS memiliki latensi tinggi</translation>
 <translation id="9063121522582193837">Tidak dapat melakukan kalibrasi beberapa komponen</translation>

@@ -1135,8 +1135,6 @@ Nova instalação</translation>
 <translation id="7720410380936703141">TENTAR NOVAMENTE</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificação}one{# notificação}other{# notificações}}</translation>
 <translation id="7724603315864178912">Recortar</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Exibir apps na estante</translation>
 <translation id="7749443890790263709">O número máximo de áreas de trabalho foi atingido.</translation>
 <translation id="7749640678855296659">Seu microfone está desligado</translation>
@@ -1190,7 +1188,6 @@ Nova instalação</translation>
 <translation id="8030169304546394654">Desconectado</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menu de configurações de acessibilidade</translation>
-<translation id="8042925093898452104">Fechar informações detalhadas</translation>
 <translation id="8044457332620420407">A luz de fundo do teclado está desligada</translation>
 <translation id="8048123526339889627">Configurações de Bluetooth</translation>
 <translation id="8051716679295756675">Já existe um modelo com o nome "<ph name="DESK_TEMPLATE_NAME" />"</translation>

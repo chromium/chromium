@@ -1135,8 +1135,6 @@ Naujas įdiegimas</translation>
 <translation id="7720410380936703141">BANDYKITE DAR KARTĄ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 pranešimas}one{# pranešimas}few{# pranešimai}many{# pranešimo}other{# pranešimų}}</translation>
 <translation id="7724603315864178912">Iškirpti</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Rodyti programas lentynoje</translation>
 <translation id="7749443890790263709">Pasiektas didžiausias pultų skaičius.</translation>
 <translation id="7749640678855296659">MIkrofonas šiuo metu išjungtas</translation>
@@ -1190,7 +1188,6 @@ Naujas įdiegimas</translation>
 <translation id="8030169304546394654">Atjungta</translation>
 <translation id="8036504271468642248">Ankstesnis sakinys</translation>
 <translation id="8042893070933512245">Atidaryti pritaikomumo nustatymų meniu</translation>
-<translation id="8042925093898452104">Uždaryti išsamią informaciją</translation>
 <translation id="8044457332620420407">Klaviatūra foninis apšvietimas išjungtas</translation>
 <translation id="8048123526339889627">„Bluetooth“ nustatymai</translation>
 <translation id="8051716679295756675">Šablonas pavadinimu „<ph name="DESK_TEMPLATE_NAME" />“ jau yra</translation>

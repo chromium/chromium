@@ -1134,8 +1134,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7720410380936703141">SPRÓBUJ PONOWNIE</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 powiadomienie}few{# powiadomienia}many{# powiadomień}other{# powiadomienia}}</translation>
 <translation id="7724603315864178912">Wytnij</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Pokaż aplikacje na półce</translation>
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
 <translation id="7749640678855296659">Mikrofon jest obecnie wyłączony</translation>
@@ -1189,7 +1187,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="8030169304546394654">Rozłączone</translation>
 <translation id="8036504271468642248">Poprzednie zdanie</translation>
 <translation id="8042893070933512245">Otwórz menu ustawień ułatwień dostępu</translation>
-<translation id="8042925093898452104">Zamknij szczegóły</translation>
 <translation id="8044457332620420407">Podświetlenie klawiatury jest wyłączone</translation>
 <translation id="8048123526339889627">Ustawienia Bluetootha</translation>
 <translation id="8051716679295756675">Szablon o nazwie <ph name="DESK_TEMPLATE_NAME" /> już istnieje</translation>

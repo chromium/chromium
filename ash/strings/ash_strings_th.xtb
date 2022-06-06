@@ -1132,7 +1132,6 @@
 <translation id="7720410380936703141">ลองอีกครั้ง</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{การแจ้งเตือน 1 รายการ}other{การแจ้งเตือน # รายการ}}</translation>
 <translation id="7724603315864178912">ตัด</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">แสดงแอปในแถบ</translation>
 <translation id="7749443890790263709">มีพื้นที่ทำงานครบตามจำนวนสูงสุดแล้ว</translation>
 <translation id="7749640678855296659">ไมโครโฟนปิดอยู่ในขณะนี้</translation>
@@ -1186,7 +1185,6 @@
 <translation id="8030169304546394654">ยกเลิกการเชื่อมต่อแล้ว</translation>
 <translation id="8036504271468642248">ประโยคก่อนหน้า</translation>
 <translation id="8042893070933512245">เปิดเมนูการตั้งค่าการช่วยเหลือพิเศษ</translation>
-<translation id="8042925093898452104">ปิดข้อมูลรายละเอียด</translation>
 <translation id="8044457332620420407">ไฟแบ็กไลต์ของแป้นพิมพ์ปิดอยู่</translation>
 <translation id="8048123526339889627">การตั้งค่าบลูทูธ</translation>
 <translation id="8051716679295756675">มีเทมเพลตชื่อ <ph name="DESK_TEMPLATE_NAME" /> อยู่แล้ว</translation>

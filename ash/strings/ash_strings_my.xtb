@@ -239,6 +239,7 @@
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2367186422933365202">သင့် Chromebook သို့ လက်မှတ်ထိုးဝင်၍ မရပါ</translation>
 <translation id="2369165858548251131">"Hello" ကို တရုတ်လို ဘယ်လိုပြောလဲ</translation>
+<translation id="2375445874393996153">Google Assistant ဖြင့် ဖန်သားပြင်ပေါ် ရှိနေသည်များကို ရှာဖွေမှုအား မပံ့ပိုးတော့ပါ။</translation>
 <translation id="2390318262976603432">ဘာသာစကား ဆက်တင်များ</translation>
 <translation id="240006516586367791">မီဒီယာ ထိန်းချုပ်မှုများ</translation>
 <translation id="2402411679569069051">သင့် Chromebook ကို လော့ခ်ဖွင့်ရန် သင့်လက်ဗွေကို အသုံးပြုပါ (သို့) သင့်ဖုန်းကို လော့ခ်ဖွင့်ပါ</translation>
@@ -1135,8 +1136,6 @@
 <translation id="7720410380936703141">ထပ်စမ်းကြည့်ရန်</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{အကြောင်းကြားချက် ၁ ခု}other{အကြောင်းကြားချက် # ခု}}</translation>
 <translation id="7724603315864178912">ဖြတ်တောက်</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />၊ 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">အက်ပ်များကို စင်တွင်ပြရန်</translation>
 <translation id="7749443890790263709">အများဆုံးသတ်မှတ်ထားသည့် စားပွဲအရေအတွက် ပြည့်သွားပါပြီ။</translation>
 <translation id="7749640678855296659">သင့်မိုက်ခရိုဖုန်းကို လက်ရှိတွင် ပိတ်ထားသည်</translation>
@@ -1190,7 +1189,6 @@
 <translation id="8030169304546394654">ချိတ်ဆက်မှု ဖြုတ်ထား</translation>
 <translation id="8036504271468642248">ယခင် ဝါကျ</translation>
 <translation id="8042893070933512245">အများသုံးစွဲနိုင်မှုဆက်တင်များ မီနူးကို ဖွင့်ရန်</translation>
-<translation id="8042925093898452104">အသေးစိတ် အချက်အလက်ကို ပိတ်ရန်</translation>
 <translation id="8044457332620420407">ကီးဘုတ်နောက်ခံမီး ပိတ်ပြီးပြီ</translation>
 <translation id="8048123526339889627">ဘလူးတုသ် ဆက်တင်များ</translation>
 <translation id="8051716679295756675">နမူနာ ပုံစံအမည် <ph name="DESK_TEMPLATE_NAME" /> က ရှိပြီးသားဖြစ်သည်</translation>

@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Стартов панел</translation>
 <translation id="1512982610995527443">Устройството ще се изключи след 5 секунди</translation>
 <translation id="1522984060396982789">Ремонтът бе успешен. Можете да изключите устройството или да предприемете допълнителни действия.</translation>
+<translation id="1526389707933164996">Анимация за скрийнсейвъра</translation>
 <translation id="152892567002884378">Увеличаване на силата на звука</translation>
 <translation id="1555130319947370107">синьо</translation>
 <translation id="155865706765934889">Сензорен панел</translation>
@@ -93,6 +94,7 @@
 <translation id="1717874160321062422">Управлява се от <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Сървъри за имена</translation>
 <translation id="1731082422893354635">Сензорен панел с Bluetooth</translation>
+<translation id="1745577949879301685">Изображенията не се заредиха. Проверете връзката си с мрежата или ги заредете отново.</translation>
 <translation id="1751249301761991853">Лични</translation>
 <translation id="1753496554272155572">Изход от визуализацията на тапета</translation>
 <translation id="175763766237925754">Добра (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -300,6 +302,7 @@
 <translation id="3858860766373142691">Име</translation>
 <translation id="3865414814144988605">Разделителна способност</translation>
 <translation id="387301095347517405">Броят пълни цикли на зареждане на батерията ви</translation>
+<translation id="3885327323343477505">Промяна на скрийнсейвъра</translation>
 <translation id="3923184630988645767">Пренос на данни</translation>
 <translation id="3924044641767672375">Свързването с Wi-Fi се препоръчва, тъй като ще улесни поправката. Мрежата ви ще бъде запазена.</translation>
 <translation id="3932043219784172185">Няма свързано устройство</translation>
@@ -418,6 +421,7 @@
 <translation id="4890353053343094602">Изберете нова незабавно</translation>
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4897058166682006107">Нивото на батерията на лявата слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4905998861748258752">Включете функцията, за да изберете опции за скрийнсейвъра</translation>
 <translation id="4908030561598728899">Фърмуерът се инсталира...</translation>
 <translation id="4915052247106771211">Това действие ще възстанови фабричните настройки на устройството (Powerwash).</translation>
 <translation id="4917385247580444890">Силен</translation>
@@ -861,6 +865,7 @@
 <translation id="8997710128084572139">Нивото на батерията на устройството е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Честота</translation>
 <translation id="9025198690966128418">Използване като лично устройство</translation>
+<translation id="9028832514430399253">Включете превключвателя, за да изберете опциите за скрийнсейвъра</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Голямо забавяне при преобразуването от DNS</translation>
 <translation id="9063121522582193837">Някои компоненти не бяха калибрирани</translation>

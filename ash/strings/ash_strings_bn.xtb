@@ -1135,8 +1135,6 @@
 <translation id="7720410380936703141">আবার চেষ্টা করুন</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{১টি বিজ্ঞপ্তি}one{#টি বিজ্ঞপ্তি}other{#টি বিজ্ঞপ্তি}}</translation>
 <translation id="7724603315864178912">কাটুন</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">শেল্ফে অ্যাপ দেখুন</translation>
 <translation id="7749443890790263709">সর্বাধিক সংখ্যক ডেস্ক যোগ করা হয়ে গেছে।</translation>
 <translation id="7749640678855296659">বর্তমানে আপনার মাইক্রোফোন বন্ধ করা আছে</translation>
@@ -1190,7 +1188,6 @@
 <translation id="8030169304546394654">সংযোগ বিচ্ছিন্ন</translation>
 <translation id="8036504271468642248">আগের বাক্য</translation>
 <translation id="8042893070933512245">অ্যাক্সেসিবিলিটি সেটিংস মেনু খুলুন</translation>
-<translation id="8042925093898452104">বিস্তারিত তথ্যের ভিউ বন্ধ করুন</translation>
 <translation id="8044457332620420407">কীবোর্ড ব্যাকলাইট বন্ধ আছে</translation>
 <translation id="8048123526339889627">ব্লুটুথ সেটিংস</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> নামের টেমপ্লেট আগে থেকেই আছে</translation>

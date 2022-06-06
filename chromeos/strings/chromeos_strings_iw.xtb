@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="1512982610995527443">המכשיר ייכבה בעוד 5 שניות</translation>
 <translation id="1522984060396982789">התיקון הושלם. אפשר לכבות את המכשיר או לבצע פעולות נוספות.</translation>
+<translation id="1526389707933164996">אנימציה של שומר המסך</translation>
 <translation id="152892567002884378">הגברת עוצמת הקול</translation>
 <translation id="1555130319947370107">כחול</translation>
 <translation id="155865706765934889">לוח מגע</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">שם</translation>
 <translation id="3865414814144988605">רזולוציה</translation>
 <translation id="387301095347517405">מספר הפעמים שבהן הסוללה נטענה במלואה</translation>
+<translation id="3885327323343477505">החלפת שומר המסך</translation>
 <translation id="3923184630988645767">שימוש בחבילת הגלישה</translation>
 <translation id="3924044641767672375">‏כדי שתהליך התיקון יהיה פשוט יותר, כדאי להתחבר לרשת Wi-Fi. הרשת שלך תישמר.</translation>
 <translation id="3932043219784172185">אין מכשיר מחובר</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">יש לבחור מיד סיסמה חדשה</translation>
 <translation id="4891842000192098784">בדיקת עומסים</translation>
 <translation id="4897058166682006107">רמת הטעינה של האוזנייה השמאלית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
+<translation id="4905998861748258752">צריך להפעיל את התכונה כדי לבחור אפשרויות לשומר המסך</translation>
 <translation id="4908030561598728899">מתבצעת התקנת קושחה…</translation>
 <translation id="4915052247106771211">‏המכשיר יאופס להגדרות המקוריות (Powerwash).</translation>
 <translation id="4917385247580444890">חזק</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">רמת הטעינה של הסוללה במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="9003704114456258138">תדר</translation>
 <translation id="9025198690966128418">שימוש בתור מכשיר אישי</translation>
+<translation id="9028832514430399253">צריך להפעיל את החלפת המצב כדי לבחור את האפשרויות של שומר המסך</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">‏זמן האחזור של רזולוציית ה-DNS ארוך</translation>
 <translation id="9063121522582193837">לא ניתן היה לכייל חלק מהרכיבים</translation>

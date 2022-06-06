@@ -110,6 +110,7 @@
 <translation id="1513352483775369820">စာညှပ်များ နှင့် ဝဘ် မှတ်တမ်း</translation>
 <translation id="1513814250881909472">သင်၏အခြားစက်ပစ္စည်းများမှ တဘ်များရယူရန် စင့်ခ်လုပ်ပါ</translation>
 <translation id="1513858653616922153">စကားဝှက်ကို ဖျက်ရန်</translation>
+<translation id="1514552811327923157">Privacy Sandbox အတည်ပြုစနစ်ကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်</translation>
 <translation id="1518421282666914498">ခံစားချက် GIF (ပုံနှင့်ဆိုင်သော ဖိုင်အမျိုးအစားတစ်ခု) <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">ယနေ့ အသုံးပြုထားသည်</translation>
 <translation id="1538801903729528855">ဝဘ်တွင် ပိုမိုကောင်းမွန်သော အသံအသုံးပြုမှုဖြင့် ဆောင်ရွက်လိုက်ပါ</translation>
@@ -321,6 +322,7 @@
 <translation id="2711073837061989559">အစမ်းသုံးခြင်းများ</translation>
 <translation id="2718352093833049315">ဝိုင်ဖိုင်တွင်သာ</translation>
 <translation id="2718846868787000099">အကြောင်းအရာများကို သင်၏ဦးစားပေး ဘာသာစကားများဖြင့် ပြရန်အတွက် သင်ဝင်ကြည့်သော ဝဘ်ဆိုက်များက သင်၏ဦးစားပေးချက်များကို ကြည့်နိုင်သည်</translation>
+<translation id="2722945394406572875">Privacy Sandbox အတည်ပြုစနစ် ပိတ်ထားသည်</translation>
 <translation id="2723001399770238859">အသံ</translation>
 <translation id="2732063072010454421">ပိုမိုကောင်းမွန်သော အသံစမ်းသပ်မှုကို ရယူပါ</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -791,6 +793,7 @@
 <translation id="5342314432463739672">ခွင့်ပြုချက် တောင်းဆိုမှုများ</translation>
 <translation id="5355191726083956201">'အဆင့်မြှင့်တင်ထားသော ကာကွယ်မှု' ကို ဖွင့်ထားသည်</translation>
 <translation id="5368227114232678694">ဤစက်တွင် သီးသန့်ကြည့်ရှုရန် ရုပ်ဖျက်စနစ်ကို သုံးကြည့်ပါ</translation>
+<translation id="5371717687506906963">Privacy Sandbox အတည်ပြုစနစ်</translation>
 <translation id="5375577065097716013">Google Lens ဖြင့် ပုံရှာရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">တုံ့ပြန်မှုကို ပြောင်းလိုက်သည်</translation>
 <translation id="5401851137404501592">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့်အမည်၊ အီးမေးလ်လိပ်စာနှင့် ပရိုဖိုင်ပုံကို ဤဝဘ်ဆိုက်အား မျှဝေမည်။</translation>
@@ -894,6 +897,7 @@
 <translation id="5906513782029855931">ဝဘ်ဆိုက်များ၏ URL များသိရှိခြင်းသည် Google Assistant ကို သင့်လုပ်ဆောင်စရာများ အထမြောက်စေရန် ကူညီခွင့်ပေးသည်။ Assistant ကို Chrome ဆက်တင်များတွင် ပိတ်နိုင်သည်။</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5919204609460789179">စင့်ခ်လုပ်ရန် <ph name="PRODUCT_NAME" /> ကို အပ်ဒိတ်လုပ်ပါ</translation>
+<translation id="593625682991400408">အစမ်းသုံးနေစဉ် Chrome သည် စပမ်း၊ လိမ်လည်မှုနှင့် ဝဘ်ဆိုက်များအကြား မျှဝေခြင်းတို့ကို ကန့်သတ်ရန်နည်းလမ်းများ ရှာဖွေနေသည်။ Chrome ကလည်း သင့်အားကြော်ငြာပြရန် ဝဘ်ဆိုက်များက အသုံးပြုနိုင်သော <ph name="BEGIN_LINK" />သင့်စိတ်ဝင်စားမှုများကို ခန့်မှန်းသည်<ph name="END_LINK" />။ သင့်စိတ်ဝင်စားမှုများကို ဆက်တင်များတွင် စီမံနိုင်သည်။</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ထည့်ရန်</translation>
 <translation id="5942872142862698679">ရှာဖွေမှုအတွက် Google ကို အသုံးပြုသည်</translation>
 <translation id="5945035219773565305">လက်ရှိ အကြံပြုချက်-  <ph name="RECOMMENDATION" /></translation>
@@ -1511,6 +1515,7 @@
 <translation id="9106148373857059373">လိပ်စာသိမ်းရန် လုပ်ငန်းစဉ် ပိတ်ထားသည်</translation>
 <translation id="9108312223223904744">ဖုန်းကို 'လုံခြုံရေးကီး အကူအညီ' အဖြစ်</translation>
 <translation id="9108808586816295166">လုံခြုံသော DNS ကို အမြဲမရနိုင်ပါ</translation>
+<translation id="9128984223251192329">Privacy Sandbox အတည်ပြုစနစ်ကို မြင်ကွင်းတစ်ဝက် ဖွင့်ထားသည်</translation>
 <translation id="9133397713400217035">အော့ဖ်လိုင်းတွင် စူးစမ်းလေ့လာရန်</translation>
 <translation id="9137013805542155359">မူရင်းအား ပြ</translation>
 <translation id="9148126808321036104">ထပ်ပြီး လက်မှတ်ထိုး ဝင်ရန်</translation>

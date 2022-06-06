@@ -1132,8 +1132,6 @@
 <translation id="7720410380936703141">እንደገና ይሞክሩ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ማሳወቂያ}one{# ማሳወቂያዎች}other{# ማሳወቂያዎች}}</translation>
 <translation id="7724603315864178912">ቁረጥ</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />፣ 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">መተግበሪያዎችን በመደርደሪያ አሳይ</translation>
 <translation id="7749443890790263709">የተደረሰባቸው የዴስኮች ከፍተኛ ብዛት።</translation>
 <translation id="7749640678855296659">የእርስዎ ማይክሮፎን በአሁኑ ጊዜ ጠፍቷል</translation>
@@ -1187,7 +1185,6 @@
 <translation id="8030169304546394654">አልተያያዘም</translation>
 <translation id="8036504271468642248">ቀዳሚ ዓረፍተ ነገር</translation>
 <translation id="8042893070933512245">የተደራሽነት ቅንብሮች ምናሌን ክፈት</translation>
-<translation id="8042925093898452104">ዝርዝር መረጃን ዝጋ</translation>
 <translation id="8044457332620420407">የቁልፍ ሰሌዳ የኋላ ብርሃን ጠፍቷል</translation>
 <translation id="8048123526339889627">የብሉቱዝ ቅንብሮች</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> ተብሎ የተሰየመ ቅንብር ደንብ አስቀድሞ አለ።</translation>

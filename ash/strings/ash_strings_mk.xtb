@@ -1136,8 +1136,6 @@
 <translation id="7720410380936703141">ОБИДЕТЕ СЕ ПОВТОРНО</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 известување}one{# известување}other{# известувања}}</translation>
 <translation id="7724603315864178912">Исечи</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Прикажи ги апликациите од полицата</translation>
 <translation id="7749443890790263709">Достигнат е максималниот број работни простори.</translation>
 <translation id="7749640678855296659">Микрофонот е исклучен во моментов</translation>
@@ -1191,7 +1189,6 @@
 <translation id="8030169304546394654">Не е поврзано</translation>
 <translation id="8036504271468642248">Претходна реченица</translation>
 <translation id="8042893070933512245">Отворете го менито со поставки за пристапност</translation>
-<translation id="8042925093898452104">Затворете ги деталите</translation>
 <translation id="8044457332620420407">Заднинското светло на тастатурата е исклучено</translation>
 <translation id="8048123526339889627">Поставки за Bluetooth</translation>
 <translation id="8051716679295756675">Веќе постои шаблон со име <ph name="DESK_TEMPLATE_NAME" /></translation>

@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
 <translation id="1512982610995527443">Құрылғы 5 секундтан кейін өшеді.</translation>
 <translation id="1522984060396982789">Жөнделді. Құрылғыны өшіруге немесе кейбір қосымша шараларды қолдануға болады.</translation>
+<translation id="1526389707933164996">Скринсейвер анимациясы</translation>
 <translation id="152892567002884378">Дыбысты арттыру</translation>
 <translation id="1555130319947370107">Көк</translation>
 <translation id="155865706765934889">Сенсорлық тақта</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Аты</translation>
 <translation id="3865414814144988605">Ажыратымдылық</translation>
 <translation id="387301095347517405">Батареяңыздың толық зарядтау циклінен өту саны</translation>
+<translation id="3885327323343477505">Скринсейверді өзгерту</translation>
 <translation id="3923184630988645767">Деректер трафигі</translation>
 <translation id="3924044641767672375">Жөндеу жұмысын жеңілдету үшін Wi-Fi желісіне қосылған жөн. Желі деректері сақталады.</translation>
 <translation id="3932043219784172185">Жалғанған құрылғы жоқ.</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Дереу жаңа құпия сөз таңдаңыз.</translation>
 <translation id="4891842000192098784">Стресс</translation>
 <translation id="4897058166682006107">Сол құлақаспаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="4905998861748258752">Скринсейвер опцияларын таңдау үшін функцияны қосыңыз</translation>
 <translation id="4908030561598728899">Микробағдарлама орнатылуда…</translation>
 <translation id="4915052247106771211">Құрылғы зауыттық параметрлерге қайтарылады (Powerwash).</translation>
 <translation id="4917385247580444890">Күшті</translation>
@@ -860,6 +863,7 @@
 <translation id="8997710128084572139">Құрылғының батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="9003704114456258138">Жиілік</translation>
 <translation id="9025198690966128418">Жеке құрылғы ретінде пайдалану</translation>
+<translation id="9028832514430399253">Скринсейвер параметрлерін таңдау үшін ауыстырғышты басыңыз</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ажыратымдылығының кідірісі жоғары.</translation>
 <translation id="9063121522582193837">Кейбір құрамдастар калибрленбеді</translation>

@@ -119,6 +119,7 @@
 <translation id="1270502636509132238">Götürmə Üsulu</translation>
 <translation id="1281476433249504884">Yığıcı 1</translation>
 <translation id="1285320974508926690">Bu saytı heç vaxt tərcümə etməyin</translation>
+<translation id="1288548991597756084">Kartı etibarlı şəkildə saxlayın</translation>
 <translation id="1292571435393770077">Qab 16</translation>
 <translation id="1292701964462482250">"Kompüterdəki proqram təminatı Chrome'un vebə təhlükəsiz şəkildə qoşulmağına mane olur" (yalnız Windows kompüterləri)</translation>
 <translation id="1294154142200295408">Əmr xəttinin növləri</translation>
@@ -223,6 +224,7 @@
     &lt;p&gt;Bunu həlle etmək üçün açdığınız səhifədə &lt;strong&gt;Connect&lt;/strong&gt; üzərinə klikləyin.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Landşaft dizaynı</translation>
 <translation id="1513706915089223971">Tarixçə daxiletmələrinin siyahısı</translation>
+<translation id="1516097932025103760">O, şifrələnəcək, təhlükəsiz saxlanacaq və CVC heç vaxt saxlanmayacaq.</translation>
 <translation id="1517433312004943670">Telefon nömrəsi tələb olunur</translation>
 <translation id="1519264250979466059">Yaratma Tarixi</translation>
 <translation id="1521159554480556801">Lif və tekstil sənəti</translation>
@@ -1411,6 +1413,7 @@
 <translation id="483241715238664915">Xəbərdarlıqları aktiv edin</translation>
 <translation id="4834250788637067901">Google Pay istifadə edən ödəniş metodları, təkliflər və ünvanlar</translation>
 <translation id="4838327282952368871">Xəyali</translation>
+<translation id="4839087176073128681">Növbəti dəfə daha sürətli ödəyin və kartınızı Google'un qabaqcıl təhlükəsizliyi ilə qoruyun.</translation>
 <translation id="4840250757394056958">Chrome tarixçənizə baxın</translation>
 <translation id="484462545196658690">Avtomatik</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> və digərləri üçün endirim əldə edin</translation>
@@ -2122,7 +2125,6 @@
 <translation id="6897140037006041989">İstifadəçi Agent</translation>
 <translation id="6898699227549475383">Təşkilat (T)</translation>
 <translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" /> rəqəmli kodu daxil edin</translation>
-<translation id="6903437476849497868">Çıxın</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> tətbiqinə icazə verin:</translation>
 <translation id="6907458757809079309">Fitnes</translation>
 <translation id="6910240653697687763"><ph name="URL" /> MIDI cihazlarda tam nəzarət əldə etmək istəyir</translation>

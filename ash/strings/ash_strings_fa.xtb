@@ -1135,8 +1135,6 @@
 <translation id="7720410380936703141">امتحان مجدد</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{۱ اعلان}one{# اعلان}other{# اعلان}}</translation>
 <translation id="7724603315864178912">برش</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />، 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">نمایش برنامه‌ها در قفسه</translation>
 <translation id="7749443890790263709">به حداکثر تعداد میز رسیده‌اید.</translation>
 <translation id="7749640678855296659">میکروفون شما درحال حاضر خاموش است</translation>
@@ -1190,7 +1188,6 @@
 <translation id="8030169304546394654">اتصال قطع شد</translation>
 <translation id="8036504271468642248">جمله قبلی</translation>
 <translation id="8042893070933512245">باز کردن منوی تنظیمات دسترس‌پذیری</translation>
-<translation id="8042925093898452104">بستن اطلاعات دقیق</translation>
 <translation id="8044457332620420407">نور پس‌زمینه صفحه‌کلید خاموش شد</translation>
 <translation id="8048123526339889627">تنظیمات بلوتوث</translation>
 <translation id="8051716679295756675">الگویی با نام <ph name="DESK_TEMPLATE_NAME" /> ازقبل وجود دارد</translation>

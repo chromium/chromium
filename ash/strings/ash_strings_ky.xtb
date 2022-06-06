@@ -263,7 +263,7 @@
 <translation id="2542089167727451762">Профилиңиздин сүрөтүн таптап коюңуз</translation>
 <translation id="255671100581129685">Google Жардамчысы жалпыга ачык сеанста жеткиликсиз.</translation>
 <translation id="256712445991462162">жалгаштырылган лупа</translation>
-<translation id="2570734079541893434">Жөндөөлөрдү башкаруу</translation>
+<translation id="2570734079541893434">Тууралоо</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> менен туташпай койду</translation>
 <translation id="2575685495496069081">Бир нече аккаунт менен кирүү өчүрүлгөн</translation>
 <translation id="2582112259361606227">Жаңыртуу үчүн өчүрүп күйгүзүңүз</translation>
@@ -1135,8 +1135,6 @@
 <translation id="7720410380936703141">КАЙТАЛОО</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 билдирме}other{# билдирме}}</translation>
 <translation id="7724603315864178912">Кесүү</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Текчедеги колдонмолорду көрсөтүү</translation>
 <translation id="7749443890790263709">Иш такталардын саны эң жогорку чегине жетти.</translation>
 <translation id="7749640678855296659">Микрофонуңуз учурда өчүк</translation>
@@ -1190,7 +1188,6 @@
 <translation id="8030169304546394654">Ажыратылды</translation>
 <translation id="8036504271468642248">Мурунку сүйлөм</translation>
 <translation id="8042893070933512245">Атайын мүмкүнчүлүктөр жөндөөлөрүнүн менюсун ачуу</translation>
-<translation id="8042925093898452104">Чоо-жайын жабуу</translation>
 <translation id="8044457332620420407">Баскычтоптун жарыгы өчүк</translation>
 <translation id="8048123526339889627">Bluetooth жөндөөлөрү</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> деп аталган үлгү бар</translation>

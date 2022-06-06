@@ -119,6 +119,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1270502636509132238">Metodo di ritiro</translation>
 <translation id="1281476433249504884">Fascicolatore 1</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
+<translation id="1288548991597756084">Salva la carta in modo sicuro</translation>
 <translation id="1292571435393770077">Vassoio 16</translation>
 <translation id="1292701964462482250">"Il software installato sul computer sta impedendo a Chrome di connettersi in sicurezza al Web" (solo su computer Windows)</translation>
 <translation id="1294154142200295408">Variazioni nella riga di comando</translation>
@@ -223,6 +224,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
     &lt;p&gt;Per risolvere il problema, fai clic su &lt;strong&gt;Connetti&lt;/strong&gt; nella pagina che stai cercando di aprire.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Architettura del paesaggio</translation>
 <translation id="1513706915089223971">Elenco di voci della cronologia</translation>
+<translation id="1516097932025103760">La carta verrà criptata, salvata in modo sicuro e il CVC non verrà mai memorizzato.</translation>
 <translation id="1517433312004943670">Numero di telefono obbligatorio</translation>
 <translation id="1519264250979466059">Data build</translation>
 <translation id="1521159554480556801">Arte tessile</translation>
@@ -1413,6 +1415,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="483241715238664915">Attiva gli avvisi</translation>
 <translation id="4834250788637067901">Metodi di pagamento, offerte e indirizzi che utilizzano Google Pay</translation>
 <translation id="4838327282952368871">Surreale</translation>
+<translation id="4839087176073128681">Esegui il pagamento più velocemente la prossima volta e proteggi la tua carta con la sicurezza leader del settore di Google.</translation>
 <translation id="4840250757394056958">Visualizza la tua cronologia di Chrome</translation>
 <translation id="484462545196658690">Automatico</translation>
 <translation id="484671803914931257">Ricevi uno sconto su <ph name="MERCHANT_NAME" /> e altri negozi</translation>
@@ -2123,7 +2126,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6897140037006041989">User-agent</translation>
 <translation id="6898699227549475383">Organizzazione (O)</translation>
 <translation id="6899000063526916106">Inserisci il codice di <ph name="NUMBER_OF_DIGITS" /> cifre</translation>
-<translation id="6903437476849497868">Disattiva</translation>
 <translation id="6907293445143367439">Consenti al sito <ph name="SITE_NAME" /> di:</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="6910240653697687763"><ph name="URL" /> vuole avere il controllo totale dei tuoi dispositivi MIDI</translation>

@@ -239,6 +239,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2367186422933365202">Can't sign in to your Chromebook</translation>
 <translation id="2369165858548251131">"Hello" in Chinese</translation>
+<translation id="2375445874393996153">Searching what's on my screen with Google Assistant is no longer supported.</translation>
 <translation id="2390318262976603432">Locale settings</translation>
 <translation id="240006516586367791">Media controls</translation>
 <translation id="2402411679569069051">To unlock your Chromebook, use your fingerprint or unlock your phone</translation>
@@ -1135,8 +1136,6 @@ New install</translation>
 <translation id="7720410380936703141">TRY AGAIN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}other{# notifications}}</translation>
 <translation id="7724603315864178912">Cut</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Show apps in shelf</translation>
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
 <translation id="7749640678855296659">Your microphone is currently turned off</translation>
@@ -1190,7 +1189,6 @@ New install</translation>
 <translation id="8030169304546394654">Disconnected</translation>
 <translation id="8036504271468642248">Previous sentence</translation>
 <translation id="8042893070933512245">Open accessibility settings menu</translation>
-<translation id="8042925093898452104">Close detail information</translation>
 <translation id="8044457332620420407">Keyboard backlight is off</translation>
 <translation id="8048123526339889627">Bluetooth settings</translation>
 <translation id="8051716679295756675">Template named <ph name="DESK_TEMPLATE_NAME" /> already exists</translation>

@@ -1135,8 +1135,6 @@ Yeni yüklenmiş</translation>
 <translation id="7720410380936703141">TEKRAR DENE</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 bildirim}other{# bildirim}}</translation>
 <translation id="7724603315864178912">Kes</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Raftaki uygulamaları göster</translation>
 <translation id="7749443890790263709">Maksimum masa sayısına ulaşıldı.</translation>
 <translation id="7749640678855296659">Mikrofonunuz şu anda kapalı</translation>
@@ -1190,7 +1188,6 @@ Yeni yüklenmiş</translation>
 <translation id="8030169304546394654">Bağlı değil</translation>
 <translation id="8036504271468642248">Önceki cümle</translation>
 <translation id="8042893070933512245">Erişilebilirlik ayarları menüsünü aç</translation>
-<translation id="8042925093898452104">Ayrıntılı bilgiyi kapat</translation>
 <translation id="8044457332620420407">Klavye arka ışığı kapalı</translation>
 <translation id="8048123526339889627">Bluetooth Ayarları</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> adlı şablon zaten var</translation>

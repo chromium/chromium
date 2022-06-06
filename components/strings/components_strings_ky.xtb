@@ -119,6 +119,7 @@
 <translation id="1270502636509132238">Алып кетүү ыкмасы</translation>
 <translation id="1281476433249504884">6-төшөгүч</translation>
 <translation id="1285320974508926690">Бул сайт эч качан которулбасын</translation>
+<translation id="1288548991597756084">Карта коопсуз сакталды</translation>
 <translation id="1292571435393770077">16-түпкүч</translation>
 <translation id="1292701964462482250">"Компьютериңизде иштеп жаткан программа Chrome’дун Интернетке коопсуз туташуусуна тоскоол болуп жатат" (Windows компьютерлери үчүн гана)</translation>
 <translation id="1294154142200295408">Буйрук сабынын варианттары</translation>
@@ -223,6 +224,7 @@
     &lt;p&gt;Катаны оңдоо үчүн ачууга аракет кылып жаткан барактан &lt;strong&gt;Туташуу&lt;/strong&gt; дегенди чыкылдатыңыз.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Ландшафттык дизайн</translation>
 <translation id="1513706915089223971">Таржымалдагы жазуулардын тизмеси</translation>
+<translation id="1516097932025103760">Ал шифрленип, коопсуз сакталды. CVC эч качан сакталбайт.</translation>
 <translation id="1517433312004943670">Телефон номери талап кылынат</translation>
 <translation id="1519264250979466059">Курама күнү</translation>
 <translation id="1521159554480556801">Була жана текстиль көркөм өнөрү</translation>
@@ -454,7 +456,7 @@
 <translation id="2135799067377889518">Эркектердин кийими</translation>
 <translation id="213826338245044447">Мобилдик кыстармалар</translation>
 <translation id="214556005048008348">Төлөмдү жокко чыгаруу</translation>
-<translation id="2148613324460538318">Картаны кошуу</translation>
+<translation id="2148613324460538318">Карта кошуу</translation>
 <translation id="2149968176347646218">Туташуу кооптуу</translation>
 <translation id="2154054054215849342">Домениңизде шайкештирүү функциясы жок</translation>
 <translation id="2154484045852737596">Карточканы түзөтүү</translation>
@@ -606,7 +608,7 @@
 <translation id="2557417190997681027">Бизнес-саякат</translation>
 <translation id="2562087035394240049">Кантип жасоону үйрөтүүчү, ӨЖ жана эксперттик мазмундар</translation>
 <translation id="2563042576090522782">Бал айлары жана романтикалык эс алуулар</translation>
-<translation id="2570734079541893434">Жөндөөлөрдү башкаруу</translation>
+<translation id="2570734079541893434">Тууралоо</translation>
 <translation id="2573834589046842510">Басып чыгаруу жана жарыялоо</translation>
 <translation id="257674075312929031">Топ</translation>
 <translation id="2576880857912732701">Коопсуздук жөндөөлөрүн башкаруу баскычы, Chrome жөндөөлөрүнөн Коопсуз серептөөнү жана башка нерселерди башкаруу үчүн Enter баскычын басыңыз</translation>
@@ -1415,6 +1417,7 @@
 <translation id="483241715238664915">Эскертүүлөрдү күйгүзүү</translation>
 <translation id="4834250788637067901">Google Pay'ди колдонгон төлөм ыкмалары, сунуштар жана даректер</translation>
 <translation id="4838327282952368871">Кыялкеч</translation>
+<translation id="4839087176073128681">Эмки жолу тез төлөп, картаңыздын коопсуздугун Google'дун жаңы технологиялары менен коргоңуз.</translation>
 <translation id="4840250757394056958">Chrome'до көрүлгөн вебсайттарды көрүү</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> сайтынан жана башкалардан арзандатуу алыңыз</translation>
@@ -1907,7 +1910,7 @@
 <translation id="6232271601416750929">Таза сулуулук</translation>
 <translation id="6233160458685643793">Арсаңдаган</translation>
 <translation id="6234122620015464377">Ар бир документтен кийин кыркуу</translation>
-<translation id="6236290670123303279">Жөндөөлөрдү башкаруу</translation>
+<translation id="6236290670123303279">Тууралоо</translation>
 <translation id="6240447795304464094">Google Pay логотиби</translation>
 <translation id="6241121617266208201">Сунуштарды жашыруу</translation>
 <translation id="624499991300733384">Басып чыгарууну курамалоо кызматы</translation>
@@ -2126,7 +2129,6 @@
 <translation id="6897140037006041989">Колдонуучунун агенти</translation>
 <translation id="6898699227549475383">Уюм (У)</translation>
 <translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" /> орундуу кодду киргизиңиз</translation>
-<translation id="6903437476849497868">Баш тартуу</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> үчүн төмөнкү уруксаттар керек:</translation>
 <translation id="6907458757809079309">Дене-бойду чыңдоо</translation>
 <translation id="6910240653697687763"><ph name="URL" /> MIDI түзмөктөрүңүздү толугу менен көзөмөлдөгөнү жатат</translation>

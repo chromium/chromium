@@ -119,6 +119,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1270502636509132238">Afhentningsmetode</translation>
 <translation id="1281476433249504884">Stabler 1</translation>
 <translation id="1285320974508926690">Oversæt aldrig dette website</translation>
+<translation id="1288548991597756084">Gem kort på en sikker måde</translation>
 <translation id="1292571435393770077">Bakke 16</translation>
 <translation id="1292701964462482250">"Der er software på computeren, som forhindrer, at Chrome kan oprette en sikker forbindelse til nettet" (kun Windows-computere)</translation>
 <translation id="1294154142200295408">Variationer i kommandolinjer</translation>
@@ -223,6 +224,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
     &lt;p&gt;Du kan rette fejlen ved at klikke på &lt;strong&gt;Opret forbindelse&lt;/strong&gt; på den side, du forsøger at åbne.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Landskabsarkitektur</translation>
 <translation id="1513706915089223971">Liste over historiske poster</translation>
+<translation id="1516097932025103760">Oplysningerne krypteres og gemmes på sikker vis. Kontrolkoden gemmes aldrig.</translation>
 <translation id="1517433312004943670">Telefonnummer er påkrævet</translation>
 <translation id="1519264250979466059">Versionsdato</translation>
 <translation id="1521159554480556801">Fiber- og tekstilkunst</translation>
@@ -1416,6 +1418,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="483241715238664915">Aktivér advarsler</translation>
 <translation id="4834250788637067901">Betalingsmetoder, tilbud og adresser, der bruger Google Pay</translation>
 <translation id="4838327282952368871">Drømmende</translation>
+<translation id="4839087176073128681">Betal hurtigere næste gang, og beskyt dit kort med Googles brancheførende sikkerhed.</translation>
 <translation id="4840250757394056958">Se din Chrome-historik</translation>
 <translation id="484462545196658690">Automatisk</translation>
 <translation id="484671803914931257">Få rabat på <ph name="MERCHANT_NAME" /> og meget mere</translation>
@@ -2127,7 +2130,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6897140037006041989">Brugeragent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6899000063526916106">Angiv <ph name="NUMBER_OF_DIGITS" />-cifret kode</translation>
-<translation id="6903437476849497868">Fravælg</translation>
 <translation id="6907293445143367439">Giv <ph name="SITE_NAME" /> tilladelse til at:</translation>
 <translation id="6907458757809079309">Træning</translation>
 <translation id="6910240653697687763"><ph name="URL" /> anmoder om fuld kontrol over dine MIDI-enheder</translation>

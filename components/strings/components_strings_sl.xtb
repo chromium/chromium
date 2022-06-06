@@ -119,6 +119,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1270502636509132238">Način prevzema</translation>
 <translation id="1281476433249504884">Zlagalnik 1</translation>
 <translation id="1285320974508926690">Nikoli ne prevedi tega spletnega mesta</translation>
+<translation id="1288548991597756084">Varno shranite kartico</translation>
 <translation id="1292571435393770077">Pladenj 16</translation>
 <translation id="1292701964462482250">»Programska oprema v računalniku Chromu preprečuje vzpostavitev varne povezave s spletom« (samo računalniki s sistemom Windows)</translation>
 <translation id="1294154142200295408">Različice ukazne vrstice</translation>
@@ -223,6 +224,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     &lt;p&gt;Napravo odpravite tako, da na strani, ki jo poskušate odpreti, kliknete &lt;strong&gt;Poveži&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Krajinska arhitektura</translation>
 <translation id="1513706915089223971">Seznam vnosov v zgodovino</translation>
+<translation id="1516097932025103760">Podatki o kartici bodo šifrirani in varno shranjeni, CVC pa se nikoli ne shrani.</translation>
 <translation id="1517433312004943670">Telefonska številka je obvezna</translation>
 <translation id="1519264250979466059">Datum gradnje</translation>
 <translation id="1521159554480556801">Umetniški izdelki iz volne in blaga</translation>
@@ -1416,6 +1418,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="483241715238664915">Vklopi opozorila</translation>
 <translation id="4834250788637067901">Plačilna sredstva, ponudbe in naslovi z Googlom Pay</translation>
 <translation id="4838327282952368871">Zasanjano</translation>
+<translation id="4839087176073128681">Naslednjič plačajte hitreje in zaščitite kartico z Googlovo najboljšo varnostno zaščito v panogi.</translation>
 <translation id="4840250757394056958">Ogled zgodovine v Chromu</translation>
 <translation id="484462545196658690">Samodejno</translation>
 <translation id="484671803914931257">Prejmite popust pri trgovcu <ph name="MERCHANT_NAME" /> in drugo</translation>
@@ -2127,7 +2130,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6897140037006041989">Uporabnikov posrednik</translation>
 <translation id="6898699227549475383">Organizacija (O)</translation>
 <translation id="6899000063526916106">Vnesite <ph name="NUMBER_OF_DIGITS" />-mestno kodo</translation>
-<translation id="6903437476849497868">Onemogočanje</translation>
 <translation id="6907293445143367439">Ali spletnemu mestu <ph name="SITE_NAME" /> dovolite, da:</translation>
 <translation id="6907458757809079309">Fitnes</translation>
 <translation id="6910240653697687763"><ph name="URL" /> želi pridobiti popolni nadzor nad vašimi napravami MIDI</translation>

@@ -66,6 +66,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1434356225517321998">Your browser is managed. <ph name="BEGIN_LINK" />Details<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Hide password</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> items</translation>
+<translation id="1450170672351507823">Standard protection is on. For even more security, use enhanced protection.</translation>
 <translation id="149095475893949513">This website is trying to download a configuration profile.</translation>
 <translation id="1491277525950327607">Double tap to toggle setting</translation>
 <translation id="1492417797159476138">You already saved this username for this site</translation>
@@ -739,6 +740,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7099761977003084116">Recent Tabs</translation>
 <translation id="7102005569666697658">Downloading… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Hide</translation>
+<translation id="7108762695052995889">Visit site</translation>
 <translation id="7133798577887235672">Full Name</translation>
 <translation id="7136892417564438900">Camera is unavailable</translation>
 <translation id="7153999225810839758"><ph name="TIME" /> minute read</translation>

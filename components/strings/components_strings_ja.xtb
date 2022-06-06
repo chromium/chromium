@@ -119,6 +119,7 @@
 <translation id="1270502636509132238">受け取り方法</translation>
 <translation id="1281476433249504884">スタッカー 1</translation>
 <translation id="1285320974508926690">このサイトは翻訳しない</translation>
+<translation id="1288548991597756084">カードを安全に保存</translation>
 <translation id="1292571435393770077">トレイ 16</translation>
 <translation id="1292701964462482250">「パソコンにインストールされているソフトウェアが原因で、Chrome からインターネットに安全に接続することができません」（Windows パソコンのみ）</translation>
 <translation id="1294154142200295408">コマンドラインのバリエーション</translation>
@@ -223,6 +224,7 @@
     &lt;p&gt;エラーを解決するには、開こうとしているページで [&lt;strong&gt;接続&lt;/strong&gt;] をクリックします。&lt;/p&gt;</translation>
 <translation id="1507780850870535225">造園設計</translation>
 <translation id="1513706915089223971">履歴項目のリスト</translation>
+<translation id="1516097932025103760">カード情報は暗号化されて安全に保存されます。ただし、CVC は保存されません。</translation>
 <translation id="1517433312004943670">電話番号が必要です</translation>
 <translation id="1519264250979466059">ビルド日</translation>
 <translation id="1521159554480556801">手芸</translation>
@@ -1407,6 +1409,7 @@
 <translation id="483241715238664915">警告をオンにする</translation>
 <translation id="4834250788637067901">Google Pay を使用したお支払方法、クーポン、住所</translation>
 <translation id="4838327282952368871">ドリーミー</translation>
+<translation id="4839087176073128681">次回から支払い処理をすばやく行うことができます。カード情報は Google の業界最高水準のセキュリティで保護されます。</translation>
 <translation id="4840250757394056958">Chrome 履歴を表示</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> などの割引を取得</translation>
@@ -2118,7 +2121,6 @@
 <translation id="6897140037006041989">ユーザー エージェント</translation>
 <translation id="6898699227549475383">組織（O）</translation>
 <translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" /> 桁のコードを入力してください</translation>
-<translation id="6903437476849497868">オプトアウト</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> に次の権限を許可:</translation>
 <translation id="6907458757809079309">フィットネス</translation>
 <translation id="6910240653697687763"><ph name="URL" /> から、MIDI デバイスをフル コントロールする許可を求められています</translation>

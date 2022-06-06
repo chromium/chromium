@@ -1133,8 +1133,6 @@
 <translation id="7720410380936703141">再試一次</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 則通知}other{# 則通知}}</translation>
 <translation id="7724603315864178912">剪下</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />，
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">在捷徑列中顯示應用程式</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="7749640678855296659">麥克風目前已關閉</translation>
@@ -1188,7 +1186,6 @@
 <translation id="8030169304546394654">已中斷連線</translation>
 <translation id="8036504271468642248">上一句</translation>
 <translation id="8042893070933512245">開啟無障礙功能設定選單</translation>
-<translation id="8042925093898452104">關閉詳細資料</translation>
 <translation id="8044457332620420407">鍵盤背光已關閉</translation>
 <translation id="8048123526339889627">藍牙設定</translation>
 <translation id="8051716679295756675">名為「<ph name="DESK_TEMPLATE_NAME" />」的範本已存在</translation>

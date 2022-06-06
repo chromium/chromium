@@ -1135,8 +1135,6 @@ Ný uppsetning</translation>
 <translation id="7720410380936703141">REYNDU AFTUR</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Ein tilkynning}one{# tilkynning}other{# tilkynningar}}</translation>
 <translation id="7724603315864178912">Klippa</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Sýna forrit á hillu</translation>
 <translation id="7749443890790263709">Hámarksfjölda skjáborða náð.</translation>
 <translation id="7749640678855296659">Slökkt er á hljóðnemanum</translation>
@@ -1190,7 +1188,6 @@ Ný uppsetning</translation>
 <translation id="8030169304546394654">Aftengt</translation>
 <translation id="8036504271468642248">Fyrri setning</translation>
 <translation id="8042893070933512245">Opna valmynd aðgengisstillinga</translation>
-<translation id="8042925093898452104">Loka ítarlegum upplýsingum</translation>
 <translation id="8044457332620420407">Slökkt er á baklýsingu lyklaborðs</translation>
 <translation id="8048123526339889627">Bluetooth-stillingar</translation>
 <translation id="8051716679295756675">Sniðmát sem heitir <ph name="DESK_TEMPLATE_NAME" /> er þegar til</translation>

@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">သီချင်းအမျိုးအစား</translation>
 <translation id="1254593899333212300">တိုက်ရိုက် အင်တာနက် ချိတ်ဆက်မှု</translation>
 <translation id="1272293450992660632">ပင်နံပါတ် အချက်အလက်မတူညီပါ။</translation>
+<translation id="127650757582748357">BZIP2 ဖြင့် ချုံ့ထားသည့် မှတ်တမ်း</translation>
 <translation id="1280820357415527819">မိုဘိုင်းကွန်ရက်များကို ရှာဖွေနေပါသည်</translation>
 <translation id="1291603679744561561">ဆင်းမ် လော့ခ်ချထားသည်</translation>
 <translation id="1293556467332435079">ဖိုင်များ</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">ဒိန်ခဲ</translation>
 <translation id="2781645665747935084">ဘယ်လ်ဂျီယံ</translation>
 <translation id="2782104745158847185">Linux အပလီကေးရှင်းကို ထည့်ရာတွင် အမှားအယွင်းရှိနေသည်</translation>
+<translation id="2788520643285360081">7-Zip ဖိုင်</translation>
 <translation id="2803375539583399270">ပင်နံပါတ် ထည့်ပါ</translation>
 <translation id="2820957248982571256">ရှာဖွေနေသည်...</translation>
+<translation id="2822595620066756134">GZIP ဖြင့် ချုံ့ထားသည့် မှတ်တမ်း</translation>
 <translation id="2830077785865012357">တရုတ် ကျူရင်</translation>
 <translation id="2843806747483486897">ပုံသေကို ပြောင်းရန်...</translation>
 <translation id="2850124913210091882">အရံသိမ်းဆည်းသည်</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">လီသွေနီယံ</translation>
 <translation id="3587482841069643663">အားလုံး</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> ကို အော့ဖ်လိုင်းသုံးနိုင်အောင် ပြုလုပ်၍မရပါ</translation>
+<translation id="3593874215226880809">LZIP ဖြင့် ချုံ့ထားသည့် မှတ်တမ်း</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">ကနေဒါမွေး ပြင်သစ်</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ကို ပယ်ဖျက်မည်။</translation>
 <translation id="3690128548376345212">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊<ph name="NETWORK_NAME" />၊ ဖွင့်မထားပါ၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်</translation>
 <translation id="3691184985318546178">ဆင်ဟာလာ</translation>
+<translation id="3703620396751288986">ZIP ဖိုင်</translation>
 <translation id="3726463242007121105">ဤစက်ပစ္စည်း၏ ဖိုင်စနစ်ကို မထောက်ပံ့သောကြောင့် ဖွင့်၍မရပါ။</translation>
 <translation id="3727148787322499904">ဤဆက်တင်ကို ပြောင်းလဲခြင်းအားဖြင့် မျှဝေထားသည့် ကွန်ရက်အားလုံးကို အကျိုးသက်ရောက်စေပါလိမ့်မည်</translation>
 <translation id="3737576078404241332">ဆိုက်ဘားမှ ဖယ်ရှားရန်</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Qwerty ကီးဘုတ်ဖြင့် ချက်</translation>
 <translation id="4656777537938206294">ဖိုင်များကို အော့ဖ်လိုင်းသုံးနိုင်ရန် ပြုလုပ်ခြင်း</translation>
 <translation id="4658782175094886150">နှင်းတောထဲကလူ</translation>
+<translation id="4661996069183330363">TAR ဖြင့် ချုံ့ထားသည့် မှတ်တမ်း</translation>
 <translation id="4669606053856530811">ဤအရာများကို '<ph name="SOURCE_NAME" />' ၏ အဖွဲ့ဝင်များနှင့် မျှဝေထားခြင်း မရှိလျင် ၎င်းတို့သည် အသုံးပြုခွင့် ဆုံးရှုံးနိုင်ပါသည်။</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ဆွီဒင်</translation>
@@ -929,6 +935,7 @@
 <translation id="8903931173357132290">ဘွဲ့ရပုဂ္ဂိုလ်</translation>
 <translation id="8912078710089354287">အမြီးလှုပ်နေသည့်ခွေး</translation>
 <translation id="8919081441417203123">ဒိန်းမတ်</translation>
+<translation id="8965273390142984105">LZOP ဖြင့် ချုံ့ထားသည့် မှတ်တမ်း</translation>
 <translation id="8965697826696209160">နေရာ လုံလုံလောက်လောက် မရှိပါ။</translation>
 <translation id="8997962250644902079">တရုတ် (ရိုးရာ) ပင်ယင်</translation>
 <translation id="9003940392834790328">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ အသေးစိတ်များ</translation>

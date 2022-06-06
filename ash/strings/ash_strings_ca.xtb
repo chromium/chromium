@@ -1135,8 +1135,6 @@ Instal·lació nova</translation>
 <translation id="7720410380936703141">TORNA-HO A PROVAR</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificació}other{# notificacions}}</translation>
 <translation id="7724603315864178912">Retalla</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Mostra les aplicacions del prestatge</translation>
 <translation id="7749443890790263709">S'ha assolit el nombre màxim d'escriptoris.</translation>
 <translation id="7749640678855296659">El micròfon està desactivat</translation>
@@ -1190,7 +1188,6 @@ Instal·lació nova</translation>
 <translation id="8030169304546394654">Desconnectat</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Obre el menú de configuració d'accessibilitat</translation>
-<translation id="8042925093898452104">Tanca la informació detallada</translation>
 <translation id="8044457332620420407">La il·luminació a contrallum del teclat està desactivada</translation>
 <translation id="8048123526339889627">Configuració del Bluetooth</translation>
 <translation id="8051716679295756675">La plantilla anomenada <ph name="DESK_TEMPLATE_NAME" /> ja existeix</translation>

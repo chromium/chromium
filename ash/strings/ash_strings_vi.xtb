@@ -1136,8 +1136,6 @@ Mới cài đặt</translation>
 <translation id="7720410380936703141">THỬ LẠI</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 thông báo}other{# thông báo}}</translation>
 <translation id="7724603315864178912">Cắt</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Hiện các ứng dụng trên kệ</translation>
 <translation id="7749443890790263709">Đã đạt đến số lượng không gian làm việc tối đa.</translation>
 <translation id="7749640678855296659">Micrô của bạn đang tắt</translation>
@@ -1191,7 +1189,6 @@ Mới cài đặt</translation>
 <translation id="8030169304546394654">Đã ngắt kết nối</translation>
 <translation id="8036504271468642248">Câu trước</translation>
 <translation id="8042893070933512245">Mở trình đơn cài đặt hỗ trợ tiếp cận</translation>
-<translation id="8042925093898452104">Đóng thông tin chi tiết</translation>
 <translation id="8044457332620420407">Đèn nền bàn phím đang tắt</translation>
 <translation id="8048123526339889627">Cài đặt Bluetooth</translation>
 <translation id="8051716679295756675">Mẫu có tên <ph name="DESK_TEMPLATE_NAME" /> đã tồn tại</translation>

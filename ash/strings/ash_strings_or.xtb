@@ -1134,8 +1134,6 @@
 <translation id="7720410380936703141">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1ଟି ବିଜ୍ଞପ୍ତି}other{#ଟି ବିଜ୍ଞପ୍ତି}}</translation>
 <translation id="7724603315864178912">Cut</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-<ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">ସେଲ୍ଫରେ ଥିବା ଆପଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ</translation>
 <translation id="7749443890790263709">ସର୍ବାଧିକ ସଂଖ୍ୟକ ଡେସ୍କରେ ପହଞ୍ଚିଯାଇଛି।</translation>
 <translation id="7749640678855296659">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବର୍ତ୍ତମାନ ବନ୍ଦ କରାଯାଇଛି</translation>
@@ -1189,7 +1187,6 @@
 <translation id="8030169304546394654">ବିଚ୍ଛିନ୍ନ କରାଯାଇଛି</translation>
 <translation id="8036504271468642248">ପୂର୍ବବର୍ତ୍ତୀ ବାକ୍ୟ</translation>
 <translation id="8042893070933512245">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍ ମେନୁ ଖୋଲନ୍ତୁ</translation>
-<translation id="8042925093898452104">ସବିଶେଷ ସୂଚନା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8044457332620420407">କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟ ବନ୍ଦ ଅଛି</translation>
 <translation id="8048123526339889627">ବ୍ଲୁଟୁଥ୍ ସେଟିଂସ୍</translation>
 <translation id="8051716679295756675">ପୂର୍ବରୁ <ph name="DESK_TEMPLATE_NAME" /> ନାମକ ଟେମ୍ପଲେଟଟି ଅଛି</translation>

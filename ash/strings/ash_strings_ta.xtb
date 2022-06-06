@@ -1135,8 +1135,6 @@
 <translation id="7720410380936703141">மீண்டும் முயல்க</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 அறிவிப்பு}other{# அறிவிப்புகள்}}</translation>
 <translation id="7724603315864178912">வெட்டு</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">ஆப்ஸை ஷெல்ஃபில் காட்டும்</translation>
 <translation id="7749443890790263709">டெஸ்க்குகளின் எண்ணிக்கை அதிகபட்ச வரம்பை எட்டிவிட்டது.</translation>
 <translation id="7749640678855296659">உங்கள் மைக்ரோஃபோன் தற்போது முடக்கப்பட்டுள்ளது</translation>
@@ -1190,7 +1188,6 @@
 <translation id="8030169304546394654">துண்டிக்கப்பட்டது</translation>
 <translation id="8036504271468642248">முந்தைய வாக்கியம்</translation>
 <translation id="8042893070933512245">அணுகல்தன்மை அமைப்புகள் மெனுவைத் திற</translation>
-<translation id="8042925093898452104">விரிவான தகவல்கள் காட்சியை மூடும்</translation>
 <translation id="8044457332620420407">கீபோர்டின் பேக்லைட் ஆஃப் செய்யப்பட்டது</translation>
 <translation id="8048123526339889627">புளூடூத் அமைப்புகள்</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> என்ற பெயரில் ஏற்கெனவே ஒரு டெம்ப்ளேட் உள்ளது</translation>

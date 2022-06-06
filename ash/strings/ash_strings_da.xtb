@@ -1135,8 +1135,6 @@ Installeret for nylig</translation>
 <translation id="7720410380936703141">PRØV IGEN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifikation}one{# notifikation}other{# notifikationer}}</translation>
 <translation id="7724603315864178912">Klip</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Vis apps på hylde</translation>
 <translation id="7749443890790263709">Det maksimale antal skriveborde er nået.</translation>
 <translation id="7749640678855296659">Din mikrofon er i øjeblikket slået fra</translation>
@@ -1190,7 +1188,6 @@ Installeret for nylig</translation>
 <translation id="8030169304546394654">Afbrudt</translation>
 <translation id="8036504271468642248">Forrige sætning</translation>
 <translation id="8042893070933512245">Åbn menuen med indstillinger for hjælpefunktioner</translation>
-<translation id="8042925093898452104">Luk detaljer</translation>
 <translation id="8044457332620420407">Baggrundslyset på tastaturet er slukket</translation>
 <translation id="8048123526339889627">Bluetooth-indstillinger</translation>
 <translation id="8051716679295756675">Der findes allerede en skabelon med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>

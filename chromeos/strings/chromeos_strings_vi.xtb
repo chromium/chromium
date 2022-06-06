@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Trình chạy</translation>
 <translation id="1512982610995527443">Thiết bị sẽ tắt trong 5 giây</translation>
 <translation id="1522984060396982789">Quá trình sửa đã thành công. Bạn có thể tắt thiết bị hoặc thực hiện thao tác khác.</translation>
+<translation id="1526389707933164996">Ảnh động cho trình bảo vệ màn hình</translation>
 <translation id="152892567002884378">Tăng âm lượng</translation>
 <translation id="1555130319947370107">Xanh lam</translation>
 <translation id="155865706765934889">Ô di chuột</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">Tên</translation>
 <translation id="3865414814144988605">Độ phân giải</translation>
 <translation id="387301095347517405">Số lần pin của bạn được sạc đầy</translation>
+<translation id="3885327323343477505">Thay đổi trình bảo vệ màn hình</translation>
 <translation id="3923184630988645767">Chế độ sử dụng dữ liệu</translation>
 <translation id="3924044641767672375">Bạn nên kết nối với Wi-Fi để giúp quy trình sửa chữa dễ dàng hơn. Mạng của bạn sẽ được lưu.</translation>
 <translation id="3932043219784172185">Không có thiết bị nào được kết nối</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">Chọn ngay một mật khẩu mới</translation>
 <translation id="4891842000192098784">Độ ổn định</translation>
 <translation id="4897058166682006107">Tai nghe trái còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
+<translation id="4905998861748258752">Bật tính năng này để chọn trình bảo vệ màn hình</translation>
 <translation id="4908030561598728899">Đang cài đặt chương trình cơ sở...</translation>
 <translation id="4915052247106771211">Thao tác này sẽ đặt lại thiết bị về trạng thái cài đặt ban đầu (Powerwash).</translation>
 <translation id="4917385247580444890">Mạnh</translation>
@@ -861,6 +864,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8997710128084572139">Thiết bị còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
 <translation id="9003704114456258138">Tần số</translation>
 <translation id="9025198690966128418">Dùng làm thiết bị cá nhân</translation>
+<translation id="9028832514430399253">Bật nút chuyển để chọn trình bảo vệ màn hình</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Quá trình phân giải DNS có độ trễ cao</translation>
 <translation id="9063121522582193837">Không hiệu chỉnh được một số thành phần</translation>

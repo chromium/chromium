@@ -119,6 +119,7 @@
 <translation id="1270502636509132238">روش تحویل گرفتن</translation>
 <translation id="1281476433249504884">پشته‌ساز ۱</translation>
 <translation id="1285320974508926690">این سایت هرگز ترجمه نشود</translation>
+<translation id="1288548991597756084">ذخیره ایمن کارت</translation>
 <translation id="1292571435393770077">سینی ۱۶</translation>
 <translation id="1292701964462482250">‏«نرم‌افزاری در رایانه شما مانع از اتصال ایمن Chrome به وب می‌شود» (فقط رایانه‌های Windows)</translation>
 <translation id="1294154142200295408">انواع مختلف خط فرمان</translation>
@@ -223,6 +224,7 @@
     &lt;p&gt;برای برطرف کردن این خطا، در صفحه‌ای که می‌خواهید باز کنید روی &lt;strong&gt;اتصال&lt;/strong&gt; کلیک کنید.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">طراحی چشم‌انداز</translation>
 <translation id="1513706915089223971">فهرست ورودی‌های سابقه</translation>
+<translation id="1516097932025103760">رمزگذاری خواهد شد، به‌طور ایمن ذخیره خواهد شد، و کد تأیید کارت هرگز ذخیره نمی‌شود.</translation>
 <translation id="1517433312004943670">شماره تلفن ضروری است</translation>
 <translation id="1519264250979466059">تاریخ ساخت</translation>
 <translation id="1521159554480556801">هنر نساجی و بافت</translation>
@@ -1416,6 +1418,7 @@
 <translation id="483241715238664915">روشن کردن هشدارها</translation>
 <translation id="4834250788637067901">‏روش‌های پرداخت، پیشنهادها، و نشانی‌های استفاده‌شده در Google Pay</translation>
 <translation id="4838327282952368871">رؤیایی</translation>
+<translation id="4839087176073128681">‏دفعه بعد سریع‌تر پرداخت کنید و با امنیت Google که امنیتی پیشرو در این صنعت است از کارتتان محافظت کنید.</translation>
 <translation id="4840250757394056958">‏مشاهده سابقه Chrome</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="484671803914931257">دریافت تخفیف از <ph name="MERCHANT_NAME" /> و موارد دیگر</translation>
@@ -2127,7 +2130,6 @@
 <translation id="6897140037006041989">نماینده کاربر</translation>
 <translation id="6898699227549475383">‏سازمان (O)</translation>
 <translation id="6899000063526916106">کد <ph name="NUMBER_OF_DIGITS" /> رقمی را وارد کنید</translation>
-<translation id="6903437476849497868">انصراف</translation>
 <translation id="6907293445143367439">به <ph name="SITE_NAME" /> اجازه داده شود تا:</translation>
 <translation id="6907458757809079309">تناسب اندام</translation>
 <translation id="6910240653697687763">‏<ph name="URL" /> می‌خواهد کنترل کامل دستگاه‌های MIDI شما را به‌دست آورد</translation>

@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="1512982610995527443">سيتم إيقاف الجهاز في غضون 5 ثوانٍ.</translation>
 <translation id="1522984060396982789">تمت عملية الإصلاح بنجاح. يمكنك إيقاف الجهاز أو تنفيذ بعض الإجراءات الإضافية.</translation>
+<translation id="1526389707933164996">الصور المتحركة لشاشة الاستراحة</translation>
 <translation id="152892567002884378">رفع مستوى الصوت</translation>
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="155865706765934889">لوحة اللمس</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3865414814144988605">درجة الدقة</translation>
 <translation id="387301095347517405">عدد المرات التي تم فيها شحن بطاريتك بالكامل</translation>
+<translation id="3885327323343477505">تغيير شاشة الاستراحة</translation>
 <translation id="3923184630988645767">استخدام البيانات</translation>
 <translation id="3924044641767672375">‏لتسهيل عملية الإصلاح، ننصح بالاتصال بشبكة Wi-Fi. وسيتم حفظ بيانات شبكتك.</translation>
 <translation id="3932043219784172185">لم يتم الاتصال بأي أجهزة</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">اختيار كلمة مرور جديدة فورًا</translation>
 <translation id="4891842000192098784">الإجهاد</translation>
 <translation id="4897058166682006107">مستوى شحن بطارية السماعة اليسرى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
+<translation id="4905998861748258752">فعِّل الميزة لتحديد خيارات شاشة الاستراحة.</translation>
 <translation id="4908030561598728899">جارٍ تثبيت البرامج الثابتة…</translation>
 <translation id="4915052247106771211">‏يؤدي هذا الخيار إلى إعادة ضبط الجهاز على الإعدادات الأصلية (Powerwash).</translation>
 <translation id="4917385247580444890">قوية</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">مستوى شحن بطارية الجهاز هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="9003704114456258138">التردد</translation>
 <translation id="9025198690966128418">الاستخدام كجهاز شخصي</translation>
+<translation id="9028832514430399253">فعِّل التبديل لتحديد خيارات شاشة الاستراحة.</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">‏يستغرق التحويل باستخدام نظام أسماء النطاقات (DNS) وقت استجابة طويلاً.</translation>
 <translation id="9063121522582193837">لا يمكن معايرة بعض المكونات</translation>

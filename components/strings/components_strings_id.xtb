@@ -119,6 +119,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1270502636509132238">Metode Pengambilan</translation>
 <translation id="1281476433249504884">Tempat kertas 1</translation>
 <translation id="1285320974508926690">Jangan pernah terjemahkan situs ini</translation>
+<translation id="1288548991597756084">Simpan kartu dengan aman</translation>
 <translation id="1292571435393770077">Baki 16</translation>
 <translation id="1292701964462482250">"Software di komputer mencegah Chrome terhubung dengan aman ke web" (khusus komputer Windows)</translation>
 <translation id="1294154142200295408">Variasi baris perintah</translation>
@@ -223,6 +224,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
     &lt;p&gt;Untuk memperbaiki error, klik &lt;strong&gt;Sambungkan&lt;/strong&gt; di halaman yang ingin Anda buka.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Desain lanskap</translation>
 <translation id="1513706915089223971">Daftar entri histori</translation>
+<translation id="1516097932025103760">Kartu akan dienkripsi dan disimpan dengan aman, serta CVC tidak akan disimpan.</translation>
 <translation id="1517433312004943670">Perlu nomor telepon</translation>
 <translation id="1519264250979466059">Tanggal Dibuat</translation>
 <translation id="1521159554480556801">Seni serat &amp; tekstil</translation>
@@ -1406,6 +1408,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="483241715238664915">Aktifkan peringatan</translation>
 <translation id="4834250788637067901">Metode pembayaran, penawaran, dan alamat yang menggunakan Google Pay</translation>
 <translation id="4838327282952368871">Sangat Indah</translation>
+<translation id="4839087176073128681">Bayar lebih cepat dan lindungi kartu Anda dengan keamanan terbaik di industri dari Google.</translation>
 <translation id="4840250757394056958">Lihat histori Chrome Anda</translation>
 <translation id="484462545196658690">Otomatis</translation>
 <translation id="484671803914931257">Dapatkan diskon di <ph name="MERCHANT_NAME" /> dan lainnya</translation>
@@ -2117,7 +2120,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6897140037006041989">Agen Pengguna</translation>
 <translation id="6898699227549475383">Organisasi (O)</translation>
 <translation id="6899000063526916106">Masukkan kode <ph name="NUMBER_OF_DIGITS" /> digit</translation>
-<translation id="6903437476849497868">Memilih Tidak Ikut</translation>
 <translation id="6907293445143367439">Izinkan <ph name="SITE_NAME" /> untuk:</translation>
 <translation id="6907458757809079309">Kebugaran</translation>
 <translation id="6910240653697687763"><ph name="URL" /> ingin mengontrol penuh perangkat MIDI Anda</translation>

@@ -800,7 +800,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5689633613396158040">Yövalo helpottaa näytön katsomista ja lukemista hämärässä. Kosketa muuttaaksesi Yövalon syttymisaikaa tai poista se kokonaan käytöstä.</translation>
 <translation id="5691772641933328258">Sormenjälkeä ei tunnistettu</translation>
 <translation id="570390244361237317">Kaikki sovellukset, siirry sovellusten välillä nuolinäppämillä</translation>
-<translation id="5707775774148071965">Laitteesi tukee nopeampaa tiedosiirtoa kuin johto. Laitteen toiminta voi olla rajoitettua.</translation>
+<translation id="5707775774148071965">Laitteesi tukee nopeampaa tiedonsiirtoa kuin johto</translation>
 <translation id="5710450975648804523">Älä häiritse -tila on päällä</translation>
 <translation id="571295407079589142">Mobiilidata on poissa päältä</translation>
 <translation id="573413375004481890">Tämä laite ei voinut tukea kaikkia näyttöjäsi, joten yhden yhteys on katkaistu</translation>
@@ -1134,8 +1134,6 @@ Uusi asennus</translation>
 <translation id="7720410380936703141">YRITÄ UUDELLEEN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ilmoitus}other{# ilmoitusta}}</translation>
 <translation id="7724603315864178912">Leikkaa</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Näytä sovellukset hyllyssä</translation>
 <translation id="7749443890790263709">Työpöytiä on enimmäismäärä.</translation>
 <translation id="7749640678855296659">Mikrofoni ei ole tällä hetkellä päällä</translation>
@@ -1189,7 +1187,6 @@ Uusi asennus</translation>
 <translation id="8030169304546394654">Yhteys katkaistu</translation>
 <translation id="8036504271468642248">Edellinen lause</translation>
 <translation id="8042893070933512245">Avaa Esteettömyysasetukset-valikko</translation>
-<translation id="8042925093898452104">Sulje lisätiedot</translation>
 <translation id="8044457332620420407">Näppäimistön taustavalo on poissa päältä</translation>
 <translation id="8048123526339889627">Bluetooth-asetukset</translation>
 <translation id="8051716679295756675">Malli nimeltään <ph name="DESK_TEMPLATE_NAME" /> on jo olemassa</translation>

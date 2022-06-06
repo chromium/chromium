@@ -119,6 +119,7 @@
 <translation id="1270502636509132238">Таңдау әдісі</translation>
 <translation id="1281476433249504884">1-жинастырушы</translation>
 <translation id="1285320974508926690">Бұл сайтты ешқашан аудармау</translation>
+<translation id="1288548991597756084">Картаңызды қауіпсіз сақтаңыз</translation>
 <translation id="1292571435393770077">16-науа</translation>
 <translation id="1292701964462482250">"Компьютердегі бағдарламалық құрал Chrome жүйесінің интернетке қауіпсіз қосылуына жол бермей тұр" (тек Windows компьютерлерінде)</translation>
 <translation id="1294154142200295408">Пәрмендер жолының нұсқалары</translation>
@@ -223,6 +224,7 @@
     &lt;p&gt;Қатені түзету үшін ашқыңыз келетін бетте &lt;strong&gt;Қосылу&lt;/strong&gt; түймесін басыңыз.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Ландшафт дизайны</translation>
 <translation id="1513706915089223971">Тарихтағы жазбалар тізімі</translation>
+<translation id="1516097932025103760">Ол шифрланады, қауіпсіз сақталады. CVC ешқашан сақталмайды.</translation>
 <translation id="1517433312004943670">Телефон нөмірі қажет</translation>
 <translation id="1519264250979466059">Жасалған күні</translation>
 <translation id="1521159554480556801">Тоқыма және текстиль өнері</translation>
@@ -1415,6 +1417,7 @@
 <translation id="483241715238664915">Хабарландыруларды қосу</translation>
 <translation id="4834250788637067901">Google Pay қызметіндегі төлеу әдістері, ұсыныстар және мекенжайлар</translation>
 <translation id="4838327282952368871">Арманшыл</translation>
+<translation id="4839087176073128681">Google-дың үздік қауіпсіздік жүйесімен картаңызды қорғаңыз және жылдамырақ төлеңіз.</translation>
 <translation id="4840250757394056958">Chrome тарихын көру</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> және т. б. дүкендердің жеңілдіктерін алыңыз</translation>
@@ -2126,7 +2129,6 @@
 <translation id="6897140037006041989">Пайдаланушы агенті</translation>
 <translation id="6898699227549475383">Ұйым (O)</translation>
 <translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" /> цифрлық кодты енгізіңіз</translation>
-<translation id="6903437476849497868">Бас тарту</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> сайтына мына әрекеттерді орындауға рұқсат етіңіз:</translation>
 <translation id="6907458757809079309">Фитнес</translation>
 <translation id="6910240653697687763"><ph name="URL" /> беті MIDI құрылғыларыңызды толық бақылағысы келеді</translation>

@@ -1135,8 +1135,6 @@ Ukufaka okusha</translation>
 <translation id="7720410380936703141">ZAMA FUTHI</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 isaziso}one{# izaziso}other{# izaziso}}</translation>
 <translation id="7724603315864178912">Sika</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Bonisa izinhlelo zokusebenza kushelufu</translation>
 <translation id="7749443890790263709">Inombolo enkulu yamadeski ifinyelelwe.</translation>
 <translation id="7749640678855296659">Imakrofoni yakho okwamanje ivaliwe</translation>
@@ -1190,7 +1188,6 @@ Ukufaka okusha</translation>
 <translation id="8030169304546394654">Inqanyuliwe</translation>
 <translation id="8036504271468642248">Umusho wangaphambilini</translation>
 <translation id="8042893070933512245">Vula imenyu yezilungiselelo zokufinyeleleka</translation>
-<translation id="8042925093898452104">Vala ulwazi lwemininingwane</translation>
 <translation id="8044457332620420407">I-backlight yekhibhodi ivaliwe</translation>
 <translation id="8048123526339889627">Izilungiselelo ze-Bluetooth</translation>
 <translation id="8051716679295756675">Isifanekiso esiqanjwe ngokuthi <ph name="DESK_TEMPLATE_NAME" /> sesikhona kakade</translation>

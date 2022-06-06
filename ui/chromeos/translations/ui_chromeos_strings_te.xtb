@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">కళా ప్రక్రియ</translation>
 <translation id="1254593899333212300">ప్రత్యక్ష ఇంటర్నెట్ కనెక్షన్</translation>
 <translation id="1272293450992660632">పిన్ విలువలు సరిపోలలేదు.</translation>
+<translation id="127650757582748357">కుదించిన BZIP2 ఆర్కైవ్</translation>
 <translation id="1280820357415527819">మొబైల్ నెట్‌వర్క్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="1291603679744561561">SIM లాక్ చేయబడింది</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">జున్ను</translation>
 <translation id="2781645665747935084">బెల్జియన్</translation>
 <translation id="2782104745158847185">Linux అప్లికేషన్‌ను ఇన్‌స్టాల్ చేయడంలో ఎర్రర్</translation>
+<translation id="2788520643285360081">7-Zip ఆర్కైవ్</translation>
 <translation id="2803375539583399270">PINను నమోదు చేయండి</translation>
 <translation id="2820957248982571256">స్కాన్ చేస్తోంది...</translation>
+<translation id="2822595620066756134">కుదించిన Gzip ఆర్కైవ్</translation>
 <translation id="2830077785865012357">చైనీస్ జుయిన్</translation>
 <translation id="2843806747483486897">డిఫాల్ట్‌ను మార్చు...</translation>
 <translation id="2850124913210091882">బ్యాకప్ చేయి</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">లిథువేనియన్</translation>
 <translation id="3587482841069643663">మొత్తం</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" />ను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచడం సాధ్యం కాలేదు</translation>
+<translation id="3593874215226880809">కుదించిన LZIP ఆర్కైవ్</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">కెనడియెన్ ఫ్రెంచ్</translation>
 <translation id="3606220979431771195">టర్కిష్-ఎఫ్</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ను రద్దు చేయి.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />లోని నెట్‌వర్క్ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, యాక్టివేట్ చేయబడలేదు, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="3691184985318546178">సింహళం</translation>
+<translation id="3703620396751288986">ZIP ఆర్కైవ్</translation>
 <translation id="3726463242007121105">పరికరం తెరవడం సాధ్యం కాదు ఎందుకంటే దాని ఫైల్‌సిస్టమ్‌కు మద్దతు లేదు.</translation>
 <translation id="3727148787322499904">ఈ సెట్టింగ్‌ను మార్చడం వలన అన్ని భాగస్వామ్య నెట్‌వర్క్‌లు ప్రభావితం అవుతాయి</translation>
 <translation id="3737576078404241332">సైడ్‌బార్ నుండి తీసివేయండి</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Qwerty కీబోర్డ్‌తో చెక్(Czech)</translation>
 <translation id="4656777537938206294">ఫైళ్లను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచండి</translation>
 <translation id="4658782175094886150">మంచు ప్రదేశంలో ఉన్న వ్యక్తి</translation>
+<translation id="4661996069183330363">TAR ఆర్కైవ్</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' యొక్క సభ్యులతో ఈ అంశాలను షేర్ చేస్తే మినహా వారు యాక్సెస్‌ను కోల్పోతారు.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">స్వీడిష్</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">గ్రాడ్యుయేట్</translation>
 <translation id="8912078710089354287">తోక ఊపుతున్న కుక్క</translation>
 <translation id="8919081441417203123">డేనిష్</translation>
+<translation id="8965273390142984105">కుదించిన LZOP ఆర్కైవ్</translation>
 <translation id="8965697826696209160">తగినంత ఖాళీ లేదు.</translation>
 <translation id="8997962250644902079">చైనీస్ (సాంప్రదాయ) పిన్యిన్</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది, వివరాలు</translation>

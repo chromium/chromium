@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">راه‌انداز</translation>
 <translation id="1512982610995527443">دستگاه تا ۵ ثانیه دیگر خاموش خواهد شد</translation>
 <translation id="1522984060396982789">تعمیر باموفقیت انجام شد. می‌توانید دستگاه را خاموش کنید یا اقدامات بیشتری انجام دهید.</translation>
+<translation id="1526389707933164996">پویانمایی محافظ صفحه‌نمایش</translation>
 <translation id="152892567002884378">افزایش صدا</translation>
 <translation id="1555130319947370107">آبی</translation>
 <translation id="155865706765934889">صفحه لمسی</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">نام</translation>
 <translation id="3865414814144988605">وضوح</translation>
 <translation id="387301095347517405">تعداد دفعاتی که باتری‌تان یک دوره شارژ کامل را گذرانده است</translation>
+<translation id="3885327323343477505">تغییر محافظ صفحه‌نمایش</translation>
 <translation id="3923184630988645767">مصرف داده</translation>
 <translation id="3924044641767672375">‏برای آسان‌تر شدن فرایند تعمیر، توصیه می‌شود به Wi-Fi متصل شوید. شبکه‌تان ذخیره خواهد شد.</translation>
 <translation id="3932043219784172185">دستگاهی متصل نیست</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">انتخاب فوری موردی جدید</translation>
 <translation id="4891842000192098784">استرس</translation>
 <translation id="4897058166682006107">باتری هدفون توگوشی سمت چپ دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
+<translation id="4905998861748258752">برای انتخاب گزینه‌های محافظ صفحه‌نمایش، این ویژگی را روشن کنید</translation>
 <translation id="4908030561598728899">درحال نصب سفت‌افزار…</translation>
 <translation id="4915052247106771211">‏با این کار، دستگاه به تنظیمات کارخانه بازنشانی خواهد شد (Powerwash).</translation>
 <translation id="4917385247580444890">قوی</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">باتری دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="9003704114456258138">فرکانس</translation>
 <translation id="9025198690966128418">استفاده به‌عنوان دستگاه شخصی</translation>
+<translation id="9028832514430399253">برای انتخاب گزینه‌های محافظ صفحه‌نمایش، کلید تغییر وضعیت را روشن کنید</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">تفکیک ساناد تأخیر زیادی دارد</translation>
 <translation id="9063121522582193837">برخی از اجزا واسنجی نشدند</translation>

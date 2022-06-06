@@ -1136,8 +1136,6 @@ Uus installimine</translation>
 <translation id="7720410380936703141">PROOVIGE UUESTI</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 märguanne}other{# märguannet}}</translation>
 <translation id="7724603315864178912">Lõika</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Kuva riiulil olevad rakendused</translation>
 <translation id="7749443890790263709">Töölaudade maksimaalne arv on täis.</translation>
 <translation id="7749640678855296659">Teie mikrofon on praegu välja lülitatud</translation>
@@ -1191,7 +1189,6 @@ Uus installimine</translation>
 <translation id="8030169304546394654">Ühendus katkestatud</translation>
 <translation id="8036504271468642248">Eelmine lause</translation>
 <translation id="8042893070933512245">Ava juurdepääsetavuse seadete menüü</translation>
-<translation id="8042925093898452104">Sule üksikasjalik teave</translation>
 <translation id="8044457332620420407">Klaviatuuri taustavalgus on välja lülitatud</translation>
 <translation id="8048123526339889627">Bluetoothi seaded</translation>
 <translation id="8051716679295756675">Mall nimega <ph name="DESK_TEMPLATE_NAME" /> on juba olemas</translation>

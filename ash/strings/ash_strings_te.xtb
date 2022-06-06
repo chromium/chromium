@@ -239,6 +239,7 @@
 <translation id="2359808026110333948">కొనసాగించు</translation>
 <translation id="2367186422933365202">మీ Chromebookకు సైన్ ఇన్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="2369165858548251131">చైనీస్‌లో "హలో"</translation>
+<translation id="2375445874393996153">Google Assistantను ఉపయోగించి నా స్క్రీన్‌పై ఏముందో సెర్చ్ చేసే ఫీచర్ ఇకపై అందుబాటులో లేదు.</translation>
 <translation id="2390318262976603432">లొకేల్ సెట్టింగ్‌లు</translation>
 <translation id="240006516586367791">మీడియా నియంత్రణలు</translation>
 <translation id="2402411679569069051">మీ Chromebookను అన్‌లాక్ చేయడానికి, మీ వేలిముద్రను ఉపయోగించండి లేదా మీ ఫోన్‌ను అన్‌లాక్ చేయండి</translation>
@@ -1136,8 +1137,6 @@
 <translation id="7720410380936703141">మళ్లీ ట్రై చేయండి</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 నోటిఫికేషన్‌}other{# నోటిఫికేషన్‌లు}}</translation>
 <translation id="7724603315864178912">కత్తిరించు</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">యాప్‌లను షెల్ఫ్‌లో చూపించు</translation>
 <translation id="7749443890790263709">గరిష్ట డెస్క్‌ల సంఖ్యను చేరుకుంది.</translation>
 <translation id="7749640678855296659">మీ మైక్రోఫోన్ ప్రస్తుతం ఆఫ్ చేయబడింది</translation>
@@ -1191,7 +1190,6 @@
 <translation id="8030169304546394654">డిస్‌కనెక్ట్ చెయ్యబడింది</translation>
 <translation id="8036504271468642248">మునుపటి వాక్యం</translation>
 <translation id="8042893070933512245">యాక్సెసిబిలిటీ సెట్టింగ్‌ల మెనూను తెరవండి</translation>
-<translation id="8042925093898452104">వివరణాత్మక సమాచారాన్ని మూసివేయండి</translation>
 <translation id="8044457332620420407">కీబోర్డ్ బ్యాక్‌లైట్ ఆఫ్‌లో ఉంది</translation>
 <translation id="8048123526339889627">బ్లూటూత్ సెట్టింగ్‌లు</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> పేరు ఉన్న టెంప్లేట్ ఇప్పటికే ఉంది</translation>

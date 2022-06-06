@@ -119,6 +119,7 @@
 <translation id="1270502636509132238">طريقة الاستلام</translation>
 <translation id="1281476433249504884">المكدِّس 1</translation>
 <translation id="1285320974508926690">عدم ترجمة هذا الموقع مطلقًا</translation>
+<translation id="1288548991597756084">حفظ البطاقة بأمان</translation>
 <translation id="1292571435393770077">الدُرج 16</translation>
 <translation id="1292701964462482250">‏"هناك برامج على جهاز الكمبيوتر تمنع اتصال Chrome بالويب بأمان" (أجهزة الكمبيوتر المزوّدة بنظام التشغيل Windows فقط)</translation>
 <translation id="1294154142200295408">صيغ سطر الأوامر</translation>
@@ -223,6 +224,7 @@
     &lt;p&gt;لإصلاح الخطأ، انقر على &lt;strong&gt;"اتصال"&lt;/strong&gt; في الصفحة التي تحاول فتحها.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">تصميم مناظر طبيعية</translation>
 <translation id="1513706915089223971">قائمة إدخالات السجل</translation>
+<translation id="1516097932025103760">‏ستكون البطاقة مشفّرة، وسيتم حفظها بأمان ولن يتم تخزين رمز التحقق من البطاقة (CVC) مطلقًا.</translation>
 <translation id="1517433312004943670">رقم الهاتف مطلوب</translation>
 <translation id="1519264250979466059">تاريخ الإصدار</translation>
 <translation id="1521159554480556801">أعمال فنية بالغزل والنسيج</translation>
@@ -1418,6 +1420,7 @@
 <translation id="483241715238664915">تفعيل التحذيرات</translation>
 <translation id="4834250788637067901">‏طرق الدفع والعروض الترويجية والعناوين التي تستخدم Google Pay</translation>
 <translation id="4838327282952368871">جذّاب</translation>
+<translation id="4839087176073128681">‏يمكنك الدفع بشكل أسرع في المرة القادمة وحماية بطاقتك باستخدام ميزات الأمان الرائدة من Google.</translation>
 <translation id="4840250757394056958">‏عرض سجلّ Chrome</translation>
 <translation id="484462545196658690">تلقائي</translation>
 <translation id="484671803914931257">الحصول على خصم على منتجات <ph name="MERCHANT_NAME" /> والمزيد</translation>
@@ -2129,7 +2132,6 @@
 <translation id="6897140037006041989">وكيل المستخدم</translation>
 <translation id="6898699227549475383">‏المؤسسة (O)</translation>
 <translation id="6899000063526916106">أدخِل الرمز المكوَّن من <ph name="NUMBER_OF_DIGITS" /> رقم.</translation>
-<translation id="6903437476849497868">إيقاف</translation>
 <translation id="6907293445143367439">السماح للموقع الإلكتروني <ph name="SITE_NAME" /> بإجراء ما يلي:</translation>
 <translation id="6907458757809079309">لياقة بدنية</translation>
 <translation id="6910240653697687763">‏يريد <ph name="URL" /> التحكُّم بالكامل بأجهزة MIDI الخاصة بك.</translation>

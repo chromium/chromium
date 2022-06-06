@@ -1132,7 +1132,6 @@ Nieuwe installatie</translation>
 <translation id="7720410380936703141">OPNIEUW PROBEREN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Eén melding}other{# meldingen}}</translation>
 <translation id="7724603315864178912">Knip</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Apps in plank bekijken</translation>
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>
 <translation id="7749640678855296659">Je microfoon staat momenteel uit</translation>
@@ -1186,7 +1185,6 @@ Nieuwe installatie</translation>
 <translation id="8030169304546394654">Verbinding verbroken</translation>
 <translation id="8036504271468642248">Vorige zin</translation>
 <translation id="8042893070933512245">Menu met toegankelijkheidsinstellingen openen</translation>
-<translation id="8042925093898452104">Detailinformatie sluiten</translation>
 <translation id="8044457332620420407">Achtergrondverlichting van toetsenbord staat uit</translation>
 <translation id="8048123526339889627">Bluetooth-instellingen</translation>
 <translation id="8051716679295756675">Er bestaat al een template met de naam <ph name="DESK_TEMPLATE_NAME" /></translation>

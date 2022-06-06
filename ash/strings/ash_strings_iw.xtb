@@ -1137,8 +1137,6 @@
 <translation id="7720410380936703141">ניסיון חוזר</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{הודעה אחת}two{2 הודעות}many{# הודעות}other{# הודעות}}</translation>
 <translation id="7724603315864178912">חיתוך</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">הצגת האפליקציות במדף</translation>
 <translation id="7749443890790263709">הגעת למספר המקסימלי של שולחנות עבודה.</translation>
 <translation id="7749640678855296659">המיקרופון כבוי כרגע</translation>
@@ -1192,7 +1190,6 @@
 <translation id="8030169304546394654">מנותק</translation>
 <translation id="8036504271468642248">המשפט הקודם</translation>
 <translation id="8042893070933512245">פתיחת התפריט של הגדרות הנגישות</translation>
-<translation id="8042925093898452104">סגירת המידע המפורט</translation>
 <translation id="8044457332620420407">התאורה האחורית של המקלדת כבויה</translation>
 <translation id="8048123526339889627">‏הגדרות Bluetooth</translation>
 <translation id="8051716679295756675">קיימת כבר תבנית בשם <ph name="DESK_TEMPLATE_NAME" /></translation>

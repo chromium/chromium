@@ -1136,8 +1136,6 @@ Berriki instalatu da</translation>
 <translation id="7720410380936703141">SAIATU BERRIRO</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 jakinarazpen}other{# jakinarazpen}}</translation>
 <translation id="7724603315864178912">Ebaki</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Bistaratu aplikazioak apalean</translation>
 <translation id="7749443890790263709">Gehieneko lan-eremuen kopurura iritsi zara.</translation>
 <translation id="7749640678855296659">Mikrofonoa desaktibatuta dago</translation>
@@ -1191,7 +1189,6 @@ Berriki instalatu da</translation>
 <translation id="8030169304546394654">Deskonektatuta</translation>
 <translation id="8036504271468642248">Aurreko esaldia</translation>
 <translation id="8042893070933512245">Ireki Erabilerraztasun-ezarpenak menua</translation>
-<translation id="8042925093898452104">Itxi informazio xehatua</translation>
 <translation id="8044457332620420407">Teklatuaren ondoko argia itzalita dago</translation>
 <translation id="8048123526339889627">Bluetooth-aren ezarpenak</translation>
 <translation id="8051716679295756675">Badago "<ph name="DESK_TEMPLATE_NAME" />" izeneko txantiloi bat</translation>

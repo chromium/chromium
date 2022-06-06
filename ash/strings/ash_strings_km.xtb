@@ -1135,8 +1135,6 @@
 <translation id="7720410380936703141">ព្យាយាមម្ដងទៀត</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{ការ​ជូនដំណឹង 1}other{ការ​ជូន​ដំណឹង #}}</translation>
 <translation id="7724603315864178912">កាត់</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" /> 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">បង្ហាញកម្មវិធីនៅក្នុងធ្នើរ</translation>
 <translation id="7749443890790263709">ចំនួនតុ​បាន​ឈានដល់កម្រិតអតិបរមាហើយ។</translation>
 <translation id="7749640678855296659">បច្ចុប្បន្ននេះ មីក្រូហ្វូន​របស់អ្នក​ត្រូវបានបិទ</translation>
@@ -1190,7 +1188,6 @@
 <translation id="8030169304546394654">បានផ្ដាច់</translation>
 <translation id="8036504271468642248">ប្រយោគ​មុន</translation>
 <translation id="8042893070933512245">បើកម៉ឺនុយការកំណត់ភាពងាយស្រួល</translation>
-<translation id="8042925093898452104">បិទព័ត៌មានលម្អិត</translation>
 <translation id="8044457332620420407">ពន្លឺ​ផ្នែកខាងក្រោយ​នៃក្ដារចុច​ត្រូវបានបិទ</translation>
 <translation id="8048123526339889627">ការកំណត់​ប៊្លូធូស</translation>
 <translation id="8051716679295756675">ទម្រង់គំរូដែលមានឈ្មោះថា <ph name="DESK_TEMPLATE_NAME" /> មានរួចហើយ</translation>

@@ -1134,8 +1134,6 @@
 <translation id="7720410380936703141">دوبارہ کوشش کریں</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 اطلاع}other{# اطلاعات}}</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />، 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">شیلف میں ایپس دکھائیں</translation>
 <translation id="7749443890790263709">ڈیسکس کی زیادہ سے زیادہ تعداد تک پہنچ گئی۔</translation>
 <translation id="7749640678855296659">آپ کا مائیکروفون فی الحال آف ہے</translation>
@@ -1189,7 +1187,6 @@
 <translation id="8030169304546394654">منقطع</translation>
 <translation id="8036504271468642248">پچھلا جملہ</translation>
 <translation id="8042893070933512245">ایکسیسبیلٹی ترتیبات کا مینو کھولیں</translation>
-<translation id="8042925093898452104">تفصیلی معلومات بند کریں</translation>
 <translation id="8044457332620420407">کی بورڈ عقبی لائٹ آف ہے</translation>
 <translation id="8048123526339889627">بلوٹوتھ کی ترتیبات</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> کے نام والی تمثیل پہلے سے موجود ہے</translation>

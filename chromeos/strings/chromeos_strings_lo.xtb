@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">ຕົວ​ເປີດ​ໃຊ້</translation>
 <translation id="1512982610995527443">ອຸປະກອນຈະປິດເຄື່ອງໃນ 5 ວິນາທີ</translation>
 <translation id="1522984060396982789">ການສ້ອມແປງຂອງທ່ານສຳເລັດແລ້ວ. ທ່ານສາມາດປິດອຸປະກອນ ຫຼື ດຳເນີນການເພີ່ມເຕີມບາງຢ່າງໄດ້.</translation>
+<translation id="1526389707933164996">ອະນິເມຊັນພາບພັກໜ້າຈໍ</translation>
 <translation id="152892567002884378">ເປີດສຽງຂຶ້ນ</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="155865706765934889">ແຜ່ນສໍາຜັດ</translation>
@@ -93,6 +94,7 @@
 <translation id="1717874160321062422">ຈັດການໂດຍ <ph name="FIRST_MANAGER" /> ແລະ <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">ຕັ້ງຊື່ເຊີບເວີ</translation>
 <translation id="1731082422893354635">ແຜ່ນສໍາຜັດ Bluetooth</translation>
+<translation id="1745577949879301685">ບໍ່ສາມາດໂຫຼດຮູບໄດ້. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານ ຫຼື ລອງໂຫຼດຮູບຄືນໃໝ່.</translation>
 <translation id="1751249301761991853">ສ່ວນຕົວ</translation>
 <translation id="1753496554272155572">ອອກຈາກຕົວຢ່າງຮູບພື້ນຫຼັງ</translation>
 <translation id="175763766237925754">ດີ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -300,6 +302,7 @@
 <translation id="3858860766373142691">ຊື່</translation>
 <translation id="3865414814144988605">ຄວາມລະອຽດ</translation>
 <translation id="387301095347517405">ຈຳນວນເທື່ອທີ່ແບັດເຕີຣີຂອງທ່ານມີຮອບການສາກໄຟເຕັມ.</translation>
+<translation id="3885327323343477505">ປ່ຽນພາບພັກໜ້າຈໍ</translation>
 <translation id="3923184630988645767">ການນຳໃຊ້ອິນເຕີເນັດ</translation>
 <translation id="3924044641767672375">ແນະນຳໃຫ້ເຊື່ອມຕໍ່ຫາ Wi-Fi ເພື່ອເຮັດໃຫ້ຂັ້ນຕອນການສ້ອມແປງງ່າຍຂຶ້ນ. ລະບົບຈະບັນທຶກເຄືອຂ່າຍຂອງທ່ານໄວ້.</translation>
 <translation id="3932043219784172185">ບໍ່ມີການເຊື່ອມຕໍ່ອຸປະກອນ</translation>
@@ -419,6 +422,7 @@
 <translation id="4890353053343094602">ເລືອກລະຫັດຜ່ານໃໝ່ໃນທັນທີ</translation>
 <translation id="4891842000192098784">ປະສິດທິພາບເມື່ອເພີ່ມແຮງກົດດັນ</translation>
 <translation id="4897058166682006107">ອຸປະກອນມີແບັດເຕີຣີຫູຟັງຂ້າງຊ້າຍເຫຼືອ <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4905998861748258752">ເປີດໃຊ້ຄຸນສົມບັດເພື່ອເລືອກຕົວເລືອກພາບພັກໜ້າຈໍ</translation>
 <translation id="4908030561598728899">ກຳລັງຕິດຕັ້ງເຟີມແວ...</translation>
 <translation id="4915052247106771211">ນີ້ຈະຣີເຊັດອຸປະກອນນີ້ໄປເປັນຄ່າຈາກໂຮງງານ (Powerwash).</translation>
 <translation id="4917385247580444890">ແຮງ</translation>
@@ -863,6 +867,7 @@
 <translation id="8997710128084572139">ອຸປະກອນມີແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">ຄວາມຖີ່</translation>
 <translation id="9025198690966128418">ໃຊ້ເປັນອຸປະກອນສ່ວນຕົວ</translation>
+<translation id="9028832514430399253">ເປີດໃຊ້ຕົວສະຫຼັບເພື່ອເລືອກຕົວເລືອກພາບພັກໜ້າຈໍ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS resolution ມີເວລາຕອບສະໜອງສູງ</translation>
 <translation id="9063121522582193837">ບໍ່ສາມາດປັບທຽບອົງປະກອບບາງຢ່າງໄດ້</translation>

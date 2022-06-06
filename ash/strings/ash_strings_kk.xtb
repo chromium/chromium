@@ -1135,8 +1135,6 @@
 <translation id="7720410380936703141">ҚАЙТАЛАП КӨРУ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 хабарландыру}other{# хабарландыру}}</translation>
 <translation id="7724603315864178912">Қиып алу</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Сөредегі қолданбаларды көрсету</translation>
 <translation id="7749443890790263709">Жұмыс үстелдерінің максималды санына жетті.</translation>
 <translation id="7749640678855296659">Микрофон өшірулі.</translation>
@@ -1190,7 +1188,6 @@
 <translation id="8030169304546394654">Ажыратылған</translation>
 <translation id="8036504271468642248">Алдыңғы сөйлем</translation>
 <translation id="8042893070933512245">Арнайы мүмкіндіктер параметрлері мәзірін ашу</translation>
-<translation id="8042925093898452104">Толық ақпаратты жабу</translation>
 <translation id="8044457332620420407">Пернетақта жарығы өшірулі</translation>
 <translation id="8048123526339889627">Bluetooth параметрлері</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> атты үлгі бұрыннан бар.</translation>

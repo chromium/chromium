@@ -1135,8 +1135,6 @@ Nouvelle installation</translation>
 <translation id="7720410380936703141">RÉESSAYER</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}one{# notification}other{# notifications}}</translation>
 <translation id="7724603315864178912">Couper</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Afficher les applications sur l'étagère</translation>
 <translation id="7749443890790263709">Le nombre maximal de bureaux a été atteint.</translation>
 <translation id="7749640678855296659">Votre microphone est présentement désactivé</translation>
@@ -1190,7 +1188,6 @@ Nouvelle installation</translation>
 <translation id="8030169304546394654">Déconnecté</translation>
 <translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8042893070933512245">Ouvrir le menu des paramètres d'accessibilité</translation>
-<translation id="8042925093898452104">Fermer les informations détaillées</translation>
 <translation id="8044457332620420407">Le rétroéclairage du clavier est désactivé</translation>
 <translation id="8048123526339889627">Paramètres Bluetooth</translation>
 <translation id="8051716679295756675">Le modèle intitulé <ph name="DESK_TEMPLATE_NAME" /> existe déjà</translation>

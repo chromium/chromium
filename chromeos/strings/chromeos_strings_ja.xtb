@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">ランチャー</translation>
 <translation id="1512982610995527443">デバイスは 5 秒後にシャットダウンします</translation>
 <translation id="1522984060396982789">修復が完了しました。デバイスのシャットダウンや他の操作を行うことができます。</translation>
+<translation id="1526389707933164996">スクリーン セーバーのアニメーション</translation>
 <translation id="152892567002884378">音量を上げる</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="155865706765934889">タッチパッド</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">名前</translation>
 <translation id="3865414814144988605">解像度</translation>
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
+<translation id="3885327323343477505">スクリーン セーバーを変更</translation>
 <translation id="3923184630988645767">データ使用</translation>
 <translation id="3924044641767672375">修理手続きをスムーズに進めるため、Wi-Fi に接続することをおすすめします。ネットワークは保存されます。</translation>
 <translation id="3932043219784172185">接続されているデバイスはありません</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">新しいパスワードを今すぐ選択してください</translation>
 <translation id="4891842000192098784">ストレス</translation>
 <translation id="4897058166682006107">デバイスの左イヤフォンのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
+<translation id="4905998861748258752">この機能をオンにするとスクリーン セーバーのオプションを選択できます</translation>
 <translation id="4908030561598728899">ファームウェアをインストールしています...</translation>
 <translation id="4915052247106771211">デバイスは出荷時の設定にリセットされます（Powerwash）。</translation>
 <translation id="4917385247580444890">強い</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">デバイスのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="9003704114456258138">周波数</translation>
 <translation id="9025198690966128418">個人用デバイスとして使用</translation>
+<translation id="9028832514430399253">オンに切り替えてスクリーン セーバーのオプションを選択します</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS の解決のレイテンシが高くなっています</translation>
 <translation id="9063121522582193837">一部のコンポーネントをキャリブレーションできませんでした</translation>

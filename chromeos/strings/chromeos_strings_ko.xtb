@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">런처</translation>
 <translation id="1512982610995527443">5초 후 기기가 종료됩니다.</translation>
 <translation id="1522984060396982789">수리가 성공적으로 완료되었습니다. 기기를 종료하거나 추가 조치를 할 수 있습니다.</translation>
+<translation id="1526389707933164996">화면 보호기 애니메이션</translation>
 <translation id="152892567002884378">볼륨 크게</translation>
 <translation id="1555130319947370107">파란색</translation>
 <translation id="155865706765934889">터치패드</translation>
@@ -300,6 +301,7 @@
 <translation id="3858860766373142691">이름</translation>
 <translation id="3865414814144988605">해상도</translation>
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
+<translation id="3885327323343477505">화면 보호기 변경</translation>
 <translation id="3923184630988645767">데이터 사용</translation>
 <translation id="3924044641767672375">수리 과정을 간편하게 진행하려면 Wi-Fi에 연결하는 것이 좋습니다. 네트워크가 저장됩니다.</translation>
 <translation id="3932043219784172185">연결된 기기 없음</translation>
@@ -418,6 +420,7 @@
 <translation id="4890353053343094602">지금 바로 새 비밀번호를 선택하세요.</translation>
 <translation id="4891842000192098784">스트레스</translation>
 <translation id="4897058166682006107">기기의 왼쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
+<translation id="4905998861748258752">화면 보호기 옵션을 선택하려면 기능을 사용 설정하세요.</translation>
 <translation id="4908030561598728899">펌웨어 설치 중...</translation>
 <translation id="4915052247106771211">기기가 기본 설정으로 재설정됩니다(파워워시).</translation>
 <translation id="4917385247580444890">강함</translation>
@@ -861,6 +864,7 @@
 <translation id="8997710128084572139">기기 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
 <translation id="9003704114456258138">주파수</translation>
 <translation id="9025198690966128418">개인용 기기로 사용</translation>
+<translation id="9028832514430399253">전환 스위치를 사용하여 화면 보호기 옵션을 선택하세요.</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS 변환 지연 시간이 깁니다.</translation>
 <translation id="9063121522582193837">일부 구성요소를 보정할 수 없음</translation>

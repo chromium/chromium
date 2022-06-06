@@ -1135,8 +1135,6 @@ Baru diinstal</translation>
 <translation id="7720410380936703141">COBA LAGI</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifikasi}other{# notifikasi}}</translation>
 <translation id="7724603315864178912">Potong</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Tampilkan aplikasi di rak</translation>
 <translation id="7749443890790263709">Jumlah halaman kerja maksimum tercapai.</translation>
 <translation id="7749640678855296659">Mikrofon Anda saat ini dinonaktifkan</translation>
@@ -1190,7 +1188,6 @@ Baru diinstal</translation>
 <translation id="8030169304546394654">Diputuskan</translation>
 <translation id="8036504271468642248">Kalimat sebelumnya</translation>
 <translation id="8042893070933512245">Buka menu setelan aksesibilitas</translation>
-<translation id="8042925093898452104">Tutup informasi detail</translation>
 <translation id="8044457332620420407">Lampu latar keyboard menyala</translation>
 <translation id="8048123526339889627">Setelan Bluetooth</translation>
 <translation id="8051716679295756675">Template bernama <ph name="DESK_TEMPLATE_NAME" /> sudah ada</translation>

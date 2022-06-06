@@ -1135,8 +1135,6 @@ Jauna instalācija</translation>
 <translation id="7720410380936703141">MĒĢINĀT VĒLREIZ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 paziņojums}zero{# paziņojumu}one{# paziņojums}other{# paziņojumi}}</translation>
 <translation id="7724603315864178912">Izgriezt</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Rādīt lietotņu joslu</translation>
 <translation id="7749443890790263709">Sasniegts maksimālais darbvietu skaits.</translation>
 <translation id="7749640678855296659">Jūsu mikrofons pašlaik ir izslēgts</translation>
@@ -1190,7 +1188,6 @@ Jauna instalācija</translation>
 <translation id="8030169304546394654">atvienots</translation>
 <translation id="8036504271468642248">Iepriekšējais teikums</translation>
 <translation id="8042893070933512245">Atvērt pieejamības iestatījumu izvēlni</translation>
-<translation id="8042925093898452104">Aizvērt detalizētu informāciju</translation>
 <translation id="8044457332620420407">Tastatūras fona apgaismojums ir izslēgts.</translation>
 <translation id="8048123526339889627">Bluetooth iestatījumi</translation>
 <translation id="8051716679295756675">Veidne ar nosaukumu “<ph name="DESK_TEMPLATE_NAME" />” jau pastāv.</translation>

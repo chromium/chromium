@@ -119,6 +119,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1270502636509132238">Mode d'enlèvement</translation>
 <translation id="1281476433249504884">Empileur 1</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
+<translation id="1288548991597756084">Enregistrez la carte de manière sécurisée</translation>
 <translation id="1292571435393770077">Bac 16</translation>
 <translation id="1292701964462482250">Un logiciel installé sur votre ordinateur empêche Chrome de se connecter au Web de manière sécurisée (sous Windows uniquement)</translation>
 <translation id="1294154142200295408">Variations de ligne de commande</translation>
@@ -223,6 +224,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
     &lt;p&gt;Pour corriger cette erreur, cliquez sur &lt;strong&gt;Se connecter&lt;/strong&gt; sur la page que vous essayez d'ouvrir.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Aménagement paysager</translation>
 <translation id="1513706915089223971">Liste des entrées de l'historique</translation>
+<translation id="1516097932025103760">Elle sera chiffrée et enregistrée de manière sécurisée, et le code CVC ne sera jamais stocké.</translation>
 <translation id="1517433312004943670">Veuillez saisir le numéro de téléphone.</translation>
 <translation id="1519264250979466059">Date de création</translation>
 <translation id="1521159554480556801">Arts textiles</translation>
@@ -1416,6 +1418,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="483241715238664915">Activer les avertissements</translation>
 <translation id="4834250788637067901">Modes de paiement, offres et adresses utilisant Google Pay</translation>
 <translation id="4838327282952368871">Rêveur</translation>
+<translation id="4839087176073128681">Avec le système de sécurité hors pair de Google, payez plus vite la prochaine fois et protégez votre carte.</translation>
 <translation id="4840250757394056958">Afficher votre historique Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="484671803914931257">Obtenez des remises sur <ph name="MERCHANT_NAME" /> et plus</translation>
@@ -2127,7 +2130,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6897140037006041989">Agent utilisateur</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6899000063526916106">Saisissez le code à <ph name="NUMBER_OF_DIGITS" /> chiffres</translation>
-<translation id="6903437476849497868">Désactiver</translation>
 <translation id="6907293445143367439">Autoriser le site "<ph name="SITE_NAME" />" à :</translation>
 <translation id="6907458757809079309">Remise en forme</translation>
 <translation id="6910240653697687763"><ph name="URL" /> souhaite obtenir le contrôle total de vos appareils MIDI</translation>

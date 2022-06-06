@@ -1135,8 +1135,6 @@ Instalim i ri</translation>
 <translation id="7720410380936703141">PROVO SËRISH</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 njoftim}other{# njoftime}}</translation>
 <translation id="7724603315864178912">Prite</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Shfaq aplikacionet në raft</translation>
 <translation id="7749443890790263709">Është arritur numri maksimal i tavolinave të punës.</translation>
 <translation id="7749640678855296659">Mikrofoni yt është aktualisht i fikur</translation>
@@ -1190,7 +1188,6 @@ Instalim i ri</translation>
 <translation id="8030169304546394654">I shkëputur</translation>
 <translation id="8036504271468642248">Fjalia e mëparshme</translation>
 <translation id="8042893070933512245">Hap menynë e cilësimeve të qasshmërisë</translation>
-<translation id="8042925093898452104">Mbyll informacionet e detajuara</translation>
 <translation id="8044457332620420407">Drita e pasme e tastierës është e fikur</translation>
 <translation id="8048123526339889627">Cilësimet e Bluetooth-it</translation>
 <translation id="8051716679295756675">Shablloni me emrin "<ph name="DESK_TEMPLATE_NAME" />" ekziston tashmë</translation>

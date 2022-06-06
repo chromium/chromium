@@ -119,6 +119,7 @@
 <translation id="1270502636509132238">ວິທີການຮັບເຄື່ອງ</translation>
 <translation id="1281476433249504884">ສະແຕັກເກີ້ 1</translation>
 <translation id="1285320974508926690">ຢ່າແປເວັບ​ໄຊ​ທ໌ນີ້</translation>
+<translation id="1288548991597756084">ບັນທຶກບັດໄວ້ຢ່າງປອດໄພ</translation>
 <translation id="1292571435393770077">ຖາດ 16</translation>
 <translation id="1292701964462482250">"ຊອບແວຢູ່ໃນຄອມພິວເຕີຂອງທ່ານກຳລັງປ້ອງກັນບໍ່ໃຫ້ Chrome ເຊື່ອມຕໍ່ກັບເວັບໄຊໄດ້ຢ່າງປອດໄພ" (ຄອມພິວເຕີ Windows ເທົ່ານັ້ນ)</translation>
 <translation id="1294154142200295408">ການປ່ຽນແປງແຖວຄຳສັ່ງ</translation>
@@ -223,6 +224,7 @@
     &lt;p&gt;ເພື່ອແກ້ໄຂຂໍ້ຜິດພາດ, ກະລຸນາຄລິກ &lt;strong&gt;ເຊື່ອມຕໍ່&lt;/strong&gt; ຢູ່ໃນໜ້າທີ່ທ່ານກຳລັງພະຍາຍາມເປີດ.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">ການອອກແບບພູມມິທັດ</translation>
 <translation id="1513706915089223971">ລາຍຊື່ລາຍການປະຫວັດ</translation>
+<translation id="1516097932025103760">ມັນຈະຖືກເຂົ້າລະຫັດ, ບັນທຶກໄວ້ຢ່າງປອດໄພ ແລະ ຈະບໍ່ມີການຈັດເກັບ CVC ໄວ້ເດັດຂາດ.</translation>
 <translation id="1517433312004943670">ຈຳເປັນຕ້ອງມີເບີໂທລະສັບ</translation>
 <translation id="1519264250979466059">​ວັນ​ທີສ້າງ</translation>
 <translation id="1521159554480556801">ສິນລະປະສິ່ງທໍ ແລະ ເສັ້ນໃຍ</translation>
@@ -1416,6 +1418,7 @@
 <translation id="483241715238664915">ເປີດໃຊ້ຄຳເຕືອນ</translation>
 <translation id="4834250788637067901">ວິທີການຈ່າຍເງິນ, ຂໍ້ສະເໜີ ແລະ ທີ່ຢູ່ໂດຍໃຊ້ Google Pay</translation>
 <translation id="4838327282952368871">ຊວນຝັນ</translation>
+<translation id="4839087176073128681">ຈ່າຍເງິນໄດ້ໄວຂຶ້ນໃນເທື່ອຕໍ່ໄປ ແລະ ປົກປ້ອງບັດຂອງທ່ານດ້ວຍຄວາມປອດໄພລະດັບແນວໜ້າຂອງອຸດສາຫະກຳຂອງ Google.</translation>
 <translation id="4840250757394056958">ເບິ່ງປະຫວັດ Chrome ຂອງທ່ານ</translation>
 <translation id="484462545196658690">ອັດຕະໂນມັດ</translation>
 <translation id="484671803914931257">ຮັບສ່ວນຫຼຸດຢູ່ <ph name="MERCHANT_NAME" /> ແລະ ອື່ນໆ</translation>
@@ -2127,7 +2130,6 @@
 <translation id="6897140037006041989">ຕົວແທນຜູ້ໃຊ້</translation>
 <translation id="6898699227549475383">ອົງການຈັດຕັ້ງ (O)</translation>
 <translation id="6899000063526916106">ລະບຸລະຫັດ <ph name="NUMBER_OF_DIGITS" /> ຕົວເລກ</translation>
-<translation id="6903437476849497868">ຖອນຕົວ</translation>
 <translation id="6907293445143367439">ອະນຸຍາດໃຫ້ <ph name="SITE_NAME" /> ສາມາດ:</translation>
 <translation id="6907458757809079309">ຟິດເນສ</translation>
 <translation id="6910240653697687763"><ph name="URL" /> ຕ້ອງການໄດ້ຮັບການຄວບຄຸມເຕັມຕໍ່ກັບອຸປະກອນ MIDI ຂອງທ່ານ</translation>

@@ -1135,8 +1135,6 @@
 <translation id="7720410380936703141">다시 시도</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{알림 1개}other{알림 #개}}</translation>
 <translation id="7724603315864178912">잘라내기</translation>
-<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
-        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">실행기에 앱 표시</translation>
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>
 <translation id="7749640678855296659">현재 마이크가 꺼져 있습니다.</translation>
@@ -1190,7 +1188,6 @@
 <translation id="8030169304546394654">연결 끊김</translation>
 <translation id="8036504271468642248">이전 문장</translation>
 <translation id="8042893070933512245">접근성 설정 메뉴 열기</translation>
-<translation id="8042925093898452104">세부정보 닫기</translation>
 <translation id="8044457332620420407">키보드 백라이트 꺼짐</translation>
 <translation id="8048123526339889627">블루투스 설정</translation>
 <translation id="8051716679295756675">이름이 <ph name="DESK_TEMPLATE_NAME" />인 템플릿이 이미 있습니다.</translation>
