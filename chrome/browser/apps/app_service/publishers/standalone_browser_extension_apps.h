@@ -120,6 +120,7 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                  bool report_abuse) override;
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
+  void OpenNativeSettings(const std::string& app_id) override;
 
   // crosapi::mojom::AppPublisher overrides.
   void OnApps(std::vector<AppPtr> deltas) override;

@@ -358,6 +358,16 @@ void StandaloneBrowserExtensionApps::SetWindowMode(
                              ConvertMojomWindowModeToWindowMode(window_mode));
 }
 
+void StandaloneBrowserExtensionApps::OpenNativeSettings(
+    const std::string& app_id) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound())
+    return;
+
+  controller_->OpenNativeSettings(app_id);
+}
+
 void StandaloneBrowserExtensionApps::OnApps(std::vector<AppPtr> deltas) {
   if (deltas.empty()) {
     return;
