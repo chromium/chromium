@@ -163,7 +163,7 @@ LayoutBlock* LayoutObjectFactory::CreateGrid(Node& node,
 LayoutBlock* LayoutObjectFactory::CreateMath(Node& node,
                                              const ComputedStyle& style,
                                              LegacyLayout legacy) {
-  DCHECK(IsA<MathMLElement>(node));
+  DCHECK(IsA<MathMLElement>(node) || node.IsDocumentNode() /* is_anonymous */);
   bool disable_ng_for_type = !RuntimeEnabledFeatures::MathMLCoreEnabled();
   if (IsA<MathMLTokenElement>(node)) {
     return CreateObject<LayoutBlockFlow, LayoutNGMathMLBlockFlow,

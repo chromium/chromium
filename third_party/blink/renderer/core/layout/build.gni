@@ -484,6 +484,8 @@ blink_core_sources_layout = [
   "ng/mathml/layout_ng_mathml_block_flow.h",
   "ng/mathml/layout_ng_mathml_block_with_anonymous_mrow.cc",
   "ng/mathml/layout_ng_mathml_block_with_anonymous_mrow.h",
+  "ng/mathml/layout_ng_table_cell_with_anonymous_mrow.cc",
+  "ng/mathml/layout_ng_table_cell_with_anonymous_mrow.h",
   "ng/mathml/ng_math_fraction_layout_algorithm.cc",
   "ng/mathml/ng_math_fraction_layout_algorithm.h",
   "ng/mathml/ng_math_layout_utils.cc",
