@@ -170284,6 +170284,116 @@
         {}
        ]
       ],
+      "text-align-center-last-center.html": [
+       "97c2b7840f6b17985ac80ee59cecf4871ea51f2f",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-center-last-start.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-center-last-end.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-center-last-justify.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-center-last-default.html": [
+       "0b3a7ad9eb7a733ab1cf9b60d90d1c9bcc7043f7",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-center-last-center.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-center-last-end.html": [
+       "c23eb03812e1cce04ba5d7e28aee2aaf7e6dad5e",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-center-last-start.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-center-last-center.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-center-last-justify.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-center-last-justify.html": [
+       "10a06696e6aed22fdce55ba62288c9248c0e90ee",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-center-last-start.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-center-last-end.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-center-last-center.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-center-last-start.html": [
+       "10f68edec3dee8f0099bd57efa17c50c34a52380",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-center-last-center.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-center-last-end.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-center-last-justify.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-default-last-default.html": [
+       "ee626a6ac92a477526265e38fa9d58a11a383bb0",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-start-last-start.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-align-end-001.html": [
        "14e666aca227849d7ea97d97122730168347afc7",
        [
@@ -170466,6 +170576,103 @@
         {}
        ]
       ],
+      "text-align-end-last-center.html": [
+       "993d98d514534601f0239842f249719c4a675333",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-end-last-start.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-end-last-end.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-end-last-justify.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-end-last-default.html": [
+       "b730ba6994d804417912b5dd3818617f4a088606",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-end-last-end.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-end-last-end.html": [
+       "97ff92634723b2a153fd6df84c0f1be53bba3049",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-end-last-start.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-end-last-center.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-end-last-justify.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-end-last-justify.html": [
+       "3c4957ddb6612680aa4e74f6a79ae765c678f525",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-end-last-start.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-end-last-end.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-end-last-center.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-end-last-start.html": [
+       "d98221f2a018fb7975d9ee0aa111e4cd7ca771f7",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-end-last-center.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-end-last-end.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-end-last-justify.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-align-justify-001.html": [
        "f2ba8cc230201b7e180517e9f7574797c0fc8a4d",
        [
@@ -170544,6 +170751,103 @@
         {}
        ]
       ],
+      "text-align-justify-last-center.html": [
+       "8aba126e14802b81a0f3c196e588753adfb7f40d",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-justify-last-start.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-justify-last-end.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-justify-last-justify.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-justify-last-default.html": [
+       "b744958c473f84b3d977729d7f048d4dc270e715",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-justify-last-start.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-justify-last-end.html": [
+       "6e084f33e8fa05d22baf7c0cd3a637274b2b81b7",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-justify-last-start.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-justify-last-center.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-justify-last-justify.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-justify-last-justify.html": [
+       "c1bdfc38e5b2317bb755d38013c0c0283764a856",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-justify-last-start.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-justify-last-center.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-justify-last-end.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-justify-last-start.html": [
+       "ca4f0d92236caccd301a537e739d2e28845dad6e",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-justify-last-end.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-justify-last-center.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-justify-last-justify.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-align-justify-shy-001.html": [
        "3d15488024eb693f7799a2e8322d0e777dcfa236",
        [
@@ -170577,6 +170881,84 @@
         [
          [
           "/css/css-text/text-align/text-align-last-010-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-last-center.html": [
+       "639156062d23e61d07130b48b573fc521f115382",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-last-center-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-last-end.html": [
+       "4b6fe4339206d1c5a0b014d6d9795547f9722261",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-last-end-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-last-justify-rtl.html": [
+       "835e4cdd5ca39939bec14ee3fc636d6efe4d9831",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-last-justify-rtl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-last-justify.html": [
+       "c48678b74a2d7008a2c1beebbca7de6f1a54fafd",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-last-justify-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-last-simple.html": [
+       "6dabb111fafdcaf2e764b9a208c97341b4f74745",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-last-simple-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-last-start.html": [
+       "af5b49dd9661647d8bda617530c55f371a5dad87",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-last-start-ref.html",
           "=="
          ]
         ],
@@ -170851,6 +171233,103 @@
          [
           "/css/css-text/text-align/reference/text-align-start-ref-017.html",
           "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-start-last-center.html": [
+       "3b8af4537d818dfd811477349911459b6b4b4a81",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-start-last-start.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-start-last-end.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-start-last-justify.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-start-last-default.html": [
+       "ee626a6ac92a477526265e38fa9d58a11a383bb0",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-start-last-start.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-start-last-end.html": [
+       "8c7d153fc0b359031e33f4968b03076d3aa401ae",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-start-last-start.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-start-last-center.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-start-last-justify.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-start-last-justify.html": [
+       "2d1714af596699cde2c893a9e433c256e2edab50",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-start-last-start.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-start-last-center.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-start-last-end.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-start-last-start.html": [
+       "2e33fd15b0252a3ad12080dbb4784258c11d1b33",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-start-last-end.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-start-last-center.html",
+          "!="
+         ],
+         [
+          "/css/css-text/text-align/text-align-start-last-justify.html",
+          "!="
          ]
         ],
         {}
@@ -285105,6 +285584,30 @@
        "2f26b42723d0e736ef8d01ddc72ec3cc5e69d088",
        []
       ],
+      "text-align-last-center-ref.html": [
+       "6ad0e6396d18f437d18d4ac87594260ffac9ae4c",
+       []
+      ],
+      "text-align-last-end-ref.html": [
+       "ded6defa8a07285acbeb67fb5445da7a7f0920c8",
+       []
+      ],
+      "text-align-last-justify-ref.html": [
+       "d07bed3f779f55d717f806b0c2b1889446a465da",
+       []
+      ],
+      "text-align-last-justify-rtl-ref.html": [
+       "d3b941e900025649473175fda4487fdb19221cb6",
+       []
+      ],
+      "text-align-last-simple-ref.html": [
+       "3c8ba2e580ada15ac390743b0bd5eb90f2138d60",
+       []
+      ],
+      "text-align-last-start-ref.html": [
+       "be564fda0b4fa5999adcefba24560e6bb6196f0b",
+       []
+      ],
       "text-align-match-parent-ref.html": [
        "f916b44c9867ed55b143bb54c340564c07c831d7",
        []
@@ -295146,14 +295649,6 @@
       "e7775276038f307b7cdb0a75d19ee24f67619c2a",
       []
      ]
-    },
-    "tools": {
-     "_virtualenv": {
-      ".gitignore": [
-       "ede80b85f0f30f7d19ce1a46d6b421fac3c1f82f",
-       []
-      ]
-     }
     },
     "vendor-imports": {
      "mozilla": {
@@ -394710,6 +395205,13 @@
        {}
       ]
      ],
+     "base-uri.html": [
+      "b948d5a7f4ed1dba5b253752a6f569c326868376",
+      [
+       null,
+       {}
+      ]
+     ],
      "border-shorthand-serialization.html": [
       "9b5821563c49c8874f7bbd8dc4ffb2f9813a789e",
       [
@@ -395966,6 +396468,13 @@
      ],
      "negativeMargins.html": [
       "0616e8b4999e73b5a43d46d7364a079607515f5b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "offsetParent-block-in-inline.html": [
+      "f2bbb55f36d084b2cdf3e6fad23cd16c00369252",
       [
        null,
        {}
@@ -471795,7 +472304,7 @@
        ]
       ],
       "popup-attribute-basic.tentative.html": [
-       "2c9c23c500d7cf2ca2efe62ec8b58099b3c9d299",
+       "9c49795a2590ee5ba9be2aedb1702ee0324ce020",
        [
         null,
         {}
@@ -487979,7 +488488,7 @@
    },
    "mediacapture-region": {
     "MediaDevices-produceCropId.https.html": [
-     "8b381b82fde6a6d5ac1e83686e2eca8ad72d69cb",
+     "af8c659a5ba0d771f9ff46813e4cf50011580975",
      [
       null,
       {}
