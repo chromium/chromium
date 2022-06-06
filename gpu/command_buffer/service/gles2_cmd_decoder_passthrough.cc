@@ -2420,6 +2420,16 @@ bool GLES2DecoderPassthroughImpl::FlushErrors() {
   return had_error;
 }
 
+bool GLES2DecoderPassthroughImpl::IsIgnoredCap(GLenum cap) const {
+  switch (cap) {
+    case GL_DEBUG_OUTPUT:
+      return true;
+
+    default:
+      return false;
+  }
+}
+
 bool GLES2DecoderPassthroughImpl::CheckResetStatus() {
   DCHECK(!WasContextLost());
   DCHECK(context_->IsCurrent(nullptr));

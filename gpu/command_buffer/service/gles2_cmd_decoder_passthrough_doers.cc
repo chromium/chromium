@@ -1183,6 +1183,11 @@ error::Error GLES2DecoderPassthroughImpl::DoDetachShader(GLuint program,
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoDisable(GLenum cap) {
+  if (IsIgnoredCap(cap)) {
+    InsertError(GL_INVALID_ENUM, "Invalid cap.");
+    return error::kNoError;
+  }
+
   api()->glDisableFn(cap);
   return error::kNoError;
 }
@@ -1250,6 +1255,11 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawElementsIndirect(
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoEnable(GLenum cap) {
+  if (IsIgnoredCap(cap)) {
+    InsertError(GL_INVALID_ENUM, "Invalid cap.");
+    return error::kNoError;
+  }
+
   api()->glEnableFn(cap);
   return error::kNoError;
 }

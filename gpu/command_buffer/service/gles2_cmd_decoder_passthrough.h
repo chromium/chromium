@@ -438,6 +438,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   GLenum PopError();
   bool FlushErrors();
 
+  bool IsIgnoredCap(GLenum cap) const;
+
   bool IsEmulatedQueryTarget(GLenum target) const;
   error::Error ProcessQueries(bool did_finish);
   void RemovePendingQuery(GLuint service_id);
