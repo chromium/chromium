@@ -156,13 +156,6 @@ void CastContentWindowAndroid::SetHostContext(base::Value host_context) {
   }
 }
 
-void CastContentWindowAndroid::NotifyVisibilityChange(
-    VisibilityType visibility_type) {
-  for (auto& observer : observers_) {
-    observer->OnVisibilityChange(visibility_type);
-  }
-}
-
 void CastContentWindowAndroid::RequestMoveOut() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CastContentWindowAndroid_requestMoveOut(env, java_window_);

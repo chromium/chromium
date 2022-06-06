@@ -864,9 +864,17 @@ void CastWebContentsImpl::NotifyPageState() {
     for (auto& observer : observers_) {
       observer->PageStopped(page_state_, last_error_);
     }
+    // Notifies the local observers.
+    for (Observer& observer : sync_observers_) {
+      observer.PageStopped(page_state_, last_error_);
+    }
   } else {
     for (auto& observer : observers_) {
       observer->PageStateChanged(page_state_);
+    }
+    // Notifies the local observers.
+    for (Observer& observer : sync_observers_) {
+      observer.PageStateChanged(page_state_);
     }
   }
   notifying_ = false;

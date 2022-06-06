@@ -170,13 +170,6 @@ void CastContentWindowAura::SetActivityContext(base::Value activity_context) {}
 
 void CastContentWindowAura::SetHostContext(base::Value host_context) {}
 
-void CastContentWindowAura::NotifyVisibilityChange(
-    VisibilityType visibility_type) {
-  for (auto& observer : observers_) {
-    observer->OnVisibilityChange(visibility_type);
-  }
-}
-
 void CastContentWindowAura::RequestMoveOut() {}
 
 void CastContentWindowAura::OnWindowVisibilityChanged(aura::Window* window,

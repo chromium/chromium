@@ -137,13 +137,6 @@ void CastContentWindowEmbedded::SetHostContext(base::Value host_context) {
   host_context_ = host_context.Clone();
 }
 
-void CastContentWindowEmbedded::NotifyVisibilityChange(
-    VisibilityType visibility_type) {
-  for (auto& observer : observers_) {
-    observer->OnVisibilityChange(visibility_type);
-  }
-}
-
 void CastContentWindowEmbedded::RequestMoveOut() {}
 
 void CastContentWindowEmbedded::OnWindowDestroyed(aura::Window* window) {

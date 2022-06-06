@@ -25,6 +25,16 @@ void CastContentWindow::SetCastWebContents(CastWebContents* cast_web_contents) {
       gesture_router()->GetBinder());
 }
 
+void CastContentWindow::AddObserver(Observer* observer) {
+  DCHECK(observer);
+  sync_observers_.AddObserver(observer);
+}
+
+void CastContentWindow::RemoveObserver(CastContentWindow::Observer* observer) {
+  DCHECK(observer);
+  sync_observers_.RemoveObserver(observer);
+}
+
 void CastContentWindow::AddObserver(
     mojo::PendingRemote<mojom::CastContentWindowObserver> observer) {
   observers_.Add(std::move(observer));
@@ -46,6 +56,15 @@ void CastContentWindow::Show() {
 
 void CastContentWindow::Hide() {
   RequestMoveOut();
+}
+
+void CastContentWindow::NotifyVisibilityChange(VisibilityType visibility_type) {
+  for (auto& observer : observers_) {
+    observer->OnVisibilityChange(visibility_type);
+  }
+  for (Observer& observer : sync_observers_) {
+    observer.OnVisibilityChange(visibility_type);
+  }
 }
 
 mojom::MediaControlUi* CastContentWindow::media_controls() {
