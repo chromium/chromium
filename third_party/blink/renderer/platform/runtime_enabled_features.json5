@@ -615,7 +615,7 @@
     },
     {
       name: "CSSIndependentTransformProperties",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSLayoutAPI",

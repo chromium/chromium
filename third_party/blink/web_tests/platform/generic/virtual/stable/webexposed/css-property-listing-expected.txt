@@ -289,10 +289,12 @@ All changes to this list should go through Blink's feature review process: http:
     r
     resize
     right
+    rotate
     row-gap
     ruby-position
     rx
     ry
+    scale
     scroll-behavior
     scroll-margin-block-end
     scroll-margin-block-start
@@ -363,6 +365,7 @@ All changes to this list should go through Blink's feature review process: http:
     transition-duration
     transition-property
     transition-timing-function
+    translate
     unicode-bidi
     user-select
     vector-effect

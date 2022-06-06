@@ -328,10 +328,12 @@ range
 removeProperty
 resize
 right
+rotate
 rowGap
 rubyPosition
 rx
 ry
+scale
 scrollBehavior
 scrollMargin
 scrollMarginBlock
@@ -419,6 +421,7 @@ transitionDelay
 transitionDuration
 transitionProperty
 transitionTimingFunction
+translate
 unicodeBidi
 unicodeRange
 userSelect
