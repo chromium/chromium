@@ -114,7 +114,6 @@ PluginPrivateFileSystemBackend::CdmFileInfo::~CdmFileInfo() = default;
 PluginPrivateFileSystemBackend::PluginPrivateFileSystemBackend(
     scoped_refptr<base::SequencedTaskRunner> file_task_runner,
     const base::FilePath& profile_path,
-    const base::FilePath& bucket_base_path,
     scoped_refptr<SpecialStoragePolicy> special_storage_policy,
     const FileSystemOptions& file_system_options,
     leveldb::Env* env_override)
@@ -125,8 +124,7 @@ PluginPrivateFileSystemBackend::PluginPrivateFileSystemBackend(
       plugin_map_(new FileSystemIDToPluginMap(file_task_runner_)) {
   file_util_ = std::make_unique<AsyncFileUtilAdapter>(
       std::make_unique<ObfuscatedFileUtil>(
-          std::move(special_storage_policy), base_path_, bucket_base_path,
-          env_override,
+          std::move(special_storage_policy), base_path_, env_override,
           base::BindRepeating(&FileSystemIDToPluginMap::GetPluginIDForURL,
                               base::Owned(plugin_map_.get())),
           std::set<std::string>(), nullptr,

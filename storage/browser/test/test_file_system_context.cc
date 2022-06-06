@@ -44,7 +44,7 @@ CreateFileSystemContextWithAdditionalProvidersForTesting(
       ExternalMountPoints::CreateRefCounted(),
       base::MakeRefCounted<MockSpecialStoragePolicy>(),
       std::move(quota_manager_proxy), std::move(additional_providers),
-      std::vector<URLRequestAutoMountHandler>(), base_path, base_path,
+      std::vector<URLRequestAutoMountHandler>(), base_path,
       CreateAllowFileAccessOptions());
 }
 
@@ -61,7 +61,7 @@ CreateFileSystemContextWithAutoMountersForTesting(
       ExternalMountPoints::CreateRefCounted(),
       base::MakeRefCounted<MockSpecialStoragePolicy>(),
       std::move(quota_manager_proxy), std::move(additional_providers),
-      auto_mounters, base_path, base_path, CreateAllowFileAccessOptions());
+      auto_mounters, base_path, CreateAllowFileAccessOptions());
 }
 
 scoped_refptr<FileSystemContext> CreateIncognitoFileSystemContextForTesting(
@@ -90,7 +90,7 @@ CreateIncognitoFileSystemContextWithAdditionalProvidersForTesting(
       ExternalMountPoints::CreateRefCounted(),
       base::MakeRefCounted<MockSpecialStoragePolicy>(),
       std::move(quota_manager_proxy), std::move(additional_providers),
-      std::vector<URLRequestAutoMountHandler>(), base_path, base_path,
+      std::vector<URLRequestAutoMountHandler>(), base_path,
       CreateIncognitoFileSystemOptions());
 }
 

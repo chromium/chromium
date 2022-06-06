@@ -69,7 +69,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
   PluginPrivateFileSystemBackend(
       scoped_refptr<base::SequencedTaskRunner> file_task_runner,
       const base::FilePath& profile_path,
-      const base::FilePath& bucket_base_path,
       scoped_refptr<SpecialStoragePolicy> special_storage_policy,
       const FileSystemOptions& file_system_options,
       leveldb::Env* env_override);

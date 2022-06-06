@@ -270,7 +270,7 @@ void CannedSyncableFileSystem::SetUp(QuotaMode quota_mode) {
       quota_manager_.get() ? quota_manager_->proxy() : nullptr,
       std::move(additional_backends),
       std::vector<storage::URLRequestAutoMountHandler>(), data_dir_.GetPath(),
-      data_dir_.GetPath(), options);
+      options);
 
   is_filesystem_set_up_ = true;
 }

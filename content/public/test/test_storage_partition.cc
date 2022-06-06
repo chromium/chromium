@@ -19,10 +19,6 @@ base::FilePath TestStoragePartition::GetPath() {
   return file_path_;
 }
 
-base::FilePath TestStoragePartition::GetBucketBasePath() {
-  return file_path_.Append(storage::kWebStorageDirectory);
-}
-
 network::mojom::NetworkContext* TestStoragePartition::GetNetworkContext() {
   return network_context_;
 }

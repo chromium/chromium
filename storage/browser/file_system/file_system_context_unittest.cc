@@ -76,7 +76,7 @@ class FileSystemContextTest : public testing::Test {
         storage_policy_, mock_quota_manager_->proxy(),
         std::move(additional_providers),
         std::vector<URLRequestAutoMountHandler>(), data_dir_.GetPath(),
-        data_dir_.GetPath(), CreateAllowFileAccessOptions());
+        CreateAllowFileAccessOptions());
   }
 
   QuotaManagerProxy* proxy() { return mock_quota_manager_->proxy(); }

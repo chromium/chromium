@@ -135,7 +135,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
       std::vector<std::unique_ptr<FileSystemBackend>> additional_backends,
       const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
       const base::FilePath& partition_path,
-      const base::FilePath& bucket_base_path,
       const FileSystemOptions& options);
 
   // Exposed for base::MakeRefCounted(). Instances should be obtained from the
@@ -149,7 +148,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
       std::vector<std::unique_ptr<FileSystemBackend>> additional_backends,
       const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
       const base::FilePath& partition_path,
-      const base::FilePath& bucket_base_path,
       const FileSystemOptions& options,
       base::PassKey<FileSystemContext>);
 
@@ -309,8 +307,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   }
 
   const base::FilePath& partition_path() const { return partition_path_; }
-
-  const base::FilePath& bucket_base_path() const { return bucket_base_path_; }
 
   // Same as `CrackFileSystemURL`, but cracks FileSystemURL created from `url`
   // and `storage_key`.
@@ -491,10 +487,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
 
   // The base path of the storage partition for this context.
   const base::FilePath partition_path_;
-
-  // The base path of the file directory where StorageBucket data is stored for
-  // this context.
-  const base::FilePath bucket_base_path_;
 
   const bool is_incognito_;
 

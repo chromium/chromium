@@ -38,7 +38,6 @@ CONTENT_EXPORT scoped_refptr<storage::FileSystemContext>
 CreateFileSystemContext(
     BrowserContext* browser_context,
     const base::FilePath& profile_path,
-    const base::FilePath& bucket_base_path,
     bool is_incognito,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 

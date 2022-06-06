@@ -150,7 +150,7 @@ class NativeMediaFileUtilTest : public testing::Test {
         std::move(storage_policy),
         /* quota_manager_proxy=*/nullptr, std::move(additional_providers),
         std::vector<storage::URLRequestAutoMountHandler>(), data_dir_.GetPath(),
-        data_dir_.GetPath(), storage::CreateAllowFileAccessOptions());
+        storage::CreateAllowFileAccessOptions());
 
     filesystem_ = isolated_context()->RegisterFileSystemForPath(
         storage::kFileSystemTypeLocalMedia, std::string(), root_path(),

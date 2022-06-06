@@ -50,8 +50,6 @@ class TestStoragePartition : public StoragePartition {
   void set_path(base::FilePath file_path) { file_path_ = file_path; }
   base::FilePath GetPath() override;
 
-  base::FilePath GetBucketBasePath() override;
-
   void set_network_context(network::mojom::NetworkContext* context) {
     network_context_ = context;
   }
