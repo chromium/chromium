@@ -740,16 +740,29 @@ void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  if (frame && !ReconfigureFormatIfNeeded(*frame)) {
-    NOTIFY_ERROR(kPlatformFailureError);
-    encoder_state_ = kError;
-    return;
-  }
+  if (frame) {
+    // |frame| can be nullptr to indicate a flush.
+    const bool is_expected_storage_type =
+        native_input_mode_
+            ? frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+            : frame->IsMappable();
+    if (!is_expected_storage_type) {
+      VLOGF(1) << "Unexpected storage: "
+               << VideoFrame::StorageTypeToString(frame->storage_type());
+      NOTIFY_ERROR(kInvalidArgumentError);
+      return;
+    }
 
-  // If a video frame to be encoded is fed, then call VIDIOC_REQBUFS if it has
-  // not been called yet.
-  if (frame && input_buffer_map_.empty() && !CreateInputBuffers())
-    return;
+    if (!ReconfigureFormatIfNeeded(*frame)) {
+      NOTIFY_ERROR(kPlatformFailureError);
+      return;
+    }
+
+    // If a video frame to be encoded is fed, then call VIDIOC_REQBUFS if it has
+    // not been called yet.
+    if (input_buffer_map_.empty() && !CreateInputBuffers())
+      return;
+  }
 
   if (image_processor_) {
     image_processor_input_queue_.emplace(std::move(frame), force_keyframe);

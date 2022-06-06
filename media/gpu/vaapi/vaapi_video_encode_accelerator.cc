@@ -540,6 +540,20 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK_NE(state_, kUninitialized);
 
+  if (frame) {
+    // |frame| can be nullptr to indicate a flush.
+    const bool is_expected_storage_type =
+        native_input_mode_
+            ? frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+            : frame->IsMappable();
+    if (!is_expected_storage_type) {
+      NOTIFY_ERROR(kInvalidArgumentError,
+                   "Unexpected storage: " << VideoFrame::StorageTypeToString(
+                       frame->storage_type()));
+      return;
+    }
+  }
+
   input_queue_.push(
       std::make_unique<InputFrameRef>(std::move(frame), force_keyframe));
   EncodePendingInputs();
@@ -552,14 +566,9 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
     std::vector<scoped_refptr<VASurface>>* reconstructed_surfaces) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(native_input_mode_);
+  DCHECK_EQ(frame.storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
   TRACE_EVENT0("media,gpu", "VAVEA::CreateSurfacesForGpuMemoryBuffer");
 
-  if (frame.storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    NOTIFY_ERROR(kPlatformFailureError,
-                 "Unexpected storage: "
-                     << VideoFrame::StorageTypeToString(frame.storage_type()));
-    return false;
-  }
   if (frame.format() != PIXEL_FORMAT_NV12) {
     NOTIFY_ERROR(
         kPlatformFailureError,
