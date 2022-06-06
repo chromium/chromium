@@ -317,6 +317,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // Reset all cached flags when |TSFTextStore::RequestLock| returns.
   void ResetCacheAfterEditSession();
 
+  // Returns if current input method is an IME.
+  bool IsInputIME() const;
+
   // Gets the style information from the display attribute for the actively
   // composed text.
   void GetStyle(const TF_DISPLAYATTRIBUTE& attribute, ImeTextSpan* span);
@@ -459,6 +462,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   Microsoft::WRL::ComPtr<ITfCategoryMgr> category_manager_;
   Microsoft::WRL::ComPtr<ITfDisplayAttributeMgr> display_attribute_manager_;
   Microsoft::WRL::ComPtr<ITfContext> context_;
+  Microsoft::WRL::ComPtr<ITfInputProcessorProfileMgr>
+      input_processor_profile_mgr_;
 
   // Current list of requested supported attribute values.
   // Currently the supported attributes are URL and InputScope.
