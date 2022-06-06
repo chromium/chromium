@@ -110,15 +110,13 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     base::WeakPtr<InitializerSupplier> app_controller;
 
     bool operator<(const Key& other) const {
-      const auto lhs =
-          std::make_tuple(color_mode, contrast_mode, elevation_mode,
-                          system_theme, frame_type, custom_theme);
-      const auto rhs = std::make_tuple(other.color_mode, other.contrast_mode,
-                                       other.elevation_mode, other.system_theme,
-                                       other.frame_type, other.custom_theme);
-      if (lhs == rhs)
-        return app_controller.get() < other.app_controller.get();
-      return lhs < rhs;
+      auto* lhs_app_controller = app_controller.get();
+      auto* rhs_app_controller = other.app_controller.get();
+      return std::tie(color_mode, contrast_mode, elevation_mode, system_theme,
+                      frame_type, custom_theme, lhs_app_controller) <
+             std::tie(other.color_mode, other.contrast_mode,
+                      other.elevation_mode, other.system_theme,
+                      other.frame_type, other.custom_theme, rhs_app_controller);
     }
   };
 
