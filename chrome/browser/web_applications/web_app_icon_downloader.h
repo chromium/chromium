@@ -28,7 +28,7 @@ enum class IconsDownloadedResult;
 
 // Class to help download all icons (including favicons and web app manifest
 // icons) for a tab.
-class WebAppIconDownloader : private content::WebContentsObserver {
+class WebAppIconDownloader : public content::WebContentsObserver {
  public:
   using WebAppIconDownloaderCallback =
       base::OnceCallback<void(IconsDownloadedResult result,

@@ -286,6 +286,30 @@ TEST_F(WebAppIconDownloaderTest, SkipPageFavicons) {
                       Pair(favicon_url_1, net::HttpStatusCode::HTTP_OK))));
 }
 
+TEST_F(WebAppIconDownloaderTest, ShuttingDown) {
+  base::test::TestFuture<IconsDownloadedResult, IconsMap,
+                         DownloadedIconsHttpResults>
+      test_future;
+  WebAppIconDownloader downloader(web_contents(), std::vector<GURL>(),
+                                  test_future.GetCallback());
+
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      GURL("http://www.google.com/favicon.ico"),
+      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>()));
+  web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
+
+  downloader.Start();
+
+  static_cast<content::WebContentsObserver&>(downloader).WebContentsDestroyed();
+
+  EXPECT_THAT(test_future.Get(),
+              FieldsAre(
+                  /*result=*/IconsDownloadedResult::kPrimaryPageChanged,
+                  /*icons_map=*/IsEmpty(),
+                  /*icons_http_results=*/_));
+}
+
 TEST_F(WebAppIconDownloaderTest, PageNavigates) {
   base::test::TestFuture<IconsDownloadedResult, IconsMap,
                          DownloadedIconsHttpResults>
