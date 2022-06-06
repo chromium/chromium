@@ -65473,8 +65473,15 @@ Called by update_use_counter_css.py.-->
 
 <enum name="MultitouchEvent">
   <int value="0" label="Released"/>
-  <int value="1" label="Canceled"/>
+  <int value="1" label="Canceled (deprecated)">
+    <obsolete>
+      Replaced by more specific cancel events.
+    </obsolete>
+  </int>
   <int value="2" label="Held"/>
+  <int value="3" label="Canceled by other key"/>
+  <int value="4" label="Canceled by reset"/>
+  <int value="5" label="Canceled by popup"/>
 </enum>
 
 <enum name="NaClAppTypeEnum">

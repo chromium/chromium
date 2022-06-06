@@ -1066,7 +1066,7 @@ chromium-metrics-reviews@google.com.
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     The number of times each type of multitouch behavior is triggered. Recorded
-    when a key is pressed while another key is still held down.
+    when a touch event occurs while another key is held down.
   </summary>
 </histogram>
 
