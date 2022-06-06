@@ -53,10 +53,14 @@ enum class DialogActivationLocationAndCastMode {
   kAppMenuAndTabMirror,
   kAppMenuAndDesktopMirror,
   kAppMenuAndLocalFile,  // Obsolete.
+  kSharingHubAndPresentation,
+  kSharingHubAndTabMirror,
+  kSharingHubAndDesktopMirror,
 
   // NOTE: Do not reorder existing entries, and add entries only immediately
-  // above this line.
-  kMaxValue = kAppMenuAndLocalFile
+  // above this line. Remember to also update
+  // tools/metrics/histograms/enums.xml.
+  kMaxValue = kSharingHubAndDesktopMirror
 };
 
 // Where the user clicked to open the Media Router dialog.
@@ -69,9 +73,11 @@ enum class MediaRouterDialogOpenOrigin {
   PAGE = 3,
   APP_MENU = 4,
   SYSTEM_TRAY = 5,
+  SHARING_HUB = 6,
 
-  // NOTE: Add entries only immediately above this line.
-  TOTAL_COUNT = 6
+  // NOTE: Add entries only immediately above this line. Remember to also update
+  // tools/metrics/histograms/enums.xml.
+  TOTAL_COUNT = 7
 };
 
 // The possible outcomes from a route creation response.
@@ -80,7 +86,8 @@ enum class MediaRouterRouteCreationOutcome {
   FAILURE_NO_ROUTE = 1,
   FAILURE_INVALID_SINK = 2,
 
-  // Note: Add entries only immediately above this line.
+  // Note: Add entries only immediately above this line. Remember to also update
+  // tools/metrics/histograms/enums.xml.
   TOTAL_COUNT = 3,
 };
 
@@ -95,7 +102,8 @@ enum class MediaRouterUserAction {
   REPLACE_LOCAL_ROUTE = 5,
   STOP_REMOTE = 6,
 
-  // Note: Add entries only immediately above this line.
+  // Note: Add entries only immediately above this line. Remember to also update
+  // tools/metrics/histograms/enums.xml.
   TOTAL_COUNT = 7
 };
 

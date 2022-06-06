@@ -63635,6 +63635,9 @@ Called by update_use_counter_css.py.-->
   <int value="17" label="App menu and tab mirroring"/>
   <int value="18" label="App menu and desktop mirroring"/>
   <int value="19" label="(Obsolete) App menu and local file"/>
+  <int value="20" label="Sharing Hub and presentation"/>
+  <int value="21" label="Sharing Hub and tab mirroring"/>
+  <int value="22" label="Sharing Hub and desktop mirroring"/>
 </enum>
 
 <enum name="MediaRouterDialogOpenOrigin">
@@ -63643,6 +63646,8 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Contextual Menu"/>
   <int value="3" label="Page"/>
   <int value="4" label="App Menu"/>
+  <int value="5" label="System Tray"/>
+  <int value="6" label="Sharing Hub"/>
 </enum>
 
 <enum name="MediaRouterDialParseMessageResult">

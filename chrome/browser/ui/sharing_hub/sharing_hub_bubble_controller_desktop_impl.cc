@@ -26,6 +26,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "components/media_router/browser/media_router_dialog_controller.h"
+#include "components/media_router/browser/media_router_metrics.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -207,6 +209,21 @@ void SharingHubBubbleControllerDesktopImpl::OnActionSelected(
               send_tab_to_self::SendTabToSelfBubbleController::
                   CreateOrGetFromWebContents(&GetWebContents());
       send_tab_to_self_controller->ShowBubble(true);
+    } else if (command_id == IDC_ROUTE_MEDIA) {
+      media_router::MediaRouterDialogController* dialog_controller =
+          media_router::MediaRouterDialogController::GetOrCreateForWebContents(
+              browser->tab_strip_model()->GetActiveWebContents());
+      if (!dialog_controller)
+        return;
+
+      dialog_controller->ShowMediaRouterDialog(
+          media_router::MediaRouterDialogOpenOrigin::SHARING_HUB);
+
+      // TODO(crbug.com/1333335): Look into moving this metrics logging to a
+      // single location, like
+      // MediaRouterDialogController::ShowMediaRouterDialog().
+      media_router::MediaRouterMetrics::RecordMediaRouterDialogOrigin(
+          media_router::MediaRouterDialogOpenOrigin::SHARING_HUB);
     } else {
       chrome::ExecuteCommand(browser, command_id);
     }
