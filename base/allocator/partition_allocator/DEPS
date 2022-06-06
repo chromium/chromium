@@ -14,12 +14,8 @@ include_rules = [
     "+third_party/lss/linux_syscall_support.h",
 ]
 
-# These are dependencies included only from tests, which means we can tackle
-# them at a later point of time.
-#
-# CAUTION! This list can't be verified automatically and thus can easily get out
-# of date.
-include_rules += [
+specific_include_rules = {
+  ".*_(perf|unit)test\.cc": [
     "+base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
     "+base/debug/proc_maps_linux.h",
     "+base/system/sys_info.h",
@@ -30,4 +26,5 @@ include_rules += [
     "+testing/gtest/include/gtest/gtest.h",
     "+testing/gtest/include/gtest/gtest_prod.h",
     "+testing/perf/perf_result_reporter.h",
-]
+  ],
+}
