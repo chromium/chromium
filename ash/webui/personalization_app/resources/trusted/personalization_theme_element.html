@@ -51,9 +51,9 @@
   <iron-selector id="selector" selected="0"
       selected-item="{{selectedButton_}}">
     <cr-button id="lightMode" data-color-mode="LIGHT"
-        on-click="onClickColorModeButton_" role="button"
+        on-click="onClickColorModeButton_"
         aria-pressed$="[[getLightAriaPressed_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]"
-        aria-label="$i18n{ariaLabelEnableLightColorMode}">
+        aria-description="$i18n{ariaLabelEnableLightColorMode}">
       <iron-icon icon="personalization:light" aria-hidden="true"></iron-icon>
       <div class="text">$i18n{lightColorMode}</div>
     </cr-button>
@@ -61,7 +61,7 @@
         on-click="onClickColorModeButton_"
         on-keypress="onClickColorModeButton_" tabindex="-1"
         aria-pressed$="[[getDarkAriaPressed_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]"
-        aria-label="$i18n{ariaLabelEnableDarkColorMode}">
+        aria-description="$i18n{ariaLabelEnableDarkColorMode}">
       <iron-icon icon="personalization:dark" aria-hidden="true"></iron-icon>
       <div class="text">$i18n{darkColorMode}</div>
     </cr-button>
@@ -69,7 +69,7 @@
         on-click="onClickAutoModeButton_"
         on-keypress="onClickAutoModeButton_" tabindex="-1"
         aria-pressed$="[[getAutoAriaPressed_(colorModeAutoScheduleEnabled_)]]"
-        aria-label="$i18n{ariaLabelEnableAutoColorMode}">
+        aria-description="$i18n{ariaLabelEnableAutoColorMode}">
       <iron-icon icon="personalization:auto" aria-hidden="true"></iron-icon>
       <div class="text">$i18n{autoColorMode}</div>
     </cr-button>

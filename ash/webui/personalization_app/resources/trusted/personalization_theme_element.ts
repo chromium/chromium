@@ -45,8 +45,14 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
   static get properties() {
     return {
       // null indicates value is being loaded.
-      darkModeEnabled_: Boolean,
-      colorModeAutoScheduleEnabled_: Boolean,
+      darkModeEnabled_: {
+        type: Boolean,
+        value: null,
+      },
+      colorModeAutoScheduleEnabled_: {
+        type: Boolean,
+        value: null,
+      },
 
       /** The button currently highlighted by keyboard navigation. */
       selectedButton_: {
@@ -56,8 +62,8 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     };
   }
 
-  private darkModeEnabled_: boolean|null = null;
-  private colorModeAutoScheduleEnabled_: boolean|null = null;
+  private darkModeEnabled_: boolean|null;
+  private colorModeAutoScheduleEnabled_: boolean|null;
   private selectedButton_: CrButtonElement;
 
   override ready() {
@@ -117,7 +123,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         .toString();
   }
 
-  private getDarkAriaPressed_() {
+  private getDarkAriaPressed_(): string {
     //  If auto schedule mode is enabled, the system disregards whether dark
     //  mode is enabled or not. To ensure expected behavior, we show that light
     //  mode is selected only when both auto schedule mode and dark mode are
@@ -126,7 +132,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         .toString();
   }
 
-  private getAutoAriaPressed_() {
+  private getAutoAriaPressed_(): string {
     return (!!this.colorModeAutoScheduleEnabled_).toString();
   }
 
