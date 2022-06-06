@@ -3123,6 +3123,8 @@ crbug.com/1223955 external/wpt/css/css-ruby/ruby-inlinize-blocks-003.html [ Fail
 crbug.com/1223955 external/wpt/css/css-ruby/ruby-inlinize-blocks-004.html [ Failure ]
 crbug.com/1223955 external/wpt/css/css-ruby/ruby-inlinize-blocks-005.html [ Failure ]
 
+crbug.com/1333451 external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
+
 # WebRTC: Perfect Negotiation times out in Plan B. This is expected.
 crbug.com/980872 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-perfect-negotiation.https.html [ Skip Timeout ]
 
@@ -3341,7 +3343,6 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac11 ] external/wpt/html/semantics/popups/popup-light-dismiss.tentative.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/preload/preload-referrer-policy.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/preload/preload-referrer-policy.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/preload/preload-referrer-policy.html [ Skip Timeout ]
@@ -3349,13 +3350,6 @@ crbug.com/626703 [ Mac11-arm64 ] external/wpt/preload/preload-referrer-policy.ht
 crbug.com/626703 [ Mac12 ] external/wpt/preload/preload-referrer-policy.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12-arm64 ] external/wpt/preload/preload-referrer-policy.html [ Skip Timeout ]
 crbug.com/626703 [ Win ] external/wpt/preload/preload-referrer-policy.html [ Skip Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
-crbug.com/626703 [ Mac11 ] external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
-crbug.com/626703 [ Mac12 ] external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
-crbug.com/626703 [ Mac12-arm64 ] external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
-crbug.com/626703 [ Win ] external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/api/basic/request-upload.h2.any.worker.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/loading/early-hints/coep-early-hints-none-final-require-corp.h2.window.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/loading/early-hints/iframe-pdf.h2.window.html [ Timeout ]
@@ -5308,6 +5302,7 @@ crbug.com/1222729 external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN
 crbug.com/678633 external/wpt/html/browsers/history/the-location-interface/location-protocol-setter-non-broken.html [ Failure ]
 crbug.com/1317071 [ Mac ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-yes-child-no-port.sub.https.html [ Failure Timeout ]
 crbug.com/1323989 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/tentative/same-document-traversal-cross-document-traversal.html [ Pass Timeout ]
+crbug.com/1197633 [ Mac11 ] external/wpt/html/semantics/popups/popup-light-dismiss.tentative.html [ Timeout ]
 
 # Sheriff 2020-03-06
 crbug.com/1059262 virtual/threaded/http/tests/worklet/webexposed/global-interface-listing-paint-worklet.html [ Failure Pass ]
