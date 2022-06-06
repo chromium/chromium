@@ -378,26 +378,6 @@ IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, ConnectWithEnterprisePolicy) {
-  // Connection succeeds regardless of feature flag state with the enterprise
-  // policy overriding deprecation changes.
-  browser()->profile()->GetPrefs()->Set(
-      extensions::pref_names::kU2fSecurityKeyApiEnabled, base::Value(true));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(kNonOriginTrialDomain, "/empty.html")));
-  ExpectConnectSuccess();
-}
-
-IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest,
-                       SignWithEnterprisePolicyDoesNotShowPrompt) {
-  browser()->profile()->GetPrefs()->Set(
-      extensions::pref_names::kU2fSecurityKeyApiEnabled, base::Value(true));
-  GURL url = GURL(https_server_.GetURL(kNonOriginTrialDomain, "/empty.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  std::string app_id = url::Origin::Create(url).Serialize();
-  ExpectSignSuccess(app_id, PromptExpectation::kNoPrompt);
-}
-
 IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, InsecureOriginCannotConnect) {
   // Connections from insecure origins always fail.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

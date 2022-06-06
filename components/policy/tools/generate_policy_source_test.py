@@ -56,7 +56,8 @@ class PolicyGenerationTest(unittest.TestCase):
           "schema": {
               "type": "boolean"
           },
-          "supported_on": ["chrome_os:1-"],
+          "supported_on":
+          ["chrome_os:1-", "chrome.*:1-", "android:1-", "ios:1-"],
           "features": {
               "metapolicy_type": "merge",
           },
@@ -70,7 +71,8 @@ class PolicyGenerationTest(unittest.TestCase):
           "schema": {
               "type": "boolean"
           },
-          "supported_on": ["chrome_os:1-"],
+          "supported_on":
+          ["chrome_os:1-", "chrome.*:1-", "android:1-", "ios:1-"],
           "features": {
               "metapolicy_type": "precedence",
           },
@@ -158,12 +160,22 @@ class PolicyGenerationTest(unittest.TestCase):
           "tags": [],
           "caption": "ChunkTwoLastFieldStringPolicy caption",
           "desc": "ChunkTwoLastFieldStringPolicy desc"
+      }, {
+          "name": "UnsupportedPolicy",
+          "type": "string",
+          "schema": {
+              "type": "string"
+          },
+          "supported_on": [],
+          "id": 2616,
+          "tags": [],
+          "caption": "UnsupportedPolicy caption",
+          "desc": "UnsupportedPolicy desc"
       }],
       "policy_atomic_group_definitions": []
   }
 
   def setUp(self):
-    self.maxDiff = 10000
     self.chrome_major_version = 94
     self.target_platform = 'chrome_os'
     self.all_target_platforms = ['win', 'mac', 'linux', 'chromeos', 'fuchsia']
@@ -314,18 +326,17 @@ class PolicyGenerationTest(unittest.TestCase):
   def testGetMetapoliciesOfType(self):
     merge_metapolicies = generate_policy_source._GetMetapoliciesOfType(
         self.policies, "merge")
-    self.assertListEqual(["ExampleBoolMergeMetapolicy"], merge_metapolicies)
     self.assertEqual(1, len(merge_metapolicies))
+    self.assertEqual("ExampleBoolMergeMetapolicy", merge_metapolicies[0].name)
 
     precedence_metapolicies = generate_policy_source._GetMetapoliciesOfType(
         self.policies, "precedence")
-    self.assertListEqual(["ExampleBoolPrecedenceMetapolicy"],
-                         precedence_metapolicies)
     self.assertEqual(1, len(precedence_metapolicies))
+    self.assertEqual("ExampleBoolPrecedenceMetapolicy",
+                     precedence_metapolicies[0].name)
 
     invalid_metapolicies = generate_policy_source._GetMetapoliciesOfType(
         self.policies, "invalid")
-    self.assertListEqual([], invalid_metapolicies)
     self.assertEqual(0, len(invalid_metapolicies))
 
   def testWritePolicyConstantHeader(self):

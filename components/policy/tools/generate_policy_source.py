@@ -483,19 +483,26 @@ def _GetSupportedChromeUserPolicies(policies, protobuf_type):
   ]
 
 
+# Returns the policies supported by at least one platform.
+def _GetSupportedPolicies(policies):
+  return [
+      policy for policy in policies
+      if len(policy.platforms) + len(policy.future_on) > 0
+  ]
+
 #------------------ policy constants header ------------------------#
 
 
 # Return a list of all policies of type |metapolicy_type|.
 def _GetMetapoliciesOfType(policies, metapolicy_type):
   return [
-      policy.name for policy in policies
-      if policy.metapolicy_type == metapolicy_type
+      policy for policy in policies if policy.metapolicy_type == metapolicy_type
   ]
 
 
-def _WritePolicyConstantHeader(policies, policy_atomic_groups, target_platform,
-                               f, risk_tags):
+def _WritePolicyConstantHeader(all_policies, policy_atomic_groups,
+                               target_platform, f, risk_tags):
+  policies = _GetSupportedPolicies(all_policies)
   f.write('''#ifndef COMPONENTS_POLICY_POLICY_CONSTANTS_H_
 #define COMPONENTS_POLICY_POLICY_CONSTANTS_H_
 
@@ -1083,8 +1090,10 @@ def _GenerateDefaultValue(value):
   return [], None
 
 
-def _WritePolicyConstantSource(policies, policy_atomic_groups, target_platform,
-                               f, risk_tags):
+def _WritePolicyConstantSource(all_policies, policy_atomic_groups,
+                               target_platform, f, risk_tags):
+  policies = _GetSupportedPolicies(all_policies)
+  policy_names = [policy.name for policy in policies]
   f.write('''#include "components/policy/policy_constants.h"
 
 #include <algorithm>
@@ -1285,7 +1294,8 @@ void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {
   for group in policy_atomic_groups:
     f.write('const char* const %s[] = {' % (group.name))
     for policy in group.policies:
-      f.write('key::k%s, ' % (policy))
+      if policy in policy_names:
+        f.write('key::k%s, ' % (policy))
     f.write('nullptr};\n')
   f.write('\n}  // namespace\n')
   f.write('\n}  // namespace group\n\n')
@@ -1308,7 +1318,7 @@ void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {
                                               METAPOLICY_TYPE['merge'])
   f.write('const char* const kMerge[%s] = {\n' % len(merge_metapolicies))
   for metapolicy in merge_metapolicies:
-    f.write('  key::k%s,\n' % metapolicy)
+    f.write('  key::k%s,\n' % metapolicy.name)
   f.write('};\n\n')
 
   # Populate precedence metapolicy array.
@@ -1317,7 +1327,7 @@ void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {
   f.write('const char* const kPrecedence[%s] = {\n' %
           len(precedence_metapolicies))
   for metapolicy in precedence_metapolicies:
-    f.write('  key::k%s,\n' % metapolicy)
+    f.write('  key::k%s,\n' % metapolicy.name)
   f.write('};\n\n')
   f.write('}  // namespace metapolicy\n\n')
 
