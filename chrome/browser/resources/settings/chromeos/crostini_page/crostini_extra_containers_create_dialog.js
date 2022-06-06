@@ -180,9 +180,9 @@ class ExtraContainersCreateDialog extends PolymerElement {
   }
 
   /** @private */
-  onAnsiblePlaybookUploadClick_() {
+  async onAnsiblePlaybookUploadClick_() {
     this.$.preconfiguredContainersInput.value =
-        CrostiniBrowserProxyImpl.getInstance().applyAnsiblePlaybook();
+        await CrostiniBrowserProxyImpl.getInstance().applyAnsiblePlaybook();
   }
 
   /** @private */
