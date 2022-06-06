@@ -293,7 +293,7 @@ TEST_F(AXVirtualViewTest, ReorderingVirtualChildren) {
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_2));
   ASSERT_EQ(2, virtual_label_->GetChildCount());
 
-  virtual_label_->ReorderChildView(virtual_child_1, -1);
+  virtual_label_->ReorderChildView(virtual_child_1, 100);
   ASSERT_EQ(2, virtual_label_->GetChildCount());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_2->GetParent());
   ASSERT_NE(nullptr, virtual_label_->ChildAtIndex(0));
@@ -363,11 +363,11 @@ TEST_F(AXVirtualViewTest, GetIndexOfVirtualChild) {
   virtual_child_2->AddChildView(base::WrapUnique(virtual_child_3));
   ASSERT_EQ(1, virtual_child_2->GetChildCount());
 
-  EXPECT_EQ(-1, virtual_label_->GetIndexOf(virtual_label_));
-  EXPECT_EQ(0, virtual_label_->GetIndexOf(virtual_child_1));
-  EXPECT_EQ(1, virtual_label_->GetIndexOf(virtual_child_2));
-  EXPECT_EQ(-1, virtual_label_->GetIndexOf(virtual_child_3));
-  EXPECT_EQ(0, virtual_child_2->GetIndexOf(virtual_child_3));
+  EXPECT_FALSE(virtual_label_->GetIndexOf(virtual_label_).has_value());
+  EXPECT_EQ(0u, virtual_label_->GetIndexOf(virtual_child_1).value());
+  EXPECT_EQ(1u, virtual_label_->GetIndexOf(virtual_child_2).value());
+  EXPECT_FALSE(virtual_label_->GetIndexOf(virtual_child_3).has_value());
+  EXPECT_EQ(0u, virtual_child_2->GetIndexOf(virtual_child_3).value());
 
   virtual_label_->RemoveAllChildViews();
   ASSERT_EQ(0, virtual_label_->GetChildCount());

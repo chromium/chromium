@@ -539,8 +539,7 @@ void TreeView::TreeNodesAdded(TreeModel* model,
     parent_node->Add(std::move(child), i);
     DCHECK_LE(static_cast<int>(i),
               parent_node->accessibility_view()->GetChildCount());
-    parent_node->accessibility_view()->AddChildViewAt(std::move(ax_view),
-                                                      static_cast<int>(i));
+    parent_node->accessibility_view()->AddChildViewAt(std::move(ax_view), i);
   }
   if (IsExpanded(parent)) {
     NotifyAccessibilityEvent(ax::mojom::Event::kRowCountChanged, true);
@@ -1229,8 +1228,8 @@ TreeView::InternalNode* TreeView::GetInternalNodeForVirtualView(
   DCHECK(parent_internal_node->loaded_children());
   AXVirtualView* parent_ax_view = parent_internal_node->accessibility_view();
   DCHECK(parent_ax_view);
-  size_t index = parent_ax_view->GetIndexOf(ax_view);
-  return parent_internal_node->children()[index].get();
+  auto index = parent_ax_view->GetIndexOf(ax_view);
+  return parent_internal_node->children()[index.value()].get();
 }
 
 gfx::Rect TreeView::GetBoundsForNode(InternalNode* node) {

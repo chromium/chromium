@@ -771,9 +771,10 @@ absl::optional<int> ViewAXPlatformNodeDelegate::GetPosInSet() const {
   if (found_view == views_in_group.end())
     return absl::nullopt;
 
-  int posInSet = std::distance(views_in_group.begin(), found_view);
-  // posInSet is zero-based; users expect one-based, so increment.
-  return ++posInSet;
+  int pos_in_set = base::checked_cast<int>(
+      std::distance(views_in_group.begin(), found_view));
+  // pos_in_set is zero-based; users expect one-based, so increment.
+  return ++pos_in_set;
 }
 
 absl::optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {

@@ -1526,11 +1526,11 @@ std::unique_ptr<AXVirtualView> TableView::CreateCellAccessibilityView(
 
 void TableView::PopulateAccessibilityRowData(AXVirtualView* ax_row,
                                              ui::AXNodeData* data) {
-  int ax_index = GetViewAccessibility().GetIndexOf(ax_row);
-  DCHECK_GE(ax_index, 0);
+  auto ax_index = GetViewAccessibility().GetIndexOf(ax_row);
+  DCHECK(ax_index.has_value());
 
-  int row_index = ax_index - (header_ ? 1 : 0);
-  int model_index = ViewToModel(row_index);
+  size_t row_index = ax_index.value() - (header_ ? 1 : 0);
+  int model_index = ViewToModel(static_cast<int>(row_index));
   DCHECK_GE(model_index, 0);
 
   // When navigating using up / down cursor keys on the Mac, we read the
@@ -1553,23 +1553,23 @@ void TableView::PopulateAccessibilityCellData(AXVirtualView* ax_cell,
   AXVirtualView* ax_row = ax_cell->virtual_parent_view();
   DCHECK(ax_row);
 
-  int ax_index = GetViewAccessibility().GetIndexOf(ax_row);
-  DCHECK_GE(ax_index, 0);
+  auto ax_index = GetViewAccessibility().GetIndexOf(ax_row);
+  DCHECK(ax_index.has_value());
 
-  int row_index = ax_index - (header_ ? 1 : 0);
-  int column_index = ax_row->GetIndexOf(ax_cell);
-  DCHECK_GE(column_index, 0);
+  size_t row_index = ax_index.value() - (header_ ? 1 : 0);
+  auto column_index = ax_row->GetIndexOf(ax_cell);
+  DCHECK(column_index.has_value());
 
-  int model_index = ViewToModel(row_index);
+  int model_index = ViewToModel(static_cast<int>(row_index));
   DCHECK_GE(model_index, 0);
 
-  gfx::Rect cell_bounds = GetCellBounds(row_index, column_index);
+  gfx::Rect cell_bounds = GetCellBounds(row_index, column_index.value());
 
   if (!GetVisibleBounds().Intersects(cell_bounds))
     data->AddState(ax::mojom::State::kInvisible);
 
   if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell &&
-      static_cast<const int>(column_index) == GetActiveVisibleColumnIndex()) {
+      static_cast<int>(column_index.value()) == GetActiveVisibleColumnIndex()) {
     if (selection_model().IsSelected(model_index))
       data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
   }
@@ -1577,8 +1577,8 @@ void TableView::PopulateAccessibilityCellData(AXVirtualView* ax_cell,
   // Set the cell's value since it changes dynamically.
   std::u16string current_name = base::UTF8ToUTF16(
       data->GetStringAttribute(ax::mojom::StringAttribute::kName));
-  std::u16string new_name =
-      model()->GetText(model_index, GetVisibleColumn(column_index).column.id);
+  std::u16string new_name = model()->GetText(
+      model_index, GetVisibleColumn(column_index.value()).column.id);
   data->SetName(new_name);
   if (current_name != new_name) {
     ui::AXNodeData& cell_data = ax_cell->GetCustomData();

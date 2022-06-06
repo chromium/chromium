@@ -199,7 +199,7 @@ class VIEWS_EXPORT ViewAccessibility {
   // Adds |virtual_view| as a child of this View at an index.
   // We take ownership of our virtual children.
   void AddVirtualChildViewAt(std::unique_ptr<AXVirtualView> virtual_view,
-                             int index);
+                             size_t index);
 
   // Removes |virtual_view| from this View. The virtual view's parent will
   // change to nullptr. Hands ownership back to the caller.
@@ -216,9 +216,9 @@ class VIEWS_EXPORT ViewAccessibility {
   // View, even as an indirect descendant.
   bool Contains(const AXVirtualView* virtual_view) const;
 
-  // Returns the index of |virtual_view|, or -1 if |virtual_view| is not a child
-  // of this View.
-  int GetIndexOf(const AXVirtualView* virtual_view) const;
+  // Returns the index of |virtual_view|, or nullopt if |virtual_view| is not a
+  // child of this View.
+  absl::optional<size_t> GetIndexOf(const AXVirtualView* virtual_view) const;
 
   // Returns the native accessibility object associated with the AXVirtualView
   // descendant that is currently focused. If no virtual descendants are
