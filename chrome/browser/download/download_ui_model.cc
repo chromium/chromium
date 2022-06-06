@@ -953,6 +953,7 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete() const {
                  l10n_util::GetStringUTF16(
                      IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT))
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertMediumSeverity)
+          .AddPrimaryButton(DownloadCommands::Command::DISCARD)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
               DownloadCommands::Command::KEEP,
