@@ -711,6 +711,7 @@ source_set("browser_tests") {
     "//build:chromeos_buildflags",
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/system_web_apps/types:types",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications/extensions",

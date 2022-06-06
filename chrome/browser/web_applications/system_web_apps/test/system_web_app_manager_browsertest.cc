@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 
 #include <string>
@@ -1147,7 +1149,7 @@ class SystemWebAppManagerInstallAllAppsBrowserTest
 // Technically speaking, this test can merge into PRE_Upgrade if the
 // aforementioned crbug is fixed.
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
-                       WebAppProtoEntryDefined) {
+                       BasicConsistencyCheck) {
   // Wait for apps to install before performing assertions, otherwise the test
   // might flake. See https://crbug.com/1286600#c6.
   WaitForSystemAppsSynchronized();
@@ -1155,14 +1157,70 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
   const auto& app_map = GetManager().system_app_delegates();
   ASSERT_GT(app_map.size(), 0U);
 
-  // Check all system app types has a corresponding SystemWebAppDataProto entry
-  // defined.
   for (const auto& type_and_info : app_map) {
+    // Check all system app types has a corresponding SystemWebAppDataProto
+    // entry defined.
     EXPECT_TRUE(SystemWebAppDataProto_SystemWebAppType_IsValid(
         static_cast<ash::SystemWebAppDataProto_SystemWebAppType>(
             type_and_info.first)))
         << "Please make sure you have added a corresponding entry to "
            "SystemWebAppDataProto when adding a new System Web App.";
+
+    // Check app's install_url and start_url are from the same origin.
+    //
+    // TODO(https://crbug.com/1111171): Include OS Settings in this check.
+    //
+    // OS Settings uses a different install_url origin (by mistake) which are
+    // persisted to disk. We can't fix it until the above crbug is fixed.
+    // Without fixing the above bug, non-fresh profiles will run into
+    // https://crbug.com/1220354.
+    if (type_and_info.first != ash::SystemWebAppType::SETTINGS) {
+      EXPECT_TRUE(url::IsSameOriginWith(
+          type_and_info.second->GetInstallUrl(),
+          type_and_info.second->GetWebAppInfo()->start_url));
+    }
+  }
+
+  // Check each SWA app has their own unique origin (i.e. doesn't share origin
+  // with a different app).
+  std::set<url::Origin> install_url_origins;
+  std::set<url::Origin> start_url_origins;
+  for (const auto& type_and_info : app_map) {
+    auto install_url_origin =
+        url::Origin::Create(type_and_info.second->GetInstallUrl());
+    EXPECT_EQ(0, install_url_origins.count(install_url_origin))
+        << "System web app's install_url origin should be unique.";
+    install_url_origins.insert(install_url_origin);
+
+    auto start_url_origin =
+        url::Origin::Create(type_and_info.second->GetWebAppInfo()->start_url);
+    EXPECT_EQ(0, start_url_origins.count(start_url_origin))
+        << "System web app's start_url origin should be unique.";
+    start_url_origins.insert(start_url_origin);
+  }
+
+  // Check apps (other than Terminal, which is published by its own App
+  // publisher) are exposed in AppService.
+  for (const auto& type_and_info : app_map) {
+    if (type_and_info.first == ash::SystemWebAppType::TERMINAL)
+      continue;
+
+    absl::optional<std::string> app_id =
+        GetManager().GetAppIdForSystemApp(type_and_info.first);
+    EXPECT_TRUE(app_id);
+
+    bool app_found = false;
+    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+        ->AppRegistryCache()
+        .ForOneApp(*app_id, [&](const apps::AppUpdate& app) {
+          app_found = true;
+          EXPECT_EQ(
+              app.Name(),
+              base::UTF16ToUTF8(type_and_info.second->GetWebAppInfo()->title));
+        });
+    EXPECT_TRUE(app_found) << "System Web App "
+                           << type_and_info.second->GetInternalName()
+                           << " can't be found in AppService after install.";
   }
 }
 
