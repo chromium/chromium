@@ -50,9 +50,11 @@ class BuilderList(object):
                 by test-results.appspot.com API."
             "has_webdriver_tests": Whether webdriver_tests_suite runs on this builder.
 
-        Possible refactoring note: Potentially, it might make sense to use
-        blinkpy.common.net.results_fetcher.Builder and add port_name and
-        specifiers properties to that class.
+        Possible refactoring note:
+            Most of these methods have `builder_name` as the first arg to look
+            into the builder registry. It might make more sense for
+            `BuilderList` to vend `Builder` named tuples with `port_name`,
+            `specifiers`, and other properties that are more ergonomic to use.
         """
         self._builders = builders_dict
         for builder in builders_dict:

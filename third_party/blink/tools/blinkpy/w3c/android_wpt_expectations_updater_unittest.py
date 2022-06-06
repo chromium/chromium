@@ -55,9 +55,12 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
         host.builders = BuilderList({
             'MOCK Android Weblayer - Pie': {
                 'port_name': 'test-android-pie',
-                'specifiers': ['Precise', 'Release',
-                               'anDroid', 'android_Weblayer'],
+                'specifiers':
+                ['Precise', 'Release', 'anDroid', 'android_Weblayer'],
                 'is_try_builder': True,
+                'steps': {
+                    'weblayer_shell_wpt (with patch)': {},
+                },
             },
         })
 
