@@ -79,7 +79,10 @@ QuickAnswersControllerImpl::QuickAnswersControllerImpl()
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-QuickAnswersControllerImpl::~QuickAnswersControllerImpl() = default;
+QuickAnswersControllerImpl::~QuickAnswersControllerImpl() {
+  quick_answers_client_.reset();
+  quick_answers_state_.reset();
+}
 
 void QuickAnswersControllerImpl::SetClient(
     std::unique_ptr<QuickAnswersClient> client) {
