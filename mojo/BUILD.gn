@@ -46,15 +46,17 @@ test("mojo_unittests") {
 }
 
 test("mojo_perftests") {
+  sources = [ "//mojo/core/handle_table_perftest.cc" ]
   deps = [
     "//mojo/core/test:run_all_perftests",
     "//mojo/core/test:test_support",
     "//mojo/public/c/system/tests:perftests",
     "//mojo/public/cpp/bindings/tests:perftests",
+    "//testing/perf",
   ]
 
   if (!is_ios) {
-    sources = [ "//mojo/core/message_pipe_perftest.cc" ]
+    sources += [ "//mojo/core/message_pipe_perftest.cc" ]
 
     deps += [
       "//base",
