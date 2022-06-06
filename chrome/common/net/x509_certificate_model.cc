@@ -1445,6 +1445,10 @@ absl::optional<std::string> X509CertificateModel::ProcessExtensionData(
       extension.oid == net::der::Input(kNetscapeLostPasswordURLOid)) {
     return ProcessIA5String(extension.value);
   }
+  // TODO(https://crbug.com/853550): SCT
+  // TODO(mattm): name constraints
+  // TODO(mattm): policy mappings
+  // TODO(mattm): policy constraints
   return ProcessRawBytes(extension.value);
 }
 
