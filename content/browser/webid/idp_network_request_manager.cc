@@ -87,7 +87,9 @@ constexpr char kClientIdKey[] = "client_id";
 constexpr char kRevokeAccountKey[] = "account_id";
 constexpr char kRevokeRequestKey[] = "request";
 
+// Body content types.
 constexpr char kRequestBodyContentType[] = "application/x-www-form-urlencoded";
+constexpr char kResponseBodyContentType[] = "application/json";
 
 // 1 MiB is an arbitrary upper bound that should account for any reasonable
 // response size that is a part of this protocol.
@@ -162,7 +164,7 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
   // https://crbug.com/1155312.
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                      kRequestBodyContentType);
+                                      kResponseBodyContentType);
 
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
@@ -921,7 +923,7 @@ IdpNetworkRequestManager::CreateUncredentialedUrlLoader(
   resource_request->url = target_url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                      kRequestBodyContentType);
+                                      kResponseBodyContentType);
   AddCsrfHeader(resource_request.get());
   if (send_referrer) {
     resource_request->referrer = relying_party_origin_.GetURL();
