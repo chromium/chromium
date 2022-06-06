@@ -177,8 +177,8 @@ interface PageHandler {
   // Requests to remove all visits to the specified URLs in the specified
   // timespan in `visits`. This includes the less recent visits to the same set
   // of URLs whose information is preserved in `visits`. The returned Promise
-  // indicates if the request was accepted by the browser.
-  RemoveVisits(array<URLVisit> visits) => (bool accepted);
+  // resolves with whether the request succeeded in the History backend layer.
+  RemoveVisits(array<URLVisit> visits) => (bool success);
 
   // Requests to open the URLs in `visits` in a new tab group.
   OpenVisitUrlsInTabGroup(array<URLVisit> visits);

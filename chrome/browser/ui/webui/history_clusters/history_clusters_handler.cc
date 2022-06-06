@@ -259,14 +259,14 @@ void HistoryClustersHandler::RemoveVisits(
   if (!profile_->GetPrefs()->GetBoolean(
           ::prefs::kAllowDeletingBrowserHistory) ||
       visits.empty()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
-  // If there's already a pending deletion, we have to fail here, because
+  // If there's a pending request for deletion, we have to fail here, because
   // `BrowsingHistoryService` only supports one deletion request at a time.
-  if (!pending_deletion_.empty()) {
-    std::move(callback).Run(false);
+  if (!pending_remove_visits_callback_.is_null()) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -285,11 +285,12 @@ void HistoryClustersHandler::RemoveVisits(
     }
   }
 
-  // Transfer the visits to be deleted to the pending member variable.
-  pending_deletion_ = std::move(visits);
+  // Transfer the visits pending deletion and the respective callback to member
+  // variables.
+  pending_remove_visits_ = std::move(visits);
+  pending_remove_visits_callback_ = std::move(callback);
 
   browsing_history_service_->RemoveVisits(items_to_remove);
-  std::move(callback).Run(true);
 }
 
 void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
@@ -340,14 +341,15 @@ void HistoryClustersHandler::OnDebugMessage(const std::string& message) {
 }
 
 void HistoryClustersHandler::OnRemoveVisitsComplete() {
-  page_->OnVisitsRemoved(std::move(pending_deletion_));
-  pending_deletion_.clear();
+  DCHECK(!pending_remove_visits_callback_.is_null());
+  std::move(pending_remove_visits_callback_).Run(/*success=*/true);
+  // Notify the page of the successfully deleted visits to update the UI.
+  page_->OnVisitsRemoved(std::move(pending_remove_visits_));
 }
 
 void HistoryClustersHandler::OnRemoveVisitsFailed() {
-  // The WebUI page doesn't expect or need a notification if the deletion
-  // failed at the History backend layer.
-  pending_deletion_.clear();
+  DCHECK(!pending_remove_visits_callback_.is_null());
+  std::move(pending_remove_visits_callback_).Run(/*success=*/false);
 }
 
 Profile* HistoryClustersHandler::GetProfile() {

@@ -183,12 +183,12 @@ export class HistoryClustersElement extends PolymerElement {
   }
 
   private onRemoveButtonClick_() {
-    this.pageHandler_.removeVisits(this.visitsToBeRemoved_)
-        .then(({accepted}) => {
-          if (!accepted) {
-            this.visitsToBeRemoved_ = [];
-          }
-        });
+    this.pageHandler_.removeVisits(this.visitsToBeRemoved_).then(() => {
+      // The returned promise resolves with whether the request succeeded in the
+      // browser. That value may be used to show a toast but is ignored for now.
+      // Allow remove requests again.
+      this.visitsToBeRemoved_ = [];
+    });
     this.$.confirmationDialog.get().close();
   }
 
@@ -336,15 +336,15 @@ export class HistoryClustersElement extends PolymerElement {
   }
 
   /**
-   * Called when the last accepted request to browser to remove visits succeeds.
+   * Called with the original remove params when the last accepted request to
+   * browser to remove visits succeeds.
    */
-  private onVisitsRemoved_() {
+  private onVisitsRemoved_(removedVisits: Array<URLVisit>) {
     // Show the confirmation toast once done removing one visit only; since a
     // confirmation dialog was not shown prior to the action.
-    if (this.visitsToBeRemoved_.length === 1) {
+    if (removedVisits.length === 1) {
       this.$.confirmationToast.get().show();
     }
-    this.visitsToBeRemoved_ = [];
   }
 }
 

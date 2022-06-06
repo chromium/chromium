@@ -108,10 +108,11 @@ class HistoryClustersHandler : public mojom::PageHandler,
   // querying with HistoryClustersService.
   std::unique_ptr<history::BrowsingHistoryService> browsing_history_service_;
 
-  // Holds the visits we requested to be deleted. We can only handle one
-  // deletion request at a time, and that's a limitation built into
-  // `BrowsingHistoryService`.
-  std::vector<mojom::URLVisitPtr> pending_deletion_;
+  // The following variables hold the visits requested to be deleted and the
+  // callback for the respective request. `BrowsingHistoryService` can only
+  // handle one deletion request at a time.
+  std::vector<mojom::URLVisitPtr> pending_remove_visits_;
+  RemoveVisitsCallback pending_remove_visits_callback_;
 
   base::WeakPtrFactory<HistoryClustersHandler> weak_ptr_factory_{this};
 };
