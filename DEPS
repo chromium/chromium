@@ -4222,16 +4222,6 @@ hooks = [
     ],
   },
 
-  # Download telemetry_gpu_integration_test binary dependencies
-  {
-    'name': 'checkout_telemetry_gpu_integration_test_binary_dependencies',
-    'condition': 'host_os == "linux"',
-    'pattern': '.',
-    'action': [ 'python3',
-                'src/content/test/gpu/gpu_tests/fetch_gpu_integration_test_dependencies.py',
-    ],
-  },
-
   # Download test data for Maps telemetry_gpu_integration_test.
   {
     'name': 'maps_perf_test_load_dataset',
