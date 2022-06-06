@@ -13,6 +13,7 @@ import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,17 +23,52 @@ import org.chromium.net.impl.CronetLogger.CronetEngineBuilderInfo;
 import org.chromium.net.impl.CronetLogger.CronetVersion;
 
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Test logging functionality.
  */
 @RunWith(JUnit4.class)
-public final class CronetLoggingTest {
+public final class CronetLoggerTest {
+    private TestLogger mTestLogger;
     private Context mContext;
+
+    final class TestLogger extends CronetLogger {
+        private AtomicInteger mCallsToLogCronetEngineCreation = new AtomicInteger();
+        private AtomicInteger mCallsToLogCronetTrafficInfo = new AtomicInteger();
+
+        @Override
+        public void logCronetEngineCreation(int cronetEngineId,
+                CronetEngineBuilderInfo engineBuilderInfo, CronetVersion version,
+                CronetSource source) {
+            mCallsToLogCronetEngineCreation.incrementAndGet();
+        }
+
+        @Override
+        public void logCronetTrafficInfo(int cronetEngineId, CronetTrafficInfo trafficInfo) {
+            mCallsToLogCronetTrafficInfo.incrementAndGet();
+        }
+
+        public int callsToLogCronetTrafficInfo() {
+            return mCallsToLogCronetTrafficInfo.get();
+        }
+
+        public int callsToLogCronetEngineCreation() {
+            return mCallsToLogCronetEngineCreation.get();
+        }
+    }
 
     @Before
     public void setUp() {
+        mTestLogger = new TestLogger();
+        CronetLoggerFactory.setLoggerForTesting(mTestLogger);
         mContext = InstrumentationRegistry.getTargetContext();
+    }
+
+    @After
+    public void tearDown() {
+        mTestLogger = null;
+        CronetLoggerFactory.setLoggerForTesting(null);
     }
 
     @Test
@@ -68,5 +104,21 @@ public final class CronetLoggingTest {
         assertEquals(parsedVersion.getMinorVersion(), minor);
         assertEquals(parsedVersion.getBuildVersion(), build);
         assertEquals(parsedVersion.getPatchVersion(), patch);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetLoggerForTesting() {
+        CronetLogger logger = CronetLoggerFactory.createLogger();
+        assertEquals(mTestLogger.callsToLogCronetTrafficInfo(), 0);
+        assertEquals(mTestLogger.callsToLogCronetEngineCreation(), 0);
+
+        // We don't care about what's being logged.
+        logger.logCronetTrafficInfo(0, null);
+        assertEquals(mTestLogger.callsToLogCronetTrafficInfo(), 1);
+        assertEquals(mTestLogger.callsToLogCronetEngineCreation(), 0);
+        logger.logCronetEngineCreation(0, null, null, null);
+        assertEquals(mTestLogger.callsToLogCronetTrafficInfo(), 1);
+        assertEquals(mTestLogger.callsToLogCronetEngineCreation(), 1);
     }
 }
