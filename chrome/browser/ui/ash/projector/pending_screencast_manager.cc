@@ -210,15 +210,6 @@ const std::string BuildRequestBody(
   return request_body;
 }
 
-void OnGetRequestBody(const std::string& file_id,
-                      const std::string& request_body) {
-  // TODO(b/221078840): Send drive patch request to update
-  // indexable text if request_body is not empty.
-  if (request_body.empty()) {
-    LOG(ERROR) << "Failed to parse the reqeust body for file id: " << file_id;
-  }
-}
-
 // Returns a valid pending screencast from `container_absolute_path`.  A valid
 // screencast should have 1 media file and 1 metadata file.
 absl::optional<ash::PendingScreencast> GetPendingScreencast(
@@ -481,6 +472,12 @@ void PendingScreencastManager::SetOnGetRequestBodyCallbackForTest(
     OnGetRequestBodyCallback callback) {
   on_get_request_body_ = std::move(callback);
 }
+
+void PendingScreencastManager::SetProjectorXhrSenderForTest(
+    std::unique_ptr<ash::ProjectorXhrSender> xhr_sender) {
+  xhr_sender_ = std::move(xhr_sender);
+}
+
 void PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished(
     const base::TimeTicks task_start_tick,
     const ash::PendingScreencastSet& screencasts) {
@@ -580,5 +577,31 @@ void PendingScreencastManager::OnGetFileId(
       base::BindOnce(&BuildRequestBody, local_file_path),
       on_get_request_body_
           ? base::BindOnce(std::move(on_get_request_body_), file_id)
-          : base::BindOnce(&OnGetRequestBody, file_id));
+          : base::BindOnce(&PendingScreencastManager::SendDrivePatchRequest,
+                           weak_ptr_factory_.GetWeakPtr(), file_id));
+}
+
+void PendingScreencastManager::SendDrivePatchRequest(
+    const std::string& file_id,
+    const std::string& request_body) {
+  DCHECK(!file_id.empty());
+  if (request_body.empty())
+    return;
+
+  if (!xhr_sender_) {
+    xhr_sender_ = std::make_unique<ash::ProjectorXhrSender>(
+        ash::ProjectorAppClient::Get()->GetUrlLoaderFactory());
+  }
+
+  xhr_sender_->Send(
+      GURL(base::StrCat({ash::kDriveV3BaseUrl, file_id})),
+      ash::kRequestMethodPatch, request_body,
+      /*use_credentials=*/false,
+      base::BindOnce([](bool success, const std::string& response_body,
+                        const std::string& error) {
+        if (!success) {
+          LOG(ERROR) << "Failed to send Drive patch request for file."
+                     << " Error: " << error;
+        }
+      }));
 }

@@ -7,6 +7,7 @@
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "ash/webui/projector_app/test/mock_xhr_sender.h"
 #include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -32,6 +33,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 
@@ -688,7 +690,8 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
       /*count=*/2);
 }
 
-IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, OnGetRequestBody) {
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
+                       UpdateIndexableTextSuccess) {
   // Prepares a ".projector" file and it's metadata:
   const std::string kProjectorFileContent =
       "{\"captionLanguage\":\"en\",\"captions\":[{\"endOffset\":1260,"
@@ -704,16 +707,22 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, OnGetRequestBody) {
 
   // Sets get file id callback:
   base::RunLoop run_loop;
-  pending_screencast_manager()->SetOnGetRequestBodyCallbackForTest(
-      base::BindLambdaForTesting(
-          [&](const std::string& file_id, const std::string& request_body) {
+  network::TestURLLoaderFactory test_url_loader_factory;
+  pending_screencast_manager()->SetProjectorXhrSenderForTest(
+      std::make_unique<MockXhrSender>(
+          base::BindLambdaForTesting([&](const GURL& url,
+                                         const std::string& method,
+                                         const std::string& request_body) {
             EXPECT_EQ(
                 "{\"contentHints\":{\"indexableText\":\" metadata file. "
                 "another sentence.\"}}",
                 request_body);
-            EXPECT_EQ("fileId", file_id);
+            EXPECT_EQ("PATCH", method);
+            EXPECT_EQ(GURL("https://www.googleapis.com/drive/v3/files/fileId"),
+                      url);
             run_loop.Quit();
-          }));
+          }),
+          &test_url_loader_factory));
 
   // Mocks a metadata file finishes upload:
   MockSyncFileCompleted(kDefaultMetadataFilePath, kTestMetadataFileBytes);
@@ -722,14 +731,14 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, OnGetRequestBody) {
 }
 
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
-                       GetFileIdFailByFileNotExist) {
+                       UpdateIndexableTextFailByEmptyFileId) {
   // Does not create ".projector", which leads to drive::FILE_ERROR_NOT_FOUND.
 
   TestGetFileIdFailed();
 }
 
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
-                       GetFileIdFailByEmptyAlternateUrl) {
+                       UpdateIndexableTextFailByEmptyAlternateUrl) {
   CreateFileInDriveFsFolder(kDefaultMetadataFilePath, kTestMetadataFileBytes);
   // Sets empty alternate url in metadata, which could happen when metadata is
   // not fully populated.
@@ -742,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
-                       GetFileIdFailByInCorrectAlternateUrl) {
+                       UpdateIndexableTextFailByInCorrectAlternateUrl) {
   CreateFileInDriveFsFolder(kDefaultMetadataFilePath, kTestMetadataFileBytes);
   // Sets incorrect alternate url in metadata.
   GetFakeDriveFs()->SetMetadata(base::FilePath(kDefaultMetadataFilePath),

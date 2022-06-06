@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_UI_ASH_PROJECTOR_PENDING_SCREENCAST_MANAGER_H_
 #define CHROME_BROWSER_UI_ASH_PROJECTOR_PENDING_SCREENCAST_MANAGER_H_
 
+#include <memory>
+
 #include "ash/components/drivefs/drivefs_host.h"
 #include "ash/components/drivefs/drivefs_host_observer.h"
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -69,6 +72,8 @@ class PendingScreencastManager
       base::OnceCallback<void(const std::string& file_id,
                               const std::string& request_body)>;
   void SetOnGetRequestBodyCallbackForTest(OnGetRequestBodyCallback callback);
+  void SetProjectorXhrSenderForTest(
+      std::unique_ptr<ash::ProjectorXhrSender> xhr_sender);
 
  private:
   // Updates `pending_screencast_cache_` and notifies pending screencast change.
@@ -92,6 +97,11 @@ class PendingScreencastManager
 
   void OnGetFileId(const base::FilePath& local_file_path,
                    const std::string& file_id);
+
+  // Sends a patch request to patch file metadata. `file_id` is the Drive server
+  // side file id.
+  void SendDrivePatchRequest(const std::string& file_id,
+                             const std::string& request_body);
 
   // TODO(b/221902328): Fix the case that user might delete files through file
   // app.
@@ -132,6 +142,10 @@ class PendingScreencastManager
   // empty screencasts set or no `pending_screencast_change_callback_` invoked
   // in the current ChromeOS session.
   base::TimeTicks last_pending_screencast_change_tick_;
+
+  // Not available if user never uploads a screencast during current ChromeOS
+  // session.
+  std::unique_ptr<ash::ProjectorXhrSender> xhr_sender_;
 
   // Updates indexable text containing a lot of async steps. These callbacks are
   // used in tests to verify the task quit correctly while error happens.

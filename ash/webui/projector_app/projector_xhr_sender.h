@@ -27,6 +27,9 @@ class URLLoaderFactory;
 
 namespace ash {
 
+constexpr char kDriveV3BaseUrl[] = "https://www.googleapis.com/drive/v3/files/";
+constexpr char kRequestMethodPatch[] = "PATCH";
+
 /**
  * Projector XHR sender. Used by Projector App to send XHR requests.
  */
@@ -44,14 +47,14 @@ class ProjectorXhrSender {
       network::mojom::URLLoaderFactory* url_loader_factory);
   ProjectorXhrSender(const ProjectorXhrSender&) = delete;
   ProjectorXhrSender& operator=(const ProjectorXhrSender&) = delete;
-  ~ProjectorXhrSender();
+  virtual ~ProjectorXhrSender();
 
   // Send XHR request and trigger the callback when complete.
-  void Send(const GURL& url,
-            const std::string& method,
-            const std::string& request_body,
-            bool use_credentials,
-            SendRequestCallback callback);
+  virtual void Send(const GURL& url,
+                    const std::string& method,
+                    const std::string& request_body,
+                    bool use_credentials,
+                    SendRequestCallback callback);
 
  private:
   // Triggered when an OAuth token fetch completed.

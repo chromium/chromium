@@ -56,6 +56,8 @@ source_set("test_support") {
   sources = [
     "test/mock_app_client.cc",
     "test/mock_app_client.h",
+    "test/mock_xhr_sender.cc",
+    "test/mock_xhr_sender.h",
   ]
 
   public_deps = [
