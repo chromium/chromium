@@ -109,6 +109,20 @@ void LayoutNGSVGForeignObject::UpdateBlockLayout(bool relayout_children) {
   // SetRect() will clamp negative width/height to zero.
   viewport_.SetRect(origin.x(), origin.y(), size.x(), size.y());
 
+  // A generated physical fragment should have the size for viewport_.
+  // This is necessary for external/wpt/inert/inert-on-non-html.html.
+  // See FullyClipsContents() in fully_clipped_state_stack.cc.
+  const float zoom = style.EffectiveZoom();
+  const LayoutUnit zoomed_width = LayoutUnit(viewport_.width() * zoom);
+  const LayoutUnit zoomed_height = LayoutUnit(viewport_.height() * zoom);
+  if (style.IsHorizontalWritingMode()) {
+    SetOverrideLogicalWidth(zoomed_width);
+    SetOverrideLogicalHeight(zoomed_height);
+  } else {
+    SetOverrideLogicalWidth(zoomed_height);
+    SetOverrideLogicalHeight(zoomed_width);
+  }
+
   // Use the zoomed version of the viewport as the location, because we will
   // interpose a transform that "unzooms" the effective zoom to let the children
   // of the foreign object exist with their specified zoom.
