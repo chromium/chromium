@@ -50,7 +50,7 @@ IPEndPoint GetMdnsReceiveEndPoint(AddressFamily address_family) {
 // CrOS as described in crbug.com/931916, and the following is a temporary
 // mitigation to reconcile the two issues. Remove this after closing
 // crbug.com/899310.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   // With Windows, binding to a mulitcast group address is not allowed.
   // Multicast messages will be received appropriate to the multicast groups the
   // socket has joined. Sockets intending to receive multicast messages should
@@ -66,12 +66,14 @@ IPEndPoint GetMdnsReceiveEndPoint(AddressFamily address_family) {
       NOTREACHED();
       return IPEndPoint();
   }
-#else   // !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)) || BUILDFLAG(IS_APPLE)
-  // With POSIX, any socket can receive messages for multicast groups joined by
-  // any socket on the system. Sockets intending to receive messages for a
-  // specific multicast group should bind to that group address.
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  // With POSIX/Fuchsia, any socket can receive messages for multicast groups
+  // joined by any socket on the system. Sockets intending to receive messages
+  // for a specific multicast group should bind to that group address.
   return GetMdnsGroupEndPoint(address_family);
-#endif  // !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)) || BUILDFLAG(IS_APPLE)
+#else
+#error Platform not supported.
+#endif
 }
 
 std::string GetNameForHttpsQuery(const url::SchemeHostPort& scheme_host_port,
