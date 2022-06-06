@@ -4,6 +4,8 @@
 
 package org.chromium.net.impl;
 
+import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
+
 import java.time.Duration;
 
 /**
@@ -25,14 +27,13 @@ public abstract class CronetLogger {
      * Logs a cronetEngine creation action with the details of the creation.
      *
      * @param cronetEngineId the id of the engine being created.
-     * @param builder the builder used in creating the engine. This allows us to log the details of
-     * the cronet. While this builder exposes some setter methods, do not set any of the variables
-     * here. It's here just for logging purposes.
+     * @param engineBuilderInfo the configuration of the CronetEngine being created. See {@link
+     *        CronetEngineBuilderInfo}
      * @param version the version of cronet used for the engine. See {@link CronetVersion}
      * @param source the source of the cronet provider for the engine. See {@link CronetSource}
      */
     public abstract void logCronetEngineCreation(int cronetEngineId,
-            CronetEngineBuilderImpl builder, CronetVersion version, CronetSource source);
+            CronetEngineBuilderInfo engineBuilderInfo, CronetVersion version, CronetSource source);
 
     /**
      * Logs a request/response action.
@@ -40,6 +41,105 @@ public abstract class CronetLogger {
      * @param trafficInfo the associated traffic information. See {@link CronetTrafficInfo}
      */
     public abstract void logCronetTrafficInfo(int cronetEngineId, CronetTrafficInfo trafficInfo);
+
+    /**
+     * Aggregates the information about a CronetEngine configuration.
+     */
+    public static class CronetEngineBuilderInfo {
+        private final boolean mPublicKeyPinningBypassForLocalTrustAnchorsEnabled;
+        private final String mUserAgent;
+        private final String mStoragePath;
+        private final boolean mQuicEnabled;
+        private final boolean mHttp2Enabled;
+        private final boolean mBrotiEnabled;
+        private final int mHttpCacheMode;
+        private final String mExperimentalOptions;
+        private final boolean mNetworkQualityEstimatorEnabled;
+        private final int mThreadPriority;
+
+        public CronetEngineBuilderInfo(CronetEngineBuilderImpl builder) {
+            mPublicKeyPinningBypassForLocalTrustAnchorsEnabled =
+                    builder.publicKeyPinningBypassForLocalTrustAnchorsEnabled();
+            mUserAgent = builder.getUserAgent();
+            mStoragePath = builder.storagePath();
+            mQuicEnabled = builder.quicEnabled();
+            mHttp2Enabled = builder.http2Enabled();
+            mBrotiEnabled = builder.brotliEnabled();
+            mHttpCacheMode = builder.httpCacheMode();
+            mExperimentalOptions = builder.experimentalOptions();
+            mNetworkQualityEstimatorEnabled = builder.networkQualityEstimatorEnabled();
+            mThreadPriority = builder.threadPriority(THREAD_PRIORITY_BACKGROUND);
+        }
+
+        /**
+         * @return Whether public key pinning bypass for local trust anchors is enabled
+         */
+        public boolean isPublicKeyPinningBypassForLocalTrustAnchorsEnabled() {
+            return mPublicKeyPinningBypassForLocalTrustAnchorsEnabled;
+        }
+        /**
+         * @return User-Agent used for URLRequests created through this CronetEngine
+         */
+        public String getUserAgent() {
+            return mUserAgent;
+        }
+        /**
+         * @return Path to the directory used for HTTP cache and Cookie storage
+         */
+        public String getStoragePath() {
+            return mStoragePath;
+        }
+
+        /**
+         * @return Whether QUIC protocol is enabled
+         */
+        public boolean isQuicEnabled() {
+            return mQuicEnabled;
+        }
+
+        /**
+         * @return Whether HTTP2 protocol is enabled
+         */
+        public boolean isHttp2Enabled() {
+            return mHttp2Enabled;
+        }
+
+        /**
+         * @return Whether Brotli compression is enabled
+         */
+        public boolean isBrotliEnabled() {
+            return mBrotiEnabled;
+        }
+
+        /**
+         * @return Whether caching of HTTP data and other information like QUIC server information
+         *         is enabled
+         */
+        public int getHttpCacheMode() {
+            return mHttpCacheMode;
+        }
+
+        /**
+         * @return Experimental options configuration used by the CronetEngine
+         */
+        public String getExperimentalOptions() {
+            return mExperimentalOptions;
+        }
+
+        /**
+         * @return Whether network quality estimator is enabled
+         */
+        public boolean isNetworkQualityEstimatorEnabled() {
+            return mNetworkQualityEstimatorEnabled;
+        }
+
+        /**
+         * @return The thread priority of Cronet's internal thread
+         */
+        public int getThreadPriority() {
+            return mThreadPriority;
+        }
+    }
 
     /**
      * Aggregates the information about request and response traffic for a

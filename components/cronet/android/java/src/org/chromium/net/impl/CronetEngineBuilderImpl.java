@@ -117,6 +117,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         return this;
     }
 
+    @VisibleForTesting
     String getUserAgent() {
         return mUserAgent;
     }
@@ -130,6 +131,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         return this;
     }
 
+    @VisibleForTesting
     String storagePath() {
         return mStoragePath;
     }
@@ -158,6 +160,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         return this;
     }
 
+    @VisibleForTesting
     boolean quicEnabled() {
         return mQuicEnabled;
     }
@@ -178,6 +181,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         return this;
     }
 
+    @VisibleForTesting
     boolean http2Enabled() {
         return mHttp2Enabled;
     }
@@ -193,6 +197,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         return this;
     }
 
+    @VisibleForTesting
     boolean brotliEnabled() {
         return mBrotiEnabled;
     }
@@ -243,6 +248,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         return mHttpCacheMaxSize;
     }
 
+    @VisibleForTesting
     int httpCacheMode() {
         return mHttpCacheMode;
     }
@@ -301,6 +307,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         return this;
     }
 
+    @VisibleForTesting
     boolean publicKeyPinningBypassForLocalTrustAnchorsEnabled() {
         return mPublicKeyPinningBypassForLocalTrustAnchorsEnabled;
     }
@@ -370,6 +377,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
      * @return true if the network quality estimator has been enabled for
      * this builder.
      */
+    @VisibleForTesting
     boolean networkQualityEstimatorEnabled() {
         return mNetworkQualityEstimatorEnabled;
     }
@@ -392,6 +400,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     /**
      * @return thread priority provided by user, or {@code defaultThreadPriority} if none provided.
      */
+    @VisibleForTesting
     int threadPriority(int defaultThreadPriority) {
         return mThreadPriority == INVALID_THREAD_PRIORITY ? defaultThreadPriority : mThreadPriority;
     }

@@ -1012,6 +1012,7 @@ if (!is_component_build) {
       "test/javatests/src/org/chromium/net/TestNetworkQualityThroughputListener.java",
       "test/javatests/src/org/chromium/net/UploadDataProvidersTest.java",
       "test/javatests/src/org/chromium/net/UrlResponseInfoTest.java",
+      "test/javatests/src/org/chromium/net/impl/CronetLoggingTest.java",
       "test/javatests/src/org/chromium/net/urlconnection/CronetBufferedOutputStreamTest.java",
       "test/javatests/src/org/chromium/net/urlconnection/CronetChunkedOutputStreamTest.java",
       "test/javatests/src/org/chromium/net/urlconnection/CronetFixedModeOutputStreamTest.java",
