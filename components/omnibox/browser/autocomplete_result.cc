@@ -118,7 +118,8 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
     DCHECK(kMaxAutocompletePositionValue > field_trial_value);
 #if BUILDFLAG(IS_IOS)
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      field_trial_value = MIN(field_trial_value, kMaxZeroSuggestMatchesOnIPad);
+      field_trial_value =
+          std::min(field_trial_value, kMaxZeroSuggestMatchesOnIPad);
     }
 #endif
     return field_trial_value;
