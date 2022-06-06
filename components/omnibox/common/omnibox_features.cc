@@ -181,7 +181,7 @@ const base::Feature kOmniboxExperimentalSuggestScoring{
 // over 10% of all shutdown hangs.
 const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile{
     "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
-    enabled_by_default_desktop_only};
+    enabled_by_default_desktop_android};
 
 // If enabled, suggestions from a cgi param name match are scored to 0.
 const base::Feature kDisableCGIParamMatching{"OmniboxDisableCGIParamMatching",

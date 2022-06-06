@@ -5772,17 +5772,17 @@
             ]
         }
     ],
-    "OmniboxDisableHistoryQuickProviderCacheFileMobile": [
+    "OmniboxDisableHistoryQuickProviderCacheFileiOS": [
         {
             "platforms": [
-                "android",
                 "ios"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_MaxIndex200",
+                    "name": "Enabled_MaxIndex400",
                     "params": {
-                        "MaxNumHQPUrlsIndexedAtStartupOnNonLowEndDevices": "200"
+                        "MaxNumHQPUrlsIndexedAtStartupOnLowEndDevices": "100",
+                        "MaxNumHQPUrlsIndexedAtStartupOnNonLowEndDevices": "400"
                     },
                     "enable_features": [
                         "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile"
