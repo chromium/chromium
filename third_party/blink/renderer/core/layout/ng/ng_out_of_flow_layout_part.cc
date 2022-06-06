@@ -753,20 +753,26 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
         SaveStaticPositionOnPaintLayer(layout_box, candidate.static_position);
       if (IsContainingBlockForCandidate(candidate) &&
           (!only_layout || layout_box == only_layout)) {
-        if (has_block_fragmentation_ &&
-            !container_builder_->IsInitialColumnBalancingPass()) {
-          // As an optimization, only populate legacy positioned objects lists
-          // when inside a fragmentation context root, since otherwise we can
-          // just look at the children in the fragment tree.
-          if (layout_box != only_layout)
-            container_builder_->InsertLegacyPositionedObject(candidate.Node());
-          NGLogicalOOFNodeForFragmentation fragmentainer_descendant(candidate);
-          container_builder_->AdjustFragmentainerDescendant(
-              fragmentainer_descendant);
-          container_builder_->AdjustFixedposContainingBlockForInnerMulticols();
-          container_builder_->AddOutOfFlowFragmentainerDescendant(
-              fragmentainer_descendant);
-          continue;
+        if (has_block_fragmentation_) {
+          container_builder_->SetHasOutOfFlowInFragmentainerSubtree(true);
+          if (!container_builder_->IsInitialColumnBalancingPass()) {
+            // As an optimization, only populate legacy positioned objects lists
+            // when inside a fragmentation context root, since otherwise we can
+            // just look at the children in the fragment tree.
+            if (layout_box != only_layout) {
+              container_builder_->InsertLegacyPositionedObject(
+                  candidate.Node());
+            }
+            NGLogicalOOFNodeForFragmentation fragmentainer_descendant(
+                candidate);
+            container_builder_->AdjustFragmentainerDescendant(
+                fragmentainer_descendant);
+            container_builder_
+                ->AdjustFixedposContainingBlockForInnerMulticols();
+            container_builder_->AddOutOfFlowFragmentainerDescendant(
+                fragmentainer_descendant);
+            continue;
+          }
         }
         NodeInfo node_info = SetupNodeInfo(candidate);
         NodeToLayout node_to_layout = {node_info,

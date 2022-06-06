@@ -184,6 +184,16 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     has_out_of_flow_fragment_child_ = has_out_of_flow_fragment_child;
   }
 
+  bool HasOutOfFlowInFragmentainerSubtree() const {
+    return has_out_of_flow_in_fragmentainer_subtree_;
+  }
+
+  void SetHasOutOfFlowInFragmentainerSubtree(
+      bool has_out_of_flow_in_fragmentainer_subtree) {
+    has_out_of_flow_in_fragmentainer_subtree_ =
+        has_out_of_flow_in_fragmentainer_subtree;
+  }
+
   void SwapOutOfFlowPositionedCandidates(
       HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates);
 
@@ -435,6 +445,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
 
   bool has_oof_candidate_that_needs_block_offset_adjustment_ = false;
   bool has_out_of_flow_fragment_child_ = false;
+  bool has_out_of_flow_in_fragmentainer_subtree_ = false;
 
 #if DCHECK_IS_ON()
   bool is_may_have_descendant_above_block_start_explicitly_set_ = false;
