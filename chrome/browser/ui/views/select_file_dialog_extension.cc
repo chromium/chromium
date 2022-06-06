@@ -487,11 +487,16 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
   if (PendingExists(routing_id))
     return;
 
-  // If SelectFileAsh is opening the dialog, use fusebox volumes in the File
-  // Manager UI to return real file descriptors to SelectFileAsh.
   std::vector<std::string> volume_filter;
   if (owner.is_lacros) {
+    // SelectFileAsh (Lacros) is opening the dialog: only show fusebox volumes
+    // in File Manager UI to return real file descriptors to SelectFileAsh.
     volume_filter.push_back("fusebox-only");
+  } else if (use_media_store_filter) {
+    // ArcSelectFile is opening the dialog: add 'media-store-files-only' filter
+    // to only show volumes in File Manager UI that are indexed by the Android
+    // MediaStore and have a permanent Android content:URI.
+    volume_filter.push_back("media-store-files-only");
   }
 
   GURL file_manager_url = SelectFileDialogExtension::MakeDialogURL(
