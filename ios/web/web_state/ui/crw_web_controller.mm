@@ -481,7 +481,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     }];
   }
 
-  if (@available(iOS 15.4, *)) {
+  if (@available(iOS 16.0, *)) {
     if (base::FeatureList::IsEnabled(web::features::kEnableFullscreenAPI)) {
       [observers addEntriesFromDictionary:@{
         @"fullscreenState" : @"fullscreenStateDidChange"
@@ -1505,9 +1505,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   }
 }
 
-#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
 CrFullscreenState CrFullscreenStateFromWKFullscreenState(
-    WKFullscreenState state) API_AVAILABLE(ios(15.4)) {
+    WKFullscreenState state) API_AVAILABLE(ios(16.0)) {
   switch (state) {
     case WKFullscreenStateEnteringFullscreen:
       return CrFullscreenState::kEnteringFullscreen;
@@ -1522,7 +1522,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
       return CrFullscreenState::kNotInFullScreen;
   }
 }
-#endif  // defined (__IPHONE_15_4)
+#endif  // defined (__IPHONE_16_0)
 
 #pragma mark - Security Helpers
 
@@ -1667,8 +1667,8 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   if (!self.webView || [_containerView webViewContentView])
     return;
 
-#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
-  if (@available(iOS 15.4, *)) {
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+  if (@available(iOS 16.0, *)) {
     CRWWebViewContentView* webViewContentView = [[CRWWebViewContentView alloc]
         initWithWebView:self.webView
              scrollView:self.webScrollView
@@ -1677,7 +1677,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     [_containerView displayWebViewContentView:webViewContentView];
     return;
   }
-#endif  // defined(__IPHONE_15_4)
+#endif  // defined(__IPHONE_16_0)
 
   CRWWebViewContentView* webViewContentView = [[CRWWebViewContentView alloc]
       initWithWebView:self.webView
@@ -1845,13 +1845,13 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 }
 
 - (void)fullscreenStateDidChange {
-#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
-  if (@available(iOS 15.4, *)) {
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+  if (@available(iOS 16.0, *)) {
     [_containerView updateWebViewContentViewFullscreenState:
                         CrFullscreenStateFromWKFullscreenState(
                             self.webView.fullscreenState)];
   }
-#endif  // defined (__IPHONE_15_4)
+#endif  // defined (__IPHONE_16_0)
 }
 
 #pragma mark - CRWWebViewHandlerDelegate
