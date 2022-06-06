@@ -79,10 +79,12 @@
   }
 
   div[slot='footer'] {
+    box-sizing: border-box;
     display: flex;
     flex-flow: row nowrap;
     gap: 8px;
     justify-content: center;
+    min-height: 65px;
   }
 
   #loadingButton {
@@ -140,13 +142,13 @@
         </cr-button>
       </template>
       <template is="dom-if" if="[[previewBlobUrl_]]">
-        <cr-button id="confirmPhoto" on-click="confirmPhoto_" class="primary">
-          <iron-icon icon="personalization:circle_checkmark"></iron-icon>
-          <span>[[getConfirmText_(mode)]]</span>
-        </cr-button>
         <cr-button id="clearPhoto" on-click="clearPhoto_" class="secondary">
           <iron-icon icon="personalization:refresh"></iron-icon>
           <span>$i18n{rejectWebcamPhoto}</span>
+        </cr-button>
+        <cr-button id="confirmPhoto" on-click="confirmPhoto_" class="primary">
+          <iron-icon icon="personalization:circle_checkmark"></iron-icon>
+          <span>[[getConfirmText_(mode)]]</span>
         </cr-button>
       </template>
     </div>

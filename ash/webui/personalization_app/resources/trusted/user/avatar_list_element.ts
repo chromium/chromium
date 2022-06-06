@@ -191,6 +191,9 @@ export class AvatarList extends WithPersonalizationStore {
         });
       });
     }
+
+    const activeElement = this.shadowRoot!.activeElement;
+
     this.updateList(
         /*propertyPath=*/ 'options_',
         /*identityGetter=*/
@@ -208,6 +211,11 @@ export class AvatarList extends WithPersonalizationStore {
         /*newList=*/ options,
         /*identityBasedUpdate=*/ true,
     );
+
+    if (activeElement instanceof HTMLElement) {
+      // Restore focus to previously selected element after list update.
+      activeElement.focus();
+    }
   }
 
   private onLastExternalUserImageUrlChanged_(_: Url|null, old: Url|null) {
