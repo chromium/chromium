@@ -53,7 +53,7 @@ TEST_F(PDPMetricsTest, TestPDPIsRecorded) {
 
   MockWebWrapper web(GURL(url), false);
 
-  shopping_service_->DidNavigatePrimaryMainFrame(&web);
+  DidNavigatePrimaryMainFrame(&web);
 
   histogram_tester.ExpectBucketCount(
       metrics::kPDPStateHistogramName,
@@ -76,7 +76,7 @@ TEST_F(PDPMetricsTest, TestIncognitoPDPIsNotRecorded) {
 
   MockWebWrapper web(GURL(url), true);
 
-  shopping_service_->DidNavigatePrimaryMainFrame(&web);
+  DidNavigatePrimaryMainFrame(&web);
 
   histogram_tester.ExpectBucketCount(
       metrics::kPDPStateHistogramName,
@@ -99,7 +99,7 @@ TEST_F(PDPMetricsTest, TestFalseOptGuideResponseIsRecorded) {
 
   MockWebWrapper web(GURL(url), false);
 
-  shopping_service_->DidNavigatePrimaryMainFrame(&web);
+  DidNavigatePrimaryMainFrame(&web);
 
   histogram_tester.ExpectBucketCount(
       metrics::kPDPStateHistogramName,

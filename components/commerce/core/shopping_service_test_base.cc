@@ -157,4 +157,8 @@ ShoppingServiceTestBase::~ShoppingServiceTestBase() = default;
 
 void ShoppingServiceTestBase::TestBody() {}
 
+void ShoppingServiceTestBase::DidNavigatePrimaryMainFrame(WebWrapper* web) {
+  shopping_service_->DidNavigatePrimaryMainFrame(web);
+}
+
 }  // namespace commerce

@@ -94,6 +94,12 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   void Shutdown() override;
 
+ private:
+  // "CommerceTabHelper" encompases both the content/ and ios/ versions.
+  friend class CommerceTabHelper;
+  // Test classes are also friends.
+  friend class ShoppingServiceTestBase;
+
   // A notification that a WebWrapper has been created. This typically
   // corresponds to a user creating a tab.
   void WebWrapperCreated(WebWrapper* web);
@@ -107,7 +113,6 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // Typically corresponds to a user closing a tab.
   void WebWrapperDestroyed(WebWrapper* web);
 
- private:
   // Whether APIs like |GetProductInfoForURL| are enabled and allowed to be
   // used.
   bool IsProductInfoApiEnabled();

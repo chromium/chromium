@@ -115,6 +115,9 @@ class ShoppingServiceTestBase : public testing::Test {
 
   void TestBody() override;
 
+  // A direct proxy to the same method in the ShoppingService class.
+  void DidNavigatePrimaryMainFrame(WebWrapper* web);
+
  protected:
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
