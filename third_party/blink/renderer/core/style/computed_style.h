@@ -2281,6 +2281,7 @@ class ComputedStyle : public ComputedStyleBase,
   CORE_EXPORT const Vector<AppliedTextDecoration>& AppliedTextDecorations()
       const;
   CORE_EXPORT TextDecorationLine TextDecorationsInEffect() const;
+  bool IsAppliedTextDecorationsSame(const ComputedStyle& other) const;
 
   // Overflow utility functions.
 

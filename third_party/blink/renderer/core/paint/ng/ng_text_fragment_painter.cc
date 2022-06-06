@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/paint/inline_text_box_painter.h"
 #include "third_party/blink/renderer/core/paint/list_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_painter.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
@@ -388,6 +389,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     if (auto* layout_text = DynamicTo<LayoutText>(node->GetLayoutObject()))
       node_id = layout_text->EnsureNodeId();
   }
+  NGInlinePaintContext::ScopedPaintOffset scoped_paint_offset(paint_offset,
+                                                              inline_context_);
 
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));

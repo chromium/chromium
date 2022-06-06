@@ -1575,6 +1575,8 @@ void NGBoxFragmentPainter::PaintLineBoxChildItems(
       DCHECK(line_box_fragment);
       PaintLineBox(*line_box_fragment, *child_item->GetDisplayItemClient(),
                    *child_item, paint_info, child_offset);
+      NGInlinePaintContext::ScopedLineBox scoped_line_box(*child_item,
+                                                          inline_context_);
       NGInlineCursor line_box_cursor = children->CursorForDescendants();
       PaintInlineItems(paint_info, paint_offset,
                        child_item->OffsetInContainerFragment(),
@@ -1656,6 +1658,7 @@ void NGBoxFragmentPainter::PaintTextItem(const NGInlineCursor& cursor,
   ScopedDisplayItemFragment display_item_fragment(paint_info.context,
                                                   item.FragmentId());
   DCHECK(inline_context_);
+  NGInlinePaintContext::ScopedInlineItem scoped_item(item, inline_context_);
   NGTextFragmentPainter text_painter(cursor, parent_offset, inline_context_);
   text_painter.Paint(paint_info, paint_offset);
 }

@@ -64,6 +64,8 @@ void NGInlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
 
   const bool suppress_box_decoration_background = true;
   DCHECK(inline_context_);
+  NGInlinePaintContext::ScopedInlineItem scoped_item(inline_box_item_,
+                                                     inline_context_);
   DCHECK(inline_box_cursor_);
   NGBoxFragmentPainter box_painter(*inline_box_cursor_, inline_box_item_,
                                    PhysicalFragment(), inline_context_);
@@ -310,6 +312,8 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     if (target_fragment_idx != cursor.ContainerFragmentIndex())
       continue;
+    NGInlinePaintContext::ScopedInlineBoxAncestors scoped_items(
+        cursor, &inline_context);
     const NGFragmentItem* item = cursor.CurrentItem();
     DCHECK(item);
     const NGPhysicalBoxFragment* box_fragment = item->BoxFragment();

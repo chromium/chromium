@@ -11,9 +11,11 @@
 namespace blink {
 
 class NGInlinePaintContextTest : public RenderingTest,
-                                 private ScopedLayoutNGForTest {
+                                 private ScopedLayoutNGForTest,
+                                 private ScopedTextDecoratingBoxForTest {
  public:
-  NGInlinePaintContextTest() : ScopedLayoutNGForTest(true) {}
+  NGInlinePaintContextTest()
+      : ScopedLayoutNGForTest(true), ScopedTextDecoratingBoxForTest(true) {}
 
   Vector<float> GetFontSizes(
       const NGInlinePaintContext::DecoratingBoxList& boxes) {
@@ -34,7 +36,9 @@ TEST_F(NGInlinePaintContextTest, NestedBlocks) {
     </style>
     <div class="ul" style="font-size: 40px">
       <div id="ifc" class="ul" style="font-size: 20px">
-        <span class="ul" style="font-size: 10px">10</span>
+        <span id="span10" class="ul" style="font-size: 10px">
+          <span id="span5" class="ul" style="font-size: 5px">10</span>
+        </span>
       </div>
     </div>
   )HTML");
@@ -50,10 +54,24 @@ TEST_F(NGInlinePaintContextTest, NestedBlocks) {
   EXPECT_THAT(GetFontSizes(context.DecoratingBoxes()),
               testing::ElementsAre(20.f, 20.f));
 
-  cursor.MoveToNext();  // |cursor| should be at the `<span>`.
-  EXPECT_TRUE(cursor.Current().IsInlineBox());
-  context.PushDecoratingBox(*cursor.Current(), cursor.Current()->Style());
+  const LayoutObject* span10 = GetLayoutObjectByElementId("span10");
+  cursor.MoveTo(*span10);
+  EXPECT_TRUE(cursor.Current());
+  context.PushDecoratingBox(*cursor.Current());
   EXPECT_THAT(GetFontSizes(context.DecoratingBoxes()),
+              testing::ElementsAre(20.f, 20.f, 10.f));
+
+  const LayoutObject* span5 = GetLayoutObjectByElementId("span5");
+  cursor.MoveTo(*span5);
+  EXPECT_TRUE(cursor.Current());
+  context.PushDecoratingBox(*cursor.Current());
+  EXPECT_THAT(GetFontSizes(context.DecoratingBoxes()),
+              testing::ElementsAre(20.f, 20.f, 10.f, 5.f));
+
+  // Push all decorating boxes in the ancestor chain of the `span5`.
+  NGInlinePaintContext context2;
+  context2.PushDecoratingBoxAncestors(cursor);
+  EXPECT_THAT(GetFontSizes(context2.DecoratingBoxes()),
               testing::ElementsAre(20.f, 20.f, 10.f));
 }
 
