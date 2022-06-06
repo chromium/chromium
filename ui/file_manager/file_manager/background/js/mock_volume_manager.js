@@ -76,6 +76,11 @@ export class MockVolumeManager {
   }
 
   /** @override */
+  getFuseBoxOnlyFilterEnabled() {
+    return false;
+  }
+
+  /** @override */
   dispose() {}
 
   /**

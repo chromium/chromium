@@ -23,6 +23,14 @@ export class VolumeManager {
   }
 
   /**
+   * Gets the 'fusebox-only' filter state: true if enabled, false if disabled.
+   * The filter is only enabled by the SelectFileAsh (Lacros) file picker, and
+   * implemented by {FilteredVolumeManager} override.
+   * @return {boolean}
+   */
+  getFuseBoxOnlyFilterEnabled() {}
+
+  /**
    * Disposes the instance. After the invocation of this method, any other
    * method should not be called.
    */

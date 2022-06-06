@@ -128,12 +128,8 @@ export class FilteredVolumeManager extends EventTarget {
     this.initialized_ = this.initialize_();
   }
 
-  /**
-   * Gets 'fusebox-only' filter state: true if enabled, false if disabled. This
-   * filter is only enabled by the SelectFileAsh (Lacros) file picker.
-   * @return {boolean}
-   */
-  get isFuseBoxOnlyFilterEnabled() {
+  /** @override */
+  getFuseBoxOnlyFilterEnabled() {
     return this.isFuseBoxOnly_;
   }
 
@@ -195,7 +191,7 @@ export class FilteredVolumeManager extends EventTarget {
       // the UI, which aids manually testing fusebox.
     } else if (this.isFuseBoxOnly_) {
       // SelectFileAsh requires native volumes. Note: DocumentsProvider and
-      // FSPs return false here, until they are implemented in the Fusebox.
+      // FSPs return false here, until they are implemented in the fusebox.
       return this.isFuseBoxFileSystem(volumeInfo.diskFileSystemType) ||
           VolumeManagerCommon.VolumeType.isNative(volumeInfo.volumeType);
     } else if (this.isFuseBoxFileSystem(volumeInfo.diskFileSystemType)) {

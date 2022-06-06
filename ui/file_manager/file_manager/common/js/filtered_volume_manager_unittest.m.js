@@ -88,8 +88,8 @@ export function testVolumeDefaultFilter(done) {
       AllowedPaths.ANY_PATH_OR_URL, false, Promise.resolve(volumeManager), []);
 
   filteredVolumeManager.ensureInitialized(() => {
-    // Check: isFuseBoxOnlyFilterEnabled getter should return false.
-    assertFalse(filteredVolumeManager.isFuseBoxOnlyFilterEnabled);
+    // Check: getFuseBoxOnlyFilterEnabled should return false.
+    assertFalse(filteredVolumeManager.getFuseBoxOnlyFilterEnabled());
 
     // Check: filteredVolumeManager.volumeInfoList should have 4 volumes.
     assertEquals(4, filteredVolumeManager.volumeInfoList.length);
@@ -174,8 +174,8 @@ export function testVolumeFuseboxOnlyFilter(done) {
       ['fusebox-only']);
 
   filteredVolumeManager.ensureInitialized(() => {
-    // Check: isFuseBoxOnlyFilterEnabled getter should return true.
-    assertTrue(filteredVolumeManager.isFuseBoxOnlyFilterEnabled);
+    // Check: getFuseBoxOnlyFilterEnabled should return true.
+    assertTrue(filteredVolumeManager.getFuseBoxOnlyFilterEnabled());
 
     // Check: filteredVolumeManager.volumeInfoList should have 3 volumes.
     assertEquals(3, filteredVolumeManager.volumeInfoList.length);

@@ -256,6 +256,14 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
+   * @return {boolean} True if the current volume is provided by FuseBox.
+   */
+  isOnFuseBox() {
+    const info = this.getCurrentVolumeInfo();
+    return info ? info.diskFileSystemType === 'fusebox' : false;
+  }
+
+  /**
    * @return {boolean} True if it's on a Linux native volume.
    */
   isOnNative() {

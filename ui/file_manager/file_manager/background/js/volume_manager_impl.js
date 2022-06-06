@@ -73,6 +73,11 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  getFuseBoxOnlyFilterEnabled() {
+    return false;
+  }
+
+  /** @override */
   dispose() {}
 
   /**

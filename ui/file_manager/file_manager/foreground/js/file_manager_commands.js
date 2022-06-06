@@ -1131,6 +1131,16 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
       return;
     }
 
+    // Block fusebox volumes in SelectFileAsh (Lacros) file picker mode.
+    if (fileManager.volumeManager.getFuseBoxOnlyFilterEnabled()) {
+      // TODO(crbug/1292825) Make it work with fusebox volumes: MTP, etc.
+      if (fileManager.directoryModel.isOnFuseBox()) {
+        event.canExecute = false;
+        event.command.setHidden(true);
+        return;
+      }
+    }
+
     event.canExecute = this.canDeleteEntries_(entries, fileManager);
 
     // Remove if nothing is selected, e.g. user clicked in an empty
@@ -1570,6 +1580,16 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
 
   /** @override */
   canExecute(event, fileManager) {
+    // Block fusebox volumes in SelectFileAsh (Lacros) file picker mode.
+    if (fileManager.volumeManager.getFuseBoxOnlyFilterEnabled()) {
+      // TODO(crbug/1292825) Make it work with fusebox volumes: MTP, etc.
+      if (fileManager.directoryModel.isOnFuseBox()) {
+        event.canExecute = false;
+        event.command.setHidden(true);
+        return;
+      }
+    }
+
     // Check if it is removable drive
     if ((() => {
           const root = CommandUtil.getCommandEntry(fileManager, event.target);
