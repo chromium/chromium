@@ -17,6 +17,9 @@ extern const base::Feature kWebPageDefaultZoomFromDynamicType;
 // Used to enable a different method of zooming web pages.
 extern const base::Feature kWebPageAlternativeTextZoom;
 
+// Reneables text zoom on iPad.
+extern const base::Feature kWebPageTextZoomIPad;
+
 // Feature flag for to use native session restoration.
 extern const base::Feature kRestoreSessionFromCache;
 

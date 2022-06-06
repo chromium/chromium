@@ -6324,6 +6324,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "webpage-text-zoom-ipad",
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 108
+  },
+  {
     "name": "webui-tab-strip",
     "owners": [
       "yuhengh",

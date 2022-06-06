@@ -696,6 +696,10 @@ const char kWebPageAlternativeTextZoomName[] =
 const char kWebPageAlternativeTextZoomDescription[] =
     "When enabled, switches the method used to zoom web pages.";
 
+const char kWebPageTextZoomIPadName[] = "Enable text zoom on iPad";
+const char kWebPageTextZoomIPadDescription[] =
+    "When enabled, text zoom works again on iPad";
+
 // Please insert your name/description above in alphabetical order.
 
 }  // namespace flag_descriptions

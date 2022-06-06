@@ -627,6 +627,10 @@ extern const char kWebPageDefaultZoomFromDynamicTypeDescription[];
 extern const char kWebPageAlternativeTextZoomName[];
 extern const char kWebPageAlternativeTextZoomDescription[];
 
+// Title and description for the flag to (re)-enable text zoom on iPad.
+extern const char kWebPageTextZoomIPadName[];
+extern const char kWebPageTextZoomIPadDescription[];
+
 // Please add names and descriptions above in alphabetical order.
 
 }  // namespace flag_descriptions
