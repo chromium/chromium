@@ -4852,31 +4852,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.TcpConnectAttempt.LatencyPercentRTT.Error" units="%"
-    expires_after="2022-11-13">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Time taken when failed to establish a TCP connection to an individual
-    endpoint, expressed as a multiple of the transport RTT. This includes the
-    case when the attempt was aborted by a higher layer (likely because it took
-    too long). This may have fewer samples than Net.TcpConnectAttempt.Latency.*
-    in cases where the network quality estimation was unknown.
-  </summary>
-</histogram>
-
-<histogram name="Net.TcpConnectAttempt.LatencyPercentRTT.Success" units="%"
-    expires_after="2022-11-13">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Time taken to successfully establish a TCP connection to an individual
-    endpoint, expressed as a multiple of the transport RTT. This may have fewer
-    samples than Net.TcpConnectAttempt.Latency.* in cases where the network
-    quality estimation was unknown.
-  </summary>
-</histogram>
-
 <histogram name="Net.TcpRtt.AtDisconnect" units="ms" expires_after="M85">
   <owner>bmcquade@chromium.org</owner>
   <summary>

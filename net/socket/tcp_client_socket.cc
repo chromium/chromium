@@ -583,37 +583,6 @@ void TCPClientSocket::EmitConnectAttemptHistograms(int result) {
   } else {
     UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Error", duration);
   }
-
-  absl::optional<base::TimeDelta> transport_rtt = absl::nullopt;
-  if (network_quality_estimator_)
-    transport_rtt = network_quality_estimator_->GetTransportRTT();
-
-  // In cases where there is an estimated transport RTT, histogram the attempt
-  // duration as a percentage of the transport RTT. The histogram range can
-  // record fractions up to 1,000x RTT.
-  if (transport_rtt) {
-    int percent_rtt = 0;
-
-    if (transport_rtt.value().InMilliseconds() != 0) {
-      // Convert the percentage to an int, saturating to 100000.
-      float percent_rtt_float =
-          100.f * (duration.InMillisecondsF() /
-                   transport_rtt.value().InMillisecondsF());
-      if (percent_rtt_float > 100000) {
-        percent_rtt = 100000;
-      } else if (percent_rtt_float > 0) {
-        percent_rtt = static_cast<int>(percent_rtt_float);
-      }
-    }
-
-    if (result == OK) {
-      UMA_HISTOGRAM_COUNTS_100000(
-          "Net.TcpConnectAttempt.LatencyPercentRTT.Success", percent_rtt);
-    } else {
-      UMA_HISTOGRAM_COUNTS_100000(
-          "Net.TcpConnectAttempt.LatencyPercentRTT.Error", percent_rtt);
-    }
-  }
 }
 
 base::TimeDelta TCPClientSocket::GetConnectAttemptTimeout() {
