@@ -359,7 +359,15 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MultiSelectDefaultHandler) {
 // Check that QuickOffice has a handler installed for common Office doc types.
 // This test only runs with the is_chrome_branded GN flag set because otherwise
 // QuickOffice is not installed.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, QuickOffice) {
+
+// TODO(https://crbug.com/1333360): Fix the flakiness.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_QuickOffice DISABLED_QuickOffice
+#else
+#define MAYBE_QuickOffice QuickOffice
+#endif
+
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MAYBE_QuickOffice) {
   std::vector<Expectation> expectations = {
       {"doc", extension_misc::kQuickOfficeComponentExtensionId,
        "application/msword"},
