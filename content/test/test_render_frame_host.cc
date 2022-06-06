@@ -183,7 +183,20 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
 }
 
 void TestRenderFrameHost::Detach() {
-  DetachForTesting();
+  if (IsFencedFrameRoot()) {
+    // In production code, detaching Fenced Frames is intiated in a renderer
+    // process by, e.g. Web API `Element.remove()`. This is resolved as
+    // `Node.removeChild()` of the parent node and triggers
+    // RenderFrameProxyHost::Detach for the outer delegate node. In unit tests,
+    // this method initiates detaching. So, this method mimics
+    // RenderFrameProxyHost::Detach.
+
+    ResumeDeletionForTesting();
+
+    frame_tree_node_->render_manager()->RemoveOuterDelegateFrame();
+  } else {
+    DetachForTesting();
+  }
 }
 
 void TestRenderFrameHost::SimulateNavigationStart(const GURL& url) {
