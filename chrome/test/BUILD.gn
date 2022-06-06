@@ -6833,6 +6833,7 @@ test("unit_tests") {
       "//chrome/browser/resources:component_extension_resources_grit",
       "//chrome/browser/resources/new_tab_page_instant:resources_grit",
       "//chrome/browser/share/core:share_targets_unittest",
+      "//chrome/browser/share/core/crow:crow_configuration_unittest",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/webui/discards:mojo_bindings",

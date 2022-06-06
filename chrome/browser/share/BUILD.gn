@@ -47,6 +47,8 @@ source_set("share") {
     deps += [
       ":jni_headers",
       "//chrome/browser/share/android:jni_headers",
+      "//chrome/browser/share/core/crow:crow_configuration",
+      "//chrome/browser/share/proto:crow_proto",
       "//components/history/core/browser:browser",
       "//components/ukm/content:content",
       "//ui/android",
