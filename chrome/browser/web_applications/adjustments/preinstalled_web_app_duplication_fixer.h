@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -47,6 +48,8 @@ class PreinstalledWebAppDuplicationFixer
   void ObserveAppRegistryCache();
 
   void ScanForDuplication();
+
+  bool RemoveInstallUrlForPreinstalledApp(GURL url);
 
   Profile& profile_;
 

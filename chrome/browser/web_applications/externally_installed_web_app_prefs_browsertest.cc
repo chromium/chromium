@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -35,22 +37,37 @@ class ExternallyInstalledWebAppPrefsBrowserTest
       const ExternallyInstalledWebAppPrefsBrowserTest&) = delete;
   ~ExternallyInstalledWebAppPrefsBrowserTest() override = default;
 
-  AppId SimulatePreviouslyInstalledApp(const GURL& url,
-                                       ExternalInstallSource install_source) {
-    AppId id = test::InstallDummyWebApp(profile(), "TestApp", url);
+  AppId SimulateInstallApp(const GURL& url,
+                           ExternalInstallSource install_source) {
+    auto web_app_install_info = std::make_unique<WebAppInstallInfo>();
+    web_app_install_info->start_url = url;
+    web_app_install_info->title = u"App Title";
+    web_app_install_info->display_mode = web_app::DisplayMode::kBrowser;
+    web_app_install_info->user_display_mode =
+        web_app::UserDisplayMode::kStandalone;
+    web_app_install_info->install_url = url;
+
+    AppId app_id;
+    {
+      app_id = test::InstallWebApp(
+          profile(), std::move(web_app_install_info),
+          /*overwrite_existing_manifest_fields=*/true,
+          ConvertExternalInstallSourceToInstallSource(install_source));
+      DCHECK(provider().registrar().IsInstalled(app_id));
+    }
     ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-        .Insert(url, id, install_source);
-    return id;
+        .Insert(url, app_id, install_source);
+    return app_id;
   }
 
-  std::vector<GURL> GetAppUrls(ExternalInstallSource install_source) {
-    std::vector<GURL> urls;
+  base::flat_set<GURL> GetAppUrls(ExternalInstallSource install_source) {
+    base::flat_set<GURL> urls;
     for (const auto& id_and_url :
-         ExternallyInstalledWebAppPrefs::BuildAppIdsMap(profile()->GetPrefs(),
-                                                        install_source)) {
-      urls.push_back(id_and_url.second);
+         provider().registrar().GetExternallyInstalledApps(install_source)) {
+      for (const auto& url : id_and_url.second) {
+        urls.emplace(url);
+      }
     }
-    std::sort(urls.begin(), urls.end());
     return urls;
   }
 };
@@ -74,7 +91,9 @@ class ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest, BasicOps) {
+IN_PROC_BROWSER_TEST_P(
+    ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration,
+    BasicOps) {
   GURL url_a("https://a.example.com/");
   GURL url_b("https://b.example.com/");
   GURL url_c("https://c.example.com/");
@@ -85,95 +104,127 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest, BasicOps) {
   AppId id_c;
   AppId id_d;
 
-  auto* prefs = profile()->GetPrefs();
-  ExternallyInstalledWebAppPrefs map(prefs);
+  // Start with no data in the DB.
+  WebAppRegistrar& registrar = provider().registrar();
+  EXPECT_EQ("missing",
+            registrar.LookupExternalAppId(url_a).value_or("missing"));
+  EXPECT_EQ("missing",
+            registrar.LookupExternalAppId(url_b).value_or("missing"));
+  EXPECT_EQ("missing",
+            registrar.LookupExternalAppId(url_c).value_or("missing"));
+  EXPECT_EQ("missing",
+            registrar.LookupExternalAppId(url_d).value_or("missing"));
 
-  // Start with an empty map.
+  EXPECT_FALSE(registrar.HasExternalApp(id_a));
+  EXPECT_FALSE(registrar.HasExternalApp(id_b));
+  EXPECT_FALSE(registrar.HasExternalApp(id_c));
+  EXPECT_FALSE(registrar.HasExternalApp(id_d));
 
-  EXPECT_EQ("missing", map.LookupAppId(url_a).value_or("missing"));
-  EXPECT_EQ("missing", map.LookupAppId(url_b).value_or("missing"));
-  EXPECT_EQ("missing", map.LookupAppId(url_c).value_or("missing"));
-  EXPECT_EQ("missing", map.LookupAppId(url_d).value_or("missing"));
-
-  EXPECT_FALSE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_a));
-  EXPECT_FALSE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_b));
-  EXPECT_FALSE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_c));
-  EXPECT_FALSE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_d));
-
-  EXPECT_EQ(std::vector<GURL>({}),
+  EXPECT_EQ(base::flat_set<GURL>({}),
             GetAppUrls(ExternalInstallSource::kInternalDefault));
-  EXPECT_EQ(std::vector<GURL>({}),
+  EXPECT_EQ(base::flat_set<GURL>({}),
             GetAppUrls(ExternalInstallSource::kExternalDefault));
-  EXPECT_EQ(std::vector<GURL>({}),
+  EXPECT_EQ(base::flat_set<GURL>({}),
             GetAppUrls(ExternalInstallSource::kExternalPolicy));
 
   // Add some entries.
-  id_a = SimulatePreviouslyInstalledApp(
-      url_a, ExternalInstallSource::kExternalDefault);
-  id_b = SimulatePreviouslyInstalledApp(
-      url_b, ExternalInstallSource::kInternalDefault);
-  id_c = SimulatePreviouslyInstalledApp(
-      url_c, ExternalInstallSource::kExternalDefault);
+  id_a = SimulateInstallApp(url_a, ExternalInstallSource::kExternalDefault);
+  id_b = SimulateInstallApp(url_b, ExternalInstallSource::kInternalDefault);
+  id_c = SimulateInstallApp(url_c, ExternalInstallSource::kExternalDefault);
 
-  EXPECT_EQ(id_a, map.LookupAppId(url_a).value_or("missing"));
-  EXPECT_EQ(id_b, map.LookupAppId(url_b).value_or("missing"));
-  EXPECT_EQ(id_c, map.LookupAppId(url_c).value_or("missing"));
-  EXPECT_EQ("missing", map.LookupAppId(url_d).value_or("missing"));
+  EXPECT_EQ(id_a, registrar.LookupExternalAppId(url_a).value_or("missing"));
+  EXPECT_EQ(id_b, registrar.LookupExternalAppId(url_b).value_or("missing"));
+  EXPECT_EQ(id_c, registrar.LookupExternalAppId(url_c).value_or("missing"));
+  EXPECT_EQ("missing",
+            registrar.LookupExternalAppId(url_d).value_or("missing"));
 
-  EXPECT_TRUE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_a));
-  EXPECT_TRUE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_b));
-  EXPECT_TRUE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_c));
-  EXPECT_FALSE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_d));
+  EXPECT_TRUE(registrar.HasExternalApp(id_a));
+  EXPECT_TRUE(registrar.HasExternalApp(id_b));
+  EXPECT_TRUE(registrar.HasExternalApp(id_c));
+  EXPECT_FALSE(registrar.HasExternalApp(id_d));
 
-  EXPECT_EQ(std::vector<GURL>({url_b}),
-            GetAppUrls(ExternalInstallSource::kInternalDefault));
-  EXPECT_EQ(std::vector<GURL>({url_a, url_c}),
-            GetAppUrls(ExternalInstallSource::kExternalDefault));
-  EXPECT_EQ(std::vector<GURL>({}),
+  // There are 2 different expect conditions because external prefs store the
+  // source as ExternalInstallSource, while the DB stores the sources as
+  // WebAppManagement::Type. WebAppManagement::Type::kDefault corresponds to
+  // both ExternalInstallSource::kInternalDefault and KExternalDefault, hence
+  // we need 2 different expects as per the source.
+  if (base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    EXPECT_EQ(base::flat_set<GURL>({url_a, url_b, url_c}),
+              GetAppUrls(ExternalInstallSource::kInternalDefault));
+  } else {
+    EXPECT_EQ(base::flat_set<GURL>({url_b}),
+              GetAppUrls(ExternalInstallSource::kInternalDefault));
+    EXPECT_EQ(base::flat_set<GURL>({url_a, url_c}),
+              GetAppUrls(ExternalInstallSource::kExternalDefault));
+  }
+  EXPECT_EQ(base::flat_set<GURL>({}),
             GetAppUrls(ExternalInstallSource::kExternalPolicy));
 
   // Overwrite an entry.
+  SimulateInstallApp(url_c, ExternalInstallSource::kInternalDefault);
 
-  SimulatePreviouslyInstalledApp(url_c,
-                                 ExternalInstallSource::kInternalDefault);
+  EXPECT_EQ(id_a, registrar.LookupExternalAppId(url_a).value_or("missing"));
+  EXPECT_EQ(id_b, registrar.LookupExternalAppId(url_b).value_or("missing"));
+  EXPECT_EQ(id_c, registrar.LookupExternalAppId(url_c).value_or("missing"));
+  EXPECT_EQ("missing",
+            registrar.LookupExternalAppId(url_d).value_or("missing"));
 
-  EXPECT_EQ(id_a, map.LookupAppId(url_a).value_or("missing"));
-  EXPECT_EQ(id_b, map.LookupAppId(url_b).value_or("missing"));
-  EXPECT_EQ(id_c, map.LookupAppId(url_c).value_or("missing"));
-  EXPECT_EQ("missing", map.LookupAppId(url_d).value_or("missing"));
+  EXPECT_TRUE(registrar.HasExternalApp(id_a));
+  EXPECT_TRUE(registrar.HasExternalApp(id_b));
+  EXPECT_TRUE(registrar.HasExternalApp(id_c));
+  EXPECT_FALSE(registrar.HasExternalApp(id_d));
 
-  EXPECT_TRUE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_a));
-  EXPECT_TRUE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_b));
-  EXPECT_TRUE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_c));
-  EXPECT_FALSE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_d));
-
-  EXPECT_EQ(std::vector<GURL>({url_b, url_c}),
-            GetAppUrls(ExternalInstallSource::kInternalDefault));
-  EXPECT_EQ(std::vector<GURL>({url_a}),
-            GetAppUrls(ExternalInstallSource::kExternalDefault));
-  EXPECT_EQ(std::vector<GURL>({}),
+  if (base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    EXPECT_EQ(base::flat_set<GURL>({url_a, url_b, url_c}),
+              GetAppUrls(ExternalInstallSource::kInternalDefault));
+  } else {
+    EXPECT_EQ(base::flat_set<GURL>({url_b, url_c}),
+              GetAppUrls(ExternalInstallSource::kInternalDefault));
+    EXPECT_EQ(base::flat_set<GURL>({url_a}),
+              GetAppUrls(ExternalInstallSource::kExternalDefault));
+  }
+  EXPECT_EQ(base::flat_set<GURL>({}),
             GetAppUrls(ExternalInstallSource::kExternalPolicy));
 
-  // Uninstall an underlying extension. The ExternallyInstalledWebAppPrefs will
-  // still return positive.
-  ScopedRegistryUpdate update(&provider().sync_bridge());
-  update->DeleteApp(id_b);
+  // Uninstalling an underlying app still stores data in the external
+  // prefs, but the registrar removes the app.
+  test::UninstallWebApp(profile(), id_b);
 
-  EXPECT_EQ(id_a, map.LookupAppId(url_a).value_or("missing"));
-  EXPECT_EQ(id_b, map.LookupAppId(url_b).value_or("missing"));
-  EXPECT_EQ(id_c, map.LookupAppId(url_c).value_or("missing"));
-  EXPECT_EQ("missing", map.LookupAppId(url_d).value_or("missing"));
+  EXPECT_EQ(id_a, registrar.LookupExternalAppId(url_a).value_or("missing"));
 
-  EXPECT_TRUE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_a));
-  EXPECT_TRUE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_b));
-  EXPECT_TRUE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_c));
-  EXPECT_FALSE(ExternallyInstalledWebAppPrefs::HasAppId(prefs, id_d));
+  if (base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs))
+    EXPECT_EQ("missing",
+              registrar.LookupExternalAppId(url_b).value_or("missing"));
+  else
+    EXPECT_EQ(id_b, registrar.LookupExternalAppId(url_b).value_or("missing"));
 
-  EXPECT_EQ(std::vector<GURL>({url_b, url_c}),
-            GetAppUrls(ExternalInstallSource::kInternalDefault));
-  EXPECT_EQ(std::vector<GURL>({url_a}),
-            GetAppUrls(ExternalInstallSource::kExternalDefault));
-  EXPECT_EQ(std::vector<GURL>({}),
+  EXPECT_EQ(id_c, registrar.LookupExternalAppId(url_c).value_or("missing"));
+  EXPECT_EQ("missing",
+            registrar.LookupExternalAppId(url_d).value_or("missing"));
+
+  EXPECT_TRUE(registrar.HasExternalApp(id_a));
+  if (base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs))
+    EXPECT_FALSE(registrar.HasExternalApp(id_b));
+  else
+    EXPECT_TRUE(registrar.HasExternalApp(id_b));
+  EXPECT_TRUE(registrar.HasExternalApp(id_c));
+  EXPECT_FALSE(registrar.HasExternalApp(id_d));
+
+  if (base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    EXPECT_EQ(base::flat_set<GURL>({url_a, url_c}),
+              GetAppUrls(ExternalInstallSource::kExternalDefault));
+  } else {
+    EXPECT_EQ(base::flat_set<GURL>({url_c}),
+              GetAppUrls(ExternalInstallSource::kInternalDefault));
+    EXPECT_EQ(base::flat_set<GURL>({url_a}),
+              GetAppUrls(ExternalInstallSource::kExternalDefault));
+  }
+  EXPECT_EQ(base::flat_set<GURL>({}),
             GetAppUrls(ExternalInstallSource::kExternalPolicy));
 }
 
@@ -187,6 +238,7 @@ IN_PROC_BROWSER_TEST_P(
   web_app_install_info->display_mode = web_app::DisplayMode::kBrowser;
   web_app_install_info->user_display_mode =
       web_app::UserDisplayMode::kStandalone;
+  web_app_install_info->install_url = url;
 
   AppId app_id =
       test::InstallWebApp(profile(), std::move(web_app_install_info),
@@ -347,6 +399,7 @@ IN_PROC_BROWSER_TEST_P(
   web_app_install_info->display_mode = web_app::DisplayMode::kBrowser;
   web_app_install_info->user_display_mode =
       web_app::UserDisplayMode::kStandalone;
+  web_app_install_info->install_url = url;
 
   AppId app_id =
       test::InstallWebApp(profile(), std::move(web_app_install_info),

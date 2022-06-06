@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_INSTALLED_WEB_APP_PREFS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_INSTALLED_WEB_APP_PREFS_H_
 
-#include <map>
-
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -45,20 +43,6 @@ class ExternallyInstalledWebAppPrefs {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  static bool HasAppId(const PrefService* pref_service, const AppId& app_id);
-
-  // Returns true if |app_id| was added with |install_source| to
-  // |pref_service|.
-  static bool HasAppIdWithInstallSource(const PrefService* pref_service,
-                                        const AppId& app_id,
-                                        ExternalInstallSource install_source);
-
-  // Returns the URLs of the apps that have been installed from
-  // |install_source|. Will still return apps that have been uninstalled.
-  static std::map<AppId, GURL> BuildAppIdsMap(
-      const PrefService* pref_service,
-      ExternalInstallSource install_source);
-
   // Removes invalid registration for Terminal System App.
   static void RemoveTerminalPWA(PrefService* pref_service);
 
@@ -71,9 +55,6 @@ class ExternallyInstalledWebAppPrefs {
   void Insert(const GURL& url,
               const AppId& app_id,
               ExternalInstallSource install_source);
-  bool Remove(const GURL& url);
-  absl::optional<AppId> LookupAppId(const GURL& url) const;
-  bool HasNoApps() const;
 
   void SetIsPlaceholder(const GURL& url, bool is_placeholder);
 
@@ -87,6 +68,25 @@ class ExternallyInstalledWebAppPrefs {
 
  private:
   friend class WebAppRegistrar;
+  friend class PreinstalledWebAppDuplicationFixer;
+
+  bool Remove(const GURL& url);
+
+  absl::optional<AppId> LookupAppId(const GURL& url) const;
+
+  static bool HasAppId(const PrefService* pref_service, const AppId& app_id);
+
+  // Returns the URLs of the apps that have been installed from
+  // |install_source|. Will still return apps that have been uninstalled.
+  static base::flat_map<AppId, base::flat_set<GURL>> BuildAppIdsMap(
+      const PrefService* pref_service,
+      ExternalInstallSource install_source);
+
+  // Returns true if |app_id| was added with |install_source| to
+  // |pref_service|.
+  static bool HasAppIdWithInstallSource(const PrefService* pref_service,
+                                        const AppId& app_id,
+                                        ExternalInstallSource install_source);
 
   // Returns an id if there is a placeholder app for |url|. Note that nullopt
   // does not mean that there is no app for |url| just that there is no

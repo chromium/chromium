@@ -67,7 +67,6 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
@@ -161,22 +160,6 @@ void ExtensionService::CheckExternalUninstall(const std::string& id) {
     DCHECK(provider->IsReady());
     if (provider->HasExtension(id))
       return;  // Yup, known extension, don't uninstall.
-  }
-
-  // Historically, the code under //chrome/browser/extensions has
-  // unsurprisingly managed all extensions. Later, Progressive Web Apps (PWAs)
-  // were implemented on top of extensions, more out of convenience than out of
-  // principle. As of mid 2018, there is work underway to separate PWAs's
-  // implementation details from the //c/b/e code. During the transition
-  // period, PWA-extensions are no longer managed solely by //c/b/e code. We
-  // add a special case here so that //c/b/e code doesn't uninstall
-  // PWA-extensions that it doesn't otherwise know about.
-  //
-  // Long term, PWAs will be completely separate from extensions, and we can
-  // remove this cross-link.
-  if (web_app::ExternallyInstalledWebAppPrefs::HasAppId(profile_->GetPrefs(),
-                                                        id)) {
-    return;
   }
 
   // We get the list of external extensions to check from preferences.

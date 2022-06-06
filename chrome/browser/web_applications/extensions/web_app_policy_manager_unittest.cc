@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -301,7 +303,12 @@ ExternalInstallOptions GetCustomAppIconInstallOptions() {
 
 }  // namespace
 
-enum class TestParam { kLacrosDisabled, kLacrosEnabled };
+enum class TestLacrosParam { kLacrosDisabled, kLacrosEnabled };
+
+struct TestParam {
+  TestLacrosParam lacros_params;
+  bool is_external_pref_migration_enabled = false;
+};
 
 class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
                                 public testing::WithParamInterface<TestParam> {
@@ -313,21 +320,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
   ~WebAppPolicyManagerTest() override = default;
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (GetParam() == TestParam::kLacrosEnabled) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kDesktopPWAsEnforceWebAppSettingsPolicy,
-           features::kWebAppsCrosapi},
-          {});
-    } else if (GetParam() == TestParam::kLacrosDisabled) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kDesktopPWAsEnforceWebAppSettingsPolicy},
-          {features::kWebAppsCrosapi, ash::features::kLacrosPrimary});
-    }
-#else
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDesktopPWAsEnforceWebAppSettingsPolicy);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    BuildAndInitFeatureList();
     ChromeRenderViewHostTestHarness::SetUp();
 
     fake_registry_controller_ =
@@ -361,6 +354,9 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
                     ConvertExternalInstallSourceToSource(install_source));
                 if (install_options.override_name)
                   web_app->SetName(install_options.override_name.value());
+                web_app->AddInstallURLToManagementExternalConfigMap(
+                    ConvertExternalInstallSourceToSource(install_source),
+                    install_url);
                 RegisterApp(std::move(web_app));
 
                 externally_installed_app_prefs().Insert(install_url, app_id,
@@ -404,6 +400,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
                                       ExternalInstallSource install_source) {
     auto web_app = test::CreateWebApp(
         url, ConvertExternalInstallSourceToSource(install_source));
+    web_app->AddInstallURLToManagementExternalConfigMap(
+        ConvertExternalInstallSourceToSource(install_source), url);
     RegisterApp(std::move(web_app));
 
     externally_installed_app_prefs().Insert(
@@ -425,9 +423,30 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
   }
 
  protected:
+  void BuildAndInitFeatureList() {
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+    enabled_features.push_back(
+        features::kDesktopPWAsEnforceWebAppSettingsPolicy);
+    // Add external pref migration enable flags.
+    if (GetParam().is_external_pref_migration_enabled)
+      enabled_features.push_back(features::kUseWebAppDBInsteadOfExternalPrefs);
+    else
+      disabled_features.push_back(features::kUseWebAppDBInsteadOfExternalPrefs);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (GetParam().lacros_params == TestLacrosParam::kLacrosEnabled) {
+      enabled_features.push_back(features::kWebAppsCrosapi);
+    } else if (GetParam().lacros_params == TestLacrosParam::kLacrosDisabled) {
+      disabled_features.push_back(features::kWebAppsCrosapi);
+      disabled_features.push_back(ash::features::kLacrosPrimary);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
   bool ShouldSkipPWASpecificTest() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (GetParam() == TestParam::kLacrosEnabled)
+    if (GetParam().lacros_params == TestLacrosParam::kLacrosEnabled)
       return true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return false;
@@ -837,8 +856,9 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppNameRefresh) {
 
   EXPECT_EQ(install_requests, expected_install_options_list);
 
-  std::map<AppId, GURL> apps = app_registrar().GetExternallyInstalledApps(
-      ExternalInstallSource::kExternalPolicy);
+  base::flat_map<AppId, base::flat_set<GURL>> apps =
+      app_registrar().GetExternallyInstalledApps(
+          ExternalInstallSource::kExternalPolicy);
   EXPECT_EQ(1u, apps.size());
   EXPECT_EQ(kPrefix + kDefaultCustomAppName,
             app_registrar().GetAppShortName(apps.begin()->first));
@@ -1066,11 +1086,13 @@ TEST_P(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
             externally_managed_app_manager().uninstall_requests());
 
   // There should be exactly 1 app remaining.
-  std::map<AppId, GURL> apps = app_registrar().GetExternallyInstalledApps(
-      ExternalInstallSource::kExternalPolicy);
+  base::flat_map<AppId, base::flat_set<GURL>> apps =
+      app_registrar().GetExternallyInstalledApps(
+          ExternalInstallSource::kExternalPolicy);
   EXPECT_EQ(1u, apps.size());
-  for (auto& it : apps)
-    EXPECT_EQ(it.second, GURL(kTabbedUrl));
+  for (auto& it : apps) {
+    EXPECT_EQ(*it.second.begin(), GURL(kTabbedUrl));
+  }
 }
 
 TEST_P(WebAppPolicyManagerTest, InstallResultHistogram) {
@@ -1261,12 +1283,19 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
   app_registrar().RemoveObserver(&mock_observer);
 }
 
-INSTANTIATE_TEST_SUITE_P(WebAppPolicyManagerTestWithParams,
-                         WebAppPolicyManagerTest,
-                         testing::Values(
+INSTANTIATE_TEST_SUITE_P(
+    WebAppPolicyManagerTestWithParams,
+    WebAppPolicyManagerTest,
+    testing::Values(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                             TestParam::kLacrosDisabled,
+        TestParam({TestLacrosParam::kLacrosDisabled,
+                   /*is_external_pref_migration_enabled=*/false}),
+        TestParam({TestLacrosParam::kLacrosDisabled,
+                   /*is_external_pref_migration_enabled=*/true}),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-                             TestParam::kLacrosEnabled));
+        TestParam({TestLacrosParam::kLacrosEnabled,
+                   /*is_external_pref_migration_enabled=*/false}),
+        TestParam({TestLacrosParam::kLacrosEnabled,
+                   /*is_external_pref_migration_enabled=*/true})));
 
 }  // namespace web_app
