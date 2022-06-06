@@ -592,6 +592,15 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "linux_chromium_tsan_rel_ng",
+    mirrors = [
+        "ci/Linux TSan Builder",
+        "ci/Linux TSan Tests",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
     compilator = "linux_chromium_tsan_rel_ng-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
