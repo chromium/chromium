@@ -49,7 +49,7 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
   ~ReplyProxyImpl() override = default;
 
   // WebMessageReplyProxy:
-  void PostMessage(std::unique_ptr<WebMessage> message) override {
+  void PostWebMessage(std::unique_ptr<WebMessage> message) override {
     java_to_js_messaging_->OnPostMessage(message->message);
   }
   bool IsInBackForwardCache() override {

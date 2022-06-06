@@ -44,11 +44,11 @@ class WebMessageHostWrapper : public js_injection::WebMessageHost,
   }
 
   // WebMessageReplyProxy:
-  void PostMessage(std::unique_ptr<WebMessage> message) override {
+  void PostWebMessage(std::unique_ptr<WebMessage> message) override {
     std::unique_ptr<js_injection::WebMessage> w =
         std::make_unique<js_injection::WebMessage>();
     w->message = std::move(message->message);
-    proxy_->PostMessage(std::move(w));
+    proxy_->PostWebMessage(std::move(w));
   }
   bool IsInBackForwardCache() override {
     return proxy_->IsInBackForwardCache();

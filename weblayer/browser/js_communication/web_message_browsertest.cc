@@ -67,7 +67,7 @@ class WebMessageHostImpl : public WebMessageHost {
       // First time called, send a message to the page.
       std::unique_ptr<WebMessage> m2 = std::make_unique<WebMessage>();
       m2->message = u"from c++";
-      proxy_->PostMessage(std::move(m2));
+      proxy_->PostWebMessage(std::move(m2));
     } else {
       // On subsequent calls quit.
       quit_closure_.Run();

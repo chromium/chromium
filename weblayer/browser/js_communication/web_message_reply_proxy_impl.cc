@@ -40,7 +40,7 @@ void WebMessageReplyProxyImpl::PostMessage(
   auto message = std::make_unique<WebMessage>();
   base::android::ConvertJavaStringToUTF16(env, message_contents,
                                           &(message->message));
-  reply_proxy_->PostMessage(std::move(message));
+  reply_proxy_->PostWebMessage(std::move(message));
 }
 
 bool WebMessageReplyProxyImpl::IsActive(JNIEnv* env) {

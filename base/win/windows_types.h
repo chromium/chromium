@@ -13,6 +13,8 @@
 #include <sal.h>
 #include <specstrings.h>
 
+#include "base/win/win_handle_types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -76,14 +78,6 @@ typedef LONG NTSTATUS;
 #define _REFGUID_DEFINED
 #define REFGUID const GUID&
 #endif
-
-// Forward declare Windows compatible handles.
-
-#define CHROME_WINDOWS_HANDLE_TYPE(name) \
-  struct name##__;                       \
-  typedef struct name##__* name;
-#include "base/win/win_handle_types_list.inc"
-#undef CHROME_WINDOWS_HANDLE_TYPE
 
 typedef LPVOID HINTERNET;
 typedef HICON HCURSOR;
