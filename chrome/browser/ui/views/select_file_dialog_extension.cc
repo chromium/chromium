@@ -441,7 +441,8 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
     void* params,
     const Owner& owner,
     const std::string& search_query,
-    bool show_android_picker_apps) {
+    bool show_android_picker_apps,
+    bool use_media_store_filter) {
   if (owner_window_) {
     LOG(ERROR) << "File dialog already in use!";
     return;

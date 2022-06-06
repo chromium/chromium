@@ -115,7 +115,8 @@ class SelectFileDialogExtension : public ui::SelectFileDialog,
                                        void* params,
                                        const Owner& owner,
                                        const std::string& search_query,
-                                       bool show_android_picker_apps);
+                                       bool show_android_picker_apps,
+                                       bool use_media_store_filter = false);
 
  protected:
   // ui::SelectFileDialog:
