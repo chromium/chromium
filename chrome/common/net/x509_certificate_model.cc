@@ -198,6 +198,80 @@ constexpr uint8_t kNetscapeLostPasswordURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
 constexpr uint8_t kNetscapeRenewalTimeOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
                                                0xf8, 0x42, 0x01, 0x0f};
 
+// Microsoft OIDs. Do we still need all these?
+//
+// 1.3.6.1.4.1.311.20.2
+constexpr uint8_t kMsCertExtCerttype[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                          0x82, 0x37, 0x14, 0x02};
+
+// 1.3.6.1.4.1.311.21.1
+constexpr uint8_t kMsCertsrvCaVersion[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                           0x82, 0x37, 0x15, 0x01};
+
+// 1.3.6.1.4.1.311.20.2.3
+constexpr uint8_t kMsNtPrincipalName[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                          0x82, 0x37, 0x14, 0x02, 0x03};
+
+// 1.3.6.1.4.1.311.25.1
+constexpr uint8_t kMsNtdsReplication[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                          0x82, 0x37, 0x19, 0x01};
+
+// 1.3.6.1.4.1.311.2.1.21
+constexpr uint8_t kEkuMsIndividualCodeSigning[] = {
+    0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x02, 0x01, 0x15};
+
+// 1.3.6.1.4.1.311.2.1.22
+constexpr uint8_t kEkuMsCommercialCodeSigning[] = {
+    0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x02, 0x01, 0x16};
+
+// 1.3.6.1.4.1.311.10.3.1
+constexpr uint8_t kEkuMsTrustListSigning[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                              0x82, 0x37, 0x0a, 0x03, 0x01};
+
+// 1.3.6.1.4.1.311.10.3.2
+constexpr uint8_t kEkuMsTimeStamping[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                          0x82, 0x37, 0x0a, 0x03, 0x02};
+
+// 1.3.6.1.4.1.311.10.3.3
+constexpr uint8_t kEkuMsServerGatedCrypto[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                               0x82, 0x37, 0x0a, 0x03, 0x03};
+
+// 1.3.6.1.4.1.311.10.3.4
+constexpr uint8_t kEkuMsEncryptingFileSystem[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                                  0x82, 0x37, 0x0a, 0x03, 0x04};
+
+// 1.3.6.1.4.1.311.10.3.4.1
+constexpr uint8_t kEkuMsFileRecovery[] = {0x2b, 0x06, 0x01, 0x04, 0x01, 0x82,
+                                          0x37, 0x0a, 0x03, 0x04, 0x01};
+
+// 1.3.6.1.4.1.311.10.3.5
+constexpr uint8_t kEkuMsWindowsHardwareDriverVerification[] = {
+    0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x0a, 0x03, 0x05};
+
+// 1.3.6.1.4.1.311.10.3.10
+constexpr uint8_t kEkuMsQualifiedSubordination[] = {
+    0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x0a, 0x03, 0x0a};
+
+// 1.3.6.1.4.1.311.10.3.11
+constexpr uint8_t kEkuMsKeyRecovery[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                         0x82, 0x37, 0x0a, 0x03, 0x0b};
+
+// 1.3.6.1.4.1.311.10.3.12
+constexpr uint8_t kEkuMsDocumentSigning[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                             0x82, 0x37, 0x0a, 0x03, 0x0c};
+
+// 1.3.6.1.4.1.311.10.3.13
+constexpr uint8_t kEkuMsLifetimeSigning[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                             0x82, 0x37, 0x0a, 0x03, 0x0d};
+
+// 1.3.6.1.4.1.311.20.2.2
+constexpr uint8_t kEkuMsSmartCardLogon[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                            0x82, 0x37, 0x14, 0x02, 0x02};
+
+// 1.3.6.1.4.1.311.21.6
+constexpr uint8_t kEkuMsKeyRecoveryAgent[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                              0x82, 0x37, 0x15, 0x06};
+
 // The certificate viewer may be used to view client certificates, so use the
 // relaxed parsing mode. See crbug.com/770323 and crbug.com/788655.
 constexpr auto kNameStringHandling =
@@ -381,6 +455,34 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<net::der::Input, int>({
     {net::der::Input(net::kOCSPSigning), IDS_CERT_EKU_OCSP_SIGNING},
     {net::der::Input(net::kNetscapeServerGatedCrypto),
      IDS_CERT_EKU_NETSCAPE_INTERNATIONAL_STEP_UP},
+
+    // Microsoft oids:
+    {net::der::Input(kMsCertExtCerttype), IDS_CERT_EXT_MS_CERT_TYPE},
+    {net::der::Input(kMsCertsrvCaVersion), IDS_CERT_EXT_MS_CA_VERSION},
+    {net::der::Input(kMsNtPrincipalName), IDS_CERT_EXT_MS_NT_PRINCIPAL_NAME},
+    {net::der::Input(kMsNtdsReplication), IDS_CERT_EXT_MS_NTDS_REPLICATION},
+    {net::der::Input(kEkuMsIndividualCodeSigning),
+     IDS_CERT_EKU_MS_INDIVIDUAL_CODE_SIGNING},
+    {net::der::Input(kEkuMsCommercialCodeSigning),
+     IDS_CERT_EKU_MS_COMMERCIAL_CODE_SIGNING},
+    {net::der::Input(kEkuMsTrustListSigning),
+     IDS_CERT_EKU_MS_TRUST_LIST_SIGNING},
+    {net::der::Input(kEkuMsTimeStamping), IDS_CERT_EKU_MS_TIME_STAMPING},
+    {net::der::Input(kEkuMsServerGatedCrypto),
+     IDS_CERT_EKU_MS_SERVER_GATED_CRYPTO},
+    {net::der::Input(kEkuMsEncryptingFileSystem),
+     IDS_CERT_EKU_MS_ENCRYPTING_FILE_SYSTEM},
+    {net::der::Input(kEkuMsFileRecovery), IDS_CERT_EKU_MS_FILE_RECOVERY},
+    {net::der::Input(kEkuMsWindowsHardwareDriverVerification),
+     IDS_CERT_EKU_MS_WINDOWS_HARDWARE_DRIVER_VERIFICATION},
+    {net::der::Input(kEkuMsQualifiedSubordination),
+     IDS_CERT_EKU_MS_QUALIFIED_SUBORDINATION},
+    {net::der::Input(kEkuMsKeyRecovery), IDS_CERT_EKU_MS_KEY_RECOVERY},
+    {net::der::Input(kEkuMsDocumentSigning), IDS_CERT_EKU_MS_DOCUMENT_SIGNING},
+    {net::der::Input(kEkuMsLifetimeSigning), IDS_CERT_EKU_MS_LIFETIME_SIGNING},
+    {net::der::Input(kEkuMsSmartCardLogon), IDS_CERT_EKU_MS_SMART_CARD_LOGON},
+    {net::der::Input(kEkuMsKeyRecoveryAgent),
+     IDS_CERT_EKU_MS_KEY_RECOVERY_AGENT},
 });
 
 absl::optional<std::string> GetOidText(net::der::Input oid) {
