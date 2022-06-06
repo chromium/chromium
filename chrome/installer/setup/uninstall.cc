@@ -601,7 +601,6 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
     LOG(DFATAL) << "Cannot retrieve the toast activator registry path";
   }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (installer_state.system_install()) {
     if (!InstallServiceWorkItem::DeleteService(
             install_static::GetElevationServiceName(),
@@ -612,7 +611,6 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
                    << install_static::GetElevationServiceName();
     }
   }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING
 
   // Delete all Start Menu Internet registrations that refer to this Chrome.
   {
