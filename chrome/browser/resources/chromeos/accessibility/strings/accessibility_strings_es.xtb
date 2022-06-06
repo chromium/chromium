@@ -7,7 +7,7 @@
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Desliza dos dedos hacia la derecha</translation>
 <translation id="1022586497894531524">¿Es la primera vez que utilizas los mensajes de voz de ChromeVox? En este rápido tutorial encontrarás los conceptos básicos para empezar a utilizar ChromeVox.</translation>
-<translation id="1025074108959230262">Modo persistente inhabilitado</translation>
+<translation id="1025074108959230262">Modo Persistente inhabilitado</translation>
 <translation id="1031961866430398710">y</translation>
 <translation id="1038643060055067718">Líneas:</translation>
 <translation id="1038795173450935438">Para desplazarte hacia adelante por los elementos de una página, pulsa la tecla de búsqueda+flecha hacia la derecha, o bien la tecla de búsqueda+flecha hacia la izquierda para desplazarte hacia atrás. Para ir a la siguiente línea, pulsa la tecla de búsqueda+flecha hacia abajo. Para ir a la línea anterior, utiliza la tecla de búsqueda+flecha hacia arriba. Si llegas a un elemento en el que quieras hacer clic, pulsa la tecla de búsqueda+barra espaciadora.</translation>
@@ -86,7 +86,7 @@
 <translation id="1465097259579587977">Reiniciar orientación rápida</translation>
 <translation id="1480046233931937785">Créditos</translation>
 <translation id="1487494366197411587">En el Chromebook, la tecla de búsqueda está justamente encima de la tecla Mayús.</translation>
-<translation id="1498498210836053409">Desactivar el modo persistente al editar texto (modo persistente inteligente)</translation>
+<translation id="1498498210836053409">Desactivar el modo Persistente al editar texto (modo Persistente inteligente)</translation>
 <translation id="1499041187027566160">subir el volumen</translation>
 <translation id="1502086903961450562">Gráfico anterior</translation>
 <translation id="1506187449813838456">Sube el tono</translation>
@@ -629,7 +629,7 @@
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5310788376443009632">eliminada:</translation>
 <translation id="5316825363044614340">mover a la línea siguiente</translation>
-<translation id="5320727453979144100">Modo persistente habilitado</translation>
+<translation id="5320727453979144100">Modo Persistente habilitado</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{coma}other{# comas}}</translation>
 <translation id="532485153932049746">Formato del texto
     <ph name="FONT_SIZE_STRING" />
@@ -1175,7 +1175,7 @@
 <translation id="958854023026327378">Desliza un dedo hacia abajo</translation>
 <translation id="962913030769097253">Siguiente encabezado de nivel 1</translation>
 <translation id="966588271015727539">Selecciona una pantalla de braille Bluetooth</translation>
-<translation id="973955474346881951">Habilita o inhabilita el modo persistente</translation>
+<translation id="973955474346881951">Habilita o inhabilita el modo Persistente</translation>
 <translation id="985654871861528815">Bajar una línea</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>
