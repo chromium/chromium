@@ -85,7 +85,12 @@ function detectHoldGesture({
   button.onpointerdown = press;
   button.onpointerleave = release;
   button.onpointerup = release;
-  button.onkeydown = ({key}) => {
+  button.onkeydown = ({key, repeat}) => {
+    if (repeat) {
+      // Ignoring repeating keydown event since we have our own DelayInterval
+      // implementation.
+      return;
+    }
     if (key === 'Enter' || key === ' ') {
       press();
     }
