@@ -434,11 +434,11 @@ void DesktopSessionAgent::Start(
 
   // Start the video capturer and mouse cursor monitor.
   // TODO(lambroslambrou): When supporting multiple streams, this class should
-  // create and own a single DesktopDisplayInfoMonitor and call Start() on it,
-  // instead of passing it to CreateVideoCapturer() here.
+  // call desktop_environment_->GetDisplayInfoMonitor()->Start(), so the
+  // display-info is queried on a timer instead of after each captured frame
+  // from multiple capturers.
   video_capturer_ = std::make_unique<DesktopAndCursorConditionalComposer>(
-      desktop_environment_->CreateVideoCapturer(
-          desktop_environment_->CreateDisplayInfoMonitor()));
+      desktop_environment_->CreateVideoCapturer());
   video_capturer_->Start(this);
   video_capturer_->SetSharedMemoryFactory(
       std::make_unique<SharedMemoryFactoryImpl>(

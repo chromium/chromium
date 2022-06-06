@@ -47,11 +47,19 @@ DesktopDisplayInfoMonitor::~DesktopDisplayInfoMonitor() {
 
 void DesktopDisplayInfoMonitor::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  timer_running_ = true;
   timer_.Start(FROM_HERE, kPollingInterval, this,
-               &DesktopDisplayInfoMonitor::QueryDisplayInfo);
+               &DesktopDisplayInfoMonitor::QueryDisplayInfoImpl);
 }
 
 void DesktopDisplayInfoMonitor::QueryDisplayInfo() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!timer_running_) {
+    QueryDisplayInfoImpl();
+  }
+}
+
+void DesktopDisplayInfoMonitor::QueryDisplayInfoImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (client_session_control_) {
     ui_task_runner_->PostTaskAndReplyWithResult(

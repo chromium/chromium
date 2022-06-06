@@ -27,7 +27,6 @@
 #include "remoting/host/desktop_and_cursor_composer_notifier.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_display_info.h"
-#include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/host_experiment_session_plugin.h"
 #include "remoting/host/host_extension_session_manager.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
@@ -344,8 +343,6 @@ class ClientSession : public protocol::HostStub,
 
   // Contains the most recently gathered info about the desktop displays;
   DesktopDisplayInfo desktop_display_info_;
-
-  std::unique_ptr<DesktopDisplayInfoMonitor> display_info_monitor_;
 
   // Default DPI values to use if a display reports 0 for DPI.
   int default_x_dpi_;

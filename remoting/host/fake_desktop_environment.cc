@@ -87,8 +87,7 @@ std::unique_ptr<ScreenControls> FakeDesktopEnvironment::CreateScreenControls() {
   return std::make_unique<FakeScreenControls>();
 }
 
-std::unique_ptr<DesktopCapturer> FakeDesktopEnvironment::CreateVideoCapturer(
-    std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
+std::unique_ptr<DesktopCapturer> FakeDesktopEnvironment::CreateVideoCapturer() {
   auto fake_capturer = std::make_unique<protocol::FakeDesktopCapturer>();
   if (!frame_generator_.is_null())
     fake_capturer->set_frame_generator(frame_generator_);
@@ -99,8 +98,7 @@ std::unique_ptr<DesktopCapturer> FakeDesktopEnvironment::CreateVideoCapturer(
   return std::move(result);
 }
 
-std::unique_ptr<DesktopDisplayInfoMonitor>
-FakeDesktopEnvironment::CreateDisplayInfoMonitor() {
+DesktopDisplayInfoMonitor* FakeDesktopEnvironment::GetDisplayInfoMonitor() {
   return nullptr;
 }
 
@@ -135,8 +133,7 @@ uint32_t FakeDesktopEnvironment::GetDesktopSessionId() const {
 }
 
 std::unique_ptr<DesktopAndCursorConditionalComposer>
-FakeDesktopEnvironment::CreateComposingVideoCapturer(
-    std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
+FakeDesktopEnvironment::CreateComposingVideoCapturer() {
   return nullptr;
 }
 

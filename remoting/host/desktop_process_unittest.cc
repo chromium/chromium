@@ -218,7 +218,7 @@ DesktopProcessTest::CreateDesktopEnvironment() {
       .WillOnce(Invoke(this, &DesktopProcessTest::CreateInputInjector));
   EXPECT_CALL(*desktop_environment, CreateActionExecutor()).Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, CreateScreenControls()).Times(AtMost(1));
-  EXPECT_CALL(*desktop_environment, CreateVideoCapturer(_))
+  EXPECT_CALL(*desktop_environment, CreateVideoCapturer())
       .Times(AtMost(1))
       .WillOnce(
           Return(ByMove(std::make_unique<protocol::FakeDesktopCapturer>())));

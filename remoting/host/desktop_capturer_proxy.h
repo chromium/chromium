@@ -44,12 +44,9 @@ class DesktopCapturerProxy : public DesktopCapturer {
 
   ~DesktopCapturerProxy() override;
 
-  // If a monitor is provided, it will be asked to load the display-info after
-  // each captured frame. This is intended only for the single-video-stream
-  // case. When multiple video streams are used (each with its own capturer),
-  // the display-info will not be loaded by this class.
-  void set_desktop_display_info_monitor(
-      std::unique_ptr<DesktopDisplayInfoMonitor> monitor);
+  // If |monitor| is non-null, it must outlive |this|, and
+  // monitor->QueryDisplayInfo() will be called after each captured frame.
+  void set_desktop_display_info_monitor(DesktopDisplayInfoMonitor* monitor);
 
   // CreateCapturer() should be used if the capturer needs to be created on the
   // capturer thread. Alternatively the capturer can be passed to
@@ -87,9 +84,8 @@ class DesktopCapturerProxy : public DesktopCapturer {
 
   raw_ptr<webrtc::DesktopCapturer::Callback> callback_;
 
-  // Monitors and stores info about the desktop displays. Only used in the
-  // single-video-stream case.
-  std::unique_ptr<DesktopDisplayInfoMonitor> desktop_display_info_monitor_;
+  // Monitors and stores info about the desktop displays.
+  raw_ptr<DesktopDisplayInfoMonitor> desktop_display_info_monitor_ = nullptr;
 
 #if defined(WEBRTC_USE_GIO)
   base::OnceCallback<void(webrtc::DesktopCaptureMetadata)> metadata_callback_;

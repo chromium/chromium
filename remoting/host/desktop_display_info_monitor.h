@@ -47,11 +47,15 @@ class DesktopDisplayInfoMonitor {
 
   // Queries the OS immediately for the current monitor layout and reports any
   // changed display info to the ClientSessionControl. If this instance is
-  // associated with a DesktopCapturerProxy, this method could be used to
-  // query the display info on each captured frame.
+  // associated with only one DesktopCapturerProxy, this method could be used to
+  // query the display info after each captured frame. If there are multiple
+  // capturers all linked to this instance, it doesn't make sense to query after
+  // every captured frame. So Start() should be called instead, and subsequent
+  // calls to QueryDisplayInfo() will have no effect.
   void QueryDisplayInfo();
 
  private:
+  void QueryDisplayInfoImpl();
   void OnDisplayInfoLoaded(DesktopDisplayInfo info);
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -71,6 +75,7 @@ class DesktopDisplayInfoMonitor {
 
   // Timer to regularly poll |desktop_display_info_loader_| for updates.
   base::RepeatingTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool timer_running_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   base::WeakPtrFactory<DesktopDisplayInfoMonitor> weak_factory_{this};
 };

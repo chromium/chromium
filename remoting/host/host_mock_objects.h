@@ -66,10 +66,10 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               (override));
   MOCK_METHOD(std::unique_ptr<DesktopCapturer>,
               CreateVideoCapturer,
-              (std::unique_ptr<DesktopDisplayInfoMonitor>),
+              (),
               (override));
-  MOCK_METHOD(std::unique_ptr<DesktopDisplayInfoMonitor>,
-              CreateDisplayInfoMonitor,
+  MOCK_METHOD(DesktopDisplayInfoMonitor*,
+              GetDisplayInfoMonitor,
               (),
               (override));
   MOCK_METHOD(std::unique_ptr<webrtc::MouseCursorMonitor>,
@@ -90,7 +90,7 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               (override));
   MOCK_METHOD(std::unique_ptr<DesktopAndCursorConditionalComposer>,
               CreateComposingVideoCapturer,
-              (std::unique_ptr<DesktopDisplayInfoMonitor> monitor),
+              (),
               (override));
   MOCK_METHOD(std::unique_ptr<RemoteWebAuthnStateChangeNotifier>,
               CreateRemoteWebAuthnStateChangeNotifier,

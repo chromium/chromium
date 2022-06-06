@@ -165,9 +165,9 @@ DesktopCapturerProxy::~DesktopCapturerProxy() {
 }
 
 void DesktopCapturerProxy::set_desktop_display_info_monitor(
-    std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
+    DesktopDisplayInfoMonitor* monitor) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  desktop_display_info_monitor_ = std::move(monitor);
+  desktop_display_info_monitor_ = monitor;
 }
 
 void DesktopCapturerProxy::CreateCapturer(

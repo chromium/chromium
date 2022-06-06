@@ -103,10 +103,12 @@ BasicDesktopEnvironment::CreateScreenControls() {
   return nullptr;
 }
 
-std::unique_ptr<DesktopDisplayInfoMonitor>
-BasicDesktopEnvironment::CreateDisplayInfoMonitor() {
-  return std::make_unique<DesktopDisplayInfoMonitor>(ui_task_runner_,
-                                                     client_session_control_);
+DesktopDisplayInfoMonitor* BasicDesktopEnvironment::GetDisplayInfoMonitor() {
+  if (!display_info_monitor_) {
+    display_info_monitor_ = std::make_unique<DesktopDisplayInfoMonitor>(
+        ui_task_runner_, client_session_control_);
+  }
+  return display_info_monitor_.get();
 }
 
 std::unique_ptr<webrtc::MouseCursorMonitor>
@@ -150,15 +152,14 @@ uint32_t BasicDesktopEnvironment::GetDesktopSessionId() const {
 }
 
 std::unique_ptr<DesktopAndCursorConditionalComposer>
-BasicDesktopEnvironment::CreateComposingVideoCapturer(
-    std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
+BasicDesktopEnvironment::CreateComposingVideoCapturer() {
 #if BUILDFLAG(IS_APPLE)
   // Mac includes the mouse cursor in the captured image in curtain mode.
   if (options_.enable_curtaining())
     return nullptr;
 #endif
   return std::make_unique<DesktopAndCursorConditionalComposer>(
-      CreateVideoCapturer(std::move(monitor)));
+      CreateVideoCapturer());
 }
 
 std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
@@ -166,13 +167,13 @@ BasicDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return std::make_unique<RemoteWebAuthnExtensionNotifier>();
 }
 
-std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(
-    std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
+std::unique_ptr<DesktopCapturer>
+BasicDesktopEnvironment::CreateVideoCapturer() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   auto result = std::make_unique<DesktopCapturerProxy>(
       video_capture_task_runner_, ui_task_runner_);
-  result->set_desktop_display_info_monitor(std::move(monitor));
+  result->set_desktop_display_info_monitor(GetDisplayInfoMonitor());
   result->CreateCapturer(desktop_capture_options());
   return std::move(result);
 }
