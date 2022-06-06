@@ -125,7 +125,7 @@ TEST_F(LayerPerfTest, ImplPushPropertiesTo) {
   std::unique_ptr<LayerImpl> impl_layer =
       LayerImpl::Create(host_impl_.active_tree(), 2);
 
-  SkColor background_color = SK_ColorRED;
+  SkColor4f background_color = SkColors::kRed;
   gfx::Size bounds(1000, 1000);
   bool draws_content = true;
   bool contents_opaque = true;
@@ -142,7 +142,7 @@ TEST_F(LayerPerfTest, ImplPushPropertiesTo) {
     test_layer->PushPropertiesTo(impl_layer.get());
 
     background_color =
-        background_color == SK_ColorRED ? SK_ColorGREEN : SK_ColorRED;
+        background_color == SkColors::kRed ? SkColors::kGreen : SkColors::kRed;
     bounds = bounds == gfx::Size(1000, 1000) ? gfx::Size(500, 500)
                                              : gfx::Size(1000, 1000);
     draws_content = !draws_content;

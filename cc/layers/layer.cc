@@ -1468,12 +1468,10 @@ void Layer::PushPropertiesTo(LayerImpl* layer,
   const auto& inputs = inputs_.Read(*this);
   layer->SetElementId(inputs.element_id);
   layer->SetHasTransformNode(has_transform_node());
-  // TODO(crbug/1308932): Remove toSkColor and FromColor and make all SkColor4f.
-  layer->SetBackgroundColor(inputs.background_color.toSkColor());
-  layer->SetSafeOpaqueBackgroundColor(
-      SafeOpaqueBackgroundColor(
-          SkColor4f::FromColor(commit_state.background_color))
-          .toSkColor());
+  layer->SetBackgroundColor(inputs.background_color);
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  layer->SetSafeOpaqueBackgroundColor(SafeOpaqueBackgroundColor(
+      SkColor4f::FromColor(commit_state.background_color)));
   layer->SetBounds(inputs.bounds);
   layer->SetTransformTreeIndex(transform_tree_index(property_trees));
   layer->SetEffectTreeIndex(effect_tree_index(property_trees));

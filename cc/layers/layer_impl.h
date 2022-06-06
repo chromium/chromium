@@ -164,13 +164,12 @@ class CC_EXPORT LayerImpl {
   void SetHitTestable(bool should_hit_test);
   bool HitTestable() const;
 
-  void SetBackgroundColor(SkColor background_color);
-  SkColor background_color() const { return background_color_; }
-  void SetSafeOpaqueBackgroundColor(SkColor background_color);
-  SkColor safe_opaque_background_color() const {
+  void SetBackgroundColor(SkColor4f background_color);
+  SkColor4f background_color() const { return background_color_; }
+  void SetSafeOpaqueBackgroundColor(SkColor4f background_color);
+  SkColor4f safe_opaque_background_color() const {
     // Layer::SafeOpaqueBackgroundColor() should ensure this.
-    DCHECK_EQ(contents_opaque(),
-              SkColorGetA(safe_opaque_background_color_) == SK_AlphaOPAQUE);
+    DCHECK_EQ(contents_opaque(), safe_opaque_background_color_.isOpaque());
     return safe_opaque_background_color_;
   }
 
@@ -471,7 +470,7 @@ class CC_EXPORT LayerImpl {
             bool will_always_push_properties = false);
 
   // Get the color and size of the layer's debug border.
-  virtual void GetDebugBorderProperties(SkColor* color, float* width) const;
+  virtual void GetDebugBorderProperties(SkColor4f* color, float* width) const;
 
   void AppendDebugBorderQuad(viz::CompositorRenderPass* render_pass,
                              const gfx::Rect& quad_rect,
@@ -481,7 +480,7 @@ class CC_EXPORT LayerImpl {
                              const gfx::Rect& quad_rect,
                              const viz::SharedQuadState* shared_quad_state,
                              AppendQuadsData* append_quads_data,
-                             SkColor color,
+                             SkColor4f color,
                              float width) const;
 
   static float GetPreferredRasterScale(
@@ -538,8 +537,8 @@ class CC_EXPORT LayerImpl {
 
   TouchActionRegion touch_action_region_;
 
-  SkColor background_color_;
-  SkColor safe_opaque_background_color_;
+  SkColor4f background_color_;
+  SkColor4f safe_opaque_background_color_;
 
   int transform_tree_index_;
   int effect_tree_index_;

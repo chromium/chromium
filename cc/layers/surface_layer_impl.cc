@@ -182,8 +182,9 @@ void SurfaceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
   if (surface_range_.IsValid()) {
     auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
+    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
     quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
-                 surface_range_, background_color(),
+                 surface_range_, background_color().toSkColor(),
                  stretch_content_to_fill_bounds_);
     quad->is_reflection = is_reflection_;
     // Add the primary surface ID as a dependency.
@@ -199,8 +200,10 @@ void SurfaceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   } else {
     auto* quad =
         render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
     quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
-                 background_color(), false /* force_anti_aliasing_off */);
+                 background_color().toSkColor(),
+                 false /* force_anti_aliasing_off */);
   }
 
   // Unless the client explicitly specifies otherwise, don't block on
@@ -217,10 +220,9 @@ gfx::Rect SurfaceLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
       layer_tree_impl()->device_scale_factor());
 }
 
-void SurfaceLayerImpl::GetDebugBorderProperties(SkColor* color,
+void SurfaceLayerImpl::GetDebugBorderProperties(SkColor4f* color,
                                                 float* width) const {
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-  *color = DebugColors::SurfaceLayerBorderColor().toSkColor();
+  *color = DebugColors::SurfaceLayerBorderColor();
   *width = DebugColors::SurfaceLayerBorderWidth(
       layer_tree_impl() ? layer_tree_impl()->device_scale_factor() : 1);
 }
@@ -234,7 +236,7 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
       render_pass->CreateAndAppendSharedQuadState();
   PopulateSharedQuadState(shared_quad_state, contents_opaque());
 
-  SkColor color;
+  SkColor4f color;
   float border_width;
   GetDebugBorderProperties(&color, &border_width);
 

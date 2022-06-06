@@ -6280,7 +6280,7 @@ TEST_F(LegacySWPictureLayerImplTest,
       FakeRasterSource::CreateFilledWithText(gfx::Size(200, 200));
   SetupTreesWithInvalidation(raster_source, raster_source, Region());
 
-  pending_layer()->SetBackgroundColor(SK_ColorWHITE);
+  pending_layer()->SetBackgroundColor(SkColors::kWhite);
   pending_layer()->SetContentsOpaque(true);
   pending_layer()->SetOffsetToTransformParent(gfx::Vector2dF(0.2, 0.3));
   host_impl()->pending_tree()->set_needs_update_draw_properties();
@@ -6336,7 +6336,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   auto raster_source = FakeRasterSource::CreateFilled(gfx::Size(200, 200));
   SetupTreesWithInvalidation(raster_source, raster_source, Region());
 
-  pending_layer()->SetBackgroundColor(SK_ColorWHITE);
+  pending_layer()->SetBackgroundColor(SkColors::kWhite);
   pending_layer()->SetContentsOpaque(true);
   pending_layer()->SetOffsetToTransformParent(gfx::Vector2dF(0.2, 0.3));
   host_impl()->pending_tree()->set_needs_update_draw_properties();
@@ -6540,14 +6540,14 @@ TEST_P(LCDTextTest, Opacity) {
 TEST_P(LCDTextTest, ContentsNotOpaque) {
   // Non-opaque content and opaque background.
   layer_->SetContentsOpaque(false);
-  layer_->SetBackgroundColor(SK_ColorGREEN);
+  layer_->SetBackgroundColor(SkColors::kGreen);
   CheckCanUseLCDText(LCDTextDisallowedReason::kContentsNotOpaque,
                      "contents not opaque", layer_);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone,
                      "descedant of contents not opaque", descendant_);
 
   // Non-opaque content and non-opaque background.
-  layer_->SetBackgroundColor(SkColorSetARGB(128, 255, 255, 255));
+  layer_->SetBackgroundColor({1.0f, 1.0f, 1.0f, 0.5f});
   CheckCanUseLCDText(LCDTextDisallowedReason::kBackgroundColorNotOpaque,
                      "background not opaque", layer_);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone,
@@ -6635,7 +6635,7 @@ TEST_P(LCDTextTest, BackdropFilterAnimation) {
 
 TEST_P(LCDTextTest, ContentsOpaqueForText) {
   layer_->SetContentsOpaque(false);
-  layer_->SetBackgroundColor(SK_ColorGREEN);
+  layer_->SetBackgroundColor(SkColors::kGreen);
   layer_->SetContentsOpaqueForText(true);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "contents opaque for text",
                      layer_);

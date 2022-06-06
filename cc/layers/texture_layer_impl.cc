@@ -122,15 +122,14 @@ void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       std::make_move_iterator(to_register_bitmaps_.end()));
   to_register_bitmaps_.clear();
 
-  SkColor bg_color =
-      blend_background_color_ ? background_color() : SK_ColorTRANSPARENT;
+  SkColor4f bg_color =
+      blend_background_color_ ? background_color() : SkColors::kTransparent;
 
   if (force_texture_to_opaque_) {
-    bg_color = SK_ColorBLACK;
+    bg_color = SkColors::kBlack;
   }
 
-  bool are_contents_opaque =
-      contents_opaque() || (SkColorGetA(bg_color) == 0xFF);
+  bool are_contents_opaque = contents_opaque() || bg_color.isOpaque();
 
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
@@ -148,11 +147,12 @@ void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     return;
 
   float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
                resource_id_, premultiplied_alpha_, uv_top_left_,
-               uv_bottom_right_, bg_color, vertex_opacity, flipped_,
-               nearest_neighbor_, /*secure_output_only=*/false,
+               uv_bottom_right_, bg_color.toSkColor(), vertex_opacity, flipped_,
+               nearest_neighbor_, /*secure_output=*/false,
                gfx::ProtectedVideoType::kClear);
   quad->set_resource_size_in_pixels(transferable_resource_.size);
   ValidateQuadResources(quad);
@@ -165,7 +165,7 @@ SimpleEnclosedRegion TextureLayerImpl::VisibleOpaqueRegion() const {
   if (force_texture_to_opaque_)
     return SimpleEnclosedRegion(visible_layer_rect());
 
-  if (blend_background_color_ && (SkColorGetA(background_color()) == 0xFF))
+  if (blend_background_color_ && background_color().isOpaque())
     return SimpleEnclosedRegion(visible_layer_rect());
 
   return SimpleEnclosedRegion();

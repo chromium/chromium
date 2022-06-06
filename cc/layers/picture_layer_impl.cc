@@ -230,9 +230,10 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     Occlusion occlusion = draw_properties().occlusion_in_content_space;
 
     EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
+    // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
     SolidColorLayerImpl::AppendSolidQuads(
         render_pass, occlusion, shared_quad_state, scaled_visible_layer_rect,
-        raster_source_->GetSolidColor(),
+        SkColor4f::FromColor(raster_source_->GetSolidColor()),
         !layer_tree_impl()->settings().enable_edge_anti_aliasing,
         effect_node->blend_mode, append_quads_data);
     return;
@@ -295,10 +296,9 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
   if (current_draw_mode_ == DRAW_MODE_RESOURCELESS_SOFTWARE) {
     DCHECK(shared_quad_state->quad_layer_rect.origin() == gfx::Point(0, 0));
-    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
     AppendDebugBorderQuad(
         render_pass, shared_quad_state->quad_layer_rect, shared_quad_state,
-        append_quads_data, DebugColors::DirectPictureBorderColor().toSkColor(),
+        append_quads_data, DebugColors::DirectPictureBorderColor(),
         DebugColors::DirectPictureBorderWidth(device_scale_factor));
 
     gfx::Rect geometry_rect = shared_quad_state->visible_quad_layer_rect;
@@ -367,33 +367,31 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
              shared_quad_state->visible_quad_layer_rect,
              ideal_contents_scale_key());
          iter; ++iter) {
-      SkColor color;
+      SkColor4f color;
       float width;
       if (*iter && iter->draw_info().IsReadyToDraw()) {
-        // TODO(crbug/1308932): Remove all instances of toSkColor below and make
-        // all SkColor4f.
         TileDrawInfo::Mode mode = iter->draw_info().mode();
         if (mode == TileDrawInfo::SOLID_COLOR_MODE) {
-          color = DebugColors::SolidColorTileBorderColor().toSkColor();
+          color = DebugColors::SolidColorTileBorderColor();
           width = DebugColors::SolidColorTileBorderWidth(device_scale_factor);
         } else if (mode == TileDrawInfo::OOM_MODE) {
-          color = DebugColors::OOMTileBorderColor().toSkColor();
+          color = DebugColors::OOMTileBorderColor();
           width = DebugColors::OOMTileBorderWidth(device_scale_factor);
         } else if (iter.resolution() == HIGH_RESOLUTION) {
-          color = DebugColors::HighResTileBorderColor().toSkColor();
+          color = DebugColors::HighResTileBorderColor();
           width = DebugColors::HighResTileBorderWidth(device_scale_factor);
         } else if (iter.resolution() == LOW_RESOLUTION) {
-          color = DebugColors::LowResTileBorderColor().toSkColor();
+          color = DebugColors::LowResTileBorderColor();
           width = DebugColors::LowResTileBorderWidth(device_scale_factor);
         } else if (iter->contents_scale_key() > max_contents_scale) {
-          color = DebugColors::ExtraHighResTileBorderColor().toSkColor();
+          color = DebugColors::ExtraHighResTileBorderColor();
           width = DebugColors::ExtraHighResTileBorderWidth(device_scale_factor);
         } else {
-          color = DebugColors::ExtraLowResTileBorderColor().toSkColor();
+          color = DebugColors::ExtraLowResTileBorderColor();
           width = DebugColors::ExtraLowResTileBorderWidth(device_scale_factor);
         }
       } else {
-        color = DebugColors::MissingTileBorderColor().toSkColor();
+        color = DebugColors::MissingTileBorderColor();
         width = DebugColors::MissingTileBorderWidth(device_scale_factor);
       }
 
@@ -402,10 +400,9 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       gfx::Rect geometry_rect = iter.geometry_rect();
       geometry_rect.Offset(quad_offset);
       gfx::Rect visible_geometry_rect = geometry_rect;
-      debug_border_quad->SetNew(shared_quad_state,
-                                geometry_rect,
-                                visible_geometry_rect,
-                                color,
+      // TODO(crbug/1308932): Remove  toSkColor  and make all SkColor4f.
+      debug_border_quad->SetNew(shared_quad_state, geometry_rect,
+                                visible_geometry_rect, color.toSkColor(),
                                 width);
     }
   }
@@ -518,16 +515,16 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
     if (!has_draw_quad) {
       // Checkerboard.
-      SkColor color = safe_opaque_background_color();
+      SkColor4f color = safe_opaque_background_color();
       if (ShowDebugBorders(DebugBorderType::LAYER)) {
         // Fill the whole tile with the missing tile color.
-        // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-        color = DebugColors::DefaultCheckerboardColor().toSkColor();
+        color = DebugColors::DefaultCheckerboardColor();
       }
       auto* quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+      // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
       quad->SetNew(shared_quad_state, offset_geometry_rect,
-                   offset_visible_geometry_rect, color, false);
+                   offset_visible_geometry_rect, color.toSkColor(), false);
       ValidateQuadResources(quad);
 
       if (geometry_rect.Intersects(scaled_viewport_for_tile_priority)) {
@@ -866,7 +863,7 @@ LCDTextDisallowedReason PictureLayerImpl::ComputeLCDTextDisallowedReason(
   if (!layer_tree_impl()->settings().can_use_lcd_text)
     return LCDTextDisallowedReason::kSetting;
   if (!contents_opaque_for_text()) {
-    if (SkColorGetA(background_color()) != SK_AlphaOPAQUE)
+    if (!background_color().isOpaque())
       return LCDTextDisallowedReason::kBackgroundColorNotOpaque;
     return LCDTextDisallowedReason::kContentsNotOpaque;
   }
@@ -1867,19 +1864,16 @@ void PictureLayerImpl::UpdateIdealScales() {
                          ideal_contents_scale_.y() / ideal_page_scale_};
 }
 
-void PictureLayerImpl::GetDebugBorderProperties(
-    SkColor* color,
-    float* width) const {
+void PictureLayerImpl::GetDebugBorderProperties(SkColor4f* color,
+                                                float* width) const {
   float device_scale_factor =
       layer_tree_impl() ? layer_tree_impl()->device_scale_factor() : 1;
 
   if (IsDirectlyCompositedImage()) {
-    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-    *color = DebugColors::ImageLayerBorderColor().toSkColor();
+    *color = DebugColors::ImageLayerBorderColor();
     *width = DebugColors::ImageLayerBorderWidth(device_scale_factor);
   } else {
-    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-    *color = DebugColors::TiledContentLayerBorderColor().toSkColor();
+    *color = DebugColors::TiledContentLayerBorderColor();
     *width = DebugColors::TiledContentLayerBorderWidth(device_scale_factor);
   }
 }

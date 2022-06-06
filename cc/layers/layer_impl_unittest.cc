@@ -102,7 +102,7 @@ TEST_F(LayerImplTest, VerifyPendingLayerChangesAreTrackedProperly) {
   gfx::Point arbitrary_point = gfx::Point(333, 444);
 
   gfx::Rect arbitrary_rect = gfx::Rect(arbitrary_point, arbitrary_size);
-  SkColor arbitrary_color = SkColorSetRGB(10, 20, 30);
+  SkColor4f arbitrary_color{0.1f, 0.2f, 0.3f, 1.0f};
   gfx::Transform arbitrary_transform;
   arbitrary_transform.Scale3d(0.1f, 0.2f, 0.3f);
   FilterOperations arbitrary_filters;
@@ -166,7 +166,7 @@ TEST_F(LayerImplTest, VerifyNeedsUpdateDrawProperties) {
   gfx::PointF arbitrary_scroll_offset(
       gfx::PointAtOffsetFromOrigin(arbitrary_vector2d));
   gfx::Size large_size = gfx::Size(1000, 1000);
-  SkColor arbitrary_color = SkColorSetRGB(10, 20, 30);
+  SkColor4f arbitrary_color{0.1f, 0.2f, 0.3f, 1.0f};
   gfx::Transform arbitrary_transform;
   arbitrary_transform.Scale3d(0.1f, 0.2f, 0.3f);
   FilterOperations arbitrary_filters;

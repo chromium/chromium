@@ -6248,7 +6248,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   auto* layer = AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
   layer->SetBounds(gfx::Size(10, 10));
   layer->SetDrawsContent(true);
-  layer->SetBackgroundColor(SK_ColorRED);
+  layer->SetBackgroundColor(SkColors::kRed);
   CopyProperties(root, layer);
 
   UpdateDrawProperties(host_impl_->active_tree());
@@ -11049,7 +11049,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PartialSwapReceivesDamageRect) {
 
   layer_tree_host_impl->active_tree()->SetDeviceViewportRect(gfx::Rect(10, 10));
   // This will damage everything.
-  root->SetBackgroundColor(SK_ColorBLACK);
+  root->SetBackgroundColor(SkColors::kBlack);
   args = viz::CreateBeginFrameArgsForTesting(
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1));
@@ -11256,13 +11256,13 @@ TEST_F(LayerTreeHostImplTestDrawAndTestDamage, FrameIncludesDamageRect) {
   auto* root = SetupRootLayer<SolidColorLayerImpl>(host_impl_->active_tree(),
                                                    gfx::Size(10, 10));
   root->SetDrawsContent(true);
-  root->SetBackgroundColor(SK_ColorRED);
+  root->SetBackgroundColor(SkColors::kRed);
 
   // Child layer is in the bottom right corner.
   auto* child = AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
   child->SetBounds(gfx::Size(1, 1));
   child->SetDrawsContent(true);
-  child->SetBackgroundColor(SK_ColorRED);
+  child->SetBackgroundColor(SkColors::kRed);
   CopyProperties(root, child);
   child->SetOffsetToTransformParent(gfx::Vector2dF(9, 9));
 
@@ -11527,7 +11527,7 @@ TEST_F(LayerTreeHostImplTestDrawAndTestDamage,
 
   LayerImpl* root = SetupRootLayer<SolidColorLayerImpl>(
       host_impl_->active_tree(), gfx::Size(10, 10));
-  root->SetBackgroundColor(SK_ColorRED);
+  root->SetBackgroundColor(SkColors::kRed);
   UpdateDrawProperties(host_impl_->active_tree());
 
   // RequiresHighResToDraw is set when new output surface is used.

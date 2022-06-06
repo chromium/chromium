@@ -33,7 +33,7 @@ TEST_F(SolidColorLayerImplTest, VerifyTilingCompleteAndNoOverlap) {
   auto* layer = AddLayer<SolidColorLayerImpl>();
   layer->SetBounds(layer_size);
   layer->SetDrawsContent(true);
-  layer->SetBackgroundColor(SK_ColorRED);
+  layer->SetBackgroundColor(SkColors::kRed);
   CopyProperties(root_layer(), layer);
   CreateEffectNode(layer).render_surface_reason = RenderSurfaceReason::kTest;
   UpdateActiveTreeDrawProperties();
@@ -44,7 +44,7 @@ TEST_F(SolidColorLayerImplTest, VerifyTilingCompleteAndNoOverlap) {
 }
 
 TEST_F(SolidColorLayerImplTest, VerifyCorrectBackgroundColorInQuad) {
-  SkColor test_color = 0xFFA55AFF;
+  SkColor4f test_color{0.647058f, 0.352941f, 1.0f, 1.0f};
   auto render_pass = viz::CompositorRenderPass::Create();
   gfx::Size layer_size = gfx::Size(100, 100);
   gfx::Rect visible_layer_rect = gfx::Rect(layer_size);
@@ -64,10 +64,11 @@ TEST_F(SolidColorLayerImplTest, VerifyCorrectBackgroundColorInQuad) {
   layer->AppendQuads(render_pass.get(), &data);
 
   ASSERT_EQ(render_pass->quad_list.size(), 1U);
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
   EXPECT_EQ(
       viz::SolidColorDrawQuad::MaterialCast(render_pass->quad_list.front())
           ->color,
-      test_color);
+      test_color.toSkColor());
 }
 
 TEST_F(SolidColorLayerImplTest, VerifyCorrectOpacityInQuad) {
@@ -78,7 +79,7 @@ TEST_F(SolidColorLayerImplTest, VerifyCorrectOpacityInQuad) {
   auto* layer = AddLayer<SolidColorLayerImpl>();
   layer->SetDrawsContent(true);
   layer->SetBounds(layer_size);
-  layer->SetBackgroundColor(SK_ColorRED);
+  layer->SetBackgroundColor(SkColors::kRed);
   CopyProperties(root_layer(), layer);
   auto& effect_node = CreateEffectNode(layer);
   effect_node.opacity = opacity;
@@ -104,7 +105,7 @@ TEST_F(SolidColorLayerImplTest, VerifyCorrectRenderSurfaceOpacityInQuad) {
   auto* layer = AddLayer<SolidColorLayerImpl>();
   layer->SetDrawsContent(true);
   layer->SetBounds(layer_size);
-  layer->SetBackgroundColor(SK_ColorRED);
+  layer->SetBackgroundColor(SkColors::kRed);
   CopyProperties(root_layer(), layer);
   auto& effect_node = CreateEffectNode(layer);
   effect_node.render_surface_reason = RenderSurfaceReason::kTest;
@@ -126,7 +127,7 @@ TEST_F(SolidColorLayerImplTest, VerifyCorrectRenderSurfaceOpacityInQuad) {
 }
 
 TEST_F(SolidColorLayerImplTest, VerifyEliminateTransparentAlpha) {
-  SkColor test_color = 0;
+  SkColor4f test_color = SkColors::kTransparent;
   auto render_pass = viz::CompositorRenderPass::Create();
   gfx::Size layer_size = gfx::Size(100, 100);
 
@@ -144,7 +145,7 @@ TEST_F(SolidColorLayerImplTest, VerifyEliminateTransparentAlpha) {
 }
 
 TEST_F(SolidColorLayerImplTest, VerifyEliminateTransparentOpacity) {
-  SkColor test_color = 0xFFA55AFF;
+  SkColor4f test_color{0.5f, 0.8f, 1.0f, 1.0f};
   auto render_pass = viz::CompositorRenderPass::Create();
   gfx::Size layer_size = gfx::Size(100, 100);
 
@@ -260,7 +261,7 @@ TEST_F(SolidColorLayerImplTest, Occlusion) {
   gfx::Size viewport_size(1000, 1000);
 
   auto* solid_color_layer_impl = AddLayer<SolidColorLayerImpl>();
-  solid_color_layer_impl->SetBackgroundColor(SkColorSetARGB(255, 10, 20, 30));
+  solid_color_layer_impl->SetBackgroundColor({0.1f, 0.2f, 0.3f, 1.0f});
   solid_color_layer_impl->SetBounds(layer_size);
   solid_color_layer_impl->SetDrawsContent(true);
   CopyProperties(root_layer(), solid_color_layer_impl);
