@@ -194,9 +194,8 @@ void GpuHostImpl::AddConnectionErrorHandler(base::OnceClosure handler) {
 void GpuHostImpl::BlockLiveOffscreenContexts() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (auto iter = urls_with_live_offscreen_contexts_.begin();
-       iter != urls_with_live_offscreen_contexts_.end(); ++iter) {
-    delegate_->BlockDomainFrom3DAPIs(*iter, gpu::DomainGuilt::kUnknown);
+  for (auto& url : urls_with_live_offscreen_contexts_) {
+    delegate_->BlockDomainFrom3DAPIs(url, gpu::DomainGuilt::kUnknown);
   }
 }
 
