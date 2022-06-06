@@ -11,7 +11,7 @@ const base::Feature kTestFeature{"TestFeature",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSharedHighlightingIOS{"SharedHighlightingIOS",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableFREDefaultBrowserPromoScreen{
     "EnableFREDefaultBrowserPromoScreen", base::FEATURE_DISABLED_BY_DEFAULT};
