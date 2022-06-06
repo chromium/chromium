@@ -507,15 +507,6 @@ TEST_F(KeyframeEffectTest, CheckCanStartAnimationOnCompositorBadTarget) {
   EXPECT_TRUE(keyframe_effect->CheckCanStartAnimationOnCompositor(
                   nullptr, animation_playback_rate) &
               CompositorAnimations::kTargetHasCSSOffset);
-
-  // If the target has multiple transform properties we can't composite it.
-  element->SetInlineStyleProperty(CSSPropertyID::kRotate, "90deg");
-  element->SetInlineStyleProperty(CSSPropertyID::kScale, "2 1");
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_TRUE(keyframe_effect->CheckCanStartAnimationOnCompositor(
-                  nullptr, animation_playback_rate) &
-              CompositorAnimations::kTargetHasMultipleTransformProperties);
 }
 
 TEST_F(KeyframeEffectTest, TranslationTransformsPreserveAxisAlignment) {

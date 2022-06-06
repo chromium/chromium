@@ -87,7 +87,11 @@ class CORE_EXPORT CompositorAnimations {
     // Cases where the target is invalid (but that we could feasibly address).
     kTargetHasIncompatibleAnimations = 1 << 6,
     kTargetHasCSSOffset = 1 << 7,
-    kTargetHasMultipleTransformProperties = 1 << 8,
+
+    // This failure reason is no longer used, as multiple transform-related
+    // animations are allowed on the same target provided they target different
+    // transform properties (e.g. rotate vs scale).
+    kObsoleteTargetHasMultipleTransformProperties = 1 << 8,
 
     // Cases relating to the properties being animated.
     kAnimationAffectsNonCSSProperties = 1 << 9,
@@ -95,7 +99,12 @@ class CORE_EXPORT CompositorAnimations {
     kTransformRelatedPropertyDependsOnBoxSize = 1 << 11,
     kFilterRelatedPropertyMayMovePixels = 1 << 12,
     kUnsupportedCSSProperty = 1 << 13,
-    kMultipleTransformAnimationsOnSameTarget = 1 << 14,
+
+    // This failure reason is no longer used, as multiple transform-related
+    // animations are allowed on the same target provided they target different
+    // transform properties (e.g. rotate vs scale).
+    kObsoleteMultipleTransformAnimationsOnSameTarget = 1 << 14,
+
     kMixedKeyframeValueTypes = 1 << 15,
 
     // Cases where the scroll timeline source is not composited.
