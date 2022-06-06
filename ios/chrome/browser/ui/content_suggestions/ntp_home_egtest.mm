@@ -32,6 +32,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -158,7 +159,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 }
 
 - (void)tearDown {
-  [NewTabPageAppInterface disableSuggestions];
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
                                 error:nil];
   [NewTabPageAppInterface resetSearchEngineTo:self.defaultSearchEngine];
@@ -1065,6 +1065,44 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
+// Tests that feed ablation successfully hides the feed from the NTP and the
+// toggle from the Chrome settings.
+- (void)testFeedAblationHidesFeed {
+  // Ensures that feed header is visible before enabling ablation.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Opens settings menu and ensures that Discover setting is present.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [[[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                           kSettingsArticleSuggestionsCellId)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 250)
+      onElementWithMatcher:grey_allOf(
+                               grey_accessibilityID(kSettingsTableViewId),
+                               grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  // Relaunch the app with ablation enabled.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kEnableFeedAblation);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Ensures that feed header is not visible with ablation enabled.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+
+  // Opens settings menu and ensures that Discover setting is not present.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [[[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                           kSettingsArticleSuggestionsCellId)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 250)
+      onElementWithMatcher:grey_allOf(
+                               grey_accessibilityID(kSettingsTableViewId),
+                               grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+}
+
 #pragma mark - Helpers
 
 - (void)addMostVisitedTile {
@@ -1265,6 +1303,13 @@ id<GREYMatcher> FeedHeaderSegmentFollowing() {
       std::string(kIOSOmniboxUpdatedPopupUIVariationName) + "/" + _variant);
 
   return config;
+}
+
+// Variants set the |--enable-features| flag manually, preventing us from being
+// able to add more features without overriding the initial ones. We therefore
+// skip this test for the variants since it relies on enabling a feature.
+- (void)testFeedAblationHidesFeed {
+  EARL_GREY_TEST_SKIPPED(@"Skipped for variants.");
 }
 
 @end
