@@ -401,9 +401,11 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         }
 
         // Multi-cols behave differently between the initial column balancing
-        // pass, and the regular pass (specifically when forced breaks are
-        // present), we just miss the cache for these cases.
+        // pass, and the regular pass (specifically when forced breaks or OOFs
+        // are present), we just miss the cache for these cases.
         if (old_space.IsInitialColumnBalancingPass()) {
+          if (physical_fragment.HasOutOfFlowInFragmentainerSubtree())
+            return nullptr;
           if (auto* block = DynamicTo<LayoutBlock>(this)) {
             if (block->IsFragmentationContextRoot())
               return nullptr;

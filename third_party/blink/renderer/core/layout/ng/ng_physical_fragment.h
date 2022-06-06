@@ -611,6 +611,13 @@ class CORE_EXPORT NGPhysicalFragment
     return has_out_of_flow_fragment_child_;
   }
 
+  // If there is an OOF contained within a fragmentation context, this will
+  // return true for all fragments in the chain from the OOF's CB to the
+  // fragmentainer that the CB resides in.
+  bool HasOutOfFlowInFragmentainerSubtree() const {
+    return has_out_of_flow_in_fragmentainer_subtree_;
+  }
+
   bool HasOutOfFlowPositionedDescendants() const {
     return oof_data_ && !oof_data_->oof_positioned_descendants.IsEmpty();
   }
@@ -709,6 +716,7 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_last_baseline_ : 1;
   const unsigned has_fragmented_out_of_flow_data_ : 1;
   const unsigned has_out_of_flow_fragment_child_ : 1;
+  const unsigned has_out_of_flow_in_fragmentainer_subtree_ : 1;
 
   // The following are only used by NGPhysicalLineBoxFragment.
   unsigned base_direction_ : 1;  // TextDirection

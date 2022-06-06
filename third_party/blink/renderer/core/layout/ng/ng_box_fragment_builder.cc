@@ -444,6 +444,12 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
   } else {
     DCHECK(!child_layout_result.ColumnSpannerPath());
   }
+
+  if (!child_box_fragment->IsFragmentainerBox() &&
+      !HasOutOfFlowInFragmentainerSubtree()) {
+    SetHasOutOfFlowInFragmentainerSubtree(
+        child_box_fragment->HasOutOfFlowInFragmentainerSubtree());
+  }
 }
 
 void NGBoxFragmentBuilder::PropagateChildBreakValues(
