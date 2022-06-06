@@ -105,11 +105,13 @@ SkColor ResolveColor(AshColorProvider::ContentLayerType type,
   return cros_styles::ResolveColor(TypeToColorName(type), use_dark_color);
 }
 
-// Notify all the other components besides the System UI to update on the color
-// mode changes. E.g, Chrome browser, WebUI. And since AshColorProvider is kind
-// of NativeTheme of ChromeOS. This will notify the View::OnThemeChanged to live
-// update the colors on color mode or theme changes as well.
-void NotifyColorModeChanges(bool is_dark_mode_enabled) {
+// Refresh colors of the system on the current color mode. Not only the SysUI,
+// but also all the other components like WebUI. And since AshColorProvider is
+// kind of NativeTheme of ChromeOS. This will trigger View::OnThemeChanged to
+// live update the colors. The colors live update can happen when color mode
+// changes or wallpaper changes. It is needed when wallpaper changes as the
+// background color is calculated from current wallpaper.
+void RefreshColorsOnColorMode(bool is_dark_mode_enabled) {
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   native_theme->set_use_dark_colors(is_dark_mode_enabled);
   native_theme->NotifyOnNativeThemeUpdated();
@@ -129,9 +131,10 @@ AshColorProvider::AshColorProvider() {
 
   // May be null in unit tests.
   if (Shell::HasInstance()) {
-    Shell::Get()->session_controller()->AddObserver(this);
-    Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(
-        this);
+    auto* shell = Shell::Get();
+    shell->session_controller()->AddObserver(this);
+    shell->login_screen_controller()->data_dispatcher()->AddObserver(this);
+    shell->wallpaper_controller()->AddObserver(this);
   }
 
   cros_styles::SetDebugColorsEnabled(base::FeatureList::IsEnabled(
@@ -144,14 +147,16 @@ AshColorProvider::~AshColorProvider() {
 
   // May be null in unit tests.
   if (Shell::HasInstance()) {
-    Shell::Get()->session_controller()->RemoveObserver(this);
-    if (Shell::Get()->login_screen_controller() &&
-        Shell::Get()->login_screen_controller()->data_dispatcher()) {
-      Shell::Get()
-          ->login_screen_controller()
-          ->data_dispatcher()
-          ->RemoveObserver(this);
-    }
+    auto* shell = Shell::Get();
+    shell->session_controller()->RemoveObserver(this);
+    auto* login_screen_controller = shell->login_screen_controller();
+    auto* data_dispatcher = login_screen_controller
+                                ? login_screen_controller->data_dispatcher()
+                                : nullptr;
+    if (data_dispatcher)
+      data_dispatcher->RemoveObserver(this);
+
+    shell->wallpaper_controller()->RemoveObserver(this);
   }
 
   cros_styles::SetDebugColorsEnabled(false);
@@ -195,11 +200,11 @@ void AshColorProvider::OnActiveUserPrefServiceChanged(PrefService* prefs) {
 
   pref_change_registrar_->Add(
       prefs::kDarkModeEnabled,
-      base::BindRepeating(&AshColorProvider::NotifyDarkModeEnabledPrefChange,
+      base::BindRepeating(&AshColorProvider::NotifyColorModeChanges,
                           base::Unretained(this)));
 
   // Immediately tell all the observers to load this user's saved preferences.
-  NotifyDarkModeEnabledPrefChange();
+  NotifyColorModeChanges();
 }
 
 void AshColorProvider::OnSessionStateChanged(
@@ -210,7 +215,7 @@ void AshColorProvider::OnSessionStateChanged(
       state != session_manager::SessionState::LOGIN_PRIMARY) {
     oobe_state_ = OobeDialogState::HIDDEN;
   }
-  NotifyDarkModeEnabledPrefChange();
+  RefreshColorsOnColorMode(IsDarkModeEnabled());
 }
 
 SkColor AshColorProvider::GetShieldLayerColor(ShieldLayerType type) const {
@@ -373,12 +378,19 @@ void AshColorProvider::OnFocusPod(const AccountId& account_id) {
           .FindBoolPath(account_id, prefs::kDarkModeEnabled);
 }
 
+void AshColorProvider::OnWallpaperColorsChanged() {
+  if (!features::IsDarkLightModeEnabled())
+    return;
+
+  RefreshColorsOnColorMode(IsDarkModeEnabled());
+}
+
 void AshColorProvider::ToggleColorMode() {
   DCHECK(active_user_pref_service_);
   active_user_pref_service_->SetBoolean(prefs::kDarkModeEnabled,
                                         !IsDarkModeEnabled());
   active_user_pref_service_->CommitPendingWrite();
-  NotifyDarkModeEnabledPrefChange();
+  NotifyColorModeChanges();
 
   DarkModeController::Get()->ToggledByUser();
 }
@@ -538,13 +550,13 @@ SkColor AshColorProvider::GetBackgroundThemedColorImpl(
       muted_color);
 }
 
-void AshColorProvider::NotifyDarkModeEnabledPrefChange() {
+void AshColorProvider::NotifyColorModeChanges() {
   const bool is_enabled = IsDarkModeEnabled();
   cros_styles::SetDarkModeEnabled(is_enabled);
   for (auto& observer : observers_)
     observer.OnColorModeChanged(is_enabled);
 
-  NotifyColorModeChanges(IsDarkModeEnabled());
+  RefreshColorsOnColorMode(IsDarkModeEnabled());
 }
 
 base::ScopedClosureRunner AshColorProvider::GetNotifyOnDarkModeChangeClosure() {
@@ -559,7 +571,7 @@ base::ScopedClosureRunner AshColorProvider::GetNotifyOnDarkModeChangeClosure() {
 void AshColorProvider::NotifyIfDarkModeChanged(bool old_is_dark_mode_enabled) {
   if (old_is_dark_mode_enabled == IsDarkModeEnabled())
     return;
-  NotifyDarkModeEnabledPrefChange();
+  NotifyColorModeChanges();
 }
 
 }  // namespace ash

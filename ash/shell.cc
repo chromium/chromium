@@ -829,6 +829,10 @@ Shell::~Shell() {
   keyboard_backlight_color_controller_.reset();
   rgb_keyboard_manager_.reset();
 
+  // `AshColorProvider` observes `WallPaperController` and must be destructed
+  // before it.
+  ash_color_provider_.reset();
+
   // These members access Shell in their destructors.
   wallpaper_controller_.reset();
   accessibility_controller_.reset();
@@ -951,8 +955,6 @@ Shell::~Shell() {
   // `CalendarController` observes `SessionController` and must be destructed
   // before it.
   calendar_controller_.reset();
-
-  ash_color_provider_.reset();
 
   shell_delegate_.reset();
 

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "base/callback_helpers.h"
 #include "base/observer_list.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -35,7 +36,8 @@ class ColorModeObserver;
 // system UI will be the combination of the colors of the four layers.
 class ASH_EXPORT AshColorProvider : public SessionObserver,
                                     public ColorProvider,
-                                    public LoginDataDispatcher::Observer {
+                                    public LoginDataDispatcher::Observer,
+                                    public WallpaperControllerObserver {
  public:
   AshColorProvider();
   AshColorProvider(const AshColorProvider& other) = delete;
@@ -78,6 +80,9 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // LoginDataDispatcher::Observer:
   void OnOobeDialogStateChanged(OobeDialogState state) override;
   void OnFocusPod(const AccountId& account_id) override;
+
+  // WallpaperControllerObserver:
+  void OnWallpaperColorsChanged() override;
 
   // Gets the color of |type| of the corresponding layer based on the current
   // inverted color mode. For views that need LIGHT colors while DARK mode is
@@ -128,8 +133,9 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   SkColor GetBackgroundThemedColorImpl(SkColor default_color,
                                        bool use_dark_color) const;
 
-  // Notifies all the observers on |kDarkModeEnabled|'s change.
-  void NotifyDarkModeEnabledPrefChange();
+  // Notifies all the observers on color mode changes and refreshes the system's
+  // colors on this change.
+  void NotifyColorModeChanges();
 
   // Returns a closure which calls `NotifyIfDarkModeChanged` if the dark mode
   // changed between creation and getting out of scope.
