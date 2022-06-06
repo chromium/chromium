@@ -64,6 +64,10 @@ class SidePanelEntry final {
   void AddObserver(SidePanelEntryObserver* observer);
   void RemoveObserver(SidePanelEntryObserver* observer);
 
+  base::WeakPtr<SidePanelEntry> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   const Id id_;
   const std::u16string name_;
@@ -74,6 +78,8 @@ class SidePanelEntry final {
       create_content_callback_;
 
   base::ObserverList<SidePanelEntryObserver> observers_;
+
+  base::WeakPtrFactory<SidePanelEntry> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_H_

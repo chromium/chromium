@@ -184,10 +184,8 @@ void SidePanelCoordinator::Show(absl::optional<SidePanelEntry::Id> entry_id) {
     entry_id = GetLastActiveEntryId().value_or(kDefaultEntry);
 
   SidePanelEntry* entry = GetEntryForId(entry_id.value());
-  if (!entry || (GetContentView() && GetLastActiveEntryId().has_value() &&
-                 GetLastActiveEntryId().value() == entry->id())) {
+  if (!entry)
     return;
-  }
 
   if (GetContentView() == nullptr) {
     InitializeSidePanel();
@@ -223,9 +221,13 @@ void SidePanelCoordinator::Close() {
   if (!GetContentView())
     return;
 
-  if (GetLastActiveEntryId().has_value()) {
-    SidePanelEntry* current_entry =
-        GetEntryForId(GetLastActiveEntryId().value());
+  if (current_entry_) {
+    // Reset current_entry_ first to prevent current_entry->OnEntryHidden() from
+    // calling multiple times. This could happen in the edge cases when callback
+    // inside current_entry->OnEntryHidden() is calling Close() to trigger race
+    // condition.
+    auto* current_entry = current_entry_.get();
+    current_entry_.reset();
     current_entry->OnEntryHidden();
   }
 
@@ -315,6 +317,10 @@ void SidePanelCoordinator::InitializeSidePanel() {
 void SidePanelCoordinator::PopulateSidePanel(
     SidePanelEntry* entry,
     absl::optional<std::unique_ptr<views::View>> content_view) {
+  if (current_entry_.get() == entry) {
+    return;
+  }
+
   auto* content_wrapper =
       GetContentView()->GetViewByID(kSidePanelContentWrapperViewId);
   DCHECK(content_wrapper);
@@ -323,21 +329,18 @@ void SidePanelCoordinator::PopulateSidePanel(
   DCHECK(content_wrapper->children().size() <= 1);
 
   GetContentView()->SetVisible(true);
-  if (content_wrapper->children().size()) {
-    DCHECK(GetLastActiveEntryId().has_value());
-    SidePanelEntry* current_entry =
-        GetEntryForId(GetLastActiveEntryId().value());
-    DCHECK(current_entry);
+  if (current_entry_ && content_wrapper->children().size()) {
     auto current_entry_view =
         content_wrapper->RemoveChildViewT(content_wrapper->children().front());
-    current_entry->CacheView(std::move(current_entry_view));
-    current_entry->OnEntryHidden();
+    current_entry_->CacheView(std::move(current_entry_view));
+    current_entry_->OnEntryHidden();
   }
   content_wrapper->AddChildView(content_view.has_value()
                                     ? std::move(content_view.value())
                                     : entry->GetContent());
   if (auto* contextual_registry = GetActiveContextualRegistry())
     contextual_registry->ResetActiveEntry();
+  current_entry_ = entry->GetWeakPtr();
   entry->OnEntryShown();
 }
 

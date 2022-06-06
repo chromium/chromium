@@ -47,6 +47,12 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
         base::BindRepeating([]() { return std::make_unique<views::View>(); })));
     contextual_registries_.push_back(SidePanelRegistry::Get(active_contents));
 
+    // Add a kSideSearch entry to the contextual registry for the second tab.
+    registry->Register(std::make_unique<SidePanelEntry>(
+        SidePanelEntry::Id::kSideSearch, u"testing1",
+        ui::ImageModel::FromVectorIcon(kReadLaterIcon, ui::kColorIcon),
+        base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+
     coordinator_ = browser_view()->side_panel_coordinator();
     coordinator_->SetNoDelaysForTesting();
     global_registry_ = coordinator_->global_registry_;
@@ -60,13 +66,15 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
     EXPECT_EQ(contextual_registry->entries()[0]->id(),
               SidePanelEntry::Id::kSideSearch);
 
-    // Verify the second tab has one entry, kLens.
+    // Verify the second tab has 2 entries, kLens and kSideSearch.
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
     active_contents = browser_view()->GetActiveWebContents();
     contextual_registry = SidePanelRegistry::Get(active_contents);
-    EXPECT_EQ(contextual_registry->entries().size(), 1u);
+    EXPECT_EQ(contextual_registry->entries().size(), 2u);
     EXPECT_EQ(contextual_registry->entries()[0]->id(),
               SidePanelEntry::Id::kLens);
+    EXPECT_EQ(contextual_registry->entries()[1]->id(),
+              SidePanelEntry::Id::kSideSearch);
   }
 
   void VerifyEntryExistanceAndValue(absl::optional<SidePanelEntry*> entry,
@@ -288,6 +296,30 @@ TEST_F(SidePanelCoordinatorTest, ShowContextualEntry) {
   EXPECT_EQ(GetLastActiveEntryId().value(), SidePanelEntry::Id::kSideSearch);
 }
 
+TEST_F(SidePanelCoordinatorTest, SwapBetweenTwoContextualEntryWithTheSameId) {
+  // Open side search for the first tab.
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+  coordinator_->Show(SidePanelEntry::Id::kReadingList);
+  auto* reading_list_entry = coordinator_->GetCurrentSidePanelEntryForTesting();
+  coordinator_->Show(SidePanelEntry::Id::kSideSearch);
+  auto* side_search_entry1 = coordinator_->GetCurrentSidePanelEntryForTesting();
+
+  // Switch to the second tab and open side search.
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_EQ(reading_list_entry,
+            coordinator_->GetCurrentSidePanelEntryForTesting());
+  coordinator_->Show(SidePanelEntry::Id::kSideSearch);
+  EXPECT_NE(side_search_entry1,
+            coordinator_->GetCurrentSidePanelEntryForTesting());
+
+  // Switch back to the first tab.
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_EQ(side_search_entry1,
+            coordinator_->GetCurrentSidePanelEntryForTesting());
+}
+
 TEST_F(SidePanelCoordinatorTest,
        SwapBetweenTabsAfterNavigatingToContextualEntry) {
   // Open side panel and verify it opens to kReadingList by default.
@@ -308,6 +340,7 @@ TEST_F(SidePanelCoordinatorTest,
                                SidePanelEntry::Id::kBookmarks);
   EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
   EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  auto* bookmarks_entry = coordinator_->GetCurrentSidePanelEntryForTesting();
 
   // Switch to a contextual entry and verify the active entry is updated.
   coordinator_->Show(SidePanelEntry::Id::kSideSearch);
@@ -318,6 +351,7 @@ TEST_F(SidePanelCoordinatorTest,
   VerifyEntryExistanceAndValue(contextual_registries_[0]->active_entry(),
                                SidePanelEntry::Id::kSideSearch);
   EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  auto* side_search_entry = coordinator_->GetCurrentSidePanelEntryForTesting();
 
   // Switch to a tab where this contextual entry is not available and verify we
   // fall back to the last seen global entry.
@@ -329,6 +363,8 @@ TEST_F(SidePanelCoordinatorTest,
   VerifyEntryExistanceAndValue(contextual_registries_[0]->active_entry(),
                                SidePanelEntry::Id::kSideSearch);
   EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_EQ(bookmarks_entry,
+            coordinator_->GetCurrentSidePanelEntryForTesting());
 
   // Switch back to the tab where the contextual entry was visible and verify it
   // is shown.
@@ -340,6 +376,8 @@ TEST_F(SidePanelCoordinatorTest,
   VerifyEntryExistanceAndValue(contextual_registries_[0]->active_entry(),
                                SidePanelEntry::Id::kSideSearch);
   EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_EQ(side_search_entry,
+            coordinator_->GetCurrentSidePanelEntryForTesting());
 }
 
 TEST_F(SidePanelCoordinatorTest, TogglePanelWithContextualEntryShowing) {

@@ -48,6 +48,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // This should be called before the side panel is first shown.
   void SetNoDelaysForTesting();
 
+  SidePanelEntry* GetCurrentSidePanelEntryForTesting() {
+    return current_entry_.get();
+  }
+
  private:
   friend class SidePanelCoordinatorTest;
   FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
@@ -103,6 +107,16 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   const raw_ptr<BrowserView> browser_view_;
   raw_ptr<SidePanelRegistry> global_registry_;
   absl::optional<SidePanelEntry::Id> last_active_global_entry_id_;
+
+  // current_entry_ tracks the entry that currently has its view hosted by the
+  // side panel. It is necessary as current_entry_ may belong to a contextual
+  // registry that is swapped out (during a tab switch for e.g.). In such
+  // situations we may still need a reference to the entry corresponding to the
+  // hosted view so we can cache and clean up appropriately before switching in
+  // the new entry.
+  // Use a weak pointer so that current side panel entry can be reset
+  // automatically if the entry is destroyed.
+  base::WeakPtr<SidePanelEntry> current_entry_;
 
   // Used to update SidePanelEntry options in the header_combobox_ based on
   // their availability in the observed side panel registries.
