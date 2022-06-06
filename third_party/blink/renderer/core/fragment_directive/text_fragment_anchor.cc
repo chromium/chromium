@@ -471,28 +471,31 @@ void TextFragmentAnchor::ApplyTargetToCommonAncestor(
 }
 
 void TextFragmentAnchor::FireBeforeMatchEvent(const RangeInFlatTree* range) {
-  // TODO(crbug.com/1252872): Only |first_node| is considered for the below
-  // ancestor expanding code, but we should be considering the entire range
-  // of selected text for ancestor unlocking as well.
-  Node& first_node = *range->ToEphemeralRange().Nodes().begin();
+  if (!range->IsCollapsed() && range->IsConnected()) {
+    // TODO(crbug.com/1252872): Only |first_node| is considered for the below
+    // ancestor expanding code, but we should be considering the entire range
+    // of selected text for ancestor unlocking as well.
+    Node& first_node = *range->ToEphemeralRange().Nodes().begin();
 
-  // Activate content-visibility:auto subtrees if needed.
-  DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
-      range->ToEphemeralRange());
+    // Activate content-visibility:auto subtrees if needed.
+    DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
+        range->ToEphemeralRange());
 
-  // If the active match is hidden inside a <details> element, then we should
-  // expand it so we can scroll to it.
-  if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
-      HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
-    UseCounter::Count(first_node.GetDocument(),
-                      WebFeature::kAutoExpandedDetailsForScrollToTextFragment);
-  }
+    // If the active match is hidden inside a <details> element, then we should
+    // expand it so we can scroll to it.
+    if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
+        HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
+      UseCounter::Count(
+          first_node.GetDocument(),
+          WebFeature::kAutoExpandedDetailsForScrollToTextFragment);
+    }
 
-  // If the active match is hidden inside a hidden=until-found element, then we
-  // should reveal it so we can scroll to it.
-  if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
-          first_node.GetExecutionContext())) {
-    DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
+    // If the active match is hidden inside a hidden=until-found element, then
+    // we should reveal it so we can scroll to it.
+    if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
+            first_node.GetExecutionContext())) {
+      DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
+    }
   }
 
   state_ = kBeforeMatchEventFired;
