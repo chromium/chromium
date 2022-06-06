@@ -127,8 +127,9 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "target_os": "chromeos",
-      "use_goma": true,
-      "use_libfuzzer": true
+      "use_libfuzzer": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Libfuzzer Upload Linux ASan": {
