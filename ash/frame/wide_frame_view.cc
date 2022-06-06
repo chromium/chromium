@@ -180,6 +180,15 @@ void WideFrameView::OnWindowDestroying(aura::Window* window) {
 
 void WideFrameView::OnDisplayMetricsChanged(const display::Display& display,
                                             uint32_t changed_metrics) {
+  aura::Window* target_window = target_->GetNativeWindow();
+  // The target window is detached from the tree when the window is being moved
+  // to another desks, or another display, and it may trigger the display
+  // metrics change if the target window is in fullscreen. Do not try to layout
+  // in this case. The it'll be layout when the window is added back.
+  // (crbug.com/1267128)
+  if (!target_window->GetRootWindow())
+    return;
+
   display::Screen* screen = display::Screen::GetScreen();
   if (screen->GetDisplayNearestWindow(target_->GetNativeWindow()).id() !=
           display.id() ||
@@ -191,8 +200,7 @@ void WideFrameView::OnDisplayMetricsChanged(const display::Display& display,
   // Ignore if this is called when the targe window state is nor proper
   // state. This can happen when switching the state to other states, in which
   // case, the wide frame will be removed.
-  if (!WindowState::Get(target_->GetNativeWindow())
-           ->IsMaximizedOrFullscreenOrPinned()) {
+  if (!WindowState::Get(target_window)->IsMaximizedOrFullscreenOrPinned()) {
     return;
   }
 

@@ -23,6 +23,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
@@ -782,6 +783,33 @@ TEST_F(NonClientFrameViewAshTest, WideFrameButton) {
     EXPECT_STREQ(views::kWindowControlRestoreIcon.name,
                  test_api.size_button()->icon_definition_for_test()->name);
   }
+}
+
+TEST_F(NonClientFrameViewAshTest, MoveFullscreenWideFrameBetweenDisplay) {
+  UpdateDisplay("800x600, 1000x600");
+
+  auto* screen = display::Screen::GetScreen();
+  auto display_list = screen->GetAllDisplays();
+
+  auto* delegate = new NonClientFrameViewAshTestWidgetDelegate();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(delegate, desks_util::GetActiveDeskContainerId(),
+                       gfx::Rect(100, 0, 400, 500));
+  widget->SetFullscreen(true);
+  std::unique_ptr<WideFrameView> wide_frame_view =
+      std::make_unique<WideFrameView>(widget.get());
+  wide_frame_view->GetWidget()->Show();
+  ASSERT_EQ(display_list[0].id(),
+            screen->GetDisplayNearestWindow(widget->GetNativeWindow()).id());
+  EXPECT_EQ(800,
+            wide_frame_view->GetWidget()->GetWindowBoundsInScreen().width());
+
+  window_util::MoveWindowToDisplay(widget->GetNativeWindow(),
+                                   display_list[1].id());
+  EXPECT_EQ(display_list[1].id(),
+            screen->GetDisplayNearestWindow(widget->GetNativeWindow()).id());
+  EXPECT_EQ(1000,
+            wide_frame_view->GetWidget()->GetWindowBoundsInScreen().width());
 }
 
 namespace {
