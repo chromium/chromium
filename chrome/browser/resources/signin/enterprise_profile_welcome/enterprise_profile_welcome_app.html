@@ -24,9 +24,15 @@
     --info-box-margin-top: 28px;
     --info-box-width: auto;
     --footer-margin: 16px;
-    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    min-height: 512px;
     position: relative;
     width: 512px;
+  }
+
+  :host([is-modal-dialog_]) #contentContainer h2 {
+    margin-top: 0;
   }
 
   .secondary {
@@ -39,6 +45,11 @@
     box-sizing: border-box;
     position: absolute;
     width: 100%;
+  }
+
+  :host([is-modal-dialog_]) .action-container {
+    margin-top: auto;
+    position: relative;
   }
 
   #headerContainer {
