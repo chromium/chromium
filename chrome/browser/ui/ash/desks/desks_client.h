@@ -94,6 +94,12 @@ class DesksClient : public ash::SessionObserver {
   // further uses of this method.
   void GetDeskTemplates(GetDeskTemplatesCallback callback);
 
+  using GetAllDesksCallback =
+      base::OnceCallback<void(const std::vector<const ash::Desk*>&,
+                              std::string error)>;
+  // Returns the current available desks.
+  void GetAllDesks(GetAllDesksCallback callback);
+
   using GetTemplateJsonCallback =
       base::OnceCallback<void(const std::string& template_json,
                               std::string error)>;

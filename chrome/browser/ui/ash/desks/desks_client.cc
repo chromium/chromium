@@ -53,6 +53,7 @@ constexpr char kNoSavedTemplatesError[] = "You can create up to 6 templates.";
 constexpr char kNoSuchDeskError[] = "The desk cannot be found.";
 constexpr char kInvalidDeskIdError[] = "The desk id is not valid.";
 constexpr char kCantCloseDeskError[] = "The desk cannot be closed.";
+constexpr char kCantGetAllDesksError[] = "Unable to retrieve all desks.";
 
 // Timeout time used in LaunchPerformanceTracker.
 constexpr base::TimeDelta kLaunchPerformanceTimeout = base::Minutes(3);
@@ -342,6 +343,13 @@ void DesksClient::RemoveDesk(const base::GUID& desk_uuid,
   }
 
   std::move(callback).Run("");
+}
+
+void DesksClient::GetAllDesks(GetAllDesksCallback callback) {
+  std::vector<const ash::Desk*> desks;
+  desks_controller_->GetAllDesks(desks);
+  // There should be at least one default desk.
+  std::move(callback).Run(desks, desks.empty() ? kCantGetAllDesksError : "");
 }
 
 void DesksClient::LaunchAppsFromTemplate(

@@ -19,6 +19,13 @@ namespace wmDesksPrivate {
     boolean combineDesks;
   };
 
+   dictionary Desk {
+    // Unique ID for a desk.
+    DOMString deskUuid;
+    // User readable name of the desk.
+    DOMString deskName;
+  };
+
   callback CaptureDeskAndSaveTemplateCallback =
       void (DeskTemplate deskTemplate);
   callback GetSavedDeskTemplatesCallback =
@@ -26,6 +33,7 @@ namespace wmDesksPrivate {
   callback LaunchDeskTemplateCallback = void (DOMString deskId);
   callback VoidCallback = void ();
   callback GetDeskTemplateJsonCallback = void (DOMString templateJson);
+  callback GetAllDesksCallback = void (Desk[] desks);
 
   interface Functions {
     // Captures the current active desk as a template and then returns the
@@ -72,5 +80,8 @@ namespace wmDesksPrivate {
     // the desk.
     static void removeDesk(DOMString deskId, optional RemoveDeskOptions removeDeskOptions,
                                           VoidCallback callback);
+
+    // Returns all available desks.
+    static void getAllDesks(GetAllDesksCallback callback);
   };
 };

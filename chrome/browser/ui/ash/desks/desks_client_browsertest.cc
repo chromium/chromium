@@ -2095,6 +2095,18 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, RemoveWithInvalidDeskId) {
   EXPECT_EQ(1, desks_controller->desks().size());
 }
 
+// Tests list all available desks.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, GetAllDesks) {
+  auto* desks_controller = ash::DesksController::Get();
+  // Should have 1 default active desk.
+  EXPECT_EQ(1, desks_controller->desks().size());
+  DesksClient::Get()->GetAllDesks(base::BindLambdaForTesting(
+      [&](const std::vector<const ash::Desk*>& desks, std::string error) {
+        EXPECT_TRUE(error.empty());
+        EXPECT_EQ(1, desks_controller->desks().size());
+      }));
+}
+
 class DesksTemplatesClientArcTest : public InProcessBrowserTest {
  public:
   DesksTemplatesClientArcTest() {

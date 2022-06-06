@@ -11,6 +11,7 @@
 
 namespace ash {
 class DeskTemplate;
+class Desk;
 }
 
 namespace extensions {
@@ -161,6 +162,26 @@ class WmDesksPrivateRemoveDeskFunction : public ExtensionFunction {
   void OnRemoveDesk(std::string error_string);
 };
 
+class WmDesksPrivateGetAllDesksFunction : public ExtensionFunction {
+ public:
+  WmDesksPrivateGetAllDesksFunction();
+  WmDesksPrivateGetAllDesksFunction(const WmDesksPrivateGetAllDesksFunction&) =
+      delete;
+  WmDesksPrivateGetAllDesksFunction& operator=(
+      const WmDesksPrivateGetAllDesksFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.getAllDesks",
+                             WMDESKSPRIVATE_GETALLDESKS)
+
+ protected:
+  ~WmDesksPrivateGetAllDesksFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  void OnGetAllDesks(const std::vector<const ash::Desk*>& desks,
+                     std::string error_string);
+};
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_WM_WM_DESKS_PRIVATE_API_H_

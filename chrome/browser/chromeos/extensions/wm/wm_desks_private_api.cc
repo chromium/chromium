@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/desk_template.h"
+#include "ash/wm/desks/desk.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +25,13 @@ api::wm_desks_private::DeskTemplate FromAshDeskTemplate(
   out_api_template.template_name =
       base::UTF16ToUTF8(desk_template.template_name());
   return out_api_template;
+}
+
+api::wm_desks_private::Desk FromAshDesk(const ash::Desk& ash_desk) {
+  api::wm_desks_private::Desk target;
+  target.desk_name = base::UTF16ToUTF8(ash_desk.name());
+  target.desk_uuid = ash_desk.uuid().AsLowercaseString();
+  return target;
 }
 
 }  // namespace
@@ -237,6 +245,33 @@ void WmDesksPrivateRemoveDeskFunction::OnRemoveDesk(std::string error_string) {
   }
 
   Respond(NoArguments());
+}
+
+WmDesksPrivateGetAllDesksFunction::WmDesksPrivateGetAllDesksFunction() =
+    default;
+WmDesksPrivateGetAllDesksFunction::~WmDesksPrivateGetAllDesksFunction() =
+    default;
+
+ExtensionFunction::ResponseAction WmDesksPrivateGetAllDesksFunction::Run() {
+  DesksClient::Get()->GetAllDesks(
+      base::BindOnce(&WmDesksPrivateGetAllDesksFunction::OnGetAllDesks, this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void WmDesksPrivateGetAllDesksFunction::OnGetAllDesks(
+    const std::vector<const ash::Desk*>& desks,
+    std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
+    return;
+  }
+
+  std::vector<api::wm_desks_private::Desk> api_desks;
+  for (const ash::Desk* desk : desks)
+    api_desks.push_back(FromAshDesk(*desk));
+
+  Respond(ArgumentList(
+      api::wm_desks_private::GetAllDesks::Results::Create(api_desks)));
 }
 
 }  // namespace extensions
