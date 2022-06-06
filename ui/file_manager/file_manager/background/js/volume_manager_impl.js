@@ -78,6 +78,11 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  getMediaStoreFilesOnlyFilterEnabled() {
+    return false;
+  }
+
+  /** @override */
   dispose() {}
 
   /**

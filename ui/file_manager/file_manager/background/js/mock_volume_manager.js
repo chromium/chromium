@@ -81,6 +81,11 @@ export class MockVolumeManager {
   }
 
   /** @override */
+  getMediaStoreFilesOnlyFilterEnabled() {
+    return false;
+  }
+
+  /** @override */
   dispose() {}
 
   /**

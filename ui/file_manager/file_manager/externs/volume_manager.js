@@ -31,6 +31,14 @@ export class VolumeManager {
   getFuseBoxOnlyFilterEnabled() {}
 
   /**
+   * Gets the 'media-store-files-only' filter state: true if enabled, false if
+   * disabled. The filter is only enabled by the Android (ARC) file picker, and
+   * implemented by {FilteredVolumeManager} override.
+   * @return {boolean}
+   */
+  getMediaStoreFilesOnlyFilterEnabled() {}
+
+  /**
    * Disposes the instance. After the invocation of this method, any other
    * method should not be called.
    */

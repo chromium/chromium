@@ -109,14 +109,21 @@ export class FilteredVolumeManager extends EventTarget {
 
     /**
      * True if |volumeFilter| contains the 'fusebox-only' filter. SelectFileAsh
-     * (file picker) sets this filter.
+     * (Lacros) file picker sets this filter.
      * @private @const {boolean}
      */
     this.isFuseBoxOnly_ = volumeFilter.includes('fusebox-only');
 
     /**
+     * True if |volumeFilter| contains the 'media-store-files-only' filter.
+     * Android (ARC) file picker sets this filter.
+     * @private @const {boolean}
+     */
+    this.isMediaStoreOnly_ = volumeFilter.includes('media-store-files-only');
+
+    /**
      * True if chrome://flags#fuse-box-debug is enabled. This shows additional
-     * UI elements, for manual testing.
+     * UI elements, for manual fusebox testing.
      * @private @const {boolean}
      */
     this.isFuseBoxDebugEnabled_ = util.isFuseBoxDebugEnabled();
@@ -131,6 +138,11 @@ export class FilteredVolumeManager extends EventTarget {
   /** @override */
   getFuseBoxOnlyFilterEnabled() {
     return this.isFuseBoxOnly_;
+  }
+
+  /** @override */
+  getMediaStoreFilesOnlyFilterEnabled() {
+    return this.isMediaStoreOnly_;
   }
 
   /**
