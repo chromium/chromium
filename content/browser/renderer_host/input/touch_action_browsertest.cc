@@ -830,17 +830,11 @@ class TouchActionBrowserTestEnableCursorControl
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1331056): Flaky Crash on Android
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_BasicCursorControl DISABLED_BasicCursorControl
-#else
-#define MAYBE_BasicCursorControl BasicCursorControl
-#endif
 // Perform a horizontal swipe over an editable element from right to left.
 // Ensure the swipe is interpreted as a cursor control movement, rather than a
 // scroll, and changes the selection.
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
-                       MAYBE_BasicCursorControl) {
+                       BasicCursorControl) {
   if (!::features::IsSwipeToMoveCursorEnabled())
     return;
   LoadURL(kContentEditableDataURL.c_str());
