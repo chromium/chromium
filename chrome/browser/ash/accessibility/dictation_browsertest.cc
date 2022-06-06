@@ -346,6 +346,8 @@ class DictationTest
         browser()->tab_strip_model()->GetActiveWebContents(),
         ui::kAXModeComplete, ax::mojom::Event::kValueChanged);
     SendFinalResultAndWait(result);
+    // TODO(https://crbug.com/1333354): Investigate why this does not always
+    // return true.
     std::ignore = waiter.WaitForNotification();
     WaitForTextAreaValue(value);
   }
@@ -359,6 +361,8 @@ class DictationTest
     content::BoundingBoxUpdateWaiter bounding_box_waiter(web_contents);
     SendFinalResultAndWait(result);
     bounding_box_waiter.Wait();
+    // TODO(https://crbug.com/1333354): Investigate why this does not always
+    // return true.
     std::ignore = selection_waiter.WaitForNotification();
   }
 
@@ -370,6 +374,8 @@ class DictationTest
         browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
     SendFinalResultAndWait(result);
     caret_waiter.Wait();
+    // TODO(https://crbug.com/1333354): Investigate why this does not always
+    // return true.
     std::ignore = selection_waiter.WaitForNotification();
   }
 
