@@ -3,20 +3,17 @@
   <head>
     <meta charset="utf-8">
     <title>cr-checkbox demo</title>
-    <style>
-      html,
-      body {
-        height: 100%;
-        overflow: hidden;
-        width: 100%;
-      }
-
-      body {
-        margin: 0;
-      }
-    </style>
-  </head>
+    <link rel="stylesheet" href="demo.css">
   <body>
-    Demo content will be added here
+    <h1>cr-checkbox</h1>
+    <div class="demos">
+      <cr-checkbox>Checkbox</cr-checkbox>
+      <cr-checkbox checked>Checkbox</cr-checkbox>
+      <cr-checkbox disabled>Disabled checkbox</cr-checkbox>
+      <cr-checkbox checked disabled>Disabled checked checkbox</cr-checkbox>
+    </div>
+
+    <script src="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js"
+        type="module"></script>
   </body>
 </html>

@@ -29,6 +29,7 @@ generate_grd("build_grd") {
   grd_prefix = "webui_gallery"
   out_grd = "$target_gen_dir/resources.grd"
   input_files = [
+    "demos/demo.css",
     "demos/cr_button_demo.html",
     "demos/cr_checkbox_demo.html",
     "webui_gallery.html",

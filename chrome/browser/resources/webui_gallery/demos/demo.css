@@ -1,0 +1,32 @@
+/* Copyright 2022 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+@import 'chrome://resources/css/text_defaults_md.css';
+
+body {
+  margin: 0;
+  padding: 16px;
+}
+
+h1 {
+  font-size: 1.5em;
+  margin: 0;
+  margin-block-end: 16px;
+}
+
+.demos {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+}
+
+.flex {
+  display: flex;
+}
