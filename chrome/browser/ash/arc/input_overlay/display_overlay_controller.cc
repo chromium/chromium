@@ -16,8 +16,8 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/educational_view.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/error_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
@@ -399,7 +399,7 @@ void DisplayOverlayController::AddEditErrorMsg(ActionView* action_view,
   DCHECK(parent_view);
   if (!parent_view)
     return;
-  auto error = std::make_unique<ErrorView>(this, action_view, error_msg);
+  auto error = std::make_unique<MessageView>(this, action_view, error_msg);
   error_ = parent_view->AddChildView(std::move(error));
 }
 

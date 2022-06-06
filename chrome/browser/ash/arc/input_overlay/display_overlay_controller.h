@@ -9,8 +9,8 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_menu.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/error_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -34,12 +34,12 @@ class InputMappingView;
 class InputMenuView;
 class ActionEditMenu;
 class EditFinishView;
-class ErrorView;
+class MessageView;
 class EducationalView;
 
 // DisplayOverlayController manages the input mapping view, view and edit mode,
 // menu, and educational dialog. It also handles the visibility of the
-// |ActionEditMenu| and |ErrorView| by listening to the |LocatedEvent|.
+// |ActionEditMenu| and |MessageView| by listening to the |LocatedEvent|.
 class DisplayOverlayController : public ui::EventHandler {
  public:
   DisplayOverlayController(TouchInjector* touch_injector, bool first_launch);
@@ -122,8 +122,8 @@ class DisplayOverlayController : public ui::EventHandler {
   void SetTouchInjectorEnable(bool enable);
   bool GetTouchInjectorEnable();
 
-  // Close |ActionEditMenu| Or |ErrorView| if |LocatedEvent| happens outside of
-  // their view bounds.
+  // Close |ActionEditMenu| Or |MessageView| if |LocatedEvent| happens outside
+  // of their view bounds.
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 
   // For test:
@@ -140,7 +140,7 @@ class DisplayOverlayController : public ui::EventHandler {
   raw_ptr<views::ImageButton> menu_entry_ = nullptr;
   raw_ptr<ActionEditMenu> action_edit_menu_ = nullptr;
   raw_ptr<EditFinishView> edit_finish_view_ = nullptr;
-  raw_ptr<ErrorView> error_ = nullptr;
+  raw_ptr<MessageView> error_ = nullptr;
   raw_ptr<EducationalView> educational_view_ = nullptr;
   raw_ptr<ash::PillButton> nudge_view_ = nullptr;
 
