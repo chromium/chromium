@@ -44,7 +44,6 @@ class CastWebService;
 class DisplaySettingsManager;
 class ServiceConnector;
 class ServiceManagerContext;
-class WaylandServerController;
 
 #if defined(USE_AURA)
 class CastWindowManagerAura;
@@ -168,10 +167,6 @@ class CastBrowserMainParts : public content::BrowserMainParts {
       extensions_browser_client_;
   std::unique_ptr<PrefService> local_state_;
   std::unique_ptr<PrefService> user_pref_service_;
-#endif
-
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
-  std::unique_ptr<WaylandServerController> wayland_server_controller_;
 #endif
 
   std::unique_ptr<CastFeatureUpdateObserver> feature_update_observer_;

@@ -486,10 +486,6 @@ cast_source_set("browser_base") {
 
   if ((is_linux || is_chromeos) && use_ozone) {
     sources += [
-      "exo/cast_wm_helper.cc",
-      "exo/cast_wm_helper.h",
-      "exo/wayland_server_controller.cc",
-      "exo/wayland_server_controller.h",
       "webview/cast_app_controller.cc",
       "webview/cast_app_controller.h",
       "webview/cast_app_rpc_instance.cc",
