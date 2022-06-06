@@ -14,6 +14,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
@@ -22,7 +23,8 @@ namespace policy {
 
 namespace {
 const char kAutoplayTestPageURL[] = "/media/autoplay_iframe.html";
-}
+const char kUnifiedAutoplayTestPageURL[] = "/media/unified_autoplay.html";
+}  // namespace
 
 class AutoplayPolicyTest : public PolicyTest {
  public:
@@ -275,6 +277,73 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest,
   NavigateToTestPage();
   EXPECT_TRUE(TryAutoplay(GetMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
+}
+
+class AutoplayPolicyFencedFrameTest : public AutoplayPolicyTest {
+ public:
+  AutoplayPolicyFencedFrameTest() = default;
+  ~AutoplayPolicyFencedFrameTest() override = default;
+
+  // Prevent additional feature/field trial enablement.
+  void SetUpCommandLine(base::CommandLine* command_line) override {}
+
+  void NavigateAndCheckAutoplayAllowed(bool expected_result) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL(kUnifiedAutoplayTestPageURL)));
+    // Append a cross origin fenced frame into the primary main frame.
+    content::RenderFrameHost* fenced_frame_host =
+        fenced_frame_helper_.CreateFencedFrame(
+            GetMainFrame(),
+            embedded_test_server2()->GetURL(kUnifiedAutoplayTestPageURL));
+    ASSERT_NE(nullptr, fenced_frame_host);
+
+    // Check that autoplay works as |expected_result|.
+    EXPECT_EQ(TryAutoplay(GetMainFrame()), expected_result);
+    EXPECT_EQ(TryAutoplay(fenced_frame_host), expected_result);
+  }
+
+  bool TryAutoplay(content::RenderFrameHost* rfh) {
+    bool result = false;
+    EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
+        rfh, "attemptPlay();", &result));
+    return result;
+  }
+
+ protected:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(AutoplayPolicyFencedFrameTest, AutoplayAllowedByPolicy) {
+  // Check that autoplay was not allowed.
+  NavigateAndCheckAutoplayAllowed(false);
+
+  // Update policy to allow autoplay.
+  PolicyMap policies;
+  SetPolicy(&policies, key::kAutoplayAllowed, base::Value(true));
+  UpdateProviderPolicy(policies);
+
+  // Check that autoplay was allowed by policy.
+  NavigateAndCheckAutoplayAllowed(true);
+}
+
+IN_PROC_BROWSER_TEST_F(AutoplayPolicyFencedFrameTest,
+                       AutoplayAllowlist_Allowed) {
+  // Check that autoplay was not allowed.
+  NavigateAndCheckAutoplayAllowed(false);
+
+  // Create a test allowlist with our origin.
+  std::vector<base::Value> allowlist;
+  allowlist.emplace_back(
+      base::Value(embedded_test_server()->GetURL("/").spec()));
+
+  // Update policy to allow autoplay for our test origin.
+  PolicyMap policies;
+  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  UpdateProviderPolicy(policies);
+
+  // Check that autoplay was allowed by policy.
+  NavigateAndCheckAutoplayAllowed(true);
 }
 
 }  // namespace policy
