@@ -8,13 +8,16 @@
 namespace ui {
 namespace ime {
 
-const gfx::Rect kWindowAnchorRect = gfx::Rect(-1000, -1000, 0, 0);
+const gfx::Rect kWindowAnchorRect = gfx::Rect(-100000, -100000, 0, 0);
 
 AssistiveAccessibilityView::AssistiveAccessibilityView(gfx::NativeView parent) {
   DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
   SetCanActivate(false);
   DCHECK(parent);
   set_parent_window(parent);
+  set_margins(gfx::Insets());
+  set_title_margins(gfx::Insets());
+  set_shadow(views::BubbleBorder::NO_SHADOW);
 
   accessibility_label_ =
       AddChildView(std::make_unique<SuggestionAccessibilityLabel>());
