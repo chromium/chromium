@@ -2653,67 +2653,67 @@ Try tapping the mic to ask me anything.
 
       <!-- Shimless RMA -->
       <!-- Component names. Used by select components and calibration pages-->
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_AUDIO" translateable="false" desc="Name of device audio processing component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_AUDIO" desc="Name of device audio processing component.">
         Audio
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_BATTERY" translateable="false" desc="Name of device battery component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_BATTERY" desc="Name of device battery component.">
         Battery
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_STORAGE" translateable="false" desc="Name of device SSD storage component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_STORAGE" desc="Name of device SSD storage component.">
         Storage
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_VPD_CACHE" translateable="false" desc="Name of device Vital Product Data SPI flash storage component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_VPD_CACHE" desc="Name of device Vital Product Data SPI flash storage component.">
         Vpd Cached
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_NETWORK" translateable="false" desc="Name of device network component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_NETWORK" desc="Name of device network component.">
         Network
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_CAMERA" translateable="false" desc="Name of device camera component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_CAMERA" desc="Name of device camera component.">
         Camera
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_STYLUS" translateable="false" desc="Name of device stylus support component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_STYLUS" desc="Name of device stylus support component.">
         Stylus support
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_TOUCHPAD" translateable="false" desc="Name of device touchpad component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_TOUCHPAD" desc="Name of device touchpad component.">
         Touchpad
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_TOUCHSCREEN" translateable="false" desc="Name of device touchscreen component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_TOUCHSCREEN" desc="Name of device touchscreen component.">
         Touchscreen
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_MEMORY" translateable="false" desc="Name of device memory components.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_MEMORY" desc="Name of device memory components.">
         Memory
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_DISPLAY_PANEL" translateable="false" desc="Name of device display panel component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_DISPLAY_PANEL" desc="Name of device display panel component.">
         Display
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_CELLULAR" translateable="false" desc="Name of device cellular network component. Used for wireless internet service through a service provider such as Google Fi.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_CELLULAR" desc="Name of device cellular network component. Used for wireless internet service through a service provider such as Google Fi.">
         Cellular
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_ETHERNET" translateable="false" desc="Name of device ethernet component. Used for wired internet connection.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_ETHERNET" desc="Name of device ethernet component. Used for wired internet connection.">
         Ethernet
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_WIRELESS" translateable="false" desc="Name of device Wi-Fi network component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_WIRELESS" desc="Name of device Wi-Fi network component.">
         Wireless
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_BASE_ACCELEROMETER" translateable="false" desc="Name of device accelerometer component in the base (e.g. mainboard and keyboard) part of the device.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_BASE_ACCELEROMETER" desc="Name of device accelerometer component in the base (e.g. mainboard and keyboard) part of the device.">
         Base Accelerometer
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_LID_ACCELEROMETER" translateable="false" desc="Name of device accelerometer component in the lid (e.g. screen) of the component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_LID_ACCELEROMETER" desc="Name of device accelerometer component in the lid (e.g. screen) of the component.">
         Lid Accelerometer
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_BASE_GYROSCOPE" translateable="false" desc="Name of device gyroscope component in the base (e.g. mainboard and keyboard) part of the device.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_BASE_GYROSCOPE" desc="Name of device gyroscope component in the base (e.g. mainboard and keyboard) part of the device.">
         Base Gyroscope
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_LID_GYROSCOPE" translateable="false" desc="Name of device component in the lid (e.g. screen) of the component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_LID_GYROSCOPE" desc="Name of device component in the lid (e.g. screen) of the component.">
         Lid Gyroscope
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_SCREEN" translateable="false" desc="Name of device screen component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_SCREEN" desc="Name of device screen component.">
         Screen
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_KEYBOARD" translateable="false" desc="Name of device keyboard component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_KEYBOARD" desc="Name of device keyboard component.">
         Keyboard
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_POWER_BUTTON" translateable="false" desc="Name of device power button component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_POWER_BUTTON" desc="Name of device power button component.">
         Power Button
       </message>
       <!-- Splash screen -->
