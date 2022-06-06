@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_OobeLogin) {
 }
 
 // Test focusing different pods.
-IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, OobeLogin) {
+IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, DISABLED_OobeLogin) {
   ASSERT_EQ(LoginScreenTestApi::GetFocusedUser(), user2);
   EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
 
