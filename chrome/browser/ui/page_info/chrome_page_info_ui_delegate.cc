@@ -102,7 +102,7 @@ ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
   if (auto* service =
           AboutThisSiteServiceFactory::GetForProfile(GetProfile())) {
     return service->GetAboutThisSiteInfo(
-        site_url_, web_contents_->GetMainFrame()->GetPageUkmSourceId());
+        site_url_, web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
   return absl::nullopt;
 }

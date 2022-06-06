@@ -163,7 +163,7 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
   const PermissionsData* permissions_data = extension->permissions_data();
 
   const GURL& url =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin().GetURL();
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL();
 
   // If the extension requested the host permission to |url| but had it
   // withheld, we grant it active tab-style permissions, even if it doesn't have
@@ -215,7 +215,7 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
       ProcessManager* process_manager = ProcessManager::Get(browser_context);
       SendRendererMessageToProcesses(
           process_manager->GetRenderFrameHostsForExtension(extension->id()),
-          web_contents()->GetMainFrame()->GetProcess(), update_message);
+          web_contents()->GetPrimaryMainFrame()->GetProcess(), update_message);
 
       // If more things ever need to know about this, we should consider making
       // an observer class.
@@ -284,7 +284,8 @@ void ActiveTabPermissionGranter::ClearActiveExtensionsAndNotify() {
   RendererMessageFunction clear_message =
       base::BindRepeating(&ClearTabSpecificPermissions, extension_ids, tab_id_);
   SendRendererMessageToProcesses(
-      frame_hosts, web_contents()->GetMainFrame()->GetProcess(), clear_message);
+      frame_hosts, web_contents()->GetPrimaryMainFrame()->GetProcess(),
+      clear_message);
 
   granted_extensions_.Clear();
 }

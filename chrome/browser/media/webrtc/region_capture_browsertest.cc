@@ -90,7 +90,7 @@ struct TabInfo {
   void StartEmbeddingFrame(const GURL& url) {
     std::string script_result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(),
+        web_contents->GetPrimaryMainFrame(),
         base::StringPrintf("startEmbeddingFrame('%s');", url.spec().c_str()),
         &script_result));
     EXPECT_EQ(script_result, "embedding-done");
@@ -102,7 +102,8 @@ struct TabInfo {
 
     std::string script_result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(), "startCapture();", &script_result));
+        web_contents->GetPrimaryMainFrame(), "startCapture();",
+        &script_result));
     EXPECT_EQ(script_result, "capture-success");
   }
 
@@ -112,7 +113,7 @@ struct TabInfo {
 
     std::string script_result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(), "startCaptureFromEmbeddedFrame();",
+        web_contents->GetPrimaryMainFrame(), "startCaptureFromEmbeddedFrame();",
         &script_result));
     EXPECT_EQ(script_result, "embedded-capture-success");
   }
@@ -124,7 +125,7 @@ struct TabInfo {
         (frame == Frame::kTopLevelDocument) ? "top" : "embedded";
     std::string script_result = "error-not-modified";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(),
+        web_contents->GetPrimaryMainFrame(),
         base::StrCat(
             {"produceCropId(\"", frame_js, "\", \"" + element_id + "\");"}),
         &script_result));
@@ -134,7 +135,7 @@ struct TabInfo {
   std::string CropTo(const std::string& crop_id) {
     std::string script_result = "error-not-modified";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(),
+        web_contents->GetPrimaryMainFrame(),
         base::StrCat({"cropTo(\"", crop_id, "\");"}), &script_result));
     return script_result;
   }
@@ -145,7 +146,7 @@ struct TabInfo {
         (frame == Frame::kTopLevelDocument) ? "top" : "embedded";
     std::string script_result = "error-not-modified";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(),
+        web_contents->GetPrimaryMainFrame(),
         base::StrCat(
             {"createNewDivElement(\"", frame_js, "\", \"", div_id, "\");"}),
         &script_result));

@@ -358,7 +358,7 @@ class TranslateManagerRenderViewHostTest
     params.writing_direction_right_to_left = 0;
 #endif  // BUILDFLAG(IS_MAC)
     params.edit_flags = blink::ContextMenuDataEditFlags::kCanTranslate;
-    return new TestRenderViewContextMenu(*web_contents()->GetMainFrame(),
+    return new TestRenderViewContextMenu(*web_contents()->GetPrimaryMainFrame(),
                                          params);
   }
 
@@ -877,7 +877,7 @@ TEST_F(TranslateManagerRenderViewHostTest, ReloadFromLocationBar) {
       url, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
   int pending_id =
       web_contents()->GetController().GetPendingEntry()->GetUniqueID();
-  content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+  content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
       ->SendNavigateWithTransition(pending_id, false, url,
                                    ui::PAGE_TRANSITION_TYPED);
 

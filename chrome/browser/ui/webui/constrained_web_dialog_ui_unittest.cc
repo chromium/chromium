@@ -107,7 +107,7 @@ class ConstrainedWebDialogUITest : public ::testing::Test {
 
     dialog_delegate_ = std::make_unique<TestConstrainedWebDialogDelegate>();
     dialog_ = std::make_unique<ConstrainedWebDialogUI>(web_ui_.get());
-    dialog_->WebUIRenderFrameCreated(web_contents_->GetMainFrame());
+    dialog_->WebUIRenderFrameCreated(web_contents_->GetPrimaryMainFrame());
 
     ConstrainedWebDialogUI::SetConstrainedDelegate(web_contents_.get(),
                                                    dialog_delegate_.get());

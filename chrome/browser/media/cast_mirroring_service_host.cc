@@ -114,8 +114,9 @@ content::DesktopMediaID BuildMediaIdForWebContents(
     return media_id;
   media_id.type = content::DesktopMediaID::TYPE_WEB_CONTENTS;
   media_id.web_contents_id = content::WebContentsMediaCaptureId(
-      contents->GetMainFrame()->GetProcess()->GetID(),
-      contents->GetMainFrame()->GetRoutingID(), true /* disable_local_echo */);
+      contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      contents->GetPrimaryMainFrame()->GetRoutingID(),
+      true /* disable_local_echo */);
   return media_id;
 }
 
@@ -156,8 +157,8 @@ void CastMirroringServiceHost::GetForDesktop(
     const content::DesktopMediaID media_id =
         content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
             desktop_stream_id,
-            initiator_contents->GetMainFrame()->GetProcess()->GetID(),
-            initiator_contents->GetMainFrame()->GetRoutingID(),
+            initiator_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            initiator_contents->GetPrimaryMainFrame()->GetRoutingID(),
             url::Origin::Create(initiator_contents->GetVisibleURL()),
             &original_extension_name, content::kRegistryStreamTypeDesktop);
     mojo::MakeSelfOwnedReceiver(

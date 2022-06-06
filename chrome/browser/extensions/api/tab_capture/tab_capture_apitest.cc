@@ -155,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
                                 ui::PAGE_TRANSITION_LINK, false);
   content::WebContents* web_contents = browser()->OpenURL(params);
 
-  content::RenderFrameHost* const main_frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* const main_frame =
+      web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(main_frame);
   listener.Reply(base::StringPrintf("web-contents-media-stream://%i:%i",
                                     main_frame->GetProcess()->GetID(),

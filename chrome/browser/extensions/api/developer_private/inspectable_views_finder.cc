@@ -182,7 +182,7 @@ void InspectableViewsFinder::GetViewsForExtensionProcess(
         url = extension_host->initial_url();
     }
 
-    bool is_iframe = web_contents->GetMainFrame() != host;
+    bool is_iframe = web_contents->GetPrimaryMainFrame() != host;
     content::RenderProcessHost* process = host->GetProcess();
     result->push_back(ConstructView(url, process->GetID(), host->GetRoutingID(),
                                     is_incognito, is_iframe,
@@ -219,7 +219,7 @@ void InspectableViewsFinder::GetAppWindowViewsForExtension(
     if (url.is_empty())
       url = window->initial_url();
 
-    content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+    content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
     result->push_back(ConstructView(
         url, main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(),
         false, false, ConvertViewType(GetViewType(web_contents))));

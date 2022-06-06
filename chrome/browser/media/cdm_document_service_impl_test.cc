@@ -79,7 +79,7 @@ class CdmDocumentServiceImplTest : public ChromeRenderViewHostTestHarness {
       ASSERT_TRUE(cdm_document_service_.Unbind());
     NavigateAndCommit(url);
     CdmDocumentServiceImpl::Create(
-        web_contents()->GetMainFrame(),
+        web_contents()->GetPrimaryMainFrame(),
         cdm_document_service_.BindNewPipeAndPassReceiver());
   }
 
@@ -116,8 +116,10 @@ class CdmDocumentServiceImplTest : public ChromeRenderViewHostTestHarness {
 
     DictionaryPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
     base::Value* dict = update.Get();
-    const std::string serialized_origin =
-        web_contents()->GetMainFrame()->GetLastCommittedOrigin().Serialize();
+    const std::string serialized_origin = web_contents()
+                                              ->GetPrimaryMainFrame()
+                                              ->GetLastCommittedOrigin()
+                                              .Serialize();
     dict->SetKey(serialized_origin, std::move(entry));
   }
 

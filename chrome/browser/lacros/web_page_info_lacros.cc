@@ -29,7 +29,8 @@ mojom::WebPageInfoPtr PopulateWebPageInfoFromBrowser(const Browser* browser) {
   if (!contents)
     return nullptr;
 
-  ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
+  ukm::SourceId source_id =
+      contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   if (source_id == ukm::kInvalidSourceId)
     return nullptr;
 

@@ -161,7 +161,7 @@ namespace {
 class UserActivationUpdateWaiter {
  public:
   explicit UserActivationUpdateWaiter(content::WebContents* web_contents)
-      : user_activation_interceptor_(web_contents->GetMainFrame()) {}
+      : user_activation_interceptor_(web_contents->GetPrimaryMainFrame()) {}
   ~UserActivationUpdateWaiter() = default;
 
   void Wait() {
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, EmbedderFrameRemovedNoCrash) {
   int32_t element_instance_id = guest_view->element_instance_id();
   auto* embedder_web_contents = GetEmbedderWebContents();
   auto* child_frame =
-      content::ChildFrameAt(embedder_web_contents->GetMainFrame(), 0);
+      content::ChildFrameAt(embedder_web_contents->GetPrimaryMainFrame(), 0);
   content::RenderFrameDeletedObserver render_frame_observer(child_frame);
   ASSERT_TRUE(
       content::ExecJs(embedder_web_contents,
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, EmbedderFrameRemovedNoCrash) {
   // removed from the global map.
   mojo::AssociatedRemote<extensions::mojom::MimeHandlerViewContainerManager>
       container_manager;
-  embedder_web_contents->GetMainFrame()
+  embedder_web_contents->GetPrimaryMainFrame()
       ->GetRemoteAssociatedInterfaces()
       ->GetInterface(&container_manager);
   container_manager->DestroyFrameContainer(element_instance_id);
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
       browser(),
       embedded_test_server()->GetURL("a.com", "/test_object_with_frame.html")));
   auto* main_frame =
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame();
+      browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame();
   auto url_with_beforeunload =
       embedded_test_server()->GetURL("b.com", "/test_page.html?beforeunload");
   bool result = false;
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, BeforeUnload_NoDialog) {
 
   // Wait for a round trip to the outer renderer to ensure any beforeunload
   // toggle IPC has had time to reach the browser.
-  ExecuteScriptAndGetValue(web_contents->GetMainFrame(), "");
+  ExecuteScriptAndGetValue(web_contents->GetPrimaryMainFrame(), "");
 
   // Try to navigate away from the page. If the beforeunload listener is
   // triggered and a dialog is shown, this navigation will never complete,
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, BeforeUnload_ShowDialog) {
 
   // Wait for a round trip to the outer renderer to ensure the beforeunload
   // toggle IPC has had time to reach the browser.
-  ExecuteScriptAndGetValue(web_contents->GetMainFrame(), "");
+  ExecuteScriptAndGetValue(web_contents->GetPrimaryMainFrame(), "");
 
   web_contents->GetController().LoadURL(GURL(url::kAboutBlankURL), {},
                                         ui::PAGE_TRANSITION_TYPED, "");
@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
 
   // Wait for a round trip to the outer renderer to ensure any beforeunload
   // toggle IPC has had time to reach the browser.
-  ExecuteScriptAndGetValue(web_contents->GetMainFrame(), "");
+  ExecuteScriptAndGetValue(web_contents->GetPrimaryMainFrame(), "");
 
   // Try to navigate away, this should invoke a beforeunload dialog.
   web_contents->GetController().LoadURL(GURL(url::kAboutBlankURL), {},
@@ -600,7 +600,8 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, DoNotLoadInSandboxedFrame) {
   ASSERT_EQ(1U, guest_view_manager->num_guests_created());
 
   // Remove the non-sandboxed frame.
-  content::RenderFrameHost* main_rfh = GetEmbedderWebContents()->GetMainFrame();
+  content::RenderFrameHost* main_rfh =
+      GetEmbedderWebContents()->GetPrimaryMainFrame();
   ASSERT_TRUE(content::ExecJs(main_rfh, "remove_frame('notsandboxed');"));
   // The page is expected to embed only '1' GuestView. If there is GuestViews
   // embedded inside other frames we should be timing out here.
@@ -649,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, RejectPointLock) {
     run_loop.Run();
   }
   EXPECT_TRUE(WaitForLoadStop(guest_contents));
-  content::RenderFrameHost* guest_rfh = guest_contents->GetMainFrame();
+  content::RenderFrameHost* guest_rfh = guest_contents->GetPrimaryMainFrame();
   EXPECT_EQ(false, content::EvalJs(guest_rfh, R"code(
     var promise = new Promise((resolve, reject) => {
       document.addEventListener('pointerlockchange', () => resolve(true));
@@ -718,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, EmbeddedThenPrint) {
 
   // Verify that print dialog comes up.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   // Use setTimeout() to prevent ExecuteScript() from blocking on the print
   // dialog.
   ASSERT_TRUE(content::ExecuteScript(

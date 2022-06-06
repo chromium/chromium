@@ -116,7 +116,7 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
   run_loop.Run();
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
   EXPECT_TRUE(
       content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION));
 }

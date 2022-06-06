@@ -772,7 +772,7 @@ class MockNetworkContext : public network::TestNetworkContext {
                        pending_response_client) override {
     EXPECT_EQ(browser_->tab_strip_model()
                   ->GetActiveWebContents()
-                  ->GetMainFrame()
+                  ->GetPrimaryMainFrame()
                   ->GetNetworkIsolationKey(),
               network_isolation_key);
     mojo::Remote<network::mojom::ResolveHostClient> response_client(
@@ -1243,7 +1243,7 @@ void CheckTestHostNameUsedWithCorrectNetworkIsolationKey(Browser* browser) {
   net::NetworkIsolationKey network_isolation_key =
       browser->tab_strip_model()
           ->GetActiveWebContents()
-          ->GetMainFrame()
+          ->GetPrimaryMainFrame()
           ->GetNetworkIsolationKey();
   network::DnsLookupResult result1 = network::BlockingDnsLookup(
       network_context, kHostPortPair, std::move(params), network_isolation_key);

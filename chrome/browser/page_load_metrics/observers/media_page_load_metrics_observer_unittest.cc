@@ -97,7 +97,7 @@ TEST_F(MediaPageLoadMetricsObserverTest, MediaNotPlayed) {
   ResetTest();
 
   NavigateAndCommit(GURL(kDefaultTestUrl));
-  content::RenderFrameHost* mainframe = web_contents()->GetMainFrame();
+  content::RenderFrameHost* mainframe = web_contents()->GetPrimaryMainFrame();
 
   SimulateEvents(mainframe, false /* simulate_play_media */,
                  false /* simulate_app_background */);
@@ -114,7 +114,7 @@ TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayed) {
   ResetTest();
 
   NavigateAndCommit(GURL(kDefaultTestUrl));
-  content::RenderFrameHost* mainframe = web_contents()->GetMainFrame();
+  content::RenderFrameHost* mainframe = web_contents()->GetPrimaryMainFrame();
 
   SimulateEvents(mainframe, true /* simulate_play_media */,
                  false /* simulate_app_background */);
@@ -134,7 +134,7 @@ TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayedAppBackground) {
   ResetTest();
 
   NavigateAndCommit(GURL(kDefaultTestUrl));
-  content::RenderFrameHost* mainframe = web_contents()->GetMainFrame();
+  content::RenderFrameHost* mainframe = web_contents()->GetPrimaryMainFrame();
 
   SimulateEvents(mainframe, true /* simulate_play_media */,
                  true /* simulate_app_background */);
@@ -154,7 +154,7 @@ TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayedInSubframe) {
   ResetTest();
 
   NavigateAndCommit(GURL(kDefaultTestUrl));
-  content::RenderFrameHost* mainframe = web_contents()->GetMainFrame();
+  content::RenderFrameHost* mainframe = web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* subframe =
       content::RenderFrameHostTester::For(mainframe)->AppendChild("subframe");
   std::unique_ptr<content::NavigationSimulator> simulator =
@@ -180,7 +180,7 @@ TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayedInFencedFrame) {
   ResetTest();
 
   NavigateAndCommit(GURL(kDefaultTestUrl));
-  content::RenderFrameHost* mainframe = web_contents()->GetMainFrame();
+  content::RenderFrameHost* mainframe = web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* subframe =
       content::RenderFrameHostTester::For(mainframe)->AppendFencedFrame();
   std::unique_ptr<content::NavigationSimulator> simulator =

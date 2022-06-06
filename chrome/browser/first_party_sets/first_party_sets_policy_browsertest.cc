@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
   ASSERT_TRUE(NavigateToURL(
       web_contents(), https_server()->GetURL(kHostA, "/echoheader?Cookie")));
   EXPECT_THAT(
-      ExtractFrameContent(web_contents()->GetMainFrame()),
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
       net::CookieStringIs(UnorderedPointwise(net::NameIs(), kAllCookies)));
 }
 
@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
   ASSERT_TRUE(NavigateToURL(
       web_contents(), https_server()->GetURL(kHostD, "/echoheader?Cookie")));
   EXPECT_THAT(
-      ExtractFrameContent(web_contents()->GetMainFrame()),
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
       net::CookieStringIs(UnorderedPointwise(net::NameIs(), kAllCookies)));
 }
 

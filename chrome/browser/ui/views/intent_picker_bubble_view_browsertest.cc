@@ -381,9 +381,12 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewFencedFrameBrowserTest,
   const GURL fenced_frame_url = https_server().GetURL(
       GetAppUrlHost(), std::string(GetAppScopePath()) + "index1.html");
   // Create a fenced frame.
-  ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      fenced_frame_url));
+  ASSERT_TRUE(
+      fenced_frame_test_helper().CreateFencedFrame(browser()
+                                                       ->tab_strip_model()
+                                                       ->GetActiveWebContents()
+                                                       ->GetPrimaryMainFrame(),
+                                                   fenced_frame_url));
 
   EXPECT_FALSE(intent_picker_view->GetVisible());
 }

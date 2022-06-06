@@ -101,8 +101,10 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, DISABLED_OnScreensChangeEvent) {
 
   SetupTwoIframes();
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* local_child = ChildFrameAt(tab->GetMainFrame(), 0);
-  content::RenderFrameHost* remote_child = ChildFrameAt(tab->GetMainFrame(), 1);
+  content::RenderFrameHost* local_child =
+      ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
+  content::RenderFrameHost* remote_child =
+      ChildFrameAt(tab->GetPrimaryMainFrame(), 1);
 
   auto initial_result = std::vector<base::Value>();
   initial_result.emplace_back(801);
@@ -248,8 +250,10 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnCurrentScreenChangeEvent) {
 
   SetupTwoIframes();
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* local_child = ChildFrameAt(tab->GetMainFrame(), 0);
-  content::RenderFrameHost* remote_child = ChildFrameAt(tab->GetMainFrame(), 1);
+  content::RenderFrameHost* local_child =
+      ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
+  content::RenderFrameHost* remote_child =
+      ChildFrameAt(tab->GetPrimaryMainFrame(), 1);
 
   auto* initial_script = R"(
       var screenDetails;
@@ -358,8 +362,10 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenDetailedOnChange) {
 
   SetupTwoIframes();
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* local_child = ChildFrameAt(tab->GetMainFrame(), 0);
-  content::RenderFrameHost* remote_child = ChildFrameAt(tab->GetMainFrame(), 1);
+  content::RenderFrameHost* local_child =
+      ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
+  content::RenderFrameHost* remote_child =
+      ChildFrameAt(tab->GetPrimaryMainFrame(), 1);
 
   auto* initial_script = R"(
       var screenDetails;

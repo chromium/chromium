@@ -162,7 +162,8 @@ void BackgroundSyncDelegateImpl::OnEngagementEvent(
   suspended_periodic_sync_origins_.erase(iter);
 
   // Engagement is always accumulated in the main frame.
-  auto* storage_partition = web_contents->GetMainFrame()->GetStoragePartition();
+  auto* storage_partition =
+      web_contents->GetPrimaryMainFrame()->GetStoragePartition();
   if (!storage_partition)
     return;
 

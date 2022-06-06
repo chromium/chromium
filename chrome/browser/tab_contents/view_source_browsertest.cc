@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, CrossSiteSubframe) {
   content::WebContents* original_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* original_main_frame =
-      original_contents->GetMainFrame();
+      original_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* original_child_frame =
       ChildFrameAt(original_main_frame, 0);
   ASSERT_TRUE(original_child_frame);
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, CrossSiteSubframe) {
   content::WebContents* view_source_contents =
       view_source_contents_observer.GetWebContents();
   content::RenderFrameHost* view_source_frame =
-      view_source_contents->GetMainFrame();
+      view_source_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(WaitForLoadStop(view_source_contents));
 
   // Verify that the last committed URL is the same in the original and the
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInMainframe) {
   content::WebContents* original_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* original_main_frame =
-      original_contents->GetMainFrame();
+      original_contents->GetPrimaryMainFrame();
 
   // Submit the form and verify that we arrived at the expected location.
   content::TestNavigationObserver form_post_observer(original_contents, 1);
@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInMainframe) {
   GURL target_url(embedded_test_server()->GetURL("a.com", "/echoall"));
 
   content::RenderFrameHost* current_main_frame =
-      original_contents->GetMainFrame();
+      original_contents->GetPrimaryMainFrame();
   if (content::CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
     // When ProactivelySwapBrowsingInstance or RenderDocument is enabled on
     // same-site main frame navigations, the form submission above will result
@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInMainframe) {
   // Verify that the original contents and the view-source contents are in a
   // different process - see https://crbug.com/699493.
   EXPECT_NE(current_main_frame->GetSiteInstance(),
-            view_source_contents->GetMainFrame()->GetSiteInstance());
+            view_source_contents->GetPrimaryMainFrame()->GetSiteInstance());
 
   // Verify the title of view-source is derived from the URL (not from the title
   // of the original contents).
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   EXPECT_EQ(GURL(), browser()
                         ->tab_strip_model()
                         ->GetActiveWebContents()
-                        ->GetMainFrame()
+                        ->GetPrimaryMainFrame()
                         ->GetLastCommittedURL());
 
   // Open a view source tab, and watch for its main network request.
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->ViewSource();
   content::WebContents* view_source_contents =
       view_source_contents_observer.GetWebContents();
@@ -580,9 +580,9 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheTest, HttpPostInSubframe) {
 
   // Verify that view-source opens in a new process - https://crbug.com/699493.
   EXPECT_NE(original_child_frame->GetSiteInstance(),
-            view_source_contents->GetMainFrame()->GetSiteInstance());
+            view_source_contents->GetPrimaryMainFrame()->GetSiteInstance());
   EXPECT_NE(original_contents->GetSiteInstance(),
-            view_source_contents->GetMainFrame()->GetSiteInstance());
+            view_source_contents->GetPrimaryMainFrame()->GetSiteInstance());
 
   // Verify the title is derived from the URL.
   GURL original_url = original_child_frame->GetLastCommittedURL();
@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheEnabledTest,
         "document.body.appendChild(frame);",
         subframe_url.c_str());
     content::TestNavigationObserver navigation_observer(original_contents);
-    original_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+    original_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(create_frame_script), base::NullCallback());
     navigation_observer.Wait();
   }

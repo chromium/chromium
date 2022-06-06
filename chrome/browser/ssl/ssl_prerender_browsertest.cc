@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
 
     // Activate.
     ASSERT_TRUE(
-        content::ExecJs(web_contents()->GetMainFrame(),
+        content::ExecJs(web_contents()->GetPrimaryMainFrame(),
                         content::JsReplace("location = $1", kPrerenderUrl)));
     activation_manager.WaitForNavigationFinished();
     EXPECT_TRUE(activation_manager.was_activated());

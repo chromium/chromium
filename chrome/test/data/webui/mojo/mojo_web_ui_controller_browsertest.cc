@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(MojoWebUIControllerBrowserTest, CrashForNoBinder) {
 
   content::ScopedAllowRendererCrashes allow;
   content::RenderProcessHostBadMojoMessageWaiter watcher(
-      web_contents->GetMainFrame()->GetProcess());
+      web_contents->GetPrimaryMainFrame()->GetProcess());
 
   // Attempt to bind an interface with no browser binders registered.
   EXPECT_FALSE(content::EvalJs(web_contents,

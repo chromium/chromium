@@ -248,8 +248,9 @@ std::unique_ptr<views::View>
 PaymentHandlerWebFlowViewController::CreateHeaderContentView(
     views::View* header_view) {
   const url::Origin origin =
-      web_contents() ? web_contents()->GetMainFrame()->GetLastCommittedOrigin()
-                     : url::Origin::Create(target_);
+      web_contents()
+          ? web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()
+          : url::Origin::Create(target_);
   std::unique_ptr<views::Background> background =
       GetHeaderBackground(header_view);
   return std::make_unique<ReadOnlyOriginView>(
@@ -346,8 +347,8 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
 
   if (first_navigation_complete_callback_) {
     std::move(first_navigation_complete_callback_)
-        .Run(true, web_contents()->GetMainFrame()->GetProcess()->GetID(),
-             web_contents()->GetMainFrame()->GetRoutingID());
+        .Run(true, web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+             web_contents()->GetPrimaryMainFrame()->GetRoutingID());
   }
 
   UpdateHeaderView();

@@ -19,7 +19,7 @@ ukm::SourceId GetSourceId(
     const base::android::JavaParamRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
-  return web_contents->GetMainFrame()->GetPageUkmSourceId();
+  return web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
 }
 }  // namespace
 

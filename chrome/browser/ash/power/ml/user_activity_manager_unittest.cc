@@ -262,7 +262,7 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
       WebContentsTester::For(contents)->SetMainFrameMimeType(mime_type);
 
     WebContentsTester::For(contents)->TestSetIsLoading(false);
-    return contents->GetMainFrame()->GetPageUkmSourceId();
+    return contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   }
 
   TestingUserActivityUkmLogger delegate_;

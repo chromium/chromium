@@ -349,7 +349,8 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   }
 
   content::RenderFrameHost* GetPluginFrame(WebContents* guest_contents) const {
-    return pdf_frame_util::FindPdfChildFrame(guest_contents->GetMainFrame());
+    return pdf_frame_util::FindPdfChildFrame(
+        guest_contents->GetPrimaryMainFrame());
   }
 
   // Finds the `RenderFrameHost`s of PDF plugin frames within a given
@@ -595,7 +596,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 
   // Start loading another PDF in the new tab, but pause during guest attach.
   // It is important that the PDF navigation uses the same RFH as `delayer`.
-  InnerWebContentsAttachDelayer delayer(new_web_contents->GetMainFrame());
+  InnerWebContentsAttachDelayer delayer(
+      new_web_contents->GetPrimaryMainFrame());
   content::TestNavigationObserver navigation_observer(new_web_contents);
   new_web_contents->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(main_url));
@@ -1573,7 +1575,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, LinkPermissions) {
 
   GURL unfiltered_valid_link_url(valid_link_url);
   content::RenderProcessHost* rph =
-      guest_contents->GetMainFrame()->GetProcess();
+      guest_contents->GetPrimaryMainFrame()->GetProcess();
   rph->FilterURL(true, &valid_link_url);
   rph->FilterURL(true, &invalid_link_url);
 
@@ -2050,14 +2052,15 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
 
   // Makes sure that the correct frame invoked the context menu.
   content::ContextMenuInterceptor menu_interceptor(
-      guest_contents->GetMainFrame());
+      guest_contents->GetPrimaryMainFrame());
 
   // Executes the print command as soon as the context menu is shown.
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   PrintObserver print_observer(guest_contents, plugin_frame);
-  guest_contents->GetMainFrame()->GetRenderWidgetHost()->ShowContextMenuAtPoint(
-      {1, 1}, ui::MENU_SOURCE_MOUSE);
+  guest_contents->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->ShowContextMenuAtPoint({1, 1}, ui::MENU_SOURCE_MOUSE);
   print_observer.WaitForPrintPreview();
   menu_interceptor.Wait();
 }
@@ -2071,7 +2074,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
 
   // Makes sure that the correct frame invoked the context menu.
   content::ContextMenuInterceptor menu_interceptor(
-      guest_contents->GetMainFrame());
+      guest_contents->GetPrimaryMainFrame());
 
   // Executes the print command as soon as the context menu is shown.
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
@@ -2080,8 +2083,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
   content::SimulateMouseClickAt(guest_contents,
                                 blink::WebInputEvent::kNoModifiers,
                                 blink::WebMouseEvent::Button::kLeft, {1, 1});
-  guest_contents->GetMainFrame()->GetRenderWidgetHost()->ShowContextMenuAtPoint(
-      {1, 1}, ui::MENU_SOURCE_MOUSE);
+  guest_contents->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->ShowContextMenuAtPoint({1, 1}, ui::MENU_SOURCE_MOUSE);
   print_observer.WaitForPrintPreview();
   menu_interceptor.Wait();
 }
@@ -2162,13 +2166,14 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionRegionSearchTest,
 
   // Makes sure that the correct frame invoked the context menu.
   content::ContextMenuInterceptor menu_interceptor(
-      guest_contents->GetMainFrame());
+      guest_contents->GetPrimaryMainFrame());
 
   // Captures the command IDs of the context menu.
   ContextMenuWaiter menu_observer;
 
-  guest_contents->GetMainFrame()->GetRenderWidgetHost()->ShowContextMenuAtPoint(
-      {1, 1}, ui::MENU_SOURCE_MOUSE);
+  guest_contents->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->ShowContextMenuAtPoint({1, 1}, ui::MENU_SOURCE_MOUSE);
 
   menu_observer.WaitForMenuOpenAndClose();
   menu_interceptor.Wait();
@@ -2598,7 +2603,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, DataNavigation) {
       GetPluginFrames(guest_contents);
   ASSERT_EQ(plugin_frames.size(), 1u);
   EXPECT_NE(plugin_frames[0]->GetProcess(),
-            guest_contents->GetMainFrame()->GetProcess());
+            guest_contents->GetPrimaryMainFrame()->GetProcess());
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, HistoryNavigation) {
@@ -4601,7 +4606,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_helper().CreateFencedFrame(
-          GetActiveWebContents()->GetMainFrame(), fenced_frame_url);
+          GetActiveWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
   auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
@@ -4622,7 +4627,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
 
   // Create a fenced frame and try to navigate to a PDF.
   EXPECT_TRUE(fenced_frame_helper().CreateFencedFrame(
-      GetActiveWebContents()->GetMainFrame(),
+      GetActiveWebContents()->GetPrimaryMainFrame(),
       embedded_test_server()->GetURL("/pdf/test-fenced-frame.pdf"),
       net::Error::ERR_BLOCKED_BY_CLIENT));
   EXPECT_EQ(CountPDFProcesses(), 0);
@@ -4636,7 +4641,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
 
   // Create a fenced frame and try to navigate to a PDF.
   EXPECT_TRUE(fenced_frame_helper().CreateFencedFrame(
-      GetActiveWebContents()->GetMainFrame(),
+      GetActiveWebContents()->GetPrimaryMainFrame(),
       embedded_test_server()->GetURL("/pdf/test.pdf"),
       net::Error::ERR_BLOCKED_BY_RESPONSE));
   EXPECT_EQ(CountPDFProcesses(), 0);
@@ -4652,7 +4657,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
   // Create a fenced frame for loading a document with pdf embed(s).
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_helper().CreateFencedFrame(
-          GetActiveWebContents()->GetMainFrame(),
+          GetActiveWebContents()->GetPrimaryMainFrame(),
           embedded_test_server()->GetURL("/fenced_frames/title1.html"));
   ASSERT_TRUE(fenced_frame_host);
 

@@ -147,7 +147,8 @@ class PasswordManagerBackForwardCacheBrowserTest
   }
 
   bool IsGetCredentialsSuccessful() {
-    return "success" == content::EvalJs(WebContents()->GetMainFrame(), R"(
+    return "success" ==
+           content::EvalJs(WebContents()->GetPrimaryMainFrame(), R"(
       new Promise(resolve => {
         navigator.credentials.get({password: true, unmediated: true })
           .then(m => { resolve("success"); })
@@ -1235,7 +1236,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       autofill::ChromeAutofillClient::FromWebContents(WebContents());
   autofill_client->PropagateAutofillPredictions(
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
-          WebContents()->GetMainFrame()),
+          WebContents()->GetPrimaryMainFrame()),
       {&form_structure});
 
   // Check original values before interaction
@@ -1299,7 +1300,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       autofill::ChromeAutofillClient::FromWebContents(WebContents());
   autofill_client->PropagateAutofillPredictions(
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
-          WebContents()->GetMainFrame()),
+          WebContents()->GetPrimaryMainFrame()),
       {&form_structure});
 
   // Check original values before interaction
@@ -2051,7 +2052,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ObservingAutofillClient* observing_autofill_client =
       ObservingAutofillClient::FromWebContents(WebContents());
   password_manager::ContentPasswordManagerDriver* driver =
-      driver_factory->GetDriverForFrame(WebContents()->GetMainFrame());
+      driver_factory->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
   driver->GetPasswordAutofillManager()->set_autofill_client(
       observing_autofill_client);
 
@@ -3007,7 +3008,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "window.domAutomationController.send(logs_found);";
   bool logs_found = false;
   ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-      internals_web_contents->GetMainFrame(), find_logs, &logs_found));
+      internals_web_contents->GetPrimaryMainFrame(), find_logs, &logs_found));
   EXPECT_TRUE(logs_found);
 }
 
@@ -3030,7 +3031,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, InternalsPage_Browser) {
       "window.domAutomationController.send(logs_found);";
   bool logs_found = false;
   ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-      internals_web_contents->GetMainFrame(), find_logs, &logs_found));
+      internals_web_contents->GetPrimaryMainFrame(), find_logs, &logs_found));
   EXPECT_TRUE(logs_found);
 }
 
@@ -3359,7 +3360,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, AboutBlankFramesAreIgnored) {
   GURL submit_url(embedded_test_server()->GetURL("/password/done.html"));
   InjectBlankFrameWithPasswordForm(WebContents(), submit_url);
   content::RenderFrameHost* frame =
-      ChildFrameAt(WebContents()->GetMainFrame(), 0);
+      ChildFrameAt(WebContents()->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(GURL(url::kAboutBlankURL), frame->GetLastCommittedURL());
   EXPECT_TRUE(frame->IsRenderFrameLive());
   EXPECT_FALSE(prompt_observer.IsSavePromptAvailable());
@@ -3395,10 +3396,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, AboutBlankPopupsAreIgnored) {
 
   // Submit the password form and check that there was no renderer kill and no
   BubbleObserver prompt_observer(WebContents());
-  SubmitInjectedPasswordForm(newtab, newtab->GetMainFrame(), submit_url);
+  SubmitInjectedPasswordForm(newtab, newtab->GetPrimaryMainFrame(), submit_url);
   EXPECT_FALSE(prompt_observer.IsSavePromptAvailable());
-  EXPECT_TRUE(newtab->GetMainFrame()->IsRenderFrameLive());
-  EXPECT_EQ(submit_url, newtab->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_TRUE(newtab->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_EQ(submit_url, newtab->GetPrimaryMainFrame()->GetLastCommittedURL());
 }
 
 // Verify that previously saved passwords for about:blank frames are not used
@@ -3423,7 +3424,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Inject an about:blank frame with password form.
   InjectBlankFrameWithPasswordForm(WebContents(), submit_url);
   content::RenderFrameHost* frame =
-      ChildFrameAt(WebContents()->GetMainFrame(), 0);
+      ChildFrameAt(WebContents()->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(GURL(url::kAboutBlankURL), frame->GetLastCommittedURL());
 
   // Simulate user interaction in the iframe which normally triggers
@@ -3469,7 +3470,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                                      inject_data_frame_with_password_form));
   EXPECT_TRUE(content::WaitForLoadStop(WebContents()));
   content::RenderFrameHost* frame =
-      ChildFrameAt(WebContents()->GetMainFrame(), 0);
+      ChildFrameAt(WebContents()->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(frame->GetLastCommittedURL().SchemeIs(url::kDataScheme));
   EXPECT_TRUE(frame->IsRenderFrameLive());
   EXPECT_FALSE(prompt_observer.IsSavePromptAvailable());
@@ -3478,7 +3479,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // password prompt and shouldn't result in a renderer kill.
   SubmitInjectedPasswordForm(WebContents(), frame, submit_url);
   // After navigation, the RenderFrameHost may change.
-  frame = ChildFrameAt(WebContents()->GetMainFrame(), 0);
+  frame = ChildFrameAt(WebContents()->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(frame->IsRenderFrameLive());
   EXPECT_EQ(submit_url, frame->GetLastCommittedURL());
   EXPECT_FALSE(prompt_observer.IsSavePromptAvailable());
@@ -3801,7 +3802,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ContentPasswordManagerDriverFactory* factory =
       ContentPasswordManagerDriverFactory::FromWebContents(WebContents());
   autofill::mojom::PasswordManagerDriver* driver =
-      factory->GetDriverForFrame(WebContents()->GetMainFrame());
+      factory->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
 
   // Just fake a position of the <input> element within the content_area_bounds.
   // For this test it does not matter where the dropdown is rendered.
@@ -3971,7 +3972,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
                        SavePasswordOnRestoredPage) {
   // Navigate to a page with a password form.
   NavigateToFile("/password/password_form.html");
-  content::RenderFrameHostWrapper rfh(WebContents()->GetMainFrame());
+  content::RenderFrameHostWrapper rfh(WebContents()->GetPrimaryMainFrame());
 
   // Navigate away so that the password form page is stored in the cache.
   EXPECT_TRUE(NavigateToURL(
@@ -3982,7 +3983,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
   // Restore the cached page.
   WebContents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(WebContents()));
-  EXPECT_EQ(rfh.get(), WebContents()->GetMainFrame());
+  EXPECT_EQ(rfh.get(), WebContents()->GetPrimaryMainFrame());
 
   // Fill out and submit the password form.
   PasswordsNavigationObserver observer(WebContents());
@@ -4011,7 +4012,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
                        NotCachedIfCredentialsAPIUsed) {
   // Navigate to a page with a password form.
   NavigateToFile("/password/password_form.html");
-  content::RenderFrameHost* rfh = WebContents()->GetMainFrame();
+  content::RenderFrameHost* rfh = WebContents()->GetPrimaryMainFrame();
   content::RenderFrameDeletedObserver rfh_deleted_observer(rfh);
 
   // Use the password manager API, this should make the page uncacheable.
@@ -4028,7 +4029,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
                        CredentialsAPIOnlyCalledOnRestoredPage) {
   // Navigate to a page with a password form.
   NavigateToFile("/password/password_form.html");
-  content::RenderFrameHostWrapper rfh(WebContents()->GetMainFrame());
+  content::RenderFrameHostWrapper rfh(WebContents()->GetPrimaryMainFrame());
 
   // Navigate away.
   EXPECT_TRUE(NavigateToURL(
@@ -4039,7 +4040,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
   // Restore the cached page.
   WebContents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(WebContents()));
-  EXPECT_EQ(rfh.get(), WebContents()->GetMainFrame());
+  EXPECT_EQ(rfh.get(), WebContents()->GetPrimaryMainFrame());
 
   // Make sure the password manager API works. Since it was never connected, it
   // shouldn't have been affected by the
@@ -4060,7 +4061,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   GURL submit_url(embedded_test_server()->GetURL("/password/done.html"));
   InjectFrameWithPasswordForm(WebContents(), submit_url);
   content::RenderFrameHost* frame =
-      ChildFrameAt(WebContents()->GetMainFrame(), 0);
+      ChildFrameAt(WebContents()->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(GURL(url::kAboutBlankURL), frame->GetLastCommittedURL());
   EXPECT_EQ(submit_url.DeprecatedGetOriginAsURL(),
             frame->GetLastCommittedOrigin().GetURL());
@@ -4745,8 +4746,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   // Sets to ignore mouse events. Otherwise, OnInputEvent() could be called
   // multiple times if the mouse cursor is over on the test window during
   // testing.
-  web_contents()->GetMainFrame()->GetRenderWidgetHost()->AddMouseEventCallback(
-      base::BindRepeating(
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->AddMouseEventCallback(base::BindRepeating(
           [](const blink::WebMouseEvent& event) { return true; }));
 
   EXPECT_CALL(

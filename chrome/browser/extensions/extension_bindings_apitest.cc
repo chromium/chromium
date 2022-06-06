@@ -43,7 +43,7 @@ void MouseDownInWebContents(content::WebContents* web_contents) {
   mouse_event.button = blink::WebMouseEvent::Button::kLeft;
   mouse_event.SetPositionInWidget(10, 10);
   mouse_event.click_count = 1;
-  web_contents->GetMainFrame()
+  web_contents->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->ForwardMouseEvent(mouse_event);
@@ -56,7 +56,7 @@ void MouseUpInWebContents(content::WebContents* web_contents) {
   mouse_event.button = blink::WebMouseEvent::Button::kLeft;
   mouse_event.SetPositionInWidget(10, 10);
   mouse_event.click_count = 1;
-  web_contents->GetMainFrame()
+  web_contents->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->ForwardMouseEvent(mouse_event);
@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  content::RenderFrameHost* main_frame = tab->GetMainFrame();
+  content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
   content::RenderFrameHost* subframe = ChildFrameAt(main_frame, 0);
   content::RenderFrameDeletedObserver subframe_deleted(subframe);
 

@@ -162,7 +162,7 @@ ChromeKeyboardWebContents::ChromeKeyboardWebContents(
 
   // Set the background to be transparent for custom keyboard window shape.
   content::RenderWidgetHostView* view =
-      web_contents_->GetMainFrame()->GetView();
+      web_contents_->GetPrimaryMainFrame()->GetView();
   view->SetBackgroundColor(SK_ColorTRANSPARENT);
   view->GetNativeView()->SetTransparent(true);
 

@@ -450,7 +450,7 @@ TEST_F(WebAppIconDownloaderPrerenderTest, PrerenderedPageNavigates) {
 
   // Activate the prerendered page.
   content::NavigationSimulator::CreateRendererInitiated(
-      prerender_url, web_contents()->GetMainFrame())
+      prerender_url, web_contents()->GetPrimaryMainFrame())
       ->Commit();
 
   // Ensure prerender activation cancel pending download requests.

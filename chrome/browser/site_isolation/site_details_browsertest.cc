@@ -902,7 +902,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameSiteDetailsBrowserTest,
       embedded_test_server()->GetURL("b.com", "/fenced_frames/iframe.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
   scoped_refptr<TestMemoryDetails> details = new TestMemoryDetails();

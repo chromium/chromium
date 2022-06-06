@@ -595,8 +595,8 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, UrgentFastShutdownSharedTabProcess) {
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
   OpenTwoTabs(embedded_test_server()->GetURL("a.com", "/title1.html"),
               embedded_test_server()->GetURL("a.com", "/title2.html"));
-  EXPECT_EQ(tsm()->GetWebContentsAt(0)->GetMainFrame()->GetProcess(),
-            tsm()->GetWebContentsAt(1)->GetMainFrame()->GetProcess());
+  EXPECT_EQ(tsm()->GetWebContentsAt(0)->GetPrimaryMainFrame()->GetProcess(),
+            tsm()->GetWebContentsAt(1)->GetPrimaryMainFrame()->GetProcess());
 
   // Advance time so everything is urgent discardable.
   test_clock_.Advance(kBackgroundUrgentProtectionTime);
@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, DiscardedTabHasNoProcess) {
 
   // The renderer process should be alive at this point.
   content::RenderProcessHost* process =
-      web_contents->GetMainFrame()->GetProcess();
+      web_contents->GetPrimaryMainFrame()->GetProcess();
   ASSERT_TRUE(process);
   EXPECT_TRUE(process->IsInitializedAndNotDead());
   EXPECT_NE(base::kNullProcessHandle, process->GetProcess().Handle());
@@ -737,13 +737,13 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, DiscardedTabHasNoProcess) {
   EXPECT_NE(new_web_contents, web_contents);
   web_contents = new_web_contents;
   content::RenderProcessHost* new_process =
-      web_contents->GetMainFrame()->GetProcess();
+      web_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_NE(new_process, process);
   EXPECT_NE(new_process->GetID(), renderer_id);
   process = new_process;
 
   // The renderer process should be dead after a discard.
-  EXPECT_EQ(process, web_contents->GetMainFrame()->GetProcess());
+  EXPECT_EQ(process, web_contents->GetPrimaryMainFrame()->GetProcess());
   EXPECT_FALSE(process->IsInitializedAndNotDead());
   EXPECT_EQ(base::kNullProcessHandle, process->GetProcess().Handle());
 
@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, DiscardedTabHasNoProcess) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
 
   // Reload should mean that the renderer process is alive now.
-  EXPECT_EQ(process, web_contents->GetMainFrame()->GetProcess());
+  EXPECT_EQ(process, web_contents->GetPrimaryMainFrame()->GetProcess());
   EXPECT_TRUE(process->IsInitializedAndNotDead());
   EXPECT_NE(base::kNullProcessHandle, process->GetProcess().Handle());
 }
@@ -771,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
 
   // Grab the original frames.
   content::WebContents* contents = tsm()->GetActiveWebContents();
-  content::RenderFrameHost* main_frame = contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
   ASSERT_TRUE(child_frame);
 
@@ -808,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
 
   // Re-assign pointers after discarding, as they've changed.
   contents = tsm()->GetActiveWebContents();
-  main_frame = contents->GetMainFrame();
+  main_frame = contents->GetPrimaryMainFrame();
   child_frame = ChildFrameAt(main_frame, 0);
   ASSERT_TRUE(child_frame);
 

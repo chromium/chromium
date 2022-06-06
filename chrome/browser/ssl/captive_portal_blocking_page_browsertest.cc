@@ -253,7 +253,7 @@ void CaptivePortalBlockingPageTest::TestInterstitial(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("https://mock.failed.request/start=-20")));
   content::RenderFrameHost* frame;
-  frame = contents->GetMainFrame();
+  frame = contents->GetPrimaryMainFrame();
   ASSERT_TRUE(WaitForRenderFrameReady(frame));
 
   EXPECT_EQ(expect_wifi == EXPECT_WIFI_YES,

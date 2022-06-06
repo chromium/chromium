@@ -589,8 +589,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
   // Create a fenced frame and load the test url. Active extensions should not
   // be cleared by the fenced frame navigation.
   content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_helper_.CreateFencedFrame(web_contents->GetMainFrame(),
-                                             fenced_frame_url);
+      fenced_frame_helper_.CreateFencedFrame(
+          web_contents->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
   EXPECT_EQ(active_tab_granter->granted_extensions_.size(), 1U);
 
@@ -630,8 +630,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
   GURL fenced_frame_url =
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_helper_.CreateFencedFrame(web_contents->GetMainFrame(),
-                                             fenced_frame_url);
+      fenced_frame_helper_.CreateFencedFrame(
+          web_contents->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
   // Fenced frame doesn't clear pending script injection requests and the
   // scripts.

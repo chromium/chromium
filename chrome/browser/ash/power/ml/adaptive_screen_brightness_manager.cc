@@ -87,7 +87,7 @@ const std::pair<ukm::SourceId, bool> GetActiveTabData() {
     DCHECK(tab_strip_model);
     content::WebContents* contents = tab_strip_model->GetActiveWebContents();
     if (contents) {
-      tab_id = contents->GetMainFrame()->GetPageUkmSourceId();
+      tab_id = contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
       has_form_entry = FormInteractionTabHelper::FromWebContents(contents)
                            ->had_form_interaction();
     }

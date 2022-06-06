@@ -237,7 +237,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, RendererInitiatedByUser) {
   ASSERT_EQ(0ul,
             breadcrumb_service_->GetEvents(/*event_count_limit=*/0).size());
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-      GURL(), web_contents()->GetMainFrame());
+      GURL(), web_contents()->GetPrimaryMainFrame());
   simulator->SetHasUserGesture(true);
   simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
   simulator->Start();
@@ -262,7 +262,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, RendererInitiatedByScript) {
   ASSERT_EQ(0ul,
             breadcrumb_service_->GetEvents(/*event_count_limit=*/0).size());
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-      GURL(), web_contents()->GetMainFrame());
+      GURL(), web_contents()->GetPrimaryMainFrame());
   simulator->SetHasUserGesture(false);
   simulator->Start();
   const std::list<std::string> events =
@@ -350,7 +350,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, PageLoadFailure) {
             breadcrumb_service_->GetEvents(/*event_count_limit=*/0).size());
 
   static_cast<content::TestWebContents*>(web_contents())
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->DidFailLoadWithError(GURL(), net::ERR_ABORTED);
   const std::list<std::string> events =
       breadcrumb_service_->GetEvents(/*event_count_limit=*/0);

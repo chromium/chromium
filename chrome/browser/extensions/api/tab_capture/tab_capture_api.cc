@@ -73,7 +73,7 @@ bool OptionsSpecifyAudioOrVideo(const TabCapture::CaptureOptions& options) {
 DesktopMediaID BuildDesktopMediaID(content::WebContents* target_contents,
                                    TabCapture::CaptureOptions* options) {
   content::RenderFrameHost* const target_frame =
-      target_contents->GetMainFrame();
+      target_contents->GetPrimaryMainFrame();
   DesktopMediaID source(
       DesktopMediaID::TYPE_WEB_CONTENTS, DesktopMediaID::kNullId,
       WebContentsMediaCaptureId(target_frame->GetProcess()->GetID(),

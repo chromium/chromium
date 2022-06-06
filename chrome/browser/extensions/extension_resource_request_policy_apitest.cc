@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   GURL accessible_url = extension->GetResourceURL("/test.png");
   EXPECT_EQ(accessible_url, result);
   EXPECT_EQ(accessible_url,
-            web_contents->GetMainFrame()->GetLastCommittedURL());
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   GURL nonaccessible_linked_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
@@ -352,7 +352,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
             controller.GetLastCommittedEntry()->GetPageType());
   EXPECT_EQ("chrome-error://chromewebdata/", result);
   GURL invalid_url("chrome-extension://invalid/");
-  EXPECT_EQ(invalid_url, web_contents->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(invalid_url,
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   // Redirects can sometimes occur before the load event, so use a
   // UrlLoadObserver instead of blocking waiting for two load events.
@@ -434,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   EXPECT_NE(private_page, web_contents->GetLastCommittedURL());
   std::string content;
   EXPECT_TRUE(ExecuteScriptAndExtractString(
-      ChildFrameAt(web_contents->GetMainFrame(), 0),
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0),
       "domAutomationController.send(document.body.innerText)", &content));
 
   // The iframe should not load |private_page|, which is not web-accessible.
@@ -478,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
 
   // That should not have been allowed.
   EXPECT_NE(url::Origin::Create(target_url).GetURL(),
-            ChildFrameAt(web_contents->GetMainFrame(), 0)
+            ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0)
                 ->GetLastCommittedOrigin()
                 .GetURL());
 }

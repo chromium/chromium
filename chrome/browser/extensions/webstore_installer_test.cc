@@ -138,7 +138,7 @@ void WebstoreInstallerTest::RunTestAsync(
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->ExecuteJavaScriptWithUserGestureForTests(base::UTF8ToUTF16(script),
                                                  base::NullCallback());
 }

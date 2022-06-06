@@ -393,7 +393,8 @@ class NoStatePrefetchBrowserTest
                          const GURL& ping_url,
                          bool new_web_contents) const {
     content::WebContents* web_contents = GetActiveWebContents();
-    content::RenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+    content::RenderFrameHost* render_frame_host =
+        web_contents->GetPrimaryMainFrame();
     // Extra arguments in JS are ignored.
     std::string javascript =
         base::StringPrintf("%s('%s', '%s')", javascript_function_name.c_str(),
@@ -1851,9 +1852,11 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchFencedFrameBrowserTest,
   const GURL fenced_frame_url =
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-          fenced_frame_url);
+      fenced_frame_test_helper().CreateFencedFrame(browser()
+                                                       ->tab_strip_model()
+                                                       ->GetActiveWebContents()
+                                                       ->GetPrimaryMainFrame(),
+                                                   fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
   // NoStatePrefetchManager should not record the navigation on fenced frame
   // navigation.

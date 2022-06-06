@@ -62,8 +62,10 @@ class ExtensionWebUITest : public ExtensionApiTest {
     // Run the test.
     bool actual_result = false;
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-    content::RenderFrameHost* webui =
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    content::RenderFrameHost* webui = browser()
+                                          ->tab_strip_model()
+                                          ->GetActiveWebContents()
+                                          ->GetPrimaryMainFrame();
     if (!webui)
       return testing::AssertionFailure() << "Failed to navigate to WebUI";
     CHECK(content::ExecuteScriptAndExtractBool(webui, script, &actual_result));
@@ -363,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, MultipleURLListeners) {
                                            GURL("chrome://test/body1.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   EventRouter* event_router = EventRouter::Get(profile());
   EXPECT_FALSE(event_router->HasEventListener("test.onMessage"));
   // Register a listener and create a child frame at a different URL.

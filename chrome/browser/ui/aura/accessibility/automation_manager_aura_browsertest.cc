@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, WebAppearsOnce) {
 
   WaitForAccessibilityTreeToContainNodeWithName(web_contents, "Click me");
 
-  auto* frame_host = web_contents->GetMainFrame();
+  auto* frame_host = web_contents->GetPrimaryMainFrame();
   ui::AXTreeID ax_tree_id = GetAXTreeIDFromRenderFrameHost(frame_host);
   ASSERT_NE(ax_tree_id, ui::AXTreeIDUnknown());
 

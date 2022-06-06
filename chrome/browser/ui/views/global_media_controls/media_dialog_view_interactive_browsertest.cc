@@ -406,7 +406,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   void StartPlayback() {
     // The test HTML files used in these tests contain "play()" functions that
     // play the video.
-    GetActiveWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    GetActiveWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"play()", base::NullCallback());
   }
 
@@ -425,12 +425,12 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void DisablePictureInPicture() {
-    GetActiveWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    GetActiveWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"disablePictureInPicture()", base::NullCallback());
   }
 
   void EnablePictureInPicture() {
-    GetActiveWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    GetActiveWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"enablePictureInPicture()", base::NullCallback());
   }
 
@@ -1117,8 +1117,8 @@ class MediaDialogViewWithBackForwardCacheBrowserTest
     MediaDialogViewBrowserTest::SetUpOnMainThread();
   }
 
-  content::RenderFrameHost* GetMainFrame() {
-    return GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* GetPrimaryMainFrame() {
+    return GetActiveWebContents()->GetPrimaryMainFrame();
   }
 
  protected:
@@ -1139,7 +1139,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
       "a.test", "/media/session/video-with-metadata.html"));
   GURL url2(embedded_test_server()->GetURL("b.test", "/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
-  content::RenderFrameHost* rfh = GetMainFrame();
+  content::RenderFrameHost* rfh = GetPrimaryMainFrame();
 
   StartPlayback();
   WaitForStart();
@@ -1177,7 +1177,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
       "a.test", "/media/session/video-with-metadata.html"));
   GURL url2(embedded_test_server()->GetURL("b.test", "/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
-  content::RenderFrameHost* rfh = GetMainFrame();
+  content::RenderFrameHost* rfh = GetPrimaryMainFrame();
 
   StartPlayback();
   WaitForStart();
@@ -1227,7 +1227,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
   GURL url3(embedded_test_server()->GetURL(
       "c.test", "/media/session/video-with-metadata.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
-  content::RenderFrameHost* rfh1 = GetMainFrame();
+  content::RenderFrameHost* rfh1 = GetPrimaryMainFrame();
 
   StartPlayback();
   WaitForStart();
@@ -1244,7 +1244,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
             rfh1->GetLifecycleState());
   EXPECT_TRUE(ui_.WaitForToolbarIconHidden());
   EXPECT_FALSE(ui_.IsDialogVisible());
-  content::RenderFrameHost* rfh2 = GetMainFrame();
+  content::RenderFrameHost* rfh2 = GetPrimaryMainFrame();
 
   StartPlayback();
   WaitForStart();

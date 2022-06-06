@@ -16,7 +16,7 @@ SameOriginObserver::SameOriginObserver(
       on_same_origin_state_changed_(on_same_origin_state_changed) {
   DCHECK(observed_contents);
   is_same_origin_ = reference_origin_.IsSameOriginWith(
-      observed_contents->GetMainFrame()->GetLastCommittedOrigin());
+      observed_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }
 
 SameOriginObserver::~SameOriginObserver() = default;

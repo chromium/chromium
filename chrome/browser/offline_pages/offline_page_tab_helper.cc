@@ -131,7 +131,7 @@ void OfflinePageTabHelper::NotifyMhtmlPageLoadAttempted(
     const GURL& main_frame_url,
     base::Time date) {
   if (mhtml_page_notifier_receivers_.GetCurrentTargetFrame() !=
-      web_contents()->GetMainFrame()) {
+      web_contents()->GetPrimaryMainFrame()) {
     return;
   }
 

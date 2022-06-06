@@ -368,23 +368,25 @@ void VRUiHostImpl::InitCapturingStates() {
       permission_manager
           ->GetPermissionStatusForCurrentDocument(
               ContentSettingsType::MEDIASTREAM_MIC,
-              web_contents_->GetMainFrame())
+              web_contents_->GetPrimaryMainFrame())
           .content_setting == CONTENT_SETTING_ALLOW;
   potential_capturing_.video_capture_enabled =
       permission_manager
           ->GetPermissionStatusForCurrentDocument(
               ContentSettingsType::MEDIASTREAM_CAMERA,
-              web_contents_->GetMainFrame())
+              web_contents_->GetPrimaryMainFrame())
           .content_setting == CONTENT_SETTING_ALLOW;
   potential_capturing_.location_access_enabled =
       permission_manager
           ->GetPermissionStatusForCurrentDocument(
-              ContentSettingsType::GEOLOCATION, web_contents_->GetMainFrame())
+              ContentSettingsType::GEOLOCATION,
+              web_contents_->GetPrimaryMainFrame())
           .content_setting == CONTENT_SETTING_ALLOW;
   potential_capturing_.midi_connected =
       permission_manager
           ->GetPermissionStatusForCurrentDocument(
-              ContentSettingsType::MIDI_SYSEX, web_contents_->GetMainFrame())
+              ContentSettingsType::MIDI_SYSEX,
+              web_contents_->GetPrimaryMainFrame())
           .content_setting == CONTENT_SETTING_ALLOW;
 
   indicators_shown_start_time_ = base::Time::Now();
@@ -406,7 +408,7 @@ void VRUiHostImpl::PollCapturingState() {
   // should get a RFH from VRServiceImpl instead of WebContents)
   content_settings::PageSpecificContentSettings* settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents_->GetMainFrame());
+          web_contents_->GetPrimaryMainFrame());
 
   if (settings) {
     active_capturing.location_access_enabled =

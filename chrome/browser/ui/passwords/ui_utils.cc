@@ -250,7 +250,7 @@ void NavigateToPasswordCheckupPage(Profile* profile) {
 
 mojo::Remote<network::mojom::URLLoaderFactory> GetURLLoaderForMainFrame(
     content::WebContents* web_contents) {
-  content::RenderFrameHost* frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
   frame->CreateNetworkServiceDefaultFactory(
       url_loader_factory.BindNewPipeAndPassReceiver());

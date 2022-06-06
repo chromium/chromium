@@ -1706,7 +1706,7 @@ bool TestRecipeReplayer::GetTargetFrameFromAction(
     return false;
   }
   if (!is_iframe_container.value_or(false)) {
-    *frame = GetWebContents()->GetMainFrame();
+    *frame = GetWebContents()->GetPrimaryMainFrame();
     return true;
   }
 

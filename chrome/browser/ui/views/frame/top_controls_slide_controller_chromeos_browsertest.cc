@@ -1400,7 +1400,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   auto* permission_manager =
       permissions::PermissionRequestManager::FromWebContents(active_contents);
   TopControlsShownRatioWaiter waiter(top_controls_slide_controller());
-  permission_manager->AddRequest(active_contents->GetMainFrame(),
+  permission_manager->AddRequest(active_contents->GetPrimaryMainFrame(),
                                  &permission_request);
   waiter.WaitForRatio(1.f);
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);

@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestWithInvalidInstanceID) {
       extensions::AppWindowRegistry::Get(browser()->profile())
           ->GetCurrentAppWindowForApp(bad_app->id())
           ->web_contents()
-          ->GetMainFrame()
+          ->GetPrimaryMainFrame()
           ->GetProcess();
 
   // Monitor |bad_app|'s RenderProcessHost for its exiting.

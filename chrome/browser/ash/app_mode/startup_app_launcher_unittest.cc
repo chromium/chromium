@@ -352,7 +352,7 @@ void InitAppWindow(extensions::AppWindow* app_window, const gfx::Rect& bounds) {
       app_window_contents->GetWebContents());
 
   content::RenderFrameHost* main_frame =
-      app_window_contents->GetWebContents()->GetMainFrame();
+      app_window_contents->GetWebContents()->GetPrimaryMainFrame();
   DCHECK(main_frame);
 
   extensions::AppWindow::CreateParams params;

@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest,
 
   // We should wait for the main frame's hit-test data to be ready before
   // sending the click event below to avoid flakiness.
-  content::WaitForHitTestData(web_contents()->GetMainFrame());
+  content::WaitForHitTestData(web_contents()->GetPrimaryMainFrame());
   // Ensure the compositor thread is aware of the mouse events.
   content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
   frame_observer.Wait();

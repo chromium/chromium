@@ -33,7 +33,7 @@ class EmptyParametersTest : public PaymentRequestPlatformBrowserTestBase {
     downloader->AddTestServerURL("https://kylepay.com/",
                                  kylepay_server_.GetURL("kylepay.com", "/"));
     ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
-        GetActiveWebContents()->GetMainFrame())
+        GetActiveWebContents()->GetPrimaryMainFrame())
         ->SetDownloaderAndIgnorePortInOriginComparisonForTesting(
             std::move(downloader));
   }

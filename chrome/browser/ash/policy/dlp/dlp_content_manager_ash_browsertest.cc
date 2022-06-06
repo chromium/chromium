@@ -102,9 +102,10 @@ content::MediaStreamRequest CreateMediaStreamRequest(
     std::string requested_video_device_id,
     blink::mojom::MediaStreamType video_type) {
   return content::MediaStreamRequest(
-      web_contents->GetMainFrame()->GetProcess()->GetID(),
-      web_contents->GetMainFrame()->GetRoutingID(), /*page_request_id=*/0,
-      GURL(kExampleUrl), /*user_gesture=*/false, blink::MEDIA_GENERATE_STREAM,
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents->GetPrimaryMainFrame()->GetRoutingID(),
+      /*page_request_id=*/0, GURL(kExampleUrl), /*user_gesture=*/false,
+      blink::MEDIA_GENERATE_STREAM,
       /*requested_audio_device_id=*/std::string(), requested_video_device_id,
       blink::mojom::MediaStreamType::NO_SERVICE, video_type,
       /*disable_local_echo=*/false,
@@ -794,8 +795,8 @@ class DlpContentManagerAshScreenShareBrowserTest
                                            content::DesktopMediaID::kFakeId);
     const std::string requested_video_device_id =
         content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-            web_contents->GetMainFrame()->GetProcess()->GetID(),
-            web_contents->GetMainFrame()->GetRoutingID(),
+            web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            web_contents->GetPrimaryMainFrame()->GetRoutingID(),
             url::Origin::Create(GURL(kExampleUrl)), media_id,
             /*extension_name=*/"",
             content::DesktopStreamRegistryType::kRegistryStreamTypeDesktop);
@@ -823,8 +824,8 @@ class DlpContentManagerAshScreenShareBrowserTest
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(
-            web_contents->GetMainFrame()->GetProcess()->GetID(),
-            web_contents->GetMainFrame()->GetRoutingID()));
+            web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            web_contents->GetPrimaryMainFrame()->GetRoutingID()));
     extensions::TabCaptureRegistry::Get(browser()->profile())
         ->AddRequest(web_contents, /*extension_id=*/"", /*is_anonymous=*/false,
                      GURL(kExampleUrl), media_id, /*extension_name=*/"",
@@ -1030,8 +1031,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetMainFrame()->GetProcess()->GetID(),
-          web_contents->GetMainFrame()->GetRoutingID()));
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetRoutingID()));
   manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
                                 stop_cb_.Get(), state_change_cb_.Get(),
                                 base::DoNothing());
@@ -1063,8 +1064,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          new_web_contents->GetMainFrame()->GetProcess()->GetID(),
-          new_web_contents->GetMainFrame()->GetRoutingID()));
+          new_web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          new_web_contents->GetPrimaryMainFrame()->GetRoutingID()));
   // Simulate changing the source to another tab.
   manager->OnScreenShareSourceChanging(kLabel, media_id, new_media_id);
   EXPECT_FALSE(display_service_tester.GetNotification(

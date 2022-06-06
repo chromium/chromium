@@ -78,14 +78,14 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
   }
 
   void SendAccessRequest(WebContents* tab) {
-    tab->GetMainFrame()->ExecuteJavaScriptForTests(
+    tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"supervisedUserErrorPageController.requestPermission()",
         base::NullCallback());
     return;
   }
 
   void GoBack(WebContents* tab) {
-    tab->GetMainFrame()->ExecuteJavaScriptForTests(
+    tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"supervisedUserErrorPageController.goBack()", base::NullCallback());
     return;
   }

@@ -64,7 +64,7 @@ class SecurityStateTabHelperHistogramTest
 
   void StartNavigation(bool is_form, bool is_main_frame) {
     testing::NiceMock<MockNavigationHandle> handle(
-        GURL("http://example.test"), web_contents()->GetMainFrame());
+        GURL("http://example.test"), web_contents()->GetPrimaryMainFrame());
     handle.set_is_form_submission(is_form);
     handle.set_is_in_main_frame(is_main_frame);
     helper_->DidStartNavigation(&handle);

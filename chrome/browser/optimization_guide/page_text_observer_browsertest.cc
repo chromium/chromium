@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCaseNoSubframes) {
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
               mojom::TextDumpEvent::kFirstLayout,
-              web_contents()->GetMainFrame()->GetGlobalId(),
+              web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"hello"),
@@ -260,7 +260,8 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
       SCOPED_TRACE(result);
 
       // These fields are the same for both events.
-      EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalId(), result.rfh_id());
+      EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
+                result.rfh_id());
       EXPECT_FALSE(result.amp_frame());
       EXPECT_EQ(
           web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
@@ -348,7 +349,8 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFAMPSubframe) {
       has_amp_result = true;
     } else {
       EXPECT_EQ(mojom::TextDumpEvent::kFirstLayout, result.event());
-      EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalId(), result.rfh_id());
+      EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
+                result.rfh_id());
       EXPECT_EQ(
           web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
           result.unique_navigation_id());
@@ -393,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFNotAmpSubframe) {
   const auto& result = *consumer.result()->frame_results().begin();
 
   EXPECT_EQ(mojom::TextDumpEvent::kFirstLayout, result.event());
-  EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalId(), result.rfh_id());
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
+            result.rfh_id());
   EXPECT_FALSE(result.amp_frame());
   EXPECT_EQ(web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
             result.unique_navigation_id());
@@ -447,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
               mojom::TextDumpEvent::kFinishedLoad,
-              web_contents()->GetMainFrame()->GetGlobalId(),
+              web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"mainframe\n\nhello"),
@@ -485,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
               mojom::TextDumpEvent::kFirstLayout,
-              web_contents()->GetMainFrame()->GetGlobalId(),
+              web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"mainframe"),
@@ -529,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverFencedFrameBrowserTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html"));
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
   // Loading a URL in a fenced frame should not increase

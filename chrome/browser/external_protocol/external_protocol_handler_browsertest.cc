@@ -224,25 +224,26 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
 // - allow-top-navigation-by-user-activation + UserGesture
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest, Sandbox) {
   EXPECT_TRUE(
-      AllowedBySandbox(CreateIFrame(web_content()->GetMainFrame(), "")));
+      AllowedBySandbox(CreateIFrame(web_content()->GetPrimaryMainFrame(), "")));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest, SandboxAll) {
-  EXPECT_FALSE(AllowedBySandbox(CreateIFrame(
-      web_content()->GetMainFrame(), "iframe.sandbox = 'allow-scripts';")));
+  EXPECT_FALSE(
+      AllowedBySandbox(CreateIFrame(web_content()->GetPrimaryMainFrame(),
+                                    "iframe.sandbox = 'allow-scripts';")));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
                        SandboxAllowPopups) {
   EXPECT_TRUE(AllowedBySandbox(
-      CreateIFrame(web_content()->GetMainFrame(),
+      CreateIFrame(web_content()->GetPrimaryMainFrame(),
                    "iframe.sandbox = 'allow-scripts allow-popups';")));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
                        SandboxAllowTopNavigationToCustomProtocols) {
   EXPECT_TRUE(AllowedBySandbox(
-      CreateIFrame(web_content()->GetMainFrame(),
+      CreateIFrame(web_content()->GetPrimaryMainFrame(),
                    "iframe.sandbox = 'allow-scripts "
                    "allow-top-navigation-to-custom-protocols';")));
 }
@@ -250,14 +251,14 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
                        SandboxAllowTopNavigation) {
   EXPECT_TRUE(AllowedBySandbox(
-      CreateIFrame(web_content()->GetMainFrame(),
+      CreateIFrame(web_content()->GetPrimaryMainFrame(),
                    "iframe.sandbox = 'allow-scripts allow-top-navigation';")));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
                        SandboxAllowTopNavigationByUserActivation) {
   EXPECT_FALSE(AllowedBySandbox(
-      CreateIFrame(web_content()->GetMainFrame(),
+      CreateIFrame(web_content()->GetPrimaryMainFrame(),
                    "iframe.sandbox = 'allow-scripts "
                    "allow-top-navigation-by-user-activation';"),
       /*user-gesture=*/false));
@@ -266,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
                        SandboxAllowTopNavigationByUserActivationWithGesture) {
   EXPECT_TRUE(AllowedBySandbox(
-      CreateIFrame(web_content()->GetMainFrame(),
+      CreateIFrame(web_content()->GetPrimaryMainFrame(),
                    "iframe.sandbox = 'allow-scripts "
                    "allow-top-navigation-by-user-activation';"),
       /*user-gesture=*/true));
@@ -350,7 +351,7 @@ class ExternalProtocolHandlerSandboxFencedFrameBrowserTest
 
   content::RenderFrameHost* CreateFencedFrame() {
     return fenced_frame_test_helper().CreateFencedFrame(
-        web_content()->GetMainFrame(),
+        web_content()->GetPrimaryMainFrame(),
         embedded_test_server()->GetURL("/fenced_frames/title1.html"));
   }
 
@@ -417,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(
     ExternalProtocolHandlerSandboxFencedFrameBrowserTest,
     SandboxAllowTopNavigationByUserActivationWithGestureInFencedFrame) {
   EXPECT_TRUE(AllowedBySandbox(
-      CreateIFrame(web_content()->GetMainFrame(),
+      CreateIFrame(web_content()->GetPrimaryMainFrame(),
                    "iframe.sandbox = 'allow-scripts "
                    "allow-top-navigation-by-user-activation';"),
       /*user-gesture=*/true));

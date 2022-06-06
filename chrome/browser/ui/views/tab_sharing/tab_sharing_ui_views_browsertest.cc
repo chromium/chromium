@@ -49,7 +49,7 @@ content::WebContents* GetWebContents(Browser* browser, int tab) {
 }
 
 content::GlobalRenderFrameHostId GetGlobalId(Browser* browser, int tab) {
-  auto* const main_frame = GetWebContents(browser, tab)->GetMainFrame();
+  auto* const main_frame = GetWebContents(browser, tab)->GetPrimaryMainFrame();
   return main_frame ? main_frame->GetGlobalId()
                     : content::GlobalRenderFrameHostId();
 }
@@ -93,7 +93,7 @@ bool SecondaryButtonIsEnabled(Browser* browser, int tab) {
 
 std::u16string GetExpectedSwitchToMessage(Browser* browser, int tab) {
   content::RenderFrameHost* const rfh =
-      GetWebContents(browser, tab)->GetMainFrame();
+      GetWebContents(browser, tab)->GetPrimaryMainFrame();
   return l10n_util::GetStringFUTF16(
       IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
       url_formatter::FormatOriginForSecurityDisplay(
@@ -103,7 +103,7 @@ std::u16string GetExpectedSwitchToMessage(Browser* browser, int tab) {
 
 content::DesktopMediaID GetDesktopMediaID(Browser* browser, int tab) {
   content::RenderFrameHost* main_frame =
-      GetWebContents(browser, tab)->GetMainFrame();
+      GetWebContents(browser, tab)->GetPrimaryMainFrame();
   return content::DesktopMediaID(
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, KillTab) {
   // Kill a tab different than the shared one.
   content::WebContents* web_contents = GetWebContents(browser(), 0);
   content::RenderProcessHost* process =
-      web_contents->GetMainFrame()->GetProcess();
+      web_contents->GetPrimaryMainFrame()->GetProcess();
   content::RenderProcessHostWatcher crash_observer(
       process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   process->Shutdown(content::RESULT_CODE_KILLED);
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, KillSharedTab) {
   // Kill the shared tab.
   content::WebContents* shared_tab_web_contents = GetWebContents(browser(), 1);
   content::RenderProcessHost* shared_tab_process =
-      shared_tab_web_contents->GetMainFrame()->GetProcess();
+      shared_tab_web_contents->GetPrimaryMainFrame()->GetProcess();
   content::RenderProcessHostWatcher shared_tab_crash_observer(
       shared_tab_process,
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);

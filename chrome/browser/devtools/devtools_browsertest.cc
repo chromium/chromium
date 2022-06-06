@@ -1070,7 +1070,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   //       - data:
   //       - web URL
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* devtools_extension_devtools_page_rfh =
       ChildFrameAt(main_devtools_rfh, 0);
   RenderFrameHost* devtools_extension_panel_rfh =
@@ -1195,7 +1196,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(4U, rfhs.size());
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* devtools_extension_devtools_page_rfh =
       ChildFrameAt(main_devtools_rfh, 0);
   RenderFrameHost* devtools_sidebar_pane_extension_rfh =
@@ -1255,7 +1257,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(3U, rfhs.size());
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* devtools_extension_devtools_page_rfh =
       ChildFrameAt(main_devtools_rfh, 0);
   RenderFrameHost* http_iframe_rfh =
@@ -1320,7 +1323,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(4U, rfhs.size());
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* devtools_extension_devtools_page_rfh =
       ChildFrameAt(main_devtools_rfh, 0);
   RenderFrameHost* devtools_extension_panel_rfh =
@@ -1391,7 +1395,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(5U, rfhs.size());
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
 
   RenderFrameHost* devtools_extension_a_devtools_rfh =
       content::FrameMatchingPredicate(
@@ -1471,7 +1476,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, DevToolsExtensionInItself) {
       CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(4U, rfhs.size());
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* devtools_extension_devtools_page_rfh =
       ChildFrameAt(main_devtools_rfh, 0);
   RenderFrameHost* devtools_extension_panel_rfh =
@@ -1521,7 +1527,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_DevtoolsInDevTools) {
       "devtoolsFrame.src = '" +
       devtools_url.spec() + "';";
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
 
   content::TestNavigationManager manager(main_web_contents(), devtools_url);
   ASSERT_TRUE(content::ExecuteScript(main_devtools_rfh, javascript));
@@ -1902,7 +1909,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
 
   autofill::ContentAutofillDriver* autofill_driver =
       autofill::ContentAutofillDriverFactory::FromWebContents(GetInspectedTab())
-          ->DriverForFrame(GetInspectedTab()->GetMainFrame());
+          ->DriverForFrame(GetInspectedTab()->GetPrimaryMainFrame());
   auto* autofill_manager = static_cast<autofill::BrowserAutofillManager*>(
       autofill_driver->autofill_manager());
   BrowserAutofillManagerTestDelegateDevtoolsImpl autoFillTestDelegate(

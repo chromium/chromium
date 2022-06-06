@@ -178,10 +178,11 @@ void TabCaptureAccessHandler::HandleRequest(
     // Use extension name as title for extensions and host/origin for drive-by
     // web.
     std::u16string application_title =
-        extension ? base::UTF8ToUTF16(extension->name())
-                  : url_formatter::FormatOriginForSecurityDisplay(
-                        web_contents->GetMainFrame()->GetLastCommittedOrigin(),
-                        url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+        extension
+            ? base::UTF8ToUTF16(extension->name())
+            : url_formatter::FormatOriginForSecurityDisplay(
+                  web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+                  url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
     content::DesktopMediaID media_id(
         content::DesktopMediaID::TYPE_WEB_CONTENTS, /*id=*/0,
         content::WebContentsMediaCaptureId(request.render_process_id,

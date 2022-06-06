@@ -587,10 +587,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     // the |content_script| declared in the extension manifest.
     GURL page_url = GetTestPageUrl("fetch-initiator.com");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-    EXPECT_EQ(page_url,
-              active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-    EXPECT_EQ(url::Origin::Create(page_url),
-              active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+    EXPECT_EQ(
+        page_url,
+        active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+    EXPECT_EQ(
+        url::Origin::Create(page_url),
+        active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
     // Extract results of the fetch done in the declarative content script.
     std::string fetch_result = PopString(&message_queue);
@@ -641,10 +643,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a cross-origin fetch to
   // cross-site.com.
@@ -673,10 +677,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that adds a link that initiates a fetch from
   // cross-site.com.
@@ -768,10 +774,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Test fetch from a host allowed by the policy (and allowed by the extension
   // permissions).
@@ -824,10 +832,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Test fetch from a host allowed by the policy (and allowed by the extension
   // permissions).
@@ -873,10 +883,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a cross-origin fetch to
   // cross-site.com.
@@ -920,8 +932,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to a file:// test page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
   const char kScriptTemplate[] = R"(
       const url = $1;
       const xhr = new XMLHttpRequest();
@@ -998,10 +1011,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Verify behavior for fetching URLs covered by extension permissions.
   GURL kAllowedUrls[] = {
@@ -1036,10 +1051,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a cross-origin fetch to
   // cross-site.com.
@@ -1070,10 +1087,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a cross-origin fetch to
   // other-without-permission.com.
@@ -1099,10 +1118,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a cross-origin fetch to
   // other-without-permission.com.
@@ -1135,10 +1156,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a same-origin fetch to
   // fetch-initiator.com.
@@ -1163,10 +1186,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a cross-origin fetch to
   // cross-site.com.
@@ -1250,7 +1275,7 @@ IN_PROC_BROWSER_TEST_F(
     return;
   SimulateNetworkServiceCrash();
   active_web_contents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->FlushNetworkAndNavigationInterfacesForTesting();
   {
     content::DOMMessageQueue message_queue(active_web_contents());
@@ -1279,10 +1304,12 @@ IN_PROC_BROWSER_TEST_F(
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Verify behavior for fetching URLs covered by extension permissions.
   GURL kAllowedUrls[] = {
@@ -1316,10 +1343,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a cross-origin fetch to
   // cross-site.com (to a PNG image that is incorrectly labelled as
@@ -1346,10 +1375,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a cross-origin fetch to
   // cross-site.com.
@@ -1613,8 +1644,10 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate a tab to the extension origin.
   GURL extension_resource = GetExtensionResource("page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_resource));
-  content::RenderFrameHost* test_frame =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* test_frame = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
   ASSERT_EQ(GetExtensionOrigin(), test_frame->GetLastCommittedOrigin());
 
   // Perform a cross-origin fetch from an extension frame and verify that it got
@@ -1704,11 +1737,13 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       ASSERT_EQ(extension_resource, navigation_observer.last_navigation_url());
     }
   }
-  content::RenderFrameHost* regular_frame =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* regular_frame = browser()
+                                                ->tab_strip_model()
+                                                ->GetActiveWebContents()
+                                                ->GetPrimaryMainFrame();
   ASSERT_EQ(GetExtensionOrigin(), regular_frame->GetLastCommittedOrigin());
   content::RenderFrameHost* incognito_frame =
-      content::ChildFrameAt(incognito_contents->GetMainFrame(), 0);
+      content::ChildFrameAt(incognito_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(incognito_frame);
   ASSERT_EQ(GetExtensionOrigin(), incognito_frame->GetLastCommittedOrigin());
 
@@ -1789,9 +1824,10 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   content::WebContents* incognito_contents =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(extension->origin(),
-            regular_contents->GetMainFrame()->GetLastCommittedOrigin());
-  ASSERT_EQ(extension->origin(),
-            incognito_contents->GetMainFrame()->GetLastCommittedOrigin());
+            regular_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      extension->origin(),
+      incognito_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Test fetching a cross-site resource.
   GURL cross_site_resource(
@@ -1857,8 +1893,9 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate a tab to an extension page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GetExtensionResource("page.html")));
-  ASSERT_EQ(GetExtensionOrigin(),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      GetExtensionOrigin(),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Verify that the service worker controls the fetches.
   bool is_controlled_by_service_worker = false;
@@ -2067,8 +2104,9 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     //    (task posted from ReadyToCommitNavigation above should execute
     //     before any IPC responses that come after PostTask call).
     ready_to_commit_waiter.Wait();
-    DCHECK_NE(web_ui_url,
-              active_web_contents()->GetMainFrame()->GetLastCommittedURL());
+    DCHECK_NE(
+        web_ui_url,
+        active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
     // Inject the content script (simulating chrome.tabs.executeScript, but
     // using TabsExecuteScriptFunction directly to ensure the right timing).
@@ -2093,8 +2131,9 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
     // Wait until the navigation completes.
     navigation_observer.Wait();
-    EXPECT_EQ(web_ui_url,
-              active_web_contents()->GetMainFrame()->GetLastCommittedURL());
+    EXPECT_EQ(
+        web_ui_url,
+        active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
   }
 
   // Check if the injection above succeeded (it shouldn't have, because of
@@ -2232,10 +2271,12 @@ IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a cross-origin GET fetch to
   // cross-site.com.
@@ -2279,10 +2320,12 @@ IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a cross-origin POST fetch to
   // cross-site.com.
@@ -2323,10 +2366,12 @@ IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
   // Navigate to a fetch-initiator.com page.
   GURL page_url = GetTestPageUrl("fetch-initiator.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a same-origin POST fetch to
   // fetch-initiator.com.
@@ -2373,10 +2418,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to https test page.
   GURL page_url = https_server.GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a same-origin GET fetch.
   GURL same_origin_resource(https_server.GetURL("/subresource"));
@@ -2414,10 +2461,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Navigate to https test page.
   GURL page_url = https_server.GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(url::Origin::Create(page_url),
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      url::Origin::Create(page_url),
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a same-origin GET XHR.
   GURL same_origin_resource(https_server.GetURL("/subresource"));
@@ -2452,10 +2501,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest, CorsFromContentScript) {
   url::Origin page_origin = url::Origin::Create(page_url);
   std::string page_origin_string = page_origin.Serialize();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  ASSERT_EQ(page_url,
-            active_web_contents()->GetMainFrame()->GetLastCommittedURL());
-  ASSERT_EQ(page_origin,
-            active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  ASSERT_EQ(
+      page_url,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  ASSERT_EQ(
+      page_origin,
+      active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a cross-origin GET fetch.
   content::DOMMessageQueue message_queue(active_web_contents());
@@ -2803,8 +2854,9 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // background page).
   content::WebContents* regular_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(kRegularHost,
-            regular_contents->GetMainFrame()->GetLastCommittedOrigin().host());
+  EXPECT_EQ(
+      kRegularHost,
+      regular_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().host());
   EXPECT_NE(kRegularHost, kIncognitoHost);
   ExtensionActionRunner::GetForWebContents(regular_contents)
       ->RunAction(extension, true);

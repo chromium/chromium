@@ -88,7 +88,8 @@ class StorageAccessGrantPermissionContextTest
 
   permissions::PermissionRequestID CreateFakeID() {
     return permissions::PermissionRequestID(
-        web_contents()->GetMainFrame(), request_id_generator_.GenerateNextId());
+        web_contents()->GetPrimaryMainFrame(),
+        request_id_generator_.GenerateNextId());
   }
 
  private:

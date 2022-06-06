@@ -40,7 +40,10 @@ void BackgroundThumbnailVideoCapturer::Start(
     return;
 
   content::RenderWidgetHostView* const source_view =
-      contents_->GetMainFrame()->GetRenderViewHost()->GetWidget()->GetView();
+      contents_->GetPrimaryMainFrame()
+          ->GetRenderViewHost()
+          ->GetWidget()
+          ->GetView();
   if (!source_view)
     return;
 

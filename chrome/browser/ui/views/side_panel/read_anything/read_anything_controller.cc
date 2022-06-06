@@ -107,7 +107,8 @@ void ReadAnythingController::DistillAXTree() {
 
   // Read Anything just runs on the main frame and does not run on embedded
   // content.
-  content::RenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  content::RenderFrameHost* render_frame_host =
+      web_contents->GetPrimaryMainFrame();
   if (!render_frame_host)
     return;
 

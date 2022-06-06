@@ -49,7 +49,7 @@ PasswordAutoSignInView::PasswordAutoSignInView(
           l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TITLE_MD),
           form.username_value, &form,
           GetURLLoaderForMainFrame(web_contents).get(),
-          web_contents->GetMainFrame()->GetLastCommittedOrigin(),
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
           views::style::STYLE_HINT, views::style::STYLE_PRIMARY));
   credential->SetEnabled(false);
 

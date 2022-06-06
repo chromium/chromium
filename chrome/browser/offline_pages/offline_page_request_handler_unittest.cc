@@ -974,7 +974,8 @@ void OfflinePageURLLoaderBuilder::InterceptRequestInternal(
 
   url_loader_ = OfflinePageURLLoader::Create(
       navigation_ui_data_.get(),
-      test_->web_contents()->GetMainFrame()->GetFrameTreeNodeId(), request,
+      test_->web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+      request,
       base::BindOnce(&OfflinePageURLLoaderBuilder::MaybeStartLoader,
                      base::Unretained(this), request));
 

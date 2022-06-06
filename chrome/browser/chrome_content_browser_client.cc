@@ -879,7 +879,7 @@ blink::mojom::AutoplayPolicy GetAutoplayPolicyForWebContents(
     result = UnifiedAutoplayConfig::ShouldBlockAutoplay(profile)
                  ? blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired
                  : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
-  } else if (web_contents->GetMainFrame()->IsFeatureEnabled(
+  } else if (web_contents->GetPrimaryMainFrame()->IsFeatureEnabled(
                  blink::mojom::PermissionsPolicyFeature::kAutoplay) &&
              IsAutoplayAllowedByPolicy(web_contents->GetOuterWebContents(),
                                        prefs)) {
@@ -1127,7 +1127,7 @@ void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
                     has_user_gesture);
 
     if (!allowed) {
-      content::RenderFrameHost* rfh = web_contents->GetMainFrame();
+      content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
       if (client) {
         client->LogWebFeatureForCurrentPage(
             rfh, blink::mojom::WebFeature::kExternalProtocolBlockedBySandbox);
@@ -3675,7 +3675,8 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   }
 
   UpdatePreferredColorScheme(
-      web_prefs, web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL(),
+      web_prefs,
+      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL(),
       web_contents, GetWebTheme());
 
   web_prefs->translate_service_available = TranslateService::IsAvailable(prefs);

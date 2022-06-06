@@ -46,7 +46,7 @@ void WritePredictionToConsoleLog(
     return;
   }
 
-  prediction.web_contents()->GetMainFrame()->AddMessageToConsole(
+  prediction.web_contents()->GetPrimaryMainFrame()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kInfo,
       "JSON Navigation Prediction: " + json_body);
 }

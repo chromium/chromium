@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
                        LargestContentfulPaint_SubframeInput) {
   Start();
   Load("/lcp_subframe_input.html");
-  auto* sub = ChildFrameAt(web_contents()->GetMainFrame(), 0);
+  auto* sub = ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(EvalJs(sub, "test_step_1()").value.GetString(), "green-16x16.png");
 
   content::SimulateMouseClickAt(web_contents(), 0,
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 
   base::RunLoop run_loop;
   client->CapturePaintPreview(
-      params, web_contents()->GetMainFrame(),
+      params, web_contents()->GetPrimaryMainFrame(),
       base::BindOnce(
           [](base::OnceClosure callback, base::UnguessableToken,
              paint_preview::mojom::PaintPreviewStatus,
@@ -275,7 +275,8 @@ class IsAnimatedLCPTest : public MetricIntegrationTest {
     waiter->AddMinimumCompleteResourcesExpectation(entries);
     Start();
     Load(html_name);
-    EXPECT_EQ(EvalJs(web_contents()->GetMainFrame(), "run_test()").error, "");
+    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(), "run_test()").error,
+              "");
 
     // Need to navigate away from the test html page to force metrics to get
     // flushed/synced.
@@ -327,11 +328,12 @@ class MouseoverLCPTest : public MetricIntegrationTest {
     waiter->AddMinimumCompleteResourcesExpectation(2);
     Start();
     Load(html_name);
-    EXPECT_EQ(EvalJs(web_contents()->GetMainFrame(), "run_test(1)").error, "");
+    EXPECT_EQ(
+        EvalJs(web_contents()->GetPrimaryMainFrame(), "run_test(1)").error, "");
 
     // We should wait for the main frame's hit-test data to be ready before
     // sending the mouse events below to avoid flakiness.
-    content::WaitForHitTestData(web_contents()->GetMainFrame());
+    content::WaitForHitTestData(web_contents()->GetPrimaryMainFrame());
     // Ensure the compositor thread is aware of the mouse events.
     content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
     frame_observer.Wait();
@@ -345,7 +347,7 @@ class MouseoverLCPTest : public MetricIntegrationTest {
                    ", y: " + base::NumberToString(y1) + " }, ] }], ()=>{});"));
 
     // Wait for a second image to load and for LCP entry to be there.
-    EXPECT_EQ(EvalJs(web_contents()->GetMainFrame(),
+    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
                      "run_test(/*entries_expected= */" + entries + ")")
                   .error,
               "");
@@ -359,12 +361,13 @@ class MouseoverLCPTest : public MetricIntegrationTest {
       // currently a second mouse move call is not dispatching the event as it
       // should. So instead, we dispatch the event directly.
       EXPECT_EQ(
-          EvalJs(web_contents()->GetMainFrame(), "dispatch_mouseover()").error,
+          EvalJs(web_contents()->GetPrimaryMainFrame(), "dispatch_mouseover()")
+              .error,
           "");
 
       // Wait for a third image (potentially) to load and for LCP entry to be
       // there.
-      EXPECT_EQ(EvalJs(web_contents()->GetMainFrame(),
+      EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
                        "run_test(/*entries_expected= */" + entries2 + ")")
                     .error,
                 "");

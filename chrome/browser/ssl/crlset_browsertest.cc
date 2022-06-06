@@ -93,7 +93,8 @@ IN_PROC_BROWSER_TEST_F(CRLSetBrowserTest, TestCRLSetRevoked) {
   ASSERT_EQ(interstitial_expected,
             chrome_browser_interstitials::IsShowingInterstitial(
                 GetActiveWebContents()));
-  ASSERT_TRUE(WaitForRenderFrameReady(GetActiveWebContents()->GetMainFrame()));
+  ASSERT_TRUE(
+      WaitForRenderFrameReady(GetActiveWebContents()->GetPrimaryMainFrame()));
 
   if (interstitial_expected) {
     ASSERT_TRUE(chrome_browser_interstitials::IsShowingSSLInterstitial(
@@ -138,7 +139,8 @@ IN_PROC_BROWSER_TEST_F(CRLSetBrowserTest, TestCRLSetBlockedInterception) {
   ASSERT_EQ(interstitial_expected,
             chrome_browser_interstitials::IsShowingInterstitial(
                 GetActiveWebContents()));
-  ASSERT_TRUE(WaitForRenderFrameReady(GetActiveWebContents()->GetMainFrame()));
+  ASSERT_TRUE(
+      WaitForRenderFrameReady(GetActiveWebContents()->GetPrimaryMainFrame()));
 
   if (interstitial_expected) {
     ASSERT_TRUE(
@@ -244,7 +246,8 @@ IN_PROC_BROWSER_TEST_F(CRLSetInterceptionBrowserTest,
 
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       GetActiveWebContents()));
-  ASSERT_TRUE(WaitForRenderFrameReady(GetActiveWebContents()->GetMainFrame()));
+  ASSERT_TRUE(
+      WaitForRenderFrameReady(GetActiveWebContents()->GetPrimaryMainFrame()));
 
   ssl_test_util::CheckSecurityState(
       GetActiveWebContents(),
@@ -257,5 +260,5 @@ IN_PROC_BROWSER_TEST_F(CRLSetInterceptionBrowserTest,
 
   // Expect there to be a proceed link, even for HSTS.
   EXPECT_TRUE(chrome_browser_interstitials::InterstitialHasProceedLink(
-      GetActiveWebContents()->GetMainFrame()));
+      GetActiveWebContents()->GetPrimaryMainFrame()));
 }

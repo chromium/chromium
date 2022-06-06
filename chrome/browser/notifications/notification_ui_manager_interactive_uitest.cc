@@ -72,7 +72,7 @@ class NotificationUIManagerInteractiveUITest : public InProcessBrowserTest {
   // will be returned, indicating whether the script was executed successfully.
   bool RunScript(const std::string& script, std::string* result) const {
     return content::ExecuteScriptAndExtractString(
-        GetActiveWebContents()->GetMainFrame(), script, result);
+        GetActiveWebContents()->GetPrimaryMainFrame(), script, result);
   }
 
   GURL TestPageUrl() const {

@@ -49,7 +49,7 @@ content::DesktopMediaID GetDesktopMediaIDForScreen() {
 
 content::DesktopMediaID GetDesktopMediaIDForTab(Browser* browser, int tab) {
   content::RenderFrameHost* main_frame =
-      GetWebContents(browser, tab)->GetMainFrame();
+      GetWebContents(browser, tab)->GetPrimaryMainFrame();
   return content::DesktopMediaID(
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,

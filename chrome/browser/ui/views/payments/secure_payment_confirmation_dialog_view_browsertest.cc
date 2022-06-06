@@ -61,7 +61,8 @@ class SecurePaymentConfirmationDialogViewTest
 
     test_delegate_ =
         std::make_unique<TestSecurePaymentConfirmationPaymentRequestDelegate>(
-            web_contents->GetMainFrame(), model_.GetWeakPtr(), GetWeakPtr());
+            web_contents->GetPrimaryMainFrame(), model_.GetWeakPtr(),
+            GetWeakPtr());
 
     // TODO(crbug.com/1175327): Ideally, we'd expect the browser window to be
     // active here and could check that |IsBrowserWindowActivate()| returned
@@ -119,7 +120,8 @@ class SecurePaymentConfirmationDialogViewTest
 
     test_delegate_ =
         std::make_unique<TestSecurePaymentConfirmationPaymentRequestDelegate>(
-            web_contents->GetMainFrame(), model_.GetWeakPtr(), GetWeakPtr());
+            web_contents->GetPrimaryMainFrame(), model_.GetWeakPtr(),
+            GetWeakPtr());
 
     ResetEventWaiter(DialogEvent::DIALOG_OPENED);
     test_delegate_->ShowDialog(nullptr);

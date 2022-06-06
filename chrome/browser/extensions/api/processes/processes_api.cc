@@ -477,7 +477,7 @@ ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
 
   // TODO(https://crbug.com/767563): chrome.processes.getProcessIdForTab API
   // incorrectly assumes a *single* renderer process per tab.
-  const int process_id = contents->GetMainFrame()->GetProcess()->GetID();
+  const int process_id = contents->GetPrimaryMainFrame()->GetProcess()->GetID();
   return RespondNow(ArgumentList(
       api::processes::GetProcessIdForTab::Results::Create(process_id)));
 }

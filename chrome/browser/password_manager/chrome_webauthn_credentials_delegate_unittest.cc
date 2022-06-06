@@ -83,7 +83,7 @@ class ChromeWebAuthnCredentialsDelegateTest
 #if !BUILDFLAG(IS_ANDROID)
     authenticator_request_delegate_ =
         AuthenticatorRequestScheduler::CreateRequestDelegate(
-            web_contents()->GetMainFrame());
+            web_contents()->GetPrimaryMainFrame());
     // Setting the RPID creates the dialog model.
     authenticator_request_delegate_->SetRelyingPartyId("rpId");
 #else

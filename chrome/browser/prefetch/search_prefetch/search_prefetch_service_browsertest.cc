@@ -2369,7 +2369,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
 
-  content::RenderFrameHost* frame = GetWebContents()->GetMainFrame();
+  content::RenderFrameHost* frame = GetWebContents()->GetPrimaryMainFrame();
 
   // Check the request total time is non-negative.
   int value = -1;

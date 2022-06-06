@@ -91,7 +91,7 @@ SafeBrowsingUserInteractionObserver::SafeBrowsingUserInteractionObserver(
   // indicate that it wants the key press to be ignored.
   // (DidGetUserInteraction() can only observe and not cancel the event.)
   content::RenderWidgetHost* widget =
-      web_contents->GetMainFrame()->GetRenderWidgetHost();
+      web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
   widget->AddKeyPressEventCallback(key_press_callback_);
   widget->AddMouseEventCallback(mouse_event_callback_);
 
@@ -110,11 +110,11 @@ SafeBrowsingUserInteractionObserver::~SafeBrowsingUserInteractionObserver() {
     permission_request_manager->RemoveObserver(this);
   }
   web_contents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->GetRenderWidgetHost()
       ->RemoveKeyPressEventCallback(key_press_callback_);
   web_contents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->GetRenderWidgetHost()
       ->RemoveMouseEventCallback(mouse_event_callback_);
 }
@@ -142,7 +142,7 @@ void SafeBrowsingUserInteractionObserver::RenderFrameHostChanged(
     content::RenderFrameHost* new_frame) {
   // We currently only insert callbacks on the widget for the top-level main
   // frame.
-  if (new_frame != web_contents()->GetMainFrame())
+  if (new_frame != web_contents()->GetPrimaryMainFrame())
     return;
   // The `old_frame` is null when the `new_frame` is the initial
   // RenderFrameHost, which we already attached to in the constructor.
@@ -358,7 +358,7 @@ void SafeBrowsingUserInteractionObserver::ShowInterstitial(
 
 void SafeBrowsingUserInteractionObserver::CleanUp() {
   content::RenderWidgetHost* widget =
-      web_contents()->GetMainFrame()->GetRenderWidgetHost();
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
   widget->RemoveKeyPressEventCallback(key_press_callback_);
   widget->RemoveMouseEventCallback(mouse_event_callback_);
 }

@@ -121,7 +121,7 @@ class MockAutofillManagerInjector : public content::WebContentsObserver {
  public:
   explicit MockAutofillManagerInjector(content::WebContents* web_contents)
       : WebContentsObserver(web_contents) {
-    Inject(web_contents->GetMainFrame());
+    Inject(web_contents->GetPrimaryMainFrame());
   }
   ~MockAutofillManagerInjector() override = default;
 
@@ -172,7 +172,7 @@ class AutofillTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     AutofillManager* autofill_manager =
         ContentAutofillDriverFactory::FromWebContents(web_contents)
-            ->DriverForFrame(web_contents->GetMainFrame())
+            ->DriverForFrame(web_contents->GetPrimaryMainFrame())
             ->autofill_manager();
     autofill_manager->client()->HideAutofillPopup(PopupHidingReason::kTabGone);
     test::ReenableSystemServices();
@@ -1026,7 +1026,7 @@ IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, Submission) {
       web_contents());
   base::RunLoop run_loop;
   EXPECT_CALL(
-      *injector.GetForFrame(web_contents()->GetMainFrame()),
+      *injector.GetForFrame(web_contents()->GetPrimaryMainFrame()),
       OnFormSubmittedImpl(_, _, mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
       .WillRepeatedly(
@@ -1044,7 +1044,7 @@ IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, ProbableSubmission) {
   MockAutofillManagerInjector<MockFormSubmissionAutofillManager> injector(
       web_contents());
   base::RunLoop run_loop;
-  EXPECT_CALL(*injector.GetForFrame(web_contents()->GetMainFrame()),
+  EXPECT_CALL(*injector.GetForFrame(web_contents()->GetPrimaryMainFrame()),
               OnFormSubmittedImpl(
                   _, _, mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
       .Times(1)

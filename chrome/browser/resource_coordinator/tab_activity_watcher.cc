@@ -200,7 +200,7 @@ class TabActivityWatcher::WebContentsData
       : WebContentsObserver(web_contents),
         content::WebContentsUserData<WebContentsData>(*web_contents) {
     DCHECK(!web_contents->GetBrowserContext()->IsOffTheRecord());
-    web_contents->GetMainFrame()
+    web_contents->GetPrimaryMainFrame()
         ->GetRenderViewHost()
         ->GetWidget()
         ->AddInputEventObserver(this);
@@ -208,7 +208,7 @@ class TabActivityWatcher::WebContentsData
     creation_time_ = NowTicks();
 
     // A navigation may already have completed if this is a replacement tab.
-    ukm_source_id_ = web_contents->GetMainFrame()->GetPageUkmSourceId();
+    ukm_source_id_ = web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
     // When a tab is discarded, a new null_web_contents will be created (with
     // WasDiscarded set as true) applied as a replacement of the discarded tab.

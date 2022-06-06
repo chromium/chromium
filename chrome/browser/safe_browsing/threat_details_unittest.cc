@@ -274,7 +274,7 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
                     const GURL& url,
                     UnsafeResource* resource) {
     const content::GlobalRenderFrameHostId primary_main_frame_id =
-        web_contents()->GetMainFrame()->GetGlobalId();
+        web_contents()->GetPrimaryMainFrame()->GetGlobalId();
     resource->url = url;
     resource->is_subresource = is_subresource;
     resource->threat_type = threat_type;
@@ -500,7 +500,7 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
   returned_referrer_chain.Add()->set_url(kSecondRedirectURL);
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByRenderFrameHost(
-                  web_contents()->GetMainFrame(), _, _))
+                  web_contents()->GetPrimaryMainFrame(), _, _))
       .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
                       Return(ReferrerChainProvider::SUCCESS)));
 

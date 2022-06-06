@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerSubFrameBrowserTest,
       .Times(0);
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_helper_.CreateFencedFrame(
-          GetWebContents()->GetMainFrame(),
+          GetWebContents()->GetPrimaryMainFrame(),
           embedded_test_server()->GetURL("/fenced_frames/title1.html"));
   ASSERT_NE(nullptr, fenced_frame_host);
   ::testing::Mock::VerifyAndClear(&mock_observer);

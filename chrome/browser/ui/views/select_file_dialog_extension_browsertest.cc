@@ -252,7 +252,7 @@ class BaseSelectFileDialogExtensionBrowserTest
   }
 
   void CheckJavascriptErrors() {
-    content::RenderFrameHost* host = dialog_->GetMainFrame();
+    content::RenderFrameHost* host = dialog_->GetPrimaryMainFrame();
     base::Value value =
         content::ExecuteScriptAndGetValue(host, "window.JSErrorCount");
     int js_error_count = value.GetInt();
@@ -260,7 +260,7 @@ class BaseSelectFileDialogExtensionBrowserTest
   }
 
   void ClickElement(const std::string& selector) {
-    content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
+    content::RenderFrameHost* frame_host = dialog_->GetPrimaryMainFrame();
 
     auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
     CHECK(web_contents);
@@ -365,7 +365,7 @@ class BaseSelectFileDialogExtensionBrowserTest
   void CloseDialog(DialogButtonType button_type,
                    const gfx::NativeWindow& owning_window) {
     // Inject JavaScript into the dialog to click the dialog |button_type|.
-    content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
+    content::RenderFrameHost* frame_host = dialog_->GetPrimaryMainFrame();
 
     ClickJsButton(frame_host, button_type);
 
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, DestroyListener2) {
                                      base::FilePath(), owning_window, ""));
 
   // Get the Files app WebContents/Framehost, before deleting the dialog_.
-  content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
+  content::RenderFrameHost* frame_host = dialog_->GetPrimaryMainFrame();
 
   // Some users of SelectFileDialog destroy their listener before cleaning
   // up the dialog, delete the `dialog_`, however the
@@ -673,7 +673,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, DialogColoredTitle) {
   // Open the file dialog on the default path.
   ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
                                      base::FilePath(), owning_window, ""));
-  content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
+  content::RenderFrameHost* frame_host = dialog_->GetPrimaryMainFrame();
   aura::Window* dialog_window =
       frame_host->GetNativeView()->GetToplevelWindow();
   auto* color_provider = ash::ColorProvider::Get();
@@ -716,7 +716,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionDarkLightModeEnabledTest,
   // Open the file dialog on the default path.
   ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
                                      base::FilePath(), owning_window, ""));
-  content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
+  content::RenderFrameHost* frame_host = dialog_->GetPrimaryMainFrame();
   aura::Window* dialog_window =
       frame_host->GetNativeView()->GetToplevelWindow();
 

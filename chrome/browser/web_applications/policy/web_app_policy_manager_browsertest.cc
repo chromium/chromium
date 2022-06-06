@@ -123,7 +123,7 @@ class WebAppPolicyManagerBrowserTest
   }
 
   content::RenderFrameHost* RenderFrameHost() const {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   ExternallyInstalledWebAppPrefs& externally_installed_app_prefs() {

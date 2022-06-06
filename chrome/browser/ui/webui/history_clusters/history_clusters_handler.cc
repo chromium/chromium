@@ -334,7 +334,7 @@ void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
 }
 
 void HistoryClustersHandler::OnDebugMessage(const std::string& message) {
-  content::RenderFrameHost* rfh = web_contents_->GetMainFrame();
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
   if (rfh && GetConfig().non_user_visible_debug) {
     rfh->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kInfo, message);
   }

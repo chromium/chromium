@@ -295,7 +295,7 @@ void ManagePasswordsUIController::OnCredentialLeak(
       this, leak_type, url, username,
       std::make_unique<
           password_manager::metrics_util::LeakDialogMetricsRecorder>(
-          web_contents()->GetMainFrame()->GetPageUkmSourceId(),
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
           password_manager::GetLeakDialogType(leak_type)));
   dialog_controller_.reset(raw_controller);
   raw_controller->ShowCredentialLeakPrompt(

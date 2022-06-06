@@ -195,7 +195,7 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
 
   absl::variant<printing::mojom::PrintPagesParamsPtr, std::string>
       print_pages_params = print_to_pdf::GetPrintPagesParams(
-          web_contents_->GetMainFrame()->GetLastCommittedURL(),
+          web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
           OptionalFromMaybe<bool>(landscape),
           OptionalFromMaybe<bool>(display_header_footer),
           OptionalFromMaybe<bool>(print_background),
@@ -225,7 +225,7 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
   if (auto* print_manager =
           print_to_pdf::PdfPrintManager::FromWebContents(web_contents_.get())) {
     print_manager->PrintToPdf(
-        web_contents_->GetMainFrame(), page_ranges.fromMaybe(""),
+        web_contents_->GetPrimaryMainFrame(), page_ranges.fromMaybe(""),
         std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(
             print_pages_params)),
         base::BindOnce(&PageHandler::OnPDFCreated,

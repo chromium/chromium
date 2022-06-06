@@ -148,7 +148,8 @@ SavePackageFilePicker::SavePackageFilePicker(
     bool can_save_as_complete,
     DownloadPrefs* download_prefs,
     content::SavePackagePathPickedCallback callback)
-    : render_process_id_(web_contents->GetMainFrame()->GetProcess()->GetID()),
+    : render_process_id_(
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()),
       can_save_as_complete_(can_save_as_complete),
       download_prefs_(download_prefs),
       callback_(std::move(callback)) {

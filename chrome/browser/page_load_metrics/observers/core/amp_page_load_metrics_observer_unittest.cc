@@ -228,7 +228,7 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameInputBeforeNavigation) {
       "https://ampsubframe.com/page"
       "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage");
   content::RenderFrameHost* subframe = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe", subframe_url);
+      web_contents()->GetPrimaryMainFrame(), "subframe", subframe_url);
 
   page_load_metrics::mojom::FrameMetadata metadata;
   metadata.behavior_flags =
@@ -288,7 +288,7 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameNavigationBeforeInput) {
       "https://ampsubframe.com/page"
       "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage");
   content::RenderFrameHost* subframe = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe", subframe_url);
+      web_contents()->GetPrimaryMainFrame(), "subframe", subframe_url);
 
   NavigationSimulator::CreateRendererInitiated(amp_url, main_rfh())
       ->CommitSameDocument();
@@ -341,7 +341,7 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMetrics) {
       "https://ampsubframe.com/page"
       "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage");
   content::RenderFrameHost* subframe = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe", subframe_url);
+      web_contents()->GetPrimaryMainFrame(), "subframe", subframe_url);
 
   page_load_metrics::mojom::FrameMetadata metadata;
   metadata.behavior_flags =
@@ -420,7 +420,7 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMetrics_LayoutInstability) {
       "https://ampsubframe.com/page"
       "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage");
   content::RenderFrameHost* subframe = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe", subframe_url);
+      web_contents()->GetPrimaryMainFrame(), "subframe", subframe_url);
 
   page_load_metrics::mojom::FrameMetadata metadata;
   metadata.behavior_flags =
@@ -466,7 +466,7 @@ TEST_P(AMPPageLoadMetricsObserverTest,
       "https://ampsubframe.com/page"
       "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage");
   content::RenderFrameHost* subframe = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe", subframe_url);
+      web_contents()->GetPrimaryMainFrame(), "subframe", subframe_url);
 
   page_load_metrics::mojom::FrameMetadata metadata;
   metadata.behavior_flags =
@@ -534,7 +534,7 @@ TEST_P(AMPPageLoadMetricsObserverTest,
       "https://ampsubframe.com/page"
       "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage");
   content::RenderFrameHost* subframe = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe", subframe_url);
+      web_contents()->GetPrimaryMainFrame(), "subframe", subframe_url);
 
   page_load_metrics::mojom::FrameMetadata metadata;
   metadata.behavior_flags =
@@ -618,7 +618,7 @@ TEST_P(AMPPageLoadMetricsObserverTest,
       "https://ampsubframe.com/page"
       "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage");
   content::RenderFrameHost* subframe = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe", subframe_url);
+      web_contents()->GetPrimaryMainFrame(), "subframe", subframe_url);
 
   page_load_metrics::mojom::FrameMetadata metadata;
   metadata.behavior_flags =
@@ -704,7 +704,7 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMetricsFullNavigation) {
       "https://ampsubframe.com/page"
       "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage");
   content::RenderFrameHost* subframe = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe", subframe_url);
+      web_contents()->GetPrimaryMainFrame(), "subframe", subframe_url);
 
   page_load_metrics::mojom::FrameMetadata metadata;
   metadata.behavior_flags =
@@ -773,7 +773,7 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameRecordOnFullNavigation) {
       "https://ampsubframe.com/page"
       "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage");
   content::RenderFrameHost* subframe = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe", subframe_url);
+      web_contents()->GetPrimaryMainFrame(), "subframe", subframe_url);
 
   page_load_metrics::mojom::FrameMetadata metadata;
   metadata.behavior_flags =
@@ -830,7 +830,7 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameRecordOnFrameDeleted) {
       "https://ampsubframe.com/page"
       "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage");
   content::RenderFrameHost* subframe = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe", subframe_url);
+      web_contents()->GetPrimaryMainFrame(), "subframe", subframe_url);
 
   page_load_metrics::mojom::FrameMetadata metadata;
   metadata.behavior_flags =
@@ -882,7 +882,7 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMultipleFrames) {
       "https://ampsubframe.com/page2"
       "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage2");
   content::RenderFrameHost* subframe2 = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe2", subframe_url2);
+      web_contents()->GetPrimaryMainFrame(), "subframe2", subframe_url2);
 
   // Perform a main-frame navigation to a different AMP document (not the
   // prerender).
@@ -894,7 +894,7 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMultipleFrames) {
       "https://ampsubframe.com/page"
       "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage");
   content::RenderFrameHost* subframe1 = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe1", subframe_url1);
+      web_contents()->GetPrimaryMainFrame(), "subframe1", subframe_url1);
 
   page_load_metrics::mojom::FrameMetadata metadata;
   metadata.behavior_flags =
@@ -998,7 +998,7 @@ TEST_P(AMPPageLoadMetricsObserverTest,
       "https://ampsubframe.com/page"
       "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage");
   content::RenderFrameHost* subframe = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe", subframe_url);
+      web_contents()->GetPrimaryMainFrame(), "subframe", subframe_url);
 
   page_load_metrics::mojom::FrameMetadata metadata;
   metadata.behavior_flags =
@@ -1043,7 +1043,7 @@ TEST_P(AMPPageLoadMetricsObserverTest, NoSubFrameMetricsForNonAmpSubFrame) {
 
   // Create a non-AMP subframe document.
   GURL subframe_url("https://example.com/");
-  AppendChildFrameAndNavigateAndCommit(web_contents()->GetMainFrame(),
+  AppendChildFrameAndNavigateAndCommit(web_contents()->GetPrimaryMainFrame(),
                                        "subframe", subframe_url);
 
   // Navigate the main frame to trigger metrics recording.
@@ -1079,7 +1079,7 @@ TEST_P(AMPPageLoadMetricsObserverTest,
       ->CommitSameDocument();
 
   content::RenderFrameHost* subframe = AppendChildFrameAndNavigateAndCommit(
-      web_contents()->GetMainFrame(), "subframe", subframe_url);
+      web_contents()->GetPrimaryMainFrame(), "subframe", subframe_url);
 
   page_load_metrics::mojom::FrameMetadata metadata;
   metadata.behavior_flags =

@@ -41,7 +41,7 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   }
 
   // Only intercept main frame requests.
-  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   if (!main_frame || main_frame->GetFrameTreeNodeId() != frame_tree_node_id) {
     return nullptr;
   }

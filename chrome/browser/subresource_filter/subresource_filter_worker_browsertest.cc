@@ -72,7 +72,7 @@ class SubresourceFilterWorkerFetchBrowserTest
   }
 
   void ClearTitle() {
-    ASSERT_TRUE(content::ExecJs(web_contents()->GetMainFrame(),
+    ASSERT_TRUE(content::ExecJs(web_contents()->GetPrimaryMainFrame(),
                                 "document.title = \"\";"));
   }
 };

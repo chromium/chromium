@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(PDFIFrameNavigationThrottleBrowserTest,
   // the prerender.
   {
     PrerenderHostObserver prerender_observer(*web_contents(), kPrerenderUrl);
-    ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+    ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
                        JsReplace("location = $1", kPrerenderUrl)));
     prerender_observer.WaitForActivation();
   }
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(PDFIFrameNavigationThrottleBrowserTest,
     EXPECT_TRUE(pdf_navigation.was_successful());
 
     content::RenderFrameHost* child_frame =
-        ChildFrameAt(web_contents()->GetMainFrame(), 0);
+        ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
     ASSERT_TRUE(child_frame);
     EXPECT_EQ(child_frame->GetLastCommittedURL(), kFallbackPdfUrl);
   }

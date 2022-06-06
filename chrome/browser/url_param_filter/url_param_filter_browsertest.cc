@@ -83,9 +83,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterDisabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -155,9 +157,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -200,9 +204,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -260,9 +266,11 @@ IN_PROC_BROWSER_TEST_F(
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -313,9 +321,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = redirect_page;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -368,9 +378,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = redirect_page;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -420,9 +432,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = redirect_page;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -475,9 +489,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = redirect_page;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -532,9 +548,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in New Tab" and wait for the tab to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
 
@@ -575,9 +593,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -619,9 +639,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -676,9 +698,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -731,9 +755,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -779,9 +805,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -858,9 +886,11 @@ IN_PROC_BROWSER_TEST_F(EnterpriseContextMenuIncognitoFilterBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -905,9 +935,11 @@ IN_PROC_BROWSER_TEST_F(EnterpriseContextMenuIncognitoFilterBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 

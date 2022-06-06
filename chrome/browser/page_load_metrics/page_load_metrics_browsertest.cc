@@ -421,7 +421,7 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   content::RenderFrameHost* RenderFrameHost() const {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -3274,7 +3274,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   // main frame.
   waiter->AddMainFrameIntersectionExpectation(gfx::Rect(110, 110, 190, 190));
   content::RenderFrameHost* child_frame =
-      content::ChildFrameAt(web_contents->GetMainFrame(), 0);
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(
       ExecJs(child_frame, "createIframeAtRect(\"test2\", 10, 10, 300, 300);"));
 
@@ -3327,7 +3327,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   // main frame.
   waiter->AddMainFrameIntersectionExpectation(gfx::Rect(110, 110, 140, 140));
   content::RenderFrameHost* child_frame =
-      content::ChildFrameAt(web_contents->GetMainFrame(), 0);
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(
       ExecJs(child_frame, "createIframeAtRect(\"test2\", 10, 10, 300, 300);"));
 
@@ -3368,7 +3368,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   // frame's viewport.
   waiter->AddMainFrameIntersectionExpectation(gfx::Rect(0, 0, 0, 0));
   content::RenderFrameHost* child_frame =
-      content::ChildFrameAt(web_contents->GetMainFrame(), 0);
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(ExecJs(child_frame,
                      "createIframeAtRect(\"test2\", 5000, 5000, 190, 190);"));
 
@@ -3410,7 +3410,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   // frame's viewport.
   waiter->AddMainFrameIntersectionExpectation(gfx::Rect(0, 0, 0, 0));
   content::RenderFrameHost* child_frame =
-      content::ChildFrameAt(web_contents->GetMainFrame(), 0);
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(ExecJs(child_frame,
                      "createIframeAtRect(\"test2\", 5000, 5000, 190, 190);"));
   waiter->Wait();
@@ -4086,7 +4086,7 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
   bool back_forward_cache_enabled = GetParam() == kEnabled;
   // Navigate to A.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
-  content::RenderFrameHostWrapper rfh_a(web_contents()->GetMainFrame());
+  content::RenderFrameHostWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
 
   // Navigate to B.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
@@ -4148,7 +4148,7 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
   bool back_forward_cache_enabled = GetParam() == kEnabled;
   // Navigate to A.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
-  content::RenderFrameHostWrapper rfh_a(web_contents()->GetMainFrame());
+  content::RenderFrameHostWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
 
   // Navigate to B.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
@@ -4191,7 +4191,7 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
   bool back_forward_cache_enabled = GetParam() == kEnabled;
   // Navigate to A.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
-  content::RenderFrameHostWrapper rfh_a(web_contents()->GetMainFrame());
+  content::RenderFrameHostWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
 
   // Navigate to B.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));

@@ -103,7 +103,7 @@ class BrowsingTopicsInternalsBrowserTestBase : public InProcessBrowserTest {
   // to execute the script because WebUI has a default CSP policy denying
   // "eval()", which is what EvalJs uses under the hood.
   std::string EvalJsInWebUI(const std::string& script) {
-    return content::EvalJs(web_contents()->GetMainFrame(), script,
+    return content::EvalJs(web_contents()->GetPrimaryMainFrame(), script,
                            content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                            /*world_id=*/1)
         .ExtractString();
@@ -579,7 +579,8 @@ Model file path: /test_path/test_model.tflite
     document.querySelector('#hosts-classification-button').click();
   )";
 
-  EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(), classify_hosts_script,
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     classify_hosts_script,
                      content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                      /*world_id=*/1));
 
@@ -615,7 +616,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest,
     document.querySelector('#hosts-classification-button').click();
   )";
 
-  EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(), classify_hosts_script,
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     classify_hosts_script,
                      content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                      /*world_id=*/1));
 

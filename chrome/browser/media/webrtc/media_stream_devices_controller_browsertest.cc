@@ -72,7 +72,7 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
 
   PageSpecificContentSettings* GetContentSettings() {
     return PageSpecificContentSettings::GetForFrame(
-        GetWebContents()->GetMainFrame());
+        GetWebContents()->GetPrimaryMainFrame());
   }
 
   const std::string& example_audio_id() const { return example_audio_id_; }
@@ -159,17 +159,20 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
         video_id.empty() ? blink::mojom::MediaStreamType::NO_SERVICE
                          : blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE;
     if (!GetWebContents()
-             ->GetMainFrame()
+             ->GetPrimaryMainFrame()
              ->GetLastCommittedOrigin()
              .GetURL()
              .is_empty()) {
-      EXPECT_EQ(
-          example_url().DeprecatedGetOriginAsURL(),
-          GetWebContents()->GetMainFrame()->GetLastCommittedOrigin().GetURL());
+      EXPECT_EQ(example_url().DeprecatedGetOriginAsURL(),
+                GetWebContents()
+                    ->GetPrimaryMainFrame()
+                    ->GetLastCommittedOrigin()
+                    .GetURL());
     }
     int render_process_id =
-        GetWebContents()->GetMainFrame()->GetProcess()->GetID();
-    int render_frame_id = GetWebContents()->GetMainFrame()->GetRoutingID();
+        GetWebContents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+    int render_frame_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetRoutingID();
     return content::MediaStreamRequest(
         render_process_id, render_frame_id, 0,
         example_url().DeprecatedGetOriginAsURL(), false, request_type, audio_id,
@@ -1020,7 +1023,7 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   content::NavigateIframeToURL(GetWebContents(), "test",
                                GURL(cross_origin_url));
   content::RenderFrameHost* child_frame =
-      ChildFrameAt(GetWebContents()->GetMainFrame(), 0);
+      ChildFrameAt(GetWebContents()->GetPrimaryMainFrame(), 0);
 
   content::MediaStreamRequest request =
       CreateRequest(example_audio_id(), example_video_id(), false);
@@ -1052,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   content::NavigateIframeToURL(GetWebContents(), "test",
                                GURL(cross_origin_url));
   content::RenderFrameHost* child_frame =
-      ChildFrameAt(GetWebContents()->GetMainFrame(), 0);
+      ChildFrameAt(GetWebContents()->GetPrimaryMainFrame(), 0);
 
   content::MediaStreamRequest request =
       CreateRequest(std::string(), example_video_id(), false);

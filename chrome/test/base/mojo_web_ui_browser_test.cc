@@ -85,7 +85,7 @@ class MojoWebUIBrowserTest::WebUITestContentBrowserClient
         [&](content::WebUIController* controller,
             mojo::PendingReceiver<web_ui_test::mojom::TestRunner> receiver) {
           content::RenderFrameHost* rfh =
-              controller->web_ui()->GetWebContents()->GetMainFrame();
+              controller->web_ui()->GetWebContents()->GetPrimaryMainFrame();
           this->BindWebUITestRunner(rfh, std::move(receiver));
         }));
   }
@@ -141,13 +141,13 @@ void MojoWebUIBrowserTest::BrowsePreload(const GURL& browse_to) {
     std::string test_mojo_lite_js =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_WEB_UI_TEST_MOJO_LITE_JS);
-    web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+    web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         base::UTF8ToUTF16(test_mojo_lite_js), base::NullCallback());
   } else {
     std::string test_mojo_js =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_WEB_UI_TEST_MOJO_JS);
-    web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+    web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         base::UTF8ToUTF16(test_mojo_js), base::NullCallback());
   }
 }

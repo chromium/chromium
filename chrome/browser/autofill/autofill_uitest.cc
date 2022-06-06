@@ -132,8 +132,9 @@ void AutofillUiTest::SetUpOnMainThread() {
   ChromeAutofillClient::FromWebContents(GetWebContents())
       ->KeepPopupOpenForTesting();
   // Inject the test delegate into the BrowserAutofillManager of the main frame.
-  RenderFrameHostChanged(/* old_host = */ nullptr,
-                         /* new_host = */ GetWebContents()->GetMainFrame());
+  RenderFrameHostChanged(
+      /* old_host = */ nullptr,
+      /* new_host = */ GetWebContents()->GetPrimaryMainFrame());
   Observe(GetWebContents());
 
   // Wait for Personal Data Manager to be fully loaded to prevent that
@@ -259,7 +260,7 @@ content::WebContents* AutofillUiTest::GetWebContents() {
 }
 
 content::RenderViewHost* AutofillUiTest::GetRenderViewHost() {
-  return GetWebContents()->GetMainFrame()->GetRenderViewHost();
+  return GetWebContents()->GetPrimaryMainFrame()->GetRenderViewHost();
 }
 
 BrowserAutofillManager* AutofillUiTest::GetBrowserAutofillManager() {

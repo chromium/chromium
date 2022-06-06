@@ -112,7 +112,7 @@ TouchToFillController::TouchToFillController(
     : password_client_(password_client),
       authenticator_(std::move(authenticator)),
       source_id_(password_client->web_contents()
-                     ->GetMainFrame()
+                     ->GetPrimaryMainFrame()
                      ->GetPageUkmSourceId()) {}
 
 TouchToFillController::~TouchToFillController() {

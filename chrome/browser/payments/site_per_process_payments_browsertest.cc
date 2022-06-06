@@ -77,9 +77,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPaymentsBrowserTest,
   EXPECT_TRUE(content::ExecJs(iframe, "triggerPaymentRequest()"));
 
   EXPECT_TRUE(tab->GetRenderWidgetHostView()->IsShowing());
-  content::RenderFrameHost* frame = ChildFrameAt(tab->GetMainFrame(), 0);
+  content::RenderFrameHost* frame = ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(frame);
-  EXPECT_NE(frame->GetSiteInstance(), tab->GetMainFrame()->GetSiteInstance());
+  EXPECT_NE(frame->GetSiteInstance(),
+            tab->GetPrimaryMainFrame()->GetSiteInstance());
 }
 
 }  // namespace payments

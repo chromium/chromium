@@ -40,7 +40,7 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     ContentAutofillDriver* autofill_driver =
         ContentAutofillDriverFactory::FromWebContents(web_contents)
-            ->DriverForFrame(web_contents->GetMainFrame());
+            ->DriverForFrame(web_contents->GetPrimaryMainFrame());
     return autofill_driver->autofill_manager()->GetCreditCardAccessManager();
   }
 

@@ -195,50 +195,51 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
   content::RenderProcessHost* isolated1_host = browser()
                                                    ->tab_strip_model()
                                                    ->GetWebContentsAt(0)
-                                                   ->GetMainFrame()
+                                                   ->GetPrimaryMainFrame()
                                                    ->GetProcess();
   content::RenderProcessHost* ntp1_host = browser()
                                               ->tab_strip_model()
                                               ->GetWebContentsAt(1)
-                                              ->GetMainFrame()
+                                              ->GetPrimaryMainFrame()
                                               ->GetProcess();
   content::RenderProcessHost* hosted1_host = browser()
                                                  ->tab_strip_model()
                                                  ->GetWebContentsAt(2)
-                                                 ->GetMainFrame()
+                                                 ->GetPrimaryMainFrame()
                                                  ->GetProcess();
   content::RenderProcessHost* web1_host = browser()
                                               ->tab_strip_model()
                                               ->GetWebContentsAt(3)
-                                              ->GetMainFrame()
+                                              ->GetPrimaryMainFrame()
                                               ->GetProcess();
 
   content::RenderProcessHost* isolated2_host = browser()
                                                    ->tab_strip_model()
                                                    ->GetWebContentsAt(4)
-                                                   ->GetMainFrame()
+                                                   ->GetPrimaryMainFrame()
                                                    ->GetProcess();
   content::RenderProcessHost* ntp2_host = browser()
                                               ->tab_strip_model()
                                               ->GetWebContentsAt(5)
-                                              ->GetMainFrame()
+                                              ->GetPrimaryMainFrame()
                                               ->GetProcess();
   content::RenderProcessHost* hosted2_host = browser()
                                                  ->tab_strip_model()
                                                  ->GetWebContentsAt(6)
-                                                 ->GetMainFrame()
+                                                 ->GetPrimaryMainFrame()
                                                  ->GetProcess();
   content::RenderProcessHost* web2_host = browser()
                                               ->tab_strip_model()
                                               ->GetWebContentsAt(7)
-                                              ->GetMainFrame()
+                                              ->GetPrimaryMainFrame()
                                               ->GetProcess();
 
-  content::RenderProcessHost* second_isolated1_host = browser()
-                                                          ->tab_strip_model()
-                                                          ->GetWebContentsAt(8)
-                                                          ->GetMainFrame()
-                                                          ->GetProcess();
+  content::RenderProcessHost* second_isolated1_host =
+      browser()
+          ->tab_strip_model()
+          ->GetWebContentsAt(8)
+          ->GetPrimaryMainFrame()
+          ->GetProcess();
 
   // Get extension processes.
   extensions::ProcessManager* process_manager =
@@ -432,9 +433,12 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ExtensionAndWebProcessOverflow) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Verify the number of processes across extensions and tabs.
-  process_ids.insert(web_contents1->GetMainFrame()->GetProcess()->GetID());
-  process_ids.insert(web_contents2->GetMainFrame()->GetProcess()->GetID());
-  process_ids.insert(web_contents3->GetMainFrame()->GetProcess()->GetID());
+  process_ids.insert(
+      web_contents1->GetPrimaryMainFrame()->GetProcess()->GetID());
+  process_ids.insert(
+      web_contents2->GetPrimaryMainFrame()->GetProcess()->GetID());
+  process_ids.insert(
+      web_contents3->GetPrimaryMainFrame()->GetProcess()->GetID());
 
   // The web processes still share 2 processes as if there were a single
   // extension process (making a total of 5 processes counting the existing 3
@@ -456,7 +460,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ExtensionAndWebProcessOverflow) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   WebContents* web_contents4 =
       browser()->tab_strip_model()->GetActiveWebContents();
-  process_ids.insert(web_contents4->GetMainFrame()->GetProcess()->GetID());
+  process_ids.insert(
+      web_contents4->GetPrimaryMainFrame()->GetProcess()->GetID());
   // The cross-site process adds 1 more process to the total, to avoid sharing
   // with the existing web renderer processes (due to Site Isolation).
   EXPECT_EQ(6u, process_ids.size());
@@ -478,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(extension_url, web_contents->GetLastCommittedURL());
   content::RenderProcessHost* old_process_host =
-      web_contents->GetMainFrame()->GetProcess();
+      web_contents->GetPrimaryMainFrame()->GetProcess();
 
   // Note that the |setTimeout| call below is needed to make sure
   // ExecuteScriptAndExtractBool returns *after* a scheduled navigation has
@@ -505,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
   // Verify that the navigation transferred the contents to another renderer
   // process.
   content::RenderProcessHost* new_process_host =
-      web_contents->GetMainFrame()->GetProcess();
+      web_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_NE(old_process_host, new_process_host);
 }
 
@@ -518,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebStoreProcessTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(web_url, web_contents->GetLastCommittedURL());
   content::RenderProcessHost* old_process_host =
-      web_contents->GetMainFrame()->GetProcess();
+      web_contents->GetPrimaryMainFrame()->GetProcess();
 
   // Calculate an URL that is 1) relative to the fake (i.e. test-controlled)
   // Chrome Web Store gallery URL and 2) resolves to something that
@@ -555,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebStoreProcessTest,
   // Verify that we really have the Chrome Web Store app loaded in the Web
   // Contents.
   content::RenderProcessHost* new_process_host =
-      web_contents->GetMainFrame()->GetProcess();
+      web_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(
       extensions::kWebStoreAppId, new_process_host->GetID()));
 
@@ -590,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebStoreInIsolatedOriginTest,
 
   // Verify that the Chrome Web Store hosted app is really loaded.
   content::RenderProcessHost* render_process_host =
-      web_contents->GetMainFrame()->GetProcess();
+      web_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(
       extensions::kWebStoreAppId, render_process_host->GetID()));
 }

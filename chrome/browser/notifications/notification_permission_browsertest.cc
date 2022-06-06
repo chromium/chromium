@@ -156,13 +156,14 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
   GrantNotificationPermissionForTest(TesterUrl());
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), TesterUrl()));
-  content::RenderFrameHost* main_frame = GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* main_frame =
+      GetActiveWebContents()->GetPrimaryMainFrame();
   EXPECT_EQ("granted", EvalJs(main_frame, "getNotificationPermission()"));
   EXPECT_EQ("granted",
             EvalJs(main_frame, "getServiceWorkerNotificationPermission()"));
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), EmbedderUrl()));
-  main_frame = GetActiveWebContents()->GetMainFrame();
+  main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
   EXPECT_EQ("default", EvalJs(main_frame, "getNotificationPermission()"));
 
   content::RenderFrameHost* iframe = CreateChildIframe(main_frame, TesterUrl());
@@ -182,7 +183,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
 
   // Verify that TesterUrl() has notification/push permission.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), TesterUrl()));
-  content::RenderFrameHost* main_frame = GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* main_frame =
+      GetActiveWebContents()->GetPrimaryMainFrame();
   EXPECT_EQ("granted", EvalJs(main_frame, "getNotificationPermission()"));
   EXPECT_EQ("granted",
             EvalJs(main_frame, "getServiceWorkerNotificationPermission()"));
@@ -195,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
   // Load a site that uses a dedicated StoragePartition and verify that it has
   // default notification/push permissions.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), IsolatedEmbedderUrl()));
-  main_frame = GetActiveWebContents()->GetMainFrame();
+  main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
   EXPECT_EQ("default", EvalJs(main_frame, "getNotificationPermission()"));
   EXPECT_EQ("denied",
             EvalJs(main_frame, "getServiceWorkerNotificationPermission()"));

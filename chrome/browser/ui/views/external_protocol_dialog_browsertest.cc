@@ -102,7 +102,7 @@ class ExternalProtocolDialogBrowserTest
     dialog_ = new ExternalProtocolDialog(
         web_contents, GURL("telnet://12345"), u"/usr/bin/telnet",
         url::Origin::Create(GURL(initiating_origin)),
-        web_contents->GetMainFrame()->GetWeakDocumentPtr());
+        web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
   }
 
   void SetChecked(bool checked) {

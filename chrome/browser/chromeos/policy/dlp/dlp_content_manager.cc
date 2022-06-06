@@ -326,7 +326,7 @@ void DlpContentManager::ScreenShareInfo::Resume() {
   // here explicitly.
   if (media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
       web_contents_ && source_callback_) {
-    content::RenderFrameHost* main_frame = web_contents_->GetMainFrame();
+    content::RenderFrameHost* main_frame = web_contents_->GetPrimaryMainFrame();
     DCHECK(main_frame);
     source_callback_.Run(content::DesktopMediaID(
         content::DesktopMediaID::TYPE_WEB_CONTENTS,

@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, OriginTextVisibility) {
     // Make sure the navigation has finished before proceeding.
     url_observer.Wait();
     ASSERT_TRUE(ExecJs(
-        browser_view_->GetActiveWebContents()->GetMainFrame(),
+        browser_view_->GetActiveWebContents()->GetPrimaryMainFrame(),
         "var meta = document.head.appendChild(document.createElement('meta'));"
         "meta.name = 'theme-color';"
         "meta.content = '#123456';"));

@@ -79,7 +79,10 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
   }
 
   content::RenderFrameHost* GetActiveMainFrame() {
-    return browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
   }
 
   void RequestPermission(permissions::RequestType type) {

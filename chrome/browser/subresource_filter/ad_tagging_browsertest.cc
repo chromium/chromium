@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
   EXPECT_FALSE(observer.GetIsAdSubframe(
-      GetWebContents()->GetMainFrame()->GetFrameTreeNodeId()));
+      GetWebContents()->GetPrimaryMainFrame()->GetFrameTreeNodeId()));
 
   // (1) Vanilla child.
   content::RenderFrameHost* vanilla_child =
@@ -1121,7 +1121,9 @@ class AdTaggingFencedFrameBrowserTest : public AdTaggingBrowserTest {
     return observer_->GetIsAdSubframe(host->GetFrameTreeNodeId());
   }
 
-  RenderFrameHost* PrimaryMainFrame() { return web_contents()->GetMainFrame(); }
+  RenderFrameHost* PrimaryMainFrame() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
 
   GURL GetURL(const std::string& page) {
     return https_server_.GetURL("/ad_tagging/" + page);

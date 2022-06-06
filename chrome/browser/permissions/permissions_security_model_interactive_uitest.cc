@@ -165,7 +165,7 @@ content::WebContents* OpenPopup(Browser* browser, const GURL& url) {
   EXPECT_NE(popup, browser);
   content::WebContents* popup_contents =
       popup->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetMainFrame()));
+  EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetPrimaryMainFrame()));
   WaitForLoadStop(popup_contents);
   return popup_contents;
 }
@@ -283,7 +283,7 @@ void VerifyPermission(content::WebContents* opener_or_embedder_contents,
                       const std::string& request_permission_script,
                       const std::string& check_permission_script) {
   content::RenderFrameHost* opener_rfh =
-      opener_or_embedder_contents->GetMainFrame();
+      opener_or_embedder_contents->GetPrimaryMainFrame();
   ASSERT_FALSE(
       content::EvalJs(opener_rfh, check_permission_script).value.GetBool());
   ASSERT_FALSE(
@@ -334,7 +334,7 @@ void VerifyPermissionsDeniedForFencedFrame(
     const std::string& request_permission_script,
     const std::string& check_permission_script) {
   content::RenderFrameHost* embedder_main_rfh =
-      embedder_contents->GetMainFrame();
+      embedder_contents->GetPrimaryMainFrame();
   ASSERT_FALSE(content::EvalJs(embedder_main_rfh, check_permission_script)
                    .value.GetBool());
   ASSERT_FALSE(
@@ -385,8 +385,8 @@ void VerifyPermissionsDeniedForFencedFrame(
 // getUserMedia requires focus. It should be verified only on a popup window.
 void VerifyPopupWindowGetUserMedia(content::WebContents* opener_contents,
                                    content::WebContents* popup_contents) {
-  content::RenderFrameHost* opener_rfh = opener_contents->GetMainFrame();
-  content::RenderFrameHost* popup_rfh = popup_contents->GetMainFrame();
+  content::RenderFrameHost* opener_rfh = opener_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* popup_rfh = popup_contents->GetPrimaryMainFrame();
 
   ASSERT_FALSE(content::EvalJs(opener_rfh, kCheckCamera).value.GetBool());
   ASSERT_FALSE(content::EvalJs(popup_rfh, kCheckCamera).value.GetBool());
@@ -419,7 +419,8 @@ void VerifyPermissionsDeniedForPortal(
     content::WebContents* portal_contents,
     const std::string& request_permission_script,
     const std::string& check_permission_script) {
-  content::RenderFrameHost* portal_main_rfh = portal_contents->GetMainFrame();
+  content::RenderFrameHost* portal_main_rfh =
+      portal_contents->GetPrimaryMainFrame();
   ASSERT_FALSE(content::EvalJs(portal_main_rfh, check_permission_script)
                    .value.GetBool());
 
@@ -629,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   ASSERT_TRUE(popup_contents);
 
   VerifyPermissionsExceptGetUserMedia(opener_contents,
-                                      popup_contents->GetMainFrame());
+                                      popup_contents->GetPrimaryMainFrame());
   VerifyPopupWindowGetUserMedia(opener_contents, popup_contents);
 }
 
@@ -692,8 +693,8 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   ASSERT_TRUE(blob_popup_contents);
   EXPECT_TRUE(blob_popup_contents->GetLastCommittedURL().SchemeIsBlob());
 
-  VerifyPermissionsExceptGetUserMedia(opener_contents,
-                                      blob_popup_contents->GetMainFrame());
+  VerifyPermissionsExceptGetUserMedia(
+      opener_contents, blob_popup_contents->GetPrimaryMainFrame());
   VerifyPopupWindowGetUserMedia(opener_contents, blob_popup_contents);
 }
 
@@ -1144,7 +1145,8 @@ class PermissionsSecurityModelHTTPS
     content::WebContents* embedder_contents = GetWebContents();
 
     EXPECT_TRUE(content::NavigateToURL(embedder_contents, url));
-    content::RenderFrameHost* main_rfh = embedder_contents->GetMainFrame();
+    content::RenderFrameHost* main_rfh =
+        embedder_contents->GetPrimaryMainFrame();
     EXPECT_EQ(origin, main_rfh->GetLastCommittedOrigin());
 
     // By default permissions are not allowed.
@@ -1427,8 +1429,8 @@ IN_PROC_BROWSER_TEST_F(PermissionsRequestedFromFencedFrameTest,
   GURL fenced_frame_url =
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(web_contents->GetMainFrame(),
-                                                   fenced_frame_url);
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
   VerifyPermissionsDeniedForFencedFrame(web_contents, fenced_frame_host);
@@ -1468,7 +1470,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestWithPortalTest,
 
   // `contents` is in a default state.
   EXPECT_FALSE(contents->IsPortal());
-  VerifyPermissionsAllowed(contents->GetMainFrame());
+  VerifyPermissionsAllowed(contents->GetPrimaryMainFrame());
 
   EXPECT_EQ(true, content::EvalJs(contents, "loadPromise"));
   std::vector<content::WebContents*> inner_web_contents =
@@ -1543,8 +1545,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestWithPrerendererTest,
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
   EXPECT_FALSE(
-      GetActiveWebContents()->GetMainFrame()->IsInactiveAndDisallowActivation(
-          content::DisallowActivationReasonId::kRequestPermission));
+      GetActiveWebContents()
+          ->GetPrimaryMainFrame()
+          ->IsInactiveAndDisallowActivation(
+              content::DisallowActivationReasonId::kRequestPermission));
 
   // Start a prerender.
   GURL prerender_url =
@@ -1559,8 +1563,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestWithPrerendererTest,
 
   // The main frame of an outer document is not a prerenderer.
   EXPECT_FALSE(
-      GetActiveWebContents()->GetMainFrame()->IsInactiveAndDisallowActivation(
-          content::DisallowActivationReasonId::kRequestPermission));
+      GetActiveWebContents()
+          ->GetPrimaryMainFrame()
+          ->IsInactiveAndDisallowActivation(
+              content::DisallowActivationReasonId::kRequestPermission));
 
   // The main frame of a newly created frame tree is a prerenderer. It is
   // inactive, all permission requests should be automatically denied.
@@ -1635,7 +1641,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
 
   // 1) Navigate to A.
   EXPECT_TRUE(content::NavigateToURL(embedder_contents, url_a));
-  content::RenderFrameHost* rfh_a = embedder_contents->GetMainFrame();
+  content::RenderFrameHost* rfh_a = embedder_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(rfh_a);
   EXPECT_EQ(origin_a, rfh_a->GetLastCommittedOrigin());
   // Currently active RFH is not `kInBackForwardCache`.
@@ -1645,7 +1651,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
 
   // 2) Navigate to B.
   EXPECT_TRUE(content::NavigateToURL(embedder_contents, url_b));
-  content::RenderFrameHost* rfh_b = embedder_contents->GetMainFrame();
+  content::RenderFrameHost* rfh_b = embedder_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(rfh_b);
   EXPECT_EQ(origin_b, rfh_b->GetLastCommittedOrigin());
   // Currently active RFH is not `kInBackForwardCache`.
@@ -1661,10 +1667,10 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
 
   // 3) Verify that `HistoryGoBack` restores previously cached `rfh_a` and does
   // not create a new one.
-  EXPECT_NE(rfh_a, embedder_contents->GetMainFrame());
+  EXPECT_NE(rfh_a, embedder_contents->GetPrimaryMainFrame());
   // After `HistoryGoBack` `rfh_a` should be moved back from the BFCache.
   ASSERT_TRUE(HistoryGoBack(embedder_contents));
-  EXPECT_EQ(rfh_a, embedder_contents->GetMainFrame());
+  EXPECT_EQ(rfh_a, embedder_contents->GetPrimaryMainFrame());
   EXPECT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kActive);
 
@@ -1688,11 +1694,11 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
   bubble_factory->set_response_type(
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
 
-  EXPECT_FALSE(
-      content::EvalJs(embedder_contents->GetMainFrame(), kCheckGeolocation)
-          .value.GetBool());
+  EXPECT_FALSE(content::EvalJs(embedder_contents->GetPrimaryMainFrame(),
+                               kCheckGeolocation)
+                   .value.GetBool());
 
-  EXPECT_EQ("granted", content::EvalJs(embedder_contents->GetMainFrame(),
+  EXPECT_EQ("granted", content::EvalJs(embedder_contents->GetPrimaryMainFrame(),
                                        kRequestGeolocation));
   EXPECT_EQ(1, bubble_factory->TotalRequestCount());
 
@@ -1712,7 +1718,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
 
   // 5) Go back to a.test and verify that it has no permissions.
   ASSERT_TRUE(HistoryGoBack(embedder_contents));
-  content::RenderFrameHost* rfh_a_2 = embedder_contents->GetMainFrame();
+  content::RenderFrameHost* rfh_a_2 = embedder_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(rfh_a_2);
   EXPECT_EQ(origin_a, rfh_a_2->GetLastCommittedOrigin());
   // Verify that `a.test` has no granted Geolocation permission despite it being
@@ -1889,7 +1895,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
   GURL url = GetTestServerInsecureUrl("/extensions/test_file.html?succeed");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::RenderFrameHost* main_rfh = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(main_rfh);
 
   content::RenderFrameHost* iframe_with_embedded_extension =
@@ -1983,7 +1989,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
   GURL url = GetTestServerInsecureUrl("/extensions/test_file.html?succeed");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::RenderFrameHost* main_rfh = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(main_rfh);
 
   content::RenderFrameHost* iframe_with_embedded_extension =
@@ -2057,7 +2063,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
   GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::RenderFrameHost* main_rfh = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(main_rfh);
 
   // Allow permissions on the main frame, so they became available for an

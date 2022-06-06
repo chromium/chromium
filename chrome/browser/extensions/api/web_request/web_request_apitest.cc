@@ -761,11 +761,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestNewTab) {
   mouse_event.button = blink::WebMouseEvent::Button::kLeft;
   mouse_event.SetPositionInWidget(7, 7);
   mouse_event.click_count = 1;
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
@@ -1075,7 +1079,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   {
     EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
 
-    content::RenderFrameHostWrapper main_frame(web_contents->GetMainFrame());
+    content::RenderFrameHostWrapper main_frame(
+        web_contents->GetPrimaryMainFrame());
     content::RenderFrameHostWrapper child_frame(
         ChildFrameAt(main_frame.get(), 0));
     ASSERT_TRUE(child_frame);
@@ -1098,7 +1103,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   // The runner will have refreshed the page, and the extension will have
   // received access to the main-frame ("a.com"). It should still not be able to
   // intercept the cross-origin sub-frame requests to "b.com" and "c.com".
-  content::RenderFrameHostWrapper main_frame(web_contents->GetMainFrame());
+  content::RenderFrameHostWrapper main_frame(
+      web_contents->GetPrimaryMainFrame());
   content::RenderFrameHostWrapper child_frame(
       ChildFrameAt(main_frame.get(), 0));
   const std::string kChildHost = child_frame->GetLastCommittedURL().host();
@@ -1313,7 +1319,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       xhr.onerror = () => {window.domAutomationController.send(false);};
       xhr.send();)";
   bool success = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetMainFrame(),
+  EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetPrimaryMainFrame(),
                                           kRequest, &success));
   // Requests always fail due to cross origin nature.
   EXPECT_FALSE(success);
@@ -1810,8 +1816,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, InitiatorAccessRequired) {
         browser(),
         embedded_test_server()->GetURL(testcase.navigate_before_start,
                                        "/extensions/body1.html")));
-    PerformXhrInFrame(web_contents->GetMainFrame(), testcase.xhr_domain, port,
-                      "extensions/api_test/webrequest/xhr/data.json");
+    PerformXhrInFrame(web_contents->GetPrimaryMainFrame(), testcase.xhr_domain,
+                      port, "extensions/api_test/webrequest/xhr/data.json");
 
     // Ensure that the extension wasn't able to intercept the request if it
     // didn't have permission to the initiator or the request url.
@@ -1893,7 +1899,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   auto pending_receiver = factory.BindNewPipeAndPassReceiver();
   auto temp_web_contents =
       WebContents::Create(WebContents::CreateParams(temp_profile));
-  content::RenderFrameHost* frame = temp_web_contents->GetMainFrame();
+  content::RenderFrameHost* frame = temp_web_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(api->MaybeProxyURLLoaderFactory(
       frame->GetProcess()->GetBrowserContext(), frame,
       frame->GetProcess()->GetID(),
@@ -2339,7 +2345,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
   // The extension shouldn't have currently received any webRequest events,
   // since it doesn't have permission (and shouldn't receive any from an XHR).
   EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
-  PerformXhrInFrame(web_contents->GetMainFrame(), protected_domain, port,
+  PerformXhrInFrame(web_contents->GetPrimaryMainFrame(), protected_domain, port,
                     kXhrPath);
   EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
 
@@ -2358,7 +2364,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
   // didn't block the events.
   EXPECT_EQ(0, xhr_count);
   // And the extension should also block future events.
-  PerformXhrInFrame(web_contents->GetMainFrame(), protected_domain, port,
+  PerformXhrInFrame(web_contents->GetPrimaryMainFrame(), protected_domain, port,
                     kXhrPath);
   EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
 }
@@ -2540,7 +2546,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, StaleHeadersAfterRedirect) {
   // Make a XHR request which redirects. The final response should not include
   // the Location header.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  PerformXhrInFrame(web_contents->GetMainFrame(),
+  PerformXhrInFrame(web_contents->GetPrimaryMainFrame(),
                     embedded_test_server()->host_port_pair().host(),
                     embedded_test_server()->port(), "redirect-and-wait");
   EXPECT_EQ(
@@ -3283,10 +3289,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       base::Time::Now() + base::Days(100), true, run_loop.QuitClosure());
   run_loop.Run();
 
-  PerformXhrInFrame(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      https_test_server.host_port_pair().host(), https_test_server.port(),
-      "echo");
+  PerformXhrInFrame(browser()
+                        ->tab_strip_model()
+                        ->GetActiveWebContents()
+                        ->GetPrimaryMainFrame(),
+                    https_test_server.host_port_pair().host(),
+                    https_test_server.port(), "echo");
   EXPECT_GT(
       GetCountFromBackgroundPage(extension, profile(), "window.headerCount"),
       0);
@@ -3404,7 +3412,7 @@ class SubresourceWebBundlesWebRequestApiTest
           })();
         )",
                                             script_src.c_str());
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetMainFrame(),
+    EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetPrimaryMainFrame(),
                                             script, &success));
     return success;
   }
@@ -3431,7 +3439,7 @@ class SubresourceWebBundlesWebRequestApiTest
           })();
         )",
                                             href.c_str(), resources.c_str());
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetMainFrame(),
+    EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetPrimaryMainFrame(),
                                             script, &success));
     return success;
   }
@@ -4278,7 +4286,7 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
   EXPECT_EQ(page_with_iframe_url, web_contents->GetLastCommittedURL());
 
   content::RenderFrameHostWrapper child_frame(
-      ChildFrameAt(web_contents->GetMainFrame(), 0));
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0));
   ASSERT_TRUE(child_frame);
 
   GURL redirected_url =
@@ -4329,7 +4337,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest, Loader) {
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ukm::SourceId frame_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
+  ukm::SourceId frame_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
       identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
@@ -4357,7 +4366,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest, Navigation) {
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ukm::SourceId frame_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
+  ukm::SourceId frame_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
       identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
@@ -4386,7 +4396,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest, WebSocket) {
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ukm::SourceId frame_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
+  ukm::SourceId frame_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
       identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
@@ -4588,7 +4599,7 @@ IN_PROC_BROWSER_TEST_F(ProxyCORSWebRequestApiTest,
       xhr.send();)";
   bool success = false;
   ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents->GetMainFrame(),
+      web_contents->GetPrimaryMainFrame(),
       base::StringPrintf(kCORSPreflightedRequest, kCORSUrl,
                          kCustomPreflightHeader),
       &success));

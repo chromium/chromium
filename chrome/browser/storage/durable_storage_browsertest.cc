@@ -41,7 +41,9 @@ class DurableStorageBrowserTest : public InProcessBrowserTest {
 
  protected:
   content::RenderFrameHost* GetRenderFrameHost(Browser* browser) {
-    return browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    return browser->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
   }
 
   content::RenderFrameHost* GetRenderFrameHost() {

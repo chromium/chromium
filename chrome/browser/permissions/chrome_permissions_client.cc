@@ -272,7 +272,7 @@ void ChromePermissionsClient::GetUkmSourceId(
     GetUkmSourceIdCallback callback) {
   if (web_contents) {
     ukm::SourceId source_id =
-        web_contents->GetMainFrame()->GetPageUkmSourceId();
+        web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
     std::move(callback).Run(source_id);
   } else {
     // We only record a permission change if the origin is in the user's

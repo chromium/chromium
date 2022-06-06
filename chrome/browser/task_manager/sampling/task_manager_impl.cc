@@ -467,7 +467,7 @@ TaskId TaskManagerImpl::GetTaskIdForWebContents(
     content::WebContents* web_contents) const {
   if (!web_contents)
     return -1;
-  content::RenderFrameHost* rfh = web_contents->GetMainFrame();
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
   Task* task = GetTaskByRoute(rfh->GetGlobalId());
   if (!task)
     return -1;

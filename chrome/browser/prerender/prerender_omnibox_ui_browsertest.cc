@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   EXPECT_TRUE(IsPrerenderingNavigation());
 
   // Wait until the history is updated.
-  ASSERT_EQ(true, content::EvalJs(GetActiveWebContents()->GetMainFrame(),
+  ASSERT_EQ(true, content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(),
                                   "historyUpdated;"));
 
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prerender_url));
@@ -764,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   EXPECT_TRUE(IsPrerenderingNavigation());
 
   // Wait until the history is updated.
-  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetMainFrame(),
+  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(),
                                   "historyUpdated;"));
 
   // The displayed url shouldn't contain the parameter of pf=cs.
@@ -819,7 +819,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   EXPECT_TRUE(IsPrerenderingNavigation());
 
   // Wait until the history is updated.
-  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetMainFrame(),
+  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(),
                                   "historyUpdated;"));
 
   // The displayed url shouldn't contain the parameter of pf=cs.

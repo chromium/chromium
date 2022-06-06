@@ -48,7 +48,9 @@ class HatsHelperTest : public testing::Test {
     return content::WebContentsTester::For(web_contents_.get());
   }
 
-  content::RenderFrameHost* main_rfh() { return web_contents_->GetMainFrame(); }
+  content::RenderFrameHost* main_rfh() {
+    return web_contents_->GetPrimaryMainFrame();
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;

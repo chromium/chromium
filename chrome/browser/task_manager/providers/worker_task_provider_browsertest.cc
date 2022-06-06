@@ -59,7 +59,7 @@ std::u16string ExpectedTaskTitle(const std::string& title) {
 int GetChildProcessID(Browser* browser) {
   return browser->tab_strip_model()
       ->GetActiveWebContents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->GetProcess()
       ->GetID();
 }

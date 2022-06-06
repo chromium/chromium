@@ -987,7 +987,8 @@ void MediaRouterMojoImpl::CreateRouteWithSelectedDesktop(
   PendingStreamRequest& request = *pending_stream_request_;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(web_contents);
-  content::RenderFrameHost* const main_frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* const main_frame =
+      web_contents->GetPrimaryMainFrame();
   request.render_process_id = main_frame->GetProcess()->GetID();
   request.render_frame_id = main_frame->GetRoutingID();
   request.origin = url::Origin::Create(web_contents->GetVisibleURL());

@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest, IsolatedSandbox) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* frame_host = web_contents->GetMainFrame();
+  content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
 
   VerifyStartupMetrics();
 
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* frame_host = web_contents->GetMainFrame();
+  content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
 
   VerifyStartupMetrics();
 
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* frame_host = web_contents->GetMainFrame();
+  content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
 
   VerifyStartupMetrics();
 
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url_a));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* frame_host = web_contents->GetMainFrame();
+  content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
 
   VerifyStartupMetrics();
 
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         child_url_b.spec().c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents_b->GetMainFrame(), js_str));
+    EXPECT_TRUE(ExecuteScript(web_contents_b->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents_b));
   }
 
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "frame.srcdoc = '%s'; "
         "document.body.appendChild(frame);",
         child_inner_text.c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), js_str));
+    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "frame.sandbox = ''; "
         "frame.src = 'about:blank'; "
         "document.body.appendChild(frame);");
-    EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), js_str));
+    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         empty_url.spec().c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), js_str));
+    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         js_url_str.c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), js_str));
+    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(NotIsolatedSandboxedIframeBrowserTest, IsolatedSandbox) {
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         child_url.spec().c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), js_str));
+    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         child_url.spec().c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), js_str));
+    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
   // is isolatable. We make sure the popup url is same-site to the opener,
   // otherwise it would just create an OOPIF.
   content::RenderFrameHost* child_rfh =
-      ChildFrameAt(web_contents->GetMainFrame(), 0);
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   {
     std::string js_str =
         base::StringPrintf("window.open('%s');", popup_url.spec().c_str());
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
 
     content::TestNavigationObserver popup_observer(nullptr);
     popup_observer.StartWatchingNewWebContents();
-    EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), js_str));
+    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
     popup_observer.Wait();
   }
 
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
         "frame.src = '%s'; "
         "document.body.appendChild(frame);",
         data_url_str.c_str());
-    EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), js_str));
+    EXPECT_TRUE(ExecuteScript(web_contents->GetPrimaryMainFrame(), js_str));
     ASSERT_TRUE(WaitForLoadStop(web_contents));
   }
 

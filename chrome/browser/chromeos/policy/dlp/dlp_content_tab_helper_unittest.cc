@@ -173,9 +173,9 @@ TEST_F(DlpContentTabHelperTest, SubFrameNavigation) {
       .Times(1);
   content::RenderFrameHost* subframe =
       content::NavigationSimulator::NavigateAndCommitFromDocument(
-          kConfidentialUrl,
-          content::RenderFrameHostTester::For(web_contents->GetMainFrame())
-              ->AppendChild("child"));
+          kConfidentialUrl, content::RenderFrameHostTester::For(
+                                web_contents->GetPrimaryMainFrame())
+                                ->AppendChild("child"));
 
   // Navigate away from confidential URL.
   EXPECT_CALL(mock_dlp_content_observer_,

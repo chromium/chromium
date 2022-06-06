@@ -211,7 +211,7 @@ bool ExtensionMayAttachToWebContents(const Extension& extension,
   }
   // This is *not* redundant to the checks below, as
   // web_contents.GetLastCommittedURL() may be different from
-  // web_contents.GetMainFrame()->GetLastCommittedURL(), with the
+  // web_contents.GetPrimaryMainFrame()->GetLastCommittedURL(), with the
   // former being a 'virtual' URL as obtained from NavigationEntry.
   if (!ExtensionMayAttachToURL(extension, extension_profile,
                                web_contents.GetLastCommittedURL(), error)) {
@@ -219,7 +219,7 @@ bool ExtensionMayAttachToWebContents(const Extension& extension,
   }
 
   return ExtensionMayAttachToRenderFrameHost(
-      extension, extension_profile, web_contents.GetMainFrame(), error);
+      extension, extension_profile, web_contents.GetPrimaryMainFrame(), error);
 }
 
 bool ExtensionMayAttachToAgentHost(const Extension& extension,

@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverPrerenderBrowserTest,
   // Set a dummy form data to simulate to submit a form. And, OnFormSubmitted
   // method will be called upon navigation.
   ContentAutofillDriverFactory::FromWebContents(web_contents())
-      ->DriverForFrame(web_contents()->GetMainFrame())
+      ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
       ->SetFormToBeProbablySubmitted(absl::make_optional<FormData>());
 
   base::HistogramTester histogram_tester;

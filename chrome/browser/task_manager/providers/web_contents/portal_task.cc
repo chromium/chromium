@@ -23,7 +23,7 @@ std::u16string GetCurrentTitle(content::WebContents* web_contents) {
 
   // Imitate the UI style of Subframe task.
   content::SiteInstance* site_instance =
-      web_contents->GetMainFrame()->GetSiteInstance();
+      web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   std::u16string site_url =
       base::UTF8ToUTF16(site_instance->GetSiteURL().spec());
   int message_id = site_instance->GetBrowserContext()->IsOffTheRecord()
@@ -64,7 +64,8 @@ const Task* PortalTask::GetParentTask() const {
       web_contents()->GetResponsibleWebContents();
   if (responsible_contents == web_contents())
     return nullptr;
-  return task_provider_->GetTaskOfFrame(responsible_contents->GetMainFrame());
+  return task_provider_->GetTaskOfFrame(
+      responsible_contents->GetPrimaryMainFrame());
 }
 
 }  // namespace task_manager

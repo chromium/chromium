@@ -59,7 +59,7 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
     if (!web_contents) {
       web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     }
-    return web_contents->GetMainFrame();
+    return web_contents->GetPrimaryMainFrame();
   }
 
   GURL GetURL(const std::string& url) {

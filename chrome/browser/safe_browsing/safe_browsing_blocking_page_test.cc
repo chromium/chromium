@@ -171,7 +171,9 @@ bool IsShowingInterstitial(WebContents* contents) {
 }
 
 content::RenderFrameHost* GetRenderFrameHost(Browser* browser) {
-  return browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  return browser->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetPrimaryMainFrame();
 }
 
 class ClickEvent : public ui::Event {
@@ -193,7 +195,7 @@ views::BubbleDialogDelegateView* OpenPageInfo(Browser* browser) {
 
 bool WaitForReady(Browser* browser) {
   WebContents* contents = browser->tab_strip_model()->GetActiveWebContents();
-  if (!content::WaitForRenderFrameReady(contents->GetMainFrame())) {
+  if (!content::WaitForRenderFrameReady(contents->GetPrimaryMainFrame())) {
     return false;
   }
   return IsShowingInterstitial(contents);
@@ -580,7 +582,7 @@ class SafeBrowsingBlockingPageBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents();
     security_interstitials::SecurityInterstitialPage* ssl_blocking_page;
 
-    EXPECT_TRUE(WaitForRenderFrameReady(contents->GetMainFrame()));
+    EXPECT_TRUE(WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
     security_interstitials::SecurityInterstitialTabHelper* helper =
         security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
             contents);
@@ -1771,7 +1773,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop().RunUntilIdle();
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::WaitForRenderFrameReady(contents->GetMainFrame()));
+  EXPECT_TRUE(
+      content::WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
   EXPECT_FALSE(IsShowingInterstitial(contents));
 }
 
@@ -1794,7 +1797,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop().RunUntilIdle();
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::WaitForRenderFrameReady(contents->GetMainFrame()));
+  EXPECT_TRUE(
+      content::WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
   EXPECT_FALSE(IsShowingInterstitial(contents));
 }
 
@@ -1936,7 +1940,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
         blink::WebInputEvent::GetStaticTimeStampForTests());
     event.text[0] = 'a';
     content::RenderWidgetHost* rwh =
-        contents->GetMainFrame()->GetRenderViewHost()->GetWidget();
+        contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
     rwh->ForwardKeyboardEvent(event);
     observer.WaitForNavigationFinished();
     return WaitForReady(browser);
@@ -1953,7 +1957,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
     content::WebContents* contents =
         browser->tab_strip_model()->GetActiveWebContents();
     content::RenderWidgetHost* rwh =
-        contents->GetMainFrame()->GetRenderViewHost()->GetWidget();
+        contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
     rwh->ForwardMouseEvent(event);
   }
 
@@ -2231,7 +2235,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   // Browser expects a non-synthesized event to have an os_event. Make the
   // browser ignore this event instead.
   event.skip_in_browser = true;
-  contents->GetMainFrame()
+  contents->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->ForwardKeyboardEvent(event);
@@ -2263,7 +2267,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   // Browser expects a non-synthesized event to have an os_event. Make the
   // browser ignore this event instead.
   event.skip_in_browser = true;
-  contents->GetMainFrame()
+  contents->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->ForwardKeyboardEvent(event);
@@ -2294,7 +2298,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   event.native_key_code = ui::VKEY_C;
   // We don't set event.skip_in_browser = true here because the event will be
   // consumed by UserInteractionObserver and not passed to the browser.
-  contents->GetMainFrame()
+  contents->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->ForwardKeyboardEvent(event);
@@ -2329,7 +2333,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   // Browser expects a non-synthesized event to have an os_event. Make the
   // browser ignore this event instead.
   event.skip_in_browser = true;
-  contents->GetMainFrame()
+  contents->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->ForwardKeyboardEvent(event);
@@ -2580,7 +2584,7 @@ class SafeBrowsingBlockingPageIDNTest
     SafeBrowsingService* sb_service =
         g_browser_process->safe_browsing_service();
     const content::GlobalRenderFrameHostId primary_main_frame_id =
-        contents->GetMainFrame()->GetGlobalId();
+        contents->GetPrimaryMainFrame()->GetGlobalId();
     SafeBrowsingBlockingPage::UnsafeResource resource;
 
     resource.url = request_url;
@@ -3200,7 +3204,7 @@ class SafeBrowsingFencedFrameBrowserTest
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::TestFrameNavigationObserver error_page_navigation_observer(
-        contents->GetMainFrame());
+        contents->GetPrimaryMainFrame());
     // The error checking that the FencedFrameTestHelper performs is not
     // suitable for this case. The resulting error page is an interstitial shown
     // in the frame that owns the fenced frame, not in the fenced frame itself.
@@ -3213,7 +3217,7 @@ class SafeBrowsingFencedFrameBrowserTest
           document.body.appendChild(fencedFrame);
         })";
     EXPECT_TRUE(
-        content::ExecJs(contents->GetMainFrame(),
+        content::ExecJs(contents->GetPrimaryMainFrame(),
                         content::JsReplace(kAddFencedFrameScript, url)));
     error_page_navigation_observer.Wait();
     EXPECT_FALSE(error_page_navigation_observer.last_navigation_succeeded());
@@ -3248,7 +3252,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingFencedFrameBrowserTest, UnsafeFencedFrame) {
   ASSERT_FALSE(browser()
                    ->tab_strip_model()
                    ->GetActiveWebContents()
-                   ->GetMainFrame()
+                   ->GetPrimaryMainFrame()
                    ->IsErrorDocument());
   AddFencedFrameAndExpectInterstitial(fenced_frame_url);
 }

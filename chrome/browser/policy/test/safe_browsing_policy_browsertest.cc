@@ -50,8 +50,8 @@ int IsEnhancedProtectionMessageVisibleOnInterstitial(
                      "protection message.";
   }
   int result = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(tab->GetMainFrame(), command,
-                                                  &result));
+  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(tab->GetPrimaryMainFrame(),
+                                                  command, &result));
   return result;
 }
 

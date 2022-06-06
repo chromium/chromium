@@ -334,8 +334,10 @@ class ExtensionManagementApiEscalationTest :
     const char* const enabled_string = enabled ? "true" : "false";
     if (user_gesture)
       function->set_user_gesture(true);
-    function->SetRenderFrameHost(browser()->tab_strip_model()->
-        GetActiveWebContents()->GetMainFrame());
+    function->SetRenderFrameHost(browser()
+                                     ->tab_strip_model()
+                                     ->GetActiveWebContents()
+                                     ->GetPrimaryMainFrame());
     bool response = test_utils::RunFunction(
         function.get(), base::StringPrintf("[\"%s\", %s]", kId, enabled_string),
         browser(), api_test_utils::NONE);

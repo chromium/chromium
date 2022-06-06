@@ -568,7 +568,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_VIEW_SOURCE:
       browser_->tab_strip_model()
           ->GetActiveWebContents()
-          ->GetMainFrame()
+          ->GetPrimaryMainFrame()
           ->ViewSource();
       break;
     case IDC_PRINT:
@@ -1340,9 +1340,9 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   command_updater_.UpdateCommandEnabled(IDC_OPEN_IN_PWA_WINDOW,
                                         web_app::CanPopOutWebApp(profile()));
 
-  bool is_isolated_app =
-      current_web_contents->GetMainFrame()->GetWebExposedIsolationLevel() >=
-      WebExposedIsolationLevel::kMaybeIsolatedApplication;
+  bool is_isolated_app = current_web_contents->GetPrimaryMainFrame()
+                             ->GetWebExposedIsolationLevel() >=
+                         WebExposedIsolationLevel::kMaybeIsolatedApplication;
   command_updater_.UpdateCommandEnabled(
       IDC_OPEN_IN_CHROME, IsWebAppOrCustomTab() && !is_isolated_app);
 

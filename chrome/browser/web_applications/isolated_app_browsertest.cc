@@ -196,8 +196,10 @@ class IsolatedAppBrowserTest : public IsolatedAppBrowserTestHarness {
     return browser()->profile()->GetDefaultStoragePartition();
   }
 
-  content::RenderFrameHost* GetMainFrame(Browser* browser) {
-    return browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* GetPrimaryMainFrame(Browser* browser) {
+    return browser->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
   }
 };
 
@@ -230,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest,
       NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
 
   // The browser shouldn't have opened the app's page.
-  EXPECT_EQ(GetMainFrame(browser())->GetLastCommittedURL(), GURL());
+  EXPECT_EQ(GetPrimaryMainFrame(browser())->GetLastCommittedURL(), GURL());
 
   // The app's frame should belong to an isolated PWA browser window.
   Browser* app_browser = GetBrowserFromFrame(app_frame);
@@ -257,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(
       NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
 
   // The browser shouldn't have opened the app's page.
-  EXPECT_EQ(GetMainFrame(browser())->GetLastCommittedURL(), GURL());
+  EXPECT_EQ(GetPrimaryMainFrame(browser())->GetLastCommittedURL(), GURL());
 
   // The app's frame should belong to an isolated PWA browser window.
   Browser* app_browser = GetBrowserFromFrame(app_frame);
@@ -526,8 +528,9 @@ IN_PROC_BROWSER_TEST_F(
   // Check that the click resulted in a new isolated web app window that runs in
   // the same isolated non-default storage partition.
   auto* new_app_window = browser_waiter.AwaitAdded();
-  auto* new_app_frame =
-      new_app_window->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  auto* new_app_frame = new_app_window->tab_strip_model()
+                            ->GetActiveWebContents()
+                            ->GetPrimaryMainFrame();
   auto* new_storage_partition = new_app_frame->GetStoragePartition();
   EXPECT_EQ(new_storage_partition, storage_partition_);
   EXPECT_EQ(new_app_frame->GetWebExposedIsolationLevel(),

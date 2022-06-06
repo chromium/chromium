@@ -244,7 +244,8 @@ void MediaNotificationService::OnMediaSessionActionButtonPressed(
                             IsWebContentsFocused(web_contents));
 
   ukm::UkmRecorder* recorder = ukm::UkmRecorder::Get();
-  ukm::SourceId source_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
+  ukm::SourceId source_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   if (++actions_recorded_to_ukm_[source_id] > kMaxActionsRecordedToUKM)
     return;

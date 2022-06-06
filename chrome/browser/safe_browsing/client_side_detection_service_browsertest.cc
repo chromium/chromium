@@ -50,8 +50,10 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 
   base::RunLoop run_loop;
 
-  content::RenderFrameHost* rfh =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* rfh = browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame();
   mojo::Remote<mojom::PhishingDetector> phishing_detector;
   rfh->GetRemoteInterfaces()->GetInterface(
       phishing_detector.BindNewPipeAndPassReceiver());

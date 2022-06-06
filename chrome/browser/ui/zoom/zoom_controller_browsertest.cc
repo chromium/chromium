@@ -94,14 +94,15 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
   double old_zoom_level = zoom_controller->GetZoomLevel();
   double new_zoom_level = old_zoom_level + 0.5;
 
-  content::RenderProcessHost* host = web_contents->GetMainFrame()->GetProcess();
+  content::RenderProcessHost* host =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
   {
     content::RenderProcessHostWatcher crash_observer(
         host, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
     host->Shutdown(0);
     crash_observer.Wait();
   }
-  EXPECT_FALSE(web_contents->GetMainFrame()->IsRenderFrameLive());
+  EXPECT_FALSE(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
 
   // The following attempt to change the zoom level for a crashed tab should
   // fail.

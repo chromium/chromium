@@ -91,7 +91,7 @@ std::u16string GetApplicationTitle(content::WebContents* web_contents,
     return base::UTF8ToUTF16(extension->name());
 
   return url_formatter::FormatOriginForSecurityDisplay(
-      web_contents->GetMainFrame()->GetLastCommittedOrigin(),
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
 
@@ -409,7 +409,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
           content::RenderFrameHost::FromID(request.render_process_id,
                                            request.render_frame_id));
   content::RenderFrameHost* const main_frame =
-      web_contents_for_stream ? web_contents_for_stream->GetMainFrame()
+      web_contents_for_stream ? web_contents_for_stream->GetPrimaryMainFrame()
                               : nullptr;
   if (main_frame) {
     media_id =

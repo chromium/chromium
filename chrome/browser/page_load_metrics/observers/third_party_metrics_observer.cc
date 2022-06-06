@@ -67,7 +67,7 @@ void ThirdPartyMetricsObserver::FrameReceivedUserActivation(
   auto* third_party_info = GetThirdPartyInfo(
       render_frame_host->GetLastCommittedURL(),
       content::WebContents::FromRenderFrameHost(render_frame_host)
-          ->GetMainFrame()
+          ->GetPrimaryMainFrame()
           ->GetLastCommittedURL(),
       is_third_party);
 
@@ -182,7 +182,7 @@ void ThirdPartyMetricsObserver::RecordUseCounters(
   // Report the feature usage if there's anything to report.
   if (third_party_storage_features.size() > 0) {
     page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-        GetDelegate().GetWebContents()->GetMainFrame(),
+        GetDelegate().GetWebContents()->GetPrimaryMainFrame(),
         std::move(third_party_storage_features));
   }
 }
@@ -233,7 +233,7 @@ void ThirdPartyMetricsObserver::OnTimingUpdate(
 
   // Filter out first-party frames.
   content::RenderFrameHost* top_frame =
-      GetDelegate().GetWebContents()->GetMainFrame();
+      GetDelegate().GetWebContents()->GetPrimaryMainFrame();
   if (!top_frame)
     return;
 

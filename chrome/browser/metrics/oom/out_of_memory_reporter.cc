@@ -81,9 +81,9 @@ void OutOfMemoryReporter::PrimaryMainFrameRenderProcessGone(
     return;
 
   // RenderProcessGone is only called for when the current RenderFrameHost of
-  // the primary main frame exits, so it is ok to call GetMainFrame here.
+  // the primary main frame exits, so it is ok to call GetPrimaryMainFrame here.
   crashed_render_process_id_ =
-      web_contents()->GetMainFrame()->GetProcess()->GetID();
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
 
 // On Android, we care about OOM protected crashes, which are obtained via
 // crash dump analysis. Otherwise we can use the termination status to

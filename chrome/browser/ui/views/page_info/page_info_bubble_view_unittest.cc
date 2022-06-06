@@ -929,7 +929,7 @@ TEST_F(PageInfoBubbleViewTest, OpenPageInfoBubbleAfterNavigationStart) {
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(
           GURL(kSecureUrl),
-          web_contents_helper_->web_contents()->GetMainFrame());
+          web_contents_helper_->web_contents()->GetPrimaryMainFrame());
   navigation->Start();
   api_->CreateView();
   EXPECT_EQ(kHostname, api_->GetWindowTitle());
@@ -993,7 +993,7 @@ TEST_F(PageInfoBubbleViewTest, CertificateButtonShowsEvCertDetails) {
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(
           GURL(kSecureUrl),
-          web_contents_helper_->web_contents()->GetMainFrame());
+          web_contents_helper_->web_contents()->GetPrimaryMainFrame());
   navigation->Start();
   api_->CreateView();
 
@@ -1043,7 +1043,7 @@ TEST_F(PageInfoBubbleViewTest, EvDetailsShowForCertWithStateButNoLocality) {
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(
           GURL(kSecureUrl),
-          web_contents_helper_->web_contents()->GetMainFrame());
+          web_contents_helper_->web_contents()->GetPrimaryMainFrame());
   navigation->Start();
   api_->CreateView();
 

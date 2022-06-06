@@ -50,7 +50,8 @@ TEST_F(PageSpecificContentSettingsTest, HistogramTest) {
 
   task_environment()->FastForwardBy(base::Seconds(1));
   PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
 
   histograms.ExpectTotalCount(kGeolocationHistogramName, 0);
   content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);

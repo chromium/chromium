@@ -114,7 +114,7 @@ cc::BrowserControlsState GetBrowserControlsStateConstraints(
 void SynchronizeVisualProperties(content::WebContents* contents) {
   DCHECK(contents);
 
-  content::RenderFrameHost* main_frame = contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
   if (!main_frame)
     return;
 
@@ -210,7 +210,7 @@ class TopControlsSlideTabObserver
                    const GURL& validated_url,
                    int error_code) override {
     if (render_frame_host->IsActive() &&
-        (render_frame_host == web_contents()->GetMainFrame())) {
+        (render_frame_host == web_contents()->GetPrimaryMainFrame())) {
       UpdateBrowserControlsStateShown(/*animate=*/true);
     }
   }

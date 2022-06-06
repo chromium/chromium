@@ -71,9 +71,11 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
         std::make_unique<test::PermissionRequestManagerTestApi>(browser());
     EXPECT_TRUE(test_api_->manager());
 
-    test_api_->AddSimpleRequest(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-        permissions::RequestType::kGeolocation);
+    test_api_->AddSimpleRequest(browser()
+                                    ->tab_strip_model()
+                                    ->GetActiveWebContents()
+                                    ->GetPrimaryMainFrame(),
+                                permissions::RequestType::kGeolocation);
 
     EXPECT_TRUE(browser()->window()->IsActive());
 

@@ -37,8 +37,8 @@ class DynamicOriginBrowserTest : public ExtensionBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  content::RenderFrameHost* GetMainFrame() const {
-    return GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* GetPrimaryMainFrame() const {
+    return GetActiveWebContents()->GetPrimaryMainFrame();
   }
 
  private:
@@ -75,7 +75,8 @@ IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest, DynamicUrl) {
   {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), extension->GetResourceURL("ok.html")));
-    ASSERT_EQ(extension->origin(), GetMainFrame()->GetLastCommittedOrigin());
+    ASSERT_EQ(extension->origin(),
+              GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }
 
   // Dynamic resource should resolve to static url.
@@ -84,8 +85,9 @@ IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest, DynamicUrl) {
     GURL dynamic_url = extension->dynamic_url().Resolve("ok.html");
     ASSERT_NE(static_url, dynamic_url);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), dynamic_url));
-    EXPECT_EQ(static_url, GetMainFrame()->GetLastCommittedURL());
-    EXPECT_EQ(extension->origin(), GetMainFrame()->GetLastCommittedOrigin());
+    EXPECT_EQ(static_url, GetPrimaryMainFrame()->GetLastCommittedURL());
+    EXPECT_EQ(extension->origin(),
+              GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }
 }
 
@@ -129,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest, FetchGuidFromFrame) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), frame_url));
     content::WebContents* web_contents = GetActiveWebContents();
     EXPECT_EQ(expected_frame_url,
-              web_contents->GetMainFrame()->GetLastCommittedURL());
+              web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 
     std::string result;
     constexpr char kFetchScriptTemplate[] =

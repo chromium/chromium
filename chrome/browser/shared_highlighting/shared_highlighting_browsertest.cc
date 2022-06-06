@@ -175,7 +175,7 @@ std::string SharedHighlightingBrowserTest::GetFirstHighlightedText() {
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->GetRemoteInterfaces()
       ->GetInterface(remote.BindNewPipeAndPassReceiver());
   remote->ExtractTextFragmentsMatches(
@@ -362,13 +362,13 @@ IN_PROC_BROWSER_TEST_F(
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
   // Intercept TextFragmentReceiver Mojo connection.
   MockTextFragmentReceiver text_fragment_receiver;
   service_manager::InterfaceProvider::TestApi interface_overrider(
-      web_contents()->GetMainFrame()->GetRemoteInterfaces());
+      web_contents()->GetPrimaryMainFrame()->GetRemoteInterfaces());
   interface_overrider.SetBinderForName(
       blink::mojom::TextFragmentReceiver::Name_,
       base::BindRepeating(&MockTextFragmentReceiver::Bind,

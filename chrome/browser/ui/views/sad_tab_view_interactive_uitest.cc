@@ -55,7 +55,7 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::RenderProcessHost* process =
-        web_contents->GetMainFrame()->GetProcess();
+        web_contents->GetPrimaryMainFrame()->GetProcess();
     content::RenderProcessHostWatcher crash_observer(
         process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
     process->Shutdown(content::RESULT_CODE_KILLED);

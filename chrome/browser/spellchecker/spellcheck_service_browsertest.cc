@@ -516,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
   content::RenderProcessHost* process = browser()
                                             ->tab_strip_model()
                                             ->GetActiveWebContents()
-                                            ->GetMainFrame()
+                                            ->GetPrimaryMainFrame()
                                             ->GetProcess();
   content::RenderProcessHostWatcher crash_observer(
       process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);

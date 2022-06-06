@@ -341,7 +341,7 @@ TEST_F(NetErrorTabHelperTest, CoalesceFailures) {
 // Makes sure that URLs are sanitized before running the platform network
 // diagnostics tool.
 TEST_F(NetErrorTabHelperTest, SanitizeDiagnosticsUrl) {
-  tab_helper()->SetCurrentTargetFrame(web_contents()->GetMainFrame());
+  tab_helper()->SetCurrentTargetFrame(web_contents()->GetPrimaryMainFrame());
   tab_helper()->network_diagnostics_interface()->RunNetworkDiagnostics(
       GURL("http://foo:bar@somewhere:123/hats?for#goats"));
   EXPECT_EQ("http://somewhere:123/",
@@ -362,7 +362,7 @@ TEST_F(NetErrorTabHelperTest, NoDiagnosticsForNonHttpSchemes) {
   };
 
   for (const char* url : kUrls) {
-    tab_helper()->SetCurrentTargetFrame(web_contents()->GetMainFrame());
+    tab_helper()->SetCurrentTargetFrame(web_contents()->GetPrimaryMainFrame());
     tab_helper()->network_diagnostics_interface()
         ->RunNetworkDiagnostics(GURL(url));
     EXPECT_EQ(0, tab_helper()->times_diagnostics_dialog_invoked());

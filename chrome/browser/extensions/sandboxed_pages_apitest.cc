@@ -201,9 +201,9 @@ IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, WebAccessibleResourcesTest) {
     EXPECT_EQ(result, fetch_url);
     histograms.ExpectBucketCount(kHistogramName, is_web_accessible_resource,
                                  count);
-    EXPECT_EQ(
-        expected_frame_origin,
-        web_contents->GetMainFrame()->GetLastCommittedOrigin().Serialize());
+    EXPECT_EQ(expected_frame_origin, web_contents->GetPrimaryMainFrame()
+                                         ->GetLastCommittedOrigin()
+                                         .Serialize());
   };
 
   // Extension page fetching an extension file.

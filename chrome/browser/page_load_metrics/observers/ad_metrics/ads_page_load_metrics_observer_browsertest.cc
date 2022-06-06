@@ -893,7 +893,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 
   // Activate one frame by executing a dummy script.
   content::RenderFrameHost* ad_frame =
-      ChildFrameAt(web_contents->GetMainFrame(), 0);
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   const std::string no_op_script = "// No-op script";
   EXPECT_TRUE(ExecuteScript(ad_frame, no_op_script));
 
@@ -946,13 +946,13 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   // activate the second frame due to same-origin visibility user activation.
   // The activation of the second frame by this heuristic should be ignored.
   content::RenderFrameHost* ad_frame =
-      ChildFrameAt(web_contents->GetMainFrame(), 0);
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   const std::string no_op_script = "// No-op script";
   EXPECT_TRUE(ExecuteScript(ad_frame, no_op_script));
 
   // Activate the other frame directly by executing a dummy script.
   content::RenderFrameHost* ad_frame_2 =
-      ChildFrameAt(web_contents->GetMainFrame(), 1);
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 1);
   EXPECT_TRUE(ExecuteScript(ad_frame_2, no_op_script));
 
   // Ensure both frames are marked active.
@@ -1325,7 +1325,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 
   // Wait for the video to autoplay in the frame.
   content::RenderFrameHost* ad_frame =
-      ChildFrameAt(web_contents->GetMainFrame(), 0);
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   const std::string play_script =
       "var video = document.getElementsByTagName('video')[0];"
       "video.onplaying = () => { "
@@ -1545,7 +1545,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
                      "foo.com", "/ad_tagging/frame_factory.html")));
-  contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"createAdFrame('frame_factory.html', '');", base::NullCallback());
   // Two pages subresources should have been reported as ad. The iframe resource
   // and its three subresources should also be reported as ads.
@@ -1565,7 +1565,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
                      "foo.com", "/ad_tagging/frame_factory.html")));
-  contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"createAdFrame('frame_factory.html', 'test');", base::NullCallback());
   waiter->AddMinimumAdResourceExpectation(6);
   waiter->Wait();
@@ -1748,7 +1748,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::RenderFrameHost* ad_frame =
-      ChildFrameAt(web_contents->GetMainFrame(), 0);
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 
   content::DOMMessageQueue message_queue(ad_frame);
 
@@ -1831,7 +1831,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   child_observer.Wait();
 
   content::RenderFrameHost* ad_frame =
-      ChildFrameAt(web_contents->GetMainFrame(), 0);
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 
   auto cross_origin_ad_url = embedded_test_server()->GetURL(
       "xyz.com", "/ad_tagging/frame_factory.html");
@@ -2140,7 +2140,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   GURL url = embedded_test_server()->GetURL("foo.com",
                                             "/ad_tagging/frame_factory.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"createAdFrame('multiple_mimes.html', 'test');", base::NullCallback());
   waiter->AddMinimumAdResourceExpectation(8);
   waiter->Wait();
@@ -2447,14 +2447,15 @@ class AdsMemoryMeasurementBrowserTest
                        content::GlobalRenderFrameHostIdHasher>
         frame_routing_ids;
 
-    web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-        [](std::unordered_set<content::GlobalRenderFrameHostId,
-                              content::GlobalRenderFrameHostIdHasher>*
-               frame_routing_ids,
-           content::RenderFrameHost* frame) {
-          frame_routing_ids->insert(frame->GetGlobalId());
-        },
-        &frame_routing_ids));
+    web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+        base::BindRepeating(
+            [](std::unordered_set<content::GlobalRenderFrameHostId,
+                                  content::GlobalRenderFrameHostIdHasher>*
+                   frame_routing_ids,
+               content::RenderFrameHost* frame) {
+              frame_routing_ids->insert(frame->GetGlobalId());
+            },
+            &frame_routing_ids));
 
     return frame_routing_ids;
   }
@@ -2494,7 +2495,7 @@ IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
   waiter->AddMemoryUpdateExpectation(browser()
                                          ->tab_strip_model()
                                          ->GetActiveWebContents()
-                                         ->GetMainFrame()
+                                         ->GetPrimaryMainFrame()
                                          ->GetGlobalId());
 
   // Navigate to the main URL.

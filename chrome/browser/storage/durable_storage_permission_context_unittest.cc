@@ -94,8 +94,8 @@ TEST_F(DurableStoragePermissionContextTest, Bookmarked) {
   NavigateAndCommit(url);
 
   const permissions::PermissionRequestID id(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
       permissions::PermissionRequestID::RequestLocalId());
 
   ASSERT_EQ(0, permission_context.permission_set_count());
@@ -120,8 +120,8 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndIncognitoMode) {
   NavigateAndCommit(url);
 
   const permissions::PermissionRequestID id(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
       permissions::PermissionRequestID::RequestLocalId());
 
   ASSERT_EQ(0, permission_context.permission_set_count());
@@ -148,8 +148,8 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndNonPrimaryOTRProfile) {
   NavigateAndCommit(url);
 
   const permissions::PermissionRequestID id(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
       permissions::PermissionRequestID::RequestLocalId());
 
   ASSERT_EQ(0, permission_context.permission_set_count());
@@ -172,8 +172,8 @@ TEST_F(DurableStoragePermissionContextTest, NoBookmark) {
   NavigateAndCommit(url);
 
   const permissions::PermissionRequestID id(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
       permissions::PermissionRequestID::RequestLocalId());
 
   ASSERT_EQ(0, permission_context.permission_set_count());
@@ -203,8 +203,8 @@ TEST_F(DurableStoragePermissionContextTest, CookiesNotAllowed) {
   cookie_settings->SetCookieSetting(url, CONTENT_SETTING_BLOCK);
 
   const permissions::PermissionRequestID id(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
       permissions::PermissionRequestID::RequestLocalId());
 
   ASSERT_EQ(0, permission_context.permission_set_count());
@@ -229,8 +229,8 @@ TEST_F(DurableStoragePermissionContextTest, EmbeddedFrame) {
   NavigateAndCommit(url);
 
   const permissions::PermissionRequestID id(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
       permissions::PermissionRequestID::RequestLocalId());
 
   ASSERT_EQ(0, permission_context.permission_set_count());

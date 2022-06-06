@@ -1013,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_EQ(2u, render_frame_hosts.size());
 
   content::RenderFrameHost* iframe =
-      render_frame_hosts[0] == active_web_contents->GetMainFrame()
+      render_frame_hosts[0] == active_web_contents->GetPrimaryMainFrame()
           ? render_frame_hosts[1]
           : render_frame_hosts[0];
 
@@ -1081,7 +1081,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_EQ(2u, render_frame_hosts.size());
 
   content::RenderFrameHost* iframe =
-      render_frame_hosts[0] == active_web_contents->GetMainFrame()
+      render_frame_hosts[0] == active_web_contents->GetPrimaryMainFrame()
           ? render_frame_hosts[1]
           : render_frame_hosts[0];
 
@@ -1115,7 +1115,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_EQ(2u, render_frame_hosts.size());
 
   content::RenderFrameHost* iframe =
-      render_frame_hosts[0] == active_web_contents->GetMainFrame()
+      render_frame_hosts[0] == active_web_contents->GetPrimaryMainFrame()
           ? render_frame_hosts[1]
           : render_frame_hosts[0];
 
@@ -1337,7 +1337,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_EQ(2u, render_frame_hosts.size());
 
   content::RenderFrameHost* iframe =
-      render_frame_hosts[0] == active_web_contents->GetMainFrame()
+      render_frame_hosts[0] == active_web_contents->GetPrimaryMainFrame()
           ? render_frame_hosts[1]
           : render_frame_hosts[0];
 
@@ -1649,7 +1649,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerFencedFrameBrowserTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          active_web_contents->GetMainFrame(), fenced_frame_url);
+          active_web_contents->GetPrimaryMainFrame(), fenced_frame_url);
   EXPECT_NE(nullptr, fenced_frame_host);
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 }

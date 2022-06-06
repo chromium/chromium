@@ -189,7 +189,8 @@ void DownloadsDOMHandler::RetryDownload(const std::string& id) {
   if (!file)
     return;
   content::WebContents* web_contents = GetWebUIWebContents();
-  content::RenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  content::RenderFrameHost* render_frame_host =
+      web_contents->GetPrimaryMainFrame();
   const GURL url = file->GetURL();
 
   net::NetworkTrafficAnnotationTag traffic_annotation =

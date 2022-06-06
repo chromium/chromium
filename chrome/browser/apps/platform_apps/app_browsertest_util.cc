@@ -250,7 +250,7 @@ AppWindow* PlatformAppBrowserTest::CreateAppWindowFromParams(
   ExtensionHost* background_host =
       process_manager->GetBackgroundHostForExtension(extension->id());
   window->Init(GURL(std::string()), new AppWindowContentsImpl(window),
-               background_host->host_contents()->GetMainFrame(), params);
+               background_host->host_contents()->GetPrimaryMainFrame(), params);
   return window;
 }
 

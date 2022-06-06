@@ -856,7 +856,8 @@ bool IsFidoAuthenticationAvailable(autofill::PersonalDataManager* personal_data,
   if (!autofill_driver_factory)
     return false;
   autofill::ContentAutofillDriver* autofill_driver =
-      autofill_driver_factory->DriverForFrame(web_contents->GetMainFrame());
+      autofill_driver_factory->DriverForFrame(
+          web_contents->GetPrimaryMainFrame());
   if (!autofill_driver)
     return false;
   if (!autofill_driver->autofill_manager())

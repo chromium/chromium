@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagFencedFrameTest,
       embedded_test_server()->GetURL("/fenced_frames/title2.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), kFencedFrameUrl);
+          GetWebContents()->GetPrimaryMainFrame(), kFencedFrameUrl);
   EXPECT_NE(nullptr, fenced_frame_host);
 
   // The navigation in the fenced frame should not change the title of the

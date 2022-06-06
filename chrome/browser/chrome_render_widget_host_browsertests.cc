@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* main_frame_a = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame_a = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child_frame_b = ChildFrameAt(main_frame_a, 0);
   ASSERT_NE(nullptr, child_frame_b);
   content::RenderFrameHost* child_frame_d = ChildFrameAt(main_frame_a, 1);
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest, FocusOmniBox) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   EXPECT_EQ(main_frame, web_contents->GetFocusedFrame());
 
   mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>

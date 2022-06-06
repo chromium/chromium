@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayMetricsBrowserTest,
       embedded_test_server()->GetURL("bar.com", "/media/autoplay_iframe.html"));
 
   // Navigate main frame, try play.
-  NavigateFrameAndWait(web_contents()->GetMainFrame(), main_url);
+  NavigateFrameAndWait(web_contents()->GetPrimaryMainFrame(), main_url);
   TryAutoplay(test_ukm_recorder, web_contents());
 
   // Check that we recorded a UKM event using the main frame URL.
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayMetricsBrowserTest,
   }
 
   // Navigate top frame, try play.
-  NavigateFrameAndWait(web_contents()->GetMainFrame(), foo_url);
+  NavigateFrameAndWait(web_contents()->GetPrimaryMainFrame(), foo_url);
   TryAutoplay(test_ukm_recorder, web_contents());
 
   // Check that we recorded a UKM event using the main frame URL.

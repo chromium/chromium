@@ -83,7 +83,7 @@ void ShoppingDataProvider::DidFinishLoad(
   base::OnceCallback<void(base::Value)> callback =
       base::BindOnce(&ShoppingDataProvider::OnJavascriptExecutionCompleted,
                      weak_ptr_factory_.GetWeakPtr());
-  web_contents()->GetMainFrame()->ExecuteJavaScriptInIsolatedWorld(
+  web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
       base::UTF8ToUTF16(script), std::move(callback),
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
 }

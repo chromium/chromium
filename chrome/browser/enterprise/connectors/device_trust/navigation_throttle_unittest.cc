@@ -91,7 +91,7 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
 
   content::WebContents* web_contents() const { return web_contents_.get(); }
   content::RenderFrameHost* main_frame() const {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
  protected:

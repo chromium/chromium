@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest,
   ASSERT_TRUE(content::ExecuteScript(web_contents, "dropFrame()"));
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   content::RenderFrameHost* subframe =
-      content::ChildFrameAt(web_contents->GetMainFrame(), 0);
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(subframe);
 
   // The subframe load should fail due to XFO.
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, FrameErrorPageBlocked) {
   ASSERT_TRUE(content::ExecuteScript(web_contents, "dropFrame()"));
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   content::RenderFrameHost* subframe =
-      content::ChildFrameAt(web_contents->GetMainFrame(), 0);
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(subframe);
 
   // The subframe load should fail due to XFO.

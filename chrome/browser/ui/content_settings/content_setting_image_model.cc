@@ -459,7 +459,8 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
   // If a content type is blocked by default and was accessed, display the
   // content blocked page action.
   PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
+      PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
   if (!content_settings)
     return false;
 
@@ -516,7 +517,8 @@ ContentSettingGeolocationImageModel::ContentSettingGeolocationImageModel()
 bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
+      PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
   set_should_auto_open_bubble(false);
   if (!content_settings)
     return false;
@@ -649,7 +651,8 @@ ContentSettingMIDISysExImageModel::ContentSettingMIDISysExImageModel()
 bool ContentSettingMIDISysExImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
+      PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
   if (!content_settings)
     return false;
 
@@ -714,7 +717,8 @@ ContentSettingClipboardReadWriteImageModel::
 bool ContentSettingClipboardReadWriteImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
+      PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
   if (!content_settings)
     return false;
   ContentSettingsType content_type = ContentSettingsType::CLIPBOARD_READ_WRITE;
@@ -739,7 +743,8 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   set_should_auto_open_bubble(false);
   PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
+      PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
   if (!content_settings)
     return false;
   state_ = content_settings->GetMicrophoneCameraState();
@@ -936,8 +941,8 @@ ContentSettingSensorsImageModel::ContentSettingSensorsImageModel()
 
 bool ContentSettingSensorsImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
-  auto* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents->GetPrimaryMainFrame());
   if (!content_settings)
     return false;
 
@@ -979,7 +984,8 @@ ContentSettingPopupImageModel::ContentSettingPopupImageModel()
 bool ContentSettingPopupImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
+      PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
   if (!content_settings || !content_settings->IsContentBlocked(content_type()))
     return false;
   set_icon(kWebIcon, vector_icons::kBlockedBadgeIcon);

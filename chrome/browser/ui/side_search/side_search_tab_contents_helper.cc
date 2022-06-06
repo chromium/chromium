@@ -38,7 +38,7 @@ void SideSearchTabContentsHelper::NavigateInTabContents(
       params.url, ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_LINK,
                                                params.transition)};
 
-  web_contents()->GetMainFrame()->NotifyUserActivation(
+  web_contents()->GetPrimaryMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kInteraction);
   web_contents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));

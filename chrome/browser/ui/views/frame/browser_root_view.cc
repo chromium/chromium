@@ -182,7 +182,7 @@ void BrowserRootView::OnDragEntered(const ui::DropTargetEvent& event) {
         return;
       }
 
-      content::RenderFrameHost* rfh = web_contents->GetMainFrame();
+      content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
           base::BindOnce(&FindURLMimeType, url),

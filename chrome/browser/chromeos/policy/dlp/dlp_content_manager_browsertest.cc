@@ -619,8 +619,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetMainFrame()->GetProcess()->GetID(),
-          web_contents->GetMainFrame()->GetRoutingID()));
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetRoutingID()));
 
   DlpContentManager* manager = helper_->GetContentManager();
   base::MockCallback<content::MediaStreamUI::StateChangeCallback>

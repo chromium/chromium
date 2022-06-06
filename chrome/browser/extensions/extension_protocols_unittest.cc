@@ -353,7 +353,7 @@ class ExtensionProtocolsTestBase : public testing::Test {
   content::WebContents* web_contents() { return contents_.get(); }
 
   content::RenderFrameHost* main_rfh() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   content::BrowserTaskEnvironment task_environment_;

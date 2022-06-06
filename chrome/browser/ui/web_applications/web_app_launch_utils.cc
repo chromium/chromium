@@ -123,7 +123,7 @@ absl::optional<AppId> GetWebAppForActiveTab(Browser* browser) {
     return absl::nullopt;
 
   return provider->registrar().FindInstalledAppWithUrlInScope(
-      web_contents->GetMainFrame()->GetLastCommittedURL());
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 }
 
 void PrunePreScopeNavigationHistory(const GURL& scope,

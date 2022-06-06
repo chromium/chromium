@@ -115,7 +115,7 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
   // have been filtered by the NavigationThrottle.
   if (navigation_handle->IsSameDocument() &&
       navigation_handle->IsInPrimaryMainFrame()) {
-    auto* render_frame_host = web_contents()->GetMainFrame();
+    auto* render_frame_host = web_contents()->GetPrimaryMainFrame();
     int process_id = render_frame_host->GetProcess()->GetID();
     int routing_id = render_frame_host->GetRoutingID();
     bool skip_manual_parent_filter =
@@ -156,7 +156,7 @@ void SupervisedUserNavigationObserver::DidFinishLoad(
 }
 
 void SupervisedUserNavigationObserver::OnURLFilterChanged() {
-  auto* main_frame = web_contents()->GetMainFrame();
+  auto* main_frame = web_contents()->GetPrimaryMainFrame();
   int main_frame_process_id = main_frame->GetProcess()->GetID();
   int routing_id = main_frame->GetRoutingID();
   bool skip_manual_parent_filter =
@@ -275,7 +275,7 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
 
   bool already_requested = base::Contains(requested_hosts_, url.host());
   bool is_main_frame =
-      frame_id == web_contents()->GetMainFrame()->GetFrameTreeNodeId();
+      frame_id == web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
   callback.Run(SupervisedUserNavigationThrottle::CallbackActions::
                    kCancelWithInterstitial,

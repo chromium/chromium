@@ -1364,7 +1364,7 @@ void PrefetchProxyTabHelper::PrefetchUrls(
     page_->prefetch_metrics_collector_ =
         base::MakeRefCounted<PrefetchProxyPrefetchMetricsCollector>(
             page_->navigation_start_,
-            web_contents()->GetMainFrame()->GetPageUkmSourceId());
+            web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
 
   // Add new prefetches, and update the type for any existing prefetches.

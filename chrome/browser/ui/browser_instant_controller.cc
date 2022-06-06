@@ -52,7 +52,8 @@ void BrowserInstantController::OnSearchEngineBaseURLChanged(
     if (!contents)
       continue;
 
-    GURL site_url = contents->GetMainFrame()->GetSiteInstance()->GetSiteURL();
+    GURL site_url =
+        contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL();
     bool is_ntp = site_url == GURL(chrome::kChromeUINewTabPageURL) ||
                   site_url == GURL(chrome::kChromeUINewTabPageThirdPartyURL);
 
@@ -61,7 +62,7 @@ void BrowserInstantController::OnSearchEngineBaseURLChanged(
           InstantServiceFactory::GetForProfile(profile());
       if (instant_service) {
         content::RenderProcessHost* rph =
-            contents->GetMainFrame()->GetProcess();
+            contents->GetPrimaryMainFrame()->GetProcess();
         is_ntp = instant_service->IsInstantProcess(rph->GetID());
       }
     }

@@ -123,14 +123,14 @@ class StorageAccessAPIBrowserTest : public InProcessBrowserTest {
     storage::test::ExpectFrameContent(GetNestedFrame(), expected);
   }
 
-  content::RenderFrameHost* GetMainFrame() {
+  content::RenderFrameHost* GetPrimaryMainFrame() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    return web_contents->GetMainFrame();
+    return web_contents->GetPrimaryMainFrame();
   }
 
   content::RenderFrameHost* GetFrame() {
-    return ChildFrameAt(GetMainFrame(), 0);
+    return ChildFrameAt(GetPrimaryMainFrame(), 0);
   }
 
   content::RenderFrameHost* GetNestedFrame() {
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, OpaqueOriginRejects) {
 
   NavigateToPageWithFrame("a.com");
   ASSERT_TRUE(ExecuteScript(
-      GetMainFrame(),
+      GetPrimaryMainFrame(),
       "document.querySelector('iframe').sandbox='allow-scripts';"));
   NavigateFrameTo("b.com", "/echoheader?cookie");
 
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame("a.com");
-  ASSERT_TRUE(ExecuteScript(GetMainFrame(),
+  ASSERT_TRUE(ExecuteScript(GetPrimaryMainFrame(),
                             "document.querySelector('iframe').sandbox='allow-"
                             "scripts allow-same-origin';"));
   NavigateFrameTo("b.com", "/echoheader?cookie");
@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, SandboxTokenResolves) {
 
   NavigateToPageWithFrame("a.com");
   ASSERT_TRUE(ExecuteScript(
-      GetMainFrame(),
+      GetPrimaryMainFrame(),
       "document.querySelector('iframe').sandbox='allow-scripts "
       "allow-same-origin allow-storage-access-by-user-activation';"));
   NavigateFrameTo("b.com", "/echoheader?cookie");

@@ -237,7 +237,8 @@ class PresentationServiceDelegateImplTest
   }
 
   void SetMainFrame() {
-    content::RenderFrameHost* main_frame = GetWebContents()->GetMainFrame();
+    content::RenderFrameHost* main_frame =
+        GetWebContents()->GetPrimaryMainFrame();
     ASSERT_TRUE(main_frame);
     main_frame_process_id_ = main_frame->GetProcess()->GetID();
     main_frame_routing_id_ = main_frame->GetRoutingID();

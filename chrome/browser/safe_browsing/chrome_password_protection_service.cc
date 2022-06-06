@@ -378,7 +378,7 @@ bool ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
       prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
   return unhandled_sync_password_reuses
              ? (unhandled_sync_password_reuses->FindKey(
-                    web_contents->GetMainFrame()
+                    web_contents->GetPrimaryMainFrame()
                         ->GetLastCommittedOrigin()
                         .Serialize()) != nullptr)
              : false;
@@ -479,7 +479,9 @@ void ChromePasswordProtectionService::OnModalWarningShownForGaiaPassword(
     // Since base::Value doesn't support int64_t type, we convert the navigation
     // ID to string format and store it in the preference dictionary.
     update->SetStringKey(
-        web_contents->GetMainFrame()->GetLastCommittedOrigin().Serialize(),
+        web_contents->GetPrimaryMainFrame()
+            ->GetLastCommittedOrigin()
+            .Serialize(),
         base::NumberToString(GetLastCommittedNavigationID(web_contents)));
   }
   SBThreatType threat_type;
@@ -585,7 +587,7 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
     return;
 
   const content::GlobalRenderFrameHostId primary_main_frame_id =
-      web_contents->GetMainFrame()->GetGlobalId();
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
   security_interstitials::UnsafeResource resource;
   if (password_type.account_type() ==
       ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
@@ -939,7 +941,8 @@ void ChromePasswordProtectionService::HandleUserActionOnModalWarning(
     LoginReputationClientResponse::VerdictType verdict_type,
     const std::string& verdict_token,
     WarningAction action) {
-  const Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  const Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   int64_t navigation_id =
       GetNavigationIDFromPrefsByOrigin(profile_->GetPrefs(), origin);
 

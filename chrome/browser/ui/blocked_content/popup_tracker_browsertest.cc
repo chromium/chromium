@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, AllowlistedPopup_HasTracker) {
   // Is blocked by the popup blocker.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
-                  web_contents->GetMainFrame())
+                  web_contents->GetPrimaryMainFrame())
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   // Click through to open the popup.

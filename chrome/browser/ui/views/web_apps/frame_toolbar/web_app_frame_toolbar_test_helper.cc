@@ -135,7 +135,7 @@ WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
     content::WebContents* web_contents,
     const std::string& rect_value_list,
     const std::string& rect_var_name) {
-  EXPECT_TRUE(ExecJs(web_contents->GetMainFrame(), rect_value_list));
+  EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), rect_value_list));
   return EvalJs(web_contents, rect_var_name).ExtractList().TakeListDeprecated();
 }
 
@@ -152,7 +152,7 @@ gfx::Rect WebAppFrameToolbarTestHelper::GetXYWidthHeightRect(
 void WebAppFrameToolbarTestHelper::SetupGeometryChangeCallback(
     content::WebContents* web_contents) {
   EXPECT_TRUE(
-      ExecJs(web_contents->GetMainFrame(),
+      ExecJs(web_contents->GetPrimaryMainFrame(),
              "var geometrychangeCount = 0;"
              "document.title = 'beforegeometrychange';"
              "navigator.windowControlsOverlay.ongeometrychange = (e) => {"

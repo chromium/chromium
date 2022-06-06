@@ -364,7 +364,8 @@ class SitePerProcessTextInputManagerTest : public InProcessBrowserTest {
   // inside frame. For example, for 'a(b(c, d(e)))', [0] returns b, and
   // [0, 1, 0] returns e;
   content::RenderFrameHost* GetFrame(const IndexVector& indices) {
-    content::RenderFrameHost* current = active_contents()->GetMainFrame();
+    content::RenderFrameHost* current =
+        active_contents()->GetPrimaryMainFrame();
     for (size_t index : indices)
       current = ChildFrameAt(current, index);
     return current;
@@ -1159,7 +1160,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   // Focus the subframe and then its input field.  The return value
   // "input-focus" will be sent once the input field's focus event fires.
   content::RenderFrameHost* child =
-      ChildFrameAt(web_contents->GetMainFrame(), 0);
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   std::string result;
   std::string script =
       "function onInput(e) {"

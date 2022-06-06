@@ -522,7 +522,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintFromSubframeMerged) {
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -580,7 +580,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintFromMainFrameMerged) {
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -988,7 +988,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -1040,7 +1040,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -1075,7 +1075,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -1130,12 +1130,12 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   RenderFrameHost* same_site_subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSameSiteSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("same_site_subframe"));
   RenderFrameHost* cross_site_subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kCrossSiteSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("cross_site_subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -1191,7 +1191,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -2043,7 +2043,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstabilitySubframeAggregation) {
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate layout instability in the subframe.
@@ -2676,7 +2676,7 @@ void CLSUkmPageLoadMetricsObserverTest::SimulateShiftDelta(
 RenderFrameHost* CLSUkmPageLoadMetricsObserverTest::NavigateSubframe() {
   return NavigationSimulator::NavigateAndCommitFromDocument(
       GURL(kSubframeTestUrl),
-      RenderFrameHostTester::For(web_contents()->GetMainFrame())
+      RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
           ->AppendChild("subframe"));
 }
 
@@ -2715,7 +2715,7 @@ void CLSUkmPageLoadMetricsObserverTest::RunBeforeInputOrScrollCase(
     bool input_in_subframe) {
   NavigateAndCommit(GURL(kTestUrl1));
 
-  RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* subframe = NavigateSubframe();
 
   SimulateShiftDelta(1.0, main_frame);

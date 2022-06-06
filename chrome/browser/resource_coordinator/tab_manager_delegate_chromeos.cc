@@ -281,7 +281,7 @@ void TabManagerDelegate::OnBrowserSetLastActive(Browser* browser) {
     return;
 
   base::ProcessHandle pid =
-      contents->GetMainFrame()->GetProcess()->GetProcess().Handle();
+      contents->GetPrimaryMainFrame()->GetProcess()->GetProcess().Handle();
   AdjustFocusedTabScore(pid);
 }
 

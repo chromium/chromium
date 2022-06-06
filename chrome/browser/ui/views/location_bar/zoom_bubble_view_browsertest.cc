@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, NonImmersiveFullscreen) {
     // notification before testing the zoom bubble visibility.
     FullscreenNotificationObserver waiter(browser());
     static_cast<content::WebContentsDelegate*>(browser())
-        ->EnterFullscreenModeForTab(web_contents->GetMainFrame(), {});
+        ->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame(), {});
     waiter.Wait();
   }
   ASSERT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());

@@ -1958,7 +1958,7 @@ bool TabStripModel::CloseWebContentses(
       if (ShouldRunUnloadListenerBeforeClosing(contents))
         continue;
       content::RenderProcessHost* process =
-          contents->GetMainFrame()->GetProcess();
+          contents->GetPrimaryMainFrame()->GetProcess();
       ++processes[process];
     }
 

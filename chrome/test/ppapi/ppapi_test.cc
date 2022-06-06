@@ -332,7 +332,7 @@ void OutOfProcessPPAPITest::RunTouchEventTest(const std::string& test_case) {
   RenderViewHost* rvh = browser()
                             ->tab_strip_model()
                             ->GetActiveWebContents()
-                            ->GetMainFrame()
+                            ->GetPrimaryMainFrame()
                             ->GetRenderViewHost();
   auto watcher = content::RenderViewHostTester::CreateInputWatcher(
       rvh, blink::WebInputEvent::Type::kTouchStart);
@@ -343,7 +343,7 @@ void OutOfProcessPPAPITest::RunTouchEventTest(const std::string& test_case) {
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->InsertVisualStateCallback(base::BindOnce(
           [](base::OnceClosure quit_closure, bool result) {
             EXPECT_TRUE(result);

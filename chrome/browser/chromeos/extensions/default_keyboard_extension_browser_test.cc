@@ -106,7 +106,8 @@ DefaultKeyboardExtensionBrowserTest::GetKeyboardWebContents(
     if (!view)
       continue;
     content::WebContents* wc = content::WebContents::FromRenderViewHost(view);
-    if (wc && url == wc->GetMainFrame()->GetSiteInstance()->GetSiteURL()) {
+    if (wc &&
+        url == wc->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL()) {
       // Waits for virtual keyboard to load.
       EXPECT_TRUE(content::WaitForLoadStop(wc));
       return wc;

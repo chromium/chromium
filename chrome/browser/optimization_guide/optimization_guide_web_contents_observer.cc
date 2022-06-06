@@ -143,7 +143,7 @@ void OptimizationGuideWebContentsObserver::DidFinishNavigation(
 void OptimizationGuideWebContentsObserver::PostFetchHintsUsingManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!web_contents()
-           ->GetMainFrame()
+           ->GetPrimaryMainFrame()
            ->GetLastCommittedURL()
            .SchemeIsHTTPOrHTTPS())
     return;

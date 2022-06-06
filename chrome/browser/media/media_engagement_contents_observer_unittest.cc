@@ -1401,7 +1401,7 @@ TEST_F(MediaEngagementContentsObserverPrerenderTest,
 
   // Activate the prerendered page.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      url, web_contents()->GetMainFrame());
+      url, web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ(prerender_frame->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kActive);
   EXPECT_EQ(0u, GetAudioContextPlayersCount());

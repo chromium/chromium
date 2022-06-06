@@ -200,8 +200,10 @@ class WebUsbTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     origin_ = url.DeprecatedGetOriginAsURL();
 
-    RenderFrameHost* render_frame_host =
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    RenderFrameHost* render_frame_host = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
     EXPECT_EQ(origin_, render_frame_host->GetLastCommittedOrigin().GetURL());
   }
 

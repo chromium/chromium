@@ -588,7 +588,7 @@ void IntentPickerBubbleView::Initialize() {
   const bool show_origin =
       initiating_origin_ &&
       !initiating_origin_->IsSameOriginWith(
-          web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+          web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto leading_content_type = use_grid_view_
                                   ? views::DialogContentType::kText

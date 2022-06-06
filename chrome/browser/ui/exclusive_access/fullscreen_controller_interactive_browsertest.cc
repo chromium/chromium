@@ -87,7 +87,7 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
     EXPECT_TRUE(browser()->IsMouseLocked() == browser()
                                                   ->tab_strip_model()
                                                   ->GetActiveWebContents()
-                                                  ->GetMainFrame()
+                                                  ->GetPrimaryMainFrame()
                                                   ->GetRenderViewHost()
                                                   ->GetWidget()
                                                   ->GetView()
@@ -147,7 +147,7 @@ void FullscreenControllerInteractiveTest::ToggleTabFullscreen_Internal(
   do {
     FullscreenNotificationObserver fullscreen_observer(browser());
     if (enter_fullscreen)
-      browser()->EnterFullscreenModeForTab(tab->GetMainFrame(), {});
+      browser()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
     else
       browser()->ExitFullscreenModeForTab(tab);
     fullscreen_observer.Wait();
@@ -207,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        RunOrDeferClosureDuringTransition) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  GetFullscreenController()->EnterFullscreenModeForTab(tab->GetMainFrame(), {});
+  GetFullscreenController()->EnterFullscreenModeForTab(
+      tab->GetPrimaryMainFrame(), {});
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
 
   base::RunLoop run_loop;
@@ -713,7 +714,7 @@ class FullscreenCapabilityDelegationFullscreenControllerInteractiveTest
     EXPECT_NE(popup, browser);
     content::WebContents* popup_contents =
         popup->tab_strip_model()->GetActiveWebContents();
-    EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetMainFrame()));
+    EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetPrimaryMainFrame()));
     EXPECT_TRUE(content::WaitForLoadStop(popup_contents));
     return popup_contents;
   }

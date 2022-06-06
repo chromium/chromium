@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WindowOpenInvalidExtension) {
       broken_extension_url, new_page_in_same_process, expect_success, &newtab));
 
   EXPECT_EQ(broken_extension_url,
-            newtab->GetMainFrame()->GetLastCommittedURL());
+            newtab->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_EQ(content::PAGE_TYPE_ERROR,
             newtab->GetController().GetLastCommittedEntry()->GetPageType());
 }
@@ -319,9 +319,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 
   EXPECT_EQ(content::PAGE_TYPE_ERROR,
             newtab->GetController().GetLastCommittedEntry()->GetPageType());
-  EXPECT_EQ(extension_url, newtab->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_FALSE(newtab->GetMainFrame()->GetSiteInstance()->GetSiteURL().SchemeIs(
-      extensions::kExtensionScheme));
+  EXPECT_EQ(extension_url,
+            newtab->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_FALSE(
+      newtab->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL().SchemeIs(
+          extensions::kExtensionScheme));
 }
 
 // Test that navigating to an extension URL is allowed on chrome://.
@@ -342,13 +344,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   GURL history_url(chrome::kChromeUIHistoryURL);
   ASSERT_TRUE(history_url.SchemeIs(content::kChromeUIScheme));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), history_url));
-  EXPECT_EQ(history_url, tab->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(history_url, tab->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   content::TestNavigationObserver observer(tab);
   ASSERT_TRUE(content::ExecuteScript(
       tab, "location.href = '" + extension_url.spec() + "';"));
   observer.Wait();
-  EXPECT_EQ(extension_url, tab->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(extension_url, tab->GetPrimaryMainFrame()->GetLastCommittedURL());
   std::string result;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       tab, "domAutomationController.send(document.body.innerText)", &result));

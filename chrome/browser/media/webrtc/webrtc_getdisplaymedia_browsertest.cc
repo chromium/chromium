@@ -108,7 +108,7 @@ void RunGetDisplayMedia(content::WebContents* tab,
                         bool is_tab_capture) {
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(),
+      tab->GetPrimaryMainFrame(),
       base::StringPrintf("runGetDisplayMedia(%s, \"top-level-document\");",
                          constraints.c_str()),
       &result));
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "waitVideoUnmuted();", &result));
+      tab->GetPrimaryMainFrame(), "waitVideoUnmuted();", &result));
   EXPECT_EQ(result, "unmuted");
 
   const policy::DlpContentRestrictionSet kScreenShareRestricted(
@@ -285,14 +285,14 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   content::WaitForLoadStop(tab);
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "waitVideoMuted();", &result));
+      tab->GetPrimaryMainFrame(), "waitVideoMuted();", &result));
   EXPECT_EQ(result, "muted");
 
   const policy::DlpContentRestrictionSet kEmptyRestrictionSet;
   helper.ChangeConfidentiality(tab, kEmptyRestrictionSet);
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "waitVideoUnmuted();", &result));
+      tab->GetPrimaryMainFrame(), "waitVideoUnmuted();", &result));
   EXPECT_EQ(result, "unmuted");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -377,15 +377,15 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getDisplaySurfaceSetting();", &result));
+      tab->GetPrimaryMainFrame(), "getDisplaySurfaceSetting();", &result));
   EXPECT_EQ(result, test_config_.display_surface);
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getLogicalSurfaceSetting();", &result));
+      tab->GetPrimaryMainFrame(), "getLogicalSurfaceSetting();", &result));
   EXPECT_EQ(result, "true");
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getCursorSetting();", &result));
+      tab->GetPrimaryMainFrame(), "getCursorSetting();", &result));
   EXPECT_EQ(result, "never");
 }
 
@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "hasAudioTrack();", &result));
+      tab->GetPrimaryMainFrame(), "hasAudioTrack();", &result));
   EXPECT_EQ(result, "true");
 }
 
@@ -427,11 +427,11 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getWidthSetting();", &result));
+      tab->GetPrimaryMainFrame(), "getWidthSetting();", &result));
   EXPECT_EQ(result, base::StringPrintf("%d", kMaxWidth));
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getFrameRateSetting();", &result));
+      tab->GetPrimaryMainFrame(), "getFrameRateSetting();", &result));
   EXPECT_EQ(result, base::StringPrintf("%d", kMaxFrameRate));
 }
 
@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCapturePermissionPolicyBrowserTest,
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      OpenTestPageInNewTab(kMainHtmlPage)->GetMainFrame(),
+      OpenTestPageInNewTab(kMainHtmlPage)->GetPrimaryMainFrame(),
       base::StringPrintf(
           "runGetDisplayMedia(%s, \"%s\");", constraints.c_str(),
           allowlisted_by_policy_ ? "allowedFrame" : "disallowedFrame"),
@@ -657,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
   // Verify that the video stream has ended.
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      capturing_tab->GetMainFrame(), "waitVideoEnded();", &result));
+      capturing_tab->GetPrimaryMainFrame(), "waitVideoEnded();", &result));
   EXPECT_EQ(result, "ended");
 }
 
@@ -699,8 +699,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
   // Verify that the video hasn't been ended.
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      capturing_tab->GetMainFrame(), "returnToTest(video_track.readyState);",
-      &result));
+      capturing_tab->GetPrimaryMainFrame(),
+      "returnToTest(video_track.readyState);", &result));
   EXPECT_EQ(result, "live");
 }
 
@@ -743,7 +743,7 @@ class GetDisplayMediaVideoTrackBrowserTest
     // Initiate the capture.
     std::string result;
     ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        tab_->GetMainFrame(),
+        tab_->GetPrimaryMainFrame(),
         "runGetDisplayMedia({video: true, audio: true}, "
         "\"top-level-document\");",
         &result));
@@ -776,21 +776,21 @@ class GetDisplayMediaVideoTrackBrowserTest
   std::string GetVideoTrackType() {
     std::string result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        tab_->GetMainFrame(), "getVideoTrackType();", &result));
+        tab_->GetPrimaryMainFrame(), "getVideoTrackType();", &result));
     return result;
   }
 
   std::string GetVideoCloneTrackType() {
     std::string result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        tab_->GetMainFrame(), "getVideoCloneTrackType();", &result));
+        tab_->GetPrimaryMainFrame(), "getVideoCloneTrackType();", &result));
     return result;
   }
 
   bool HasAudioTrack() {
     std::string result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        tab_->GetMainFrame(), "hasAudioTrack();", &result));
+        tab_->GetPrimaryMainFrame(), "hasAudioTrack();", &result));
     EXPECT_TRUE(result == "true" || result == "false");
     return result == "true";
   }
@@ -798,7 +798,7 @@ class GetDisplayMediaVideoTrackBrowserTest
   std::string GetAudioTrackType() {
     std::string result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        tab_->GetMainFrame(), "getAudioTrackType();", &result));
+        tab_->GetPrimaryMainFrame(), "getAudioTrackType();", &result));
     return result;
   }
 
@@ -910,19 +910,21 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
   EXPECT_TRUE(captured_tab->IsBeingCaptured());
   EXPECT_FALSE(other_tab->IsBeingCaptured());
   EXPECT_FALSE(capturing_tab->IsBeingCaptured());
-  EXPECT_EQ(GetSecondaryButtonLabel(captured_tab),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
-                url_formatter::FormatOriginForSecurityDisplay(
-                    captured_tab->GetMainFrame()->GetLastCommittedOrigin(),
-                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(
+      GetSecondaryButtonLabel(captured_tab),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+          url_formatter::FormatOriginForSecurityDisplay(
+              captured_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
   EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
-  EXPECT_EQ(GetSecondaryButtonLabel(capturing_tab),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
-                url_formatter::FormatOriginForSecurityDisplay(
-                    capturing_tab->GetMainFrame()->GetLastCommittedOrigin(),
-                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(
+      GetSecondaryButtonLabel(capturing_tab),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+          url_formatter::FormatOriginForSecurityDisplay(
+              capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
 
   // Click the secondary button, i.e., the "Share this tab instead" button
   GetDelegate(other_tab)->Cancel();
@@ -940,14 +942,15 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
             l10n_util::GetStringFUTF16(
                 IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
                 url_formatter::FormatOriginForSecurityDisplay(
-                    other_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    other_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
                     url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
-  EXPECT_EQ(GetSecondaryButtonLabel(capturing_tab),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
-                url_formatter::FormatOriginForSecurityDisplay(
-                    capturing_tab->GetMainFrame()->GetLastCommittedOrigin(),
-                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(
+      GetSecondaryButtonLabel(capturing_tab),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+          url_formatter::FormatOriginForSecurityDisplay(
+              capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
 }
 
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest,
@@ -967,19 +970,21 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest,
   EXPECT_TRUE(captured_tab->IsBeingCaptured());
   EXPECT_FALSE(other_tab->IsBeingCaptured());
   EXPECT_FALSE(capturing_tab->IsBeingCaptured());
-  EXPECT_EQ(GetSecondaryButtonLabel(captured_tab),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
-                url_formatter::FormatOriginForSecurityDisplay(
-                    captured_tab->GetMainFrame()->GetLastCommittedOrigin(),
-                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(
+      GetSecondaryButtonLabel(captured_tab),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+          url_formatter::FormatOriginForSecurityDisplay(
+              captured_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
   EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
-  EXPECT_EQ(GetSecondaryButtonLabel(capturing_tab),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
-                url_formatter::FormatOriginForSecurityDisplay(
-                    capturing_tab->GetMainFrame()->GetLastCommittedOrigin(),
-                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(
+      GetSecondaryButtonLabel(capturing_tab),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+          url_formatter::FormatOriginForSecurityDisplay(
+              capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
 
   browser()->tab_strip_model()->ActivateTabAt(
       browser()->tab_strip_model()->GetIndexOfWebContents(other_tab));
@@ -1003,19 +1008,21 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest,
   EXPECT_TRUE(captured_tab->IsBeingCaptured());
   EXPECT_FALSE(other_tab->IsBeingCaptured());
   EXPECT_FALSE(capturing_tab->IsBeingCaptured());
-  EXPECT_EQ(GetSecondaryButtonLabel(captured_tab),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
-                url_formatter::FormatOriginForSecurityDisplay(
-                    captured_tab->GetMainFrame()->GetLastCommittedOrigin(),
-                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(
+      GetSecondaryButtonLabel(captured_tab),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+          url_formatter::FormatOriginForSecurityDisplay(
+              captured_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
   EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
-  EXPECT_EQ(GetSecondaryButtonLabel(capturing_tab),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
-                url_formatter::FormatOriginForSecurityDisplay(
-                    capturing_tab->GetMainFrame()->GetLastCommittedOrigin(),
-                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(
+      GetSecondaryButtonLabel(capturing_tab),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+          url_formatter::FormatOriginForSecurityDisplay(
+              capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
 }
 
 #endif

@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorFencedFrameBrowserTest,
   const GURL& fenced_frame_url =
       test_server()->GetURL("/fenced_frames/simple_page_with_anchors.html");
   std::ignore = fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetMainFrame(), fenced_frame_url);
+      web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
 
   // Make sure the fenced frame doesn't log any anchors.
   anchor_entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);

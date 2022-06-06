@@ -74,7 +74,8 @@ void ScheduleLoadForRestoredTabs(
 
     bool has_notifications_permission =
         permission_controller->GetPermissionStatusForCurrentDocument(
-            blink::PermissionType::NOTIFICATIONS, content->GetMainFrame()) ==
+            blink::PermissionType::NOTIFICATIONS,
+            content->GetPrimaryMainFrame()) ==
         blink::mojom::PermissionStatus::GRANTED;
 
     BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission

@@ -290,9 +290,11 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
   auto test_api =
       std::make_unique<test::PermissionRequestManagerTestApi>(browser());
   EXPECT_TRUE(test_api->manager());
-  test_api->AddSimpleRequest(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      permissions::RequestType::kGeolocation);
+  test_api->AddSimpleRequest(browser()
+                                 ->tab_strip_model()
+                                 ->GetActiveWebContents()
+                                 ->GetPrimaryMainFrame(),
+                             permissions::RequestType::kGeolocation);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsUIShowing());
 

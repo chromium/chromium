@@ -153,8 +153,8 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ContextMenu) {
   menu_observer.WaitForMenuOpenAndClose();
 
   content::WebContents* tab = GetActiveWebContents();
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"done()",
-                                                 base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"done()",
+                                                        base::NullCallback());
   const std::u16string success_title = u"without mouseleave";
   const std::u16string failure_title = u"with mouseleave";
   content::TitleWatcher done_title_watcher(tab, success_title);
@@ -181,15 +181,15 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ModalDialog) {
   base::RunLoop dialog_wait;
   js_dialog_manager->SetDialogShownCallbackForTesting(
       dialog_wait.QuitClosure());
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"alert()",
-                                                 base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"alert()",
+                                                        base::NullCallback());
   dialog_wait.Run();
 
   // Cancel the dialog.
   js_dialog_manager->HandleJavaScriptDialog(tab, false, nullptr);
 
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"done()",
-                                                 base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"done()",
+                                                        base::NullCallback());
   const std::u16string success_title = u"without mouseleave";
   const std::u16string failure_title = u"with mouseleave";
   content::TitleWatcher done_title_watcher(tab, success_title);

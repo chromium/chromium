@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NavigateAwayFromHungRenderer) {
   content::WebContentsAddedObserver web_contents_added_observer;
   int dummy_value = 0;
   ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      tab1->GetMainFrame(),
+      tab1->GetPrimaryMainFrame(),
       "window.open('title3.html', '_blank');\n"
       "window.domAutomationController.send(55);\n"
       "while(1);",
@@ -301,8 +301,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NavigateAwayFromHungRenderer) {
   // Make sure the new WebContents is in tab1's hung renderer process.
   ASSERT_NE(nullptr, tab2);
   ASSERT_NE(tab1, tab2);
-  ASSERT_EQ(tab1->GetMainFrame()->GetProcess(),
-            tab2->GetMainFrame()->GetProcess())
+  ASSERT_EQ(tab1->GetPrimaryMainFrame()->GetProcess(),
+            tab2->GetPrimaryMainFrame()->GetProcess())
       << "New WebContents must be in the same process as the old WebContents, "
       << "so that the new tab doesn't finish loading (what this test is all "
       << "about)";
@@ -688,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->ExecuteJavaScriptForTests(base::UTF8ToUTF16(test_js),
                                   base::NullCallback());
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerStatToExceed(
@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_TotalSentDataObserved) {
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->ExecuteJavaScriptForTests(base::UTF8ToUTF16(test_js),
                                   base::NullCallback());
 
@@ -744,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_TotalSentDataObserved) {
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->ExecuteJavaScriptForTests(base::UTF8ToUTF16(test_js),
                                   base::NullCallback());
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerStatToExceed(
@@ -912,7 +912,8 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, SubframeHistoryNavigation) {
 
   // Simulate a user gesture on the frame about to be navigated so that the
   // corresponding navigation entry is not marked as skippable.
-  content::RenderFrameHost* child_frame = ChildFrameAt(tab->GetMainFrame(), 0);
+  content::RenderFrameHost* child_frame =
+      ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   content::RenderFrameHost* grandchild_frame = ChildFrameAt(child_frame, 0);
   grandchild_frame->ExecuteJavaScriptWithUserGestureForTests(
       u"a=5", base::NullCallback());
@@ -920,7 +921,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, SubframeHistoryNavigation) {
   GURL d_url = embedded_test_server()->GetURL(
       "d.com", "/cross_site_iframe_factory.html?d(e)");
   ASSERT_TRUE(content::ExecuteScript(
-      tab->GetMainFrame(),
+      tab->GetPrimaryMainFrame(),
       "frames[0][0].location.href = '" + d_url.spec() + "';"));
 
   ASSERT_NO_FATAL_FAILURE(
@@ -1051,7 +1052,10 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
   // Reload the subframe and verify it has re-appeared in the task manager.
   // This is a regression test for https://crbug.com/642958.
   ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame(),
       "document.getElementById('frame1').src = '" + b_url.spec() + "';"));
 
   // Verify the expected number of b.com and c.com subframes.
@@ -1194,9 +1198,11 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
   const std::string r_script =
       R"( document.getElementById('frame1').src='/title1.html';
           document.title='aac'; )";
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      r_script));
+  ASSERT_TRUE(content::ExecuteScript(browser()
+                                         ->tab_strip_model()
+                                         ->GetActiveWebContents()
+                                         ->GetPrimaryMainFrame(),
+                                     r_script));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("aac")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
   if (!ShouldExpectSubframes()) {

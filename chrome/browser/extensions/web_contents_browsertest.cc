@@ -207,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionNavigationUIData) {
   // Test ExtensionNavigationUIData for the main frame.
   {
     const auto* extension_navigation_ui_data =
-        observer.GetExtensionNavigationUIData(web_contents->GetMainFrame());
+        observer.GetExtensionNavigationUIData(
+            web_contents->GetPrimaryMainFrame());
     ASSERT_TRUE(extension_navigation_ui_data);
     EXPECT_FALSE(extension_navigation_ui_data->is_web_view());
 
@@ -224,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionNavigationUIData) {
   {
     const auto* extension_navigation_ui_data =
         observer.GetExtensionNavigationUIData(
-            content::ChildFrameAt(web_contents->GetMainFrame(), 0));
+            content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0));
     ASSERT_TRUE(extension_navigation_ui_data);
     EXPECT_FALSE(extension_navigation_ui_data->is_web_view());
 

@@ -132,8 +132,10 @@ TEST_F(BrowserCommandsTest, ViewSource) {
   // Navigate to a URL and simulate a subframe committing.
   AddTab(browser(), url1);
   content::RenderFrameHostTester* rfh_tester =
-      content::RenderFrameHostTester::For(
-          browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame());
+      content::RenderFrameHostTester::For(browser()
+                                              ->tab_strip_model()
+                                              ->GetWebContentsAt(0)
+                                              ->GetPrimaryMainFrame());
   content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
   content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL(url1_subframe), subframe);

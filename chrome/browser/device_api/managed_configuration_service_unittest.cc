@@ -33,7 +33,8 @@ class ManagedConfigurationServiceTest : public ChromeRenderViewHostTestHarness {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents,
                                                                GURL(kUrl));
     ManagedConfigurationServiceImpl::Create(
-        web_contents->GetMainFrame(), remote_.BindNewPipeAndPassReceiver());
+        web_contents->GetPrimaryMainFrame(),
+        remote_.BindNewPipeAndPassReceiver());
   }
 
   TestingProfileManager* profile_manager() { return &profile_manager_; }

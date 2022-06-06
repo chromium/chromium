@@ -39,7 +39,7 @@ void AXScreenAIAnnotator::Run() {
       native_view, gfx::Rect(web_contents->GetSize()),
       base::BindOnce(&AXScreenAIAnnotator::OnScreenshotReceived,
                      weak_ptr_factory_.GetWeakPtr(),
-                     web_contents->GetMainFrame()->GetAXTreeID()));
+                     web_contents->GetPrimaryMainFrame()->GetAXTreeID()));
 }
 
 void AXScreenAIAnnotator::OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,

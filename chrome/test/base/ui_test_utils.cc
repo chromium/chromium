@@ -150,7 +150,7 @@ class AppModalDialogWaiter : public javascript_dialogs::AppModalDialogObserver {
     // and this will catch that case.
     auto* contents = dialog->web_contents();
     bool found_disabled_for_testing = false;
-    contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+    contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
         [](bool* found_disabled_for_testing, content::RenderFrameHost* frame) {
           if (frame->IsBeforeUnloadHangMonitorDisabledForTesting()) {
             *found_disabled_for_testing = true;
@@ -296,7 +296,7 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
   }
   if (disposition == WindowOpenDisposition::CURRENT_TAB) {
     same_tab_observer.Wait();
-    return web_contents->GetMainFrame();
+    return web_contents->GetPrimaryMainFrame();
   } else if (web_contents) {
     content::TestNavigationObserver observer(
         web_contents, number_of_navigations,
@@ -305,7 +305,7 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
     if (!blink::IsRendererDebugURL(url))
       observer.set_expected_initial_url(url);
     observer.Wait();
-    return web_contents->GetMainFrame();
+    return web_contents->GetPrimaryMainFrame();
   }
   EXPECT_TRUE(web_contents)
       << " Unable to wait for navigation to \"" << url.spec() << "\""
@@ -496,7 +496,7 @@ void GetCookies(const GURL& url,
   if (url.is_valid() && contents) {
     base::RunLoop loop;
     auto* storage_partition =
-        contents->GetMainFrame()->GetProcess()->GetStoragePartition();
+        contents->GetPrimaryMainFrame()->GetProcess()->GetStoragePartition();
     net::CookieList cookie_list;
     storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
         url, net::CookieOptions::MakeAllInclusive(),

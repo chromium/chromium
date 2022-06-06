@@ -124,8 +124,10 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
       const GURL& url,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client) {
-    content::RenderFrameHost* const frame =
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    content::RenderFrameHost* const frame = browser()
+                                                ->tab_strip_model()
+                                                ->GetActiveWebContents()
+                                                ->GetPrimaryMainFrame();
     content::RenderProcessHost* const process = frame->GetProcess();
 
     const std::vector<std::string> requested_protocols;

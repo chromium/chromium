@@ -94,7 +94,7 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
   // Set fake WebPageMetadataAgent to avoid mojo connection errors.
   void SetFakeWebPageMetadataAgent() {
     web_contents()
-        ->GetMainFrame()
+        ->GetPrimaryMainFrame()
         ->GetRemoteAssociatedInterfaces()
         ->OverrideBinderForTesting(
             webapps::mojom::WebPageMetadataAgent::Name_,
@@ -110,7 +110,7 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
     // TODO(crbug.com/936696): Make WebAppDataRetriever support a change of
     // RenderFrames.
     content::DisableProactiveBrowsingInstanceSwapFor(
-        web_contents()->GetMainFrame());
+        web_contents()->GetPrimaryMainFrame());
   }
 
   void SetRendererWebAppInstallInfo(const WebAppInstallInfo& web_app_info) {

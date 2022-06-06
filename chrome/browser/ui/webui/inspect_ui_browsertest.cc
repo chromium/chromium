@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(InspectUIFencedFrameTest,
   const GURL fenced_frame_url =
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
-      front_end_tab->GetMainFrame(), fenced_frame_url));
+      front_end_tab->GetPrimaryMainFrame(), fenced_frame_url));
 
   // Ensure that the fenced frame doesn't affect to the the front-end observer.
   // "Inspect Native UI" button is still disabled.

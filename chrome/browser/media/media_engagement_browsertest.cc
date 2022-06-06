@@ -978,7 +978,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverPrerenderBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   MockAutoplayConfigurationClient client;
-  OverrideInterface(GetWebContents()->GetMainFrame(), &client);
+  OverrideInterface(GetWebContents()->GetPrimaryMainFrame(), &client);
 
   const GURL& initial_url = embedded_test_server()->GetURL("/empty.html");
   SetScores(url::Origin::Create(initial_url), 24, 20);
@@ -1046,7 +1046,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverFencedFrameBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   MockAutoplayConfigurationClient client;
-  OverrideInterface(GetWebContents()->GetMainFrame(), &client);
+  OverrideInterface(GetWebContents()->GetPrimaryMainFrame(), &client);
 
   const GURL& initial_url =
       embedded_test_server()->GetURL("a.com", "/empty.html");
@@ -1063,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverFencedFrameBrowserTest,
       embedded_test_server()->GetURL("b.com", "/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), fenced_frame_url);
+          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
   EXPECT_NE(nullptr, fenced_frame_host);
 
   // AddAutoplayFlags should be called on the fenced frame.

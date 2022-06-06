@@ -1876,7 +1876,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), kFencedFrameUrl);
+          GetWebContents()->GetPrimaryMainFrame(), kFencedFrameUrl);
   EXPECT_NE(nullptr, fenced_frame_host);
 
   // Check that the tab download state wasn't reset by the  navigation on the
@@ -2966,7 +2966,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
       blink::mojom::ContextMenuDataMediaType::kPlugin;
   context_menu_params.src_url = url;
   context_menu_params.page_url = inner_web_contents->GetLastCommittedURL();
-  TestRenderViewContextMenu menu(*inner_web_contents->GetMainFrame(),
+  TestRenderViewContextMenu menu(*inner_web_contents->GetPrimaryMainFrame(),
                                  context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_SAVE_PAGE, 0);
@@ -3124,10 +3124,10 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
       blink::mojom::ContextMenuDataMediaType::kImage;
   context_menu_params.src_url = subframe_url;
   context_menu_params.page_url =
-      content::ChildFrameAt(web_contents->GetMainFrame(), 0)
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0)
           ->GetLastCommittedURL();
   content::RenderFrameHost* frame =
-      content::ChildFrameAt(web_contents->GetMainFrame(), 0);
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(frame);
   TestRenderViewContextMenu menu(*frame, context_menu_params);
   menu.Init();
@@ -3215,7 +3215,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
       blink::mojom::ContextMenuDataMediaType::kPlugin;
   context_menu_params.src_url = subframe_url;
   context_menu_params.page_url = inner_web_contents->GetLastCommittedURL();
-  TestRenderViewContextMenu menu(*inner_web_contents->GetMainFrame(),
+  TestRenderViewContextMenu menu(*inner_web_contents->GetPrimaryMainFrame(),
                                  context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEAVAS, 0);
@@ -3303,9 +3303,11 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithHistogramTester,
       blink::mojom::ContextMenuDataMediaType::kImage;
   context_menu_params.src_url = url;
   context_menu_params.page_url = url;
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEIMAGEAS, 0);
   waiter_context_menu->WaitForFinished();
@@ -3376,9 +3378,11 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_SaveLargeImage) {
       blink::mojom::ContextMenuDataMediaType::kImage;
   context_menu_params.src_url = GURL(data_url);
   context_menu_params.page_url = url;
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEIMAGEAS, 0);
   waiter_context_menu->WaitForFinished();
@@ -3440,7 +3444,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SavePageNonHTMLViaPost) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  content::RenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  content::RenderFrameHost* render_frame_host =
+      web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(render_frame_host);
   content::TestNavigationObserver navigation_observer(web_contents, 1);
   EXPECT_TRUE(content::ExecJs(render_frame_host, "SubmitForm()"));
@@ -3477,7 +3482,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SavePageNonHTMLViaPost) {
       blink::mojom::ContextMenuDataMediaType::kImage;
   context_menu_params.src_url = jpeg_url;
   context_menu_params.page_url = jpeg_url;
-  TestRenderViewContextMenu menu(*web_contents->GetMainFrame(),
+  TestRenderViewContextMenu menu(*web_contents->GetPrimaryMainFrame(),
                                  context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEIMAGEAS, 0);
@@ -3789,11 +3794,15 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
   mouse_event.button = blink::WebMouseEvent::Button::kLeft;
   mouse_event.SetPositionInWidget(15, 15);
   mouse_event.click_count = 1;
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
 
   waiter->WaitForFinished();
   EXPECT_EQ(1u, waiter->NumDownloadsSeenInState(DownloadItem::COMPLETE));
@@ -3874,11 +3883,15 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
   mouse_event.button = blink::WebMouseEvent::Button::kRight;
   mouse_event.SetPositionInWidget(15, 15);
   mouse_event.click_count = 1;
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
 
   waiter->WaitForFinished();
   EXPECT_EQ(1u, waiter->NumDownloadsSeenInState(DownloadItem::COMPLETE));
@@ -3969,11 +3982,15 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
   mouse_event.button = blink::WebMouseEvent::Button::kRight;
   mouse_event.SetPositionInWidget(15, 15);
   mouse_event.click_count = 1;
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
 
   download_waiter->WaitForFinished();
   EXPECT_EQ(1u,
@@ -4032,9 +4049,11 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
       blink::mojom::ContextMenuDataMediaType::kImage;
   context_menu_params.page_url = url;
   context_menu_params.src_url = img_url;
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEIMAGEAS, 0);
   waiter_context_menu->WaitForFinished();
@@ -4117,11 +4136,15 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
   mouse_event.button = blink::WebMouseEvent::Button::kLeft;
   mouse_event.SetPositionInWidget(15, 15);
   mouse_event.click_count = 1;
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
 
   waiter->WaitForFinished();
   EXPECT_EQ(1u, waiter->NumDownloadsSeenInState(DownloadItem::COMPLETE));
@@ -4779,7 +4802,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrossOriginDownloadNavigatesIframe) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  content::RenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  content::RenderFrameHost* render_frame_host =
+      web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(render_frame_host);
 
   // Clicking the <a download> in the iframe should navigate the iframe,
@@ -5072,11 +5096,15 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SaveCanvasImage) {
   mouse_event.button = blink::WebMouseEvent::Button::kRight;
   mouse_event.SetPositionInWidget(15, 15);
   mouse_event.click_count = 1;
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
   waiter->WaitForFinished();
   EXPECT_EQ(1u, waiter->NumDownloadsSeenInState(DownloadItem::COMPLETE));
   CheckDownloadStates(1, DownloadItem::COMPLETE);
@@ -5125,11 +5153,15 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, ContextMenuSaveImageWithAcceptHeader) {
   mouse_event.button = blink::WebMouseEvent::Button::kRight;
   mouse_event.SetPositionInWidget(15, 15);
   mouse_event.click_count = 1;
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
   waiter->WaitForFinished();
   std::string accept_header;
   headers.GetHeader(net::HttpRequestHeaders::kAccept, &accept_header);

@@ -397,12 +397,12 @@ class PrintPreviewHandlerTest : public testing::Test {
     // Ensure the initiator has a RenderFrameHost with a live RenderFrame, as
     // the print code will not bother to send IPCs to a non-live RenderFrame.
     content::NavigationSimulator::NavigateAndCommitFromDocument(
-        GURL("about:blank"), initiator->GetMainFrame());
+        GURL("about:blank"), initiator->GetPrimaryMainFrame());
     preview_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(&profile_));
     PrintViewManager::CreateForWebContents(initiator);
     PrintViewManager::FromWebContents(initiator)->PrintPreviewNow(
-        initiator->GetMainFrame(), false);
+        initiator->GetPrimaryMainFrame(), false);
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(preview_web_contents_.get());
 
@@ -669,7 +669,7 @@ class PrintPreviewHandlerTest : public testing::Test {
 
   blink::AssociatedInterfaceProvider*
   GetInitiatorAssociatedInterfaceProvider() {
-    return initiator_web_contents_->GetMainFrame()
+    return initiator_web_contents_->GetPrimaryMainFrame()
         ->GetRemoteAssociatedInterfaces();
   }
 

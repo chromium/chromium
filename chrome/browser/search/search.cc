@@ -216,7 +216,7 @@ bool IsRenderedInInstantProcess(content::WebContents* contents,
   return false;
 #else
   content::RenderProcessHost* process_host =
-      contents->GetMainFrame()->GetProcess();
+      contents->GetPrimaryMainFrame()->GetProcess();
   if (!process_host)
     return false;
 

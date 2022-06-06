@@ -337,7 +337,7 @@ void ChromeAppDelegate::SetWebContentsBlocked(
   if (!blocked)
     web_contents->Focus();
   // RenderFrameHost may be NULL during shutdown.
-  content::RenderFrameHost* host = web_contents->GetMainFrame();
+  content::RenderFrameHost* host = web_contents->GetPrimaryMainFrame();
   if (host && host->IsRenderFrameLive()) {
     mojo::Remote<extensions::mojom::AppWindow> app_window;
     host->GetRemoteInterfaces()->GetInterface(

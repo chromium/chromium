@@ -1328,7 +1328,7 @@ ChromeWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
   if (!function)
     return nullptr;
 
-  if (web_ui->GetWebContents()->GetMainFrame())
+  if (web_ui->GetWebContents()->GetPrimaryMainFrame())
     webui::LogWebUIUrl(url);
 
   return base::WrapUnique((*function)(web_ui, url));

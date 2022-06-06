@@ -109,7 +109,8 @@ IN_PROC_BROWSER_TEST_F(SerialTest, RemovePort) {
   // Create port and grant permission to it.
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
-  url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   context()->GrantPortPermission(origin, *port);
   port_manager().AddPort(port.Clone());
 
@@ -140,7 +141,8 @@ IN_PROC_BROWSER_TEST_F(SerialTest, ForgetPort) {
   // Create port and grant permission to it.
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
-  url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   context()->GrantPortPermission(origin, *port);
   port_manager().AddPort(port.Clone());
 
@@ -166,7 +168,8 @@ IN_PROC_BROWSER_TEST_F(SerialTest, ForgetAfterOpenPort) {
   // Create port and grant permission to it.
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
-  url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   context()->GrantPortPermission(origin, *port);
   port_manager().AddPort(port.Clone());
 
@@ -217,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(SerialBlocklistTest, Blocklist) {
   port->vendor_id = 0x18D1;
   port->has_product_id = true;
   port->product_id = 0x58F0;
-  url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   context()->GrantPortPermission(origin, *port);
   port_manager().AddPort(port.Clone());
 

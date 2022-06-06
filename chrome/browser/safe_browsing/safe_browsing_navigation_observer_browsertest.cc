@@ -264,7 +264,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     {
       std::string script = base::StringPrintf("clickLink('%s');", element_id);
       content::RenderFrameHost* script_executing_frame =
-          current_web_contents->GetMainFrame();
+          current_web_contents->GetPrimaryMainFrame();
       if (subframe_index != -1) {
         script_executing_frame =
             ChildFrameAt(script_executing_frame, subframe_index);
@@ -305,7 +305,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     {
       std::string script = base::StringPrintf("clickLink('%s');", element_id);
       content::RenderFrameHost* script_executing_frame =
-          current_web_contents->GetMainFrame();
+          current_web_contents->GetPrimaryMainFrame();
       if (subframe_index != -1) {
         script_executing_frame =
             ChildFrameAt(script_executing_frame, subframe_index);
@@ -441,7 +441,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
                                            ReferrerChain* referrer_chain) {
     observer_manager_->IdentifyReferrerChainByRenderFrameHost(
         // We will assume the primary main frame here.
-        web_contents->GetMainFrame(),
+        web_contents->GetPrimaryMainFrame(),
         2,  // kDownloadAttributionUserGestureLimit
         referrer_chain);
   }
@@ -468,7 +468,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     observer_manager_->OnUserGestureConsumed(web_contents);
     EXPECT_LE(observer_manager_->IdentifyReferrerChainByHostingPage(
                   initiating_frame_url, web_contents->GetLastCommittedURL(),
-                  web_contents->GetMainFrame()->GetGlobalId(), tab_id,
+                  web_contents->GetPrimaryMainFrame()->GetGlobalId(), tab_id,
                   has_user_gesture,
                   2,  // kDownloadAttributionUserGestureLimit
                   referrer_chain),
@@ -2564,14 +2564,14 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
   auto initiator_outermost_main_frame_id =
-      web_contents()->GetMainFrame()->GetGlobalId();
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId();
 
   auto* initial_web_contents = web_contents();
 
   ui_test_utils::UrlLoadObserver url_observer(
       new_window_url, content::NotificationService::AllSources());
   ASSERT_TRUE(
-      ExecJs(web_contents()->GetMainFrame(),
+      ExecJs(web_contents()->GetPrimaryMainFrame(),
              content::JsReplace("var w = window.open($1, 'New Window');",
                                 new_window_url)));
   url_observer.Wait();
@@ -2580,13 +2580,14 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   content::TestNavigationObserver navigation_observer(
       web_contents(), kExpectedNumberOfNavigations);
   ASSERT_TRUE(
-      ExecJs(initial_web_contents->GetMainFrame(),
+      ExecJs(initial_web_contents->GetPrimaryMainFrame(),
              content::JsReplace("w.document.querySelector('IFRAME').src = $1;",
                                 new_window_subframe_url)));
   navigation_observer.Wait();
   EXPECT_EQ(new_window_subframe_url, navigation_observer.last_navigation_url());
 
-  auto target_main_frame_id = web_contents()->GetMainFrame()->GetGlobalId();
+  auto target_main_frame_id =
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId();
 
   ReferrerChain referrer_chain;
   IdentifyReferrerChainByEventURL(
@@ -2661,13 +2662,13 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
                                    content::GlobalRenderFrameHostId());
   ASSERT_TRUE(index);
   nav_event = GetNavigationEvent(*index);
-  EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalId(),
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
             nav_event->outermost_main_frame_id);
 
   // If the initial main frame runs JS to initiate this subframe navigation, the
   // the navigation request's initiator frame is in the current frame tree,
   // not the frame in which the JS ran.
-  EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalId(),
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
             nav_event->initiator_outermost_main_frame_id);
 }
 
@@ -2688,7 +2689,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ReferrerChain referrer_chain;
   IdentifyReferrerChainByEventURL(
       next_url, sessions::SessionTabHelper::IdForTab(web_contents()),
-      web_contents()->GetMainFrame()->GetGlobalId(), &referrer_chain);
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(), &referrer_chain);
 
   EXPECT_EQ(2, referrer_chain.size());
 
@@ -2741,7 +2742,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   // Since we're supplying the id for the primary page's outermost main frame,
   // we should find the event for the primary page.
   auto index_b = FindNavigationEventIndex(
-      prerendered_url, web_contents()->GetMainFrame()->GetGlobalId());
+      prerendered_url, web_contents()->GetPrimaryMainFrame()->GetGlobalId());
 
   // Ensure that these indices are valid and not equal.
   EXPECT_TRUE(index_a && index_b);
@@ -2798,7 +2799,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   referrer_chain.Clear();
   IdentifyReferrerChainByEventURL(
       prerendered_url, sessions::SessionTabHelper::IdForTab(web_contents()),
-      web_contents()->GetMainFrame()->GetGlobalId(), &referrer_chain);
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(), &referrer_chain);
 
   EXPECT_EQ(2, referrer_chain.size());
 

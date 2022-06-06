@@ -850,7 +850,7 @@ void RenderViewContextMenu::AppendCurrentExtensionItems() {
   if (web_view_guest) {
     key = MenuItem::ExtensionKey(extension->id(),
                                  web_view_guest->owner_web_contents()
-                                     ->GetMainFrame()
+                                     ->GetPrimaryMainFrame()
                                      ->GetProcess()
                                      ->GetID(),
                                  web_view_guest->view_instance_id());
@@ -1157,7 +1157,7 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
        lens::features::GetEnableUKMLoggingForImageSearch())) {
     // Enum id should correspond to the RenderViewContextMenuItem enum.
     ukm::SourceId source_id =
-        source_web_contents_->GetMainFrame()->GetPageUkmSourceId();
+        source_web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId();
     ukm::builders::RenderViewContextMenu_Used(source_id)
         .SetSelectedMenuItem(enum_id)
         .Record(ukm::UkmRecorder::Get());
@@ -2661,7 +2661,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_VIEW_SOURCE:
-      embedder_web_contents_->GetMainFrame()->ViewSource();
+      embedder_web_contents_->GetPrimaryMainFrame()->ViewSource();
       break;
 
     case IDC_CONTENT_CONTEXT_INSPECTELEMENT:
@@ -3631,11 +3631,11 @@ void RenderViewContextMenu::PluginActionAt(
   // main frame when Pepper-free PDF viewer is enabled. To trigger any plugin
   // action, we need to detect this child frame and trigger the actions from
   // there.
-  plugin_rfh =
-      pdf_frame_util::FindPdfChildFrame(source_web_contents_->GetMainFrame());
+  plugin_rfh = pdf_frame_util::FindPdfChildFrame(
+      source_web_contents_->GetPrimaryMainFrame());
 #endif
   if (!plugin_rfh)
-    plugin_rfh = source_web_contents_->GetMainFrame();
+    plugin_rfh = source_web_contents_->GetPrimaryMainFrame();
 
   // TODO(crbug.com/776807): See if this needs to be done for OOPIFs as well.
   // Calculate the local location in view coordinates inside the plugin before

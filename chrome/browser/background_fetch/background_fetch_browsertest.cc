@@ -360,7 +360,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
     return content::ExecuteScriptAndExtractString(
         active_browser_->tab_strip_model()
             ->GetActiveWebContents()
-            ->GetMainFrame(),
+            ->GetPrimaryMainFrame(),
         script, result);
   }
 
@@ -1001,9 +1001,11 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
   // Load a fenced frame.
   GURL fenced_frame_url(https_server()->GetURL("/fenced_frames/title1.html"));
   content::RenderFrameHost* fenced_frame =
-      fenced_frame_test_helper().CreateFencedFrame(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-          fenced_frame_url);
+      fenced_frame_test_helper().CreateFencedFrame(browser()
+                                                       ->tab_strip_model()
+                                                       ->GetActiveWebContents()
+                                                       ->GetPrimaryMainFrame(),
+                                                   fenced_frame_url);
 
   GURL fenced_frame_test_url(
       https_server()->GetURL("/fenced_frames/background_fetch.html"));
@@ -1043,9 +1045,11 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
   GURL fenced_frame_url(
       cross_origin_server.GetURL("/fenced_frames/title1.html"));
   content::RenderFrameHost* fenced_frame =
-      fenced_frame_test_helper().CreateFencedFrame(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-          fenced_frame_url);
+      fenced_frame_test_helper().CreateFencedFrame(browser()
+                                                       ->tab_strip_model()
+                                                       ->GetActiveWebContents()
+                                                       ->GetPrimaryMainFrame(),
+                                                   fenced_frame_url);
 
   GURL fenced_frame_test_url(
       cross_origin_server.GetURL("/fenced_frames/background_fetch.html"));

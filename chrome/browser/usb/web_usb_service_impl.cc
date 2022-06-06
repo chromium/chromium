@@ -143,7 +143,7 @@ WebUsbServiceImpl::WebUsbServiceImpl(
       content::WebContents::FromRenderFrameHost(render_frame_host_);
   // This class is destroyed on cross-origin navigations and so it is safe to
   // cache these values.
-  origin_ = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  origin_ = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   chooser_context_ = UsbChooserContextFactory::GetForProfile(profile);

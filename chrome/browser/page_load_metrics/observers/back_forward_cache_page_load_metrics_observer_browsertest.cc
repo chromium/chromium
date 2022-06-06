@@ -47,7 +47,7 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
 
  protected:
   content::RenderFrameHost* top_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>

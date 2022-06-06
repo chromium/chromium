@@ -118,7 +118,8 @@ namespace {
 
 [[nodiscard]] bool IsDisplayingText(Browser* browser, const std::string& text) {
   return IsDisplayingText(
-      browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame(), text);
+      browser->tab_strip_model()->GetActiveWebContents()->GetPrimaryMainFrame(),
+      text);
 }
 
 // Expands the more box on the currently displayed error page.
@@ -413,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_DoReload) {
   // Can't use content::ExecuteScript because it waits for scripts to send
   // notification that they've run, and scripts that trigger a navigation may
   // not send that notification.
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.getElementById('reload-button').click();",
       base::NullCallback());
   nav_observer.Wait();
@@ -435,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest,
 
   // Do a same-document navigation on the error page, which should not result
   // in a new navigation.
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.location='#';", base::NullCallback());
   content::WaitForLoadStop(web_contents);
   // Page being displayed should not change.
@@ -446,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest,
   // Can't use content::ExecuteScript because it waits for scripts to send
   // notification that they've run, and scripts that trigger a navigation may
   // not send that notification.
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.getElementById('reload-button').click();",
       base::NullCallback());
   nav_observer2.Wait();
@@ -527,8 +528,8 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError_JavaScript) {
   {
     TestFailProvisionalLoadObserver fail_observer(wc);
     content::LoadStopObserver load_observer(wc);
-    wc->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16(script),
-                                                  base::NullCallback());
+    wc->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        base::ASCIIToUTF16(script), base::NullCallback());
     load_observer.Wait();
 
     // Ensure we saw the expected failure.
@@ -546,8 +547,8 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError_JavaScript) {
            "document.body.appendChild(frame);";
   {
     content::LoadStopObserver load_observer(wc);
-    wc->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16(script),
-                                                  base::NullCallback());
+    wc->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        base::ASCIIToUTF16(script), base::NullCallback());
     load_observer.Wait();
   }
 
@@ -556,8 +557,8 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError_JavaScript) {
   {
     TestFailProvisionalLoadObserver fail_observer(wc);
     content::LoadStopObserver load_observer(wc);
-    wc->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16(script),
-                                                  base::NullCallback());
+    wc->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        base::ASCIIToUTF16(script), base::NullCallback());
     load_observer.Wait();
 
     EXPECT_EQ(fail_url, fail_observer.fail_url());
@@ -756,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest, ManualReloadNotSuppressed) {
   content::WebContents* web_contents =
     browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(web_contents, 1);
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.getElementById('reload-button').click();",
       base::NullCallback());
   nav_observer.Wait();
@@ -787,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
 
   // Same-document navigation on an error page should not interrupt the
   // scheduled auto-reload which should still be pending on the WebContents.
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.location='#';", base::NullCallback());
 
   // Wait for the second auto reload to happen. It will succeed and update the

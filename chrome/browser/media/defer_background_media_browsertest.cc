@@ -27,8 +27,8 @@ IN_PROC_BROWSER_TEST_F(DeferredMediaBrowserTest, BackgroundMediaIsDeferred) {
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   content::WebContents* background_contents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_TRUE(
-      content::WaitForRenderFrameReady(background_contents->GetMainFrame()));
+  EXPECT_TRUE(content::WaitForRenderFrameReady(
+      background_contents->GetPrimaryMainFrame()));
   EXPECT_NE(background_contents,
             browser()->tab_strip_model()->GetActiveWebContents());
 

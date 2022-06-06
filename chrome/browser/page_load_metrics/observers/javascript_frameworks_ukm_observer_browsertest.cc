@@ -133,9 +133,12 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
     waiter.AddPageExpectation(
         page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
     GURL subframe_url = https_test_server()->GetURL(test_url);
-    content::RenderFrameHost* subframe = fenced_frame_helper_.CreateFencedFrame(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-        subframe_url);
+    content::RenderFrameHost* subframe =
+        fenced_frame_helper_.CreateFencedFrame(browser()
+                                                   ->tab_strip_model()
+                                                   ->GetActiveWebContents()
+                                                   ->GetPrimaryMainFrame(),
+                                               subframe_url);
     EXPECT_NE(nullptr, subframe);
     waiter.Wait();
     CloseAllTabs();

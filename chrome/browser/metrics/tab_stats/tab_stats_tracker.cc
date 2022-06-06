@@ -292,7 +292,8 @@ class TabStatsTracker::WebContentsUsageObserver
                            TabStatsTracker* tab_stats_tracker)
       : content::WebContentsObserver(web_contents),
         tab_stats_tracker_(tab_stats_tracker),
-        ukm_source_id_(web_contents->GetMainFrame()->GetPageUkmSourceId()) {}
+        ukm_source_id_(
+            web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()) {}
 
   WebContentsUsageObserver(const WebContentsUsageObserver&) = delete;
   WebContentsUsageObserver& operator=(const WebContentsUsageObserver&) = delete;

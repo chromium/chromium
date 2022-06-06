@@ -1451,7 +1451,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentFencedFrameTest,
       https_server_.GetURL("www.guitarcenter.com", "/cart.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   EXPECT_NE(nullptr, fenced_frame_host);
 
   // Do not affect counts.

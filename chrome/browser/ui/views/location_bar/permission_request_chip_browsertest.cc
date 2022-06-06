@@ -35,7 +35,7 @@ void RequestPermission(Browser* browser) {
 
   EXPECT_NE(nullptr, test_api.manager());
   test_api.AddSimpleRequest(
-      browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      browser->tab_strip_model()->GetActiveWebContents()->GetPrimaryMainFrame(),
       permissions::RequestType::kGeolocation);
 
   observer.Wait();

@@ -464,8 +464,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DefaultToIncognitoWhenItIsForced) {
       IncognitoModePrefs::Availability::kForced);
   // Run without an explicit "incognito" param.
   scoped_refptr<WindowsCreateFunction> function(new WindowsCreateFunction());
-  function->SetRenderFrameHost(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+  function->SetRenderFrameHost(browser()
+                                   ->tab_strip_model()
+                                   ->GetActiveWebContents()
+                                   ->GetPrimaryMainFrame());
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   base::Value::Dict result =
@@ -482,8 +484,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DefaultToIncognitoWhenItIsForced) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   // Run without an explicit "incognito" param.
   function = new WindowsCreateFunction();
-  function->SetRenderFrameHost(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+  function->SetRenderFrameHost(browser()
+                                   ->tab_strip_model()
+                                   ->GetActiveWebContents()
+                                   ->GetPrimaryMainFrame());
   function->set_extension(extension.get());
   result = utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
       function.get(), kArgsWithoutExplicitIncognitoParam, incognito_browser,
@@ -2088,17 +2092,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_WithOpener) {
         old_contents, "window.location = '" + web_url2.spec() + "';"));
     nav_observer.Wait();
   }
-  EXPECT_EQ(web_url1, new_contents->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(web_url2, old_contents->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(web_url1,
+            new_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(web_url2,
+            old_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   // Verify that the old and new tab are in the same process.
-  EXPECT_EQ(old_contents->GetMainFrame()->GetProcess(),
-            new_contents->GetMainFrame()->GetProcess());
+  EXPECT_EQ(old_contents->GetPrimaryMainFrame()->GetProcess(),
+            new_contents->GetPrimaryMainFrame()->GetProcess());
 
   // Verify the old and new contents are in the same BrowsingInstance.
-  EXPECT_TRUE(
-      old_contents->GetMainFrame()->GetSiteInstance()->IsRelatedSiteInstance(
-          new_contents->GetMainFrame()->GetSiteInstance()));
+  EXPECT_TRUE(old_contents->GetPrimaryMainFrame()
+                  ->GetSiteInstance()
+                  ->IsRelatedSiteInstance(
+                      new_contents->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // Verify that the |new_contents| has |window.opener| set.
   std::string location_of_opener;
@@ -2106,7 +2113,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_WithOpener) {
       new_contents,
       "window.domAutomationController.send(window.opener.location.href)",
       &location_of_opener));
-  EXPECT_EQ(old_contents->GetMainFrame()->GetLastCommittedURL().spec(),
+  EXPECT_EQ(old_contents->GetPrimaryMainFrame()->GetLastCommittedURL().spec(),
             location_of_opener);
 
   // Verify that |new_contents| can find |old_contents| using window.open/name.
@@ -2116,7 +2123,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_WithOpener) {
       "var w = window.open('', 'old-contents');\n"
       "window.domAutomationController.send(w.location.href);",
       &location_of_other_window));
-  EXPECT_EQ(old_contents->GetMainFrame()->GetLastCommittedURL().spec(),
+  EXPECT_EQ(old_contents->GetPrimaryMainFrame()->GetLastCommittedURL().spec(),
             location_of_other_window);
 }
 
@@ -2148,9 +2155,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_NoOpener) {
   }
 
   // Verify the old and new contents are NOT in the same BrowsingInstance.
-  EXPECT_FALSE(
-      old_contents->GetMainFrame()->GetSiteInstance()->IsRelatedSiteInstance(
-          new_contents->GetMainFrame()->GetSiteInstance()));
+  EXPECT_FALSE(old_contents->GetPrimaryMainFrame()
+                   ->GetSiteInstance()
+                   ->IsRelatedSiteInstance(
+                       new_contents->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // Verify that the |new_contents| doesn't have |window.opener| set.
   bool opener_as_bool = true;
@@ -2237,7 +2245,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
         &actual_origin_str));
     EXPECT_EQ(test_case.expected_origin_str, actual_origin_str);
     const bool is_opaque_origin =
-        new_contents->GetMainFrame()->GetLastCommittedOrigin().opaque();
+        new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque();
     EXPECT_EQ(test_case.expected_origin_str == "null", is_opaque_origin);
   };
   for (size_t i = 0; i < std::size(test_cases); ++i) {
@@ -2266,8 +2274,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutBlank) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   content::WebContents* extension_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(extension_origin,
-            extension_contents->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(
+      extension_origin,
+      extension_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Create another tab and navigate it to a web page.
   content::WebContents* test_contents = nullptr;
@@ -2279,9 +2288,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutBlank) {
     test_contents = test_contents_observer.GetWebContents();
   }
   EXPECT_EQ(web_origin,
-            test_contents->GetMainFrame()->GetLastCommittedOrigin());
-  EXPECT_NE(extension_contents->GetMainFrame()->GetProcess(),
-            test_contents->GetMainFrame()->GetProcess());
+            test_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  EXPECT_NE(extension_contents->GetPrimaryMainFrame()->GetProcess(),
+            test_contents->GetPrimaryMainFrame()->GetProcess());
 
   // Use |chrome.tabs.update| API to navigate |test_contents| to an about:blank
   // URL.
@@ -2298,10 +2307,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutBlank) {
   }
 
   // Verify the origin and process of the about:blank tab.
-  content::RenderFrameHost* test_frame = test_contents->GetMainFrame();
+  content::RenderFrameHost* test_frame = test_contents->GetPrimaryMainFrame();
   EXPECT_EQ(about_blank_url, test_frame->GetLastCommittedURL());
-  EXPECT_EQ(extension_contents->GetMainFrame()->GetProcess(),
-            test_contents->GetMainFrame()->GetProcess());
+  EXPECT_EQ(extension_contents->GetPrimaryMainFrame()->GetProcess(),
+            test_contents->GetPrimaryMainFrame()->GetProcess());
   // Note that committing with the extension origin wouldn't be possible when
   // targeting an incognito window (see also IncognitoApiTest.Incognito test).
   EXPECT_EQ(extension_origin, test_frame->GetLastCommittedOrigin());
@@ -2331,8 +2340,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutNewTab) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   content::WebContents* extension_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(extension_origin,
-            extension_contents->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(
+      extension_origin,
+      extension_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Create another tab and navigate it to a web page.
   content::WebContents* test_contents = nullptr;
@@ -2359,12 +2369,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutNewTab) {
   }
 
   // Verify the origin and process of the about:newtab tab.
-  content::RenderFrameHost* test_frame = test_contents->GetMainFrame();
+  content::RenderFrameHost* test_frame = test_contents->GetPrimaryMainFrame();
   EXPECT_EQ(chrome_newtab_url, test_frame->GetLastCommittedURL());
   EXPECT_EQ(url::Origin::Create(chrome_newtab_url),
             test_frame->GetLastCommittedOrigin());
-  EXPECT_NE(extension_contents->GetMainFrame()->GetProcess(),
-            test_contents->GetMainFrame()->GetProcess());
+  EXPECT_NE(extension_contents->GetPrimaryMainFrame()->GetProcess(),
+            test_contents->GetPrimaryMainFrame()->GetProcess());
 }
 
 // Tests updating a URL of a web tab to a non-web-accessible-resource of an
@@ -2384,8 +2394,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToNonWAR) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   content::WebContents* extension_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(extension_origin,
-            extension_contents->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(
+      extension_origin,
+      extension_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Create another tab and navigate it to a web page.
   content::WebContents* test_contents = nullptr;
@@ -2397,9 +2408,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToNonWAR) {
     test_contents = test_contents_observer.GetWebContents();
   }
   EXPECT_EQ(web_origin,
-            test_contents->GetMainFrame()->GetLastCommittedOrigin());
-  EXPECT_NE(extension_contents->GetMainFrame()->GetProcess(),
-            test_contents->GetMainFrame()->GetProcess());
+            test_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  EXPECT_NE(extension_contents->GetPrimaryMainFrame()->GetProcess(),
+            test_contents->GetPrimaryMainFrame()->GetProcess());
 
   // Use |chrome.tabs.update| API to navigate |test_contents| to a
   // non-web-accessible-resource of an extension.
@@ -2416,11 +2427,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToNonWAR) {
   }
 
   // Verify the origin and process of the navigated tab.
-  content::RenderFrameHost* test_frame = test_contents->GetMainFrame();
+  content::RenderFrameHost* test_frame = test_contents->GetPrimaryMainFrame();
   EXPECT_EQ(non_war_url, test_frame->GetLastCommittedURL());
   EXPECT_EQ(extension_origin, test_frame->GetLastCommittedOrigin());
-  EXPECT_EQ(extension_contents->GetMainFrame()->GetProcess(),
-            test_contents->GetMainFrame()->GetProcess());
+  EXPECT_EQ(extension_contents->GetPrimaryMainFrame()->GetProcess(),
+            test_contents->GetPrimaryMainFrame()->GetProcess());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,

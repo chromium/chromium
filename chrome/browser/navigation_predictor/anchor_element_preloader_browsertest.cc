@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {
   ukm::SourceId ukm_source_id = browser()
                                     ->tab_strip_model()
                                     ->GetActiveWebContents()
-                                    ->GetMainFrame()
+                                    ->GetPrimaryMainFrame()
                                     ->GetPageUkmSourceId();
 
   histogram_tester()->ExpectTotalCount(
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, DISABLED_IframeTest) {
   ukm::SourceId ukm_source_id = browser()
                                     ->tab_strip_model()
                                     ->GetActiveWebContents()
-                                    ->GetMainFrame()
+                                    ->GetPrimaryMainFrame()
                                     ->GetPageUkmSourceId();
 
   auto ukm_entries = test_ukm_recorder()->GetEntries(
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
   ukm::SourceId ukm_source_id = browser()
                                     ->tab_strip_model()
                                     ->GetActiveWebContents()
-                                    ->GetMainFrame()
+                                    ->GetPrimaryMainFrame()
                                     ->GetPageUkmSourceId();
 
   auto ukm_entries = test_ukm_recorder()->GetEntries(

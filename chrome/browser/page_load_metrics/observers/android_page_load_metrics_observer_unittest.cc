@@ -188,7 +188,8 @@ TEST_F(AndroidPageLoadMetricsObserverTest, LoadTimingInfo) {
   SetNetworkQualityMock();
   auto navigation_simulator =
       content::NavigationSimulator::CreateRendererInitiated(
-          GURL("https://www.example.com"), web_contents()->GetMainFrame());
+          GURL("https://www.example.com"),
+          web_contents()->GetPrimaryMainFrame());
   navigation_simulator->Start();
   int frame_tree_node_id =
       navigation_simulator->GetNavigationHandle()->GetFrameTreeNodeId();

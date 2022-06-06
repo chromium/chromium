@@ -192,7 +192,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     ContentAutofillDriver::GetForRenderFrameHost(
-        GetActiveWebContents()->GetMainFrame())
+        GetActiveWebContents()->GetPrimaryMainFrame())
         ->autofill_manager()
         ->client()
         ->GetPaymentsClient()
@@ -203,19 +203,20 @@ class SaveCardBubbleViewsFullFormBrowserTest
     WaitForPersonalDataManagerToBeLoaded(GetProfile(0));
 
     // Set up this class as the ObserverForTest implementation.
-    credit_card_save_manager_ = ContentAutofillDriver::GetForRenderFrameHost(
-                                    GetActiveWebContents()->GetMainFrame())
-                                    ->autofill_manager()
-                                    ->client()
-                                    ->GetFormDataImporter()
-                                    ->credit_card_save_manager_.get();
+    credit_card_save_manager_ =
+        ContentAutofillDriver::GetForRenderFrameHost(
+            GetActiveWebContents()->GetPrimaryMainFrame())
+            ->autofill_manager()
+            ->client()
+            ->GetFormDataImporter()
+            ->credit_card_save_manager_.get();
     credit_card_save_manager_->SetEventObserverForTesting(this);
     AddEventObserverToController();
 
     // Set up this class as the ObserverForTest implementation.
     AutofillManager* autofill_manager =
         ContentAutofillDriver::GetForRenderFrameHost(
-            GetActiveWebContents()->GetMainFrame())
+            GetActiveWebContents()->GetPrimaryMainFrame())
             ->autofill_manager();
     autofill_manager->AddObserver(this);
 

@@ -167,7 +167,7 @@ TEST_F(PasswordSaveUpdateViewTest,
   url::Origin kOrigin = url::Origin::Create(kURL);
   ON_CALL(*model_delegate_mock(), GetOrigin).WillByDefault(Return(kOrigin));
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      kURL, web_contents()->GetMainFrame());
+      kURL, web_contents()->GetPrimaryMainFrame());
 
   // Set the federation_origin to force a Federated Credentials bubble.
   pending_password_.federation_origin = kOrigin;

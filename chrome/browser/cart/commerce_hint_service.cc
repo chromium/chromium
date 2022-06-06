@@ -279,7 +279,7 @@ void CommerceHintService::OnFormSubmit(const GURL& navigation_url,
   bool random = (bytes[0] >> 1) & 0x1;
   bool reported = report_truth ? is_purchase : random;
   ukm::builders::Shopping_FormSubmitted(
-      GetWebContents().GetMainFrame()->GetPageUkmSourceId())
+      GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId())
       .SetIsTransaction(reported)
       .Record(ukm::UkmRecorder::Get());
   base::UmaHistogramBoolean("Commerce.Carts.FormSubmitIsTransaction", reported);
@@ -295,7 +295,7 @@ void CommerceHintService::OnWillSendRequest(const GURL& navigation_url,
   bool random = (bytes[0] >> 1) & 0x1;
   bool reported = report_truth ? is_addtocart : random;
   ukm::builders::Shopping_WillSendRequest(
-      GetWebContents().GetMainFrame()->GetPageUkmSourceId())
+      GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId())
       .SetIsAddToCart(reported)
       .Record(ukm::UkmRecorder::Get());
   base::UmaHistogramBoolean("Commerce.Carts.XHRIsAddToCart", reported);

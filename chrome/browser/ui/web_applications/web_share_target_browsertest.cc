@@ -182,7 +182,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
 
     const scoped_refptr<storage::FileSystemContext> file_system_context =
         file_manager::util::GetFileSystemContextForRenderFrameHost(
-            profile(), contents->GetMainFrame());
+            profile(), contents->GetPrimaryMainFrame());
     chromeos::RecentModel::GetForProfile(profile())->GetRecentFiles(
         file_system_context.get(),
         /*origin=*/GURL(),

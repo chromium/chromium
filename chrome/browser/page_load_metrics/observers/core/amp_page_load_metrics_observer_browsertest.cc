@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(AmpPageLoadMetricsFencedFrameBrowserTest,
       https_test_server()->GetURL("/page_load_metrics/amp_basic.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), kFencedFrameUrl);
+          GetWebContents()->GetPrimaryMainFrame(), kFencedFrameUrl);
   EXPECT_NE(nullptr, fenced_frame_host);
 
   waiter.Wait();

@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
   InstantService* instant_service =
       InstantServiceFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
-      contents->GetMainFrame()->GetProcess()->GetID()));
+      contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Add a chrome-search://most-visited/title.html?rid=1&fs=0 subframe and
   // verify that navigation completes successfully, with no kills.
@@ -124,8 +124,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, ProcessPerSite) {
   }
 
   // Verify that |tab1| and |tab2| share a process.
-  EXPECT_EQ(tab1->GetMainFrame()->GetProcess(),
-            tab2->GetMainFrame()->GetProcess());
+  EXPECT_EQ(tab1->GetPrimaryMainFrame()->GetProcess(),
+            tab2->GetPrimaryMainFrame()->GetProcess());
 }
 
 // Verify that a third-party NTP commits in a remote NTP SiteInstance.
@@ -145,6 +145,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, VerifySiteInstance) {
   EXPECT_EQ(ntp_url, content::EvalJs(web_contents, "window.location.href"));
 
   // Verify that NTP committed in remote NTP SiteInstance.
-  EXPECT_EQ(GURL("chrome-search://remote-ntp/"),
-            web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(
+      GURL("chrome-search://remote-ntp/"),
+      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
 }

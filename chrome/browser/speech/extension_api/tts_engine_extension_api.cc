@@ -69,7 +69,7 @@ void WarnIfMissingPauseOrResumeListener(Profile* profile,
   extensions::ExtensionHost* host =
       extensions::ProcessManager::Get(profile)->GetBackgroundHostForExtension(
           extension_id);
-  host->host_contents()->GetMainFrame()->AddMessageToConsole(
+  host->host_contents()->GetPrimaryMainFrame()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kWarning,
       constants::kErrorMissingPauseOrResume);
 }

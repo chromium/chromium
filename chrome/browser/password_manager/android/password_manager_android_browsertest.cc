@@ -84,7 +84,8 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
       password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
           GetActiveWebContents());
   password_manager::ContentPasswordManagerDriver* driver =
-      driver_factory->GetDriverForFrame(GetActiveWebContents()->GetMainFrame());
+      driver_factory->GetDriverForFrame(
+          GetActiveWebContents()->GetPrimaryMainFrame());
 
   PasswordsNavigationObserver observer(GetActiveWebContents());
   observer.SetPathToWaitFor("/password/done.html");

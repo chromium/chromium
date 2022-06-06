@@ -49,7 +49,7 @@ constexpr int kBlockAll = 2;
 
 bool IsJavascriptEnabled(content::WebContents* contents) {
   base::Value value =
-      content::ExecuteScriptAndGetValue(contents->GetMainFrame(), "123");
+      content::ExecuteScriptAndGetValue(contents->GetPrimaryMainFrame(), "123");
   return value.is_int() && value.GetInt() == 123;
 }
 
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothPolicyTest, MAYBE_Block) {
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_THAT(
-      web_contents->GetMainFrame()->GetLastCommittedOrigin().Serialize(),
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().Serialize(),
       testing::StartsWith("http://localhost:"));
 
   // Set the policy to block Web Bluetooth.
@@ -358,7 +358,8 @@ IN_PROC_BROWSER_TEST_P(ScrollToTextFragmentPolicyTest, RunPolicyTest) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(contents));
-  ASSERT_TRUE(content::WaitForRenderFrameReady(contents->GetMainFrame()));
+  ASSERT_TRUE(
+      content::WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
 
   content::RenderFrameSubmissionObserver frame_observer(contents);
   if (IsScrollToTextFragmentEnabled()) {
@@ -367,7 +368,7 @@ IN_PROC_BROWSER_TEST_P(ScrollToTextFragmentPolicyTest, RunPolicyTest) {
     // Force a frame - if it were going to happen, the scroll would complete
     // before this forced frame makes its way through the pipeline.
     content::RunUntilInputProcessed(
-        contents->GetMainFrame()->GetView()->GetRenderWidgetHost());
+        contents->GetPrimaryMainFrame()->GetView()->GetRenderWidgetHost());
   }
   EXPECT_EQ(IsScrollToTextFragmentEnabled(),
             !frame_observer.LastRenderFrameMetadata().is_scroll_offset_at_top);
@@ -440,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(SensorsPolicyTest, BlockSensorApi) {
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_THAT(
-      web_contents->GetMainFrame()->GetLastCommittedOrigin().Serialize(),
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().Serialize(),
       testing::StartsWith("http://localhost:"));
 
   // Set the policy to block Sensors.

@@ -193,7 +193,7 @@ void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
       ->GetPermissionController()
       ->RequestPermissionFromCurrentDocument(
           blink::PermissionType::GEOLOCATION,
-          web_view_guest()->embedder_web_contents()->GetMainFrame(),
+          web_view_guest()->embedder_web_contents()->GetPrimaryMainFrame(),
           user_gesture, std::move(callback));
 }
 

@@ -18,7 +18,7 @@ namespace {
 
 std::pair<ukm::SourceId, url::Origin> GetNavigationInfoForContents(
     content::WebContents* contents) {
-  auto* main_frame = contents->GetMainFrame();
+  auto* main_frame = contents->GetPrimaryMainFrame();
   if (!main_frame || main_frame->GetLastCommittedURL().is_empty())
     return std::make_pair(ukm::kInvalidSourceId, url::Origin());
 

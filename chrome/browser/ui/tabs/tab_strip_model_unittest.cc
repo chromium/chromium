@@ -384,10 +384,10 @@ class TabStripModelTest : public testing::Test {
   std::unique_ptr<WebContents> CreateWebContentsWithSharedRPH(
       WebContents* web_contents) {
     WebContents::CreateParams create_params(
-        profile(), web_contents->GetMainFrame()->GetSiteInstance());
+        profile(), web_contents->GetPrimaryMainFrame()->GetSiteInstance());
     std::unique_ptr<WebContents> retval = WebContents::Create(create_params);
-    EXPECT_EQ(retval->GetMainFrame()->GetProcess(),
-              web_contents->GetMainFrame()->GetProcess());
+    EXPECT_EQ(retval->GetPrimaryMainFrame()->GetProcess(),
+              web_contents->GetPrimaryMainFrame()->GetProcess());
     return retval;
   }
 
@@ -2270,8 +2270,9 @@ TEST_F(TabStripModelTest, FastShutdown) {
     tabstrip.CloseAllTabs();
     // On a mock RPH this checks whether we *attempted* fast shutdown.
     // A real RPH would reject our attempt since there is an unload handler.
-    EXPECT_TRUE(
-        raw_contents1->GetMainFrame()->GetProcess()->FastShutdownStarted());
+    EXPECT_TRUE(raw_contents1->GetPrimaryMainFrame()
+                    ->GetProcess()
+                    ->FastShutdownStarted());
     EXPECT_EQ(2, tabstrip.count());
 
     delegate.set_run_unload_listener(false);
@@ -2294,8 +2295,9 @@ TEST_F(TabStripModelTest, FastShutdown) {
     tabstrip.AppendWebContents(std::move(contents2), true);
 
     tabstrip.CloseWebContentsAt(1, TabStripModel::CLOSE_NONE);
-    EXPECT_FALSE(
-        raw_contents1->GetMainFrame()->GetProcess()->FastShutdownStarted());
+    EXPECT_FALSE(raw_contents1->GetPrimaryMainFrame()
+                     ->GetProcess()
+                     ->FastShutdownStarted());
     EXPECT_EQ(1, tabstrip.count());
 
     tabstrip.CloseAllTabs();

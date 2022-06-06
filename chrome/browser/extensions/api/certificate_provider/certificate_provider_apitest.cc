@@ -166,7 +166,7 @@ std::string JsUint8Array(const std::vector<uint8_t>& bytes) {
 std::string GetPageTextContent(content::WebContents* web_contents) {
   std::string text_content;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents->GetMainFrame(),
+      web_contents->GetPrimaryMainFrame(),
       "domAutomationController.send(document.body.textContent);",
       &text_content));
   return text_content;
@@ -353,7 +353,7 @@ class CertificateProviderApiMockedExtensionTest
   }
 
   content::RenderFrameHost* GetExtensionMainFrame() const {
-    return extension_contents_->GetMainFrame();
+    return extension_contents_->GetPrimaryMainFrame();
   }
 
   void ExecuteJavascript(const std::string& function) const {

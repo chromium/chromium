@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAppsURL)));
   auto waiter = views::NamedWidgetShownWaiter(
       views::test::AnyWidgetTestPasskey{}, "DeprecatedAppsDialogView");
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.getElementById('deprecated-apps-link').click()",
       base::NullCallback());
   EXPECT_NE(waiter.WaitIfNeededAndGet(), nullptr);

@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   ASSERT_TRUE(IsShowingInterstitial(tab));
 
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      tab->GetMainFrame(), "proceed-link"));
+      tab->GetPrimaryMainFrame(), "proceed-link"));
   EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
 
   // Now exempt the URL from being blocked by setting policy.
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   ASSERT_TRUE(helper);
   ASSERT_TRUE(
       helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting());
-  main_frame = web_contents->GetMainFrame();
+  main_frame = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(content::WaitForRenderFrameReady(main_frame));
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
       main_frame, "proceed-link"));

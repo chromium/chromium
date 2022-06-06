@@ -306,7 +306,7 @@ void TabLoadTrackerTest::StateTransitionsTest(bool use_non_ui_tabs) {
                                    LoadingState::UNLOADED));
   content::MockRenderProcessHost* rph =
       static_cast<content::MockRenderProcessHost*>(
-          contents1()->GetMainFrame()->GetProcess());
+          contents1()->GetPrimaryMainFrame()->GetProcess());
   rph->SimulateCrash();
   if (use_non_ui_tabs) {
     EXPECT_TAB_COUNTS(3, 1, 0, 2);

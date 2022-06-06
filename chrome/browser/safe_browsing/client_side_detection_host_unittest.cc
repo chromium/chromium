@@ -302,7 +302,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     // Initiate the connection to a (pretend) renderer process.
     NavigateAndCommit(GURL("about:blank"));
 
-    InitTestApi(web_contents()->GetMainFrame());
+    InitTestApi(web_contents()->GetPrimaryMainFrame());
 
     // Inject service classes.
     csd_service_ = std::make_unique<MockClientSideDetectionService>();

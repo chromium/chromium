@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstScrollDelay) {
 
   // We should wait for the main frame's hit-test data to be ready before
   // sending the click event below to avoid flakiness.
-  content::WaitForHitTestData(web_contents()->GetMainFrame());
+  content::WaitForHitTestData(web_contents()->GetPrimaryMainFrame());
   // Ensure the compositor thread is ready for wheel events.
   content::MainThreadFrameObserver main_thread(GetRenderWidgetHost());
   main_thread.Wait();

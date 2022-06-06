@@ -60,7 +60,7 @@ class WebAppNotificationsBrowserTest : public WebAppControllerBrowserTest {
 
   content::EvalJsResult AwaitScript(const std::string& script) {
     content::EvalJsResult js_result =
-        content::EvalJs(GetActiveWebContents()->GetMainFrame(), script,
+        content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(), script,
                         content::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
 
     // Purges all pending messages to propagate them to notification views.

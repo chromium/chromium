@@ -324,7 +324,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     content::Source<content::NavigationController> source =
         guest_observer.source();
     EXPECT_TRUE(source->DeprecatedGetWebContents()
-                    ->GetMainFrame()
+                    ->GetPrimaryMainFrame()
                     ->GetProcess()
                     ->IsForGuestsOnly());
 
@@ -449,8 +449,9 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
         popup_observer.last_render_widget_host();
     gfx::Rect popup_bounds = popup_rwh->GetView()->GetViewBounds();
 
-    content::RenderViewHost* embedder_rvh =
-        GetFirstAppWindowWebContents()->GetMainFrame()->GetRenderViewHost();
+    content::RenderViewHost* embedder_rvh = GetFirstAppWindowWebContents()
+                                                ->GetPrimaryMainFrame()
+                                                ->GetRenderViewHost();
     gfx::Rect embedder_bounds =
         embedder_rvh->GetWidget()->GetView()->GetViewBounds();
     gfx::Vector2d diff = popup_bounds.origin() - embedder_bounds.origin();
@@ -727,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
                   "window.runCommand('testFocusTracksEmbedderRunNextStep');"));
 
   // Blur the embedder.
-  embedder_web_contents->GetMainFrame()
+  embedder_web_contents->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->Blur();
@@ -754,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_AdvanceFocus) {
         GetGuestViewManager()->WaitForSingleGuestCreated();
 
     SimulateRWHMouseClick(
-        guest->GetMainFrame()->GetRenderViewHost()->GetWidget(),
+        guest->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget(),
         blink::WebMouseEvent::Button::kLeft, 200, 20);
     content::SimulateKeyPress(embedder_web_contents, ui::DomKey::TAB,
                               ui::DomCode::TAB, ui::VKEY_TAB, false, false,
@@ -792,9 +793,13 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
       GetGuestViewManager()->WaitForSingleGuestCreated();
 
   content::MainThreadFrameObserver embedder_observer(
-      embedder_web_contents->GetMainFrame()->GetView()->GetRenderWidgetHost());
+      embedder_web_contents->GetPrimaryMainFrame()
+          ->GetView()
+          ->GetRenderWidgetHost());
   content::MainThreadFrameObserver guest_observer(
-      guest_web_contents->GetMainFrame()->GetView()->GetRenderWidgetHost());
+      guest_web_contents->GetPrimaryMainFrame()
+          ->GetView()
+          ->GetRenderWidgetHost());
 
   // Embedder should be focused initially.
   EXPECT_EQ(content::GetFocusedWebContents(guest_web_contents),
@@ -1098,11 +1103,12 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusRestored) {
 
   // |text_input_client| is not available for mac and android.
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
-  ui::TextInputClient* text_input_client = embedder_web_contents->GetMainFrame()
-                                               ->GetRenderViewHost()
-                                               ->GetWidget()
-                                               ->GetView()
-                                               ->GetTextInputClient();
+  ui::TextInputClient* text_input_client =
+      embedder_web_contents->GetPrimaryMainFrame()
+          ->GetRenderViewHost()
+          ->GetWidget()
+          ->GetView()
+          ->GetTextInputClient();
   ASSERT_TRUE(text_input_client);
   ASSERT_TRUE(text_input_client->GetTextInputType() !=
               ui::TEXT_INPUT_TYPE_NONE);
@@ -1123,11 +1129,12 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
                    &embedder_web_contents));
   ASSERT_TRUE(done_listener->WaitUntilSatisfied());
 
-  ui::TextInputClient* text_input_client = embedder_web_contents->GetMainFrame()
-                                               ->GetRenderViewHost()
-                                               ->GetWidget()
-                                               ->GetView()
-                                               ->GetTextInputClient();
+  ui::TextInputClient* text_input_client =
+      embedder_web_contents->GetPrimaryMainFrame()
+          ->GetRenderViewHost()
+          ->GetWidget()
+          ->GetView()
+          ->GetTextInputClient();
   ASSERT_TRUE(text_input_client);
 
   ExtensionTestMessageListener next_step_listener("TEST_STEP_PASSED");
@@ -1284,7 +1291,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, WordLookup) {
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(GetPlatformAppWindow()));
 
   content::TextInputTestLocalFrame text_input_local_frame;
-  text_input_local_frame.SetUp(guest_web_contents()->GetMainFrame());
+  text_input_local_frame.SetUp(guest_web_contents()->GetPrimaryMainFrame());
 
   // Lookup some string through context menu.
   ContextMenuNotificationObserver menu_observer(IDC_CONTENT_CONTEXT_LOOK_UP);
@@ -1380,7 +1387,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_KeyboardFocusSimple) {
   TestHelper("testKeyboardFocusSimple", "web_view/focus", NO_TEST_SERVER);
 
   EXPECT_EQ(embedder_web_contents()->GetFocusedFrame(),
-            embedder_web_contents()->GetMainFrame());
+            embedder_web_contents()->GetPrimaryMainFrame());
   ExtensionTestMessageListener next_step_listener("TEST_STEP_PASSED");
   next_step_listener.set_failure_message("TEST_STEP_FAILED");
   {
@@ -1427,7 +1434,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_KeyboardFocusWindowCycle) {
              NO_TEST_SERVER);
 
   EXPECT_EQ(embedder_web_contents()->GetFocusedFrame(),
-            embedder_web_contents()->GetMainFrame());
+            embedder_web_contents()->GetPrimaryMainFrame());
   ExtensionTestMessageListener next_step_listener("TEST_STEP_PASSED");
   next_step_listener.set_failure_message("TEST_STEP_FAILED");
   {

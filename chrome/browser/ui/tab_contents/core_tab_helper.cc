@@ -316,7 +316,7 @@ void CoreTabHelper::DidStartLoading() {
 void CoreTabHelper::OnVisibilityChanged(content::Visibility visibility) {
   if (visibility == content::Visibility::VISIBLE) {
     web_cache::WebCacheManager::GetInstance()->ObserveActivity(
-        web_contents()->GetMainFrame()->GetProcess()->GetID());
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
   }
 }
 

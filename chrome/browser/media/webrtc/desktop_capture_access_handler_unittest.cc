@@ -72,9 +72,10 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
         features::kMacSystemScreenCapturePermissionCheck);
 #endif
     content::MediaStreamRequest request(
-        web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(), /*page_request_id=*/0,
-        origin, /*user_gesture=*/false, blink::MEDIA_GENERATE_STREAM,
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+        /*page_request_id=*/0, origin, /*user_gesture=*/false,
+        blink::MEDIA_GENERATE_STREAM,
         /*requested_audio_device_id=*/std::string(), requested_video_device_id,
         blink::mojom::MediaStreamType::NO_SERVICE,
         blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
@@ -345,8 +346,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamSuccess) {
   const GURL origin(kOrigin);
   const std::string id =
       content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID(),
+          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           url::Origin::Create(origin),
           content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
                                   content::DesktopMediaID::kFakeId),
@@ -508,8 +509,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpRestricted) {
 
   const std::string id =
       content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID(),
+          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           url::Origin::Create(GURL(kOrigin)),
           content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
                                   content::DesktopMediaID::kFakeId),
@@ -541,8 +542,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpNotRestricted) {
 
   const std::string id =
       content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID(),
+          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           url::Origin::Create(GURL(kOrigin)),
           content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
                                   content::DesktopMediaID::kFakeId),

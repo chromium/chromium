@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(
       GetTestURL("/fenced_frames/anchors_different_area.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   // The count should not increase in DidFinishLoad method.
   histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
                                     1);

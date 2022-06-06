@@ -425,8 +425,8 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
     content::RenderFrameDeletedObserver crash_observer(
-        web_contents_->GetMainFrame());
-    web_contents_->GetMainFrame()->GetProcess()->Shutdown(1);
+        web_contents_->GetPrimaryMainFrame());
+    web_contents_->GetPrimaryMainFrame()->GetProcess()->Shutdown(1);
     crash_observer.WaitUntilDeleted();
   }
   ASSERT_TRUE(web_contents_->IsCrashed());

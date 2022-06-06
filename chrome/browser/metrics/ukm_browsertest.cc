@@ -959,7 +959,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsPreviousSourceId) {
   EXPECT_NE(opener, sync_browser->tab_strip_model()->GetActiveWebContents());
   ukm::SourceId new_id = sync_browser->tab_strip_model()
                              ->GetActiveWebContents()
-                             ->GetMainFrame()
+                             ->GetPrimaryMainFrame()
                              ->GetPageUkmSourceId();
   ukm::UkmSource* new_tab_source = ukm_test_helper.GetSource(new_id);
   EXPECT_NE(nullptr, new_tab_source);
@@ -1006,7 +1006,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsOpenerSource) {
   EXPECT_NE(opener, sync_browser->tab_strip_model()->GetActiveWebContents());
   ukm::SourceId new_id = sync_browser->tab_strip_model()
                              ->GetActiveWebContents()
-                             ->GetMainFrame()
+                             ->GetPrimaryMainFrame()
                              ->GetPageUkmSourceId();
   ukm::UkmSource* new_tab_source = ukm_test_helper.GetSource(new_id);
   EXPECT_NE(nullptr, new_tab_source);

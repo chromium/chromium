@@ -73,7 +73,7 @@ TEST_F(PrintPreviewUIUnitTest, PrintPreviewData) {
 
   PrintViewManager* print_view_manager =
       PrintViewManager::FromWebContents(initiator);
-  print_view_manager->PrintPreviewNow(initiator->GetMainFrame(), false);
+  print_view_manager->PrintPreviewNow(initiator->GetPrimaryMainFrame(), false);
   WebContents* preview_dialog = controller->GetOrCreatePreviewDialog(initiator);
 
   EXPECT_NE(initiator, preview_dialog);
@@ -118,7 +118,7 @@ TEST_F(PrintPreviewUIUnitTest, PrintPreviewDraftPages) {
 
   PrintViewManager* print_view_manager =
       PrintViewManager::FromWebContents(initiator);
-  print_view_manager->PrintPreviewNow(initiator->GetMainFrame(), false);
+  print_view_manager->PrintPreviewNow(initiator->GetPrimaryMainFrame(), false);
   WebContents* preview_dialog = controller->GetOrCreatePreviewDialog(initiator);
 
   EXPECT_NE(initiator, preview_dialog);
@@ -176,7 +176,7 @@ TEST_F(PrintPreviewUIUnitTest, ShouldCancelRequest) {
 
   PrintViewManager* print_view_manager =
       PrintViewManager::FromWebContents(initiator);
-  print_view_manager->PrintPreviewNow(initiator->GetMainFrame(), false);
+  print_view_manager->PrintPreviewNow(initiator->GetPrimaryMainFrame(), false);
   WebContents* preview_dialog = controller->GetOrCreatePreviewDialog(initiator);
 
   EXPECT_NE(initiator, preview_dialog);

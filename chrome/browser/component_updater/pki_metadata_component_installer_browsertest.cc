@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
 
   // Check that the page is blocked depending on CT enforcement.
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
-  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetMainFrame()));
+  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
   if (GetParam() == CTEnforcement::kEnabled) {
     EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
   } else {
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
   // Check that the page is still blocked depending on CT enforcement.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("/simple.html")));
-  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetMainFrame()));
+  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
   if (GetParam() == CTEnforcement::kEnabled) {
     EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
   } else {
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
 
   // Check that the page is blocked depending on contents of Chrome Root Store.
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
-  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetMainFrame()));
+  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
   EXPECT_NE(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
   ssl_test_util::CheckAuthenticationBrokenState(
       tab, net::CERT_STATUS_AUTHORITY_INVALID,
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
 
   // Check that the page is allowed due to contents of Chrome Root Store.
   tab = chrome_test_utils::GetActiveWebContents(this);
-  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetMainFrame()));
+  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
   EXPECT_EQ(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
   ssl_test_util::CheckAuthenticatedState(tab, ssl_test_util::AuthState::NONE);
 
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
 
   // Check that the page is blocked depending on contents of Chrome Root Store.
   tab = chrome_test_utils::GetActiveWebContents(this);
-  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetMainFrame()));
+  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
   EXPECT_NE(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
   ssl_test_util::CheckAuthenticationBrokenState(
       tab, net::CERT_STATUS_AUTHORITY_INVALID,

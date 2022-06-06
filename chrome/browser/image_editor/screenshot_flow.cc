@@ -389,7 +389,7 @@ void ScreenshotFlow::SetCursor(ui::mojom::CursorType cursor_type) {
 #endif
 
   content::RenderWidgetHost* host =
-      web_contents_->GetMainFrame()->GetRenderWidgetHost();
+      web_contents_->GetPrimaryMainFrame()->GetRenderWidgetHost();
   if (host) {
     ui::Cursor cursor(cursor_type);
     host->SetCursor(cursor);

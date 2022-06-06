@@ -1162,23 +1162,25 @@ IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest,
   // Kill one of renderer processes (this is the essence of this test).
   WebContents* web_contents = GetCurrentTab(browser());
   bool did_kill_a_process = false;
-  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      [](WebContents* web_contents, bool* did_kill_a_process,
-         RenderFrameHost* frame) {
-        if (frame->GetLastCommittedURL().host() == "bar.com") {
-          RenderProcessHost* process_to_kill = frame->GetProcess();
-          EXPECT_NE(web_contents->GetMainFrame()->GetProcess()->GetID(),
-                    process_to_kill->GetID())
-              << "a.com and bar.com should be in different processes.";
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating(
+          [](WebContents* web_contents, bool* did_kill_a_process,
+             RenderFrameHost* frame) {
+            if (frame->GetLastCommittedURL().host() == "bar.com") {
+              RenderProcessHost* process_to_kill = frame->GetProcess();
+              EXPECT_NE(
+                  web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+                  process_to_kill->GetID())
+                  << "a.com and bar.com should be in different processes.";
 
-          EXPECT_TRUE(process_to_kill->FastShutdownIfPossible());
-          EXPECT_FALSE(process_to_kill->IsInitializedAndNotDead());
-          *did_kill_a_process = true;
-          return content::RenderFrameHost::FrameIterationAction::kStop;
-        }
-        return content::RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      web_contents, &did_kill_a_process));
+              EXPECT_TRUE(process_to_kill->FastShutdownIfPossible());
+              EXPECT_FALSE(process_to_kill->IsInitializedAndNotDead());
+              *did_kill_a_process = true;
+              return content::RenderFrameHost::FrameIterationAction::kStop;
+            }
+            return content::RenderFrameHost::FrameIterationAction::kContinue;
+          },
+          web_contents, &did_kill_a_process));
   EXPECT_TRUE(did_kill_a_process);
 
   // Main verification is that we don't hang and time out when saving.
@@ -1244,7 +1246,7 @@ class SavePageOriginalVsSavedComparisonTest
 
     if (GetParam() == content::SAVE_PAGE_TYPE_AS_MHTML) {
       std::set<url::Origin> origins;
-      GetCurrentTab(browser())->GetMainFrame()->ForEachRenderFrameHost(
+      GetCurrentTab(browser())->GetPrimaryMainFrame()->ForEachRenderFrameHost(
           base::BindRepeating(&CheckFrameForMHTML, base::Unretained(&origins)));
       int unique_origins = origins.size();
       EXPECT_EQ(expected_number_of_frames_in_saved_page, unique_origins)
@@ -1328,7 +1330,7 @@ class SavePageOriginalVsSavedComparisonTest
           save_page_type == content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML) {
         DLOG(INFO) << "Verifying that a.htm frame has fully loaded...";
         std::vector<std::string> frame_names;
-        GetCurrentTab(browser())->GetMainFrame()->ForEachRenderFrameHost(
+        GetCurrentTab(browser())->GetPrimaryMainFrame()->ForEachRenderFrameHost(
             base::BindRepeating(
                 [](std::vector<std::string>* frame_names,
                    content::RenderFrameHost* frame) {

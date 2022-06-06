@@ -157,10 +157,10 @@ void SoundContentSettingObserver::CheckSoundBlocked(bool is_audible) {
     // page.
     // TODO(https://crbug.com/1103176): For other types of FrameTrees(fenced
     // frames, portals) than prerendering, we should figure a way of not having
-    // to use GetMainFrame here. (pass the source frame somehow)
+    // to use GetPrimaryMainFrame here. (pass the source frame somehow)
     content_settings::PageSpecificContentSettings* settings =
         content_settings::PageSpecificContentSettings::GetForFrame(
-            web_contents()->GetMainFrame());
+            web_contents()->GetPrimaryMainFrame());
     if (settings)
       settings->OnAudioBlocked();
 
@@ -175,7 +175,7 @@ void SoundContentSettingObserver::RecordSiteMutedUKM() {
   logged_site_muted_ukm_ = true;
 
   ukm::builders::Media_SiteMuted(
-      web_contents()->GetMainFrame()->GetPageUkmSourceId())
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId())
       .SetMuteReason(GetSiteMutedReason())
       .Record(ukm::UkmRecorder::Get());
 }

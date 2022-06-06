@@ -37,8 +37,8 @@ DevToolsEyeDropper::DevToolsEyeDropper(content::WebContents* web_contents,
     : content::WebContentsObserver(web_contents), callback_(callback) {
   mouse_event_callback_ = base::BindRepeating(
       &DevToolsEyeDropper::HandleMouseEvent, base::Unretained(this));
-  if (web_contents->GetMainFrame()->IsRenderFrameLive())
-    AttachToHost(web_contents->GetMainFrame());
+  if (web_contents->GetPrimaryMainFrame()->IsRenderFrameLive())
+    AttachToHost(web_contents->GetPrimaryMainFrame());
 }
 
 DevToolsEyeDropper::~DevToolsEyeDropper() {
@@ -87,7 +87,7 @@ void DevToolsEyeDropper::DetachFromHost() {
 void DevToolsEyeDropper::RenderFrameCreated(
     content::RenderFrameHost* frame_host) {
   // Only handle the initial main frame, not speculative ones.
-  if (frame_host != web_contents()->GetMainFrame())
+  if (frame_host != web_contents()->GetPrimaryMainFrame())
     return;
   DCHECK(!host_);
 
@@ -97,7 +97,7 @@ void DevToolsEyeDropper::RenderFrameCreated(
 void DevToolsEyeDropper::RenderFrameDeleted(
     content::RenderFrameHost* frame_host) {
   // Only handle the active main frame, not speculative ones.
-  if (frame_host != web_contents()->GetMainFrame())
+  if (frame_host != web_contents()->GetPrimaryMainFrame())
     return;
   DCHECK(host_);
   DCHECK_EQ(host_, frame_host->GetRenderWidgetHost());
@@ -111,7 +111,7 @@ void DevToolsEyeDropper::RenderFrameHostChanged(
     content::RenderFrameHost* new_host) {
   // Since we skipped speculative main frames in RenderFrameCreated, we must
   // watch for them being swapped in by watching for RenderFrameHostChanged().
-  if (new_host != web_contents()->GetMainFrame())
+  if (new_host != web_contents()->GetPrimaryMainFrame())
     return;
   // Don't watch for the initial main frame RenderFrameHost, which does not come
   // with a renderer frame. We'll hear about that from RenderFrameCreated.

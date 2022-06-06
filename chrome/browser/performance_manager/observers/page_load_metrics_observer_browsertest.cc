@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsObserverFencedFrameBrowserTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), fenced_frame_url);
+          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
 
   entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::LoadCountsPerTopLevelDocument::kEntryName);

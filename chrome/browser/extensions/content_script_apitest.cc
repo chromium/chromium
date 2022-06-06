@@ -861,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   EXPECT_EQ(new_tab_override->GetResourceURL("newtab.html"),
-            tab_contents->GetMainFrame()->GetLastCommittedURL());
+            tab_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_FALSE(listener.was_satisfied());
   listener.Reset();
 
@@ -1500,9 +1500,9 @@ GURL ContentScriptRelatedFrameTest::CreateFilesystemURL(
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_Iframe_Allowed) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", about_blank());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", about_blank());
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(about_blank(), render_frame_host->GetLastCommittedURL());
   EXPECT_TRUE(DidScriptRunInFrame(render_frame_host));
@@ -1513,9 +1513,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_Iframe_Disallowed) {
   content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", about_blank());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", about_blank());
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(about_blank(), render_frame_host->GetLastCommittedURL());
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
@@ -1527,7 +1527,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_Popup_Allowed) {
   content::WebContents* tab = NavigateTab(allowed_url());
   content::WebContents* popup = OpenPopup(tab, about_blank());
-  EXPECT_TRUE(DidScriptRunInFrame(popup->GetMainFrame()));
+  EXPECT_TRUE(DidScriptRunInFrame(popup->GetPrimaryMainFrame()));
 }
 
 // Injection should fail on a popup to about:blank created by a disallowed site.
@@ -1535,7 +1535,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_Popup_Disallowed) {
   content::WebContents* tab = NavigateTab(disallowed_url());
   content::WebContents* popup = OpenPopup(tab, about_blank());
-  EXPECT_FALSE(DidScriptRunInFrame(popup->GetMainFrame()));
+  EXPECT_FALSE(DidScriptRunInFrame(popup->GetPrimaryMainFrame()));
 }
 
 // Browser-initiated navigations do not have a separate precursor tuple, so
@@ -1543,7 +1543,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_BrowserOpened) {
   content::WebContents* tab = NavigateTab(about_blank());
-  EXPECT_FALSE(DidScriptRunInFrame(tab->GetMainFrame()));
+  EXPECT_FALSE(DidScriptRunInFrame(tab->GetPrimaryMainFrame()));
 }
 
 // Tests injecting a content script when the iframe rewrites the parent to be
@@ -1576,7 +1576,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(null_document_url(), tab->GetLastCommittedURL());
-  content::RenderFrameHost* main_frame = tab->GetMainFrame();
+  content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
   // Sanity check: The main frame should have been re-written. The test passes
   // if there's no crash. Since the iframe rewrites the parent synchronously
   // after sending the "navigated" message, there's no risk of a race here.
@@ -1591,10 +1591,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_BlobFrame) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  GURL blob_url = CreateBlobURL(tab->GetMainFrame());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", blob_url);
+  GURL blob_url = CreateBlobURL(tab->GetPrimaryMainFrame());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", blob_url);
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(blob_url, render_frame_host->GetLastCommittedURL());
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
@@ -1605,9 +1605,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_DataFrame) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", data_url());
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(data_url(), render_frame_host->GetLastCommittedURL());
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
@@ -1617,10 +1617,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_FilesystemFrame) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  GURL filesystem_url = CreateFilesystemURL(tab->GetMainFrame());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", filesystem_url);
+  GURL filesystem_url = CreateFilesystemURL(tab->GetPrimaryMainFrame());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", filesystem_url);
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(filesystem_url, render_frame_host->GetLastCommittedURL());
 
@@ -1640,19 +1640,20 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   content::WebContents* tab =
       NavigateTab(non_matching_path_specific_iframe_url());
   // Navigate the child frame to the URL that matches the path requirement.
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", path_specific_allowed_url());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]",
+                 path_specific_allowed_url());
 
   content::RenderFrameHost* child_frame =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
 
   EXPECT_EQ(path_specific_allowed_url(), child_frame->GetLastCommittedURL());
   // The script should have ran in the child frame (which matches the pattern),
   // but not the parent frame (which doesn't match the path component).
   EXPECT_TRUE(DidScriptRunInFrame(child_frame));
-  EXPECT_FALSE(DidScriptRunInFrame(tab->GetMainFrame()));
+  EXPECT_FALSE(DidScriptRunInFrame(tab->GetPrimaryMainFrame()));
 
   // Now, navigate the iframe to an about:blank URL.
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", about_blank());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", about_blank());
 
   // Unlike match_origin_as_fallback, match_about_blank will attempt to climb
   // the frame tree to find an ancestor with path. This results in finding the
@@ -1686,9 +1687,9 @@ class ContentScriptMatchOriginAsFallbackTest
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        DataURLInjection_SimpleIframe_Allowed) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", data_url());
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(data_url(), render_frame_host->GetLastCommittedURL());
   EXPECT_TRUE(DidScriptRunInFrame(render_frame_host));
@@ -1699,9 +1700,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        DataURLInjection_SimpleIframe_Disallowed) {
   content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", data_url());
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(data_url(), render_frame_host->GetLastCommittedURL());
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
@@ -1711,10 +1712,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        BlobURLInjection_SimpleIframe_Allowed) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  GURL blob_url = CreateBlobURL(tab->GetMainFrame());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", blob_url);
+  GURL blob_url = CreateBlobURL(tab->GetPrimaryMainFrame());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", blob_url);
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(blob_url, render_frame_host->GetLastCommittedURL());
   EXPECT_TRUE(DidScriptRunInFrame(render_frame_host));
@@ -1725,10 +1726,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        BlobURLInjection_SimpleIframe_Disallowed) {
   content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
-  GURL blob_url = CreateBlobURL(tab->GetMainFrame());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", blob_url);
+  GURL blob_url = CreateBlobURL(tab->GetPrimaryMainFrame());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", blob_url);
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(blob_url, render_frame_host->GetLastCommittedURL());
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
@@ -1738,10 +1739,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        FilesystemURLInjection_SimpleIframe_Allowed) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  GURL filesystem_url = CreateFilesystemURL(tab->GetMainFrame());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", filesystem_url);
+  GURL filesystem_url = CreateFilesystemURL(tab->GetPrimaryMainFrame());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", filesystem_url);
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(filesystem_url, render_frame_host->GetLastCommittedURL());
   EXPECT_TRUE(DidScriptRunInFrame(render_frame_host));
@@ -1752,10 +1753,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        FilesystemURLInjection_SimpleIframe_Disallowed) {
   content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
-  GURL filesystem_url = CreateFilesystemURL(tab->GetMainFrame());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", filesystem_url);
+  GURL filesystem_url = CreateFilesystemURL(tab->GetPrimaryMainFrame());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", filesystem_url);
   content::RenderFrameHost* render_frame_host =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(render_frame_host);
   EXPECT_EQ(filesystem_url, render_frame_host->GetLastCommittedURL());
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
@@ -1773,12 +1774,12 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
       nested_frame_src.c_str());
 
   const GURL data_url(base::StrCat({"data:text/html,", nested_data_html}));
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url);
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", data_url);
 
   // The extension should have injected in both iframes, since they each
   // "belong" to the original, allowed site.
   content::RenderFrameHost* first_data =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(first_data);
   EXPECT_EQ(data_url, first_data->GetLastCommittedURL());
   EXPECT_TRUE(DidScriptRunInFrame(first_data));
@@ -1797,9 +1798,10 @@ IN_PROC_BROWSER_TEST_F(
   // Open a page to a protected site, and then navigate an iframe to an allowed
   // site with an iframe.
   content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", allowed_url_with_iframe());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]",
+                 allowed_url_with_iframe());
   content::RenderFrameHost* example_com_frame =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(allowed_url_with_iframe(),
             example_com_frame->GetLastCommittedURL());
 
@@ -1819,7 +1821,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Now, navigate the iframe within the allowed site to a data URL, but do so
   // from the top frame (which the extension is not allowed to access).
-  NavigateIframe(tab->GetMainFrame(), "frames[0].frames[0]", data_url());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0].frames[0]", data_url());
 
   {
     // Since the top frame (which the extension may not access) is now the
@@ -1840,10 +1842,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
   // Open a page to an allowed site, and then navigate an iframe to a disallowed
   // site with an iframe.
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
-  NavigateIframe(tab->GetMainFrame(), "frames[0]",
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]",
                  disallowed_url_with_iframe());
   content::RenderFrameHost* example_com_frame =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(disallowed_url_with_iframe(),
             example_com_frame->GetLastCommittedURL());
 
@@ -1864,7 +1866,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 
   // Now, navigate the iframe within the disallowed site to a data URL, but do
   // so from the top frame (which the extension is allowed to access).
-  NavigateIframe(tab->GetMainFrame(), "frames[0].frames[0]", data_url());
+  NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0].frames[0]", data_url());
 
   {
     content::RenderFrameHost* data_url_host = content::FrameMatchingPredicate(

@@ -122,8 +122,8 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   void EnterActiveTabFullscreen() {
     FullscreenNotificationObserver fullscreen_observer(browser());
     auto* delegate = static_cast<content::WebContentsDelegate*>(browser());
-    delegate->EnterFullscreenModeForTab(GetActiveWebContents()->GetMainFrame(),
-                                        {});
+    delegate->EnterFullscreenModeForTab(
+        GetActiveWebContents()->GetPrimaryMainFrame(), {});
     fullscreen_observer.Wait();
     ASSERT_TRUE(delegate->IsFullscreenForTabOrPending(GetActiveWebContents()));
   }

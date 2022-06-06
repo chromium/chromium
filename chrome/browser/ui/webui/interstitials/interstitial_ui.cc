@@ -307,7 +307,7 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
     }
   }
   const content::GlobalRenderFrameHostId primary_main_frame_id =
-      web_contents->GetMainFrame()->GetGlobalId();
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
   resource.is_subresource = request_url != main_frame_url;
@@ -363,7 +363,7 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
     }
   }
   const content::GlobalRenderFrameHostId primary_main_frame_id =
-      web_contents->GetMainFrame()->GetGlobalId();
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
   resource.is_subresource = request_url != main_frame_url;

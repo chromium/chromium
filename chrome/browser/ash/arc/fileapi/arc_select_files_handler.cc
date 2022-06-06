@@ -411,7 +411,8 @@ bool SelectFileDialogHolder::SelectFile(
 void SelectFileDialogHolder::ExecuteJavaScript(
     const std::string& script,
     content::RenderFrameHost::JavaScriptResultCallback callback) {
-  content::RenderFrameHost* frame_host = select_file_dialog_->GetMainFrame();
+  content::RenderFrameHost* frame_host =
+      select_file_dialog_->GetPrimaryMainFrame();
 
   if (!frame_host || !frame_host->IsRenderFrameLive()) {
     LOG(ERROR) << "Can't execute a script. SelectFileDialog is not ready.";

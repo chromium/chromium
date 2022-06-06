@@ -238,7 +238,7 @@ void StartLocalPrint(base::Value::Dict job_settings,
   }
   print_view_manager->PrintForPrintPreview(
       std::move(job_settings), std::move(print_data),
-      preview_web_contents->GetMainFrame(), std::move(callback));
+      preview_web_contents->GetPrimaryMainFrame(), std::move(callback));
 }
 
 bool ParseSettings(const base::Value::Dict& settings,

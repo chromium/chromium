@@ -75,7 +75,7 @@ class CookieStoreSamePartyTest : public InProcessBrowserTest {
 
   content::RenderFrameHost* GetDescendantFrame(
       const std::vector<int>& indices) {
-    content::RenderFrameHost* frame = contents()->GetMainFrame();
+    content::RenderFrameHost* frame = contents()->GetPrimaryMainFrame();
     for (int index : indices) {
       frame = ChildFrameAt(frame, index);
     }

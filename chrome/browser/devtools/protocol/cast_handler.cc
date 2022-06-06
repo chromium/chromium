@@ -269,7 +269,7 @@ void CastHandler::StartObservingForSinks(
 
   if (presentation_url.isJust()) {
     url::Origin frame_origin =
-        web_contents_->GetMainFrame()->GetLastCommittedOrigin();
+        web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     std::vector<media_router::MediaSource> sources = {
         media_router::MediaSource(presentation_url.fromJust())};
     query_result_manager_->SetSourcesForCastMode(

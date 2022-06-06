@@ -177,9 +177,10 @@ void ReputationWebContentsObserver::DidFinishNavigation(
 
 void ReputationWebContentsObserver::OnVisibilityChanged(
     content::Visibility visibility) {
-  MaybeShowSafetyTip(web_contents()->GetMainFrame()->GetPageUkmSourceId(),
-                     /*called_from_visibility_check=*/true,
-                     /*record_ukm_if_tip_not_shown=*/false);
+  MaybeShowSafetyTip(
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+      /*called_from_visibility_check=*/true,
+      /*record_ukm_if_tip_not_shown=*/false);
 }
 
 security_state::SafetyTipInfo
@@ -220,7 +221,7 @@ void ReputationWebContentsObserver::MaybeShowSafetyTip(
     ukm::SourceId navigation_source_id,
     bool called_from_visibility_check,
     bool record_ukm_if_tip_not_shown) {
-  if (web_contents()->GetMainFrame()->GetVisibilityState() !=
+  if (web_contents()->GetPrimaryMainFrame()->GetVisibilityState() !=
       content::PageVisibilityState::kVisible) {
     MaybeCallReputationCheckCallback(false);
     return;
@@ -305,7 +306,7 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
   // Log a console message if it's the first time we're going to open the Safety
   // Tip. (Otherwise, we'd print the message each time the tab became visible.)
   if (!called_from_visibility_check) {
-    web_contents()->GetMainFrame()->AddMessageToConsole(
+    web_contents()->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         base::StringPrintf(
             "Chrome has determined that %s could be fake or fraudulent.\n\n"

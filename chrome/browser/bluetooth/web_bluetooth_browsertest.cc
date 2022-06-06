@@ -527,9 +527,10 @@ class WebBluetoothTest : public InProcessBrowserTest {
   }
 
   void CheckLastCommitedOrigin(const std::string& pattern) {
-    EXPECT_THAT(
-        web_contents_->GetMainFrame()->GetLastCommittedOrigin().Serialize(),
-        testing::StartsWith(pattern));
+    EXPECT_THAT(web_contents_->GetPrimaryMainFrame()
+                    ->GetLastCommittedOrigin()
+                    .Serialize(),
+                testing::StartsWith(pattern));
   }
 
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalValuesForTesting>
@@ -566,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, WebBluetoothAfterCrash) {
 
   // Crash the renderer process.
   content::RenderProcessHost* process =
-      web_contents_->GetMainFrame()->GetProcess();
+      web_contents_->GetPrimaryMainFrame()->GetProcess();
   content::RenderProcessHostWatcher crash_observer(
       process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   process->Shutdown(0);
@@ -845,8 +846,8 @@ IN_PROC_BROWSER_TEST_P(WebBluetoothPermissionsPolicyTest,
 
   // Attempting to access bluetooth devices from a disallowed iframe should
   // throw a SecurityError.
-  content::EvalJsResult inner_device_error =
-      InvokeGetDevices(content::ChildFrameAt(web_contents_->GetMainFrame(), 0));
+  content::EvalJsResult inner_device_error = InvokeGetDevices(
+      content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0));
   EXPECT_EQ(
       "SecurityError: Failed to execute 'getDevices' on 'Bluetooth': Access to "
       "the feature \"bluetooth\" is disallowed by permissions policy.",
@@ -869,8 +870,8 @@ IN_PROC_BROWSER_TEST_P(WebBluetoothPermissionsPolicyTest,
   // has requested.
   content::EvalJsResult outer_device_id =
       InvokeRequestDevice(web_contents_.get());
-  content::EvalJsResult inner_device_id =
-      InvokeGetDevices(content::ChildFrameAt(web_contents_->GetMainFrame(), 0));
+  content::EvalJsResult inner_device_id = InvokeGetDevices(
+      content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0));
   ASSERT_TRUE(outer_device_id.value.is_list()) << outer_device_id.value;
   ASSERT_TRUE(inner_device_id.value.is_list()) << inner_device_id.value;
   EXPECT_EQ(outer_device_id.ExtractList(), inner_device_id.ExtractList());
@@ -901,7 +902,7 @@ IN_PROC_BROWSER_TEST_P(WebBluetoothPermissionsPolicyTest,
   // The main page should have access to the same devices that the inner frame
   // has requested.
   content::EvalJsResult inner_device_id = InvokeRequestDevice(
-      content::ChildFrameAt(web_contents_->GetMainFrame(), 0));
+      content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0));
   content::EvalJsResult outer_device_id = InvokeGetDevices(web_contents_.get());
   ASSERT_TRUE(outer_device_id.value.is_list()) << outer_device_id.value;
   ASSERT_TRUE(inner_device_id.value.is_list()) << inner_device_id.value;
@@ -1228,7 +1229,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
 
   permissions::BluetoothChooserContext* context =
       BluetoothChooserContextFactory::GetForProfile(browser()->profile());
-  url::Origin origin = web_contents_->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin origin =
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   // Revoke the permission.
   const auto objects = context->GetGrantedObjects(origin);
@@ -1285,7 +1287,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
     })()
   )"));
 
-  url::Origin origin = web_contents_->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin origin =
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   permissions::BluetoothChooserContext* context =
       BluetoothChooserContextFactory::GetForProfile(browser()->profile());
   auto objects = context->GetGrantedObjects(origin);
@@ -1481,7 +1484,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(observer.last_is_connected_to_bluetooth_device().has_value());
 
   content::RenderFrameDeletedObserver rfh_observer(
-      GetWebContents()->GetMainFrame());
+      GetWebContents()->GetPrimaryMainFrame());
 
   // Navigates the primary page to the URL.
   prerender_helper()->NavigatePrimaryPage(prerender_url);

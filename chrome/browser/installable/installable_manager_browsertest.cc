@@ -1963,7 +1963,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   static_cast<content::WebContentsObserver*>(manager)->DidUpdateWebManifestURL(
-      web_contents->GetMainFrame(), GURL());
+      web_contents->GetPrimaryMainFrame(), GURL());
   run_loop.Run();
 
   ASSERT_EQ(tester->errors().size(), 1u);

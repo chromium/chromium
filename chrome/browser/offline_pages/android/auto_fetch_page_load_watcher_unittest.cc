@@ -332,7 +332,7 @@ TEST_F(AutoFetchInternalImplFencedFrameTest,
   content::RenderFrameHostTester::For(main_rfh())
       ->InitializeRenderFrameIfNeeded();
   content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrame(web_content->GetMainFrame());
+      CreateFencedFrame(web_content->GetPrimaryMainFrame());
   GURL kFencedFrameUrl("http://fencedframe.com");
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
       content::NavigationSimulator::CreateRendererInitiated(kFencedFrameUrl,

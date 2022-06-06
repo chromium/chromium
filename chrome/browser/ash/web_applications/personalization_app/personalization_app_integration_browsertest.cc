@@ -167,8 +167,8 @@ void CallJavascriptAndWaitForPropertyChange(content::WebContents* web_contents,
   WindowPropertyWaiter<bool> window_property_waiter(
       web_contents->GetTopLevelNativeWindow(),
       chromeos::kWindowManagerManagesOpacityKey);
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(javascript,
-                                                          base::DoNothing());
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      javascript, base::DoNothing());
   window_property_waiter.Wait();
 }
 
@@ -249,8 +249,9 @@ class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
     EXPECT_FALSE(widget->IsFullscreen());
 
     FullscreenNotificationObserver waiter(browser);
-    web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-        u"personalizationTestApi.enterFullscreen();", base::NullCallback());
+    web_contents->GetPrimaryMainFrame()
+        ->ExecuteJavaScriptWithUserGestureForTests(
+            u"personalizationTestApi.enterFullscreen();", base::NullCallback());
     waiter.Wait();
 
     // After the full screen change is observed, there is a significant delay
@@ -259,7 +260,7 @@ class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
     // allows shelf to hide, app list to hide, and wallpaper to change.
     for (int i = 0; i < 3; i++) {
       base::RunLoop loop;
-      web_contents->GetMainFrame()->InsertVisualStateCallback(
+      web_contents->GetPrimaryMainFrame()->InsertVisualStateCallback(
           base::BindLambdaForTesting([&loop](bool visual_state_updated) {
             ASSERT_TRUE(visual_state_updated);
             loop.Quit();

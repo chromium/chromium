@@ -64,10 +64,11 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
   // Confirm that the subframe is cross-process depending on the process
   // model.
   content::RenderFrameHost* frame_host =
-      ChildFrameAt(active_web_contents->GetMainFrame(), 0);
+      ChildFrameAt(active_web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(frame_host);
   EXPECT_EQ(cross_site_url, frame_host->GetLastCommittedURL());
-  auto* main_instance = active_web_contents->GetMainFrame()->GetSiteInstance();
+  auto* main_instance =
+      active_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   auto* subframe_instance = frame_host->GetSiteInstance();
   if (main_instance->RequiresDedicatedProcess()) {
     // Subframe is cross process because it can't be place in the main frame's
@@ -137,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
 
   // Confirm that the subframe is same-process.
   content::RenderFrameHost* frame_host =
-      ChildFrameAt(active_web_contents->GetMainFrame(), 0);
+      ChildFrameAt(active_web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(frame_host);
   EXPECT_EQ(subframe_url, frame_host->GetLastCommittedURL());
   EXPECT_FALSE(frame_host->IsCrossProcessSubframe());

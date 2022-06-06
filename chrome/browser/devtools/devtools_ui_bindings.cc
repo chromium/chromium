@@ -899,7 +899,8 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
     if (allow_web_ui_scheme && target_tab &&
         target_tab->GetLastCommittedURL().scheme() == gurl.scheme()) {
       std::vector<std::string> allowed_webui_hosts;
-      content::RenderFrameHost* frame_host = web_contents()->GetMainFrame();
+      content::RenderFrameHost* frame_host =
+          web_contents()->GetPrimaryMainFrame();
 
       mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote =
           content::CreateWebUIURLLoaderFactory(
@@ -920,7 +921,8 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
         DevToolsWindow::AsDevToolsWindow(web_contents_)
             ->GetInspectedWebContents();
     if (target_tab) {
-      auto* partition = target_tab->GetMainFrame()->GetStoragePartition();
+      auto* partition =
+          target_tab->GetPrimaryMainFrame()->GetStoragePartition();
       url_loader_factory = partition->GetURLLoaderFactoryForBrowserProcess();
     } else {
       base::DictionaryValue response;
@@ -1537,7 +1539,7 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
     // process. Grant the devtools process the ability to request URLs from the
     // extension.
     content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestOrigin(
-        web_contents_->GetMainFrame()->GetProcess()->GetID(),
+        web_contents_->GetPrimaryMainFrame()->GetProcess()->GetID(),
         url::Origin::Create(extension->url()));
 
     base::Value::Dict extension_info;
@@ -1657,7 +1659,7 @@ void DevToolsUIBindings::CallClientMethod(
     return;
   // If the client renderer is gone (e.g., the window was closed with both the
   // inspector and client being destroyed), the message can not be sent.
-  if (!web_contents_->GetMainFrame()->IsRenderFrameLive())
+  if (!web_contents_->GetPrimaryMainFrame()->IsRenderFrameLive())
     return;
   base::Value::List arguments;
   if (!arg1.is_none()) {
@@ -1669,7 +1671,7 @@ void DevToolsUIBindings::CallClientMethod(
       }
     }
   }
-  web_contents_->GetMainFrame()->ExecuteJavaScriptMethod(
+  web_contents_->GetPrimaryMainFrame()->ExecuteJavaScriptMethod(
       base::ASCIIToUTF16(object_name), base::ASCIIToUTF16(method_name),
       std::move(arguments), std::move(completion_callback));
 }

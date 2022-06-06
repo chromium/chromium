@@ -96,8 +96,9 @@ void JSChecker::Evaluate(const std::string& expression) {
 void JSChecker::ExecuteAsync(const std::string& expression) {
   CHECK(web_contents_);
   std::string new_script = expression + ";";
-  web_contents_->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      base::UTF8ToUTF16(new_script), base::NullCallback());
+  web_contents_->GetPrimaryMainFrame()
+      ->ExecuteJavaScriptWithUserGestureForTests(base::UTF8ToUTF16(new_script),
+                                                 base::NullCallback());
 }
 
 bool JSChecker::GetBool(const std::string& expression) {

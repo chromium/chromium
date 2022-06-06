@@ -430,7 +430,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
   // Confirm request dialog
   auto function =
       base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
-  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   {
     ScopedTestDialogAutoConfirm auto_confirm(
         ScopedTestDialogAutoConfirm::ACCEPT);
@@ -445,7 +445,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
   // Show pending request dialog which can only be canceled.
   function =
       base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
-  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   {
     ScopedTestDialogAutoConfirm auto_cancel(
         ScopedTestDialogAutoConfirm::CANCEL);
@@ -467,7 +467,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto function =
       base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
-  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   ScopedTestDialogAutoConfirm auto_cancel(ScopedTestDialogAutoConfirm::CANCEL);
 
   api_test_utils::RunFunction(function.get(),
@@ -487,7 +487,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
 
   auto function =
       base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
-  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   {
     ScopedTestDialogAutoConfirm auto_confirm(
         ScopedTestDialogAutoConfirm::ACCEPT);
@@ -513,7 +513,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto function =
       base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
-  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   {
     ScopedTestDialogAutoConfirm auto_cancel(
         ScopedTestDialogAutoConfirm::CANCEL);
@@ -536,7 +536,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto function =
       base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
-  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   {
     ScopedTestDialogAutoConfirm auto_confirm(
         ScopedTestDialogAutoConfirm::ACCEPT);
@@ -551,7 +551,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
   EnableExtensionRequest(false);
   function =
       base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
-  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   {
     // Successfully confirm the install prompt and the API returns an empty
     // string without error.
@@ -576,7 +576,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test, BlockedByPolicy) {
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto function =
       base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
-  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
   api_test_utils::RunFunction(function.get(),
@@ -596,7 +596,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto function =
       base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
-  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
   api_test_utils::RunFunction(function.get(),
@@ -614,7 +614,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto function =
       base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
-  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
   api_test_utils::RunFunction(function.get(),
@@ -631,7 +631,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto function =
       base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
-  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
   api_test_utils::RunFunction(function.get(),
@@ -648,7 +648,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto function =
       base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
-  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
   std::unique_ptr<base::Value> response = RunFunctionAndReturnValue(
@@ -673,7 +673,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
                                                           nullptr);
     auto function = base::MakeRefCounted<
         WebstorePrivateBeginInstallWithManifest3Function>();
-    function->SetRenderFrameHost(web_contents->GetMainFrame());
+    function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     ScopedTestDialogAutoConfirm auto_confirm(
         ScopedTestDialogAutoConfirm::ACCEPT);
 
@@ -772,7 +772,7 @@ TEST_P(WebstorePrivateBeginInstallWithManifest3FrictionDialogTest,
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto function =
       base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
-  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   ScopedTestDialogAutoConfirm auto_confirm(test_case.dialog_action);
 
   std::string args =

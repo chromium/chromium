@@ -60,7 +60,7 @@ class PaymentMethodViewControllerTest : public PaymentRequestBrowserTestBase {
     downloader->AddTestServerURL("https://google.com/",
                                  gpay_server_.GetURL("google.com", "/"));
     ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
-        GetActiveWebContents()->GetMainFrame())
+        GetActiveWebContents()->GetPrimaryMainFrame())
         ->SetDownloaderAndIgnorePortInOriginComparisonForTesting(
             std::move(downloader));
   }

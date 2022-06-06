@@ -678,7 +678,7 @@ bool ChromeContentBrowserClientExtensionsPart::
   // webview tags as well as hosts that happen to match the id of an
   // installed extension would get the wrong preferences.
   const GURL& site_url =
-      web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL();
+      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL();
   if (!site_url.SchemeIs(kExtensionScheme))
     return false;
 

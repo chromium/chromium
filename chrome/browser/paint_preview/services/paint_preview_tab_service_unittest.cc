@@ -104,7 +104,7 @@ class PaintPreviewTabServiceTest : public ChromeRenderViewHostTestHarness {
 
   void OverrideInterface(MockPaintPreviewRecorder* recorder) {
     blink::AssociatedInterfaceProvider* remote_interfaces =
-        web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces();
+        web_contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces();
     remote_interfaces->OverrideBinderForTesting(
         mojom::PaintPreviewRecorder::Name_,
         base::BindRepeating(&MockPaintPreviewRecorder::BindRequest,

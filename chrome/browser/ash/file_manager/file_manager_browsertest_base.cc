@@ -2408,21 +2408,23 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "executeScriptInChromeUntrusted") {
     for (auto* web_contents : GetAllWebContents()) {
       bool found = false;
-      web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-          [](const base::DictionaryValue& value, bool& found,
-             std::string* output, content::RenderFrameHost* frame) {
-            const url::Origin origin = frame->GetLastCommittedOrigin();
-            if (origin.GetURL() ==
-                ash::file_manager::kChromeUIFileManagerUntrustedURL) {
-              const std::string* script = value.FindStringKey("data");
-              EXPECT_TRUE(script);
-              CHECK(ExecuteScriptAndExtractString(frame, *script, output));
-              found = true;
-              return content::RenderFrameHost::FrameIterationAction::kStop;
-            }
-            return content::RenderFrameHost::FrameIterationAction::kContinue;
-          },
-          std::ref(value), std::ref(found), output));
+      web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+          base::BindRepeating(
+              [](const base::DictionaryValue& value, bool& found,
+                 std::string* output, content::RenderFrameHost* frame) {
+                const url::Origin origin = frame->GetLastCommittedOrigin();
+                if (origin.GetURL() ==
+                    ash::file_manager::kChromeUIFileManagerUntrustedURL) {
+                  const std::string* script = value.FindStringKey("data");
+                  EXPECT_TRUE(script);
+                  CHECK(ExecuteScriptAndExtractString(frame, *script, output));
+                  found = true;
+                  return content::RenderFrameHost::FrameIterationAction::kStop;
+                }
+                return content::RenderFrameHost::FrameIterationAction::
+                    kContinue;
+              },
+              std::ref(value), std::ref(found), output));
       if (found)
         return;
     }
@@ -2953,8 +2955,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       if (!window->web_contents())
         break;
 
-      CHECK(window->web_contents()->GetMainFrame());
-      window->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+      CHECK(window->web_contents()->GetPrimaryMainFrame());
+      window->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
           base::UTF8ToUTF16(*script), base::NullCallback());
 
       break;
@@ -3276,7 +3278,7 @@ FileManagerBrowserTestBase::GetAllWebContents() {
         content::WebContents::FromRenderViewHost(rvh);
     if (!web_contents)
       continue;
-    if (web_contents->GetMainFrame()->GetRenderViewHost() != rvh)
+    if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost() != rvh)
       continue;
     // Because a WebContents can only have one current RVH at a time, there will
     // be no duplicate WebContents here.

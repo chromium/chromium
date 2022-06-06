@@ -656,7 +656,7 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
 
   auto metrics_recorder = std::make_unique<
       password_manager::metrics_util::LeakDialogMetricsRecorder>(
-      web_contents()->GetMainFrame()->GetPageUkmSourceId(),
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
       password_manager::GetLeakDialogType(leak_type));
   (new CredentialLeakControllerAndroid(
        leak_type, url, username, GetPasswordChangeSuccessTracker(),
@@ -815,7 +815,7 @@ ChromePasswordManagerClient::GetAutofillDownloadManager() {
       autofill::ContentAutofillDriverFactory::FromWebContents(web_contents());
   if (factory) {
     autofill::ContentAutofillDriver* driver =
-        factory->DriverForFrame(web_contents()->GetMainFrame());
+        factory->DriverForFrame(web_contents()->GetPrimaryMainFrame());
     // |driver| can be NULL if the tab is being closed.
     if (driver) {
       autofill::AutofillManager* autofill_manager = driver->autofill_manager();
@@ -828,7 +828,7 @@ ChromePasswordManagerClient::GetAutofillDownloadManager() {
 
 bool ChromePasswordManagerClient::IsCommittedMainFrameSecure() const {
   return network::IsOriginPotentiallyTrustworthy(
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }
 
 const GURL& ChromePasswordManagerClient::GetLastCommittedURL() const {
@@ -837,7 +837,7 @@ const GURL& ChromePasswordManagerClient::GetLastCommittedURL() const {
 
 url::Origin ChromePasswordManagerClient::GetLastCommittedOrigin() const {
   DCHECK(web_contents());
-  return web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+  return web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 }
 const password_manager::CredentialsFilter*
 ChromePasswordManagerClient::GetStoreResultFilter() const {
@@ -965,7 +965,7 @@ void ChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
 #endif
 
 ukm::SourceId ChromePasswordManagerClient::GetUkmSourceId() {
-  return web_contents()->GetMainFrame()->GetPageUkmSourceId();
+  return web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 }
 
 PasswordManagerMetricsRecorder*
@@ -1256,7 +1256,7 @@ void ChromePasswordManagerClient::BindCredentialManager(
 
   // Only valid for the currently committed RenderFrameHost, and not, e.g. old
   // zombie RFH's being swapped out following cross-origin navigations.
-  if (web_contents->GetMainFrame() != render_frame_host)
+  if (web_contents->GetPrimaryMainFrame() != render_frame_host)
     return;
 
   // The ChromePasswordManagerClient will not bind the mojo interface for

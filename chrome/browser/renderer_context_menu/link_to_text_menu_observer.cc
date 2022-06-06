@@ -212,7 +212,7 @@ void LinkToTextMenuObserver::RegisterGenerationCompleteCallbackForTesting(
 
 void LinkToTextMenuObserver::RequestLinkGeneration() {
   content::RenderFrameHost* main_frame =
-      proxy_->GetWebContents()->GetMainFrame();
+      proxy_->GetWebContents()->GetPrimaryMainFrame();
   if (!main_frame)
     return;
 
@@ -292,7 +292,7 @@ void LinkToTextMenuObserver::CompleteWithError(LinkGenerationError error) {
 
 void LinkToTextMenuObserver::ReshareLink() {
   // Get the list of RenderFrameHosts from the current page.
-  proxy_->GetWebContents()->GetMainFrame()->ForEachRenderFrameHost(
+  proxy_->GetWebContents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       base::BindRepeating(
           [](std::vector<content::GlobalRenderFrameHostId>*
                  render_frame_host_ids,
@@ -362,7 +362,7 @@ void LinkToTextMenuObserver::OnGetExistingSelectorsComplete(
 
 void LinkToTextMenuObserver::RemoveHighlights() {
   // Remove highlights from all frames in the primary page.
-  proxy_->GetWebContents()->GetMainFrame()->ForEachRenderFrameHost(
+  proxy_->GetWebContents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       base::BindRepeating(RemoveHighlightsInFrame));
 
   execute_command_pending_ = false;

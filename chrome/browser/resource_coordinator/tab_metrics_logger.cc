@@ -90,7 +90,7 @@ void PopulateTabFeaturesFromPageMetrics(
 void PopulateTabFeaturesFromWebContents(content::WebContents* web_contents,
                                         tab_ranker::TabFeatures* tab_features) {
   tab_features->has_before_unload_handler =
-      web_contents->GetMainFrame()->GetSuddenTerminationDisablerState(
+      web_contents->GetPrimaryMainFrame()->GetSuddenTerminationDisablerState(
           blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
   tab_features->has_form_entry =
       FormInteractionTabHelper::FromWebContents(web_contents)

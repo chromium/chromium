@@ -124,7 +124,7 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
     std::string script_result;
     // TODO(crbug.com/1243764): Use EvalJs() instead.
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        capturing_tab_->GetMainFrame(),
+        capturing_tab_->GetPrimaryMainFrame(),
         base::StringPrintf("captureOtherTab(%d, \"%s\", %s);", busy_wait_ms,
                            ToString(focus_enum_value),
                            on_correct_microtask ? "true" : "false"),
@@ -156,7 +156,7 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
     std::string script_result;
     // TODO(crbug.com/1243764): Use EvalJs() instead.
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        capturing_tab_->GetMainFrame(), "callFocusAndExpectError();",
+        capturing_tab_->GetPrimaryMainFrame(), "callFocusAndExpectError();",
         &script_result));
     EXPECT_EQ(script_result, expected_error);
   }
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
   // TODO(crbug.com/1243764): Use EvalJs() instead.
   std::string script_result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      capturing_tab_->GetMainFrame(), "captureCloneAndFocusClone();",
+      capturing_tab_->GetPrimaryMainFrame(), "captureCloneAndFocusClone();",
       &script_result));
   EXPECT_EQ(
       script_result,

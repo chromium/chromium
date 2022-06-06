@@ -1030,7 +1030,7 @@ class BackForwardCachePrintBrowserTest : public PrintBrowserTest {
   }
 
   content::RenderFrameHost* current_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   void ExpectBlocklistedFeature(
@@ -1306,7 +1306,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedImagesFetchedScriptedPrint) {
   TestPrintViewManager* print_view_manager =
       TestPrintViewManager::CreateForWebContents(web_contents);
 
-  content::ExecuteScriptAsync(web_contents->GetMainFrame(), "window.print();");
+  content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
+                              "window.print();");
   print_view_manager->WaitUntilPreviewIsShownOrCancelled();
 
   // The non-printed document should have loaded the image, which will have
@@ -1345,7 +1346,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PrintFrameContent) {
 
   content::WebContents* original_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* rfh = original_contents->GetMainFrame();
+  content::RenderFrameHost* rfh = original_contents->GetPrimaryMainFrame();
   CreateTestPrintRenderFrame(rfh, original_contents);
   GetPrintRenderFrame(rfh)->PrintFrameContent(GetDefaultPrintFrameParams(),
                                               base::DoNothing());
@@ -1393,7 +1394,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PrintSubframeChain) {
   // Create composite client so subframe print message can be forwarded.
   PrintCompositeClient::CreateForWebContents(original_contents);
 
-  content::RenderFrameHost* main_frame = original_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame =
+      original_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child_frame = content::ChildFrameAt(main_frame, 0);
   ASSERT_TRUE(child_frame);
   ASSERT_NE(child_frame, main_frame);
@@ -1439,7 +1441,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PrintSubframeABA) {
   // Create composite client so subframe print message can be forwarded.
   PrintCompositeClient::CreateForWebContents(original_contents);
 
-  content::RenderFrameHost* main_frame = original_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame =
+      original_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child_frame = content::ChildFrameAt(main_frame, 0);
   ASSERT_TRUE(child_frame);
   ASSERT_NE(child_frame, main_frame);
@@ -1486,7 +1489,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
 
   content::WebContents* original_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* main_frame = original_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame =
+      original_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(main_frame);
   content::RenderFrameHost* test_frame = ChildFrameAt(main_frame, 0);
   ASSERT_TRUE(test_frame);
@@ -1619,7 +1623,7 @@ IN_PROC_BROWSER_TEST_F(IsolateOriginsPrintBrowserTest, PrintIsolatedSubframe) {
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(NavigateIframeToURL(original_contents, "iframe", isolated_url));
 
-  auto* main_frame = original_contents->GetMainFrame();
+  auto* main_frame = original_contents->GetPrimaryMainFrame();
   auto* subframe = ChildFrameAt(main_frame, 0);
   ASSERT_NE(main_frame->GetProcess(), subframe->GetProcess());
 
@@ -1737,7 +1741,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnAllowedWithWindowDotPrint) {
 
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
-  content::ExecuteScriptAsync(web_contents->GetMainFrame(), "window.print();");
+  content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
+                              "window.print();");
   print_view_manager->WaitUntilPreviewIsShownOrCancelled();
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kAllowed);
@@ -1763,7 +1768,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnCanceledWithWindowDotPrint) {
 
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
-  content::ExecuteScriptAsync(web_contents->GetMainFrame(), "window.print();");
+  content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
+                              "window.print();");
   print_view_manager->WaitUntilPreviewIsShownOrCancelled();
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kDisallowed);
@@ -1787,7 +1793,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPBlockedWithWindowDotPrint) {
 
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
-  content::ExecuteScriptAsync(web_contents->GetMainFrame(), "window.print();");
+  content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
+                              "window.print();");
   print_view_manager->WaitUntilPreviewIsShownOrCancelled();
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kDisallowed);
@@ -1974,7 +1981,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, WindowDotPrint) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
-  content::ExecuteScriptAsync(web_contents->GetMainFrame(), "window.print();");
+  content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
+                              "window.print();");
   print_preview_observer.WaitUntilPreviewIsReady();
 }
 
@@ -1983,7 +1991,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoExtraSetPrintingEnabledCalls) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   SetPrintingEnabledInterceptor main_frame_interceptor;
-  main_frame_interceptor.OverrideBinderForTesting(web_contents->GetMainFrame());
+  main_frame_interceptor.OverrideBinderForTesting(
+      web_contents->GetPrimaryMainFrame());
 
   // Clear `print_render_frames_` to use the overridden binder.
   auto* print_view_manager =
@@ -2096,7 +2105,7 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
 IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
                        SetPrintingEnabledShouldNotBeCalledInPrerendering) {
   SetPrintingEnabledInterceptor interceptor;
-  interceptor.OverrideBinderForTesting(web_contents()->GetMainFrame());
+  interceptor.OverrideBinderForTesting(web_contents()->GetPrimaryMainFrame());
 
   // Clear `print_render_frames_` to use the overridden binder.
   auto* print_view_manager =
@@ -2209,8 +2218,8 @@ class PrintFencedFrameBrowserTest
     GURL fenced_frame_url = https_server_.GetURL("/fenced_frames/title1.html");
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    content::RenderFrameHost* fenced_frame_host =
-        CreateFencedFrame(web_contents->GetMainFrame(), fenced_frame_url);
+    content::RenderFrameHost* fenced_frame_host = CreateFencedFrame(
+        web_contents->GetPrimaryMainFrame(), fenced_frame_url);
     ASSERT_TRUE(fenced_frame_host);
     content::WebContentsConsoleObserver console_observer(web_contents);
     EXPECT_EQ(0u, console_observer.messages().size());
@@ -2263,7 +2272,7 @@ IN_PROC_BROWSER_TEST_P(PrintFencedFrameBrowserTest,
     return;
 
   SetPrintingEnabledInterceptor interceptor;
-  interceptor.OverrideBinderForTesting(web_contents()->GetMainFrame());
+  interceptor.OverrideBinderForTesting(web_contents()->GetPrimaryMainFrame());
 
   // Clear `print_render_frames_` to use the overridden binder.
   auto* print_view_manager =
@@ -2285,7 +2294,7 @@ IN_PROC_BROWSER_TEST_P(PrintFencedFrameBrowserTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper()->CreateFencedFrame(
-          web_contents()->GetMainFrame(), kFencedFrameUrl);
+          web_contents()->GetPrimaryMainFrame(), kFencedFrameUrl);
   ASSERT_TRUE(fenced_frame_host);
 
   // The fenced frame should not call SetPrintingEnabled().
@@ -3553,7 +3562,7 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
     auto* print_view_manager =
         TestPrintViewManagerForContentAnalysis::CreateForWebContents(
             web_contents);
-    content::ExecuteScriptAsync(web_contents->GetMainFrame(), script);
+    content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(), script);
 
     print_view_manager->WaitOnScanning();
     ASSERT_EQ(print_view_manager->scripted_print_called(),

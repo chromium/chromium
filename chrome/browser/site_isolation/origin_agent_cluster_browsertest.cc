@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", cmd_line_isolated_url));
 
   // Make sure we got two SiteInstances.
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   auto* child_frame = ChildFrameAt(main_frame, 0);
   EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
 
@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", cmd_line_isolated_url));
 
   // Make sure we got two SiteInstances.
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   auto* child_frame = ChildFrameAt(main_frame, 0);
   EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
 
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", cmd_line_isolated_url));
 
   // Make sure we got two SiteInstances.
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   auto* child_frame = ChildFrameAt(main_frame, 0);
   EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
 
@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", cmd_line_isolated_url));
 
   // Make sure we got two SiteInstances.
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   auto* child_frame = ChildFrameAt(main_frame, 0);
   EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
 

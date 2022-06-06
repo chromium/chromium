@@ -117,7 +117,7 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
   }
 
   content::RenderFrameHost* current_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   void SetupFeaturesAndParameters() {

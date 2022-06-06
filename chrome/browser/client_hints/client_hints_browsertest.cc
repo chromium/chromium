@@ -518,7 +518,10 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
   // blocked on the webpage due to the checks done by client hints.
   void VerifyContentSettingsNotNotified() const {
     auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetPrimaryMainFrame());
     EXPECT_FALSE(pscs->IsContentBlocked(ContentSettingsType::COOKIES));
     EXPECT_FALSE(pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
   }

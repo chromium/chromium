@@ -210,7 +210,7 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
 
   void ExecuteJavaScriptForTests(const std::string& js) {
     base::RunLoop run_loop;
-    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(js),
         base::BindOnce(
             [](base::OnceClosure quit_callback, base::Value result) {
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ChromeDevtoolsURL) {
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ViewSourceURL) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-  web_contents()->GetMainFrame()->ViewSource();
+  web_contents()->GetPrimaryMainFrame()->ViewSource();
   OpenPageInfoBubble(browser());
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_INTERNAL_PAGE,
             PageInfoBubbleView::GetShownBubbleType());

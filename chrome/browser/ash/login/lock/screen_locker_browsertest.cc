@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestFullscreenExit) {
     browser()
         ->exclusive_access_manager()
         ->fullscreen_controller()
-        ->EnterFullscreenModeForTab(web_contents->GetMainFrame());
+        ->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
     fullscreen_waiter.Wait();
     EXPECT_TRUE(browser_window->IsFullscreen());
     EXPECT_TRUE(window_state->GetHideShelfWhenFullscreen());

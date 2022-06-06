@@ -199,11 +199,15 @@ void PerformClick(content::WebContents* contents, int x, int y) {
   click_event.button = blink::WebMouseEvent::Button::kLeft;
   click_event.click_count = 1;
   click_event.SetPositionInWidget(x, y);
-  contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      click_event);
+  contents->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(click_event);
   click_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      click_event);
+  contents->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(click_event);
 }
 
 class ExtensionPolicyTest : public ExtensionPolicyTestBase {

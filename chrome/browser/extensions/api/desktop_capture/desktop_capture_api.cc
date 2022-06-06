@@ -92,7 +92,7 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
     }
     // The |target_render_frame_host| is the main frame of the tab that
     // was requested for capture.
-    target_render_frame_host = web_contents->GetMainFrame();
+    target_render_frame_host = web_contents->GetPrimaryMainFrame();
   } else {
     origin = extension()->url();
     target_name = base::UTF8ToUTF16(GetExtensionTargetName());

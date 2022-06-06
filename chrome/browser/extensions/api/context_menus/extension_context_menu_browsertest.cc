@@ -889,7 +889,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, ClickInFrame) {
   // Click on a menu item in the main frame.
   EXPECT_EQ(
       "pageUrl=" + url_with_frame.spec() + ", frameUrl=undefined, frameId=0",
-      ClickMenuInFrame(GetWebContents()->GetMainFrame(), "item1"));
+      ClickMenuInFrame(GetWebContents()->GetPrimaryMainFrame(), "item1"));
 
   // Click on a menu item in the child frame.
   content::RenderFrameHost* child_frame = content::FrameMatchingPredicate(

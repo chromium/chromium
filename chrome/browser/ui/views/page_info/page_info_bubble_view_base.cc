@@ -67,7 +67,7 @@ void PageInfoBubbleViewBase::OnWidgetDestroying(views::Widget* widget) {
 
 void PageInfoBubbleViewBase::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host == web_contents()->GetMainFrame()) {
+  if (render_frame_host == web_contents()->GetPrimaryMainFrame()) {
     GetWidget()->Close();
   }
 }

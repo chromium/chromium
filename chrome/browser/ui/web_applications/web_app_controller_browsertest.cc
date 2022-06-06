@@ -117,8 +117,8 @@ content::WebContents* WebAppControllerBrowserTest::OpenWindow(
   EXPECT_EQ(
       content::PAGE_TYPE_NORMAL,
       new_contents->GetController().GetLastCommittedEntry()->GetPageType());
-  EXPECT_EQ(contents->GetMainFrame()->GetSiteInstance(),
-            new_contents->GetMainFrame()->GetSiteInstance());
+  EXPECT_EQ(contents->GetPrimaryMainFrame()->GetSiteInstance(),
+            new_contents->GetPrimaryMainFrame()->GetSiteInstance());
 
   return new_contents;
 }

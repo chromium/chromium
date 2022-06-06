@@ -83,7 +83,7 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
             requesting_frame_origin);
     if (IsExtensionWithPermissionOrSuggestInConsole(
             extensions::mojom::APIPermissionID::kGeolocation, extension,
-            web_contents->GetMainFrame())) {
+            web_contents->GetPrimaryMainFrame())) {
       // Make sure the extension is in the calling process.
       if (extensions::ProcessMap::Get(profile_)->Contains(
               extension->id(), request_id.render_process_id())) {

@@ -264,8 +264,8 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
                  content::WebContents* web_contents) {
     if (!web_contents)
       web_contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-    return content::ExecuteScriptAndExtractString(web_contents->GetMainFrame(),
-                                                  script, result);
+    return content::ExecuteScriptAndExtractString(
+        web_contents->GetPrimaryMainFrame(), script, result);
   }
 
   gcm::GCMAppHandler* GetAppHandler() {
@@ -2017,7 +2017,8 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, CrossOriginFrame) {
 
   auto* web_contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
   LOG(ERROR) << web_contents->GetLastCommittedURL();
-  auto* subframe = content::ChildFrameAt(web_contents->GetMainFrame(), 0u);
+  auto* subframe =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0u);
   ASSERT_TRUE(subframe);
 
   // A cross-origin subframe that had not been granted the NOTIFICATIONS
@@ -2843,7 +2844,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest, WarningToCorrectRFH) {
   console_observer.SetPattern(kIncognitoWarningPattern);
 
   // Filter out the main frame host of the currently active page.
-  content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
   console_observer.SetFilter(base::BindLambdaForTesting(
       [&](const content::WebContentsConsoleObserver::Message& message) {
         return message.source_frame == rfh;
@@ -2877,7 +2878,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
   // prerender page activation.
   std::string script_result;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents()->GetMainFrame(), "registerServiceWorker()",
+      web_contents()->GetPrimaryMainFrame(), "registerServiceWorker()",
       &script_result));
   ASSERT_EQ("ok - service worker registered", script_result);
 

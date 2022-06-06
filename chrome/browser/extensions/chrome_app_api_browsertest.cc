@@ -39,8 +39,10 @@ class ChromeAppAPITest : public extensions::ExtensionBrowserTest {
   }
 
   bool IsAppInstalledInMainFrame() {
-    return IsAppInstalledInFrame(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+    return IsAppInstalledInFrame(browser()
+                                     ->tab_strip_model()
+                                     ->GetActiveWebContents()
+                                     ->GetPrimaryMainFrame());
   }
   bool IsAppInstalledInIFrame() {
     return IsAppInstalledInFrame(GetIFrame());
@@ -56,8 +58,10 @@ class ChromeAppAPITest : public extensions::ExtensionBrowserTest {
   }
 
   std::string InstallStateInMainFrame() {
-    return InstallStateInFrame(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+    return InstallStateInFrame(browser()
+                                   ->tab_strip_model()
+                                   ->GetActiveWebContents()
+                                   ->GetPrimaryMainFrame());
   }
   std::string InstallStateInIFrame() {
     return InstallStateInFrame(GetIFrame());
@@ -74,8 +78,10 @@ class ChromeAppAPITest : public extensions::ExtensionBrowserTest {
   }
 
   std::string RunningStateInMainFrame() {
-    return RunningStateInFrame(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+    return RunningStateInFrame(browser()
+                                   ->tab_strip_model()
+                                   ->GetActiveWebContents()
+                                   ->GetPrimaryMainFrame());
   }
   std::string RunningStateInIFrame() {
     return RunningStateInFrame(GetIFrame());

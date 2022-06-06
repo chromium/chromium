@@ -17,8 +17,8 @@ namespace chrome_browser_interstitials {
 // Looks for text in the |textContent| of |interstitial_frame|'s body and
 // returns true if found. This can be used for either transient or committed
 // interstitials. For the former, pass
-// web_contents->GetInterstitialPage()->GetMainFrame() as the first argument,
-// and for the latter, just pass web_contents->GetMainFrame().
+// web_contents->GetInterstitialPage()->GetPrimaryMainFrame() as the first
+// argument, and for the latter, just pass web_contents->GetPrimaryMainFrame().
 bool IsInterstitialDisplayingText(content::RenderFrameHost* interstitial_frame,
                                   const std::string& text);
 

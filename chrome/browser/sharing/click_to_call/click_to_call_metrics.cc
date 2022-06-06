@@ -20,7 +20,8 @@ void LogClickToCallUKM(content::WebContents* web_contents,
   if (!ukm_recorder)
     return;
 
-  ukm::SourceId source_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
+  ukm::SourceId source_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   if (source_id == ukm::kInvalidSourceId)
     return;
 

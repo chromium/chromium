@@ -1368,7 +1368,7 @@ class V2App {
     // in a random RenderFrameHost is Good Enough™.
     window_->Init(GURL(std::string()),
                   new extensions::AppWindowContentsImpl(window_),
-                  creator_web_contents_->GetMainFrame(), params);
+                  creator_web_contents_->GetPrimaryMainFrame(), params);
   }
 
   V2App(const V2App&) = delete;

@@ -91,7 +91,8 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
       https_embedded_test_server()->GetURL("c.com", "/simple.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
-  content::RenderFrameHost* main_frame = GetWebContents()->GetMainFrame();
+  content::RenderFrameHost* main_frame =
+      GetWebContents()->GetPrimaryMainFrame();
 
   // Delegate permission to both frames.
   EXPECT_TRUE(content::ExecuteScript(

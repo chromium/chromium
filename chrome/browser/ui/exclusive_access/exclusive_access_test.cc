@@ -192,7 +192,7 @@ void ExclusiveAccessTest::Reload() {
 void ExclusiveAccessTest::EnterActiveTabFullscreen() {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   FullscreenNotificationObserver fullscreen_observer(browser());
-  browser()->EnterFullscreenModeForTab(tab->GetMainFrame(), {});
+  browser()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
   fullscreen_observer.Wait();
 }
 

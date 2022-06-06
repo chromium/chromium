@@ -674,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, GetTopicsForSiteForDisplay) {
 
   std::vector<privacy_sandbox::CanonicalTopic> result =
       browsing_topics_service()->GetTopicsForSiteForDisplay(
-          web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+          web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Epoch switch time has not arrived. So expect one topic from each of the
   // first two epochs.
@@ -753,8 +753,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
                                            /*iframe_id=*/"frame",
                                            subframe_url));
 
-  std::string result =
-      InvokeTopicsAPI(content::ChildFrameAt(web_contents()->GetMainFrame(), 0));
+  std::string result = InvokeTopicsAPI(
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
 
   EXPECT_TRUE(result == kExpectedResultOrder1 ||
               result == kExpectedResultOrder2);
@@ -776,7 +776,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
 
   // b.test has yet to call the API so it shouldn't receive a topic.
   EXPECT_EQ("[]", InvokeTopicsAPI(content::ChildFrameAt(
-                      web_contents()->GetMainFrame(), 0)));
+                      web_contents()->GetPrimaryMainFrame(), 0)));
   auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
       web_contents()->GetPrimaryPage());
   EXPECT_FALSE(pscs->HasAccessedTopics());
@@ -803,7 +803,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   EXPECT_EQ(api_usage_contexts.size(), 1u);
 
   EXPECT_EQ("[]", InvokeTopicsAPI(content::ChildFrameAt(
-                      web_contents()->GetMainFrame(), 0)));
+                      web_contents()->GetPrimaryMainFrame(), 0)));
 
   api_usage_contexts =
       content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
@@ -872,7 +872,7 @@ IN_PROC_BROWSER_TEST_F(
       "The \"browsing-topics\" Permissions Policy denied the use of "
       "document.browsingTopics().",
       InvokeTopicsAPI(
-          content::ChildFrameAt(web_contents()->GetMainFrame(), 0)));
+          content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
@@ -900,7 +900,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
                                            /*iframe_id=*/"frame",
                                            subframe_url));
   EXPECT_EQ("[]", InvokeTopicsAPI(content::ChildFrameAt(
-                      web_contents()->GetMainFrame(), 0)));
+                      web_contents()->GetPrimaryMainFrame(), 0)));
 
   subframe_url =
       https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
@@ -913,7 +913,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
       "The \"browsing-topics\" Permissions Policy denied the use of "
       "document.browsingTopics().",
       InvokeTopicsAPI(
-          content::ChildFrameAt(web_contents()->GetMainFrame(), 0)));
+          content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
@@ -933,7 +933,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   // frame.
   EXPECT_EQ("not a function", InvokeTopicsAPI(web_contents()));
   EXPECT_EQ("not a function", InvokeTopicsAPI(content::ChildFrameAt(
-                                  web_contents()->GetMainFrame(), 0)));
+                                  web_contents()->GetPrimaryMainFrame(), 0)));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
@@ -967,7 +967,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   EXPECT_EQ(
       "document.browsingTopics() is not allowed in an opaque origin context.",
       InvokeTopicsAPI(
-          content::ChildFrameAt(web_contents()->GetMainFrame(), 0)));
+          content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
@@ -982,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
 
   content::RenderFrameHostWrapper fenced_frame_rfh_wrapper(
       fenced_frame_test_helper_.CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url));
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url));
 
   EXPECT_EQ(
       "document.browsingTopics() is only allowed in the primary main frame or "

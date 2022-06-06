@@ -294,7 +294,8 @@ PrintPreviewDialogController::~PrintPreviewDialogController() = default;
 void PrintPreviewDialogController::RenderProcessGone(
     content::WebContents* web_contents,
     base::TerminationStatus status) {
-  content::RenderProcessHost* rph = web_contents->GetMainFrame()->GetProcess();
+  content::RenderProcessHost* rph =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
 
   // Store contents in a vector and deal with them after iterating through
   // `preview_dialog_map_` because RemoveFoo() can change `preview_dialog_map_`.
@@ -303,9 +304,9 @@ void PrintPreviewDialogController::RenderProcessGone(
   for (auto& it : preview_dialog_map_) {
     WebContents* preview_dialog = it.first;
     WebContents* initiator = it.second;
-    if (preview_dialog->GetMainFrame()->GetProcess() == rph)
+    if (preview_dialog->GetPrimaryMainFrame()->GetProcess() == rph)
       closed_preview_dialogs.push_back(preview_dialog);
-    else if (initiator && initiator->GetMainFrame()->GetProcess() == rph)
+    else if (initiator && initiator->GetPrimaryMainFrame()->GetProcess() == rph)
       closed_initiators.push_back(initiator);
   }
 

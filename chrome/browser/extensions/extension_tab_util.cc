@@ -154,7 +154,7 @@ ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehaviorImpl(
 }
 
 bool HasValidMainFrameProcess(content::WebContents* contents) {
-  content::RenderFrameHost* main_frame_host = contents->GetMainFrame();
+  content::RenderFrameHost* main_frame_host = contents->GetPrimaryMainFrame();
   content::RenderProcessHost* process_host = main_frame_host->GetProcess();
   return process_host->IsReady() && process_host->IsInitializedAndNotDead();
 }

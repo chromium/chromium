@@ -149,7 +149,8 @@ void OfflinePageTabHelperTest::SimulateOfflinePageLoad(
     const GURL& mhtml_url,
     base::Time mhtml_creation_time,
     MHTMLLoadResult load_result) {
-  tab_helper()->SetCurrentTargetFrameForTest(web_contents()->GetMainFrame());
+  tab_helper()->SetCurrentTargetFrameForTest(
+      web_contents()->GetPrimaryMainFrame());
 
   // Simulate navigation
   CreateNavigationSimulator(GURL("file://foo"));
@@ -397,7 +398,8 @@ TEST_F(OfflinePageTabHelperTest, TestNotifyMhtmlPageLoadAttempted_Untrusted) {
   GURL mhtml_url("https://www.example.com");
   base::HistogramTester histogram_tester;
 
-  tab_helper()->SetCurrentTargetFrameForTest(web_contents()->GetMainFrame());
+  tab_helper()->SetCurrentTargetFrameForTest(
+      web_contents()->GetPrimaryMainFrame());
 
   // Simulate navigation
   CreateNavigationSimulator(GURL("file://foo"));
@@ -442,8 +444,8 @@ TEST_F(OfflinePageTabHelperTest, OfflinePageIsNotStoredInBackForwardCache) {
   SimulateOfflinePageLoad(kTestUrl, kTestMhtmlCreationTime,
                           MHTMLLoadResult::kSuccess);
 
-  int process_id = web_contents()->GetMainFrame()->GetProcess()->GetID();
-  int main_frame_id = web_contents()->GetMainFrame()->GetRoutingID();
+  int process_id = web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+  int main_frame_id = web_contents()->GetPrimaryMainFrame()->GetRoutingID();
 
   // Navigate away.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),

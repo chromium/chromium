@@ -48,7 +48,7 @@ class QuickAnswersMenuObserverTest : public InProcessBrowserTest {
   void ShowMenu(const content::ContextMenuParams& params) {
     auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
     menu()->set_web_contents(web_contents);
-    content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+    content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
     EXPECT_TRUE(ExecuteScript(main_frame, "window.focus();"));
 
     observer_->OnContextMenuShown(params, gfx::Rect());

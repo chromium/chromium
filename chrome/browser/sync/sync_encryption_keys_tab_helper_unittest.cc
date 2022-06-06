@@ -177,7 +177,7 @@ TEST_F(SyncEncryptionKeysTabHelperPrerenderingTest,
   // Activate the prerendered page.
   auto* activated_rfh =
       content::NavigationSimulator::NavigateAndCommitFromDocument(
-          kPrerenderingUrl, web_contents()->GetMainFrame());
+          kPrerenderingUrl, web_contents()->GetPrimaryMainFrame());
   host_observer.WaitForActivation();
   EXPECT_TRUE(host_observer.was_activated());
   // The EncryptionKeys exists for the activated page.
@@ -194,7 +194,7 @@ TEST_F(SyncEncryptionKeysTabHelperPrerenderingTest,
 
   // Load a page that doesn't allow EncryptionKeys.
   auto* rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
-      kCrossOriginPrerenderingUrl, web_contents()->GetMainFrame());
+      kCrossOriginPrerenderingUrl, web_contents()->GetPrimaryMainFrame());
   EXPECT_FALSE(HasEncryptionKeysApi(rfh));
   EXPECT_FALSE(HasEncryptionKeysApiInMainFrame());
 }

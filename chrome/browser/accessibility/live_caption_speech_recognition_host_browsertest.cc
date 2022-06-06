@@ -137,8 +137,10 @@ class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
 // Disabled due to flaky crashes; https://crbug.com/1216304.
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                        DISABLED_DestroysWithoutCrashing) {
-  content::RenderFrameHost* frame_host =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* frame_host = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
   CreateLiveCaptionSpeechRecognitionHost(frame_host);
 
   SetLiveCaptionEnabled(true);
@@ -153,8 +155,10 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
       ui_test_utils::NavigateToURL(browser(), GURL("http://www.google.com")));
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
-  content::RenderFrameHost* new_frame_host =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* new_frame_host = browser()
+                                                 ->tab_strip_model()
+                                                 ->GetActiveWebContents()
+                                                 ->GetPrimaryMainFrame();
   // After navigating to a new URL, the main frame should be different from the
   // former frame host.
   CreateLiveCaptionSpeechRecognitionHost(new_frame_host);
@@ -169,8 +173,10 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                        OnSpeechRecognitionRecognitionEvent) {
-  content::RenderFrameHost* frame_host =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* frame_host = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
   CreateLiveCaptionSpeechRecognitionHost(frame_host);
 
   SetLiveCaptionEnabled(true);
@@ -190,8 +196,10 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                        OnLanguageIdentificationEvent) {
-  content::RenderFrameHost* frame_host =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* frame_host = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
   CreateLiveCaptionSpeechRecognitionHost(frame_host);
 
   SetLiveCaptionEnabled(true);
@@ -201,8 +209,10 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                        OnSpeechRecognitionError) {
-  content::RenderFrameHost* frame_host =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* frame_host = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
   CreateLiveCaptionSpeechRecognitionHost(frame_host);
 
   SetLiveCaptionEnabled(true);
@@ -214,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                        MediaEffectivelyFullscreenChanged) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* frame_host = web_contents->GetMainFrame();
+  content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   CreateLiveCaptionSpeechRecognitionHost(frame_host);
   EXPECT_TRUE(content::NavigateToURL(
       web_contents, embedded_test_server()->GetURL("/media/fullscreen.html")));

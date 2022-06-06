@@ -1808,7 +1808,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPushMessagingTest, OnPush) {
   ExtensionTestMessageListener ready_listener("SERVICE_WORKER_READY");
   ready_listener.set_failure_message("SERVICE_WORKER_FAILURE");
   const char* kScript = "window.runServiceWorker()";
-  EXPECT_TRUE(content::ExecuteScript(web_contents->GetMainFrame(), kScript));
+  EXPECT_TRUE(
+      content::ExecuteScript(web_contents->GetPrimaryMainFrame(), kScript));
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
   PushMessagingAppIdentifier app_identifier =
@@ -2831,7 +2832,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWithManifestVersionTest,
   // inherits the extension CSP.
   result = "";
   content::RenderFrameHost* iframe =
-      content::ChildFrameAt(web_contents->GetMainFrame(), 0);
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe);
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(iframe, kScript, &result));
   EXPECT_EQ("PASS", result);

@@ -36,7 +36,8 @@ void MaybeFreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
   // it's in background. This information isn't available in the PM graph, this
   // has to be checked on the UI thread.
   if (permission_controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::NOTIFICATIONS, contents->GetMainFrame()) ==
+          blink::PermissionType::NOTIFICATIONS,
+          contents->GetPrimaryMainFrame()) ==
       blink::mojom::PermissionStatus::GRANTED) {
     return;
   }

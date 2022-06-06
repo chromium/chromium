@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(ViewExtensionSourceTest, ViewSourceTabRestore) {
   content::WebContents* bookmarks_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL bookmarks_extension_url =
-      bookmarks_tab->GetMainFrame()->GetLastCommittedURL();
+      bookmarks_tab->GetPrimaryMainFrame()->GetLastCommittedURL();
   EXPECT_TRUE(bookmarks_extension_url.SchemeIs(extensions::kExtensionScheme));
 
   // Open a new view-source tab for that URL.
@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(ViewExtensionSourceTest, ViewSourceTabRestore) {
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(view_source_url, view_source_tab->GetVisibleURL());
   EXPECT_EQ(bookmarks_extension_url,
-            view_source_tab->GetMainFrame()->GetLastCommittedURL());
+            view_source_tab->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_FALSE(chrome::CanViewSource(browser()));
 
   // Close the view-source tab.
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(ViewExtensionSourceTest, ViewSourceTabRestore) {
   // view-source:chrome-extension://.../.
   EXPECT_EQ(view_source_url, view_source_tab->GetVisibleURL());
   EXPECT_EQ(bookmarks_extension_url,
-            view_source_tab->GetMainFrame()->GetLastCommittedURL());
+            view_source_tab->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_FALSE(chrome::CanViewSource(browser()));
 
   // Verify that the view-source content is not empty, and that the

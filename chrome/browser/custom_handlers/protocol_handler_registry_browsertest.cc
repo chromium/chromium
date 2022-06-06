@@ -91,9 +91,12 @@ class ChromeRegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
     params.writing_direction_left_to_right = 0;
     params.writing_direction_right_to_left = 0;
 #endif  // BUILDFLAG(IS_MAC)
-    TestRenderViewContextMenu* menu = new TestRenderViewContextMenu(
-        *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-        params);
+    TestRenderViewContextMenu* menu =
+        new TestRenderViewContextMenu(*browser()
+                                           ->tab_strip_model()
+                                           ->GetActiveWebContents()
+                                           ->GetPrimaryMainFrame(),
+                                      params);
     menu->Init();
     return menu;
   }
@@ -240,7 +243,10 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest, FencedFrame) {
   // Create a FencedFrame.
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+          browser()
+              ->tab_strip_model()
+              ->GetActiveWebContents()
+              ->GetPrimaryMainFrame(),
           embedded_test_server()->GetURL("/fenced_frames/title1.html"));
   ASSERT_TRUE(fenced_frame_host);
 

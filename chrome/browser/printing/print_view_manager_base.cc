@@ -524,9 +524,10 @@ void PrintViewManagerBase::ScriptedPrintReply(
 void PrintViewManagerBase::UpdatePrintingEnabled() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // The Unretained() is safe because ForEachRenderFrameHost() is synchronous.
-  web_contents()->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      &PrintViewManagerBase::SendPrintingEnabled, base::Unretained(this),
-      printing_enabled_.GetValue()));
+  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating(&PrintViewManagerBase::SendPrintingEnabled,
+                          base::Unretained(this),
+                          printing_enabled_.GetValue()));
 }
 
 void PrintViewManagerBase::NavigationStopped() {
@@ -870,7 +871,8 @@ bool PrintViewManagerBase::RenderAllMissingPagesNow() {
   }
 
   // We can't print if there is no renderer.
-  if (!web_contents() || !web_contents()->GetMainFrame()->IsRenderFrameLive()) {
+  if (!web_contents() ||
+      !web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive()) {
     return false;
   }
 
@@ -917,7 +919,7 @@ bool PrintViewManagerBase::CreateNewPrintJob(
     return false;
 
   // We can't print if there is no renderer.
-  if (!web_contents()->GetMainFrame()->IsRenderFrameLive()) {
+  if (!web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive()) {
     return false;
   }
 

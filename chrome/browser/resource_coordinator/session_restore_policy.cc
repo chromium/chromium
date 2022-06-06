@@ -209,7 +209,8 @@ void TabDataAccess::SetUsedInBgFromSiteData(
       contents->GetBrowserContext()->GetPermissionController();
 
   if (permission_controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::NOTIFICATIONS, contents->GetMainFrame()) ==
+          blink::PermissionType::NOTIFICATIONS,
+          contents->GetPrimaryMainFrame()) ==
       blink::mojom::PermissionStatus::GRANTED) {
     used_in_bg = true;
   }

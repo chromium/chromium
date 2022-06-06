@@ -27,25 +27,25 @@ class AuthenticatorRequestSchedulerTest
 TEST_F(AuthenticatorRequestSchedulerTest,
        SingleWebContents_AtMostOneSimultaneousRequest) {
   auto first_request = AuthenticatorRequestScheduler::CreateRequestDelegate(
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(first_request);
 
   ASSERT_FALSE(AuthenticatorRequestScheduler::CreateRequestDelegate(
-      web_contents()->GetMainFrame()));
+      web_contents()->GetPrimaryMainFrame()));
 
   first_request.reset();
   ASSERT_TRUE(AuthenticatorRequestScheduler::CreateRequestDelegate(
-      web_contents()->GetMainFrame()));
+      web_contents()->GetPrimaryMainFrame()));
 }
 
 TEST_F(AuthenticatorRequestSchedulerTest,
        TwoWebContents_TwoSimultaneousRequests) {
   auto first_request = AuthenticatorRequestScheduler::CreateRequestDelegate(
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
 
   auto second_web_contents = CreateTestWebContents();
   auto second_request = AuthenticatorRequestScheduler::CreateRequestDelegate(
-      second_web_contents->GetMainFrame());
+      second_web_contents->GetPrimaryMainFrame());
 
   ASSERT_TRUE(first_request);
   ASSERT_TRUE(second_request);
@@ -70,7 +70,7 @@ TEST_F(AuthenticatorRequestSchedulerFencedFramesTest,
   NavigateAndCommit(GURL("https://example.com"));
 
   auto first_request = AuthenticatorRequestScheduler::CreateRequestDelegate(
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
 
   content::RenderFrameHost* fenced_frame_root =
       content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();

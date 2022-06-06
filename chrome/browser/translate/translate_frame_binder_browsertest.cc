@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(TranslateFrameBinderFencedFrameBrowserTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   base::RunLoop run_loop;
   if (test_browser_client.WaitForBinding(fenced_frame_host,
                                          run_loop.QuitClosure())) {

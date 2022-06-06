@@ -145,7 +145,7 @@ bool WebTimeLimitEnforcerThrottleTest::IsErrorPageBeingShownInWebContents(
 
   bool value = false;
   content::ToRenderFrameHost target =
-      content::ToRenderFrameHost(tab->GetMainFrame());
+      content::ToRenderFrameHost(tab->GetPrimaryMainFrame());
   EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
       target, command, &value));
   return value;

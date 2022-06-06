@@ -69,9 +69,11 @@ class BackgroundSyncBrowserTest : public InProcessBrowserTest {
 
   // Runs the |script| in the current tab and writes the output to |*result|.
   bool RunScript(const std::string& script, std::string* result) {
-    return content::ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-        script, result);
+    return content::ExecuteScriptAndExtractString(browser()
+                                                      ->tab_strip_model()
+                                                      ->GetActiveWebContents()
+                                                      ->GetPrimaryMainFrame(),
+                                                  script, result);
   }
 
   // Intercepts all requests.

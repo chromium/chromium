@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, CloseTabWithBubble) {
       ->set_on_dialog_shown_closure_for_testing(run_loop.QuitClosure());
 
   // Click on the tel link to trigger the bubble view.
-  web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.querySelector('a').click();", base::NullCallback());
   // Wait until the bubble is visible.
   run_loop.Run();
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, LeftClick_ChooseDevice) {
   controller->set_on_dialog_shown_closure_for_testing(run_loop.QuitClosure());
 
   // Click on the tel link to trigger the bubble view.
-  web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.querySelector('a').click();", base::NullCallback());
   // Wait until the bubble is visible.
   run_loop.Run();
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, NavigateDifferentOrigin) {
       ->set_on_dialog_shown_closure_for_testing(run_loop.QuitClosure());
 
   // Click on the tel link to trigger the bubble view.
-  web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.querySelector('a').click();", base::NullCallback());
   // Wait until the bubble is visible.
   run_loop.Run();

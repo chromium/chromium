@@ -2018,7 +2018,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   // Wait for the interstitial to load all the JavaScript code. Otherwise,
   // trying to click on a button will fail.
   content::RenderFrameHost* rfh;
-  rfh = broken_tab_contents->GetMainFrame();
+  rfh = broken_tab_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(WaitForRenderFrameReady(rfh));
   const char kClickConnectButtonJS[] =
       "document.getElementById('primary-button').click();";

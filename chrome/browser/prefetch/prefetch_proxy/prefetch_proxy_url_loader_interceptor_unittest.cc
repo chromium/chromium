@@ -118,7 +118,7 @@ class PrefetchProxyURLLoaderInterceptorTest
 TEST_F(PrefetchProxyURLLoaderInterceptorTest, DISABLE_ASAN(WantIntercept)) {
   std::unique_ptr<TestPrefetchProxyURLLoaderInterceptor> interceptor =
       std::make_unique<TestPrefetchProxyURLLoaderInterceptor>(
-          web_contents()->GetMainFrame()->GetFrameTreeNodeId());
+          web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId());
 
   const GURL kTestUrl("https://test.com/path");
   interceptor->SetHasPrefetchedResponse(kTestUrl, true);
@@ -143,7 +143,7 @@ TEST_F(PrefetchProxyURLLoaderInterceptorTest,
        DISABLE_ASAN(DoNotWantIntercept)) {
   std::unique_ptr<TestPrefetchProxyURLLoaderInterceptor> interceptor =
       std::make_unique<TestPrefetchProxyURLLoaderInterceptor>(
-          web_contents()->GetMainFrame()->GetFrameTreeNodeId());
+          web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId());
 
   const GURL kTestUrl("https://test.com/path");
   interceptor->SetHasPrefetchedResponse(kTestUrl, false);

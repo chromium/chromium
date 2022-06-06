@@ -310,7 +310,7 @@ void PrintConsoleMessage(const MixedContentDownloadData& data,
     return;
   }
 
-  web_contents->GetMainFrame()->AddMessageToConsole(
+  web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError,
       base::StringPrintf(
           "Mixed Content: The site at '%s' was loaded over a secure "

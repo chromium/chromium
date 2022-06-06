@@ -202,7 +202,8 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_Allow) {
       TestingProfile::Builder().Build();
   auto web_contents = CreateTestWebContents(testing_profile.get());
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
-                                 web_contents->GetMainFrame(), callback.Get());
+                                 web_contents->GetPrimaryMainFrame(),
+                                 callback.Get());
 }
 
 TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_NullWebContents) {
@@ -235,7 +236,8 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_WarnDst) {
   EXPECT_CALL(dlp_controller_, WarnOnBlinkPaste);
 
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
-                                 web_contents->GetMainFrame(), callback.Get());
+                                 web_contents->GetPrimaryMainFrame(),
+                                 callback.Get());
   // We are not expecting warning proceeded event here. Warning proceeded event
   // is sent after a user accept the warn dialogue.
   // However, DataTransferDlpController::WarnOnBlinkPaste method is mocked
@@ -266,7 +268,8 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_ProceedDst) {
 
   EXPECT_CALL(callback, Run(true));
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
-                                 web_contents->GetMainFrame(), callback.Get());
+                                 web_contents->GetPrimaryMainFrame(),
+                                 callback.Get());
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
@@ -293,7 +296,8 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_CancelDst) {
 
   EXPECT_CALL(callback, Run(false));
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
-                                 web_contents->GetMainFrame(), callback.Get());
+                                 web_contents->GetPrimaryMainFrame(),
+                                 callback.Get());
   EXPECT_TRUE(events_.empty());
 }
 

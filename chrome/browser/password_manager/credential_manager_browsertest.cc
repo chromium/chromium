@@ -244,7 +244,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
     // Trigger a cross-site navigation that is carried out in a new renderer,
     // and which will swap out the old RenderFrameHost.
     content::RenderFrameDeletedObserver rfh_destruction_observer(
-        WebContents()->GetMainFrame());
+        WebContents()->GetPrimaryMainFrame());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
 
     // Ensure that the navigator.credentials.store() call is never serviced.

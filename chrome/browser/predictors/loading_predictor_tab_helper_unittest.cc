@@ -149,7 +149,7 @@ void LoadingPredictorTabHelperTest::
   NavigateAndCommitInFrame(url, main_rfh());
 
   EXPECT_EQ(ukm_source_id,
-            web_contents()->GetMainFrame()->GetPageUkmSourceId());
+            web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   GURL gurl(url);
   EXPECT_EQ(gurl, main_frame_url);
   EXPECT_EQ(gurl, old_main_frame_url);
@@ -202,7 +202,7 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationWithRedirects) {
       RecordFinishNavigation(_, main_frame_url, expected_main_frame_url, _));
   navigation->Commit();
 
-  EXPECT_EQ(web_contents()->GetMainFrame()->GetPageUkmSourceId(),
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
             ukm_source_id);
 }
 
@@ -241,7 +241,7 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationFailed) {
 
   EXPECT_EQ(ukm_source_id,
 
-            web_contents()->GetMainFrame()->GetPageUkmSourceId());
+            web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 }
 
 // Tests that a same document navigation is not recorded.

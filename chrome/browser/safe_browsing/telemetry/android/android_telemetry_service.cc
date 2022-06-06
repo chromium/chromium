@@ -231,7 +231,7 @@ AndroidTelemetryService::GetReport(download::DownloadItem* item) {
   content::RenderFrameHost* rfh =
       content::DownloadItemUtils::GetRenderFrameHost(item);
   if (!rfh && web_contents)
-    rfh = web_contents->GetMainFrame();
+    rfh = web_contents->GetPrimaryMainFrame();
 
   FillReferrerChain(web_contents, rfh, report.get());
 

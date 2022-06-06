@@ -66,8 +66,9 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
   }
 
   mojo::AssociatedRemote<webapps::mojom::WebPageMetadataAgent> metadata_agent;
-  web_contents->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
-      &metadata_agent);
+  web_contents->GetPrimaryMainFrame()
+      ->GetRemoteAssociatedInterfaces()
+      ->GetInterface(&metadata_agent);
 
   // Set the error handler so that we can run |get_web_app_info_callback_| if
   // the WebContents or the RenderFrameHost are destroyed and the connection

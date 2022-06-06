@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, MediaRequest) {
   AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   Browser* browser = LaunchWebAppBrowserAndWait(app_id);
   content::RenderFrameHost* render_frame_host =
-      browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+      browser->tab_strip_model()->GetActiveWebContents()->GetPrimaryMainFrame();
   const int render_process_id = render_frame_host->GetProcess()->GetID();
   const int render_frame_id = render_frame_host->GetRoutingID();
 

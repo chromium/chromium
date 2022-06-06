@@ -152,12 +152,12 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   WebContents* web_contents() { return web_contents_.get(); }
 
   int process_id() {
-    return web_contents()->GetMainFrame()->GetProcess()->GetID();
+    return web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   }
 
   content::GlobalRenderFrameHostId frame_id() {
     return content::GlobalRenderFrameHostId(
-        process_id(), web_contents()->GetMainFrame()->GetRoutingID());
+        process_id(), web_contents()->GetPrimaryMainFrame()->GetRoutingID());
   }
 
   base::Time Now() const { return task_environment_.GetMockClock()->Now(); }
@@ -1577,7 +1577,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_Dismissed) {
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::DISMISSED);
-  content::RenderFrameHostTester::For(web_contents_->GetMainFrame())
+  content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
       ->SimulateUserActivation();
 
   auto grant = permission_context()->GetWritePermissionGrant(
@@ -1600,7 +1600,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 TEST_F(ChromeFileSystemAccessPermissionContextTest, RequestPermission_Granted) {
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
-  content::RenderFrameHostTester::For(web_contents_->GetMainFrame())
+  content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
       ->SimulateUserActivation();
 
   auto grant = permission_context()->GetWritePermissionGrant(
@@ -1622,7 +1622,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, RequestPermission_Granted) {
 TEST_F(ChromeFileSystemAccessPermissionContextTest, RequestPermission_Denied) {
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::DENIED);
-  content::RenderFrameHostTester::For(web_contents_->GetMainFrame())
+  content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
       ->SimulateUserActivation();
 
   auto grant = permission_context()->GetWritePermissionGrant(

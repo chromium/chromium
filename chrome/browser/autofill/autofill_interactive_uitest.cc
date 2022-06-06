@@ -2964,7 +2964,7 @@ class AutofillInteractiveIsolationTest : public AutofillInteractiveTestBase {
   bool IsPopupShown() {
     return !!static_cast<ChromeAutofillClient*>(
                  ContentAutofillDriverFactory::FromWebContents(GetWebContents())
-                     ->DriverForFrame(GetWebContents()->GetMainFrame())
+                     ->DriverForFrame(GetWebContents()->GetPrimaryMainFrame())
                      ->autofill_manager()
                      ->client())
                  ->popup_controller_for_testing();
@@ -2999,7 +2999,7 @@ class AutofillInteractiveFencedFrameTest
   ~AutofillInteractiveFencedFrameTest() override = default;
 
   content::RenderFrameHost* primary_main_frame_host() {
-    return GetWebContents()->GetMainFrame();
+    return GetWebContents()->GetPrimaryMainFrame();
   }
 
   content::RenderFrameHost* LoadSubFrame(std::string relative_url) {

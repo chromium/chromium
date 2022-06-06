@@ -233,14 +233,15 @@ void AccessibilityLabelsService::EnableLabelsServiceOnce() {
   // We only need to fire this event for the active page.
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kAnnotatePageImages;
-  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      [](const ui::AXActionData& action_data,
-         content::RenderFrameHost* render_frame_host) {
-        if (render_frame_host->IsRenderFrameLive()) {
-          render_frame_host->AccessibilityPerformAction(action_data);
-        }
-      },
-      action_data));
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating(
+          [](const ui::AXActionData& action_data,
+             content::RenderFrameHost* render_frame_host) {
+            if (render_frame_host->IsRenderFrameLive()) {
+              render_frame_host->AccessibilityPerformAction(action_data);
+            }
+          },
+          action_data));
 #endif
 }
 
@@ -356,13 +357,14 @@ void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
   // We only need to fire this event for the active page.
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kAnnotatePageImages;
-  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      [](const ui::AXActionData& action_data,
-         content::RenderFrameHost* render_frame_host) {
-        if (render_frame_host->IsRenderFrameLive()) {
-          render_frame_host->AccessibilityPerformAction(action_data);
-        }
-      },
-      action_data));
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating(
+          [](const ui::AXActionData& action_data,
+             content::RenderFrameHost* render_frame_host) {
+            if (render_frame_host->IsRenderFrameLive()) {
+              render_frame_host->AccessibilityPerformAction(action_data);
+            }
+          },
+          action_data));
 }
 #endif

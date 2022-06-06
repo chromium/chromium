@@ -259,9 +259,10 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
 
   // The created AttestationPermissionRequest deletes itself once complete.
   permission_request_manager->AddRequest(
-      web_contents->GetMainFrame(),  // Extension API targets a particular tab,
-                                     // so select the current main frame to
-                                     // handle the request.
+      web_contents
+          ->GetPrimaryMainFrame(),  // Extension API targets a particular tab,
+                                    // so select the current main frame to
+                                    // handle the request.
       NewAttestationPermissionRequest(
           origin,
           base::BindOnce(

@@ -55,7 +55,7 @@ class ThirdPartyMetricsObserverTest
 
   // Returns the final RenderFrameHost after navigation commits.
   content::RenderFrameHost* NavigateMainFrame(const std::string& url) {
-    return NavigateFrame(url, web_contents()->GetMainFrame());
+    return NavigateFrame(url, web_contents()->GetPrimaryMainFrame());
   }
 
   // Returns the final RenderFrameHost after navigation commits.

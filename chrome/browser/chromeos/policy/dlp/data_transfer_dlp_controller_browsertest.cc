@@ -697,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ProceedOnWarn) {
              "});"));
 
   content::UpdateUserActivationStateInterceptor user_activation_interceptor(
-      GetActiveWebContents()->GetMainFrame());
+      GetActiveWebContents()->GetPrimaryMainFrame());
   user_activation_interceptor.UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType::kNotifyActivation,
       blink::mojom::UserActivationNotificationType::kTest);
@@ -792,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_CancelWarn) {
              "});"));
 
   content::UpdateUserActivationStateInterceptor user_activation_interceptor(
-      GetActiveWebContents()->GetMainFrame());
+      GetActiveWebContents()->GetPrimaryMainFrame());
   user_activation_interceptor.UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType::kNotifyActivation,
       blink::mojom::UserActivationNotificationType::kTest);
@@ -884,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
              "});"));
 
   content::UpdateUserActivationStateInterceptor user_activation_interceptor(
-      GetActiveWebContents()->GetMainFrame());
+      GetActiveWebContents()->GetPrimaryMainFrame());
   user_activation_interceptor.UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType::kNotifyActivation,
       blink::mojom::UserActivationNotificationType::kTest);
@@ -967,7 +967,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
              "});"));
 
   content::UpdateUserActivationStateInterceptor user_activation_interceptor(
-      GetActiveWebContents()->GetMainFrame());
+      GetActiveWebContents()->GetPrimaryMainFrame());
   user_activation_interceptor.UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType::kNotifyActivation,
       blink::mojom::UserActivationNotificationType::kTest);

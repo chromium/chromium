@@ -106,7 +106,8 @@ TEST_F(BrowserUnitTest, MAYBE_SetBackgroundColorForNewTab) {
   WebContentsTester::For(raw_contents1)->NavigateAndCommit(GURL("about:blank"));
   WebContentsTester::For(raw_contents1)->TestSetIsLoading(false);
 
-  raw_contents1->GetMainFrame()->GetView()->SetBackgroundColor(SK_ColorRED);
+  raw_contents1->GetPrimaryMainFrame()->GetView()->SetBackgroundColor(
+      SK_ColorRED);
 
   // Add a second tab in the background.
   std::unique_ptr<WebContents> contents2 = CreateTestWebContents();
@@ -116,9 +117,11 @@ TEST_F(BrowserUnitTest, MAYBE_SetBackgroundColorForNewTab) {
   WebContentsTester::For(raw_contents2)->TestSetIsLoading(false);
 
   tab_strip_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
-  ASSERT_TRUE(raw_contents2->GetMainFrame()->GetView()->GetBackgroundColor());
-  EXPECT_EQ(SK_ColorRED,
-            *raw_contents2->GetMainFrame()->GetView()->GetBackgroundColor());
+  ASSERT_TRUE(
+      raw_contents2->GetPrimaryMainFrame()->GetView()->GetBackgroundColor());
+  EXPECT_EQ(
+      SK_ColorRED,
+      *raw_contents2->GetPrimaryMainFrame()->GetView()->GetBackgroundColor());
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)

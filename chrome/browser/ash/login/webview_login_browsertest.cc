@@ -950,7 +950,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, RequestCamera) {
   content::WebContents* web_contents = GetLoginUI()->GetWebContents();
   bool getUserMediaSuccess = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents->GetMainFrame(),
+      web_contents->GetPrimaryMainFrame(),
       "navigator.getUserMedia("
       "    {video: true},"
       "    function() { window.domAutomationController.send(true); },"
@@ -960,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, RequestCamera) {
 
   // Audio devices should be denied from the login screen.
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents->GetMainFrame(),
+      web_contents->GetPrimaryMainFrame(),
       "navigator.getUserMedia("
       "    {audio: true},"
       "    function() { window.domAutomationController.send(true); },"

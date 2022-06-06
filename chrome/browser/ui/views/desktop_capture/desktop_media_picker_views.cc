@@ -156,9 +156,9 @@ void RecordUmaSelection(DialogType dialog_type,
       // list of all available tabs.
       const bool current_tab_selected =
           web_contents &&
-          web_contents->GetMainFrame()->GetProcess()->GetID() ==
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID() ==
               selected_media.web_contents_id.render_process_id &&
-          web_contents->GetMainFrame()->GetRoutingID() ==
+          web_contents->GetPrimaryMainFrame()->GetRoutingID() ==
               selected_media.web_contents_id.main_render_frame_id;
 
       if (dialog_type == DialogType::kPreferCurrentTab) {

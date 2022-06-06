@@ -137,7 +137,10 @@ class PermissionPromptBubbleViewBrowserTest
   GURL GetTestUrl() { return GURL("https://example.com"); }
 
   content::RenderFrameHost* GetActiveMainFrame() {
-    return browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
   }
 
   PermissionChip* GetChip() {
@@ -322,7 +325,7 @@ IN_PROC_BROWSER_TEST_P(
   content::RenderViewHost* render_view_host = browser()
                                                   ->tab_strip_model()
                                                   ->GetActiveWebContents()
-                                                  ->GetMainFrame()
+                                                  ->GetPrimaryMainFrame()
                                                   ->GetRenderViewHost();
   content::RenderProcessHost* render_process_host =
       render_view_host->GetProcess();

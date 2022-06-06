@@ -744,7 +744,8 @@ DownloadTargetDeterminer::Result
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(download_);
   if (web_contents)
-    render_process_id = web_contents->GetMainFrame()->GetProcess()->GetID();
+    render_process_id =
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
   IsHandledBySafePlugin(
       render_process_id, net::FilePathToFileURL(local_path_), mime_type_,
       RETRY_IF_STALE_PLUGIN_LIST,

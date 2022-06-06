@@ -87,7 +87,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog,
                             Profile* profile);
 
   // Allows access to the extension's main frame for injecting javascript.
-  content::RenderFrameHost* GetMainFrame();
+  content::RenderFrameHost* GetPrimaryMainFrame();
 
   // Call SelectFile with params specific to Chrome OS file manager.
   // |owner| specifies the window and app type that opened the dialog.

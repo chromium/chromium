@@ -78,7 +78,8 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
     FullscreenNotificationObserver waiter(browser());
     auto* delegate = static_cast<content::WebContentsDelegate*>(browser());
     if (tab_fullscreen)
-      delegate->EnterFullscreenModeForTab(web_contents->GetMainFrame(), {});
+      delegate->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame(),
+                                          {});
     else
       delegate->ExitFullscreenModeForTab(web_contents);
     waiter.Wait();

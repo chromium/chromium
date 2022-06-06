@@ -121,7 +121,7 @@ WebContentsTaskProvider::WebContentsEntry::~WebContentsEntry() {
 }
 
 void WebContentsTaskProvider::WebContentsEntry::CreateAllTasks() {
-  DCHECK(web_contents()->GetMainFrame());
+  DCHECK(web_contents()->GetPrimaryMainFrame());
   web_contents()->ForEachFrame(base::BindRepeating(
       &WebContentsEntry::CreateTaskForFrame, base::Unretained(this)));
 }
@@ -257,7 +257,7 @@ void WebContentsTaskProvider::WebContentsEntry::DidFinishNavigation(
     return;
 
   RendererTask* main_frame_task =
-      GetTaskForFrame(web_contents()->GetMainFrame());
+      GetTaskForFrame(web_contents()->GetPrimaryMainFrame());
   if (!main_frame_task)
     return;
 
@@ -311,7 +311,7 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
 
   bool site_instance_exists = site_instance_infos_.count(site_instance) != 0;
   bool is_primary_main_frame =
-      (render_frame_host == web_contents()->GetMainFrame());
+      (render_frame_host == web_contents()->GetPrimaryMainFrame());
   bool site_instance_is_main = (site_instance == main_frame_site_instance_);
 
   std::unique_ptr<RendererTask> new_task;
@@ -335,7 +335,8 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
       main_frame_site_instance_ = site_instance;
     } else {
       new_task = std::make_unique<SubframeTask>(
-          render_frame_host, GetTaskForFrame(web_contents()->GetMainFrame()));
+          render_frame_host,
+          GetTaskForFrame(web_contents()->GetPrimaryMainFrame()));
     }
   }
 

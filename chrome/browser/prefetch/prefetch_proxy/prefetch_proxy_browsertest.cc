@@ -1452,7 +1452,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   tab_helper_observer.SetOnPrefetchSuccessfulClosure(run_loop.QuitClosure());
 
   ukm::SourceId srp_source_id =
-      GetWebContents()->GetMainFrame()->GetPageUkmSourceId();
+      GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   base::HistogramTester histogram_tester;
 
@@ -2199,7 +2199,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
       blink::StorageKey(url::Origin::Create(starting_page))));
 
   ukm::SourceId srp_source_id =
-      GetWebContents()->GetMainFrame()->GetPageUkmSourceId();
+      GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   base::RunLoop run_loop;
   TestTabHelperObserver tab_helper_observer(
@@ -2281,7 +2281,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
                                  "cookietype=ChocolateChip"));
 
   ukm::SourceId srp_source_id =
-      GetWebContents()->GetMainFrame()->GetPageUkmSourceId();
+      GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   base::RunLoop run_loop;
   TestTabHelperObserver tab_helper_observer(
@@ -3613,7 +3613,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
   tab_helper_observer.SetOnNSPFinishedClosure(nsp_run_loop.QuitClosure());
 
   ukm::SourceId srp_source_id =
-      GetWebContents()->GetMainFrame()->GetPageUkmSourceId();
+      GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   GURL doc_url("https://www.google.com/search?q=test");
   MakeNavigationPrediction(doc_url, {eligible_link});
@@ -3824,7 +3824,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
   tab_helper_observer.SetOnNSPFinishedClosure(nsp_run_loop.QuitClosure());
 
   ukm::SourceId srp_source_id =
-      GetWebContents()->GetMainFrame()->GetPageUkmSourceId();
+      GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   GURL doc_url("https://www.google.com/search?q=test");
   MakeNavigationPrediction(doc_url, {eligible_link});
@@ -4482,7 +4482,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyFencedFrameBrowserTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html"));
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), fenced_frame_url);
+          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
   ASSERT_EQ(fenced_frame_url, fenced_frame_host->GetLastCommittedURL());
 
@@ -4827,7 +4827,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL starting_page = GetOriginServerURL("/search/q=blah");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
-  content::OverrideLastCommittedOrigin(GetWebContents()->GetMainFrame(),
+  content::OverrideLastCommittedOrigin(GetWebContents()->GetPrimaryMainFrame(),
                                        url::Origin::Create(starting_page));
   WaitForUpdatedCustomProxyConfig();
 
@@ -4898,7 +4898,7 @@ IN_PROC_BROWSER_TEST_F(SpeculationNonPrivatePrefetchesPrefetchProxyTest,
 
   GURL localhost_url = GetLocalhostURL("/search/q=blah");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), localhost_url));
-  content::OverrideLastCommittedOrigin(GetWebContents()->GetMainFrame(),
+  content::OverrideLastCommittedOrigin(GetWebContents()->GetPrimaryMainFrame(),
                                        url::Origin::Create(localhost_url));
   WaitForUpdatedCustomProxyConfig();
 

@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, CaptureFrame) {
   auto* client = PaintPreviewClient::FromWebContents(GetWebContents());
   WaitForLoadStopWithoutSuccessCheck();
   client->CapturePaintPreview(
-      params, GetWebContents()->GetMainFrame(),
+      params, GetWebContents()->GetPrimaryMainFrame(),
       base::BindOnce(
           [](base::RepeatingClosure quit,
              const PaintPreviewClient::PaintPreviewParams& params,
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   auto* client = PaintPreviewClient::FromWebContents(GetWebContents());
   WaitForLoadStopWithoutSuccessCheck();
   client->CapturePaintPreview(
-      params, GetWebContents()->GetMainFrame(),
+      params, GetWebContents()->GetPrimaryMainFrame(),
       base::BindOnce(
           [](base::RepeatingClosure quit,
              const PaintPreviewClient::PaintPreviewParams& params,
@@ -278,7 +278,8 @@ class PaintPreviewFencedFrameBrowserTest : public PaintPreviewBrowserTest {
 IN_PROC_BROWSER_TEST_P(PaintPreviewFencedFrameBrowserTest,
                        CaptureMainFrameWithCrossProcessFencedFrames) {
   LoadPage(http_server_.GetURL("a.com", "/title1.html"));
-  content::RenderFrameHost* primary_main_rfh = GetWebContents()->GetMainFrame();
+  content::RenderFrameHost* primary_main_rfh =
+      GetWebContents()->GetPrimaryMainFrame();
 
   // Create two fenced frames.
   fenced_frame_test_helper().CreateFencedFrame(
@@ -329,7 +330,8 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewFencedFrameBrowserTest,
   base::ScopedAllowBlockingForTesting scope;
 
   LoadPage(http_server_.GetURL("a.com", "/title1.html"));
-  content::RenderFrameHost* primary_main_rfh = GetWebContents()->GetMainFrame();
+  content::RenderFrameHost* primary_main_rfh =
+      GetWebContents()->GetPrimaryMainFrame();
 
   // Create two fenced frames.
   content::RenderFrameHostWrapper fenced_rfh_wrapper(
@@ -417,7 +419,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   auto* client = PaintPreviewClient::FromWebContents(GetWebContents());
   WaitForLoadStopWithoutSuccessCheck();
   client->CapturePaintPreview(
-      params, GetWebContents()->GetMainFrame(),
+      params, GetWebContents()->GetPrimaryMainFrame(),
       base::BindOnce(
           [](base::RepeatingClosure quit,
              const PaintPreviewClient::PaintPreviewParams& params,
@@ -471,7 +473,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   auto* client = PaintPreviewClient::FromWebContents(GetWebContents());
   WaitForLoadStopWithoutSuccessCheck();
   client->CapturePaintPreview(
-      params, GetWebContents()->GetMainFrame(),
+      params, GetWebContents()->GetPrimaryMainFrame(),
       base::BindOnce(
           [](base::RepeatingClosure quit,
              const PaintPreviewClient::PaintPreviewParams& params,
@@ -515,7 +517,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
   base::RunLoop started_loop;
   NoOpPaintPreviewRecorder noop_recorder;
   noop_recorder.SetRequestedClosure(started_loop.QuitClosure());
-  OverrideInterface(&noop_recorder, GetWebContents()->GetMainFrame());
+  OverrideInterface(&noop_recorder, GetWebContents()->GetPrimaryMainFrame());
 
   CreateClient();
   auto* client = PaintPreviewClient::FromWebContents(web_contents);
@@ -533,7 +535,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
   auto params = MakeParams();
   bool did_run = false;
   client->CapturePaintPreview(
-      params, web_contents->GetMainFrame(),
+      params, web_contents->GetPrimaryMainFrame(),
       // This callback is now posted so it shouldn't cause a crash.
       base::BindOnce(
           [](content::WebContents* web_contents, bool* did_run_ptr,
@@ -560,7 +562,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
 
   // Crash the renderer.
   content::RenderProcessHost* process =
-      GetWebContents()->GetMainFrame()->GetProcess();
+      GetWebContents()->GetPrimaryMainFrame()->GetProcess();
   content::RenderProcessHostWatcher crash_observer(
       process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   process->Shutdown(0);

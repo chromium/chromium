@@ -141,9 +141,9 @@ bool OpenTabFromSourceIndex(int browser_index,
                                          ui::PAGE_TRANSITION_LINK, false,
                                          false);
   open_url_params.source_render_frame_id =
-      source_contents->GetMainFrame()->GetRoutingID();
+      source_contents->GetPrimaryMainFrame()->GetRoutingID();
   open_url_params.source_render_process_id =
-      source_contents->GetMainFrame()->GetProcess()->GetID();
+      source_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
 
   content::WebContents* new_contents =
       source_contents->OpenURL(open_url_params);

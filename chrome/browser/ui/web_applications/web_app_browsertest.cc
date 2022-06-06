@@ -1022,8 +1022,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutMenuOptionsForCrashedTab) {
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
     content::RenderFrameDeletedObserver crash_observer(
-        tab_contents->GetMainFrame());
-    tab_contents->GetMainFrame()->GetProcess()->Shutdown(1);
+        tab_contents->GetPrimaryMainFrame());
+    tab_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(1);
     crash_observer.WaitUntilDeleted();
   }
   ASSERT_TRUE(tab_contents->IsCrashed());
@@ -1493,7 +1493,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PermissionBubble) {
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
 
   content::RenderFrameHost* const render_frame_host =
-      app_browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+      app_browser->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame();
   EXPECT_TRUE(content::ExecuteScript(
       render_frame_host,
       "navigator.geolocation.getCurrentPosition(function(){});"));
@@ -1675,7 +1677,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, SubframeRedirectsToWebApp) {
   // Ensure that the frame navigated successfully and that it has correct
   // content.
   content::RenderFrameHost* const subframe =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(app_url, subframe->GetLastCommittedURL());
   EXPECT_EQ(
       "This page has no title.",

@@ -298,7 +298,7 @@ bool PerformanceHintsObserver::DoesPageSupportHints() {
   // The error pages do not support hints.
   const GURL page_url = GetWebContents().GetLastCommittedURL();
   return page_url.is_valid() && page_url.SchemeIsHTTPOrHTTPS() &&
-         !GetWebContents().GetMainFrame()->IsErrorDocument();
+         !GetWebContents().GetPrimaryMainFrame()->IsErrorDocument();
 }
 
 void PerformanceHintsObserver::PopulateLinkHints(PageData& page_data) {

@@ -1087,12 +1087,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // There is no navigation (to about:blank or something like that).
   EXPECT_FALSE(params.contents_to_insert->IsLoading());
 
-  ASSERT_TRUE(params.contents_to_insert->GetMainFrame());
-  EXPECT_TRUE(params.contents_to_insert->GetMainFrame()->IsRenderFrameLive());
+  ASSERT_TRUE(params.contents_to_insert->GetPrimaryMainFrame());
+  EXPECT_TRUE(
+      params.contents_to_insert->GetPrimaryMainFrame()->IsRenderFrameLive());
   EXPECT_TRUE(
       params.contents_to_insert->GetController().IsInitialBlankNavigation());
   int renderer_id =
-      params.contents_to_insert->GetMainFrame()->GetProcess()->GetID();
+      params.contents_to_insert->GetPrimaryMainFrame()->GetProcess()->GetID();
 
   // We should have one window, with one tab of WebContents differ from
   // params.target_contents.
@@ -1108,9 +1109,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(browser(), params.browser);
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
             params.navigated_or_inserted_contents);
-  EXPECT_EQ(renderer_id, params.navigated_or_inserted_contents->GetMainFrame()
-                             ->GetProcess()
-                             ->GetID());
+  EXPECT_EQ(renderer_id,
+            params.navigated_or_inserted_contents->GetPrimaryMainFrame()
+                ->GetProcess()
+                ->GetID());
 
   // We should have one window, with two tabs.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -1387,8 +1389,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateToCrashedSingletonTab) {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
 
     content::RenderFrameDeletedObserver crash_observer(
-        web_contents->GetMainFrame());
-    web_contents->GetMainFrame()->GetProcess()->Shutdown(1);
+        web_contents->GetPrimaryMainFrame());
+    web_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(1);
     crash_observer.WaitUntilDeleted();
   }
   EXPECT_TRUE(web_contents->IsCrashed());
@@ -1853,7 +1855,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
   // Retrieve the iframe.
-  content::RenderFrameHost* main_frame = tab->GetMainFrame();
+  content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
   content::RenderFrameHost* iframe = ChildFrameAt(main_frame, 0);
   ASSERT_TRUE(iframe);
 

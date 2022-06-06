@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   EXPECT_GT(GetAppFrameView()->GetTopInset(false), 0);
 
   static_cast<content::WebContentsDelegate*>(app_browser_)
-      ->EnterFullscreenModeForTab(web_contents_->GetMainFrame(), {});
+      ->EnterFullscreenModeForTab(web_contents_->GetPrimaryMainFrame(), {});
 
   EXPECT_EQ(GetAppFrameView()->GetTopInset(false), 0);
 }
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
       ui_test_utils::NavigateToURL(app_browser_, GURL("http://example.com")));
 
   static_cast<content::WebContentsDelegate*>(app_browser_)
-      ->EnterFullscreenModeForTab(web_contents_->GetMainFrame(), {});
+      ->EnterFullscreenModeForTab(web_contents_->GetPrimaryMainFrame(), {});
 
   EXPECT_TRUE(app_browser_view_->toolbar()->custom_tab_bar()->IsDrawn());
 }
@@ -322,7 +322,7 @@ class SaveCardOfferObserver
  public:
   explicit SaveCardOfferObserver(content::WebContents* web_contents) {
     manager_ = autofill::ContentAutofillDriver::GetForRenderFrameHost(
-                   web_contents->GetMainFrame())
+                   web_contents->GetPrimaryMainFrame())
                    ->autofill_manager()
                    ->client()
                    ->GetFormDataImporter()

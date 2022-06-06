@@ -111,7 +111,7 @@ TEST_F(FormInteractionTabHelperTest, HadFormInteractionWithChildFrames) {
   EXPECT_FALSE(helper->had_form_interaction());
 
   auto* parent_tester =
-      content::RenderFrameHostTester::For(contents->GetMainFrame());
+      content::RenderFrameHostTester::For(contents->GetPrimaryMainFrame());
   auto* child = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://foochild.com"), parent_tester->AppendChild("child"));
 

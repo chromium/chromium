@@ -173,16 +173,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
   InstantService* instant_service =
       InstantServiceFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
-      contents->GetMainFrame()->GetProcess()->GetID()));
-  EXPECT_EQ(contents->GetMainFrame()->GetSiteInstance()->GetSiteURL(),
+      contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  EXPECT_EQ(contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL(),
             ntp_site_instance->GetSiteURL());
 
   // Navigating to a non-NTP URL on ntp.com should not result in an Instant
   // process.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), isolated_url));
   EXPECT_FALSE(instant_service->IsInstantProcess(
-      contents->GetMainFrame()->GetProcess()->GetID()));
-  EXPECT_EQ(contents->GetMainFrame()->GetSiteInstance()->GetSiteURL(),
+      contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  EXPECT_EQ(contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL(),
             site_instance->GetSiteURL());
 }
 
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
   InstantService* instant_service =
       InstantServiceFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
-      ntp_tab->GetMainFrame()->GetProcess()->GetID()));
+      ntp_tab->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Execute script that creates new window from ntp tab with
   // ntp.com/title1.html as target url. Host is same as remote-ntp host, yet
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
   EXPECT_EQ(generic_url, opened_tab->GetLastCommittedURL());
   // New created tab should not reside in an Instant process.
   EXPECT_FALSE(instant_service->IsInstantProcess(
-      opened_tab->GetMainFrame()->GetProcess()->GetID()));
+      opened_tab->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
 class PrefersColorSchemeTest : public testing::WithParamInterface<bool>,

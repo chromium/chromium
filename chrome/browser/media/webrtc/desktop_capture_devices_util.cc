@@ -66,7 +66,7 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
 
   // Observing CaptureHandle when either the capturing or the captured party
   // is incognito is disallowed, except for self-capture.
-  if (capturer->GetMainFrame() != captured->GetMainFrame()) {
+  if (capturer->GetPrimaryMainFrame() != captured->GetPrimaryMainFrame()) {
     if (capturer->GetBrowserContext()->IsOffTheRecord() ||
         captured->GetBrowserContext()->IsOffTheRecord()) {
       return nullptr;
@@ -80,7 +80,7 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
 
   auto result = media::mojom::CaptureHandle::New();
   if (captured_config.expose_origin) {
-    result->origin = captured->GetMainFrame()->GetLastCommittedOrigin();
+    result->origin = captured->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   }
   result->capture_handle = captured_config.capture_handle;
 
@@ -178,9 +178,9 @@ std::string DeviceNamePrefix(
   // dialog for DISPLAY_VIDEO_CAPTURE_THIS_TAB could still return something
   // other than the current tab - be it a screen, window, or another tab.
   if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
-      web_contents->GetMainFrame()->GetProcess()->GetID() ==
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID() ==
           media_id.web_contents_id.render_process_id &&
-      web_contents->GetMainFrame()->GetRoutingID() ==
+      web_contents->GetPrimaryMainFrame()->GetRoutingID() ==
           media_id.web_contents_id.main_render_frame_id) {
     return "current-";
   }
@@ -254,8 +254,8 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
   if (display_notification) {
     if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
       content::GlobalRenderFrameHostId capturer_id;
-      if (web_contents && web_contents->GetMainFrame()) {
-        capturer_id = web_contents->GetMainFrame()->GetGlobalId();
+      if (web_contents && web_contents->GetPrimaryMainFrame()) {
+        capturer_id = web_contents->GetPrimaryMainFrame()->GetGlobalId();
       }
       notification_ui = TabSharingUI::Create(
           capturer_id, media_id, application_title,

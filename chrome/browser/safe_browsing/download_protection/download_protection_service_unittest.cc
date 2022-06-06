@@ -620,7 +620,7 @@ class DownloadProtectionServiceTestBase
         ->TestDidReceiveMouseDownEvent();
     std::unique_ptr<content::NavigationSimulator> navigation =
         content::NavigationSimulator::CreateRendererInitiated(
-            url, web_contents()->GetMainFrame());
+            url, web_contents()->GetPrimaryMainFrame());
 
     navigation->SetTransition(ui::PAGE_TRANSITION_LINK);
     navigation->Commit();
@@ -2707,7 +2707,7 @@ TEST_F(DownloadProtectionServiceTest,
   std::vector<base::FilePath::StringType> alternate_extensions{
       FILE_PATH_LITERAL(".tmp"), FILE_PATH_LITERAL(".asdfasdf")};
   download_service_->CheckPPAPIDownloadRequest(
-      GURL("http://example.com/foo"), web_contents->GetMainFrame(),
+      GURL("http://example.com/foo"), web_contents->GetPrimaryMainFrame(),
       default_file_path, alternate_extensions, profile(),
       base::BindOnce(&DownloadProtectionServiceTest::SyncCheckDoneCallback,
                      base::Unretained(this)));

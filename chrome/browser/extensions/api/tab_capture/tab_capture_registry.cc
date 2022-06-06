@@ -46,8 +46,9 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
         is_verified_(false),
         is_fullscreened_(false),
         render_process_id_(
-            target_contents->GetMainFrame()->GetProcess()->GetID()),
-        render_frame_id_(target_contents->GetMainFrame()->GetRoutingID()) {
+            target_contents->GetPrimaryMainFrame()->GetProcess()->GetID()),
+        render_frame_id_(
+            target_contents->GetPrimaryMainFrame()->GetRoutingID()) {
     DCHECK(web_contents());
     DCHECK(registry_);
   }
@@ -198,7 +199,8 @@ std::string TabCaptureRegistry::AddRequest(
   requests_.push_back(std::make_unique<LiveRequest>(
       target_contents, extension_id, is_anonymous, this));
 
-  content::RenderFrameHost* const main_frame = caller_contents->GetMainFrame();
+  content::RenderFrameHost* const main_frame =
+      caller_contents->GetPrimaryMainFrame();
   if (main_frame) {
     device_id = content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
         main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(),

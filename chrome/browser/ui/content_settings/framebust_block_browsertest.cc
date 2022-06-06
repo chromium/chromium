@@ -121,7 +121,7 @@ class FramebustBlockBrowserTest
     NavigateIframeToUrlWithoutGesture(GetWebContents(), "test", child_url);
 
     content::RenderFrameHost* child =
-        content::ChildFrameAt(GetWebContents()->GetMainFrame(), 0);
+        content::ChildFrameAt(GetWebContents()->GetPrimaryMainFrame(), 0);
     EXPECT_EQ(child_url, child->GetLastCommittedURL());
 
     const GURL redirect_url =
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
       embedded_test_server()->GetURL("a.com", "/title1.html"));
 
   content::RenderFrameHost* child =
-      content::ChildFrameAt(GetWebContents()->GetMainFrame(), 0);
+      content::ChildFrameAt(GetWebContents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(child);
 
   GURL redirect_url = embedded_test_server()->GetURL("b.com", "/title1.html");
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
       embedded_test_server()->GetURL("a.com", "/title1.html"));
 
   content::RenderFrameHost* child =
-      content::ChildFrameAt(GetWebContents()->GetMainFrame(), 0);
+      content::ChildFrameAt(GetWebContents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(child);
 
   GURL redirect_url = embedded_test_server()->GetURL("b.com", "/title1.html");
@@ -403,7 +403,7 @@ class FramebustBlockFencedFrameTest : public FramebustBlockBrowserTest {
   ~FramebustBlockFencedFrameTest() override = default;
 
   content::RenderFrameHost* primary_main_frame_host() {
-    return GetWebContents()->GetMainFrame();
+    return GetWebContents()->GetPrimaryMainFrame();
   }
 
  protected:

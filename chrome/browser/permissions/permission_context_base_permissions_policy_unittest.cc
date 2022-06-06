@@ -47,7 +47,7 @@ class PermissionContextBasePermissionsPolicyTest
   static constexpr const char* kOrigin2 = "https://maps.google.com";
 
   content::RenderFrameHost* GetMainRFH(const char* origin) {
-    content::RenderFrameHost* result = web_contents()->GetMainFrame();
+    content::RenderFrameHost* result = web_contents()->GetPrimaryMainFrame();
     content::RenderFrameHostTester::For(result)
         ->InitializeRenderFrameIfNeeded();
     SimulateNavigation(&result, GURL(origin));
@@ -97,7 +97,7 @@ class PermissionContextBasePermissionsPolicyTest
     return pcb
         ->GetPermissionStatus(
             rfh, rfh->GetLastCommittedURL(),
-            web_contents()->GetMainFrame()->GetLastCommittedURL())
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL())
         .content_setting;
   }
 

@@ -343,9 +343,11 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   EXPECT_TRUE(test_api->manager());
 
   // Add a permission bubble using the test api.
-  test_api->AddSimpleRequest(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      permissions::RequestType::kGeolocation);
+  test_api->AddSimpleRequest(browser()
+                                 ->tab_strip_model()
+                                 ->GetActiveWebContents()
+                                 ->GetPrimaryMainFrame(),
+                             permissions::RequestType::kGeolocation);
 
   // The permission prompt is shown asynchronously. Without immersive mode
   // enabled the anchor should exist.

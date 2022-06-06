@@ -270,7 +270,7 @@ void ChromePasswordManagerClientTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
 
   blink::AssociatedInterfaceProvider* remote_interfaces =
-      web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces();
+      web_contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces();
   remote_interfaces->OverrideBinderForTesting(
       autofill::mojom::PasswordAutofillAgent::Name_,
       base::BindRepeating(&FakePasswordAutofillAgent::BindReceiver,
@@ -760,7 +760,7 @@ TEST_F(ChromePasswordManagerClientTest, BindCredentialManager_MissingInstance) {
 
   // This call should not crash.
   ChromePasswordManagerClient::BindCredentialManager(
-      web_contents->GetMainFrame(), mojo::NullReceiver());
+      web_contents->GetPrimaryMainFrame(), mojo::NullReceiver());
 }
 
 TEST_F(ChromePasswordManagerClientTest, CanShowBubbleOnURL) {

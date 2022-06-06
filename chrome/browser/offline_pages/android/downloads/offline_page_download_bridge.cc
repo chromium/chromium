@@ -259,7 +259,8 @@ content::WebContents* GetWebContentsByFrameID(int render_process_id,
 content::WebContents::Getter GetWebContentsGetter(
     content::WebContents* web_contents) {
   // The FrameTreeNode ID should be used to access the WebContents.
-  int frame_tree_node_id = web_contents->GetMainFrame()->GetFrameTreeNodeId();
+  int frame_tree_node_id =
+      web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();
   if (frame_tree_node_id != content::RenderFrameHost::kNoFrameTreeNodeId) {
     return base::BindRepeating(content::WebContents::FromFrameTreeNodeId,
                                frame_tree_node_id);
@@ -269,8 +270,8 @@ content::WebContents::Getter GetWebContentsGetter(
   // the WebContents.
   return base::BindRepeating(
       &GetWebContentsByFrameID,
-      web_contents->GetMainFrame()->GetProcess()->GetID(),
-      web_contents->GetMainFrame()->GetRoutingID());
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents->GetPrimaryMainFrame()->GetRoutingID());
 }
 
 void DownloadAsFile(content::WebContents* web_contents, const GURL& url) {

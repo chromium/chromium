@@ -100,7 +100,7 @@ class SearchResultExtractorProducerRenderViewHostTest
   // interface.
   void OverrideInterface(FakeSearchResultExtractor* extractor) {
     web_contents()
-        ->GetMainFrame()
+        ->GetPrimaryMainFrame()
         ->GetRemoteAssociatedInterfaces()
         ->OverrideBinderForTesting(
             mojom::SearchResultExtractor::Name_,

@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsFencedFrameBrowserTest,
       https_test_server()->GetURL("/fenced_frames/title1.html"));
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), fenced_frame_url);
+          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
   histogram_tester()->ExpectTotalCount("Security.SecurityLevel.OnCommit", 1);

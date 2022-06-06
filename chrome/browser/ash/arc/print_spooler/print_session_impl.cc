@@ -196,7 +196,7 @@ bool IsPdfPluginLoaded(content::WebContents* web_contents) {
     return false;
   }
 
-  GURL url = contents_to_use->GetMainFrame()->GetLastCommittedURL();
+  GURL url = contents_to_use->GetPrimaryMainFrame()->GetLastCommittedURL();
   if (!url.SchemeIs("chrome-extension")) {
     VLOG(1) << "Plugin frame URL not loaded yet.";
     return false;

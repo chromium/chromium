@@ -171,7 +171,7 @@ TEST_F(SessionRestorePageLoadMetricsObserverTest, NoMetrics) {
 TEST_F(SessionRestorePageLoadMetricsObserverTest,
        FirstPaintsOutOfSessionRestore) {
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GetTestURL(), web_contents()->GetMainFrame());
+      GetTestURL(), web_contents()->GetPrimaryMainFrame());
   ASSERT_NO_FATAL_FAILURE(SimulateTimingUpdateForTab(web_contents()));
   ExpectFirstPaintMetricsTotalCount(0);
   auto entries =

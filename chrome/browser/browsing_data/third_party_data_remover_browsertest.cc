@@ -132,7 +132,7 @@ class ThirdPartyDataRemoverTest : public InProcessBrowserTest {
   content::RenderFrameHost* GetFrame() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    return ChildFrameAt(web_contents->GetMainFrame(), 0);
+    return ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   }
 
   void AddStorage(const std::string& top_level_host,

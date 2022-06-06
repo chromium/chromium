@@ -50,9 +50,10 @@ class TabCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
       blink::mojom::StreamDevices* devices_result,
       bool expect_result = true) {
     content::MediaStreamRequest request(
-        web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(), /*page_request_id=*/0,
-        GURL(kOrigin), /*user_gesture=*/false, blink::MEDIA_GENERATE_STREAM,
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+        /*page_request_id=*/0, GURL(kOrigin), /*user_gesture=*/false,
+        blink::MEDIA_GENERATE_STREAM,
         /*requested_audio_device_id=*/std::string(),
         /*requested_video_device_id=*/std::string(),
         blink::mojom::MediaStreamType::NO_SERVICE,
@@ -96,8 +97,8 @@ TEST_F(TabCaptureAccessHandlerTest, PermissionGiven) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID()));
+          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()->GetPrimaryMainFrame()->GetRoutingID()));
 
   extensions::TabCaptureRegistry::Get(profile())->AddRequest(
       web_contents(), /*extension_id=*/"", /*is_anonymous=*/false,
@@ -120,8 +121,8 @@ TEST_F(TabCaptureAccessHandlerTest, DlpRestricted) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID()));
+          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()->GetPrimaryMainFrame()->GetRoutingID()));
 
   // Setup Data Leak Prevention restriction.
   policy::MockDlpContentManager mock_dlp_content_manager;
@@ -152,8 +153,8 @@ TEST_F(TabCaptureAccessHandlerTest, DlpNotRestricted) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID()));
+          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()->GetPrimaryMainFrame()->GetRoutingID()));
 
   // Setup Data Leak Prevention restriction.
   policy::MockDlpContentManager mock_dlp_content_manager;
@@ -184,8 +185,8 @@ TEST_F(TabCaptureAccessHandlerTest, DlpWebContentsDestroyed) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID()));
+          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()->GetPrimaryMainFrame()->GetRoutingID()));
 
   // Setup Data Leak Prevention restriction.
   policy::MockDlpContentManager mock_dlp_content_manager;

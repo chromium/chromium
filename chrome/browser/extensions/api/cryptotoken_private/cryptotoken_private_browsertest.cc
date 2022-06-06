@@ -103,7 +103,7 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
                                         : browser()
                                               ->tab_strip_model()
                                               ->GetActiveWebContents()
-                                              ->GetMainFrame();
+                                              ->GetPrimaryMainFrame();
   }
 
   void ExpectChromeRuntimeIsUndefined() {

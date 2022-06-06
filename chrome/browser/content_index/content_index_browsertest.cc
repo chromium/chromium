@@ -148,7 +148,10 @@ class ContentIndexTest : public InProcessBrowserTest,
  private:
   void RunScript(const std::string& script, std::string* result) {
     ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetPrimaryMainFrame(),
         "WrapFunction(async () => " + script + ")", result));
     ASSERT_TRUE(
         base::StartsWith(*result, "ok - ", base::CompareCase::SENSITIVE))

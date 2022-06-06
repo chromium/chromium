@@ -162,7 +162,7 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
   void TriggerFrameActivation() {
     // Activate one frame by executing a dummy script.
     content::RenderFrameHost* ad_frame =
-        ChildFrameAt(web_contents()->GetMainFrame(), 0);
+        ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
     const std::string no_op_script = "// No-op script";
     EXPECT_TRUE(ExecuteScript(ad_frame, no_op_script));
   }
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
   NavigateFrameTo("a.com", "/empty.html");
   content::RenderFrameHost* frame =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
 
   // Write a first-party cookie.
   EXPECT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';"));
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
   NavigateFrameTo("b.com", "/empty.html");
   content::RenderFrameHost* frame =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
 
   // Write a third-party cookie.
   EXPECT_TRUE(content::ExecJs(
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
   NavigateFrameTo("b.com", "/empty.html");
   content::RenderFrameHost* frame =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
 
   // Read a third-party cookie.
   EXPECT_TRUE(content::ExecJs(frame, "let x = document.cookie;"));
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateToPageWithFrame("a.com");  // Same origin cookie read.
   NavigateFrameTo("b.com", "/empty.html");
   content::RenderFrameHost* frame =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
 
   // Write a third-party cookie.
   EXPECT_TRUE(content::ExecJs(
@@ -490,7 +490,8 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyDomStorageAccessMetricsObserverBrowserTest,
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");
   NavigateFrameTo("a.com", "/empty.html");
-  InvokeStorageAccessOnFrame(ChildFrameAt(web_contents()->GetMainFrame(), 0));
+  InvokeStorageAccessOnFrame(
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
 
   NavigateToUntrackedUrl();
 
@@ -502,7 +503,8 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyDomStorageAccessMetricsObserverBrowserTest,
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");
   NavigateFrameTo("b.com", "/empty.html");
-  InvokeStorageAccessOnFrame(ChildFrameAt(web_contents()->GetMainFrame(), 0));
+  InvokeStorageAccessOnFrame(
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
 
   NavigateToUntrackedUrl();
 
@@ -514,11 +516,13 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyDomStorageAccessMetricsObserverBrowserTest,
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");
   NavigateFrameTo("b.com", "/empty.html");
-  InvokeStorageAccessOnFrame(ChildFrameAt(web_contents()->GetMainFrame(), 0));
+  InvokeStorageAccessOnFrame(
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
 
   NavigateFrameTo("c.com", "/empty.html");
   NavigateFrameTo("b.com", "/empty.html");
-  InvokeStorageAccessOnFrame(ChildFrameAt(web_contents()->GetMainFrame(), 0));
+  InvokeStorageAccessOnFrame(
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
 
   NavigateToUntrackedUrl();
 
@@ -530,10 +534,12 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyDomStorageAccessMetricsObserverBrowserTest,
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame("a.com");
   NavigateFrameTo("b.com", "/empty.html");
-  InvokeStorageAccessOnFrame(ChildFrameAt(web_contents()->GetMainFrame(), 0));
+  InvokeStorageAccessOnFrame(
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
 
   NavigateFrameTo("c.com", "/empty.html");
-  InvokeStorageAccessOnFrame(ChildFrameAt(web_contents()->GetMainFrame(), 0));
+  InvokeStorageAccessOnFrame(
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
 
   NavigateToUntrackedUrl();
 
@@ -559,8 +565,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
     base::HistogramTester histogram_tester;
     NavigateToPageWithFrame("a.com");
     NavigateFrameTo("a.com", "/empty.html");
-    InvokeStorageAccessOnFrame(ChildFrameAt(web_contents()->GetMainFrame(), 0),
-                               test_case);
+    InvokeStorageAccessOnFrame(
+        ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0), test_case);
     NavigateToUntrackedUrl();
 
     histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
@@ -585,8 +591,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
     base::HistogramTester histogram_tester;
     NavigateToPageWithFrame("a.com");
     NavigateFrameTo("b.com", "/empty.html");
-    InvokeStorageAccessOnFrame(ChildFrameAt(web_contents()->GetMainFrame(), 0),
-                               test_case);
+    InvokeStorageAccessOnFrame(
+        ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0), test_case);
     NavigateToUntrackedUrl();
 
     histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",

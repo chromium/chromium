@@ -176,7 +176,7 @@ SelectFileDialogExtension::RoutingID GetRoutingID(
 
   if (web_contents) {
     return base::StringPrintf(
-        "web.%d", web_contents->GetMainFrame()->GetFrameTreeNodeId());
+        "web.%d", web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId());
   }
   LOG(ERROR) << "Unable to generate a RoutingID";
   return "";
@@ -363,11 +363,11 @@ void SelectFileDialogExtension::OnFileSelectionCanceled(RoutingID routing_id) {
   dialog->selection_index_ = 0;
 }
 
-content::RenderFrameHost* SelectFileDialogExtension::GetMainFrame() {
+content::RenderFrameHost* SelectFileDialogExtension::GetPrimaryMainFrame() {
   if (extension_dialog_)
     return extension_dialog_->host()->main_frame_host();
   else if (system_files_app_web_contents_)
-    return system_files_app_web_contents_->GetMainFrame();
+    return system_files_app_web_contents_->GetPrimaryMainFrame();
   return nullptr;
 }
 

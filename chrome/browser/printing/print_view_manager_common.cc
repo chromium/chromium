@@ -50,7 +50,7 @@ content::RenderFrameHost* GetRenderFrameHostToUse(
 #if BUILDFLAG(ENABLE_PDF)
   // Pick the plugin frame if `contents` is a PDF viewer guest.
   content::RenderFrameHost* pdf_rfh =
-      pdf_frame_util::FindPdfChildFrame(contents->GetMainFrame());
+      pdf_frame_util::FindPdfChildFrame(contents->GetPrimaryMainFrame());
   if (pdf_rfh)
     return pdf_rfh;
 #endif
@@ -117,7 +117,7 @@ content::RenderFrameHost* GetFrameToPrint(content::WebContents* contents) {
   auto* focused_frame = contents->GetFocusedFrame();
   return (focused_frame && focused_frame->HasSelection())
              ? focused_frame
-             : contents->GetMainFrame();
+             : contents->GetPrimaryMainFrame();
 }
 
 content::WebContents* GetWebContentsToUse(content::WebContents* contents) {

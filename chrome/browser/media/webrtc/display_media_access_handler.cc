@@ -49,7 +49,7 @@ namespace {
 // Helper function to get the title of the calling application.
 std::u16string GetApplicationTitle(content::WebContents* web_contents) {
   return url_formatter::FormatOriginForSecurityDisplay(
-      web_contents->GetMainFrame()->GetLastCommittedOrigin(),
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
 

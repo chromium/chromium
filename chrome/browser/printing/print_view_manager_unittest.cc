@@ -282,7 +282,7 @@ TEST_F(PrintViewManagerTest, PrintSubFrameAndDestroy) {
   ASSERT_TRUE(web_contents);
 
   content::RenderFrameHost* sub_frame =
-      content::RenderFrameHostTester::For(web_contents->GetMainFrame())
+      content::RenderFrameHostTester::For(web_contents->GetPrimaryMainFrame())
           ->AppendChild("child");
 
   PrintViewManager* print_view_manager =
@@ -320,7 +320,8 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
       std::make_unique<TestPrintViewManager>(web_contents);
   PrintViewManager::SetReceiverImplForTesting(print_view_manager.get());
 
-  print_view_manager->PrintPreviewNow(web_contents->GetMainFrame(), false);
+  print_view_manager->PrintPreviewNow(web_contents->GetPrimaryMainFrame(),
+                                      false);
 
   base::Value::Dict print_ticket = GetPrintTicket(mojom::PrinterType::kLocal);
   const char kTestData[] = "abc";
@@ -330,7 +331,7 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
       base::BindOnce(&TestPrintViewManager::FakePrintCallback,
                      base::Unretained(print_view_manager.get()));
   print_view_manager->PrintForPrintPreview(std::move(print_ticket), print_data,
-                                           web_contents->GetMainFrame(),
+                                           web_contents->GetPrimaryMainFrame(),
                                            std::move(callback));
   print_view_manager->WaitForCallback();
 
