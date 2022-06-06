@@ -3,6 +3,33 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview 'settings-google-assistant-page' is the settings page
+ * containing Google Assistant settings.
+ */
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/md_select_css.m.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import '../../controls/controlled_button.js';
+import '../../controls/settings_toggle_button.js';
+import '../../prefs/prefs.js';
+import '../../prefs/pref_util.js';
+import '../../settings_shared_css.js';
+
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {recordSettingChange} from '../metrics_recorder.js';
+import {routes} from '../os_route.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+
+import {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './google_assistant_browser_proxy.js';
+
+/**
  * The types of Hotword enable status without Dsp support.
  * @enum {number}
  */
@@ -35,140 +62,138 @@ export const ConsentStatus = {
 };
 
 /**
- * @fileoverview 'settings-google-assistant-page' is the settings page
- * containing Google Assistant settings.
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
  */
-import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+const SettingsGoogleAssistantPageElementBase = mixinBehaviors(
+    [
+      DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior,
+      WebUIListenerBehavior
+    ],
+    PolymerElement);
 
-import '//resources/cr_elements/cr_link_row/cr_link_row.js';
-import '//resources/cr_elements/md_select_css.m.js';
-import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
-import {sendWithPromise, removeWebUIListener, addWebUIListener, WebUIListener} from '//resources/js/cr.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import '../../controls/controlled_button.js';
-import '../../controls/settings_toggle_button.js';
-import '../../prefs/prefs.js';
-import {PrefsBehavior} from '../prefs_behavior.js';
-import '../../prefs/pref_util.js';
-import {Router, Route} from '../../router.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
-import '../../settings_shared_css.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
-import {recordSettingChange} from '../metrics_recorder.js';
-import {routes} from '../os_route.js';
-import {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './google_assistant_browser_proxy.js';
+/** @polymer */
+class SettingsGoogleAssistantPageElement extends
+    SettingsGoogleAssistantPageElementBase {
+  static get is() {
+    return 'settings-google-assistant-page';
+  }
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-google-assistant-page',
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  behaviors: [
-    DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior,
-    WebUIListenerBehavior
-  ],
-
-  properties: {
-    /** @private */
-    shouldShowVoiceMatchSettings_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    hotwordDspAvailable_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('hotwordDspAvailable');
+  static get properties() {
+    return {
+      /** @private */
+      shouldShowVoiceMatchSettings_: {
+        type: Boolean,
+        value: false,
       },
-    },
 
-    /** @private */
-    hotwordDropdownList_: {
-      type: Array,
-      value() {
-        return [
-          {
-            name: loadTimeData.getString(
-                'googleAssistantEnableHotwordWithoutDspRecommended'),
-            value: DspHotwordState.DEFAULT_ON
-          },
-          {
-            name: loadTimeData.getString(
-                'googleAssistantEnableHotwordWithoutDspAlwaysOn'),
-            value: DspHotwordState.ALWAYS_ON
-          },
-          {
-            name: loadTimeData.getString(
-                'googleAssistantEnableHotwordWithoutDspOff'),
-            value: DspHotwordState.OFF
-          }
-        ];
+      /** @private */
+      hotwordDspAvailable_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('hotwordDspAvailable');
+        },
       },
-    },
 
-    /** @private */
-    hotwordEnforced_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      hotwordDropdownList_: {
+        type: Array,
+        value() {
+          return [
+            {
+              name: loadTimeData.getString(
+                  'googleAssistantEnableHotwordWithoutDspRecommended'),
+              value: DspHotwordState.DEFAULT_ON
+            },
+            {
+              name: loadTimeData.getString(
+                  'googleAssistantEnableHotwordWithoutDspAlwaysOn'),
+              value: DspHotwordState.ALWAYS_ON
+            },
+            {
+              name: loadTimeData.getString(
+                  'googleAssistantEnableHotwordWithoutDspOff'),
+              value: DspHotwordState.OFF
+            }
+          ];
+        },
+      },
 
-    /** @private */
-    hotwordEnforcedForChild_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      hotwordEnforced_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {DspHotwordState} */
-    dspHotwordState_: Number,
+      /** @private */
+      hotwordEnforcedForChild_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kAssistantOnOff,
-        chromeos.settings.mojom.Setting.kAssistantRelatedInfo,
-        chromeos.settings.mojom.Setting.kAssistantOkGoogle,
-        chromeos.settings.mojom.Setting.kAssistantNotifications,
-        chromeos.settings.mojom.Setting.kAssistantVoiceInput,
-        chromeos.settings.mojom.Setting.kTrainAssistantVoiceModel,
-      ]),
-    },
-  },
+      /** @private {DspHotwordState} */
+      dspHotwordState_: Number,
 
-  observers: [
-    'onPrefsChanged_(' +
-        'prefs.settings.voice_interaction.hotword.enabled.value, ' +
-        'prefs.settings.voice_interaction.hotword.always_on.value, ' +
-        'prefs.settings.voice_interaction.activity_control.consent_status' +
-        '.value, ' +
-        'prefs.settings.assistant.disabled_by_policy.value)',
-  ],
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kAssistantOnOff,
+          chromeos.settings.mojom.Setting.kAssistantRelatedInfo,
+          chromeos.settings.mojom.Setting.kAssistantOkGoogle,
+          chromeos.settings.mojom.Setting.kAssistantNotifications,
+          chromeos.settings.mojom.Setting.kAssistantVoiceInput,
+          chromeos.settings.mojom.Setting.kTrainAssistantVoiceModel,
+        ]),
+      },
+    };
+  }
 
-  /** @private {?GoogleAssistantBrowserProxy} */
-  browserProxy_: null,
+  static get observers() {
+    return [
+      'onPrefsChanged_(' +
+          'prefs.settings.voice_interaction.hotword.enabled.value, ' +
+          'prefs.settings.voice_interaction.hotword.always_on.value, ' +
+          'prefs.settings.voice_interaction.activity_control.consent_status' +
+          '.value, ' +
+          'prefs.settings.assistant.disabled_by_policy.value)',
+    ];
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!GoogleAssistantBrowserProxy} */
     this.browserProxy_ = GoogleAssistantBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.addWebUIListener('hotwordDeviceUpdated', (hasHotword) => {
       this.hotwordDspAvailable_ = hasHotword;
     });
 
     chrome.send('initializeGoogleAssistantPage');
-  },
+  }
 
   /**
    * @param {!Route} route
-   * @param {!Route} oldRoute
+   * @param {!Route=} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
@@ -177,7 +202,7 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /**
    * @param {boolean} toggleValue
@@ -187,30 +212,30 @@ Polymer({
   getAssistantOnOffLabel_(toggleValue) {
     return this.i18n(
         toggleValue ? 'searchGoogleAssistantOn' : 'searchGoogleAssistantOff');
-  },
+  }
 
   /** @private */
   onGoogleAssistantSettingsTapped_() {
     this.browserProxy_.showGoogleAssistantSettings();
     recordSettingChange();
-  },
+  }
 
   /** @private */
   onRetrainVoiceModelTapped_() {
     this.browserProxy_.retrainAssistantVoiceModel();
     recordSettingChange();
-  },
+  }
 
   /** @private */
   onEnableHotwordChange_(event) {
     if (event.target.checked) {
       this.browserProxy_.syncVoiceModelStatus();
     }
-  },
+  }
 
   /** @private */
   onDspHotwordStateChange_() {
-    switch (Number(this.$$('#dsp-hotword-state').value)) {
+    switch (Number(this.shadowRoot.querySelector('#dsp-hotword-state').value)) {
       case DspHotwordState.DEFAULT_ON:
         this.setPrefValue('settings.voice_interaction.hotword.enabled', true);
         this.setPrefValue(
@@ -230,7 +255,7 @@ Polymer({
       default:
         console.error('Invalid Dsp hotword settings state');
     }
-  },
+  }
 
   /**
    * @param {number} state
@@ -239,7 +264,7 @@ Polymer({
    */
   isDspHotwordStateMatch_(state) {
     return state === this.dspHotwordState_;
-  },
+  }
 
   /** @private */
   onPrefsChanged_() {
@@ -263,7 +288,7 @@ Polymer({
     this.hotwordEnforcedForChild_ = this.hotwordEnforced_ &&
         hotwordEnabled.controlledBy ===
             chrome.settingsPrivate.ControlledBy.CHILD_RESTRICTION;
-  },
+  }
 
   /** @private */
   refreshDspHotwordState_() {
@@ -276,8 +301,12 @@ Polymer({
       this.dspHotwordState_ = DspHotwordState.DEFAULT_ON;
     }
 
-    if (this.$$('#dsp-hotword-state')) {
-      this.$$('#dsp-hotword-state').value = this.dspHotwordState_;
+    if (this.shadowRoot.querySelector('#dsp-hotword-state')) {
+      this.shadowRoot.querySelector('#dsp-hotword-state').value =
+          this.dspHotwordState_;
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsGoogleAssistantPageElement.is, SettingsGoogleAssistantPageElement);
