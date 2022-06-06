@@ -172,6 +172,12 @@ const char
 const char kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar[] =
     "ContentSuggestions.Feed.Management.TappedUnfollowTryAgainOnSnackbar";
 
+// User action names for first follow surface.
+const char kFirstFollowGoToFeedButtonTapped[] =
+    "ContentSuggestions.Follow.FirstFollow.GoToFeedButtonTapped";
+const char kFirstFollowGotItButtonTapped[] =
+    "ContentSuggestions.Follow.FirstFollow.GotItButtonTapped";
+
 // User action name for engaging with feed.
 const char kDiscoverFeedUserActionEngaged[] = "ContentSuggestions.Feed.Engaged";
 
@@ -793,6 +799,23 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
             FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar];
   base::RecordAction(base::UserMetricsAction(
       kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar));
+}
+
+- (void)recordFirstFollowShown {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kFirstFollowSheetShown];
+}
+
+- (void)recordFirstFollowTappedGoToFeed {
+  [self recordDiscoverFeedUserActionHistogram:
+            FeedUserActionType::kFirstFollowSheetTappedGoToFeed];
+  base::RecordAction(base::UserMetricsAction(kFirstFollowGoToFeedButtonTapped));
+}
+
+- (void)recordFirstFollowTappedGotIt {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kFirstFollowSheetTappedGotIt];
+  base::RecordAction(base::UserMetricsAction(kFirstFollowGotItButtonTapped));
 }
 
 #pragma mark - Private

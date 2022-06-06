@@ -269,6 +269,15 @@ class Time;
 // confirmation snackbar in the management UI.
 - (void)recordManagementTappedUnfollowTryAgainOnSnackbar;
 
+// Record metrics for when the first follow sheet is shown.
+- (void)recordFirstFollowShown;
+
+// Record metrics for when the user taps "Go To Feed" on the first follow sheet.
+- (void)recordFirstFollowTappedGoToFeed;
+
+// Record metrics for when the user taps "Got it" on the first follow sheet.
+- (void)recordFirstFollowTappedGotIt;
+
 // Delegate to get the currently selected feed.
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
 
