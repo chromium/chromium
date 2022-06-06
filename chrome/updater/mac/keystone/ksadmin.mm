@@ -23,6 +23,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
@@ -106,16 +107,23 @@ bool HasSwitch(const std::string& arg,
                const std::map<std::string, std::string>& switches) {
   if (base::Contains(switches, arg))
     return true;
-  const static std::map<std::string, std::vector<std::string>> aliases = {
-      {kCommandDelete, {"d"}},        {kCommandInstall, {"i"}},
-      {kCommandList, {"l"}},          {kCommandKsadminVersion, {"k"}},
-      {kCommandPrintTag, {"G"}},      {kCommandPrintTickets, {"print", "p"}},
-      {kCommandRegister, {"r"}},      {kCommandSystemStore, {"S"}},
-      {kCommandUserInitiated, {"F"}}, {kCommandUserStore, {"U"}},
-  };
-  if (!base::Contains(aliases, arg))
+  static const base::NoDestructor<
+      std::map<std::string, std::vector<std::string>>>
+      aliases{{
+          {kCommandDelete, {"d"}},
+          {kCommandInstall, {"i"}},
+          {kCommandList, {"l"}},
+          {kCommandKsadminVersion, {"k"}},
+          {kCommandPrintTag, {"G"}},
+          {kCommandPrintTickets, {"print", "p"}},
+          {kCommandRegister, {"r"}},
+          {kCommandSystemStore, {"S"}},
+          {kCommandUserInitiated, {"F"}},
+          {kCommandUserStore, {"U"}},
+      }};
+  if (!base::Contains(*aliases, arg))
     return false;
-  for (const auto& alias : aliases.at(arg)) {
+  for (const auto& alias : aliases->at(arg)) {
     if (base::Contains(switches, alias))
       return true;
   }
@@ -126,16 +134,21 @@ std::string SwitchValue(const std::string& arg,
                         const std::map<std::string, std::string>& switches) {
   if (base::Contains(switches, arg))
     return switches.at(arg);
-  const static std::map<std::string, std::string> aliases = {
-      {kCommandBrandKey, "b"},    {kCommandBrandPath, "B"},
-      {kCommandProductId, "P"},   {kCommandTag, "g"},
-      {kCommandTagKey, "K"},      {kCommandTagPath, "H"},
-      {kCommandVersion, "v"},     {kCommandVersionKey, "e"},
-      {kCommandVersionPath, "a"}, {kCommandXCPath, "x"},
-  };
-  if (!base::Contains(aliases, arg))
+  static const base::NoDestructor<std::map<std::string, std::string>> aliases{{
+      {kCommandBrandKey, "b"},
+      {kCommandBrandPath, "B"},
+      {kCommandProductId, "P"},
+      {kCommandTag, "g"},
+      {kCommandTagKey, "K"},
+      {kCommandTagPath, "H"},
+      {kCommandVersion, "v"},
+      {kCommandVersionKey, "e"},
+      {kCommandVersionPath, "a"},
+      {kCommandXCPath, "x"},
+  }};
+  if (!base::Contains(*aliases, arg))
     return "";
-  const std::string& alias = aliases.at(arg);
+  const std::string& alias = aliases->at(arg);
   return base::Contains(switches, alias) ? switches.at(alias) : "";
 }
 

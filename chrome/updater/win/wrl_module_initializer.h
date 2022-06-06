@@ -10,7 +10,7 @@
 namespace updater {
 
 // Allows one time creation of the WRL::Module instance. The WRL library
-// contains a global instance of a class, which must be created only once.
+// contains a global instance of a class, which must be created exactly once.
 class WRLModuleInitializer {
  public:
   WRLModuleInitializer() {
@@ -18,6 +18,7 @@ class WRLModuleInitializer {
   }
 
   static const WRLModuleInitializer& Get() {
+    // WRLModuleInitializer has a trivial destructor.
     static const WRLModuleInitializer module;
     return module;
   }

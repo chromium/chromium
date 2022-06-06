@@ -20,14 +20,13 @@
 #include "chrome/updater/updater_branding.h"
 
 namespace updater {
-
 namespace {
 
-static const CFStringRef kEnrollmentTokenKey = CFSTR("EnrollmentToken");
-static const CFStringRef kBrowserBundleId =
-    CFSTR(MAC_BROWSER_BUNDLE_IDENTIFIER_STRING);
-
 bool LoadEnrollmentTokenFromPolicy(std::string* enrollment_token) {
+  const CFStringRef kEnrollmentTokenKey = CFSTR("EnrollmentToken");
+  const CFStringRef kBrowserBundleId =
+      CFSTR(MAC_BROWSER_BUNDLE_IDENTIFIER_STRING);
+
   base::ScopedCFTypeRef<CFPropertyListRef> token_value(
       CFPreferencesCopyAppValue(kEnrollmentTokenKey, kBrowserBundleId));
   if (!token_value || CFGetTypeID(token_value) != CFStringGetTypeID() ||

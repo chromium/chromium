@@ -85,7 +85,7 @@ HRESULT GetSidIntegrityLevel(PSID sid, MANDATORY_LEVEL* level) {
   SID_IDENTIFIER_AUTHORITY* authority = ::GetSidIdentifierAuthority(sid);
   if (!authority)
     return E_FAIL;
-  static const SID_IDENTIFIER_AUTHORITY kMandatoryLabelAuth =
+  constexpr SID_IDENTIFIER_AUTHORITY kMandatoryLabelAuth =
       SECURITY_MANDATORY_LABEL_AUTHORITY;
   if (std::memcmp(authority, &kMandatoryLabelAuth,
                   sizeof(SID_IDENTIFIER_AUTHORITY))) {

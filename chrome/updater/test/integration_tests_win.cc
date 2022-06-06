@@ -678,7 +678,7 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
                         int expected_final_state,
                         HRESULT expected_error_code) {
   bool done = false;
-  static const base::TimeDelta kExpirationTimeout = base::Minutes(1);
+  static constexpr base::TimeDelta kExpirationTimeout = base::Minutes(1);
   base::ElapsedTimer timer;
 
   EXPECT_TRUE(timer.Elapsed() < kExpirationTimeout);
