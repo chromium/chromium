@@ -7,12 +7,13 @@
 
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
 // Conversion functions between OptimizationTarget and SegmentId.
-optimization_guide::proto::OptimizationTarget SegmentIdToOptimizationTarget(
-    proto::SegmentId segment_id);
+absl::optional<optimization_guide::proto::OptimizationTarget>
+SegmentIdToOptimizationTarget(proto::SegmentId segment_id);
 
 // Conversion functions between OptimizationTarget and SegmentId.
 proto::SegmentId OptimizationTargetToSegmentId(

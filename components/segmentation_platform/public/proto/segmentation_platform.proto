@@ -9,8 +9,10 @@ option java_outer_classname = "SegmentationProto";
 
 package segmentation_platform.proto;
 
-// List of user segment types. Each enum entry should have a corresponding entry
-// in OptimizationTarget.
+// List of user segment types.
+// Any segment that needs a server provided model should have an entry in
+// OptimizationTarget. If the segment only uses default model, then the segment
+// should have a value higher than `MAX_OPTIMIZATION_TARGET`.
 enum SegmentId {
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Should only be applied when the page load is predicted to be painful.
@@ -49,11 +51,11 @@ enum SegmentId {
   OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT = 16;
   // Target for segmentation: Determine users who prefer to use Feed.
   OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER = 17;
-  // TODO(ssid): Remove this comment once the migration is final.
-  // DO NOT add new entries here. This is under process of migration from
-  // OptimizationTarget enum. New entries should start from a high value of 1000
-  // if OptimizationTarget does not have a corresponding type.
+  // Add new entries to OptimizationTarget proto.
 
+  // New entries should start from a 1000 if OptimizationTarget does not have a
+  // corresponding type.
+  MAX_OPTIMIZATION_TARGET = 999;
   // Target for price tracking action when shown as a contextual page action.
   CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING = 1000;
 };

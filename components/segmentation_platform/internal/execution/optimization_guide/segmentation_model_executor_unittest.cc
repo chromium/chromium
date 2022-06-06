@@ -114,7 +114,7 @@ class SegmentationModelExecutorTest : public testing::Test {
                               .SetVersion(kModelVersion)
                               .Build();
     opt_guide_model_handler().OnModelUpdated(
-        SegmentIdToOptimizationTarget(kSegmentId), *model_metadata);
+        *SegmentIdToOptimizationTarget(kSegmentId), *model_metadata);
     RunUntilIdle();
   }
 

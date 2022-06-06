@@ -19,7 +19,6 @@
 #include "components/segmentation_platform/internal/database/mock_ukm_database.h"
 #include "components/segmentation_platform/internal/dummy_ukm_data_manager.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
-#include "components/segmentation_platform/internal/segment_id_convertor.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_test_base.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/signals/ukm_observer.h"

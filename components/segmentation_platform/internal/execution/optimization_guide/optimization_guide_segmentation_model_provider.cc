@@ -55,9 +55,15 @@ OptimizationGuideSegmentationModelProvider::
 void OptimizationGuideSegmentationModelProvider::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
   DCHECK(!model_handler_);
+  absl::optional<optimization_guide::proto::OptimizationTarget> target =
+      SegmentIdToOptimizationTarget(segment_id_);
+  if (!target) {
+    // If the segment ID is not an OptimizationTarget then do not request a
+    // model.
+    return;
+  }
   model_handler_ = std::make_unique<OptimizationGuideSegmentationModelHandler>(
-      model_provider_, background_task_runner_,
-      SegmentIdToOptimizationTarget(segment_id_), model_updated_callback,
+      model_provider_, background_task_runner_, *target, model_updated_callback,
       GetModelFetchConfig());
 }
 
