@@ -138,37 +138,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scheduler.TaskQueueImpl.DelayedIncomingQueueSize"
-    units="tasks" expires_after="2022-09-30">
-  <owner>yafroze@google.com</owner>
-  <owner>pmonette@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The size of the |delayed_incoming_queue|.
-
-    This is emitted pseudorandomly when a delayedtask is enqueued on the
-    SequenceManager's main thread.
-
-    Note: This metric merges from all named threads.
-  </summary>
-</histogram>
-
-<histogram name="Scheduler.TaskQueueImpl.MaxDelayedIncomingQueueSize"
-    units="tasks" expires_after="2022-09-30">
-  <owner>yafroze@google.com</owner>
-  <owner>pmonette@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The max size of the |delayed_incoming_queue| between the time two sequential
-    samples are chosen.
-
-    This is emitted pseudorandomly when a delayedtask is enqueued on the
-    SequenceManager's main thread.
-
-    Note: This metric merges from all named threads.
-  </summary>
-</histogram>
-
 <histogram name="Scheduler.TaskQueueImpl.PostDelayedTaskDelay" units="ms"
     expires_after="2022-09-30">
   <owner>yafroze@google.com</owner>
@@ -177,8 +146,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The delay time for the delayed tasks posted to the sequence manager.
 
-    This is emitted pseudorandomly when a delayedtask is enqueued on the
-    SequenceManager's main thread.
+    A sample is chosen pseudorandomly when PostDelayedTask is enqueuing tasks.
 
     Note: This metric merges from all named threads.
   </summary>
