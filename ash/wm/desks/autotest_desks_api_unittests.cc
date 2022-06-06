@@ -9,7 +9,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "components/viz/common/features.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
@@ -112,9 +111,7 @@ using EnhancedDeskAnimationsAutotestDesksApiTest = AutotestDesksApiTest;
 
 // TODO(b/219068687): Re-enable chained desk animation tests.
 TEST_F(EnhancedDeskAnimationsAutotestDesksApiTest,
-       ActivateAdjacentDesksToTargetIndex) {
-  if (::features::IsUsingSkiaRenderer())
-    GTEST_SKIP() << "Chained desk animations are flaky on SkiaRenderer.";
+       DISABLED_ActivateAdjacentDesksToTargetIndex) {
   // Create all desks possible.
   AutotestDesksApi test_api;
   const int max_number_of_desks = desks_util::kMaxNumberOfDesks;
