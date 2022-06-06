@@ -4,6 +4,9 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+# Only allow use by the WebEngine implementation.
+visibility = [ "//fuchsia_web/webengine:web_engine_core" ]
+
 mojom("mojom") {
   sources = [ "web_engine_media_resource_provider.mojom" ]
 

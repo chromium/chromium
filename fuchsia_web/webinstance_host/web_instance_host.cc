@@ -67,6 +67,11 @@ namespace cr_fuchsia {
 
 namespace {
 
+// Production URL for web hosting Component instances.
+// TODO(fxbug.dev/51490): Use a programmatic mechanism to obtain this.
+const char kWebInstanceComponentUrl[] =
+    "fuchsia-pkg://fuchsia.com/web_engine#meta/web_instance.cmx";
+
 // Test-only URL for web hosting Component instances with WebUI resources.
 const char kWebInstanceWithWebUiComponentUrl[] =
     "fuchsia-pkg://fuchsia.com/web_engine_with_webui#meta/web_instance.cmx";
@@ -88,7 +93,7 @@ void RegisterWebInstanceProductData() {
   constexpr char kFeedbackAnnotationsNamespace[] = "web-engine";
 
   fuchsia_component_support::RegisterProductDataForCrashReporting(
-      WebInstanceHost::kComponentUrl, kCrashProductName);
+      kWebInstanceComponentUrl, kCrashProductName);
 
   fuchsia_component_support::RegisterProductDataForFeedback(
       kFeedbackAnnotationsNamespace);
@@ -523,11 +528,6 @@ std::vector<std::string> GetRequiredServicesForConfig(
 
 }  // namespace
 
-// Production URL for web hosting Component instances.
-// TODO(fxbug.dev/51490): Use a programmatic mechanism to obtain this.
-const char WebInstanceHost::kComponentUrl[] =
-    "fuchsia-pkg://fuchsia.com/web_engine#meta/web_instance.cmx";
-
 WebInstanceHost::WebInstanceHost() {
   // Ensure WebInstance is registered before launching it.
   // TODO(crbug.com/1211174): Replace with a different mechanism when available.
@@ -562,12 +562,12 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
   launch_args.RemoveSwitch(switches::kContextProvider);
 
   fuchsia::sys::LaunchInfo launch_info;
-  // TODO(1010222): Make kComponentUrl a relative component URL, and
+  // TODO(1010222): Make kWebInstanceComponentUrl a relative component URL, and
   // remove this workaround.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch("with-webui"))
-    launch_info.url = kWebInstanceWithWebUiComponentUrl;
-  else
-    launch_info.url = kComponentUrl;
+  launch_info.url =
+      base::CommandLine::ForCurrentProcess()->HasSwitch("with-webui")
+          ? kWebInstanceWithWebUiComponentUrl
+          : kWebInstanceComponentUrl;
   launch_info.flat_namespace = fuchsia::sys::FlatNamespace::New();
 
   // Process command-line settings specified in our package config-data.

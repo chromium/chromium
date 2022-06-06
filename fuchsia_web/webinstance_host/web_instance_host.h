@@ -34,9 +34,6 @@ namespace cr_fuchsia {
 // TODO(crbug.com/1211174): Remove these requirements.
 class WebInstanceHost {
  public:
-  // Component URL used to launch WebEngine instances to host Contexts.
-  static const char kComponentUrl[];
-
   WebInstanceHost();
   ~WebInstanceHost();
 

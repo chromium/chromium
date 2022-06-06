@@ -4,6 +4,9 @@
 
 import("//third_party/fuchsia-sdk/sdk/build/fidl_library.gni")
 
+# Only allow use by targets in this directory unless explicitly specified.
+visibility = [ ":*" ]
+
 fidl_library("fidl") {
   library_name = "chromium.cast"
 
@@ -23,7 +26,7 @@ fidl_library("fidl") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
   ]
 
-  visibility = [
+  visibility += [
     "//chromecast/bindings:*",
     "//chromecast/internal/*",
     "//fuchsia_web/runners:cast_runner_core",

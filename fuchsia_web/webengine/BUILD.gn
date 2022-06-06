@@ -11,16 +11,17 @@ import("//testing/test.gni")
 import("//third_party/fuchsia-sdk/sdk/build/fidl_library.gni")
 import("//tools/grit/repack.gni")
 
+# Only allow use by targets in this directory unless explicitly specified.
+visibility = [ ":*" ]
+
 config("web_engine_implementation") {
   defines = [ "WEB_ENGINE_IMPLEMENTATION" ]
-  visibility = [ ":*" ]
 }
 
 fidl_library("fidl") {
   library_name = "chromium.internal"
   sources = [ "fidl/dev_tools.fidl" ]
   public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web" ]
-  visibility = [ ":*" ]
 }
 
 repack("web_engine_pak") {
@@ -52,7 +53,6 @@ repack("web_engine_pak") {
   # TODO(crbug.com/1092804): Move this into ${target_gen_dir} and have a
   # GN SDK fuchsia_resource() rule map it into place in the web_engine package.
   output = "$root_gen_dir/web_engine_common_resources.pak"
-  visibility = [ ":*" ]
 }
 
 foreach(locale, locales_with_pseudolocales) {
@@ -75,7 +75,6 @@ foreach(locale, locales_with_pseudolocales) {
     ]
 
     output = "$root_gen_dir/locales/${locale}.pak"
-    visibility = [ ":*" ]
   }
 }
 
@@ -123,6 +122,9 @@ component("web_engine_core") {
     "//fuchsia/base:message_port",
     "//fuchsia/base:modular",
     "//fuchsia_web/webengine/mojom",
+
+    # TODO(crbug.com/1081525): Move context_provider to its own target and move
+    # this deps there.
     "//fuchsia_web/webinstance_host",
     "//google_apis",
     "//gpu/command_buffer/service",
@@ -295,24 +297,18 @@ component("web_engine_core") {
     "web_engine_main_delegate.cc",
     "web_engine_main_delegate.h",
   ]
-  visibility = [ ":*" ]
 }
 
 # TODO(crbug.com/1081525): Rename to features_and_switches or collapse into
 # common. Consider moving these and other files in engine/ to common/ or
 # elsewhere.
 source_set("switches") {
+  visibility += [ "//fuchsia_web/webinstance_host" ]
   deps = [ "//base" ]
-
   sources = [
     "features.h",
     "switches.cc",
     "switches.h",
-  ]
-
-  visibility = [
-    ":*",
-    "//fuchsia_web/webinstance_host",
   ]
 }
 
@@ -324,13 +320,11 @@ executable("web_engine_exe") {
     "//content/public/app",
   ]
   sources = [ "web_engine_main.cc" ]
-  visibility = [ ":*" ]
 }
 
 source_set("webui_resources") {
   data = [ "$root_gen_dir/ui/resources/webui_generated_resources.pak" ]
   deps = [ "//ui/resources" ]
-  visibility = [ ":*" ]
 }
 
 _web_engine_excluded_files = [
@@ -352,7 +346,6 @@ _web_engine_excluded_files = [
 fuchsia_component("web_instance_component") {
   manifest = "web_instance.cmx"
   data_deps = [ ":web_engine_exe" ]
-  visibility = [ ":*" ]
 }
 
 # Component definition for the legacy fuchsia.web.ContextProvider service.
@@ -361,7 +354,6 @@ fuchsia_component("web_instance_component") {
 fuchsia_component("context_provider_component") {
   manifest = "context_provider.cmx"
   data_deps = [ ":web_engine_exe" ]
-  visibility = [ ":*" ]
 }
 
 fuchsia_package("web_engine") {
@@ -390,7 +382,6 @@ cmc_merge("context_provider_with_webui_manifest") {
     "context_provider_with_webui.test-cmx-fragment",
   ]
   output_name = "context_provider_with_webui.cmx"
-  visibility = [ ":*" ]
 }
 
 fuchsia_component("context_provider_with_webui_component") {
@@ -398,7 +389,6 @@ fuchsia_component("context_provider_with_webui_component") {
   manifest = "$target_out_dir/context_provider_with_webui.cmx"
   manifest_output_name = "context_provider"
   data_deps = [ ":web_engine_exe" ]
-  visibility = [ ":*" ]
 }
 
 fuchsia_package("web_engine_with_webui") {
@@ -415,7 +405,9 @@ fuchsia_package_installer("web_engine_with_webui_installer") {
   package = ":web_engine_with_webui"
 }
 
+# TODO(crbug.com/1081525): Move to ../common/test.
 source_set("browsertest_core") {
+  visibility += [ "//fuchsia_web/runners:*" ]
   testonly = true
   sources = [
     "test/frame_for_test.cc",
@@ -440,10 +432,6 @@ source_set("browsertest_core") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//ui/ozone",
-  ]
-  visibility = [
-    ":*",
-    "//fuchsia_web/runners:*",
   ]
 }
 
@@ -545,8 +533,6 @@ action("web_engine_unittests_fake_instance_manifest") {
     "--program",
     "web_engine_unittests__exec",
   ]
-
-  visibility = [ ":*" ]
 }
 
 test("web_engine_unittests") {
@@ -577,7 +563,6 @@ test("web_engine_unittests") {
     "//components/url_rewrite/mojom",
     "//content/test:test_support",
     "//fuchsia/base/test:test_support",
-    "//fuchsia_web/webinstance_host",
     "//mojo/core/embedder",
     "//services/media_session/public/mojom",
     "//services/network:network_service",
@@ -654,7 +639,6 @@ fuchsia_component("web_engine_shell_component") {
   testonly = true
   manifest = "test/web_engine_shell.cmx"
   data_deps = [ ":web_engine_shell_exec" ]
-  visibility = [ ":*" ]
 }
 
 fuchsia_package("web_engine_shell_pkg") {
@@ -696,6 +680,4 @@ executable("web_engine_shell_exec") {
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//url",
   ]
-
-  visibility = [ ":*" ]
 }

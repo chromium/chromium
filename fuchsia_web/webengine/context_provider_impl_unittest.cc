@@ -41,7 +41,6 @@
 #include "build/build_config.h"
 #include "fuchsia_web/webengine/fake_context.h"
 #include "fuchsia_web/webengine/switches.h"
-#include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -156,7 +155,8 @@ class FakeSysLauncher final : public fuchsia::sys::testing::Launcher_TestBase {
     // CreateContextParams from being mapped.
     // Launch the component via a fake manifest identical to the one used for
     // web instances, but which runs this test executable.
-    EXPECT_EQ(launch_info.url, cr_fuchsia::WebInstanceHost::kComponentUrl);
+    EXPECT_EQ(launch_info.url,
+              "fuchsia-pkg://fuchsia.com/web_engine#meta/web_instance.cmx");
     launch_info.url =
         "fuchsia-pkg://fuchsia.com/web_engine_unittests#meta/"
         "web_engine_unittests_fake_instance.cmx";

@@ -4,7 +4,22 @@
 
 assert(is_fuchsia)
 
+visibility = []
+
 source_set("webinstance_host") {
+  # Only WebInstance clients should use the host.
+  visibility += [
+    # WebEngine clients that instantiate WebInstances directly.
+    "//fuchsia_web/runners/*",
+    "//fuchsia_web/webengine:web_engine_shell_exec",
+
+    # TODO(crbug.com/1081525): Change to the context_provider target when created.
+    "//fuchsia_web/webengine:web_engine_core",
+
+    # TODO(crbug.com/1081525): Move dependent tests into this directory and
+    # source_sets that have these deps.
+    "//fuchsia_web/webengine:web_engine_integration_tests__exec",
+  ]
   sources = [ "web_instance_host.cc" ]
   public = [ "web_instance_host.h" ]
   deps = [
