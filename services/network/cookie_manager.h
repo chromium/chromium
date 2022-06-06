@@ -156,22 +156,23 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   void RemoveChangeListener(ListenerRegistration* registration);
 
   // Called after getting the First-Party-Set-aware partition key when setting a
-  // cookie.
+  // cookie. `adjusted_cookie_partition_key` holds a bool representing whether
+  // the cookie needs to be recreated (due to using the wrong partition key);
+  // and the partition key to use when recreating the cookie (for any reason).
   void OnGotFirstPartySetPartitionKeyForSet(
       const GURL& source_url,
       const net::CookieOptions& cookie_options,
       std::unique_ptr<net::CanonicalCookie> cookie,
       SetCanonicalCookieCallback callback,
-      absl::optional<net::CookiePartitionKey> cookie_partition_key,
-      absl::optional<net::CookiePartitionKey> fps_cookie_partition_key);
+      std::pair<bool, absl::optional<net::CookiePartitionKey>>
+          adjusted_cookie_partition_key);
 
   // Called after getting the First-Party-Set-aware partition key when deleting
   // a cookie.
   void OnGotFirstPartySetPartitionKeyForDelete(
       std::unique_ptr<net::CanonicalCookie> cookie,
       DeleteCanonicalCookieCallback callback,
-      absl::optional<net::CookiePartitionKey> cookie_partition_key,
-      absl::optional<net::CookiePartitionKey> fps_cookie_partition_key);
+      bool cookie_partition_keys_match);
 
   void OnGotCookiePartitionKeyCollection(
       const GURL& url,
