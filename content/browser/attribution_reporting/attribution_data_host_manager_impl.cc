@@ -358,7 +358,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   std::vector<AttributionTrigger::EventTriggerData> event_triggers;
   event_triggers.reserve(data->event_triggers.size());
 
-  for (const auto& event_trigger : data->event_triggers) {
+  for (auto& event_trigger : data->event_triggers) {
     absl::optional<AttributionFilterData> filters =
         AttributionFilterData::FromTriggerFilterValues(
             std::move(event_trigger->filters->filter_values));
