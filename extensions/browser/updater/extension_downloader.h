@@ -51,12 +51,11 @@ struct ResourceRequest;
 namespace extensions {
 
 struct DownloadFailure {
-  DownloadFailure(ExtensionId id,
-                  ExtensionDownloaderDelegate::Error error,
+  DownloadFailure(ExtensionDownloaderDelegate::Error error,
                   ExtensionDownloaderDelegate::FailureData failure_data);
+  DownloadFailure(DownloadFailure&& other);
   ~DownloadFailure();
 
-  ExtensionId id;
   ExtensionDownloaderDelegate::Error error;
   ExtensionDownloaderDelegate::FailureData failure_data;
 };
@@ -293,10 +292,12 @@ class ExtensionDownloader {
   // ExtensionDownloader's perspective).
   //   For example, a common error is |possible_updates| doesn't have any update
   //   information for some extensions.
-  void DetermineUpdates(std::vector<ExtensionDownloaderTask> tasks,
-                        const UpdateManifestResults& possible_updates,
-                        std::vector<UpdateManifestResult*>* to_update,
-                        std::vector<DownloadFailure>* errors);
+  void DetermineUpdates(
+      std::vector<ExtensionDownloaderTask> tasks,
+      const UpdateManifestResults& possible_updates,
+      std::vector<std::pair<ExtensionDownloaderTask, UpdateManifestResult*>>*
+          to_update,
+      std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>>* errors);
 
   // Checks whether extension is presented in cache. If yes, return path to its
   // cached CRX, absl::nullopt otherwise. |manifest_fetch_failed| flag indicates
@@ -351,7 +352,7 @@ class ExtensionDownloader {
   // of arguments because there is no guarantee that callback won't indirectly
   // change source of them.
   void NotifyExtensionsDownloadFailedWithList(
-      std::vector<DownloadFailure> errors,
+      std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>> errors,
       std::set<int> request_ids);
 
   // Send a notification that an update was found for |id| that we'll

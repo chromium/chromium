@@ -662,12 +662,14 @@ class ExtensionUpdaterTest : public testing::Test {
   }
 
   const DownloadFailure* GetFailureWithId(
-      const std::vector<DownloadFailure>& failures,
+      const std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>>&
+          failures,
       const ExtensionId& id) {
     auto it = std::find_if(
         failures.begin(), failures.end(),
-        [&](const DownloadFailure& failure) { return failure.id == id; });
-    return it == failures.end() ? nullptr : &*it;
+        [&](const std::pair<ExtensionDownloaderTask, DownloadFailure>&
+                failure) { return failure.first.id == id; });
+    return it == failures.end() ? nullptr : &it->second;
   }
 
   void TestExtensionUpdateCheckRequests(bool pending) {
@@ -922,8 +924,9 @@ class ExtensionUpdaterTest : public testing::Test {
 
     // Check passing an empty list of parse results to DetermineUpdates
     UpdateManifestResults updates;
-    std::vector<UpdateManifestResult*> updateable;
-    std::vector<DownloadFailure> failures;
+    std::vector<std::pair<ExtensionDownloaderTask, UpdateManifestResult*>>
+        updateable;
+    std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>> failures;
     helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
                                          updates, &updateable, &failures);
     EXPECT_TRUE(updateable.empty());
@@ -953,11 +956,11 @@ class ExtensionUpdaterTest : public testing::Test {
     helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
                                          updates, &updateable, &failures);
     ASSERT_EQ(1u, failures.size());
-    EXPECT_EQ(id2, failures[0].id);
+    EXPECT_EQ(id2, failures[0].first.id);
     EXPECT_EQ(ExtensionDownloaderDelegate::Error::NO_UPDATE_AVAILABLE,
-              failures[0].error);
+              failures[0].second.error);
     ASSERT_EQ(1u, updateable.size());
-    EXPECT_EQ("1.1", updateable[0]->version);
+    EXPECT_EQ("1.1", updateable[0].second->version);
   }
 
   void TestDetermineUpdatesError() {
@@ -1021,8 +1024,9 @@ class ExtensionUpdaterTest : public testing::Test {
     EXPECT_CALL(delegate, GetExtensionExistingVersion(id6, _))
         .WillOnce(DoAll(SetArgPointee<1>("0.0.0.0"), Return(true)));
 
-    std::vector<UpdateManifestResult*> updateable;
-    std::vector<DownloadFailure> failures;
+    std::vector<std::pair<ExtensionDownloaderTask, UpdateManifestResult*>>
+        updateable;
+    std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>> failures;
     helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
                                          updates, &updateable, &failures);
     std::vector<ExtensionId> ids_not_updateable({id2, id3});
@@ -1041,7 +1045,7 @@ class ExtensionUpdaterTest : public testing::Test {
     }
     EXPECT_EQ(5u, failures.size());
     ASSERT_EQ(1u, updateable.size());
-    EXPECT_EQ("1.1", updateable[0]->version);
+    EXPECT_EQ("1.1", updateable[0].second->version);
   }
 
   void TestDetermineUpdatesPending() {
@@ -1072,8 +1076,9 @@ class ExtensionUpdaterTest : public testing::Test {
     // pending.
     EXPECT_CALL(delegate, IsExtensionPending(_)).WillRepeatedly(Return(true));
 
-    std::vector<UpdateManifestResult*> updateable;
-    std::vector<DownloadFailure> failures;
+    std::vector<std::pair<ExtensionDownloaderTask, UpdateManifestResult*>>
+        updateable;
+    std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>> failures;
     helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
                                          updates, &updateable, &failures);
     // All the apps should be updateable.
@@ -1139,8 +1144,9 @@ class ExtensionUpdaterTest : public testing::Test {
     EXPECT_CALL(delegate, GetExtensionExistingVersion(id6, _))
         .WillOnce(DoAll(SetArgPointee<1>("1.6.0.0"), Return(true)));
 
-    std::vector<UpdateManifestResult*> updateable;
-    std::vector<DownloadFailure> failures;
+    std::vector<std::pair<ExtensionDownloaderTask, UpdateManifestResult*>>
+        updateable;
+    std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>> failures;
     helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
                                          updates, &updateable, &failures);
     std::vector<ExtensionId> ids_not_updateable({id1, id4});
@@ -1159,8 +1165,8 @@ class ExtensionUpdaterTest : public testing::Test {
     }
     EXPECT_EQ(5u, failures.size());
     ASSERT_EQ(2u, updateable.size());
-    EXPECT_EQ("1.3.1.0", updateable[0]->version);
-    EXPECT_EQ("1.6.1.0", updateable[1]->version);
+    EXPECT_EQ("1.3.1.0", updateable[0].second->version);
+    EXPECT_EQ("1.6.1.0", updateable[1].second->version);
   }
 
   void TestMultipleManifestDownloading() {
