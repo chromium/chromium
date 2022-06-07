@@ -2781,13 +2781,6 @@ RenderFrameHostImpl::AccessibilityGetAcceleratedWidget() {
 
 gfx::NativeViewAccessible
 RenderFrameHostImpl::AccessibilityGetNativeViewAccessible() {
-  // If this method is called when the document is in BackForwardCache, evict
-  // the document to avoid ignoring any accessibility related events which the
-  // document might not expect.
-  if (IsInactiveAndDisallowActivation(
-          DisallowActivationReasonId::kAXGetNativeView))
-    return nullptr;
-
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
       render_view_host_->GetWidget()->GetView());
   if (view)
@@ -2812,12 +2805,6 @@ RenderFrameHostImpl::AccessibilityGetNativeViewAccessibleForWindow() {
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::AccessibilityRenderFrameHost() {
-  // If this method is called when the frame is in BackForwardCache, evict
-  // the frame to avoid ignoring any accessibility related events which are not
-  // expected.
-  if (IsInactiveAndDisallowActivation(
-          DisallowActivationReasonId::kAXWebContents))
-    return nullptr;
   return this;
 }
 
@@ -6092,6 +6079,10 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
     case LifecycleStateImpl::kReadyToBeDeleted:
       return true;
     case LifecycleStateImpl::kInBackForwardCache: {
+      // This function should not be called with kAXEvent when the page is in
+      // back/forward cache, because |HandleAXevents()| will continue to process
+      // accessibility events without evicting.
+      DCHECK_NE(reason, kAXEvent);
       BackForwardCacheCanStoreDocumentResult can_store_flat;
       can_store_flat.NoDueToDisallowActivation(reason);
       EvictFromBackForwardCacheWithFlattenedReasons(can_store_flat);
@@ -6121,20 +6112,6 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
     case LifecycleStateImpl::kActive:
       return false;
   }
-}
-
-bool RenderFrameHostImpl::IsInactiveAndDisallowActivationForAXEvents(
-    const std::vector<ui::AXEvent>& events) {
-  if (lifecycle_state_ != LifecycleStateImpl::kInBackForwardCache) {
-    return IsInactiveAndDisallowActivation(
-        DisallowActivationReasonId::kAXEvent);
-  }
-  // If the lifecycle state is |LifecycleStateImpl::kInBackForwardCache|, we
-  // cannot handle accessibility events any more. We should evict the entry.
-  BackForwardCacheCanStoreDocumentResult can_store_flat;
-  can_store_flat.NoDueToAXEvents(events);
-  EvictFromBackForwardCacheWithFlattenedReasons(can_store_flat);
-  return true;
 }
 
 void RenderFrameHostImpl::EvictFromBackForwardCache(
@@ -7602,8 +7579,14 @@ void RenderFrameHostImpl::HandleAXEvents(
   accessibility_reset_token_ = 0;
 
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
+
+  // If the page is in back/forward cache, do not return early and continue to
+  // apply AX tree updates.
+  // TODO(https://crbug.com/1328126): Define and implement the behavior for when
+  // the page is prerendering, too.
   if (accessibility_mode.is_mode_off() ||
-      IsInactiveAndDisallowActivationForAXEvents(updates_and_events->events)) {
+      (!IsInBackForwardCache() &&
+       IsInactiveAndDisallowActivation(DisallowActivationReasonId::kAXEvent))) {
     return;
   }
   if (accessibility_mode.has_mode(ui::AXMode::kNativeAPIs))

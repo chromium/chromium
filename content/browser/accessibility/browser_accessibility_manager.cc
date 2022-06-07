@@ -474,9 +474,21 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     DCHECK_LE(static_cast<int>(tree_update.nodes.size()), ax_tree()->size());
   }
 
-  // If this page is hidden by an interstitial, suppress all events.
+  // If this page is hidden by an interstitial or frozen inside the
+  // back/forward cache, suppress all the events. If/when the page becomes
+  // visible, the correct set of accessibility events will be generated.
+  //
+  // Rationale for the back/forward cache behavior:
+  // https://docs.google.com/document/d/1_jaEAXurfcvriwcNU-5u0h8GGioh0LelagUIIGFfiuU/
   BrowserAccessibilityManager* root_manager = GetRootManager();
-  if (root_manager && root_manager->hidden_by_interstitial_page()) {
+  bool rfh_in_bfcache = false;
+  // |delegate_| can be nullptr in unittests.
+  if (delegate_) {
+    RenderFrameHostImpl* rfh = delegate_->AccessibilityRenderFrameHost();
+    rfh_in_bfcache = rfh ? rfh->IsInBackForwardCache() : false;
+  }
+  if ((root_manager && root_manager->hidden_by_interstitial_page()) ||
+      rfh_in_bfcache) {
     event_generator().ClearEvents();
     return true;
   }

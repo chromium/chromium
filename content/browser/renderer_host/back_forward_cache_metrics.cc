@@ -458,14 +458,6 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUMA(
         reason);
   }
 
-  for (const ax::mojom::Event event : page_store_result_->ax_events()) {
-    base::UmaHistogramSparse(
-        "BackForwardCache.HistoryNavigationOutcome."
-        "NotRestoredDueToAccessibility."
-        "AXEventType",
-        static_cast<int>(event));
-  }
-
   if (!DidSwapBrowsingInstance()) {
     DCHECK(!navigation->IsServedFromBackForwardCache());
 

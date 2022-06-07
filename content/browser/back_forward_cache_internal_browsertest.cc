@@ -4,12 +4,14 @@
 
 #include "content/browser/back_forward_cache_browsertest.h"
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
+#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -19,6 +21,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -34,6 +37,7 @@
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/accessibility/ax_action_data.h"
 
 // This file contains back/forward-cache tests that test or use internal
 // features, e.g. cache-flushing, crashes, verifying proxies and other
@@ -3471,6 +3475,79 @@ IN_PROC_BROWSER_TEST_F(
 
   // Make sure the grandchild is live.
   EXPECT_TRUE(ExecuteScript(rfh_a->child_at(0)->child_at(0), "true"));
+}
+
+class AccessibilityBackForwardCacheBrowserTest
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(features::kEnableBackForwardCacheForScreenReader,
+                              "", "true");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AccessibilityBackForwardCacheBrowserTest,
+                       DoNotEvictOnAccessibilityEvents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  // Enable accessibility for A.
+  EnableAccessibilityForWebContents(shell()->web_contents());
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), url_b));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Set the callback for generated events, and expect that this is never
+  // fired.
+  BrowserAccessibilityManager* manager =
+      rfh_a->GetOrCreateBrowserAccessibilityManager();
+  manager->SetGeneratedEventCallbackForTesting(base::BindRepeating(
+      [](BrowserAccessibilityDelegate* delegate,
+         ui::AXEventGenerator::Event event, int event_target_id) { FAIL(); }));
+  // Generate an event.
+  mojom::AXUpdatesAndEventsPtr updates_and_events =
+      mojom::AXUpdatesAndEvents::New();
+  ui::AXTreeUpdate update;
+  update.root_id = 1;
+  updates_and_events->updates.emplace_back(update);
+  updates_and_events->events.emplace_back(
+      ui::AXEvent(/*id=*/0, ax::mojom::Event::kChildrenChanged));
+  // If any events are generated and fired, they will be fired synchronously
+  // in the same task of |HandleAXEventsForTests()| and and result in a test
+  // fail.
+  rfh_a->HandleAXEventsForTests(rfh_a->GetAXTreeID(),
+                                std::move(updates_and_events),
+                                /*reset_token=*/0);
+
+  // Reset the callback before restoring the page so that we will not fail when
+  // events are generated.
+  manager->SetGeneratedEventCallbackForTesting(
+      GeneratedEventCallbackForTesting());
+
+  // 4) Navigate back and ensure that |rfh_a| is successfully restored from
+  // bfcache.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  EXPECT_EQ(current_frame_host(), rfh_a.get());
+  ExpectRestored(FROM_HERE);
+
+  // 5) Accessibility events are dispatched again.
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::CHILDREN_CHANGED);
+  // Modify the DOM tree to dispatch new events to verify that the new events
+  // won't be dropped.
+  EXPECT_TRUE(ExecJs(rfh_a.get(),
+                     "document.getElementsByTagName('body')[0].remove();"));
+  // Ensure the AX events are dispatched for |rfh_a|.
+  waiter.WaitForNotification();
+  EXPECT_EQ(waiter.event_render_frame_host(), rfh_a.get());
 }
 
 class BackgroundForegroundProcessLimitBackForwardCacheBrowserTest
