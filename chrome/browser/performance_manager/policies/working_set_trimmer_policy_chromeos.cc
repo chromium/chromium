@@ -330,9 +330,7 @@ void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcessesOnUIThread(
       (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   const mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot =
       params.trim_arcvm_on_first_memory_pressure_after_arcvm_boot
-          ? (params.only_drop_caches_on_first_memory_pressure_after_arcvm_boot
-                 ? mechanism::ArcVmReclaimType::kReclaimGuestPageCaches
-                 : mechanism::ArcVmReclaimType::kReclaimAll)
+          ? mechanism::ArcVmReclaimType::kReclaimGuestPageCaches
           : mechanism::ArcVmReclaimType::kReclaimNone;
 
   bool is_first_trim_post_boot =
@@ -425,12 +423,14 @@ void WorkingSetTrimmerPolicyChromeOS::OnTrimArcVmWorkingSetOnUIThread(
     bool success,
     const std::string& failure_reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (reclaim_type == mechanism::ArcVmReclaimType::kReclaimAll) {
-    PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(&WorkingSetTrimmerPolicyChromeOS::OnArcVmTrimEnded, ptr,
-                       success));
-  }
+
+  // NOTE: To ease unit test, we invoke OnArcVmTrimEnded even when
+  // |reclaim_type| is not kReclaimAll.
+  PerformanceManager::CallOnGraph(
+      FROM_HERE,
+      base::BindOnce(&WorkingSetTrimmerPolicyChromeOS::OnArcVmTrimEnded, ptr,
+                     reclaim_type, success));
+
   if (success) {
     VLOG(2) << "Reclaimed ARCVM memory";
     return;
@@ -443,7 +443,11 @@ void WorkingSetTrimmerPolicyChromeOS::OnArcVmTrimStarting() {
   ++arcvm_trim_count_;
 }
 
-void WorkingSetTrimmerPolicyChromeOS::OnArcVmTrimEnded(bool success) {
+void WorkingSetTrimmerPolicyChromeOS::OnArcVmTrimEnded(
+    mechanism::ArcVmReclaimType reclaim_type,
+    bool success) {
+  if (reclaim_type != mechanism::ArcVmReclaimType::kReclaimAll)
+    return;
   if (success)
     last_arcvm_trim_success_ = base::TimeTicks::Now();
   else
