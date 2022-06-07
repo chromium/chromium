@@ -1145,7 +1145,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mHasDeterminedOverviewStateForCurrentSession = true;
         boolean isOverviewVisible = isInOverviewMode();
 
-        if (shouldRefreshAndShowOverview(isOverviewVisible)) {
+        if (shouldShowOverviewPageOnStart() && !isOverviewVisible) {
             if (getCurrentTabModel() != null) {
                 RecordHistogram.recordCount1MHistogram(
                         TAB_COUNT_ON_RETURN, getCurrentTabModel().getCount());
@@ -1177,16 +1177,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
         mAppLaunchDrawBlocker.onOverviewPageAvailable(
                 mOverviewShownOnStart && !isInstantStartEnabled());
-    }
-
-    private boolean shouldRefreshAndShowOverview(boolean isOverviewVisible) {
-        // If StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON is turned on, MV tiles and
-        // carousels may be hidden before Chrome is brought to the background. If overview should be
-        // shown, no matter overview was already visible or not, we should call
-        // showOverview(StartSurfaceState.SHOWING_START) to show MV tiles and carousels again.
-        return shouldShowOverviewPageOnStart()
-                && (!isOverviewVisible
-                        || StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton());
     }
 
     private void logMainIntentBehavior(Intent intent) {

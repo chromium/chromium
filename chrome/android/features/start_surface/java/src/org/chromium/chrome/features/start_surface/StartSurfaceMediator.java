@@ -172,8 +172,6 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
     private Boolean mFeedVisibilityInSharedPreferenceOnStartUp;
     private boolean mHasFeedPlaceholderShown;
     private final JankTracker mJankTracker;
-    private boolean mHideMVForNewSurface;
-    private boolean mHideTabCarouselForNewSurface;
     private boolean mHideOverviewOnTabSelecting = true;
     private StartSurface.OnTabSelectingListener mOnTabSelectingListener;
     private ViewGroup mTabSwitcherContainer;
@@ -279,7 +277,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
                     if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
                             && !mHideOverviewOnTabSelecting
                             && !mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE)) {
-                        setTabCarouselVisibility(!mIsIncognito && !mHideTabCarouselForNewSurface);
+                        setTabCarouselVisibility(!mIsIncognito);
                     }
                 }
             };
@@ -515,28 +513,6 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
             mPropertyModel.set(RESET_FEED_SURFACE_SCROLL_POSITION, true);
             StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
 
-            String newHomeSurface =
-                    StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue();
-            switch (newHomeSurface) {
-                case "hide_tab_switcher_only":
-                    mHideMVForNewSurface = false;
-                    mHideTabCarouselForNewSurface = true;
-                    break;
-                case "hide_mv_tiles_and_tab_switcher":
-                    mHideMVForNewSurface = true;
-                    mHideTabCarouselForNewSurface = true;
-                    break;
-                default:
-                    mHideMVForNewSurface = false;
-                    mHideTabCarouselForNewSurface = false;
-            }
-        } else if (mStartSurfaceState == StartSurfaceState.SHOWING_START) {
-            if (!mTabModelSelector.isIncognitoSelected()) {
-                // Every time Chrome is started, no matter warm start or cold start, show MV tiles &
-                // tab carousel.
-                mHideMVForNewSurface = false;
-                mHideTabCarouselForNewSurface = false;
-            }
         } else if (mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER) {
             // Set secondary surface visible to make sure tab list recyclerview is updated in time
             // (before GTS animations start). We need to skip
@@ -548,9 +524,8 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
 
             // If new home surface for home button is enabled, MV tiles and carousel tab switcher
             // will not show.
-            setMVTilesVisibility(!mIsIncognito && !mHideMVForNewSurface);
-            setTabCarouselVisibility(
-                    hasNormalTab && !mIsIncognito && !mHideTabCarouselForNewSurface);
+            setMVTilesVisibility(!mIsIncognito);
+            setTabCarouselVisibility(hasNormalTab && !mIsIncognito);
             setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
             // TODO(qinmin): show query tiles when flag is enabled.
             setQueryTilesVisibility(false);

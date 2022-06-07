@@ -7,11 +7,7 @@ package org.chromium.chrome.features.start_surface;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
-import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -296,73 +292,6 @@ public class StartSurfaceFinaleTest {
     public void testOmnibox_FocusedOnNewTabInSingleSurface_BackGestureDeleteBlankTab() {
         backActionDeleteBlankTabForOmniboxFocusedOnNewTabSingleSurface(
                 () -> StartSurfaceTestUtils.gestureNavigateBack(mActivityTestRule));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/exclude_mv_tiles/false"
-        + "/new_home_surface_from_home_button/hide_mv_tiles_and_tab_switcher"
-        + "/tab_count_button_on_start_surface/true"})
-    public void testNewSurfaceFromHomeButton(){
-        // clang-format on
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        if (mImmediateReturn) {
-            StartSurfaceTestUtils.waitForOverviewVisible(
-                    mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-
-            onViewWaiting(allOf(withId(R.id.mv_tiles_layout), isDisplayed()));
-            onViewWaiting(withId(R.id.carousel_tab_switcher_container));
-            onViewWaiting(withId(R.id.start_tab_switcher_button));
-
-            // Launch a tab. The home button should show on the normal tab.
-            StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
-        }
-
-        // Go back to the home surface, MV tiles and carousel tab switcher should not show anymore.
-        StartSurfaceTestUtils.pressHomePageButton(cta);
-
-        // MV tiles and carousel tab switcher should not show anymore.
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
-        onViewWaiting(withId(R.id.start_tab_switcher_button));
-        onView(withId(R.id.mv_tiles_container)).check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.carousel_tab_switcher_container))
-                .check(matches(withEffectiveVisibility(GONE)));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/exclude_mv_tiles/false"
-        + "/new_home_surface_from_home_button/hide_tab_switcher_only"
-        + "/tab_count_button_on_start_surface/true"})
-    public void testNewSurfaceHideTabOnlyFromHomeButton() {
-        // clang-format on
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        if (mImmediateReturn) {
-            StartSurfaceTestUtils.waitForOverviewVisible(
-                    mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-
-            onViewWaiting(withId(R.id.mv_tiles_layout));
-            onViewWaiting(withId(R.id.carousel_tab_switcher_container));
-            onViewWaiting(withId(R.id.start_tab_switcher_button));
-
-            // Launch a tab. The home button should show on the normal tab.
-            StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
-            onViewWaiting(withId(R.id.home_button)).check(matches(isDisplayed()));
-        }
-
-        // Go back to the home surface, MV tiles and carousel tab switcher should not show anymore.
-        StartSurfaceTestUtils.pressHomePageButton(cta);
-
-        // MV tiles should shown and carousel tab switcher should not show anymore.
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
-        onViewWaiting(withId(R.id.start_tab_switcher_button));
-        onView(withId(R.id.mv_tiles_layout)).check(matches(withEffectiveVisibility(VISIBLE)));
-        onView(withId(R.id.carousel_tab_switcher_container))
-                .check(matches(withEffectiveVisibility(GONE)));
     }
 
     @Test

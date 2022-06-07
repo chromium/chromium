@@ -276,14 +276,6 @@ public class StartSurfaceConfiguration {
     }
 
     /**
-     * @return Whether new surface should show when home button is clicked.
-     */
-    public static boolean shouldShowNewSurfaceFromHomeButton() {
-        return NEW_SURFACE_FROM_HOME_BUTTON.getValue().equals("hide_tab_switcher_only")
-                || NEW_SURFACE_FROM_HOME_BUTTON.getValue().equals("hide_mv_tiles_and_tab_switcher");
-    }
-
-    /**
      * Returns whether to show the transition animations for the Finale version.
      */
     public static boolean shouldShowAnimationsForFinale() {

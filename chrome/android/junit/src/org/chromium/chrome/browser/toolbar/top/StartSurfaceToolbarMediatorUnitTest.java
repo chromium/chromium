@@ -29,7 +29,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_TEXT_IS_VISIBLE;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TAB_SWITCHER_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
 import android.content.res.Resources;
@@ -493,38 +492,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mStartSurfaceHomeButtonIPHController.setIsShowingIPHForTesting(true);
         mPropertyModel.get(HOME_BUTTON_CLICK_HANDLER).onClick(mHomeButtonView);
         verify(mTracker).notifyEvent(EventConstants.START_SURFACE_TAB_SWITCHER_HOME_BUTTON_CLICKED);
-    }
-
-    @Test
-    public void testNewHomeSurface() {
-        createMediator(false, true, true, false);
-        assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
-
-        mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
-        assertTrue(mPropertyModel.get(IS_VISIBLE));
-        assertTrue(mPropertyModel.get(TAB_SWITCHER_BUTTON_IS_VISIBLE));
-        // Identity disc should be shown at start on homepage.
-        assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
-        mButtonData.setCanShow(true);
-        mButtonData.setButtonSpec(new ButtonSpec(mDrawable, mOnClickListener,
-                /*onLongClickListener*/ null, /*contentDescriptionResId=*/5,
-                /*supportsTinting=*/false, /*iphCommandBuilder=*/null,
-                AdaptiveToolbarButtonVariant.UNKNOWN));
-        mMediator.updateIdentityDisc(mButtonData);
-        assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
-        assertTrue(mPropertyModel.get(IDENTITY_DISC_AT_START));
-
-        mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
-        assertFalse(mPropertyModel.get(TAB_SWITCHER_BUTTON_IS_VISIBLE));
-        assertTrue(mPropertyModel.get(HOME_BUTTON_IS_VISIBLE));
-        // Change homepage to customized.
-        mStartSurfaceAsHomepageSupplier.set(false);
-        assertFalse(mPropertyModel.get(HOME_BUTTON_IS_VISIBLE));
-        // Disable homepage.
-        mStartSurfaceAsHomepageSupplier.set(true);
-        assertTrue(mPropertyModel.get(HOME_BUTTON_IS_VISIBLE));
-        mHomepageEnabledSupplier.set(false);
-        assertFalse(mPropertyModel.get(HOME_BUTTON_IS_VISIBLE));
     }
 
     @Test
