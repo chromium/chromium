@@ -46,8 +46,10 @@ try_.builder(
 try_.builder(
     name = "fuchsia-binary-size",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = True,
+    builderless = not settings.is_main,
+    cores = 16,
     executable = "recipe:binary_size_fuchsia_trybot",
+    goma_jobs = goma.jobs.J150,
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
