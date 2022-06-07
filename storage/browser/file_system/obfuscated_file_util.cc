@@ -866,6 +866,34 @@ bool ObfuscatedFileUtil::IsDirectoryEmpty(FileSystemOperationContext* context,
   return children.empty();
 }
 
+base::FileErrorOr<base::FilePath>
+ObfuscatedFileUtil::GetDirectoryForBucketAndType(const BucketLocator& bucket,
+                                                 const std::string& type_string,
+                                                 bool create) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // A default bucket in a first-party context uses
+  // GetDirectoryForStorageKeyAndType() to determine its file path.
+  if (bucket.storage_key.IsFirstPartyContext() && bucket.is_default) {
+    base::File::Error error = base::File::FILE_OK;
+    base::FilePath path = GetDirectoryForStorageKeyAndType(
+        bucket.storage_key, type_string, create, &error);
+    if (error != base::File::FILE_OK)
+      return error;
+    return path;
+  }
+  // All other contexts use the provided bucket information to construct the
+  // file path.
+  base::FilePath path =
+      sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
+          bucket, QuotaClientType::kFileSystem);
+  // Append the file system type and verify the path is valid.
+  path = path.AppendASCII(type_string);
+  base::File::Error error = GetDirectoryHelper(path, create);
+  if (error != base::File::FILE_OK)
+    return error;
+  return path;
+}
+
 // TODO(https://crbug.com/1310361): refactor GetDirectoryForStorageKeyAndType
 // and its callers to return a base::FileErrorOr<base::FilePath>.
 base::FilePath ObfuscatedFileUtil::GetDirectoryForStorageKeyAndType(
@@ -1011,8 +1039,7 @@ base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForURL(
     const FileSystemURL& url,
     bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!url.bucket().has_value() ||
-      (url.storage_key().IsFirstPartyContext() && url.bucket()->is_default)) {
+  if (!url.bucket().has_value()) {
     // Access the SandboxDirectoryDatabase to construct the file path.
     // TODO(https://crbug.com/1310361): refactor GetDirectoryForStorageKey and
     // its related functions to return a base::FileErrorOr<base::FilePath>.
@@ -1024,15 +1051,8 @@ base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForURL(
     return path;
   }
   // Construct the file path using the provided bucket information.
-  base::FilePath path =
-      sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
-          url.bucket().value(), QuotaClientType::kFileSystem);
-  // Append the file system type and verify the path is valid.
-  path = path.AppendASCII(CallGetTypeStringForURL(url));
-  base::File::Error error = GetDirectoryHelper(path, create);
-  if (error != base::File::FILE_OK)
-    return error;
-  return path;
+  return GetDirectoryForBucketAndType(url.bucket().value(),
+                                      CallGetTypeStringForURL(url), create);
 }
 
 std::string ObfuscatedFileUtil::CallGetTypeStringForURL(

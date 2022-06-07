@@ -174,6 +174,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   bool IsDirectoryEmpty(FileSystemOperationContext* context,
                         const FileSystemURL& url);
 
+  // Gets the topmost directory specific to this BucketLocator and type. This
+  // will contain both the directory database's files and all the backing file
+  // subdirectories.
+  // Returns the topmost origin directory if `type_string` is empty.
+  // Returns a base::FileError if the directory is undefined.
+  base::FileErrorOr<base::FilePath> GetDirectoryForBucketAndType(
+      const BucketLocator& bucket_locator,
+      const std::string& type_string,
+      bool create);
+
   // Gets the topmost directory specific to this StorageKey and type.  This will
   // contain both the directory database's files and all the backing file
   // subdirectories.
