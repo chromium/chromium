@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -316,7 +317,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   base::ObserverList<DestructionObserver>::Unchecked destruction_observers_;
 
-  base::TimeTicks process_delayed_work_time_;
+  base::DeadlineTimer process_delayed_work_timer_;
   uint32_t previous_processed_num_;
   base::TimeTicks last_idle_time_;
 
