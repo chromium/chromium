@@ -3077,6 +3077,7 @@ group("gpu_pytype") {
     "//build/util/lib/results/",
     "//content/test/gpu/gold_inexact_matching/",
     "//content/test/gpu/flake_suppressor/",
+    "//testing/pytype_common/",
     "//testing/unexpected_passes_common/",
   ]
 
