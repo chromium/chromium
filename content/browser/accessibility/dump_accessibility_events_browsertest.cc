@@ -1137,11 +1137,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menu-opened-closed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsMenuOpenedClosedViaInnerText) {
-  RunEventTest(FILE_PATH_LITERAL("menu-opened-closed-via-inner-text.html"));
-}
-
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/1198056#c16): Test is flaky on Windows ASAN.
 #define MAYBE_AccessibilityEventsMenubarShowHideMenus \
