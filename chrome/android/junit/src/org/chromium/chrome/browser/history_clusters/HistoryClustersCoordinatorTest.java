@@ -40,6 +40,7 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.display.DisplayAndroidManager;
+import org.chromium.url.GURL;
 
 /** Unit tests for HistoryClustersCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -89,12 +90,36 @@ public class HistoryClustersCoordinatorTest {
         ShadowHistoryClustersBridge.sBridge = mHistoryClustersBridge;
 
         mActivityScenario = ActivityScenario.launch(ChromeTabbedActivity.class);
-        mActivityScenario.onActivity(activity -> {
-            mHistoryClustersCoordinator = new HistoryClustersCoordinator(mProfile, activity,
-                    ()
-                            -> mIntent,
-                    () -> mTab, (url) -> new Intent(), mTemplateUrlService, (vg) -> mToggleView);
-        });
+        HistoryClustersDelegate historyClustersDelegate = new HistoryClustersDelegate() {
+            @Override
+            public boolean isSeparateActivity() {
+                return true;
+            }
+
+            @Override
+            public Tab getTab() {
+                return mTab;
+            }
+
+            @Override
+            public Intent getHistoryActivityIntent() {
+                return mIntent;
+            }
+
+            @Override
+            public Intent getOpenUrlIntent(GURL gurl) {
+                return mIntent;
+            }
+
+            @Override
+            public ViewGroup getToggleView(ViewGroup parent) {
+                return mToggleView;
+            }
+        };
+
+        mActivityScenario.onActivity(activity
+                -> mHistoryClustersCoordinator = new HistoryClustersCoordinator(
+                           mProfile, activity, mTemplateUrlService, historyClustersDelegate));
     }
 
     @After

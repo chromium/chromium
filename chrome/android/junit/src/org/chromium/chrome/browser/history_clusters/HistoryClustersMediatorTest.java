@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,10 +34,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Function;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -83,8 +82,6 @@ public class HistoryClustersMediatorTest {
     @Mock
     private GURL mMockGurl;
     @Mock
-    private Function<GURL, Intent> mUrlIntentCreator;
-    @Mock
     private HistoryClustersMediator.Clock mClock;
     @Mock
     private TemplateUrlService mTemplateUrlService;
@@ -106,22 +103,48 @@ public class HistoryClustersMediatorTest {
     private ModelList mModelList;
     private PropertyModel mToolbarModel;
     private Intent mIntent = new Intent();
-    private Supplier<Intent> mHistoryActivityIntentFactory = () -> mIntent;
-    private Supplier<Tab> mTabSupplier = () -> mTab;
     private HistoryClustersMediator mMediator;
+    private boolean mIsSeparateActivity;
+    private HistoryClustersDelegate mHistoryClustersDelegate;
 
     @Before
     public void setUp() {
         ContextUtils.initApplicationContextForTests(mContext);
         doReturn(mResources).when(mContext).getResources();
         doReturn(ITEM_URL_SPEC).when(mMockGurl).getSpec();
-        doReturn(mIntent).when(mUrlIntentCreator).apply(mMockGurl);
         doReturn(mLayoutManager).when(mRecyclerView).getLayoutManager();
         mModelList = new ModelList();
         mToolbarModel = new PropertyModel(HistoryClustersToolbarProperties.ALL_KEYS);
+
+        mHistoryClustersDelegate = new HistoryClustersDelegate() {
+            @Override
+            public boolean isSeparateActivity() {
+                return mIsSeparateActivity;
+            }
+
+            @Override
+            public Tab getTab() {
+                return mTab;
+            }
+
+            @Override
+            public Intent getHistoryActivityIntent() {
+                return mIntent;
+            }
+
+            @Override
+            public Intent getOpenUrlIntent(GURL gurl) {
+                return mIntent;
+            }
+
+            @Override
+            public ViewGroup getToggleView(ViewGroup parent) {
+                return null;
+            }
+        };
+
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
-                mModelList, mToolbarModel, mHistoryActivityIntentFactory, mTabSupplier, false,
-                mUrlIntentCreator, mClock, mTemplateUrlService);
+                mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService);
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1");
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 2");
         mVisit3 = new ClusterVisit(1.0F, mGurl3, "Title 3");
@@ -254,13 +277,8 @@ public class HistoryClustersMediatorTest {
 
     @Test
     public void testNavigateSeparateActivity() {
-        HistoryClustersMediator standaloneMediator =
-                new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
-                        mModelList, mToolbarModel, mHistoryActivityIntentFactory, mTabSupplier,
-                        true, mUrlIntentCreator, mClock, mTemplateUrlService);
-        standaloneMediator.navigateToItemUrl(mMockGurl);
-
-        verify(mUrlIntentCreator).apply(mMockGurl);
+        mIsSeparateActivity = true;
+        mMediator.navigateToItemUrl(mMockGurl);
         verify(mContext).startActivity(mIntent);
     }
 

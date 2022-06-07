@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersDelegate;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -155,6 +156,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.vr.VrModeObserver;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.List;
@@ -787,14 +789,38 @@ public class RootUiCoordinator
 
     private void initHistoryClustersCoordinator(Profile profile) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS)) {
-            mHistoryClustersCoordinator = new HistoryClustersCoordinator(profile, mActivity,
-                    ()
-                            -> new Intent()
-                                       .setClass(mActivity, HistoryActivity.class)
-                                       .putExtra(IntentHandler.EXTRA_PARENT_COMPONENT,
-                                               mActivity.getComponentName()),
-                    mActivityTabProvider,
-                    (url) -> new Intent(), TemplateUrlServiceFactory.get(), (vg) -> null);
+            HistoryClustersDelegate historyClustersDelegate = new HistoryClustersDelegate() {
+                @Override
+                public boolean isSeparateActivity() {
+                    return false;
+                }
+
+                @Override
+                public Tab getTab() {
+                    return mActivityTabProvider.get();
+                }
+
+                @Override
+                public Intent getHistoryActivityIntent() {
+                    return new Intent()
+                            .setClass(mActivity, HistoryActivity.class)
+                            .putExtra(IntentHandler.EXTRA_PARENT_COMPONENT,
+                                    mActivity.getComponentName());
+                }
+
+                @Override
+                public Intent getOpenUrlIntent(GURL gurl) {
+                    return new Intent();
+                }
+
+                @Override
+                public ViewGroup getToggleView(ViewGroup parent) {
+                    return null;
+                }
+            };
+
+            mHistoryClustersCoordinator = new HistoryClustersCoordinator(
+                    profile, mActivity, TemplateUrlServiceFactory.get(), historyClustersDelegate);
             mHistoryClustersCoordinatorSupplier.set(mHistoryClustersCoordinator);
         }
     }

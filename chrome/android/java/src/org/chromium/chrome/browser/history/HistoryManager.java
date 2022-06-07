@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.history;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.transition.AutoTransition;
 import android.transition.Transition;
@@ -33,6 +34,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersDelegate;
 import org.chromium.chrome.browser.history_clusters.QueryState;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -51,6 +53,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -124,12 +127,36 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         boolean historyClustersEnabled =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS);
         if (historyClustersEnabled) {
-            mHistoryClustersCoordinator = new HistoryClustersCoordinator(
-                    Profile.getLastUsedRegularProfile(), activity, null, tabSupplier,
-                    (url)
-                            -> HistoryContentManager.createOpenUrlIntent(url, mActivity),
-                    TemplateUrlServiceFactory.get(),
-                    (vg) -> buildToggleView(vg, JOURNEYS_TAB_INDEX));
+            HistoryClustersDelegate historyClustersDelegate = new HistoryClustersDelegate() {
+                @Override
+                public boolean isSeparateActivity() {
+                    return isSeparateActivity;
+                }
+
+                @Override
+                public Tab getTab() {
+                    return tabSupplier.get();
+                }
+
+                @Override
+                public Intent getHistoryActivityIntent() {
+                    return null;
+                }
+
+                @Override
+                public Intent getOpenUrlIntent(GURL gurl) {
+                    return HistoryContentManager.createOpenUrlIntent(gurl, mActivity);
+                }
+
+                @Override
+                public ViewGroup getToggleView(ViewGroup parent) {
+                    return buildToggleView(parent, JOURNEYS_TAB_INDEX);
+                }
+            };
+
+            mHistoryClustersCoordinator =
+                    new HistoryClustersCoordinator(Profile.getLastUsedRegularProfile(), activity,
+                            TemplateUrlServiceFactory.get(), historyClustersDelegate);
         }
 
         // 1. Create selectable components.

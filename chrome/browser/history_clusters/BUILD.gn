@@ -27,6 +27,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersBridge.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersConstants.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersCoordinator.java",
+    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersDelegate.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersItemProperties.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersItemView.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersMediator.java",

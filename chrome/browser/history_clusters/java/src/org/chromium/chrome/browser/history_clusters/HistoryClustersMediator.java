@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,9 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Function;
 import org.chromium.base.Promise;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -62,13 +59,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private final RoundedIconGenerator mIconGenerator;
     private final LargeIconBridge mLargeIconBridge;
     private final int mFaviconSize;
-    private final Supplier<Tab> mTabSupplier;
     private Promise<HistoryClustersResult> mPromise;
-    private Supplier<Intent> mHistoryActivityIntentFactory;
-    private final boolean mIsSeparateActivity;
-    private Function<GURL, Intent> mOpenUrlIntentCreator;
+    private final HistoryClustersDelegate mDelegate;
     private CallbackController mCallbackController = new CallbackController();
-    private Clock mClock;
+    private final Clock mClock;
     private final TemplateUrlService mTemplateUrlService;
 
     /**
@@ -80,22 +74,15 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
      * @param modelList Model list to which fetched cluster data should be pushed to.
      * @param toolbarModel Model for properties affecting the "full page" toolbar shown in the
      *         history activity.
-     * @param historyActivityIntentFactory Supplier of an intent that targets the History activity.
-     * @param tabSupplier Supplier of the currently active tab. Null in cases where there isn't a
-     *         tab, e.g. when we're operating in a dedicated history activity.
-     * @param isSeparateActivity Whether the Journeys UI this mediator supports is running in a
-     *         separate activity (as opposed to in a tab). This informs, e.g. whether viewing a url
-     *         should launch an intent or directly navigate a tab.
-     * @param openUrlIntentCreator Function that creates an intent that opens the given url in the
-     *         correct main browsing activity.
+     * @param historyClustersDelegate Delegate that provides functionality that must be implemented
+     *         externally, e.g. populating intents targeting activities we can't reference directly.
      * @param clock Provider of the current time in ms relative to the unix epoch.
      * @param templateUrlService Service that allows us to generate a URL for a given search query.
      */
     HistoryClustersMediator(@NonNull HistoryClustersBridge historyClustersBridge,
             LargeIconBridge largeIconBridge, @NonNull Context context, @NonNull Resources resources,
             @NonNull ModelList modelList, @NonNull PropertyModel toolbarModel,
-            Supplier<Intent> historyActivityIntentFactory, @Nullable Supplier<Tab> tabSupplier,
-            boolean isSeparateActivity, Function<GURL, Intent> openUrlIntentCreator, Clock clock,
+            HistoryClustersDelegate historyClustersDelegate, Clock clock,
             TemplateUrlService templateUrlService) {
         mHistoryClustersBridge = historyClustersBridge;
         mLargeIconBridge = largeIconBridge;
@@ -103,12 +90,9 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mContext = context;
         mResources = resources;
         mToolbarModel = toolbarModel;
-        mHistoryActivityIntentFactory = historyActivityIntentFactory;
-        mTabSupplier = tabSupplier;
+        mDelegate = historyClustersDelegate;
         mFaviconSize = mResources.getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
-        mIsSeparateActivity = isSeparateActivity;
-        mOpenUrlIntentCreator = openUrlIntentCreator;
         mClock = clock;
         mTemplateUrlService = templateUrlService;
     }
@@ -167,7 +151,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     void openHistoryClustersUi(String query) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         if (isTablet) {
-            Tab currentTab = mTabSupplier.get();
+            Tab currentTab = mDelegate.getTab();
             if (currentTab == null) return;
             Uri journeysUri =
                     new Uri.Builder()
@@ -182,7 +166,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             return;
         }
 
-        Intent historyActivityIntent = mHistoryActivityIntentFactory.get();
+        Intent historyActivityIntent = mDelegate.getHistoryActivityIntent();
         historyActivityIntent.putExtra(HistoryClustersConstants.EXTRA_SHOW_HISTORY_CLUSTERS, true);
         historyActivityIntent.putExtra(
                 HistoryClustersConstants.EXTRA_HISTORY_CLUSTERS_QUERY, query);
@@ -305,12 +289,12 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     @VisibleForTesting
     void navigateToItemUrl(GURL gurl) {
         Context appContext = ContextUtils.getApplicationContext();
-        if (mIsSeparateActivity) {
-            appContext.startActivity(mOpenUrlIntentCreator.apply(gurl));
+        if (mDelegate.isSeparateActivity()) {
+            appContext.startActivity(mDelegate.getOpenUrlIntent(gurl));
             return;
         }
 
-        Tab currentTab = mTabSupplier.get();
+        Tab currentTab = mDelegate.getTab();
         if (currentTab == null) return;
 
         LoadUrlParams loadUrlParams = new LoadUrlParams(gurl);
