@@ -584,6 +584,9 @@ Things to consider:
       <message name="IDS_IOS_PASSWORD_SUGGESTIONS_TIP" desc="The text of the tip explaining to the user they can tap on Autofill password suggestions">
         Use the password you saved in Chrome to sign in faster
       </message>
+      <message name="IDS_IOS_PASSWORD_SUGGESTIONS_TIP_VOICEOVER" desc="The VoiceOver announcement when the tip explaining to the user they can select Autofill password suggestions." meaning="The VoiceOver announcement when the tip explaining to the user they can select Autofill password suggestions.">
+        Chrome tip. Sign in faster by selecting your saved password at the top of the keyboard.
+      </message>
     </messages>
   </release>
 </grit>

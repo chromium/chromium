@@ -618,6 +618,8 @@ BubbleViewType BubbleTypeFromFeature() {
                   alignment:BubbleAlignmentLeading
                  bubbleType:bubbleType
           dismissalCallback:dismissalCallback];
+  bubbleViewControllerPresenter.voiceOverAnnouncement =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SUGGESTIONS_TIP_VOICEOVER);
   return bubbleViewControllerPresenter;
 }
 
