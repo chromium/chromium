@@ -254,9 +254,10 @@ void AppServiceMojomImpl::AddPreferredApp(
     apps::mojom::IntentPtr intent,
     bool from_publisher) {
   if (preferred_apps_impl_) {
-    preferred_apps_impl_->AddPreferredApp(app_type, app_id,
-                                          std::move(intent_filter),
-                                          std::move(intent), from_publisher);
+    preferred_apps_impl_->AddPreferredApp(
+        ConvertMojomAppTypToAppType(app_type), app_id,
+        ConvertMojomIntentFilterToIntentFilter(intent_filter),
+        ConvertMojomIntentToIntent(intent), from_publisher);
   }
 }
 

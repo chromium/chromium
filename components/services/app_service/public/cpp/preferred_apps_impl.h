@@ -19,8 +19,6 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
 
@@ -69,10 +67,10 @@ class PreferredAppsImpl {
 
   ~PreferredAppsImpl();
 
-  void AddPreferredApp(apps::mojom::AppType app_type,
+  void AddPreferredApp(AppType app_type,
                        const std::string& app_id,
-                       apps::mojom::IntentFilterPtr intent_filter,
-                       apps::mojom::IntentPtr intent,
+                       IntentFilterPtr intent_filter,
+                       IntentPtr intent,
                        bool from_publisher);
   void RemovePreferredApp(const std::string& app_id);
   void SetSupportedLinksPreference(AppType app_type,
@@ -105,10 +103,10 @@ class PreferredAppsImpl {
   // be run immediately if preferred apps are already initialized.
   void RunAfterPreferredAppsReady(base::OnceClosure task);
 
-  void AddPreferredAppImpl(apps::mojom::AppType app_type,
+  void AddPreferredAppImpl(AppType app_type,
                            const std::string& app_id,
-                           apps::mojom::IntentFilterPtr intent_filter,
-                           apps::mojom::IntentPtr intent,
+                           IntentFilterPtr intent_filter,
+                           IntentPtr intent,
                            bool from_publisher);
   void RemovePreferredAppImpl(const std::string& app_id);
   void SetSupportedLinksPreferenceImpl(AppType app_type,

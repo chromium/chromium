@@ -142,7 +142,7 @@ AppServiceProxyBase::AppServiceProxyBase(Profile* profile)
                          apps::IconCache::GarbageCollectionPolicy::kEager),
       profile_(profile) {
   if (base::FeatureList::IsEnabled(kAppServicePreferredAppsWithoutMojom)) {
-    preferred_apps_impl_ = std::make_unique<PreferredAppsImpl>(
+    preferred_apps_impl_ = std::make_unique<apps::PreferredAppsImpl>(
         this, profile ? profile->GetPath() : base::FilePath());
   }
 }
@@ -219,6 +219,10 @@ AppServiceProxyBase::AppCapabilityAccessCache() {
 
 BrowserAppLauncher* AppServiceProxyBase::BrowserAppLauncher() {
   return browser_app_launcher_.get();
+}
+
+apps::PreferredAppsImpl* AppServiceProxyBase::PreferredAppsImpl() {
+  return preferred_apps_impl_.get();
 }
 
 apps::PreferredAppsListHandle& AppServiceProxyBase::PreferredAppsList() {
@@ -679,9 +683,17 @@ void AppServiceProxyBase::AddPreferredApp(
   preferred_apps_list_.AddPreferredApp(
       app_id, ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter));
   constexpr bool kFromPublisher = false;
-  app_service_->AddPreferredApp(
-      ConvertAppTypeToMojomAppType(app_registry_cache_.GetAppType(app_id)),
-      app_id, std::move(mojom_intent_filter), intent->Clone(), kFromPublisher);
+  if (preferred_apps_impl_) {
+    preferred_apps_impl_->AddPreferredApp(
+        app_registry_cache_.GetAppType(app_id), app_id,
+        ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter),
+        ConvertMojomIntentToIntent(intent), kFromPublisher);
+  } else {
+    app_service_->AddPreferredApp(
+        ConvertAppTypeToMojomAppType(app_registry_cache_.GetAppType(app_id)),
+        app_id, std::move(mojom_intent_filter), intent->Clone(),
+        kFromPublisher);
+  }
 }
 
 void AppServiceProxyBase::SetSupportedLinksPreference(

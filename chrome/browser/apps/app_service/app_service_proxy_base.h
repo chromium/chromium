@@ -89,6 +89,9 @@ class AppServiceProxyBase : public KeyedService,
 
   apps::BrowserAppLauncher* BrowserAppLauncher();
 
+  // TODO(crbug.com/1333422): Remove this PreferredAppsImpl() function when
+  // proxy()->AddPreferredApp() can be called directly to add preferred apps.
+  apps::PreferredAppsImpl* PreferredAppsImpl();
   apps::PreferredAppsListHandle& PreferredAppsList();
 
   // Registers `publisher` with the App Service as exclusively publishing apps
@@ -419,7 +422,7 @@ class AppServiceProxyBase : public KeyedService,
   IconCoalescer icon_coalescer_;
   IconCache outer_icon_loader_;
 
-  std::unique_ptr<PreferredAppsImpl> preferred_apps_impl_;
+  std::unique_ptr<apps::PreferredAppsImpl> preferred_apps_impl_;
   apps::PreferredAppsList preferred_apps_list_;
 
   raw_ptr<Profile> profile_;

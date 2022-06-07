@@ -95,12 +95,11 @@ PreferredAppsImpl::PreferredAppsImpl(
 
 PreferredAppsImpl::~PreferredAppsImpl() = default;
 
-void PreferredAppsImpl::AddPreferredApp(
-    apps::mojom::AppType app_type,
-    const std::string& app_id,
-    apps::mojom::IntentFilterPtr intent_filter,
-    apps::mojom::IntentPtr intent,
-    bool from_publisher) {
+void PreferredAppsImpl::AddPreferredApp(AppType app_type,
+                                        const std::string& app_id,
+                                        IntentFilterPtr intent_filter,
+                                        IntentPtr intent,
+                                        bool from_publisher) {
   RunAfterPreferredAppsReady(base::BindOnce(
       &PreferredAppsImpl::AddPreferredAppImpl, weak_ptr_factory_.GetWeakPtr(),
       app_type, app_id, std::move(intent_filter), std::move(intent),
@@ -242,12 +241,11 @@ void PreferredAppsImpl::RunAfterPreferredAppsReady(base::OnceClosure task) {
   }
 }
 
-void PreferredAppsImpl::AddPreferredAppImpl(
-    apps::mojom::AppType app_type,
-    const std::string& app_id,
-    apps::mojom::IntentFilterPtr mojom_intent_filter,
-    apps::mojom::IntentPtr intent,
-    bool from_publisher) {
+void PreferredAppsImpl::AddPreferredAppImpl(AppType app_type,
+                                            const std::string& app_id,
+                                            IntentFilterPtr intent_filter,
+                                            IntentPtr intent,
+                                            bool from_publisher) {
   // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
   // after finding out the root cause.
   if (app_id.empty()) {
@@ -255,13 +253,8 @@ void PreferredAppsImpl::AddPreferredAppImpl(
     return;
   }
 
-  IntentFilterPtr intent_filter =
-      ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter);
   auto replaced_apps =
       preferred_apps_list_.AddPreferredApp(app_id, intent_filter);
-
-  auto mojom_replaced_apps =
-      ConvertReplacedAppPreferencesToMojomReplacedAppPreferences(replaced_apps);
 
   WriteToJSON(profile_dir_, preferred_apps_list_);
 
@@ -280,8 +273,7 @@ void PreferredAppsImpl::AddPreferredAppImpl(
   // TODO(crbug.com/1322000): The |replaced_app_preference| can be really big,
   // update this logic to only call the relevant publisher for each app after
   // updating the storage structure.
-  host_->OnPreferredAppSet(app_id, std::move(intent_filter),
-                           ConvertMojomIntentToIntent(intent),
+  host_->OnPreferredAppSet(app_id, std::move(intent_filter), std::move(intent),
                            std::move(replaced_apps));
 }
 
