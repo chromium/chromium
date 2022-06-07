@@ -104,6 +104,8 @@ void MarkRequestCompleteTask::StoreResponse(base::OnceClosure done_closure) {
   BackgroundFetchCrossOriginFilter filter(
       registration_id_.storage_key().origin(), *request_info_);
   if (!filter.CanPopulateBody()) {
+    // Don't expose the initial URL in case of cross-origin redirects.
+    response_->url_list.resize(1);
     failure_reason_ = proto::BackgroundFetchRegistration::FETCH_ERROR;
     // No point writing the response to the cache since it won't be exposed.
     CreateAndStoreCompletedRequest(std::move(done_closure));
