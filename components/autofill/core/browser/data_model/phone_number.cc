@@ -217,10 +217,27 @@ std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
     case PHONE_HOME_NUMBER:
       return cached_parsed_phone_.number();
 
-    case PHONE_HOME_NUMBER_PREFIX:
-    case PHONE_HOME_NUMBER_SUFFIX:
-      NOTIMPLEMENTED();
-      return std::u16string();
+    case PHONE_HOME_NUMBER_PREFIX: {
+      const std::u16string number = GetInfo(PHONE_HOME_NUMBER, app_locale);
+      const std::u16string number_suffix =
+          GetInfo(PHONE_HOME_NUMBER_SUFFIX, app_locale);
+      DCHECK(number.size() >= number_suffix.size());
+      // As PHONE_HOME_NUMBER = PHONE_HOME_NUMBER_PREFIX +
+      // PHONE_HOME_NUMBER_SUFFIX, extract the appropriate prefix from `number`.
+      return number.substr(0, number.size() - number_suffix.size());
+    }
+
+    case PHONE_HOME_NUMBER_SUFFIX: {
+      const std::u16string number = GetInfo(PHONE_HOME_NUMBER, app_locale);
+      // Libphonenumber doesn't provide functionality to split PHONE_HOME_NUMBER
+      // further, and the HTML standard doesn't specify which suffix
+      // autocomplete="tel-local-suffix" corresponds to. In all countries using
+      // this format that we are aware of (see unit tests), the suffix consists
+      // of the last 4 digits, while the length of the prefix varies.
+      constexpr int kSuffixLength = 4;
+      DCHECK(number.size() >= kSuffixLength);
+      return number.substr(number.size() - kSuffixLength);
+    }
 
     case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
       return GetTrunkPrefix() + cached_parsed_phone_.city_code();

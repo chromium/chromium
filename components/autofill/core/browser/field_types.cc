@@ -48,6 +48,8 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case EMAIL_ADDRESS:
     case USERNAME_AND_EMAIL_ADDRESS:
     case PHONE_HOME_NUMBER:
+    case PHONE_HOME_NUMBER_PREFIX:
+    case PHONE_HOME_NUMBER_SUFFIX:
     case PHONE_HOME_CITY_CODE:
     case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
     case PHONE_HOME_COUNTRY_CODE:
@@ -156,8 +158,6 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case PHONE_FAX_COUNTRY_CODE:
     case PHONE_FAX_CITY_AND_NUMBER:
     case PHONE_FAX_WHOLE_NUMBER:
-    case PHONE_HOME_NUMBER_PREFIX:
-    case PHONE_HOME_NUMBER_SUFFIX:
     case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case PRICE:

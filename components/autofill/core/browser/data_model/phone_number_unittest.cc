@@ -324,7 +324,7 @@ TEST(PhoneNumberTest, TrunkPrefix) {
                         const std::u16string& city_code_without_trunk,
                         const std::u16string& city_number_with_trunk,
                         const std::u16string& city_number_without_trunk) {
-    // Irrelevant, as the `profile` has country information.
+    // The `locale` is irrelevant, as the `profile` has country information.
     const std::string locale = "en-US";
     PhoneNumber phone_number(&profile);
     phone_number.SetInfo(PHONE_HOME_WHOLE_NUMBER, number, locale);
@@ -369,6 +369,38 @@ TEST(PhoneNumberTest, TrunkPrefix) {
     TestNumber(u"+39 338 1234567", u"338", u"338", u"3381234567",
                u"3381234567");
     TestNumber(u"338 1234567", u"338", u"338", u"3381234567", u"3381234567");
+  }
+}
+
+// Tests that PHONE_HOME_NUMBER_PREFIX and PHONE_HOME_NUMBER_PREFIX are
+// extracted correctly.
+TEST(PhoneNumberTest, NumberPreAndSuffixes) {
+  AutofillProfile profile;
+
+  // Constructs a `PhoneNumber` object from `number` and verifies that the
+  // pre- and suffix match the expectation.
+  auto TestNumber = [&](const std::u16string& number,
+                        const std::u16string& prefix,
+                        const std::u16string& suffix) {
+    // The `locale` is irrelevant, as the `profile` has country information.
+    const std::string locale = "en-US";
+    PhoneNumber phone_number(&profile);
+    phone_number.SetInfo(PHONE_HOME_WHOLE_NUMBER, number, locale);
+    EXPECT_EQ(prefix, phone_number.GetInfo(PHONE_HOME_NUMBER_PREFIX, locale));
+    EXPECT_EQ(suffix, phone_number.GetInfo(PHONE_HOME_NUMBER_SUFFIX, locale));
+  };
+
+  // US
+  {
+    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+    TestNumber(u"(650) 234-5678", u"234", u"5678");
+  }
+  // JP
+  {
+    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"JP");
+    TestNumber(u"03-3224-9999", u"3224", u"9999");   // Landline
+    TestNumber(u"090-1234-5678", u"1234", u"5678");  // Mobile
+    TestNumber(u"+81 824-86-3123", u"86", u"3123");  // Different length prefix
   }
 }
 
