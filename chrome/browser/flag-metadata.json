@@ -2656,6 +2656,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "enable-search-resumption-module",
+    "owners": ["clank-start","hanxi","spdonghao", "andrewheard"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-secure-payment-confirmation-android",
     "owners": [ "web-payments-team@google.com" ],
     "expiry_milestone": 110

@@ -267,6 +267,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kShareButtonInTopToolbar,
     &kShowScrollableMVTOnNTPAndroid,
     &kFeedPositionAndroid,
+    &kSearchResumptionModuleAndroid,
     &kSpannableInlineAutocomplete,
     &kSpecialLocaleWrapper,
     &kSpecialUserDecision,
@@ -839,6 +840,9 @@ const base::Feature kStartSurfaceAndroid{"StartSurfaceAndroid",
 
 const base::Feature kFeedPositionAndroid{"FeedPositionAndroid",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSearchResumptionModuleAndroid{
+    "SearchResumptionModuleAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, keep logging and reporting UMA while chrome is backgrounded.
 const base::Feature kUmaBackgroundSessions{"UMABackgroundSessions",

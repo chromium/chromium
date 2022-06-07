@@ -2065,6 +2065,9 @@ extern const char kStartSurfaceAndroidDescription[];
 extern const char kFeedPositionAndroidName[];
 extern const char kFeedPositionAndroidDescription[];
 
+extern const char kSearchResumptionModuleAndroidName[];
+extern const char kSearchResumptionModuleAndroidDescription[];
+
 extern const char kStrictSiteIsolationName[];
 extern const char kStrictSiteIsolationDescription[];
 

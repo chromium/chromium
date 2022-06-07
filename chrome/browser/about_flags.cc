@@ -5808,6 +5808,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowScrollableMVTOnNTPAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kShowScrollableMVTOnNTPAndroid)},
 
+    {"enable-search-resumption-module",
+     flag_descriptions::kSearchResumptionModuleAndroidName,
+     flag_descriptions::kSearchResumptionModuleAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSearchResumptionModuleAndroid)},
+
     {"enable-close-tab-suggestions",
      flag_descriptions::kCloseTabSuggestionsName,
      flag_descriptions::kCloseTabSuggestionsDescription, kOsAndroid,
