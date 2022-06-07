@@ -169,6 +169,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   EXPECT_TRUE(ukm_recorder().EntryHasMetric(
       prerendered_page_entry,
       PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
+  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+      prerendered_page_entry,
+      PrerenderPageLoad::kInteractiveTiming_FirstInputDelay4Name));
+  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+      prerendered_page_entry,
+      PrerenderPageLoad::
+          kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName));
   EXPECT_FALSE(ukm_recorder().EntryHasMetric(
       prerendered_page_entry,
       PageLoad::kPaintTiming_NavigationToFirstContentfulPaintName));
