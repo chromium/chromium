@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1032,7 +1033,7 @@ class CredentialManagerAvatarTest : public PasswordManagerBrowserTestBase {
   size_t avatar_request_counter_ = 0;
 
   // A pointer to the run loop used to wait for the avatar.
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 };
 
 const char CredentialManagerAvatarTest::kAvatarOrigin[] = "avatarserver.com";

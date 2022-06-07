@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -271,10 +272,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   gfx::RectF GetDamageRect(const DrawQuad* quad,
                            const OverlayCandidate& candidate) const;
 
-  const AggregatedRenderPass* render_pass_;
-  DisplayResourceProvider* resource_provider_;
-  const SurfaceDamageRectList* surface_damage_rect_list_;
-  const SkM44* output_color_matrix_;
+  raw_ptr<const AggregatedRenderPass> render_pass_;
+  raw_ptr<DisplayResourceProvider> resource_provider_;
+  raw_ptr<const SurfaceDamageRectList> surface_damage_rect_list_;
+  raw_ptr<const SkM44> output_color_matrix_;
   const gfx::RectF primary_rect_;
   bool is_delegated_context_;
 

@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -414,7 +415,7 @@ class AccountTrackerServiceTest : public testing::Test {
   FakeProfileOAuth2TokenService fake_oauth2_token_service_;
   std::unique_ptr<AccountFetcherService> account_fetcher_;
   std::unique_ptr<AccountTrackerService> account_tracker_;
-  FakeAccountCapabilitiesFetcherFactory*
+  raw_ptr<FakeAccountCapabilitiesFetcherFactory>
       fake_account_capabilities_fetcher_factory_ = nullptr;
   std::vector<TrackingEvent> account_tracker_events_;
   bool force_account_id_to_email_for_legacy_tests_ = false;

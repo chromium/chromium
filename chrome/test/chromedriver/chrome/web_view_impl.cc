@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
@@ -183,7 +184,7 @@ class RemoteObjectReleaseGuard {
   ~RemoteObjectReleaseGuard() { ReleaseRemoteObject(client_, object_id_); }
 
  private:
-  DevToolsClient* client_;
+  raw_ptr<DevToolsClient> client_;
   std::string object_id_;
 };
 

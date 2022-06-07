@@ -164,7 +164,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
     }
 
    private:
-    const BrowserAccessibility* const parent_;
+    const raw_ptr<const BrowserAccessibility> parent_;
   };
 
   // Returns a range for platform children which can be used in range-based for
@@ -256,8 +256,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
     }
 
    private:
-    const BrowserAccessibility* const parent_;
-    const BrowserAccessibility* const child_tree_root_;
+    const raw_ptr<const BrowserAccessibility> parent_;
+    const raw_ptr<const BrowserAccessibility> child_tree_root_;
   };
 
   // Returns a range for all children including ignored children, which can be

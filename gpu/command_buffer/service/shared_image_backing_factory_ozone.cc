@@ -86,7 +86,7 @@ SharedImageBackingFactoryOzone::CreateSharedImageInternal(
   }
   return std::make_unique<SharedImageBackingOzone>(
       mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
-      surface_origin, alpha_type, usage, shared_context_state_,
+      surface_origin, alpha_type, usage, shared_context_state_.get(),
       std::move(pixmap), dawn_procs_);
 }
 
@@ -162,7 +162,7 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
         viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format));
     backing = std::make_unique<SharedImageBackingOzone>(
         mailbox, plane_format, plane, plane_size, color_space, surface_origin,
-        alpha_type, usage, shared_context_state_, std::move(pixmap),
+        alpha_type, usage, shared_context_state_.get(), std::move(pixmap),
         dawn_procs_);
     backing->SetCleared();
   } else if (handle.type == gfx::SHARED_MEMORY_BUFFER) {

@@ -703,7 +703,7 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
   std::unique_ptr<MockGLES2Decoder> mock_decoder_;
   std::unique_ptr<GLES2Decoder> decoder_;
   std::unique_ptr<MemoryTracker> memory_tracker_;
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 
   GLuint client_buffer_id_;
   GLuint client_framebuffer_id_;
@@ -1035,7 +1035,7 @@ class GLES2DecoderPassthroughTestBase : public testing::Test,
   TraceOutputter outputter_;
   std::unique_ptr<GLES2DecoderPassthroughImpl> decoder_;
   scoped_refptr<ContextGroup> group_;
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 }  // namespace gles2

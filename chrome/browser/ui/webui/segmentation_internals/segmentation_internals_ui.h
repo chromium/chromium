@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SEGMENTATION_INTERNALS_SEGMENTATION_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SEGMENTATION_INTERNALS_SEGMENTATION_INTERNALS_UI_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals.mojom.h"  // nogncheck
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -34,7 +35,7 @@ class SegmentationInternalsUI
       mojo::PendingReceiver<segmentation_internals::mojom::PageHandler>
           receiver) override;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<SegmentationInternalsPageHandlerImpl>
       segmentation_internals_page_handler_;
   mojo::Receiver<segmentation_internals::mojom::PageHandlerFactory>

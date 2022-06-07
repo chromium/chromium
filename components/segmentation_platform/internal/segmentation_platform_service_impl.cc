@@ -56,13 +56,13 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     std::unique_ptr<InitParams> init_params)
     : model_provider_factory_(std::move(init_params->model_provider)),
       task_runner_(init_params->task_runner),
-      clock_(init_params->clock),
+      clock_(init_params->clock.get()),
       platform_options_(PlatformOptions::CreateDefault()),
       input_delegate_holder_(std::move(init_params->input_delegate_holder)),
       configs_(std::move(init_params->configs)),
       all_segment_ids_(GetAllSegmentIds(configs_)),
       field_trial_register_(std::move(init_params->field_trial_register)),
-      profile_prefs_(init_params->profile_prefs),
+      profile_prefs_(init_params->profile_prefs.get()),
       creation_time_(clock_->Now()) {
   base::UmaHistogramMediumTimes(
       "SegmentationPlatform.Init.ProcessCreationToServiceCreationLatency",

@@ -78,7 +78,7 @@ class FeaturePromoController {
 
    private:
     base::WeakPtr<FeaturePromoController> controller_;
-    const base::Feature* feature_ = nullptr;
+    raw_ptr<const base::Feature> feature_ = nullptr;
   };
 
   FeaturePromoController();
@@ -344,7 +344,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       TutorialIdentifier tutorial_id);
 
   // The feature promo registry to use.
-  FeaturePromoRegistry* const registry_;
+  const raw_ptr<FeaturePromoRegistry> registry_;
 
   // Non-null as long as a promo is showing. Corresponds to an IPH
   // feature registered with |feature_engagement_tracker_|.
@@ -380,7 +380,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // engagement tracker, the current iph feature will be set and then checked
   // against to verify the right feature is bypassing. this page is located at
   // internals/user-education.
-  const base::Feature* iph_feature_bypassing_tracker_ = nullptr;
+  raw_ptr<const base::Feature> iph_feature_bypassing_tracker_ = nullptr;
 
   base::WeakPtrFactory<FeaturePromoControllerCommon> weak_ptr_factory_{this};
 

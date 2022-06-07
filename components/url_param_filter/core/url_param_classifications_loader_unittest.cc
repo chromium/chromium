@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/url_param_filter/core/features.h"
 #include "components/url_param_filter/core/url_param_filter_classification.pb.h"
@@ -76,7 +77,7 @@ class UrlParamClassificationsLoaderTest : public ::testing::Test {
   std::string test_file_contents() { return raw_test_file_; }
 
  private:
-  ClassificationsLoader* classifications_loader_;
+  raw_ptr<ClassificationsLoader> classifications_loader_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::string raw_test_file_;
 };

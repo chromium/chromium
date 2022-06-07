@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -122,16 +123,16 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   const content::ClientIdData client_data_;
 
   // View containing the logo of the identity provider and the title.
-  views::View* header_view_{nullptr};
+  raw_ptr<views::View> header_view_{nullptr};
 
   // View containing the bubble icon.
-  views::ImageView* bubble_icon_view_{nullptr};
+  raw_ptr<views::ImageView> bubble_icon_view_{nullptr};
 
   // View containing the bubble title.
-  views::Label* title_label_{nullptr};
+  raw_ptr<views::Label> title_label_{nullptr};
 
   // View containing the continue button.
-  views::View* continue_button_{nullptr};
+  raw_ptr<views::View> continue_button_{nullptr};
 
   // Used to differentiate UI dismissal scenarios.
   bool verify_sheet_shown_{false};

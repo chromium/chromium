@@ -474,7 +474,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
     void OnInitializationCompleted(bool succeeded) override;
 
    private:
-    PrefService* pref_service_ = nullptr;
+    raw_ptr<PrefService> pref_service_ = nullptr;
   };
 
   // Sends notification of a changed preference. This needs to be called by

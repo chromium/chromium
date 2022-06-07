@@ -2554,8 +2554,8 @@ class StoragePartitionImplSharedStorageTest : public StoragePartitionImplTest {
   base::test::ScopedFeatureList feature_list_;
 
   // We don't own these pointers.
-  StoragePartition* const storage_partition_;
-  storage::SharedStorageManager* shared_storage_manager_;
+  const raw_ptr<StoragePartition> storage_partition_;
+  raw_ptr<storage::SharedStorageManager> shared_storage_manager_;
 };
 
 TEST_F(StoragePartitionImplSharedStorageTest,

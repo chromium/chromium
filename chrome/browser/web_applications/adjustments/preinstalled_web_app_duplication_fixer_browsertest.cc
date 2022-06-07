@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/adjustments/preinstalled_web_app_duplication_fixer.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -172,7 +173,7 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
-  WebAppProvider* provider_;
+  raw_ptr<WebAppProvider> provider_;
   base::test::ScopedFeatureList feature_list_{
       features::kPreinstalledWebAppDuplicationFixer};
   ScopedTestingPreinstalledAppData preinstalled_app_data_;

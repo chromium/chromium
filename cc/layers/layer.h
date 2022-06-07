@@ -1161,7 +1161,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     AllowRemoveForReadd& operator=(const AllowRemoveForReadd&) = delete;
 
    private:
-    Layer* layer_;
+    raw_ptr<Layer> layer_;
   };
 
   bool allow_remove_for_readd_ = false;

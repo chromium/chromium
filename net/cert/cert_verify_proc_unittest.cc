@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -4862,7 +4863,7 @@ TEST(CertVerifyProcTest, RecordEkuHistogram) {
   struct {
     std::string expected_suffix;
     bool known_root;
-    X509Certificate* root_cert;
+    raw_ptr<X509Certificate> root_cert;
   } root_cases[] = {
       {"PrivateRoot", false, nullptr},
       {"PrivateRoot", false, root.get()},

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/barrier_closure.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -397,10 +398,10 @@ class IsolatedAppBrowserServiceWorkerTest : public IsolatedAppBrowserTest {
     return version_activated_waiter.AwaitVersionActivated();
   }
 
-  Browser* app_window_;
-  content::WebContents* app_web_contents_;
-  content::RenderFrameHost* app_frame_;
-  content::StoragePartition* storage_partition_;
+  raw_ptr<Browser> app_window_;
+  raw_ptr<content::WebContents> app_web_contents_;
+  raw_ptr<content::RenderFrameHost> app_frame_;
+  raw_ptr<content::StoragePartition> storage_partition_;
 
   GURL app_url_;
 };

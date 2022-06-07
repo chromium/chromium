@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -41,7 +42,7 @@ class VIEWS_EXPORT DialogModelContextMenuController final
                                   ui::MenuSourceType source_type) override;
 
  private:
-  View* const host_;
+  const raw_ptr<View> host_;
   const int run_types_;
   const MenuAnchorPosition anchor_position_;
   const base::RepeatingCallback<std::unique_ptr<ui::DialogModel>()>

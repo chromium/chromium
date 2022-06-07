@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/device_signals/core/browser/mock_signals_collector.h"
@@ -111,8 +112,8 @@ class SignalsAggregatorImplTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  MockSignalsCollector* fake_signal_collector_;
-  MockSignalsCollector* other_fake_signal_collector_;
+  raw_ptr<MockSignalsCollector> fake_signal_collector_;
+  raw_ptr<MockSignalsCollector> other_fake_signal_collector_;
   testing::StrictMock<MockUserPermissionService> mock_permission_service_;
   UserContext user_context_{kGaiaId};
   std::unique_ptr<SignalsAggregatorImpl> aggregator_;

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -100,7 +101,7 @@ class PlaybackCommandDispatcher
   bool has_set_playback_controller_call_returned_ = false;
   base::OnceCallback<void()> acquire_renderer_cb_;
 
-  openscreen::cast::RpcMessenger* messenger_;
+  raw_ptr<openscreen::cast::RpcMessenger> messenger_;
 
   // Multiplexes Renderer commands from a number of senders.
   std::unique_ptr<RendererControlMultiplexer> muxer_;
@@ -116,8 +117,8 @@ class PlaybackCommandDispatcher
   // Handles for the demuxer stream data providers, to be used for dispatching
   // demuxer stream RPC commands.
   absl::optional<StreamingInitializationInfo> streaming_init_info_;
-  Dispatcher* streaming_dispatcher_ = nullptr;
-  const openscreen::cast::ReceiverSession* receiver_session_ = nullptr;
+  raw_ptr<Dispatcher> streaming_dispatcher_ = nullptr;
+  raw_ptr<const openscreen::cast::ReceiverSession> receiver_session_ = nullptr;
 
   // The mojo API used to configure the renderer controls in the renderer
   // process. Although this instance is only needed once, it is stored as an

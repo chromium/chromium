@@ -55,7 +55,7 @@ struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer>,
     SkColor4f background_color;
     TouchActionRegion touch_action_region;
     ElementId element_id;
-    void* rare_inputs;
+    raw_ptr<void> rare_inputs;
   } inputs;
   raw_ptr<void> layer_tree_inputs;
   gfx::Rect update_rect;

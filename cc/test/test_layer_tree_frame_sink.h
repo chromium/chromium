@@ -168,7 +168,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   raw_ptr<TestLayerTreeFrameSinkClient> test_client_ = nullptr;
   gfx::Size enlarge_pass_texture_amount_;
 
-  TaskRunnerProvider* task_runner_provider_;
+  raw_ptr<TaskRunnerProvider> task_runner_provider_;
 
   // The set of SharedBitmapIds that have been reported as allocated to this
   // interface. On closing this interface, the display compositor should drop

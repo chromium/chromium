@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -142,7 +143,7 @@ class ImageFetcherParams {
 
   // The data decoder to use for decoding this image. If null, a new data
   // decoder will be created for each fetch.
-  data_decoder::DataDecoder* data_decoder_ = nullptr;
+  raw_ptr<data_decoder::DataDecoder> data_decoder_ = nullptr;
 };
 
 // A class used to fetch server images. It can be called from any thread and the

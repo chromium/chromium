@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/proxy_resolution/proxy_list.h"
@@ -33,7 +34,7 @@ class WindowsSystemProxyResolverMojo::RequestImpl final
 
   // As described at WindowsSystemProxyResolutionRequest::GetProxyForUrl,
   // `callback_target_` must outlive `this`.
-  net::WindowsSystemProxyResolutionRequest* callback_target_;
+  raw_ptr<net::WindowsSystemProxyResolutionRequest> callback_target_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<WindowsSystemProxyResolverMojo::RequestImpl>

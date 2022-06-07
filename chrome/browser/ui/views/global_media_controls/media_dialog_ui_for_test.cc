@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_ui_for_test.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -211,7 +212,7 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
         .size();
   }
 
-  MediaToolbarButtonView* const button_;
+  const raw_ptr<MediaToolbarButtonView> button_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
   bool waiting_for_dialog_opened_ = false;
@@ -220,7 +221,7 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
   bool waiting_for_item_count_ = false;
   bool waiting_for_pip_visibility_changed_ = false;
 
-  MediaDialogView* observed_dialog_ = nullptr;
+  raw_ptr<MediaDialogView> observed_dialog_ = nullptr;
   bool waiting_for_dialog_to_contain_text_ = false;
   std::u16string expected_text_;
   int expected_item_count_ = 0;

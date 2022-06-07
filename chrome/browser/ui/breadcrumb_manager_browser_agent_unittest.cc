@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/breadcrumb_manager_browser_agent.h"
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -43,7 +44,8 @@ class BreadcrumbManagerBrowserAgentTest : public BrowserWithTestWindowTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_ = nullptr;
+  raw_ptr<breadcrumbs::BreadcrumbManagerKeyedService> breadcrumb_service_ =
+      nullptr;
 };
 
 // Tests that an event logged by the BrowserAgent is returned with events for

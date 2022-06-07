@@ -115,7 +115,7 @@ class FrameSenderImpl : public FrameSender {
   const raw_ptr<CastTransport> transport_sender_;
 
   // The frame sender client.
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 
   // Whether this is an audio or video frame sender.
   const bool is_audio_;

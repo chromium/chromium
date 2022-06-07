@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -88,7 +89,7 @@ class SvgIconTranscoder : public content::RenderProcessHostObserver {
                        const std::vector<SkBitmap>& bitmaps,
                        const std::vector<gfx::Size>& sizes);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   bool web_contents_ready_{false};
   base::WeakPtrFactory<SvgIconTranscoder> weak_ptr_factory_{this};

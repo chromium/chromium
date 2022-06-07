@@ -921,7 +921,7 @@ class DawnWireServer : public dawn::wire::WireServer {
     }
   };
 
-  WebGPUDecoderImpl* decoder_;
+  raw_ptr<WebGPUDecoderImpl> decoder_;
 };
 
 thread_local WebGPUDecoderImpl* DawnWireServer::tls_parent_decoder = nullptr;

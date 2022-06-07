@@ -528,7 +528,7 @@ class TestPlatform : public authenticator::Platform {
 
   Discovery::AdvertEventStream::Callback ble_advert_callback_;
   const raw_ptr<device::VirtualCtap2Device> ctap2_device_;
-  authenticator::Observer* const observer_;
+  const raw_ptr<authenticator::Observer> observer_;
   base::WeakPtrFactory<TestPlatform> weak_factory_{this};
 };
 

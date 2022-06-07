@@ -406,7 +406,8 @@ void SequenceManagerImpl::SetTimeDomain(TimeDomain* time_domain) {
 
 void SequenceManagerImpl::ResetTimeDomain() {
   controller_->SetTickClock(main_thread_only().default_clock);
-  clock_.store(main_thread_only().default_clock, std::memory_order_release);
+  clock_.store(main_thread_only().default_clock.get(),
+               std::memory_order_release);
   main_thread_only().time_domain = nullptr;
 }
 

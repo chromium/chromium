@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/base/ip_endpoint.h"
@@ -301,7 +302,7 @@ class WebURLResponse {
   const std::unique_ptr<ResourceResponse> owned_resource_response_;
 
   // Should never be null.
-  ResourceResponse* const resource_response_;
+  const raw_ptr<ResourceResponse> resource_response_;
 };
 
 }  // namespace blink

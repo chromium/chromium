@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "device/vr/orientation/orientation_device.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -41,7 +42,7 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationDeviceProvider
   mojo::Remote<device::mojom::SensorProvider> sensor_provider_;
 
   std::unique_ptr<VROrientationDevice> device_;
-  VRDeviceProviderClient* client_ = nullptr;
+  raw_ptr<VRDeviceProviderClient> client_ = nullptr;
 };
 
 }  // namespace device

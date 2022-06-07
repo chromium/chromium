@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -308,17 +309,17 @@ class TabContainer : public views::View,
   // the remove animation completes.
   views::ViewModelT<Tab> tabs_view_model_;
 
-  TabStripController* controller_;
+  raw_ptr<TabStripController> controller_;
 
-  TabHoverCardController* hover_card_controller_;
+  raw_ptr<TabHoverCardController> hover_card_controller_;
 
   // May be nullptr in tests.
-  TabDragContext* drag_context_;
+  raw_ptr<TabDragContext> drag_context_;
 
-  TabSlotController* tab_slot_controller_;
+  raw_ptr<TabSlotController> tab_slot_controller_;
 
   // The View that is to be scrolled by |tab_scrolling_animation_|.
-  views::View* scroll_contents_view_;
+  raw_ptr<views::View> scroll_contents_view_;
 
   // Responsible for animating tabs in response to model changes.
   views::BoundsAnimator bounds_animator_;

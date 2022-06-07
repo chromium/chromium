@@ -236,7 +236,7 @@ class AutocompleteProviderListenerWithClosure
   }
 
  private:
-  AutocompleteController* controller_;
+  raw_ptr<AutocompleteController> controller_;
   base::RepeatingClosure closure_;
 };
 

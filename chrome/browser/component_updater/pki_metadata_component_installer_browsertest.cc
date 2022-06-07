@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
@@ -207,7 +208,7 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
 
    private:
     base::RunLoop run_loop_;
-    PKIMetadataComponentChromeRootStoreUpdateTest* test_;
+    raw_ptr<PKIMetadataComponentChromeRootStoreUpdateTest> test_;
   };
 
  protected:

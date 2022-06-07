@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_CHROME_TAILORED_SECURITY_SERVICE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_CHROME_TAILORED_SECURITY_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 
@@ -36,7 +37,7 @@ class ChromeTailoredSecurityService : public TailoredSecurityService {
   std::unique_ptr<TailoredSecurityConsentedModalAndroid> message_;
 #endif
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace safe_browsing

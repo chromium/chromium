@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_TEST_URL_LOADER_CONTEXT_FOR_TESTS_H_
 #define SERVICES_NETWORK_TEST_URL_LOADER_CONTEXT_FOR_TESTS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -62,9 +63,9 @@ class URLLoaderContextForTests : public URLLoaderContext {
   cors::OriginAccessList origin_access_list_;
   corb::PerFactoryState corb_state_;
 
-  mojom::NetworkContextClient* network_context_client_ = nullptr;
-  mojom::OriginPolicyManager* origin_policy_manager_ = nullptr;
-  net::URLRequestContext* url_request_context_ = nullptr;
+  raw_ptr<mojom::NetworkContextClient> network_context_client_ = nullptr;
+  raw_ptr<mojom::OriginPolicyManager> origin_policy_manager_ = nullptr;
+  raw_ptr<net::URLRequestContext> url_request_context_ = nullptr;
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
 };
 

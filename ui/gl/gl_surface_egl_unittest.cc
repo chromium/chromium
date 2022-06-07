@@ -4,6 +4,7 @@
 
 #include "ui/gl/gl_surface_egl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +44,7 @@ class GLSurfaceEGLTest : public testing::Test {
   void TearDown() override { GLSurfaceTestSupport::ShutdownGL(display_); }
 
  private:
-  GLDisplay* display_ = nullptr;
+  raw_ptr<GLDisplay> display_ = nullptr;
 };
 
 #if !defined(MEMORY_SANITIZER)

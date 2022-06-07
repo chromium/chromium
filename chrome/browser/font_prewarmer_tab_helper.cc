@@ -7,6 +7,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -160,7 +161,7 @@ class FontPrewarmerCoordinator : public base::SupportsUserData::Data,
     prewarmed_hosts_.erase(host);
   }
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   // Set of hosts that were requested to be prewarmed.
   std::set<content::RenderProcessHost*> prewarmed_hosts_;
   base::WeakPtrFactory<FontPrewarmerCoordinator> weak_factory_{this};

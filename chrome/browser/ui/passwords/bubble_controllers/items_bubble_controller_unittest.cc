@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -91,7 +92,7 @@ class ItemsBubbleControllerTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_enabler_;
   std::unique_ptr<TestingProfile> profile_;
-  syncer::TestSyncService* test_sync_service_;
+  raw_ptr<syncer::TestSyncService> test_sync_service_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   std::unique_ptr<ItemsBubbleController> controller_;

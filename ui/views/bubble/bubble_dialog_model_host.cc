@@ -191,7 +191,7 @@ class BubbleDialogModelHost::ContentsView : public View {
   }
 
  private:
-  BubbleDialogModelHost* const parent_;
+  const raw_ptr<BubbleDialogModelHost> parent_;
 };
 
 class BubbleDialogModelHost::LayoutConsensusView : public View {

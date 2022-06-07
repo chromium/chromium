@@ -2353,7 +2353,7 @@ class TestPrintJobWorker : public PrintJobWorker {
     callbacks_->did_stop_callback.Run();
   }
 
-  TestPrintCallbacks* callbacks_;
+  raw_ptr<TestPrintCallbacks> callbacks_;
 };
 
 class TestPrintJobWorkerOop : public PrintJobWorkerOop {
@@ -2905,7 +2905,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   mojo::Remote<mojom::PrintBackendService> test_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
-  PrintJob* print_job_ = nullptr;
+  raw_ptr<PrintJob> print_job_ = nullptr;
   bool reset_errors_after_check_ = true;
   mojom::ResultCode use_default_settings_result_ = mojom::ResultCode::kFailed;
 #if BUILDFLAG(IS_WIN)

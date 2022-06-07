@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
@@ -114,11 +115,11 @@ class BackgroundScriptExecutor {
   void AddTestFailure(const std::string& message);
 
   // The associated BrowserContext. Must outlive this object.
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   // The associated ExtensionRegistry; tied to `browser_context_`.
-  ExtensionRegistry* const registry_;
+  const raw_ptr<ExtensionRegistry> registry_;
   // The associated ProcessManager; tied to `browser_context_`.
-  ProcessManager* const process_manager_;
+  const raw_ptr<ProcessManager> process_manager_;
 
   // The type of background context the extension uses; lazily instantiated in
   // ExecuteScript*().
@@ -136,7 +137,7 @@ class BackgroundScriptExecutor {
   std::unique_ptr<ScriptResultQueue> script_result_queue_;
 
   // The associated Extension.
-  const Extension* extension_ = nullptr;
+  raw_ptr<const Extension> extension_ = nullptr;
 
   // The script to inject; cached mostly for logging purposes.
   std::string script_;

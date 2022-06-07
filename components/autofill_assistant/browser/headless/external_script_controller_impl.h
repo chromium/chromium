@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill_assistant/browser/autofill_assistant_impl.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/controller_observer.h"
@@ -68,7 +69,7 @@ class ExternalScriptControllerImpl : public ExternalScriptController,
   void OnReadyToStart(bool can_start,
                       absl::optional<GURL> url,
                       std::unique_ptr<TriggerContext> trigger_context);
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<ClientHeadless> client_;
 
   base::OnceCallback<void(ScriptResult)> script_ended_callback_;

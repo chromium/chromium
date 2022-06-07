@@ -1732,7 +1732,7 @@ class ExecuteJavaScriptForTestsWaiter : public WebContentsObserver {
     run_loop_.Quit();
   }
 
-  RenderFrameHost* render_frame_host_;
+  raw_ptr<RenderFrameHost> render_frame_host_;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   bool has_value_ = false;
   blink::mojom::JavaScriptExecutionResultType type_;

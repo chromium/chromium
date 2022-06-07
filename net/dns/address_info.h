@@ -9,6 +9,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/net_export.h"
@@ -45,7 +46,7 @@ class NET_EXPORT_PRIVATE AddressInfo {
 
    private:
     // Owned by AddressInfo.
-    const addrinfo* ai_;
+    raw_ptr<const addrinfo> ai_;
   };
 
   // Constructors

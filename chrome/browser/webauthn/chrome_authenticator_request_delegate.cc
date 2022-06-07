@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -167,7 +168,7 @@ class CableLinkingEventHandler : public ProfileObserver {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 absl::optional<

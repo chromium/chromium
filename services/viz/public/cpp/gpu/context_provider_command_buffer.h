@@ -184,7 +184,7 @@ class ContextProviderCommandBuffer
   // provider when creating shared memory mappings.
   // TODO(crbug.com/1321521) remove this member again once users of the command
   // buffer proxy can specify the mapper for each mapping individually.
-  base::SharedMemoryMapper* buffer_mapper_ = nullptr;
+  raw_ptr<base::SharedMemoryMapper> buffer_mapper_ = nullptr;
 };
 
 }  // namespace viz

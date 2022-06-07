@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
@@ -65,7 +66,7 @@ class GpuMemoryBufferImplTest : public testing::Test {
 
  private:
   GpuMemoryBufferSupport gpu_memory_buffer_support_;
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 
   void FreeGpuMemoryBuffer(base::OnceClosure free_callback,
                            bool* destroyed,

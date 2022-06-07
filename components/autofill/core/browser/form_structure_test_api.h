@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/form_structure.h"
 
@@ -60,7 +61,7 @@ class FormStructureTestApi {
   }
 
  private:
-  FormStructure* form_structure_;
+  raw_ptr<FormStructure> form_structure_;
 };
 
 }  // namespace autofill

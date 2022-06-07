@@ -186,10 +186,10 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
     // Set when the main thread is waiting on a commit to complete.
     std::unique_ptr<ScopedCommitCompletionEvent> commit_completion_event;
     std::unique_ptr<CommitState> commit_state;
-    const ThreadUnsafeCommitState* unsafe_state;
+    raw_ptr<const ThreadUnsafeCommitState> unsafe_state;
     // This is passed from the main thread so the impl thread can record
     // timestamps at the beginning and end of commit.
-    CommitTimestamps* commit_timestamps = nullptr;
+    raw_ptr<CommitTimestamps> commit_timestamps = nullptr;
   };
 
   std::unique_ptr<DataForCommit> data_for_commit_;

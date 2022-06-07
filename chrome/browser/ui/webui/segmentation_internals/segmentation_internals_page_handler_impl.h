@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals.mojom.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
@@ -49,7 +50,7 @@ class SegmentationInternalsPageHandlerImpl
 
   mojo::Receiver<segmentation_internals::mojom::PageHandler> receiver_;
   mojo::Remote<segmentation_internals::mojom::Page> page_;
-  segmentation_platform::ServiceProxy* service_proxy_;
+  raw_ptr<segmentation_platform::ServiceProxy> service_proxy_;
 
   base::WeakPtrFactory<SegmentationInternalsPageHandlerImpl> weak_ptr_factory_{
       this};

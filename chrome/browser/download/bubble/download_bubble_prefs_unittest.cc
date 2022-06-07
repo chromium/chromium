@@ -5,6 +5,7 @@
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -50,7 +51,7 @@ class DownloadBubblePrefsTest : public testing::Test {
   }
 
  protected:
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   base::test::ScopedFeatureList feature_list_;
 
  private:

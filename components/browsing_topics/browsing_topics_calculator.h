@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/browsing_topics/common/common_types.h"
@@ -109,10 +110,11 @@ class BrowsingTopicsCalculator {
 
   // Those pointers are safe to hold and use throughout the lifetime of
   // `BrowsingTopicsService`, which owns this object.
-  privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings_;
-  history::HistoryService* history_service_;
-  content::BrowsingTopicsSiteDataManager* site_data_manager_;
-  optimization_guide::PageContentAnnotationsService* annotations_service_;
+  raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
+  raw_ptr<history::HistoryService> history_service_;
+  raw_ptr<content::BrowsingTopicsSiteDataManager> site_data_manager_;
+  raw_ptr<optimization_guide::PageContentAnnotationsService>
+      annotations_service_;
 
   CalculateCompletedCallback calculate_completed_callback_;
 

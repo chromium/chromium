@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -164,7 +165,7 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
   HWND parent_window_;
   scoped_refptr<DirectCompositionSurfaceWin> surface_;
   scoped_refptr<GLContext> context_;
-  GLDisplay* display_ = nullptr;
+  raw_ptr<GLDisplay> display_ = nullptr;
 
   // Used as a reference when making DelegatedInkMetadatas based on previously
   // sent points.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_BROWSING_TOPICS_BROWSING_TOPICS_INTERNALS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_BROWSING_TOPICS_BROWSING_TOPICS_INTERNALS_PAGE_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
@@ -50,7 +51,7 @@ class BrowsingTopicsInternalsPageHandler
       browsing_topics::mojom::PageHandler::ClassifyHostsCallback callback,
       const std::vector<optimization_guide::BatchAnnotationResult>& results);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   mojo::Receiver<browsing_topics::mojom::PageHandler> receiver_;
 

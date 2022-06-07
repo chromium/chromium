@@ -10,6 +10,7 @@
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
@@ -203,7 +204,7 @@ enum : UINT {
 
 struct IntelVpeExt {
   UINT function;
-  void* param;
+  raw_ptr<void> param;
 };
 
 void ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,

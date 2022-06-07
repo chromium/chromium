@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -207,7 +208,7 @@ class CompareUsingIndex {
   bool operator()(size_t i1, size_t i2) { return (*bufs_)[i1] < (*bufs_)[i2]; }
 
  private:
-  const std::vector<std::vector<uint8_t>>* bufs_;
+  raw_ptr<const std::vector<std::vector<uint8_t>>> bufs_;
 };
 
 bool CopiesExist(const std::vector<std::vector<uint8_t>>& bufs) {

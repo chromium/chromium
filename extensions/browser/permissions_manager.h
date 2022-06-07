@@ -168,9 +168,9 @@ class PermissionsManager : public KeyedService {
   base::ObserverList<Observer>::Unchecked observers_;
 
   // The associated browser context.
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
-  ExtensionPrefs* const extension_prefs_;
+  const raw_ptr<ExtensionPrefs> extension_prefs_;
   UserPermissionsSettings user_permissions_;
 };
 

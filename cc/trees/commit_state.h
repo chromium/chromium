@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/benchmarks/micro_benchmark_impl.h"
 #include "cc/cc_export.h"
@@ -165,7 +166,7 @@ struct CC_EXPORT ThreadUnsafeCommitState {
   }
   LayerListConstIterator end() const { return LayerListConstIterator(nullptr); }
 
-  MutatorHost* mutator_host;
+  raw_ptr<MutatorHost> mutator_host;
   PropertyTrees property_trees;
   scoped_refptr<Layer> root_layer;
 };

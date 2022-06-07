@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DOWNLOADS_DELEGATE_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 
 namespace download {
@@ -59,7 +60,7 @@ class ContentAnalysisDownloadsDelegate : public ContentAnalysisDelegateBase {
   bool bypass_justification_required_;
   base::OnceCallback<void()> open_file_callback_;
   base::OnceCallback<void()> discard_file_callback_;
-  download::DownloadItem* download_item_;
+  raw_ptr<download::DownloadItem> download_item_;
 };
 
 }  // namespace enterprise_connectors

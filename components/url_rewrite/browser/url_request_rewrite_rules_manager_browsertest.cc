@@ -4,6 +4,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
@@ -44,7 +45,7 @@ class InnerWebContentsHandler : public content::WebContentsObserver {
   }
 
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-  UrlRequestRewriteRulesManager* url_request_rewrite_rules_manager_;
+  raw_ptr<UrlRequestRewriteRulesManager> url_request_rewrite_rules_manager_;
 };
 
 class UrlRequestRewriteRulesManagerBrowserTest

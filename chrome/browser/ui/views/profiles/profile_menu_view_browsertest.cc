@@ -374,7 +374,9 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
     return IdentityManagerFactory::GetForProfile(GetProfile());
   }
 
-  Profile* GetProfile() { return profile_ ? profile_ : browser()->profile(); }
+  Profile* GetProfile() {
+    return profile_ ? profile_.get() : browser()->profile();
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void UseSecondaryProfile() {
@@ -398,7 +400,7 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
 
  private:
   CoreAccountId account_id_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -780,7 +782,9 @@ class ProfileMenuClickTest : public SyncTest,
   }
 #endif
 
-  Profile* GetProfile() { return profile_ ? profile_ : browser()->profile(); }
+  Profile* GetProfile() {
+    return profile_ ? profile_.get() : browser()->profile();
+  }
 
   virtual ProfileMenuViewBase::ActionableItem GetExpectedActionableItemAtIndex(
       size_t index) = 0;
@@ -844,7 +848,7 @@ class ProfileMenuClickTest : public SyncTest,
   base::CallbackListSubscription test_signin_client_subscription_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<SyncServiceImplHarness> sync_harness_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 #define PROFILE_MENU_CLICK_TEST(actionable_item_list, test_case_name)     \

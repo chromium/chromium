@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -44,7 +45,7 @@ class ProfileManagerObserverBridge : public ProfileManagerObserver {
   void OnProfileAdded(Profile* profile) override;
 
  private:
-  UserPolicySigninService* user_policy_signin_service_;
+  raw_ptr<UserPolicySigninService> user_policy_signin_service_;
 };
 
 // A specialization of the UserPolicySigninServiceBase for the desktop

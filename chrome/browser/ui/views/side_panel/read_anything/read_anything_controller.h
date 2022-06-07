@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
@@ -77,7 +78,7 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
 
   // ReadAnythingController is owned by ReadAnythingCoordinator which is a
   // browser user data, so this pointer is always valid.
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 
   base::WeakPtrFactory<ReadAnythingController> weak_pointer_factory_{this};
 };

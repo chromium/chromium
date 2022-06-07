@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -128,7 +129,7 @@ class RemoteWebAuthnNativeMessagingHostTest
   void ResetReceiver();
 
   MockWebAuthnProxy webauthn_proxy_;
-  MockChromotingHostServicesProvider* api_provider_;
+  raw_ptr<MockChromotingHostServicesProvider> api_provider_;
   MockChromotingSessionServices api_;
 
  private:

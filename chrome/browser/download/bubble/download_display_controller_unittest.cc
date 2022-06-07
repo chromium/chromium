@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
@@ -122,7 +123,7 @@ class DownloadDisplayControllerTest : public testing::Test {
 
     profile_ = testing_profile_manager_.CreateTestingProfile("testing_profile");
     EXPECT_CALL(*manager_.get(), GetBrowserContext())
-        .WillRepeatedly(Return(profile_));
+        .WillRepeatedly(Return(profile_.get()));
 
     // Set test delegate to get the corresponding download prefs.
     auto delegate = std::make_unique<ChromeDownloadManagerDelegate>(profile_);
@@ -308,7 +309,7 @@ class DownloadDisplayControllerTest : public testing::Test {
   std::unique_ptr<NiceMock<content::MockDownloadManager>> manager_;
   std::unique_ptr<FakeDownloadBubbleUIController> bubble_controller_;
   TestingProfileManager testing_profile_manager_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<TestBrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
 };

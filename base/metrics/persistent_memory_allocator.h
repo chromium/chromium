@@ -620,7 +620,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   struct Memory {
     Memory(void* b, MemoryType t) : base(b), type(t) {}
 
-    void* base;
+    raw_ptr<void> base;
     MemoryType type;
   };
 

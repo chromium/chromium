@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/version.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
@@ -74,7 +75,7 @@ struct ExtensionDownloaderTask {
   std::string update_url_data;
 
   // Link to the delegate, set by ExtensionDownloader.
-  ExtensionDownloaderDelegate* delegate{nullptr};
+  raw_ptr<ExtensionDownloaderDelegate> delegate{nullptr};
 
   // Notifies delegate about stage change.
   void OnStageChanged(ExtensionDownloaderDelegate::Stage stage);

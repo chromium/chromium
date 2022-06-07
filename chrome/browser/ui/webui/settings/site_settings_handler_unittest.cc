@@ -603,7 +603,8 @@ class SiteSettingsHandlerTest : public testing::Test,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif
-  browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service_;
+  raw_ptr<browsing_topics::MockBrowsingTopicsService>
+      mock_browsing_topics_service_;
 };
 
 // True if testing for handle clear unpartitioned usage with HTTPS scheme URL.

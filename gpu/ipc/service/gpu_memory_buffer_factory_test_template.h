@@ -8,6 +8,7 @@
 #ifndef GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_TEST_TEMPLATE_H_
 #define GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_TEST_TEMPLATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
@@ -46,7 +47,7 @@ class GpuMemoryBufferFactoryTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI};
 
   GpuMemoryBufferFactoryType factory_;
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 TYPED_TEST_SUITE_P(GpuMemoryBufferFactoryTest);

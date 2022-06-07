@@ -8,6 +8,7 @@
 #include <cinttypes>
 #include <cstddef>
 
+#include "base/memory/raw_ptr.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
@@ -63,7 +64,7 @@ class MetadataWriter {
     const char* const sql{nullptr};
     struct EventAndMetrics {
       const UkmEventHash event_hash;
-      const UkmMetricHash* const metrics{nullptr};
+      const raw_ptr<const UkmMetricHash> metrics{nullptr};
       const size_t metrics_size{0};
     };
     const EventAndMetrics* const events{nullptr};
@@ -89,7 +90,7 @@ class MetadataWriter {
                                      int64_t result_time_to_live);
 
  private:
-  proto::SegmentationModelMetadata* const metadata_;
+  const raw_ptr<proto::SegmentationModelMetadata> metadata_;
 };
 
 }  // namespace segmentation_platform

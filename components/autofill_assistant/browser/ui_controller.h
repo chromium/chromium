@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/basic_interactions.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
@@ -274,7 +275,7 @@ class UiController : public ScriptExecutorUiDelegate,
   UserData* GetUserData();
   UserModel* GetUserModel();
 
-  Client* const client_;
+  const raw_ptr<Client> client_;
 
   // Current status message, may be empty.
   std::string status_message_;
@@ -321,7 +322,7 @@ class UiController : public ScriptExecutorUiDelegate,
 
   base::ObserverList<UiControllerObserver> observers_;
 
-  ExecutionDelegate* execution_delegate_;
+  raw_ptr<ExecutionDelegate> execution_delegate_;
   EventHandler event_handler_;
   BasicInteractions basic_interactions_{this, execution_delegate_};
 

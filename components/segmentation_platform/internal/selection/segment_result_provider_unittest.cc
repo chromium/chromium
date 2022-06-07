@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -166,8 +167,9 @@ class SegmentResultProviderTest : public testing::Test {
   TestModelProviderFactory::Data model_providers_;
   TestModelProviderFactory provider_factory_;
   MockSignalDatabase signal_database_;
-  processing::MockFeatureListQueryProcessor* mock_query_processor_ = nullptr;
-  MockModelExecutionManager* mock_execution_manager_;
+  raw_ptr<processing::MockFeatureListQueryProcessor> mock_query_processor_ =
+      nullptr;
+  raw_ptr<MockModelExecutionManager> mock_execution_manager_;
   SignalHandler signal_handler_;
   std::unique_ptr<DefaultModelManager> default_manager_;
   std::unique_ptr<ExecutionService> execution_service_;

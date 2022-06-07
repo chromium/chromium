@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_TCP_CLIENT_SOCKET_BROKERED_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -107,9 +108,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
   // Arguments for creating a new TCPClientSocket
   std::unique_ptr<net::SocketPerformanceWatcher> socket_performance_watcher_;
 
-  net::NetworkQualityEstimator* network_quality_estimator_;
+  raw_ptr<net::NetworkQualityEstimator> network_quality_estimator_;
 
-  net::NetLog* net_log_;
+  raw_ptr<net::NetLog> net_log_;
 
   const net::NetLogSource source_;
 

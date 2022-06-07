@@ -312,7 +312,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   // `DownloadItem` for dialogs corresponding to a download with a reviewable
   // verdict. nullptr otherwise.
-  download::DownloadItem* download_item_ = nullptr;
+  raw_ptr<download::DownloadItem> download_item_ = nullptr;
 
   // Set to true once the dialog is either accepted or cancelled by the user.
   // This is used to decide whether the dialog should go away without user input

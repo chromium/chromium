@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -142,7 +143,7 @@ class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
 
   // For getting wall-clock time. Tests may override via
   // set_wall_clock_for_test().
-  const base::Clock* wall_clock_ = nullptr;
+  raw_ptr<const base::Clock> wall_clock_ = nullptr;
 
   // Ensures all access to class members come on the same sequence. API calls
   // and callbacks should occur on the same sequence used during construction.

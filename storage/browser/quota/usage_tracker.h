@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -153,7 +154,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
 
   // Raw pointer usage is safe because `quota_manager_impl_` owns `this` and
   // is therefore valid throughout its lifetime.
-  QuotaManagerImpl* const quota_manager_impl_;
+  const raw_ptr<QuotaManagerImpl> quota_manager_impl_;
   const blink::mojom::StorageType type_;
   base::flat_map<QuotaClientType,
                  std::vector<std::unique_ptr<ClientUsageTracker>>>

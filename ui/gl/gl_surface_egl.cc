@@ -17,6 +17,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_number_conversions.h"
@@ -255,7 +256,7 @@ class EGLSyncControlVSyncProvider : public SyncControlVSyncProvider {
 
  private:
   EGLSurface surface_;
-  GLDisplayEGL* display_;
+  raw_ptr<GLDisplayEGL> display_;
 };
 
 class EGLGpuSwitchingObserver final : public ui::GpuSwitchingObserver {
@@ -270,7 +271,7 @@ class EGLGpuSwitchingObserver final : public ui::GpuSwitchingObserver {
   }
 
  private:
-  GLDisplayEGL* display_ = nullptr;
+  raw_ptr<GLDisplayEGL> display_ = nullptr;
 };
 
 std::vector<const char*> GetAttribArrayFromStringVector(

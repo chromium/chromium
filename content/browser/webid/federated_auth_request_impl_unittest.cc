@@ -378,7 +378,7 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   }
 
  private:
-  IdpNetworkRequestManager* delegate_;
+  raw_ptr<IdpNetworkRequestManager> delegate_;
 };
 
 class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {

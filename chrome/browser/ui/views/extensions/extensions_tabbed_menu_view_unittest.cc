@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -66,7 +67,7 @@ class AdditionalBrowser {
 
  private:
   std::unique_ptr<Browser> browser_;
-  BrowserView* browser_view_;
+  raw_ptr<BrowserView> browser_view_;
 };
 
 std::vector<std::string> GetNamesFromMenuItems(
@@ -181,7 +182,7 @@ class ExtensionsTabbedMenuViewUnitTest : public ExtensionsToolbarUnitTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  content::WebContentsTester* web_contents_tester_;
+  raw_ptr<content::WebContentsTester> web_contents_tester_;
 };
 
 ExtensionsTabbedMenuViewUnitTest::ExtensionsTabbedMenuViewUnitTest() {

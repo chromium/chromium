@@ -412,7 +412,7 @@ void FeaturePromoControllerCommon::OnHelpBubbleClosed(HelpBubble* bubble) {
     critical_promo_bubble_ = nullptr;
   } else if (bubble == promo_bubble_.get()) {
     if (!continuing_after_bubble_closed_) {
-      if (iph_feature_bypassing_tracker_ != current_iph_feature_)
+      if (iph_feature_bypassing_tracker_.get() != current_iph_feature_)
         feature_engagement_tracker_->Dismissed(*current_iph_feature_);
       else
         iph_feature_bypassing_tracker_ = nullptr;

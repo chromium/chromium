@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/cast_streaming/public/rpc_call_message_handler.h"
 #include "media/base/renderer.h"
@@ -86,7 +87,7 @@ class RendererRpcCallTranslator : public media::mojom::RendererClient,
 
   mojo::AssociatedReceiver<media::mojom::RendererClient>
       renderer_client_receiver_;
-  media::mojom::Renderer* renderer_;
+  raw_ptr<media::mojom::Renderer> renderer_;
 
   openscreen::cast::RpcMessenger::Handle handle_ =
       openscreen::cast::RpcMessenger::kInvalidHandle;

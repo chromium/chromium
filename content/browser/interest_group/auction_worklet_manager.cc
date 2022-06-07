@@ -102,7 +102,7 @@ class AuctionWorkletManager::WorkletOwner
   // The latter allows a handle to still exist and refer to a WorkletOwner with
   // a broken Worklet pipe, while new requests for the same worklet will result
   // in creating a fresh Mojo worklet.
-  AuctionWorkletManager* worklet_manager_;
+  raw_ptr<AuctionWorkletManager> worklet_manager_;
 
   const WorkletInfo worklet_info_;
 

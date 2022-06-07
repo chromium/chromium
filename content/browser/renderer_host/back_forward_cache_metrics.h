@@ -8,6 +8,7 @@
 #include <bitset>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
@@ -328,7 +329,7 @@ class BackForwardCacheMetrics
   // didn't use a new BrowsingInstance.
   absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
 
-  TestObserver* test_observer_ = nullptr;
+  raw_ptr<TestObserver> test_observer_ = nullptr;
 };
 
 }  // namespace content

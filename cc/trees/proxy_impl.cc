@@ -77,9 +77,9 @@ class ScopedCommitCompletionEvent {
   }
 
  private:
-  CompletionEvent* const event_;
+  const raw_ptr<CompletionEvent> event_;
   CommitTimestamps commit_timestamps_;
-  base::SingleThreadTaskRunner* main_thread_task_runner_;
+  raw_ptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   base::WeakPtr<ProxyMain> proxy_main_weak_ptr_;
 };
 
@@ -767,7 +767,7 @@ void ProxyImpl::ScheduledActionCommit() {
       allow_cross_thread_ref_count_access;
 
   auto* commit_state = data_for_commit_->commit_state.get();
-  auto* unsafe_state = data_for_commit_->unsafe_state;
+  auto* unsafe_state = data_for_commit_->unsafe_state.get();
   host_impl_->BeginCommit(commit_state->source_frame_number,
                           commit_state->trace_id);
   host_impl_->FinishCommit(*commit_state, *unsafe_state);

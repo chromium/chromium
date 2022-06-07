@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/app_list/app_context_menu.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "ui/gfx/image/image_skia.h"
@@ -40,7 +41,7 @@ class ChromeAppListItem {
     void SetName(const std::string& name);
 
    private:
-    ChromeAppListItem* const item_;
+    const raw_ptr<ChromeAppListItem> item_;
   };
 
   ChromeAppListItem(Profile* profile,
@@ -158,8 +159,8 @@ class ChromeAppListItem {
 
  private:
   std::unique_ptr<ash::AppListItemMetadata> metadata_;
-  Profile* profile_;
-  AppListModelUpdater* model_updater_ = nullptr;
+  raw_ptr<Profile> profile_;
+  raw_ptr<AppListModelUpdater> model_updater_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_CHROME_APP_LIST_ITEM_H_

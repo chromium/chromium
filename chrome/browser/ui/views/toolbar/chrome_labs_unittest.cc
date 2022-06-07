@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -388,8 +389,8 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
 
  protected:
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
-  ChromeLabsBubbleView* bubble_view_;
-  views::Widget* bubble_widget_;
+  raw_ptr<ChromeLabsBubbleView> bubble_view_;
+  raw_ptr<views::Widget> bubble_widget_;
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)

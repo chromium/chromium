@@ -368,7 +368,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
   SharedImageManager shared_image_manager_;
   gles2::MailboxManagerImpl mailbox_manager_;
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DSizeMismatch) {

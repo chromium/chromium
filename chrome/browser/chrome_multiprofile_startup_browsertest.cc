@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -191,7 +192,7 @@ class ChromeMultiProfileStartupBrowserTestBase
     }
   }
 
-  MockMainExtraParts* mock_part_;
+  raw_ptr<MockMainExtraParts> mock_part_;
 
  protected:
   base::test::ScopedFeatureList feature_list_;

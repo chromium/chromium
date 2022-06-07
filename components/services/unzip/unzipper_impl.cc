@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
@@ -80,7 +81,7 @@ class Writer : public zip::FileWriterDelegate {
 
  private:
   const mojo::Remote<filesystem::mojom::Directory> owned_output_dir_;
-  filesystem::mojom::Directory* const output_dir_;
+  const raw_ptr<filesystem::mojom::Directory> output_dir_;
   const base::FilePath path_;
 };
 

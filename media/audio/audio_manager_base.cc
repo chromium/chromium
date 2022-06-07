@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -114,7 +115,7 @@ class AudioManagerBase::CompareByParams {
   }
 
  private:
-  const DispatcherParams* dispatcher_;
+  raw_ptr<const DispatcherParams> dispatcher_;
 };
 
 AudioManagerBase::AudioManagerBase(std::unique_ptr<AudioThread> audio_thread,

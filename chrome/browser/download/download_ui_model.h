@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
@@ -102,7 +103,7 @@ class DownloadUIModel {
     ui::ColorId secondary_color = ui::kColorSecondaryForeground;
 
     // Override icon
-    const gfx::VectorIcon* icon_model_override = nullptr;
+    raw_ptr<const gfx::VectorIcon> icon_model_override = nullptr;
 
     // Subpage summary of the download warning
     bool has_subpage = false;
@@ -479,7 +480,7 @@ class DownloadUIModel {
   void set_status_text_builder_for_testing(bool for_bubble);
 
   // Unowned Clock to override the time of "Now".
-  base::Clock* clock_ = base::DefaultClock::GetInstance();
+  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
 
   std::unique_ptr<StatusTextBuilderBase> status_text_builder_;
 

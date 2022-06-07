@@ -621,13 +621,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // CookieAccessObserver implementation from the URLLoaderContext aka
   // URLLoaderFactory).
   const mojo::Remote<mojom::CookieAccessObserver> cookie_observer_remote_;
-  mojom::CookieAccessObserver* const cookie_observer_ = nullptr;
+  const raw_ptr<mojom::CookieAccessObserver> cookie_observer_ = nullptr;
   const mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_observer_remote_;
-  mojom::URLLoaderNetworkServiceObserver* const url_loader_network_observer_ =
-      nullptr;
+  const raw_ptr<mojom::URLLoaderNetworkServiceObserver>
+      url_loader_network_observer_ = nullptr;
   const mojo::Remote<mojom::DevToolsObserver> devtools_observer_remote_;
-  mojom::DevToolsObserver* const devtools_observer_ = nullptr;
+  const raw_ptr<mojom::DevToolsObserver> devtools_observer_ = nullptr;
 
   // Indicates |url_request_| is fetch upload request and that has streaming
   // body.

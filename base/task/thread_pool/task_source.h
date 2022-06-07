@@ -34,7 +34,7 @@ enum class TaskSourceExecutionMode {
 
 struct BASE_EXPORT ExecutionEnvironment {
   SequenceToken token;
-  SequenceLocalStorageMap* sequence_local_storage;
+  raw_ptr<SequenceLocalStorageMap> sequence_local_storage;
 };
 
 // A TaskSource is a virtual class that provides a series of Tasks that must be

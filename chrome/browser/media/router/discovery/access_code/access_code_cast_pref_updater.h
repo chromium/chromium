@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/media_sink.h"
@@ -70,7 +71,7 @@ class AccessCodeCastPrefUpdater {
   base::WeakPtr<AccessCodeCastPrefUpdater> GetWeakPtr();
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   base::WeakPtrFactory<AccessCodeCastPrefUpdater> weak_ptr_factory_{this};
 };

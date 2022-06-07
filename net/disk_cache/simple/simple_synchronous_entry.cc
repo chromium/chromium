@@ -15,6 +15,7 @@
 #include "base/hash/hash.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -204,7 +205,7 @@ class SimpleSynchronousEntry::ScopedFileOperationsBinding final {
   }
 
  private:
-  SimpleSynchronousEntry* const owner_;
+  const raw_ptr<SimpleSynchronousEntry> owner_;
   std::unique_ptr<BackendFileOperations> file_operations_;
 };
 

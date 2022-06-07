@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_interface.h"
@@ -257,7 +258,7 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
       const std::vector<MemoryUpdate>& memory_updates) override {}
 
  private:
-  PageLoadMetricsObserverDelegate* delegate_ = nullptr;
+  raw_ptr<PageLoadMetricsObserverDelegate> delegate_ = nullptr;
 };
 
 }  // namespace page_load_metrics

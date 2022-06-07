@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_info.h"
@@ -200,7 +201,7 @@ class GPUInfoCollectorTest
   // Persistent storage is needed for the split extension string.
   std::vector<std::string> split_extensions_;
 
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(GPUConfig,

@@ -1784,7 +1784,7 @@ class TestActivationManager : public WebContentsObserver {
 
   // Set when a matching navigation reaches kBeforeChecks and cleared when the
   // navigation is deleted/finished.
-  NavigationRequest* request_ = nullptr;
+  raw_ptr<NavigationRequest> request_ = nullptr;
 
   // If the navigation is paused in the first or last CommitDeferringCondition
   // (i.e. the one installed by this manager for testing), this will be the

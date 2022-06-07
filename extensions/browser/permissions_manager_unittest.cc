@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/permissions_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -61,7 +62,7 @@ class PermissionsManagerUnittest : public ExtensionsTest {
   void SetUp() override;
 
   // PermissionsManager being tested.
-  PermissionsManager* manager_;
+  raw_ptr<PermissionsManager> manager_;
 
   raw_ptr<ExtensionPrefs> extension_prefs_;
 };

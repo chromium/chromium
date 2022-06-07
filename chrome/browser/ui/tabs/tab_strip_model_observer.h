@@ -281,7 +281,7 @@ struct TabGroupChange {
   const VisualsChange* GetVisualsChange() const;
 
   tab_groups::TabGroupId group;
-  TabStripModel* model;
+  raw_ptr<TabStripModel> model;
   Type type;
 
  private:

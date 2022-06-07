@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
@@ -61,7 +62,7 @@ class ReadAnythingPageHandler : public PageHandler,
   raw_ptr<ReadAnythingModel> model_;
   raw_ptr<ReadAnythingPageHandler::Delegate> delegate_;
 
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 
   mojo::Receiver<PageHandler> receiver_;
   mojo::Remote<Page> page_;

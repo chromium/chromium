@@ -27,7 +27,7 @@ struct ExecutionRequest {
   ~ExecutionRequest();
 
   // Required: The segment info to use for model execution.
-  const proto::SegmentInfo* segment_info = nullptr;
+  raw_ptr<const proto::SegmentInfo> segment_info = nullptr;
 
   // The model provider used to execute the model.
   raw_ptr<ModelProvider> model_provider = nullptr;

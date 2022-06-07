@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_WEB_AUTHENTICATION_PROXY_WEB_AUTHENTICATION_PROXY_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_WEB_AUTHENTICATION_PROXY_WEB_AUTHENTICATION_PROXY_API_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/web_authentication_proxy/remote_session_state_change.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
@@ -38,7 +39,7 @@ class WebAuthenticationProxyAPI : public BrowserContextKeyedAPI,
   void OnListenerAdded(const EventListenerInfo& details) override;
   void OnListenerRemoved(const EventListenerInfo& details) override;
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext> context_;
   std::map<ExtensionId, WebAuthenticationProxyRemoteSessionStateChangeNotifier>
       session_state_change_notifiers_;
 };

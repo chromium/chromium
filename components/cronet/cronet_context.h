@@ -336,7 +336,7 @@ class CronetContext {
         contexts_;
     // Shorthand for the default context (needed by
     // components/cronet/android/test/cronet_test_util.cc).
-    net::URLRequestContext* default_context_;
+    raw_ptr<net::URLRequestContext> default_context_;
 
     bool is_default_context_initialized_;
 

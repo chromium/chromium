@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -199,7 +200,7 @@ class UnassignedSiteInstanceBrowserTest
 
   std::unique_ptr<DontAssignSiteContentBrowserClient>
       content_browser_client_override_;
-  ContentBrowserClient* old_content_browser_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> old_content_browser_client_ = nullptr;
 
   base::test::ScopedFeatureList feature_list_for_render_document_;
   base::test::ScopedFeatureList feature_list_for_back_forward_cache_;

@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_context_stub.h"
@@ -86,7 +87,7 @@ class GPUTimingTest : public testing::Test {
   scoped_refptr<GLContextStub> context_;
   scoped_refptr<GLSurfaceStub> surface_;
   GPUTimingFake gpu_timing_fake_queries_;
-  GLDisplay* display_ = nullptr;
+  raw_ptr<GLDisplay> display_ = nullptr;
 };
 
 TEST_F(GPUTimingTest, FakeTimerTest) {

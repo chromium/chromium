@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_FACTORY_OZONE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_FACTORY_OZONE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory.h"
@@ -75,7 +76,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryOzone
       gfx::GpuMemoryBufferType memory_buffer_type);
   bool CanImportNativePixmapToWebGPU();
 
-  SharedContextState* const shared_context_state_;
+  const raw_ptr<SharedContextState> shared_context_state_;
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
 
   std::unique_ptr<SharedImageBackingOzone> CreateSharedImageInternal(

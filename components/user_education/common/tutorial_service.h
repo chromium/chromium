@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -85,7 +86,7 @@ class TutorialService {
     TutorialCreationParams(TutorialDescription* description,
                            ui::ElementContext context);
 
-    TutorialDescription* description_;
+    raw_ptr<TutorialDescription> description_;
     ui::ElementContext context_;
   };
 
@@ -125,8 +126,8 @@ class TutorialService {
 
   // Pointers to the registries used for constructing and showing tutorials and
   // help bubbles.
-  TutorialRegistry* const tutorial_registry_;
-  HelpBubbleFactoryRegistry* const help_bubble_factory_registry_;
+  const raw_ptr<TutorialRegistry> tutorial_registry_;
+  const raw_ptr<HelpBubbleFactoryRegistry> help_bubble_factory_registry_;
 
   // Number of times focus was toggled during the current tutorial.
   int toggle_focus_count_ = 0;

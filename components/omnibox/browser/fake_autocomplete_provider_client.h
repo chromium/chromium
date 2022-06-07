@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
@@ -99,7 +100,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   std::unique_ptr<query_tiles::TileService> tile_service_;
   FakeTabMatcher fake_tab_matcher_;
   scoped_refptr<history::TopSites> top_sites_{};
-  ntp_tiles::MostVisitedSites* ntp_most_visited_sites_{};
+  raw_ptr<ntp_tiles::MostVisitedSites> ntp_most_visited_sites_{};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_PROVIDER_CLIENT_H_

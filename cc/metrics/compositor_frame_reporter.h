@@ -162,7 +162,7 @@ class CC_EXPORT CompositorFrameReporter {
       base::TimeDelta GetLatency() const;
 
      private:
-      const ProcessedBlinkBreakdown* owner_;
+      raw_ptr<const ProcessedBlinkBreakdown> owner_;
 
       size_t index_ = 0;
     };
@@ -200,7 +200,7 @@ class CC_EXPORT CompositorFrameReporter {
       base::TimeDelta GetDuration() const;
 
      private:
-      const ProcessedVizBreakdown* owner_;
+      raw_ptr<const ProcessedVizBreakdown> owner_;
       const bool skip_swap_start_to_swap_end_;
 
       size_t index_ = 0;

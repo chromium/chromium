@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/privacy_sandbox/privacy_sandbox_notice_bubble.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -72,7 +73,7 @@ class PrivacySandboxNoticeBubbleModelDelegate : public ui::DialogModelDelegate {
   }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   bool has_user_interacted_ = false;
 };
 

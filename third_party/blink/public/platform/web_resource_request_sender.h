@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -222,7 +223,7 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
       network::mojom::URLResponseHead& response_head) const;
 
   // `delegate_` is expected to live longer than `this`.
-  WebResourceRequestSenderDelegate* delegate_;
+  raw_ptr<WebResourceRequestSenderDelegate> delegate_;
 
   // The instance is created on StartAsync() or StartSync(), and it's deleted
   // when the response has finished, or when the request is canceled.

@@ -227,7 +227,7 @@ class AppRegistryCacheObserver : public apps::AppRegistryCache::Observer {
  private:
   std::vector<std::string> updated_ids_;
   std::vector<apps::AppType> app_types_;
-  apps::AppRegistryCache* cache_ = nullptr;
+  raw_ptr<apps::AppRegistryCache> cache_ = nullptr;
 };
 
 }  // namespace

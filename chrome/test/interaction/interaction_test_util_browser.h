@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/gfx/native_widget_types.h"
@@ -42,7 +43,7 @@ class WidgetFocusWaiter : public views::WidgetFocusChangeListener {
 
   base::RunLoop run_loop_;
   base::OnceClosure closure_;
-  views::Widget* const widget_;
+  const raw_ptr<views::Widget> widget_;
 };
 
 #endif  // CHROME_TEST_INTERACTION_INTERACTION_TEST_UTIL_BROWSER_H_

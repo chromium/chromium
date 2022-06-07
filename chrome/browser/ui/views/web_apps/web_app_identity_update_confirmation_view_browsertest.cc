@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -42,7 +43,7 @@ class WebAppIdentityUpdateConfirmationViewBrowserTest
   }
 
  protected:
-  web_app::WebAppProvider* provider_ = nullptr;
+  raw_ptr<web_app::WebAppProvider> provider_ = nullptr;
 
   std::string app_id_;
 };

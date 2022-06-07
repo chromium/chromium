@@ -9,6 +9,7 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/files/important_file_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
@@ -139,7 +140,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
   mojom::URLLoaderFactory* GetURLLoaderFactory();
 
   // The NetworkContext which owns this SCTAuditingHandler.
-  NetworkContext* owner_network_context_;
+  raw_ptr<NetworkContext> owner_network_context_;
 
   // The pending reporters set is an LRUCache, so that the total number of
   // pending reporters can be capped. The LRUCache means that reporters will be

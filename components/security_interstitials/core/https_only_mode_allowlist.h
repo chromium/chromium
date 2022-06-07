@@ -61,8 +61,8 @@ class HttpsOnlyModeAllowlist {
   void SetClockForTesting(base::Clock* clock);
 
  private:
-  HostContentSettingsMap* host_content_settings_map_;
-  base::Clock* clock_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  raw_ptr<base::Clock> clock_;
   base::TimeDelta expiration_timeout_;
 
   // Tracks sites that are allowed to load over HTTP when HTTPS-First Mode is

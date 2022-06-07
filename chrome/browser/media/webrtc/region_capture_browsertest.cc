@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -146,8 +147,8 @@ struct TabInfo {
     return script_result;
   }
 
-  Browser* browser;
-  WebContents* web_contents;
+  raw_ptr<Browser> browser;
+  raw_ptr<WebContents> web_contents;
   int tab_strip_index;
 };
 
@@ -245,7 +246,7 @@ class RegionCaptureBrowserTest : public WebRtcTestBase {
 
   // Manipulation after SetUpCommandLine, but before capture starts,
   // allows tests to set which tab to capture.
-  base::CommandLine* command_line_ = nullptr;
+  raw_ptr<base::CommandLine> command_line_ = nullptr;
 
   // Holds the tabs manipulated by this test.
   TabInfo tabs_[kTabCount];

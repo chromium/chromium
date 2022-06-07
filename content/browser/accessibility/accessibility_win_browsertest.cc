@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/strings/escape.h"
 #include "base/strings/pattern.h"
@@ -875,7 +876,7 @@ class NativeWinEventWaiter {
   std::unique_ptr<ui::AXEventRecorder> event_recorder_;
   std::string match_pattern_;
   base::RunLoop run_loop_;
-  BrowserAccessibilityManager* browser_accessibility_manager_;
+  raw_ptr<BrowserAccessibilityManager> browser_accessibility_manager_;
 };
 
 // Helper class that reproduces a specific crash when UIA parent navigation

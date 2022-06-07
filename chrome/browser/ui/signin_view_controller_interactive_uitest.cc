@@ -65,7 +65,7 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
     run_loop_.Quit();
   }
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
   base::RunLoop run_loop_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
       login_ui_service_observation_{this};

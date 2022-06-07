@@ -183,7 +183,7 @@ class TailoredSecurityService : public KeyedService {
   bool is_shut_down_ = false;
 
   // The preferences for the given profile.
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   // This is used to observe when sync users update their Tailored Security
   // setting.

@@ -198,7 +198,7 @@ class AccountsRemovedWaiter : public signin::IdentityManager::Observer {
   void Wait() {
     if (identity_manager_->GetAccountsWithRefreshTokens().empty())
       return;
-    observation_.Observe(identity_manager_);
+    observation_.Observe(identity_manager_.get());
     run_loop_.Run();
   }
 
@@ -212,7 +212,7 @@ class AccountsRemovedWaiter : public signin::IdentityManager::Observer {
   }
 
   base::RunLoop run_loop_;
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       observation_{this};

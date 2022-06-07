@@ -299,7 +299,7 @@ class AccessCodeCastSinkService : public KeyedService,
 
   std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater_;
 
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   // This registrar monitors for user prefs changes.
   std::unique_ptr<PrefChangeRegistrar> user_prefs_registrar_;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/icu_test_util.h"
@@ -748,7 +749,8 @@ class PrivacySandboxServiceTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   syncer::TestSyncService sync_service_;
   TestInterestGroupManager test_interest_group_manager_;
-  privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate* mock_delegate_;
+  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+      mock_delegate_;
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;

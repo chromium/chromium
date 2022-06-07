@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_WEB_RENDER_WIDGET_SCHEDULING_STATE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_WEB_RENDER_WIDGET_SCHEDULING_STATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
@@ -25,7 +26,7 @@ class BLINK_PLATFORM_EXPORT WebRenderWidgetSchedulingState {
   explicit WebRenderWidgetSchedulingState(
       RenderWidgetSignals* render_widget_scheduling_signals);
 
-  RenderWidgetSignals* render_widget_signals_;  // NOT OWNED
+  raw_ptr<RenderWidgetSignals> render_widget_signals_;  // NOT OWNED
   bool hidden_;
   bool has_touch_handler_;
 };

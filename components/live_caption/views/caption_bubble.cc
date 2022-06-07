@@ -195,7 +195,7 @@ class MediaFoundationRendererErrorMessageView : public views::StyledLabel {
   }
 
  private:
-  CaptionBubble* const caption_bubble_;  // Not owned.
+  const raw_ptr<CaptionBubble> caption_bubble_;  // Not owned.
 };
 #endif
 

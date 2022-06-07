@@ -14,6 +14,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -414,9 +415,9 @@ class AppListSyncableService : public syncer::SyncableService,
   bool MaybeCreateFolderBeforeAddingItem(ChromeAppListItem* app_item,
                                          const std::string& folder_id);
 
-  Profile* profile_;
-  extensions::ExtensionSystem* extension_system_;
-  extensions::ExtensionRegistry* extension_registry_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<extensions::ExtensionSystem> extension_system_;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   std::unique_ptr<AppListModelUpdater> model_updater_;
   std::unique_ptr<ModelUpdaterObserver> model_updater_observer_;
   std::unique_ptr<AppListSyncModelSanitizer> sync_model_sanitizer_;

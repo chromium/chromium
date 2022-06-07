@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_metadata_store.h"
@@ -74,8 +75,8 @@ class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
   // Read sync_pb::ModelTypeState for typed URL and fill `state` with it.
   bool GetModelTypeState(sync_pb::ModelTypeState* state);
 
-  sql::Database* const db_;
-  sql::MetaTable* const meta_table_;
+  const raw_ptr<sql::Database> db_;
+  const raw_ptr<sql::MetaTable> meta_table_;
 };
 
 }  // namespace history

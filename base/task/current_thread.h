@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/callback_forward.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_for_ui.h"
@@ -194,7 +195,7 @@ class BASE_EXPORT CurrentThread {
   friend class MessageLoopTaskRunnerTest;
   friend class web::WebTaskEnvironment;
 
-  sequence_manager::internal::SequenceManagerImpl* current_;
+  raw_ptr<sequence_manager::internal::SequenceManagerImpl> current_;
 };
 
 #if !BUILDFLAG(IS_NACL)

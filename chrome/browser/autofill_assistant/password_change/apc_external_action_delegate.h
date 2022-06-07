@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
@@ -65,7 +66,7 @@ class ApcExternalActionDelegate
       nullptr;
 
   // The display where we render the UI for a password change run.
-  AssistantDisplayDelegate* display_delegate_ = nullptr;
+  raw_ptr<AssistantDisplayDelegate> display_delegate_ = nullptr;
 
   // Factory for weak pointers to this class.
   base::WeakPtrFactory<PasswordChangeRunController> weak_ptr_factory_{this};

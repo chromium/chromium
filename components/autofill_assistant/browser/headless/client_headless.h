@@ -86,7 +86,7 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
                                   signin::AccessTokenInfo access_token_info);
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<Controller> controller_;
   const raw_ptr<const CommonDependencies> common_dependencies_;
   std::unique_ptr<WebsiteLoginManager> website_login_manager_;

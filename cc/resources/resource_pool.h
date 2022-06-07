@@ -392,7 +392,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     }
 
    private:
-    ResourcePool* const resource_pool_;
+    const raw_ptr<ResourcePool> resource_pool_;
     const size_t unique_id_;
     const gfx::Size size_;
     const viz::ResourceFormat format_;

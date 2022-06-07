@@ -60,7 +60,7 @@ class CookieAccessObserver : public content::WebContentsObserver {
   }
 
  private:
-  content::RenderFrameHost* const render_frame_host_;
+  const raw_ptr<content::RenderFrameHost> render_frame_host_;
   base::RunLoop run_loop_;
 };
 
@@ -106,7 +106,7 @@ class DIPSTabHelperBrowserTest : public InProcessBrowserTest {
 
  private:
   base::SimpleTestClock test_clock_;
-  DIPSTabHelper* helper_ = nullptr;
+  raw_ptr<DIPSTabHelper> helper_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,

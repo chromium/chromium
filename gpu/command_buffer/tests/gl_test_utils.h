@@ -12,6 +12,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "ui/gl/gl_display.h"
@@ -141,7 +142,7 @@ class GpuCommandBufferTestEGL {
   gl::GLWindowSystemBindingInfo window_system_binding_info_;
   gfx::ExtensionSet egl_extensions_;
   gfx::ExtensionSet gl_extensions_;
-  gl::GLDisplay* gl_display_ = nullptr;
+  raw_ptr<gl::GLDisplay> gl_display_ = nullptr;
 };
 
 }  // namespace gpu

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/accessibility/live_caption_unavailability_notifier.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -55,7 +56,7 @@ class LiveCaptionUnavailabilityNotifierTest
 
  private:
   mojo::Remote<media::mojom::MediaFoundationRendererNotifier> remote_;
-  LiveCaptionUnavailabilityNotifier* notifier_;
+  raw_ptr<LiveCaptionUnavailabilityNotifier> notifier_;
 };
 
 TEST_F(LiveCaptionUnavailabilityNotifierTest, MediaFoundationRendererCreated) {

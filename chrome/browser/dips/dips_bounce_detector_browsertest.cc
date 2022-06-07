@@ -5,6 +5,7 @@
 #include "chrome/browser/dips/dips_bounce_detector.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -108,7 +109,7 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
   DIPSBounceDetector* bounce_detector() { return bounce_detector_; }
 
  private:
-  DIPSBounceDetector* bounce_detector_ = nullptr;
+  raw_ptr<DIPSBounceDetector> bounce_detector_ = nullptr;
 };
 
 // The timing of WCO::OnCookiesAccessed() execution is unpredictable for

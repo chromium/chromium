@@ -62,7 +62,7 @@ class BuiltinProvider : public AutocompleteProvider {
 
   raw_ptr<AutocompleteProviderClient> client_;
   Builtins builtins_;
-  TemplateURLService* template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_BUILTIN_PROVIDER_H_

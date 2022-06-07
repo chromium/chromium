@@ -244,7 +244,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   bool fetching_subscribed_web_feeds_ = false;
   bool fetching_subscribed_web_feeds_because_stale_ = false;
 
-  HooksForTesting* hooks_for_testing_ = nullptr;
+  raw_ptr<HooksForTesting> hooks_for_testing_ = nullptr;
 
   base::WeakPtrFactory<WebFeedSubscriptionCoordinator> weak_ptr_factory_{this};
 };

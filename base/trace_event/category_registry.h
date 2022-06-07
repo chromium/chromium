@@ -12,6 +12,7 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/builtin_categories.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_category.h"
@@ -41,8 +42,8 @@ class BASE_EXPORT CategoryRegistry {
     TraceCategory* end() const { return end_; }
 
    private:
-    TraceCategory* const begin_;
-    TraceCategory* const end_;
+    const raw_ptr<TraceCategory> begin_;
+    const raw_ptr<TraceCategory> end_;
   };
 
   // Known categories.

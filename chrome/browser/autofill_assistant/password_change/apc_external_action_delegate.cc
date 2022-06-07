@@ -34,7 +34,7 @@ void ApcExternalActionDelegate::OnActionRequested(
 }
 
 void ApcExternalActionDelegate::SetupDisplay() {
-  Show(PasswordChangeRunDisplay::Create(GetWeakPtr(), display_delegate_));
+  Show(PasswordChangeRunDisplay::Create(GetWeakPtr(), display_delegate_.get()));
 }
 
 void ApcExternalActionDelegate::OnInterruptStarted() {}

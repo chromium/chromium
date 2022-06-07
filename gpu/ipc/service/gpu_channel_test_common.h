@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/task/sequenced_task_runner.h"
@@ -68,7 +69,7 @@ class GpuChannelTestCommon : public testing::Test {
   std::unique_ptr<Scheduler> scheduler_;
   std::unique_ptr<TestGpuChannelManagerDelegate> channel_manager_delegate_;
   std::unique_ptr<GpuChannelManager> channel_manager_;
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 }  // namespace gpu

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_WEB_APP_COMMAND_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -206,7 +207,7 @@ class WebAppCommand {
 
   Id id_;
   WebAppCommandLock command_lock_;
-  WebAppCommandManager* command_manager_ = nullptr;
+  raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
   // Because this is owned by the command manager, it will always outlive this
   // object. Thus a raw pointer is save.
   raw_ptr<content::WebContents> shared_web_contents_;

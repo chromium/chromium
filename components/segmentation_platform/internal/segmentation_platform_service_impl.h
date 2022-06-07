@@ -62,20 +62,20 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
     bool IsValid();
 
     // Profile data:
-    leveldb_proto::ProtoDatabaseProvider* db_provider = nullptr;
-    history::HistoryService* history_service = nullptr;
+    raw_ptr<leveldb_proto::ProtoDatabaseProvider> db_provider = nullptr;
+    raw_ptr<history::HistoryService> history_service = nullptr;
     base::FilePath storage_dir;
-    PrefService* profile_prefs = nullptr;
+    raw_ptr<PrefService> profile_prefs = nullptr;
 
     // Platform configuration:
     std::unique_ptr<ModelProviderFactory> model_provider;
-    UkmDataManager* ukm_data_manager = nullptr;
+    raw_ptr<UkmDataManager> ukm_data_manager = nullptr;
     std::vector<std::unique_ptr<Config>> configs;
     std::unique_ptr<FieldTrialRegister> field_trial_register;
     std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder;
 
     scoped_refptr<base::SequencedTaskRunner> task_runner;
-    base::Clock* clock = nullptr;
+    raw_ptr<base::Clock> clock = nullptr;
 
     // Test only:
     std::unique_ptr<StorageService> storage_service;

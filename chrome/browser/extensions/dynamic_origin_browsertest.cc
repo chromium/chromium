@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -61,7 +62,7 @@ class DynamicOriginBrowserTest : public ExtensionBrowserTest {
     DCHECK(extension_);
   }
 
-  const Extension* extension_ = nullptr;
+  raw_ptr<const Extension> extension_ = nullptr;
   TestExtensionDir dir_;
   base::test::ScopedFeatureList feature_list_;
   ScopedCurrentChannel current_channel_{version_info::Channel::CANARY};

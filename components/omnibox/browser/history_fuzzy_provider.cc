@@ -254,7 +254,7 @@ bool Node::FindCorrections(const std::u16string& text,
   // A utility class to track search progression.
   struct Step {
     // Walks through trie.
-    const Node* node;
+    raw_ptr<const Node> node;
 
     // Edit distance.
     int distance;

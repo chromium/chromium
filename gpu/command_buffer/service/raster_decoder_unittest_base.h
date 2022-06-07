@@ -194,7 +194,7 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
   base::test::SingleThreadTaskEnvironment task_environment_;
   raw_ptr<gles2::MockCopyTextureResourceManager>
       copy_texture_manager_;  // not owned
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 class RasterDecoderManualInitTest : public RasterDecoderTestBase {

@@ -128,7 +128,7 @@ class AuctionProcessManager::WorkletProcess
 
   ~WorkletProcess() override { NotifyUnusableOnce(); }
 
-  RenderProcessHost* render_process_host_;
+  raw_ptr<RenderProcessHost> render_process_host_;
 
   const WorkletType worklet_type_;
   const url::Origin origin_;

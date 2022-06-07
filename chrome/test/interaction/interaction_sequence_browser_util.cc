@@ -433,7 +433,7 @@ class InteractionSequenceBrowserUtil::WebViewData : public views::ViewObserver {
     owner_->DiscardCurrentElement();
   }
 
-  InteractionSequenceBrowserUtil* const owner_;
+  const raw_ptr<InteractionSequenceBrowserUtil> owner_;
   base::raw_ptr<views::WebView> web_view_;
   bool visible_ = false;
   ui::ElementContext context_;

@@ -4,6 +4,7 @@
 
 #include "net/cert/cert_verify_proc_builtin.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -184,7 +185,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
 
   CertVerifier::Config config_;
   std::unique_ptr<net::URLRequestContext> context_;
-  MockSystemTrustStore* mock_system_trust_store_;
+  raw_ptr<MockSystemTrustStore> mock_system_trust_store_;
   scoped_refptr<CertVerifyProc> verify_proc_;
   scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
 };

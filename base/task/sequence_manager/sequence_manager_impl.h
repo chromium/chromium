@@ -292,7 +292,7 @@ class BASE_EXPORT SequenceManagerImpl
     internal::TaskQueueSelector selector;
     ObserverList<TaskObserver>::Unchecked task_observers;
     ObserverList<TaskTimeObserver>::Unchecked task_time_observers;
-    const base::TickClock* const default_clock;
+    const raw_ptr<const base::TickClock> default_clock;
     raw_ptr<TimeDomain> time_domain = nullptr;
 
     std::unique_ptr<WakeUpQueue> wake_up_queue;

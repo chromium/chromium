@@ -197,7 +197,7 @@ class InfobarUIChangeObserver : public TabStripModelObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
   std::map<content::WebContents*, std::unique_ptr<InfoBarChangeObserver>>
       observers_;
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   base::RepeatingClosure barrier_closure_;
 };
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/cast_streaming/browser/demuxer_stream_client.h"
 #include "components/cast_streaming/public/rpc_call_message_handler.h"
@@ -114,7 +115,7 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
     void OnNoBuffersAvailable() override;
     void OnError() override;
 
-    Client* client_;
+    raw_ptr<Client> client_;
     RpcProcessMessageCB process_message_cb_;
     openscreen::cast::RpcMessenger::Handle local_handle_;
     openscreen::cast::RpcMessenger::Handle remote_handle_;
@@ -145,7 +146,7 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
       absl::optional<media::VideoDecoderConfig> video_config,
       uint32_t total_frames_received) override;
 
-  Client* const client_;
+  const raw_ptr<Client> client_;
   HandleFactory handle_factory_;
   RpcProcessMessageCB process_message_cb_;
 

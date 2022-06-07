@@ -496,7 +496,7 @@ class AX_EXPORT ScopedTreeUpdateInProgressStateSetter {
       const ScopedTreeUpdateInProgressStateSetter&) = delete;
 
  private:
-  AXTree* const tree_;
+  const raw_ptr<AXTree> tree_;
   bool last_tree_update_in_progress_;
 };
 

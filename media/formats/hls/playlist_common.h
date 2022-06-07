@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/tag_name.h"
 #include "media/formats/hls/tags.h"
@@ -28,7 +29,7 @@ struct CommonParserState {
   // The dictionary of variables defined in the parent playlist. This may remain
   // null if there is no parent playlist (in the case of a multivariant
   // playlist, or a media playlist without other variants).
-  const VariableDictionary* parent_variable_dict = nullptr;
+  raw_ptr<const VariableDictionary> parent_variable_dict = nullptr;
 
   // Returns the version specified by `version_tag`, or the default version if
   // the playlist did not contain a version tag.

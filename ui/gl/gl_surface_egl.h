@@ -5,6 +5,7 @@
 #ifndef UI_GL_GL_SURFACE_EGL_H_
 #define UI_GL_GL_SURFACE_EGL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -80,7 +81,7 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
 
   EGLConfig config_ = nullptr;
   GLSurfaceFormat format_;
-  GLDisplayEGL* display_ = nullptr;
+  raw_ptr<GLDisplayEGL> display_ = nullptr;
 
  private:
   static void InitializeOneOffCommon(GLDisplayEGL* display);

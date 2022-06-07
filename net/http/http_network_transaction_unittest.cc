@@ -15170,8 +15170,8 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
     MockWrite write;
     MockRead read;
     int expected_rv;
-    const MockWrite* extra_write;
-    const MockRead* extra_read;
+    raw_ptr<const MockWrite> extra_write;
+    raw_ptr<const MockRead> extra_read;
   };
 
   static const int kNoSSL = 500;

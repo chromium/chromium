@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,7 +45,7 @@ class GpuServiceTest : public testing::Test {
   scoped_refptr<gl::GLContextStub> context_;
   scoped_refptr<gl::GLSurfaceStub> surface_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 }  // namespace gles2

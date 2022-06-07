@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
@@ -84,7 +85,7 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
 
   // The WebContents for the PiP window. If this is null, then we have already
   // closed / stopped Picture in Picture.
-  WebContents* child_contents_ = nullptr;
+  raw_ptr<WebContents> child_contents_ = nullptr;
 
   class ChildContentsObserver : public WebContentsObserver {
    public:
@@ -114,7 +115,7 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
     base::OnceClosure contents_destroyed_cb_;
   };
 
-  WebContents* opener_web_contents_ = nullptr;
+  raw_ptr<WebContents> opener_web_contents_ = nullptr;
 
   // WebContentsObserver to watch for changes in `child_contents_`.
   std::unique_ptr<ChildContentsObserver> child_contents_observer_;

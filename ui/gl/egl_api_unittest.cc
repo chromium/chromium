@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_display.h"
@@ -110,7 +111,7 @@ class EGLApiTest : public testing::Test {
   static const char* fake_extension_string_;
   static const char* fake_client_extension_string_;
 
-  GLDisplayEGL* display_ = nullptr;
+  raw_ptr<GLDisplayEGL> display_ = nullptr;
   std::unique_ptr<RealEGLApi> api_;
 };
 

@@ -608,7 +608,7 @@ class WidgetDelegateForShouldDescendIntoChildForEventHandling
   }
 
  private:
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
 };
 
 TEST_F(NativeViewHostAuraTest, ShouldDescendIntoChildForEventHandling) {

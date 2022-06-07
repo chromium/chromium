@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SHARING_HUB_PREVIEW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SHARING_HUB_PREVIEW_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/share/share_attempt.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
@@ -50,9 +51,9 @@ class PreviewView : public views::View {
  private:
   base::CallbackListSubscription subscription_;
 
-  views::Label* title_ = nullptr;
-  views::Label* url_ = nullptr;
-  views::ImageView* image_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::Label> url_ = nullptr;
+  raw_ptr<views::ImageView> image_ = nullptr;
 };
 
 }  // namespace sharing_hub

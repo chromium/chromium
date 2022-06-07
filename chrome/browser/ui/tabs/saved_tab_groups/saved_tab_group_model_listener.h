@@ -40,7 +40,7 @@ class SavedTabGroupModelListener : public BrowserListObserver,
 
  private:
   base::flat_set<raw_ptr<Browser>> observed_browsers_;
-  SavedTabGroupModel* model_ = nullptr;
+  raw_ptr<SavedTabGroupModel> model_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_MODEL_LISTENER_H_

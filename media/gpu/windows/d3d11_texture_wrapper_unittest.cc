@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
@@ -84,7 +85,7 @@ class D3D11TextureWrapperUnittest : public ::testing::Test {
   scoped_refptr<FakeCommandBufferHelper> fake_command_buffer_helper_;
   GetCommandBufferHelperCB get_helper_cb_;
 
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 TEST_F(D3D11TextureWrapperUnittest, NV12InitSucceeds) {

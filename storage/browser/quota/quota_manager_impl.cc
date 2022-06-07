@@ -635,7 +635,7 @@ class QuotaManagerImpl::StorageKeyGathererTask {
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
-  QuotaManagerImpl* manager_ GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<QuotaManagerImpl> manager_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::OnceCallback<void(StorageKeysByType)> callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
   StorageKeysByType storage_keys_by_type_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -782,7 +782,8 @@ class QuotaManagerImpl::BucketDataDeleter {
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
-  QuotaManagerImpl* const manager_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ptr<QuotaManagerImpl> manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   const BucketLocator bucket_;
   const QuotaClientTypes quota_client_types_;
   int error_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
@@ -906,7 +907,8 @@ class QuotaManagerImpl::HostDataDeleter {
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
-  QuotaManagerImpl* const manager_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ptr<QuotaManagerImpl> manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   const std::string host_;
   const StorageType type_;
   std::map<BucketDataDeleter*, std::unique_ptr<BucketDataDeleter>>

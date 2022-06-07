@@ -16,6 +16,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/string_compare.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -177,7 +178,7 @@ class ProfileAttributesSortComparator {
     return entry->GetName();
   }
 
-  icu::Collator* collator_;
+  raw_ptr<icu::Collator> collator_;
   bool use_local_name_;
 };
 

@@ -118,7 +118,7 @@ class WebAppCommandManager {
 
   std::map<WebAppCommand::Id, CommandState> commands_{};
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   // TODO(https://crbug.com/1329934): Figure out better ownership of this.
   // Perhaps set as subsystem?
   std::unique_ptr<WebAppUrlLoader> url_loader_;

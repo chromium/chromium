@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/formats/hls/media_playlist.h"
 #include "media/formats/hls/media_segment.h"
@@ -74,7 +75,7 @@ class MediaPlaylistTestBuilder : public PlaylistTestBuilder<MediaPlaylist> {
   void VerifyExpectations(const MediaPlaylist& playlist,
                           const base::Location& from) const override;
 
-  const MultivariantPlaylist* parent_ = nullptr;
+  raw_ptr<const MultivariantPlaylist> parent_ = nullptr;
   std::vector<SegmentExpectations> segment_expectations_;
 };
 

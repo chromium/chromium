@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_HOST_H_
 #define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_HOST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -172,11 +173,11 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // Both `this` and `shared_storage_manager_` live in the `StoragePartition`.
   // `shared_storage_manager_` almost always outlives `this` (thus is valid)
   // except for inside `~SharedStorageWorkletHost()`.
-  storage::SharedStorageManager* shared_storage_manager_;
+  raw_ptr<storage::SharedStorageManager> shared_storage_manager_;
 
   // Pointer to the `BrowserContext`, saved to be able to call
   // `IsSharedStorageAllowed()`.
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 
   // The shared storage owner document's origin.
   url::Origin shared_storage_origin_;

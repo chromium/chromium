@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/ui/browser.h"
@@ -56,7 +57,7 @@ class ExtensionPopup::ScopedDevToolsAgentHostObservation {
   }
 
  private:
-  content::DevToolsAgentHostObserver* observer_;
+  raw_ptr<content::DevToolsAgentHostObserver> observer_;
 };
 
 // static

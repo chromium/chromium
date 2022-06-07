@@ -294,7 +294,7 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   // TODO(1321521) remove this member and instead let callers of
   // CreateTransferBuffer specify the mapper to use so that only the buffers
   // used for WebGPU ArrayBuffers use a non-default mapper.
-  base::SharedMemoryMapper* transfer_buffer_mapper_;
+  raw_ptr<base::SharedMemoryMapper> transfer_buffer_mapper_;
 
   base::WeakPtrFactory<CommandBufferProxyImpl> weak_ptr_factory_{this};
 };

@@ -105,7 +105,7 @@ class BASE_EXPORT WorkQueueSets {
  private:
   struct OldestTaskOrder {
     TaskOrder key;
-    WorkQueue* value;
+    raw_ptr<WorkQueue> value;
 
     // Used for a min-heap.
     bool operator>(const OldestTaskOrder& other) const {

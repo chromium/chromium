@@ -4,6 +4,7 @@
 
 #include "components/device_signals/core/browser/user_permission_service_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/device_signals/core/browser/mock_user_delegate.h"
@@ -63,7 +64,7 @@ class UserPermissionServiceImplTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   TestManagementService management_service_;
   ScopedManagementServiceOverrideForTesting scoped_override_;
-  testing::StrictMock<MockUserDelegate>* mock_user_delegate_;
+  raw_ptr<testing::StrictMock<MockUserDelegate>> mock_user_delegate_;
 
   std::unique_ptr<UserPermissionServiceImpl> permission_service_;
 };

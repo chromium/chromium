@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -1237,7 +1238,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
   PaintCanvasVideoRenderer renderer_;
   scoped_refptr<VideoFrame> cropped_frame_;
   base::test::TaskEnvironment task_environment_;
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {

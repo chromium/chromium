@@ -95,8 +95,8 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   using BrowserAutofillManager::pending_form_data;
 
  private:
-  TestAutofillClient* client_;
-  TestAutofillDriver* driver_;
+  raw_ptr<TestAutofillClient> client_;
+  raw_ptr<TestAutofillDriver> driver_;
 
   bool autofill_profile_enabled_ = true;
   bool autofill_credit_card_enabled_ = true;

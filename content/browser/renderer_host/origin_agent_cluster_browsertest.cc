@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
 #include "base/command_line.h"
@@ -193,7 +194,7 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
   content::ContentMockCertVerifier mock_cert_verifier_;
 
   MockContentBrowserClient browser_client_;
-  ContentBrowserClient* original_browser_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_browser_client_ = nullptr;
 
   const bool origin_cluster_default_enabled_;
   const bool origin_cluster_absent_warning_;

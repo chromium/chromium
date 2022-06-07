@@ -1364,7 +1364,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::FakeWebAppProvider* web_app_provider_;
+  raw_ptr<web_app::FakeWebAppProvider> web_app_provider_;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 

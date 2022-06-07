@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/router/discovery/access_code/discovery_resources.pb.h"
 #include "chrome/browser/profiles/profile.h"
@@ -88,12 +89,12 @@ class AccessCodeCastDiscoveryInterface {
   AddSinkResultCode IsResponseValid(
       const absl::optional<base::Value>& response);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   // Access code passed down from the WebUI and used in the construction of the
   // discovery interface object.
   const std::string access_code_;
 
-  LoggerImpl* const logger_;
+  const raw_ptr<LoggerImpl> logger_;
 
   std::unique_ptr<EndpointFetcher> endpoint_fetcher_;
 

@@ -106,7 +106,7 @@ class AccountRemovedWaiter : public signin::IdentityManager::Observer {
   void Wait() {
     if (!identity_manager_->HasAccountWithRefreshToken(account_id_))
       return;
-    observation_.Observe(identity_manager_);
+    observation_.Observe(identity_manager_.get());
     run_loop_.Run();
   }
 
@@ -120,7 +120,7 @@ class AccountRemovedWaiter : public signin::IdentityManager::Observer {
   }
 
   base::RunLoop run_loop_;
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   const CoreAccountId account_id_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -625,7 +625,7 @@ class TurnSyncOnHelperTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   ScopedTestingLocalState local_state_;
   CoreAccountId account_id_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   raw_ptr<FakeUserPolicySigninService> user_policy_signin_service_ = nullptr;
