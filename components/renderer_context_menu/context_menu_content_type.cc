@@ -159,6 +159,10 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
       return params_.input_field_type ==
              blink::mojom::ContextMenuDataInputFieldType::kPassword;
 
+    case ITEM_GROUP_AUTOFILL:
+      return params_.input_field_type !=
+             blink::mojom::ContextMenuDataInputFieldType::kNone;
+
     default:
       NOTREACHED();
       return false;

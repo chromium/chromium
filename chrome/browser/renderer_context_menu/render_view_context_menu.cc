@@ -529,6 +529,12 @@ int FindUMAEnumValueForCommand(int id, UmaEnumIdLookupType type) {
   if (ContextMenuMatcher::IsExtensionsCustomCommandId(id))
     return 1;
 
+  if (autofill::AutofillContextMenuManager::IsAutofillCustomCommandId(
+          autofill::AutofillContextMenuManager::CommandId(id))) {
+    // TODO(crbug.com/1325811): Track the autofill items.
+    return -1;
+  }
+
   id = CollapseCommandsForUMA(id);
   const auto& map = GetIdcToUmaMap(type);
   auto it = map.find(id);
@@ -915,6 +921,12 @@ void RenderViewContextMenu::InitMenu() {
     AppendLinkItems();
     if (params_.media_type != ContextMenuDataMediaType::kNone)
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+  }
+
+  if (content_type_->SupportsGroup(
+          ContextMenuContentType::ITEM_GROUP_AUTOFILL)) {
+    autofill_context_menu_manager_.AppendTopLevelItems();
+    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
   bool media_image = content_type_->SupportsGroup(
@@ -2198,6 +2210,13 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
   if (ContextMenuMatcher::IsExtensionsCustomCommandId(id))
     return extension_items_.IsCommandIdEnabled(id);
 
+  // Autofill items.
+  if (autofill::AutofillContextMenuManager::IsAutofillCustomCommandId(
+          autofill::AutofillContextMenuManager::CommandId(id))) {
+    return autofill_context_menu_manager_.IsCommandIdEnabled(
+        autofill::AutofillContextMenuManager::CommandId(id));
+  }
+
   if (id >= IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_FIRST &&
       id <= IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_LAST) {
     return true;
@@ -2455,6 +2474,11 @@ bool RenderViewContextMenu::IsCommandIdChecked(int id) const {
 bool RenderViewContextMenu::IsCommandIdVisible(int id) const {
   if (ContextMenuMatcher::IsExtensionsCustomCommandId(id))
     return extension_items_.IsCommandIdVisible(id);
+  if (autofill::AutofillContextMenuManager::IsAutofillCustomCommandId(
+          autofill::AutofillContextMenuManager::CommandId(id))) {
+    return autofill_context_menu_manager_.IsCommandIdVisible(
+        autofill::AutofillContextMenuManager::CommandId(id));
+  }
   return RenderViewContextMenuBase::IsCommandIdVisible(id);
 }
 
@@ -2470,6 +2494,17 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     if (render_frame_host) {
       extension_items_.ExecuteCommand(id, source_web_contents_,
                                       render_frame_host, params_);
+    }
+    return;
+  }
+
+  if (autofill::AutofillContextMenuManager::IsAutofillCustomCommandId(
+          autofill::AutofillContextMenuManager::CommandId(id))) {
+    RenderFrameHost* render_frame_host = GetRenderFrameHost();
+    if (render_frame_host) {
+      autofill_context_menu_manager_.ExecuteCommand(
+          autofill::AutofillContextMenuManager::CommandId(id),
+          source_web_contents_, render_frame_host);
     }
     return;
   }
