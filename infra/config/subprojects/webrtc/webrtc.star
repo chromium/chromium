@@ -61,6 +61,8 @@ builder(
 builder(
     name = "WebRTC Chromium Linux Tester",
     triggered_by = ["WebRTC Chromium Linux Builder"],
+    pool = "luci.chromium.webrtc.fyi",
+    auto_builder_dimension = False,
 )
 
 builder(
@@ -71,8 +73,9 @@ builder(
 
 builder(
     name = "WebRTC Chromium Mac Tester",
-    os = os.MAC_ANY,
     triggered_by = ["WebRTC Chromium Mac Builder"],
+    pool = "luci.chromium.webrtc.fyi",
+    auto_builder_dimension = False,
 )
 
 builder(
@@ -84,6 +87,7 @@ builder(
 
 builder(
     name = "WebRTC Chromium Win10 Tester",
-    os = os.WINDOWS_ANY,
     triggered_by = ["WebRTC Chromium Win Builder"],
+    pool = "luci.chromium.webrtc.fyi",
+    auto_builder_dimension = False,
 )

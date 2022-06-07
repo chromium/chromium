@@ -5761,7 +5761,7 @@
           'chromium-webrtc-rel-linux',
         ],
         'test_suites': {
-          'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
+          'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests_linux',
         },
       },
       'WebRTC Chromium Mac Builder': {
@@ -5775,7 +5775,7 @@
           'mac_x64',
         ],
         'test_suites': {
-          'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
+          'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests_mac',
         },
       },
       'WebRTC Chromium Win Builder': {
@@ -5788,7 +5788,7 @@
           'chromium-webrtc-rel-win10',
         ],
         'test_suites': {
-          'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
+          'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests_win',
         },
       },
     },
