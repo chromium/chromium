@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_KEYBOARD_BRIGHTNESS_KEYBOARD_BACKLIGHT_COLOR_NUDGE_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/shelf/contextual_nudge.h"
+#include "ash/controls/contextual_nudge.h"
 #include "base/timer/timer.h"
 
 namespace views {

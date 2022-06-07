@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SHELF_CONTEXTUAL_TOOLTIP_H_
-#define ASH_SHELF_CONTEXTUAL_TOOLTIP_H_
+#ifndef ASH_CONTROLS_CONTEXTUAL_TOOLTIP_H_
+#define ASH_CONTROLS_CONTEXTUAL_TOOLTIP_H_
 
 #include "ash/ash_export.h"
 #include "base/time/clock.h"
@@ -112,4 +112,4 @@ ASH_EXPORT void ClearStatusTrackerTableForTesting();
 
 }  // namespace ash
 
-#endif  // ASH_SHELF_CONTEXTUAL_TOOLTIP_H_
+#endif  // ASH_CONTROLS_CONTEXTUAL_TOOLTIP_H_

@@ -4,8 +4,8 @@
 
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_nudge_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/contextual_tooltip.h"
 #include "ash/shell.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/test/ash_test_base.h"

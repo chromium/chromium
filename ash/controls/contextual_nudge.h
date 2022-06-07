@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SHELF_CONTEXTUAL_NUDGE_H_
-#define ASH_SHELF_CONTEXTUAL_NUDGE_H_
+#ifndef ASH_CONTROLS_CONTEXTUAL_NUDGE_H_
+#define ASH_CONTROLS_CONTEXTUAL_NUDGE_H_
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
@@ -63,4 +63,4 @@ class ASH_EXPORT ContextualNudge : public views::BubbleDialogDelegateView {
 
 }  // namespace ash
 
-#endif  // ASH_SHELF_CONTEXTUAL_NUDGE_H_
+#endif  // ASH_CONTROLS_CONTEXTUAL_NUDGE_H_

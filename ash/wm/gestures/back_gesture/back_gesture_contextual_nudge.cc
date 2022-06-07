@@ -4,9 +4,9 @@
 
 #include "ash/wm/gestures/back_gesture/back_gesture_contextual_nudge.h"
 
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/contextual_tooltip.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
