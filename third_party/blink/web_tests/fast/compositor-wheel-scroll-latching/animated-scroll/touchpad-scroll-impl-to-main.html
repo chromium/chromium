@@ -37,11 +37,12 @@ function changeStyleToScrollOnMain() {
 div.addEventListener("wheel", changeStyleToScrollOnMain, {passive: true});
 
 promise_test(async () => {
-  const pixelsToScrollY = 500;
+  const expectedScrollY = 500;
+  const pixelsToScrollY = calculatePixelsToScroll(div, 0, expectedScrollY).y;
   const x = (rect.left + rect.right) / 2;
   const y = (rect.top + rect.bottom) / 2;
-  await percentBasedSmoothScroll(
-    pixelsToScrollY, x, y, GESTURE_SOURCE_TYPE, 'down', SPEED_INSTANT, div
+  await smoothScroll(
+    pixelsToScrollY, x, y, GESTURE_SOURCE_TYPE, 'down', SPEED_INSTANT
   );
   await waitForAnimationEndTimeBased(() => {
     return div.scrollTop;

@@ -22,7 +22,7 @@
 <div id="anchor"></div>
 
 <script>
-  var asyncTest = async_test("Verify smooth scroll interaction with scroll anchoring");
+  var asyncTest = async_test("Verify smooth scroll interaction with scroll anchroing");
 
   // The element that will change in height.
   var ch;
@@ -30,7 +30,9 @@
   // Initital scroll position.
   var initialY = 10;
   // Amount to smooth scroll by.
-  const userScrollY = 205;
+  const { y: userScrollY } = calculatePixelsToScroll(
+    document.scrollingElement, 0, 205
+  );
   // Amount to change the height of the element above the viewport.
   var changerY =  100;
   // End position: height of ch + userScroll.
@@ -53,7 +55,7 @@
     document.addEventListener("scroll", scrollListener);
 
     // Smooth scroll.
-    percentBasedSmoothScroll(userScrollY, 100, 100, source, 'down', SPEED_INSTANT);
+    smoothScroll(userScrollY, 100, 100, source, 'down', SPEED_INSTANT);
     await raf();
     document.getElementById('anchor').scrollIntoView();
   }

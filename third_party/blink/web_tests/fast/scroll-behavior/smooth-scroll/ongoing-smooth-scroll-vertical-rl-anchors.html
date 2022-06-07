@@ -33,7 +33,9 @@
   var initialX = -10;
   var initialY = 0;
   // Amount to smooth scroll by.
-  const userScrollX = -205;
+  const { x: userScrollX } = calculatePixelsToScroll(
+    document.scrollingElement, -205, 0
+  );
   // Amount to change the height of the element above the viewport.
   var changerX = 100;
   // End position: height of ch + userScroll.
@@ -56,7 +58,7 @@
     document.addEventListener("scroll", scrollListener);
 
     // Smooth scroll.
-    percentBasedSmoothScroll(userScrollX, 100, 100, source, 'right', SPEED_INSTANT);
+    smoothScroll(userScrollX, 100, 100, source, 'right', SPEED_INSTANT);
     await raf();
     window.scrollTo(initialX, initialY);
   }

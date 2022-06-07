@@ -11,6 +11,19 @@
 </style>
 
 <script>
+  function checkScrollValues(pixelsToScroll) {
+    const { x: expectedScrollLeft, y: expectedScrollTop} = (
+      calculateExpectedScroll(
+        document.scrollingElement, pixelsToScroll, pixelsToScroll
+      ));
+    assert_approx_equals(
+      document.scrollingElement.scrollTop, expectedScrollTop, 0.001
+    );
+    assert_approx_equals(
+      document.scrollingElement.scrollLeft, expectedScrollLeft, 0.001
+    );
+  }
+
   // Turn on smooth scrolling.
   internals.settings.setScrollAnimatorEnabled(true);
 
@@ -28,10 +41,10 @@
     await mouseMoveTo(x, y);
 
     // Scroll 3 ticks diagonally.
-    await percentBasedSmoothScroll(3 * pixelsPerTick() , x, y, source, 'downright',
+    await smoothScroll(3 * pixelsPerTick() , x, y, source, 'downright',
       SPEED_INSTANT);
     // Undo 2 ticks in each direction.
-    await percentBasedSmoothScroll(2 * pixelsPerTick(), x, y, source, 'upleft',
+    await smoothScroll(2 * pixelsPerTick(), x, y, source, 'upleft',
       SPEED_INSTANT);
 
     await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
@@ -39,12 +52,11 @@
 
     // total scroll distance after scrolling actions above
     const pixelsToScroll = pixelsPerTick();
-    assert_approx_equals(scroller.scrollTop, pixelsToScroll, 0.4);
-    assert_approx_equals(scroller.scrollLeft, pixelsToScroll, 0.4);
+    checkScrollValues(pixelsToScroll);
 
     // Undo the last tick in each direction to reset the scroll state before
     // starting the second test.
-    await percentBasedSmoothScroll(1 * pixelsPerTick(), x, y, source, 'upleft',
+    await smoothScroll(1 * pixelsPerTick(), x, y, source, 'upleft',
       SPEED_INSTANT);
 
     await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
@@ -61,19 +73,19 @@
     await mouseMoveTo(x, y);
 
     // Scroll down 3 ticks.
-    await percentBasedSmoothScroll(1 * pixelsPerTick(), x, y, source, 'down',
+    await smoothScroll(1 * pixelsPerTick(), x, y, source, 'down',
         SPEED_INSTANT);
-    await percentBasedSmoothScroll(2 * pixelsPerTick(), x, y, source, 'down',
+    await smoothScroll(2 * pixelsPerTick(), x, y, source, 'down',
         SPEED_INSTANT);
     // Scroll right 3 ticks.
-    await percentBasedSmoothScroll(1 * pixelsPerTick(), x, y, source, 'right',
+    await smoothScroll(1 * pixelsPerTick(), x, y, source, 'right',
         SPEED_INSTANT);
-    await percentBasedSmoothScroll(2 * pixelsPerTick(), x, y, source, 'right',
+    await smoothScroll(2 * pixelsPerTick(), x, y, source, 'right',
         SPEED_INSTANT);
     // Undo 1 tick in each direction.
-    await percentBasedSmoothScroll(1 * pixelsPerTick(), x, y, source, 'up',
+    await smoothScroll(1 * pixelsPerTick(), x, y, source, 'up',
         SPEED_INSTANT);
-    await percentBasedSmoothScroll(1 * pixelsPerTick(), x, y, source, 'left',
+    await smoothScroll(1 * pixelsPerTick(), x, y, source, 'left',
         SPEED_INSTANT);
 
     await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
@@ -81,8 +93,7 @@
 
     // total scroll distance after scrolling actions above
     const pixelsToScroll = 2 * pixelsPerTick();
-    assert_approx_equals(scroller.scrollTop, pixelsToScroll, 0.6);
-    assert_approx_equals(scroller.scrollLeft, pixelsToScroll, 0.6);
+    checkScrollValues(pixelsToScroll);
   }, "This test ensures that consecutive mouse wheel ticks vertically or " +
       "horizontally scroll to the right offset. The main purpose of this " +
       "test is to ensure that smooth scrolling on the compositor works as " +
