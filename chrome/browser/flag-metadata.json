@@ -16,7 +16,7 @@
 //     - A string containing '@', which is treated as an email address;
 //     - A string beginning with '//', which is treated as a path to a file
 //       containing a list of owners for this flag (commonly an OWNERS file);
-//     - Any other string, which is treated as the username part of anf
+//     - Any other string, which is treated as the username part of any
 //       @chromium.org email address;
 //
 //   expiry_milestone: the last milestone in which this flag should be present.
@@ -3691,6 +3691,11 @@
     "name": "initial-navigation-entry",
     "owners": [ "rakina", "chrome-security-architecture@google.com" ],
     "expiry_milestone": 105
+  },
+  {
+    "name": "install-isolated-apps-at-startup",
+    "owners": [ "jarrydg", "kuragin", "reillyg", "rmcelrath" ],
+    "expiry_milestone": 140
   },
   {
     "name": "installed-apps-in-cbd",

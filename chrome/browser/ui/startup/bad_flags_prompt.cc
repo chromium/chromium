@@ -144,6 +144,10 @@ static const char* kBadFlags[] = {
     // origins.
     switches::kIsolatedAppOrigins,
 
+    // This flag tells Chrome to automatically install given isolated PWA during
+    // start up. The functionality is under active development.
+    switches::kInstallIsolatedAppsAtStartup,
+
     // Allows the specified origin to make Web Authentication API requests on
     // behalf of other origins, if a corresponding Google-internal
     // platform-level enterprise policy is also applied.

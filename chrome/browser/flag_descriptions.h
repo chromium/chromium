@@ -892,6 +892,9 @@ extern const char kInProductHelpSnoozeDescription[];
 extern const char kInProductHelpUseClientConfigName[];
 extern const char kInProductHelpUseClientConfigDescription[];
 
+extern const char kInstallIssolatedAppsAtStartup[];
+extern const char kInstallIssolatedAppsAtStartupDescription[];
+
 extern const char kInstalledAppsInCbdName[];
 extern const char kInstalledAppsInCbdDescription[];
 
