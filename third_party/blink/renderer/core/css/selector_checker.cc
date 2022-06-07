@@ -929,10 +929,6 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
   Document& document = has_anchor_element->GetDocument();
   DCHECK(document.GetCheckPseudoHasCacheScope());
   SelectorCheckingContext sub_context(has_anchor_element);
-  // TODO(blee@igalia.com) Need to clarify the :scope dependency in relative
-  // selector definition.
-  // - spec : https://www.w3.org/TR/selectors-4/#relative
-  // - csswg issue : https://github.com/w3c/csswg-drafts/issues/6399
   sub_context.scope = context.scope;
   // sub_context.is_inside_visited_link is false (by default) to disable
   // :visited matching when it is in the :has argument
