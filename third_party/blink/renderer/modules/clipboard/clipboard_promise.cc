@@ -537,7 +537,13 @@ void ClipboardPromise::RequestPermission(
       LocalFrame::HasTransientUserActivation(GetLocalFrame());
   base::UmaHistogramBoolean("Blink.Clipboard.HasTransientUserActivation",
                             has_transient_user_activation);
-  if (RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() &&
+  // `allow_without_sanitization` is true only when we are trying to read/write
+  // web custom formats.
+  // TODO(crbug.com/1334203): Remove the `allow_without_sanitization` check.
+  // Currently NTP relies on readText & writeText to be called without any user
+  // gesture.
+  if (allow_without_sanitization &&
+      RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() &&
       !has_transient_user_activation) {
     script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSecurityError,
