@@ -6,16 +6,18 @@
 
 import filecmp
 import os
-import os.path
 import sys
 from optparse import OptionParser
 
 import build_cmd_buffer_lib
 
+# Additional space required after "type" here and elsewhere because otherwise
+# pylint detects "# type:" as invalid syntax on Python 3.8, see
+# https://github.com/PyCQA/pylint/issues/3556.
 # Named type info object represents a named type that is used in OpenGL call
 # arguments.  Each named type defines a set of valid OpenGL call arguments.  The
 # named types are used in 'gles2_cmd_buffer_functions.txt'.
-# type: The actual GL type of the named type.
+# type : The actual GL type of the named type.
 # valid: The list of values that are valid for both the client and the service.
 # valid_es3: The list of values that are valid in OpenGL ES 3, but not ES 2.
 # invalid: Examples of invalid values for the type. At least these values
@@ -1625,7 +1627,7 @@ _NAMED_TYPE_INFO = {
 # Must match function names specified in "gles2_cmd_buffer_functions.txt".
 #
 # cmd_comment:  A comment added to the cmd format.
-# type:         defines which handler will be used to generate code.
+# type :        defines which handler will be used to generate code.
 # decoder_func: defines which function to call in the decoder to execute the
 #               corresponding GL command. If not specified the GL command will
 #               be called directly.

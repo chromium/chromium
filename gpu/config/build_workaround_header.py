@@ -50,7 +50,7 @@ def write_header(filename: str, workarounds: typing.List[str]) -> None:
     f.write('// The End\n')
 
 
-def main(argv):
+def main():
   parser = argparse.ArgumentParser(
       description='Generate GPU workaround definitions')
   parser.add_argument(
@@ -69,4 +69,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-  sys.exit(main(sys.argv[1:]))
+  sys.exit(main())

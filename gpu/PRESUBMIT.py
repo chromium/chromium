@@ -8,12 +8,13 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
+import sys
+
 
 USE_PYTHON3 = True
 
 
 def CommonChecks(input_api, output_api):
-  import sys
 
   output = []
   sys_path_backup = sys.path
@@ -25,10 +26,7 @@ def CommonChecks(input_api, output_api):
         input_api,
         output_api,
         version='2.7')
-    # TODO(crbug.com/1329829): Re-enable pylint once all the code under this
-    # directory is on the same Python version and existing warnings have been
-    # cleaned up.
-    # output.extend(input_api.RunTests(pylint_checks))
+    output.extend(input_api.RunTests(pylint_checks))
   finally:
     sys.path = sys_path_backup
 

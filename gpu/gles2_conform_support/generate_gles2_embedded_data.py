@@ -11,7 +11,7 @@ import os
 import sys
 import typing
 
-class GenerateEmbeddedFiles(object):
+class GenerateEmbeddedFiles():
   """generates files to embed the gles2 conform test data in executable"""
 
   paths_to_ignore = set([
