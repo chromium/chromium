@@ -1500,12 +1500,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   SetFavicon(0, bookmark, icon_url, CreateFavicon(SK_ColorWHITE),
              bookmarks_helper::FROM_UI);
 
-  ASSERT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex)).Wait());
   ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
                   {{title, GURL(kBookmarkPageUrl)}},
                   /*cryptographer=*/nullptr)
                   .Wait());
+  // TODO(crbug.com/1330378): for some reason it's important to put
+  // UpdatedProgressMarkerChecker after (not before)
+  // ServerBookmarksEqualityChecker, otherwise, test became flaky. Investigate
+  // whether there is an issue with UpdatedProgressMarkerChecker (e.g.
+  // satisfying exit condition early, if change still didn't reach sync thread).
+  ASSERT_TRUE(
+      UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex)).Wait());
 
   // Stop Sync and update local entity to enter in unsynced state.
   GetClient(kSingleProfileIndex)->StopSyncServiceWithoutClearingData();
@@ -1513,15 +1518,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   SetTitle(kSingleProfileIndex, bookmark, new_title);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-// Flaky on most desktop platforms. See https://crbug.com/1330378.
-#define MAYBE_ShouldUploadUnsyncedEntityAfterRestart DISABLED_ShouldUploadUnsyncedEntityAfterRestart
-#else
-#define MAYBE_ShouldUploadUnsyncedEntityAfterRestart ShouldUploadUnsyncedEntityAfterRestart
-#endif
-
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
-                       MAYBE_ShouldUploadUnsyncedEntityAfterRestart) {
+                       ShouldUploadUnsyncedEntityAfterRestart) {
   ASSERT_TRUE(SetupClients());
 
   const std::string title = "Title";
