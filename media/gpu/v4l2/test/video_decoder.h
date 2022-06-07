@@ -10,9 +10,6 @@
 #include "media/filters/ivf_parser.h"
 
 namespace media {
-
-class IvfParser;
-
 namespace v4l2_test {
 
 // VideoDecoder decodes encoded IVF streams using v4l2 ioctl calls.

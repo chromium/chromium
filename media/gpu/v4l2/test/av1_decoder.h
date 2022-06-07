@@ -35,9 +35,6 @@
 #endif
 
 namespace media {
-
-class IvfParser;
-
 namespace v4l2_test {
 
 constexpr int8_t kAv1NumRefFrames = libgav1::kNumReferenceFrameTypes;

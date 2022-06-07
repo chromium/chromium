@@ -17,9 +17,6 @@
 #include "media/gpu/v4l2/test/video_decoder.h"
 
 namespace media {
-
-class IvfParser;
-
 namespace v4l2_test {
 
 // A Vp9Decoder decodes VP9-encoded IVF streams using v4l2 ioctl calls.
