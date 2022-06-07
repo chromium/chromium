@@ -51,6 +51,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
+#include "ui/ozone/platform/wayland/host/wayland_zcr_touchpad_haptics.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_constraints.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
@@ -184,6 +185,8 @@ bool WaylandConnection::Initialize() {
                               &WaylandZAuraShell::Instantiate);
   RegisterGlobalObjectFactory(WaylandZcrCursorShapes::kInterfaceName,
                               &WaylandZcrCursorShapes::Instantiate);
+  RegisterGlobalObjectFactory(WaylandZcrTouchpadHaptics::kInterfaceName,
+                              &WaylandZcrTouchpadHaptics::Instantiate);
   RegisterGlobalObjectFactory(WaylandZwpLinuxDmabuf::kInterfaceName,
                               &WaylandZwpLinuxDmabuf::Instantiate);
   RegisterGlobalObjectFactory(WaylandZwpPointerConstraints::kInterfaceName,
