@@ -380,10 +380,9 @@ class CORE_EXPORT CSSSelector {
   void SetNth(int a, int b);
   bool MatchNth(unsigned count) const;
 
-  bool IsAdjacentSelector() const {
-    return relation_ == kDirectAdjacent || relation_ == kIndirectAdjacent;
+  static bool IsAdjacentRelation(RelationType relation) {
+    return relation == kDirectAdjacent || relation == kIndirectAdjacent;
   }
-  bool IsUAShadowSelector() const { return relation_ == kUAShadow; }
   bool IsAttributeSelector() const {
     return match_ >= kFirstAttributeSelectorMatch;
   }
