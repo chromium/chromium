@@ -1417,8 +1417,8 @@ void ArcApps::OnArcSupportedLinksChanged(
       }
     }
 
-    app_service->SetSupportedLinksPreference(apps::mojom::AppType::kArc, app_id,
-                                             std::move(app_service_filters));
+    proxy()->SetSupportedLinksPreference(
+        app_id, ConvertMojomIntentFiltersToIntentFilters(app_service_filters));
   }
 
   for (const auto& supported_link : removed) {
@@ -1427,8 +1427,7 @@ void ArcApps::OnArcSupportedLinksChanged(
     if (app_id.empty()) {
       continue;
     }
-    app_service->RemoveSupportedLinksPreference(apps::mojom::AppType::kArc,
-                                                app_id);
+    proxy()->RemoveSupportedLinksPreference(app_id);
   }
 }
 

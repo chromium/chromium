@@ -698,11 +698,6 @@ void AppServiceProxyBase::AddPreferredApp(
 
 void AppServiceProxyBase::SetSupportedLinksPreference(
     const std::string& app_id) {
-  DCHECK(!app_id.empty());
-  if (!app_service_.is_connected()) {
-    return;
-  }
-
   IntentFilters filters;
   AppRegistryCache().ForOneApp(
       app_id, [&app_id, &filters](const AppUpdate& app) {
@@ -713,15 +708,26 @@ void AppServiceProxyBase::SetSupportedLinksPreference(
         }
       });
 
+  SetSupportedLinksPreference(app_id, std::move(filters));
+}
+
+void AppServiceProxyBase::SetSupportedLinksPreference(
+    const std::string& app_id,
+    IntentFilters all_link_filters) {
+  DCHECK(!app_id.empty());
+
   if (preferred_apps_impl_) {
     preferred_apps_impl_->SetSupportedLinksPreference(
-        app_registry_cache_.GetAppType(app_id), app_id, std::move(filters));
+        app_registry_cache_.GetAppType(app_id), app_id,
+        std::move(all_link_filters));
     return;
   }
 
-  app_service_->SetSupportedLinksPreference(
-      ConvertAppTypeToMojomAppType(app_registry_cache_.GetAppType(app_id)),
-      app_id, ConvertIntentFiltersToMojomIntentFilters(filters));
+  if (app_service_.is_connected()) {
+    app_service_->SetSupportedLinksPreference(
+        ConvertAppTypeToMojomAppType(app_registry_cache_.GetAppType(app_id)),
+        app_id, ConvertIntentFiltersToMojomIntentFilters(all_link_filters));
+  }
 }
 
 void AppServiceProxyBase::RemoveSupportedLinksPreference(

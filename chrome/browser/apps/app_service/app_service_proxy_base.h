@@ -267,6 +267,18 @@ class AppServiceProxyBase : public KeyedService,
   // RemoveSupportedLinksPreference was called for that app.
   void SetSupportedLinksPreference(const std::string& app_id);
 
+  // Set |app_id| as preferred app for all its supported link filters. Supported
+  // link filters, which have the http/https scheme and at least one host, are
+  // always enabled/disabled as a group. |all_link_filters| should contain all
+  // of the apps' Supported Link intent filters.
+  // Any apps with overlapping preferred app preferences will have all their
+  // supported link filters unset, as if RemoveSupportedLinksPreference was
+  // called for that app.
+  // TODO(crbug.com/1265315): Remove this method to use
+  // SetSupportedLinksPreference(std::string).
+  void SetSupportedLinksPreference(const std::string& app_id,
+                                   IntentFilters all_link_filters);
+
   // Removes all supported link filters from the preferred app list for
   // |app_id|.
   void RemoveSupportedLinksPreference(const std::string& app_id);
