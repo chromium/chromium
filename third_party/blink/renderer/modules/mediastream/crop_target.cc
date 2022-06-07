@@ -72,6 +72,8 @@ ScriptPromise CropTarget::fromElement(ScriptState* script_state,
 #endif
 }
 
-CropTarget::CropTarget(String crop_id) : crop_id_(std::move(crop_id)) {}
+CropTarget::CropTarget(String crop_id) : crop_id_(std::move(crop_id)) {
+  DCHECK(!crop_id_.IsEmpty());
+}
 
 }  // namespace blink

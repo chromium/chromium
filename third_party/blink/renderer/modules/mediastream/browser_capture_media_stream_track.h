@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_BROWSER_CAPTURE_MEDIA_STREAM_TRACK_H_
 
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/focusable_media_stream_track.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -34,7 +35,7 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack final
   void Trace(Visitor*) const override;
 #endif
 
-  ScriptPromise cropTo(ScriptState*, const String&, ExceptionState&);
+  ScriptPromise cropTo(ScriptState*, CropTarget*, ExceptionState&);
 
   BrowserCaptureMediaStreamTrack* clone(ScriptState*) override;
 

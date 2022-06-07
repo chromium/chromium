@@ -3,35 +3,11 @@
     <!-- The test scans for which source to share according to the title. -->
     <title>Region Capture Test - Page 2 (Main)</title>
     <link rel="icon" href="data:," />
+    <script src="region_capture_helpers.js"></script>
     <script>
       "use strict";
 
-      function startEmbeddingFrame(url) {
-        document.getElementById("embedded_frame").src = url;
-        // window.domAutomationController.send() called by embedded page.
-      }
-
-      async function cropTargetFromElement(targetFrame, elementId) {
-        if (targetFrame == "top") {
-          const element = document.getElementById(elementId);
-          let cropId;
-          try {
-            cropId = await CropTarget.fromElement(element);
-          } catch (e) {
-            window.domAutomationController.send("top-level-produce-crop-target-error");
-            return;
-          }
-          // Explicitly note emptiness so as to make it clear that this is
-          // genuine emptiness and not a test error on the C++/JS boundary.
-          window.domAutomationController.send(
-              cropId == "" ? "empty-crop-target" : cropId);
-        } else {
-          document
-            .getElementById("embedded_frame")
-            .contentWindow.postMessage("produce-crop-target:" + elementId, "*");
-          // window.domAutomationController.send() called by embedded page.
-        }
-      }
+      setRole("top-level");
     </script>
   </head>
   <body>
@@ -41,5 +17,6 @@
       <br/>
       <iframe id="embedded_frame" allow="display-capture *"></iframe>
     </div>
+    <iframe id="mailman_frame"></iframe>
   </body>
 </html>

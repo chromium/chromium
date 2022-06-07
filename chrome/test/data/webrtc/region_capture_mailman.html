@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title>Region Capture Mailman</title>
+    <link rel="icon" href="data:," />
+    <script>
+      "use strict";
+
+      function reportEmbeddingSuccess() {
+        window.parent.postMessage({messageType: "mailman-embedded"}, "*");
+      }
+
+      const cropTargetBc = new BroadcastChannel("cropTargetBc");
+
+      // Forward all messages from parent to the BroadcastChannel.
+      window.addEventListener("message", (event) => {
+        cropTargetBc.postMessage(event.data, "*");
+      });
+
+      // Forward all messages from the BroadcastChannel to the parent.
+      cropTargetBc.onmessage = (msg) => {
+        window.parent.postMessage(msg.data, "*");
+      }
+    </script>
+  </head>
+  <body onload="reportEmbeddingSuccess();">
+  </body>
+</html>

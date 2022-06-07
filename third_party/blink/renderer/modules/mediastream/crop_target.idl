@@ -6,11 +6,10 @@
 
 [Exposed=(Window,Worker), Serializable, RuntimeEnabled = RegionCapture]
 interface CropTarget {
-  // TODO(crbug.com/1291140): Change the return-type to Promise<CropTarget>.
   [
     CallWith = ScriptState,
     RaisesException,
     MeasureAs = RegionCapture,
     RuntimeEnabled = RegionCapture
-  ] static Promise<DOMString> fromElement(Element element);
+  ] static Promise<CropTarget> fromElement(Element element);
 };

@@ -1,39 +1,17 @@
 <html>
   <head>
     <link rel="icon" href="data:," />
+    <script src="region_capture_helpers.js"></script>
     <script>
       "use strict";
+
+      setRole("embedded");
+
+      registerEmbeddedListeners();
 
       function reportEmbeddingSuccess() {
         window.domAutomationController.send("embedding-done");
       }
-
-      async function cropTargetFromElement(elementId) {
-        const element = document.getElementById(elementId);
-        let cropId;
-        try {
-          try {
-            cropId = await CropTarget.fromElement(element);
-          } catch (e) {
-            window.domAutomationController.send("embedded-produce-crop-target-error");
-            return;
-          }
-          // Explicitly note emptiness to make it clear this is genuine emptiness
-          // and not a test error on the C++/JS boundary.
-          window.domAutomationController.send(
-              cropId == "" ? "empty-crop-target" : cropId);
-        } catch (e) {
-          window.domAutomationController.send("produce-crop-target-embedded-failure");
-        }
-      }
-
-      window.addEventListener("message", (event) => {
-        if (event.data.startsWith("produce-crop-target:")) {
-          cropTargetFromElement(event.data.substr("produce-crop-target:".length));
-        } else {
-          window.domAutomationController.send("unrecognized-message");
-        }
-      });
     </script>
   </head>
   <body onload="reportEmbeddingSuccess();">
@@ -41,5 +19,6 @@
       <!-- This DIV is just a convenient target for cropTargetFromElement. -->
       <h1>Region Capture Test - Page 2 (Embedded)</h1>
     </div>
+    <iframe id="mailman_frame"></iframe>
   </body>
 </html>

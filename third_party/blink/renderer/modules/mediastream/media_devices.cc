@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
@@ -118,12 +119,6 @@ enum class DisplayCapturePolicyResult {
 #if !BUILDFLAG(IS_ANDROID)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-//
-// Note: The mismatch between "CropId" and "CropTarget" is due to spec-changes
-// as part of the work in the W3C working group. These will be reflected in
-// code at a later point.
-// TODO(crbug.com/1291140): Remove above explanation once implementation
-// is updated to CropTargets.
 enum class ProduceCropTargetFunctionResult {
   kPromiseProduced = 0,
   kGenericError = 1,
@@ -440,8 +435,8 @@ ScriptPromise MediaDevices::ProduceCropTarget(ScriptState* script_state,
     DCHECK(!old_crop_id->value().is_zero());
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
     const ScriptPromise promise = resolver->Promise();
-    resolver->Resolve(WTF::String(
-        blink::TokenToGUID(old_crop_id->value()).AsLowercaseString()));
+    resolver->Resolve(MakeGarbageCollected<CropTarget>(WTF::String(
+        blink::TokenToGUID(old_crop_id->value()).AsLowercaseString())));
     RecordUma(
         ProduceCropTargetFunctionResult::kDuplicateCallAfterPromiseResolution);
     return promise;
@@ -787,7 +782,7 @@ void MediaDevices::ResolveProduceCropIdPromise(Element* element,
     DCHECK(guid.is_valid());
     element->SetRegionCaptureCropId(
         std::make_unique<RegionCaptureCropId>(blink::GUIDToToken(guid)));
-    resolver->Resolve(crop_id);
+    resolver->Resolve(MakeGarbageCollected<CropTarget>(crop_id));
     RecordUma(ProduceCropTargetPromiseResult::kPromiseResolved);
   }
 }

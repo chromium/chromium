@@ -152,9 +152,11 @@ void BrowserCaptureMediaStreamTrack::Trace(Visitor* visitor) const {
 
 ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
     ScriptState* script_state,
-    const String& crop_id,
+    CropTarget* crop_target,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
+
+  const String crop_id(crop_target ? crop_target->GetCropId() : String());
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();

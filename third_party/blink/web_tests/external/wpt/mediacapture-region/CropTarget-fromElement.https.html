@@ -23,69 +23,66 @@
   <script>
     "use strict";
 
-    // Regex that matches a Universally Unique IDentifer composed of hex
-    // characters separated by dashes in the form 8-4-4-4-12 for a total
-    // of 36 characters.
-    const GUID_REGEX = /^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$/;
-
     promise_test(async () => {
       assert_true(!!CropTarget.fromElement);
-      const iframe_id = await CropTarget.fromElement(
+      const crop_target = await CropTarget.fromElement(
         document.getElementById('test-iframe'));
-      assert_true(GUID_REGEX.test(iframe_id));
-    }, "produces valid IDs for iframe");
+      assert_equals(crop_target.constructor.name, 'CropTarget');
+    }, "Produces a CropTarget for Elements of subtype iframe.");
 
     promise_test(async () => {
       assert_true(!!CropTarget.fromElement);
-      const div_id = await CropTarget.fromElement(
+      const crop_target = await CropTarget.fromElement(
         document.getElementById('test-div'));
-      assert_true(GUID_REGEX.test(div_id));
-    }, "produces valid id for div");
-
-    promise_test(async () => {
-      assert_true(!!CropTarget.fromElement);
-      const iframe_id = await CropTarget.fromElement(
-        document.getElementById('test-iframe'));
-      const second_iframe_id = await CropTarget.fromElement(
-        document.getElementById('test-iframe'));
-      assert_equals(iframe_id, second_iframe_id);
-    }, "repeated calls return the same value");
+      assert_equals(crop_target.constructor.name, 'CropTarget');
+    }, "Produces a CropTarget for Elements of subtype div.");
 
     promise_test(t => {
       assert_true(!!CropTarget.fromElement);
       return promise_rejects_js(t, TypeError,
         CropTarget.fromElement(undefined));
-    }, "rejects undefined with a TypeError");
+    }, "Rejects undefined with a TypeError.");
 
     promise_test(t => {
       assert_true(!!CropTarget.fromElement);
       return promise_rejects_js(t, TypeError, CropTarget.fromElement(123));
-    }, "rejects a non-element with a TypeError");
+    }, "Rejects a non-Element with a TypeError.");
 
     promise_test(function (t) {
       assert_true(!!CropTarget.fromElement);
+
       return promise_rejects_dom(t, "NotSupportedError",
         CropTarget.fromElement(document.getElementById("test-a")));
-    }, "rejects unimplemented Element subtypes with a NotSupportedError");
+    }, "Rejects unimplemented Element subtypes with a NotSupportedError");
 
     promise_test(async () => {
       assert_true(!!CropTarget.fromElement);
-      const div_id = await CropTarget.fromElement(
+
+      const div_crop_target = await CropTarget.fromElement(
         document.getElementById('test-div'));
-      const iframe_id = await CropTarget.fromElement(
+      assert_equals(div_crop_target.constructor.name, 'CropTarget');
+
+      const iframe_crop_target = await CropTarget.fromElement(
         document.getElementById('test-iframe'));
-      assert_not_equals(div_id, iframe_id);
-    }, "two elements have different IDs");
+      assert_equals(iframe_crop_target.constructor.name, 'CropTarget');
+
+      assert_not_equals(div_crop_target, iframe_crop_target);
+    }, "Distinct Elements produce distinct CropTargets.");
 
     promise_test(async () => {
       assert_true(!!CropTarget.fromElement);
+
       const div = document.getElementById('test-div');
-      const div_id = await CropTarget.fromElement(div);
+      const div_crop_target = await CropTarget.fromElement(div);
+      assert_equals(div_crop_target.constructor.name, 'CropTarget');
+
       const clone = div.cloneNode(true);
       document.querySelector('body').appendChild(clone);
-      const clone_id = await CropTarget.fromElement(clone);
-      assert_not_equals(div_id, clone_id);
-    }, "cloned elements have different IDs");
+      const clone_crop_target = await CropTarget.fromElement(clone);
+      assert_equals(clone_crop_target.constructor.name, 'CropTarget');
+
+      assert_not_equals(div_crop_target, clone_crop_target);
+    }, "Cloned Elements produce distinct CropTargets.");
 
   </script>
 </body>

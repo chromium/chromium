@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 
@@ -64,26 +65,11 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidId) {
   BrowserCaptureMediaStreamTrack* const track =
       MakeTrack(v8_scope, std::move(media_stream_video_source));
 
-  const ScriptPromise promise = track->cropTo(
-      v8_scope.GetScriptState(), WTF::String(valid_id.AsLowercaseString()),
-      v8_scope.GetExceptionState());
-}
-
-TEST_F(BrowserCaptureMediaStreamTrackTest, CropToInvalidIdIsRejected) {
-  V8TestingScope v8_scope;
-
-  std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
-      MakeMockMediaStreamVideoSource();
-
-  EXPECT_CALL(*media_stream_video_source, Crop(_, _, _)).Times(0);
-
-  BrowserCaptureMediaStreamTrack* const track =
-      MakeTrack(v8_scope, std::move(media_stream_video_source));
-
   const ScriptPromise promise =
-      track->cropTo(v8_scope.GetScriptState(), WTF::String("INVALID-ID"),
+      track->cropTo(v8_scope.GetScriptState(),
+                    MakeGarbageCollected<CropTarget>(
+                        WTF::String(valid_id.AsLowercaseString())),
                     v8_scope.GetExceptionState());
-  EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kRejected);
 }
 
 #else
@@ -101,9 +87,11 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToFailsOnAndroid) {
   BrowserCaptureMediaStreamTrack* const track =
       MakeTrack(v8_scope, std::move(media_stream_video_source));
 
-  const ScriptPromise promise = track->cropTo(
-      v8_scope.GetScriptState(), WTF::String(valid_id.AsLowercaseString()),
-      v8_scope.GetExceptionState());
+  const ScriptPromise promise =
+      track->cropTo(v8_scope.GetScriptState(),
+                    MakeGarbageCollected<CropTarget>(
+                        WTF::String(valid_id.AsLowercaseString())),
+                    v8_scope.GetExceptionState());
   EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kRejected);
 }
 #endif
