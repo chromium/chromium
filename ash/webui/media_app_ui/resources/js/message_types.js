@@ -25,6 +25,7 @@ export const Message = {
   OPEN_FILES_WITH_PICKER: 'open-files-with-picker',
   OPEN_IN_SANDBOXED_VIEWER: 'open-in-sandboxed-viewer',
   OVERWRITE_FILE: 'overwrite-file',
+  RELOAD_MAIN_FRAME: 'reload-main-frame',
   RENAME_FILE: 'rename-file',
   REQUEST_SAVE_FILE: 'request-save-file',
   SAVE_AS: 'save-as',

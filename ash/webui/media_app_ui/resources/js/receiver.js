@@ -364,6 +364,9 @@ const DELEGATE = {
     parentMessagePipe.sendMessage(
         Message.OPEN_IN_SANDBOXED_VIEWER, {title, blobUuid});
   },
+  reloadMainFrame() {
+    parentMessagePipe.sendMessage(Message.RELOAD_MAIN_FRAME);
+  },
   // TODO(b/219631600): Implement openUrlInBrowserTab() for LacrOS if needed.
 };
 

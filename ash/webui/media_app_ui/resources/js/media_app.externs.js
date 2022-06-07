@@ -64,10 +64,9 @@ mediaApp.AbstractFile.prototype.error;
  * @type {function(): !Promise<boolean>|undefined}
  */
 mediaApp.AbstractFile.prototype.isBrowserWritable;
-
 /**
- * A function that attempts to launch the original file in Photos in editing
- * mode. Returns a promise that resolves when the launch has initiated.
+ * A function that attempts to launch the file in Photos in editing mode.
+ * Returns a promise that resolves when the launch has initiated.
  * @type {function(): !Promise<undefined>|undefined}
  */
 mediaApp.AbstractFile.prototype.editInPhotos;
@@ -165,7 +164,7 @@ mediaApp.AbstractFileList.prototype.addObserver = function(observer) {};
 /**
  * Request for the user to be prompted with an open file dialog. Files chosen
  * will be added to the last received file list.
- * TODO(b/203466987): Remove the undefined here once we can ensure all file
+ * TODO(b/230670565): Remove the undefined here once we can ensure all file
  * lists implement a openFilesWithFilePicker function.
  * @type {function(!Array<string>, ?mediaApp.AbstractFile, ?boolean):
  *     !Promise<undefined>|undefined}
@@ -244,6 +243,11 @@ mediaApp.ClientApiDelegate.prototype.openInSandboxedViewer = function(
  * @type {function(string)|undefined}
  */
 mediaApp.ClientApiDelegate.prototype.openUrlInBrowserTab = function(url) {};
+/**
+ * Reloads the main frame, reloading launch files.
+ * @type {function()|undefined}
+ */
+mediaApp.ClientApiDelegate.prototype.reloadMainFrame = function() {};
 
 /**
  * The client Api for interacting with the media app instance.
