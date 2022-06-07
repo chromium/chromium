@@ -2348,4 +2348,20 @@ TEST_F(ShellSurfaceTest, SetSystemModal) {
   EXPECT_FALSE(shell_surface->frame_enabled());
 }
 
+TEST_F(ShellSurfaceTest, PipInitialPosition) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetMaximumSize(gfx::Size(10, 10))
+          .SetUseSystemModalContainer()
+          .SetNoCommit()
+          .BuildShellSurface();
+  shell_surface->SetWindowBounds(gfx::Rect(20, 20, 256, 256));
+  shell_surface->SetPip();
+  shell_surface->root_surface()->Commit();
+  // PIP positioner place the PIP window to the edge that is closer to the given
+  // position
+  EXPECT_EQ(gfx::Rect(8, 20, 256, 256),
+            shell_surface->GetWidget()->GetWindowBoundsInScreen());
+}
+
 }  // namespace exo

@@ -518,6 +518,7 @@ void ShellSurfaceBase::SetPip() {
     pending_pip_ = true;
     return;
   }
+  pending_pip_ = false;
 
   // Set all the necessary window properties and window state.
   auto* window = widget_->GetNativeWindow();
@@ -525,15 +526,15 @@ void ShellSurfaceBase::SetPip() {
   window->SetProperty(aura::client::kZOrderingKey,
                       ui::ZOrderLevel::kFloatingWindow);
 
-  // Pip windows should start in the bottom right corner of the screen so move
-  // |window| to the bottom right of the work area and let the pip positioner
-  // move it within the work area.
+  if (initial_bounds_)
+    return;
+  // If no initial bounds is specified, pip windows should start in the bottom
+  // right corner of the screen so move |window| to the bottom right of the
+  // work area and let the pip positioner move it within the work area.
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(window);
   gfx::Size window_size = window->bounds().size();
   window->SetBoundsInScreen(
       gfx::Rect(display.work_area().bottom_right(), window_size), display);
-
-  pending_pip_ = false;
 }
 
 void ShellSurfaceBase::UnsetPip() {
@@ -1368,10 +1369,8 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   if (frame_type_ != SurfaceFrameType::NONE)
     OnSetFrame(frame_type_);
 
-  if (pending_pip_) {
+  if (pending_pip_)
     SetPip();
-    pending_pip_ = false;
-  }
 
   root_surface()->OnDeskChanged(GetWindowDeskStateChanged(window));
 
