@@ -140,6 +140,10 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
     disabled_features_.push_back(features::kChromeWhatsNewUI);
 
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    enabled_features_.push_back(media::kPlatformHEVCDecoderSupport);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+
     audio_webm_codecs_.push_back("vorbis");
 
     video_webm_codecs_.push_back("vp8");
@@ -428,6 +432,32 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
                                   robustness, encryption_scheme);
   }
 
+  void CheckPlatformHevcSupport(const std::string& key_system) {
+    auto hevc_supported = IsSupportedByKeySystem(key_system, kVideoMP4MimeType,
+                                                 video_mp4_hevc_codecs());
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#if BUILDFLAG(IS_WIN)
+    // On Windows platforms, HEVC support is detected through the GPU
+    // capabilities which won't indicate support when running the tests.
+    // TODO(crbug/1327470): Fix this so that we can inject HEVC support on
+    // Windows.
+    EXPECT_UNSUPPORTED(hevc_supported);
+#elif BUILDFLAG(IS_MAC)
+    // On Mac platforms, HEVC support should be available if OS >= Big Sur 11.0
+    // and kPlatformHEVCDecoderSupport is enabled.
+    if (__builtin_available(macOS 11.0, *)) {
+      EXPECT_ECK_PROPRIETARY(hevc_supported);
+    } else {
+      EXPECT_UNSUPPORTED(hevc_supported);
+    }
+#else
+    EXPECT_ECK_PROPRIETARY(hevc_supported);
+#endif  // BUILDFLAG(IS_WIN)
+#else
+    EXPECT_UNSUPPORTED(hevc_supported);
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  }
+
  protected:
   // Features to enable or disable for the test. Must be updated in the test
   // constructor (before SetUpDefaultCommandLine()) to take effect.
@@ -468,9 +498,6 @@ class EncryptedMediaSupportedTypesExternalClearKeyTest
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   EncryptedMediaSupportedTypesExternalClearKeyTest() {
     enabled_features_.push_back(media::kExternalClearKeyForTesting);
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    enabled_features_.push_back(media::kPlatformHEVCDecoderSupport);
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -703,8 +730,9 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Video_MP4) {
   // Valid video types.
   EXPECT_PROPRIETARY(
       IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType, video_mp4_codecs()));
-  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
-                                            video_mp4_hevc_codecs()));
+
+  CheckPlatformHevcSupport(kClearKey);
+
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
                                         vp9_profile0_codecs()));
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
@@ -821,29 +849,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_codecs()));
 
-  auto hevc_supported = IsSupportedByKeySystem(
-      kExternalClearKey, kVideoMP4MimeType, video_mp4_hevc_codecs());
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-#if BUILDFLAG(IS_WIN)
-  // On Windows platforms, HEVC support is detected through the GPU capabilities
-  // which won't indicate support when running the tests.
-  // TODO(crbug/1327470): Fix this so that we can inject HEVC support on
-  // Windows.
-  EXPECT_UNSUPPORTED(hevc_supported);
-#elif BUILDFLAG(IS_MAC)
-  // On Mac platforms, HEVC support should be available if OS >= Big Sur 11.0
-  // and kPlatformHEVCDecoderSupport is enabled.
-  if (__builtin_available(macOS 11.0, *)) {
-    EXPECT_ECK_PROPRIETARY(hevc_supported);
-  } else {
-    EXPECT_UNSUPPORTED(hevc_supported);
-  }
-#else
-  EXPECT_ECK_PROPRIETARY(hevc_supported);
-#endif  // BUILDFLAG(IS_WIN)
-#else
-  EXPECT_UNSUPPORTED(hevc_supported);
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  CheckPlatformHevcSupport(kExternalClearKey);
 
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kAudioMP4MimeType, audio_mp4_codecs()));
@@ -955,29 +961,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_codecs()));
 
-  auto hevc_supported = IsSupportedByKeySystem(
-      kExternalClearKey, kVideoMP4MimeType, video_mp4_hevc_codecs());
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-#if BUILDFLAG(IS_WIN)
-  // On Windows platforms, HEVC support is detected through the GPU capabilities
-  // which won't indicate support when running the tests.
-  // TODO(crbug/1327470): Fix this so that we can inject HEVC support on
-  // Windows.
-  EXPECT_UNSUPPORTED(hevc_supported);
-#elif BUILDFLAG(IS_MAC)
-  // On Mac platforms, HEVC support should be available if OS >= Big Sur 11.0
-  // and kPlatformHEVCDecoderSupport is enabled.
-  if (__builtin_available(macOS 11.0, *)) {
-    EXPECT_ECK_PROPRIETARY(hevc_supported);
-  } else {
-    EXPECT_UNSUPPORTED(hevc_supported);
-  }
-#else
-  EXPECT_ECK_PROPRIETARY(hevc_supported);
-#endif  // BUILDFLAG(IS_WIN)
-#else
-  EXPECT_UNSUPPORTED(hevc_supported);
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  CheckPlatformHevcSupport(kExternalClearKey);
 
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kVideoMP4MimeType,
                                     vp9_profile0_codecs()));
