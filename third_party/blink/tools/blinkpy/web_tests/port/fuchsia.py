@@ -351,7 +351,7 @@ class ChromiumFuchsiaDriver(driver.Driver):
             cmd.extend([
                 '--ozone-platform=scenic', '--use-vulkan',
                 '--enable-gpu-rasterization', '--force-device-scale-factor=1',
-                '--use-gl=stub', '--enable-features=UseSkiaRenderer,Vulkan',
+                '--use-gl=stub', '--enable-features=Vulkan',
                 '--gpu-watchdog-timeout-seconds=60'
             ])
         return cmd

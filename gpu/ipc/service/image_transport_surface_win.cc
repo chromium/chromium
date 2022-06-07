@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/win/windows_version.h"
-#include "components/viz/common/features.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/service/pass_through_image_transport_surface.h"
@@ -34,9 +33,8 @@ CreateDirectCompositionSurfaceSettings(
   settings.disable_vp_scaling = workarounds.disable_vp_scaling;
   settings.disable_vp_super_resolution =
       workarounds.disable_vp_super_resolution;
-  settings.use_angle_texture_offset = features::IsUsingSkiaRenderer();
+  settings.use_angle_texture_offset = true;
   settings.force_root_surface_full_damage =
-      features::IsUsingSkiaRenderer() &&
       gl::ShouldForceDirectCompositionRootSurfaceFullDamage();
   settings.force_root_surface_full_damage_always =
       workarounds.force_direct_composition_full_damage_always;

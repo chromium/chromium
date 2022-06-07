@@ -284,7 +284,6 @@ export class InfoViewElement extends CustomElement {
       'surface_control': 'Surface Control',
       'vpx_decode': 'VPx Video Decode',
       'webgl2': 'WebGL2',
-      'skia_renderer': 'Skia Renderer',
       'canvas_oop_rasterization': 'Canvas out-of-process rasterization',
       'raw_draw': 'Raw Draw',
       'video_encode': 'Video Encode',

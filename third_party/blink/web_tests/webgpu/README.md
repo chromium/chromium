@@ -111,7 +111,7 @@ check there to see if this documentation is outdated):
 ```
 
 - On Linux, add:
-    `--no-xvfb --additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan`.
+    `--no-xvfb --additional-driver-flag=--enable-features=Vulkan`.
 - For backend validation, `--flag-specific` may be changed from `webgpu` to
     `webgpu-with-backend-validation` or `webgpu-with-partial-backend-validation`.
 

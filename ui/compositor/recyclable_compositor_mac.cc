@@ -158,8 +158,9 @@ void RecyclableCompositorMacFactory::RecycleCompositor(
 
 RecyclableCompositorMacFactory::RecyclableCompositorMacFactory()
     : weak_factory_(this) {
-  if (features::IsUsingSkiaRenderer())
-    recycling_disabled_ = true;
+  // TODO(crbug.com/1247756): This class probably isn't needed anymore since
+  // recycling is always disabled.
+  recycling_disabled_ = true;
 }
 
 RecyclableCompositorMacFactory::~RecyclableCompositorMacFactory() = default;

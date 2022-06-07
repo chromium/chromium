@@ -167,8 +167,7 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
     GpuServiceImpl* gpu_service) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!frame_sink_manager_);
-  if (features::IsUsingSkiaRenderer())
-    gpu::SchedulerSequence::DefaultDisallowScheduleTaskOnCurrentThread();
+  gpu::SchedulerSequence::DefaultDisallowScheduleTaskOnCurrentThread();
 
   server_shared_bitmap_manager_ = std::make_unique<ServerSharedBitmapManager>();
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(

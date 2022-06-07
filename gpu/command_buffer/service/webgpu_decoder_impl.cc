@@ -1067,7 +1067,7 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
 #if BUILDFLAG(IS_LINUX)
     callback(WGPURequestAdapterStatus_Unavailable, nullptr,
              "WebGPU on Linux requires command-line flag "
-             "--enable-features=Vulkan,UseSkiaRenderer",
+             "--enable-features=Vulkan",
              userdata);
     return;
 #endif  // BUILDFLAG(IS_LINUX)

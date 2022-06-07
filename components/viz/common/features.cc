@@ -209,11 +209,6 @@ bool IsSimpleFrameRateThrottlingEnabled() {
   return base::FeatureList::IsEnabled(kSimpleFrameRateThrottling);
 }
 
-bool IsUsingSkiaRenderer() {
-  // TODO(crbug.com/1247756): Remove this when all callers are gone.
-  return true;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 bool IsDynamicColorGamutEnabled() {
   if (viz::AlwaysUseWideColorGamut())

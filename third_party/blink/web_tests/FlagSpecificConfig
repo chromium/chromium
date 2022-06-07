@@ -43,7 +43,7 @@
     "name": "skia-vulkan-swiftshader",
     "args": [
           "--enable-gpu-rasterization",
-          "--enable-features=UseSkiaRenderer,Vulkan",
+          "--enable-features=Vulkan",
           "--use-vulkan=swiftshader",
           "--disable-vulkan-fallback-to-gl-for-testing"
     ]

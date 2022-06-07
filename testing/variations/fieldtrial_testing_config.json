@@ -8272,21 +8272,6 @@
             ]
         }
     ],
-    "UseSkiaRenderer": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "UseSkiaRenderer",
-                    "enable_features": [
-                        "UseSkiaRenderer"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseSnappyForParkableStrings": [
         {
             "platforms": [

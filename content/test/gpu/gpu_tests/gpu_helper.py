@@ -149,7 +149,6 @@ def GetSkiaRenderer(gpu_feature_status: typing.Dict[str, str],
   retval = 'skia-renderer-disabled'
   skia_renderer_enabled = (
       gpu_feature_status
-      and gpu_feature_status.get('skia_renderer') == 'enabled_on'
       and gpu_feature_status.get('gpu_compositing') == 'enabled')
   if skia_renderer_enabled:
     if HasDawnSkiaRenderer(extra_browser_args):

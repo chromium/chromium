@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/token.h"
 #include "build/build_config.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -110,11 +109,6 @@ bool FrameSinkVideoCaptureDevice::CanSupportNV12Format() const {
   // not support returning results in textures, and FrameSinkVideoCapturerImpl
   // does not support NV12 otherwise):
   if (gpu_data_manager->IsGpuCompositingDisabled()) {
-    return false;
-  }
-
-  // We only support NV12 if SkiaRenderer is in use:
-  if (!features::IsUsingSkiaRenderer()) {
     return false;
   }
 
