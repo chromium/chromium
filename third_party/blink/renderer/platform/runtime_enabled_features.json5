@@ -1213,7 +1213,6 @@
     },
     {
       name: "HighlightOverlayPainting",
-      status: "stable",
     },
     {
       name: "HrefTranslate",
