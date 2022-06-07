@@ -139,7 +139,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
               auto_blocker
                   ->GetEmbargoResult(GURL(kOriginToEmbargo),
                                      kContentTypeNotifications)
-                  .content_setting);
+                  ->content_setting);
   }
 
   // Check there is 1 embargoed origin for a non-incognito profile.
@@ -199,7 +199,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
               incognito_auto_blocker
                   ->GetEmbargoResult(GURL(kOriginToEmbargoIncognito),
                                      kContentTypeNotifications)
-                  .content_setting);
+                  ->content_setting);
   }
 
   // Check there are 2 blocked or embargoed origins for an incognito profile.
@@ -256,7 +256,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             auto_blocker
                 ->GetEmbargoResult(origin_to_embargo, kContentTypeNotifications)
-                .content_setting);
+                ->content_setting);
 
   // Check there are 2 blocked origins.
   {

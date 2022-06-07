@@ -1065,9 +1065,11 @@ void PageInfo::PresentSitePermissions() {
             delegate_->GetPermissionStatus(permission_info.type, site_url_);
       } else if (permission_info.type ==
                  ContentSettingsType::FEDERATED_IDENTITY_API) {
-        permission_result =
+        absl::optional<permissions::PermissionResult> embargo_result =
             delegate_->GetPermissionDecisionAutoblocker()->GetEmbargoResult(
                 site_url_, permission_info.type);
+        if (embargo_result)
+          permission_result = *embargo_result;
       }
 
       // If under embargo, update |permission_info| to reflect that.

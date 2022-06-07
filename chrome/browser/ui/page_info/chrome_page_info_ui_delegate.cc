@@ -202,8 +202,8 @@ permissions::PermissionResult ChromePageInfoUiDelegate::GetPermissionStatus(
       ->GetPermissionStatusForDisplayOnSettingsUI(type, site_url_);
 }
 
-permissions::PermissionResult ChromePageInfoUiDelegate::GetEmbargoResult(
-    ContentSettingsType type) {
+absl::optional<permissions::PermissionResult>
+ChromePageInfoUiDelegate::GetEmbargoResult(ContentSettingsType type) {
   return permissions::PermissionsClient::Get()
       ->GetPermissionDecisionAutoBlocker(GetProfile())
       ->GetEmbargoResult(site_url_, type);

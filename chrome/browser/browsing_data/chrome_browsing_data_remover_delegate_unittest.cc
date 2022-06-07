@@ -731,11 +731,8 @@ class RemovePermissionPromptCountsTest {
     return autoblocker_->RecordDismissAndEmbargo(url, permission, false);
   }
 
-  void CheckEmbargo(const GURL& url,
-                    ContentSettingsType permission,
-                    ContentSetting expected_setting) {
-    EXPECT_EQ(expected_setting,
-              autoblocker_->GetEmbargoResult(url, permission).content_setting);
+  bool IsEmbargoed(const GURL& url, ContentSettingsType permission) {
+    return autoblocker_->IsEmbargoed(url, permission);
   }
 
  private:
@@ -2850,16 +2847,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateBlockPromptsTest,
         kOrigin1, ContentSettingsType::MIDI_SYSEX));
     EXPECT_FALSE(tester.RecordIgnoreAndEmbargo(
         kOrigin2, ContentSettingsType::DURABLE_STORAGE));
-    tester.CheckEmbargo(kOrigin2, ContentSettingsType::NOTIFICATIONS,
-                        CONTENT_SETTING_ASK);
+    EXPECT_FALSE(
+        tester.IsEmbargoed(kOrigin2, ContentSettingsType::NOTIFICATIONS));
     EXPECT_FALSE(tester.RecordDismissAndEmbargo(
         kOrigin2, ContentSettingsType::NOTIFICATIONS));
     EXPECT_FALSE(tester.RecordDismissAndEmbargo(
         kOrigin2, ContentSettingsType::NOTIFICATIONS));
     EXPECT_TRUE(tester.RecordDismissAndEmbargo(
         kOrigin2, ContentSettingsType::NOTIFICATIONS));
-    tester.CheckEmbargo(kOrigin2, ContentSettingsType::NOTIFICATIONS,
-                        CONTENT_SETTING_BLOCK);
+    EXPECT_TRUE(
+        tester.IsEmbargoed(kOrigin2, ContentSettingsType::NOTIFICATIONS));
 
     BlockUntilOriginDataRemoved(AnHourAgo(), base::Time::Max(),
                                 constants::DATA_TYPE_SITE_USAGE_DATA,
@@ -2876,8 +2873,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateBlockPromptsTest,
                                        ContentSettingsType::DURABLE_STORAGE));
     EXPECT_EQ(3, tester.GetDismissCount(kOrigin2,
                                         ContentSettingsType::NOTIFICATIONS));
-    tester.CheckEmbargo(kOrigin2, ContentSettingsType::NOTIFICATIONS,
-                        CONTENT_SETTING_BLOCK);
+    EXPECT_TRUE(
+        tester.IsEmbargoed(kOrigin2, ContentSettingsType::NOTIFICATIONS));
 
     BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
                                   constants::DATA_TYPE_HISTORY, false);
@@ -2893,8 +2890,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateBlockPromptsTest,
                                        ContentSettingsType::DURABLE_STORAGE));
     EXPECT_EQ(0, tester.GetDismissCount(kOrigin2,
                                         ContentSettingsType::NOTIFICATIONS));
-    tester.CheckEmbargo(kOrigin2, ContentSettingsType::NOTIFICATIONS,
-                        CONTENT_SETTING_ASK);
+    EXPECT_FALSE(
+        tester.IsEmbargoed(kOrigin2, ContentSettingsType::NOTIFICATIONS));
   }
   {
     // Test REMOVE_SITE_DATA.
@@ -2906,8 +2903,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateBlockPromptsTest,
         kOrigin1, ContentSettingsType::NOTIFICATIONS));
     EXPECT_FALSE(tester.RecordDismissAndEmbargo(
         kOrigin1, ContentSettingsType::MIDI_SYSEX));
-    tester.CheckEmbargo(kOrigin1, ContentSettingsType::MIDI_SYSEX,
-                        CONTENT_SETTING_ASK);
+    EXPECT_FALSE(tester.IsEmbargoed(kOrigin1, ContentSettingsType::MIDI_SYSEX));
     EXPECT_FALSE(tester.RecordIgnoreAndEmbargo(
         kOrigin2, ContentSettingsType::DURABLE_STORAGE));
     EXPECT_FALSE(tester.RecordDismissAndEmbargo(
@@ -2935,8 +2931,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateBlockPromptsTest,
         kOrigin1, ContentSettingsType::MIDI_SYSEX));
     EXPECT_EQ(
         3, tester.GetDismissCount(kOrigin1, ContentSettingsType::MIDI_SYSEX));
-    tester.CheckEmbargo(kOrigin1, ContentSettingsType::MIDI_SYSEX,
-                        CONTENT_SETTING_BLOCK);
+    EXPECT_TRUE(tester.IsEmbargoed(kOrigin1, ContentSettingsType::MIDI_SYSEX));
 
     BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
                                   constants::DATA_TYPE_SITE_USAGE_DATA, false);
@@ -2952,8 +2947,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateBlockPromptsTest,
                                        ContentSettingsType::DURABLE_STORAGE));
     EXPECT_EQ(0, tester.GetDismissCount(kOrigin2,
                                         ContentSettingsType::NOTIFICATIONS));
-    tester.CheckEmbargo(kOrigin1, ContentSettingsType::MIDI_SYSEX,
-                        CONTENT_SETTING_ASK);
+    EXPECT_FALSE(tester.IsEmbargoed(kOrigin1, ContentSettingsType::MIDI_SYSEX));
   }
 }
 
