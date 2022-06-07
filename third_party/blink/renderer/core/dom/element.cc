@@ -2396,8 +2396,26 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
 }
 
 void Element::UpdatePopupAttribute(String value) {
-  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
+  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled()) {
+    // If the feature flag isn't enabled, give a console warning about this
+    // usage of the 'popup' attribute, which is likely to cause breakage when
+    // the feature ships.
+    auto& document = GetDocument();
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "Found a 'popup' attribute. If you are testing the popup API, you must "
+        "enable Experimental Web Platform Features. If not, note that custom "
+        "attributes must start with 'data-': "
+        "https://html.spec.whatwg.org/multipage/"
+        "dom.html#custom-data-attribute. This usage will *likely cause site "
+        "breakage* when the popup API ships: "
+        "https://chromestatus.com/feature/5463833265045504.");
+    console_message->SetNodes(document.GetFrame(),
+                              {DOMNodeIds::IdForNode(this)});
+    document.AddConsoleMessage(console_message);
     return;
+  }
   PopupValueType type = PopupValueType::kNone;
   if (EqualIgnoringASCIICase(value, kPopupTypeValueAuto) ||
       (!value.IsNull() && value.IsEmpty())) {
