@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 22
+// Next MinVersion: 23
 
 module arc.mojom;
 
@@ -139,13 +139,18 @@ struct OpenUrlsRequest {
 
 // Supported action types for SelectFilesRequest.
 // Corresponds to Android intent actions described in
-// http://developer.android.com/reference/android/content/Intent.html
+// http://developer.android.com/reference/android/content/Intent.html except
+// for OPEN_MEDIA_STORE_FILES, which is a dedicated intent action of
+// ArcDocumentsUI.
 [Extensible]
 enum SelectFilesActionType {
   GET_CONTENT,        // Intent.ACTION_GET_CONTENT
   OPEN_DOCUMENT,      // Intent.ACTION_OPEN_DOCUMENT
   OPEN_DOCUMENT_TREE, // Intent.ACTION_OPEN_DOCUMENT_TREE
   CREATE_DOCUMENT,    // Intent.ACTION_CREATE_DOCUMENT
+  // ArcDocumentsUI's intent action to open files indexed in Android's
+  // MediaStore with a customized file selector.
+  [MinVersion=22] OPEN_MEDIA_STORE_FILES,
 };
 
 // Request for having the user select files using ChromeOS file selector,
