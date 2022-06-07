@@ -274,7 +274,8 @@ void FederatedAuthRequestImpl::RequestIdToken(
   nonce_ = nonce;
   prefer_auto_sign_in_ = prefer_auto_sign_in && IsFedCmAutoSigninEnabled();
   start_time_ = base::TimeTicks::Now();
-  delay_timer_.Reset();
+  if (!ShouldCompleteRequestImmediatelyOnError())
+    delay_timer_.Reset();
 
   if (!GetApiPermissionContext()) {
     CompleteRequest(FederatedAuthRequestResult::kError, "",
@@ -362,7 +363,8 @@ void FederatedAuthRequestImpl::Revoke(
   provider_ = provider;
   client_id_ = client_id;
   hint_ = hint;
-  delay_timer_.Reset();
+  if (!ShouldCompleteRequestImmediatelyOnError())
+    delay_timer_.Reset();
   revoke_callback_ = std::move(callback);
 
   if (!GetApiPermissionContext()) {
@@ -892,7 +894,7 @@ void FederatedAuthRequestImpl::CompleteRevokeRequest(
   manifest_list_checked_ = false;
   idp_metadata_.reset();
 
-  if (should_call_callback)
+  if (should_call_callback || ShouldCompleteRequestImmediatelyOnError())
     std::move(revoke_callback_).Run(status);
 }
 
@@ -1217,7 +1219,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
   CleanUp();
 
-  if (should_call_callback) {
+  if (should_call_callback || ShouldCompleteRequestImmediatelyOnError()) {
     errors_logged_to_console_ = false;
 
     RequestIdTokenStatus status =
@@ -1259,6 +1261,11 @@ void FederatedAuthRequestImpl::AddConsoleErrorMessage(
   std::string message = GetConsoleErrorMessage(result);
   render_frame_host_->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError, message);
+}
+
+bool FederatedAuthRequestImpl::ShouldCompleteRequestImmediatelyOnError() {
+  return GetApiPermissionContext() &&
+         GetApiPermissionContext()->ShouldCompleteRequestImmediatelyOnError();
 }
 
 void FederatedAuthRequestImpl::CompleteLogoutRequest(

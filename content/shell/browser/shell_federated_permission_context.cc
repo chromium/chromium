@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "content/public/common/content_features.h"
+#include "content/shell/common/shell_switches.h"
 
 namespace content {
 
@@ -90,6 +91,11 @@ void ShellFederatedPermissionContext::RevokeActiveSession(
   active_sessions_.erase(std::tuple(relying_party.Serialize(),
                                     identity_provider.Serialize(),
                                     account_identifier));
+}
+
+bool ShellFederatedPermissionContext::ShouldCompleteRequestImmediatelyOnError()
+    const {
+  return switches::IsRunWebTestsSwitchPresent();
 }
 
 }  // namespace content

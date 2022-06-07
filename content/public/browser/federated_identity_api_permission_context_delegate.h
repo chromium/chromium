@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_API_PERMISSION_CONTEXT_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_API_PERMISSION_CONTEXT_DELEGATE_H_
 
+#include "content/common/content_export.h"
+
 namespace url {
 class Origin;
 }
@@ -13,7 +15,7 @@ namespace content {
 
 // Delegate interface for the FedCM implementation to query whether the FedCM
 // API is enabled in Site Settings.
-class FederatedIdentityApiPermissionContextDelegate {
+class CONTENT_EXPORT FederatedIdentityApiPermissionContextDelegate {
  public:
   enum class PermissionStatus {
     GRANTED,
@@ -38,6 +40,11 @@ class FederatedIdentityApiPermissionContextDelegate {
   // permission for the passed-in |rp_origin|. Clears the dismiss and ignore
   // counts.
   virtual void RemoveEmbargoAndResetCounts(const url::Origin& rp_origin) = 0;
+
+  // This function is so we can avoid the delay in tests. It does not really
+  // belong on this delegate but we don't have a better one and it seems
+  // wasteful to add one just for this one testing function.
+  virtual bool ShouldCompleteRequestImmediatelyOnError() const;
 };
 
 }  // namespace content
