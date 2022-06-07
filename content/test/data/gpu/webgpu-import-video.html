@@ -62,7 +62,7 @@ struct VertexOutput {
   @location(0) fragUV : vec2<f32>;
 };
 
-@stage(vertex)
+@vertex
 fn main(@builtin(vertex_index) idx : u32) -> VertexOutput {
   var pos = array<vec3<f32>, 6>(
     vec3<f32>( 1.0,  1.0, 0.0),
@@ -97,7 +97,7 @@ fn main(@builtin(vertex_index) idx : u32) -> VertexOutput {
 @binding(1) @group(0) var myTexture: texture_external;
 @binding(2) @group(0) var myTexture2: texture_external;
 
-@stage(fragment)
+@fragment
 fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
   var result : vec4<f32>;
   if (fragUV.y <= 1.0) {
