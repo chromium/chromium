@@ -49,6 +49,9 @@ std::string MediaLog::GetErrorMessageLocked() {
   return "";
 }
 
+// Default implementation.
+void MediaLog::Stop() {}
+
 void MediaLog::AddMessage(MediaLogMessageLevel level, std::string message) {
   std::unique_ptr<MediaLogRecord> record(
       CreateRecord(MediaLogRecord::Type::kMessage));

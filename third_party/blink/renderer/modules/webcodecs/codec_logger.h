@@ -81,7 +81,10 @@ class MODULES_EXPORT CodecLogger final {
     // media logs must be posted for destruction, since they can cause the
     // garbage collector to trigger an immediate cleanup and delete the owning
     // instance of |CodecLogger|.
-    task_runner_->DeleteSoon(FROM_HERE, std::move(parent_media_log_));
+    if (parent_media_log_) {
+      parent_media_log_->Stop();
+      task_runner_->DeleteSoon(FROM_HERE, std::move(parent_media_log_));
+    }
   }
 
   void SendPlayerNameInformation(const ExecutionContext& context,

@@ -131,6 +131,10 @@ class MEDIA_EXPORT MediaLog {
   // even if this occurs, in the "won't crash" sense.
   virtual std::unique_ptr<MediaLog> Clone();
 
+  // Can be used for stopping a MediaLog during a garbage-collected destruction
+  // sequence.
+  virtual void Stop();
+
  protected:
   // Ensures only subclasses and factories (e.g. Clone()) can create MediaLog.
   MediaLog();
