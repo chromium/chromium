@@ -13,6 +13,7 @@ include_rules = [
   "+components/page_load_metrics/browser",
   "+components/qr_code_generator",
   "+components/safety_check",
+  "+components/segmentation_platform/content",
   "+components/soda",
   "+components/translate/content/android",
   "+components/user_education/common",

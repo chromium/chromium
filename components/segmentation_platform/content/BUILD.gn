@@ -11,6 +11,8 @@ source_set("content") {
   sources = [
     "page_load_trigger_context.cc",
     "page_load_trigger_context.h",
+    "segmentation_platform_tab_helper.cc",
+    "segmentation_platform_tab_helper.h",
   ]
 
   deps = [

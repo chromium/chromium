@@ -92,9 +92,12 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
 
   auto* service = new SegmentationPlatformServiceImpl(std::move(params));
 
-  service->SetUserData(kSegmentationPlatformProfileObserverKey,
-                       std::make_unique<SegmentationPlatformProfileObserver>(
-                           service, g_browser_process->profile_manager()));
+  // Profile manager can be null in unit tests.
+  if (g_browser_process->profile_manager()) {
+    service->SetUserData(kSegmentationPlatformProfileObserverKey,
+                         std::make_unique<SegmentationPlatformProfileObserver>(
+                             service, g_browser_process->profile_manager()));
+  }
 
   return service;
 }
