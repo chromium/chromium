@@ -18,6 +18,7 @@ import "ui/gfx/mojom/hdr_metadata.mojom";
 enum SynchronizationType {
   kSyncToken,
   kGpuCommandsCompleted,
+  kReleaseFence,
 };
 
 // See components/viz/common/resources/transferable_resource.h.

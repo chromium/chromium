@@ -264,6 +264,11 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       OverlayProcessorInterface::PlatformOverlayCandidate* overlay);
 #endif
 
+  // Sets up callbacks for frame resource fences and passes them to
+  // SkiaOutputSurface by calling EndPaint on that. If |failed|,
+  // SkiaOutputSurface::EndPaint will be called with null callbacks.
+  void EndPaint(bool failed);
+
   DisplayResourceProviderSkia* resource_provider() {
     return static_cast<DisplayResourceProviderSkia*>(resource_provider_);
   }
@@ -288,8 +293,12 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   raw_ptr<SkCanvas> root_canvas_ = nullptr;
   raw_ptr<SkCanvas> current_canvas_ = nullptr;
   raw_ptr<SkSurface> current_surface_ = nullptr;
-  class FrameResourceFence;
-  scoped_refptr<FrameResourceFence> current_frame_resource_fence_;
+
+  class FrameResourceGpuCommandsCompletedFence;
+  scoped_refptr<FrameResourceGpuCommandsCompletedFence>
+      current_gpu_commands_completed_fence_;
+  class FrameResourceReleaseFence;
+  scoped_refptr<FrameResourceReleaseFence> current_release_fence_;
 
   bool disable_picture_quad_image_filtering_ = false;
   bool is_scissor_enabled_ = false;
