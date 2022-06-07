@@ -24,6 +24,8 @@ group("all_tests") {
 }
 
 config("config") {
+  # TODO(crbug.com/1055812): This will only guarantee ios/web_view source files
+  # are extension safe. We also need to pass this flag to all all dependencies.
   common_flags = [ "-fapplication-extension" ]
   cflags_objc = common_flags
   cflags_objcc = common_flags
