@@ -42,6 +42,7 @@ class ScreenForShutdown : public display::Screen {
       : display_list_(screen_ash->GetAllDisplays()),
         primary_display_(screen_ash->GetPrimaryDisplay()) {
     SetDisplayForNewWindows(primary_display_.id());
+    set_shutdown(true);
   }
 
   ScreenForShutdown(const ScreenForShutdown&) = delete;

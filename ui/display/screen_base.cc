@@ -75,6 +75,10 @@ void ScreenBase::RemoveObserver(DisplayObserver* observer) {
   display_list_.RemoveObserver(observer);
 }
 
+bool ScreenBase::HasDisplayObservers() const {
+  return !display_list_.observers()->empty();
+}
+
 void ScreenBase::SetPanelRotationForTesting(int64_t display_id,
                                             Display::Rotation rotation) {
   Display display = *display_list_.FindDisplayById(display_id);

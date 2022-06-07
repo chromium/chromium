@@ -97,6 +97,11 @@ OzonePlatform* OzonePlatform::GetInstance() {
 }
 
 // static
+bool OzonePlatform::IsInitialized() {
+  return !!g_instance;
+}
+
+// static
 std::string OzonePlatform::GetPlatformNameForTest() {
   return GetOzonePlatformName();
 }

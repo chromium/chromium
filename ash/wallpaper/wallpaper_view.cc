@@ -54,8 +54,6 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
     window->parent()->StackChildAtBottom(window);
     display::Display display =
         display::Screen::GetScreen()->GetDisplayNearestWindow(window);
-    display::ManagedDisplayInfo info =
-        Shell::Get()->display_manager()->GetDisplayInfo(display.id());
 
     for (auto* child : children()) {
       child->SetBounds(0, 0, display.size().width(), display.size().height());

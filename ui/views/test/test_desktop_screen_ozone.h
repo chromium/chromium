@@ -5,12 +5,13 @@
 #ifndef UI_VIEWS_TEST_TEST_DESKTOP_SCREEN_OZONE_H_
 #define UI_VIEWS_TEST_TEST_DESKTOP_SCREEN_OZONE_H_
 
+#include <memory>
+
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/desktop_aura/desktop_screen_ozone.h"
 
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
+namespace display {
+class Screen;
 }
 
 namespace views {
@@ -26,6 +27,7 @@ class TestDesktopScreenOzone : public views::DesktopScreenOzone {
   TestDesktopScreenOzone(const TestDesktopScreenOzone&) = delete;
   TestDesktopScreenOzone& operator=(const TestDesktopScreenOzone&) = delete;
 
+  static std::unique_ptr<display::Screen> Create();
   static TestDesktopScreenOzone* GetInstance();
 
   // DesktopScreenOzone:
@@ -35,12 +37,10 @@ class TestDesktopScreenOzone : public views::DesktopScreenOzone {
     cursor_screen_point_ = point;
   }
 
- private:
-  friend struct base::DefaultSingletonTraits<TestDesktopScreenOzone>;
-
   TestDesktopScreenOzone();
   ~TestDesktopScreenOzone() override;
 
+ private:
   gfx::Point cursor_screen_point_;
 };
 

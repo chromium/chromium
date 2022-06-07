@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/test/scoped_fake_full_keyboard_access.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_context_factories.h"
+#include "ui/display/screen.h"
 #include "ui/views/test/views_test_helper.h"
 
 namespace ui {
@@ -58,6 +60,8 @@ class ViewsTestHelperMac : public ViewsTestHelper {
   // more consistent with other platforms, where most views are focusable by
   // default.
   ui::test::ScopedFakeFullKeyboardAccess faked_full_keyboard_access_;
+
+  display::ScopedNativeScreen screen_;
 };
 
 }  // namespace views

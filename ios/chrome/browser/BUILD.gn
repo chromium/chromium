@@ -265,6 +265,7 @@ source_set("browser_impl") {
     "//rlz/buildflags",
     "//services/network:network_service",
     "//ui/base",
+    "//ui/display",
   ]
 
   if (enable_rlz) {

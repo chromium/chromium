@@ -15,6 +15,7 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/screen_base.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/event.h"
 #include "ui/events/platform/x11/x11_event_source.h"
@@ -215,8 +216,8 @@ class X11WindowTest : public testing::Test {
     ui::TouchFactory::GetInstance()->SetPointerDeviceForTest(pointer_devices);
 
     // X11 requires display::Screen instance.
-    test_screen_ = new TestScreen();
-    display::Screen::SetScreenInstance(test_screen_);
+    test_screen_.emplace();
+    display::Screen::SetScreenInstance(&test_screen_.value());
 
     // Make X11 synchronous for our display connection. This does not force the
     // window manager to behave synchronously.
@@ -226,6 +227,8 @@ class X11WindowTest : public testing::Test {
  protected:
   void TearDown() override {
     x11::Connection::Get()->SynchronizeForTest(false);
+    display::Screen::SetScreenInstance(nullptr);
+    test_screen_.reset();
   }
 
   std::unique_ptr<X11Window> CreateX11Window(
@@ -252,7 +255,7 @@ class X11WindowTest : public testing::Test {
   std::unique_ptr<base::test::TaskEnvironment> task_env_;
   std::unique_ptr<X11EventSource> event_source_;
 
-  TestScreen* test_screen_ = nullptr;
+  absl::optional<TestScreen> test_screen_;
 };
 
 // https://crbug.com/898742: Test is flaky.

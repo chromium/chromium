@@ -16,6 +16,10 @@
 #import "ios/testing/earl_grey/coverage_utils.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
+#if DCHECK_IS_ON()
+#include "ui/display/screen_base.h"
+#endif
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -79,6 +83,14 @@ bool g_needs_set_up_for_test_case = true;
 }
 
 + (void)tearDown {
+#if DCHECK_IS_ON()
+  // The same screen object is shared across multiple test runs on IOS build.
+  // Make sure that all display observers are removed at the end of each
+  // test.
+  display::ScreenBase* screen =
+      static_cast<display::ScreenBase*>(display::Screen::GetScreen());
+  DCHECK(!screen->HasDisplayObservers());
+#endif
   if ([[AppLaunchManager sharedManager] appIsLaunched]) {
     [CoverageUtils writeClangCoverageProfile];
     [CoverageUtils resetCoverageProfileCounters];

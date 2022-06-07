@@ -12,8 +12,12 @@
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/widget/root_view.h"
 
-namespace views {
-namespace test {
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    !BUILDFLAG(IS_CHROMECAST)
+#include "ui/views/test/test_desktop_screen_ozone.h"
+#endif
+
+namespace views::test {
 
 namespace {
 
@@ -130,8 +134,20 @@ DesktopWidgetTestInteractive::~DesktopWidgetTestInteractive() = default;
 
 void DesktopWidgetTestInteractive::SetUp() {
   SetUpForInteractiveTests();
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    !BUILDFLAG(IS_CHROMECAST)
+  screen_ = views::test::TestDesktopScreenOzone::Create();
+#endif
   DesktopWidgetTest::SetUp();
 }
+
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    !BUILDFLAG(IS_CHROMECAST)
+void DesktopWidgetTestInteractive::TearDown() {
+  DesktopWidgetTest::TearDown();
+  screen_.reset();
+}
+#endif
 
 TestDesktopWidgetDelegate::TestDesktopWidgetDelegate()
     : TestDesktopWidgetDelegate(nullptr) {}
@@ -270,5 +286,4 @@ void WidgetVisibleWaiter::OnWidgetDestroying(Widget* widget) {
   widget_observation_.Reset();
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

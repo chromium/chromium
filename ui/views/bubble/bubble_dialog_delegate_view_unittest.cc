@@ -820,30 +820,33 @@ class BubbleDialogDelegateViewArrowTest
     : public BubbleDialogDelegateViewTest,
       public testing::WithParamInterface<ArrowTestParameters> {
  public:
-  BubbleDialogDelegateViewArrowTest() : screen_override_(SetUpTestScreen()) {}
+  BubbleDialogDelegateViewArrowTest() { SetUpTestScreen(); }
 
   BubbleDialogDelegateViewArrowTest(const BubbleDialogDelegateViewArrowTest&) =
       delete;
   BubbleDialogDelegateViewArrowTest& operator=(
       const BubbleDialogDelegateViewArrowTest&) = delete;
 
-  ~BubbleDialogDelegateViewArrowTest() override = default;
+  ~BubbleDialogDelegateViewArrowTest() override {
+    display::Screen::SetScreenInstance(nullptr);
+  }
 
  private:
-  display::Screen* SetUpTestScreen() {
-    const display::Display test_display = test_screen_.GetPrimaryDisplay();
+  void SetUpTestScreen() {
+    DCHECK(!display::test::TestScreen::Get());
+    test_screen_ = std::make_unique<display::test::TestScreen>();
+    display::Screen::SetScreenInstance(test_screen_.get());
+    const display::Display test_display = test_screen_->GetPrimaryDisplay();
     display::Display display(test_display);
     display.set_id(0x2);
     display.set_bounds(gfx::Rect(0, 0, kScreenWidth, kScreenHeight));
     display.set_work_area(gfx::Rect(0, 0, kScreenWidth, kScreenHeight));
-    test_screen_.display_list().RemoveDisplay(test_display.id());
-    test_screen_.display_list().AddDisplay(display,
-                                           display::DisplayList::Type::PRIMARY);
-    return &test_screen_;
+    test_screen_->display_list().RemoveDisplay(test_display.id());
+    test_screen_->display_list().AddDisplay(
+        display, display::DisplayList::Type::PRIMARY);
   }
 
-  display::test::TestScreen test_screen_;
-  display::test::ScopedScreenOverride screen_override_;
+  std::unique_ptr<display::test::TestScreen> test_screen_;
 };
 
 TEST_P(BubbleDialogDelegateViewArrowTest, AvailableScreenSpaceTest) {

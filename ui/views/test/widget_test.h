@@ -14,10 +14,16 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
+
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    !BUILDFLAG(IS_CHROMECAST)
+#include "ui/display/screen.h"
+#endif
 
 namespace ui {
 namespace internal {
@@ -156,6 +162,12 @@ class DesktopWidgetTestInteractive : public DesktopWidgetTest {
 
   // DesktopWidgetTest
   void SetUp() override;
+
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    !BUILDFLAG(IS_CHROMECAST)
+  void TearDown() override;
+  std::unique_ptr<display::Screen> screen_;
+#endif
 };
 
 // A helper WidgetDelegate for tests that require hooks into WidgetDelegate
