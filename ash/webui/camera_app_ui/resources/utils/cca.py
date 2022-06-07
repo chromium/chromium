@@ -187,7 +187,9 @@ def deploy(args):
         '--',
         'printf',
         '%s',
-        shlex.quote(f'export const VERSION = "cca.py deploy {current_time}";'),
+        shlex.quote(
+            f'export const DEPLOYED_VERSION = "cca.py deploy {current_time}";'
+        ),
         '>',
         f'{CCA_OVERRIDE_PATH}/js/deployed_version.js',
     ])

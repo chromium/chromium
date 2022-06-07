@@ -6,6 +6,7 @@ import {
   getDefaultWindowSize,
 } from './app_window.js';
 import {assert, assertInstanceof} from './assert.js';
+import {DEPLOYED_VERSION} from './deployed_version.js';
 import {CameraManager} from './device/index.js';
 import {ModeConstraints} from './device/type.js';
 import * as dom from './dom.js';
@@ -465,6 +466,15 @@ let instance: App|null = null;
         perfLogger.stop(event, extras);
       }
     });
+  }
+
+  if (DEPLOYED_VERSION !== undefined) {
+    // eslint-disable-next-line no-console
+    console.log(
+        `Local override enabled for CCA (${DEPLOYED_VERSION}). ` +
+        'To disable local override, ' +
+        'remove /etc/camera/cca/js/deployed_version.js on device.');
+    toast.showDebugMessage(`Local override enabled (${DEPLOYED_VERSION})`);
   }
 
   instance = new App({perfLogger, intent, facing, mode});

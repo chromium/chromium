@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from './assert.js';
+import {DEPLOYED_VERSION} from './deployed_version.js';
 import {toggleExpertMode} from './expert.js';
 import * as state from './state.js';
 import * as toast from './toast.js';
@@ -180,7 +181,10 @@ export function onKeyPressed(event: KeyboardEvent): void {
       event.preventDefault();
       break;
     case 'Ctrl-V':
-      toast.showDebugMessage('SWA');
+      toast.showDebugMessage(`SWA${
+          DEPLOYED_VERSION === undefined ?
+              '' :
+              `, Local overrde enabled (${DEPLOYED_VERSION})`}`);
       break;
     case 'Ctrl-Shift-E':
       toggleExpertMode();
