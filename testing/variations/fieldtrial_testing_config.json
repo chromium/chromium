@@ -2904,6 +2904,36 @@
             ]
         }
     ],
+    "CrosDeviceActiveCountingDailyCheckMembership": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeviceActiveClientDailyCheckMembership"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CrosDeviceActiveCountingMonthlyCheckIn": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeviceActiveClientMonthlyCheckIn"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrosLazyLoginWebUI": [
         {
             "platforms": [
