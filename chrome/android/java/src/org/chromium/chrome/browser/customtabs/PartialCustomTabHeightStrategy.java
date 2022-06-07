@@ -94,13 +94,21 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final @Px int mFullyExpandedAdjustmentHeight;
     private final Integer mNavigationBarColor;
     private final Integer mNavigationBarDividerColor;
-    private final ObservableSupplier<? extends FrameLayout> mParentViewSupplier;
     private final OnResizedCallback mOnResizedCallback;
     private final AnimatorListener mSpinnerFadeoutAnimatorListener;
     private final int mHandleHeight;
     private ValueAnimator mAnimator;
     private int mShadowOffset;
     private boolean mDrawOutlineShadow;
+
+    // ContentFrame + CoordinatorLayout - CompositorViewHolder
+    //              + NavigationBar
+    //              + Spinner
+    // Not just CompositorViewHolder but also CoordinatorLayout is resized because many UI
+    // components such as BottomSheet, InfoBar, Snackbar are child views of CoordinatorLayout,
+    // which makes them appear correctly at the bottom.
+    private ViewGroup mContentFrame;
+    private ViewGroup mCoordinatorLayout;
 
     private @HeightStatus int mStatus = HeightStatus.INITIAL_HEIGHT;
     private @HeightStatus int mTargetStatus;
@@ -257,20 +265,27 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             Integer navigationBarColor, Integer navigationBarDividerColor,
             OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
-        mParentViewSupplier = parentViewSupplier;
         mMaxHeight = getMaximumPossibleHeight();
         mInitialHeight = MathUtils.clamp(
                 initialHeight, mMaxHeight, (int) (mMaxHeight * MINIMAL_HEIGHT_RATIO));
 
         // Invoked twice - when populated/destroyed(null)
+        // TODO(jinsukkim): Obtain the CoordinatorLayout and ContentFrame directly,
+        //                  not through CompositorViewHolder which is not in use.
         parentViewSupplier.addObserver(parentView -> {
-            if (parentView == null) return;
+            if (parentView == null) {
+                mCoordinatorLayout = null;
+                mContentFrame = null;
+                return;
+            }
+
+            mCoordinatorLayout = (ViewGroup) parentView.getParent();
+            mContentFrame = (ViewGroup) mCoordinatorLayout.getParent();
 
             // Elevate the main web contents area as high as the handle bar to have the shadow
             // effect look right.
             int ev = mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
-            View coordinatorLayout = (View) parentView.getParent();
-            coordinatorLayout.setElevation(ev);
+            mCoordinatorLayout.setElevation(ev);
 
             // When the navigation bar on the right side (not at the bottom), no need to set
             // contents height since it is fixed to the max height.
@@ -501,11 +516,13 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             centerSpinnerVertically((ViewGroup.LayoutParams) mSpinnerView.getLayoutParams());
         } else {
             mSpinnerView = new ImageView(mActivity);
+            mSpinnerView.setElevation(
+                    mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation));
             mSpinnerView.setBackgroundColor(mActivity.getColor(R.color.window_background_color));
 
             // Toolbar should not be hidden by spinner screen.
             ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(MATCH_PARENT, 0);
-            lp.setMargins(0, mToolbarView.getHeight(), 0, 0);
+            lp.setMargins(0, mToolbarView.getHeight() + mHandleHeight + mShadowOffset, 0, 0);
 
             mSpinner = new CircularProgressDrawable(mActivity);
             mSpinner.setStyle(CircularProgressDrawable.LARGE);
@@ -517,10 +534,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             centerSpinnerVertically(lp);
         }
 
-        // Spinner view is added to the parent view of CompositorViewHolder
-        // (CoordinatoryLayoutForPointer) to hide the WebContents and navigation bar during scroll.
-        ViewGroup coordLayout = (ViewGroup) mParentViewSupplier.get().getParent();
-        if (mSpinnerView.getParent() == null) coordLayout.addView(mSpinnerView);
+        // Spinner view is added to ContentFrameLayout to hide both WebContents and navigation bar.
+        if (mSpinnerView.getParent() == null) mContentFrame.addView(mSpinnerView);
         mSpinnerView.clearAnimation();
         mSpinnerView.setAlpha(0.f);
         mSpinnerView.setVisibility(View.VISIBLE);
@@ -537,20 +552,19 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     private void setContentsHeight() {
         // Return early if the parent view is not available. CCT may be on its way to destruction.
-        FrameLayout parentView = mParentViewSupplier.get();
-        if (parentView == null) return;
+        if (mCoordinatorLayout == null) return;
 
-        ViewGroup.LayoutParams lp = parentView.getLayoutParams();
+        ViewGroup.LayoutParams lp = mCoordinatorLayout.getLayoutParams();
         int oldHeight = lp.height;
 
-        // We resize CompositorViewHolder to occupy the size we want for CCT. This excludes
+        // We resize CoordinatorLayout to occupy the size we want for CCT. This excludes
         // the bottom navigation bar height and the top margin of CVH set aside for
         // the handle bar portion of the CCT toolbar header.
         // TODO(jinsukkim):
         //   - Remove the shadow when in full-height so there won't be a gap beneath the status bar.
         int windowPos = mActivity.getWindow().getAttributes().y;
         lp.height = getDisplayHeight() - windowPos - mHandleHeight - mShadowOffset - mNavbarHeight;
-        parentView.setLayoutParams(lp);
+        mCoordinatorLayout.setLayoutParams(lp);
         if (oldHeight >= 0 && lp.height != oldHeight) mOnResizedCallback.onResized(lp.height);
     }
 
@@ -571,11 +585,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                 setNavbarOffset();
                 setNavigationBarAndDividerColor();
 
-                // Navigation bar is a sibling of CompositorViewHolder, positioned right underneath.
-                assert mParentViewSupplier.get() != null;
-                ViewGroup coordLayout = (ViewGroup) mParentViewSupplier.get().getParent();
-                coordLayout.addView(mNavbar);
-                coordLayout.setBackgroundColor(mActivity.getColor(R.color.window_background_color));
+                assert mContentFrame != null;
+                mContentFrame.addView(mNavbar);
             } else {
                 setNavbarOffset();
                 mNavbar.setAlpha(0f);
@@ -591,9 +602,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     // Position our own navbar where the system navigation bar which is obscured by WebContents
     // rendered over it due to Window#FLAGS_LAYOUT_NO_LIMITS would be shown.
     private void setNavbarOffset() {
-        FrameLayout parentView = mParentViewSupplier.get();
-        if (parentView == null) return;
-        mNavbar.setTranslationY(parentView.getLayoutParams().height);
+        if (mCoordinatorLayout == null) return;
+        int offset = mCoordinatorLayout.getLayoutParams().height + mHandleHeight + mShadowOffset;
+        mNavbar.setTranslationY(offset);
     }
 
     private void setNavigationBarAndDividerColor() {
@@ -708,12 +719,14 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     @VisibleForTesting
     void setMockViewForTesting(LinearLayout navbar, ImageView spinnerView,
-            CircularProgressDrawable spinner, View toolbar, View toolbarCoordinator) {
+            CircularProgressDrawable spinner, View toolbar, View toolbarCoordinator,
+            ViewGroup coordinatorLayout) {
         mNavbar = navbar;
         mSpinnerView = spinnerView;
         mSpinner = spinner;
         mToolbarView = toolbar;
         mToolbarCoordinator = toolbarCoordinator;
+        mCoordinatorLayout = coordinatorLayout;
     }
 
     @VisibleForTesting
