@@ -779,6 +779,10 @@ const base::Feature kUseRealColorSpaceForAndroidVideo{
 const base::Feature kUseChromeOSDirectVideoDecoder{
     "UseChromeOSDirectVideoDecoder", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Limit the number of concurrent hardware decoder instances on ChromeOS.
+const base::Feature kLimitConcurrentDecoderInstances{
+    "LimitConcurrentDecoderInstances", base::FEATURE_ENABLED_BY_DEFAULT};
+
 #if defined(ARCH_CPU_ARM_FAMILY)
 // Some architectures have separate image processor hardware that
 // can be used by Chromium's ImageProcessor to color convert/crop/etc.

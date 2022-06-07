@@ -110,7 +110,8 @@ std::unique_ptr<VideoDecoderMixin> VaapiVideoDecoder::Create(
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client) {
   const bool can_create_decoder =
-      num_instances_.Increment() < kMaxNumOfInstances;
+      num_instances_.Increment() < kMaxNumOfInstances ||
+      !base::FeatureList::IsEnabled(media::kLimitConcurrentDecoderInstances);
   if (!can_create_decoder) {
     num_instances_.Decrement();
     return nullptr;
