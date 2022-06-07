@@ -12,6 +12,7 @@ namespace embedder_support {
 
 extern const char kAlternateErrorPagesEnabled[];
 extern const char kForceMajorVersionToMinorPosition[];
+extern const char kReduceUserAgentMinorVersion[];
 
 }  // namespace embedder_support
 
