@@ -275,19 +275,6 @@ public class PageInfoAboutThisSiteTest {
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
             ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN,
-            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO})
-    public void
-    testAboutThisSiteMoreInfoShown() {
-        mockResponse(createDescription());
-        openPageInfo();
-        onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
-        onView(withText(R.string.page_info_more_about_this_page)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
-            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN,
             ChromeFeatureList.ABOUT_THIS_SITE_BANNER})
     @DisabledTest(message = "https://crbug.com/1311192")
     public void

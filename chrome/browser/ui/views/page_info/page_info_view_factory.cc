@@ -145,20 +145,10 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreatePermissionPageView(
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateAboutThisSitePageView(
     const page_info::proto::SiteInfo& info) {
-  std::u16string title =
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER);
-  std::u16string subtitle;
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteMoreInfo)) {
-    if (info.description().has_name())
-      title = base::UTF8ToUTF16(info.description().name());
-    std::u16string subtitle;
-    if (info.description().has_subtitle())
-      subtitle = base::UTF8ToUTF16(info.description().subtitle());
-  } else {
-    subtitle = presenter_->GetSimpleSiteName();
-  }
   return std::make_unique<PageInfoSubpageView>(
-      CreateSubpageHeader(title, subtitle),
+      CreateSubpageHeader(
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER),
+          presenter_->GetSimpleSiteName()),
       std::make_unique<PageInfoAboutThisSiteContentView>(presenter_,
                                                          ui_delegate_, info));
 }

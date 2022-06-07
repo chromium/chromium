@@ -82,10 +82,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         view.setSiteInfo(mSiteInfo,
                 ()
                         -> openUrl(mSiteInfo.getDescription().getSource().getUrl(),
-                                PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED),
-                ()
-                        -> openUrl(mSiteInfo.getMoreAbout().getUrl(),
-                                PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_MORE_ABOUT_CLICKED));
+                                PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED));
         return view;
     }
 
@@ -93,7 +90,8 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         mMainController.recordAction(action);
         if (mEphemeralTabCoordinatorSupplier != null
                 && mEphemeralTabCoordinatorSupplier.get() != null) {
-            String title = mRowView.getContext().getString(R.string.page_info_more_about_this_page);
+            String title =
+                    mRowView.getContext().getString(R.string.page_info_about_this_site_title);
             mEphemeralTabCoordinatorSupplier.get().requestOpenSheet(
                     new GURL(url), title, /*isIncognito=*/false);
             mMainController.dismiss();

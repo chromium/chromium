@@ -12,7 +12,6 @@
 
 class ChromePageInfoUiDelegate;
 class PageInfo;
-class PageInfoHoverButton;
 
 // The view that is used as a content view of the "About this site" subpage in
 // page info. It contains short description about the website with the source
@@ -29,12 +28,9 @@ class PageInfoAboutThisSiteContentView : public views::View, public PageInfoUI {
       const page_info::proto::SiteInfo& info);
   [[nodiscard]] std::unique_ptr<views::View> CreateSourceLabel(
       const page_info::proto::SiteInfo& info);
-  [[nodiscard]] std::unique_ptr<PageInfoHoverButton> CreateMoreAboutButton(
-      const page_info::proto::SiteInfo& info);
   void SourceLinkClicked(const ui::Event& event);
   void MoreAboutButtonClicked(const ui::Event& event);
 
-  raw_ptr<PageInfoHoverButton> more_about_button_;
   raw_ptr<PageInfo> presenter_;
   raw_ptr<ChromePageInfoUiDelegate> ui_delegate_;
   page_info::proto::SiteInfo info_;

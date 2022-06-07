@@ -2478,9 +2478,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_PAGE_INFO_CONNECTION_PAINT_PREVIEW" desc="Message to display in the page info bubble when viewing a preview of a page.">
         You are viewing a preview of this page
       </message>
-      <message name="IDS_PAGE_INFO_MORE_ABOUT_THIS_PAGE" desc="Link in page info to learn more about the current page. Opens a website with details on the source and more information about the topic of a site.">
-        More about this page
-      </message>
 
 <message name="IDS_PAGE_INFO_IPH" desc="Message to in InProductHelp bubble to make users aware of changing permissions in PageInfo.">
         Change your site settings here
