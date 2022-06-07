@@ -796,6 +796,37 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_AddsMissingPath) {
                                      std::move(authorities1),
                                      std::move(patterns), {kScheme}, {});
 
+  apps::IntentFilterPtr app_service_filter1 =
+      apps_util::CreateIntentFilterForArc(filter_with_path);
+
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities2;
+  authorities2.emplace_back(kHost, 0);
+  arc::IntentFilter filter_without_path(kPackageName, {arc::kIntentActionView},
+                                        std::move(authorities2), {}, {kScheme},
+                                        {});
+
+  apps::IntentFilterPtr app_service_filter2 =
+      apps_util::CreateIntentFilterForArc(filter_without_path);
+
+  ASSERT_EQ(*app_service_filter1, *app_service_filter2);
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilsTest, ConvertArcIntentFilter_AddsMissingPathMojom) {
+  const char* kPackageName = "com.foo.bar";
+  const char* kHost = "www.google.com";
+  const char* kPath = "/";
+  const char* kScheme = "https";
+
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities1;
+  authorities1.emplace_back(kHost, 0);
+  std::vector<arc::IntentFilter::PatternMatcher> patterns;
+  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+
+  arc::IntentFilter filter_with_path(kPackageName, {arc::kIntentActionView},
+                                     std::move(authorities1),
+                                     std::move(patterns), {kScheme}, {});
+
   apps::mojom::IntentFilterPtr app_service_filter1 =
       apps_util::ConvertArcToAppServiceIntentFilter(filter_with_path);
 
@@ -812,6 +843,48 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_AddsMissingPath) {
 }
 
 TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ConvertsSimpleGlobToPrefix) {
+  const char* kPackageName = "com.foo.bar";
+  const char* kHost = "www.google.com";
+  const char* kScheme = "https";
+
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities;
+  authorities.emplace_back(kHost, 0);
+
+  std::vector<arc::IntentFilter::PatternMatcher> patterns;
+
+  patterns.emplace_back("/foo.*", arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
+  patterns.emplace_back(".*", arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
+  patterns.emplace_back("/foo/.*/bar",
+                        arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
+  patterns.emplace_back("/..*", arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
+
+  arc::IntentFilter filter_with_path(kPackageName, {arc::kIntentActionView},
+                                     std::move(authorities),
+                                     std::move(patterns), {kScheme}, {});
+
+  apps::IntentFilterPtr app_service_filter =
+      apps_util::CreateIntentFilterForArc(filter_with_path);
+
+  for (auto& condition : app_service_filter->conditions) {
+    if (condition->condition_type == apps::ConditionType::kPattern) {
+      EXPECT_EQ(4u, condition->condition_values.size());
+      EXPECT_EQ(apps::ConditionValue("/foo", apps::PatternMatchType::kPrefix),
+                *condition->condition_values[0]);
+      EXPECT_EQ(
+          apps::ConditionValue(std::string(), apps::PatternMatchType::kPrefix),
+          *condition->condition_values[1]);
+      EXPECT_EQ(
+          apps::ConditionValue("/foo/.*/bar", apps::PatternMatchType::kGlob),
+          *condition->condition_values[2]);
+      EXPECT_EQ(apps::ConditionValue("/..*", apps::PatternMatchType::kGlob),
+                *condition->condition_values[3]);
+    }
+  }
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilsTest,
+       ConvertArcIntentFilter_ConvertsSimpleGlobToPrefixMojom) {
   const char* kPackageName = "com.foo.bar";
   const char* kHost = "www.google.com";
   const char* kScheme = "https";
@@ -873,6 +946,39 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_DeduplicatesHosts) {
                                std::move(authorities), std::move(patterns),
                                {kScheme}, {});
 
+  apps::IntentFilterPtr app_service_filter =
+      apps_util::CreateIntentFilterForArc(arc_filter);
+
+  for (auto& condition : app_service_filter->conditions) {
+    if (condition->condition_type == apps::ConditionType::kHost) {
+      ASSERT_EQ(2u, condition->condition_values.size());
+      ASSERT_EQ(kHost1, condition->condition_values[0]->value);
+      ASSERT_EQ(kHost2, condition->condition_values[1]->value);
+    }
+  }
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilsTest, ConvertArcIntentFilter_DeduplicatesHostsMojom) {
+  const char* kPackageName = "com.foo.bar";
+  const char* kPath = "/";
+  const char* kScheme = "https";
+  const char* kHost1 = "www.a.com";
+  const char* kHost2 = "www.b.com";
+
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities;
+  authorities.emplace_back(kHost1, 0);
+  authorities.emplace_back(kHost2, 0);
+  authorities.emplace_back(kHost2, 0);
+  authorities.emplace_back(kHost1, 0);
+
+  std::vector<arc::IntentFilter::PatternMatcher> patterns;
+  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+
+  arc::IntentFilter arc_filter(kPackageName, {arc::kIntentActionView},
+                               std::move(authorities), std::move(patterns),
+                               {kScheme}, {});
+
   apps::mojom::IntentFilterPtr app_service_filter =
       apps_util::ConvertArcToAppServiceIntentFilter(arc_filter);
 
@@ -886,6 +992,42 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_DeduplicatesHosts) {
 }
 
 TEST_F(IntentUtilsTest, ConvertArcIntentFilter_WildcardHostPatternMatchType) {
+  const char* kPackageName = "com.foo.bar";
+  const char* kPath = "/";
+  const char* kScheme = "https";
+  const char* kHostWildcard = "*.google.com";
+  const char* kHostNoWildcard = "google.com";
+
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities;
+  authorities.emplace_back(kHostWildcard, 0);
+  authorities.emplace_back(kHostNoWildcard, 0);
+  std::vector<arc::IntentFilter::PatternMatcher> patterns;
+  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+
+  arc::IntentFilter arc_filter(kPackageName, {arc::kIntentActionView},
+                               std::move(authorities), std::move(patterns),
+                               {kScheme}, {});
+
+  apps::IntentFilterPtr app_service_filter =
+      apps_util::CreateIntentFilterForArc(arc_filter);
+
+  for (auto& condition : app_service_filter->conditions) {
+    if (condition->condition_type == apps::ConditionType::kHost) {
+      ASSERT_EQ(condition->condition_values.size(), 2U);
+
+      // Check wildcard host
+      EXPECT_EQ(condition->condition_values[0]->match_type,
+                apps::PatternMatchType::kSuffix);
+      // Check non-wildcard host
+      EXPECT_EQ(condition->condition_values[1]->match_type,
+                apps::PatternMatchType::kNone);
+    }
+  }
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilsTest,
+       ConvertArcIntentFilter_WildcardHostPatternMatchTypeMojom) {
   const char* kPackageName = "com.foo.bar";
   const char* kPath = "/";
   const char* kScheme = "https";

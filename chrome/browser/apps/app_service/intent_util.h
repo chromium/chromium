@@ -153,6 +153,11 @@ std::string CreateLaunchIntent(const std::string& package_name,
 arc::IntentFilter ConvertAppServiceToArcIntentFilter(
     const std::string& package_name,
     const apps::mojom::IntentFilterPtr& intent_filter);
+
+apps::IntentFilterPtr CreateIntentFilterForArc(
+    const arc::IntentFilter& arc_intent_filter);
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
     const arc::IntentFilter& arc_intent_filter);
 #endif

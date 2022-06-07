@@ -1408,17 +1408,16 @@ void ArcApps::OnArcSupportedLinksChanged(
       continue;
     }
 
-    std::vector<apps::mojom::IntentFilterPtr> app_service_filters;
+    apps::IntentFilters app_service_filters;
     for (const auto& arc_filter : supported_link->filters.value()) {
-      auto converted =
-          apps_util::ConvertArcToAppServiceIntentFilter(arc_filter);
+      auto converted = apps_util::CreateIntentFilterForArc(arc_filter);
       if (apps_util::IsSupportedLinkForApp(app_id, converted)) {
         app_service_filters.push_back(std::move(converted));
       }
     }
 
-    proxy()->SetSupportedLinksPreference(
-        app_id, ConvertMojomIntentFiltersToIntentFilters(app_service_filters));
+    proxy()->SetSupportedLinksPreference(app_id,
+                                         std::move(app_service_filters));
   }
 
   for (const auto& supported_link : removed) {

@@ -294,7 +294,37 @@ bool IsPrefixOnlyGlob(base::StringPiece pattern) {
   return true;
 }
 
-apps::mojom::ConditionValuePtr ConvertArcPatternMatcherToConditionValue(
+apps::ConditionValuePtr ConvertArcPatternMatcherToConditionValue(
+    const arc::IntentFilter::PatternMatcher& path) {
+  apps::PatternMatchType match_type;
+
+  switch (path.match_type()) {
+    case arc::mojom::PatternType::PATTERN_LITERAL:
+      match_type = apps::PatternMatchType::kLiteral;
+      break;
+    case arc::mojom::PatternType::PATTERN_PREFIX:
+      match_type = apps::PatternMatchType::kPrefix;
+      break;
+    case arc::mojom::PatternType::PATTERN_SIMPLE_GLOB:
+      match_type = apps::PatternMatchType::kGlob;
+
+      // It's common for Globs to be used to encode patterns which are actually
+      // prefixes. Detect and convert these, since prefix matching is easier &
+      // cheaper.
+      if (IsPrefixOnlyGlob(path.pattern())) {
+        DCHECK_GE(path.pattern().size(), 2);
+        return std::make_unique<apps::ConditionValue>(
+            path.pattern().substr(0, path.pattern().size() - 2),
+            apps::PatternMatchType::kPrefix);
+      }
+      break;
+  }
+
+  return std::make_unique<apps::ConditionValue>(path.pattern(), match_type);
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+apps::mojom::ConditionValuePtr ConvertArcPatternMatcherToMojomConditionValue(
     const arc::IntentFilter::PatternMatcher& path) {
   apps::mojom::PatternMatchType match_type;
 
@@ -817,6 +847,113 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
                            std::move(schemes), std::move(mime_types));
 }
 
+apps::IntentFilterPtr CreateIntentFilterForArc(
+    const arc::IntentFilter& arc_intent_filter) {
+  auto intent_filter = std::make_unique<apps::IntentFilter>();
+
+  bool has_view_action = false;
+
+  apps::ConditionValues action_condition_values;
+  for (auto& arc_action : arc_intent_filter.actions()) {
+    const char* action = ConvertArcToAppServiceIntentAction(arc_action);
+    has_view_action = has_view_action || action == kIntentActionView;
+
+    if (!action) {
+      continue;
+    }
+
+    action_condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        action, apps::PatternMatchType::kNone));
+  }
+  if (!action_condition_values.empty()) {
+    auto action_condition = std::make_unique<apps::Condition>(
+        apps::ConditionType::kAction, std::move(action_condition_values));
+    intent_filter->conditions.push_back(std::move(action_condition));
+  }
+
+  apps::ConditionValues scheme_condition_values;
+  for (auto& scheme : arc_intent_filter.schemes()) {
+    scheme_condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        scheme, apps::PatternMatchType::kNone));
+  }
+  if (!scheme_condition_values.empty()) {
+    auto scheme_condition = std::make_unique<apps::Condition>(
+        apps::ConditionType::kScheme, std::move(scheme_condition_values));
+    intent_filter->conditions.push_back(std::move(scheme_condition));
+  }
+
+  apps::ConditionValues host_condition_values;
+  for (auto& authority : arc_intent_filter.authorities()) {
+    auto match_type = authority.wild() ? apps::PatternMatchType::kSuffix
+                                       : apps::PatternMatchType::kNone;
+    host_condition_values.push_back(
+        std::make_unique<apps::ConditionValue>(authority.host(), match_type));
+  }
+
+  if (!host_condition_values.empty()) {
+    // It's common for Android apps to include duplicate host conditions, we can
+    // de-duplicate these to reduce time/space usage down the line.
+    std::sort(
+        host_condition_values.begin(), host_condition_values.end(),
+        [](const apps::ConditionValuePtr& v1,
+           const apps::ConditionValuePtr& v2) -> bool {
+          return v1->value < v2->value ||
+                 (v1->value == v2->value && v1->match_type < v2->match_type);
+        });
+    host_condition_values.erase(
+        std::unique(host_condition_values.begin(), host_condition_values.end(),
+                    [](const apps::ConditionValuePtr& v1,
+                       const apps::ConditionValuePtr& v2) -> bool {
+                      return *v1 == *v2;
+                    }),
+        host_condition_values.end());
+
+    auto host_condition = std::make_unique<apps::Condition>(
+        apps::ConditionType::kHost, std::move(host_condition_values));
+    intent_filter->conditions.push_back(std::move(host_condition));
+  }
+
+  apps::ConditionValues path_condition_values;
+  for (auto& path : arc_intent_filter.paths()) {
+    path_condition_values.push_back(
+        ConvertArcPatternMatcherToConditionValue(path));
+  }
+
+  // For ARC apps, specifying a path is optional. For any intent filters which
+  // match every URL on a host with a "view" action, add a path which matches
+  // everything to ensure the filter is treated as a supported link.
+  if (path_condition_values.empty() && has_view_action &&
+      arc_intent_filter.authorities().size() > 0 &&
+      arc_intent_filter.schemes().size() > 0) {
+    path_condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        "/", apps::PatternMatchType::kPrefix));
+  }
+  if (!path_condition_values.empty()) {
+    auto path_condition = std::make_unique<apps::Condition>(
+        apps::ConditionType::kPattern, std::move(path_condition_values));
+    intent_filter->conditions.push_back(std::move(path_condition));
+  }
+
+  apps::ConditionValues mime_type_condition_values;
+  for (auto& mime_type : arc_intent_filter.mime_types()) {
+    mime_type_condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        mime_type, apps::PatternMatchType::kMimeType));
+  }
+  if (!mime_type_condition_values.empty()) {
+    auto mime_type_condition = std::make_unique<apps::Condition>(
+        apps::ConditionType::kMimeType, std::move(mime_type_condition_values));
+    intent_filter->conditions.push_back(std::move(mime_type_condition));
+  }
+  if (!arc_intent_filter.activity_name().empty()) {
+    intent_filter->activity_name = arc_intent_filter.activity_name();
+  }
+  if (!arc_intent_filter.activity_label().empty()) {
+    intent_filter->activity_label = arc_intent_filter.activity_label();
+  }
+
+  return intent_filter;
+}
+
 apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
     const arc::IntentFilter& arc_intent_filter) {
   auto intent_filter = apps::mojom::IntentFilter::New();
@@ -875,7 +1012,7 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
   std::vector<apps::mojom::ConditionValuePtr> path_condition_values;
   for (auto& path : arc_intent_filter.paths()) {
     path_condition_values.push_back(
-        ConvertArcPatternMatcherToConditionValue(path));
+        ConvertArcPatternMatcherToMojomConditionValue(path));
   }
 
   // For ARC apps, specifying a path is optional. For any intent filters which
