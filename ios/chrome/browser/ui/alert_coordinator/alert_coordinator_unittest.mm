@@ -237,7 +237,7 @@ TEST_F(AlertCoordinatorTest, OnlyOneCancelAction) {
   EXPECT_EQ(UIAlertActionStyleCancel, action.style);
 }
 
-// Tests that the |noInteractionAction| block is called for an alert coordinator
+// Tests that the `noInteractionAction` block is called for an alert coordinator
 // which is stopped before the user has interacted with it.
 TEST_F(AlertCoordinatorTest, NoInteractionActionTest) {
   // Setup.
@@ -259,7 +259,7 @@ TEST_F(AlertCoordinatorTest, NoInteractionActionTest) {
   EXPECT_TRUE(block_called);
 }
 
-// Tests that the |noInteractionAction| block is not called for an alert
+// Tests that the `noInteractionAction` block is not called for an alert
 // coordinator which is dismissed with the cancel button.
 TEST_F(AlertCoordinatorTest, NoInteractionActionWithCancelTest) {
   // Setup.

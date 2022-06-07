@@ -21,7 +21,7 @@
 @property(nonatomic, readwrite, getter=isVisible) BOOL visible;
 
 // Cancel action passed using the public API.
-// It will called from the overridden block stored in the |cancelAction|
+// It will called from the overridden block stored in the `cancelAction`
 // property.
 @property(nonatomic, copy) ProceduralBlock rawCancelAction;
 

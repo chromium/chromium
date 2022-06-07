@@ -12,7 +12,7 @@
 
 // A coordinator specialization for the case where the coordinator is creating
 // and managing a modal alert to be displayed to the user.
-// Calling |-stop| on this coordinator dismisses the current alert with no
+// Calling `-stop` on this coordinator dismisses the current alert with no
 // animation then destroys it.
 @interface AlertCoordinator : ChromeCoordinator
 
@@ -22,17 +22,17 @@
 @property(nonatomic, copy, readonly) NSString* title;
 // Message of the alert.
 @property(nonatomic, copy) NSString* message;
-// Whether the alert is visible. This will be true after |-start| is called
-// until a subsequent |-stop|.
+// Whether the alert is visible. This will be true after `-start` is called
+// until a subsequent `-stop`.
 @property(nonatomic, readonly, getter=isVisible) BOOL visible;
-// Handler executed when calling |-executeCancelHandler|. This handler is
-// deleted when the alert is dismissed (user interaction or |-stop|).
+// Handler executed when calling `-executeCancelHandler`. This handler is
+// deleted when the alert is dismissed (user interaction or `-stop`).
 @property(nonatomic, copy) ProceduralBlock cancelAction;
 // Block called when the alert is about to be displayed.
 @property(nonatomic, copy) ProceduralBlock startAction;
-// Block called when the alert is stopped with |stop| or during dealloc. It is
+// Block called when the alert is stopped with `stop` or during dealloc. It is
 // called only if no interaction with the alert (user interaction or call to
-// |-executeCancelHandler|) has occurred.
+// `-executeCancelHandler`) has occurred.
 @property(nonatomic, copy) ProceduralBlock noInteractionAction;
 
 // Init a coordinator for displaying a alert on this view controller.
@@ -45,20 +45,20 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-// Adds an item at the end of the menu. It does nothing if |visible| is true or
+// Adds an item at the end of the menu. It does nothing if `visible` is true or
 // if trying to add an item with a UIAlertActionStyleCancel while
-// |cancelButtonAdded| is true. If |enabled| is NO, the action appears dimmed
+// `cancelButtonAdded` is true. If `enabled` is NO, the action appears dimmed
 // and non-interactable.
 - (void)addItemWithTitle:(NSString*)title
                   action:(ProceduralBlock)actionBlock
                    style:(UIAlertActionStyle)style
                  enabled:(BOOL)enabled;
-// Shorthand for the above method, with |enabled| = YES.
+// Shorthand for the above method, with `enabled` = YES.
 - (void)addItemWithTitle:(NSString*)title
                   action:(ProceduralBlock)actionBlock
                    style:(UIAlertActionStyle)style;
 
-// Executes |cancelAction|.
+// Executes `cancelAction`.
 - (void)executeCancelHandler;
 
 @end
@@ -66,7 +66,7 @@
 @interface AlertCoordinator (Subclassing)
 // The UIAlertController being managed by this coordinator.
 @property(nonatomic, readonly) UIAlertController* alertController;
-// Called when lazily instantiating |alertController|.  Subclasses should
+// Called when lazily instantiating `alertController`.  Subclasses should
 // override and return the appropriately configured UIAlertController.
 - (UIAlertController*)alertControllerWithTitle:(NSString*)title
                                        message:(NSString*)message;

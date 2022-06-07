@@ -40,14 +40,14 @@
 // UIAlertControllerStyleActionSheet.
 @property(nonatomic, assign) UIAlertControllerStyle alertStyle;
 
-// Allows replacing title with an attributed string. |updateAttributedText| must
+// Allows replacing title with an attributed string. `updateAttributedText` must
 // be called afterward.
 @property(nonatomic, copy) NSAttributedString* attributedTitle;
-// Allows replacing message with an attributed string. |updateAttributedText|
+// Allows replacing message with an attributed string. `updateAttributedText`
 // must be called afterward.
 @property(nonatomic, copy) NSAttributedString* attributedMessage;
 
-// Updates text based on current |attributedTitle| and |attributedMessage|.
+// Updates text based on current `attributedTitle` and `attributedMessage`.
 - (void)updateAttributedText;
 
 @end
