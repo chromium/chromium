@@ -66,6 +66,7 @@ static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
     jint jpriority,
     jboolean jdisable_cache,
     jboolean jdisable_connection_migration,
+    jboolean jenable_metrics,
     jboolean jtraffic_stats_tag_set,
     jint jtraffic_stats_tag,
     jboolean jtraffic_stats_uid_set,
@@ -84,8 +85,8 @@ static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
   CronetURLRequestAdapter* adapter = new CronetURLRequestAdapter(
       context_adapter, env, jurl_request, url,
       static_cast<net::RequestPriority>(jpriority), jdisable_cache,
-      jdisable_connection_migration, jtraffic_stats_tag_set, jtraffic_stats_tag,
-      jtraffic_stats_uid_set, jtraffic_stats_uid,
+      jdisable_connection_migration, jenable_metrics, jtraffic_stats_tag_set,
+      jtraffic_stats_tag, jtraffic_stats_uid_set, jtraffic_stats_uid,
       static_cast<net::Idempotency>(jidempotency), jnetwork_handle);
 
   return reinterpret_cast<jlong>(adapter);
@@ -99,6 +100,7 @@ CronetURLRequestAdapter::CronetURLRequestAdapter(
     net::RequestPriority priority,
     jboolean jdisable_cache,
     jboolean jdisable_connection_migration,
+    jboolean jenable_metrics,
     jboolean jtraffic_stats_tag_set,
     jint jtraffic_stats_tag,
     jboolean jtraffic_stats_uid_set,
@@ -112,6 +114,7 @@ CronetURLRequestAdapter::CronetURLRequestAdapter(
                                priority,
                                jdisable_cache == JNI_TRUE,
                                jdisable_connection_migration == JNI_TRUE,
+                               jenable_metrics == JNI_TRUE,
                                jtraffic_stats_tag_set == JNI_TRUE,
                                jtraffic_stats_tag,
                                jtraffic_stats_uid_set == JNI_TRUE,

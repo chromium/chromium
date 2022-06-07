@@ -378,6 +378,8 @@ Cronet_RESULT Cronet_UrlRequestImpl::InitWithParams(
       engine_->cronet_url_request_context(), std::move(network_tasks),
       GURL(url), ConvertRequestPriority(params->priority),
       params->disable_cache, true /* params->disableConnectionMigration */,
+      request_finished_listener_ != nullptr ||
+          engine_->HasRequestFinishedListener() /* params->enableMetrics */,
       // TODO(pauljensen): Consider exposing TrafficStats API via C++ API.
       false /* traffic_stats_tag_set */, 0 /* traffic_stats_tag */,
       false /* traffic_stats_uid_set */, 0 /* traffic_stats_uid */,

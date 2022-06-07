@@ -63,6 +63,7 @@ CronetURLRequest::CronetURLRequest(
     net::RequestPriority priority,
     bool disable_cache,
     bool disable_connection_migration,
+    bool enable_metrics,
     bool traffic_stats_tag_set,
     int32_t traffic_stats_tag,
     bool traffic_stats_uid_set,
@@ -76,6 +77,7 @@ CronetURLRequest::CronetURLRequest(
                      CalculateLoadFlags(context->default_load_flags(),
                                         disable_cache,
                                         disable_connection_migration),
+                     enable_metrics,
                      traffic_stats_tag_set,
                      traffic_stats_tag,
                      traffic_stats_uid_set,
@@ -178,6 +180,7 @@ CronetURLRequest::NetworkTasks::NetworkTasks(
     const GURL& url,
     net::RequestPriority priority,
     int load_flags,
+    bool enable_metrics,
     bool traffic_stats_tag_set,
     int32_t traffic_stats_tag,
     bool traffic_stats_uid_set,
@@ -190,6 +193,7 @@ CronetURLRequest::NetworkTasks::NetworkTasks(
       initial_load_flags_(load_flags),
       received_byte_count_from_redirects_(0l),
       error_reported_(false),
+      enable_metrics_(enable_metrics),
       metrics_reported_(false),
       traffic_stats_tag_set_(traffic_stats_tag_set),
       traffic_stats_tag_(traffic_stats_tag),
@@ -395,7 +399,7 @@ void CronetURLRequest::NetworkTasks::MaybeReportMetrics() {
   // be a native URLRequest. In this case, the caller gets the exception
   // immediately, and the onFailed callback isn't called, so don't report
   // metrics either.
-  if (metrics_reported_ || !url_request_) {
+  if (!enable_metrics_ || metrics_reported_ || !url_request_) {
     return;
   }
   metrics_reported_ = true;

@@ -110,7 +110,8 @@ class CronetURLRequest {
     // methods will be invoked.
     virtual void OnDestroyed() = 0;
 
-    // Invoked right before request is destroyed to report collected metrics.
+    // Invoked right before request is destroyed to report collected metrics if
+    // |enable_metrics| is true in CronetURLRequest::CronetURLRequest().
     virtual void OnMetricsCollected(const base::Time& request_start_time,
                                     const base::TimeTicks& request_start,
                                     const base::TimeTicks& dns_start,
@@ -145,6 +146,7 @@ class CronetURLRequest {
                    net::RequestPriority priority,
                    bool disable_cache,
                    bool disable_connection_migration,
+                   bool enable_metrics,
                    bool traffic_stats_tag_set,
                    int32_t traffic_stats_tag,
                    bool traffic_stats_uid_set,
@@ -208,6 +210,7 @@ class CronetURLRequest {
                  const GURL& url,
                  net::RequestPriority priority,
                  int load_flags,
+                 bool enable_metrics,
                  bool traffic_stats_tag_set,
                  int32_t traffic_stats_tag,
                  bool traffic_stats_uid_set,
@@ -281,6 +284,8 @@ class CronetURLRequest {
     // OnSSLCertificateError().
     bool error_reported_;
 
+    // Whether detailed metrics should be collected and reported.
+    const bool enable_metrics_;
     // Whether metrics have been reported.
     bool metrics_reported_;
 
