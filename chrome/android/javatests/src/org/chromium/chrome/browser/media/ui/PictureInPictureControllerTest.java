@@ -142,6 +142,7 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @DisabledTest(message = "crbug.com/1333963")
     public void testExitOnCrash() throws Throwable {
         testExitOn(() -> WebContentsUtils.simulateRendererKilled(getWebContents()));
     }
