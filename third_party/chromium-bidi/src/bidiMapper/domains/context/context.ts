@@ -46,8 +46,8 @@ export class Context {
     };
   });
 
-  public waitInitialized(): Promise<void> {
-    return this.#initialized;
+  async #waitInitialized(): Promise<void> {
+    await this.#initialized;
   }
 
   private constructor(
@@ -96,9 +96,7 @@ export class Context {
   public serializeToBidiValue(): BrowsingContext.Info {
     return {
       context: this.#targetInfo!.targetId,
-      parent: this.#targetInfo!.openerId
-        ? this.#targetInfo!.openerId
-        : undefined,
+      parent: this.#targetInfo!.openerId ? this.#targetInfo!.openerId : null,
       url: this.#targetInfo!.url,
       // TODO sadym: implement.
       children: [],
@@ -109,6 +107,8 @@ export class Context {
     url: string,
     wait: BrowsingContext.ReadinessState
   ): Promise<BrowsingContext.NavigateResult> {
+    await this.#waitInitialized();
+
     // TODO: handle loading errors.
     const cdpNavigateResult = await this.#cdpClient.Page.navigate({ url });
 
@@ -152,6 +152,7 @@ export class Context {
     _arguments: Script.ArgumentValue[],
     awaitPromise: boolean
   ): Promise<Script.CallFunctionResult> {
+    await this.#waitInitialized();
     return {
       result: await this.#scriptEvaluator.callFunction(
         functionDeclaration,
@@ -165,6 +166,7 @@ export class Context {
   public async findElement(
     selector: string
   ): Promise<BrowsingContext.PROTO.FindElementResult> {
+    await this.#waitInitialized();
     const functionDeclaration = String((resultsSelector: string) =>
       document.querySelector(resultsSelector)
     );
@@ -279,6 +281,7 @@ export class Context {
     expression: string,
     awaitPromise: boolean
   ): Promise<Script.EvaluateResult> {
+    await this.#waitInitialized();
     return this.#scriptEvaluator.scriptEvaluate(expression, awaitPromise);
   }
 }

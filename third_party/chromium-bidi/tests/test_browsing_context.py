@@ -87,14 +87,6 @@ async def _ignore_test_browsingContext_getTreeWithNestedContexts_contextReturned
 @pytest.mark.asyncio
 async def test_browsingContext_create_eventContextCreatedEmitted(
       websocket, context_id):
-    # Note: there can be a race condition between initial context created event
-    # and subscription command. Sometimes subscribe is
-    # called before the initial context emitted
-    # `browsingContext.contextCreated`. Having `context_id` causes calling
-    # `browsingContext.getTree`, which in order allows to avoid the race
-    # condition just by creating a delay before subscribing.
-    # TODO: avoid race condition properly.
-
     await subscribe(websocket, ["browsingContext.contextCreated"])
 
     await send_JSON_command(websocket, {
@@ -102,25 +94,34 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
         "method": "browsingContext.create",
         "params": {"type": "tab"}})
 
-    # Assert "browsingContext.contextCreated" event emitted.
     resp = await read_JSON_message(websocket)
-    new_context_id = resp['params']['context']
 
-    assert resp == {
+    if "params" in resp:
+        event = resp
+        command_result = await read_JSON_message(websocket)
+    else:
+        event = await read_JSON_message(websocket)
+        command_result = resp
+
+    new_context_id = event['params']['context']
+
+    # Assert "browsingContext.contextCreated" event emitted.
+    assert event == {
         "method": "browsingContext.contextCreated",
         "params": {
-            "context": new_context_id,
-            "children": [],
-            "url": "about:blank"}}
+            'context': new_context_id,
+            'parent': None,
+            'children': [],
+            'url': 'about:blank'}}
 
     # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
+    assert command_result == {
         "id": 9,
         "result": {
-            "context": new_context_id,
-            "children": [],
-            "url": "about:blank"}}
+            'context': new_context_id,
+            'parent': None,
+            'children': [],
+            'url': 'about:blank'}}
 
 
 @pytest.mark.asyncio
@@ -139,6 +140,7 @@ async def test_browsingContext_close_browsingContext_closed(
         "method": "browsingContext.contextDestroyed",
         "params": {
             "context": context_id,
+            "parent": None,
             "url": "about:blank",
             "children": []}}
 

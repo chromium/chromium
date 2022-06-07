@@ -44,20 +44,6 @@ export class BrowsingContextProcessor {
     this._setCdpEventListeners(this._cdpConnection.browserClient());
   }
 
-  private async _onContextCreated(context: Context): Promise<void> {
-    await this._eventManager.sendEvent(
-      new BrowsingContext.ContextCreatedEvent(context.serializeToBidiValue()),
-      context.id
-    );
-  }
-
-  private async _onContextDestroyed(context: Context): Promise<void> {
-    await this._eventManager.sendEvent(
-      new BrowsingContext.ContextDestroyedEvent(context.serializeToBidiValue()),
-      context.id
-    );
-  }
-
   private _setCdpEventListeners(browserCdpClient: CdpClient) {
     browserCdpClient.Target.on('attachedToTarget', async (params) => {
       await this._handleAttachedToTargetEvent(params);
@@ -119,8 +105,19 @@ export class BrowsingContextProcessor {
     this._sessionToTargets.set(sessionId, context);
     context.setSessionId(sessionId);
 
-    await context.waitInitialized();
-    await this._onContextCreated(context);
+    await this._eventManager.sendEvent(
+      new BrowsingContext.ContextCreatedEvent({
+        context: context.id,
+        parent: targetInfo.openerId ? targetInfo.openerId : null,
+        // New-opened context `url` is always `about:blank`:
+        // https://github.com/w3c/webdriver-bidi/issues/220
+        url: 'about:blank',
+        // New-opened `children` are always empty:
+        // https://github.com/w3c/webdriver-bidi/issues/220
+        children: [],
+      }),
+      context.id
+    );
   }
 
   private _handleInfoChangedEvent(
@@ -158,17 +155,22 @@ export class BrowsingContextProcessor {
         this._sessionToTargets.delete(context._sessionId);
       }
       this._contexts.delete(context.id);
-      await this._onContextDestroyed(context);
+      await this._eventManager.sendEvent(
+        new BrowsingContext.ContextDestroyedEvent(
+          context.serializeToBidiValue()
+        ),
+        context.id
+      );
     }
   }
 
   private static _targetToBiDiContext(
-    target: Protocol.Target.TargetInfo
+    targetInfo: Protocol.Target.TargetInfo
   ): BrowsingContext.Info {
     return {
-      context: target.targetId,
-      parent: target.openerId ? target.openerId : null,
-      url: target.url,
+      context: targetInfo.targetId,
+      parent: targetInfo.openerId ? targetInfo.openerId : null,
+      url: targetInfo.url,
       // TODO sadym: implement.
       children: null,
     };
@@ -199,44 +201,21 @@ export class BrowsingContextProcessor {
   async process_browsingContext_create(
     params: BrowsingContext.CreateParameters
   ): Promise<BrowsingContext.CreateResult> {
-    return new Promise(async (resolve) => {
-      const browserCdpClient = this._cdpConnection.browserClient();
+    const browserCdpClient = this._cdpConnection.browserClient();
 
-      const result = await browserCdpClient.Target.createTarget({
-        url: 'about:blank',
-        newWindow: params.type === 'window',
-      });
-
-      const contextId = result.targetId;
-
-      if (this._hasKnownContext(contextId)) {
-        const existingContext = await this._getKnownContext(contextId);
-        await existingContext.waitInitialized();
-        resolve({ result: existingContext.serializeToBidiValue() });
-        return;
-      }
-
-      const onAttachedToTarget = async (
-        attachToTargetEventParams: Protocol.Target.AttachedToTargetEvent
-      ) => {
-        if (attachToTargetEventParams.targetInfo.targetId === contextId) {
-          browserCdpClient.Target.removeListener(
-            'attachedToTarget',
-            onAttachedToTarget
-          );
-
-          const context = this._getOrCreateContext(
-            attachToTargetEventParams.targetInfo.targetId,
-            attachToTargetEventParams.sessionId
-          );
-          context.updateTargetInfo(attachToTargetEventParams.targetInfo);
-          await context.waitInitialized();
-          resolve({ result: context.serializeToBidiValue() });
-        }
-      };
-
-      browserCdpClient.Target.on('attachedToTarget', onAttachedToTarget);
+    const result = await browserCdpClient.Target.createTarget({
+      url: 'about:blank',
+      newWindow: params.type === 'window',
     });
+
+    return {
+      result: {
+        context: result.targetId,
+        parent: null,
+        url: 'about:blank',
+        children: [],
+      },
+    };
   }
 
   async process_browsingContext_navigate(

@@ -604,9 +604,7 @@ export namespace BrowsingContext {
   }
 
   export type CreateResult = {
-    result: {
-      context: CommonDataTypes.BrowsingContext;
-    };
+    result: Info;
   };
 
   export type CloseCommand = {
