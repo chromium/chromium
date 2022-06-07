@@ -47,14 +47,22 @@ android_library("ulp_delegate_java") {
   sources = [
     "java/src/org/chromium/components/language/LanguageProfileDelegate.java",
     "java/src/org/chromium/components/language/LanguageProfileDelegateImpl.java",
+    "java/src/org/chromium/components/language/LocaleManagerDelegate.java",
+    "java/src/org/chromium/components/language/LocaleManagerDelegateImpl.java",
   ]
 
   # Allow downstream targets to provide their own implementations.
-  jar_excluded_patterns = [ "*/LanguageProfileDelegateImpl.class" ]
+  jar_excluded_patterns = [
+    "*/LanguageProfileDelegateImpl.class",
+    "*/LocaleManagerDelegateImpl.class",
+  ]
 }
 
 android_library("ulp_delegate_public_java") {
-  sources = [ "java/src/org/chromium/components/language/LanguageProfileDelegateImpl.java" ]
+  sources = [
+    "java/src/org/chromium/components/language/LanguageProfileDelegateImpl.java",
+    "java/src/org/chromium/components/language/LocaleManagerDelegateImpl.java",
+  ]
 
   deps = [ ":ulp_delegate_java" ]
 }
