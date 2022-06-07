@@ -1,0 +1,27 @@
+<!doctype html>
+<link rel="help" href="http://crbug.com/1325192">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"></script>
+<script src="/html/semantics/embedded-content/resources/common.js"></script>
+
+<script>
+// This test:
+// * Attaches an <object> to first page.
+// * Navigates away, then back via bfcache if this case is supported by the browser.
+for (const testCase of BFCACHE_TEST_CASES) {
+  runBfcacheTest({
+    targetOrigin: originSameOrigin,
+    shouldBeCached: true,
+    funcBeforeNavigation: (attrs) => {
+      let e = document.createElement('object');
+      e.type = attrs.type;
+      e.data = attrs.src;
+      document.body.append(e);
+    },
+    argsBeforeNavigation: [testCase]
+  }, `Page with <object type=${testCase.type} data=${testCase.src}>`);
+}
+</script>
