@@ -756,7 +756,7 @@ bool operator==(const AttributionTrigger::EventTriggerData& a,
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
   const auto tie = [](const AttributionTrigger& t) {
     return std::make_tuple(t.destination_origin(), t.reporting_origin(),
-                           t.debug_key(), t.event_triggers(),
+                           t.filters(), t.debug_key(), t.event_triggers(),
                            t.aggregatable_trigger());
   };
   return tie(a) == tie(b);
@@ -1044,7 +1044,8 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out,
                          const AttributionTrigger& conversion) {
   out << "{destination_origin=" << conversion.destination_origin()
-      << ",reporting_origin=" << conversion.reporting_origin() << ",debug_key="
+      << ",reporting_origin=" << conversion.reporting_origin()
+      << ",filters=" << conversion.filters() << ",debug_key="
       << (conversion.debug_key() ? base::NumberToString(*conversion.debug_key())
                                  : "null")
       << "event_triggers=[";
