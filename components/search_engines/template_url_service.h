@@ -342,6 +342,15 @@ class TemplateURLService : public WebDataServiceConsumer,
   // prepopulate data.
   void RepairPrepopulatedSearchEngines();
 
+  // Performs the same actions that happen when the starter pack data version is
+  // revved: all existing starter pack entries are checked against the current
+  // starter pack data, any now-extraneous safe_for_autoreplace() entries are
+  // removed, any existing engines are reset to the provided data (except for
+  // user-edited names or keywords), and any new starter pack engines are
+  // added.  Unlike `RepairPrepopulatedSearchEngines()`, this does not modify
+  // the default search engine entry.
+  void RepairStarterPackEngines();
+
   // Observers used to listen for changes to the model.
   // TemplateURLService does NOT delete the observers when deleted.
   void AddObserver(TemplateURLServiceObserver* observer);
@@ -491,6 +500,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceTest, LastVisitedTimeUpdate);
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceTest,
                            RepairPrepopulatedSearchEngines);
+  FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceTest, RepairStarterPackEngines);
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceSyncTest, PreSyncDeletes);
   FRIEND_TEST_ALL_PREFIXES(TemplateURLServiceSyncTest, MergeInSyncTemplateURL);
   FRIEND_TEST_ALL_PREFIXES(LocationBarModelTest, GoogleBaseURL);

@@ -186,6 +186,7 @@ void ProfileResetter::ResetDefaultSearchEngine() {
     }
 
     template_url_service_->RepairPrepopulatedSearchEngines();
+    template_url_service_->RepairStarterPackEngines();
 
     MarkAsDone(DEFAULT_SEARCH_ENGINE);
   } else {

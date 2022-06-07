@@ -31,6 +31,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/util.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
@@ -893,6 +894,37 @@ void TemplateURLService::RepairPrepopulatedSearchEngines() {
     const TemplateURLData* new_dse =
         default_search_manager_.GetDefaultSearchEngine(&source);
     ApplyDefaultSearchChange(new_dse, source);
+  }
+}
+
+void TemplateURLService::RepairStarterPackEngines() {
+  DCHECK(loaded());
+
+  Scoper scoper(this);
+
+  std::vector<std::unique_ptr<TemplateURLData>> starter_pack_engines =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+  DCHECK(!starter_pack_engines.empty());
+  ActionsFromCurrentData actions(CreateActionsFromCurrentStarterPackData(
+      &starter_pack_engines, template_urls_));
+
+  // Remove items.
+  for (auto i = actions.removed_engines.begin();
+       i < actions.removed_engines.end(); ++i) {
+    Remove(*i);
+  }
+
+  // Edit items.
+  for (auto i(actions.edited_engines.begin()); i < actions.edited_engines.end();
+       ++i) {
+    Update(i->first, TemplateURL(i->second));
+  }
+
+  // Add items.
+  for (std::vector<TemplateURLData>::const_iterator i =
+           actions.added_engines.begin();
+       i < actions.added_engines.end(); ++i) {
+    Add(std::make_unique<TemplateURL>(*i));
   }
 }
 
