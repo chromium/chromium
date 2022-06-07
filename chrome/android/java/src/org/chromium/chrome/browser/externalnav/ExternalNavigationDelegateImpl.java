@@ -299,11 +299,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean isIntentToInstantApp(Intent intent) {
-        return InstantAppsHandler.isIntentToInstantApp(intent);
-    }
-
-    @Override
     public boolean isIntentToAutofillAssistant(Intent intent) {
         return AutofillAssistantFacade.isAutofillAssistantByIntentTriggeringEnabled(intent);
     }

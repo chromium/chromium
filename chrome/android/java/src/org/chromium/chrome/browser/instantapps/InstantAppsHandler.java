@@ -60,12 +60,6 @@ public class InstantAppsHandler {
     private static final String BROWSER_LAUNCH_REASON =
             "com.google.android.gms.instantapps.BROWSER_LAUNCH_REASON";
 
-    private static final String SUPERVISOR_PKG = "com.google.android.instantapps.supervisor";
-
-    private static final String[] SUPERVISOR_START_ACTIONS = {
-            "com.google.android.instantapps.START", "com.google.android.instantapps.nmr1.INSTALL",
-            "com.google.android.instantapps.nmr1.VIEW"};
-
     // Only two possible call sources for fallback intents, set boundary at n+1.
     private static final int SOURCE_BOUNDARY = 3;
 
@@ -77,23 +71,6 @@ public class InstantAppsHandler {
             }
         }
         return sInstance;
-    }
-
-    /**
-     * Checks whether {@param intent} is for an Instant App. Considers both package and actions that
-     * would resolve to Supervisor.
-     * @return Whether the given intent is going to open an Instant App.
-     */
-    public static boolean isIntentToInstantApp(Intent intent) {
-        if (SUPERVISOR_PKG.equals(intent.getPackage())) return true;
-
-        String intentAction = intent.getAction();
-        for (String action : SUPERVISOR_START_ACTIONS) {
-            if (action.equals(intentAction)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

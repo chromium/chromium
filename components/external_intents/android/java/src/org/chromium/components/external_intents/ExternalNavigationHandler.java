@@ -125,6 +125,14 @@ public class ExternalNavigationHandler {
             | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT
             | Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS | Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT;
 
+    @VisibleForTesting
+    static final String INSTANT_APP_SUPERVISOR_PKG = "com.google.android.instantapps.supervisor";
+
+    @VisibleForTesting
+    static final String[] INSTANT_APP_START_ACTIONS = {"com.google.android.instantapps.START",
+            "com.google.android.instantapps.nmr1.INSTALL",
+            "com.google.android.instantapps.nmr1.VIEW"};
+
     // These values are persisted in histograms. Please do not renumber. Append only.
     @IntDef({AiaIntent.FALLBACK_USED, AiaIntent.SERP, AiaIntent.OTHER})
     @Retention(RetentionPolicy.SOURCE)
@@ -367,7 +375,7 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        if (mDelegate.isIntentToInstantApp(targetIntent)) {
+        if (isIntentToInstantApp(targetIntent)) {
             RecordHistogram.recordEnumeratedHistogram("Android.InstantApps.DirectInstantAppsIntent",
                     AiaIntent.FALLBACK_USED, AiaIntent.NUM_ENTRIES);
         }
@@ -1007,9 +1015,9 @@ public class ExternalNavigationHandler {
      * For security reasons, we disable all intent:// URLs to Instant Apps that are not coming from
      * SERP.
      */
-    private boolean preventDirectInstantAppsIntent(
-            boolean isDirectInstantAppsIntent, boolean shouldProxyForInstantApps) {
-        if (!isDirectInstantAppsIntent || shouldProxyForInstantApps) return false;
+    private boolean preventDirectInstantAppsIntent(Intent intent) {
+        if (!isIntentToInstantApp(intent)) return false;
+        if (isSerpReferrer() && mDelegate.handlesInstantAppLaunchingInternally()) return false;
         if (DEBUG) Log.i(TAG, "Intent URL to an Instant App");
         RecordHistogram.recordEnumeratedHistogram("Android.InstantApps.DirectInstantAppsIntent",
                 AiaIntent.OTHER, AiaIntent.NUM_ENTRIES);
@@ -1363,6 +1371,10 @@ public class ExternalNavigationHandler {
 
         if (isUnhandledWtaiProtocol(params)) return OverrideUrlLoadingResult.forNoOverride();
 
+        if (preventDirectInstantAppsIntent(targetIntent)) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
+
         if (redirectShouldStayInApp(params, isExternalProtocol, targetIntent)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
@@ -1404,13 +1416,8 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        boolean isDirectInstantAppsIntent =
-                isExternalProtocol && mDelegate.isIntentToInstantApp(targetIntent);
-        boolean shouldProxyForInstantApps = isDirectInstantAppsIntent && isSerpReferrer();
-        if (preventDirectInstantAppsIntent(isDirectInstantAppsIntent, shouldProxyForInstantApps)) {
-            return OverrideUrlLoadingResult.forNoOverride();
-        }
-
+        boolean shouldProxyForInstantApps = mDelegate.handlesInstantAppLaunchingInternally()
+                && isIntentToInstantApp(targetIntent) && isSerpReferrer();
         prepareExternalIntent(
                 targetIntent, params, resolvingInfos.get(), shouldProxyForInstantApps);
         // As long as our intent resolution hasn't changed, resolvingInfos won't need to be
@@ -2103,5 +2110,22 @@ public class ExternalNavigationHandler {
                 : params.getRedirectHandler().isOnEffectiveIntentRedirectChain();
         return (params.isLinkTransition() && params.isFromIntent() && params.isRedirect())
                 || isOnEffectiveIntentRedirect;
+    }
+
+    /**
+     * Checks whether {@param intent} is for an Instant App. Considers both package and actions that
+     * would resolve to Supervisor.
+     * @return Whether the given intent is going to open an Instant App.
+     */
+    private static boolean isIntentToInstantApp(Intent intent) {
+        if (INSTANT_APP_SUPERVISOR_PKG.equals(intent.getPackage())) return true;
+
+        String intentAction = intent.getAction();
+        for (String action : INSTANT_APP_START_ACTIONS) {
+            if (action.equals(intentAction)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

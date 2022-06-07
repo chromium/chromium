@@ -165,52 +165,6 @@ public class ExternalNavigationDelegateImplTest {
 
     @Test
     @SmallTest
-    public void testIsIntentToInstantApp() {
-        // Check that the delegate correctly distinguishes instant app intents from others.
-        String vanillaUrl = "http://www.example.com";
-        Intent vanillaIntent = new Intent(Intent.ACTION_VIEW);
-        vanillaIntent.setData(Uri.parse(vanillaUrl));
-
-        String instantAppIntentUrl = "intent://buzzfeed.com/tasty#Intent;scheme=http;"
-                + "package=com.google.android.instantapps.supervisor;"
-                + "action=com.google.android.instantapps.START;"
-                + "S.com.google.android.instantapps.FALLBACK_PACKAGE="
-                + "com.android.chrome;S.com.google.android.instantapps.INSTANT_APP_PACKAGE="
-                + "com.yelp.android;S.android.intent.extra.REFERRER_NAME="
-                + "https%3A%2F%2Fwww.google.com;end";
-        Intent instantAppIntent;
-        try {
-            instantAppIntent = Intent.parseUri(instantAppIntentUrl, Intent.URI_INTENT_SCHEME);
-        } catch (Exception ex) {
-            Assert.assertTrue(false);
-            return;
-        }
-
-        Assert.assertFalse(mExternalNavigationDelegateImpl.isIntentToInstantApp(vanillaIntent));
-        Assert.assertTrue(mExternalNavigationDelegateImpl.isIntentToInstantApp(instantAppIntent));
-
-        // Check that Supervisor is detected by action even without package.
-        for (String action : SUPERVISOR_START_ACTIONS) {
-            String intentWithoutPackageUrl = "intent://buzzfeed.com/tasty#Intent;scheme=http;"
-                    + "action=" + action + ";"
-                    + "S.com.google.android.instantapps.FALLBACK_PACKAGE="
-                    + "com.android.chrome;S.com.google.android.instantapps.INSTANT_APP_PACKAGE="
-                    + "com.yelp.android;S.android.intent.extra.REFERRER_NAME="
-                    + "https%3A%2F%2Fwww.google.com;end";
-            try {
-                instantAppIntent =
-                        Intent.parseUri(intentWithoutPackageUrl, Intent.URI_INTENT_SCHEME);
-            } catch (Exception ex) {
-                Assert.assertTrue(false);
-                return;
-            }
-            Assert.assertTrue(
-                    mExternalNavigationDelegateImpl.isIntentToInstantApp(instantAppIntent));
-        }
-    }
-
-    @Test
-    @SmallTest
     public void testMaybeAdjustInstantAppExtras() {
         String url = "http://www.example.com";
         Intent intent = new Intent(Intent.ACTION_VIEW);

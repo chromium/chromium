@@ -62,7 +62,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     @Override
     public void dispatchAuthenticatedIntent(Intent intent) {
         // This method should never be invoked in WebLayer as this class always returns false for
-        // isIntentToInstantApp().
+        // handlesInstantAppLaunchingInternally().
         assert false;
     }
 
@@ -177,11 +177,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean isIntentForTrustedCallingApp(Intent intent) {
-        return false;
-    }
-
-    @Override
-    public boolean isIntentToInstantApp(Intent intent) {
         return false;
     }
 

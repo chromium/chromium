@@ -55,10 +55,8 @@ public interface ExternalNavigationDelegate {
 
     /**
      * Dispatches the intent through a proxy activity, so that startActivityForResult can be used
-     * and the intent recipient can verify the caller. Will be invoked only in flows where
-     * ExternalNavigationDelegate#isIntentForInstantApp() returns true for |intent|. In particular,
-     * if that method always returns false in the given embedder, then the embedder's implementation
-     * of this method will never be invoked and can just assert false.
+     * and the intent recipient can verify the caller. Will be invoked only in delegates where
+     * ExternalNavigationDelegate#handlesInstantAppLaunchingInternally() returns true.
      * @param intent The bare intent we were going to send.
      */
     void dispatchAuthenticatedIntent(Intent intent);
@@ -165,12 +163,6 @@ public interface ExternalNavigationDelegate {
      * @return Whether the Intent points to an app that we trust and that launched this app.
      */
     boolean isIntentForTrustedCallingApp(Intent intent);
-
-    /**
-     * @param intent The intent to launch.
-     * @return Whether the Intent points to an instant app.
-     */
-    boolean isIntentToInstantApp(Intent intent);
 
     /**
      * @param intent The intent to launch
