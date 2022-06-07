@@ -2764,7 +2764,6 @@ if (!is_android) {
       sources += [
         "../browser/apps/platform_apps/api/browser/browser_apitest.cc",
         "../browser/apps/platform_apps/api/media_galleries/media_galleries_watch_apitest.cc",
-        "../browser/apps/platform_apps/api/music_manager_private/music_manager_private_browsertest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_apitest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_browsertest.cc",
         "../browser/apps/platform_apps/audio_focus_web_contents_observer_browsertest.cc",
@@ -4439,7 +4438,6 @@ if (!is_android) {
         "../../apps/load_and_launch_browsertest.cc",
         "../browser/apps/platform_apps/api/browser/browser_apitest.cc",
         "../browser/apps/platform_apps/api/media_galleries/media_galleries_watch_apitest.cc",
-        "../browser/apps/platform_apps/api/music_manager_private/music_manager_private_browsertest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_apitest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_browsertest.cc",
         "../browser/apps/platform_apps/app_browsertest.cc",

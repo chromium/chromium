@@ -11,7 +11,7 @@ import("//tools/json_schema_compiler/json_schema_api.gni")
 assert(enable_extensions)
 
 function_registration("api_registration") {
-  sources = chrome_apps_api_schema_files + chrome_apps_uncompiled_schema_files
+  sources = chrome_apps_api_schema_files
   impl_dir = "//chrome/browser/apps/platform_apps/api"
   configs = [ "//build/config:precompiled_headers" ]
   bundle_name = "ChromeApps"
@@ -53,7 +53,6 @@ source_set("api") {
     # extracted into their own BUILD files (so they are easy to audit, add, or
     # remove), but any that depend on //chrome/browser:browser can't.
     "//chrome/browser:browser_process",
-    "//chrome/browser/apps/platform_apps/api/music_manager_private",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
@@ -64,9 +63,6 @@ source_set("api") {
     "//components/web_modal",
     "//extensions/browser",
   ]
-
-  public_deps =
-      [ "//chrome/browser/apps/platform_apps/api/music_manager_private" ]
 
   if (is_chromeos_ash) {
     sources += [

@@ -53,19 +53,6 @@
     "channel": "stable",
     "extension_types": [ "platform_app" ]
   },
-  "musicManagerPrivate": {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "allowlist": [
-      "4B1D0E19C6C43C008C44A8278C8B5BFE15ABEB3C", // Music Manager
-      "B8F61FD1B25DE03706DBB8906A73261E4DBB992A", // Test
-      "F7FA7ABC1ECB89BA8EE6656847EFABBF43BB9BCA",
-      "4FE45FA56EF6A25FDE8C302C44045CA9CE8A605A",
-      "3D14248405B8A59043420AAC160077C99E7788A9",
-      "A6C87307BBE5886CC5F1393025000E2FE8060BF2",
-      "3407516021EA3669C0EC8E65E6B9837E5A521B9C"
-    ]
-  },
   "pointerLock": {
     "channel": "stable",
     "extension_types": ["platform_app"]

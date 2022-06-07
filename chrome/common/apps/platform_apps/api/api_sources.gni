@@ -22,11 +22,7 @@ if (is_chromeos_ash) {
   chrome_apps_api_schema_files_ += [ "arc_apps_private.idl" ]
 }
 
-chrome_apps_uncompiled_schema_files_ = [ "music_manager_private.idl" ]
-
 chrome_apps_api_schema_files =
     get_path_info(chrome_apps_api_schema_files_, "abspath")
-chrome_apps_uncompiled_schema_files =
-    get_path_info(chrome_apps_uncompiled_schema_files_, "abspath")
 
 apps_api_root_namespace = "chrome_apps::api::%(namespace)s"

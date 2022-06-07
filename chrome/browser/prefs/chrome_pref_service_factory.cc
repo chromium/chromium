@@ -277,12 +277,9 @@ std::unique_ptr<ProfilePrefStoreManager> CreateProfilePrefStoreManager(
     const base::FilePath& profile_path) {
   std::string legacy_device_id;
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_RLZ)
-  // This is used by
-  // chrome/browser/apps/platform_apps/api/music_manager_private/device_id_win.cc
-  // but that API is private (http://crbug.com/276485) and other platforms are
-  // not available synchronously.
-  // As part of improving pref metrics on other platforms we may want to find
-  // ways to defer preference loading until the device ID can be used.
+  // This was used by the musicManagerPrivate API, and remains here for backward
+  // compatibility so ProfilePrefStoreManager can continue to calculate the same
+  // hashes as before.
   rlz_lib::GetMachineId(&legacy_device_id);
 #endif
   std::string seed;

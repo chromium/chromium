@@ -4637,9 +4637,6 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSION_PROMPT_WARNING_SYNCFILESYSTEM" desc="Permission string for synchronizing files to the user's Google Drive">
           Store data in your Google Drive account
         </message>
-        <message name="IDS_EXTENSION_PROMPT_WARNING_MUSIC_MANAGER_PRIVATE" desc="Permission string for accessing a unique device identifier">
-          Read a unique identifier for this computer
-        </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_NATIVE_MESSAGING" desc="Permission string for Native Messaging API.">
           Communicate with cooperating native applications
         </message>

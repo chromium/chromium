@@ -32,7 +32,7 @@ group("apps_features") {
 # Private Targets
 
 generated_json_strings("generated_api_json_strings") {
-  sources = chrome_apps_api_schema_files + chrome_apps_uncompiled_schema_files
+  sources = chrome_apps_api_schema_files
   bundle_name = "ChromeApps"
   root_namespace = apps_api_root_namespace
   deps = [

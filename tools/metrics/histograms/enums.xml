@@ -35119,7 +35119,7 @@ Called by update_extension_permission.py.-->
   <int value="101" label="kMediaRouterPrivate"/>
   <int value="102" label="kMetricsPrivate"/>
   <int value="103" label="kMDns"/>
-  <int value="104" label="kMusicManagerPrivate"/>
+  <int value="104" label="kDeleted_MusicManagerPrivate"/>
   <int value="105" label="kNativeMessaging"/>
   <int value="106" label="kDeleted_NetworkingConfig"/>
   <int value="107" label="kNetworkingPrivate"/>
