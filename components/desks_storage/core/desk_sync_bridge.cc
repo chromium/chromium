@@ -611,10 +611,94 @@ void FillAppWithLaunchContainerAndOpenDisposition(
 }
 
 // Fill `out_app` with `app_restore_data`.
-void FillApp(const std::string& app_id,
+// Return `false` if app type is unsupported.
+bool FillApp(const std::string& app_id,
              const apps::AppType app_type,
              const app_restore::AppRestoreData* app_restore_data,
              WorkspaceDeskSpecifics_App* out_app) {
+  // See definition in components/services/app_service/public/cpp/app_types.h
+  switch (app_type) {
+    case apps::AppType::kWeb:
+    case apps::AppType::kSystemWeb: {
+      // System Web Apps.
+      // kSystemWeb is returned for System Web Apps in Lacros-primary
+      // configuration. These can be persisted and launched the same way as
+      // Chrome Apps.
+      ChromeApp* chrome_app_window =
+          out_app->mutable_app()->mutable_chrome_app();
+      chrome_app_window->set_app_id(app_id);
+      FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
+      break;
+    }
+
+    case apps::AppType::kChromeApp: {
+      // Ash Chrome browser OR PWA OR Chrome App hosted in Ash Chrome.
+      if (app_constants::kChromeAppId == app_id) {
+        // This window is either a browser window or a PWA window.
+        // Both cases are persisted as "browser app" since they are launched the
+        // same way. PWA window will have field `app_name` and
+        // `app_type_browser` fields set. FillAppWithAppNameAndTitle has
+        // persisted `app_name` field. FillBrowserAppWindow will persist
+        // `app_type_browser` field.
+        BrowserAppWindow* browser_app_window =
+            out_app->mutable_app()->mutable_browser_app_window();
+        FillBrowserAppWindow(app_restore_data, browser_app_window);
+      } else {
+        // Chrome App
+        ChromeApp* chrome_app_window =
+            out_app->mutable_app()->mutable_chrome_app();
+        chrome_app_window->set_app_id(app_id);
+        FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
+      }
+      break;
+    }
+
+    case apps::AppType::kStandaloneBrowser: {
+      if (app_constants::kLacrosAppId == app_id) {
+        // Lacros Chrome browser window or PWA hosted in Lacros Chrome.
+        BrowserAppWindow* browser_app_window =
+            out_app->mutable_app()->mutable_browser_app_window();
+        FillBrowserAppWindow(app_restore_data, browser_app_window);
+      } else {
+        // Chrome app running in Lacros should have
+        // AppType::kStandaloneBrowserChromeApp and never reach here.
+        NOTREACHED();
+        // Ignore this app type.
+        return false;
+      }
+
+      break;
+    }
+
+    case apps::AppType::kStandaloneBrowserChromeApp: {
+      // Chrome App hosted in Lacros.
+      ChromeApp* chrome_app_window =
+          out_app->mutable_app()->mutable_chrome_app();
+      chrome_app_window->set_app_id(app_id);
+      FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
+      break;
+    }
+
+    case apps::AppType::kArc: {
+      ArcApp* arc_app = out_app->mutable_app()->mutable_arc_app();
+      arc_app->set_app_id(app_id);
+      FillArcApp(app_restore_data, arc_app);
+      break;
+    }
+
+    case apps::AppType::kBuiltIn:
+    case apps::AppType::kCrostini:
+    case apps::AppType::kPluginVm:
+    case apps::AppType::kUnknown:
+    case apps::AppType::kMacOs:
+    case apps::AppType::kRemote:
+    case apps::AppType::kBorealis:
+    case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserExtension:
+      // Unsupported app types will be ignored.
+      return false;
+  }
+
   FillAppWithWindowInfo(app_restore_data->GetWindowInfo().get(), out_app);
 
   // AppRestoreData.GetWindowInfo does not include `display_id` in the returned
@@ -626,44 +710,7 @@ void FillApp(const std::string& app_id,
   // fields.
   FillAppWithAppNameAndTitle(app_restore_data, out_app);
 
-  // See definition components/services/app_service/public/mojom/types.mojom
-  switch (app_type) {
-    case apps::AppType::kWeb:
-    case apps::AppType::kStandaloneBrowser: {
-      if (app_constants::kChromeAppId == app_id ||
-          app_constants::kLacrosAppId == app_id) {
-        // Chrome or Lacros Browser Window.
-        BrowserAppWindow* browser_app_window =
-            out_app->mutable_app()->mutable_browser_app_window();
-        FillBrowserAppWindow(app_restore_data, browser_app_window);
-      } else {
-        // PWA app.
-        ProgressiveWebApp* pwa_window =
-            out_app->mutable_app()->mutable_progress_web_app();
-        pwa_window->set_app_id(app_id);
-        FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
-      }
-      break;
-    }
-    case apps::AppType::kChromeApp: {
-      // Chrome extension backed app, Chrome Apps
-      ChromeApp* chrome_app_window =
-          out_app->mutable_app()->mutable_chrome_app();
-      chrome_app_window->set_app_id(app_id);
-      FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
-      break;
-    }
-    case apps::AppType::kArc: {
-      ArcApp* arc_app = out_app->mutable_app()->mutable_arc_app();
-      arc_app->set_app_id(app_id);
-      FillArcApp(app_restore_data, arc_app);
-      break;
-    }
-    default: {
-      // Unhandled app type.
-      break;
-    }
-  }
+  return true;
 }
 
 void FillArcExtraInfoFromProto(const ArcApp& app,
@@ -774,16 +821,16 @@ void FillWorkspaceDeskSpecifics(
       const int window_id = window_id_to_launch_info.first;
       const app_restore::AppRestoreData* app_restore_data =
           window_id_to_launch_info.second.get();
-      // The apps cache returns kChromeApp for browser windows, therefore we
-      // short circuit the cache retrieval if we get the browser ID.
-      const auto app_type = app_id == app_constants::kChromeAppId
-                                ? apps::AppType::kWeb
-                                : apps_cache->GetAppType(app_id);
+
+      const auto app_type = apps_cache->GetAppType(app_id);
 
       WorkspaceDeskSpecifics_App* app =
           out_entry_proto->mutable_desk()->add_apps();
       app->set_window_id(window_id);
-      FillApp(app_id, app_type, app_restore_data, app);
+      if (!FillApp(app_id, app_type, app_restore_data, app)) {
+        // Unsupported app type, remove this app entry.
+        out_entry_proto->mutable_desk()->mutable_apps()->RemoveLast();
+      }
     }
   }
 }

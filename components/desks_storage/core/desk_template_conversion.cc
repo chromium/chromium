@@ -24,6 +24,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/cpp/lacros_startup_state.h"  // nogncheck
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 
 using SyncWindowOpenDisposition =
@@ -37,10 +41,11 @@ constexpr char kAppId[] = "app_id";
 constexpr char kApps[] = "apps";
 constexpr char kAppName[] = "app_name";
 constexpr char kAppType[] = "app_type";
+constexpr char kAppTypeArc[] = "ARC";
 constexpr char kAppTypeBrowser[] = "BROWSER";
 constexpr char kAppTypeChrome[] = "CHROME_APP";
 constexpr char kAppTypeProgressiveWeb[] = "PWA";
-constexpr char kAppTypeArc[] = "ARC";
+constexpr char kAppTypeUnsupported[] = "UNSUPPORTED";
 constexpr char kBoundsInRoot[] = "bounds_in_root";
 constexpr char kCreatedTime[] = "created_time_usec";
 constexpr char kDesk[] = "desk";
@@ -191,8 +196,20 @@ std::string GetJsonAppId(const base::Value& app) {
     return std::string();  // App Type must be specified.
 
   if (app_type == kAppTypeBrowser) {
+    // Return the primary browser's known app ID.
+    const bool is_lacros =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        true;
+#else
+        // Note that this will launch the browser as lacros if it is enabled,
+        // even if it was saved as a non-lacros window (and vice-versa).
+        crosapi::lacros_startup_state::IsLacrosEnabled() &&
+        crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
     // Browser app has a known app ID.
-    return std::string(app_constants::kChromeAppId);
+    return std::string(is_lacros ? app_constants::kLacrosAppId
+                                 : app_constants::kChromeAppId);
   } else if (app_type == kAppTypeChrome || app_type == kAppTypeProgressiveWeb ||
              app_type == kAppTypeArc) {
     // Read the provided app ID
@@ -762,22 +779,45 @@ base::Value ConvertURLsToBrowserAppTabValues(const std::vector<GURL>& urls) {
 
 std::string GetAppTypeForJson(apps::AppRegistryCache* apps_cache,
                               const std::string& app_id) {
-  const auto app_type = app_id == app_constants::kChromeAppId
-                            ? apps::AppType::kWeb
-                            : apps_cache->GetAppType(app_id);
+  const auto app_type = apps_cache->GetAppType(app_id);
 
+  // This switch should follow the same structure as DeskSyncBridge#FillApp.
   switch (app_type) {
     case apps::AppType::kWeb:
-      return app_id == app_constants::kChromeAppId ? kAppTypeBrowser
-                                                   : kAppTypeProgressiveWeb;
-    case apps::AppType::kChromeApp:
+    case apps::AppType::kSystemWeb:
       return kAppTypeChrome;
+
+    case apps::AppType::kChromeApp:
+      if (app_id == app_constants::kChromeAppId) {
+        return kAppTypeBrowser;
+      } else {
+        return kAppTypeChrome;
+      }
+
+    case apps::AppType::kStandaloneBrowser:
+      if (app_id == app_constants::kLacrosAppId) {
+        return kAppTypeBrowser;
+      } else {
+        return kAppTypeUnsupported;
+      }
+
     case apps::AppType::kArc:
       return kAppTypeArc;
-    default:
-      // Default to browser if unsupported, this shouldn't be captured and
-      // there is no error type in the proto definition.
-      return kAppTypeBrowser;
+
+    case apps::AppType::kStandaloneBrowserChromeApp:
+      return kAppTypeChrome;
+
+    case apps::AppType::kBuiltIn:
+    case apps::AppType::kCrostini:
+    case apps::AppType::kPluginVm:
+    case apps::AppType::kUnknown:
+    case apps::AppType::kMacOs:
+    case apps::AppType::kRemote:
+    case apps::AppType::kBorealis:
+    case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserExtension:
+      // Default to unsupported. This app should not be captured.
+      return kAppTypeUnsupported;
   }
 }
 
@@ -785,6 +825,12 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
                                    const int window_id,
                                    const app_restore::AppRestoreData* app,
                                    apps::AppRegistryCache* apps_cache) {
+  std::string app_type = GetAppTypeForJson(apps_cache, app_id);
+
+  if (kAppTypeUnsupported == app_type) {
+    return base::Value(base::Value::Type::NONE);
+  }
+
   base::Value app_data = base::Value(base::Value::Type::DICTIONARY);
 
   if (app->current_bounds.has_value()) {
@@ -821,8 +867,6 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
 
   if (app->activation_index.has_value())
     app_data.SetKey(kZIndex, base::Value(app->activation_index.value()));
-
-  std::string app_type = GetAppTypeForJson(apps_cache, app_id);
 
   app_data.SetKey(kAppType, base::Value(app_type));
 
@@ -898,8 +942,12 @@ base::Value ConvertRestoreDataToValue(
 
   for (const auto& app : restore_data->app_id_to_launch_list()) {
     for (const auto& window : app.second) {
-      desk_data.Append(ConvertWindowToDeskApp(app.first, window.first,
-                                              window.second.get(), apps_cache));
+      auto app_data = ConvertWindowToDeskApp(app.first, window.first,
+                                             window.second.get(), apps_cache);
+      if (app_data.is_none())
+        continue;
+
+      desk_data.Append(std::move(app_data));
     }
   }
 

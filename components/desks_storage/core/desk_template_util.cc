@@ -55,17 +55,26 @@ void PopulateAppRegistryCache(AccountId account_id,
                               apps::AppRegistryCache* cache) {
   std::vector<apps::AppPtr> deltas;
 
-  deltas.push_back(MakeApp(kTestPwaAppId, "Test PWA App", apps::AppType::kWeb));
+  deltas.push_back(
+      MakeApp(kTestPwaAppId, "Test PWA App", apps::AppType::kChromeApp));
   // chromeAppId returns kExtension in the real Apps cache.
-  deltas.push_back(MakeApp(app_constants::kChromeAppId, "Chrome Browser",
+  deltas.push_back(MakeApp(app_constants::kChromeAppId, "Ash Chrome Browser",
                            apps::AppType::kChromeApp));
+  deltas.push_back(MakeApp(app_constants::kLacrosAppId, "Lacros Chrome Browser",
+                           apps::AppType::kStandaloneBrowser));
   deltas.push_back(
       MakeApp(kTestChromeAppId, "Test Chrome App", apps::AppType::kChromeApp));
   deltas.push_back(MakeApp(kTestArcAppId, "Arc app", apps::AppType::kArc));
   deltas.push_back(
-      MakeApp(kTestPwaAppId1, "Test PWA App", apps::AppType::kWeb));
+      MakeApp(kTestPwaAppId1, "Test PWA App 2", apps::AppType::kChromeApp));
+  deltas.push_back(MakeApp(kTestChromeAppId1, "Test Chrome App 2",
+                           apps::AppType::kChromeApp));
   deltas.push_back(
-      MakeApp(kTestChromeAppId1, "Test Chrome App", apps::AppType::kChromeApp));
+      MakeApp(kTestSwaAppId, "Test System Web App 1", apps::AppType::kWeb));
+  deltas.push_back(MakeApp(kTestUnsupportedAppId, "Test Supported App 1",
+                           apps::AppType::kPluginVm));
+  deltas.push_back(MakeApp(kTestLacrosChromeAppId, "Test Chrome App",
+                           apps::AppType::kStandaloneBrowserChromeApp));
 
   if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
     cache->OnApps(std::move(deltas), apps::AppType::kUnknown,

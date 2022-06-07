@@ -15,6 +15,10 @@ namespace desks_storage {
 
 namespace desk_template_util {
 
+constexpr char kTestSwaAppId[] = "test_swa_app_id";
+constexpr char kTestLacrosChromeAppId[] = "test_lacros_chrome_app_id";
+constexpr char kTestUnsupportedAppId[] = "test_unsupported_app_id";
+
 ash::DeskTemplate* FindOtherEntryWithName(
     const std::u16string& name,
     const base::GUID& uuid,

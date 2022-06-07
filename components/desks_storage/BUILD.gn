@@ -49,6 +49,10 @@ source_set("unit_tests") {
     "core/desk_template_conversion_unittests.cc",
     "core/desk_template_util_unittests.cc",
     "core/local_desks_data_manager_unittests.cc",
+    "core/saved_desk_builder.cc",
+    "core/saved_desk_builder.h",
+    "core/saved_desk_test_util.cc",
+    "core/saved_desk_test_util.h",
   ]
   deps = [
     ":desks_storage",

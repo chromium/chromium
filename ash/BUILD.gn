@@ -3030,6 +3030,7 @@ test("ash_unittests") {
     "//chromeos/components/sensors:test_support",
     "//chromeos/components/sensors/mojom",
     "//chromeos/constants",
+    "//chromeos/crosapi/cpp",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/audio",
     "//chromeos/dbus/hermes",

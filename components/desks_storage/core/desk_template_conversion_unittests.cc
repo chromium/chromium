@@ -9,6 +9,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
+#include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -19,6 +20,8 @@
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/desks_storage/core/desk_template_util.h"
+#include "components/desks_storage/core/saved_desk_builder.h"
+#include "components/desks_storage/core/saved_desk_test_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -29,8 +32,12 @@ namespace desks_storage {
 
 namespace {
 
+const int32_t kTestWindowId = 1234567;
 const std::string kEmptyJson = "{}";
 const std::string kTestUuidBrowser = "040b6112-67f2-4d3c-8ba8-53a117272eba";
+constexpr int kBrowserWindowId = 1555;
+const std::string kBrowserUrl1 = "https://example.com/";
+const std::string kBrowserUrl2 = "https://example.com/2";
 const std::string kTestUuidChromeAndProgressive =
     "7f4b7ff0-970a-41bb-aa91-f6c3e2724207";
 const std::string kBrowserTemplateName = "BrowserTest";
@@ -44,7 +51,9 @@ const std::string kValidTemplateBrowser =
     "\"1633535632\",\"desk_type\":\"TEMPLATE\",\"desk\":{\"apps\":[{\"window_"
     "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
-    "\"url\":\"https://example.com/\"},{\"url\":\"https://"
+    "\"url\":\"" +
+    kBrowserUrl1 +
+    "\"},{\"url\":\"https://"
     "example.com/"
     "2\"}],\"tab_groups\":[{\"first_"
     "index\":1,\"last_index\":2,\"title\":\"sample_tab_"
@@ -66,7 +75,8 @@ const std::string kValidTemplateChromeAndProgressive =
     "\",\"window_id\":0,\"display_id\":\"100\",\"event_flag\":0,\"pre_"
     "minimized_window_state\":\"NORMAL\", \"snap_percent\":75},{\"window_"
     "bound\":{\"left\":0,\"top\":0,\"height\":120,\"width\":120},\"window_"
-    "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"PWA\",\"app_id\":\"" +
+    "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"CHROME_APP\",\"app_id\":"
+    "\"" +
     kProgressiveAppid +
     "\",\"window_id\":1,\"display_id\":"
     "\"100\",\"event_flag\":0,\"pre_minimized_window_state\":\"NORMAL\"}]}}";
@@ -77,9 +87,9 @@ const std::string kTemplateWithoutType =
     "\"1633535632\",\"desk\":{\"apps\":[{\"window_"
     "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
-    "\"url\":\"https://example.com/\"},{\"url\":\"https://"
-    "example.com/"
-    "2\"}],\"tab_groups\":[{\"first_"
+    "\"url\":\"" +
+    kBrowserUrl1 + "\"},{\"url\":\"" + kBrowserUrl1 +
+    "\"}],\"tab_groups\":[{\"first_"
     "index\":1,\"last_index\":2,\"title\":\"sample_tab_"
     "group\",\"color\":\"GREY\",\"is_collapsed\":false}],\"active_tab_index\":"
     "1,\"window_id\":0,"
@@ -159,8 +169,8 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
   // it
   // https://osscs.corp.google.com/chromium/chromium/src/+/main:components/app_restore/app_restore_data.cc
   EXPECT_TRUE(ali->urls.has_value());
-  EXPECT_EQ(ali->urls.value()[0].spec(), "https://example.com/");
-  EXPECT_EQ(ali->urls.value()[1].spec(), "https://example.com/2");
+  EXPECT_EQ(ali->urls.value()[0].spec(), kBrowserUrl1);
+  EXPECT_EQ(ali->urls.value()[1].spec(), kBrowserUrl2);
   EXPECT_TRUE(ali->tab_group_infos.has_value());
   EXPECT_EQ(ali->tab_group_infos.value()[0], MakeSampleTabGroup());
   EXPECT_TRUE(wi->window_state_type.has_value());
@@ -314,6 +324,33 @@ TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonBrowserTest) {
   EXPECT_EQ(parsed_json.value, desk_template_value);
 }
 
+TEST_F(DeskTemplateConversionTest, ToJsonIgnoreUnsupportedApp) {
+  base::StringPiece raw_json = base::StringPiece(kValidTemplateBrowser);
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(raw_json);
+
+  EXPECT_TRUE(parsed_json.value.has_value());
+  EXPECT_TRUE(parsed_json.value->is_dict());
+
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      desk_template_conversion::ParseDeskTemplateFromSource(
+          parsed_json.value.value(), ash::DeskTemplateSource::kUser);
+
+  // Adding this unsupported app should not change the serialized JSON content.
+  saved_desk_test_util::AddGenericAppWindow(
+      kTestWindowId, desk_template_util::kTestUnsupportedAppId,
+      desk_template->mutable_desk_restore_data());
+
+  apps::AppRegistryCache* app_cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
+
+  base::Value desk_template_value =
+      desk_template_conversion::SerializeDeskTemplateAsPolicy(
+          desk_template.get(), app_cache);
+
+  EXPECT_EQ(parsed_json.value, desk_template_value);
+}
+
 TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonAppTest) {
   base::StringPiece raw_json =
       base::StringPiece(kValidTemplateChromeAndProgressive);
@@ -335,6 +372,58 @@ TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonAppTest) {
           desk_template.get(), app_cache);
 
   EXPECT_EQ(parsed_json.value, desk_template_value);
+}
+
+TEST_F(DeskTemplateConversionTest, EnsureLacrosBrowserWindowsSavedProperly) {
+  base::Time created_time = base::Time::Now();
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      SavedDeskBuilder()
+          .SetUuid(kTestUuidBrowser)
+          .SetName(kBrowserTemplateName)
+          .SetType(ash::DeskTemplateType::kSaveAndRecall)
+          .SetCreatedTime(created_time)
+          .AddLacrosBrowserAppWindow(kBrowserWindowId,
+                                     {GURL(kBrowserUrl1), GURL(kBrowserUrl2)})
+          .Build();
+
+  apps::AppRegistryCache* app_cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
+
+  base::Value desk_template_value =
+      desk_template_conversion::SerializeDeskTemplateAsPolicy(
+          desk_template.get(), app_cache);
+
+  base::Value::Dict expected_browser_tab1;
+  expected_browser_tab1.Set("url", base::Value(kBrowserUrl1));
+  base::Value::Dict expected_browser_tab2;
+  expected_browser_tab2.Set("url", base::Value(kBrowserUrl2));
+  base::Value::List expected_tab_list;
+  expected_tab_list.Append(std::move(expected_browser_tab1));
+  expected_tab_list.Append(std::move(expected_browser_tab2));
+
+  base::Value::Dict expected_browser_app_value;
+  expected_browser_app_value.Set("app_type", base::Value("BROWSER"));
+  expected_browser_app_value.Set("event_flag", base::Value(0));
+  expected_browser_app_value.Set("window_id", base::Value(kBrowserWindowId));
+  expected_browser_app_value.Set("tabs", std::move(expected_tab_list));
+
+  base::Value::List expected_app_list;
+  expected_app_list.Append(std::move(expected_browser_app_value));
+
+  base::Value::Dict expected_desk_value;
+  expected_desk_value.Set("apps", std::move(expected_app_list));
+
+  base::Value::Dict expected_value;
+  expected_value.Set("version", base::Value(1));
+  expected_value.Set("uuid", base::Value(kTestUuidBrowser));
+  expected_value.Set("name", base::Value(kBrowserTemplateName));
+  expected_value.Set("created_time_usec", base::TimeToValue(created_time));
+  expected_value.Set("updated_time_usec",
+                     base::TimeToValue(desk_template->GetLastUpdatedTime()));
+  expected_value.Set("desk_type", base::Value("SAVE_AND_RECALL"));
+  expected_value.Set("desk", std::move(expected_desk_value));
+
+  EXPECT_EQ(expected_value, desk_template_value);
 }
 
 }  // namespace desks_storage
