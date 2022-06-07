@@ -16,6 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 
 namespace ash {
 namespace {

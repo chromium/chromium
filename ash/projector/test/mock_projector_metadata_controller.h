@@ -7,6 +7,7 @@
 
 #include "ash/projector/projector_metadata_controller.h"
 #include "base/files/file_path.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

@@ -97,6 +97,10 @@ mojom("mojom") {
     public_deps += [ "//sandbox/mac/mojom" ]
   }
 
+  if (!is_android) {
+    public_deps += [ ":speech_recognition" ]
+  }
+
   enabled_features = []
 
   # Help select ServiceSandbox for media_service.mojom.
@@ -657,36 +661,6 @@ mojom("mojom") {
     },
   ]
 
-  if (!is_android) {
-    cpp_typemaps += [
-      {
-        types = [
-          {
-            mojom = "media.mojom.HypothesisParts"
-            cpp = "::media::HypothesisParts"
-          },
-          {
-            mojom = "media.mojom.TimingInformation"
-            cpp = "::media::TimingInformation"
-          },
-          {
-            mojom = "media.mojom.SpeechRecognitionResult"
-            cpp = "::media::SpeechRecognitionResult"
-          },
-        ]
-        traits_headers = [
-          "speech_recognition_result_mojom_traits.h",
-          "speech_recognition_result.h",
-        ]
-        traits_sources = [
-          "speech_recognition_result.cc",
-          "speech_recognition_result_mojom_traits.cc",
-        ]
-        traits_public_deps = [ "//base" ]
-      },
-    ]
-  }
-
   if (is_win) {
     cpp_typemaps += [
       {
@@ -757,6 +731,44 @@ mojom("encryption_pattern") {
   ]
 }
 
+# Speech recognition API used between renderer/browser/service and between
+# LaCrOS/Ash.
+mojom("speech_recognition") {
+  sources = [ "speech_recognition.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media.mojom.HypothesisParts"
+          cpp = "::media::HypothesisParts"
+        },
+        {
+          mojom = "media.mojom.TimingInformation"
+          cpp = "::media::TimingInformation"
+        },
+        {
+          mojom = "media.mojom.SpeechRecognitionResult"
+          cpp = "::media::SpeechRecognitionResult"
+        },
+      ]
+      traits_headers = [
+        "speech_recognition_result_mojom_traits.h",
+        "speech_recognition_result.h",
+      ]
+      traits_sources = [
+        "speech_recognition_result.cc",
+        "speech_recognition_result_mojom_traits.cc",
+      ]
+      traits_public_deps = [ "//base" ]
+    },
+  ]
+  public_deps = [
+    ":audio_data",
+    "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
+  ]
+}
+
 source_set("shared_mojom_traits") {
   sources = [
     "audio_processing_mojom_traits.cc",
@@ -821,4 +833,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx:test_support",
   ]
+
+  if (!is_android) {
+    deps += [ ":speech_recognition" ]
+  }
 }

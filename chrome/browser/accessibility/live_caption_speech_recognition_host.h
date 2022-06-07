@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
