@@ -8,7 +8,6 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './battery_status_card.js';
 import './cpu_card.js';
-import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 import './icons.js';
 import './memory_card.js';

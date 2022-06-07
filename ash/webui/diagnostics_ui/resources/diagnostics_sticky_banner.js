@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

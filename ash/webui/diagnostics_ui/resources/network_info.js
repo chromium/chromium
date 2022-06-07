@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import './cellular_info.js';
-import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 import './ethernet_info.js';
 import './wifi_info.js';

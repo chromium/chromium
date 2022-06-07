@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import './data_point.js';
-import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
