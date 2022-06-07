@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CurrentWallpaper, WallpaperObserverInterface, WallpaperObserverReceiver, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, WallpaperObserverInterface, WallpaperObserverReceiver, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setSelectedImageAction} from './wallpaper_actions.js';
+import {setSelectedImageAction, setUpdatedDailyRefreshImageAction} from './wallpaper_actions.js';
 import {getDailyRefreshState} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
@@ -61,6 +61,10 @@ export class WallpaperObserver implements WallpaperObserverInterface {
       initialLoadTimeout = null;
     }
     store.dispatch(setSelectedImageAction(currentWallpaper));
+    if (currentWallpaper.type == WallpaperType.kDailyGooglePhotos ||
+        currentWallpaper.type == WallpaperType.kDefault) {
+      store.dispatch(setUpdatedDailyRefreshImageAction());
+    }
     // Daily Refresh state should also get updated when wallpaper changes.
     getDailyRefreshState(getWallpaperProvider(), store);
   }
