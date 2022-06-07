@@ -150,10 +150,7 @@ PdfViewPluginBase::~PdfViewPluginBase() = default;
 
 void PdfViewPluginBase::InitializeBase(std::unique_ptr<PDFiumEngine> engine,
                                        base::StringPiece src_url,
-                                       base::StringPiece original_url,
-                                       bool full_frame) {
-  full_frame_ = full_frame;
-
+                                       base::StringPiece original_url) {
   DCHECK(engine);
   engine_ = std::move(engine);
 
@@ -337,7 +334,7 @@ void PdfViewPluginBase::DocumentLoadComplete() {
   if (accessibility_state_ == AccessibilityState::kPending)
     LoadAccessibility();
 
-  if (!full_frame_)
+  if (!full_frame())
     return;
 
   DidStopLoading();

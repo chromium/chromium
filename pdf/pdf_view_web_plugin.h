@@ -347,6 +347,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                               const gfx::PointF& right,
                               int right_height) override;
   void UserMetricsRecordAction(const std::string& action) override;
+  bool full_frame() const override;
   gfx::Vector2d plugin_offset_in_frame() const override;
 
  private:
@@ -457,6 +458,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The plugin rect in CSS pixels.
   gfx::Rect css_plugin_rect_;
+
+  // True if the plugin occupies the entire frame (not embedded).
+  bool full_frame_ = false;
 
   // The background color of the PDF viewer.
   SkColor background_color_ = SK_ColorTRANSPARENT;

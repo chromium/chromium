@@ -238,12 +238,11 @@ bool PdfViewWebPlugin::InitializeCommon() {
   is_print_preview_ = (embedder_origin == kChromePrintHost);
   CHECK(IsPrintPreview() || embedder_origin == kChromeExtensionHost);
 
+  full_frame_ = params->full_frame;
   background_color_ = params->background_color;
-
   InitializeBase(CreateEngine(this, params->script_option),
                  /*src_url=*/params->src_url,
-                 /*original_url=*/params->original_url,
-                 /*full_frame=*/params->full_frame);
+                 /*original_url=*/params->original_url);
 
   SendSetSmoothScrolling();
 
@@ -713,7 +712,7 @@ void PdfViewWebPlugin::DidFormOpen(int32_t result) {
 }
 
 std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoader() {
-  if (full_frame()) {
+  if (full_frame_) {
     DidStartLoading();
 
     // Disable save and print until the document is fully loaded, since they
@@ -1051,6 +1050,11 @@ void PdfViewWebPlugin::NotifySelectionChanged(const gfx::PointF& left,
 // TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
 void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
   client_->RecordComputedAction(action);
+}
+
+// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
+bool PdfViewWebPlugin::full_frame() const {
+  return full_frame_;
 }
 
 gfx::Vector2d PdfViewWebPlugin::plugin_offset_in_frame() const {

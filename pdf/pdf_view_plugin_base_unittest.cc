@@ -152,6 +152,8 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void, UserMetricsRecordAction, (const std::string&), (override));
 
+  MOCK_METHOD(bool, full_frame, (), (const override));
+
   void clear_sent_messages() { sent_messages_.clear(); }
 
   const std::vector<base::Value>& sent_messages() const {

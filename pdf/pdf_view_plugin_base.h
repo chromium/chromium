@@ -165,8 +165,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // parameters come from the corresponding plugin attributes.
   void InitializeBase(std::unique_ptr<PDFiumEngine> engine,
                       base::StringPiece src_url,
-                      base::StringPiece original_url,
-                      bool full_frame);
+                      base::StringPiece original_url);
 
   // Creates a new `PDFiumEngine`.
   virtual std::unique_ptr<PDFiumEngine> CreateEngine(
@@ -320,7 +319,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   const std::string& link_under_cursor() const { return link_under_cursor_; }
 
-  bool full_frame() const { return full_frame_; }
+  virtual bool full_frame() const = 0;
 
   const gfx::Rect& available_area() const { return available_area_; }
 
@@ -430,9 +429,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // The URL currently under the cursor.
   std::string link_under_cursor_;
-
-  // True if the plugin occupies the entire frame (not embedded).
-  bool full_frame_ = false;
 
   // Image data buffer for painting.
   SkBitmap image_data_;
