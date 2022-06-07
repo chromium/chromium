@@ -87,9 +87,10 @@ class Color:
         return False
 
     def _ParseRGBRef(self, rgb_ref):
-        match = re.match('^\$([a-z0-9_]+)\.rgb$', rgb_ref)
+        match = re.match(r'^\$([a-z0-9_\.\-]+)\.rgb$', rgb_ref)
         if not match:
-            raise ValueError('Expected a reference to an RGB variable')
+            raise ValueError(
+                f'Expected a reference to an RGB variable: {rgb_ref}')
 
         rgb_var = match.group(1)
 
@@ -102,7 +103,7 @@ class Color:
 
     def Parse(self, value):
         def ParseHex(value):
-            match = re.match('^#([0-9a-f]*)$', value)
+            match = re.match(r'^#([0-9a-f]*)$', value)
             if not match:
                 return False
 
@@ -116,7 +117,7 @@ class Color:
             return True
 
         def ParseRGB(value):
-            match = re.match('^rgb\((.*)\)$', value)
+            match = re.match(r'^rgb\((.*)\)$', value)
             if not match:
                 return False
 
@@ -135,7 +136,7 @@ class Color:
                 'rgb() expected to have either 1 reference or 3 ints')
 
         def ParseRGBA(value):
-            match = re.match('^rgba\((.*)\)$', value)
+            match = re.match(r'^rgba\((.*)\)$', value)
             if not match:
                 return False
 
@@ -154,7 +155,7 @@ class Color:
                              '1 reference + alpha, or 3 ints + alpha')
 
         def ParseBlend(value):
-            match = re.match('^blend\((.*)\)$', value)
+            match = re.match(r'^blend\((.*)\)$', value)
             if not match:
                 return False
 
@@ -167,7 +168,7 @@ class Color:
             raise ValueError('blend() expected to have 2 colors')
 
         def ParseVariableReference(value):
-            match = re.match('^\$([\w\d_]+)$', value)
+            match = re.match(r'^\$([\w\d_\.\-]+)$', value)
             if not match:
                 return False
 

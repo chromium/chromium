@@ -120,7 +120,10 @@ class CSSStyleGenerator(BaseGenerator):
         return prefix + '-' if prefix else ''
 
     def ToCSSVarName(self, name):
-        return '--%s%s' % (self._GetCSSVarPrefix(name), name.replace('_', '-'))
+        # This handles old_semantic_names as well as new.token-names.
+        var_name = name.translate(str.maketrans('-_.', '_--'))
+
+        return '--%s%s' % (self._GetCSSVarPrefix(name), var_name)
 
     def _CSSOpacity(self, opacity):
         if opacity.var:

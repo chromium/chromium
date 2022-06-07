@@ -38,7 +38,7 @@ class StyleVariable(object):
     '''
 
     def __init__(self, variable_type, name, json_value, context):
-        if not re.match('^[a-z0-9_]+$', name):
+        if not re.match(r'^[a-z0-9_\.\-]+$', name):
             raise ValueError(name + ' is not a valid variable name ' +
                              '(lower case, 0-9, _)')
         self.variable_type = variable_type
@@ -302,16 +302,24 @@ class Model(object):
         '''Adds a new variable to the submodel for |variable_type|.
         '''
         try:
-            added = self.submodels[variable_type].Add(name, value_obj, context)
+            full_name = self.FullTokenName(name, context)
+            added = self.submodels[variable_type].Add(full_name, value_obj,
+                                                      context)
         except ValueError as err:
             raise ValueError(
-                f'Error parsing {variable_type} "{name}": {value_obj}\n  {err}'
-            )
+                f'Error parsing {variable_type} "{full_name}": {value_obj}'
+            ) from err
 
         for var in added:
             if var.name in self.variable_map:
                 raise ValueError('Variable name "%s" is reused' % name)
             self.variable_map[var.name] = var
+
+    def FullTokenName(self, name, context):
+        namespace = context['token_namespace']
+        if namespace:
+            return f'{namespace}.{name}'
+        return name
 
     def PostProcess(self):
         '''Called after all variables have been added to perform operations that

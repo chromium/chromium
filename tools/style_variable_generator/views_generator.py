@@ -59,7 +59,7 @@ class ViewsStyleGenerator(CSSStyleGenerator):
         return color_list
 
     def _ToConstName(self, var_name):
-        return 'k%s' % var_name.title().replace('_', '')
+        return 'k%s' % re.sub(r'[_\-\.]', '', var_name.title())
 
     def _AlphaToHex(self, opacity):
         return '0x%X' % math.floor(opacity.a * 255)

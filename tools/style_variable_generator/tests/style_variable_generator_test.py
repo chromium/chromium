@@ -48,6 +48,12 @@ class ViewsStyleHGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
             ['colors_test_palette.json5', 'colors_test.json5'])
         self.expected_output_file = 'colors_test_expected.h.generated'
 
+    def testTokenStyleNames(self):
+        self.generator = ViewsHStyleGenerator()
+        self.AddJSONFilesToModel(
+            ['colors_ref_tokens_test.json5', 'colors_sys_tokens_test.json5'])
+        self.expected_output_file = 'colors_tokens_test_expected.h.generated'
+
 
 class ViewsStyleCCGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
@@ -55,6 +61,12 @@ class ViewsStyleCCGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         self.AddJSONFilesToModel(
             ['colors_test_palette.json5', 'colors_test.json5'])
         self.expected_output_file = 'colors_test_expected.cc.generated'
+
+    def testTokenStyleNames(self):
+        self.generator = ViewsCCStyleGenerator()
+        self.AddJSONFilesToModel(
+            ['colors_ref_tokens_test.json5', 'colors_sys_tokens_test.json5'])
+        self.expected_output_file = 'colors_tokens_test_expected.cc.generated'
 
 
 class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
@@ -100,6 +112,13 @@ class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         expected_file_name = 'suppress_sources_comment_test_expected.css'
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
+    def testTokenStyleNames(self):
+        self.generator = CSSStyleGenerator()
+        self.AddJSONFilesToModel(
+            ['colors_ref_tokens_test.json5', 'colors_sys_tokens_test.json5'])
+        expected_file_name = 'colors_tokens_test_expected.css'
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
+
 
 class TSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
@@ -136,6 +155,13 @@ class TSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def testSuppressSourcesComment(self):
         self.generator.generator_options = {'suppress_sources_comment': 'true'}
         expected_file_name = 'suppress_sources_comment_test_expected.ts'
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
+
+    def testTokenStyleNames(self):
+        self.generator = TSStyleGenerator()
+        self.AddJSONFilesToModel(
+            ['colors_ref_tokens_test.json5', 'colors_sys_tokens_test.json5'])
+        expected_file_name = 'colors_tokens_test_expected.ts'
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
 

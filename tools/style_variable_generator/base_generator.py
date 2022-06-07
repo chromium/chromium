@@ -62,7 +62,7 @@ class BaseGenerator:
                 with open(path, 'r') as f:
                     self.AddJSONToModel(f.read(), path)
             except ValueError as err:
-                raise ValueError('\n%s:\n    %s' % (path, err))
+                raise ValueError(f'Could not add {path}') from err
 
         self.model.PostProcess()
 
@@ -79,6 +79,7 @@ class BaseGenerator:
                            object_pairs_hook=collections.OrderedDict)
 
         context = data.get('options', {})
+        context['token_namespace'] = data.get('token_namespace', '')
         self.in_file_to_context[in_file] = context
 
         # Add variables to the model.

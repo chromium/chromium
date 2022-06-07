@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import re
 from style_variable_generator.css_generator import CSSStyleGenerator
-
 
 class TSStyleGenerator(CSSStyleGenerator):
     '''Generator for TS Variables'''
@@ -28,4 +28,4 @@ class TSStyleGenerator(CSSStyleGenerator):
         return filters
 
     def ToTSVarName(self, model_name):
-        return model_name.upper()
+        return re.sub(r'[\.\-]', '_', model_name.upper())

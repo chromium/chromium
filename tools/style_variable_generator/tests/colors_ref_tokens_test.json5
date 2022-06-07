@@ -1,0 +1,6 @@
+{
+  token_namespace: 'cros.ref',
+  colors: {
+    primary50: "#202124",
+  },
+}

@@ -24,7 +24,7 @@ class Opacity:
 
     def Parse(self, value):
         if isinstance(value, str):
-            match = re.match('^\$([a-z0-9_]+_opacity)$', value)
+            match = re.match(r'^\$([a-z0-9_\-\.]+)$', value)
             if match:
                 self.var = match.group(1)
                 return
