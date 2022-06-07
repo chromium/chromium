@@ -1576,13 +1576,6 @@ DictionaryValue::DictionaryValue(const LegacyDictStorage& storage)
 DictionaryValue::DictionaryValue(LegacyDictStorage&& storage) noexcept
     : Value(std::move(storage)) {}
 
-bool DictionaryValue::HasKey(StringPiece key) const {
-  DCHECK(IsStringUTF8AllowingNoncharacters(key));
-  auto current_entry = dict().find(key);
-  DCHECK((current_entry == dict().end()) || current_entry->second);
-  return current_entry != dict().end();
-}
-
 Value* DictionaryValue::Set(StringPiece path, std::unique_ptr<Value> in_value) {
   DCHECK(IsStringUTF8AllowingNoncharacters(path));
   DCHECK(in_value);

@@ -1257,11 +1257,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   explicit DictionaryValue(const LegacyDictStorage& in_dict);
   explicit DictionaryValue(LegacyDictStorage&& in_dict) noexcept;
 
-  // Returns true if the current dictionary has a value for the given key.
-  //
-  // DEPRECATED: prefer `Value::Dict::contains()`.
-  bool HasKey(StringPiece key) const;
-
   // Sets the Value associated with the given path starting from this object.
   // A path has the form "<key>" or "<key>.<key>.[...]", where "." indexes
   // into the next DictionaryValue down.  Obviously, "." can't be used
