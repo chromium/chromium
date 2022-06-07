@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/ui/util/named_guide_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
@@ -154,7 +156,9 @@ CGFloat ToolbarHeight() {
   // Omnibox, used for animations.
   // TODO(crbug.com/936811): See if it is possible to share some initialization
   // code with the real Omnibox.
-  UIColor* color = [UIColor colorNamed:kTextfieldPlaceholderColor];
+  UIColor* color = IsContentSuggestionsUIModuleRefreshEnabled()
+                       ? [UIColor colorNamed:kGrey700Color]
+                       : [UIColor colorNamed:kTextfieldPlaceholderColor];
   OmniboxContainerView* omnibox =
       [[OmniboxContainerView alloc] initWithFrame:CGRectZero
                                         textColor:color
@@ -454,8 +458,18 @@ CGFloat ToolbarHeight() {
     _fakeLocationBar.userInteractionEnabled = NO;
     _fakeLocationBar.clipsToBounds = YES;
     _fakeLocationBar.backgroundColor =
-        [UIColor colorNamed:kTextfieldBackgroundColor];
+        IsContentSuggestionsUIModuleRefreshEnabled()
+            ? [UIColor clearColor]
+            : [UIColor colorNamed:kTextfieldBackgroundColor];
     _fakeLocationBar.translatesAutoresizingMaskIntoConstraints = NO;
+    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+      GradientView* gradientView = [[GradientView alloc]
+          initWithTopColor:[UIColor colorNamed:kGrey300Color]
+               bottomColor:[UIColor colorNamed:kGrey200Color]];
+      gradientView.translatesAutoresizingMaskIntoConstraints = NO;
+      [_fakeLocationBar addSubview:gradientView];
+      AddSameConstraints(_fakeLocationBar, gradientView);
+    }
 
     _fakeLocationBarHighlightView = [[UIView alloc] init];
     _fakeLocationBarHighlightView.userInteractionEnabled = NO;
