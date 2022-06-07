@@ -19,6 +19,19 @@
 namespace url_param_filter {
 
 namespace {
+constexpr char DEFAULT_TAG[] = "default";
+
+bool HasExperimentTag(const FilterClassification& classification,
+                      const std::string& tag) {
+  // We expect this list to almost never exceed 2 items, making a loop
+  // acceptable.
+  for (auto i : classification.experiment_tags()) {
+    if (i == tag) {
+      return true;
+    }
+  }
+  return false;
+}
 
 void AppendParams(ClassificationMap& map,
                   const FilterClassification& classification,
@@ -28,7 +41,8 @@ void AppendParams(ClassificationMap& map,
     // We retain whether the classification was experimental, however, to write
     // a separate metric when those classifications are used.
     map[classification.site()][use_case][param.name()] =
-        classification.has_experiment_identifier()
+        !classification.experiment_tags().empty() &&
+                !HasExperimentTag(classification, DEFAULT_TAG)
             ? ClassificationExperimentStatus::EXPERIMENTAL
             : ClassificationExperimentStatus::NON_EXPERIMENTAL;
   }
@@ -37,8 +51,8 @@ void AppendParams(ClassificationMap& map,
 void ProcessClassification(ClassificationMap& map,
                            const FilterClassification& classification,
                            std::string experiment_identifier) {
-  if (classification.has_experiment_identifier() &&
-      experiment_identifier != classification.experiment_identifier()) {
+  if (!experiment_identifier.empty() &&
+      !HasExperimentTag(classification, experiment_identifier)) {
     return;
   }
   if (classification.use_cases_size() > 0) {
@@ -64,8 +78,8 @@ ClassificationMap GetClassificationsFromFeature(
       for (auto i : classifications.classifications()) {
         if (i.site_role() == role) {
           // When retrieving classifications from the feature, we do not allow
-          // additional experiment overrides; we instead use the default "".
-          DCHECK(!i.has_experiment_identifier());
+          // additional experiment overrides.
+          DCHECK(i.experiment_tags().empty());
           ProcessClassification(map, i, "");
         }
       }
@@ -83,6 +97,11 @@ ClassificationMap GetClassificationMap(
   ClassificationMap map;
   std::string experiment_identifier = base::GetFieldTrialParamValueByFeature(
       features::kIncognitoParamFilterEnabled, "experiment_identifier");
+  // If there is no experiment identifier passed via the feature, then use the
+  // classifications that are marked `default`.
+  if (experiment_identifier.empty()) {
+    experiment_identifier = DEFAULT_TAG;
+  }
   for (const FilterClassification& classification : classifications.value()) {
     ProcessClassification(map, classification, experiment_identifier);
   }

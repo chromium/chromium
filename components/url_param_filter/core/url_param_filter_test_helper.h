@@ -42,13 +42,15 @@ std::string CreateSerializedUrlParamFilterClassificationForTesting(
                             std::vector<std::string>>>& source_params,
     const std::map<std::string,
                    std::map<FilterClassification::UseCase,
-                            std::vector<std::string>>>& destination_params);
+                            std::vector<std::string>>>& destination_params,
+    const std::vector<std::string>& experiment_tags);
 
 // Equivalent to the other overload, but uses empty use case lists for all
 // parameters.
 std::string CreateSerializedUrlParamFilterClassificationForTesting(
     const std::map<std::string, std::vector<std::string>>& source_params,
-    const std::map<std::string, std::vector<std::string>>& destination_params);
+    const std::map<std::string, std::vector<std::string>>& destination_params,
+    const std::vector<std::string>& experiment_tags);
 
 // Create a base64 representation of the URL param filter classifications
 // proto. Used for initialization of the feature params in tests.
@@ -112,6 +114,6 @@ void AddClassification(
     FilterClassification_SiteRole role,
     const std::vector<std::string>& params,
     const std::vector<FilterClassification::UseCase>& use_cases,
-    const std::string& experiment_identifier);
+    const std::vector<std::string>& experiment_tags);
 }  // namespace url_param_filter
 #endif  // COMPONENTS_URL_PARAM_FILTER_CORE_URL_PARAM_FILTER_TEST_HELPER_H_

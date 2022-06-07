@@ -28,6 +28,8 @@ namespace {
 
 enum ShouldFilterState { kUnset, kTrue, kFalse };
 
+constexpr char DEFAULT_TAG[] = "default";
+
 std::string ShouldFilterStateToString(ShouldFilterState state) {
   switch (state) {
     case ShouldFilterState::kUnset:
@@ -107,7 +109,7 @@ class ClassificationsLoaderFeatureDisabledAndComponentInstalled
             component_dir_.GetPath(),
             CreateSerializedUrlParamFilterClassificationForTesting(
                 {{"source.test", {"plzblock_src"}}},
-                {{"dest.test", {"plzblock_dest"}}}));
+                {{"dest.test", {"plzblock_dest"}}}, {DEFAULT_TAG}));
     ClassificationsLoaderBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 };
@@ -153,7 +155,7 @@ class ClassificationsLoaderFeatureEnabledAndComponentInstalled
             component_dir_.GetPath(),
             CreateSerializedUrlParamFilterClassificationForTesting(
                 {{"source.test", {"plzblock_src"}}},
-                {{"dest.test", {"plzblock_dest"}}}));
+                {{"dest.test", {"plzblock_dest"}}}, {DEFAULT_TAG}));
     ClassificationsLoaderBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 };
@@ -232,7 +234,7 @@ class ClassificationsLoaderFeatureEnabledWithShouldFilterAndComponentInstalled
             component_dir_.GetPath(),
             CreateSerializedUrlParamFilterClassificationForTesting(
                 {{"source.test", {"plzblock_src"}}},
-                {{"dest.test", {"plzblock_dest"}}}));
+                {{"dest.test", {"plzblock_dest"}}}, {DEFAULT_TAG}));
     ClassificationsLoaderBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 };
@@ -333,7 +335,7 @@ class
             component_dir_.GetPath(),
             CreateSerializedUrlParamFilterClassificationForTesting(
                 {{"source.test", {"plzblock_src"}}},
-                {{"dest.test", {"plzblock_dest"}}}));
+                {{"dest.test", {"plzblock_dest"}}}, {DEFAULT_TAG}));
     ClassificationsLoaderBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 };
@@ -436,7 +438,7 @@ class ClassificationsLoaderFeatureEnabledWithAllParamsAndComponentInstalled
             component_dir_.GetPath(),
             CreateSerializedUrlParamFilterClassificationForTesting(
                 {{"source.test", {"plzblock_src"}}},
-                {{"dest.test", {"plzblock_dest"}}}));
+                {{"dest.test", {"plzblock_dest"}}}, {DEFAULT_TAG}));
     ClassificationsLoaderBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 };

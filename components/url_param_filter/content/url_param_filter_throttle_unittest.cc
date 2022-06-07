@@ -20,7 +20,7 @@ namespace url_param_filter {
 
 namespace {
 constexpr static const char kHistogramName[] =
-    "Navigation.UrlParamFilter.FilteredParamCountExperimental";
+    "Navigation.UrlParamFilter.FilteredParamCount";
 }  // namespace
 
 // Tests the UrlParamFilterThrottle, which is currently a very thin wrapper

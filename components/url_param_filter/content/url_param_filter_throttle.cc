@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/url_param_filter/content/cross_otr_observer.h"
 #include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_classifications_loader.h"
 #include "components/url_param_filter/core/url_param_filterer.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/url_request/redirect_info.h"
@@ -17,12 +18,19 @@
 
 namespace url_param_filter {
 namespace {
-
 // Write metrics about results of param filtering.
 void WriteMetrics(FilterResult result) {
-  base::UmaHistogramCounts100(
-      "Navigation.UrlParamFilter.FilteredParamCountExperimental",
-      result.filtered_param_count);
+  // When experimental classifications are used, write a metric indicating this.
+  // This allows validation of experimental results as being due to the
+  // experiment vs filtering that would happen regardless.
+  if (result.experimental_status ==
+      ClassificationExperimentStatus::EXPERIMENTAL) {
+    base::UmaHistogramCounts100(
+        "Navigation.UrlParamFilter.FilteredParamCountExperimental",
+        result.filtered_param_count);
+  }
+  base::UmaHistogramCounts100("Navigation.UrlParamFilter.FilteredParamCount",
+                              result.filtered_param_count);
 }
 }  // anonymous namespace
 
@@ -80,7 +88,7 @@ void UrlParamFilterThrottle::WillStartRequest(network::ResourceRequest* request,
   }
 
   if (observer_ && result.filtered_param_count) {
-    observer_->SetDidFilterParams(true);
+    observer_->SetDidFilterParams(true, result.experimental_status);
   }
   last_hop_initiator_ = request->url;
 }
@@ -101,7 +109,7 @@ void UrlParamFilterThrottle::WillRedirectRequest(
   }
 
   if (observer_ && result.filtered_param_count) {
-    observer_->SetDidFilterParams(true);
+    observer_->SetDidFilterParams(true, result.experimental_status);
   }
 
   // Future redirects should use the redirect's domain as the navigation

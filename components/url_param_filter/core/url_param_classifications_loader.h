@@ -55,7 +55,7 @@ class ClassificationsLoader {
   ClassificationsLoader();
   ~ClassificationsLoader();
 
-  // Creates a mapping from a site to it's `role` classifications by retrieving
+  // Creates a mapping from a site to its `role` classifications by retrieving
   // classifications from either the Component Updater or the feature flag.
   // If classifications from both are provided, then the feature flag
   // classifications take precedence.

@@ -27,7 +27,7 @@ message FilterClassification {
   optional SiteRole site_role = 2;  // required
   repeated FilterParameter parameters = 3;
   repeated UseCase use_cases = 4 [packed = true];
-  optional string experiment_identifier = 5;
+  repeated string experiment_tags = 5;
 }
 
 message FilterClassifications {

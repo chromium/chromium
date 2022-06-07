@@ -28,11 +28,11 @@ namespace url_param_filter {
 namespace {
 
 constexpr static const char kCrossOtrResponseMetricName[] =
-    "Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental";
+    "Navigation.CrossOtr.ContextMenu.ResponseCode";
 constexpr static const char kCrossOtrRefreshCountMetricName[] =
-    "Navigation.CrossOtr.ContextMenu.RefreshCountExperimental";
+    "Navigation.CrossOtr.ContextMenu.RefreshCount";
 constexpr static const char kFilteredParamCountMetricName[] =
-    "Navigation.UrlParamFilter.FilteredParamCountExperimental";
+    "Navigation.UrlParamFilter.FilteredParamCount";
 
 }  // namespace
 
