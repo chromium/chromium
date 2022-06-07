@@ -33,7 +33,17 @@ public class TimingMetric implements AutoCloseable {
     private @Nullable Timer mTimer;
 
     /**
-     * Create a new TimingMetric measuring wall time (ie. time experienced by the User) of up to 3
+     * Create a new TimingMetric measuring wall time (ie. time experienced by the user) of
+     * up to 10 seconds.
+     *
+     * @param metric The name of the histogram to record.
+     */
+    public static TimingMetric shortWallTime(String name) {
+        return new TimingMetric(name, Timer.forUpTime(), TimeDuration.SHORT);
+    }
+
+    /**
+     * Create a new TimingMetric measuring wall time (ie. time experienced by the user) of up to 3
      * minutes.
      *
      * @param metric The name of the histogram to record.

@@ -5,12 +5,14 @@
 package org.chromium.content.browser.framehost;
 
 import android.graphics.Bitmap;
+import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -167,6 +169,8 @@ import org.chromium.url.Origin;
             long inputStart = params.getInputStartTimestamp() == 0
                     ? params.getIntentReceivedTimestamp()
                     : params.getInputStartTimestamp();
+            RecordHistogram.recordTimesHistogram("Android.Omnibox.InputToNavigationControllerStart",
+                    SystemClock.elapsedRealtime() - inputStart);
             NavigationControllerImplJni.get().loadUrl(mNativeNavigationControllerAndroid,
                     NavigationControllerImpl.this, params.getUrl(), params.getLoadUrlType(),
                     params.getTransitionType(),

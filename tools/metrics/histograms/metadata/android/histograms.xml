@@ -2320,6 +2320,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.Omnibox.InputToNavigationControllerStart" units="ms"
+    expires_after="2022-12-01">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    Records time between the user input that triggered an Omnibox navigation on
+    Android to the time the Omnibox code calls into the shared C++ navigation
+    code (NavigationController).
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.InvalidMatch" enum="MatchResult"
     expires_after="2022-10-16">
   <owner>ender@chromium.org</owner>
@@ -2352,6 +2363,17 @@ chromium-metrics-reviews@google.com.
     Omnibox loses focus. This includes cases where the User chooses to navigate
     somewhere (both by using a suggestion or pressing Go button on keyboard), or
     abandons the Omnibox.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SetGeolocationHeadersTime" units="ms"
+    expires_after="2022-12-01">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    Records time spent setting geolocation headers when the user navigates via
+    the Omnibox. This time blocks the start of the navigation and is included in
+    InputToNavigationStart metrics, but not in NavigationTo* metrics.
   </summary>
 </histogram>
 

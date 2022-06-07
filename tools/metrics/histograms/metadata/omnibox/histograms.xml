@@ -937,7 +937,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Omnibox.SearchPrefetch.ClickToNavigationIntercepted"
     units="ms" expires_after="2023-05-02">
   <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     Search Prefetch issues results page requests in response to either the
@@ -982,7 +982,7 @@ chromium-metrics-reviews@google.com.
     name="Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete"
     units="ms" expires_after="2023-05-02">
   <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     Search Prefetch issues results page requests in response to either the
@@ -1325,6 +1325,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SuggestionUsed.Search.InputToNavigationStart"
+    units="ms" expires_after="2022-12-01">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Measures the time from the user selecting the omnibox suggestion and the
+    navigation start time getting ticked. Only recorded for a search query
+    suggestion selected from the omnibox.
+  </summary>
+</histogram>
+
 <histogram
     name="Omnibox.SuggestionUsed.Search.NavigationToFirstContentfulPaint"
     units="ms" expires_after="2022-11-13">
@@ -1405,6 +1417,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time from navigation start to first meaningful paint. Only
     recorded for a URL suggestion selected from the omnibox.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SuggestionUsed.URL.InputToNavigationStart" units="ms"
+    expires_after="2022-12-01">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Measures the time from the user selecting the omnibox suggestion and the
+    navigation start time getting ticked. Only recorded for a URL suggestion
+    selected from the omnibox.
   </summary>
 </histogram>
 

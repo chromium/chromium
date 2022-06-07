@@ -23,6 +23,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
@@ -247,27 +248,29 @@ public class GeolocationHeader {
 
     @HeaderState
     private static int geoHeaderStateForUrl(Profile profile, String url, boolean recordUma) {
-        // Only send X-Geo in normal mode.
-        if (profile.isOffTheRecord()) return HeaderState.INCOGNITO;
+        try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.geoHeaderStateForUrl")) {
+            // Only send X-Geo in normal mode.
+            if (profile.isOffTheRecord()) return HeaderState.INCOGNITO;
 
-        // Only send X-Geo header to Google domains.
-        if (!UrlUtilitiesJni.get().isGoogleSearchUrl(url)) return HeaderState.UNSUITABLE_URL;
+            // Only send X-Geo header to Google domains.
+            if (!UrlUtilitiesJni.get().isGoogleSearchUrl(url)) return HeaderState.UNSUITABLE_URL;
 
-        Uri uri = Uri.parse(url);
-        if (!UrlConstants.HTTPS_SCHEME.equals(uri.getScheme())) return HeaderState.NOT_HTTPS;
+            Uri uri = Uri.parse(url);
+            if (!UrlConstants.HTTPS_SCHEME.equals(uri.getScheme())) return HeaderState.NOT_HTTPS;
 
-        if (!hasGeolocationPermission()) {
-            if (recordUma) recordHistogram(UMA_LOCATION_DISABLED_FOR_CHROME_APP);
-            return HeaderState.LOCATION_PERMISSION_BLOCKED;
+            if (!hasGeolocationPermission()) {
+                if (recordUma) recordHistogram(UMA_LOCATION_DISABLED_FOR_CHROME_APP);
+                return HeaderState.LOCATION_PERMISSION_BLOCKED;
+            }
+
+            // Only send X-Geo header if the user hasn't disabled geolocation for url.
+            if (isLocationDisabledForUrl(profile, uri)) {
+                if (recordUma) recordHistogram(UMA_LOCATION_DISABLED_FOR_GOOGLE_DOMAIN);
+                return HeaderState.LOCATION_PERMISSION_BLOCKED;
+            }
+
+            return HeaderState.HEADER_ENABLED;
         }
-
-        // Only send X-Geo header if the user hasn't disabled geolocation for url.
-        if (isLocationDisabledForUrl(profile, uri)) {
-            if (recordUma) recordHistogram(UMA_LOCATION_DISABLED_FOR_GOOGLE_DOMAIN);
-            return HeaderState.LOCATION_PERMISSION_BLOCKED;
-        }
-
-        return HeaderState.HEADER_ENABLED;
     }
 
     /**
@@ -331,72 +334,81 @@ public class GeolocationHeader {
      */
     @Nullable
     private static String getGeoHeader(String url, Profile profile, Tab tab) {
-        Location locationToAttach = null;
-        VisibleNetworks visibleNetworksToAttach = null;
-        long locationAge = Long.MAX_VALUE;
-        @HeaderState
-        int headerState = geoHeaderStateForUrl(profile, url, true);
-        if (headerState == HeaderState.HEADER_ENABLED) {
-            locationToAttach =
-                    GeolocationTracker.getLastKnownLocation(ContextUtils.getApplicationContext());
-            if (locationToAttach == null) {
-                recordHistogram(UMA_LOCATION_NOT_AVAILABLE);
-            } else {
-                locationAge = GeolocationTracker.getLocationAge(locationToAttach);
-                if (locationAge > MAX_LOCATION_AGE) {
-                    // Do not attach the location
-                    recordHistogram(UMA_LOCATION_STALE);
-                    locationToAttach = null;
+        try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.getGeoHeader")) {
+            Location locationToAttach = null;
+            VisibleNetworks visibleNetworksToAttach = null;
+            long locationAge = Long.MAX_VALUE;
+            @HeaderState
+            int headerState = geoHeaderStateForUrl(profile, url, true);
+            if (headerState == HeaderState.HEADER_ENABLED) {
+                locationToAttach = GeolocationTracker.getLastKnownLocation(
+                        ContextUtils.getApplicationContext());
+                if (locationToAttach == null) {
+                    recordHistogram(UMA_LOCATION_NOT_AVAILABLE);
                 } else {
-                    recordHistogram(UMA_HEADER_SENT);
+                    locationAge = GeolocationTracker.getLocationAge(locationToAttach);
+                    if (locationAge > MAX_LOCATION_AGE) {
+                        // Do not attach the location
+                        recordHistogram(UMA_LOCATION_STALE);
+                        locationToAttach = null;
+                    } else {
+                        recordHistogram(UMA_HEADER_SENT);
+                    }
+                }
+
+                // The header state is enabled, so this means we have app permissions, and the url
+                // is allowed to receive location. Before attempting to attach visible networks,
+                // check if network-based location is enabled.
+                if (isNetworkLocationEnabled() && !isLocationFresh(locationToAttach)) {
+                    visibleNetworksToAttach = VisibleNetworksTracker.getLastKnownVisibleNetworks(
+                            ContextUtils.getApplicationContext());
                 }
             }
 
-            // The header state is enabled, so this means we have app permissions, and the url is
-            // allowed to receive location. Before attempting to attach visible networks, check if
-            // network-based location is enabled.
-            if (isNetworkLocationEnabled() && !isLocationFresh(locationToAttach)) {
-                visibleNetworksToAttach = VisibleNetworksTracker.getLastKnownVisibleNetworks(
-                        ContextUtils.getApplicationContext());
+            @LocationSource
+            int locationSource = getLocationSource();
+            @Permission
+            int appPermission = getGeolocationPermission(tab);
+            @Permission
+            int domainPermission = getDomainPermission(profile, url);
+
+            // Record the permission state with a histogram.
+            recordPermissionHistogram(locationSource, appPermission, domainPermission,
+                    locationToAttach != null, headerState);
+
+            if (locationSource != LocationSource.LOCATION_OFF && appPermission != Permission.BLOCKED
+                    && domainPermission != Permission.BLOCKED && !profile.isOffTheRecord()) {
+                // Record the Location Age with a histogram.
+                recordLocationAgeHistogram(locationSource, locationAge);
+                long duration = sFirstLocationTime == Long.MAX_VALUE
+                        ? 0
+                        : SystemClock.elapsedRealtime() - sFirstLocationTime;
+                // Record the Time Listening with a histogram.
+                recordTimeListeningHistogram(locationSource, locationToAttach != null, duration);
             }
+
+            // Proto encoding
+            String locationProtoEncoding = encodeProtoLocation(locationToAttach);
+            String visibleNetworksProtoEncoding =
+                    encodeProtoVisibleNetworks(visibleNetworksToAttach);
+
+            if (locationProtoEncoding == null && visibleNetworksProtoEncoding == null) return null;
+
+            StringBuilder header = new StringBuilder(XGEO_HEADER_PREFIX);
+            if (locationProtoEncoding != null) {
+                header.append(LOCATION_SEPARATOR)
+                        .append(LOCATION_PROTO_PREFIX)
+                        .append(LOCATION_SEPARATOR)
+                        .append(locationProtoEncoding);
+            }
+            if (visibleNetworksProtoEncoding != null) {
+                header.append(LOCATION_SEPARATOR)
+                        .append(LOCATION_PROTO_PREFIX)
+                        .append(LOCATION_SEPARATOR)
+                        .append(visibleNetworksProtoEncoding);
+            }
+            return header.toString();
         }
-
-        @LocationSource int locationSource = getLocationSource();
-        @Permission int appPermission = getGeolocationPermission(tab);
-        @Permission
-        int domainPermission = getDomainPermission(profile, url);
-
-        // Record the permission state with a histogram.
-        recordPermissionHistogram(locationSource, appPermission, domainPermission,
-                locationToAttach != null, headerState);
-
-        if (locationSource != LocationSource.LOCATION_OFF && appPermission != Permission.BLOCKED
-                && domainPermission != Permission.BLOCKED && !profile.isOffTheRecord()) {
-            // Record the Location Age with a histogram.
-            recordLocationAgeHistogram(locationSource, locationAge);
-            long duration = sFirstLocationTime == Long.MAX_VALUE
-                    ? 0
-                    : SystemClock.elapsedRealtime() - sFirstLocationTime;
-            // Record the Time Listening with a histogram.
-            recordTimeListeningHistogram(locationSource, locationToAttach != null, duration);
-        }
-
-        // Proto encoding
-        String locationProtoEncoding = encodeProtoLocation(locationToAttach);
-        String visibleNetworksProtoEncoding = encodeProtoVisibleNetworks(visibleNetworksToAttach);
-
-        if (locationProtoEncoding == null && visibleNetworksProtoEncoding == null) return null;
-
-        StringBuilder header = new StringBuilder(XGEO_HEADER_PREFIX);
-        if (locationProtoEncoding != null) {
-            header.append(LOCATION_SEPARATOR).append(LOCATION_PROTO_PREFIX)
-                    .append(LOCATION_SEPARATOR).append(locationProtoEncoding);
-        }
-        if (visibleNetworksProtoEncoding != null) {
-            header.append(LOCATION_SEPARATOR).append(LOCATION_PROTO_PREFIX)
-                    .append(LOCATION_SEPARATOR).append(visibleNetworksProtoEncoding);
-        }
-        return header.toString();
     }
 
     @SuppressWarnings("unused")
@@ -430,15 +442,17 @@ public class GeolocationHeader {
      */
     @Permission
     static int getGeolocationPermission(Tab tab) {
-        if (sUseAppPermissionGrantedForTesting) {
-            return sAppPermissionGrantedForTesting ? Permission.GRANTED : Permission.BLOCKED;
+        try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.getGeolocationPermission")) {
+            if (sUseAppPermissionGrantedForTesting) {
+                return sAppPermissionGrantedForTesting ? Permission.GRANTED : Permission.BLOCKED;
+            }
+            if (hasGeolocationPermission()) return Permission.GRANTED;
+            return (tab != null
+                           && tab.getWindowAndroid().canRequestPermission(
+                                   Manifest.permission.ACCESS_COARSE_LOCATION))
+                    ? Permission.PROMPT
+                    : Permission.BLOCKED;
         }
-        if (hasGeolocationPermission()) return Permission.GRANTED;
-        return (tab != null
-                       && tab.getWindowAndroid().canRequestPermission(
-                               Manifest.permission.ACCESS_COARSE_LOCATION))
-                ? Permission.PROMPT
-                : Permission.BLOCKED;
     }
 
     /**
@@ -485,7 +499,8 @@ public class GeolocationHeader {
     /** Returns the location source. */
     @LocationSource
     private static int getLocationSource() {
-        if (sUseLocationSourceForTesting) return sLocationSourceForTesting;
+        try (TraceEvent te = TraceEvent.scoped("GeolocationHeader.getLocationSource")) {
+            if (sUseLocationSourceForTesting) return sLocationSourceForTesting;
 
             int locationMode;
             try {
@@ -505,6 +520,7 @@ public class GeolocationHeader {
             } else {
                 return LocationSource.LOCATION_OFF;
             }
+        }
     }
 
     private static boolean isNetworkLocationEnabled() {
@@ -525,16 +541,18 @@ public class GeolocationHeader {
      */
     @Permission
     private static int getDomainPermission(Profile profile, String url) {
-        @ContentSettingValues
-        @Nullable
-        Integer domainPermission = locationContentSettingForUrl(profile, Uri.parse(url));
-        switch (domainPermission) {
-            case ContentSettingValues.ALLOW:
-                return Permission.GRANTED;
-            case ContentSettingValues.ASK:
-                return Permission.PROMPT;
-            default:
-                return Permission.BLOCKED;
+        try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.getDomainPermission")) {
+            @ContentSettingValues
+            @Nullable
+            Integer domainPermission = locationContentSettingForUrl(profile, Uri.parse(url));
+            switch (domainPermission) {
+                case ContentSettingValues.ALLOW:
+                    return Permission.GRANTED;
+                case ContentSettingValues.ASK:
+                    return Permission.PROMPT;
+                default:
+                    return Permission.BLOCKED;
+            }
         }
     }
 

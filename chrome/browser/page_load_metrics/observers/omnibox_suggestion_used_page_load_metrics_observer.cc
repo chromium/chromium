@@ -12,6 +12,11 @@
 
 namespace {
 
+const char kSearchInputToNavigationStart[] =
+    "Omnibox.SuggestionUsed.Search.InputToNavigationStart";
+const char kURLInputToNavigationStart[] =
+    "Omnibox.SuggestionUsed.URL.InputToNavigationStart";
+
 const char kSearchFirstContentfulPaint[] =
     "Omnibox.SuggestionUsed.Search.NavigationToFirstContentfulPaint";
 const char kURLFirstContentfulPaint[] =
@@ -70,9 +75,17 @@ void OmniboxSuggestionUsedMetricsObserver::OnFirstContentfulPaintInPage(
   if (GetDelegate().StartedInForeground()) {
     if (ui::PageTransitionCoreTypeIs(transition_type_,
                                      ui::PAGE_TRANSITION_GENERATED)) {
+      if (timing.input_to_navigation_start) {
+        PAGE_LOAD_HISTOGRAM(kSearchInputToNavigationStart,
+                            timing.input_to_navigation_start.value());
+      }
       PAGE_LOAD_HISTOGRAM(kSearchFirstContentfulPaint, fcp);
     } else if (ui::PageTransitionCoreTypeIs(transition_type_,
                                             ui::PAGE_TRANSITION_TYPED)) {
+      if (timing.input_to_navigation_start) {
+        PAGE_LOAD_HISTOGRAM(kURLInputToNavigationStart,
+                            timing.input_to_navigation_start.value());
+      }
       PAGE_LOAD_HISTOGRAM(kURLFirstContentfulPaint, fcp);
     }
     return;
