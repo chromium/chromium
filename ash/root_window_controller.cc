@@ -881,6 +881,10 @@ void RootWindowController::CloseAmbientWidget(bool immediately) {
   ambient_widget_.reset();
 }
 
+bool RootWindowController::HasAmbientWidget() const {
+  return !!ambient_widget_;
+}
+
 AccessibilityPanelLayoutManager*
 RootWindowController::GetAccessibilityPanelLayoutManagerForTest() {
   return GetAccessibilityPanelLayoutManager();

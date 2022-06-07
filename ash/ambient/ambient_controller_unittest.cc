@@ -17,6 +17,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
+#include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -1220,6 +1221,44 @@ TEST_P(AmbientControllerTestForAnyTheme, MetricsEngagementTime) {
   histogram_tester.ExpectTimeBucketCount(
       base::StrCat({"Ash.AmbientMode.EngagementTime.", ToString(GetParam())}),
       base::Minutes(1), 2);
+}
+
+TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTime) {
+  base::HistogramTester histogram_tester;
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}), 1);
+
+  UnlockScreen();
+  ASSERT_FALSE(ambient_controller()->IsShown());
+
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}), 2);
+}
+
+TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTimeFailedToStart) {
+  // Simulate IMAX outage that doesn't return any photos.
+  backend_controller()->SetFetchScreenUpdateInfoResponseSize(0);
+
+  base::HistogramTester histogram_tester;
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  task_environment()->FastForwardBy(base::Minutes(1));
+  ASSERT_TRUE(GetContainerViews().empty());
+
+  UnlockScreen();
+  histogram_tester.ExpectUniqueTimeSample(
+      base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}),
+      base::Minutes(1), 1);
 }
 
 }  // namespace ash

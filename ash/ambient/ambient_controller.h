@@ -167,6 +167,7 @@ class ASH_EXPORT AmbientController
   void StartRefreshingImages();
   void StopRefreshingImages();
   AmbientPhotoConfig CreatePhotoConfigForCurrentTheme();
+  AmbientAnimationTheme GetCurrentTheme() const;
 
   // Invoked when the auto-show timer in |InactivityMonitor| gets fired after
   // device being inactive for a specific amount of time.

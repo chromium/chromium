@@ -252,6 +252,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.AmbientMode.StartupTime.{Theme}" units="ms"
+    expires_after="2022-12-01">
+  <owner>esum@google.com</owner>
+  <owner>xiaohuic@google.com</owner>
+  <summary>
+    Records the amount of time it takes for {Theme} in ambient mode to start.
+    This includes tasks such as downloading an initial set of photos from IMAX
+    server, decoding them, loading the animation from resource pak, etc. Note
+    this measurement does not include the lock screen inactivity timeout
+    (currently 7 seconds). So ideally, this should be 0. Also note that ambient
+    mode should start after a 10 second timeout if at least 1 photo has been
+    downloaded from IMAX. Hitting the 10 second timeout is considered non-ideal,
+    but acceptable behavior. However, anything over that is very bad. Thus, this
+    histogram has a 15 second maximum (added a 5 second buffer to the timeout
+    just to be safe). Anything over the 15 second maximum goes in the overflow
+    bucket and is considered a total failure to start ambient mode. This should
+    be extremely rare. Emitted each time the {Theme} UI starts rendering, or
+    when ambient mode exits in the event that the UI never started rendering.
+  </summary>
+  <token key="Theme" variants="AmbientModeThemes"/>
+</histogram>
+
 <histogram name="Ash.AmbientMode.TotalNumberOfAlbums" units="int"
     expires_after="2022-12-01">
   <owner>cowmoo@google.com</owner>

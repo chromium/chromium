@@ -28,6 +28,10 @@ enum class ASH_PUBLIC_EXPORT AmbientModePhotoSource {
   kMaxValue = kGooglePhotosEmpty,
 };
 
+// Duration after which ambient mode is considered to have failed to start.
+// See summary in histograms.xml for why 15 seconds is used.
+constexpr base::TimeDelta kMetricsStartupTimeMax = base::Seconds(15);
+
 ASH_PUBLIC_EXPORT AmbientModePhotoSource
 AmbientSettingsToPhotoSource(const AmbientSettings& settings);
 
@@ -49,6 +53,10 @@ ASH_PUBLIC_EXPORT void RecordAmbientModeAnimationSmoothness(
 
 ASH_PUBLIC_EXPORT void RecordAmbientModePhotoOrientationMatch(
     int percentage_match,
+    AmbientAnimationTheme theme);
+
+ASH_PUBLIC_EXPORT void RecordAmbientModeStartupTime(
+    base::TimeDelta startup_time,
     AmbientAnimationTheme theme);
 
 }  // namespace ambient

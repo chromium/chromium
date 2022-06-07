@@ -227,6 +227,7 @@ class ASH_EXPORT RootWindowController {
 
   void CreateAmbientWidget();
   void CloseAmbientWidget(bool immediately);
+  bool HasAmbientWidget() const;
 
   views::Widget* ambient_widget_for_testing() { return ambient_widget_.get(); }
   AppMenuModelAdapter* menu_model_adapter_for_testing() {

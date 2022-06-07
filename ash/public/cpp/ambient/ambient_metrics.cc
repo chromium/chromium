@@ -114,5 +114,15 @@ void RecordAmbientModePhotoOrientationMatch(int percentage_match,
       percentage_match);
 }
 
+void RecordAmbientModeStartupTime(base::TimeDelta startup_time,
+                                  AmbientAnimationTheme theme) {
+  base::UmaHistogramCustomTimes(
+      /*name=*/base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(theme)}),
+      /*sample=*/startup_time,
+      /*min=*/base::Seconds(0),
+      /*max=*/kMetricsStartupTimeMax,
+      /*buckets=*/50);
+}
+
 }  // namespace ambient
 }  // namespace ash

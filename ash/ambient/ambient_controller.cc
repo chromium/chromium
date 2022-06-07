@@ -236,7 +236,9 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       StartRefreshingImages();
       break;
     case AmbientUiVisibility::kHidden:
-    case AmbientUiVisibility::kClosed:
+    case AmbientUiVisibility::kClosed: {
+      bool ambient_ui_was_rendering =
+          Shell::GetPrimaryRootWindowController()->HasAmbientWidget();
       CloseAllWidgets(/*immediately=*/false);
 
       // TODO(wutao): This will clear the image cache currently. It will not
@@ -257,15 +259,17 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       // ambient mode has just started.
       if (start_time_) {
         auto elapsed = base::Time::Now() - start_time_.value();
+        AmbientAnimationTheme theme = GetCurrentTheme();
         DVLOG(2) << "Exit ambient mode. Elapsed time: " << elapsed;
         ambient::RecordAmbientModeTimeElapsed(
-            elapsed, Shell::Get()->IsInTabletMode(),
-            // The user currently has no way of changing the animation theme
-            // (|current_theme_from_pref_|) without exiting screensaver first,
-            // so it is safe to assume that |current_theme_from_pref_| did not
-            // change while the screensaver was active.
-            current_theme_from_pref_ ? *current_theme_from_pref_
-                                     : kDefaultAmbientAnimationTheme);
+            elapsed, Shell::Get()->IsInTabletMode(), theme);
+
+        if (!ambient_ui_was_rendering &&
+            elapsed >= ambient::kMetricsStartupTimeMax) {
+          LOG(ERROR) << "Ambient UI completely failed to start";
+          ambient::RecordAmbientModeStartupTime(elapsed, theme);
+        }
+
         start_time_.reset();
       }
 
@@ -290,6 +294,7 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       }
 
       break;
+    }
   }
 }
 
@@ -809,6 +814,10 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
 
   widget->Show();
 
+  DCHECK(start_time_);
+  ambient::RecordAmbientModeStartupTime(base::Time::Now() - *start_time_,
+                                        GetCurrentTheme());
+
   // Only announce for the primary window.
   if (Shell::GetPrimaryRootWindow() == container->GetRootWindow()) {
     contents_view->GetViewAccessibility().AnnounceText(
@@ -854,6 +863,22 @@ void AmbientController::StopRefreshingImages() {
 }
 
 AmbientPhotoConfig AmbientController::CreatePhotoConfigForCurrentTheme() {
+  AmbientAnimationTheme current_theme = GetCurrentTheme();
+  DVLOG(4) << "Loaded ambient theme " << ToString(current_theme);
+
+  pending_animation_static_resources_.reset();
+  if (current_theme == AmbientAnimationTheme::kSlideshow) {
+    return CreateAmbientSlideshowPhotoConfig();
+  } else {
+    pending_animation_static_resources_ =
+        AmbientAnimationStaticResources::Create(current_theme);
+    return CreateAmbientAnimationPhotoConfig(
+        pending_animation_static_resources_->GetSkottieWrapper()
+            ->GetImageAssetMetadata());
+  }
+}
+
+AmbientAnimationTheme AmbientController::GetCurrentTheme() const {
   AmbientAnimationTheme current_theme = kDefaultAmbientAnimationTheme;
   absl::optional<bool> animation_experiment_enabled =
       base::FeatureList::GetStateIfOverridden(
@@ -872,18 +897,7 @@ AmbientPhotoConfig AmbientController::CreatePhotoConfigForCurrentTheme() {
     DCHECK(current_theme_from_pref_);
     current_theme = *current_theme_from_pref_;
   }
-  DVLOG(4) << "Loaded ambient theme " << ToString(current_theme);
-
-  pending_animation_static_resources_.reset();
-  if (current_theme == AmbientAnimationTheme::kSlideshow) {
-    return CreateAmbientSlideshowPhotoConfig();
-  } else {
-    pending_animation_static_resources_ =
-        AmbientAnimationStaticResources::Create(current_theme);
-    return CreateAmbientAnimationPhotoConfig(
-        pending_animation_static_resources_->GetSkottieWrapper()
-            ->GetImageAssetMetadata());
-  }
+  return current_theme;
 }
 
 void AmbientController::set_backend_controller_for_testing(
