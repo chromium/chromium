@@ -55,6 +55,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -876,7 +877,13 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Navigate the popup to each nested URL with extension origin.
   GURL nested_urls[] = {blob_url, filesystem_url};
-  for (size_t i = 0; i < std::size(nested_urls); i++) {
+  // TODO(https://crbug.com/1332598): Remove filesystem: test branch entirely
+  // when filesystem: navigation is removed for good.
+  size_t nested_url_count =
+      base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation)
+          ? 2
+          : 1;
+  for (size_t i = 0; i < nested_url_count; i++) {
     EXPECT_TRUE(ExecuteScript(
         popup, "location.href = '" + nested_urls[i].spec() + "';"));
 
@@ -909,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Navigate second subframe to each nested URL from the main frame (i.e.,
   // from non-extension process).  These should be canceled.
-  for (size_t i = 0; i < std::size(nested_urls); i++) {
+  for (size_t i = 0; i < nested_url_count; i++) {
     EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame2", nested_urls[i]));
     content::RenderFrameHost* second_frame = ChildFrameAt(main_frame, 1);
 
@@ -1048,7 +1055,13 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // Navigate second subframe to each nested URL from the main frame (i.e.,
   // from non-extension process).  These should be canceled.
   GURL nested_urls[] = {blob_url, filesystem_url};
-  for (size_t i = 0; i < std::size(nested_urls); i++) {
+  // TODO(https://crbug.com/1332598): Remove filesystem: test branch entirely
+  // when filesystem: navigation is removed for good.
+  size_t nested_url_count =
+      base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation)
+          ? 2
+          : 1;
+  for (size_t i = 0; i < nested_url_count; i++) {
     EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame2", nested_urls[i]));
     content::RenderFrameHost* second_frame = ChildFrameAt(main_frame, 1);
 
@@ -1095,7 +1108,13 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // From the main frame, navigate its subframe to each nested URL.  This
   // should be allowed and should stay in the extension process.
   GURL nested_urls[] = {blob_url, filesystem_url};
-  for (size_t i = 0; i < std::size(nested_urls); i++) {
+  // TODO(https://crbug.com/1332598): Remove filesystem: test branch entirely
+  // when filesystem: navigation is removed for good.
+  size_t nested_url_count =
+      base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation)
+          ? 2
+          : 1;
+  for (size_t i = 0; i < nested_url_count; i++) {
     EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame0", nested_urls[i]));
     content::RenderFrameHost* child = ChildFrameAt(main_frame, 0);
     EXPECT_EQ(nested_urls[i], child->GetLastCommittedURL());
@@ -1135,7 +1154,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
     EXPECT_NE(popup, tab);
 
     content::WebContentsConsoleObserver console_observer(popup);
-    console_observer.SetPattern("Not allowed to navigate top frame to*");
+    console_observer.SetPattern("Not allowed to navigate to*");
     EXPECT_TRUE(ExecuteScript(
         popup, "location.href = '" + nested_urls[1].spec() + "';"));
     console_observer.Wait();

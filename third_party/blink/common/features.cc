@@ -1480,5 +1480,8 @@ const base::Feature kSimulateClickOnAXFocus {
 const base::Feature kWebSQLNonSecureContextAccess{
     "WebSQLNonSecureContextAccess", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kFileSystemUrlNavigation{"FileSystemUrlNavigation",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

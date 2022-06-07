@@ -54,6 +54,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -1616,6 +1617,11 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 // Tests that content scripts can run on filesystem: URLs.
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_FilesystemFrame) {
+  // TODO(https://crbug.com/1332598): Remove this test when removing filesystem:
+  // navigation for good.
+  if (!base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation))
+    GTEST_SKIP();
+
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
   GURL filesystem_url = CreateFilesystemURL(tab->GetPrimaryMainFrame());
   NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", filesystem_url);
@@ -1738,6 +1744,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 // Inject a content script on an iframe to a filesystem: URL on an allowed site.
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        FilesystemURLInjection_SimpleIframe_Allowed) {
+  // TODO(https://crbug.com/1332598): Remove this test when removing filesystem:
+  // navigation for good.
+  if (!base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation))
+    GTEST_SKIP();
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
   GURL filesystem_url = CreateFilesystemURL(tab->GetPrimaryMainFrame());
   NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", filesystem_url);
@@ -1752,6 +1762,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
 // protected site.
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        FilesystemURLInjection_SimpleIframe_Disallowed) {
+  // TODO(https://crbug.com/1332598): Remove this test when removing filesystem:
+  // navigation for good.
+  if (!base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation))
+    GTEST_SKIP();
   content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
   GURL filesystem_url = CreateFilesystemURL(tab->GetPrimaryMainFrame());
   NavigateIframe(tab->GetPrimaryMainFrame(), "frames[0]", filesystem_url);

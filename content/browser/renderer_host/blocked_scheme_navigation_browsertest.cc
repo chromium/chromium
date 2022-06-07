@@ -45,9 +45,9 @@ namespace content {
 namespace {
 
 // The pattern to catch messages printed by the browser when navigation to a
-// URL is blocked.
-const char kNavigationBlockedMessage[] =
-    "Not allowed to navigate top frame to %s URL:*";
+// URL is blocked. Navigation to filesystem: URLs uses a slightly different
+// message than other blocked schemes, so use a wildcard to match both.
+const char kNavigationBlockedMessage[] = "Not allowed to navigate *to %s URL:*";
 
 // The message printed by the data or filesystem URL when it successfully
 // navigates.

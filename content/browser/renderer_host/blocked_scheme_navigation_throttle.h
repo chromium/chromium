@@ -25,6 +25,7 @@ class BlockedSchemeNavigationThrottle : public NavigationThrottle {
   ~BlockedSchemeNavigationThrottle() override;
 
   // NavigationThrottle method:
+  ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 

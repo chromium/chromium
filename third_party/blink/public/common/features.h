@@ -770,6 +770,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kSimulateClickOnAXFocus;
 // If enabled, allows the use of WebSQL in non-secure contexts.
 BLINK_COMMON_EXPORT extern const base::Feature kWebSQLNonSecureContextAccess;
 
+// Switch to temporary turn back on file system url navigation.
+// TODO(https://crbug.com/1332598): Remove this feature.
+BLINK_COMMON_EXPORT extern const base::Feature kFileSystemUrlNavigation;
+
 }  // namespace features
 }  // namespace blink
 

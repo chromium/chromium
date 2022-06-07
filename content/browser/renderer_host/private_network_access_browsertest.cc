@@ -574,6 +574,9 @@ class PrivateNetworkAccessBrowserTest
                 blink::features::kPlzDedicatedWorker,
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessSendPreflights,
+                // TODO(https://crbug.com/1332598): Remove all the filesystem:
+                // URL tests when removing filesystem: navigation for good.
+                blink::features::kFileSystemUrlNavigation,
             },
             {}) {}
 };
