@@ -1158,6 +1158,22 @@ TEST_F(AppListBubbleViewTest, FolderClosedOnAppListDismiss) {
   EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
 }
 
+TEST_F(AppListBubbleViewTest, FolderClosedAfterInvokingAssistant) {
+  SimulateAssistantEnabled();
+  AddFolderWithApps(3);
+  ShowAppList();
+
+  AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  ASSERT_TRUE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+
+  PressAndReleaseKey(ui::VKEY_ASSISTANT);
+  EXPECT_TRUE(GetAssistantPage()->GetVisible());
+  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+}
+
 TEST_F(AppListBubbleViewTest, LargeFolderViewFitsInsideMainBubble) {
   // Create more apps than fit in the default sized folder.
   AddFolderWithApps(30);

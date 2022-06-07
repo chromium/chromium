@@ -477,6 +477,8 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
       MaybeFocusAndActivateSearchBox();
       break;
     case AppListBubblePage::kAssistant:
+      if (showing_folder_)
+        HideFolderView(/*animate=*/false, /*hide_for_reparent=*/false);
       if (previous_page == AppListBubblePage::kApps)
         apps_page_->AnimateHidePage();
       else
