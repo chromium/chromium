@@ -29,6 +29,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -232,7 +233,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 void AutofillExternalDelegate::DidAcceptSuggestion(
     const std::u16string& value,
     int frontend_id,
-    const std::string& backend_id,
+    const Suggestion::Payload& payload,
     int position) {
   if (frontend_id == POPUP_ITEM_ID_AUTOFILL_OPTIONS) {
     // User selected 'Autofill Options'.
@@ -272,10 +273,12 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
   } else if (frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
     // There can be multiple virtual credit cards that all rely on
     // POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY as a frontend_id. In this case,
-    // the backend_id identifies the actually chosen credit card.
+    // the payload contains the backend id, which is a GUID that identifies the
+    // actually chosen credit card.
+    DCHECK(absl::holds_alternative<std::string>(payload));
     manager_->FillOrPreviewVirtualCardInformation(
-        mojom::RendererFormDataAction::kFill, backend_id, query_id_,
-        query_form_, query_field_);
+        mojom::RendererFormDataAction::kFill, absl::get<std::string>(payload),
+        query_id_, query_form_, query_field_);
   } else {
     if (frontend_id > 0) {  // Denotes an Autofill suggestion.
       AutofillMetrics::LogAutofillSuggestionAcceptedIndex(

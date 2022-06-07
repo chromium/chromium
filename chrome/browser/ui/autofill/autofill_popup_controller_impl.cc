@@ -357,7 +357,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   }
 
   delegate_->DidAcceptSuggestion(suggestion.main_text.value,
-                                 suggestion.frontend_id, suggestion.backend_id,
+                                 suggestion.frontend_id, suggestion.payload,
                                  index);
 }
 
@@ -486,10 +486,10 @@ AutofillPopupControllerImpl::SetSelectedLineHelper(
   view_->OnSelectedRowChanged(previous_selected_line, selected_line_);
 
   if (selected_line_) {
-    delegate_->DidSelectSuggestion(
-        suggestions_[*selected_line_].main_text.value,
-        suggestions_[*selected_line_].frontend_id,
-        suggestions_[*selected_line_].backend_id);
+    const Suggestion& suggestion = suggestions_[*selected_line_];
+    delegate_->DidSelectSuggestion(suggestion.main_text.value,
+                                   suggestion.frontend_id,
+                                   suggestion.GetPayload<std::string>());
   } else {
     delegate_->ClearPreviewedForm();
   }

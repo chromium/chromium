@@ -53,7 +53,7 @@ void AutofillOfferManager::UpdateSuggestionsWithOffers(
 
   // Update |offer_label| for each suggestion.
   for (auto& suggestion : suggestions) {
-    std::string id = suggestion.backend_id;
+    std::string id = suggestion.GetPayload<std::string>();
     if (eligible_offers_map.count(id)) {
       suggestion.offer_label =
           l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK);

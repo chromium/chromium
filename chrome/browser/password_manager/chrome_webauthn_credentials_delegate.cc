@@ -116,9 +116,9 @@ void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
     // Android passes the credential ID instead of the user ID, because it
     // needs the credential ID to directly populate the allowCredentials
     // list when one is selected.
-    suggestion.backend_id = base::Base64Encode(credential.cred_id);
+    suggestion.payload = base::Base64Encode(credential.cred_id);
 #else
-    suggestion.backend_id =
+    suggestion.payload =
         std::string(credential.user.id.begin(), credential.user.id.end());
 #endif
     suggestions.push_back(std::move(suggestion));

@@ -1839,7 +1839,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   const std::u16string kDisplayName = u"Nadeshiko Kagamihara";
   autofill::Suggestion webauthn_credential(kDisplayName);
   webauthn_credential.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
-  webauthn_credential.backend_id = kId;
+  webauthn_credential.payload = kId;
   webauthn_credential.label = kName;
   ON_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
       .WillByDefault(Return(true));
@@ -1864,7 +1864,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
                   autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL,
                   autofill::POPUP_ITEM_ID_USERNAME_ENTRY,
                   autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
-  EXPECT_EQ(open_args.suggestions[0].backend_id, kId);
+  EXPECT_EQ(absl::get<std::string>(open_args.suggestions[0].payload), kId);
   EXPECT_EQ(open_args.suggestions[0].frontend_id,
             autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL);
   EXPECT_EQ(open_args.suggestions[0].main_text.value, kDisplayName);

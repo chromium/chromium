@@ -15,6 +15,7 @@
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -58,7 +59,7 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
                            const std::string& backend_id) override;
   void DidAcceptSuggestion(const std::u16string& value,
                            int frontend_id,
-                           const std::string& backend_id,
+                           const autofill::Suggestion::Payload& payload,
                            int position) override;
   bool GetDeletionConfirmationText(const std::u16string& value,
                                    int frontend_id,

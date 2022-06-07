@@ -75,8 +75,8 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   // Adjust phone number to display in prefix/suffix case.
   if (autofill_field.Type().group() == FieldTypeGroup::kPhoneHome) {
     for (auto& suggestion : suggestions) {
-      const AutofillProfile* profile =
-          personal_data_->GetProfileByGUID(suggestion.backend_id);
+      const AutofillProfile* profile = personal_data_->GetProfileByGUID(
+          suggestion.GetPayload<std::string>());
       if (profile) {
         const std::u16string phone_home_city_and_number =
             profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale);
@@ -91,7 +91,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
 
   for (auto& suggestion : suggestions) {
     suggestion.frontend_id =
-        MakeFrontendId(std::string(), suggestion.backend_id);
+        MakeFrontendId(std::string(), suggestion.GetPayload<std::string>());
   }
 
   return suggestions;
@@ -172,7 +172,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   for (Suggestion& suggestion : suggestions) {
     if (suggestion.frontend_id == 0) {
       suggestion.frontend_id =
-          MakeFrontendId(suggestion.backend_id, std::string());
+          MakeFrontendId(suggestion.GetPayload<std::string>(), std::string());
     }
   }
 
@@ -191,8 +191,7 @@ AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
     Suggestion* suggestion = &suggestions.back();
     suggestion->label = base::ASCIIToUTF16(
         promo_code_offer->GetDisplayStrings().value_prop_text);
-    suggestion->backend_id =
-        base::NumberToString(promo_code_offer->GetOfferId());
+    suggestion->payload = base::NumberToString(promo_code_offer->GetOfferId());
     suggestion->frontend_id = POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY;
   }
   return suggestions;
@@ -306,7 +305,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
         server_duplicate_card->card_art_url();
     backend_id = server_duplicate_card->guid();
   }
-  suggestion.backend_id = backend_id;
+  suggestion.payload = backend_id;
 
   // Get the nickname for the card suggestion, which may not be the same as
   // the card's nickname if there are duplicates of the card on file.

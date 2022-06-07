@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
@@ -46,11 +47,12 @@ class AutofillPopupDelegate {
   // negative values (see popup_item_ids.h) which have special built-in meanings
   // while others have positive values which represents the backend data model
   // this suggestion relates to. See 'MakeFrontendID' in BrowserAutofillManager.
-  // |backend_id| is the guid of the backend data model. |position| refers to
-  // the index of the suggestion in the suggestion list.
+  // |payload| is the payload of the suggestion, and it represents the GUID of
+  // the backend data model. |position| refers to the index of the suggestion in
+  // the suggestion list.
   virtual void DidAcceptSuggestion(const std::u16string& value,
                                    int frontend_id,
-                                   const std::string& backend_id,
+                                   const Suggestion::Payload& payload,
                                    int position) = 0;
 
   // Returns whether the given value can be deleted, and if true,

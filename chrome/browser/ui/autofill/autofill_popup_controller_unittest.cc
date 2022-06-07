@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -118,8 +119,9 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
 
   MOCK_METHOD0(ClearPreviewedForm, void());
   MOCK_METHOD0(OnPopupSuppressed, void());
-  MOCK_METHOD4(DidAcceptSuggestion,
-               void(const std::u16string&, int, const std::string&, int));
+  MOCK_METHOD4(
+      DidAcceptSuggestion,
+      void(const std::u16string&, int, const Suggestion::Payload&, int));
 };
 
 class MockAutofillPopupView : public AutofillPopupView {
