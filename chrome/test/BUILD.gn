@@ -1593,6 +1593,7 @@ if (!is_android) {
       "//third_party/polymer/v1_0/components-chromium/iron-test-helpers/mock-interactions.js",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//third_party/simplejson/",
+      "//third_party/webrtc/rtc_tools/compare_videos.py",
       "//ui/webui/resources/",
     ]
 
