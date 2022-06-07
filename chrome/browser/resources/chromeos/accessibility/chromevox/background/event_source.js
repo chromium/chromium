@@ -5,24 +5,16 @@
 /**
  * @fileoverview Tracks event sources.
  */
+import {EventSourceType} from '/chromevox/common/event_source_type.js';
 
-goog.provide('EventSourceState');
-goog.provide('EventSourceType');
-
-/** @enum {string} */
-EventSourceType = {
-  NONE: 'none',
-  BRAILLE_KEYBOARD: 'brailleKeyboard',
-  STANDARD_KEYBOARD: 'standardKeyboard',
-  TOUCH_GESTURE: 'touchGesture'
-};
+export const EventSourceState = {};
 
 /**
  * Sets the current event source.
  * @param {EventSourceType} source
  */
 EventSourceState.set = function(source) {
-  EventSource.current_ = source;
+  EventSourceState.current_ = source;
 };
 
 /**
@@ -30,13 +22,11 @@ EventSourceState.set = function(source) {
  * @return {EventSourceType}
  */
 EventSourceState.get = function() {
-  return EventSource.current_;
+  return EventSourceState.current_;
 };
 
-/**
- * @private {EventSourceType}
- */
-EventSource.current_ =
+/** @private {EventSourceType} */
+EventSourceState.current_ =
     chrome.accessibilityPrivate.IS_DEFAULT_EVENT_SOURCE_TOUCH ?
     EventSourceType.TOUCH_GESTURE :
     EventSourceType.NONE;

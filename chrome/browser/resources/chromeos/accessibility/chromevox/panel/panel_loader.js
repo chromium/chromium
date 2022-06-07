@@ -11,8 +11,6 @@ goog.require('AutomationUtil');
 goog.require('BackgroundBridge');
 goog.require('BridgeHelper');
 goog.require('EarconDescription');
-goog.require('EventSourceState');
-goog.require('EventSourceType');
 goog.require('FocusBounds');
 goog.require('KeyCode');
 goog.require('LocaleOutputHelper');

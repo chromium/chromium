@@ -7,8 +7,10 @@
  * node.
  */
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
+import {EventSourceState} from '/chromevox/background/event_source.js';
 import {Output} from '/chromevox/background/output/output.js';
 import {ChromeVoxEvent} from '/chromevox/common/custom_automation_event.js';
+import {EventSourceType} from '/chromevox/common/event_source_type.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationEvent = chrome.automation.AutomationEvent;

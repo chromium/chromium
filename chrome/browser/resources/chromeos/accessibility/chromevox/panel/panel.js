@@ -7,6 +7,7 @@
  */
 import {BrailleCommandData} from '/chromevox/common/braille/braille_command_data.js';
 import {CommandStore} from '/chromevox/common/command_store.js';
+import {EventSourceType} from '/chromevox/common/event_source_type.js';
 import {GestureCommandData} from '/chromevox/common/gesture_command_data.js';
 import {KeyMap} from '/chromevox/common/key_map.js';
 import {KeyUtil} from '/chromevox/common/key_util.js';

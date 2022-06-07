@@ -17,7 +17,6 @@ goog.require('BrailleKeyEvent');
 goog.require('BridgeHelper');
 goog.require('ChromeVox');
 goog.require('CommandHandlerInterface');
-goog.require('EventSourceState');
 goog.require('ExtraCellsSpan');
 goog.require('FocusBounds');
 goog.require('KeyCode');

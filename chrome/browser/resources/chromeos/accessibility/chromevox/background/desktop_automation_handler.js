@@ -10,8 +10,10 @@ import {AutomationObjectConstructorInstaller} from '/chromevox/background/automa
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
 import {TextEditHandler} from '/chromevox/background/editing/editing.js';
+import {EventSourceState} from '/chromevox/background/event_source.js';
 import {Output} from '/chromevox/background/output/output.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '/chromevox/common/custom_automation_event.js';
+import {EventSourceType} from '/chromevox/common/event_source_type.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;

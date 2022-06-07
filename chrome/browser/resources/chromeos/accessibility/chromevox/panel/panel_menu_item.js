@@ -5,6 +5,7 @@
 /**
  * @fileoverview An item in a drop-down menu in the ChromeVox panel.
  */
+import {EventSourceType} from '/chromevox/common/event_source_type.js';
 
 export class PanelMenuItem {
   /**
