@@ -384,6 +384,10 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kVariable:
         DCHECK_EQ(GetRegistration(registry_, property), nullptr);
         break;
+      case CSSPropertyID::kObjectViewBox:
+        applicable_types->push_back(
+            std::make_unique<CSSBasicShapeInterpolationType>(used_property));
+        break;
       default:
         DCHECK(!css_property.IsInterpolable());
         break;
