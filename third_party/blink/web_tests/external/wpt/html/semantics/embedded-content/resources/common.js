@@ -43,13 +43,3 @@ function is_image_fully_loaded(image, expected_image) {
   }
   return true;
 }
-
-const BFCACHE_TEST_CASES = [
-  {'type': 'text/html', 'src': '/resources/blank.html'},
-  {'type': 'text/html', 'src': '/404'},
-  {'src': '/resources/blank.html'},
-  {'type': 'text/html'},
-  {'type': 'image/png', 'src': '/images/blue.png'},
-  {'type': 'application/javascript', 'src': '/resources/test-only-api.js'},
-  {'src': '/media/white.mp4'},
-];
