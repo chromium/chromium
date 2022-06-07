@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
 import os
 import shutil
 import subprocess
@@ -61,6 +62,7 @@ class TestBinarySizes(unittest.TestCase):
   def tearDownClass(cls):
     shutil.rmtree(cls.tmpdir)
 
+
   def testReadAndWritePackageBlobs(self):
     # TODO(1309977): Disabled on Windows because Windows doesn't allow opening a
     # NamedTemporaryFile by name.
@@ -81,6 +83,52 @@ class TestBinarySizes(unittest.TestCase):
                        package_blobs)
     finally:
       os.remove(tmp_package_file.name)
+
+  def testReadAndWritePackageSizes(self):
+    # TODO(1309977): Disabled on Windows because Windows doesn't allow opening a
+    # NamedTemporaryFile by name.
+    if os.name == 'nt':
+      return
+    with tempfile.NamedTemporaryFile(mode='w') as tmp_file:
+      tmp_file.write(_EXAMPLE_BLOBS)
+      tmp_file.flush()
+      blobs = binary_sizes.ReadPackageBlobsJson(tmp_file.name)
+
+    sizes = binary_sizes.GetPackageSizes(blobs)
+
+    new_sizes = {}
+    with tempfile.NamedTemporaryFile(mode='w') as tmp_file:
+      binary_sizes.WritePackageSizesJson(tmp_file.name, sizes)
+      new_sizes = binary_sizes.ReadPackageSizesJson(tmp_file.name)
+      self.assertEqual(new_sizes, sizes)
+      self.assertIn('web_engine', new_sizes)
+
+  def testGetPackageSizesUsesBlobMerklesForCount(self):
+    # TODO(1309977): Disabled on Windows because Windows doesn't allow opening a
+    # NamedTemporaryFile by name.
+    if os.name == 'nt':
+      return
+    blobs = json.loads(_EXAMPLE_BLOBS)
+
+    # Make a duplicate of the last blob.
+    last_blob = dict(blobs['web_engine'][-1])
+    blobs['cast_runner'] = []
+    last_blob['path'] = 'foo'  # Give a non-sense name, but keep merkle.
+
+    # If the merkle is the same, the blob_count increases by 1.
+    # This effectively reduces the size of the blobs size by half.
+    # In both packages, despite it appearing in both and under different
+    # names.
+    blobs['cast_runner'].append(last_blob)
+
+    with tempfile.NamedTemporaryFile(mode='w') as tmp_file:
+      tmp_file.write(json.dumps(blobs))
+      tmp_file.flush()
+      blobs = binary_sizes.ReadPackageBlobsJson(tmp_file.name)
+
+    sizes = binary_sizes.GetPackageSizes(blobs)
+
+    self.assertEqual(sizes['cast_runner'].compressed, last_blob['size'] / 2)
 
 
 if __name__ == '__main__':

@@ -59,6 +59,13 @@ class BinarySizeDifferTest(unittest.TestCase):
                                  is_counted=original_blob.is_counted)
     blobs[package][name] = new_blob
 
+  def ChangePackageSize(self, packages, name, increase):
+    original_package = packages[name]
+    new_package = binary_sizes.PackageSizes(
+        compressed=original_package.compressed + increase,
+        uncompressed=original_package.uncompressed)
+    packages[name] = new_package
+
   def testComputePackageDiffs(self):
     # TODO(1309977): Disabled on Windows because Windows doesn't allow opening a
     # NamedTemporaryFile by name.
@@ -68,6 +75,8 @@ class BinarySizeDifferTest(unittest.TestCase):
       before_file.write(_EXAMPLE_BLOBS_BEFORE)
       before_file.flush()
       blobs = binary_sizes.ReadPackageBlobsJson(before_file.name)
+      sizes = binary_sizes.GetPackageSizes(blobs)
+      binary_sizes.WritePackageSizesJson(before_file.name, sizes)
 
       # No change.
       growth = binary_size_differ.ComputePackageDiffs(before_file.name,
@@ -79,10 +88,9 @@ class BinarySizeDifferTest(unittest.TestCase):
       after_file.close()
       try:
         # Increase a blob, but below the limit.
-        other_blobs = copy.deepcopy(blobs)
-        self.ChangeBlobSize(other_blobs, 'web_engine', 'locales/ru.pak',
-                            8 * 1024)
-        binary_sizes.WritePackageBlobsJson(after_file.name, other_blobs)
+        other_sizes = copy.deepcopy(sizes)
+        self.ChangePackageSize(other_sizes, 'web_engine', 8 * 1024)
+        binary_sizes.WritePackageSizesJson(after_file.name, other_sizes)
 
         growth = binary_size_differ.ComputePackageDiffs(before_file.name,
                                                         after_file.name)
@@ -90,35 +98,12 @@ class BinarySizeDifferTest(unittest.TestCase):
         self.assertEqual(growth['compressed']['web_engine'], 8 * 1024)
 
         # Increase beyond the limit (adds another 8k)
-        self.ChangeBlobSize(other_blobs, 'web_engine', 'locales/ru.pak',
-                            8 * 1024 + 1)
-        binary_sizes.WritePackageBlobsJson(after_file.name, other_blobs)
+        self.ChangePackageSize(other_sizes, 'web_engine', 8 * 1024 + 1)
+        binary_sizes.WritePackageSizesJson(after_file.name, other_sizes)
         growth = binary_size_differ.ComputePackageDiffs(before_file.name,
                                                         after_file.name)
         self.assertEqual(growth['status_code'], 1)
         self.assertEqual(growth['compressed']['web_engine'], 16 * 1024 + 1)
-
-        other_blobs = copy.deepcopy(blobs)
-        # Increase the limit of multiple blobs.
-        self.ChangeBlobSize(other_blobs, 'web_engine', 'locales/ru.pak',
-                            (8 * 1024 + 1))
-        self.ChangeBlobSize(other_blobs, 'web_engine', 'locales/ta.pak',
-                            (8 * 1024))
-        binary_sizes.WritePackageBlobsJson(after_file.name, other_blobs)
-        growth = binary_size_differ.ComputePackageDiffs(before_file.name,
-                                                        after_file.name)
-        self.assertEqual(growth['status_code'], 1)
-        self.assertEqual(growth['compressed']['web_engine'], 16 * 1024 + 1)
-
-        other_blobs = copy.deepcopy(blobs)
-        # Increase the limit of is_counted=false does not increase limit.
-        self.ChangeBlobSize(other_blobs, 'web_engine', 'meta.far', (16 * 1024))
-        binary_sizes.WritePackageBlobsJson(after_file.name, other_blobs)
-        growth = binary_size_differ.ComputePackageDiffs(before_file.name,
-                                                        after_file.name)
-        self.assertEqual(growth['status_code'], 0)
-        self.assertEqual(growth['compressed']['web_engine'], 0)
-
       finally:
         os.remove(after_file.name)
 
