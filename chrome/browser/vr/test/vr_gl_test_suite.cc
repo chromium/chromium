@@ -4,6 +4,7 @@
 
 #include "chrome/browser/vr/test/vr_gl_test_suite.h"
 
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/test/gl_image_test_support.h"
 
@@ -19,7 +20,7 @@ VrGlTestSuite::VrGlTestSuite(int argc, char** argv) : VrTestSuite(argc, argv) {}
 void VrGlTestSuite::Initialize() {
   VrTestSuite::Initialize();
 
-  gl::GLImageTestSupport::InitializeGL(absl::nullopt);
+  display_ = gl::GLImageTestSupport::InitializeGL(absl::nullopt);
 
 #if defined(VR_USE_COMMAND_BUFFER)
   // Always enable gpu and oop raster, regardless of platform and denylist.
@@ -31,7 +32,7 @@ void VrGlTestSuite::Initialize() {
 }
 
 void VrGlTestSuite::Shutdown() {
-  gl::GLImageTestSupport::CleanupGL();
+  gl::GLImageTestSupport::CleanupGL(display_);
   vr::VrTestSuite::Shutdown();
 }
 

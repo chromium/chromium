@@ -15,7 +15,7 @@ class GLImageBindTest : public GLImageTest<GLImageTestDelegate> {};
 TYPED_TEST_SUITE_P(GLImageBindTest);
 
 TYPED_TEST_P(GLImageBindTest, BindTexImage) {
-  if (this->delegate_.SkipTest())
+  if (this->delegate_.SkipTest(this->display_))
     return;
 
   const gfx::Size image_size(256, 256);

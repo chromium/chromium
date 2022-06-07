@@ -541,16 +541,10 @@ struct GL_EXPORT CurrentGL {
 #if defined(USE_EGL)
 struct GL_EXPORT DriverEGL {
   void InitializeStaticBindings();
-  void InitializeClientExtensionBindings();
-  void InitializeExtensionBindings();
   void ClearBindings();
-  void UpdateConditionalExtensionBindings();
 
   ProcsEGL fn;
   ExtensionsEGL ext;
-
-  static std::string GetPlatformExtensions();
-  static std::string GetClientExtensions();
 };
 #endif
 
