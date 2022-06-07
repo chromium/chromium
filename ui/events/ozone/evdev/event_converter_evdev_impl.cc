@@ -65,6 +65,14 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
   if (has_numberpad_)
     NumberpadMetricsRecorder::GetInstance()->AddDevice(input_device_);
 #endif
+  // Converts unsigned long to uint64_t.
+  const auto key_bits = devinfo.GetKeyBits();
+  key_bits_.resize(key_bits.size());
+  for (int i = 0; i < KEY_CNT; i++) {
+    if (EvdevBitIsSet(key_bits.data(), i)) {
+      EvdevSetUint64Bit(key_bits_.data(), i);
+    }
+  }
 }
 
 EventConverterEvdevImpl::~EventConverterEvdevImpl() {
@@ -139,6 +147,10 @@ void EventConverterEvdevImpl::SetKeyFilter(bool enable_filter,
 void EventConverterEvdevImpl::OnDisabled() {
   ReleaseKeys();
   ReleaseMouseButtons();
+}
+
+std::vector<uint64_t> EventConverterEvdevImpl::GetKeyboardKeyBits() const {
+  return key_bits_;
 }
 
 ui::StylusState EventConverterEvdevImpl::GetStylusSwitchState() {

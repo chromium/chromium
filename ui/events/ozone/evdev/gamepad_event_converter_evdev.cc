@@ -59,7 +59,7 @@ GamepadEventConverterEvdev::GamepadEventConverterEvdev(
   }
   supports_rumble_ = devinfo.SupportsRumble();
   // Converts unsigned long to uint64_t.
-  const auto key_bits = devinfo.GetGamepadKeyBits();
+  const auto key_bits = devinfo.GetKeyBits();
   key_bits_.resize(key_bits.size());
   for (int i = 0; i < KEY_CNT; i++) {
     if (EvdevBitIsSet(key_bits.data(), i)) {

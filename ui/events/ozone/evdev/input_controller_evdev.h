@@ -61,6 +61,9 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   void GetAutoRepeatRate(base::TimeDelta* delay,
                          base::TimeDelta* interval) override;
   void SetCurrentLayoutByName(const std::string& layout_name) override;
+  void SetKeyboardKeyBitsMapping(
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override;
+  std::vector<uint64_t> GetKeyboardKeyBits(int id) override;
   void SetTouchEventLoggingEnabled(bool enabled) override;
   void SetTouchpadSensitivity(int value) override;
   void SetTouchpadScrollSensitivity(int value) override;
@@ -148,6 +151,9 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
 
   // Keyboard state.
   KeyboardEvdev* const keyboard_;
+
+  // Keyboard keybits.
+  base::flat_map<int, std::vector<uint64_t>> keyboard_key_bits_mapping_;
 
   // Mouse button map.
   MouseButtonMapEvdev* const mouse_button_map_;

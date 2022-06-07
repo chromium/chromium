@@ -5,6 +5,7 @@
 #include "components/exo/wayland/zcr_keyboard_configuration.h"
 
 #include <keyboard-configuration-unstable-v1-server-protocol.h>
+#include <linux/input.h>
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
@@ -15,6 +16,11 @@
 #include "components/exo/keyboard_device_configuration_delegate.h"
 #include "components/exo/keyboard_observer.h"
 #include "components/exo/wayland/server_util.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/input_device_event_observer.h"
+#include "ui/events/ozone/evdev/event_device_util.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace exo {
 namespace wayland {
@@ -27,7 +33,8 @@ namespace {
 class WaylandKeyboardDeviceConfigurationDelegate
     : public KeyboardDeviceConfigurationDelegate,
       public KeyboardObserver,
-      public ash::ImeControllerImpl::Observer {
+      public ash::ImeControllerImpl::Observer,
+      public ui::InputDeviceEventObserver {
  public:
   WaylandKeyboardDeviceConfigurationDelegate(wl_resource* resource,
                                              Keyboard* keyboard)
@@ -37,6 +44,8 @@ class WaylandKeyboardDeviceConfigurationDelegate
     ash::ImeControllerImpl* ime_controller =
         ash::Shell::Get()->ime_controller();
     ime_controller->AddObserver(this);
+    ui::DeviceDataManager::GetInstance()->AddObserver(this);
+    ProcessKeyBitsUpdate();
     OnKeyboardLayoutNameChanged(ime_controller->keyboard_layout_name());
   }
   WaylandKeyboardDeviceConfigurationDelegate(
@@ -45,6 +54,7 @@ class WaylandKeyboardDeviceConfigurationDelegate
       const WaylandKeyboardDeviceConfigurationDelegate&) = delete;
 
   ~WaylandKeyboardDeviceConfigurationDelegate() override {
+    ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
     ash::Shell::Get()->ime_controller()->RemoveObserver(this);
     if (keyboard_) {
       keyboard_->SetDeviceConfigurationDelegate(nullptr);
@@ -74,7 +84,51 @@ class WaylandKeyboardDeviceConfigurationDelegate
         resource_, layout_name.c_str());
   }
 
+  // Overridden from ui::InputDeviceEventObserver:
+  void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override {
+    if (!(input_device_types & ui::InputDeviceEventObserver::kKeyboard)) {
+      return;
+    }
+    ProcessKeyBitsUpdate();
+  }
+
  private:
+  // Notify key bits update.
+  void ProcessKeyBitsUpdate() {
+    if (wl_resource_get_version(resource_) <
+        ZCR_KEYBOARD_DEVICE_CONFIGURATION_V1_SUPPORTED_KEY_BITS_SINCE_VERSION) {
+      return;
+    }
+
+    // Preparing wayland keybits.
+    wl_array wl_key_bits;
+    wl_array_init(&wl_key_bits);
+    size_t key_bits_len = EVDEV_BITS_TO_INT64(KEY_CNT) * sizeof(uint64_t);
+    uint64_t* wl_key_bits_ptr =
+        static_cast<uint64_t*>(wl_array_add(&wl_key_bits, key_bits_len));
+    if (!wl_key_bits_ptr) {
+      wl_array_release(&wl_key_bits);
+      return;
+    }
+    memset(wl_key_bits_ptr, 0, key_bits_len);
+
+    ui::InputController* input_controller =
+        ui::OzonePlatform::GetInstance()->GetInputController();
+    // Combine supported key bits from all keyboard into single key bits.
+    for (const ui::InputDevice& device :
+         ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+      const std::vector<uint64_t>& key_bits =
+          input_controller->GetKeyboardKeyBits(device.id);
+      for (size_t i = 0; i < key_bits.size(); i++) {
+        wl_key_bits_ptr[i] |= key_bits[i];
+      }
+    }
+
+    zcr_keyboard_device_configuration_v1_send_supported_key_bits(resource_,
+                                                                 &wl_key_bits);
+    wl_array_release(&wl_key_bits);
+  }
+
   wl_resource* resource_;
   Keyboard* keyboard_;
 };

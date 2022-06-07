@@ -78,7 +78,8 @@ class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
   void DispatchMicrophoneMuteSwitchValueChanged(bool muted) override {}
 
   void DispatchKeyboardDevicesUpdated(
-      const std::vector<InputDevice>& devices) override {
+      const std::vector<InputDevice>& devices,
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {
     callback_.Run(devices);
   }
   void DispatchTouchscreenDevicesUpdated(

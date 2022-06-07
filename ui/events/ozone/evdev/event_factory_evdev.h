@@ -78,7 +78,9 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   void DispatchTouchEvent(const TouchEventParams& params);
 
   // Device lifecycle events.
-  void DispatchKeyboardDevicesUpdated(const std::vector<InputDevice>& devices);
+  void DispatchKeyboardDevicesUpdated(
+      const std::vector<InputDevice>& devices,
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping);
   void DispatchTouchscreenDevicesUpdated(
       const std::vector<TouchscreenDevice>& devices);
   void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices,

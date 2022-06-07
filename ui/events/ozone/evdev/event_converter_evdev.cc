@@ -245,6 +245,10 @@ void EventConverterEvdev::SetGetLatestStylusStateCallback(
 void EventConverterEvdev::SetReceivedValidInputCallback(
     ReceivedValidInputCallback callback) {}
 
+std::vector<uint64_t> EventConverterEvdev::GetKeyboardKeyBits() const {
+  return std::vector<uint64_t>();
+}
+
 base::TimeTicks EventConverterEvdev::TimeTicksFromInputEvent(
     const input_event& event) {
   base::TimeTicks timestamp =

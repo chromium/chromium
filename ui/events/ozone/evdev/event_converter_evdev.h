@@ -190,6 +190,9 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   virtual void SetReceivedValidInputCallback(
       ReceivedValidInputCallback callback);
 
+  // Returns supported key bits of the keyboard.
+  virtual std::vector<uint64_t> GetKeyboardKeyBits() const;
+
   // Helper to generate a base::TimeTicks from an input_event's time
   static base::TimeTicks TimeTicksFromInputEvent(const input_event& event);
 

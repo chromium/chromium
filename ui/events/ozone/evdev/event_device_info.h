@@ -203,8 +203,7 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   // The device type (internal or external.)
   InputDeviceType device_type() const { return device_type_; }
 
-  std::array<unsigned long, EVDEV_BITS_TO_LONGS(KEY_CNT)> GetGamepadKeyBits()
-      const {
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(KEY_CNT)> GetKeyBits() const {
     return key_bits_;
   }
 

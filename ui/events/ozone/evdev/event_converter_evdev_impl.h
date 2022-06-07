@@ -54,6 +54,7 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   void SetKeyFilter(bool enable_filter,
                     std::vector<DomCode> allowed_keys) override;
   void OnDisabled() override;
+  std::vector<uint64_t> GetKeyboardKeyBits() const override;
 
   void ProcessEvents(const struct input_event* inputs, int count);
 
@@ -127,6 +128,9 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
 
   // Callback to update keyboard devices when valid input is received.
   ReceivedValidInputCallback received_valid_input_callback_;
+
+  // Supported keyboard key bits.
+  std::vector<uint64_t> key_bits_;
 };
 
 }  // namespace ui

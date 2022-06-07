@@ -166,7 +166,8 @@ class MockDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
   void DispatchMicrophoneMuteSwitchValueChanged(bool muted) override {}
 
   void DispatchKeyboardDevicesUpdated(
-      const std::vector<InputDevice>& devices) override {}
+      const std::vector<InputDevice>& devices,
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
   void DispatchTouchscreenDevicesUpdated(
       const std::vector<TouchscreenDevice>& devices) override {}
   void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices,

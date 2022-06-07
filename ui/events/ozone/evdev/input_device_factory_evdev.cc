@@ -527,14 +527,16 @@ void InputDeviceFactoryEvdev::NotifyTouchscreensUpdated() {
 }
 
 void InputDeviceFactoryEvdev::NotifyKeyboardsUpdated() {
+  base::flat_map<int, std::vector<uint64_t>> key_bits_mapping;
   std::vector<InputDevice> keyboards;
   for (auto it = converters_.begin(); it != converters_.end(); ++it) {
     if (it->second->HasKeyboard()) {
       keyboards.push_back(InputDevice(it->second->input_device()));
+      key_bits_mapping[it->second->id()] = it->second->GetKeyboardKeyBits();
     }
   }
-
-  dispatcher_->DispatchKeyboardDevicesUpdated(keyboards);
+  dispatcher_->DispatchKeyboardDevicesUpdated(keyboards,
+                                              std::move(key_bits_mapping));
 }
 
 void InputDeviceFactoryEvdev::NotifyMouseDevicesUpdated() {

@@ -18,6 +18,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/event_converter_test_util.h"
+#include "ui/events/ozone/evdev/event_device_test_util.h"
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
 #include "ui/events/ozone/evdev/keyboard_evdev.h"
 #include "ui/events/ozone/evdev/testing/fake_cursor_delegate_evdev.h"
@@ -31,12 +32,13 @@ const char kTestDevicePath[] = "/dev/input/test-device";
 class MockEventConverterEvdevImpl : public EventConverterEvdevImpl {
  public:
   MockEventConverterEvdevImpl(base::ScopedFD fd,
+                              const ui::EventDeviceInfo& info,
                               CursorDelegateEvdev* cursor,
                               DeviceEventDispatcherEvdev* dispatcher)
       : EventConverterEvdevImpl(std::move(fd),
                                 base::FilePath(kTestDevicePath),
                                 1,
-                                EventDeviceInfo(),
+                                info,
                                 cursor,
                                 dispatcher) {
     SetEnabled(true);
@@ -65,7 +67,16 @@ class EventConverterEvdevImplTest : public testing::Test {
       delete;
 
   // Overridden from testing::Test:
-  void SetUp() override {
+  void SetUp() override { SetUpDevice(ui::EventDeviceInfo()); }
+
+  void TearDown() override {
+    device_.reset();
+    cursor_.reset();
+    events_out_.reset();
+    test_clock_.reset();
+  }
+
+  void SetUpDevice(const ui::EventDeviceInfo& info) {
     // Set up pipe to satisfy message pump (unused).
     int evdev_io[2];
     if (pipe(evdev_io))
@@ -84,16 +95,8 @@ class EventConverterEvdevImplTest : public testing::Test {
     dispatcher_ =
         ui::CreateDeviceEventDispatcherEvdevForTest(event_factory_.get());
     device_ = std::make_unique<ui::MockEventConverterEvdevImpl>(
-        std::move(events_in), cursor_.get(), dispatcher_.get());
-
+        std::move(events_in), info, cursor_.get(), dispatcher_.get());
     test_clock_ = std::make_unique<ui::test::ScopedEventTestTickClock>();
-  }
-
-  void TearDown() override {
-    device_.reset();
-    cursor_.reset();
-    events_out_.reset();
-    test_clock_.reset();
   }
 
   ui::FakeCursorDelegateEvdev* cursor() { return cursor_.get(); }
@@ -146,6 +149,21 @@ class EventConverterEvdevImplTest : public testing::Test {
   std::vector<std::unique_ptr<ui::Event>> dispatched_events_;
 
   base::ScopedFD events_out_;
+};
+
+// Test fixture which defers device set up, tests need to call SetUpDevice().
+class DeferDeviceSetUpEventConverterEvdevImplTest
+    : public EventConverterEvdevImplTest {
+ public:
+  DeferDeviceSetUpEventConverterEvdevImplTest() = default;
+
+  DeferDeviceSetUpEventConverterEvdevImplTest(
+      const DeferDeviceSetUpEventConverterEvdevImplTest&) = delete;
+  DeferDeviceSetUpEventConverterEvdevImplTest& operator=(
+      const DeferDeviceSetUpEventConverterEvdevImplTest&) = delete;
+
+  // Overridden from EventConverterEvdevImplTest:
+  void SetUp() override {}
 };
 
 TEST_F(EventConverterEvdevImplTest, KeyPress) {
@@ -749,4 +767,18 @@ TEST_F(EventConverterEvdevImplTest, ShouldSwapMouseButtonsFromUserPreference) {
   event = dispatched_mouse_event(3);
   EXPECT_EQ(ui::ET_MOUSE_RELEASED, event->type());
   EXPECT_EQ(true, event->IsLeftMouseButton());
+}
+
+TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest, KeyboardHasKeys) {
+  ui::EventDeviceInfo devinfo;
+  CapabilitiesToDeviceInfo(ui::kLogitechKeyboardK120, &devinfo);
+  SetUpDevice(devinfo);
+  ui::MockEventConverterEvdevImpl* dev = device();
+
+  const std::vector<uint64_t> key_bits = dev->GetKeyboardKeyBits();
+
+  // KEY_A should be supported.
+  EXPECT_TRUE(ui::EvdevBitUint64IsSet(key_bits.data(), 30));
+  // BTN_A shouldn't be supported.
+  EXPECT_FALSE(ui::EvdevBitUint64IsSet(key_bits.data(), 305));
 }
