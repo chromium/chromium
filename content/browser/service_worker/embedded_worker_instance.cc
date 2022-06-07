@@ -911,7 +911,12 @@ void EmbeddedWorkerInstance::OnNetworkAccessedForScriptLoad() {
 void EmbeddedWorkerInstance::ReleaseProcess() {
   // Abort an inflight start task.
   inflight_start_info_.reset();
-
+  // NotifyForegroundServiceWorkerRemoved() may trigger a call to
+  // UpdateForegroundPriority(). By setting status_ to STOPPING we
+  // prevent NotifyForegroundServiceWorkerAdded() from being called
+  // from UpdateForegroundPriority() since we don't want it to be
+  // re-added at this stage.
+  status_ = EmbeddedWorkerStatus::STOPPING;
   NotifyForegroundServiceWorkerRemoved();
 
   instance_host_receiver_.reset();
