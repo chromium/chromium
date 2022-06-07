@@ -181,10 +181,17 @@ std::vector<Result> GameFetcher::GetAppsForCurrentLocale(
         base::FilePath(app_with_locale.app().icon_info().icon_path()),
         app_with_locale.app().icon_info().is_masking_allowed(),
         GURL(app_with_locale.app().deeplink()));
-    results.push_back(Result(
-        AppSource::kGames, app_with_locale.app().app_id_for_platform(),
-        GetLocalisedName(app_with_locale.locale_availability(), profile_),
-        std::move(extras)));
+
+    auto localised_name =
+        GetLocalisedName(app_with_locale.locale_availability(), profile_);
+    // If |localised_name| is empty here, we don't have a localised name or a
+    // default name, so we cannot return this game as a result. Skip it.
+    if (localised_name.empty()) {
+      continue;
+    }
+    results.push_back(Result(AppSource::kGames,
+                             app_with_locale.app().app_id_for_platform(),
+                             localised_name, std::move(extras)));
   }
   return results;
 }
@@ -252,7 +259,8 @@ std::u16string GameFetcher::GetLocalisedName(
     localised_name = available_localised_name.name_in_language();
   }
   if (localised_name.empty()) {
-    DCHECK(!fallback_name.empty());
+    // It's ok if |fallback_name| is also empty here, as we check later on and
+    // remove results with empty name fields.
     localised_name = fallback_name;
   }
   return base::UTF8ToUTF16(localised_name);
