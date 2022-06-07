@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package test;
+package org.chromium.build;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,13 +10,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.testing.local.LocalRobolectricTestRunner;
+
+import test.NoSignatureChangeIncrementalJavacTestHelper;
 
 /**
  * Checks that build picked up changes to
  * {@link NoSignatureChangeIncrementalJavacTestHelper#foo()}.
  */
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class IncrementalJavacTest {
     @Test
