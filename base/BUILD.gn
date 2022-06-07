@@ -3053,6 +3053,7 @@ test("base_unittests") {
     "environment_unittest.cc",
     "feature_list_unittest.cc",
     "files/file_enumerator_unittest.cc",
+    "files/file_error_or_unittest.cc",
     "files/file_path_unittest.cc",
     "files/file_path_watcher_unittest.cc",
     "files/file_proxy_unittest.cc",

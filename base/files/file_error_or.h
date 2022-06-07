@@ -9,7 +9,7 @@
 
 #include "base/check.h"
 #include "base/files/file.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "base/types/expected.h"
 
 namespace base {
 
@@ -21,37 +21,26 @@ class FileErrorOr {
  public:
   // These constructors are intentionally not marked `explicit` for cleaner code
   // at call sites.
-  FileErrorOr(base::File::Error error) : error_or_value_(error) {}
-  FileErrorOr(ValueType&& value) : error_or_value_(std::move(value)) {}
+  FileErrorOr(File::Error error) : value_or_error_(unexpected(error)) {}
+  FileErrorOr(ValueType&& value) : value_or_error_(std::move(value)) {}
   FileErrorOr(const FileErrorOr&) = default;
   FileErrorOr(FileErrorOr&&) = default;
   FileErrorOr& operator=(const FileErrorOr&) = default;
   FileErrorOr& operator=(FileErrorOr&&) = default;
   ~FileErrorOr() = default;
 
-  bool is_error() const {
-    return absl::get_if<base::File::Error>(&error_or_value_);
-  }
-  base::File::Error error() const {
-    CHECK(is_error());
-    return absl::get<base::File::Error>(error_or_value_);
-  }
+  bool is_error() const { return !value_or_error_.has_value(); }
+  File::Error error() const { return value_or_error_.error(); }
 
-  bool is_value() const { return absl::get_if<ValueType>(&error_or_value_); }
-  ValueType& value() {
-    CHECK(!is_error());
-    return absl::get<ValueType>(error_or_value_);
-  }
-  const ValueType& value() const {
-    CHECK(!is_error());
-    return absl::get<const ValueType>(error_or_value_);
-  }
+  bool is_value() const { return value_or_error_.has_value(); }
+  ValueType& value() { return value_or_error_.value(); }
+  const ValueType& value() const { return value_or_error_.value(); }
 
   ValueType* operator->() { return &value(); }
   const ValueType* operator->() const { return &value(); }
 
  private:
-  absl::variant<base::File::Error, ValueType> error_or_value_;
+  expected<ValueType, File::Error> value_or_error_;
 };
 
 }  // namespace base
