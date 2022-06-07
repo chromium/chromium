@@ -494,11 +494,29 @@ void WindowPerformance::ReportEventTimings(
           input_delay, processing_time, time_to_next_paint, entry->name());
     }
 
+    // Event Timing
+    ResponsivenessMetrics::EventTimestamps event_timestamps = {
+        event_timestamp, presentation_timestamp};
+    // The page visibility was changed. In this case, we don't care about
+    // the time to next paint.
+    if (last_visibility_change_timestamp_ > event_timestamp &&
+        last_visibility_change_timestamp_ <= presentation_timestamp) {
+      event_timestamps.end_time -= time_to_next_paint;
+    }
+    if (SetInteractionIdAndRecordLatency(entry, key_code, pointer_id,
+                                         event_timestamps)) {
+      NotifyAndAddEventTimingBuffer(entry);
+    };
+
+    // First Input
     if (!first_input_timing_) {
       if (entry->name() == event_type_names::kPointerdown) {
         first_pointer_down_event_timing_ =
             PerformanceEventTiming::CreateFirstInputTiming(entry);
-      } else if (entry->name() == event_type_names::kPointerup) {
+      } else if (entry->name() == event_type_names::kPointerup &&
+                 first_pointer_down_event_timing_) {
+        first_pointer_down_event_timing_->SetInteractionId(
+            entry->interactionId());
         DispatchFirstInputTiming(first_pointer_down_event_timing_);
       } else if (entry->name() == event_type_names::kPointercancel) {
         first_pointer_down_event_timing_.Clear();
@@ -510,20 +528,6 @@ void WindowPerformance::ReportEventTimings(
             PerformanceEventTiming::CreateFirstInputTiming(entry));
       }
     }
-    ResponsivenessMetrics::EventTimestamps event_timestamps = {
-        event_timestamp, presentation_timestamp};
-    // The page visibility was changed. In this case, we don't care about
-    // the time to next paint.
-    if (last_visibility_change_timestamp_ > event_timestamp &&
-        last_visibility_change_timestamp_ <= presentation_timestamp) {
-      event_timestamps.end_time -= time_to_next_paint;
-    }
-    if (!SetInteractionIdAndRecordLatency(entry, key_code, pointer_id,
-                                          event_timestamps)) {
-      continue;
-    }
-
-    NotifyAndAddEventTimingBuffer(entry);
   }
 
   if (RuntimeEnabledFeatures::InteractionIdEnabled(GetExecutionContext())) {
