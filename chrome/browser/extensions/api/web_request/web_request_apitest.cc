@@ -1091,7 +1091,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
     PerformXhrInFrame(main_frame.get(), kHost, port, kXhrPath);
     PerformXhrInFrame(child_frame.get(), kChildHost, port, kXhrPath);
     EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
-    EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST, runner->GetBlockedActions(extension));
+    EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST,
+              runner->GetBlockedActions(extension->id()));
 
     // Grant activeTab permission.
     runner->accept_bubble_for_testing(true);
@@ -1117,7 +1118,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       HasSeenWebRequestInBackgroundPage(extension, profile(), "c.com"));
 
   // The withheld sub-frame requests should not show up as a blocked action.
-  EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension->id()));
 
   int request_count =
       GetWebRequestCountFromBackgroundPage(extension, profile());
@@ -1135,7 +1136,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
             GetWebRequestCountFromBackgroundPage(extension, profile()));
   // But since there's no way for the user to currently grant access to child
   // frames, this shouldn't show up as a blocked action.
-  EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension->id()));
 
   // Revoke the extension's tab permissions.
   ActiveTabPermissionGranter* granter =
@@ -1155,7 +1156,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
   EXPECT_EQ(request_count,
             GetWebRequestCountFromBackgroundPage(extension, profile()));
-  EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST, runner->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST,
+            runner->GetBlockedActions(extension->id()));
 }
 
 // Test that extensions with granted runtime host permissions to a tab can
@@ -1189,7 +1191,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(runner);
 
-  EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST, runner->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST,
+            runner->GetBlockedActions(extension->id()));
 
   // Grant runtime host permission to the page. The page should refresh. Even
   // though the request is for b.com (and the extension only has access to
@@ -1200,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   runner->RunAction(extension, true /* grant tab permissions */);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension->id()));
 
   EXPECT_TRUE(
       HasSeenWebRequestInBackgroundPage(extension, profile(), kCrossSiteHost));
@@ -1259,7 +1262,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
   // Even though the extension has access to b.com, it shouldn't show that it
   // wants to run, because example.com is not a requested host.
-  EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension->id()));
   EXPECT_FALSE(
       HasSeenWebRequestInBackgroundPage(extension, profile(), "b.com"));
 
@@ -1268,7 +1271,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
                      "b.com", "/extensions/cross_site_script.html")));
-  EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST, runner->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST,
+            runner->GetBlockedActions(extension->id()));
 }
 
 // Verify that requests to clientsX.google.com are protected properly.
@@ -2353,12 +2357,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
   // still be blocked due to ExtensionSettings policy on example.com.
   // Only records ACCESS_WITHHELD, not ACCESS_DENIED, this is why it matches
   // BLOCKED_ACTION_NONE.
-  EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension->id()));
   runner->accept_bubble_for_testing(true);
   runner->RunAction(extension, true);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension->id()));
   int xhr_count = GetWebRequestCountFromBackgroundPage(extension, profile());
   // ... which means that we should have a non-zero xhr count if the policy
   // didn't block the events.

@@ -22,6 +22,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -84,7 +85,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   // Returns a bitmask of BlockedActionType for the actions that have been
   // blocked for the given extension.
-  int GetBlockedActions(const Extension* extension);
+  int GetBlockedActions(const ExtensionId& extension_id);
 
   // Returns true if the given |extension| has any blocked actions.
   bool WantsToRun(const Extension* extension);
@@ -133,6 +134,9 @@ class ExtensionActionRunner : public content::WebContentsObserver,
     pending_scripts_.erase(extension.id());
   }
 #endif  // defined(UNIT_TEST)
+
+  // The blocked actions that require a page refresh to run.
+  static const int kRefreshRequiredActionsMask;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ExtensionActionRunnerFencedFrameBrowserTest,

@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
+
 #include <memory>
 
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_dialog_view.h"
@@ -46,7 +48,7 @@ void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
     return;
 
   ExtensionsRequestAccessButtonHoverCard::ShowBubble(
-      web_contents(), this, extensions_requesting_access_);
+      GetActiveWebContents(), this, extensions_requesting_access_);
 }
 
 std::u16string ExtensionsRequestAccessButton::GetTooltipText(
@@ -59,10 +61,21 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   ExtensionsToolbarContainer* const container =
       GetExtensionsToolbarContainer(browser_);
   DCHECK(container);
-  views::View* const anchor_view = container->GetExtensionsButton();
 
-  ShowExtensionsRequestAccessDialogView(web_contents(), anchor_view,
-                                        extensions_requesting_access_);
+  content::WebContents* web_contents = GetActiveWebContents();
+  views::View* const anchor_view = container->GetExtensionsButton();
+  bool requires_refresh =
+      ExtensionActionViewController::AnyActionRequiresPageRefreshToRun(
+          extensions_requesting_access_, web_contents);
+
+  if (requires_refresh) {
+    // TODO(crbug.com/1319555): Display blocked action dialog. Currently, the
+    // dialog only supports one extension, and here we can have multiple
+    // extensions.
+  } else {
+    ShowExtensionsRequestAccessDialogView(web_contents, anchor_view,
+                                          extensions_requesting_access_);
+  }
 }
 
 // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
@@ -81,6 +94,6 @@ void ExtensionsRequestAccessButton::OnMouseExited(const ui::MouseEvent& event) {
   ExtensionsRequestAccessButtonHoverCard::HideBubble();
 }
 
-content::WebContents* ExtensionsRequestAccessButton::web_contents() {
+content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents() {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }

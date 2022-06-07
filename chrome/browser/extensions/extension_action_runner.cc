@@ -47,12 +47,8 @@
 
 namespace extensions {
 
-namespace {
-
-// The blocked actions that require a page refresh to run.
-const int kRefreshRequiredActionsMask =
+const int ExtensionActionRunner::kRefreshRequiredActionsMask =
     BLOCKED_ACTION_WEB_REQUEST | BLOCKED_ACTION_SCRIPT_AT_START;
-}
 
 ExtensionActionRunner::PendingScript::PendingScript(
     mojom::RunLocation run_location,
@@ -90,8 +86,8 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
     const Extension* extension,
     bool grant_tab_permissions) {
   if (grant_tab_permissions) {
-    int blocked = GetBlockedActions(extension);
-    if (blocked & kRefreshRequiredActionsMask) {
+    int blocked_actions = GetBlockedActions(extension->id());
+    if (blocked_actions & kRefreshRequiredActionsMask) {
       const GURL& url = web_contents()->GetLastCommittedURL();
       // An extension that wants to run but it is currently blocked must have
       // "on click" access.
@@ -119,7 +115,7 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
     // If the extension had blocked actions, granting active tab will have
     // run the extension. Don't execute further since clicking should run
     // blocked actions *or* the normal extension action, not both.
-    if (blocked != BLOCKED_ACTION_NONE)
+    if (blocked_actions)
       return ExtensionAction::ACTION_NONE;
   }
 
@@ -154,8 +150,7 @@ void ExtensionActionRunner::HandlePageAccessModified(
     return;
   }
 
-  int blocked_actions = GetBlockedActions(extension);
-
+  int blocked_actions = GetBlockedActions(extension->id());
   // Refresh the page if there are pending actions which mandate a refresh.
   if (blocked_actions & kRefreshRequiredActionsMask) {
     // TODO(devlin): The bubble text should make it clear that permissions are
@@ -194,11 +189,11 @@ void ExtensionActionRunner::OnWebRequestBlocked(const Extension* extension) {
     test_observer_->OnBlockedActionAdded();
 }
 
-int ExtensionActionRunner::GetBlockedActions(const Extension* extension) {
+int ExtensionActionRunner::GetBlockedActions(const ExtensionId& extension_id) {
   int blocked_actions = BLOCKED_ACTION_NONE;
-  if (web_request_blocked_.count(extension->id()) != 0)
+  if (web_request_blocked_.count(extension_id) != 0)
     blocked_actions |= BLOCKED_ACTION_WEB_REQUEST;
-  auto iter = pending_scripts_.find(extension->id());
+  auto iter = pending_scripts_.find(extension_id);
   if (iter != pending_scripts_.end()) {
     for (const auto& script : iter->second) {
       switch (script->run_location) {
@@ -221,7 +216,7 @@ int ExtensionActionRunner::GetBlockedActions(const Extension* extension) {
 }
 
 bool ExtensionActionRunner::WantsToRun(const Extension* extension) {
-  return GetBlockedActions(extension) != BLOCKED_ACTION_NONE;
+  return GetBlockedActions(extension->id()) != BLOCKED_ACTION_NONE;
 }
 
 void ExtensionActionRunner::RunForTesting(const Extension* extension) {

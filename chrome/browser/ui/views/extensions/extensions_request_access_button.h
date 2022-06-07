@@ -42,7 +42,7 @@ class ExtensionsRequestAccessButton : public ToolbarButton {
  private:
   void OnButtonPressed();
 
-  content::WebContents* web_contents();
+  content::WebContents* GetActiveWebContents();
 
   raw_ptr<Browser> browser_;
 

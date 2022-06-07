@@ -2805,7 +2805,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     ExtensionActionRunner* runner =
         ExtensionActionRunner::GetForWebContents(web_contents());
     ASSERT_TRUE(runner);
-    EXPECT_EQ(expected_blocked_actions, runner->GetBlockedActions(extension));
+    EXPECT_EQ(expected_blocked_actions,
+              runner->GetBlockedActions(extension->id()));
   };
 
   {

@@ -54,6 +54,12 @@ class ExtensionActionViewController
       const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
       content::WebContents* web_contents);
 
+  // Returns whether any of `actions` need a page refresh to execute its action
+  // in `web_contents`.
+  static bool AnyActionRequiresPageRefreshToRun(
+      const std::vector<ToolbarActionViewController*>& actions,
+      content::WebContents* web_contents);
+
   ExtensionActionViewController(const ExtensionActionViewController&) = delete;
   ExtensionActionViewController& operator=(
       const ExtensionActionViewController&) = delete;

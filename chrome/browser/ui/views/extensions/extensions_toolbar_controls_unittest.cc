@@ -289,3 +289,6 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   // the current site to verify no extension should have access to the current
   // site. Uninstall extension in unit tests is flaky.
 }
+
+// TODO(crbug.com/3671898): Add a test that checks the correct dialog is open
+// when clicking on request access button.
