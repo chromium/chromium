@@ -254,12 +254,20 @@ template("msvc_toolchain") {
           ml = "armasm64.exe"
         }
       } else {
-        prefix = rebase_path("$clang_base_path/bin", root_build_dir)
-        ml = "$prefix/llvm-ml.exe"
-        if (toolchain_args.current_cpu == "x64") {
-          ml += " --m64"
+        if (toolchain_is_clang) {
+          prefix = rebase_path("$clang_base_path/bin", root_build_dir)
+          ml = "$prefix/llvm-ml.exe"
+          if (toolchain_args.current_cpu == "x64") {
+            ml += " -m64"
+          } else {
+            ml += " -m32"
+          }
         } else {
-          ml += " --m32"
+          if (toolchain_args.current_cpu == "x64") {
+            ml = "ml64.exe"
+          } else {
+            ml = "ml.exe"
+          }
         }
       }
 
@@ -270,6 +278,13 @@ template("msvc_toolchain") {
         # require /c because it doesn't support linking.)
         if (toolchain_args.current_cpu != "arm64") {
           ml += " /c"
+        }
+        if (use_lld && !toolchain_is_clang) {
+          # Wrap ml(64).exe with a script that makes its output deterministic.
+          # It's lld only because the script zaps obj Timestamp which
+          # link.exe /incremental looks at.
+          ml_py = rebase_path("//build/toolchain/win/ml.py", root_build_dir)
+          ml = "$python_path $ml_py $ml"
         }
       }
       if (toolchain_args.current_cpu != "arm64" || toolchain_is_clang) {
