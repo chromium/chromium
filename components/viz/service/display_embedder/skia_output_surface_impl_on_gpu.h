@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_SURFACE_IMPL_ON_GPU_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_SURFACE_IMPL_ON_GPU_H_
 
-#include <deque>
 #include <map>
 #include <memory>
 #include <utility>
@@ -42,7 +41,6 @@
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "ui/gfx/gpu_fence_handle.h"
 
 namespace gfx {
 namespace mojom {
@@ -139,14 +137,12 @@ class SkiaOutputSurfaceImplOnGpu
                const gfx::ColorSpace& color_space,
                float device_scale_factor,
                gfx::OverlayTransform transform);
-  void FinishPaintCurrentFrame(
-      sk_sp<SkDeferredDisplayList> ddl,
-      sk_sp<SkDeferredDisplayList> overdraw_ddl,
-      std::vector<ImageContextImpl*> image_contexts,
-      std::vector<gpu::SyncToken> sync_tokens,
-      base::OnceClosure on_finished,
-      base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
-      absl::optional<gfx::Rect> draw_rectangle);
+  void FinishPaintCurrentFrame(sk_sp<SkDeferredDisplayList> ddl,
+                               sk_sp<SkDeferredDisplayList> overdraw_ddl,
+                               std::vector<ImageContextImpl*> image_contexts,
+                               std::vector<gpu::SyncToken> sync_tokens,
+                               base::OnceClosure on_finished,
+                               absl::optional<gfx::Rect> draw_rectangle);
   void ScheduleOutputSurfaceAsOverlay(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane&
           output_surface_plane);
@@ -161,13 +157,11 @@ class SkiaOutputSurfaceImplOnGpu
   void SwapBuffersSkipped();
   void EnsureBackbuffer();
   void DiscardBackbuffer();
-  void FinishPaintRenderPass(
-      const gpu::Mailbox& mailbox,
-      sk_sp<SkDeferredDisplayList> ddl,
-      std::vector<ImageContextImpl*> image_contexts,
-      std::vector<gpu::SyncToken> sync_tokens,
-      base::OnceClosure on_finished,
-      base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb);
+  void FinishPaintRenderPass(const gpu::Mailbox& mailbox,
+                             sk_sp<SkDeferredDisplayList> ddl,
+                             std::vector<ImageContextImpl*> image_contexts,
+                             std::vector<gpu::SyncToken> sync_tokens,
+                             base::OnceClosure on_finished);
   // Deletes resources for RenderPasses in |ids|. Also takes ownership of
   // |images_contexts| and destroys them on GPU thread.
   void RemoveRenderPassResource(
@@ -302,8 +296,6 @@ class SkiaOutputSurfaceImplOnGpu
            gpu_preferences_.gr_context_type == gpu::GrContextType::kDawn;
   }
 
-  bool is_using_gl() const { return !is_using_vulkan() && !is_using_dawn(); }
-
   // Helper for `CopyOutput()` method, handles the RGBA format.
   void CopyOutputRGBA(SkSurface* surface,
                       copy_output::RenderPassGeometry geometry,
@@ -384,19 +376,6 @@ class SkiaOutputSurfaceImplOnGpu
   void CheckReadbackCompletion();
 
   void ReleaseAsyncReadResultHelpers();
-
-#if BUILDFLAG(ENABLE_VULKAN)
-  // Creates a release fence. The semaphore is an external semaphore created
-  // by CreateAndStoreExternalSemaphoreVulkan(). May destroy VkSemaphore that
-  // the |semaphore| stores if creation of a release fence fails. In this case,
-  // invalid fence handle is returned.
-  gfx::GpuFenceHandle CreateReleaseFenceForVulkan(
-      const GrBackendSemaphore& semaphore);
-  // Returns true if succeess.
-  bool CreateAndStoreExternalSemaphoreVulkan(
-      std::vector<GrBackendSemaphore>& end_semaphores);
-#endif
-  gfx::GpuFenceHandle CreateReleaseFenceForGL();
 
   class ReleaseCurrent {
    public:
@@ -499,13 +478,6 @@ class SkiaOutputSurfaceImplOnGpu
 
   // Tracking for ongoing AsyncReadResults.
   base::flat_set<AsyncReadResultHelper*> async_read_result_helpers_;
-
-  // Pending release fence callbacks. These callbacks can be delayed if Vulkan
-  // external semaphore type has copy transference, which means importing
-  // semaphores has to be delayed until submission.
-  std::deque<std::pair<GrBackendSemaphore,
-                       base::OnceCallback<void(gfx::GpuFenceHandle)>>>
-      pending_release_fence_cbs_;
 
   THREAD_CHECKER(thread_checker_);
 

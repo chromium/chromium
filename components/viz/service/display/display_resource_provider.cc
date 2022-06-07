@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
-#include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -307,9 +306,9 @@ void DisplayResourceProvider::TryReleaseResource(ResourceId id,
   }
 }
 
-bool DisplayResourceProvider::ResourceFenceHasPassed(
+bool DisplayResourceProvider::ReadLockFenceHasPassed(
     const ChildResource* resource) {
-  return !resource->resource_fence || resource->resource_fence->HasPassed();
+  return !resource->read_lock_fence || resource->read_lock_fence->HasPassed();
 }
 
 DisplayResourceProvider::CanDeleteNowResult
@@ -323,7 +322,7 @@ DisplayResourceProvider::CanDeleteNow(const Child& child_info,
 
     // Defer this resource deletion.
     return CanDeleteNowResult::kNo;
-  } else if (!ResourceFenceHasPassed(&resource)) {
+  } else if (!ReadLockFenceHasPassed(&resource)) {
     // TODO(dcastagna): see if it's possible to use this logic for
     // the branch above too, where the resource is locked or still exported.
     // We can't postpone the deletion, so we'll have to lose it.

@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -39,7 +38,6 @@
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "components/viz/service/display_embedder/skia_render_copy_results.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
-#include "gpu/command_buffer/service/external_semaphore.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -70,14 +68,10 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_surface.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "components/viz/service/display_embedder/skia_output_device_vulkan.h"
-#include "gpu/vulkan/vulkan_device_queue.h"
-#include "gpu/vulkan/vulkan_function_pointers.h"
-#include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_util.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/display_embedder/skia_output_device_vulkan_secondary_cb.h"
@@ -404,7 +398,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     std::vector<ImageContextImpl*> image_contexts,
     std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure on_finished,
-    base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
     absl::optional<gfx::Rect> draw_rectangle) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -487,24 +480,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     end_semaphores.insert(end_semaphores.end(), end_paint_semaphores.begin(),
                           end_paint_semaphores.end());
 
-#if BUILDFLAG(ENABLE_VULKAN)
-    // Semaphores for release fences for vulkan should be created before flush.
-    if (!return_release_fence_cb.is_null() && is_using_vulkan()) {
-      const bool result = CreateAndStoreExternalSemaphoreVulkan(end_semaphores);
-      // A release fence will be created on submit as some platforms may use
-      // VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT handle types for their
-      // external semaphore. That handle type has COPY transference. Vulkan spec
-      // says that semaphore has to be signaled, or have an associated semaphore
-      // signal operation pending execution. Thus, delay importing the handle
-      // and creating the fence until commands are submitted.
-      pending_release_fence_cbs_.emplace_back(
-          result ? end_semaphores.back() : GrBackendSemaphore(),
-          std::move(return_release_fence_cb));
-    }
-#endif
-
     const bool end_semaphores_empty = end_semaphores.empty();
-
     auto result = scoped_output_device_paint_->Flush(vulkan_context_provider_,
                                                      std::move(end_semaphores),
                                                      std::move(on_finished));
@@ -514,22 +490,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
       // TODO(penghuang): handle vulkan device lost.
       FailedSkiaFlush("output_sk_surface()->flush() failed.");
       return;
-    }
-
-    gfx::GpuFenceHandle release_fence;
-    if (!return_release_fence_cb.is_null() && is_using_gl()) {
-      DCHECK(release_fence.is_null());
-      release_fence = CreateReleaseFenceForGL();
-    }
-
-    if (!return_release_fence_cb.is_null() && is_using_dawn())
-      NOTIMPLEMENTED() << "Release fences with dawn are not supported.";
-
-    if (!return_release_fence_cb.is_null()) {
-      // Returning fences for Vulkan is delayed. See the comment above.
-      DCHECK(!is_using_vulkan());
-      PostTaskToClientThread(base::BindOnce(std::move(return_release_fence_cb),
-                                            std::move(release_fence)));
     }
   }
 }
@@ -575,8 +535,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     sk_sp<SkDeferredDisplayList> ddl,
     std::vector<ImageContextImpl*> image_contexts,
     std::vector<gpu::SyncToken> sync_tokens,
-    base::OnceClosure on_finished,
-    base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb) {
+    base::OnceClosure on_finished) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(ddl);
@@ -627,22 +586,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     backing_representation->SetCleared();
     destroy_after_swap_.emplace_back(std::move(ddl));
 
-#if BUILDFLAG(ENABLE_VULKAN)
-    // Semaphores for release fences for vulkan should be created before flush.
-    if (!return_release_fence_cb.is_null() && is_using_vulkan()) {
-      const bool result = CreateAndStoreExternalSemaphoreVulkan(end_semaphores);
-      // A release fence will be created on submit as some platforms may use
-      // VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT handle types for their
-      // external semaphore. That handle type has COPY transference. Vulkan spec
-      // says that semaphore has to be signaled, or have an associated semaphore
-      // signal operation pending execution. Thus, delay importing the handle
-      // and creating the fence until commands are submitted.
-      pending_release_fence_cbs_.emplace_back(
-          result ? end_semaphores.back() : GrBackendSemaphore(),
-          std::move(return_release_fence_cb));
-    }
-#endif
-
     GrFlushInfo flush_info = {
         .fNumSemaphores = end_semaphores.size(),
         .fSignalSemaphores = end_semaphores.data(),
@@ -651,7 +594,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
                                           &flush_info);
     if (on_finished)
       gpu::AddCleanupTaskForSkiaFlush(std::move(on_finished), &flush_info);
-
     auto result = surface->flush(flush_info);
     if (result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores.empty())) {
@@ -659,24 +601,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
       FailedSkiaFlush("offscreen.surface()->flush() failed.");
       return;
     }
-
-    // If GL is used, create the release fence after flush.
-    gfx::GpuFenceHandle release_fence;
-    if (!return_release_fence_cb.is_null() && is_using_gl()) {
-      DCHECK(release_fence.is_null());
-      release_fence = CreateReleaseFenceForGL();
-    }
-
-    if (!return_release_fence_cb.is_null() && is_using_dawn())
-      NOTIMPLEMENTED() << "Release fences with dawn are not supported.";
-
-    if (!return_release_fence_cb.is_null()) {
-      // Returning fences for Vulkan is delayed. See the comment above.
-      DCHECK(!is_using_vulkan());
-      PostTaskToClientThread(base::BindOnce(std::move(return_release_fence_cb),
-                                            std::move(release_fence)));
-    }
-
     bool sync_cpu =
         gpu::ShouldVulkanSyncCpuForSkiaSubmit(vulkan_context_provider_);
     if (sync_cpu) {
@@ -1864,20 +1788,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
   promise_image_access_helper_.EndAccess();
   scoped_output_device_paint_.reset();
 
-#if BUILDFLAG(ENABLE_VULKAN)
-  while (!pending_release_fence_cbs_.empty()) {
-    auto& item = pending_release_fence_cbs_.front();
-    auto release_fence = CreateReleaseFenceForVulkan(item.first);
-    if (release_fence.is_null())
-      LOG(ERROR) << "Unable to create a release fence for Vulkan.";
-    PostTaskToClientThread(
-        base::BindOnce(std::move(item.second), std::move(release_fence)));
-    pending_release_fence_cbs_.pop_front();
-  }
-#else
-  DCHECK(pending_release_fence_cbs_.empty());
-#endif
-
   if (frame) {
     if (waiting_for_full_damage_) {
       // If we're using partial swap, we need to check whether the sub-buffer
@@ -2097,58 +2007,6 @@ void SkiaOutputSurfaceImplOnGpu::DiscardBackbuffer() {
   // until it's removed we should keep true here.
   MakeCurrent(/*need_framebuffer=*/true);
   output_device_->DiscardBackbuffer();
-}
-
-#if BUILDFLAG(ENABLE_VULKAN)
-gfx::GpuFenceHandle SkiaOutputSurfaceImplOnGpu::CreateReleaseFenceForVulkan(
-    const GrBackendSemaphore& semaphore) {
-  DCHECK(is_using_vulkan());
-
-  if (semaphore.vkSemaphore() == VK_NULL_HANDLE)
-    return {};
-
-  auto* implementation = vulkan_context_provider_->GetVulkanImplementation();
-  VkDevice device =
-      vulkan_context_provider_->GetDeviceQueue()->GetVulkanDevice();
-
-  auto handle =
-      implementation->GetSemaphoreHandle(device, semaphore.vkSemaphore());
-  if (!handle.is_valid()) {
-    vkDestroySemaphore(device, semaphore.vkSemaphore(),
-                       /*pAllocator=*/nullptr);
-    LOG(ERROR) << "Failed to create a release fence for Vulkan.";
-    return {};
-  }
-  return std::move(handle).ToGpuFenceHandle();
-}
-
-bool SkiaOutputSurfaceImplOnGpu::CreateAndStoreExternalSemaphoreVulkan(
-    std::vector<GrBackendSemaphore>& end_semaphores) {
-  DCHECK(is_using_vulkan());
-
-  auto* implementation = vulkan_context_provider_->GetVulkanImplementation();
-  VkDevice device =
-      vulkan_context_provider_->GetDeviceQueue()->GetVulkanDevice();
-
-  VkSemaphore semaphore = implementation->CreateExternalSemaphore(device);
-  if (semaphore == VK_NULL_HANDLE) {
-    LOG(ERROR)
-        << "Creation of an external semaphore for a release fence failed.";
-    return false;
-  }
-
-  end_semaphores.emplace_back();
-  end_semaphores.back().initVulkan(semaphore);
-  return true;
-}
-#endif
-
-gfx::GpuFenceHandle SkiaOutputSurfaceImplOnGpu::CreateReleaseFenceForGL() {
-  if (gl::GLFence::IsGpuFenceSupported()) {
-    auto fence = gl::GLFence::CreateForGpuFence();
-    return fence->GetGpuFence()->GetGpuFenceHandle().Clone();
-  }
-  return {};
 }
 
 }  // namespace viz

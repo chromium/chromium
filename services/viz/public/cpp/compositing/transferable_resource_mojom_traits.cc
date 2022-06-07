@@ -25,8 +25,6 @@ EnumTraits<viz::mojom::SynchronizationType,
       return viz::mojom::SynchronizationType::kSyncToken;
     case viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted:
       return viz::mojom::SynchronizationType::kGpuCommandsCompleted;
-    case viz::TransferableResource::SynchronizationType::kReleaseFence:
-      return viz::mojom::SynchronizationType::kReleaseFence;
   }
   NOTREACHED();
   return viz::mojom::SynchronizationType::kSyncToken;
@@ -44,9 +42,6 @@ bool EnumTraits<viz::mojom::SynchronizationType,
     case viz::mojom::SynchronizationType::kGpuCommandsCompleted:
       *out =
           viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
-      return true;
-    case viz::mojom::SynchronizationType::kReleaseFence:
-      *out = viz::TransferableResource::SynchronizationType::kReleaseFence;
       return true;
   }
   return false;

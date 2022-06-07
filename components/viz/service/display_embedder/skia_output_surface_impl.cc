@@ -624,9 +624,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   return current_paint_->recorder()->getCanvas();
 }
 
-void SkiaOutputSurfaceImpl::EndPaint(
-    base::OnceClosure on_finished,
-    base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb) {
+void SkiaOutputSurfaceImpl::EndPaint(base::OnceClosure on_finished) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_paint_);
   auto ddl = current_paint_->recorder()->detach();
@@ -651,8 +649,7 @@ void SkiaOutputSurfaceImpl::EndPaint(
         &SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame,
         base::Unretained(impl_on_gpu_.get()), std::move(ddl),
         std::move(overdraw_ddl), std::move(images_in_current_paint_),
-        resource_sync_tokens_, std::move(on_finished),
-        std::move(return_release_fence_cb), draw_rectangle_);
+        resource_sync_tokens_, std::move(on_finished), draw_rectangle_);
     EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
                    /*make_current=*/true, /*need_framebuffer=*/true);
     draw_rectangle_.reset();
@@ -661,8 +658,7 @@ void SkiaOutputSurfaceImpl::EndPaint(
         &SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass,
         base::Unretained(impl_on_gpu_.get()), current_paint_->mailbox(),
         std::move(ddl), std::move(images_in_current_paint_),
-        resource_sync_tokens_, std::move(on_finished),
-        std::move(return_release_fence_cb));
+        resource_sync_tokens_, std::move(on_finished));
     EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
                    /*make_current=*/true, /*need_framebuffer=*/false);
   }

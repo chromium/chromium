@@ -84,13 +84,6 @@ DisplayResourceProviderSkia::DeleteAndReturnUnusedResourcesToChildImpl(
       continue;
     }
 
-    if (resource.transferable.synchronization_type ==
-        TransferableResource::SynchronizationType::kReleaseFence) {
-      // The resource might have never been used.
-      if (resource.resource_fence)
-        resource.release_fence = resource.resource_fence->GetGpuFenceHandle();
-    }
-
     const bool is_lost = can_delete == CanDeleteNowResult::kYesButLoseResource;
 
     to_return.emplace_back(child_id, resource.sync_token(),
@@ -174,20 +167,12 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
     }
     resource.locked_for_external_use = true;
 
-    switch (resource.transferable.synchronization_type) {
-      case TransferableResource::SynchronizationType::kGpuCommandsCompleted:
-        resource.resource_fence =
-            resource_provider_->current_gpu_commands_completed_fence_;
-        break;
-      case TransferableResource::SynchronizationType::kReleaseFence:
-        resource.resource_fence = resource_provider_->current_release_fence_;
-        break;
-      default:
-        break;
+    if (resource.transferable.synchronization_type ==
+        TransferableResource::SynchronizationType::kGpuCommandsCompleted) {
+      if (resource_provider_->current_read_lock_fence_.get())
+        resource_provider_->current_read_lock_fence_->Set();
+      resource.read_lock_fence = resource_provider_->current_read_lock_fence_;
     }
-
-    if (resource.resource_fence)
-      resource.resource_fence->Set();
   }
 
   DCHECK(base::Contains(resources_, std::make_pair(id, &resource)));
