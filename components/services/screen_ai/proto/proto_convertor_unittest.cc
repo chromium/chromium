@@ -102,7 +102,15 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
         serialized_annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "id=1 dialog (0, 0)-(800, 900) child_ids=2\n");
+        "id=1 dialog (0, 0)-(800, 900) child_ids=2,3\n"
+        "  id=2 button offset_container_id=1 (0, 1)-(2, 3) transform=[ +0.0000 "
+        "-1.0000 +0.0000 +0.0000  \n"
+        "  +1.0000 +0.0000 +0.0000 +0.0000  \n"
+        "  +0.0000 +0.0000 +1.0000 +0.0000  \n"
+        "  +0.0000 +0.0000 +0.0000 +1.0000 ]\n"
+        "\n"
+        "  id=3 genericContainer offset_container_id=1 (0, 0)-(5, 5) "
+        "role_description=Signature\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 
@@ -175,18 +183,26 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
         serialized_annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "id=3 dialog (0, 0)-(800, 900) child_ids=4\n"
-        "id=5 region (0, 0)-(800, 900) is_page_breaking_object=true "
-        "child_ids=6,7\n"
-        "  id=6 staticText (0, 0)-(5, 0) name_from=contents text_direction=ltr "
-        "name=\n"
-        "  id=7 staticText offset_container_id=5 (100, 100)-(500, 20) "
-        "name_from=contents text_direction=rtl name=Hello world language=en "
+        "id=4 dialog (0, 0)-(800, 900) child_ids=5,6\n"
+        "  id=5 button offset_container_id=4 (0, 1)-(2, 3) transform=[ +0.0000 "
+        "-1.0000 +0.0000 +0.0000  \n"
+        "  +1.0000 +0.0000 +0.0000 +0.0000  \n"
+        "  +0.0000 +0.0000 +1.0000 +0.0000  \n"
+        "  +0.0000 +0.0000 +0.0000 +1.0000 ]\n"
+        "\n"
+        "  id=6 genericContainer offset_container_id=4 (0, 0)-(5, 5) "
+        "role_description=Signature\n"
+        "id=7 region (0, 0)-(800, 900) is_page_breaking_object=true "
         "child_ids=8,9\n"
-        "    id=8 inlineTextBox offset_container_id=7 (100, 100)-(250, 20) "
+        "  id=8 staticText (0, 0)-(5, 0) name_from=contents text_direction=ltr "
+        "name=\n"
+        "  id=9 staticText offset_container_id=7 (100, 100)-(500, 20) "
+        "name_from=contents text_direction=rtl name=Hello world language=en "
+        "child_ids=10,11\n"
+        "    id=10 inlineTextBox offset_container_id=9 (100, 100)-(250, 20) "
         "name_from=contents background_color=&C350 color=&61A8 "
         "text_direction=rtl name=Hello \n"
-        "    id=9 inlineTextBox offset_container_id=7 (350, 100)-(250, 20) "
+        "    id=11 inlineTextBox offset_container_id=9 (350, 100)-(250, 20) "
         "name_from=contents background_color=&C350 color=&61A8 "
         "text_direction=rtl name=world\n");
     EXPECT_EQ(expected_update, update.ToString());

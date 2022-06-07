@@ -241,7 +241,7 @@ void SerializeUIComponent(const chrome_screen_ai::UIComponent& ui_component,
   DCHECK_LT(index, node_data.size());
   DCHECK_NE(parent_node.id, ui::kInvalidAXNodeID);
   ui::AXNodeData& current_node = node_data[index];
-  if (SerializePredictedType(ui_component.predicted_type(), current_node))
+  if (!SerializePredictedType(ui_component.predicted_type(), current_node))
     return;
   current_node.id = GetNextNodeID();
   SerializeBoundingBox(ui_component.bounding_box(), parent_node.id,
@@ -319,10 +319,10 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
   // TODO(https://crbug.com/1278249): Create an AXTreeSource and create the
   // update using AXTreeSerializer.
 
-  // Each `UIComponent`, `LineBox`, and `WordBox` will take up one node in the
-  // accessibility tree, resulting in hundreds of nodes, making it inefficient
-  // to push_back one node at a time. We pre-allocate the needed nodes making
-  // node creation an O(n) operation.
+  // Each `UIComponent` and `LineBox` will take up one node in the accessibility
+  // tree, resulting in hundreds of nodes, making it inefficient to push_back
+  // one node at a time. We pre-allocate the needed nodes making node creation
+  // an O(n) operation.
   const size_t word_count = std::accumulate(
       std::begin(visual_annotation.lines()),
       std::end(visual_annotation.lines()), 0u,
