@@ -94,6 +94,12 @@ def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
   else:
     reason = 'RAM'
 
+  # static link see too many open files if we have many concurrent links.
+  # ref: http://b/233068481
+  if num_links > 30:
+    num_links = 30
+    reason = 'nofile'
+
   explanation.append('concurrent_links={}  (reason: {})'.format(
       num_links, reason))
 
