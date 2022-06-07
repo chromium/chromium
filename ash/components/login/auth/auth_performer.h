@@ -11,8 +11,10 @@
 #include "ash/components/login/auth/cryptohome_error.h"
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -25,7 +27,7 @@ class UserContext;
 // This implementation is only compatible with AuthSession-based API.
 class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
  public:
-  AuthPerformer();
+  explicit AuthPerformer(base::raw_ptr<UserDataAuthClient> client);
 
   AuthPerformer(const AuthPerformer&) = delete;
   AuthPerformer& operator=(const AuthPerformer&) = delete;
@@ -118,6 +120,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
       AuthOperationCallback callback,
       absl::optional<user_data_auth::AuthenticateAuthSessionReply> reply);
 
+  const base::raw_ptr<UserDataAuthClient> client_;
   base::WeakPtrFactory<AuthPerformer> weak_factory_{this};
 };
 

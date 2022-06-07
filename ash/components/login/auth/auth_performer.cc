@@ -18,7 +18,9 @@
 
 namespace ash {
 
-AuthPerformer::AuthPerformer() = default;
+AuthPerformer::AuthPerformer(base::raw_ptr<UserDataAuthClient> client)
+    : client_(client) {}
+
 AuthPerformer::~AuthPerformer() = default;
 
 void AuthPerformer::InvalidateCurrentAttempts() {
@@ -32,7 +34,7 @@ base::WeakPtr<AuthPerformer> AuthPerformer::AsWeakPtr() {
 void AuthPerformer::StartAuthSession(std::unique_ptr<UserContext> context,
                                      bool ephemeral,
                                      StartSessionCallback callback) {
-  UserDataAuthClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
+  client_->WaitForServiceToBeAvailable(base::BindOnce(
       &AuthPerformer::OnServiceRunning, weak_factory_.GetWeakPtr(),
       std::move(context), ephemeral, std::move(callback)));
 }
@@ -56,7 +58,7 @@ void AuthPerformer::OnServiceRunning(std::unique_ptr<UserContext> context,
     request.set_flags(user_data_auth::AUTH_SESSION_FLAGS_NONE);
   }
 
-  UserDataAuthClient::Get()->StartAuthSession(
+  client_->StartAuthSession(
       request, base::BindOnce(&AuthPerformer::OnStartAuthSession,
                               weak_factory_.GetWeakPtr(), std::move(context),
                               std::move(callback)));
@@ -105,7 +107,7 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
   cryptohome::KeyDefinitionToKey(
       cryptohome_parameter_utils::CreateKeyDefFromUserContext(*context), key);
 
-  UserDataAuthClient::Get()->AuthenticateAuthSession(
+  client_->AuthenticateAuthSession(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthSession,
                               weak_factory_.GetWeakPtr(), std::move(context),
                               std::move(callback)));
@@ -132,7 +134,7 @@ void AuthPerformer::AuthenticateUsingChallengeResponseKey(
       cryptohome_parameter_utils::CreateAuthorizationKeyDefFromUserContext(
           *context));
 
-  UserDataAuthClient::Get()->AuthenticateAuthSession(
+  client_->AuthenticateAuthSession(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthSession,
                               weak_factory_.GetWeakPtr(), std::move(context),
                               std::move(callback)));
@@ -221,7 +223,7 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
   }
   key_data->set_label(key_def->label);
 
-  UserDataAuthClient::Get()->AuthenticateAuthSession(
+  client_->AuthenticateAuthSession(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthSession,
                               weak_factory_.GetWeakPtr(), std::move(context),
                               std::move(callback)));

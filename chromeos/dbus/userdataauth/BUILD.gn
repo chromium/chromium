@@ -47,6 +47,21 @@ component("userdataauth") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_userdataauth_client.cc",
+    "mock_userdataauth_client.h",
+  ]
+  deps = [
+    ":userdataauth",
+    ":userdataauth_proto",
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
 proto_library("userdataauth_proto") {
   deps = [ "//chromeos/dbus/cryptohome:cryptohome_proto" ]
 

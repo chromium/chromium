@@ -31,7 +31,8 @@ AuthSessionAuthenticator::AuthSessionAuthenticator(
       is_ephemeral_mount_enforced_(is_ephemeral_mount_enforced),
       safe_mode_delegate_(std::move(safe_mode_delegate)),
       auth_factor_editor_(std::make_unique<AuthFactorEditor>()),
-      auth_performer_(std::make_unique<AuthPerformer>()),
+      auth_performer_(
+          std::make_unique<AuthPerformer>(UserDataAuthClient::Get())),
       mount_performer_(std::make_unique<MountPerformer>()) {}
 
 AuthSessionAuthenticator::~AuthSessionAuthenticator() = default;

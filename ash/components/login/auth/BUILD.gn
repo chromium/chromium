@@ -138,20 +138,26 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":auth",
+    "//ash/components/cryptohome",
+    "//ash/components/login/auth",
     "//base",
     "//base:i18n",
     "//chromeos/ash/components/dbus/authpolicy",
     "//chromeos/ash/components/dbus/authpolicy:authpolicy_proto",
     "//chromeos/dbus/cryptohome",
+    "//chromeos/dbus/userdataauth",
+    "//chromeos/dbus/userdataauth:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//net",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
     "//third_party/icu",
   ]
   sources = [
+    "auth_performer_unittest.cc",
     "challenge_response/cert_utils_unittest.cc",
     "key_unittest.cc",
     "operation_chain_runner_unittest.cc",
