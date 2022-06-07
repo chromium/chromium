@@ -68,6 +68,13 @@ class APITypeReferenceMap {
   // Looks up a custom signature that was previously added.
   const APISignature* GetCustomSignature(const std::string& name) const;
 
+  // Adds a signature for an API event with the given `event_name`.
+  void AddEventSignature(const std::string& event_name,
+                         std::unique_ptr<APISignature> signature);
+
+  // Retrieves a signature for an API event with the given `event_name`.
+  const APISignature* GetEventSignature(const std::string& event_name) const;
+
   // Returns the associated APISignature for the given |name|. Logic differs
   // slightly from a normal GetAPIMethodSignature as we don't want to initialize
   // a new type if the signature is not found.
@@ -80,9 +87,12 @@ class APITypeReferenceMap {
   InitializeTypeCallback initialize_type_;
 
   std::map<std::string, std::unique_ptr<ArgumentSpec>> type_refs_;
-  std::map<std::string, std::unique_ptr<APISignature>> api_methods_;
-  std::map<std::string, std::unique_ptr<APISignature>> type_methods_;
-  std::map<std::string, std::unique_ptr<APISignature>> custom_signatures_;
+
+  using SignatureMap = std::map<std::string, std::unique_ptr<APISignature>>;
+  SignatureMap api_methods_;
+  SignatureMap type_methods_;
+  SignatureMap custom_signatures_;
+  SignatureMap event_signatures_;
 };
 
 }  // namespace extensions

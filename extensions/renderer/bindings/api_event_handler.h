@@ -16,6 +16,7 @@
 #include "v8/include/v8.h"
 
 namespace extensions {
+class APIResponseValidator;
 class ExceptionHandler;
 
 // The object to handle API events. This includes vending v8::Objects for the
@@ -38,6 +39,9 @@ class APIEventHandler {
   APIEventHandler& operator=(const APIEventHandler&) = delete;
 
   ~APIEventHandler();
+
+  // Sets the response validator to be used in verifying event arguments.
+  void SetResponseValidator(std::unique_ptr<APIResponseValidator> validator);
 
   // Returns a new v8::Object for an event with the given |event_name|. If
   // |notify_on_change| is true, notifies whenever listeners state is changed.
@@ -111,6 +115,10 @@ class APIEventHandler {
   // The exception handler associated with the bindings system; guaranteed to
   // outlive this object.
   ExceptionHandler* const exception_handler_;
+
+  // The response validator used to verify event arguments. Only non-null if
+  // validation is enabled.
+  std::unique_ptr<APIResponseValidator> api_response_validator_;
 };
 
 }  // namespace extensions

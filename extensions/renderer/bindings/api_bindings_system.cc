@@ -45,6 +45,8 @@ APIBindingsSystem::APIBindingsSystem(
   if (binding::IsResponseValidationEnabled()) {
     request_handler_.SetResponseValidator(
         std::make_unique<APIResponseValidator>(&type_reference_map_));
+    event_handler_.SetResponseValidator(
+        std::make_unique<APIResponseValidator>(&type_reference_map_));
   }
 }
 
