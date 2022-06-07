@@ -1248,7 +1248,7 @@ struct DisplayInfo {
   [MinVersion=1] array<ExternalDisplayInfo>? dp_infos@1;
 };
 
-// NextMinVersion: 2, NextIndex: 7
+// NextMinVersion: 3, NextIndex: 15
 struct EmbeddedDisplayInfo {
   // Privacy screen is supported or not.
   bool privacy_screen_supported@0;
@@ -1264,9 +1264,25 @@ struct EmbeddedDisplayInfo {
   [MinVersion=1] NullableUint32? resolution_vertical@5;
   // Refresh rate.
   [MinVersion=1] NullableDouble? refresh_rate@6;
+  // Three letter manufacturer ID.
+  [MinVersion=2] string? manufacturer@7;
+  // Manufacturer product code.
+  [MinVersion=2] NullableUint16? model_id@8;
+  // 32 bits serial number.
+  [MinVersion=2] NullableUint32? serial_number@9;
+  // Week of manufacture.
+  [MinVersion=2] NullableUint8? manufacture_week@10;
+  // Year of manufacture.
+  [MinVersion=2] NullableUint16? manufacture_year@11;
+  // EDID version.
+  [MinVersion=2] string? edid_version@12;
+  // Digital or analog input.
+  [MinVersion=2] DisplayInputType input_type@13;
+  // Name of display product.
+  [MinVersion=2] string? display_name@14;
 };
 
-// NextMinVersion: 1, NextIndex: 5
+// NextMinVersion: 2, NextIndex: 13
 struct ExternalDisplayInfo {
   // Display width in millimeters.
   NullableUint32? display_width@0;
@@ -1278,6 +1294,35 @@ struct ExternalDisplayInfo {
   NullableUint32? resolution_vertical@3;
   // Refresh rate.
   NullableDouble? refresh_rate@4;
+  // Three letter manufacturer ID.
+  [MinVersion=1] string? manufacturer@5;
+  // Manufacturer product code.
+  [MinVersion=1] NullableUint16? model_id@6;
+  // 32 bits serial number.
+  [MinVersion=1] NullableUint32? serial_number@7;
+  // Week of manufacture.
+  [MinVersion=1] NullableUint8? manufacture_week@8;
+  // Year of manufacture.
+  [MinVersion=1] NullableUint16? manufacture_year@9;
+  // EDID version.
+  [MinVersion=1] string? edid_version@10;
+  // Digital or analog input.
+  [MinVersion=1] DisplayInputType input_type@11;
+  // Name of display product.
+  [MinVersion=1] string? display_name@12;
+};
+
+// An enumeration of display input type.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Extensible]
+enum DisplayInputType {
+  // An enum value not defined in this version of the enum definition.
+  [Default] kUnmappedEnumField = 0,
+  // Digital input.
+  kDigital = 1,
+  // Analog input.
+  kAnalog = 2,
 };
 
 // Information related to a Thunderbolt device.
