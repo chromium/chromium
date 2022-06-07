@@ -46,6 +46,10 @@ ColorProviderManager::InitializerSupplier::InitializerSupplier() = default;
 
 ColorProviderManager::InitializerSupplier::~InitializerSupplier() = default;
 
+ColorProviderManager::ThemeInitializerSupplier::ThemeInitializerSupplier(
+    ThemeType theme_type)
+    : theme_type_(theme_type) {}
+
 ColorProviderManager::Key::Key()
     : Key(ColorMode::kLight,
           ContrastMode::kNormal,

@@ -40,7 +40,7 @@ class SystemThemeLinux : public CustomThemeSupplier {
 };
 
 SystemThemeLinux::SystemThemeLinux(PrefService* pref_service)
-    : CustomThemeSupplier(NATIVE_X11),
+    : CustomThemeSupplier(ThemeType::kNativeX11),
       linux_ui_(views::LinuxUI::instance()),
       pref_service_(pref_service) {}
 
@@ -98,8 +98,10 @@ bool ThemeServiceAuraLinux::IsSystemThemeDistinctFromDefaultTheme() const {
 }
 
 bool ThemeServiceAuraLinux::UsingSystemTheme() const {
-  return GetThemeSupplier() && GetThemeSupplier()->get_theme_type() ==
-                                   CustomThemeSupplier::NATIVE_X11;
+  return GetThemeSupplier() &&
+         GetThemeSupplier()->get_theme_type() ==
+             ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType::
+                 kNativeX11;
 }
 
 void ThemeServiceAuraLinux::FixInconsistentPreferencesIfNeeded() {

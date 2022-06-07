@@ -771,7 +771,7 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
 
   // For now data pack can only have extension type.
   scoped_refptr<BrowserThemePack> pack(
-      new BrowserThemePack(ThemeType::EXTENSION));
+      new BrowserThemePack(ThemeType::kExtension));
   pack->set_extension_id(expected_id);
 
   // The data pack is loaded in a local variable to be released synchronously

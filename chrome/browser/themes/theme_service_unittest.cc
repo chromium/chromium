@@ -659,7 +659,8 @@ TEST_F(ThemeServiceTest, NativeIncreasedContrastChanged) {
   bool using_increased_contrast =
       theme_service_->GetThemeSupplier() &&
       theme_service_->GetThemeSupplier()->get_theme_type() ==
-          CustomThemeSupplier::ThemeType::INCREASED_CONTRAST;
+          ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType::
+              kIncreasedContrast;
   bool expecting_increased_contrast =
       theme_service_->theme_helper_for_testing()
           .ShouldUseIncreasedContrastThemeSupplier(&test_native_theme_);
