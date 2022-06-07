@@ -796,6 +796,8 @@ std::unique_ptr<ServerTimingHeaderVector> ParseServerTimingHeader(
 
       ServerTimingHeader header(name.ToString());
 
+      tokenizer.ConsumeBeforeAnyCharMatch({',', ';'});
+
       while (tokenizer.Consume(';')) {
         StringView parameter_name;
         if (!tokenizer.ConsumeToken(ParsedContentType::Mode::kNormal,
