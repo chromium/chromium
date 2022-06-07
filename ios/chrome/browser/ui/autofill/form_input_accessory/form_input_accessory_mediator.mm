@@ -121,7 +121,7 @@ const base::Feature kFormInputKeyboardReloadInputViews{
   // Bridge to observe the web state from Objective-C.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 
-  // Bridge to observe form activity in |_webState|.
+  // Bridge to observe form activity in `_webState`.
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
 
@@ -129,10 +129,10 @@ const base::Feature kFormInputKeyboardReloadInputViews{
   BOOL _suggestionsHaveBeenShown;
 
   // The last seen valid params of a form before retrieving suggestions. Or
-  // empty if |_hasLastSeenParams| is NO.
+  // empty if `_hasLastSeenParams` is NO.
   autofill::FormActivityParams _lastSeenParams;
 
-  // If YES |_lastSeenParams| is valid.
+  // If YES `_lastSeenParams` is valid.
   BOOL _hasLastSeenParams;
 }
 
@@ -272,7 +272,7 @@ const base::Feature kFormInputKeyboardReloadInputViews{
   DCHECK_EQ(_webState, webState);
   self.validActivityForAccessoryView = NO;
 
-  // Return early if |params| is not complete.
+  // Return early if `params` is not complete.
   if (params.input_missing) {
     return;
   }
@@ -513,13 +513,13 @@ const base::Feature kFormInputKeyboardReloadInputViews{
         }];
 }
 
-// Post the passed |suggestions| to the consumer.
+// Post the passed `suggestions` to the consumer.
 - (void)updateWithProvider:(id<FormInputSuggestionsProvider>)provider
                suggestions:(NSArray<FormSuggestion*>*)suggestions {
   if (self.suggestionsDisabled)
     return;
 
-  // If suggestions are enabled, update |currentProvider|.
+  // If suggestions are enabled, update `currentProvider`.
   self.currentProvider = provider;
   // Post it to the consumer.
   [self.consumer showAccessorySuggestions:suggestions];
