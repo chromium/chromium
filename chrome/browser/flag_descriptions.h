@@ -3044,6 +3044,9 @@ extern const char kNearbySharingWifiLanDescription[];
 extern const char kOobeHidDetectionRevampName[];
 extern const char kOobeHidDetectionRevampDescription[];
 
+extern const char kPartialSplit[];
+extern const char kPartialSplitDescription[];
+
 extern const char kPcieBillboardNotificationName[];
 extern const char kPcieBillboardNotificationDescription[];
 

@@ -4848,6 +4848,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "partial-split",
+    "owners": [ "sophiewen", "chromeos-wmp-eng@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "partitioned-cookies",
     "owners": [ "dylancutler" ],
     "expiry_milestone": 110

@@ -57499,6 +57499,7 @@ from previous Chrome versions.
   <int value="-291936879" label="UsernameFirstFlowFilling:disabled"/>
   <int value="-291747397" label="ForceDisableStackedTabs:enabled"/>
   <int value="-291221380" label="SmartLockUIRevamp:disabled"/>
+  <int value="-290802690" label="PartialSplit:enabled"/>
   <int value="-290672626" label="enable-asm-wasm"/>
   <int value="-290329565" label="CrosVmCupsProxy:disabled"/>
   <int value="-288316828" label="enable-delegated-renderer"/>
@@ -59696,6 +59697,7 @@ from previous Chrome versions.
   <int value="1162693272" label="MacCoreLocationImplementation:disabled"/>
   <int value="1163255347" label="ash-enable-touch-view-touch-feedback"/>
   <int value="1163588337" label="CastForceEnableRemotingQuery:enabled"/>
+  <int value="1164299747" label="PartialSplit:disabled"/>
   <int value="1164377197" label="SwipingFromLeftEdgeToGoBack:enabled"/>
   <int value="1164460660" label="AutofillEnableVirtualCard:enabled"/>
   <int value="1165682330" label="AutofillSaveAndFillVPA:disabled"/>

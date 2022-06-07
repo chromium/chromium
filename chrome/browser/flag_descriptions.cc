@@ -5325,6 +5325,10 @@ const char kOobeHidDetectionRevampDescription[] =
     "Enables the ChromeOS HID Detection Revamp, which updates OOBE HID "
     "detection screen UI and related infrastructure.";
 
+const char kPartialSplit[] = "Partial Split";
+const char kPartialSplitDescription[] =
+    "Enables the option to snap windows by thirds for split view.";
+
 const char kPcieBillboardNotificationName[] = "Pcie billboard notification";
 const char kPcieBillboardNotificationDescription[] =
     "Enable Pcie peripheral billboard notification.";

@@ -7989,6 +7989,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"partial-split", flag_descriptions::kPartialSplit,
+     flag_descriptions::kPartialSplitDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPartialSplit)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"performant-split-view-resizing",
      flag_descriptions::kPerformantSplitViewResizing,
      flag_descriptions::kPerformantSplitViewResizingDescription, kOsCrOS,
