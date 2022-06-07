@@ -350,7 +350,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
     return size > 0 && size <= kMaximumSavedFileSize;
   }
 
-  static base::Value::DictStorage DictFromRect(const gfx::Rect& rect);
+  static base::Value::Dict DictFromRect(const gfx::Rect& rect);
 
  private:
   // Converts a scroll offset (which is relative to a UI direction-dependent

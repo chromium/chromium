@@ -1383,7 +1383,7 @@ class PdfViewWebPluginSaveTest : public PdfViewWebPluginTest {
  protected:
   static void AddDataToValue(base::span<const uint8_t> data,
                              base::Value& value) {
-    value.SetKey("dataToSave", base::Value(data));
+    value.GetDict().Set("dataToSave", base::Value(data));
   }
 
   void SetUpClient() override {

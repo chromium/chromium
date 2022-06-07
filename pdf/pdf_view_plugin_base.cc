@@ -177,7 +177,7 @@ void PdfViewPluginBase::ProposeDocumentLayout(const DocumentLayout& layout) {
   message.Set("layoutOptions", layout.options().ToValue());
   base::Value::List page_dimensions;
   for (size_t i = 0; i < layout.page_count(); ++i)
-    page_dimensions.Append(base::Value(DictFromRect(layout.page_rect(i))));
+    page_dimensions.Append(DictFromRect(layout.page_rect(i)));
   message.Set("pageDimensions", std::move(page_dimensions));
   SendMessage(std::move(message));
 
@@ -867,13 +867,12 @@ void PdfViewPluginBase::SetZoom(double scale) {
 }
 
 // static
-base::Value::DictStorage PdfViewPluginBase::DictFromRect(
-    const gfx::Rect& rect) {
-  base::Value::DictStorage dict;
-  dict["x"] = base::Value(rect.x());
-  dict["y"] = base::Value(rect.y());
-  dict["width"] = base::Value(rect.width());
-  dict["height"] = base::Value(rect.height());
+base::Value::Dict PdfViewPluginBase::DictFromRect(const gfx::Rect& rect) {
+  base::Value::Dict dict;
+  dict.Set("x", rect.x());
+  dict.Set("y", rect.y());
+  dict.Set("width", rect.width());
+  dict.Set("height", rect.height());
   return dict;
 }
 
