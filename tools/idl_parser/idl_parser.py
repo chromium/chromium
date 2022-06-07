@@ -1042,9 +1042,10 @@ class IDLParser(object):
   #    [ identifier = identifier ]
   #    [ identifier = ( IdentifierList ) ]
   #    [ identifier = identifier ( ArgumentList ) ]
+  #    [ identifier = StringLiteral ]
   #    [ identifier = ( StringList ) ]
-  # The first five patterns are specified in the Web IDL spec and the last
-  # pattern is Blink's custom extension to support [ReflectOnly].
+  # The first five patterns are specified in the Web IDL spec and the last two
+  # patterns are Blink's custom extension to support [ReflectOnly].
   def p_ExtendedAttribute(self, p):
     """ExtendedAttribute : ExtendedAttributeNoArgs
                          | ExtendedAttributeArgList
@@ -1095,11 +1096,6 @@ class IDLParser(object):
     args = self.BuildProduction('Arguments', p, 4, p[5])
     value = self.BuildNamed('Call', p, 3, args)
     p[0] = self.BuildNamed('ExtAttribute', p, 1, value)
-
-
-
-
-
 
   # Blink extension: Add support for string literal Extended Attribute values
   def p_ExtendedAttributeStringLiteral(self, p):
