@@ -1476,5 +1476,9 @@ const base::Feature kSimulateClickOnAXFocus {
 #endif
 };
 
+// Allow access to WebSQL in non-secure contexts.
+const base::Feature kWebSQLNonSecureContextAccess{
+    "WebSQLNonSecureContextAccess", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

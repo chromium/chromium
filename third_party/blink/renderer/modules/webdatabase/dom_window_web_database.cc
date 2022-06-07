@@ -71,16 +71,23 @@ Database* DOMWindowWebDatabase::openDatabase(
     if (window.GetSecurityOrigin()->IsLocal())
       UseCounter::Count(window, WebFeature::kFileAccessedDatabase);
 
-    if (!window.GetExecutionContext()->IsSecureContext()) {
-      UseCounter::Count(window, WebFeature::kOpenWebDatabaseInsecureContext);
-    }
-
     if (!base::FeatureList::IsEnabled(blink::features::kWebSQLAccess) &&
         !base::CommandLine::ForCurrentProcess()->HasSwitch(
             blink::switches::kWebSQLAccess)) {
       exception_state.ThrowSecurityError(
           "Access to the WebDatabase API is denied.");
       return nullptr;
+    }
+
+    if (!window.GetExecutionContext()->IsSecureContext()) {
+      UseCounter::Count(window, WebFeature::kOpenWebDatabaseInsecureContext);
+
+      if (!base::FeatureList::IsEnabled(
+              blink::features::kWebSQLNonSecureContextAccess)) {
+        exception_state.ThrowSecurityError(
+            "Access to the WebDatabase API is denied in non-secure contexts.");
+        return nullptr;
+      }
     }
 
     if (window.IsCrossSiteSubframeIncludingScheme()) {
