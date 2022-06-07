@@ -2275,6 +2275,9 @@ void StyleEngine::ApplyRuleSetChanges(
     }
   }
 
+  // TODO(crbug.com/1309178): Invalidate style & layout for @position-fallback
+  // rule changes.
+
   if (!new_style_sheets.IsEmpty()) {
     tree_scope.EnsureScopedStyleResolver().AppendActiveStyleSheets(
         append_start_index, new_style_sheets);

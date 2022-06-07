@@ -65,6 +65,9 @@ class CORE_EXPORT ScopedStyleResolver final
   CounterStyleMap* GetCounterStyleMap() { return counter_style_map_; }
   static void CounterStyleRulesChanged(TreeScope& scope);
 
+  StyleRulePositionFallback* PositionFallbackForName(
+      const AtomicString& fallback_name);
+
   void RebuildCascadeLayerMap(const ActiveStyleSheetVector&);
   bool HasCascadeLayerMap() const { return cascade_layer_map_.Get(); }
   const CascadeLayerMap* GetCascadeLayerMap() const {
@@ -104,6 +107,7 @@ class CORE_EXPORT ScopedStyleResolver final
   bool KeyframeStyleShouldOverride(
       const StyleRuleKeyframes* new_rule,
       const StyleRuleKeyframes* existing_rule) const;
+  void AddPositionFallbackRules(const RuleSet&);
 
   CounterStyleMap& EnsureCounterStyleMap();
 
@@ -116,6 +120,10 @@ class CORE_EXPORT ScopedStyleResolver final
   using KeyframesRuleMap =
       HeapHashMap<AtomicString, Member<StyleRuleKeyframes>>;
   KeyframesRuleMap keyframes_rule_map_;
+
+  using PositionFallbackRuleMap =
+      HeapHashMap<AtomicString, Member<StyleRulePositionFallback>>;
+  PositionFallbackRuleMap position_fallback_rule_map_;
 
   Member<CounterStyleMap> counter_style_map_;
   Member<CascadeLayerMap> cascade_layer_map_;

@@ -474,6 +474,11 @@ void RuleSet::AddScrollTimelineRule(StyleRuleScrollTimeline* rule) {
   scroll_timeline_rules_.push_back(rule);
 }
 
+void RuleSet::AddPositionFallbackRule(StyleRulePositionFallback* rule) {
+  need_compaction_ = true;
+  position_fallback_rules_.push_back(rule);
+}
+
 void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                             const MediaQueryEvaluator& medium,
                             AddRuleFlags add_rule_flags,
@@ -521,6 +526,10 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                    DynamicTo<StyleRuleScrollTimeline>(rule)) {
       scroll_timeline_rule->SetCascadeLayer(cascade_layer);
       AddScrollTimelineRule(scroll_timeline_rule);
+    } else if (auto* position_fallback_rule =
+                   DynamicTo<StyleRulePositionFallback>(rule)) {
+      // TODO(crbug.com/1309178): Handle interaction with cascade layers.
+      AddPositionFallbackRule(position_fallback_rule);
     } else if (auto* supports_rule = DynamicTo<StyleRuleSupports>(rule)) {
       if (supports_rule->ConditionIsSupported()) {
         AddChildRules(supports_rule->ChildRules(), medium, add_rule_flags,
@@ -750,6 +759,7 @@ void RuleSet::CompactRules() {
   property_rules_.ShrinkToFit();
   counter_style_rules_.ShrinkToFit();
   scroll_timeline_rules_.ShrinkToFit();
+  position_fallback_rules_.ShrinkToFit();
   layer_intervals_.ShrinkToFit();
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -850,6 +860,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(property_rules_);
   visitor->Trace(counter_style_rules_);
   visitor->Trace(scroll_timeline_rules_);
+  visitor->Trace(position_fallback_rules_);
   visitor->Trace(media_query_set_results_);
   visitor->Trace(implicit_outer_layer_);
   visitor->Trace(layer_intervals_);
