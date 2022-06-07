@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
@@ -31,6 +32,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/web_applications/test/with_crosapi_param.h"
+
+using web_app::test::CrosapiParam;
+using web_app::test::WithCrosapiParam;
+#endif
 
 namespace web_app {
 
@@ -1182,5 +1192,99 @@ TEST_F(WebAppRegistrarTest, TestIsDefaultManagementInstalled) {
   UnregisterApp(app_id1);
   EXPECT_FALSE(registrar().IsInstalledByDefaultManagement(app_id1));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace {
+
+int CountApps(const WebAppRegistrar::AppSet& app_set) {
+  int count = 0;
+  for (const auto& web_app : app_set) {
+    EXPECT_FALSE(web_app.is_uninstalling());
+    ++count;
+  }
+  return count;
+}
+
+}  // namespace
+
+class WebAppRegistrarAshTest : public WebAppTest, public WithCrosapiParam {
+ public:
+  WebAppRegistrarAshTest() {
+    // Avoid crash during TestingProfile construction when Lacros support is
+    // enabled.
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kArcAccountRestrictions);
+  }
+  ~WebAppRegistrarAshTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(WebAppRegistrarAshTest, SourceSupported) {
+  const GURL example_url("https://example.com/my-app/start");
+  const GURL swa_url("chrome://swa/start");
+  const GURL uninstalling_url("https://example.com/uninstalling/start");
+
+  AppId example_id;
+  AppId swa_id;
+  AppId uninstalling_id;
+  WebAppRegistrarMutable registrar(profile());
+  {
+    Registry registry;
+
+    auto example_app = test::CreateWebApp(example_url);
+    example_id = example_app->app_id();
+    registry.emplace(example_id, std::move(example_app));
+
+    auto swa_app = test::CreateWebApp(swa_url, WebAppManagement::Type::kSystem);
+    swa_id = swa_app->app_id();
+    registry.emplace(swa_id, std::move(swa_app));
+
+    auto uninstalling_app =
+        test::CreateWebApp(uninstalling_url, WebAppManagement::Type::kSystem);
+    uninstalling_app->SetIsUninstalling(true);
+    uninstalling_id = uninstalling_app->app_id();
+    registry.emplace(uninstalling_id, std::move(uninstalling_app));
+
+    registrar.InitRegistry(std::move(registry));
+  }
+
+  if (GetParam() == CrosapiParam::kEnabled) {
+    // Non-system web apps are managed by Lacros, excluded in Ash
+    // WebAppRegistrar.
+    EXPECT_EQ(registrar.CountUserInstalledApps(), 0);
+    EXPECT_EQ(CountApps(registrar.GetApps()), 1);
+
+    EXPECT_FALSE(registrar.FindAppWithUrlInScope(example_url).has_value());
+    EXPECT_TRUE(registrar.GetAppScope(example_id).is_empty());
+    EXPECT_FALSE(registrar.GetAppUserDisplayMode(example_id).has_value());
+  } else {
+    EXPECT_EQ(registrar.CountUserInstalledApps(), 1);
+    EXPECT_EQ(CountApps(registrar.GetApps()), 2);
+
+    EXPECT_EQ(registrar.FindAppWithUrlInScope(example_url), example_id);
+    EXPECT_EQ(registrar.GetAppScope(example_id),
+              GURL("https://example.com/my-app/"));
+    EXPECT_TRUE(registrar.GetAppUserDisplayMode(example_id).has_value());
+  }
+
+  EXPECT_EQ(registrar.FindAppWithUrlInScope(swa_url), swa_id);
+  EXPECT_EQ(registrar.GetAppScope(swa_id), GURL("chrome://swa/"));
+  EXPECT_TRUE(registrar.GetAppUserDisplayMode(swa_id).has_value());
+
+  EXPECT_FALSE(registrar.FindAppWithUrlInScope(uninstalling_url).has_value());
+  EXPECT_EQ(registrar.GetAppScope(uninstalling_id),
+            GURL("https://example.com/uninstalling/"));
+  EXPECT_TRUE(registrar.GetAppUserDisplayMode(uninstalling_id).has_value());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebAppRegistrarAshTest,
+                         ::testing::Values(CrosapiParam::kEnabled,
+                                           CrosapiParam::kDisabled),
+                         WithCrosapiParam::ParamToString);
+#endif
 
 }  // namespace web_app
