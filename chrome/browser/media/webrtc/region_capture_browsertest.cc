@@ -83,6 +83,8 @@ enum class Frame {
   kEmbeddedFrame,
 };
 
+enum class Track { kOriginal, kClone };
+
 // Conveniently pack together all relevant information about a tab and
 // conveniently expose test controls on it.
 struct TabInfo {
@@ -112,7 +114,7 @@ struct TabInfo {
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         web_contents->GetPrimaryMainFrame(), "startCapture();",
         &script_result));
-    EXPECT_EQ(script_result, "capture-success");
+    EXPECT_EQ(script_result, "top-level-capture-success");
   }
 
   void StartCaptureFromEmbeddedFrame() {
@@ -145,13 +147,36 @@ struct TabInfo {
   // [*] Actually, because `CropTarget`s are not stringifiable, an index
   // of the CropTarget is used, and translated by JS code back into
   // the CropTarget it had stored.
-  std::string CropTo(const std::string& crop_target) {
+  std::string CropTo(const std::string& crop_target,
+                     Track track = Track::kOriginal) {
     std::string script_result = "error-not-modified";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         web_contents->GetPrimaryMainFrame(),
-        base::StrCat({"cropToByIndex(\"", crop_target, "\");"}),
+        base::StringPrintf("cropToByIndex('%s', '%s');", crop_target.c_str(),
+                           track == Track::kOriginal ? "original" : "clone"),
         &script_result));
     return script_result;
+  }
+
+  bool CloneTrack() {
+    std::string script_result = "error-not-modified";
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetMainFrame(), "clone();", &script_result));
+    DCHECK(script_result == "clone-track-success" ||
+           script_result == "clone-track-failure");
+    return script_result == "clone-track-success";
+  }
+
+  bool Deallocate(Track track) {
+    std::string script_result = "error-not-modified";
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetMainFrame(),
+        base::StringPrintf("deallocate('%s');",
+                           track == Track::kOriginal ? "original" : "clone"),
+        &script_result));
+    DCHECK(script_result == "deallocate-failure" ||
+           script_result == "deallocate-success");
+    return script_result == "deallocate-success";
   }
 
   std::string CreateNewDivElement(Frame frame, const std::string& div_id) {
@@ -453,6 +478,207 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   EXPECT_EQ(tab.CropTargetFromElement(Frame::kEmbeddedFrame, element_id),
             "embedded-produce-crop-target-error");
 }
+
+// Tests related to behavior when cloning.
+class RegionCaptureClonesBrowserTest : public RegionCaptureBrowserTest {
+ public:
+  static const std::string kCropTarget0;
+  static const std::string kCropTarget1;
+
+  ~RegionCaptureClonesBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII("js-flags", "--expose-gc");
+    RegionCaptureBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  // Has to be called from within the test's body.
+  void ManualSetUp() {
+    SetUpTest(Frame::kTopLevelDocument, /*self_capture=*/true);
+    EXPECT_THAT(
+        tabs_[kMainTab].CropTargetFromElement(Frame::kTopLevelDocument, "div"),
+        IsExpectedCropTarget(kCropTarget0));
+    EXPECT_THAT(tabs_[kMainTab].CropTargetFromElement(Frame::kTopLevelDocument,
+                                                      "embedded_frame"),
+                IsExpectedCropTarget(kCropTarget1));
+  }
+
+  bool CropTo(const std::string& crop_target, Track track) {
+    const std::string result = tabs_[kMainTab].CropTo(crop_target, track);
+
+    // This test suite only ever starts the capture from the top-level frame.
+    DCHECK(result == "top-level-crop-success" ||
+           result == "top-level-crop-error");
+
+    return result == "top-level-crop-success";
+  }
+
+  bool CloneTrack() { return tabs_[kMainTab].CloneTrack(); }
+
+  bool Deallocate(Track track) { return tabs_[kMainTab].Deallocate(track); }
+};
+
+const std::string RegionCaptureClonesBrowserTest::kCropTarget0 = "0";
+const std::string RegionCaptureClonesBrowserTest::kCropTarget1 = "1";
+
+// Sanity cloning 1/2.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
+                       CanCloneUncroppedTracks) {
+  ManualSetUp();
+
+  EXPECT_TRUE(CloneTrack());
+}
+
+// Sanity cloning 2/2.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest, CanCloneCroppedTracks) {
+  ManualSetUp();
+
+  ASSERT_TRUE(CropTo(kCropTarget0, Track::kOriginal));
+
+  EXPECT_TRUE(CloneTrack());
+}
+
+// Restrictions on cloned tracked 1/3.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest, CannotCropClone) {
+  ManualSetUp();
+
+  ASSERT_TRUE(CloneTrack());
+
+  EXPECT_FALSE(CropTo(kCropTarget0, Track::kClone));
+}
+
+// Restrictions on cloned tracked 2/3.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest, CannotRecropClone) {
+  ManualSetUp();
+
+  ASSERT_TRUE(CropTo(kCropTarget0, Track::kOriginal));
+  ASSERT_TRUE(CloneTrack());
+
+  EXPECT_FALSE(CropTo(kCropTarget1, Track::kClone));
+}
+
+// Restrictions on cloned tracked 3/3.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest, CannotUncropClone) {
+  ManualSetUp();
+
+  ASSERT_TRUE(CropTo(kCropTarget0, Track::kOriginal));
+  ASSERT_TRUE(CloneTrack());
+
+  EXPECT_FALSE(CropTo("undefined", Track::kClone));
+}
+
+// Restrictions on original track that has a clone 1/3.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
+                       CannotCropTrackThatHasClone) {
+  ManualSetUp();
+
+  ASSERT_TRUE(CloneTrack());
+
+  EXPECT_FALSE(CropTo(kCropTarget0, Track::kOriginal));
+}
+
+// Restrictions on original track that has a clone 2/3.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
+                       CannotRecropTrackThatHasClone) {
+  ManualSetUp();
+
+  ASSERT_TRUE(CropTo(kCropTarget0, Track::kOriginal));
+  ASSERT_TRUE(CloneTrack());
+
+  EXPECT_FALSE(CropTo(kCropTarget1, Track::kOriginal));
+}
+
+// Restrictions on original track that has a clone 3/3.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
+                       CannotUncropTrackThatHasClone) {
+  ManualSetUp();
+
+  ASSERT_TRUE(CropTo(kCropTarget0, Track::kOriginal));
+  ASSERT_TRUE(CloneTrack());
+
+  EXPECT_FALSE(CropTo("undefined", Track::kOriginal));
+}
+
+// Original track becomes unblocked for cropping after clone is GCed 1/3.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
+                       CanCropOriginalTrackAfterCloneIsGarbageCollected) {
+  ManualSetUp();
+
+  ASSERT_TRUE(CloneTrack());
+  ASSERT_FALSE(CropTo(kCropTarget0, Track::kOriginal));  // Sanity.
+  ASSERT_TRUE(Deallocate(Track::kClone));
+
+  EXPECT_TRUE(CropTo(kCropTarget0, Track::kOriginal));
+}
+
+// Original track becomes unblocked for cropping after clone is GCed 2/3.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
+                       CanRecropOriginalTrackAfterCloneIsGarbageCollected) {
+  ManualSetUp();
+
+  ASSERT_TRUE(CropTo(kCropTarget0, Track::kOriginal));
+  ASSERT_TRUE(CloneTrack());
+  ASSERT_FALSE(CropTo(kCropTarget1, Track::kOriginal));  // Sanity.
+  ASSERT_TRUE(Deallocate(Track::kClone));
+
+  EXPECT_TRUE(CropTo(kCropTarget1, Track::kOriginal));
+}
+
+// Original track becomes unblocked for cropping after clone is GCed 3/3.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
+                       CanUncropOriginalTrackAfterCloneIsGarbageCollected) {
+  ManualSetUp();
+
+  ASSERT_TRUE(CropTo(kCropTarget0, Track::kOriginal));
+  ASSERT_TRUE(CloneTrack());
+  ASSERT_FALSE(CropTo("undefined", Track::kOriginal));  // Sanity.
+  ASSERT_TRUE(Deallocate(Track::kClone));
+
+  EXPECT_TRUE(CropTo("undefined", Track::kOriginal));
+}
+
+// The following tests are disabled because of a loosely-related issue,
+// where an original track is kept alive if a clone exists, but not vice versa.
+// TODO(crbug.com/1333594): Uncomment after fixing the aforementioned issue.
+#if 0
+// Cloned track becomes unblocked for cropping after original is GCed 1/3.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
+                       CanCropCloneAfterOriginalTrackIsGarbageCollected) {
+  ManualSetUp();
+
+  ASSERT_TRUE(CloneTrack());
+  ASSERT_FALSE(CropTo(kCropTarget0, Track::kClone));  // Sanity.
+  ASSERT_TRUE(Deallocate(Track::kOriginal));
+
+  EXPECT_TRUE(CropTo(kCropTarget0, Track::kClone));
+}
+
+// Cloned track becomes unblocked for cropping after original is GCed 2/3.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
+                       CanRecropCloneAfterOriginalTrackIsGarbageCollected) {
+  ManualSetUp();
+
+  ASSERT_TRUE(CropTo(kCropTarget0, Track::kOriginal));
+  ASSERT_TRUE(CloneTrack());
+  ASSERT_FALSE(CropTo(kCropTarget1, Track::kClone));  // Sanity.
+  ASSERT_TRUE(Deallocate(Track::kOriginal));
+
+  EXPECT_TRUE(CropTo(kCropTarget1, Track::kClone));
+}
+
+// Cloned track becomes unblocked for cropping after original is GCed 3/3.
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
+                       CanUncropCloneAfterOriginalTrackIsGarbageCollected) {
+  ManualSetUp();
+
+  ASSERT_TRUE(CropTo(kCropTarget0, Track::kOriginal));
+  ASSERT_TRUE(CloneTrack());
+  ASSERT_FALSE(CropTo("undefined", Track::kClone));  // Sanity.
+  ASSERT_TRUE(Deallocate(Track::kOriginal));
+
+  EXPECT_TRUE(CropTo("undefined", Track::kClone));
+}
+#endif
 
 // Suite of tests ensuring that only self-capture may crop, and that it may
 // only crop to targets in its own tab, but that any target in its own tab

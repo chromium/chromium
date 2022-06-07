@@ -193,6 +193,17 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
       const base::Token& crop_id,
       uint32_t crop_version,
       base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
+
+  // If a new |crop_version| can be assigned, returns it.
+  // Otherwise, returns nullopt. (Can happen if the source does not support
+  // cropping, or if a change of crop-target is not possible at this time,
+  // due to technical limitations, e.g. if clones exist.)
+  //
+  // For an explanation of what a |crop_version| is, see Crop().
+  //
+  // TODO(crbug.com/1332628): Make the crop-version an implementation detail
+  // that is not exposed to the entity calling Crop().
+  virtual absl::optional<uint32_t> GetNextCropVersion();
 #endif
 
   // Notifies the source about that the number of encoded sinks have been

@@ -219,6 +219,13 @@ void MediaStreamVideoCapturerSource::Crop(
   GetMediaStreamDispatcherHost()->Crop(session_id.value(), crop_id,
                                        crop_version, std::move(callback));
 }
+
+absl::optional<uint32_t> MediaStreamVideoCapturerSource::GetNextCropVersion() {
+  if (NumTracks() != 1) {
+    return absl::nullopt;
+  }
+  return ++current_crop_version_;
+}
 #endif
 
 base::WeakPtr<MediaStreamVideoSource>

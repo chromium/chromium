@@ -538,6 +538,10 @@ void MediaStreamVideoSource::Crop(
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
 }
+
+absl::optional<uint32_t> MediaStreamVideoSource::GetNextCropVersion() {
+  return absl::nullopt;
+}
 #endif
 
 VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {

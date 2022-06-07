@@ -37,6 +37,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
                void(const base::Token&,
                     uint32_t,
                     base::OnceCallback<void(media::mojom::CropRequestResult)>));
+  MOCK_METHOD0(GetNextCropVersion, absl::optional<uint32_t>());
 
   // Simulate that the underlying source start successfully.
   void StartMockedSource();

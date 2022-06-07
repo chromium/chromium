@@ -18,6 +18,7 @@ namespace blink {
 namespace {
 
 using ::testing::_;
+using ::testing::Return;
 
 std::unique_ptr<MockMediaStreamVideoSource> MakeMockMediaStreamVideoSource() {
   return base::WrapUnique(new MockMediaStreamVideoSource(
@@ -58,6 +59,10 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidId) {
 
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
+
+  EXPECT_CALL(*media_stream_video_source, GetNextCropVersion)
+      .Times(1)
+      .WillOnce(Return(absl::optional<uint32_t>(1)));
 
   EXPECT_CALL(*media_stream_video_source, Crop(GUIDToToken(valid_id), _, _))
       .Times(1);

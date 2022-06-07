@@ -31,7 +31,7 @@ function registerEmbeddedListeners() {
     } else if (type == "produce-crop-target") {
       cropTargetFromElement("embedded", event.data.element);
     } else if (type == "crop-to") {
-      cropTo(event.data.cropTarget);
+      cropTo(event.data.cropTarget, event.data.targetTrackStr);
     } else if (type  == "create-new-div-element") {
       createNewDivElement(event.data.targetFrame, event.data.divId);
     }
@@ -65,6 +65,21 @@ async function createNewDivElement(targetFrame, divId) {
 // Main actions from C++ test fixture. //
 /////////////////////////////////////////
 
+async function startCapture() {
+  if (track || trackClone) {
+    window.domAutomationController.send("error-multiple-captures");
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia();
+    [track] = stream.getVideoTracks();
+    window.domAutomationController.send(`${role}-capture-success`);
+  } catch (e) {
+    window.domAutomationController.send(`${role}-capture-failure`);
+  }
+}
+
 async function cropTargetFromElement(targetFrame, elementId) {
   if (role == targetFrame) {
     try {
@@ -85,11 +100,11 @@ async function cropTargetFromElement(targetFrame, elementId) {
   }
 }
 
-async function cropTo(cropTarget) {
-  console.log(`cropTarget = ${cropTarget}`);
-  if (capturedVideoTrack) {
+async function cropTo(cropTarget, targetTrackStr) {
+  const targetTrack = (targetTrackStr == "original" ? track : trackClone);
+  if (targetTrack) {
     try {
-      await capturedVideoTrack.cropTo(cropTarget);
+      await targetTrack.cropTo(cropTarget);
       window.domAutomationController.send(`${role}-crop-success`);
     } catch (e) {
       window.domAutomationController.send(`${role}-crop-error`);
@@ -102,7 +117,8 @@ async function cropTo(cropTarget) {
     const embedded_frame = document.getElementById("embedded_frame");
       embedded_frame.contentWindow.postMessage({
           messageType: "crop-to",
-          cropTarget: cropTarget
+          cropTarget: cropTarget,
+          targetTrackStr: targetTrackStr
         }, "*");
     // window.domAutomationController.send() called by embedded page.
   }

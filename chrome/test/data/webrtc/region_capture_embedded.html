@@ -9,24 +9,8 @@
 
       registerEmbeddedListeners();
 
-      let capturedStream;
-      let capturedVideoTrack;
-
-      async function startCapture() {
-        if (capturedStream) {
-          window.domAutomationController.send(
-              "error-multiple-embedded-captures");
-          return;
-        }
-
-        try {
-          capturedStream = await navigator.mediaDevices.getDisplayMedia();
-          [capturedVideoTrack] = capturedStream.getVideoTracks();
-          window.domAutomationController.send("embedded-capture-success");
-        } catch (e) {
-          window.domAutomationController.send("embedded-capture-failure");
-        }
-      }
+      let track;
+      let trackClone;
 
       function reportEmbeddingSuccess() {
         window.domAutomationController.send("embedding-done");

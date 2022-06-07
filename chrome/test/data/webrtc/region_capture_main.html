@@ -9,23 +9,8 @@
 
       setRole("top-level");
 
-      let capturedStream;
-      let capturedVideoTrack;
-
-      async function startCapture() {
-        if (capturedStream) {
-          window.domAutomationController.send("error-multiple-captures");
-          return;
-        }
-
-        try {
-          capturedStream = await navigator.mediaDevices.getDisplayMedia();
-          [capturedVideoTrack] = capturedStream.getVideoTracks();
-          window.domAutomationController.send("capture-success");
-        } catch (e) {
-          window.domAutomationController.send("capture-failure");
-        }
-      }
+      let track;
+      let trackClone;
 
       function startCaptureFromEmbeddedFrame() {
         document
@@ -34,12 +19,36 @@
         // window.domAutomationController.send() called by embedded page.
       }
 
-      async function cropToByIndex(cropTargetIndex) {
+      async function cropToByIndex(cropTargetIndex, targetTrack) {
         const cropTarget =
           (cropTargetIndex == "undefined"
               ? undefined
               : getCropTarget(cropTargetIndex));
-        cropTo(cropTarget);
+        cropTo(cropTarget, targetTrack);
+      }
+
+      // Clones |track| into |trackClone|.
+      function clone() {
+        if (!track || !!trackClone) {
+          window.domAutomationController.send("clone-track-failure");
+          return;
+        }
+        trackClone = track.clone();
+        window.domAutomationController.send("clone-track-success");
+      }
+
+      function deallocate(targetTrack) {
+        if (targetTrack == "original") {
+          track = undefined;
+          gc();
+          window.domAutomationController.send("deallocate-success");
+        } else if (targetTrack == "clone") {
+          trackClone = undefined;
+          gc();
+          window.domAutomationController.send("deallocate-success");
+        } else {
+          window.domAutomationController.send("deallocate-failure");
+        }
       }
     </script>
   </head>
