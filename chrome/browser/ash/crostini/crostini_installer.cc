@@ -446,12 +446,6 @@ void CrostiniInstaller::OnCrostiniRemovedAfterConfigurationFailed(
 }
 
 void CrostiniInstaller::OnContainerStarted(CrostiniResult result) {
-  if (result == CrostiniResult::CONTAINER_CONFIGURATION_FAILED) {
-    LOG(ERROR) << "Container start failed due to failed configuration";
-    NOTREACHED();
-    return;
-  }
-
   DCHECK(installing_state_ == InstallerState::kStartContainer ||
          installing_state_ == InstallerState::kConfigureContainer);
 
