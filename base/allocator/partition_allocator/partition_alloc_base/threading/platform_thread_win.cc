@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time_override.h"
 
 #include <windows.h>

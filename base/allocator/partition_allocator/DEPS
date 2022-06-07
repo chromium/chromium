@@ -4,13 +4,8 @@
 noparent = True
 
 include_rules = [
-    "+base/allocator/buildflags.h",
-    "+base/logging_buildflags.h",
-    "+base/debug/debugging_buildflags.h",
     "+build/build_config.h",
     "+build/buildflag.h",
-    "+build/chromeos_buildflags.h",
-    "+build/chromecast_buildflags.h",
     "+third_party/lss/linux_syscall_support.h",
 ]
 

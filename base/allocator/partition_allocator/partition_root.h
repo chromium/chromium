@@ -35,9 +35,9 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/allocation_guard.h"
+#include "base/allocator/partition_allocator/chromecast_buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -45,8 +45,10 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -67,9 +69,7 @@
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
-#include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromecast_buildflags.h"
 
 // We use this to make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max
 // size as other alloc code.
@@ -993,7 +993,7 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   PA_DCHECK(root->brp_enabled());
 
   // memset() can be really expensive.
-#if BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
+#if BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
   DebugMemset(reinterpret_cast<void*>(slot_start), kFreedByte,
               slot_span->GetUtilizedSlotSize()
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -1130,7 +1130,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
   //
   // On Chromecast, this is already checked in PartitionFree() in the shim.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    ((BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)))
+    ((BUILDFLAG(IS_ANDROID) && !BUILDFLAG(PA_IS_CASTOS)))
   PA_CHECK(IsManagedByPartitionAlloc(object_addr));
 #endif
 
@@ -1283,7 +1283,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
   // memset() can be really expensive.
-#if BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
+#if BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
   internal::DebugMemset(SlotStartAddr2Ptr(slot_start), internal::kFreedByte,
                         slot_span->GetUtilizedSlotSize()
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -1824,7 +1824,7 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   // PA_LIKELY: operator new() calls malloc(), not calloc().
   if (PA_LIKELY(!zero_fill)) {
     // memset() can be really expensive.
-#if BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
+#if BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
     internal::DebugMemset(object, internal::kUninitializedByte, usable_size);
 #endif
   } else if (!is_already_zeroed) {
