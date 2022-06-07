@@ -24,3 +24,4 @@ khushalsagar@chromium.org
 # Video SurfaceLayer functionality.
 per-file video_frame*=file://media/OWNERS
 per-file surface_layer_bridge*=file://media/OWNERS
+per-file static_bitmap_image_to_video_frame_copier*=file://media/OWNERS
