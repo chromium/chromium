@@ -88,8 +88,8 @@ bool FilterSensitiveExtensionsInstallForcelist(PolicyMap::Entry* map_entry) {
       continue;
 
     // Only allow custom update urls in enterprise environments.
-    if (!base::LowerCaseEqualsASCII(entry.substr(pos + 1),
-                                    kChromeWebstoreUpdateURL)) {
+    if (!base::EqualsCaseInsensitiveASCII(entry.substr(pos + 1),
+                                          kChromeWebstoreUpdateURL)) {
       policy_list_value->GetListDeprecated()[i] =
           base::Value(kBlockedExtensionPrefix + entry);
       has_invalid_policies = true;
@@ -131,8 +131,8 @@ bool FilterSensitiveExtensionSettings(PolicyMap::Entry* map_entry) {
       continue;
     }
     std::string* update_url = entry.second.FindStringKey(kUpdateUrl);
-    if (!update_url ||
-        base::LowerCaseEqualsASCII(*update_url, kChromeWebstoreUpdateURL)) {
+    if (!update_url || base::EqualsCaseInsensitiveASCII(
+                           *update_url, kChromeWebstoreUpdateURL)) {
       continue;
     }
 
