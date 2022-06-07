@@ -14,7 +14,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -476,6 +475,61 @@ TEST_F(PictureInPictureControllerTest,
   // really test anything.
   ASSERT_NE(Video()->BoundsInViewport(), gfx::Rect());
   EXPECT_EQ(Service().source_bounds(), Video()->BoundsInViewport());
+}
+
+TEST_F(PictureInPictureControllerTest, CreateDocumentPictureInPictureWindow) {
+  EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
+                         .pictureInPictureWindow());
+
+  // Enable the PictureInPictureV2 flag.
+  ScopedPictureInPictureAPIForTest scoped_dependency(true);
+  ScopedPictureInPictureV2ForTest scoped_feature(true);
+
+  V8TestingScope scope;
+  KURL url = KURL("https://example.com/");
+
+  // Get pass the LocalDOMWindow::isSecureContext() check.
+  GetFrame().DomWindow()->GetSecurityContext().SetSecurityOriginForTesting(
+      nullptr);
+  GetFrame().DomWindow()->GetSecurityContext().SetSecurityOrigin(
+      SecurityOrigin::Create(url));
+
+  // Get pass the BindingSecurity::ShouldAllowAccessTo() check.
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  ScriptState::Scope entered_context_scope(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+
+  // Create the PictureInPictureWindowOptions.
+  v8::Local<v8::Object> v8_object = v8::Object::New(scope.GetIsolate());
+  v8_object
+      ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "width"),
+            v8::Number::New(scope.GetIsolate(), 640))
+      .Check();
+  v8_object
+      ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "height"),
+            v8::Number::New(scope.GetIsolate(), 320))
+      .Check();
+  PictureInPictureWindowOptions* options =
+      PictureInPictureWindowOptions::Create(resolver->Promise().GetIsolate(),
+                                            v8_object,
+                                            scope.GetExceptionState());
+
+  // Set a base URL for the opener window.
+  GetDocument().SetBaseURLOverride(url);
+  EXPECT_EQ(url.GetString(), GetDocument().BaseURL().GetString());
+
+  PictureInPictureControllerImpl::From(GetDocument())
+      .CreateDocumentPictureInPictureWindow(
+          script_state, *GetFrame().DomWindow(), options, resolver,
+          scope.GetExceptionState());
+
+  PictureInPictureWindow* pictureInPictureWindow =
+      PictureInPictureControllerImpl::From(GetDocument())
+          .pictureInPictureWindow();
+  EXPECT_NE(nullptr, pictureInPictureWindow);
+  EXPECT_EQ(url.GetString(),
+            pictureInPictureWindow->document()->BaseURL().GetString());
 }
 
 }  // namespace blink

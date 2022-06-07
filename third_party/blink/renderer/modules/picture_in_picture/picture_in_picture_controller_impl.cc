@@ -19,18 +19,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_window_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_event.h"
-#include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_window.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -294,6 +291,11 @@ void PictureInPictureControllerImpl::OnExitedPictureInPicture(
     resolver->Resolve();
 }
 
+PictureInPictureWindow* PictureInPictureControllerImpl::pictureInPictureWindow()
+    const {
+  return picture_in_picture_window_;
+}
+
 Element* PictureInPictureControllerImpl::PictureInPictureElement() const {
   return picture_in_picture_element_;
 }
@@ -411,6 +413,12 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
 
   auto* local_dom_window = dom_window->ToLocalDOMWindow();
   DCHECK(local_dom_window);
+
+  // Set the Picture-in-Picture window's base URL to be the same as the opener
+  // window's so that relative URLs will be resolved in the same way.
+  DCHECK(local_dom_window->document());
+  local_dom_window->document()->SetBaseURLOverride(
+      opener.document()->BaseURL());
 
   // TODO(https://crbug.com/1329638): Return a type specific to document pip
   // instead of a shared interface between the two APIs.
