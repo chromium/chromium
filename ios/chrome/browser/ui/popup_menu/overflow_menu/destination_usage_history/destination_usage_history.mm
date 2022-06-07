@@ -178,17 +178,18 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 @implementation DestinationUsageHistory
 
 - (instancetype)initWithPrefService:(PrefService*)prefService {
-  if (self = [super init]) {
+  if (self = [super init])
     _prefService = prefService;
-  }
 
   return self;
 }
 
 #pragma mark - Public
 
-- (std::vector<overflow_menu::Destination>)updatedRankWithCurrentRanking:
-    (std::vector<overflow_menu::Destination>&)ranking {
+- (std::vector<overflow_menu::Destination>)
+    updatedRankWithCurrentRanking:
+        (std::vector<overflow_menu::Destination>&)ranking
+         numAboveFoldDestinations:(int)numAboveFoldDestinations {
   // Delete expired usage data older than |kDataExpirationWindow| days before
   // running the ranking algorithm.
   [self deleteExpiredData];
@@ -198,20 +199,16 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   base::Value::Dict recentHistory =
       [self flattenedHistoryWithinWindow:kRecencyWindow];
 
-  // In a follow-up CL, this value will be calculated dynamically by comparing
-  // frame widths.
-  int numVisibleDestinations = 5;
-
   std::vector<overflow_menu::Destination> prevRanking = ranking;
 
   overflow_menu::Destination lowestShownAll =
-      LowestShown(prevRanking, numVisibleDestinations, allHistory);
+      LowestShown(prevRanking, numAboveFoldDestinations, allHistory);
   overflow_menu::Destination lowestShownRecent =
-      LowestShown(prevRanking, numVisibleDestinations, recentHistory);
+      LowestShown(prevRanking, numAboveFoldDestinations, recentHistory);
   overflow_menu::Destination highestUnshownAll =
-      HighestUnshown(prevRanking, numVisibleDestinations, allHistory);
+      HighestUnshown(prevRanking, numAboveFoldDestinations, allHistory);
   overflow_menu::Destination highestUnshownRecent =
-      HighestUnshown(prevRanking, numVisibleDestinations, recentHistory);
+      HighestUnshown(prevRanking, numAboveFoldDestinations, recentHistory);
 
   std::vector<overflow_menu::Destination> newRanking = prevRanking;
 
@@ -229,7 +226,8 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 }
 
 // Track click for |destination| and associate it with TodaysDay().
-- (void)trackDestinationClick:(overflow_menu::Destination)destination {
+- (void)trackDestinationClick:(overflow_menu::Destination)destination
+     numAboveFoldDestinations:(int)numAboveFoldDestinations {
   DCHECK(self.prefService);
   // Exit early if there's no pref service; this is not expected to happen.
   if (!self.prefService)
@@ -251,7 +249,9 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   // ahead of time so overflow menu presentation needn't run ranking algorithm
   // each time it presents.
   const base::Value::List* currentRanking = [self fetchCurrentRanking];
-  base::Value::List newRanking = [self calculateNewRanking:currentRanking];
+  base::Value::List newRanking =
+      [self calculateNewRanking:currentRanking
+          numAboveFoldDestinations:numAboveFoldDestinations];
   update->SetKey(kRankingKey, base::Value(newRanking.Clone()));
 }
 
@@ -307,11 +307,13 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 // invalid or doesn't exist, use the default ranking, based on statistical usage
 // of the old overflow menu.
 - (base::Value::List)calculateNewRanking:
-    (const base::Value::List*)previousRanking {
+                         (const base::Value::List*)previousRanking
+                numAboveFoldDestinations:(int)numAboveFoldDestinations {
   std::vector<overflow_menu::Destination> prevRanking =
       previousRanking ? Vector(previousRanking) : kDefaultRanking;
   std::vector<overflow_menu::Destination> newRanking =
-      [self updatedRankWithCurrentRanking:prevRanking];
+      [self updatedRankWithCurrentRanking:prevRanking
+                 numAboveFoldDestinations:numAboveFoldDestinations];
 
   return List(newRanking);
 }

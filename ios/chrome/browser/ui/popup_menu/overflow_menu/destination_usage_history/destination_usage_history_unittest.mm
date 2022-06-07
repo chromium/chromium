@@ -110,6 +110,7 @@ class DestinationUsageHistoryTest : public PlatformTest {
 
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   DestinationUsageHistory* destination_usage_history_;
+  static constexpr int numAboveFoldDestinations = 5;
 };
 
 // Tests the initializer correctly creates a DestinationUsageHistory* with the
@@ -170,7 +171,8 @@ TEST_F(DestinationUsageHistoryTest, HandlesNewDestinationClickAndAddToPrefs) {
 
   // Click bookmarks destination.
   [destination_usage_history
-      trackDestinationClick:overflow_menu::Destination::Bookmarks];
+         trackDestinationClick:overflow_menu::Destination::Bookmarks
+      numAboveFoldDestinations:numAboveFoldDestinations];
 
   // Fetch saved destination usage history.
   const base::Value* history =
@@ -221,7 +223,8 @@ TEST_F(DestinationUsageHistoryTest,
 
   // Click bookmarks destination.
   [destination_usage_history
-      trackDestinationClick:overflow_menu::Destination::Bookmarks];
+         trackDestinationClick:overflow_menu::Destination::Bookmarks
+      numAboveFoldDestinations:numAboveFoldDestinations];
 
   // Fetch saved destination usage history.
   const base::Value* history =
@@ -262,19 +265,26 @@ TEST_F(DestinationUsageHistoryTest, DoesNotSwapTwoShownDestinations) {
 
   // Click bookmarks Reading List (currently in ranking position 3) five times.
   [destination_usage_history
-      trackDestinationClick:overflow_menu::Destination::ReadingList];
+         trackDestinationClick:overflow_menu::Destination::ReadingList
+      numAboveFoldDestinations:numAboveFoldDestinations];
   [destination_usage_history
-      trackDestinationClick:overflow_menu::Destination::ReadingList];
+         trackDestinationClick:overflow_menu::Destination::ReadingList
+      numAboveFoldDestinations:numAboveFoldDestinations];
   [destination_usage_history
-      trackDestinationClick:overflow_menu::Destination::ReadingList];
+         trackDestinationClick:overflow_menu::Destination::ReadingList
+      numAboveFoldDestinations:numAboveFoldDestinations];
   [destination_usage_history
-      trackDestinationClick:overflow_menu::Destination::ReadingList];
+         trackDestinationClick:overflow_menu::Destination::ReadingList
+      numAboveFoldDestinations:numAboveFoldDestinations];
   [destination_usage_history
-      trackDestinationClick:overflow_menu::Destination::ReadingList];
+         trackDestinationClick:overflow_menu::Destination::ReadingList
+      numAboveFoldDestinations:numAboveFoldDestinations];
 
   // Verify that no ranking swaps occurred.
   std::vector<overflow_menu::Destination> newRanking =
-      [destination_usage_history updatedRankWithCurrentRanking:ranking];
+      [destination_usage_history
+          updatedRankWithCurrentRanking:ranking
+               numAboveFoldDestinations:numAboveFoldDestinations];
 
   EXPECT_EQ(ranking, newRanking);
 }
@@ -315,21 +325,30 @@ TEST_F(DestinationUsageHistoryTest, DoesNotSwapTwoUnshownDestinations) {
 
   // Click Recent Tabs (currently in ranking position 6) once.
   [destination_usage_history
-      trackDestinationClick:overflow_menu::Destination::RecentTabs];
+         trackDestinationClick:overflow_menu::Destination::RecentTabs
+      numAboveFoldDestinations:numAboveFoldDestinations];
   EXPECT_EQ(ranking,
-            [destination_usage_history updatedRankWithCurrentRanking:ranking]);
+            [destination_usage_history
+                updatedRankWithCurrentRanking:ranking
+                     numAboveFoldDestinations:numAboveFoldDestinations]);
 
   // Click Site Inforamtion (currently in ranking position 7) once.
   [destination_usage_history
-      trackDestinationClick:overflow_menu::Destination::SiteInfo];
+         trackDestinationClick:overflow_menu::Destination::SiteInfo
+      numAboveFoldDestinations:numAboveFoldDestinations];
   EXPECT_EQ(ranking,
-            [destination_usage_history updatedRankWithCurrentRanking:ranking]);
+            [destination_usage_history
+                updatedRankWithCurrentRanking:ranking
+                     numAboveFoldDestinations:numAboveFoldDestinations]);
 
   // Click Settings (currently in last position) once.
   [destination_usage_history
-      trackDestinationClick:overflow_menu::Destination::Settings];
+         trackDestinationClick:overflow_menu::Destination::Settings
+      numAboveFoldDestinations:numAboveFoldDestinations];
   EXPECT_EQ(ranking,
-            [destination_usage_history updatedRankWithCurrentRanking:ranking]);
+            [destination_usage_history
+                updatedRankWithCurrentRanking:ranking
+                     numAboveFoldDestinations:numAboveFoldDestinations]);
 }
 
 TEST_F(DestinationUsageHistoryTest, DeletesExpiredUsageData) {
@@ -369,7 +388,8 @@ TEST_F(DestinationUsageHistoryTest, DeletesExpiredUsageData) {
 
   // Click destination to trigger ranking algorithm which removes expired data.
   [destination_usage_history
-      trackDestinationClick:overflow_menu::Destination::Settings];
+         trackDestinationClick:overflow_menu::Destination::Settings
+      numAboveFoldDestinations:numAboveFoldDestinations];
 
   // Fetch saved destination usage history.
   const base::Value* saved_history =

@@ -22,18 +22,24 @@ class PrefService;
 @property(nonatomic, assign) PrefService* prefService;
 
 // Records a destination click from the overflow menu carousel.
-- (void)trackDestinationClick:(overflow_menu::Destination)destination;
+- (void)trackDestinationClick:(overflow_menu::Destination)destination
+     numAboveFoldDestinations:(int)numAboveFoldDestinations;
 
 // Returns a frecency-sorted list of OverflowMenuDestination* given an unsorted
 // list |unrankedDestinations|.
 - (NSArray<OverflowMenuDestination*>*)generateDestinationsList:
     (NSArray<OverflowMenuDestination*>*)unrankedDestinations;
 
-// [For testing only] Ingests given |ranking| and returns new ranking
-// by running frecency algorithm on internally-managed destination usage
-// history.
-- (std::vector<overflow_menu::Destination>)updatedRankWithCurrentRanking:
-    (std::vector<overflow_menu::Destination>&)previousRanking;
+// [Publicly exposed for testing purposes only] Ingests given |ranking| and
+// |numAboveFoldDestinations| and returns new ranking by running frecency
+// algorithm on internally-managed destination usage history.
+// |numAboveFoldDestinations| represents the number of destinations immediately
+// visible to the user when opening the new overflow menu (i.e. the number of
+// "above-the-fold" destinations).
+- (std::vector<overflow_menu::Destination>)
+    updatedRankWithCurrentRanking:
+        (std::vector<overflow_menu::Destination>&)previousRanking
+         numAboveFoldDestinations:(int)numAboveFoldDestinations;
 
 // Designated initializer. Initializes with |prefService|.
 - (instancetype)initWithPrefService:(PrefService*)prefService

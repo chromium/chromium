@@ -385,7 +385,8 @@ enum class IOSOverflowMenuActionType {
         UIViewController* menu = [OverflowMenuViewProvider
             makeViewControllerWithModel:self.overflowMenuMediator
                                             .overflowMenuModel
-                         metricsHandler:self];
+                         metricsHandler:self
+                carouselMetricsDelegate:self.overflowMenuMediator];
 
         NamedGuide* guide =
             [NamedGuide guideWithName:guideName

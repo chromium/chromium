@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/follow/follow_action_state.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_consumer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_carousel_metrics_delegate.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -30,7 +31,8 @@ class WebStateList;
 
 // Mediator for the overflow menu. This object is in charge of creating and
 // updating the items of the overflow menu.
-@interface OverflowMenuMediator : NSObject <BrowserContainerConsumer>
+@interface OverflowMenuMediator
+    : NSObject <BrowserContainerConsumer, PopupMenuCarouselMetricsDelegate>
 
 // The data model for the overflow menu.
 @property(nonatomic, readonly) OverflowMenuModel* overflowMenuModel;
