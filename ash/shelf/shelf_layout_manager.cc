@@ -837,6 +837,8 @@ void ShelfLayoutManager::ProcessGestureEventFromShelfWidget(
 
 void ShelfLayoutManager::ProcessScrollOffset(int offset,
                                              base::TimeTicks time_stamp) {
+  DCHECK(!features::IsProductivityLauncherEnabled());
+
   if (offset <= ShelfConfig::Get()->mousewheel_scroll_offset_threshold())
     return;
 
@@ -848,6 +850,7 @@ void ShelfLayoutManager::ProcessScrollOffset(int offset,
 }
 
 void ShelfLayoutManager::ProcessScrollEventFromShelf(ui::ScrollEvent* event) {
+  DCHECK(!features::IsProductivityLauncherEnabled());
   if (shelf_->IsHorizontalAlignment()) {
     ProcessScrollOffset(GetOffset(event->y_offset(), prefs::kNaturalScroll),
                         event->time_stamp());
@@ -862,6 +865,7 @@ void ShelfLayoutManager::ProcessScrollEventFromShelf(ui::ScrollEvent* event) {
 
 void ShelfLayoutManager::ProcessMouseWheelEventFromShelf(
     ui::MouseWheelEvent* event) {
+  DCHECK(!features::IsProductivityLauncherEnabled());
   const int y_offset =
       GetOffset(event->offset().y(), prefs::kMouseReverseScroll);
   ProcessScrollOffset(y_offset, event->time_stamp());

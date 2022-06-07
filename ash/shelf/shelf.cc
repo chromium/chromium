@@ -8,6 +8,7 @@
 
 #include "ash/animation/animation_change_type.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -590,6 +591,11 @@ void Shelf::ProcessScrollEvent(ui::ScrollEvent* event) {
   if (!shelf_layout_manager_->is_active_session_state())
     return;
 
+  // Productivity launcher does not show or hide on scroll events. The legacy
+  // peeking launcher had this behavior, but it doesn't make sense for a bubble.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   auto* app_list_controller = Shell::Get()->app_list_controller();
   DCHECK(app_list_controller);
   // If the App List is not visible, send Scroll events to the
@@ -606,6 +612,11 @@ void Shelf::ProcessScrollEvent(ui::ScrollEvent* event) {
 void Shelf::ProcessMouseWheelEvent(ui::MouseWheelEvent* event) {
   if (!shelf_layout_manager_->is_active_session_state() ||
       !IsHorizontalAlignment())
+    return;
+
+  // Productivity launcher does not show or hide on wheel events. The legacy
+  // peeking launcher had this behavior, but it doesn't make sense for a bubble.
+  if (features::IsProductivityLauncherEnabled())
     return;
 
   auto* app_list_controller = Shell::Get()->app_list_controller();
