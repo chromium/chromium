@@ -422,6 +422,9 @@ class PreflightControllerTest : public testing::Test {
     // the URLLoader would create a CORS-preflight for the preflight request.
     params->disable_web_security = true;
     params->is_corb_enabled = false;
+    // Allow setting TrustedParams on requests, specifically to pass
+    // ClientSecurityState to the underlying URLLoader.
+    params->is_trusted = true;
     devtools_observer_ = std::make_unique<MockDevToolsObserver>(
         params->devtools_observer.InitWithNewPipeAndPassReceiver());
     network_context_remote_->CreateURLLoaderFactory(
@@ -723,6 +726,13 @@ TEST_F(PreflightControllerTest, CheckPrivateNetworkAccessRequest) {
               mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
           .Build();
 
+  // Set the client security state in the request's trusted params, because the
+  // test uses a shared factory with no client security state in its factory
+  // params, and URLLoader expects requests with a target IP address space to
+  // carry a client security state.
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->client_security_state = client_security_state.Clone();
+
   PerformPreflightCheck(request, /*tainted=*/false, net::IsolationInfo(),
                         EnforcePrivateNetworkAccessHeader(true),
                         std::move(client_security_state));
@@ -768,6 +778,13 @@ TEST_F(PreflightControllerTest,
               mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
           .Build();
 
+  // Set the client security state in the request's trusted params, because the
+  // test uses a shared factory with no client security state in its factory
+  // params, and URLLoader expects requests with a target IP address space to
+  // carry a client security state.
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->client_security_state = client_security_state.Clone();
+
   PerformPreflightCheck(request, /*tainted=*/false, net::IsolationInfo(),
                         EnforcePrivateNetworkAccessHeader(true),
                         std::move(client_security_state));
@@ -794,6 +811,13 @@ TEST_F(PreflightControllerTest,
           .WithPrivateNetworkRequestPolicy(
               mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
           .Build();
+
+  // Set the client security state in the request's trusted params, because the
+  // test uses a shared factory with no client security state in its factory
+  // params, and URLLoader expects requests with a target IP address space to
+  // carry a client security state.
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->client_security_state = client_security_state.Clone();
 
   PerformPreflightCheck(request, /*tainted=*/false, net::IsolationInfo(),
                         EnforcePrivateNetworkAccessHeader(true),
