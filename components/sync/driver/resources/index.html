@@ -7,7 +7,6 @@ chrome/test/functional/special_tabs.py. -->
 <title>Sync Internals</title>
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <link rel="stylesheet" href="chrome://resources/css/list.css">
-<link rel="stylesheet" href="chrome://resources/css/tabs.css">
 <link rel="stylesheet" href="chrome://resources/css/tree.css">
 <link rel="stylesheet" href="about.css">
 <link rel="stylesheet" href="sync_search.css">
@@ -30,244 +29,240 @@ chrome/test/functional/special_tabs.py. -->
 }
 </style>
 
-<tabbox id="sync-page">
-  <tabs>
-    <tab id="sync-about-tab">About</tab>
-    <tab id="sync-data-tab">Data</tab>
-    <tab id="sync-browser-tab">Sync Node Browser</tab>
-    <tab id="sync-search-tab">Search</tab>
-    <tab id="sync-user-events-tab">User Events</tab>
-    <tab id="sync-traffic-log-tab">Traffic Log</tab>
-    <tab id="sync-invalidations-tab">Invalidations</tab>
-  </tabs>
-  <tabpanels>
-    <tabpanel>
-      <div id="status">
-        <div id="dump">
-          <button id="dump-status">Dump status</button>
-          <input type="checkbox" id="include-ids">
-          Include Identifiers
-        </div>
-        <div id="import">
-          <button id="import-status">Import status</button>
-        </div>
-        <div id="status-data">
-          <textarea rows="10" cols="30" id="status-text"></textarea>
-        </div>
+<cr-tab-box id="sync-page">
+  <div slot="tab" id="sync-about-tab">About</div>
+  <div slot="tab" id="sync-data-tab">Data</div>
+  <div slot="tab" id="sync-browser-tab">Sync Node Browser</div>
+  <div slot="tab" id="sync-search-tab">Search</div>
+  <div slot="tab" id="sync-user-events-tab">User Events</div>
+  <div slot="tab" id="sync-traffic-log-tab">Traffic Log</div>
+  <div slot="tab" id="sync-invalidations-tab">Invalidations</div>
+  <div slot="panel">
+    <div id="status">
+      <div id="dump">
+        <button id="dump-status">Dump status</button>
+        <input type="checkbox" id="include-ids">
+        Include Identifiers
       </div>
-
-      <div id='about-info'>
-        <div class="section" jsselect="details">
-          <h2 jscontent="title"></h2>
-          <table class="about-details">
-            <tr jsselect="data"
-                  jsvalues="class:$this.stat_status"
-                  jseval='highlightIfChanged(this, this.children[1].innerText, stat_value)'>
-              <td class="detail" jscontent="stat_name" width=50%></td>
-              <td class="value" jscontent="stat_value" width=50%></td>
-            </tr>
-          </table>
-        </div>
-
-        <div id="request-start-stop-wrapper" jsskip="true">
-          <button id="request-start">Request Start</button>
-          <button id="request-stop-keep-data">Stop Sync (Keep Data)</button>
-          <button id="request-stop-clear-data">Disable Sync (Clear Data)</button>
-        </div>
-
-        <div id="traffic-event-container-wrapper" jsskip="true">
-          <h2 style="display:inline-block">Sync Protocol Log</h2>
-          <input type="checkbox" id="capture-specifics">
-          <label for="capture-specifics">Capture Specifics</label>
-          <button id="trigger-refresh">Trigger GetUpdates</button>
-          <div id="traffic-event-container">
-            <div class="traffic-event-entry"
-                 jsselect="events"
-                 jseval="addAboutExpandListener(this)">
-              <span class="time" jscontent="(new Date(time)).toLocaleString()"></span>
-              <span class="type" jscontent="type"></span>
-              <pre class="details" jscontent="details"></pre>
-              <pre class="proto" jscontent="JSON.stringify(proto, null, 2)"></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="section" style="overflow-x: auto">
-          <h2>Type Info</h2>
-          <table id="typeInfo">
-            <tr jsselect="type_status" jsvalues="class:$this.status">
-              <td jscontent="name" width=30%></td>
-              <td jscontent="num_entries" width=10%></td>
-              <td jscontent="num_live" width=10%></td>
-              <td jscontent="message" width=40% class="message"></td>
-              <td jscontent="state" width=10%></td>
-            </tr>
-          </table>
-        </div>
-
-        <div class="section" jsdisplay="unrecoverable_error_detected">
-          <p>
-            <span class="err" jscontent="unrecoverable_error_message"></span>
-          </p>
-        </div>
-
-        <div class="section" jsdisplay="actionable_error_detected">
-          <p>
-            <h2>Actionable Error</h2>
-            <table id="actionableError">
-              <tr jsselect="actionable_error">
-                <td jscontent="stat_name"></td>
-                <td jscontent="stat_value"></td>
-              </tr>
-            </table>
-          </p>
-        </div>
+      <div id="import">
+        <button id="import-status">Import status</button>
       </div>
-    </tabpanel>
-    <tabpanel>
-      <p><strong>Some personal info may be in the events dump. Be
-      careful about posting data dumps on bug reports.</strong></p>
-
-      <button id="dump-to-text">Dump sync events to text</button>
-
-      <pre id="data-dump"></pre>
-
-      <hr>
-
-      <div id="node-type-checkboxes">
+      <div id="status-data">
+        <textarea rows="10" cols="30" id="status-text"></textarea>
       </div>
+    </div>
 
-
-      <button id="dump-to-file">Dump sync nodes to file</button>
-
-      <input type="checkbox" id="include-specifics">include node content <font color="red">WARNING: This is likely to include personal information.</font><br>
-
-      <a style="display: none" id="dump-to-file-anchor"></a>
-    </tabpanel>
-    <tabpanel>
-      <!-- TODO(akalin): Move to a three-pane view; node tree on the left
-      (minus leaf nodes), tree contents list on the upper right, selected
-      item detail on the lower right. -->
-
-      <div id="sync-node-main">
-        <!-- TODO(akalin): Figure out how to get this element to be as tall
-             as its container (style.height=100% doesn't work).  Also fix
-             behavior when tree is too tall (currently it makes you scroll the
-             entire page). -->
-        <div id="sync-node-browser-refresher">
-          <button id="node-browser-refresh-button">Refresh</button>
-          <div id="node-refresh-status">
-            Last refresh time: <span id="node-browser-refresh-time">Never</span>
-          </div>
-        </div>
-        <div id="sync-node-browser-container">
-          <div id="sync-node-tree-container">
-          </div>
-          <div id="sync-node-splitter"></div>
-          <div id="node-details">
-            <table>
-              <tr>
-                <td>Title</td>
-                <td jscontent="NON_UNIQUE_NAME"></td>
-              </tr>
-              <tr>
-                <td>ID</td>
-                <td jscontent="ID"></td>
-              </tr>
-              <tr>
-                <td>Modification Time</td>
-                <td jscontent="MTIME"></td>
-              </tr>
-              <tr>
-                <td>Parent</td>
-                <td jscontent="PARENT_ID"></td>
-              </tr>
-              <tr>
-                <td>Is Folder</td>
-                <td jscontent="IS_DIR"></td>
-              </tr>
-              <tr>
-                <td>Type</td>
-                <td jscontent="modelType"></td>
-              </tr>
-              <tr>
-                <td>External ID</td>
-                <td jscontent="LOCAL_EXTERNAL_ID"></td>
-              </tr>
-              <tr jsdisplay="$this.hasOwnProperty('positionIndex')">
-                <td>Position Index</td>
-                <td jscontent="positionIndex"></td>
-              </tr>
-            </table>
-            <pre jscontent="JSON.stringify($this, null, 2)"></pre></td>
-          </div>
-        </div>
-      </div>
-    </tabpanel>
-    <tabpanel>
-      <p>
-      <input id="sync-search-query" type="search"
-             placeholder="Search Sync Data">
-      <button id="sync-search-submit">Search</button>
-        <span id="sync-search-quicklink-container">Quick Search:
-          <a class='sync-search-quicklink' data-query="&quot;IS_UNAPPLIED_UPDATE&quot;: true"
-            href="#">Unapplied Updates</a>
-          <a class='sync-search-quicklink' data-query="&quot;IS_UNSYNCED&quot;: true"
-            href="#">Unsynced</a>
-          <a class='sync-search-quicklink' data-query="((&quot;IS_UNAPPLIED_UPDATE&quot;: true)[\s\S]*(&quot;IS_UNSYNCED&quot;: true))|((&quot;IS_UNSYNCED&quot;: true)[\s\S]*(&quot;IS_UNAPPLIED_UPDATE&quot;: true))"
-            href="#">Conflicted</a>
-          <a class='sync-search-quicklink' data-query="&quot;IS_DEL&quot;: true"
-            href="#">Deleted</a>
-        </span>
-      </p>
-      <p>
-      <span id="sync-search-status"></span>
-      </p>
-
-      <div id="sync-results-container">
-        <list id="sync-results-list"></list>
-        <div id="sync-results-splitter"></div>
-        <div id="sync-result-details-container">
-          <pre id="sync-result-details"></pre>
-        </div>
-      </div>
-    </tabpanel>
-    <tabpanel>
-      <input id="event-time-usec-input" type="text" placeholder="event_time_usec">
-      <input id="navigation-id-input" type="text" placeholder="navigation_id">
-      <button id="create-event-button">Create</button>
-    </tabpanel>
-    <tabpanel>
-      <div id="traffic-event-fullscreen-container">
-        <div class="traffic-event-entry-fullscreen"
-            jsselect="events"
-            jseval="TrafficLogTag.getInstance().addExpandListener(this)">
-          <span class="time" jscontent="(new Date(time)).toLocaleString()"></span>
-          <span class="type" jscontent="type"></span>
-          <pre class="details" jscontent="details"></pre>
-          <pre class="proto" jscontent="JSON.stringify(proto, null, 2)"></pre>
-        </div>
-      </div>
-    </tabpanel>
-    <tabpanel>
-      <table id="invalidation-counters-table">
-        <thead>
-          <th>Data type</th>
-          <th>Count</th>
-          <th>Last time</th>
-        </thead>
-        <tbody>
-          <tr jsselect="rows">
-            <td jscontent="type"></td>
-            <td jscontent="count"></td>
-            <td jscontent="time"></td>
+    <div id='about-info'>
+      <div class="section" jsselect="details">
+        <h2 jscontent="title"></h2>
+        <table class="about-details">
+          <tr jsselect="data"
+                jsvalues="class:$this.stat_status"
+                jseval='highlightIfChanged(this, this.children[1].innerText, stat_value)'>
+            <td class="detail" jscontent="stat_name" width=50%></td>
+            <td class="value" jscontent="stat_value" width=50%></td>
           </tr>
-        </tbody>
-      </table>
-      <textarea id="invalidations-log" rows="10" cols="80"readonly></textarea>
-    </tabpanel>
-  </tabpanels>
-</tabbox>
+        </table>
+      </div>
+
+      <div id="request-start-stop-wrapper" jsskip="true">
+        <button id="request-start">Request Start</button>
+        <button id="request-stop-keep-data">Stop Sync (Keep Data)</button>
+        <button id="request-stop-clear-data">Disable Sync (Clear Data)</button>
+      </div>
+
+      <div id="traffic-event-container-wrapper" jsskip="true">
+        <h2 style="display:inline-block">Sync Protocol Log</h2>
+        <input type="checkbox" id="capture-specifics">
+        <label for="capture-specifics">Capture Specifics</label>
+        <button id="trigger-refresh">Trigger GetUpdates</button>
+        <div id="traffic-event-container">
+          <div class="traffic-event-entry"
+               jsselect="events"
+               jseval="addAboutExpandListener(this)">
+            <span class="time" jscontent="(new Date(time)).toLocaleString()"></span>
+            <span class="type" jscontent="type"></span>
+            <pre class="details" jscontent="details"></pre>
+            <pre class="proto" jscontent="JSON.stringify(proto, null, 2)"></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" style="overflow-x: auto">
+        <h2>Type Info</h2>
+        <table id="typeInfo">
+          <tr jsselect="type_status" jsvalues="class:$this.status">
+            <td jscontent="name" width=30%></td>
+            <td jscontent="num_entries" width=10%></td>
+            <td jscontent="num_live" width=10%></td>
+            <td jscontent="message" width=40% class="message"></td>
+            <td jscontent="state" width=10%></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="section" jsdisplay="unrecoverable_error_detected">
+        <p>
+          <span class="err" jscontent="unrecoverable_error_message"></span>
+        </p>
+      </div>
+
+      <div class="section" jsdisplay="actionable_error_detected">
+        <p>
+          <h2>Actionable Error</h2>
+          <table id="actionableError">
+            <tr jsselect="actionable_error">
+              <td jscontent="stat_name"></td>
+              <td jscontent="stat_value"></td>
+            </tr>
+          </table>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div slot="panel">
+    <p><strong>Some personal info may be in the events dump. Be
+    careful about posting data dumps on bug reports.</strong></p>
+
+    <button id="dump-to-text">Dump sync events to text</button>
+
+    <pre id="data-dump"></pre>
+
+    <hr>
+
+    <div id="node-type-checkboxes">
+    </div>
+
+
+    <button id="dump-to-file">Dump sync nodes to file</button>
+
+    <input type="checkbox" id="include-specifics">include node content <font color="red">WARNING: This is likely to include personal information.</font><br>
+
+    <a style="display: none" id="dump-to-file-anchor"></a>
+  </div>
+  <div slot="panel">
+    <!-- TODO(akalin): Move to a three-pane view; node tree on the left
+    (minus leaf nodes), tree contents list on the upper right, selected
+    item detail on the lower right. -->
+
+    <div id="sync-node-main">
+      <!-- TODO(akalin): Figure out how to get this element to be as tall
+           as its container (style.height=100% doesn't work).  Also fix
+           behavior when tree is too tall (currently it makes you scroll the
+           entire page). -->
+      <div id="sync-node-browser-refresher">
+        <button id="node-browser-refresh-button">Refresh</button>
+        <div id="node-refresh-status">
+          Last refresh time: <span id="node-browser-refresh-time">Never</span>
+        </div>
+      </div>
+      <div id="sync-node-browser-container">
+        <div id="sync-node-tree-container">
+        </div>
+        <div id="sync-node-splitter"></div>
+        <div id="node-details">
+          <table>
+            <tr>
+              <td>Title</td>
+              <td jscontent="NON_UNIQUE_NAME"></td>
+            </tr>
+            <tr>
+              <td>ID</td>
+              <td jscontent="ID"></td>
+            </tr>
+            <tr>
+              <td>Modification Time</td>
+              <td jscontent="MTIME"></td>
+            </tr>
+            <tr>
+              <td>Parent</td>
+              <td jscontent="PARENT_ID"></td>
+            </tr>
+            <tr>
+              <td>Is Folder</td>
+              <td jscontent="IS_DIR"></td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td jscontent="modelType"></td>
+            </tr>
+            <tr>
+              <td>External ID</td>
+              <td jscontent="LOCAL_EXTERNAL_ID"></td>
+            </tr>
+            <tr jsdisplay="$this.hasOwnProperty('positionIndex')">
+              <td>Position Index</td>
+              <td jscontent="positionIndex"></td>
+            </tr>
+          </table>
+          <pre jscontent="JSON.stringify($this, null, 2)"></pre></td>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div slot="panel">
+    <p>
+    <input id="sync-search-query" type="search"
+           placeholder="Search Sync Data">
+    <button id="sync-search-submit">Search</button>
+      <span id="sync-search-quicklink-container">Quick Search:
+        <a class='sync-search-quicklink' data-query="&quot;IS_UNAPPLIED_UPDATE&quot;: true"
+          href="#">Unapplied Updates</a>
+        <a class='sync-search-quicklink' data-query="&quot;IS_UNSYNCED&quot;: true"
+          href="#">Unsynced</a>
+        <a class='sync-search-quicklink' data-query="((&quot;IS_UNAPPLIED_UPDATE&quot;: true)[\s\S]*(&quot;IS_UNSYNCED&quot;: true))|((&quot;IS_UNSYNCED&quot;: true)[\s\S]*(&quot;IS_UNAPPLIED_UPDATE&quot;: true))"
+          href="#">Conflicted</a>
+        <a class='sync-search-quicklink' data-query="&quot;IS_DEL&quot;: true"
+          href="#">Deleted</a>
+      </span>
+    </p>
+    <p>
+    <span id="sync-search-status"></span>
+    </p>
+
+    <div id="sync-results-container">
+      <list id="sync-results-list"></list>
+      <div id="sync-results-splitter"></div>
+      <div id="sync-result-details-container">
+        <pre id="sync-result-details"></pre>
+      </div>
+    </div>
+  </div>
+  <div slot="panel">
+    <input id="event-time-usec-input" type="text" placeholder="event_time_usec">
+    <input id="navigation-id-input" type="text" placeholder="navigation_id">
+    <button id="create-event-button">Create</button>
+  </div>
+  <div slot="panel">
+    <div id="traffic-event-fullscreen-container">
+      <div class="traffic-event-entry-fullscreen"
+          jsselect="events"
+          jseval="TrafficLogTag.getInstance().addExpandListener(this)">
+        <span class="time" jscontent="(new Date(time)).toLocaleString()"></span>
+        <span class="type" jscontent="type"></span>
+        <pre class="details" jscontent="details"></pre>
+        <pre class="proto" jscontent="JSON.stringify(proto, null, 2)"></pre>
+      </div>
+    </div>
+  </div>
+  <div slot="panel">
+    <table id="invalidation-counters-table">
+      <thead>
+        <th>Data type</th>
+        <th>Count</th>
+        <th>Last time</th>
+      </thead>
+      <tbody>
+        <tr jsselect="rows">
+          <td jscontent="type"></td>
+          <td jscontent="count"></td>
+          <td jscontent="time"></td>
+        </tr>
+      </tbody>
+    </table>
+    <textarea id="invalidations-log" rows="10" cols="80"readonly></textarea>
+  </div>
+</cr-tab-box>
 
 <script type="module" src="sync_index.js"></script>
 </body>

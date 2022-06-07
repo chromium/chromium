@@ -295,8 +295,12 @@ TEST_F('SyncInternalsWebUITest', 'NetworkEventsTest', function() {
 TEST_F('SyncInternalsWebUITest', 'SearchTabDoesntChangeOnItemSelect',
        function() {
   // Select the search tab.
-  document.querySelector('#sync-search-tab').selected = true;
-  assertTrue(document.querySelector('#sync-search-tab').selected);
+  const searchTab = document.querySelector('#sync-search-tab');
+  const tabs = Array.from(document.querySelectorAll('div[slot=\'tab\']'));
+  const index = tabs.indexOf(searchTab);
+  document.querySelector('cr-tab-box').setAttribute(
+      'selected-index', index.toString());
+  assertTrue(searchTab.hasAttribute('selected'));
 
   // Build the data model and attach to result list.
   setupSyncResultsListForTest([
@@ -317,7 +321,7 @@ TEST_F('SyncInternalsWebUITest', 'SearchTabDoesntChangeOnItemSelect',
   // Select the first list item and verify the search tab remains selected.
   document.querySelector('#sync-results-list').getListItemByIndex(0).selected =
       true;
-  assertTrue(document.querySelector('#sync-search-tab').selected);
+  assertTrue(searchTab.hasAttribute('selected'));
 });
 
 TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
@@ -362,7 +366,12 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserRefreshOnTabSelect', function() {
       'Never');
 
   // Selecting the tab will refresh it.
-  document.querySelector('#sync-browser-tab').selected = true;
+  const syncBrowserTab = document.querySelector('#sync-browser-tab');
+  const tabs = Array.from(document.querySelectorAll('div[slot=\'tab\']'));
+  const index = tabs.indexOf(syncBrowserTab);
+  document.querySelector('cr-tab-box').setAttribute(
+      'selected-index', index.toString());
+  assertTrue(syncBrowserTab.hasAttribute('selected'));
   assertNotEquals(
       document.querySelector('#node-browser-refresh-time').textContent,
       'Never');
@@ -370,8 +379,9 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserRefreshOnTabSelect', function() {
   // Re-selecting the tab shouldn't re-refresh.
   document.querySelector('#node-browser-refresh-time').textContent =
       'TestCanary';
-  document.querySelector('#sync-browser-tab').selected = false;
-  document.querySelector('#sync-browser-tab').selected = true;
+  document.querySelector('cr-tab-box').setAttribute('selected-index', '0');
+  document.querySelector('cr-tab-box').setAttribute(
+      'selected-index', index.toString());
   assertEquals(
       document.querySelector('#node-browser-refresh-time').textContent,
       'TestCanary');

@@ -222,10 +222,13 @@ document.addEventListener('DOMContentLoaded', function(e) {
   customSplitter.decorate($('sync-node-splitter'));
 
   // Automatically trigger a refresh the first time this tab is selected.
-  $('sync-browser-tab').addEventListener('selectedChange', function f(e) {
-    if (this.selected) {
-      $('sync-browser-tab').removeEventListener('selectedChange', f);
-      refresh();
-    }
-  });
+  document.querySelector('cr-tab-box')
+      .addEventListener('selected-index-change', function f(e) {
+        if (document.querySelector('#sync-browser-tab')
+                .hasAttribute('selected')) {
+          document.querySelector('cr-tab-box')
+              .removeEventListener('selected-index-change', f);
+          refresh();
+        }
+      });
 });
