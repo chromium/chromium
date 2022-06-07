@@ -503,6 +503,11 @@ bool MaybeShowNewTermsAfterUpdateToFlex(Profile* profile) {
   return false;
 }
 
+void RecordKnownUser(const AccountId& account_id) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SaveKnownUser(account_id);
+}
+
 }  // namespace
 
 UserSessionManagerDelegate::~UserSessionManagerDelegate() {}
@@ -682,7 +687,7 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
                    ash::features::kUseAuthsessionAuthentication)) {
       authenticator_ = new AuthSessionAuthenticator(
           consumer, std::make_unique<ChromeSafeModeDelegate>(),
-          IsEphemeralMountForced());
+          base::BindRepeating(&RecordKnownUser), IsEphemeralMountForced());
     } else {
       authenticator_ =
           base::MakeRefCounted<ChromeCryptohomeAuthenticator>(consumer);

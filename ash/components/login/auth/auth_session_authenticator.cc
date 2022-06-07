@@ -19,6 +19,7 @@
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_names.h"
 
 namespace ash {
@@ -26,9 +27,11 @@ namespace ash {
 AuthSessionAuthenticator::AuthSessionAuthenticator(
     AuthStatusConsumer* consumer,
     std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
+    base::RepeatingCallback<void(const AccountId&)> user_recorder,
     bool is_ephemeral_mount_enforced)
     : Authenticator(consumer),
       is_ephemeral_mount_enforced_(is_ephemeral_mount_enforced),
+      user_recorder_(std::move(user_recorder)),
       safe_mode_delegate_(std::move(safe_mode_delegate)),
       auth_factor_editor_(std::make_unique<AuthFactorEditor>()),
       auth_performer_(
@@ -114,6 +117,12 @@ void AuthSessionAuthenticator::DoCompleteLogin(
     }
     // In both cases, add a key
     if (challenge_response_auth) {
+      // We need to store a user information as it would be used by
+      // CryptohomeKeyDelegateServiceProvider.
+      // Note that this might result in orphaned records in LocalState, but
+      // that should be fixed once crbug.com/1334140 is implemented.
+      steps.push_back(base::BindOnce(&AuthSessionAuthenticator::SaveKnownUser,
+                                     weak_factory_.GetWeakPtr()));
       steps.push_back(
           base::BindOnce(&AuthFactorEditor::AddContextChallengeResponseKey,
                          auth_factor_editor_->AsWeakPtr()));
@@ -758,6 +767,13 @@ void AuthSessionAuthenticator::OnUnmountForNonOwner(
   } else {
     NotifyFailure(AuthFailure::OWNER_REQUIRED, std::move(context));
   }
+}
+
+void AuthSessionAuthenticator::SaveKnownUser(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  user_recorder_.Run(context->GetAccountId());
+  std::move(callback).Run(std::move(context), absl::nullopt);
 }
 
 }  // namespace ash
