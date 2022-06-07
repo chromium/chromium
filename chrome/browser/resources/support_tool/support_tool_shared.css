@@ -42,7 +42,5 @@ h2 {
 }
 
 .data-collector-list {
-  border-bottom: var(--cr-separator-line);
-  border-top: var(--cr-separator-line);
   width: 520px;
 }

@@ -17,6 +17,14 @@
     padding-inline-start: 0;
   }
 
+  #privacy-disclaimer {
+    color: var(--cr-title-text-color);
+    margin-inline-start: 24px;
+    /* Add negative margin to override the padding of the radio-button on top
+      so the disclaimer text looks connected to the radio button text.*/
+    margin-top: -16px;
+  }
+
   #detected-pii-container {
     margin-inline-start: 36px;
     max-height: 256px;
@@ -55,21 +63,24 @@
 
 <h2>Step 3 of 4: Review personally identifiable information</h2>
 <div id="pii-warning-text" class="support-tool-title">
-  Diagnostic data collection is complete. Some personally identifiable
-  information was detected. Select which information you wish to include in
-  exported data.
+  Diagnostic data collection is complete. Some of your personal information is
+  included in this data.
 </div>
 <div id="radio-group">
   <cr-radio-group selected="[[selectedRadioButton_]]"
       on-selected-changed="onSelectedRadioButtonChanged_">
     <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_ALL]]">
-      Include all personally identifiable information
+      Include all personal information
     </cr-radio-button>
     <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_NONE]]">
-      Include no identifiable information
+      Automatically remove most personal information
     </cr-radio-button>
+    <div id="privacy-disclaimer">
+      Some personal information may still be included in the data. Make sure to
+      review the exported files. 
+    </div>
     <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_SOME]]">
-      Include only some identifiable information
+      Manually review personal information
     </cr-radio-button>
   </cr-radio-group>
 </div>
