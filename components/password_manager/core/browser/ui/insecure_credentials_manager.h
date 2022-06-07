@@ -189,14 +189,10 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
 
   // Attempts to mute |credential| from the password store.
   // Returns whether the mute succeeded.
-  // TODO(crbug.com/1330549): Use CredentialUIEntry only.
-  bool MuteCredential(const CredentialView& credential);
   bool MuteCredential(const CredentialUIEntry& credential);
 
   // Attempts to unmute |credential| from the password store.
   // Returns whether the unmute succeeded.
-  // TODO(crbug.com/1330549): Use CredentialUIEntry only.
-  bool UnmuteCredential(const CredentialView& credential);
   bool UnmuteCredential(const CredentialUIEntry& credential);
 
   // Returns a vector of currently insecure credentials.

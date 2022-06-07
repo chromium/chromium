@@ -69,7 +69,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // Removes the credential and all its duplicates from the store.
   // TODO(crbug.com/1330906): Remove in favor of EditSavedCredentials.
   void RemovePassword(const PasswordForm& form);
-  void RemoveCredential(const CredentialUIEntry& credential);
+  bool RemoveCredential(const CredentialUIEntry& credential);
 
   // Adds the credential to the store specified in the |form|. Returns true
   // if the password was added, false if |form|'s data is not valid (invalid

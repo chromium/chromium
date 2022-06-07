@@ -280,18 +280,6 @@ void InsecureCredentialsManager::SaveInsecureCredential(
 }
 
 bool InsecureCredentialsManager::MuteCredential(
-    const CredentialView& credential) {
-  auto it = credentials_to_forms_.find(credential);
-  if (it == credentials_to_forms_.end())
-    return false;
-
-  const auto& saved_passwords = it->second.forms;
-  DCHECK(!saved_passwords.empty());
-
-  return MuteCredential(CredentialUIEntry(saved_passwords[0]));
-}
-
-bool InsecureCredentialsManager::MuteCredential(
     const CredentialUIEntry& credential) {
   CredentialUIEntry updated_credential = credential;
   for (auto& password_issue : updated_credential.password_issues) {
@@ -301,18 +289,6 @@ bool InsecureCredentialsManager::MuteCredential(
     }
   }
   return presenter_->EditSavedCredentials(updated_credential);
-}
-
-bool InsecureCredentialsManager::UnmuteCredential(
-    const CredentialView& credential) {
-  auto it = credentials_to_forms_.find(credential);
-  if (it == credentials_to_forms_.end())
-    return false;
-
-  const auto& saved_passwords = it->second.forms;
-  DCHECK(!saved_passwords.empty());
-
-  return UnmuteCredential(CredentialUIEntry(saved_passwords[0]));
 }
 
 bool InsecureCredentialsManager::UnmuteCredential(

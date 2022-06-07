@@ -34,6 +34,14 @@ CredentialUIEntry& CredentialUIEntry::operator=(
 CredentialUIEntry& CredentialUIEntry::operator=(CredentialUIEntry&& other) =
     default;
 
+bool CredentialUIEntry::IsLeaked() const {
+  return password_issues.contains(InsecureType::kLeaked);
+}
+
+bool CredentialUIEntry::IsPhished() const {
+  return password_issues.contains(InsecureType::kPhished);
+}
+
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
   return lhs.key() == rhs.key();
 }

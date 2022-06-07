@@ -701,7 +701,9 @@ TEST_F(PasswordCheckDelegateTest, ChangeInsecureCredentialSuccess) {
 }
 
 // Test that changing a insecure password removes duplicates from store.
-TEST_F(PasswordCheckDelegateTest, ChangeInsecureCredentialRemovesDupes) {
+// https://crbug.com/1334160
+TEST_F(PasswordCheckDelegateTest,
+       DISABLED_ChangeInsecureCredentialRemovesDupes) {
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   AddIssueToForm(&form, InsecureType::kLeaked);
   store().AddLogin(form);

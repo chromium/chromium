@@ -20,6 +20,13 @@ using CredentialKey = base::StrongAlias<class CredentialKeyTag, std::string>;
 // construction from PasswordForm for convenience. A single entry might
 // correspond to multiple PasswordForms.
 struct CredentialUIEntry {
+  struct Less {
+    bool operator()(const CredentialUIEntry& lhs,
+                    const CredentialUIEntry& rhs) const {
+      return lhs.key() < rhs.key();
+    }
+  };
+
   explicit CredentialUIEntry(const PasswordForm& form);
   CredentialUIEntry(const CredentialUIEntry& other);
   CredentialUIEntry(CredentialUIEntry&& other);
@@ -70,6 +77,10 @@ struct CredentialUIEntry {
   bool blocked_by_user;
 
   const CredentialKey& key() const { return key_; }
+
+  // Information about password insecurities.
+  bool IsLeaked() const;
+  bool IsPhished() const;
 
  private:
   // Key which is constructed from an original PasswordForm.

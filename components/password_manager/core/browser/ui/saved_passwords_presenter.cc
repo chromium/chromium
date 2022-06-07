@@ -93,11 +93,12 @@ void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
   RemoveCredential(CredentialUIEntry(form));
 }
 
-void SavedPasswordsPresenter::RemoveCredential(
+bool SavedPasswordsPresenter::RemoveCredential(
     const CredentialUIEntry& credential) {
   const auto range =
       sort_key_to_password_forms_.equal_range(credential.key().value());
 
+  bool removed = false;
   std::for_each(range.first, range.second, [&](const auto& pair) {
     const auto& current_form = pair.second;
     // Make sure |form| and |current_form| share the same store.
@@ -106,8 +107,10 @@ void SavedPasswordsPresenter::RemoveCredential(
       // 'OnGetPasswordStoreResultsFrom'. So it can be present only in one store
       // at a time..
       GetStoreFor(current_form).RemoveLogin(current_form);
+      removed = true;
     }
   });
+  return removed;
 }
 
 bool SavedPasswordsPresenter::AddPassword(const PasswordForm& form) {
@@ -193,6 +196,7 @@ bool SavedPasswordsPresenter::EditSavedCredentials(
   base::ranges::transform(range.first, range.second,
                           std::back_inserter(forms_to_change),
                           [](const auto& pair) { return pair.second; });
+
   if (forms_to_change.empty())
     return false;
 
