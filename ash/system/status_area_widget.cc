@@ -29,6 +29,7 @@
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/status_area_overflow_button_tray.h"
+#include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/unified/date_tray.h"
@@ -610,11 +611,13 @@ void StatusAreaWidget::OnScrollEvent(ui::ScrollEvent* event) {
 
 template <typename TrayButtonT>
 TrayButtonT* StatusAreaWidget::AddTrayButton(
-    std::unique_ptr<TrayButtonT>&& tray_button) {
+    std::unique_ptr<TrayButtonT> tray_button) {
   tray_buttons_.push_back(tray_button.get());
-  return status_area_widget_delegate_->AddChildView(
-      std::forward<std::unique_ptr<TrayButtonT>>(tray_button));
+  return status_area_widget_delegate_->AddChildView(std::move(tray_button));
 }
+// Specialization declared here for use in tests.
+template TrayBackgroundView* StatusAreaWidget::AddTrayButton<
+    TrayBackgroundView>(std::unique_ptr<TrayBackgroundView> tray_button);
 
 StatusAreaWidget::LayoutInputs StatusAreaWidget::GetLayoutInputs() const {
   unsigned int child_visibility_bitmask = 0;

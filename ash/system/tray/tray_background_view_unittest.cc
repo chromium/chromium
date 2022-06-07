@@ -74,22 +74,17 @@ class TrayBackgroundViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    auto test_view =
-        std::make_unique<TrayBackgroundViewTestView>(GetPrimaryShelf());
-    test_view_ = test_view.get();
-
-    // Adds this `test_view_` to the mock `StatusAreaWidget`. We need to remove
-    // the layout manager from the delegate before adding a new child, since
-    // there's an DCHECK in the `GridLayout` to assert no more child can be
-    // added.
-    StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-        ->status_area_widget_delegate()
-        ->SetLayoutManager(nullptr);
-    StatusAreaWidgetTestHelper::GetStatusAreaWidget()->tray_buttons_.push_back(
-        test_view.get());
-    StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-        ->status_area_widget_delegate()
-        ->AddChildView(std::move(test_view));
+    // Adds this `test_view_` to the mock `StatusAreaWidget`. We need to
+    // remove the layout manager from the delegate before adding a new
+    // child, since there's a DCHECK in the `GridLayout` to assert no more
+    // children can be added.
+    // Can't use std::make_unique() here, because we need base class type for
+    // template method to link successfully without adding test code to
+    // status_area_widget.cc.
+    test_view_ = static_cast<TrayBackgroundViewTestView*>(
+        StatusAreaWidgetTestHelper::GetStatusAreaWidget()->AddTrayButton(
+            std::unique_ptr<TrayBackgroundView>(
+                new TrayBackgroundViewTestView(GetPrimaryShelf()))));
 
     // Set Dictation button to be visible.
     AccessibilityControllerImpl* controller =

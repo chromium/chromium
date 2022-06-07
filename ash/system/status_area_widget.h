@@ -220,7 +220,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // Any references to the method outside of this compilation unit will fail
   // linking unless a specialization is declared in status_area_widget.cc.
   template <typename TrayButtonT>
-  TrayButtonT* AddTrayButton(std::unique_ptr<TrayButtonT>&& tray_button);
+  TrayButtonT* AddTrayButton(std::unique_ptr<TrayButtonT> tray_button);
 
   // Called when in the collapsed state to calculate and update the visibility
   // of each tray button.
