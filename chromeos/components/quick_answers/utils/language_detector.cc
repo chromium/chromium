@@ -11,7 +11,7 @@
 namespace quick_answers {
 namespace {
 
-constexpr double kSelectedTextConfidenceThreshold = 0.8;
+constexpr double kSelectedTextConfidenceThreshold = 0.9;
 
 constexpr double kSurroundingTextConfidenceThreshold = 0.9;
 
