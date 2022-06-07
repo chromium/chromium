@@ -4,6 +4,11 @@
 
 #include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
 
+#include "ash/webui/grit/ash_guest_os_installer_resources.h"
+#include "ash/webui/grit/ash_guest_os_installer_resources_map.h"
+#include "ash/webui/guest_os_installer/url_constants.h"
+#include "content/public/browser/web_ui_data_source.h"
+
 namespace ash {
 
 GuestOSInstallerUI::GuestOSInstallerUI(content::WebUI* web_ui,
@@ -11,7 +16,17 @@ GuestOSInstallerUI::GuestOSInstallerUI(content::WebUI* web_ui,
                                        DelegateFactory delegate_factory)
     : ui::MojoWebDialogUI(web_ui),
       url_(url),
-      delegate_factory_(delegate_factory) {}
+      delegate_factory_(delegate_factory) {
+  auto* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      ash::kChromeUIGuestOSInstallerHost);
+
+  source->DisableTrustedTypesCSP();
+
+  source->AddResourcePaths(base::make_span(kAshGuestOsInstallerResources,
+                                           kAshGuestOsInstallerResourcesSize));
+  source->SetDefaultResource(IDR_ASH_GUEST_OS_INSTALLER_INDEX_HTML);
+}
 
 GuestOSInstallerUI::~GuestOSInstallerUI() = default;
 
