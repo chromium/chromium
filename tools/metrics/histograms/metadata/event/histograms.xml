@@ -1065,7 +1065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Scrollbar.TimeToHandled2"
-    units="microseconds" expires_after="2022-10-04">
+    units="microseconds" expires_after="2022-12-04">
   <owner>flackr@chromium.org</owner>
   <owner>arakeri@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1445,7 +1445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.TimeToHandled2"
-    units="microseconds" expires_after="2022-10-04">
+    units="microseconds" expires_after="2022-12-04">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1520,7 +1520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.PageShow.Persisted" enum="EventPageShowPersisted"
-    expires_after="2022-10-01">
+    expires_after="2022-12-04">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>

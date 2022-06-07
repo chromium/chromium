@@ -298,7 +298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DiskUsage.NumUserHomeDirectories"
-    units="home directories" expires_after="2022-10-04">
+    units="home directories" expires_after="2022-12-04">
   <owner>achuith@chromium.org</owner>
   <owner>tls@chromium.org</owner>
   <summary>
@@ -364,7 +364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Emmc.LifeUsed" enum="EmmcLifeUsed"
-    expires_after="2022-10-01">
+    expires_after="2022-12-04">
   <owner>gwendal@google.com</owner>
   <summary>
     eMMC [5.0] Device lifetime estimation for flash. This field provides an
@@ -855,7 +855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.ReadSectorsShort" units="sectors per second"
-    expires_after="2022-10-01">
+    expires_after="2022-12-04">
   <owner>gwendal@google.com</owner>
   <summary>
     Number of disk sectors per second read by Chrome OS in a short interval
@@ -1264,7 +1264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.UnaggregatedUsageTime" units="seconds"
-    expires_after="2022-10-03">
+    expires_after="2022-12-04">
   <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>cros-telemetry@google.com</owner>
@@ -1374,7 +1374,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.WriteSectorsShort" units="sectors per second"
-    expires_after="2022-10-01">
+    expires_after="2022-12-04">
   <owner>gwendal@google.com</owner>
   <summary>
     Number of disk sectors per second written by Chrome OS in a short interval

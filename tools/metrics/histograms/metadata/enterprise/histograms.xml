@@ -629,7 +629,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.UpdatedStatus"
-    enum="DeviceSettingsStatus" expires_after="2022-10-04">
+    enum="DeviceSettingsStatus" expires_after="2022-12-04">
   <owner>rbock@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1792,7 +1792,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Policies.IgnoredByPolicyGroup"
-    enum="EnterprisePolicies" expires_after="2022-08-28">
+    enum="EnterprisePolicies" expires_after="2022-12-04">
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -2292,7 +2292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsManaged2" enum="BooleanEnabled"
-    expires_after="2022-10-01">
+    expires_after="2022-12-04">
   <owner>rogerta@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <owner>zmin@chromium.org</owner>

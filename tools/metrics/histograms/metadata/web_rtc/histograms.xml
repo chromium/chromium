@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmAnalogGainDecreaseAverage" units="level"
-    expires_after="2022-10-05">
+    expires_after="2022-12-04">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>
@@ -315,7 +315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmAnalogGainDecreaseRate" units="changes/minute"
-    expires_after="2022-10-05">
+    expires_after="2022-12-04">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>
@@ -326,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmAnalogGainIncreaseAverage" units="level"
-    expires_after="2022-10-05">
+    expires_after="2022-12-04">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>
@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmAnalogGainUpdateAverage" units="level"
-    expires_after="2022-10-05">
+    expires_after="2022-12-04">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>
@@ -359,7 +359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmAnalogGainUpdateRate" units="changes/minute"
-    expires_after="2022-10-05">
+    expires_after="2022-12-04">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>

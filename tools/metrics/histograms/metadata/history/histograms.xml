@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.BrowsingDataLifetime.State.BrowserShutdownDeletion"
-    enum="BooleanStartedCompleted" expires_after="2022-10-01">
+    enum="BooleanStartedCompleted" expires_after="2022-12-04">
   <owner>ydago@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>

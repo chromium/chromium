@@ -42,7 +42,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CagedMemoryAllocationOutcome"
-    enum="V8CagedMemoryAllocationOutcome" expires_after="2022-09-30">
+    enum="V8CagedMemoryAllocationOutcome" expires_after="2022-12-04">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileDeserializeMicroSeconds" units="microseconds"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>vogelheim@chromium.org</owner>
   <summary>
     Time spent deseriailzing code, used by V8 code caching.
@@ -1616,7 +1616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.VirtualMemoryCageMode" enum="V8VirtualMemoryCageMode"
-    expires_after="2022-09-30">
+    expires_after="2022-12-04">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>

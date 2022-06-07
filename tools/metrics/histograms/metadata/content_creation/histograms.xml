@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.AssetsFetchSuccess" enum="BooleanSuccess"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.Funnel" enum="LightweightReactionsFunnel"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.SelectedDynamicTemplateID" units="count"
-    expires_after="2022-09-23">
+    expires_after="2022-12-04">
   <owner>graysonlafleur@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.SelectedDynamicTemplateIndex" units="count"
-    expires_after="2022-09-23">
+    expires_after="2022-12-04">
   <owner>graysonlafleur@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.TemplateFetchSuccess" enum="BooleanSuccess"
-    expires_after="2022-09-23">
+    expires_after="2022-12-04">
   <owner>graysonlafleur@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>

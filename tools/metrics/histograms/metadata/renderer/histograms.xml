@@ -408,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.RenderThreadImpl.Init" units="ms"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>jam@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
