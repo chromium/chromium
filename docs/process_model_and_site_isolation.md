@@ -457,7 +457,7 @@ affect invariants or how features are designed.
 Several academic papers have covered topics about Chromium's process model.
 
 [**Security Architecture of the Chromium
-Browser**](http://crypto.stanford.edu/websec/chromium/)
+Browser**](https://crypto.stanford.edu/websec/chromium/)
 
 Adam Barth, Collin Jackson, Charles Reis, and The Google Chrome Team. Stanford
 Technical Report, September 2008.
