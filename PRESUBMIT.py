@@ -1024,6 +1024,19 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       False,
       (),
     ),
+    BanRule(
+      'base::Passed',
+      (
+        'Do not use base::Passed. It is a legacy helper for capturing ',
+        'move-only types with base::BindRepeating, but invoking the ',
+        'resulting RepeatingCallback moves the captured value out of ',
+        'the callback storage, and subsequent invocations may pass the ',
+        'value in a valid but undefined state. Prefer base::BindOnce().',
+        'See http://crbug.com/1326449 for context.'
+      ),
+      False,
+      (),
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
