@@ -2859,6 +2859,21 @@
             ]
         }
     ],
+    "CreateSafebrowsingOnStartup": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CreateSafebrowsingOnStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "CriticalPersistedTabDataV2": [
         {
             "platforms": [
