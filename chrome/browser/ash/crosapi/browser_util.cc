@@ -886,5 +886,11 @@ bool WasGotoFilesClicked(PrefService* local_state,
   return base::Contains(list->GetList(), base::Value(user_id_hash));
 }
 
+bool ShouldEnforceAshExtensionKeepList() {
+  return IsLacrosPrimaryBrowser() &&
+         base::FeatureList::IsEnabled(
+             chromeos::features::kEnforceAshExtensionKeeplist);
+}
+
 }  // namespace browser_util
 }  // namespace crosapi

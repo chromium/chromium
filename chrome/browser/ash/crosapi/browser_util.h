@@ -335,6 +335,9 @@ void ClearGotoFilesClicked(PrefService* local_state,
 bool WasGotoFilesClicked(PrefService* local_state,
                          const std::string& user_id_hash);
 
+// Returns true if ash 1st party extension keep list should be enforced.
+bool ShouldEnforceAshExtensionKeepList();
+
 }  // namespace browser_util
 }  // namespace crosapi
 
