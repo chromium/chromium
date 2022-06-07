@@ -750,8 +750,10 @@ void LoginShelfView::SetKioskApps(
   kiosk_apps_button_->SetApps(kiosk_apps);
   UpdateUi();
   if (LockScreen::HasInstance()) {
+    // Consider Kiosk apps button to be present when there are Kiosk apps installed.
+    // TODO(b/234765162): rename the method as the naming is confusing.
     LockScreen::Get()->SetKioskAppsButtonPresence(
-        kiosk_apps_button_->GetVisible());
+        kiosk_apps_button_->HasApps());
   }
 }
 
