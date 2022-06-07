@@ -42,7 +42,6 @@ class MockResultLoaderDelegate : public ResultLoader::ResultLoaderDelegate {
   // ResultLoader::ResultLoaderDelegate:
   MOCK_METHOD0(OnNetworkError, void());
   MOCK_METHOD1(OnQuickAnswerReceived, void(std::unique_ptr<QuickAnswer>));
-  MOCK_METHOD1(RequestAccessToken, void(AccessTokenCallback));
 };
 
 MATCHER_P(QuickAnswerEqual, quick_answer, "") {

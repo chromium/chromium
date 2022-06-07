@@ -100,11 +100,6 @@ void QuickAnswersClient::OnNetworkError() {
   delegate_->OnNetworkError();
 }
 
-void QuickAnswersClient::RequestAccessToken(AccessTokenCallback callback) {
-  DCHECK(delegate_);
-  delegate_->RequestAccessToken(std::move(callback));
-}
-
 void QuickAnswersClient::OnQuickAnswerReceived(
     std::unique_ptr<QuickAnswer> quick_answer) {
   DCHECK(delegate_);

@@ -30,9 +30,6 @@ enum class ResultType;
 // A delegate interface for the QuickAnswersClient.
 class QuickAnswersDelegate {
  public:
-  using AccessTokenCallback =
-      base::OnceCallback<void(const std::string& access_token)>;
-
   QuickAnswersDelegate(const QuickAnswersDelegate&) = delete;
   QuickAnswersDelegate& operator=(const QuickAnswersDelegate&) = delete;
 
@@ -47,13 +44,6 @@ class QuickAnswersDelegate {
 
   // Invoked when there is a network error.
   virtual void OnNetworkError() {}
-
-  // Request for the access token associated with the active user's profile.
-  // Request is handled asynchronously if the token is not available.
-  // AccessTokenCallbacks are invoked as soon as the token if fetched.
-  // If the token is available, AccessTokenCallbacks are invoked
-  // synchronously before RequestAccessToken() returns.
-  virtual void RequestAccessToken(AccessTokenCallback callback) {}
 
  protected:
   QuickAnswersDelegate() = default;
@@ -86,7 +76,6 @@ class QuickAnswersClient : public ResultLoader::ResultLoaderDelegate {
   void OnNetworkError() override;
   void OnQuickAnswerReceived(
       std::unique_ptr<QuickAnswer> quick_answer) override;
-  void RequestAccessToken(AccessTokenCallback callback) override;
 
   // Send a quick answer request for preprocessing only.
   void SendRequestForPreprocessing(

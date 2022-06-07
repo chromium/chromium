@@ -8,8 +8,6 @@ assert(is_chromeos)
 
 source_set("quick_answers") {
   sources = [
-    "quick_answers_access_token_fetcher.cc",
-    "quick_answers_access_token_fetcher.h",
     "quick_answers_controller_impl.cc",
     "quick_answers_controller_impl.h",
     "quick_answers_ui_controller.cc",
