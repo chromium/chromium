@@ -1109,6 +1109,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-modal-remove-parent-container.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaModalUnhidden) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-modal-unhidden.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaMultiline) {
   RunAriaTest(FILE_PATH_LITERAL("aria-multiline.html"));
 }

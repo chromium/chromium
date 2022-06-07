@@ -717,6 +717,33 @@ AXObject* AXObjectCacheImpl::GetOrCreateFocusedObjectFromNode(Node* node) {
   if (!obj)
     return nullptr;
 
+  Settings* settings = GetSettings();
+  if (settings && settings->GetAriaModalPrunesAXTree()) {
+    // It is possible for the active_aria_modal_dialog_ to become detached in
+    // between the time a node claims focus and the time we notify platforms
+    // of that focus change. For instance given an aria-modal dialog which was
+    // newly unhidden (rather than newly added to the DOM):
+    // * HandleFocusedUIElementChanged calls UpdateActiveAriaModalDialog
+    // * UpdateActiveAriaModalDialog sets the value of active_aria_modal_dialog_
+    //   and then marks the entire tree dirty if that value changed.
+    // * The subsequent tree update results in the stored active dialog being
+    //   detached and replaced.
+    // Should this occur, the focused node we're getting or creating here is
+    // not a descendant of active_aria_modal_dialog_ and is thus pruned from
+    // the tree. This leads to firing the event on the included parent object,
+    // which is likely a non-focusable container.
+    // We could probably address this situation in one of the clean-layout
+    // functions (e.g. HandleNodeGainedFocusWithCleanLayout). However, because
+    // both HandleNodeGainedFocusWithCleanLayout and FocusedObject call
+    // GetOrCreateFocusedObjectFromNode, detecting and correcting this issue
+    // here seems like it covers more bases.
+    // TODO(crbug.com/1328815): We need to take a close look at the aria-modal
+    // tree pruning logic to be sure there are not other situations where we
+    // incorrectly prune content which should be exposed.
+    if (active_aria_modal_dialog_ && active_aria_modal_dialog_->IsDetached())
+      UpdateActiveAriaModalDialog(node);
+  }
+
   // the HTML element, for example, is focusable but has an AX object that is
   // ignored
   if (!obj->AccessibilityIsIncludedInTree())
