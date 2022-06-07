@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Resources;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.TextView;
 
@@ -26,6 +27,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -143,5 +146,78 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                 .setPaddingRelative(eq(0), eq(SUGGESTION_VERTICAL_PADDING), eq(0),
                         eq(SUGGESTION_VERTICAL_PADDING));
         verify(mView, times(2)).setPaddingRelative(anyInt(), anyInt(), anyInt(), anyInt());
+    }
+
+    /**
+     * We expect value to be computed as the tile margin value computed is larger than
+     * tile_view_padding
+     */
+    @Test
+    public void formFactor_itemSpacingPhone_computed() {
+        int displayWidth = 1000;
+        int tileViewPaddingEdgePortrait = 300;
+        int tileViewwidth = 100;
+        int tileViewPadding = 15;
+        when(mResources.getDimensionPixelSize(eq(R.dimen.tile_view_padding_edge_portrait)))
+                .thenReturn(tileViewPaddingEdgePortrait);
+        when(mResources.getDimensionPixelOffset(eq(R.dimen.tile_view_width)))
+                .thenReturn(tileViewwidth);
+        when(mResources.getDimensionPixelOffset(eq(R.dimen.tile_view_padding)))
+                .thenReturn(tileViewPadding);
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        displayMetrics.widthPixels = displayWidth;
+        when(mResources.getDisplayMetrics()).thenReturn(displayMetrics);
+
+        final int expectedSpacingPx =
+                (int) ((displayWidth - tileViewPaddingEdgePortrait - tileViewwidth * 4.7) / 4);
+        Assert.assertEquals(expectedSpacingPx,
+                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.PHONE, mResources));
+    }
+
+    /**
+     * We expect value to be fixed as tile_view_padding is larger than the tile margin value
+     * computed
+     */
+    @Test
+    public void formFactor_itemSpacingPhone_fixed() {
+        int displayWidth = 0;
+        int tileViewPaddingEdgePortrait = 0;
+        int tileViewwidth = 0;
+        int tileViewPadding = -15;
+        when(mResources.getDimensionPixelSize(eq(R.dimen.tile_view_padding_edge_portrait)))
+                .thenReturn(tileViewPaddingEdgePortrait);
+        when(mResources.getDimensionPixelOffset(eq(R.dimen.tile_view_width)))
+                .thenReturn(tileViewwidth);
+        when(mResources.getDimensionPixelOffset(eq(R.dimen.tile_view_padding)))
+                .thenReturn(tileViewPadding);
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        displayMetrics.widthPixels = displayWidth;
+        when(mResources.getDisplayMetrics()).thenReturn(displayMetrics);
+
+        final int expectedSpacingPx = -tileViewPadding;
+        Assert.assertEquals(expectedSpacingPx,
+                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.PHONE, mResources));
+    }
+
+    @Test
+    public void formFactor_itemSpacingTablet() {
+        final int paddingPx = 100;
+        when(mResources.getDimensionPixelSize(eq(R.dimen.tile_view_padding_edge_portrait)))
+                .thenReturn(paddingPx);
+        Assert.assertEquals(paddingPx,
+                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.TABLET, mResources));
+    }
+
+    @Test
+    public void formFactor_itemSpacingEndToEnd() {
+        final int spacingPx = 100;
+        when(mResources.getDimensionPixelSize(eq(R.dimen.tile_view_padding_edge_portrait)))
+                .thenReturn(spacingPx);
+        Assert.assertEquals(spacingPx,
+                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.TABLET, mResources));
+        mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
+        verify(mView, times(1)).setItemSpacingPx(eq(spacingPx));
     }
 }

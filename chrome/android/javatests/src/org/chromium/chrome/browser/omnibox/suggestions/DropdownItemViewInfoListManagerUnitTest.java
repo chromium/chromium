@@ -12,6 +12,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -59,6 +61,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
     ListObserver<Void> mListObserver;
 
     private ModelList mSuggestionModels;
+    private Context mContext;
     private DropdownItemViewInfoListManager mManager;
 
     @Before
@@ -70,7 +73,9 @@ public class DropdownItemViewInfoListManagerUnitTest {
 
         mSuggestionModels = new ModelList();
         mSuggestionModels.addObserver(mListObserver);
-        mManager = new DropdownItemViewInfoListManager(mSuggestionModels);
+
+        mContext = InstrumentationRegistry.getContext();
+        mManager = new DropdownItemViewInfoListManager(mSuggestionModels, mContext);
     }
 
     /**

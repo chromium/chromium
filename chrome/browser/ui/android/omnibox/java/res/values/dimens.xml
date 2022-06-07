@@ -71,7 +71,6 @@
 
     <dimen name="omnibox_suggestion_action_icon_width">48dp</dimen>
     <dimen name="omnibox_suggestion_refine_view_modern_end_padding">4dp</dimen>
-    <dimen name="omnibox_suggestion_carousel_horizontal_spacing">8dp</dimen>
 
     <!-- Adding search engine logo to the omnibox. -->
     <!-- Max size which will fit completely in the composed/rounded bg. -->
