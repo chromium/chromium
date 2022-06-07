@@ -996,10 +996,7 @@ void PdfViewWebPlugin::SetFormTextFieldInFocus(bool in_focus) {
 }
 
 void PdfViewWebPlugin::SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PdfViewWebPlugin::OnSetAccessibilityDocInfo,
-                     weak_factory_.GetWeakPtr(), std::move(doc_info)));
+  pdf_accessibility_data_handler_->SetAccessibilityDocInfo(std::move(doc_info));
 }
 
 void PdfViewWebPlugin::SetAccessibilityPageInfo(
@@ -1007,19 +1004,15 @@ void PdfViewWebPlugin::SetAccessibilityPageInfo(
     std::vector<AccessibilityTextRunInfo> text_runs,
     std::vector<AccessibilityCharInfo> chars,
     AccessibilityPageObjects page_objects) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&PdfViewWebPlugin::OnSetAccessibilityPageInfo,
-                                weak_factory_.GetWeakPtr(),
-                                std::move(page_info), std::move(text_runs),
-                                std::move(chars), std::move(page_objects)));
+  pdf_accessibility_data_handler_->SetAccessibilityPageInfo(
+      std::move(page_info), std::move(text_runs), std::move(chars),
+      std::move(page_objects));
 }
 
 void PdfViewWebPlugin::SetAccessibilityViewportInfo(
     AccessibilityViewportInfo viewport_info) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PdfViewWebPlugin::OnSetAccessibilityViewportInfo,
-                     weak_factory_.GetWeakPtr(), std::move(viewport_info)));
+  pdf_accessibility_data_handler_->SetAccessibilityViewportInfo(
+      std::move(viewport_info));
 }
 
 void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {
@@ -1142,34 +1135,6 @@ void PdfViewWebPlugin::HandleImeCommit(const blink::WebString& text) {
 
 void PdfViewWebPlugin::OnInvokePrintDialog() {
   client_->Print();
-}
-
-void PdfViewWebPlugin::OnSetAccessibilityDocInfo(
-    AccessibilityDocInfo doc_info) {
-  if (!pdf_accessibility_data_handler_)
-    return;
-  pdf_accessibility_data_handler_->SetAccessibilityDocInfo(doc_info);
-  // `this` may be deleted. Don't do anything else.
-}
-
-void PdfViewWebPlugin::OnSetAccessibilityPageInfo(
-    AccessibilityPageInfo page_info,
-    std::vector<AccessibilityTextRunInfo> text_runs,
-    std::vector<AccessibilityCharInfo> chars,
-    AccessibilityPageObjects page_objects) {
-  if (!pdf_accessibility_data_handler_)
-    return;
-  pdf_accessibility_data_handler_->SetAccessibilityPageInfo(
-      page_info, text_runs, chars, page_objects);
-  // `this` may be deleted. Don't do anything else.
-}
-
-void PdfViewWebPlugin::OnSetAccessibilityViewportInfo(
-    AccessibilityViewportInfo viewport_info) {
-  if (!pdf_accessibility_data_handler_)
-    return;
-  pdf_accessibility_data_handler_->SetAccessibilityViewportInfo(viewport_info);
-  // `this` may be deleted. Don't do anything else.
 }
 
 void PdfViewWebPlugin::ResetRecentlySentFindUpdate() {

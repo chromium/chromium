@@ -7,11 +7,15 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/i18n/break_iterator.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/pdf/renderer/pdf_ax_action_target.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/renderer/render_accessibility.h"
@@ -1293,6 +1297,16 @@ bool PdfAccessibilityTree::IsDataFromPluginValid(
 }
 
 void PdfAccessibilityTree::SetAccessibilityViewportInfo(
+    chrome_pdf::AccessibilityViewportInfo viewport_info) {
+  // This call may trigger layout, and ultimately self-deletion; see
+  // crbug.com/1274376 for details.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PdfAccessibilityTree::DoSetAccessibilityViewportInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(viewport_info)));
+}
+
+void PdfAccessibilityTree::DoSetAccessibilityViewportInfo(
     const chrome_pdf::AccessibilityViewportInfo& viewport_info) {
   zoom_ = viewport_info.zoom;
   scale_ = viewport_info.scale;
@@ -1319,6 +1333,16 @@ void PdfAccessibilityTree::SetAccessibilityViewportInfo(
 }
 
 void PdfAccessibilityTree::SetAccessibilityDocInfo(
+    chrome_pdf::AccessibilityDocInfo doc_info) {
+  // This call may trigger layout, and ultimately self-deletion; see
+  // crbug.com/1274376 for details.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PdfAccessibilityTree::DoSetAccessibilityDocInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(doc_info)));
+}
+
+void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
     const chrome_pdf::AccessibilityDocInfo& doc_info) {
   content::RenderAccessibility* render_accessibility =
       GetRenderAccessibilityIfEnabled();
@@ -1342,6 +1366,21 @@ void PdfAccessibilityTree::SetAccessibilityDocInfo(
 }
 
 void PdfAccessibilityTree::SetAccessibilityPageInfo(
+    chrome_pdf::AccessibilityPageInfo page_info,
+    std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs,
+    std::vector<chrome_pdf::AccessibilityCharInfo> chars,
+    chrome_pdf::AccessibilityPageObjects page_objects) {
+  // This call may trigger layout, and ultimately self-deletion; see
+  // crbug.com/1274376 for details.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PdfAccessibilityTree::DoSetAccessibilityPageInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(page_info),
+                     std::move(text_runs), std::move(chars),
+                     std::move(page_objects)));
+}
+
+void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
     const chrome_pdf::AccessibilityPageInfo& page_info,
     const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
     const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,

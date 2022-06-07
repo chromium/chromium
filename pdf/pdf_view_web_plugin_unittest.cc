@@ -30,6 +30,7 @@
 #include "pdf/content_restriction.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_ready_rect.h"
+#include "pdf/pdf_accessibility_data_handler.h"
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/test/test_pdfium_engine.h"
@@ -200,6 +201,26 @@ class MockWebAssociatedURLLoader : public blink::WebAssociatedURLLoader {
               (override));
 };
 
+class MockPdfAccessibilityDataHandler : public PdfAccessibilityDataHandler {
+ public:
+  // PdfAccessibilityDataHandler:
+  MOCK_METHOD(void,
+              SetAccessibilityViewportInfo,
+              (AccessibilityViewportInfo),
+              (override));
+  MOCK_METHOD(void,
+              SetAccessibilityDocInfo,
+              (AccessibilityDocInfo),
+              (override));
+  MOCK_METHOD(void,
+              SetAccessibilityPageInfo,
+              (AccessibilityPageInfo,
+               std::vector<AccessibilityTextRunInfo>,
+               std::vector<AccessibilityCharInfo>,
+               AccessibilityPageObjects),
+              (override));
+};
+
 class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
  public:
   FakePdfViewWebPluginClient() {
@@ -298,6 +319,11 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
   MOCK_METHOD(void, DidStopLoading, (), (override));
 
   MOCK_METHOD(void, RecordComputedAction, (const std::string&), (override));
+
+  MOCK_METHOD(std::unique_ptr<PdfAccessibilityDataHandler>,
+              CreateAccessibilityDataHandler,
+              (PdfAccessibilityActionHandler*),
+              (override));
 };
 
 class FakePdfService : public pdf::mojom::PdfService {
@@ -356,6 +382,13 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
           engine_ptr_ = engine.get();
           return engine;
         });
+    ON_CALL(*client_ptr_, CreateAccessibilityDataHandler)
+        .WillByDefault([this]() {
+          auto handler =
+              std::make_unique<NiceMock<MockPdfAccessibilityDataHandler>>();
+          accessibility_data_handler_ptr_ = handler.get();
+          return handler;
+        });
     SetUpClient();
 
     plugin_ =
@@ -398,6 +431,7 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
   raw_ptr<FakePdfViewWebPluginClient> client_ptr_;
   std::unique_ptr<PdfViewWebPlugin, PluginDeleter> plugin_;
   raw_ptr<TestPDFiumEngine> engine_ptr_;
+  raw_ptr<MockPdfAccessibilityDataHandler> accessibility_data_handler_ptr_;
 };
 
 class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
@@ -617,6 +651,8 @@ TEST_F(PdfViewWebPluginTest, DocumentLoadComplete) {
     "type": "printPreviewLoaded",
   })")))
       .Times(0);
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
+      .Times(0);
   EXPECT_CALL(*client_ptr_, DidStopLoading).Times(0);
   EXPECT_CALL(pdf_service_, UpdateContentRestrictions).Times(0);
   plugin_->DocumentLoadComplete();
@@ -643,6 +679,8 @@ TEST_F(PdfViewWebPluginFullFrameTest, DocumentLoadComplete) {
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
     "type": "printPreviewLoaded",
   })")))
+      .Times(0);
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
       .Times(0);
   EXPECT_CALL(*client_ptr_, DidStopLoading);
   EXPECT_CALL(pdf_service_, UpdateContentRestrictions(kContentRestrictionPrint |
@@ -1717,6 +1755,8 @@ TEST_F(PdfViewWebPluginPrintPreviewTest, DocumentLoadComplete) {
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
     "type": "printPreviewLoaded",
   })")));
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
+      .Times(0);
   EXPECT_CALL(*client_ptr_, DidStopLoading).Times(0);
   EXPECT_CALL(pdf_service_, UpdateContentRestrictions).Times(0);
   plugin_->DocumentLoadComplete();
