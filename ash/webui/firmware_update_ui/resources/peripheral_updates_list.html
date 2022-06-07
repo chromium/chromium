@@ -2,7 +2,7 @@
 </style>
 <div id="container">
   <template is="dom-if" if="[[!hasFirmwareUpdates_(firmwareUpdates_)]]">
-    <div id="upToDateText">All firmwares are up to date</div>
+    <div id="upToDateText">[[i18n('upToDate')]]</div>
   </template>
   <dom-repeat id="updateList" items="[[firmwareUpdates_]]" as="update">
     <template>
