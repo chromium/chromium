@@ -58,7 +58,9 @@ public class ViewResourceAdapterTest {
              * Otherwise the GC-related tests would fail.
              */
             @Override
-            protected void capture(Canvas canvas) {}
+            protected boolean captureCommon(Canvas canvas, boolean drawWhileDetached) {
+                return true;
+            }
         };
 
     }
