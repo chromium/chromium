@@ -43,17 +43,21 @@ MEDIA_GPU_EXPORT VideoBitrateAllocation
 AllocateBitrateForDefaultEncoding(const VideoEncodeAccelerator::Config& config);
 
 // Create VideoBitrateAllocation with |num_spatial_layers|,
-// |num_temporal_layers| and |bitrate|. |bitrate| is the bitrate of the entire
+// |num_temporal_layers| and |bitrate|, additionally indicating if the
+// constructed bitrate should |use_vbr|. |bitrate| is the bitrate of the entire
 // stream. |num_temporal_layers| is the number of temporal layers in each
-// spatial layer.
+// spatial layer. |use_vbr| indicates whether the bitrate should have
+// |Bitrate::Mode::kVariable.|
 // First, |bitrate| is distributed to spatial layers based on libwebrtc bitrate
 // division. Then the bitrate of each spatial layer is distributed to temporal
 // layers in the spatial layer based on the same bitrate division ratio as a
-// software encoder.
+// software encoder. If a variable bitrate is requested, the peak will be set
+// equal to the target.
 MEDIA_GPU_EXPORT VideoBitrateAllocation
 AllocateDefaultBitrateForTesting(const size_t num_spatial_layers,
                                  const size_t num_temporal_layers,
-                                 const uint32_t bitrate);
+                                 const uint32_t bitrate,
+                                 const bool uses_vbr);
 }  // namespace media
 
 #endif  // MEDIA_GPU_GPU_VIDEO_ENCODE_ACCELERATOR_HELPERS_H_
