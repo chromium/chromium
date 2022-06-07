@@ -118,7 +118,7 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
     super.ready();
   }
 
-  /** @return {!Promise<StateResult>} */
+  /** @return {!Promise<{stateResult: !StateResult}>} */
   onNextButtonClick() {
     if (!this.verificationInProgress_) {
       return this.shimlessRmaService_.beginFinalization();

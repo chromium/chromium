@@ -75,7 +75,7 @@ export class OnboardingChooseDestinationPageElement extends
     }
   }
 
-  /** @return {!Promise<!StateResult>} */
+  /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
     if (this.destinationOwner_ === 'originalOwner') {
       return this.shimlessRmaService_.setSameOwner();

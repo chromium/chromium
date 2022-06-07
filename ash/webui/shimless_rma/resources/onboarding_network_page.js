@@ -327,7 +327,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
     return this.i18n('internetJoinType', type);
   }
 
-  /** @return {!Promise<StateResult>} */
+  /** @return {!Promise<{stateResult: !StateResult}>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.networkSelectionComplete();
   }

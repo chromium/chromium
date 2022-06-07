@@ -82,7 +82,7 @@ export class ReimagingCalibrationSetupPage extends
     enableNextButton(this);
   }
 
-  /** @return {!Promise<StateResult>} */
+  /** @return {!Promise<{stateResult: !StateResult}>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.runCalibrationStep();
   }

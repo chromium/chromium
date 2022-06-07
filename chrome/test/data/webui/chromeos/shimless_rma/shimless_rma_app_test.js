@@ -216,7 +216,8 @@ export function shimlessRMAAppTest() {
     assertFalse(initialPage.hidden);
     assertTrue(initialPage.allButtonsDisabled);
 
-    resolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
+    resolver.resolve(
+        {stateResult: {state: State.kUpdateOs, error: RmadErrorCode.kOk}});
     await flushTasks();
 
     const updatePage =
@@ -355,7 +356,8 @@ export function shimlessRMAAppTest() {
     assertFalse(backButtonSpinner.hidden);
     assertTrue(exitButtonSpinner.hidden);
 
-    backResolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
+    backResolver.resolve(
+        {stateResult: {state: State.kUpdateOs, error: RmadErrorCode.kOk}});
     await flushTasks();
     assertTrue(nextButtonSpinner.hidden);
     assertTrue(backButtonSpinner.hidden);
@@ -481,7 +483,7 @@ export function shimlessRMAAppTest() {
           bubbles: true,
           composed: true,
           detail: () => Promise.resolve(
-              {state: State.kUpdateOs, error: RmadErrorCode.kOk})
+              {stateResult: {state: State.kUpdateOs, error: RmadErrorCode.kOk}})
         },
         ));
     await flushTasks();

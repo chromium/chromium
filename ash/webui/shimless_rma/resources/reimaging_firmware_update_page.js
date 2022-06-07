@@ -123,7 +123,7 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
     }
   }
 
-  /** @return {!Promise<!StateResult>} */
+  /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
     if (this.status_ == UpdateRoFirmwareStatus.kComplete) {
       return this.shimlessRmaService_.roFirmwareUpdateComplete();

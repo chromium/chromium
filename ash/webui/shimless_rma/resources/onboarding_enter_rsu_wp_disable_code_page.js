@@ -218,7 +218,7 @@ export class OnboardingEnterRsuWpDisableCodePage extends
     return this.shadowRoot.querySelector('#qrCodeCanvas').getContext('2d');
   }
 
-  /** @return {!Promise<!StateResult>} */
+  /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
     if (this.rsuCode_.length !== this.rsuCodeExpectedLength_) {
       this.rsuCodeInvalid_ = true;

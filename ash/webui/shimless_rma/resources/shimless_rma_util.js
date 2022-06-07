@@ -56,7 +56,7 @@ export function enableAllButtons(element) {
  * Dispatches an event captured by shimless_rma.js that will execute `fn`,
  * process the result, then transition to the next state.
  * @param {!HTMLElement} element
- * @param {!function(): !Promise<!StateResult>} fn
+ * @param {!function(): !Promise<!{stateResult: !StateResult}>} fn
  */
 export function executeThenTransitionState(element, fn) {
   element.dispatchEvent(new CustomEvent(

@@ -363,7 +363,7 @@ export class ReimagingDeviceInformationPage extends
     this.dramPartNumber_ = this.originalDramPartNumber_;
   }
 
-  /** @return {!Promise<!StateResult>} */
+  /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
     if (!this.allInformationIsValid_()) {
       return Promise.reject(new Error('Some required information is not set'));

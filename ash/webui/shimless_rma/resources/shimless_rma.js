@@ -485,12 +485,12 @@ export class ShimlessRma extends ShimlessRmaBase {
   }
 
   /**
-   * @param {!StateResult} stateResult
+   * @param {{stateResult: !StateResult}} stateResult
    * @private
    */
   processStateResult_(stateResult) {
     // Do not show the state screen if the critical error screen was shown.
-    if (this.handleStandardAndCriticalError_(stateResult.error)) {
+    if (this.handleStandardAndCriticalError_(stateResult.stateResult.error)) {
       return;
     }
     this.showState_(stateResult);
@@ -511,10 +511,12 @@ export class ShimlessRma extends ShimlessRmaBase {
     // Critical error - expected to be in RMA.
     if (error === RmadErrorCode.kRmaNotRequired) {
       const errorState = {
-        state: State.kUnknown,
-        canExit: false,
-        canGoBack: false,
-        error: RmadErrorCode.kRmaNotRequired
+        stateResult: {
+          state: State.kUnknown,
+          canExit: false,
+          canGoBack: false,
+          error: RmadErrorCode.kRmaNotRequired
+        }
       };
       this.showState_(errorState);
       return true;
@@ -524,10 +526,10 @@ export class ShimlessRma extends ShimlessRmaBase {
   }
 
   /**
-   * @param {!StateResult} stateResult
+   * @param {{stateResult: !StateResult}} stateResult
    * @private
    */
-  showState_(stateResult) {
+  showState_({stateResult}) {
     // Reset clicked variables to hide the spinners.
     this.nextButtonClicked_ = false;
     this.backButtonClicked_ = false;

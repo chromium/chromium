@@ -120,7 +120,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   getCurrentState() {
     // As next state functions and transitionPreviousState can modify the result
@@ -141,7 +141,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   transitionPreviousState() {
     // As next state methods and transitionPreviousState can modify the result
@@ -184,7 +184,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   beginFinalization() {
     return this.getNextStateForMethod_(
@@ -200,7 +200,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   networkSelectionComplete() {
     return this.getNextStateForMethod_(
@@ -260,14 +260,14 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   updateOsSkipped() {
     return this.getNextStateForMethod_('updateOsSkipped', State.kUpdateOs);
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   setSameOwner() {
     return this.getNextStateForMethod_(
@@ -275,7 +275,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   setDifferentOwner() {
     return this.getNextStateForMethod_(
@@ -284,7 +284,7 @@ export class FakeShimlessRmaService {
 
   /**
    * @param {boolean} shouldWipeDevice
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   setWipeDevice(shouldWipeDevice) {
     return this.getNextStateForMethod_(
@@ -307,7 +307,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   chooseManuallyDisableWriteProtect() {
     return this.getNextStateForMethod_(
@@ -316,7 +316,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   chooseRsuDisableWriteProtect() {
     return this.getNextStateForMethod_(
@@ -371,7 +371,7 @@ export class FakeShimlessRmaService {
 
   /**
    * @param {string} code
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   setRsuDisableWriteProtectCode(code) {
     return this.getNextStateForMethod_(
@@ -379,7 +379,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   writeProtectManuallyDisabled() {
     return this.getNextStateForMethod_(
@@ -416,7 +416,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   confirmManualWpDisableComplete() {
     return this.getNextStateForMethod_(
@@ -440,7 +440,7 @@ export class FakeShimlessRmaService {
 
   /**
    * @param {!Array<!Component>} components
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   setComponentList(components) {
     return this.getNextStateForMethod_(
@@ -448,7 +448,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   reworkMainboard() {
     return this.getNextStateForMethod_(
@@ -456,7 +456,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   roFirmwareUpdateComplete() {
     return this.getNextStateForMethod_(
@@ -464,7 +464,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    *
    */
   shutdownForRestock() {
@@ -472,7 +472,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   continueFinalizationAfterRestock() {
     return this.getNextStateForMethod_(
@@ -600,7 +600,7 @@ export class FakeShimlessRmaService {
    * @param {number} skuIndex
    * @param {number} whiteLabelIndex
    * @param {string} dramPartNumber
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   setDeviceInformation(
       serialNumber, regionIndex, skuIndex, whiteLabelIndex, dramPartNumber) {
@@ -643,7 +643,7 @@ export class FakeShimlessRmaService {
    * The fake does not use the status list parameter, the fake data is never
    * updated.
    * @param {!Array<!CalibrationComponentStatus>} unused
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   startCalibration(unused) {
     return this.getNextStateForMethod_(
@@ -651,7 +651,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   runCalibrationStep() {
     return this.getNextStateForMethod_(
@@ -659,7 +659,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   continueCalibration() {
     return this.getNextStateForMethod_(
@@ -667,7 +667,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   calibrationComplete() {
     return this.getNextStateForMethod_(
@@ -675,7 +675,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   retryProvisioning() {
     return this.getNextStateForMethod_(
@@ -683,7 +683,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   provisioningComplete() {
     return this.getNextStateForMethod_(
@@ -691,21 +691,21 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   finalizationComplete() {
     return this.getNextStateForMethod_('finalizationComplete', State.kFinalize);
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   retryFinalization() {
     return this.getNextStateForMethod_('retryFinalization', State.kFinalize);
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   writeProtectManuallyEnabled() {
     return this.getNextStateForMethod_(
@@ -756,7 +756,7 @@ export class FakeShimlessRmaService {
    * The fake does not use the status list parameter, the fake data is never
    * updated.
    * @param {!ShutdownMethod} unused
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    */
   endRma(unused) {
     return this.getNextStateForMethod_('endRma', State.kRepairComplete);
@@ -1346,7 +1346,7 @@ export class FakeShimlessRmaService {
   /**
    * @param {string} method
    * @param {!State} expectedState
-   * @returns {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    * @private
    */
   getNextStateForMethod_(method, expectedState) {
@@ -1421,11 +1421,14 @@ export class FakeShimlessRmaService {
    * @private
    */
   setFakeStateForMethod_(method, state, canExit, canGoBack, error) {
-    this.methods_.setResult(method, /** @type {!StateResult} */ ({
-                              state: state,
-                              canExit: canExit,
-                              canGoBack: canGoBack,
-                              error: error
-                            }));
+    this.methods_.setResult(
+        method, /** @type {{stateResult: !StateResult}} */ ({
+          stateResult: {
+            state: state,
+            canExit: canExit,
+            canGoBack: canGoBack,
+            error: error
+          }
+        }));
   }
 }

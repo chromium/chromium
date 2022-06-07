@@ -136,7 +136,7 @@ export class OnboardingSelectComponentsPageElement extends
         this, () => this.shimlessRmaService_.reworkMainboard());
   }
 
-  /** @return {!Promise<!StateResult>} */
+  /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.setComponentList(
         this.getComponentRepairStateList_());

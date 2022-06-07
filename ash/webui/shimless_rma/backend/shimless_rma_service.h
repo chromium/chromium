@@ -195,7 +195,13 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
  private:
   using TransitionStateCallback =
-      base::OnceCallback<void(mojom::State, bool, bool, rmad::RmadErrorCode)>;
+      base::OnceCallback<void(mojom::StateResultPtr)>;
+
+  mojom::StateResultPtr CreateStateResult(mojom::State,
+                                          bool can_exit,
+                                          bool can_go_back,
+                                          rmad::RmadErrorCode);
+  mojom::StateResultPtr CreateStateResultForInvalidRequest();
 
   enum StateResponseCalledFrom {
     kTransitPreviousState = 0,

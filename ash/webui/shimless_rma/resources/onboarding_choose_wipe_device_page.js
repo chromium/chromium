@@ -91,7 +91,7 @@ export class OnboardingChooseWipeDevicePage extends
     enableNextButton(this);
   }
 
-  /** @return {!Promise<!StateResult>} */
+  /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
     assert(!!this.selectedWipeDeviceOption_);
     return this.shimlessRmaService_.setWipeDevice(

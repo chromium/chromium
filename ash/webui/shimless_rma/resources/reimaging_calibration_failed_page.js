@@ -83,7 +83,7 @@ export class ReimagingCalibrationFailedPage extends
      * a exit button. So we use the common exit button from shimless_rma.js
      * This function needs to be public, because it's invoked by
      * shimless_rma.js as part of the response to the exit button click.
-     * @return {!Promise<!StateResult>}
+     * @return {!Promise<!{stateResult: !StateResult}>}
      */
     this.onExitButtonClick = () => {
       if (this.tryingToSkipWithFailedComponents_()) {
@@ -143,7 +143,7 @@ export class ReimagingCalibrationFailedPage extends
   }
 
   /**
-   * @return {!Promise<!StateResult>}
+   * @return {!Promise<!{stateResult: !StateResult}>}
    * @private
    */
   skipCalibration_() {
@@ -157,7 +157,7 @@ export class ReimagingCalibrationFailedPage extends
     return this.shimlessRmaService_.startCalibration(skippedComponents);
   }
 
-  /** @return {!Promise<!StateResult>} */
+  /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.startCalibration(this.getComponentsList_());
   }

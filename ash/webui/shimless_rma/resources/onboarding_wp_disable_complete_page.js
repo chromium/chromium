@@ -89,7 +89,7 @@ export class OnboardingWpDisableCompletePage extends
         this.i18n(disableActionTextKeys[this.action_]);
   }
 
-  /** @return {!Promise<!StateResult>} */
+  /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.confirmManualWpDisableComplete();
   }

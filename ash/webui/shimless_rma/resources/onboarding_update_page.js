@@ -187,7 +187,7 @@ export class OnboardingUpdatePageElement extends
     });
   }
 
-  /** @return {!Promise<StateResult>} */
+  /** @return {!Promise<{stateResult: !StateResult}>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.updateOsSkipped();
   }
