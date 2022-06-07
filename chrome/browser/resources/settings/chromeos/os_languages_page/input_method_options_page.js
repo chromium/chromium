@@ -256,6 +256,10 @@ class SettingsInputMethodOptionsPageElement extends
       newValue = parseInt(newValue, 10);
     }
     updatedSettings[prefix][optionName] = newValue;
+
+    if (prefix !== this.engineId_) {
+      updatedSettings[this.engineId_] = updatedSettings[prefix];
+    }
     this.setPrefValue(this.PREFS_PATH, updatedSettings);
   }
 
