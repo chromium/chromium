@@ -1348,6 +1348,73 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, TabShare) {
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
 }
 
+// Tests that a paused screen share is resumed when the user navigates to
+// content that's under warn restriction, but has already allowed sharing it.
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
+                       ScreenShareResumedWhenNavigatingToBypassedContent) {
+  SetupReporting();
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  MaybeStartFullScreenShare(web_contents, /*expect_allowed=*/true,
+                            /*expect_warning=*/false);
+  // Nothing is emitted yet since there's no restrictions on web_contents.
+  ASSERT_EQ(events_.size(), 0);
+  VerifyHistogramCounts(/*blocked_count=*/0,
+                        /*warned_count=*/0,
+                        /*total_count=*/1,
+                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+
+  testing::InSequence s;
+  EXPECT_CALL(state_change_cb_,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
+      .Times(1);
+  EXPECT_CALL(state_change_cb_,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))
+      .Times(1);
+  EXPECT_CALL(stop_cb_, Run).Times(0);
+
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+  VerifyHistogramCounts(/*blocked_count=*/0,
+                        /*warned_count=*/1,
+                        /*total_count=*/2,
+                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  DismissDialog(/*expect_allowed=*/true);
+
+  EXPECT_CALL(state_change_cb_,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
+      .Times(1);
+  EXPECT_CALL(state_change_cb_,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))
+      .Times(1);
+  helper_->ChangeConfidentiality(web_contents, kScreenShareRestricted);
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kScreenSharePausedNotificationId)
+          .has_value());
+  VerifyHistogramCounts(/*blocked_count=*/1,
+                        /*warned_count=*/1,
+                        /*total_count=*/3,
+                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+  VerifyHistogramCounts(/*blocked_count=*/1,
+                        /*warned_count=*/2,
+                        /*total_count=*/4,
+                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, false, 0);
+
+  helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
+}
+
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                        ContentsUpdatedOnWebContentsTitleChanged) {
   SetupReporting();
@@ -1387,6 +1454,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                              .GetContents();
   EXPECT_EQ(actual_contents.size(), 1);
   EXPECT_EQ(actual_contents.begin()->title, u"example.com");
+
+  // Another check should be ignored if contents don't change.
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
 
   // Change the title.
   EXPECT_TRUE(content::ExecJs(web_contents,
@@ -1588,6 +1658,27 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
               DlpRulesManager::Level::kReport, 1u);
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenShareBlockedNotificationId));
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
+                       ScreenShareWithoutLabelNotReported) {
+  SetupReporting();
+  const GURL origin(kExampleUrl);
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), origin));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  const content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
+                                         content::DesktopMediaID::kFakeId);
+  DlpContentManagerAsh* manager =
+      static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
+  manager->OnScreenShareStarted("", {media_id}, kApplicationTitle,
+                                stop_cb_.Get(), state_change_cb_.Get(),
+                                source_cb_.Get());
+
+  helper_->ChangeConfidentiality(web_contents, kScreenShareReported);
+  ASSERT_TRUE(events_.empty());
 }
 
 // TODO(crbug.com/1319941): Enable after fixing.
