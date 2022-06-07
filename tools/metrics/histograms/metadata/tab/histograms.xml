@@ -510,7 +510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Preview.TimeToFirstUsableFrameAfterStartCapture"
-    units="ms" expires_after="2022-06-19">
+    units="ms" expires_after="2022-11-27">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -520,7 +520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Preview.TimeToNotifyObserversAfterCaptureReceived"
-    units="microseconds" expires_after="2022-06-19">
+    units="microseconds" expires_after="2022-11-27">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -534,7 +534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Preview.TimeToStoreAfterFrameReceived"
-    units="microseconds" expires_after="2022-06-19">
+    units="microseconds" expires_after="2022-11-27">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -546,7 +546,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Preview.TimeToStoreAfterTabSwitch" units="ms"
-    expires_after="2022-06-19">
+    expires_after="2022-11-27">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -557,7 +557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Preview.VideoCaptureDuration" units="ms"
-    expires_after="2022-09-01">
+    expires_after="2022-11-27">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
