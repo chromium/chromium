@@ -173,6 +173,13 @@ class VIEWS_EXPORT ScrollBar : public View,
   // scrollbar.
   virtual int GetThickness() const = 0;
 
+  // Gets or creates ScrollAnimator if it does not exist.
+  ScrollAnimator* GetOrCreateScrollAnimator();
+
+  // Sets `fling_multiplier_` which is used to modify animation velocities
+  // in `scroll_animator_`.
+  void SetFlingMultiplier(float fling_multiplier);
+
   bool is_scrolling() const {
     return scroll_status_ == ScrollStatus::kScrollInProgress;
   }
@@ -266,6 +273,8 @@ class VIEWS_EXPORT ScrollBar : public View,
 
   int max_pos_ = 0;
 
+  float fling_multiplier_ = 1.f;
+
   // An instance of a RepeatController which scrolls the scrollbar continuously
   // as the user presses the mouse button down on the up/down buttons or the
   // track.
@@ -295,6 +304,7 @@ class VIEWS_EXPORT ScrollBar : public View,
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<MenuRunner> menu_runner_;
+  // Used to animate gesture flings on the scroll bar.
   std::unique_ptr<ScrollAnimator> scroll_animator_;
 };
 

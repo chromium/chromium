@@ -38,6 +38,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
@@ -77,6 +78,10 @@ constexpr base::TimeDelta kAnimationDurationForClosingEvents =
 
 // The cool-down time for enabling animation.
 constexpr base::TimeDelta kAnimationDisablingTimeout = base::Milliseconds(500);
+
+// The multiplier used to reduce velocity of flings on the calendar view.
+// Without this, CalendarView will scroll a few years per fast swipe.
+constexpr float kCalendarScrollFlingMultiplier = 0.25f;
 
 constexpr char kMonthViewScrollOneMonthAnimationHistogram[] =
     "Ash.CalendarView.ScrollOneMonth.MonthView.AnimationSmoothness";
@@ -420,6 +425,9 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+  scroll_view_->vertical_scroll_bar()->SetFlingMultiplier(
+      kCalendarScrollFlingMultiplier);
+
   scroll_view_->SetFocusBehavior(FocusBehavior::NEVER);
   on_contents_scrolled_subscription_ =
       scroll_view_->AddContentsScrolledCallback(base::BindRepeating(

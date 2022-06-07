@@ -192,9 +192,7 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
 
   if (event->type() == ui::ET_SCROLL_FLING_START) {
     scroll_status_ = ScrollStatus::kScrollInEnding;
-    if (!scroll_animator_)
-      scroll_animator_ = std::make_unique<ScrollAnimator>(this);
-    scroll_animator_->Start(
+    GetOrCreateScrollAnimator()->Start(
         IsHorizontal() ? event->details().velocity_x() : 0.f,
         IsHorizontal() ? 0.f : event->details().velocity_y());
     event->SetHandled();
@@ -379,6 +377,23 @@ void ScrollBar::ObserveScrollEvent(const ui::ScrollEvent& event) {
     default:
       break;
   }
+}
+
+ScrollAnimator* ScrollBar::GetOrCreateScrollAnimator() {
+  if (!scroll_animator_) {
+    scroll_animator_ = std::make_unique<ScrollAnimator>(this);
+    scroll_animator_->set_velocity_multiplier(fling_multiplier_);
+  }
+  return scroll_animator_.get();
+}
+
+void ScrollBar::SetFlingMultiplier(float fling_multiplier) {
+  fling_multiplier_ = fling_multiplier;
+  // `scroll_animator_` is lazily created when needed.
+  if (!scroll_animator_)
+    return;
+
+  GetOrCreateScrollAnimator()->set_velocity_multiplier(fling_multiplier_);
 }
 
 ScrollBar::ScrollBar(bool is_horiz)

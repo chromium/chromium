@@ -42,6 +42,11 @@ class VIEWS_EXPORT ScrollAnimator : public gfx::AnimationDelegate {
   // Use this if you would prefer different acceleration than the default.
   void set_acceleration(float acceleration) { acceleration_ = acceleration; }
 
+  // Use this if you would prefer different velocity than the default.
+  void set_velocity_multiplier(float velocity_multiplier) {
+    velocity_multiplier_ = velocity_multiplier;
+  }
+
   void Start(float velocity_x, float velocity_y);
   void Stop();
 
@@ -55,10 +60,11 @@ class VIEWS_EXPORT ScrollAnimator : public gfx::AnimationDelegate {
 
   raw_ptr<ScrollDelegate> delegate_;
 
-  float velocity_x_;
-  float velocity_y_;
-  float last_t_;
-  float duration_;
+  float velocity_x_{0.f};
+  float velocity_y_{0.f};
+  float velocity_multiplier_{1.f};
+  float last_t_{0.f};
+  float duration_{0.f};
   float acceleration_;
 
   std::unique_ptr<gfx::SlideAnimation> animation_;
