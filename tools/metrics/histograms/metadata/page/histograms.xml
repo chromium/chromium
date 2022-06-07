@@ -1365,8 +1365,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Experimental.InputTiming.InputToNavigationStart"
-    units="ms" expires_after="2021-12-26">
-  <owner>sullivan@chromium.org</owner>
+    units="ms" expires_after="2022-12-01">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     The time between the OS-level input event that initiated a navigation, and
     the navigation actually starting.
@@ -1375,8 +1376,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.InputTiming.InputToNavigationStart.Background"
-    units="ms" expires_after="2020-09-05">
-  <owner>sullivan@chromium.org</owner>
+    units="ms" expires_after="2022-12-01">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     The time between the OS-level input event that initiated a navigation, and
     the navigation actually starting, for background loads.
@@ -1385,8 +1387,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.InputTiming.InputToNavigationStart.FromLinkClick"
-    units="ms" expires_after="2020-09-05">
-  <owner>sullivan@chromium.org</owner>
+    units="ms" expires_after="2022-12-01">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     The time between the OS-level click/tap event and navigation start, for
     clicks on links in the renderer.
@@ -1395,8 +1398,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.InputTiming.InputToNavigationStart.FromOmnibox"
-    units="ms" expires_after="2020-09-05">
-  <owner>sullivan@chromium.org</owner>
+    units="ms" expires_after="2022-12-01">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     The time between the OS-level keypress/tap event in the omnibox and
     navigation start, for navigations from the omnibox.
