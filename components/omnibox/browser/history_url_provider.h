@@ -339,8 +339,6 @@ class HistoryURLProvider : public HistoryProvider {
       size_t match_number,
       int relevance);
 
-  raw_ptr<AutocompleteProviderListener> listener_;
-
   // Params for the current query.  The provider should not free this directly;
   // instead, it is passed as a parameter through the history backend, and the
   // parameter itself is freed once it's no longer needed.  The only reason we

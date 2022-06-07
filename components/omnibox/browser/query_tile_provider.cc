@@ -51,8 +51,9 @@ QueryTileProvider::QueryTileProvider(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener)
     : AutocompleteProvider(AutocompleteProvider::TYPE_QUERY_TILE),
       client_(client),
-      listener_(listener),
-      tile_service_(client_->GetQueryTileService()) {}
+      tile_service_(client_->GetQueryTileService()) {
+  AddListener(listener);
+}
 
 QueryTileProvider::~QueryTileProvider() = default;
 
@@ -171,5 +172,5 @@ void QueryTileProvider::BuildSuggestion(const AutocompleteInput& input,
     match.SetAllowedToBeDefault(input);
 
   matches_.push_back(match);
-  listener_->OnProviderUpdate(true);
+  NotifyListeners(true);
 }

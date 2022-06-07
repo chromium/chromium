@@ -181,8 +181,9 @@ LocalHistoryZeroSuggestProvider::LocalHistoryZeroSuggestProvider(
     : AutocompleteProvider(
           AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY),
       max_matches_(AutocompleteResult::GetMaxMatches(true)),
-      client_(client),
-      listener_(listener) {}
+      client_(client) {
+  AddListener(listener);
+}
 
 LocalHistoryZeroSuggestProvider::~LocalHistoryZeroSuggestProvider() {}
 
@@ -258,7 +259,7 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
       break;
   }
 
-  listener_->OnProviderUpdate(true);
+  NotifyListeners(true);
 }
 
 void LocalHistoryZeroSuggestProvider::OnHistoryQueryResults(

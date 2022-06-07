@@ -382,8 +382,6 @@ class SearchProvider : public BaseSearchProvider,
   // Finds image URLs in most relevant results and uses client to prefetch them.
   void PrefetchImages(SearchSuggestionParser::Results* results);
 
-  raw_ptr<AutocompleteProviderListener> listener_;
-
   // Maintains the TemplateURLs used.
   Providers providers_;
 

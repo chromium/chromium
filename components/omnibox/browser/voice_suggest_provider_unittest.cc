@@ -8,13 +8,11 @@
 
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class VoiceSuggestProviderTest : public testing::Test,
-                                 public AutocompleteProviderListener {
+class VoiceSuggestProviderTest : public testing::Test {
  public:
   VoiceSuggestProviderTest() = default;
   VoiceSuggestProviderTest(const VoiceSuggestProviderTest&) = delete;
@@ -24,9 +22,6 @@ class VoiceSuggestProviderTest : public testing::Test,
   void TearDown() override;
 
  protected:
-  // AutocompleteProviderListener:
-  void OnProviderUpdate(bool updated_matches) override;
-
   base::test::TaskEnvironment environment_;
   FakeAutocompleteProviderClient client_;
   scoped_refptr<VoiceSuggestProvider> provider_;
@@ -34,7 +29,7 @@ class VoiceSuggestProviderTest : public testing::Test,
 };
 
 void VoiceSuggestProviderTest::SetUp() {
-  provider_ = base::MakeRefCounted<VoiceSuggestProvider>(&client_, this);
+  provider_ = base::MakeRefCounted<VoiceSuggestProvider>(&client_);
   input_ = std::make_unique<AutocompleteInput>(
       std::u16string(), metrics::OmniboxEventProto::OTHER,
       TestSchemeClassifier());
@@ -43,8 +38,6 @@ void VoiceSuggestProviderTest::SetUp() {
 void VoiceSuggestProviderTest::TearDown() {
   provider_->Stop(true, true);
 }
-
-void VoiceSuggestProviderTest::OnProviderUpdate(bool updated_matches) {}
 
 TEST_F(VoiceSuggestProviderTest, ServesNoSuggestionsByDefault) {
   provider_->Start(*input_, false);

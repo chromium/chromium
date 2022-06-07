@@ -157,16 +157,16 @@ void MostVisitedSitesProvider::Stop(bool clear_cached_results,
 MostVisitedSitesProvider::MostVisitedSitesProvider(
     AutocompleteProviderClient* client,
     AutocompleteProviderListener* listener)
-    : AutocompleteProvider(TYPE_MOST_VISITED_SITES),
-      client_{client},
-      listener_{listener} {}
+    : AutocompleteProvider(TYPE_MOST_VISITED_SITES), client_{client} {
+  AddListener(listener);
+}
 
 MostVisitedSitesProvider::~MostVisitedSitesProvider() = default;
 
 void MostVisitedSitesProvider::OnMostVisitedUrlsAvailable(
     const history::MostVisitedURLList& urls) {
   if (BuildTileSuggest(this, client_, urls, matches_))
-    listener_->OnProviderUpdate(true);
+    NotifyListeners(true);
 }
 
 bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
@@ -223,7 +223,7 @@ void MostVisitedSitesProvider::OnURLsAvailable(
   if (BuildTileSuggest(this, client_,
                        sections.at(ntp_tiles::SectionType::PERSONALIZED),
                        matches_)) {
-    listener_->OnProviderUpdate(true);
+    NotifyListeners(true);
   }
 }
 

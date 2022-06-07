@@ -65,7 +65,6 @@ class MostVisitedSitesProvider : public AutocompleteProvider,
   raw_ptr<ntp_tiles::MostVisitedSites> most_visited_sites_{};
 
   const raw_ptr<AutocompleteProviderClient> client_;
-  const raw_ptr<AutocompleteProviderListener> listener_;
   // Note: used to cancel requests - not a general purpose WeakPtr factory.
   base::WeakPtrFactory<MostVisitedSitesProvider> request_weak_ptr_factory_{
       this};

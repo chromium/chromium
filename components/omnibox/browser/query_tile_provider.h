@@ -67,7 +67,6 @@ class QueryTileProvider : public AutocompleteProvider {
                        std::vector<query_tiles::Tile> tiles);
 
   const raw_ptr<AutocompleteProviderClient> client_;
-  const raw_ptr<AutocompleteProviderListener> listener_;
 
   // The backend providing query tiles.
   const raw_ptr<query_tiles::TileService> tile_service_;

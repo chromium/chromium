@@ -126,12 +126,12 @@ ClipboardProvider::ClipboardProvider(AutocompleteProviderClient* client,
                                      ClipboardRecentContent* clipboard_content)
     : AutocompleteProvider(AutocompleteProvider::TYPE_CLIPBOARD),
       client_(client),
-      listener_(listener),
       clipboard_content_(clipboard_content),
       current_url_suggested_times_(0),
       field_trial_triggered_(false),
       field_trial_triggered_in_session_(false) {
   DCHECK(clipboard_content_);
+  AddListener(listener);
 }
 
 ClipboardProvider::~ClipboardProvider() {}
@@ -321,17 +321,17 @@ void ClipboardProvider::OnReceiveClipboardContent(
     field_trial_triggered_ = true;
     field_trial_triggered_in_session_ = true;
     AddCreatedMatchWithTracking(input, match, clipboard_contents_age);
-    listener_->OnProviderUpdate(true);
+    NotifyListeners(true);
   } else if (matched_types.find(ClipboardContentType::URL) !=
              matched_types.end()) {
     AutocompleteMatch match = NewBlankURLMatch();
     AddCreatedMatchWithTracking(input, match, clipboard_contents_age);
-    listener_->OnProviderUpdate(true);
+    NotifyListeners(true);
   } else if (matched_types.find(ClipboardContentType::Text) !=
              matched_types.end()) {
     AutocompleteMatch match = NewBlankTextMatch();
     AddCreatedMatchWithTracking(input, match, clipboard_contents_age);
-    listener_->OnProviderUpdate(true);
+    NotifyListeners(true);
   }
   done_ = true;
 }
@@ -436,7 +436,7 @@ void ClipboardProvider::AddImageMatchCallback(
     return;
   }
   AddCreatedMatchWithTracking(input, match.value(), clipboard_contents_age);
-  listener_->OnProviderUpdate(true);
+  NotifyListeners(true);
   done_ = true;
 }
 

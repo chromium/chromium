@@ -64,9 +64,6 @@ class LocalHistoryZeroSuggestProvider : public AutocompleteProvider {
   // Client for accessing TemplateUrlService, prefs, etc.
   const raw_ptr<AutocompleteProviderClient> client_;
 
-  // Listener to notify when matches are available.
-  const raw_ptr<AutocompleteProviderListener> listener_;
-
   // Used for the async tasks querying the HistoryService.
   base::CancelableTaskTracker history_task_tracker_;
 

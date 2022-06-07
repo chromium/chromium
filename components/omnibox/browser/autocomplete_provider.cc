@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
+#include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/scored_history_match.h"
@@ -77,6 +78,15 @@ const char* AutocompleteProvider::TypeToString(Type type) {
   }
 }
 
+void AutocompleteProvider::AddListener(AutocompleteProviderListener* listener) {
+  listeners_.push_back(listener);
+}
+
+void AutocompleteProvider::NotifyListeners(bool updated_matches) const {
+  for (auto* listener : listeners_)
+    listener->OnProviderUpdate(updated_matches);
+}
+
 void AutocompleteProvider::Stop(bool clear_cached_results,
                                 bool due_to_user_inactivity) {
   done_ = true;
@@ -114,8 +124,8 @@ ACMatchClassifications AutocompleteProvider::ClassifyAllMatchesInString(
                                                  classifications);
 }
 
-metrics::OmniboxEventProto_ProviderType AutocompleteProvider::
-    AsOmniboxEventProviderType() const {
+metrics::OmniboxEventProto_ProviderType
+AutocompleteProvider::AsOmniboxEventProviderType() const {
   switch (type_) {
     case TYPE_BOOKMARK:
       return metrics::OmniboxEventProto::BOOKMARK;
@@ -173,8 +183,7 @@ void AutocompleteProvider::DeleteMatchElement(const AutocompleteMatch& match,
 void AutocompleteProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
 }
 
-void AutocompleteProvider::ResetSession() {
-}
+void AutocompleteProvider::ResetSession() {}
 
 size_t AutocompleteProvider::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(matches_);
@@ -207,9 +216,8 @@ AutocompleteProvider::FixupReturn AutocompleteProvider::FixupUserInput(
   // "17173.com"), swap the original hostname in for the fixed-up one.
   if ((input.type() != metrics::OmniboxInputType::URL) &&
       canonical_gurl.HostIsIPAddress()) {
-    std::string original_hostname =
-        base::UTF16ToUTF8(input_text.substr(input.parts().host.begin,
-                                            input.parts().host.len));
+    std::string original_hostname = base::UTF16ToUTF8(
+        input_text.substr(input.parts().host.begin, input.parts().host.len));
     const url::Parsed& parts =
         canonical_gurl.parsed_for_possibly_invalid_spec();
     // parts.host must not be empty when HostIsIPAddress() is true.

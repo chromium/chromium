@@ -284,8 +284,9 @@ void ZeroSuggestProvider::ResetSession() {
 ZeroSuggestProvider::ZeroSuggestProvider(AutocompleteProviderClient* client,
                                          AutocompleteProviderListener* listener)
     : BaseSearchProvider(AutocompleteProvider::TYPE_ZERO_SUGGEST, client),
-      listener_(listener),
-      result_type_running_(NONE) {}
+      result_type_running_(NONE) {
+  AddListener(listener);
+}
 
 ZeroSuggestProvider::~ZeroSuggestProvider() = default;
 
@@ -375,9 +376,8 @@ void ZeroSuggestProvider::OnURLLoadComplete(
   result_type_running_ = NONE;
 
   // Do not notify the provider listener for prefetch requests.
-  if (!is_prefetch) {
-    listener_->OnProviderUpdate(results_updated);
-  }
+  if (!is_prefetch)
+    NotifyListeners(results_updated);
 }
 
 void ZeroSuggestProvider::OnCounterfactualURLLoadComplete(

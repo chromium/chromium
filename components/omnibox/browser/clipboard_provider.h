@@ -179,7 +179,6 @@ class ClipboardProvider : public AutocompleteProvider {
                                   AutocompleteMatch* match);
 
   raw_ptr<AutocompleteProviderClient> client_;
-  raw_ptr<AutocompleteProviderListener> listener_;
   raw_ptr<ClipboardRecentContent> clipboard_content_;
 
   // The current URL suggested and the number of times it has been offered.

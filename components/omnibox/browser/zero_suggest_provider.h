@@ -213,8 +213,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
                                       const AutocompleteInput& input,
                                       const GURL& suggest_url);
 
-  raw_ptr<AutocompleteProviderListener> listener_;
-
   // The result type that is currently being processed by provider.
   // When the provider is not running, the result type is set to NONE.
   ResultType result_type_running_;

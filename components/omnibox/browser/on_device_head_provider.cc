@@ -98,11 +98,12 @@ OnDeviceHeadProvider::OnDeviceHeadProvider(
     AutocompleteProviderListener* listener)
     : AutocompleteProvider(AutocompleteProvider::TYPE_ON_DEVICE_HEAD),
       client_(client),
-      listener_(listener),
       worker_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()})),
-      on_device_search_request_id_(0) {}
+      on_device_search_request_id_(0) {
+  AddListener(listener);
+}
 
 OnDeviceHeadProvider::~OnDeviceHeadProvider() {}
 
@@ -276,7 +277,7 @@ void OnDeviceHeadProvider::SearchDone(
   }
 
   done_ = true;
-  listener_->OnProviderUpdate(true);
+  NotifyListeners(true);
 }
 
 std::string OnDeviceHeadProvider::GetOnDeviceHeadModelFilename() const {

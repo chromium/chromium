@@ -164,8 +164,6 @@ class KeywordProvider : public AutocompleteProvider {
       const TemplateURLService* template_url_service,
       const std::u16string& keyword);
 
-  raw_ptr<AutocompleteProviderListener> listener_;
-
   // Input when searching against the keyword provider.
   AutocompleteInput keyword_input_;
 

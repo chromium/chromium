@@ -404,9 +404,9 @@ size_t HistoryURLProviderParams::EstimateMemoryUsage() const {
 HistoryURLProvider::HistoryURLProvider(AutocompleteProviderClient* client,
                                        AutocompleteProviderListener* listener)
     : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_URL, client),
-      listener_(listener),
       params_(nullptr),
       search_url_database_(OmniboxFieldTrial::HUPSearchDatabase()) {
+  AddListener(listener);
   // Initialize the default HUP scoring params.
   OmniboxFieldTrial::GetDefaultHUPScoringParams(&scoring_params_);
   // Initialize HUP scoring params based on the current experiment.
@@ -811,7 +811,7 @@ void HistoryURLProvider::QueryComplete(
   }
 
   done_ = true;
-  listener_->OnProviderUpdate(true);
+  NotifyListeners(true);
 }
 
 bool HistoryURLProvider::FixupExactSuggestion(

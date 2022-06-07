@@ -86,9 +86,10 @@ void ScopedEndExtensionKeywordMode::StayInKeywordMode() {
 KeywordProvider::KeywordProvider(AutocompleteProviderClient* client,
                                  AutocompleteProviderListener* listener)
     : AutocompleteProvider(AutocompleteProvider::TYPE_KEYWORD),
-      listener_(listener),
       model_(client->GetTemplateURLService()),
-      extensions_delegate_(client->GetKeywordExtensionsDelegate(this)) {}
+      extensions_delegate_(client->GetKeywordExtensionsDelegate(this)) {
+  AddListener(listener);
+}
 
 // static
 std::u16string KeywordProvider::SplitKeywordFromInput(
