@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/url_param_classification_component_installer.h"
+#include "components/component_updater/installer_policies/url_param_classification_component_installer.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -18,7 +18,6 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/url_param_filter/core/features.h"
 #include "components/url_param_filter/core/url_param_classifications_loader.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using component_updater::ComponentUpdateService;
@@ -114,7 +113,6 @@ void UrlParamClassificationComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value manifest) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
   // Given BEST_EFFORT since we don't need to be USER_BLOCKING.
@@ -218,7 +216,6 @@ void UrlParamClassificationComponentInstallerPolicy::ResetForTesting() {
 }
 
 void RegisterUrlParamClassificationComponent(ComponentUpdateService* cus) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Register the component even if feature isn't enabled so that when it is
   // enabled in the future, the component is already installed.
   VLOG(1) << "Registering Url Param Classifications component.";

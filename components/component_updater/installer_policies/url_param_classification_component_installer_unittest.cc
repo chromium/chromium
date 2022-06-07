@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/url_param_classification_component_installer.h"
+#include "components/component_updater/installer_policies/url_param_classification_component_installer.h"
+
 #include <memory>
 
 #include "base/check.h"
@@ -13,13 +14,13 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/version.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/url_param_filter/core/features.h"
 #include "components/url_param_filter/core/url_param_classifications_loader.h"
 #include "components/url_param_filter/core/url_param_filter_classification.pb.h"
 #include "components/url_param_filter/core/url_param_filter_test_helper.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -98,7 +99,7 @@ class UrlParamClassificationComponentInstallerFeatureAgnosticTest
 
 TEST_P(UrlParamClassificationComponentInstallerFeatureAgnosticTest,
        ComponentRegistered) {
-  content::BrowserTaskEnvironment task_env;
+  base::test::TaskEnvironment task_env;
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
 
@@ -237,7 +238,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(UrlParamClassificationComponentInstallerTest,
        FeatureEnabled_ComponentReady_FiresCallback) {
-  content::BrowserTaskEnvironment task_env;
+  base::test::TaskEnvironment task_env;
   base::test::ScopedFeatureList scoped_list;
 
   scoped_list.InitAndEnableFeatureWithParameters(
@@ -272,7 +273,7 @@ TEST_F(UrlParamClassificationComponentInstallerTest,
 
 TEST_F(UrlParamClassificationComponentInstallerTest,
        FeatureDisabled_ComponentReady_DoesntFireCallback) {
-  content::BrowserTaskEnvironment task_env;
+  base::test::TaskEnvironment task_env;
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndDisableFeature(
       url_param_filter::features::kIncognitoParamFilterEnabled);

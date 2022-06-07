@@ -24,6 +24,8 @@ static_library("installer_policies_no_content_deps") {
     "safety_tips_component_installer.h",
     "trust_token_key_commitments_component_installer_policy.cc",
     "trust_token_key_commitments_component_installer_policy.h",
+    "url_param_classification_component_installer.cc",
+    "url_param_classification_component_installer.h",
   ]
 
   deps = [
@@ -33,6 +35,8 @@ static_library("installer_policies_no_content_deps") {
     "//components/prefs:prefs",
     "//components/reputation/core",
     "//components/reputation/core:proto",
+    "//components/url_param_filter/core:core",
+    "//components/url_param_filter/core:url_param_filter_classification_proto",
   ]
 
   # Disallow depending on content.
@@ -62,6 +66,7 @@ source_set("unit_tests") {
     "autofill_states_component_installer_unittest.cc",
     "optimization_hints_component_installer_unittest.cc",
     "trust_token_key_commitments_component_installer_policy_unittest.cc",
+    "url_param_classification_component_installer_unittest.cc",
   ]
 
   deps = [
@@ -71,6 +76,9 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/component_updater:test_support",
     "//components/optimization_guide/core",
+    "//components/url_param_filter/core:core",
+    "//components/url_param_filter/core:test_support",
+    "//components/url_param_filter/core:url_param_filter_classification_proto",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",

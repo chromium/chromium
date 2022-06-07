@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/component_updater/url_param_classification_component_installer.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_launcher_utils.h"
+#include "components/component_updater/installer_policies/url_param_classification_component_installer.h"
 #include "components/url_param_filter/core/features.h"
 #include "components/url_param_filter/core/url_param_classifications_loader.h"
 #include "components/url_param_filter/core/url_param_filter_test_helper.h"
