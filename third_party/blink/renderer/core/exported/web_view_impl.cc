@@ -1257,10 +1257,12 @@ void WebViewImpl::ResizeViewWhileAnchored(
 
   fullscreen_controller_->UpdateSize();
 
-  // Page scale constraints may need to be updated; running layout now will
-  // do that.
-  MainFrameWidget()->UpdateLifecycle(WebLifecycleUpdate::kLayout,
-                                     DocumentUpdateReason::kSizeChange);
+  if (!scoped_defer_main_frame_update_) {
+    // Page scale constraints may need to be updated; running layout now will
+    // do that.
+    MainFrameWidget()->UpdateLifecycle(WebLifecycleUpdate::kLayout,
+                                       DocumentUpdateReason::kSizeChange);
+  }
 }
 
 void WebViewImpl::ResizeWithBrowserControls(

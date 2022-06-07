@@ -5810,4 +5810,43 @@ TEST_F(StyleEngineTest, RevertLayerWithPresentationalHints) {
   EXPECT_EQ(33, img->OffsetHeight());
 }
 
+TEST_F(StyleEngineSimTest, ResizeWithBlockingSheetTransition) {
+  WebView().MainFrameWidget()->Resize(gfx::Size(500, 500));
+
+  SimRequest html_request("https://example.com/test.html", "text/html");
+  SimSubresourceRequest css_request("https://example.com/slow.css", "text/css");
+
+  LoadURL("https://example.com/test.html");
+  html_request.Complete(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        #trans {
+          transition-duration: 30s;
+          color: red;
+        }
+      </style>
+      <link rel="stylesheet" href="slow.css">
+      <div id="trans"></div>
+  )HTML");
+
+  css_request.Start();
+  WebView().MainFrameWidget()->Resize(gfx::Size(800, 800));
+
+  css_request.Complete(R"CSS(
+    #trans { color: green; }
+  )CSS");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  Element* trans = GetDocument().getElementById("trans");
+  ASSERT_TRUE(trans);
+
+  // Completing the linked stylesheet should not start a transition since the
+  // sheet is render-blocking.
+  EXPECT_EQ(
+      trans->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()),
+      MakeRGB(0, 128, 0));
+}
+
 }  // namespace blink
