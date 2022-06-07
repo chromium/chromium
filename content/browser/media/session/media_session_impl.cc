@@ -108,7 +108,7 @@ size_t ComputeFrameDepth(RenderFrameHost* rfh,
       break;
     }
     ++depth;
-    current_frame = current_frame->GetParent();
+    current_frame = current_frame->GetParentOrOuterDocument();
   }
   (*map_rfh_to_depth)[rfh] = depth;
   return depth;

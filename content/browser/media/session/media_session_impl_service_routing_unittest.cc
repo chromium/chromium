@@ -10,6 +10,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "content/browser/media/session/media_session_player_observer.h"
 #include "content/browser/media/session/mock_media_session_service_impl.h"
@@ -19,6 +20,7 @@
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/media_session/public/mojom/constants.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
 
 using ::testing::_;
@@ -1219,6 +1221,121 @@ TEST_F(MediaSessionImplServiceRoutingThrottleTest,
 
     observer.WaitForExpectedPosition(expected_position);
   }
+}
+
+class MediaSessionImplServiceRoutingFencedFrameTest
+    : public MediaSessionImplServiceRoutingTest {
+ public:
+  MediaSessionImplServiceRoutingFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+
+  void SetUp() override {
+    MediaSessionImplServiceRoutingTest::SetUp();
+    fenced_frame_ = main_frame_->AppendFencedFrame();
+  }
+
+  void CreateFencedFrameInSubframe() {
+    inner_fenced_frame_ = sub_frame_->AppendFencedFrame();
+  }
+
+ protected:
+  raw_ptr<TestRenderFrameHost> fenced_frame_;
+  raw_ptr<TestRenderFrameHost> inner_fenced_frame_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(MediaSessionImplServiceRoutingFencedFrameTest, NoFrameProducesAudio) {
+  CreateServiceForFrame(main_frame_);
+  CreateServiceForFrame(fenced_frame_);
+
+  ASSERT_EQ(nullptr, ComputeServiceForRouting());
+}
+
+TEST_F(MediaSessionImplServiceRoutingFencedFrameTest,
+       OnlyFencedFrameProducesAudioButHasNoService) {
+  StartPlayerForFrame(fenced_frame_);
+
+  ASSERT_EQ(nullptr, ComputeServiceForRouting());
+}
+
+TEST_F(MediaSessionImplServiceRoutingFencedFrameTest,
+       OnlyFencedFrameProducesAudioButHasDestroyedService) {
+  CreateServiceForFrame(fenced_frame_);
+  StartPlayerForFrame(fenced_frame_);
+  DestroyServiceForFrame(fenced_frame_);
+
+  ASSERT_EQ(nullptr, ComputeServiceForRouting());
+}
+
+TEST_F(MediaSessionImplServiceRoutingFencedFrameTest,
+       OnlyFencedFrameProducesAudioAndServiceIsCreatedAfterwards) {
+  StartPlayerForFrame(fenced_frame_);
+  CreateServiceForFrame(fenced_frame_);
+
+  ASSERT_EQ(services_[fenced_frame_].get(), ComputeServiceForRouting());
+}
+
+TEST_F(MediaSessionImplServiceRoutingFencedFrameTest,
+       BothFrameProducesAudioButOnlyFencedFrameHasService) {
+  StartPlayerForFrame(main_frame_);
+  StartPlayerForFrame(fenced_frame_);
+
+  CreateServiceForFrame(fenced_frame_);
+
+  ASSERT_EQ(services_[fenced_frame_].get(), ComputeServiceForRouting());
+}
+
+TEST_F(MediaSessionImplServiceRoutingFencedFrameTest, PreferTopMostFrame) {
+  StartPlayerForFrame(main_frame_);
+  StartPlayerForFrame(fenced_frame_);
+
+  CreateServiceForFrame(main_frame_);
+  CreateServiceForFrame(fenced_frame_);
+
+  ASSERT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
+}
+
+TEST_F(MediaSessionImplServiceRoutingFencedFrameTest,
+       RoutedServiceUpdatedAfterRemovingPlayer) {
+  StartPlayerForFrame(main_frame_);
+  StartPlayerForFrame(fenced_frame_);
+
+  CreateServiceForFrame(main_frame_);
+  CreateServiceForFrame(fenced_frame_);
+
+  ClearPlayersForFrame(main_frame_);
+
+  ASSERT_EQ(services_[fenced_frame_].get(), ComputeServiceForRouting());
+}
+
+TEST_F(MediaSessionImplServiceRoutingFencedFrameTest, PreferSubFrame) {
+  CreateFencedFrameInSubframe();
+
+  StartPlayerForFrame(sub_frame_);
+  StartPlayerForFrame(inner_fenced_frame_);
+
+  CreateServiceForFrame(sub_frame_);
+  CreateServiceForFrame(inner_fenced_frame_);
+
+  ASSERT_EQ(services_[sub_frame_].get(), ComputeServiceForRouting());
+}
+
+TEST_F(MediaSessionImplServiceRoutingFencedFrameTest,
+       AllFrameProducesAudioButSubFrameAndFencedFrameHaveService) {
+  CreateFencedFrameInSubframe();
+
+  StartPlayerForFrame(main_frame_);
+  StartPlayerForFrame(sub_frame_);
+  StartPlayerForFrame(inner_fenced_frame_);
+
+  CreateServiceForFrame(sub_frame_);
+  CreateServiceForFrame(inner_fenced_frame_);
+
+  ASSERT_EQ(services_[sub_frame_].get(), ComputeServiceForRouting());
 }
 
 }  // namespace content
