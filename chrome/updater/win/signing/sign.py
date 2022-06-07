@@ -26,10 +26,9 @@ import resedit
 
 class SigningError(Exception):
     """Module exception class."""
-    pass
 
 
-class Signer(object):
+class Signer:
     """A container for a signing operation."""
 
     def __init__(self, tmpdir, lzma_exe, signtool_exe, tagging_exe, identity):
