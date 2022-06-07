@@ -1151,6 +1151,7 @@ public class BidirectionalStreamTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunNativeCronet
+    @DisabledTest(message = "crbug.com/1334040")
     public void testSimpleGetBufferUpdates() throws Exception {
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         callback.setAutoAdvance(false);
