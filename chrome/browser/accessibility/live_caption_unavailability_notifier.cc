@@ -12,8 +12,7 @@
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble.h"
@@ -165,12 +164,10 @@ void LiveCaptionUnavailabilityNotifier::
 
 void LiveCaptionUnavailabilityNotifier::
     OnMediaFoundationRendererErrorClicked() {
-  NavigateParams params(
-      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext()),
-      GURL("chrome://settings/content/protectedContent"),
-      ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext());
+  chrome::ShowSiteSettings(
+      profile, render_frame_host()->GetLastCommittedOrigin().GetURL());
 }
 
 void LiveCaptionUnavailabilityNotifier::
