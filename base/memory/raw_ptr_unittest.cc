@@ -1391,13 +1391,13 @@ TEST(AsanBackupRefPtrImpl, Dereference) {
   delete protected_ptr.get();
 
   EXPECT_DEATH_IF_SUPPORTED((*protected_ptr).x = 1,
-                            "BackupRefPtr: Dereferencing a raw_ptr");
+                            "dangling pointer was being dereferenced");
   EXPECT_DEATH_IF_SUPPORTED((*protected_ptr).func(),
-                            "BackupRefPtr: Dereferencing a raw_ptr");
+                            "dangling pointer was being dereferenced");
   EXPECT_DEATH_IF_SUPPORTED(++(protected_ptr->x),
-                            "BackupRefPtr: Dereferencing a raw_ptr");
+                            "dangling pointer was being dereferenced");
   EXPECT_DEATH_IF_SUPPORTED(protected_ptr->func(),
-                            "BackupRefPtr: Dereferencing a raw_ptr");
+                            "dangling pointer was being dereferenced");
 }
 
 TEST(AsanBackupRefPtrImpl, Extraction) {
@@ -1423,7 +1423,7 @@ TEST(AsanBackupRefPtrImpl, Extraction) {
         AsanStruct* ptr2 = protected_ptr;
         ptr2->x = 1;
       },
-      "BackupRefPtr: Extracting from a raw_ptr");
+      "pointer to the same region was extracted from a raw_ptr<T>");
 }
 
 TEST(AsanBackupRefPtrImpl, Instantiation) {
@@ -1446,7 +1446,7 @@ TEST(AsanBackupRefPtrImpl, Instantiation) {
 
   EXPECT_DEATH_IF_SUPPORTED(
       { [[maybe_unused]] raw_ptr<AsanStruct> protected_ptr2 = ptr; },
-      "BackupRefPtr: Constructing a raw_ptr");
+      "pointer to an already freed region was assigned to a raw_ptr<T>");
 }
 
 TEST(AsanBackupRefPtrImpl, InstantiationInvalidPointer) {
@@ -1490,7 +1490,7 @@ TEST(AsanBackupRefPtrImpl, UserPoisoned) {
   delete ptr;  // Should crash now.
   EXPECT_DEATH_IF_SUPPORTED(
       { [[maybe_unused]] raw_ptr<AsanStruct> protected_ptr2 = ptr; },
-      "BackupRefPtr: Constructing a raw_ptr");
+      "pointer to an already freed region was assigned to a raw_ptr<T>");
 }
 
 TEST(AsanBackupRefPtrImpl, EarlyAllocationDetection) {

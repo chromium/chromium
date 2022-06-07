@@ -31,6 +31,12 @@ class BASE_EXPORT RawPtrAsanService {
     kEnabled,
   };
 
+  enum class ReportType {
+    kDereference,
+    kExtraction,
+    kInstantiation,
+  };
+
   void Configure(EnableDereferenceCheck,
                  EnableExtractionCheck,
                  EnableInstantiationCheck);
@@ -50,11 +56,26 @@ class BASE_EXPORT RawPtrAsanService {
 
   static RawPtrAsanService& GetInstance() { return instance_; }
 
+  static void SetPendingReport(ReportType type, const volatile void* ptr);
+  static void Log(const char* format, ...);
+
  private:
+  struct PendingReport {
+    ReportType type;
+    uintptr_t allocation_base;
+    size_t allocation_size;
+  };
+
+  static PendingReport& GetPendingReport() {
+    static thread_local PendingReport report;
+    return report;
+  }
+
   uint8_t* GetShadow(void* ptr) const;
 
   static void MallocHook(const volatile void*, size_t);
   static void FreeHook(const volatile void*) {}
+  static void ErrorReportCallback(const char* report);
 
   Mode mode_ = Mode::kUninitialized;
   bool is_dereference_check_enabled_ = false;

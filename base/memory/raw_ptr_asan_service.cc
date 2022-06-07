@@ -7,9 +7,13 @@
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #include <sanitizer/allocator_interface.h>
 #include <sanitizer/asan_interface.h>
+#include <stdarg.h>
+#include <string.h>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/logging.h"
+#include "base/strings/stringprintf.h"
 
 namespace base {
 
@@ -25,6 +29,18 @@ constexpr uint8_t kAsanHeapLeftRedzoneMagic = 0xfa;
 // https://github.com/llvm/llvm-project/blob/b84673b3f424882c4c1961fb2c49b6302b68f344/compiler-rt/lib/asan/asan_internal.h#L145
 constexpr uint8_t kAsanUserPoisonedMemoryMagic = 0xf7;
 }  // namespace
+
+// static
+void RawPtrAsanService::Log(const char* format, ...) {
+  va_list ap;
+  va_start(ap, format);
+  auto formatted_message = StringPrintV(format, ap);
+  va_end(ap);
+
+  // Despite its name, the function just prints the input to the destination
+  // configured by ASan.
+  __sanitizer_report_error_summary(formatted_message.c_str());
+}
 
 // Mark the first eight bytes of every allocation's header as "user poisoned".
 // This allows us to filter out allocations made before BRP-ASan is activated.
@@ -72,6 +88,7 @@ void RawPtrAsanService::Configure(
     delete dummy_alloc;
 
     __sanitizer_install_malloc_and_free_hooks(MallocHook, FreeHook);
+    __asan_set_error_report_callback(ErrorReportCallback);
 
     is_dereference_check_enabled_ = !!enable_dereference_check;
     is_extraction_check_enabled_ = !!enable_extraction_check;
@@ -84,6 +101,89 @@ void RawPtrAsanService::Configure(
 uint8_t* RawPtrAsanService::GetShadow(void* ptr) const {
   return reinterpret_cast<uint8_t*>(
       (reinterpret_cast<uintptr_t>(ptr) >> kShadowScale) + shadow_offset_);
+}
+
+// static
+void RawPtrAsanService::SetPendingReport(ReportType type,
+                                         const volatile void* ptr) {
+  // The actual ASan crash may occur at an offset from the pointer passed
+  // here, so track the whole region.
+  void* region_base;
+  size_t region_size;
+  __asan_locate_address(const_cast<void*>(ptr), nullptr, 0, &region_base,
+                        &region_size);
+
+  GetPendingReport() = {type, reinterpret_cast<uintptr_t>(region_base),
+                        region_size};
+}
+
+// static
+void RawPtrAsanService::ErrorReportCallback(const char* report) {
+  if (strcmp(__asan_get_report_description(), "heap-use-after-free") != 0)
+    return;
+
+  const char* status_body;
+
+  auto& pending_report = GetPendingReport();
+  uintptr_t ptr = reinterpret_cast<uintptr_t>(__asan_get_report_address());
+  if (pending_report.allocation_base <= ptr &&
+      ptr < pending_report.allocation_base + pending_report.allocation_size) {
+    bool is_supported_allocation =
+        RawPtrAsanService::GetInstance().IsSupportedAllocation(
+            reinterpret_cast<void*>(pending_report.allocation_base));
+    switch (pending_report.type) {
+      case ReportType::kDereference: {
+        if (is_supported_allocation) {
+          status_body =
+              "PROTECTED\n"
+              "The crash occurred while a raw_ptr<T> object containing a "
+              "dangling pointer was being dereferenced.\n"
+              "MiraclePtr should make this crash non-exploitable in regular "
+              "builds.";
+        } else {
+          status_body =
+              "NOT PROTECTED\n"
+              "The region was allocated before MiraclePtr was activated.";
+        }
+        break;
+      }
+      case ReportType::kExtraction: {
+        if (is_supported_allocation) {
+          status_body =
+              "MANUAL ANALYSIS REQUIRED\n"
+              "A pointer to the same region was extracted from a raw_ptr<T> "
+              "object prior to the crash.\n"
+              "To determine the protection status, enable extraction warnings "
+              "and check whether the raw_ptr<T>\n"
+              "object can be destroyed or overwritten between the extraction "
+              "and "
+              "use.";
+        } else {
+          status_body =
+              "NOT PROTECTED\n"
+              "The region was allocated before MiraclePtr was activated.";
+        }
+        break;
+      }
+      case ReportType::kInstantiation: {
+        status_body =
+            "NOT PROTECTED\n"
+            "A pointer to an already freed region was assigned to a raw_ptr<T> "
+            "object, which may lead to memory\n"
+            "corruption.";
+      }
+    }
+  } else {
+    status_body =
+        "NOT PROTECTED\n"
+        "No raw_ptr<T> access to this region was detected prior to the crash.";
+  }
+
+  Log("\nMiraclePtr Status: %s\n"
+      "Refer to "
+      "https://chromium.googlesource.com/chromium/src/+/main/base/memory/"
+      "raw_ptr.md for details.",
+      status_body);
 }
 
 }  // namespace base

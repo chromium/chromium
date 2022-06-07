@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include "base/allocator/buildflags.h"
+#include "base/process/process.h"
 
 // USE_BACKUP_REF_PTR implies USE_PARTITION_ALLOC, needed for code under
 // allocator/partition_allocator/ to be built.
@@ -131,28 +132,43 @@ void AsanBackupRefPtrImpl::AsanCheckIfValidDereference(
     void const volatile* ptr) {
   if (RawPtrAsanService::GetInstance().is_dereference_check_enabled() &&
       IsFreedHeapPointer(ptr)) {
-    LOG(ERROR)
-        << "BackupRefPtr: Dereferencing a raw_ptr to an already "
-           "freed allocation at "
-        << const_cast<void*>(ptr)
-        << ".\nThis issue is covered by BackupRefPtr in production builds.";
+    RawPtrAsanService::SetPendingReport(
+        RawPtrAsanService::ReportType::kDereference, ptr);
     ForceRead(ptr);
   }
 }
 
 void AsanBackupRefPtrImpl::AsanCheckIfValidExtraction(
     void const volatile* ptr) {
-  if (RawPtrAsanService::GetInstance().is_extraction_check_enabled() &&
+  auto& service = RawPtrAsanService::GetInstance();
+
+  if ((service.is_extraction_check_enabled() ||
+       service.is_dereference_check_enabled()) &&
       IsFreedHeapPointer(ptr)) {
-    LOG(ERROR)
-        << "BackupRefPtr: Extracting from a raw_ptr to an already "
-           "freed allocation at "
-        << const_cast<void*>(ptr)
-        << ".\nIf ASan reports a use-after-free on a related address, it "
-           "*may be* covered by BackupRefPtr in production builds but the issue"
-           "requires a manual analysis to determine if that's the case.";
-    // Don't trigger ASan manually to avoid false-positives when the extracted
-    // pointer is never dereferenced.
+    RawPtrAsanService::SetPendingReport(
+        RawPtrAsanService::ReportType::kExtraction, ptr);
+    // If the dereference check is enabled, we still record the extraction event
+    // to catch the potential subsequent dangling dereference, but don't report
+    // the extraction itself.
+    if (service.is_extraction_check_enabled()) {
+      RawPtrAsanService::Log(
+          "=================================================================\n"
+          "==%d==WARNING: MiraclePtr: dangling-pointer-extraction on address "
+          "%p\n"
+          "extracted here:",
+          Process::Current().Pid(), ptr);
+      __sanitizer_print_stack_trace();
+      __asan_describe_address(const_cast<void*>(ptr));
+      RawPtrAsanService::Log(
+          "A regular ASan report will follow if the extracted pointer is "
+          "dereferenced later.\n"
+          "Otherwise, it is still likely a bug to rely on the address of an "
+          "already freed allocation.\n"
+          "Refer to "
+          "https://chromium.googlesource.com/chromium/src/+/main/base/memory/"
+          "raw_ptr.md for details.\n"
+          "=================================================================");
+    }
   }
 }
 
@@ -160,9 +176,8 @@ void AsanBackupRefPtrImpl::AsanCheckIfValidInstantiation(
     void const volatile* ptr) {
   if (RawPtrAsanService::GetInstance().is_instantiation_check_enabled() &&
       IsFreedHeapPointer(ptr)) {
-    LOG(ERROR) << "BackupRefPtr: Constructing a raw_ptr from a pointer "
-                  "to an already freed allocation at "
-               << const_cast<void*>(ptr) << " leads to memory corruption.";
+    RawPtrAsanService::SetPendingReport(
+        RawPtrAsanService::ReportType::kInstantiation, ptr);
     ForceRead(ptr);
   }
 }
