@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial_params.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -415,6 +417,12 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
 bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
     const AccountInfo& intercepted_account_info) const {
   DCHECK(intercepted_account_info.IsValid());
+
+  if (!base::FeatureList::IsEnabled(
+          kShowEnterpriseDialogForAllManagedAccountsSignin)) {
+    return false;
+  }
+
   // Check if the intercepted account is managed.
   if (!intercepted_account_info.IsManaged())
     return false;
