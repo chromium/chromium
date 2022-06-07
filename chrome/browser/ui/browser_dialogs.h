@@ -242,23 +242,6 @@ void ShowWebAppDetailedInstallDialog(
 // user interaction.
 void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
 
-#if BUILDFLAG(IS_CHROMEOS)
-
-// Shows the print job confirmation dialog bubble anchored to the toolbar icon
-// for the extension.
-// If there's no toolbar icon, shows a modal dialog using
-// CreateBrowserModalDialogViews(). Note that this dialog is shown up even if we
-// have no |parent| window.
-void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
-                                    const std::string& extension_id,
-                                    const std::u16string& extension_name,
-                                    const gfx::ImageSkia& extension_icon,
-                                    const std::u16string& print_job_title,
-                                    const std::u16string& printer_name,
-                                    base::OnceCallback<void(bool)> callback);
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_MAC)
 
 // Bridging methods that show/hide the toolkit-views based Task Manager on Mac.
