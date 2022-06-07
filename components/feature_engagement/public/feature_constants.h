@@ -69,6 +69,7 @@ extern const base::Feature kIPHAddToHomescreenTextBubbleFeature;
 extern const base::Feature kIPHAutoDarkOptOutFeature;
 extern const base::Feature kIPHAutoDarkUserEducationMessageFeature;
 extern const base::Feature kIPHAutoDarkUserEducationMessageOptInFeature;
+extern const base::Feature kIPHContextualPageActionsPriceTrackingFeature;
 extern const base::Feature kIPHCrowFeature;
 extern const base::Feature kIPHDataSaverDetailFeature;
 extern const base::Feature kIPHDataSaverMilestonePromoFeature;

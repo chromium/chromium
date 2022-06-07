@@ -25,6 +25,7 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.DOWNLOAD_HOME_FEATURE, FeatureConstants.DOWNLOAD_INDICATOR_FEATURE,
         FeatureConstants.CHROME_HOME_EXPAND_FEATURE,
         FeatureConstants.CHROME_HOME_PULL_TO_REFRESH_FEATURE, FeatureConstants.CROW_FEATURE,
+        FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING,
         FeatureConstants.DATA_SAVER_PREVIEW_FEATURE, FeatureConstants.DATA_SAVER_DETAIL_FEATURE,
         FeatureConstants.DATA_SAVER_MILESTONE_PROMO_FEATURE, FeatureConstants.EPHEMERAL_TAB_FEATURE,
         FeatureConstants.EXPLORE_SITES_TILE_FEATURE, FeatureConstants.PREVIEWS_OMNIBOX_UI_FEATURE,
@@ -99,6 +100,7 @@ public @interface FeatureConstants {
     String AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE = "IPH_AutoDarkUserEducationMessage";
     String AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE =
             "IPH_AutoDarkUserEducationMessageOptIn";
+    String CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING = "IPH_ContextualPageActions_PriceTracking";
     String CROW_FEATURE = "IPH_Crow";
     String DOWNLOAD_PAGE_FEATURE = "IPH_DownloadPage";
     String DOWNLOAD_PAGE_SCREENSHOT_FEATURE = "IPH_DownloadPageScreenshot";

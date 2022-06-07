@@ -33416,6 +33416,8 @@ should be able to be added at any place in this file.
       label="For ChromeHomeMenuHeader feature."/>
   <suffix name="ChromeHomePullToRefresh"
       label="For ChromeHomePullToRefresh feature."/>
+  <suffix name="ContextualPageActions_PriceTracking"
+      label="For Contextual page actions price tracking feature."/>
   <suffix name="ContextualSearch" label="For ContextualSearch feature."/>
   <suffix name="ContextualSearchInPanelHelp"
       label="For ContextualSearchInPanelHelp feature."/>
