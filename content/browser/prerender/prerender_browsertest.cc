@@ -2906,9 +2906,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
-// This is a browser test and cannot be upstreamed to WPT because it diverges
-// from the spec by cancelling prerendering in the Notification constructor,
-// whereas the spec says to defer upon use requestPermission().
 #if BUILDFLAG(IS_ANDROID)
 // On Android the Notification constructor throws an exception regardless of
 // whether the page is being prerendered.
@@ -2933,28 +2930,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NotificationConstructorAndroid) {
       } catch(e) { return false; }
     })();
   )"));
-}
-#else
-// On non-Android the Notification constructor is supported and can be used to
-// show a notification, but if used during prerendering it cancels prerendering.
-// Tests that we will cancel the prerendering if the prerendering page attempts
-// to use notification.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NotificationConstructor) {
-  base::HistogramTester histogram_tester;
-  const GURL kInitialUrl = GetUrl("/empty.html");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  LoadAndWaitForPrerenderDestroyed(web_contents(),
-                                   GetUrl("/prerender/notification.html"),
-                                   prerender_helper());
-
-  ExpectFinalStatusForSpeculationRule(
-      PrerenderHost::FinalStatus::kMojoBinderPolicy);
-  histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
-      PrerenderCancelledInterface::kNotificationService, 1);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

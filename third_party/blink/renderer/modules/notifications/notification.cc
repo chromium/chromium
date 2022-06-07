@@ -418,6 +418,15 @@ String Notification::permission(ExecutionContext* context) {
   if (!context->IsSecureContext())
     return PermissionString(mojom::blink::PermissionStatus::DENIED);
 
+  // If the current global object's browsing context is a prerendering browsing
+  // context, then return "default".
+  // https://wicg.github.io/nav-speculation/prerendering.html#patch-notifications
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    if (Document* document = window->document(); document->IsPrerendering()) {
+      return PermissionString(mojom::blink::PermissionStatus::ASK);
+    }
+  }
+
   mojom::blink::PermissionStatus status =
       NotificationManager::From(context)->GetPermissionStatus();
 

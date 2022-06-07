@@ -23,7 +23,7 @@ enum class PrerenderCancelledInterface {
   kUnknown = 0,  // For kCancel interfaces added by embedders or tests.
   kGamepadHapticsManager = 1,
   kGamepadMonitor = 2,
-  kNotificationService = 3,
+  // kNotificationService = 3,   Deprecated.
   kSyncEncryptionKeysExtension = 4,
   kMaxValue = kSyncEncryptionKeysExtension
 };
