@@ -39,6 +39,7 @@ See [Debugging](debug_instructions.md)
 * [Deploying content_shell and running web_tests on Fuchsia](web_tests.md)
 * [Running GPU integration tests on Fuchsia](gpu_testing.md)
 * [Running Telemetry Benchmarks on Fuchsia](telemetry.md)
+* [Fuchsia Binary Size Bot](../speed/binary_size/fuchsia_binary_size_trybot.md)
 
 ## Fuchsia WebEngine and Runners
 See [Fuchsia WebEngine and Runners](../../fuchsia_web/README.md).
