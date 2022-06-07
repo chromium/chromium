@@ -272,12 +272,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             View coordinatorLayout = (View) parentView.getParent();
             coordinatorLayout.setElevation(ev);
 
-            // When the navigation bar on the right side (not at the bottom), no need to call
-            // the methods below since the contents height is fixed and the system navigation
-            // bar works as expected.
-            if (mNavbarHeight == 0) return;
-
-            setContentsHeight();
+            // When the navigation bar on the right side (not at the bottom), no need to set
+            // contents height since it is fixed to the max height.
+            if (mNavbarHeight != 0) setContentsHeight();
             updateNavbarVisibility(true);
         });
 
@@ -559,13 +556,14 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     // Show or hide our own navigation bar.
     private void updateNavbarVisibility(boolean show) {
-        // No need draw its own navigation bar when it is located on the right side since
-        // the system navigation bar is visible and can handle API #setNavigationBarColor.
-        if (mNavbarHeight == 0) {
-            if (mNavbar != null) mNavbar.setVisibility(View.GONE);
-            return;
-        }
         if (show) {
+            // No need draw its own navigation bar when it is located on the right side since
+            // the system navigation bar is visible and can handle API #setNavigationBarColor.
+            if (mNavbarHeight == 0) {
+                setNavigationBarAndDividerColor();
+                if (mNavbar != null) mNavbar.setVisibility(View.GONE);
+                return;
+            }
             if (mNavbar == null) {
                 mNavbar = (LinearLayout) mActivity.getLayoutInflater().inflate(
                         R.layout.custom_tabs_navigation_bar, null);
@@ -606,19 +604,31 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // Since we cannot alter the button color, darken the bar color instead to address
         // the bad contrast against buttons when they are both white.
         boolean needsDarkButtons = !ColorUtils.shouldUseLightForegroundOnBackground(color);
-        View bar = mNavbar.findViewById(R.id.bar);
-        bar.setBackgroundColor(
-                needsDarkButtons ? ColorUtils.getDarkenedColorForStatusBar(color) : color);
+        if (needsDarkButtons) color = ColorUtils.getDarkenedColorForStatusBar(color);
+        if (mNavbarHeight == 0) {
+            mActivity.getWindow().setNavigationBarColor(color);
+        } else {
+            // Use our own navbar where the system navigation bar which is obscured by WebContents
+            // rendered over it due to Window#FLAGS_LAYOUT_NO_LIMITS would be shown.
+            View bar = mNavbar.findViewById(R.id.bar);
+            bar.setBackgroundColor(color);
+        }
 
         // navigationBarDividerColor can only be set in Android P+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
         Integer dividerColor = CustomTabNavigationBarController.getDividerColor(
                 mActivity, mNavigationBarColor, mNavigationBarDividerColor, needsDarkButtons);
-        View divider = mNavbar.findViewById(R.id.divider);
-        if (dividerColor != null) {
-            divider.setBackgroundColor(dividerColor);
+        if (mNavbarHeight == 0) {
+            if (dividerColor != null) {
+                mActivity.getWindow().setNavigationBarDividerColor(dividerColor);
+            }
         } else {
-            divider.setVisibility(View.GONE);
+            View divider = mNavbar.findViewById(R.id.divider);
+            if (dividerColor != null) {
+                divider.setBackgroundColor(dividerColor);
+            } else {
+                divider.setVisibility(View.GONE);
+            }
         }
     }
 
