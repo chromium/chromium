@@ -115,6 +115,7 @@ export class HistoryClustersElement extends PolymerElement {
   private headerText_: string;
   private onClustersQueryResultListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
+  private onHistoryDeletedListenerId_: number|null = null;
   private pageHandler_: PageHandlerRemote;
   private placeholderText_: string;
   private result_: QueryResult;
@@ -148,6 +149,9 @@ export class HistoryClustersElement extends PolymerElement {
     this.onVisitsRemovedListenerId_ =
         this.callbackRouter_.onVisitsRemoved.addListener(
             this.onVisitsRemoved_.bind(this));
+    this.onHistoryDeletedListenerId_ =
+        this.callbackRouter_.onHistoryDeleted.addListener(
+            this.onHistoryDeleted_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -345,6 +349,16 @@ export class HistoryClustersElement extends PolymerElement {
     if (removedVisits.length === 1) {
       this.$.confirmationToast.get().show();
     }
+  }
+
+  /**
+   * Called when History is deleted from a different tab.
+   */
+  private onHistoryDeleted_() {
+    // Just re-issue the existing query to "reload" the results and display
+    // the externally deleted History. It would be nice if we could save the
+    // user's scroll position, but History doesn't do that either.
+    this.onQueryChanged_();
   }
 }
 

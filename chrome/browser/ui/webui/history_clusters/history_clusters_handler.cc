@@ -352,6 +352,12 @@ void HistoryClustersHandler::OnRemoveVisitsFailed() {
   std::move(pending_remove_visits_callback_).Run(/*success=*/false);
 }
 
+void HistoryClustersHandler::HistoryDeleted() {
+  if (page_) {
+    page_->OnHistoryDeleted();
+  }
+}
+
 Profile* HistoryClustersHandler::GetProfile() {
   DCHECK(profile_);
   return profile_;

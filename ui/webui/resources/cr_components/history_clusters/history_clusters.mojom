@@ -209,4 +209,7 @@ interface Page {
   // Called with the set of removed visits when the last accepted call to
   // `RemoveVisits()` succeeds. `removed_visits` will be used to update the UI.
   OnVisitsRemoved(array<URLVisit> removed_visits);
+
+  // Called when History is deleted from a different tab.
+  OnHistoryDeleted();
 };

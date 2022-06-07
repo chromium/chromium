@@ -82,6 +82,7 @@ class HistoryClustersHandler : public mojom::PageHandler,
   // ProfileBasedBrowsingHistoryDriver:
   void OnRemoveVisitsComplete() override;
   void OnRemoveVisitsFailed() override;
+  void HistoryDeleted() override;
   Profile* GetProfile() override;
 
  private:
