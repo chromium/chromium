@@ -834,6 +834,12 @@ crbug.com/1285112 [ chromeos chromeos-board-kevin passthrough ] conformance2/ren
 crbug.com/1285114 [ chromeos chromeos-board-kevin passthrough ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
 crbug.com/1286099 [ chromeos chromeos-board-kevin passthrough ] conformance2/rendering/blitframebuffer-r11f-g11f-b10f.html [ Failure ]
 
+crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance/context/context-size-change.html [ Failure ]
+crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
+crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance/state/gl-enable-enum-test.html [ Failure ]
+crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance2/rendering/blitframebuffer-resolve-to-back-buffer.html [ Failure ]
+crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance2/textures/misc/tex-input-validation.html [ Failure ]
+
 ##############################
 # Lacros-like Linux Failures #
 ##############################
