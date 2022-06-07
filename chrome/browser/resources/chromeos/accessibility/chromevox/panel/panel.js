@@ -10,6 +10,7 @@ import {CommandStore} from '/chromevox/common/command_store.js';
 import {GestureCommandData} from '/chromevox/common/gesture_command_data.js';
 import {KeyMap} from '/chromevox/common/key_map.js';
 import {KeyUtil} from '/chromevox/common/key_util.js';
+import {PanelCommand, PanelCommandType} from '/chromevox/common/panel_command.js';
 import {ISearchUI} from '/chromevox/panel/i_search_ui.js';
 import {PanelInterface} from '/chromevox/panel/panel_interface.js';
 import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from '/chromevox/panel/panel_menu.js';

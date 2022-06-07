@@ -8,6 +8,7 @@
  * other platforms.
  */
 import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';
+import {PanelCommand, PanelCommandType} from '/chromevox/common/panel_command.js';
 
 export class BrailleCaptionsBackground {
   /**

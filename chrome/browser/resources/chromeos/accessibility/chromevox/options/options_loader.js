@@ -13,7 +13,6 @@ goog.require('ChromeVox');
 goog.require('ExtraCellsSpan');
 goog.require('LibLouis');
 goog.require('Msgs');
-goog.require('PanelCommand');
 goog.require('Spannable');
 goog.require('SpeechLog');
 goog.require('TtsInterface');

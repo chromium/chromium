@@ -7,6 +7,7 @@
  */
 import {Output} from '/chromevox/background/output/output.js';
 import {KeySequence} from '/chromevox/common/key_sequence.js';
+import {PanelCommand, PanelCommandType} from '/chromevox/common/panel_command.js';
 
 /**
  * The types of actions we want to monitor.

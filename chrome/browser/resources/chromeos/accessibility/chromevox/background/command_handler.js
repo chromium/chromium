@@ -22,6 +22,7 @@ import {CommandStore} from '/chromevox/common/command_store.js';
 import {CustomAutomationEvent} from '/chromevox/common/custom_automation_event.js';
 import {GestureGranularity} from '/chromevox/common/gesture_command_data.js';
 import {ChromeVoxKbHandler} from '/chromevox/common/keyboard_handler.js';
+import {PanelCommand, PanelCommandType} from '/chromevox/common/panel_command.js';
 import {EventGenerator} from '/common/event_generator.js';
 
 const ActionType = chrome.automation.ActionType;

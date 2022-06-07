@@ -14,6 +14,9 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
     await super.setUpDeferred();
     await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule(
+        ['PanelCommand', 'PanelCommandType'],
+        '/chromevox/common/panel_command.js');
   }
 
   fireMockEvent(key) {

@@ -8,6 +8,7 @@
  */
 
 import {AbstractTts} from '/chromevox/common/abstract_tts.js';
+import {PanelCommand, PanelCommandType} from '/chromevox/common/panel_command.js';
 import {ChromeTtsBase} from '/chromevox/common/tts_base.js';
 
 const Utterance = class {

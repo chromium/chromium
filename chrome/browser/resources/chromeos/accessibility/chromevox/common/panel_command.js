@@ -7,13 +7,10 @@
  * to the ChromeVox Panel.
  */
 
-goog.provide('PanelCommand');
-goog.provide('PanelCommandType');
-
 /**
  * Create one command to pass to the ChromeVox Panel.
  */
-PanelCommand = class {
+export class PanelCommand {
   /**
    * @param {PanelCommandType} type The type of command.
    * @param {string|{groups:Array}=} opt_data
@@ -62,14 +59,14 @@ PanelCommand = class {
     const panelWindow = this.getPanelWindow();
     panelWindow.postMessage(JSON.stringify(this), window.location.origin);
   }
-};
+}
 
 
 /**
  * Possible panel commands.
  * @enum {string}
  */
-PanelCommandType = {
+export const PanelCommandType = {
   CLEAR_SPEECH: 'clear_speech',
   ADD_NORMAL_SPEECH: 'add_normal_speech',
   ADD_ANNOTATION_SPEECH: 'add_annotation_speech',

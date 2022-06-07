@@ -41,8 +41,6 @@ goog.require('OutputRulesStr');
 goog.require('OutputSelectionSpan');
 goog.require('OutputSpeechProperties');
 goog.require('PanelBridge');
-goog.require('PanelCommand');
-goog.require('PanelCommandType');
 goog.require('PanelNodeMenuData');
 goog.require('PanelTabMenuItemData');
 goog.require('PhoneticData');
