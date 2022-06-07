@@ -1149,12 +1149,21 @@ class DeviceContainer {
         ProcessingBasedContainer::CreateNoApmProcessedContainer(
             source_info, is_device_capture, device_parameters_,
             is_reconfiguration_allowed));
-    processing_based_containers_.push_back(
-        ProcessingBasedContainer::CreateApmProcessedContainer(
-            source_info, stream_type, is_device_capture, device_parameters_,
-            is_reconfiguration_allowed));
-
-    DCHECK_EQ(processing_based_containers_.size(), 3u);
+    // TODO(https://crbug.com/1332484): Sample rates not divisible by 100 are
+    // not reliably supported due to the common assumption that sample_rate/100
+    // corresponds to 10 ms of audio. This needs to be addressed in order to
+    // support these rates for WebRTC audio processing in the audio process.
+    if ((device_parameters_.sample_rate() % 100 == 0) ||
+        !(media::IsChromeWideEchoCancellationEnabled() &&
+          stream_type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE)) {
+      processing_based_containers_.push_back(
+          ProcessingBasedContainer::CreateApmProcessedContainer(
+              source_info, stream_type, is_device_capture, device_parameters_,
+              is_reconfiguration_allowed));
+      DCHECK_EQ(processing_based_containers_.size(), 3u);
+    } else {
+      DCHECK_EQ(processing_based_containers_.size(), 2u);
+    }
 
     if (source_info.type() == SourceType::kNone)
       return;
