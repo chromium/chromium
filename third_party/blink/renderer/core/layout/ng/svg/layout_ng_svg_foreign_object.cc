@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_foreign_object.h"
 
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
+#include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 
@@ -153,6 +155,41 @@ void LayoutNGSVGForeignObject::UpdateBlockLayout(bool relayout_children) {
     LayoutSVGBlock::SetNeedsBoundariesUpdate();
 
   DCHECK(!needs_transform_update_);
+}
+
+bool LayoutNGSVGForeignObject::NodeAtPointFromSVG(
+    HitTestResult& result,
+    const HitTestLocation& hit_test_location,
+    const PhysicalOffset& accumulated_offset,
+    HitTestAction) {
+  NOT_DESTROYED();
+  DCHECK_EQ(accumulated_offset, PhysicalOffset());
+  TransformedHitTestLocation local_location(hit_test_location,
+                                            LocalToSVGParentTransform());
+  if (!local_location)
+    return false;
+
+  // |local_location| already includes the offset of the <foreignObject>
+  // element, but PaintLayer::HitTestLayer assumes it has not been.
+  HitTestLocation local_without_offset(*local_location, -PhysicalLocation());
+  HitTestResult layer_result(result.GetHitTestRequest(), local_without_offset);
+  bool retval = Layer()->HitTest(local_without_offset, layer_result,
+                                 PhysicalRect(PhysicalRect::InfiniteIntRect()));
+
+  // Preserve the "point in inner node frame" from the original request,
+  // since |layer_result| is a hit test rooted at the <foreignObject> element,
+  // not the frame, due to the constructor above using
+  // |point_in_foreign_object| as its "point in inner node frame".
+  // TODO(chrishtr): refactor the PaintLayer and HitTestResults code around
+  // this, to better support hit tests that don't start at frame boundaries.
+  PhysicalOffset original_point_in_inner_node_frame =
+      result.PointInInnerNodeFrame();
+  if (result.GetHitTestRequest().ListBased())
+    result.Append(layer_result);
+  else
+    result = layer_result;
+  result.SetPointInInnerNodeFrame(original_point_in_inner_node_frame);
+  return retval;
 }
 
 }  // namespace blink

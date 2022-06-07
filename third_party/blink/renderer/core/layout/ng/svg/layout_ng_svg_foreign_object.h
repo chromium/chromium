@@ -23,6 +23,15 @@ class LayoutNGSVGForeignObject final
 
   bool IsObjectBoundingBoxValid() const;
 
+  // A method to call when recursively hit testing from an SVG parent.
+  // Since LayoutSVGRoot has a PaintLayer always, this will cause a
+  // trampoline through PaintLayer::HitTest and back to a call to NodeAtPoint
+  // on this object. This is why there are two methods.
+  bool NodeAtPointFromSVG(HitTestResult& result,
+                          const HitTestLocation& hit_test_location,
+                          const PhysicalOffset& accumulated_offset,
+                          HitTestAction action);
+
  private:
   // LayoutObject override:
   const char* GetName() const override;

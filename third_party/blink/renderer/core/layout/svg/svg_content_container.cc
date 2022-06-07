@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_content_container.h"
 
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
@@ -103,6 +104,11 @@ bool SVGContentContainer::HitTest(HitTestResult& result,
        child = child->PreviousSibling()) {
     if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(child)) {
       if (foreign_object->NodeAtPointFromSVG(
+              result, location, accumulated_offset, hit_test_action))
+        return true;
+    } else if (auto* ng_foreign_object =
+                   DynamicTo<LayoutNGSVGForeignObject>(child)) {
+      if (ng_foreign_object->NodeAtPointFromSVG(
               result, location, accumulated_offset, hit_test_action))
         return true;
     } else {
