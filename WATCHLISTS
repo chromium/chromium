@@ -1514,6 +1514,10 @@
     'os_crypt': {
       'filepath': 'components/os_crypt/',
     },
+    'os_feedback_ui': {
+      'filepath': 'ash/webui/os_feedback_ui/|' \
+                  'chrome/browser/ash/os_feedback/'
+    },
     'ozone': {
       'filepath': 'ui/ozone/|'\
         'ui/events/ozone/|'\
@@ -2712,6 +2716,13 @@
     'origin_trials': ['chasej+watch@chromium.org',
                       'iclelland+watch@chromium.org'],
     'os_crypt': ['wfh+watch@chromium.org'],
+    'os_feedback_ui': ['ashleydp+feedback-watch@google.com',
+                       'cambickel+feedback-watch@google.com',
+                       'longbowei+feedback-watch@google.com',
+                       'wangdanny+feedback-watch@google.com',
+                       'xiangdongkong+feedback-watch@google.com',
+                       'yyhyyh+feedback-watch@google.com',
+                       'zhangwenyu+feedback-watch@google.com'],
     'ozone': ['ozone-reviews@chromium.org'],
     'ozone_fuchsia': ['dworsham@google.com',
                       'emircan@google.com',
