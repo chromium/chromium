@@ -8,9 +8,13 @@ namespace ui {
 
 DeviceEvent::DeviceEvent(DeviceType type,
                          ActionType action,
-                         const base::FilePath& path)
+                         const base::FilePath& path,
+                         const PropertyMap& property_map)
     : device_type_(type),
       action_type_(action),
-      path_(path) {}
+      path_(path),
+      properties_(property_map) {}
+
+DeviceEvent::~DeviceEvent() = default;
 
 }  // namespace ui

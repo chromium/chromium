@@ -5,12 +5,15 @@
 #include "ui/ozone/platform/drm/gpu/drm_gpu_display_manager.h"
 
 #include <stddef.h>
+#include <cstring>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
@@ -28,6 +31,10 @@ constexpr char kMultipleDisplayIdsCollisionDetected[] =
     "Display.MultipleDisplays.GenerateId.CollisionDetection";
 using MapDisplayIdToIndexAndSnapshotPair =
     base::flat_map<int64_t, display::DisplaySnapshot*>;
+
+// A list of property names that are blocked from issuing a full display
+// configuration (modeset) via a udev display CHANGE event.
+const char* kBlockedEventsByTriggerProperty[] = {"Content Protection"};
 
 class DisplayComparator {
  public:
@@ -96,6 +103,15 @@ bool FindModeForDisplay(
     }
   }
   return mode_found;
+}
+
+std::string GetEventPropertyByKey(const std::string& key,
+                                  const EventPropertyMap event_props) {
+  const auto it = event_props.find(key);
+  if (it == event_props.end())
+    return std::string();
+
+  return std::string(it->second);
 }
 
 }  // namespace
@@ -198,6 +214,55 @@ void DrmGpuDisplayManager::RelinquishDisplayControl() {
   const DrmDeviceVector& devices = drm_device_manager_->GetDrmDevices();
   for (const auto& drm : devices)
     drm->DropMaster();
+}
+
+bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
+    const EventPropertyMap& event_props) {
+  DCHECK(!event_props.empty());
+
+  const std::string event_seq_num =
+      GetEventPropertyByKey("SEQNUM", event_props);
+  std::string log_prefix =
+      "Display event CHANGE" +
+      (event_seq_num.empty() ? "" : "(SEQNUM:" + event_seq_num + ") ");
+  std::string trigger_prop_log;
+
+  const std::string event_dev_path =
+      GetEventPropertyByKey("DEVPATH", event_props);
+  const DrmDeviceVector& devices = drm_device_manager_->GetDrmDevices();
+  for (const auto& drm : devices) {
+    if (drm->device_path().value().find(event_dev_path) == std::string::npos)
+      continue;
+
+    // Get the trigger property's ID and convert to an int.
+    const std::string trigger_prop_id_str =
+        GetEventPropertyByKey("PROPERTY", event_props);
+    if (trigger_prop_id_str.empty())
+      break;
+
+    uint32_t trigger_prop_id;
+    const bool conversion_success =
+        base::StringToUint(trigger_prop_id_str, &trigger_prop_id);
+    DCHECK(conversion_success);
+
+    // Fetch the name of the property from the device.
+    ScopedDrmPropertyPtr drm_property(drm->GetProperty(trigger_prop_id));
+    DCHECK(drm_property);
+    trigger_prop_log =
+        "[trigger property: " + std::string(drm_property->name) + "] ";
+    for (const char* blocked_prop : kBlockedEventsByTriggerProperty) {
+      if (strcmp(drm_property->name, blocked_prop) == 0) {
+        VLOG(1) << log_prefix << trigger_prop_log
+                << "resolution: blocked; display configuration task "
+                   "rejected.";
+        return false;
+      }
+    }
+  }
+
+  VLOG(1) << log_prefix << trigger_prop_log
+          << "resolution: allowed; display configuration task triggered.";
+  return true;
 }
 
 bool DrmGpuDisplayManager::ConfigureDisplays(

@@ -412,6 +412,16 @@ void DrmThread::RelinquishDisplayControl(
   std::move(callback).Run(true);
 }
 
+void DrmThread::ShouldDisplayEventTriggerConfiguration(
+    const EventPropertyMap& event_props,
+    base::OnceCallback<void(bool)> callback) {
+  TRACE_EVENT0("drm", "DrmThread::ShouldDisplayEventTriggerConfiguration");
+  const bool should_trigger =
+      display_manager_->ShouldDisplayEventTriggerConfiguration(event_props);
+
+  std::move(callback).Run(should_trigger);
+}
+
 void DrmThread::AddGraphicsDevice(const base::FilePath& path, base::File file) {
   TRACE_EVENT0("drm", "DrmThread::AddGraphicsDevice");
   device_manager_->AddDrmDevice(path, std::move(file));

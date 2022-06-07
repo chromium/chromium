@@ -62,6 +62,8 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
   void GpuAddGraphicsDevice(const base::FilePath& path,
                             base::ScopedFD fd) override;
   bool GpuRemoveGraphicsDevice(const base::FilePath& path) override;
+  void GpuShouldDisplayEventTriggerConfiguration(
+      const EventPropertyMap& event_props) override;
 
   // Services needed by DrmDisplayHost
   void GpuConfigureNativeDisplays(
@@ -100,6 +102,8 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
   void GpuRefreshNativeDisplaysCallback(MovableDisplaySnapshots displays) const;
   void GpuTakeDisplayControlCallback(bool success) const;
   void GpuRelinquishDisplayControlCallback(bool success) const;
+  void GpuShouldDisplayEventTriggerConfigurationCallback(
+      bool should_trigger) const;
   void GpuGetHDCPStateCallback(
       int64_t display_id,
       bool success,

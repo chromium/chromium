@@ -12,6 +12,7 @@
 #include "ui/display/types/native_display_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/drm/common/display_types.h"
 
 namespace base {
 class FilePath;
@@ -44,6 +45,8 @@ class GpuThreadAdapter {
   virtual void GpuAddGraphicsDevice(const base::FilePath& path,
                                     base::ScopedFD fd) = 0;
   virtual bool GpuRemoveGraphicsDevice(const base::FilePath& path) = 0;
+  virtual void GpuShouldDisplayEventTriggerConfiguration(
+      const EventPropertyMap& event_props) = 0;
 
   // Services needed by DrmDisplayHost
   virtual void GpuConfigureNativeDisplays(
