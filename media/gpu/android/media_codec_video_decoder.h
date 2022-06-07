@@ -353,6 +353,10 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // See https://crbug.com/1081346 .
   bool allow_nonsecure_overlays_ = true;
 
+  // If set, then the next call to `CodecConfig()` will be allowed to retry if
+  // it fails to get a codec.  This is to work around b/191966399.
+  bool should_retry_codec_allocation_ = false;
+
   base::WeakPtrFactory<MediaCodecVideoDecoder> weak_factory_{this};
   base::WeakPtrFactory<MediaCodecVideoDecoder> codec_allocator_weak_factory_{
       this};

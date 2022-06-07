@@ -417,6 +417,9 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
     // sure, request a deferred flush.
     deferred_flush_pending_ = true;
     deferred_reallocation_pending_ = true;
+    // Since this will re-use the same surface, allow a retry to work around a
+    // race condition in the android framework.
+    should_retry_codec_allocation_ = true;
     last_width_ = width;
   }  // else leave |last_width_| unmodified, since we're re-using the codec.
 }
@@ -707,6 +710,21 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
     std::unique_ptr<MediaCodecBridge> codec) {
   DCHECK(!codec_);
   DCHECK_EQ(state_, State::kRunning);
+  bool should_retry_codec_allocation = should_retry_codec_allocation_;
+  should_retry_codec_allocation_ = false;
+
+  // In rare cases, the framework can fail transiently when trying to re-use a
+  // surface.  If we're in one of those cases, then retry codec allocation.
+  // This only happens on R and S, so skip it otherwise.
+  if (!codec && should_retry_codec_allocation &&
+      device_info_->SdkVersion() >= base::android::SDK_VERSION_R &&
+      device_info_->SdkVersion() <= 32 /* SDK_VERSION_S_V2 */
+  ) {
+    // We might want to post this with a short delay, but there is already quite
+    // a lot of overhead in codec allocation.
+    CreateCodec();
+    return;
+  }
 
   if (!codec) {
     EnterTerminalState(State::kError, "Unable to allocate codec");
@@ -778,6 +796,8 @@ void MediaCodecVideoDecoder::FlushCodec() {
   if (deferred_reallocation_pending_) {
     deferred_reallocation_pending_ = false;
     ReleaseCodec();
+    // Re-initializing the codec with the same surface may need to retry.
+    should_retry_codec_allocation_ = !SurfaceTransitionPending();
     CreateCodec();
   }
 
