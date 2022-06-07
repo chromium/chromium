@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -66,7 +67,10 @@ bool IsShowingInterstitial(content::WebContents* tab) {
 
 class TestBookmarkTabHelperObserver : public BookmarkTabHelperObserver {
  public:
-  TestBookmarkTabHelperObserver() : starred_(false) {}
+  explicit TestBookmarkTabHelperObserver(BookmarkTabHelper* helper)
+      : starred_(false) {
+    observation_.Observe(helper);
+  }
 
   TestBookmarkTabHelperObserver(const TestBookmarkTabHelperObserver&) = delete;
   TestBookmarkTabHelperObserver& operator=(
@@ -80,6 +84,9 @@ class TestBookmarkTabHelperObserver : public BookmarkTabHelperObserver {
   bool is_starred() const { return starred_; }
 
  private:
+  base::ScopedObservation<BookmarkTabHelper, BookmarkTabHelperObserver>
+      observation_{this};
+
   bool starred_;
 };
 
@@ -289,12 +296,11 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
   GURL bookmark_url = embedded_test_server()->GetURL("example.test", "/");
   bookmarks::AddIfNotBookmarked(bookmark_model, bookmark_url, u"Bookmark");
 
-  TestBookmarkTabHelperObserver bookmark_observer;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   BookmarkTabHelper* tab_helper =
       BookmarkTabHelper::FromWebContents(web_contents);
-  tab_helper->AddObserver(&bookmark_observer);
+  TestBookmarkTabHelperObserver bookmark_observer(tab_helper);
 
   // Go to a bookmarked url. Bookmark star should show.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bookmark_url));
@@ -307,8 +313,6 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(IsShowingInterstitial(web_contents));
   EXPECT_FALSE(bookmark_observer.is_starred());
-
-  tab_helper->RemoveObserver(&bookmark_observer);
 }
 
 // Provides coverage for the Bookmark Manager bookmark drag and drag image
@@ -480,6 +484,29 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, EmitUmaForDuplicates) {
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Test that the bookmark star state updates in response to same document
+// navigations that change the URL
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, SameDocumentNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+  GURL bookmark_url = embedded_test_server()->GetURL("/title1.html");
+  bookmarks::AddIfNotBookmarked(bookmark_model, bookmark_url, u"Bookmark");
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  BookmarkTabHelper* tab_helper =
+      BookmarkTabHelper::FromWebContents(web_contents);
+  TestBookmarkTabHelperObserver bookmark_observer(tab_helper);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bookmark_url));
+  EXPECT_TRUE(bookmark_observer.is_starred());
+
+  GURL same_document_url = embedded_test_server()->GetURL("/title1.html#test");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_document_url));
+  EXPECT_FALSE(bookmark_observer.is_starred());
+}
+
 class BookmarkPrerenderBrowsertest : public BookmarkBrowsertest {
  public:
   BookmarkPrerenderBrowsertest()
@@ -524,10 +551,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkPrerenderBrowsertest,
   GURL bookmark_url = embedded_test_server()->GetURL("/title1.html");
   bookmarks::AddIfNotBookmarked(bookmark_model, bookmark_url, u"Bookmark");
 
-  TestBookmarkTabHelperObserver bookmark_observer;
   BookmarkTabHelper* tab_helper =
       BookmarkTabHelper::FromWebContents(GetWebContents());
-  tab_helper->AddObserver(&bookmark_observer);
+  TestBookmarkTabHelperObserver bookmark_observer(tab_helper);
 
   // Load a prerender page and prerendering should not notify to
   // URLStarredChanged listener.
@@ -541,6 +567,4 @@ IN_PROC_BROWSER_TEST_F(BookmarkPrerenderBrowsertest,
   prerender_test_helper().NavigatePrimaryPage(bookmark_url);
   EXPECT_TRUE(host_observer.was_activated());
   EXPECT_TRUE(bookmark_observer.is_starred());
-
-  tab_helper->RemoveObserver(&bookmark_observer);
 }

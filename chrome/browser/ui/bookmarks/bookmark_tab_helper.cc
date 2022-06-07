@@ -157,8 +157,7 @@ void BookmarkTabHelper::DidStartNavigation(
 
 void BookmarkTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
   UpdateStarredStateForCurrentURL();
 }
