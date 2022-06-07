@@ -121,6 +121,7 @@ class WavMixerInputSource : public MixerInput::Source {
   AudioContentType focus_type() override { return AudioContentType::kMedia; }
   int desired_read_size() override { return kReadSize; }
   int playout_channel() override { return -1; }
+  bool require_clock_rate_simulation() const override { return false; }
 
   void InitializeAudioPlayback(
       int read_size,
