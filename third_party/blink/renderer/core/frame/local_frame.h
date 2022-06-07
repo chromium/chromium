@@ -384,6 +384,9 @@ class CORE_EXPORT LocalFrame final
 
   bool ShouldThrottleRendering() const;
 
+  // Called on the main frame of the portal is activated or adopted.
+  void PortalStateChanged();
+
   // Returns frame scheduler for this frame.
   // FrameScheduler is destroyed during frame detach and nullptr will be
   // returned after it.

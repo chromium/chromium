@@ -1080,10 +1080,8 @@ void Page::SetInsidePortal(bool inside_portal) {
 
   inside_portal_ = inside_portal;
 
-  if (MainFrame() && MainFrame()->IsLocalFrame() &&
-      DeprecatedLocalMainFrame()->GetDocument()) {
-    DeprecatedLocalMainFrame()->GetDocument()->ClearAXObjectCache();
-  }
+  if (MainFrame() && MainFrame()->IsLocalFrame())
+    DeprecatedLocalMainFrame()->PortalStateChanged();
 }
 
 bool Page::InsidePortal() const {
