@@ -1561,7 +1561,12 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
   for (NGInlineCursor cursor(container, items); cursor; cursor.MoveToNext()) {
     if (const NGPhysicalBoxFragment* child = cursor.Current().BoxFragment()) {
       // Replaced elements and inline blocks need Location() set relative to
-      // their block container.
+      // their block container. Similarly for block-in-inline anonymous wrapper
+      // blocks, but those may actually fragment, so we need to make sure that
+      // we only do this when at the first fragment.
+      if (!child->IsFirstForNode())
+        continue;
+
       LayoutObject* layout_object = child->GetMutableLayoutObject();
       if (!layout_object)
         continue;
