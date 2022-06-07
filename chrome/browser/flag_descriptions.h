@@ -2065,6 +2065,9 @@ extern const char kFeedPositionAndroidDescription[];
 extern const char kStrictSiteIsolationName[];
 extern const char kStrictSiteIsolationDescription[];
 
+extern const char kSyncAndroidPromosWithAlternativeTitleName[];
+extern const char kSyncAndroidPromosWithAlternativeTitleDescription[];
+
 extern const char kSyncAndroidPromosWithIllustrationName[];
 extern const char kSyncAndroidPromosWithIllustrationDescription[];
 

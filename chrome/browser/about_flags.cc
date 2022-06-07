@@ -7451,6 +7451,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPwaUpdateDialogForName)},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"sync-android-promos-with-alternative-title",
+     flag_descriptions::kSyncAndroidPromosWithAlternativeTitleName,
+     flag_descriptions::kSyncAndroidPromosWithAlternativeTitleDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(syncer::kSyncAndroidPromosWithAlternativeTitle)},
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
     {"sync-android-promos-with-illustration",
      flag_descriptions::kSyncAndroidPromosWithIllustrationName,
      flag_descriptions::kSyncAndroidPromosWithIllustrationDescription,

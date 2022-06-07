@@ -58079,6 +58079,7 @@ from previous Chrome versions.
   <int value="92106937" label="CloseTabSuggestions:disabled"/>
   <int value="92327255" label="DisplayMoveWindowAccels:disabled"/>
   <int value="93832899" label="NtpCustomizationMenuV2:enabled"/>
+  <int value="96148142" label="SyncAndroidPromosWithAlternativeTitle:enabled"/>
   <int value="97091906" label="AutofillSaveCardShowNoThanks:enabled"/>
   <int value="97764742" label="QuickAnswersForMoreLocales:disabled"/>
   <int value="97976428" label="CastUseBlocklistForRemotingQuery:enabled"/>
@@ -60640,6 +60641,8 @@ from previous Chrome versions.
   <int value="1806450300" label="WebUsbDeviceDetection:enabled"/>
   <int value="1807374811" label="CCTModuleCache:enabled"/>
   <int value="1808936313" label="AutofillEnableNameSurenameParsing:enabled"/>
+  <int value="1809704744"
+      label="SyncAndroidPromosWithAlternativeTitle:disabled"/>
   <int value="1809940714" label="SpeculativeLaunchServiceWorker:disabled"/>
   <int value="1810258949" label="DisplayLocking:enabled"/>
   <int value="1810311887" label="WebAssemblyThreads:enabled"/>

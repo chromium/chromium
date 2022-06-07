@@ -309,6 +309,8 @@ public abstract class ChromeFeatureList {
             "ContextualTriggersSelectionMenu";
     public static final String CONTEXTUAL_TRIGGERS_SELECTION_SIZE =
             "ContextualTriggersSelectionSize";
+    public static final String SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE =
+            "SyncAndroidPromosWithAlternativeTitle";
     public static final String SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION =
             "SyncAndroidPromosWithIllustration";
     public static final String SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON =
