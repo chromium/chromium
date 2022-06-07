@@ -580,10 +580,9 @@ static_library("test_support") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos_lacros) {
-    public_deps += [ "//ui/base:pixel_diff_test_support" ]
-    sources += [
-      "pixel/browser_skia_gold_pixel_diff.cc",
-      "pixel/browser_skia_gold_pixel_diff.h",
+    public_deps += [
+      "//ui/base:pixel_diff_test_support",
+      "//ui/views:view_pixel_diff_test_support",
     ]
   }
 
@@ -8531,7 +8530,6 @@ test("unit_tests") {
       "../browser/ui/profile_picker_unittest.cc",
       "../browser/ui/webui/signin/enterprise_profile_welcome_handler_unittest.cc",
       "../browser/ui/webui/signin/turn_sync_on_helper_unittest.cc",
-      "../test/pixel/browser_skia_gold_pixel_diff_unittest.cc",
     ]
   }
 

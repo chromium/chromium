@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/pixel/browser_skia_gold_pixel_diff.h"
+#include "ui/views/test/view_skia_gold_pixel_diff.h"
+
+#include <memory>
+#include <utility>
 
 #include "base/command_line.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -16,7 +18,9 @@
 using ::testing::_;
 using ::testing::Return;
 
-class MockBrowserSkiaGoldPixelDiff : public BrowserSkiaGoldPixelDiff {
+namespace views {
+
+class MockBrowserSkiaGoldPixelDiff : public ViewSkiaGoldPixelDiff {
  public:
   MockBrowserSkiaGoldPixelDiff() = default;
   MOCK_CONST_METHOD1(LaunchProcess, int(const base::CommandLine&));
@@ -30,25 +34,25 @@ class MockBrowserSkiaGoldPixelDiff : public BrowserSkiaGoldPixelDiff {
   }
 };
 
-class MockBrowserSkiaGoldPixelDiffMockUpload
+class MockViewSkiaGoldPixelDiffMockUpload
     : public MockBrowserSkiaGoldPixelDiff {
  public:
-  MockBrowserSkiaGoldPixelDiffMockUpload() = default;
+  MockViewSkiaGoldPixelDiffMockUpload() = default;
   MOCK_CONST_METHOD3(UploadToSkiaGoldServer,
                      bool(const base::FilePath&,
                           const std::string&,
                           const ui::test::SkiaGoldMatchingAlgorithm*));
 };
 
-class BrowserSkiaGoldPixelDiffTest : public views::test::WidgetTest {
+class ViewSkiaGoldPixelDiffTest : public views::test::WidgetTest {
  public:
-  BrowserSkiaGoldPixelDiffTest() {
+  ViewSkiaGoldPixelDiffTest() {
     auto* cmd_line = base::CommandLine::ForCurrentProcess();
     cmd_line->AppendSwitchASCII("git-revision", "test");
   }
 
-  BrowserSkiaGoldPixelDiffTest(const BrowserSkiaGoldPixelDiffTest&) = delete;
-  BrowserSkiaGoldPixelDiffTest& operator=(const BrowserSkiaGoldPixelDiffTest&) =
+  ViewSkiaGoldPixelDiffTest(const ViewSkiaGoldPixelDiffTest&) = delete;
+  ViewSkiaGoldPixelDiffTest& operator=(const ViewSkiaGoldPixelDiffTest&) =
       delete;
 
   views::View* AddChildViewToWidget(views::Widget* widget) {
@@ -60,8 +64,8 @@ class BrowserSkiaGoldPixelDiffTest : public views::test::WidgetTest {
   }
 };
 
-TEST_F(BrowserSkiaGoldPixelDiffTest, CompareScreenshotByView) {
-  MockBrowserSkiaGoldPixelDiffMockUpload mock_pixel;
+TEST_F(ViewSkiaGoldPixelDiffTest, CompareScreenshotByView) {
+  MockViewSkiaGoldPixelDiffMockUpload mock_pixel;
   EXPECT_CALL(
       mock_pixel,
       UploadToSkiaGoldServer(
@@ -71,12 +75,12 @@ TEST_F(BrowserSkiaGoldPixelDiffTest, CompareScreenshotByView) {
   views::Widget* widget = CreateTopLevelNativeWidget();
   views::View* child_view = AddChildViewToWidget(widget);
   mock_pixel.Init("Prefix");
-  bool ret = mock_pixel.CompareScreenshot("Demo", child_view);
+  bool ret = mock_pixel.CompareViewScreenshot("Demo", child_view);
   EXPECT_TRUE(ret);
   widget->CloseNow();
 }
 
-TEST_F(BrowserSkiaGoldPixelDiffTest, BypassSkiaGoldFunctionality) {
+TEST_F(ViewSkiaGoldPixelDiffTest, BypassSkiaGoldFunctionality) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       "bypass-skia-gold-functionality");
 
@@ -85,7 +89,9 @@ TEST_F(BrowserSkiaGoldPixelDiffTest, BypassSkiaGoldFunctionality) {
   views::Widget* widget = CreateTopLevelNativeWidget();
   views::View* child_view = AddChildViewToWidget(widget);
   mock_pixel.Init("Prefix");
-  bool ret = mock_pixel.CompareScreenshot("Demo", child_view);
+  bool ret = mock_pixel.CompareViewScreenshot("Demo", child_view);
   EXPECT_TRUE(ret);
   widget->CloseNow();
 }
+
+}  // namespace views

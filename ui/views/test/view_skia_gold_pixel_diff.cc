@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/pixel/browser_skia_gold_pixel_diff.h"
+#include "ui/views/test/view_skia_gold_pixel_diff.h"
 
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -17,6 +17,9 @@
 #include "ui/snapshot/snapshot_aura.h"
 #endif
 
+namespace views {
+
+namespace {
 void SnapshotCallback(base::RunLoop* run_loop,
                       gfx::Image* ret_image,
                       gfx::Image image) {
@@ -24,28 +27,13 @@ void SnapshotCallback(base::RunLoop* run_loop,
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                 run_loop->QuitClosure());
 }
+}  // namespace
 
-BrowserSkiaGoldPixelDiff::BrowserSkiaGoldPixelDiff() = default;
+ViewSkiaGoldPixelDiff::ViewSkiaGoldPixelDiff() = default;
 
-BrowserSkiaGoldPixelDiff::~BrowserSkiaGoldPixelDiff() = default;
+ViewSkiaGoldPixelDiff::~ViewSkiaGoldPixelDiff() = default;
 
-bool BrowserSkiaGoldPixelDiff::GrabWindowSnapshotInternal(
-    gfx::NativeWindow window,
-    const gfx::Rect& snapshot_bounds,
-    gfx::Image* image) const {
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-#if defined(USE_AURA)
-  ui::GrabWindowSnapshotAsyncAura(
-#else
-  ui::GrabWindowSnapshotAsync(
-#endif
-      window, snapshot_bounds,
-      base::BindOnce(&SnapshotCallback, &run_loop, image));
-  run_loop.Run();
-  return !image->IsEmpty();
-}
-
-bool BrowserSkiaGoldPixelDiff::CompareScreenshot(
+bool ViewSkiaGoldPixelDiff::CompareViewScreenshot(
     const std::string& screenshot_name,
     views::View* view,
     const ui::test::SkiaGoldMatchingAlgorithm* algorithm) const {
@@ -65,3 +53,21 @@ bool BrowserSkiaGoldPixelDiff::CompareScreenshot(
   return SkiaGoldPixelDiff::CompareScreenshot(screenshot_name,
                                               *image.ToSkBitmap(), algorithm);
 }
+
+bool ViewSkiaGoldPixelDiff::GrabWindowSnapshotInternal(
+    gfx::NativeWindow window,
+    const gfx::Rect& snapshot_bounds,
+    gfx::Image* image) const {
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+#if defined(USE_AURA)
+  ui::GrabWindowSnapshotAsyncAura(
+#else
+  ui::GrabWindowSnapshotAsync(
+#endif
+      window, snapshot_bounds,
+      base::BindOnce(&SnapshotCallback, &run_loop, image));
+  run_loop.Run();
+  return !image->IsEmpty();
+}
+
+}  // namespace views

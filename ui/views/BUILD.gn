@@ -905,6 +905,27 @@ component("views") {
   }
 }
 
+# TODO(crbug.com/1091985): Support CrOS.
+if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+  static_library("view_pixel_diff_test_support") {
+    testonly = true
+    sources = [
+      "test/view_skia_gold_pixel_diff.cc",
+      "test/view_skia_gold_pixel_diff.h",
+    ]
+
+    deps = [
+      ":views",
+      "//base",
+      "//skia",
+      "//testing/gtest",
+      "//ui/base:pixel_diff_test_support",
+      "//ui/gfx",
+      "//ui/snapshot",
+    ]
+  }
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -1402,6 +1423,11 @@ test("views_unittests") {
 
   if (is_linux || is_chromeos) {
     sources += [ "color_chooser/color_chooser_unittest.cc" ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+    sources += [ "test/view_skia_gold_pixel_diff_unittest.cc" ]
+    deps += [ "//ui/views:view_pixel_diff_test_support" ]
   }
 }
 
