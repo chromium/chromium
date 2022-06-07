@@ -1752,7 +1752,7 @@
   {
     "name": "enable-cros-ime-system-emoji-picker-extension",
     "owners": [ "hdchuong", "curtismcmullan", "myy", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "enable-cros-ime-system-emoji-picker-search-extension",
