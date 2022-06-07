@@ -54,14 +54,13 @@ EventTiming::EventTiming(base::TimeTicks processing_start,
 }
 
 // static
-void EventTiming::HandleInputDelay(LocalDOMWindow* window,
-                                   const Event& event,
-                                   base::TimeTicks processing_start) {
+void EventTiming::HandleInputDelay(LocalDOMWindow* window, const Event& event) {
   auto* pointer_event = DynamicTo<PointerEvent>(&event);
   base::TimeTicks event_timestamp =
       pointer_event ? pointer_event->OldestPlatformTimeStamp()
                     : event.PlatformTimeStamp();
 
+  base::TimeTicks processing_start = Now();
   if (ShouldLogEvent(event) && event.isTrusted()) {
     InteractiveDetector* interactive_detector =
         InteractiveDetector::From(*window->document());
@@ -114,8 +113,8 @@ std::unique_ptr<EventTiming> EventTiming::Create(LocalDOMWindow* window,
   if (!should_report_for_event_timing && !should_log_event)
     return nullptr;
 
+  HandleInputDelay(window, event);
   base::TimeTicks processing_start = Now();
-  HandleInputDelay(window, event, processing_start);
   return should_report_for_event_timing
              ? std::make_unique<EventTiming>(processing_start, performance,
                                              event)

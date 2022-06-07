@@ -39,9 +39,7 @@ class CORE_EXPORT EventTiming final {
   EventTiming(const EventTiming&) = delete;
   EventTiming& operator=(const EventTiming&) = delete;
 
-  static void HandleInputDelay(LocalDOMWindow* window,
-                               const Event& event,
-                               base::TimeTicks processing_start);
+  static void HandleInputDelay(LocalDOMWindow* window, const Event& event);
   // The caller owns the |clock| which must outlive the EventTiming.
   static void SetTickClockForTesting(const base::TickClock* clock);
 
