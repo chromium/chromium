@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -34,17 +35,16 @@ bool IsEncodedFormat(const assistant_client::OutputStreamFormat& format) {
 class AudioOutputImpl : public assistant_client::AudioOutput {
  public:
   AudioOutputImpl(
+      AudioOutputProviderImpl* audio_output_provider_impl,
       mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
       scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-      chromeos::assistant::mojom::AssistantAudioDecoderFactory*
-          audio_decoder_factory,
       mojom::AudioOutputDelegate* audio_output_delegate,
       assistant_client::OutputStreamType type,
       assistant_client::OutputStreamFormat format,
       const std::string& device_id)
-      : main_task_runner_(main_task_runner),
+      : audio_output_provider_impl_(audio_output_provider_impl),
+        main_task_runner_(main_task_runner),
         stream_factory_(std::move(stream_factory)),
-        audio_decoder_factory_(audio_decoder_factory),
         audio_output_delegate_(audio_output_delegate),
         stream_type_(type),
         format_(format) {
@@ -60,6 +60,8 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
   AudioOutputImpl& operator=(const AudioOutputImpl&) = delete;
 
   ~AudioOutputImpl() override {
+    main_task_runner_->ReleaseSoon(FROM_HERE,
+                                   std::move(audio_decoder_factory_manager_));
     main_task_runner_->DeleteSoon(FROM_HERE, device_owner_.release());
     main_task_runner_->DeleteSoon(FROM_HERE, audio_stream_handler_.release());
   }
@@ -98,8 +100,14 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
     }
 
     if (IsEncodedFormat(format_)) {
+      if (!audio_decoder_factory_manager_) {
+        audio_decoder_factory_manager_ =
+            audio_output_provider_impl_
+                ->GetOrCreateAudioDecoderFactoryManager();
+      }
+
       audio_stream_handler_->StartAudioDecoder(
-          audio_decoder_factory_, delegate,
+          audio_decoder_factory_manager_->GetAudioDecoderFactory(), delegate,
           base::BindOnce(&AudioDeviceOwner::Start,
                          base::Unretained(device_owner_.get()),
                          audio_output_delegate_, audio_stream_handler_.get(),
@@ -127,12 +135,15 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
     }
   }
 
+  AudioOutputProviderImpl* audio_output_provider_impl_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
+  scoped_refptr<AudioOutputProviderImpl::AudioDecoderFactoryManager>
+      audio_decoder_factory_manager_ GUARDED_BY_CONTEXT(main_sequence_checker_);
+
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory_
       GUARDED_BY_CONTEXT(main_sequence_checker_);
-  chromeos::assistant::mojom::AssistantAudioDecoderFactory*
-      audio_decoder_factory_ GUARDED_BY_CONTEXT(main_sequence_checker_);
   mojom::AudioOutputDelegate* const audio_output_delegate_
       GUARDED_BY_CONTEXT(main_sequence_checker_);
 
@@ -154,13 +165,53 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
   base::WeakPtrFactory<AudioOutputImpl> weak_ptr_factory_{this};
 };
 
+class AudioDecoderFactoryManagerImpl
+    : public AudioOutputProviderImpl::AudioDecoderFactoryManager {
+ public:
+  explicit AudioDecoderFactoryManagerImpl(
+      mojom::PlatformDelegate* platform_delegate) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+    platform_delegate->BindAudioDecoderFactory(
+        audio_decoder_factory_.BindNewPipeAndPassReceiver());
+  }
+
+  chromeos::assistant::mojom::AssistantAudioDecoderFactory*
+  GetAudioDecoderFactory() override {
+    return audio_decoder_factory_.get();
+  }
+
+  base::WeakPtr<AudioDecoderFactoryManager> GetWeakPtr() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ protected:
+  ~AudioDecoderFactoryManagerImpl() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+    audio_decoder_factory_.reset();
+  }
+
+ private:
+  mojo::Remote<chromeos::assistant::mojom::AssistantAudioDecoderFactory>
+      audio_decoder_factory_;
+
+  SEQUENCE_CHECKER(main_sequence_checker_);
+
+  base::WeakPtrFactory<AudioDecoderFactoryManagerImpl> weak_ptr_factory_{this};
+};
+
 }  // namespace
 
 AudioOutputProviderImpl::AudioOutputProviderImpl(const std::string& device_id)
     : loop_back_input_(media::AudioDeviceDescription::kLoopbackInputDeviceId),
       volume_control_impl_(),
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      device_id_(device_id) {}
+      device_id_(device_id),
+      start_audio_decoder_on_demand_(
+          ash::features::IsStartAssistantAudioDecoderOnDemandEnabled()) {}
 
 void AudioOutputProviderImpl::Bind(
     mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
@@ -218,19 +269,50 @@ void AudioOutputProviderImpl::RegisterAudioEmittingStateCallback(
 }
 
 void AudioOutputProviderImpl::BindAudioDecoderFactory() {
-  platform_delegate_->BindAudioDecoderFactory(
-      audio_decoder_factory_.BindNewPipeAndPassReceiver());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  if (start_audio_decoder_on_demand_)
+    return;
+
+  // Hold a ref counted object of |AudioDecoderFactoryManager| as it won't get
+  // destructed.
+  audio_decoder_factory_manager_ref_counted_ =
+      GetOrCreateAudioDecoderFactoryManager();
 }
 
 void AudioOutputProviderImpl::UnBindAudioDecoderFactory() {
-  audio_decoder_factory_.reset();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  if (start_audio_decoder_on_demand_)
+    return;
+
+  audio_decoder_factory_manager_ref_counted_.reset();
+}
+
+scoped_refptr<AudioOutputProviderImpl::AudioDecoderFactoryManager>
+AudioOutputProviderImpl::GetOrCreateAudioDecoderFactoryManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  if (audio_decoder_factory_manager_) {
+    return base::WrapRefCounted<
+        AudioOutputProviderImpl::AudioDecoderFactoryManager>(
+        audio_decoder_factory_manager_.get());
+  }
+
+  auto impl =
+      base::MakeRefCounted<AudioDecoderFactoryManagerImpl>(platform_delegate_);
+  audio_decoder_factory_manager_ = impl->GetWeakPtr();
+  return std::move(impl);
 }
 
 void AudioOutputProviderImpl::BindStreamFactory(
     mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
   platform_delegate_->BindAudioStreamFactory(std::move(receiver));
 }
 
+// Called from the Libassistant thread.
 assistant_client::AudioOutput*
 AudioOutputProviderImpl::CreateAudioOutputInternal(
     assistant_client::OutputStreamType type,
@@ -241,10 +323,10 @@ AudioOutputProviderImpl::CreateAudioOutputInternal(
       base::BindOnce(&AudioOutputProviderImpl::BindStreamFactory,
                      weak_ptr_factory_.GetWeakPtr(),
                      stream_factory.InitWithNewPipeAndPassReceiver()));
+
   // Owned by one arbitrary thread inside libassistant. It will be destroyed
   // once assistant_client::AudioOutput::Delegate::OnStopped() is called.
-  return new AudioOutputImpl(std::move(stream_factory), main_task_runner_,
-                             audio_decoder_factory_.get(),
+  return new AudioOutputImpl(this, std::move(stream_factory), main_task_runner_,
                              audio_output_delegate_.get(), type, stream_format,
                              device_id_);
 }

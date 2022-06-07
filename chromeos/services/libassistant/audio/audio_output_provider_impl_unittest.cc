@@ -7,19 +7,32 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
+#include "chromeos/services/libassistant/test_support/fake_platform_delegate.h"
 #include "media/base/audio_bus.h"
 #include "media/base/bind_to_current_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace libassistant {
+namespace {
+using ::assistant_client::OutputStreamMetadata;
+using ::base::test::ScopedFeatureList;
+using ::base::test::SingleThreadTaskEnvironment;
+using ::chromeos::assistant::FakePlatformDelegate;
+using ::chromeos::assistant::mojom::AssistantAudioDecoderFactory;
+
+constexpr char kFakeDeviceId[] = "device_id";
+}  // namespace
 
 class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
  public:
@@ -104,6 +117,20 @@ class FakeAudioOutputDelegateMojom
           observer) override {}
 };
 
+class FakeAssistantAudioDecoderFactory : public AssistantAudioDecoderFactory {
+ public:
+  FakeAssistantAudioDecoderFactory() = default;
+
+  void CreateAssistantAudioDecoder(
+      ::mojo::PendingReceiver<
+          ::chromeos::assistant::mojom::AssistantAudioDecoder> audio_decoder,
+      ::mojo::PendingRemote<
+          ::chromeos::assistant::mojom::AssistantAudioDecoderClient> client,
+      ::mojo::PendingRemote<
+          ::chromeos::assistant::mojom::AssistantMediaDataSource> data_source)
+      override {}
+};
+
 class AssistantAudioDeviceOwnerTest : public testing::Test {
  public:
   AssistantAudioDeviceOwnerTest()
@@ -121,6 +148,172 @@ class AssistantAudioDeviceOwnerTest : public testing::Test {
   base::test::TaskEnvironment task_env_;
 };
 
+TEST(AudioOutputProviderImplTest, StartDecoderServiceWithBindCall) {
+  ASSERT_FALSE(ash::features::IsStartAssistantAudioDecoderOnDemandEnabled());
+  SingleThreadTaskEnvironment task_environment;
+
+  auto provider = std::make_unique<AudioOutputProviderImpl>(kFakeDeviceId);
+
+  FakePlatformDelegate platform_delegate;
+  mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate;
+  { auto unused = audio_output_delegate.InitWithNewPipeAndPassReceiver(); }
+  provider->Bind(std::move(audio_output_delegate), &platform_delegate);
+
+  provider->BindAudioDecoderFactory();
+
+  mojo::PendingReceiver<AssistantAudioDecoderFactory>
+      audio_decoder_factory_pending_receiver =
+          platform_delegate.audio_decoder_factory_receiver();
+  FakeAssistantAudioDecoderFactory fake_assistant_audio_decoder_factory;
+  mojo::Receiver<AssistantAudioDecoderFactory>
+      assistant_audio_decoder_factory_receiver(
+          &fake_assistant_audio_decoder_factory,
+          std::move(audio_decoder_factory_pending_receiver));
+  // If the flag is off, we expect that AudioDecoderFactory will be bound after
+  // BindAudioDecoderFactory call.
+  EXPECT_TRUE(assistant_audio_decoder_factory_receiver.is_bound());
+
+  bool disconnected = false;
+  assistant_audio_decoder_factory_receiver.set_disconnect_handler(
+      base::BindLambdaForTesting([&]() { disconnected = true; }));
+
+  provider->UnBindAudioDecoderFactory();
+  task_environment.RunUntilIdle();
+
+  // Confirm that it's disconnected after UnBindAudioDecoderFactory call.
+  EXPECT_TRUE(disconnected);
+}
+
+TEST(AudioOutputProviderImplTest, StartDecoderServiceOnDemand) {
+  ScopedFeatureList scoped_feature_list(
+      features::kStartAssistantAudioDecoderOnDemand);
+  SingleThreadTaskEnvironment task_environment;
+
+  auto provider = std::make_unique<AudioOutputProviderImpl>(kFakeDeviceId);
+
+  FakePlatformDelegate platform_delegate;
+  mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate;
+  { auto unused = audio_output_delegate.InitWithNewPipeAndPassReceiver(); }
+  provider->Bind(std::move(audio_output_delegate), &platform_delegate);
+
+  provider->BindAudioDecoderFactory();
+  // If the flag is on, AudioDecoderFactory should not be bound with
+  // BindAudioDecoderFactory, i.e. It should not be valid.
+  EXPECT_FALSE(platform_delegate.audio_decoder_factory_receiver().is_valid());
+
+  // Set encoding format to MP3 as we use AudioDecoder only if it's in encoded
+  // format.
+  OutputStreamMetadata metadata = {
+      .buffer_stream_format = {
+          .encoding = assistant_client::OutputStreamEncoding::STREAM_MP3,
+      }};
+
+  std::unique_ptr<assistant_client::AudioOutput> first_output(
+      provider->CreateAudioOutput(metadata));
+  FakeAudioOutputDelegate first_fake_audio_output_delegate;
+  first_output->Start(&first_fake_audio_output_delegate);
+  task_environment.RunUntilIdle();
+
+  FakeAssistantAudioDecoderFactory fake_assistant_audio_decoder_factory;
+  auto receiver =
+      std::make_unique<mojo::Receiver<AssistantAudioDecoderFactory>>(
+          &fake_assistant_audio_decoder_factory,
+          platform_delegate.audio_decoder_factory_receiver());
+
+  // Confirm that AudioDecoderFactory is now bound after Start call.
+  EXPECT_TRUE(receiver->is_bound());
+
+  // Create/Start another output as |second_output|.
+  std::unique_ptr<assistant_client::AudioOutput> second_output(
+      provider->CreateAudioOutput(metadata));
+  FakeAudioOutputDelegate second_fake_audio_output_delegate;
+  second_output->Start(&second_fake_audio_output_delegate);
+  task_environment.RunUntilIdle();
+
+  bool disconnected = false;
+  receiver->set_disconnect_handler(
+      base::BindLambdaForTesting([&]() { disconnected = true; }));
+
+  // Delete the first output and confirm that the connection is not disconnected
+  // as we still have the second output.
+  first_output.reset();
+  task_environment.RunUntilIdle();
+  EXPECT_TRUE(receiver->is_bound());
+  EXPECT_FALSE(disconnected);
+
+  second_output.reset();
+  task_environment.RunUntilIdle();
+  // Confirm that AudioDecoderFactory is disconnected once all outputs got
+  // deleted.
+  EXPECT_TRUE(disconnected);
+
+  // Create another one and confirm that it still works correctly.
+  std::unique_ptr<assistant_client::AudioOutput> third_output(
+      provider->CreateAudioOutput(metadata));
+  FakeAudioOutputDelegate third_fake_audio_output_delegate;
+  third_output->Start(&third_fake_audio_output_delegate);
+  task_environment.RunUntilIdle();
+
+  receiver = std::make_unique<mojo::Receiver<AssistantAudioDecoderFactory>>(
+      &fake_assistant_audio_decoder_factory,
+      platform_delegate.audio_decoder_factory_receiver());
+  EXPECT_TRUE(receiver->is_bound());
+  disconnected = false;
+  receiver->set_disconnect_handler(
+      base::BindLambdaForTesting([&]() { disconnected = true; }));
+
+  third_output.reset();
+  task_environment.RunUntilIdle();
+  EXPECT_TRUE(disconnected);
+
+  provider->UnBindAudioDecoderFactory();
+}
+
+// We do not use AssistantAudioDecoder if audio format is in raw format.
+TEST(AudioOutputProviderImplTest, DoNotStartAudioServiceForRawFormat) {
+  ScopedFeatureList scoped_feature_list(
+      features::kStartAssistantAudioDecoderOnDemand);
+  SingleThreadTaskEnvironment task_environment;
+  FakeAssistantAudioDecoderFactory fake_assistant_audio_decoder_factory;
+
+  auto provider = std::make_unique<AudioOutputProviderImpl>(kFakeDeviceId);
+
+  FakePlatformDelegate platform_delegate;
+  mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate;
+  { auto unused = audio_output_delegate.InitWithNewPipeAndPassReceiver(); }
+  provider->Bind(std::move(audio_output_delegate), &platform_delegate);
+
+  provider->BindAudioDecoderFactory();
+  EXPECT_FALSE(platform_delegate.audio_decoder_factory_receiver().is_valid());
+
+  OutputStreamMetadata metadata = {
+      .buffer_stream_format = {
+          .encoding = assistant_client::OutputStreamEncoding::STREAM_PCM_S16,
+          .pcm_sample_rate = 44800,
+          .pcm_num_channels = 2,
+      }};
+
+  std::unique_ptr<assistant_client::AudioOutput> output(
+      provider->CreateAudioOutput(metadata));
+  FakeAudioOutputDelegate fake_audio_output_delegate;
+  output->Start(&fake_audio_output_delegate);
+  fake_audio_output_delegate.Reset();
+  fake_audio_output_delegate.Wait();
+  task_environment.RunUntilIdle();
+
+  // Confirm that AudioDecoderFactory is not bound even after Start call if it's
+  // in raw format.
+  EXPECT_FALSE(platform_delegate.audio_decoder_factory_receiver().is_valid());
+
+  output.reset();
+  task_environment.RunUntilIdle();
+
+  provider->UnBindAudioDecoderFactory();
+  task_environment.RunUntilIdle();
+}
+
+// TODO(b/234874756): Move AssistantAudioDeviceOwner test under
+// audio_device_owner_unittest.cc
 TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
   FakeAudioOutputDelegateMojom audio_output_delegate_mojom;
   FakeAudioOutputDelegate audio_output_delegate;
@@ -134,7 +327,7 @@ TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
   audio_output_delegate.set_num_of_bytes_to_fill(200);
   audio_output_delegate.Reset();
 
-  auto owner = std::make_unique<AudioDeviceOwner>("test device");
+  auto owner = std::make_unique<AudioDeviceOwner>(kFakeDeviceId);
   // Upon start, it will start to fill the buffer. The fill should stop after
   // Wait().
   owner->Start(&audio_output_delegate_mojom, &audio_output_delegate,

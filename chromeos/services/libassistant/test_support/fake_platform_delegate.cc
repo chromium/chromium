@@ -15,6 +15,12 @@ void FakePlatformDelegate::BindAudioStreamFactory(
   stream_factory_receiver_ = std::move(receiver);
 }
 
+void FakePlatformDelegate::BindAudioDecoderFactory(
+    mojo::PendingReceiver<
+        ::chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver) {
+  audio_decoder_factory_receiver_ = std::move(receiver);
+}
+
 void FakePlatformDelegate::BindBatteryMonitor(
     mojo::PendingReceiver<::device::mojom::BatteryMonitor> receiver) {
   battery_monitor_receiver_ = std::move(receiver);

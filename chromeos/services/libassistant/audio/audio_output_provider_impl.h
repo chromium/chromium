@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
@@ -30,6 +31,31 @@ namespace libassistant {
 
 class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
  public:
+  // |AudioDecoderFactoryManager| is responsible for managing life time of
+  // AssistantAudioDecoder service. |AudioOutputImpl| will hold a ref counted
+  // object of |AudioDecoderFactoryManager|. |AudioDecoderFactoryManager| will
+  // be destructed when all of ref counted objects of
+  // |AudioDecoderFactoryManager| are destructed, i.e. All of |AudioOutputImpl|
+  // are destructed.
+  //
+  // Define |AudioDecoderFactoryManager| here as we want to reference it from
+  // |AudioOutputProviderImpl|.
+  class AudioDecoderFactoryManager
+      : public base::RefCounted<AudioDecoderFactoryManager> {
+   public:
+    virtual chromeos::assistant::mojom::AssistantAudioDecoderFactory*
+    GetAudioDecoderFactory() = 0;
+
+    AudioDecoderFactoryManager() = default;
+    AudioDecoderFactoryManager(const AudioDecoderFactoryManager&) = delete;
+    AudioDecoderFactoryManager& operator=(const AudioDecoderFactoryManager&) =
+        delete;
+
+   protected:
+    friend class base::RefCounted<AudioDecoderFactoryManager>;
+    virtual ~AudioDecoderFactoryManager() = default;
+  };
+
   explicit AudioOutputProviderImpl(const std::string& device_id);
 
   AudioOutputProviderImpl(const AudioOutputProviderImpl&) = delete;
@@ -54,6 +80,8 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
 
   void BindAudioDecoderFactory();
   void UnBindAudioDecoderFactory();
+  scoped_refptr<AudioDecoderFactoryManager>
+  GetOrCreateAudioDecoderFactoryManager();
 
  private:
   void BindStreamFactory(
@@ -71,9 +99,24 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
   AudioInputImpl loop_back_input_;
   VolumeControlImpl volume_control_impl_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-  mojo::Remote<chromeos::assistant::mojom::AssistantAudioDecoderFactory>
-      audio_decoder_factory_;
   std::string device_id_;
+
+  // Life time of |AudioDecoderFactoryManager| is managed by |AudioOutput|
+  // instances. |AudioOutputImpl| will hold a ref counted object of
+  // |AudioDecoderFactoryManager|.
+  base::WeakPtr<AudioDecoderFactoryManager> audio_decoder_factory_manager_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
+
+  const bool start_audio_decoder_on_demand_;
+  // This is used to implement |start_audio_decoder_on_demand_| flag off
+  // behavior. |AudioOutputProviderImpl| will hold a ref counted object of
+  // |AudioDecoderFactoryManager| as it won't destructed.
+  scoped_refptr<AudioDecoderFactoryManager>
+      audio_decoder_factory_manager_ref_counted_
+          GUARDED_BY_CONTEXT(main_sequence_checker_);
+
+  SEQUENCE_CHECKER(main_sequence_checker_);
+
   base::WeakPtrFactory<AudioOutputProviderImpl> weak_ptr_factory_{this};
 };
 

@@ -841,6 +841,12 @@ const base::Feature kHoldingSpaceInProgressDownloadsNotificationSuppression{
 const base::Feature kSnoopingProtection{"SnoopingProtection",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to start AssistantAudioDecoder service on demand (at query
+// response time).
+const base::Feature kStartAssistantAudioDecoderOnDemand(
+    "StartAssistantAudioDecoderOnDemand",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable a new header bar for the ChromeOS virtual keyboard.
 const base::Feature kVirtualKeyboardNewHeader{
     "VirtualKeyboardNewHeader", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1890,6 +1896,10 @@ bool IsHostnameSettingEnabled() {
 bool IsSnoopingProtectionEnabled() {
   return base::FeatureList::IsEnabled(kSnoopingProtection) &&
          ash::switches::HasHps();
+}
+
+bool IsStartAssistantAudioDecoderOnDemandEnabled() {
+  return base::FeatureList::IsEnabled(kStartAssistantAudioDecoderOnDemand);
 }
 
 bool IsImprovedDesksKeyboardShortcutsEnabled() {
