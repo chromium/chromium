@@ -170,11 +170,6 @@ extern const char kDiscoverFeedInNtpDescription[];
 extern const char kEnableDiscoverFeedTopSyncPromoName[];
 extern const char kEnableDiscoverFeedTopSyncPromoDescription[];
 
-// Title and description for the flag to enable DisplaySyncErrors refactored
-// code.
-extern const char kDisplaySyncErrorsRefactorName[];
-extern const char kDisplaySyncErrorsRefactorDescription[];
-
 // Title and description for the flag to enable Calendar support.
 extern const char kDownloadCalendarName[];
 extern const char kDownloadCalendarDescription[];

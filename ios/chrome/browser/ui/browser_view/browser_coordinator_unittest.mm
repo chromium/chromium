@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
@@ -80,6 +81,7 @@ class BrowserCoordinatorTest : public PlatformTest {
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
     WebStateDelegateBrowserAgent::CreateForBrowser(
         browser_.get(), TabInsertionBrowserAgent::FromBrowser(browser_.get()));
+    SyncErrorBrowserAgent::CreateForBrowser(browser_.get());
 
     IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]];

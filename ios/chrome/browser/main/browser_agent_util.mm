@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
+#import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/tabs/synced_window_delegate_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_parenting_browser_agent.h"
@@ -93,6 +94,8 @@ void AttachBrowserAgents(Browser* browser) {
 
   if (!browser->GetBrowserState()->IsOffTheRecord())
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser);
+
+  SyncErrorBrowserAgent::CreateForBrowser(browser);
 
   UpgradeCenterBrowserAgent::CreateForBrowser(browser,
                                               [UpgradeCenter sharedInstance]);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/sync/sync_error_browser_agent.h"
+#import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
@@ -52,8 +52,9 @@ void SyncErrorBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
                                                web::WebState* web_state,
                                                int index,
                                                bool activating) {
-  DCHECK(signin_presenter_provider_);
-  DCHECK(sync_presenter_provider_);
+  if (signin_presenter_provider_ == nullptr ||
+      sync_presenter_provider_ == nullptr)
+    return;
 
   ChromeBrowserState* browser_state = browser_->GetBrowserState();
 

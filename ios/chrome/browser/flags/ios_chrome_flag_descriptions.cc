@@ -198,12 +198,6 @@ const char kEnableDiscoverFeedTopSyncPromoDescription[] =
     "When enabled, a sync promotion will be presented to eligible users on top "
     "of the feed cards.";
 
-const char kDisplaySyncErrorsRefactorName[] =
-    "Enable Display Sync Errors refactored code";
-const char kDisplaySyncErrorsRefactorDescription[] =
-    "When enabled, displaying sync errors logic is provided by a Browser Agent "
-    "not BVC.";
-
 const char kDownloadCalendarName[] = "Download Calendar";
 const char kDownloadCalendarDescription[] =
     "Allows user to download & save Calendar";

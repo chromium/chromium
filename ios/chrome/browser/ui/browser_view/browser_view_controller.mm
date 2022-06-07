@@ -102,7 +102,6 @@
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
-#import "ios/chrome/browser/ui/sync/utils/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/background_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
@@ -4125,14 +4124,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (SessionRestorationBrowserAgent::FromBrowser(self.browser)
           ->IsRestoringSession()) {
     return;
-  }
-
-  if (!IsDisplaySyncErrorsRefactorEnabled()) {
-    if (!ReSignInInfoBarDelegate::Create(self.browserState, webState,
-                                         self /* id<SigninPresenter> */)) {
-      DisplaySyncErrors(self.browserState, webState,
-                        self /* id<SyncPresenter> */);
-    }
   }
 
   BOOL inBackground = !activating;
