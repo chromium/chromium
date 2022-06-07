@@ -115,7 +115,10 @@ FrameTextDumpResult FrameTextDumpResult::CompleteWithContents(
   DCHECK(!IsCompleted());
 
   FrameTextDumpResult copy = *this;
+  // Always trim whitespace from |contents| because it can non-deterministically
+  // have trailing whitespace which makes testing and parsing harder.
   copy.contents_ = contents;
+  base::TrimWhitespace(contents, base::TRIM_ALL, &(copy.contents_.value()));
   return copy;
 }
 

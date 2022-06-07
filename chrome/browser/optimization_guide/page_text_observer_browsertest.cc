@@ -149,7 +149,7 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
     if (request.GetURL().path() == "/slow-first-layout.js") {
       std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
           std::make_unique<net::test_server::DelayedHttpResponse>(
-              base::Milliseconds(500));
+              base::Milliseconds(1500));
       resp->set_code(net::HTTP_OK);
       resp->set_content_type("application/javascript");
       resp->set_content(std::string());
@@ -404,26 +404,12 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFNotAmpSubframe) {
                                                base::TrimPositions::TRIM_ALL));
 }
 
-class PageTextObserverSingleProcessBrowserTest
-    : public PageTextObserverBrowserTest {
- public:
-  PageTextObserverSingleProcessBrowserTest() = default;
-  ~PageTextObserverSingleProcessBrowserTest() override = default;
+IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SameProcessIframe) {
+  // Give the browser a moment to startup (helps to reduce flakes by ensuring
+  // renderer and browser are ready to go).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(embedded_test_server()->GetURL("a.com", "/hello.html"))));
 
-  void SetUpCommandLine(base::CommandLine* cmd_line) override {
-    PageTextObserverBrowserTest::SetUpCommandLine(cmd_line);
-    cmd_line->AppendSwitch("single-process");
-  }
-};
-
-#if BUILDFLAG(IS_MAC)
-// https://crbug.com/1189556
-#define MAYBE_SameProcessIframe DISABLED_SameProcessIframe
-#else
-#define MAYBE_SameProcessIframe SameProcessIframe
-#endif
-IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
-                       MAYBE_SameProcessIframe) {
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
@@ -457,9 +443,12 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
-                       // TODO(crbug.com/1295025): Re-enable this test
-                       DISABLED_SameProcessAMPSubframe) {
+IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SameProcessAMPSubframe) {
+  // Give the browser a moment to startup (helps to reduce flakes by ensuring
+  // renderer and browser are ready to go).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(embedded_test_server()->GetURL("a.com", "/hello.html"))));
+
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
