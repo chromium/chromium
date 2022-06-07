@@ -96,10 +96,11 @@ void ShowDialog(gfx::NativeWindow parent,
                 const extensions::ExtensionId& extension_id,
                 std::unique_ptr<ui::DialogModel> dialog_model) {
   ExtensionsToolbarContainer* container = GetExtensionsToolbarContainer(parent);
-  if (container)
+  if (container && container->GetVisible()) {
     ShowDialog(container, extension_id, std::move(dialog_model));
-  else
+  } else {
     constrained_window::ShowBrowserModal(std::move(dialog_model), parent);
+  }
 }
 
 void ShowDialog(ExtensionsToolbarContainer* container,
