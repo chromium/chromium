@@ -5,13 +5,19 @@
     <title>cr-checkbox demo</title>
     <link rel="stylesheet" href="demo.css">
   <body>
-    <h1>cr-checkbox</h1>
-    <div class="demos">
-      <cr-checkbox>Checkbox</cr-checkbox>
-      <cr-checkbox checked>Checkbox</cr-checkbox>
-      <cr-checkbox disabled>Disabled checkbox</cr-checkbox>
-      <cr-checkbox checked disabled>Disabled checked checkbox</cr-checkbox>
-    </div>
+    <dom-bind>
+      <template>
+        <h1>cr-checkbox</h1>
+        <div class="demos">
+          <cr-checkbox checked="{{myValue_}}">Checkbox</cr-checkbox>
+          <div>Above checkbox is checked? [[myValue_]]</div>
+          
+          <cr-checkbox checked>Checkbox</cr-checkbox>
+          <cr-checkbox disabled>Disabled checkbox</cr-checkbox>
+          <cr-checkbox checked disabled>Disabled checked checkbox</cr-checkbox>
+        </div>
+      </template>
+    </dom-bind>
 
     <script src="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js"
         type="module"></script>
