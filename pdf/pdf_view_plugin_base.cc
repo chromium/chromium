@@ -148,24 +148,6 @@ PdfViewPluginBase::PdfViewPluginBase() = default;
 
 PdfViewPluginBase::~PdfViewPluginBase() = default;
 
-void PdfViewPluginBase::InitializeBase(std::unique_ptr<PDFiumEngine> engine,
-                                       base::StringPiece src_url,
-                                       base::StringPiece original_url) {
-  DCHECK(engine);
-  engine_ = std::move(engine);
-
-  // If we're in print preview mode we don't need to load the document yet.
-  // A `kJSResetPrintPreviewModeType` message will be sent to the plugin letting
-  // it know the url to load. By not loading here we avoid loading the same
-  // document twice.
-  if (IsPrintPreview())
-    return;
-
-  last_progress_sent_ = 0;
-  LoadUrl(src_url, base::BindOnce(&PdfViewPluginBase::DidOpen, GetWeakPtr()));
-  url_ = std::string(original_url);
-}
-
 void PdfViewPluginBase::ProposeDocumentLayout(const DocumentLayout& layout) {
   base::Value::Dict message;
   message.Set("type", "documentDimensions");
@@ -595,6 +577,10 @@ void PdfViewPluginBase::DestroyEngine() {
 
 void PdfViewPluginBase::DestroyPreviewEngine() {
   preview_engine_.reset();
+}
+
+void PdfViewPluginBase::set_engine(std::unique_ptr<PDFiumEngine> engine) {
+  engine_ = std::move(engine);
 }
 
 void PdfViewPluginBase::InvalidateAfterPaintDone() {

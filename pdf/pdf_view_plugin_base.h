@@ -160,13 +160,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   PdfViewPluginBase();
   ~PdfViewPluginBase() override;
 
-  // Performs initialization common to all implementations of this plugin.
-  // `engine` should be an appropriately-configured PDF engine, while the other
-  // parameters come from the corresponding plugin attributes.
-  void InitializeBase(std::unique_ptr<PDFiumEngine> engine,
-                      base::StringPiece src_url,
-                      base::StringPiece original_url);
-
   // Creates a new `PDFiumEngine`.
   virtual std::unique_ptr<PDFiumEngine> CreateEngine(
       PDFEngine::Client* client,
@@ -182,6 +175,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   const PDFiumEngine* engine() const { return engine_.get(); }
   PDFiumEngine* engine() { return engine_.get(); }
+  void set_engine(std::unique_ptr<PDFiumEngine> engine);
 
   // Loads `url`, invoking `callback` on receiving the initial response.
   virtual void LoadUrl(base::StringPiece url, LoadUrlCallback callback) = 0;
@@ -312,6 +306,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Records user actions.
   virtual void UserMetricsRecordAction(const std::string& action) = 0;
 
+  void set_url(std::string url) { url_ = std::move(url); }
+
   ui::mojom::CursorType cursor_type() const { return cursor_type_; }
   void set_cursor_type(ui::mojom::CursorType cursor_type) {
     cursor_type_ = cursor_type;
@@ -339,11 +335,16 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   float device_scale() const { return device_scale_; }
 
+  void set_last_progress_sent(int progress) { last_progress_sent_ = progress; }
+
   static constexpr bool IsSaveDataSizeValid(size_t size) {
     return size > 0 && size <= kMaximumSavedFileSize;
   }
 
   static base::Value::Dict DictFromRect(const gfx::Rect& rect);
+
+  // Handles `LoadUrl()` result.
+  void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result);
 
  private:
   // Converts a scroll offset (which is relative to a UI direction-dependent
@@ -389,9 +390,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Starts loading accessibility information.
   void LoadAccessibility();
-
-  // Handles `LoadUrl()` result.
-  void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result);
 
   // Handles `LoadUrl()` result for print preview.
   void DidOpenPreview(std::unique_ptr<UrlLoader> loader, int32_t result);

@@ -240,15 +240,21 @@ bool PdfViewWebPlugin::InitializeCommon() {
 
   full_frame_ = params->full_frame;
   background_color_ = params->background_color;
-  InitializeBase(CreateEngine(this, params->script_option),
-                 /*src_url=*/params->src_url,
-                 /*original_url=*/params->original_url);
+
+  set_engine(CreateEngine(this, params->script_option));
+  DCHECK(engine());
 
   SendSetSmoothScrolling();
 
-  // Skip the remaining initialization when in Print Preview mode.
+  // Skip the remaining initialization when in Print Preview mode. Loading will
+  // continue after the plugin receives a "resetPrintPreviewMode" message.
   if (IsPrintPreview())
     return true;
+
+  set_last_progress_sent(0);
+  LoadUrl(params->src_url,
+          base::BindOnce(&PdfViewWebPlugin::DidOpen, GetWeakPtr()));
+  set_url(params->original_url);
 
   // Not all edits go through the PDF plugin's form filler. The plugin instance
   // can be restarted by exiting annotation mode on ChromeOS, which can set the
