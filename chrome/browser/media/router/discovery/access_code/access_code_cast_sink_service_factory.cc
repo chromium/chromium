@@ -21,8 +21,21 @@ AccessCodeCastSinkService* AccessCodeCastSinkServiceFactory::GetForProfile(
   }
   // GetServiceForBrowserContext returns a KeyedService hence the static_cast<>
   // to return a pointer to AccessCodeCastSinkService.
-  return static_cast<AccessCodeCastSinkService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, false));
+  AccessCodeCastSinkService* service = static_cast<AccessCodeCastSinkService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /* create */ false));
+  if (!service) {
+    // This can happen in certain cases (notably when a profile has been newly
+    // created and a null ACCSS was associated with this profile before the
+    // policies were downloaded. If we passed the above enabled check, then we
+    // shouldn't have a null ACCSS pointer. So if we do, disassociate the null
+    // and recreate (b/233285243).
+    GetInstance()->Disassociate(profile);
+    service = static_cast<AccessCodeCastSinkService*>(
+        GetInstance()->GetServiceForBrowserContext(profile, /* create */ true));
+  }
+  DCHECK(service)
+      << "No AccessCodeCastSinkService found for pref enabled user!";
+  return service;
 }
 
 // static
