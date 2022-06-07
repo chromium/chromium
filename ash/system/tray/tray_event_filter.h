@@ -34,6 +34,7 @@ class ASH_EXPORT TrayEventFilter : public ui::EventHandler {
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:
   void ProcessPressedEvent(const ui::LocatedEvent& event);

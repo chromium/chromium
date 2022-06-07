@@ -124,6 +124,26 @@ TEST_F(TrayEventFilterTest, ClickingInsideDoesNotCloseBubble) {
   EXPECT_TRUE(IsBubbleShown());
 }
 
+TEST_F(TrayEventFilterTest, DraggingInsideDoesNotCloseBubble) {
+  ShowSystemTrayMainView();
+  EXPECT_TRUE(IsBubbleShown());
+
+  // Dragging within the bubble should not close the bubble.
+  const gfx::Rect tray_bounds = GetSystemTrayBoundsInScreen();
+  const gfx::Point start = tray_bounds.origin();
+  const gfx::Point end_inside = start + gfx::Vector2d(5, 5);
+  GetEventGenerator()->GestureScrollSequence(start, end_inside,
+                                             base::Milliseconds(100), 4);
+  EXPECT_TRUE(IsBubbleShown());
+
+  // Dragging from inside to outside of the bubble should not close the bubble.
+  const gfx::Point start_inside = end_inside;
+  const gfx::Point end_outside = start + gfx::Vector2d(-5, -5);
+  GetEventGenerator()->GestureScrollSequence(start_inside, end_outside,
+                                             base::Milliseconds(100), 4);
+  EXPECT_TRUE(IsBubbleShown());
+}
+
 TEST_F(TrayEventFilterTest, ClickingOnMenuContainerDoesNotCloseBubble) {
   // Create a menu window and place it in the menu container window.
   std::unique_ptr<aura::Window> menu_window = CreateTestWindow();
@@ -188,6 +208,20 @@ TEST_F(TrayEventFilterTest, ClickingOnKeyboardContainerDoesNotCloseBubble) {
   ui::Event::DispatcherApi(&event).set_target(keyboard_window.get());
   GetTrayEventFilter()->OnMouseEvent(&event);
   EXPECT_TRUE(IsBubbleShown());
+}
+
+TEST_F(TrayEventFilterTest, DraggingOnTrayClosesBubble) {
+  ShowSystemTrayMainView();
+  EXPECT_TRUE(IsBubbleShown());
+
+  // Dragging on the tray background view should close the bubble.
+  const gfx::Rect tray_bounds =
+      GetPrimaryUnifiedSystemTray()->GetBoundsInScreen();
+  const gfx::Point start = tray_bounds.CenterPoint();
+  const gfx::Point end_inside = start + gfx::Vector2d(0, 10);
+  GetEventGenerator()->GestureScrollSequence(start, end_inside,
+                                             base::Milliseconds(100), 4);
+  EXPECT_FALSE(IsBubbleShown());
 }
 
 TEST_F(TrayEventFilterTest, MessageCenterAndSystemTrayStayOpenTogether) {
