@@ -187,6 +187,8 @@
 #include "ash/webui/file_manager/url_constants.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
+#include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
+#include "ash/webui/guest_os_installer/url_constants.h"
 #include "ash/webui/help_app_ui/help_app_ui.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/media_app_ui/media_app_ui.h"
@@ -216,6 +218,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
+#include "chrome/browser/ash/guest_os/public/installer_delegate_factory.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -665,6 +668,13 @@ WebUIController* NewWebUI<ash::personalization_app::PersonalizationAppUI>(
   return ash::personalization_app::CreatePersonalizationAppUI(web_ui);
 }
 
+template <>
+WebUIController* NewWebUI<ash::GuestOSInstallerUI>(WebUI* web_ui,
+                                                   const GURL& url) {
+  return new ash::GuestOSInstallerUI(
+      web_ui, url, base::BindRepeating(&guest_os::InstallerDelegateFactory));
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -954,6 +964,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::CertificateManagerDialogUI>;
   if (url.host_piece() == ash::kChromeUIConnectivityDiagnosticsHost)
     return &NewWebUI<ash::ConnectivityDiagnosticsUI>;
+  if (url.host_piece() == ash::kChromeUIGuestOSInstallerHost)
+    return &NewWebUI<ash::GuestOSInstallerUI>;
   if (url.host_piece() == chrome::kChromeUICrostiniInstallerHost)
     return &NewWebUI<chromeos::CrostiniInstallerUI>;
   if (url.host_piece() == chrome::kChromeUICrostiniUpgraderHost)
