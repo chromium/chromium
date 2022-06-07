@@ -235,8 +235,9 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Test that we don't crash when uninstalling a web app from a web app window in
 // Ash. Context: crbug.com/825554
+// TODO(crbug.com/1332923): The test is flaky.
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
-                       WebAppWindowAshCrash) {
+                       DISABLED_WebAppWindowAshCrash) {
   AppId app_id = InstallTestWebApp(browser()->profile());
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
