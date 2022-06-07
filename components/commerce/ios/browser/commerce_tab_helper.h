@@ -41,6 +41,10 @@ class CommerceTabHelper : public web::WebStateObserver,
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
 
+  void PageLoaded(
+      web::WebState* web_state,
+      web::PageLoadCompletionStatus load_completion_status) override;
+
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
@@ -59,6 +63,12 @@ class CommerceTabHelper : public web::WebStateObserver,
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       scoped_observation_{this};
+
+  // The url from the previous successful main frame navigation. This will be
+  // empty if this is the first navigation for this tab or post-restart. We keep
+  // track of this because the URL kepkt by the backing WebContents will have
+  // changed before we get the signal for it.
+  GURL previous_main_frame_url_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

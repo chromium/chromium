@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
@@ -25,6 +24,8 @@
 namespace commerce {
 
 ProductInfo::ProductInfo() = default;
+ProductInfo::ProductInfo(const ProductInfo&) = default;
+ProductInfo& ProductInfo::operator=(const ProductInfo&) = default;
 ProductInfo::~ProductInfo() = default;
 MerchantInfo::MerchantInfo() = default;
 MerchantInfo::MerchantInfo(MerchantInfo&&) = default;
@@ -70,22 +71,100 @@ void ShoppingService::RegisterPrefs(PrefRegistrySimple* registry) {
 void ShoppingService::WebWrapperCreated(WebWrapper* web) {}
 
 void ShoppingService::DidNavigatePrimaryMainFrame(WebWrapper* web) {
-  // Record metrics about the page navigation if allowed.
-  if (IsPDPMetricsRecordingEnabled() && opt_guide_) {
+  if (opt_guide_ &&
+      (IsProductInfoApiEnabled() || IsPDPMetricsRecordingEnabled())) {
+    UpdateProductInfoCacheForInsertion(web->GetLastCommittedURL());
+
     opt_guide_->CanApplyOptimization(
         web->GetLastCommittedURL(),
         optimization_guide::proto::OptimizationType::PRICE_TRACKING,
-        base::BindOnce(&ShoppingService::PDPMetricsCallback,
-                       weak_ptr_factory_.GetWeakPtr(), web->IsOffTheRecord()));
+        base::BindOnce(
+            [](base::WeakPtr<ShoppingService> service, const GURL& url,
+               bool is_off_the_record,
+               optimization_guide::OptimizationGuideDecision decision,
+               const optimization_guide::OptimizationMetadata& metadata) {
+              service->HandleOptGuideProductInfoResponse(
+                  url,
+                  base::BindOnce(
+                      [](const GURL&, const absl::optional<ProductInfo>&) {}),
+                  decision, metadata);
+
+              service->PDPMetricsCallback(is_off_the_record, decision,
+                                          metadata);
+            },
+            weak_ptr_factory_.GetWeakPtr(), web->GetLastCommittedURL(),
+            web->IsOffTheRecord()));
   }
 }
 
-void ShoppingService::WebWrapperDestroyed(WebWrapper* web) {}
+void ShoppingService::DidNavigateAway(WebWrapper* web, const GURL& from_url) {
+  UpdateProductInfoCacheForRemoval(from_url);
+}
+
+void ShoppingService::DidFinishLoad(WebWrapper* web) {}
+
+void ShoppingService::WebWrapperDestroyed(WebWrapper* web) {
+  UpdateProductInfoCacheForRemoval(web->GetLastCommittedURL());
+}
+
+void ShoppingService::UpdateProductInfoCacheForInsertion(const GURL& url) {
+  if (!IsProductInfoApiEnabled())
+    return;
+
+  auto it = product_info_cache_.find(url.spec());
+  if (it != product_info_cache_.end()) {
+    std::get<0>(it->second) = std::get<0>(it->second) + 1;
+  } else {
+    product_info_cache_[url.spec()] = std::make_tuple(1, false, nullptr);
+    std::get<2>(product_info_cache_[url.spec()]).reset();
+  }
+}
+
+void ShoppingService::UpdateProductInfoCache(
+    const GURL& url,
+    bool needs_js,
+    std::unique_ptr<ProductInfo> info) {
+  auto it = product_info_cache_.find(url.spec());
+  if (it == product_info_cache_.end())
+    return;
+
+  int count = std::get<0>(it->second);
+  product_info_cache_[url.spec()] =
+      std::make_tuple(count, needs_js, std::move(info));
+}
+
+const ProductInfo* ShoppingService::GetFromProductInfoCache(const GURL& url) {
+  auto it = product_info_cache_.find(url.spec());
+  if (it == product_info_cache_.end())
+    return nullptr;
+
+  return std::get<2>(it->second).get();
+}
+
+void ShoppingService::UpdateProductInfoCacheForRemoval(const GURL& url) {
+  if (!IsProductInfoApiEnabled())
+    return;
+
+  // Check if the previously navigated URL cache needs to be cleared. If more
+  // than one tab was open with the same URL, keep it in the cache but decrement
+  // the internal count.
+  auto it = product_info_cache_.find(url.spec());
+  if (it != product_info_cache_.end()) {
+    if (std::get<0>(it->second) <= 1) {
+      product_info_cache_.erase(it);
+    } else {
+      std::get<0>(it->second) = std::get<0>(it->second) - 1;
+    }
+  }
+}
 
 void ShoppingService::PDPMetricsCallback(
     bool is_off_the_record,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
+  if (!IsPDPMetricsRecordingEnabled())
+    return;
+
   metrics::RecordPDPStateForNavigation(decision, metadata, pref_service_,
                                        is_off_the_record);
 }
@@ -97,6 +176,15 @@ void ShoppingService::GetProductInfoForUrl(const GURL& url,
 
   // Crash if this API is used without a valid experiment.
   CHECK(IsProductInfoApiEnabled());
+
+  const ProductInfo* cachedInfo = GetFromProductInfoCache(url);
+  if (cachedInfo) {
+    absl::optional<ProductInfo> info;
+    // Make a copy based on the cached value.
+    info.emplace(*cachedInfo);
+    std::move(callback).Run(url, info);
+    return;
+  }
 
   opt_guide_->CanApplyOptimization(
       url, optimization_guide::proto::OptimizationType::PRICE_TRACKING,
@@ -136,6 +224,9 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
     ProductInfoCallback callback,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
+  if (!IsProductInfoApiEnabled())
+    return;
+
   // If optimization guide returns negative, return a negative signal with an
   // empty data object.
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
@@ -143,7 +234,7 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
     return;
   }
 
-  absl::optional<ProductInfo> info;
+  std::unique_ptr<ProductInfo> info = nullptr;
 
   if (metadata.any_metadata().has_value()) {
     absl::optional<commerce::PriceTrackingData> parsed_any =
@@ -153,7 +244,7 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
     if (parsed_any.has_value() && price_data.IsInitialized()) {
       commerce::BuyableProduct buyable_product = price_data.buyable_product();
 
-      info.emplace();
+      info = std::make_unique<ProductInfo>();
 
       if (buyable_product.has_title())
         info->title = buyable_product.title();
@@ -177,7 +268,15 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
     }
   }
 
-  std::move(callback).Run(url, info);
+  absl::optional<ProductInfo> optional_info;
+  if (info) {
+    optional_info.emplace(*info);
+    UpdateProductInfoCache(url, true, std::move(info));
+  }
+
+  // TODO(mdjones): Longer-term it probably makes sense to wait until the
+  // javascript has run to execute this.
+  std::move(callback).Run(url, optional_info);
 }
 
 void ShoppingService::HandleOptGuideMerchantInfoResponse(

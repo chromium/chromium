@@ -115,8 +115,17 @@ class ShoppingServiceTestBase : public testing::Test {
 
   void TestBody() override;
 
-  // A direct proxy to the same method in the ShoppingService class.
+  // A direct proxies to the same methods in the ShoppingService class.
   void DidNavigatePrimaryMainFrame(WebWrapper* web);
+  void DidNavigateAway(WebWrapper* web, const GURL& url);
+  void WebWrapperDestroyed(WebWrapper* web);
+
+  // Get the count of the number of tabs a particular URL is open in from the
+  // product info cache.
+  int GetProductInfoCacheOpenURLCount(const GURL& url);
+
+  // Get the item in the product info cache if it exists.
+  const ProductInfo* GetFromProductInfoCache(const GURL& url);
 
  protected:
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;

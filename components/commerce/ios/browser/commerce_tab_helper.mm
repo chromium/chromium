@@ -46,7 +46,21 @@ void CommerceTabHelper::DidFinishNavigation(
     return;
   }
 
+  // Notify the service that we're no longer interested in a particular URL.
+  shopping_service_->DidNavigateAway(web_wrapper_.get(),
+                                     previous_main_frame_url_);
+  previous_main_frame_url_ = web_wrapper_->GetLastCommittedURL();
+
   shopping_service_->DidNavigatePrimaryMainFrame(web_wrapper_.get());
+}
+
+void CommerceTabHelper::PageLoaded(
+    web::WebState* web_state,
+    web::PageLoadCompletionStatus load_completion_status) {
+  if (!shopping_service_)
+    return;
+
+  shopping_service_->DidFinishLoad(web_wrapper_.get());
 }
 
 void CommerceTabHelper::WebStateDestroyed(web::WebState* web_state) {

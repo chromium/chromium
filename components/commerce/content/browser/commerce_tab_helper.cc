@@ -32,7 +32,21 @@ void CommerceTabHelper::DidFinishNavigation(
     return;
   }
 
+  // Notify the service that we're no longer interested in a particular URL.
+  shopping_service_->DidNavigateAway(web_wrapper_.get(),
+                                     previous_main_frame_url_);
+  previous_main_frame_url_ = web_wrapper_->GetLastCommittedURL();
+
   shopping_service_->DidNavigatePrimaryMainFrame(web_wrapper_.get());
+}
+
+void CommerceTabHelper::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  if (!shopping_service_)
+    return;
+
+  shopping_service_->DidFinishLoad(web_wrapper_.get());
 }
 
 void CommerceTabHelper::WebContentsDestroyed() {

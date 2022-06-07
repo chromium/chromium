@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_COMMERCE_CORE_SHOPPING_SERVICE_H_
 #define COMPONENTS_COMMERCE_CORE_SHOPPING_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -38,8 +40,8 @@ class WebWrapper;
 // Information returned by the product info APIs.
 struct ProductInfo {
   ProductInfo();
-  ProductInfo(const ProductInfo&) = delete;
-  ProductInfo& operator=(const ProductInfo&) = delete;
+  ProductInfo(const ProductInfo&);
+  ProductInfo& operator=(const ProductInfo&);
   ~ProductInfo();
 
   std::string title;
@@ -104,14 +106,25 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // corresponds to a user creating a tab.
   void WebWrapperCreated(WebWrapper* web);
 
-  // A notification that a web wrapper finished a navigation in the primary
-  // main frame.
-  void DidNavigatePrimaryMainFrame(WebWrapper* web);
-
   // A notification that a WebWrapper has been destroyed. This signals that the
   // web page backing the provided WebWrapper is about to be destroyed.
   // Typically corresponds to a user closing a tab.
   void WebWrapperDestroyed(WebWrapper* web);
+
+ private:
+  // Allow tests to access private methods.
+  friend class ShoppingServiceTestBase;
+
+  // A notification that a web wrapper finished a navigation in the primary
+  // main frame.
+  void DidNavigatePrimaryMainFrame(WebWrapper* web);
+
+  // A notification that the user navigated away from the |from_url|.
+  void DidNavigateAway(WebWrapper* web, const GURL& from_url);
+
+  // A notification that the provided web wrapper has finished loading its main
+  // frame.
+  void DidFinishLoad(WebWrapper* web);
 
   // Whether APIs like |GetProductInfoForURL| are enabled and allowed to be
   // used.
@@ -144,6 +157,21 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
+  // Update the cache notifying that a tab is on the specified URL.
+  void UpdateProductInfoCacheForInsertion(const GURL& url);
+
+  // Update the data stored in the cache.
+  void UpdateProductInfoCache(const GURL& url,
+                              bool needs_js,
+                              std::unique_ptr<ProductInfo> info);
+
+  // Get the data stored in the cache or nullptr if none exists.
+  const ProductInfo* GetFromProductInfoCache(const GURL& url);
+
+  // Update the cache storing product info for a navigation away from the
+  // provided URL or closing of a tab.
+  void UpdateProductInfoCacheForRemoval(const GURL& url);
+
   // A handle to optimization guide for information about URLs that have
   // recently been navigated to.
   raw_ptr<optimization_guide::NewOptimizationGuideDecider> opt_guide_;
@@ -154,6 +182,13 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // removed from the model when destroyed. This will be null if no
   // BookmarkModel is provided to the service.
   std::unique_ptr<ShoppingBookmarkModelObserver> shopping_bookmark_observer_;
+
+  // This is a cache that maps URL to a tuple of number of web wrappers the URL
+  // is open in, whether the javascript fallback needs to run, and the product
+  // info associated with the URL, so: <count, run_js, info>.
+  std::unordered_map<std::string,
+                     std::tuple<uint32_t, bool, std::unique_ptr<ProductInfo>>>
+      product_info_cache_;
 
   base::WeakPtrFactory<ShoppingService> weak_ptr_factory_;
 };

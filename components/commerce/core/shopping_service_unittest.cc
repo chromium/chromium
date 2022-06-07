@@ -103,6 +103,107 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_OptGuideFalse) {
   ASSERT_TRUE(callback_executed);
 }
 
+// Test that the product info cache only keeps track of live tabs.
+TEST_F(ShoppingServiceTest, TestProductInfoCacheURLCount) {
+  base::test::ScopedFeatureList test_features;
+  test_features.InitAndEnableFeature(commerce::kShoppingList);
+
+  std::string url = "http://example.com/foo";
+  MockWebWrapper web1(GURL(url), false);
+  MockWebWrapper web2(GURL(url), false);
+
+  std::string url2 = "http://example.com/bar";
+  MockWebWrapper web3(GURL(url2), false);
+
+  // Ensure navigating to then navigating away clears the cache item.
+  ASSERT_EQ(0, GetProductInfoCacheOpenURLCount(GURL(url)));
+  DidNavigatePrimaryMainFrame(&web1);
+  ASSERT_EQ(1, GetProductInfoCacheOpenURLCount(GURL(url)));
+  DidNavigateAway(&web1, GURL(url));
+  ASSERT_EQ(0, GetProductInfoCacheOpenURLCount(GURL(url)));
+
+  // Ensure navigating to a URL in multiple "tabs" retains the cached item until
+  // both are navigated away.
+  ASSERT_EQ(0, GetProductInfoCacheOpenURLCount(GURL(url)));
+  DidNavigatePrimaryMainFrame(&web1);
+  DidNavigatePrimaryMainFrame(&web2);
+  ASSERT_EQ(2, GetProductInfoCacheOpenURLCount(GURL(url)));
+  DidNavigateAway(&web1, GURL(url));
+  ASSERT_EQ(1, GetProductInfoCacheOpenURLCount(GURL(url)));
+  DidNavigateAway(&web2, GURL(url));
+  ASSERT_EQ(0, GetProductInfoCacheOpenURLCount(GURL(url)));
+
+  // Make sure more than one entry can be in the cache.
+  ASSERT_EQ(0, GetProductInfoCacheOpenURLCount(GURL(url)));
+  ASSERT_EQ(0, GetProductInfoCacheOpenURLCount(GURL(url2)));
+  DidNavigatePrimaryMainFrame(&web1);
+  DidNavigatePrimaryMainFrame(&web3);
+  ASSERT_EQ(1, GetProductInfoCacheOpenURLCount(GURL(url)));
+  ASSERT_EQ(1, GetProductInfoCacheOpenURLCount(GURL(url2)));
+
+  // Simulate closing the browser to ensure the cache is emptied.
+  WebWrapperDestroyed(&web1);
+  WebWrapperDestroyed(&web2);
+  WebWrapperDestroyed(&web3);
+
+  ASSERT_EQ(0, GetProductInfoCacheOpenURLCount(GURL(url)));
+  ASSERT_EQ(0, GetProductInfoCacheOpenURLCount(GURL(url2)));
+}
+
+// Test that product info is inserted into the cache without a client
+// necessarily querying for it.
+TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
+  base::test::ScopedFeatureList test_features;
+  test_features.InitAndEnableFeature(commerce::kShoppingList);
+
+  MockWebWrapper web(GURL(kProductUrl), false);
+
+  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
+      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode);
+
+  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue, meta);
+
+  DidNavigatePrimaryMainFrame(&web);
+
+  // By this point there should be something in the cache.
+  ASSERT_EQ(1, GetProductInfoCacheOpenURLCount(GURL(kProductUrl)));
+
+  // We should be able to access the cached data.
+  const ProductInfo* cached_info = GetFromProductInfoCache(GURL(kProductUrl));
+  ASSERT_EQ(kTitle, cached_info->title);
+  ASSERT_EQ(kImageUrl, cached_info->image_url);
+  ASSERT_EQ(kOfferId, cached_info->offer_id);
+  ASSERT_EQ(kClusterId, cached_info->product_cluster_id);
+  ASSERT_EQ(kCountryCode, cached_info->country_code);
+
+  // The main API should still work.
+  bool callback_executed = false;
+  shopping_service_->GetProductInfoForUrl(
+      GURL(kProductUrl), base::BindOnce(
+                             [](bool* callback_executed, const GURL& url,
+                                const absl::optional<ProductInfo>& info) {
+                               ASSERT_EQ(kProductUrl, url.spec());
+                               ASSERT_TRUE(info.has_value());
+
+                               ASSERT_EQ(kTitle, info->title);
+                               ASSERT_EQ(kImageUrl, info->image_url);
+                               ASSERT_EQ(kOfferId, info->offer_id);
+                               ASSERT_EQ(kClusterId, info->product_cluster_id);
+                               ASSERT_EQ(kCountryCode, info->country_code);
+                               *callback_executed = true;
+                             },
+                             &callback_executed));
+
+  // Make sure the callback was actually run. In testing the callback is run
+  // immediately, this check ensures that is actually the case.
+  ASSERT_TRUE(callback_executed);
+
+  // Close the "tab" and make sure the cache is empty.
+  WebWrapperDestroyed(&web);
+  ASSERT_EQ(0, GetProductInfoCacheOpenURLCount(GURL(kProductUrl)));
+}
+
 // Test that merchant info is processed correctly.
 TEST_F(ShoppingServiceTest, TestMerchantInfoResponse) {
   // Ensure a feature that uses merchant info is enabled.

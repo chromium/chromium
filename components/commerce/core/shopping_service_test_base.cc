@@ -161,4 +161,26 @@ void ShoppingServiceTestBase::DidNavigatePrimaryMainFrame(WebWrapper* web) {
   shopping_service_->DidNavigatePrimaryMainFrame(web);
 }
 
+void ShoppingServiceTestBase::DidNavigateAway(WebWrapper* web,
+                                              const GURL& url) {
+  shopping_service_->DidNavigateAway(web, url);
+}
+
+void ShoppingServiceTestBase::WebWrapperDestroyed(WebWrapper* web) {
+  shopping_service_->WebWrapperDestroyed(web);
+}
+
+int ShoppingServiceTestBase::GetProductInfoCacheOpenURLCount(const GURL& url) {
+  auto it = shopping_service_->product_info_cache_.find(url.spec());
+  if (it == shopping_service_->product_info_cache_.end())
+    return 0;
+
+  return std::get<0>(it->second);
+}
+
+const ProductInfo* ShoppingServiceTestBase::GetFromProductInfoCache(
+    const GURL& url) {
+  return shopping_service_->GetFromProductInfoCache(url);
+}
+
 }  // namespace commerce
