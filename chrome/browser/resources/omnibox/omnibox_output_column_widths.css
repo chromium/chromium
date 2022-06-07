@@ -9,17 +9,16 @@
 .header-relevance {
   width: 100%;
 }
-
-.header-aqs-type-subtypes {
-  width: 200%;
-}
-
 .header-contents-and-description {
   width: 480%;
 }
 
 .header-destination-url {
   width: 220%;
+}
+
+.header-aqs-type-subtypes {
+  width: 100%;
 }
 
 .header-fill-and-inline {

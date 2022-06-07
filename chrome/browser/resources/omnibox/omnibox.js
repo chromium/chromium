@@ -37,11 +37,11 @@ import {OmniboxOutput} from './omnibox_output.js';
 let OmniboxRequest;
 
 /**
-  * @typedef {{
-  *   batchMode: string,
-  *   batchQueryInputs: Array<QueryInputs>,
-  * }}
-  */
+ * @typedef {{
+ *   batchMode: string,
+ *   batchQueryInputs: Array<QueryInputs>,
+ * }}
+ */
 let BatchSpecifier;
 
 /**
@@ -243,21 +243,20 @@ class ExportDelegate {
   async processBatch(batchQueryInputs, batchName) {
     const batchExports = [];
     for (const queryInputs of batchQueryInputs) {
-      const omniboxResponse = await browserProxy
-        .makeRequest(
-          queryInputs.inputText, queryInputs.resetAutocompleteController,
-          queryInputs.cursorPosition, queryInputs.zeroSuggest,
-          queryInputs.preventInlineAutocomplete, queryInputs.preferKeyword,
-          queryInputs.currentUrl, queryInputs.pageClassification, false);
-      const exportData = {
-        queryInputs,
-        // TODO(orinj|manukh): Make the schema consistent and remove
-        // the extra level of array nesting.  [[This]] is done for now
-        // so that elements can be extracted in the form import expects.
-        responsesHistory: [[omniboxResponse]],
-        displayInputs: this.omniboxInput_.displayInputs,
-      };
-      batchExports.push(exportData);
+    const omniboxResponse = await browserProxy.makeRequest(
+        queryInputs.inputText, queryInputs.resetAutocompleteController,
+        queryInputs.cursorPosition, queryInputs.zeroSuggest,
+        queryInputs.preventInlineAutocomplete, queryInputs.preferKeyword,
+        queryInputs.currentUrl, queryInputs.pageClassification, false);
+    const exportData = {
+      queryInputs,
+      // TODO(orinj|manukh): Make the schema consistent and remove
+      // the extra level of array nesting.  [[This]] is done for now
+      // so that elements can be extracted in the form import expects.
+      responsesHistory: [[omniboxResponse]],
+      displayInputs: this.omniboxInput_.displayInputs,
+    };
+    batchExports.push(exportData);
     }
     const variationInfo =
         await sendWithPromise('requestVariationInfo', true);
@@ -274,7 +273,7 @@ class ExportDelegate {
       description: '',
       authorTool: 'chrome://omnibox',
       batchName,
-      versionDetails : ExportDelegate.getVersionDetails_(),
+      versionDetails: ExportDelegate.getVersionDetails_(),
       variationInfo,
       pathInfo,
       appVersion: navigator.appVersion,
@@ -330,7 +329,7 @@ class ExportDelegate {
   /** @private @return {OmniboxExport} */
   get exportData_() {
     return {
-      versionDetails : ExportDelegate.getVersionDetails_(),
+      versionDetails: ExportDelegate.getVersionDetails_(),
       queryInputs: this.omniboxInput_.queryInputs,
       displayInputs: this.omniboxInput_.displayInputs,
       responsesHistory: this.omniboxOutput_.responsesHistory,
@@ -353,9 +352,9 @@ class ExportDelegate {
   }
 
   /**
-    * @param {Date=} date
-    * @return {string} A sortable timestamp string for use in filenames.
-    */
+   * @param {Date=} date
+   * @return {string} A sortable timestamp string for use in filenames.
+   */
   static getTimeStamp(date) {
     if (!date) {
       date = new Date();
@@ -370,7 +369,15 @@ class ExportDelegate {
       'language', 'official', 'os_type', 'profile_path', 'useragent',
       'version', 'version_processor_variation', 'version_modifier'];
     return Object.fromEntries(
-        loadTimeDataKeys.map(key => [key, loadTimeData.getValue(key)]));
+        loadTimeDataKeys.map(key => {
+    let valueOrError;
+    try {
+      valueOrError = loadTimeData.getValue(key);
+    } catch (e) {
+      valueOrError = e.toString();
+    }
+    return [key, valueOrError];
+        }));
   }
 }
 
@@ -415,10 +422,10 @@ function validateImportData_(importData) {
   }
 
   if (!importData.responsesHistory.every(
-          responses => responses.every(
-              ({combinedResults, resultsByProvider}) =>
-                  Array.isArray(combinedResults) &&
-                  Array.isArray(resultsByProvider)))) {
+      responses => responses.every(
+          ({combinedResults, resultsByProvider}) =>
+              Array.isArray(combinedResults) &&
+              Array.isArray(resultsByProvider)))) {
     console.error(
         INVALID_MESSAGE +
         'responsesHistory items\' items missing combinedResults and ' +
