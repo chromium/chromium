@@ -254,7 +254,12 @@ static_js_files = [
 
 # END: static_js_files.
 
-ts_files = [ "file_manager/hello.ts" ]
+ts_files = [
+  "file_manager/lib/base_store.ts",
+  "file_manager/state/store.ts",
+  "file_manager/state/state.ts",
+  "file_manager/state/reducers.ts",
+]
 
 # Generated files are built from the repository and the final JS files is only
 # available in the "gen/" folder.

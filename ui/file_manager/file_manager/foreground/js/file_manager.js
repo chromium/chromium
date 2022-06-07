@@ -29,6 +29,7 @@ import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {BackgroundWindow} from '../../externs/background_window.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
+import {getStore} from '../../state/store.js';
 
 import {ActionsController} from './actions_controller.js';
 import {AndroidAppListModel} from './android_app_list_model.js';
@@ -939,6 +940,11 @@ export class FileManager extends EventTarget {
     this.initAdditionalUI_();
     await this.initSettingsPromise_;
     const fileSystemUIPromise = this.initFileSystemUI_();
+    // Initialize the Store for the whole app.
+    if (util.isFilesAppExperimental()) {
+      const store = getStore();
+      store.init({});
+    }
     this.initUIFocus_();
     metrics.recordInterval('Load.InitUI');
     return fileSystemUIPromise;
