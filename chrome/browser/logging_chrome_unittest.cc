@@ -193,11 +193,6 @@ TEST_F(ChromeLoggingTest, RotateLogFiles) {
     std::string buffer;
     base::ReadFileToString(expected_rotated_path, &buffer);
     EXPECT_EQ(buffer, kLog1Content);
-
-    base::File(expected_rotated_path,
-               base::File::FLAG_OPEN | base::File::FLAG_READ)
-        .GetInfo(&file_info);
-    EXPECT_EQ(creation_time, file_info.creation_time);
   }
 }
 
@@ -287,11 +282,6 @@ TEST_F(ChromeLoggingTest, RotateLogFilesExisting) {
     // The second candidate is the previous latest log.
     base::ReadFileToString(rotated_log_path, &buffer);
     EXPECT_EQ(buffer, kLatestLogContent);
-
-    // The second candidate is the previous latest log.
-    base::File(rotated_log_path, base::File::FLAG_OPEN | base::File::FLAG_READ)
-        .GetInfo(&file_info);
-    EXPECT_EQ(creation_time, file_info.creation_time);
   }
 }
 
