@@ -54,7 +54,7 @@ CrossOtrObserver::CrossOtrObserver(content::WebContents* web_contents)
 
 CrossOtrObserver::~CrossOtrObserver() = default;
 
-bool CrossOtrObserver::IsCrossOtrState() {
+bool CrossOtrObserver::IsCrossOtrState() const {
   return protecting_navigations_;
 }
 
@@ -99,9 +99,13 @@ void CrossOtrObserver::DidFinishNavigation(
           kCrossOtrResponseCodeMetricName,
           net::HttpUtil::MapStatusCodeForHistogram(headers->response_code()));
     }
-  } else if (navigation_handle->GetReloadType() != content::ReloadType::NONE) {
+    return;
+  }
+  if (navigation_handle->GetReloadType() != content::ReloadType::NONE) {
     refresh_count_++;
-  } else if (navigation_handle->HasCommitted() && !protecting_navigations_) {
+    return;
+  }
+  if (navigation_handle->HasCommitted() && !protecting_navigations_) {
     Detach();
     // DO NOT add code past this point. `this` is destroyed.
   }

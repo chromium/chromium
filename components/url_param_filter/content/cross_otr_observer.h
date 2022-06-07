@@ -21,6 +21,9 @@ namespace url_param_filter {
 // regardless of cause, detaches. Note that for our purposes, navigation above
 // refers to top-level, main frame navigations only; we do not consider e.g.,
 // subframe loads.
+//
+// Changes made to the logic in this observer should also be made on the ios
+// equivalent CrossOtrTabHelper at components/url_param_filter/ios.
 class CrossOtrObserver : public content::WebContentsObserver,
                          public content::WebContentsUserData<CrossOtrObserver> {
  public:
@@ -32,7 +35,7 @@ class CrossOtrObserver : public content::WebContentsObserver,
                                         bool is_cross_otr,
                                         bool started_from_context_menu,
                                         ui::PageTransition transition);
-  bool IsCrossOtrState();
+  bool IsCrossOtrState() const;
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;

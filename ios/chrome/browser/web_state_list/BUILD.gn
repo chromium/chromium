@@ -73,6 +73,8 @@ source_set("agents") {
     "//base",
     "//components/navigation_metrics",
     "//components/profile_metrics",
+    "//components/url_param_filter/core",
+    "//components/url_param_filter/ios",
     "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state_metrics",

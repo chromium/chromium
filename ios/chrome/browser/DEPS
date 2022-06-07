@@ -115,6 +115,8 @@ include_rules = [
   "+components/update_client",
   "+components/upload_list",
   "+components/url_formatter",
+  "+components/url_param_filter/core",
+  "+components/url_param_filter/ios",
   "+components/variations",
   "+components/variations/net",
   "+components/version_info",

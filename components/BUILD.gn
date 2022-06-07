@@ -307,6 +307,7 @@ test("components_unittests") {
       "//components/signin/public/identity_manager/objc:unit_tests",
       "//components/translate/ios/browser:unit_tests",
       "//components/ukm/ios:unit_tests",
+      "//components/url_param_filter/ios:unit_tests",
     ]
   } else {  #!is_ios
     deps += [
