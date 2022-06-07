@@ -923,7 +923,10 @@ TEST_P(AssistantPageClamshellTest, ShouldHavePopulatedSuggestionChips) {
 
 TEST_F(AssistantPageNonBubbleTest, Theme) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(chromeos::features::kDarkLightMode);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kNotificationsRefresh,
+                             chromeos::features::kDarkLightMode});
 
   ShowAssistantUi();
 

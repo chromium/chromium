@@ -36,8 +36,11 @@ class AssistantMainStageTest : public AssistantAshTestBase {
  public:
   // AssistantAshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        chromeos::features::kDarkLightMode);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{chromeos::features::kDarkLightMode,
+                               features::kNotificationsRefresh});
+
     AssistantAshTestBase::SetUp();
   }
 

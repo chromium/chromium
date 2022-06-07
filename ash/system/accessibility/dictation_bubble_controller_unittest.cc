@@ -5,6 +5,7 @@
 #include "ash/system/accessibility/dictation_bubble_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -26,8 +27,11 @@ class DictationBubbleControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        chromeos::features::kDarkLightMode);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{chromeos::features::kDarkLightMode,
+                               features::kNotificationsRefresh});
+
     AshTestBase::SetUp();
     Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
   }

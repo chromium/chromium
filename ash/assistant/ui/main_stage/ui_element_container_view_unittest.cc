@@ -7,6 +7,7 @@
 #include "ash/assistant/assistant_interaction_controller_impl.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -66,7 +67,8 @@ TEST_F(UiElementContainerViewTest, DarkAndLightModeFlagOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kProductivityLauncher});
+          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
+          features::kProductivityLauncher});
 
   ShowAssistantUi();
 

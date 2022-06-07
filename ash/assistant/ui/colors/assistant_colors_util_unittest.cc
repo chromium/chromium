@@ -5,6 +5,7 @@
 #include "ash/assistant/ui/colors/assistant_colors_util.h"
 
 #include "ash/assistant/ui/colors/assistant_colors.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -52,7 +53,8 @@ TEST_F(AssistantColorsUtilUnittest, AssistantColorFlagOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kProductivityLauncher});
+          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
+          features::kProductivityLauncher});
 
   EXPECT_EQ(
       ResolveAssistantColor(assistant_colors::ColorName::kBgAssistantPlate),
@@ -69,7 +71,8 @@ TEST_F(AssistantColorsUtilUnittest, AssistantColorFlagOffFallback) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kProductivityLauncher});
+          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
+          features::kProductivityLauncher});
 
   EXPECT_EQ(ResolveAssistantColor(assistant_colors::ColorName::kGoogleBlue100),
             assistant_colors::ResolveColor(

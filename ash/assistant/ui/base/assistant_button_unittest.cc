@@ -93,7 +93,10 @@ TEST_F(AssistantButtonTest, IconColor) {
 
 TEST_F(AssistantButtonTest, IconColorTypeDefaultLight) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(chromeos::features::kDarkLightMode);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kNotificationsRefresh,
+                             chromeos::features::kDarkLightMode});
 
   AssistantButton::InitParams params;
   params.size_in_dip = kSizeInDip;
@@ -164,7 +167,10 @@ TEST_F(AssistantButtonTest, IconColorType) {
 
 TEST_F(AssistantButtonTest, FocusAndHoverColor) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(chromeos::features::kDarkLightMode);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kNotificationsRefresh,
+                             chromeos::features::kDarkLightMode});
 
   AssistantButton::InitParams params;
   params.size_in_dip = kSizeInDip;
