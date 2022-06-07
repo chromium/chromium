@@ -87,6 +87,8 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<base::TimeDelta>
     kAutofillMultiStepImportCandidateTTL;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillEnableParsingEmptyPhoneNumberLabels;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableRankingFormula;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int> kAutofillRankingFormulaUsageHalfLife;

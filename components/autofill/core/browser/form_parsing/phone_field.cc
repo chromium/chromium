@@ -123,6 +123,14 @@ const std::vector<PhoneField::PhoneGrammar>& PhoneField::GetPhoneGrammars() {
       {{REGEX_AREA, FIELD_AREA_CODE}, {REGEX_PHONE, FIELD_PHONE}},
       // Phone: <cc>:3 - <phone> (Ext: <ext>)?
       {{REGEX_PHONE, FIELD_COUNTRY_CODE, 3}, {REGEX_PHONE, FIELD_PHONE}},
+      // Phone: <cc> <ac> <phone> (Ext: <ext>)?
+      // Indistinguishable from <area> <prefix> <suffix>
+      {{REGEX_PHONE, FIELD_COUNTRY_CODE},
+       {EMPTY_LABEL, FIELD_AREA_CODE},
+       {EMPTY_LABEL, FIELD_PHONE}},
+      // Phone: <cc> <phone> (Ext: <ext>)?
+      // Indistinguishable from <area> <phone>
+      {{REGEX_PHONE, FIELD_COUNTRY_CODE}, {EMPTY_LABEL, FIELD_PHONE}},
       // Phone: <phone> (Ext: <ext>)?
       {{REGEX_PHONE, FIELD_PHONE}},
   });
@@ -206,12 +214,28 @@ bool PhoneField::ParseGrammar(const PhoneGrammar& grammar,
       continue;
     }
 
-    if (!ParsePhoneField(
-            scanner, GetRegExp(rule.regex), &parsed_fields[rule.phone_part],
-            {log_manager, GetRegExpName(rule.regex)}, is_country_code_field,
-            GetJSONFieldType(rule.regex), page_language, pattern_source)) {
+    bool is_empty_label = rule.regex == EMPTY_LABEL;
+    if (is_empty_label &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillEnableParsingEmptyPhoneNumberLabels)) {
+      // This `grammar` contains empty labels and doesn't apply when
+      // `kAutofillEnableParsingEmptyPhoneNumberLabels` is disabled.
       return false;
     }
+    // Try parsing either a field with an empty label or a field matching the
+    // regex of this rule.
+    bool parsed =
+        is_empty_label
+            ? ParseEmptyLabel(scanner, &parsed_fields[rule.phone_part])
+            : ParsePhoneField(scanner, GetRegExp(rule.regex),
+                              &parsed_fields[rule.phone_part],
+                              {log_manager, GetRegExpName(rule.regex)},
+                              is_country_code_field,
+                              GetJSONFieldType(rule.regex), page_language,
+                              pattern_source);
+    if (!parsed)
+      return false;
+
     if (rule.max_size != 0 &&
         (parsed_fields[rule.phone_part]->max_length == 0 ||
          rule.max_size < parsed_fields[rule.phone_part]->max_length)) {
@@ -350,6 +374,7 @@ std::u16string PhoneField::GetRegExp(RegexType regex_id) {
       return kPhoneSuffixRe;
     case REGEX_EXTENSION:
       return kPhoneExtensionRe;
+    case EMPTY_LABEL:
     default:
       NOTREACHED();
       break;
@@ -378,6 +403,7 @@ const char* PhoneField::GetRegExpName(RegexType regex_id) {
       return "kPhoneSuffixRe";
     case REGEX_EXTENSION:
       return "kPhoneExtensionRe";
+    case EMPTY_LABEL:
     default:
       NOTREACHED();
       break;
@@ -407,6 +433,7 @@ std::string PhoneField::GetJSONFieldType(RegexType phonetype_id) {
       return "PHONE_SUFFIX";
     case REGEX_EXTENSION:
       return "PHONE_EXTENSION";
+    case EMPTY_LABEL:
     default:
       NOTREACHED();
       break;

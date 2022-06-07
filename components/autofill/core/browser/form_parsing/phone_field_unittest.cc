@@ -239,6 +239,25 @@ TEST_P(PhoneFieldTest, CountryAndCityAndPhoneNumber) {
   }
 }
 
+TEST_P(PhoneFieldTest, EmptyLabels) {
+  base::test::ScopedFeatureList enabled_features;
+  enabled_features.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
+       features::kAutofillEnableParsingEmptyPhoneNumberLabels},
+      /*disabled_features=*/{});
+
+  // Phone: <input><input>
+  RunParsingTest(
+      {{"text", u"Phone", u"", PHONE_HOME_COUNTRY_CODE},
+       {"text", u"", u"", PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}});
+
+  // Phone: <input><input><input>
+  RunParsingTest({{"text", u"Phone", u"", PHONE_HOME_COUNTRY_CODE},
+                  {"text", u"", u"", PHONE_HOME_CITY_CODE},
+                  {"text", u"", u"", PHONE_HOME_NUMBER}});
+}
+
 TEST_P(PhoneFieldTest, TrunkPrefixTypes) {
   base::test::ScopedFeatureList trunk_types_enabled;
   trunk_types_enabled.InitAndEnableFeature(
