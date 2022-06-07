@@ -1368,7 +1368,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kOriginAgentClusterDefaultEnabled, true);
   registry->RegisterIntegerPref(
       prefs::kForceMajorVersionToMinorPositionInUserAgent,
-      embedder_support::ForceMajorVersionToMinorPosition::kDefault);
+      static_cast<int>(
+          embedder_support::ForceMajorVersionToMinorPosition::kDefault));
   registry->RegisterBooleanPref(
       policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed, true);
 }

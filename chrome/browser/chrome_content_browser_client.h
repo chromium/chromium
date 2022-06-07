@@ -892,9 +892,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   UserAgentReductionEnterprisePolicyState
   GetUserAgentReductionEnterprisePolicyState(content::BrowserContext* context);
 
-  embedder_support::ForceMajorVersionToMinorPosition
-  GetForceMajorVersionToMinorPosition(content::BrowserContext* context);
-
   // Vector of additional ChromeContentBrowserClientParts.
   // Parts are deleted in the reverse order they are added.
   std::vector<ChromeContentBrowserClientParts*> extra_parts_;

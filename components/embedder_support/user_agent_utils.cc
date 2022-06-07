@@ -164,12 +164,13 @@ const std::string& GetWindowsPlatformVersion() {
 // the minor position.
 // TODO(crbug.com/1290820): Remove this method along with policy.
 bool ShouldForceMajorVersionToMinorPosition(
-    ForceMajorVersionToMinorPosition force_major_to_minor = kDefault) {
+    ForceMajorVersionToMinorPosition force_major_to_minor) {
   return (
-      (force_major_to_minor != kForceDisabled &&
+      (force_major_to_minor !=
+           ForceMajorVersionToMinorPosition::kForceDisabled &&
        base::FeatureList::IsEnabled(
            blink::features::kForceMajorVersionInMinorPositionInUserAgent)) ||
-      force_major_to_minor == kForceEnabled);
+      force_major_to_minor == ForceMajorVersionToMinorPosition::kForceEnabled);
 }
 
 const std::string& GetMajorInMinorVersionNumber() {
@@ -527,7 +528,7 @@ blink::UserAgentMetadata GetUserAgentMetadata() {
   return GetUserAgentMetadata(nullptr);
 }
 
-blink::UserAgentMetadata GetUserAgentMetadata(PrefService* pref_service) {
+blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service) {
   blink::UserAgentMetadata metadata;
   bool enable_updated_grease_by_policy = true;
   UserAgentOptions ua_options;
@@ -600,17 +601,17 @@ int GetHighestKnownUniversalApiContractVersionForTesting() {
 
 // TODO(crbug.com/1290820): Remove this function with policy.
 embedder_support::ForceMajorVersionToMinorPosition GetMajorToMinorFromPrefs(
-    PrefService* pref_service) {
+    const PrefService* pref_service) {
   if (!pref_service->HasPrefPath(kForceMajorVersionToMinorPosition))
-    return kDefault;
+    return ForceMajorVersionToMinorPosition::kDefault;
   switch (pref_service->GetInteger(kForceMajorVersionToMinorPosition)) {
     case 1:
-      return kForceDisabled;
+      return ForceMajorVersionToMinorPosition::kForceDisabled;
     case 2:
-      return kForceEnabled;
+      return ForceMajorVersionToMinorPosition::kForceEnabled;
     case 0:
     default:
-      return kDefault;
+      return ForceMajorVersionToMinorPosition::kDefault;
   }
 }
 
