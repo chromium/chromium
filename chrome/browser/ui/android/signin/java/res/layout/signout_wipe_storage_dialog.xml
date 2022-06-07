@@ -18,8 +18,7 @@
         android:id="@android:id/message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-        android:text="@string/turn_off_sync_and_signout_message"/>
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
 
     <CheckBox
         android:id="@+id/remove_local_data"

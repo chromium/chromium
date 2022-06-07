@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -86,17 +87,19 @@ public class SignOutDialogCoordinator {
         final View view =
                 LayoutInflater.from(context).inflate(R.layout.signout_wipe_storage_dialog, null);
         ((TextView) view.findViewById(android.R.id.title))
-                .setText(getTitleId(managedDomain, actionType));
-        if (managedDomain != null) {
-            ((TextView) view.findViewById(android.R.id.message))
-                    .setText(context.getString(
-                            R.string.signout_managed_account_message, managedDomain));
-        }
+                .setText(getTitleRes(managedDomain, actionType));
+        ((TextView) view.findViewById(android.R.id.message))
+                .setText(getMessage(context, managedDomain));
 
         return view;
     }
 
-    private static @StringRes int getTitleId(String managedDomain, @ActionType int actionType) {
+    private static @StringRes int getTitleRes(String managedDomain, @ActionType int actionType) {
+        if (!IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .hasPrimaryAccount(ConsentLevel.SYNC)) {
+            return R.string.signout_title;
+        }
         if (managedDomain != null) {
             return R.string.signout_managed_account_title;
         }
@@ -111,12 +114,28 @@ public class SignOutDialogCoordinator {
         }
     }
 
+    private static String getMessage(Context context, String managedDomain) {
+        if (!IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .hasPrimaryAccount(ConsentLevel.SYNC)) {
+            return context.getString(R.string.signout_message);
+        }
+        if (managedDomain != null) {
+            return context.getString(R.string.signout_managed_account_message, managedDomain);
+        }
+        return context.getString(R.string.turn_off_sync_and_signout_message);
+    }
+
     private static int getCheckBoxVisibility(String managedDomain) {
         // TODO(crbug.com/1294761): extract logic for whether data wiping is allowed into
         // SigninManager.
         final boolean allowDeletingData = UserPrefs.get(Profile.getLastUsedRegularProfile())
                                                   .getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
-        final boolean showCheckBox = (managedDomain == null) && allowDeletingData;
+        final boolean hasSyncConsent =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .hasPrimaryAccount(ConsentLevel.SYNC);
+        final boolean showCheckBox = (managedDomain == null) && allowDeletingData && hasSyncConsent;
         return showCheckBox ? View.VISIBLE : View.GONE;
     }
 

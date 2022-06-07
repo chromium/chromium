@@ -40,6 +40,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -77,6 +79,9 @@ public class SignOutDialogRenderTest {
     private SigninManager mSigninManagerMock;
 
     @Mock
+    private IdentityManager mIdentityManagerMock;
+
+    @Mock
     private Profile mProfile;
 
     @Mock
@@ -96,6 +101,9 @@ public class SignOutDialogRenderTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mIdentityManagerMock);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(true);
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsMock);
         mActivityTestRule.launchActivity(null);
     }
@@ -113,9 +121,40 @@ public class SignOutDialogRenderTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    public void testSignOutDialogForNonSyncingAccount() throws Exception {
+        mockAllowDeletingBrowserHistoryPref(true);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
+
+        mRenderTestRule.render(showSignOutDialog(), "signout_dialog_for_non_syncing_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testSignOutDialogForNonSyncingManagedAccount() throws Exception {
+        mockAllowDeletingBrowserHistoryPref(true);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
+
+        mRenderTestRule.render(showSignOutDialog(), "signout_dialog_for_non_syncing_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testTurnOffSyncDialogForNonSyncingAccount() throws Exception {
+        mockAllowDeletingBrowserHistoryPref(true);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
+
+        mRenderTestRule.render(showSignOutDialog(), "signout_dialog_for_non_syncing_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
     public void testSignOutDialogForManagedAccount() throws Exception {
         mockAllowDeletingBrowserHistoryPref(true);
         when(mSigninManagerMock.getManagementDomain()).thenReturn(TEST_DOMAIN);
+
         mRenderTestRule.render(showSignOutDialog(), "signout_dialog_for_managed_account");
     }
 
@@ -124,6 +163,7 @@ public class SignOutDialogRenderTest {
     @Feature("RenderTest")
     public void testSignOutDialogForManagedAccountCannotDeleteHistory() throws Exception {
         mockAllowDeletingBrowserHistoryPref(false);
+
         mRenderTestRule.render(showTurnOffSyncDialog(),
                 "signout_dialog_for_managed_account_cannot_delete_history");
     }
@@ -133,6 +173,7 @@ public class SignOutDialogRenderTest {
     @Feature("RenderTest")
     public void testSignOutDialogForNonManagedAccount() throws Exception {
         mockAllowDeletingBrowserHistoryPref(true);
+
         mRenderTestRule.render(showSignOutDialog(), "signout_dialog_for_non_managed_account");
     }
 
@@ -141,6 +182,7 @@ public class SignOutDialogRenderTest {
     @Feature("RenderTest")
     public void testTurnOffSyncDialogForNonManagedAccount() throws Exception {
         mockAllowDeletingBrowserHistoryPref(true);
+
         mRenderTestRule.render(
                 showTurnOffSyncDialog(), "turn_off_sync_dialog_for_non_managed_account");
     }
@@ -150,6 +192,7 @@ public class SignOutDialogRenderTest {
     @Feature("RenderTest")
     public void testTurnOffSyncDialogForNonManagedAccountCannotDeleteHistory() throws Exception {
         mockAllowDeletingBrowserHistoryPref(false);
+
         mRenderTestRule.render(showTurnOffSyncDialog(),
                 "turn_off_sync_dialog_for_non_managed_account_cannot_delete_history");
     }

@@ -17,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -47,6 +48,8 @@ import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -74,6 +77,9 @@ public class SignOutDialogTest {
     private SigninManager mSigninManagerMock;
 
     @Mock
+    private IdentityManager mIdentityManagerMock;
+
+    @Mock
     private Profile mProfile;
 
     @Mock
@@ -92,7 +98,41 @@ public class SignOutDialogTest {
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mIdentityManagerMock);
+        when(mIdentityManagerMock.hasPrimaryAccount(anyInt())).thenReturn(true);
         mActivityTestRule.launchActivity(null);
+    }
+
+    @Test
+    @MediumTest
+    public void testDialogForNonSyncingAccount() {
+        mockAllowDeletingBrowserHistoryPref(true);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
+
+        showSignOutDialog();
+
+        onView(withText(R.string.signout_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.signout_message)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.remove_local_data))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    public void testDialogForNonSyncingManagedAccount() {
+        mockAllowDeletingBrowserHistoryPref(true);
+        when(mSigninManagerMock.getManagementDomain()).thenReturn(TEST_DOMAIN);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
+
+        showSignOutDialog();
+
+        onView(withText(R.string.signout_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.signout_message)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.remove_local_data))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
     }
 
     @Test
