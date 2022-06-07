@@ -174,7 +174,7 @@ void CameraRollManagerImpl::OnFetchCameraRollItemsResponseReceived(
   thumbnail_decoder_->BatchDecode(
       response, current_items(),
       base::BindOnce(&CameraRollManagerImpl::OnItemThumbnailsDecoded,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     thumbnail_decoder_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CameraRollManagerImpl::SendFetchCameraRollItemsRequest() {
@@ -214,7 +214,7 @@ void CameraRollManagerImpl::OnItemThumbnailsDecoded(
 }
 
 void CameraRollManagerImpl::CancelPendingThumbnailRequests() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  thumbnail_decoder_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 bool CameraRollManagerImpl::IsCameraRollSettingEnabled() {

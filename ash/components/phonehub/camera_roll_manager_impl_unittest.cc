@@ -621,6 +621,46 @@ TEST_F(CameraRollManagerImplTest, DownloadItem) {
                              /*bytes_transferred=*/1000);
 }
 
+TEST_F(CameraRollManagerImplTest, DownloadItemAndCurrentItemsChanged) {
+  // Make an item available to CameraRollManager.
+  proto::FetchCameraRollItemsResponse items_response;
+  PopulateItemProto(items_response.add_items(), "key1");
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
+      items_response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+  const CameraRollItem& item_to_download =
+      camera_roll_manager()->current_items().back();
+
+  // Request to download the item that was added.
+  camera_roll_manager()->DownloadItem(item_to_download.metadata());
+  SendFetchCameraRollItemDataResponse(
+      item_to_download.metadata(),
+      proto::FetchCameraRollItemDataResponse::AVAILABLE,
+      /*payload_id=*/1234);
+  SendFileTransferUpdate(/*payload_id=*/1234, FileTransferStatus::kInProgress,
+                         /*total_bytes=*/1000, /*bytes_transferred=*/200);
+
+  VerifyFileTransferProgress(/*payload_id=*/1234,
+                             FileTransferStatus::kInProgress,
+                             /*total_bytes=*/1000,
+                             /*bytes_transferred=*/200);
+
+  // The item being downloaded is no longer in the current item set, but the
+  // download should still finish normally.
+  SendPhoneStatusUpdate(/*has_camera_roll_updates=*/true);
+  proto::FetchCameraRollItemsResponse new_items_response;
+  PopulateItemProto(new_items_response.add_items(), "key2");
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
+      new_items_response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+  SendFileTransferUpdate(/*payload_id=*/1234, FileTransferStatus::kSuccess,
+                         /*total_bytes=*/1000, /*bytes_transferred=*/1000);
+
+  VerifyFileTransferProgress(/*payload_id=*/1234, FileTransferStatus::kSuccess,
+                             /*total_bytes=*/1000,
+                             /*bytes_transferred=*/1000);
+}
+
 TEST_F(CameraRollManagerImplTest,
        DownloadItemWhenFileNoLongerAvailableOnPhone) {
   // Make an item available to CameraRollManager.
