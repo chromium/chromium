@@ -274,29 +274,8 @@ if (is_fuchsia) {
     excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
   }
 
-  fuchsia_package_installer("chrome_fuchsia_installer") {
+  fuchsia_package_installer("chrome_fuchsia") {
     package = ":chrome_pkg"
     package_name = "chrome"
-  }
-
-  fuchsia_run_script_with_packages("chrome_fuchsia_runner") {
-    package = ":chrome_pkg"
-    package_name = "chrome"
-    output_name_format = "run_%package%"
-
-    executable = rebase_path("//build/fuchsia/run_ffx_command.py")
-    executable_args = [
-      "--command",
-      "session add fuchsia-pkg://fuchsia.com/chrome#meta/chrome_v1.cmx -- " +
-          "%args%",
-    ]
-    include_fuchsia_build_dir = true
-  }
-
-  group("chrome_fuchsia") {
-    deps = [
-      ":chrome_fuchsia_installer",
-      ":chrome_fuchsia_runner",
-    ]
   }
 }
