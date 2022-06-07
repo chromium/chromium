@@ -41,6 +41,7 @@ FAIL inbound-rtp's sliCount assert_true: Is sliCount present expected true got f
 PASS inbound-rtp's totalProcessingDelay
 FAIL inbound-rtp's estimatedPlayoutTimestamp assert_true: Is estimatedPlayoutTimestamp present expected true got false
 PASS inbound-rtp's jitterBufferDelay
+PASS inbound-rtp's jitterBufferTargetDelay
 PASS inbound-rtp's jitterBufferEmittedCount
 PASS inbound-rtp's totalSamplesReceived
 FAIL inbound-rtp's totalSamplesDecoded assert_true: Is totalSamplesDecoded present expected true got false

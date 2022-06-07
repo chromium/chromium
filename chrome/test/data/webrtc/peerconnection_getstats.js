@@ -141,6 +141,7 @@ let kRTCInboundRtpStreamStats = new RTCStats(kRTCReceivedRtpStreamStats, {
   frameBitDepth: 'number',
   framesPerSecond: 'number',
   jitterBufferDelay: 'number',
+  jitterBufferTargetDelay: 'number',
   jitterBufferEmittedCount: 'number',
   totalSamplesReceived: 'number',
   concealedSamples: 'number',
