@@ -96,7 +96,7 @@ InstallFromSyncCommand::InstallFromSyncCommand(
   fallback_install_info_ = std::make_unique<WebAppInstallInfo>();
   fallback_install_info_->manifest_id = params_.manifest_id;
   fallback_install_info_->start_url = params_.start_url;
-  fallback_install_info_->title = base::ASCIIToUTF16(params_.title);
+  fallback_install_info_->title = base::UTF8ToUTF16(params_.title);
   fallback_install_info_->user_display_mode = params_.user_display_mode;
   fallback_install_info_->scope = params_.scope;
   fallback_install_info_->theme_color = params_.theme_color;
