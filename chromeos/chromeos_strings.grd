@@ -3342,7 +3342,7 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_NO_MATCHED_RESULTS" translateable="false" desc="Label for help content when there are no matched results.">
         No matched results, see popular help content
       </message>
-      <message name="IDS_FEEDBACK_TOOL_PAGE_TITLE" translateable="false" desc="Label showing the title of the feedback tool before a report has been sent">
+      <message name="IDS_FEEDBACK_TOOL_PAGE_TITLE" desc="Label showing the title of the feedback tool before a report has been sent">
         Send feedback
       </message>
       <message name="IDS_FEEDBACK_TOOL_POPULAR_HELP_CONTENT" translateable="false" desc="Label for help content when there is no query entered yet.">
