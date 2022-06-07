@@ -184,7 +184,7 @@ void InstallFromSyncCommand::OnGetWebAppInstallInfo(
   install_info_ = std::move(web_app_info);
   install_info_->user_display_mode = params_.user_display_mode;
   // Prefer the synced title to the one from the page's metadata
-  install_info_->title = base::ASCIIToUTF16(params_.title);
+  install_info_->title = base::UTF8ToUTF16(params_.title);
 
   // Populate fallback info with the data retrieved from `GetWebAppInstallInfo`
   fallback_install_info_->description = install_info_->description;
