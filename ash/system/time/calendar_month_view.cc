@@ -103,6 +103,8 @@ CalendarDateCellView::CalendarDateCellView(
       event_number_ = calendar_view_controller_->GetEventNumber(date_);
     }
     SetTooltipAndAccessibleName();
+    is_selected_ = calendar_utils::IsTheSameDay(
+        date_, calendar_view_controller_->selected_date());
   }
   scoped_calendar_view_controller_observer_.Observe(calendar_view_controller_);
 }
