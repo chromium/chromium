@@ -91,6 +91,9 @@ export function testVolumeDefaultFilter(done) {
     // Check: getFuseBoxOnlyFilterEnabled should return false.
     assertFalse(filteredVolumeManager.getFuseBoxOnlyFilterEnabled());
 
+    // Check: getMediaStoreFilesOnlyFilterEnabled should return false.
+    assertFalse(filteredVolumeManager.getMediaStoreFilesOnlyFilterEnabled());
+
     // Check: filteredVolumeManager.volumeInfoList should have 4 volumes.
     assertEquals(4, filteredVolumeManager.volumeInfoList.length);
 
@@ -166,8 +169,8 @@ export function testVolumeFuseboxOnlyFilter(done) {
   assertEquals(5, volumeManager.volumeInfoList.length);
 
   /**
-   * SelectFileAsh sets ['fusebox-only'] filter: FilteredVolumeManager should
-   * only show native and fusebox volumes in the files app UI.
+   * SelectFileAsh (Lacros) ['fusebox-only'] filter: FilteredVolumeManager
+   * should only show native and fusebox volumes in the files app UI.
    */
   const filteredVolumeManager = new FilteredVolumeManager(
       AllowedPaths.ANY_PATH_OR_URL, false, Promise.resolve(volumeManager),
@@ -176,6 +179,9 @@ export function testVolumeFuseboxOnlyFilter(done) {
   filteredVolumeManager.ensureInitialized(() => {
     // Check: getFuseBoxOnlyFilterEnabled should return true.
     assertTrue(filteredVolumeManager.getFuseBoxOnlyFilterEnabled());
+
+    // Check: getMediaStoreFilesOnlyFilterEnabled should return false.
+    assertFalse(filteredVolumeManager.getMediaStoreFilesOnlyFilterEnabled());
 
     // Check: filteredVolumeManager.volumeInfoList should have 3 volumes.
     assertEquals(3, filteredVolumeManager.volumeInfoList.length);
@@ -199,6 +205,106 @@ export function testVolumeFuseboxOnlyFilter(done) {
     assertEquals('MTP fusebox volume', info.label);
     assertEquals('fusebox/mtp-path', info.devicePath);
     assertEquals('fusebox', info.diskFileSystemType);
+
+    done();
+  });
+}
+
+/**
+ * Tests FilteredVolumeManager 'media-store-files-only' volume filter.
+ */
+export function testVolumeMediaStoreFilesOnlyFilter(done) {
+  // Create mock volume manager.
+  const volumeManager = createMockVolumeManager();
+
+  // Get `DRIVE` volume.
+  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
+      VolumeManagerCommon.VolumeType.DRIVE);
+  assert(driveVolumeInfo);
+
+  // Get `DOWNLOADS` volume.
+  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOWNLOADS);
+  assert(downloadsVolumeInfo);
+
+  // Add `ARCHIVE` volume.
+  const zipArchiveVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.ARCHIVE, 'zipArchiveVolumeId',
+      'zip archive volume', 'zip-archive-volume-path');
+  volumeManager.volumeInfoList.add(zipArchiveVolumeInfo);
+
+  // Add `REMOVABLE` volume.
+  const removableVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.REMOVABLE, 'removableVolumeId',
+      'removable volume', 'removable-volume-path');
+  volumeManager.volumeInfoList.add(removableVolumeInfo);
+
+  // Add `MTP` volume.
+  const mtpVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.MTP, 'mtpNormalVolumeId',
+      'MTP normal volume', 'mtp-path');
+  volumeManager.volumeInfoList.add(mtpVolumeInfo);
+
+  // Add `MTP` fusebox volume.
+  const mtpFuseBoxVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.MTP, 'mtpFuseBoxVolumeId',
+      'MTP fusebox volume', 'fusebox/mtp-path');
+  volumeManager.volumeInfoList.add(mtpFuseBoxVolumeInfo);
+
+  // Add `DOCUMENTS_PROVIDER` volume.
+  const documentsProviderVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'adpNormalVolumeId',
+      'Documents provider normal volume', 'documents-provider-path');
+  volumeManager.volumeInfoList.add(documentsProviderVolumeInfo);
+
+  // Add `PROVIDED` volume.
+  const fspVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.PROVIDED, 'fspNormalVolumeId',
+      'FSP normal volume', 'fsp-provider-path');
+  volumeManager.volumeInfoList.add(fspVolumeInfo);
+
+  // Add `PROVIDED` fusebox volume.
+  const fspFuseBoxVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.PROVIDED, 'fspFuseBoxVolumeId',
+      'FSP fusebox volume', 'fusebox/fsp-provider-path');
+  volumeManager.volumeInfoList.add(fspFuseBoxVolumeInfo);
+
+  // Add `SMB` volume.
+  const smbVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.SMB, 'smbVolumeId',
+      'SMB server message block volume', 'server-message-block-path');
+  volumeManager.volumeInfoList.add(smbVolumeInfo);
+
+  // Check: volumeManager.volumeInfoList should have 10 volumes.
+  assertEquals(10, volumeManager.volumeInfoList.length);
+
+  /**
+   * ArcSelectFile ['media-store-files-only'] filter: FilteredVolumeManager
+   * should only allow volumes that are indexed by the Android MediaStore.
+   */
+  const filteredVolumeManager = new FilteredVolumeManager(
+      AllowedPaths.ANY_PATH_OR_URL, false, Promise.resolve(volumeManager),
+      ['media-store-files-only']);
+
+  filteredVolumeManager.ensureInitialized(() => {
+    // Check: getFuseBoxOnlyFilterEnabled should return false.
+    assertFalse(filteredVolumeManager.getFuseBoxOnlyFilterEnabled());
+
+    // Check: getMediaStoreFilesOnlyFilterEnabled should return true.
+    assertTrue(filteredVolumeManager.getMediaStoreFilesOnlyFilterEnabled());
+
+    // Check: filteredVolumeManager.volumeInfoList should have 2 volumes.
+    assertEquals(2, filteredVolumeManager.volumeInfoList.length);
+
+    // Get `DOWNLOADS` volume.
+    let info = filteredVolumeManager.volumeInfoList.item(0);
+    assert(info, 'volume[0] DOWNLOADS expected');
+    assertEquals(VolumeManagerCommon.VolumeType.DOWNLOADS, info.volumeType);
+
+    // Get `REMOVABLE` volume.
+    info = filteredVolumeManager.volumeInfoList.item(1);
+    assert(info, 'volume[1] REMOVABLE expected');
+    assertEquals(VolumeManagerCommon.VolumeType.REMOVABLE, info.volumeType);
 
     done();
   });
