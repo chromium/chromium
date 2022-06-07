@@ -34,28 +34,29 @@ constexpr char kSwitchValue[] = "value";
 constexpr char kSwitchAlternativeAggregationMode[] =
     "alternative-aggregation-mode";
 constexpr char kSwitchReportingOrigin[] = "reporting-origin";
-constexpr char kSwitchPrivacyBudgetKey[] = "privacy-budget-key";
 constexpr char kSwitchHelperKeyUrls[] = "helper-key-urls";
 constexpr char kSwitchHelperKeyFiles[] = "helper-key-files";
 constexpr char kSwitchOutputFile[] = "output-file";
 constexpr char kSwitchOutputUrl[] = "output-url";
 constexpr char kSwitchDisablePayloadEncryption[] = "disable-payload-encryption";
 constexpr char kSwitchAdditionalFields[] = "additional-fields";
+constexpr char kSwitchAdditionalSharedInfoFields[] =
+    "additional-shared-info-fields";
 constexpr char kSwitchEnableDebugMode[] = "enable-debug-mode";
 
 constexpr char kHelpMsg[] = R"(
   aggregation_service_tool [--operation=<operation>] --bucket=<bucket>
   --value=<value> --aggregation-mode=<aggregation_mode>
   --reporting-origin=<reporting_origin>
-  --privacy-budget-key=<privacy_budget_key>
   --helper-keys=<helper_server_keys> [--output=<output_file>]
   [--output-url=<output_url>] [--disable-payload-encryption]
-  [--additional-fields=<additional_fields>] [--debug-mode]
+  [--additional-fields=<additional_fields>]
+  [--additional-shared-info-fields=<additional_shared_info_fields]
+  [--debug-mode]
 
   Examples:
   aggregation_service_tool --operation="histogram" --bucket=1234 --value=5
   --alternative-aggregation-mode="experimental-poplar" --reporting-origin="https://example.com"
-  --privacy-budget-key="test_privacy_budget_key"
   --helper-key-urls="https://a.com/keys.json https://b.com/path/to/keys.json"
   --output-file="output.json" --enable-debug-mode
   --additional-fields=
@@ -63,7 +64,6 @@ constexpr char kHelpMsg[] = R"(
   or
   aggregation_service_tool --bucket=1234 --value=5
   --reporting-origin="https://example.com"
-  --privacy-budget-key="test_privacy_budget_key"
   --helper-key-files="keys.json"
   --output-url="https://c.com/reports"
 
@@ -85,7 +85,6 @@ constexpr char kHelpMsg[] = R"(
                                    "experimental-poplar" and "default"
                                    (default value, equivalent to "tee-based").
   --reporting-origin = The reporting origin endpoint.
-  --privacy-budget-key = The privacy budgeting key.
   --helper-key-urls = Optional switch to specify the URL(s) to fetch the public
                       key json file(s) from. Spaces are used as separators.
                       Either this or "--helper-key-files" must be specified.
@@ -99,6 +98,10 @@ constexpr char kHelpMsg[] = R"(
   --additional-fields = List of key-value pairs of additional fields to be
                         included in the aggregatable report. Only supports
                         string valued fields.
+  --additional-shared-info-fields = List of key-value pairs of additional
+                                    fields to be included in the aggregatable
+                                    report's shared_info dictionary.
+                                    Only supports string valued fields.
   --disable-payload-encryption = Optional switch. If provided, the aggregatable
                                  report's payload(s) will not be encrypted after
                                  serialization.
@@ -137,13 +140,13 @@ int main(int argc, char* argv[]) {
       kSwitchValue,
       kSwitchAlternativeAggregationMode,
       kSwitchReportingOrigin,
-      kSwitchPrivacyBudgetKey,
       kSwitchHelperKeyUrls,
       kSwitchHelperKeyFiles,
       kSwitchOutputFile,
       kSwitchOutputUrl,
       kSwitchDisablePayloadEncryption,
       kSwitchAdditionalFields,
+      kSwitchAdditionalSharedInfoFields,
       kSwitchEnableDebugMode};
   for (const auto& provided_switch : command_line.GetSwitches()) {
     if (!base::Contains(kAllowedSwitches, provided_switch.first)) {
@@ -162,8 +165,7 @@ int main(int argc, char* argv[]) {
   }
 
   const std::vector<std::string> kRequiredSwitches = {
-      kSwitchBucket, kSwitchValue, kSwitchReportingOrigin,
-      kSwitchPrivacyBudgetKey};
+      kSwitchBucket, kSwitchValue, kSwitchReportingOrigin};
   for (const std::string& required_switch : kRequiredSwitches) {
     if (!command_line.HasSwitch(required_switch.c_str())) {
       LOG(ERROR) << "aggregation_service_tool expects " << required_switch
@@ -260,17 +262,30 @@ int main(int argc, char* argv[]) {
   url::Origin reporting_origin = url::Origin::Create(
       GURL(command_line.GetSwitchValueASCII(kSwitchReportingOrigin)));
 
-  std::string privacy_budget_key =
-      command_line.GetSwitchValueASCII(kSwitchPrivacyBudgetKey);
-
   bool is_debug_mode_enabled = command_line.HasSwitch(kSwitchEnableDebugMode);
+
+  base::Value::Dict additional_shared_info_fields;
+  if (command_line.HasSwitch(kSwitchAdditionalFields)) {
+    std::string additional_shared_info_fields_str =
+        command_line.GetSwitchValueASCII(kSwitchAdditionalFields);
+    // `additional_shared_info_fields_str` is formatted like
+    // "key1=value1,key2=value2".
+    base::StringPairs kv_pairs;
+    base::SplitStringIntoKeyValuePairs(
+        additional_shared_info_fields_str, /*key_value_delimiter=*/'=',
+        /*key_value_pair_delimiter=*/',', &kv_pairs);
+    for (std::pair<std::string, std::string>& kv : kv_pairs) {
+      additional_shared_info_fields.Set(std::move(kv.first),
+                                        std::move(kv.second));
+    }
+  }
 
   base::Value::Dict report_dict = tool.AssembleReport(
       std::move(operation), command_line.GetSwitchValueASCII(kSwitchBucket),
       command_line.GetSwitchValueASCII(kSwitchValue),
       std::move(aggregation_mode), std::move(reporting_origin),
-      std::move(privacy_budget_key), std::move(processing_urls),
-      is_debug_mode_enabled);
+      std::move(processing_urls), is_debug_mode_enabled,
+      std::move(additional_shared_info_fields));
   if (report_dict.empty()) {
     LOG(ERROR)
         << "aggregation_service_tool failed to create the aggregatable report.";

@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
@@ -95,12 +96,17 @@ AggregatableReport CreateExampleAggregatableReport() {
                         /*key_id=*/"key_2",
                         /*debug_cleartext_payload=*/absl::nullopt);
 
+  base::Value::Dict additional_fields;
+  additional_fields.Set("source_registration_time", "1234569600");
+  additional_fields.Set(
+      "attribution_destination",
+      url::Origin::Create(GURL("https://example.destination")).Serialize());
   AggregatableReportSharedInfo shared_info(
-      base::Time::FromJavaTime(1234567890123),
-      /*privacy_budget_key=*/"example_pbk", DefaultExternalReportID(),
+      base::Time::FromJavaTime(1234567890123), DefaultExternalReportID(),
       /*reporting_origin=*/
       url::Origin::Create(GURL("https://example.reporting")),
-      AggregatableReportSharedInfo::DebugMode::kDisabled);
+      AggregatableReportSharedInfo::DebugMode::kDisabled,
+      std::move(additional_fields));
 
   return AggregatableReport(std::move(payloads), shared_info.SerializeAsJson());
 }

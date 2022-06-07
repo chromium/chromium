@@ -23,7 +23,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/cbor/values.h"
@@ -280,20 +279,31 @@ AggregationServicePayloadContents::~AggregationServicePayloadContents() =
 
 AggregatableReportSharedInfo::AggregatableReportSharedInfo(
     base::Time scheduled_report_time,
-    std::string privacy_budget_key,
     base::GUID report_id,
     url::Origin reporting_origin,
-    DebugMode debug_mode)
-    : scheduled_report_time(std::move(scheduled_report_time)),
-      privacy_budget_key(std::move(privacy_budget_key)),
+    DebugMode debug_mode,
+    base::Value::Dict additional_fields)
+    : scheduled_report_time(scheduled_report_time),
       report_id(std::move(report_id)),
       reporting_origin(std::move(reporting_origin)),
-      debug_mode(debug_mode) {}
+      debug_mode(debug_mode),
+      additional_fields(std::move(additional_fields)) {}
 
 AggregatableReportSharedInfo::AggregatableReportSharedInfo(
-    const AggregatableReportSharedInfo& other) = default;
+    const AggregatableReportSharedInfo& other) {
+  *this = other;
+}
+
 AggregatableReportSharedInfo& AggregatableReportSharedInfo::operator=(
-    const AggregatableReportSharedInfo& other) = default;
+    const AggregatableReportSharedInfo& other) {
+  scheduled_report_time = other.scheduled_report_time;
+  report_id = other.report_id;
+  reporting_origin = other.reporting_origin;
+  debug_mode = other.debug_mode;
+  additional_fields = other.additional_fields.Clone();
+  return *this;
+}
+
 AggregatableReportSharedInfo::AggregatableReportSharedInfo(
     AggregatableReportSharedInfo&& other) = default;
 AggregatableReportSharedInfo& AggregatableReportSharedInfo::operator=(
@@ -302,8 +312,6 @@ AggregatableReportSharedInfo::~AggregatableReportSharedInfo() = default;
 
 std::string AggregatableReportSharedInfo::SerializeAsJson() const {
   base::Value::Dict value;
-
-  value.Set("privacy_budget_key", privacy_budget_key);
 
   DCHECK(report_id.is_valid());
   value.Set("report_id", report_id.AsLowercaseString());
@@ -317,7 +325,6 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
   value.Set("scheduled_report_time",
             base::NumberToString(scheduled_report_time.ToJavaTime() /
                                  base::Time::kMillisecondsPerSecond));
-
   // TODO(alexmt): Replace with a real version once a version string is decided.
   value.Set("version", "");
 
@@ -325,6 +332,12 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
   if (debug_mode == DebugMode::kEnabled) {
     value.Set("debug_mode", "enabled");
   }
+
+  DCHECK(base::ranges::none_of(additional_fields, [&value](const auto& e) {
+    return value.contains(e.first);
+  })) << "Additional fields in shared_info cannot duplicate existing fields";
+
+  value.Merge(additional_fields);
 
   std::string serialized_value;
   bool succeeded = base::JSONWriter::Write(value, &serialized_value);
@@ -383,11 +396,6 @@ AggregatableReportRequest::CreateInternal(
   }
 
   if (!shared_info.report_id.is_valid()) {
-    return absl::nullopt;
-  }
-
-  if (!base::ranges::all_of(shared_info.privacy_budget_key,
-                            &base::IsAsciiPrintable<char>)) {
     return absl::nullopt;
   }
 

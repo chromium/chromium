@@ -1,12 +1,10 @@
 {
-  "aggregation_service_payloads": [ {
-     "debug_cleartext_payload": "omRkYXRhgaJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAWlvcGVyYXRpb25paGlzdG9ncmFt",
-     "key_id": "example_id",
-     "payload": "nNJRhchQJaZTld/Cfsz5/4JelfwxVw4wTBwaXdDu0y2YKJ3lKyjjRUKKemGsPtSj+D1MlST0ggABMGuJexhxntg7hO+fK1KIcoSK0IWyvrgfkvdip0enRdtxxEZP7xR3nAd8JFnMGDnRHOjBuOni"
-  } ],
-  "attribution_destination": "https://conversion.test",
-  "shared_info": "{\"debug_mode\":\"enabled\",\"privacy_budget_key\":\"hTxwDPlUIel3dB39m09GOkeAkMLcYVdE6H0eK2t1RYc=\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"version\":\"\"}",
-  "source_debug_key": "123",
-  "source_registration_time": "1234483200",
-  "trigger_debug_key": "456"
+   "aggregation_service_payloads": [ {
+      "debug_cleartext_payload": "omRkYXRhgaJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAWlvcGVyYXRpb25paGlzdG9ncmFt",
+      "key_id": "example_id",
+      "payload": "CF4PgWaFAWo8A3jC9rs3Lqr5HRh47Gkdat07Rc510HyCWo+WNwpD0t5jSCexfy2cgVyucGoT0ub58zA82Vg3fBz/sJcrI/83YxuuXPLMbABysLULuILecMqHSBBJfUQIHv80cMemkRKR6u19mzaq"
+   } ],
+   "shared_info": "{\"attribution_destination\":\"https://conversion.test\",\"debug_mode\":\"enabled\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"source_registration_time\":\"1234483200\",\"version\":\"\"}",
+   "source_debug_key": "123",
+   "trigger_debug_key": "456"
 }

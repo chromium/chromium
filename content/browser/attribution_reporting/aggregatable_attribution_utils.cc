@@ -12,6 +12,9 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
@@ -20,11 +23,28 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 
 namespace content {
+
+namespace {
+
+// Note: use the same time serialization as in aggregatable_report.cc.
+// Consider sharing logic if more call-sites need this.
+std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
+  // TODO(csharrison, linnan): Validate that `time` is valid (e.g. not null /
+  // inf).
+  base::Time rounded =
+      base::Time::UnixEpoch() +
+      (time - base::Time::UnixEpoch()).FloorToMultiple(base::Days(1));
+  return base::NumberToString(rounded.ToJavaTime() /
+                              base::Time::kMillisecondsPerSecond);
+}
+
+}  // namespace
 
 std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const AttributionFilterData& source_filter_data,
@@ -120,16 +140,24 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
             .value = static_cast<int>(contribution.value())};
       });
 
+  base::Value::Dict additional_fields;
+  additional_fields.Set(
+      "source_registration_time",
+      SerializeTimeRoundedDownToWholeDayInSeconds(
+          attribution_info.source.common_info().impression_time()));
+  additional_fields.Set("attribution_destination",
+                        attribution_info.source.common_info()
+                            .ConversionDestination()
+                            .Serialize());
   return AggregatableReportRequest::Create(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,
           std::move(contributions),
           AggregationServicePayloadContents::AggregationMode::kDefault),
       AggregatableReportSharedInfo(
-          data->initial_report_time, report.PrivacyBudgetKey(),
-          report.external_report_id(),
-          attribution_info.source.common_info().reporting_origin(),
-          debug_mode));
+          data->initial_report_time, report.external_report_id(),
+          attribution_info.source.common_info().reporting_origin(), debug_mode,
+          std::move(additional_fields)));
 }
 
 }  // namespace content

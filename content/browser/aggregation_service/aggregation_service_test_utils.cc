@@ -168,11 +168,6 @@ testing::AssertionResult SharedInfoEqual(
            << expected.scheduled_report_time
            << ", actual: " << actual.scheduled_report_time;
   }
-  if (expected.privacy_budget_key != actual.privacy_budget_key) {
-    return testing::AssertionFailure()
-           << "Expected privacy_budget_key " << expected.privacy_budget_key
-           << ", actual: " << actual.privacy_budget_key;
-  }
   if (expected.report_id != actual.report_id) {
     return testing::AssertionFailure()
            << "Expected report_id " << expected.report_id
@@ -182,6 +177,11 @@ testing::AssertionResult SharedInfoEqual(
     return testing::AssertionFailure()
            << "Expected debug_mode " << expected.debug_mode
            << ", actual: " << actual.debug_mode;
+  }
+  if (expected.additional_fields != actual.additional_fields) {
+    return testing::AssertionFailure()
+           << "Expected additional_fields " << expected.additional_fields
+           << ", actual: " << actual.additional_fields;
   }
 
   return testing::AssertionSuccess();
@@ -197,11 +197,11 @@ AggregatableReportRequest CreateExampleRequest(
                  aggregation_mode),
              AggregatableReportSharedInfo(
                  /*scheduled_report_time=*/base::Time::Now(),
-                 /*privacy_budget_key=*/"example_budget_key",
                  /*report_id=*/
                  base::GUID::GenerateRandomV4(),
                  url::Origin::Create(GURL("https://reporting.example")),
-                 AggregatableReportSharedInfo::DebugMode::kDisabled))
+                 AggregatableReportSharedInfo::DebugMode::kDisabled,
+                 /*additional_fields=*/base::Value::Dict()))
       .value();
 }
 

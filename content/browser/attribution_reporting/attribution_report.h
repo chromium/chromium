@@ -136,11 +136,6 @@ class CONTENT_EXPORT AttributionReport {
 
   Id ReportId() const;
 
-  // This will be included in aggregatable report to allow aggregation service
-  // to do privacy budgeting. Note that this will DCHECK that the underlying
-  // data is `AggregatableAttributionData`.
-  std::string PrivacyBudgetKey() const;
-
   const AttributionInfo& attribution_info() const { return attribution_info_; }
 
   base::Time report_time() const { return report_time_; }

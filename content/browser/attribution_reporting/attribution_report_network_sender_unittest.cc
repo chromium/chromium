@@ -617,9 +617,7 @@ TEST_F(AttributionReportNetworkSenderTest,
        AggregatableReportSent_ReportBodySetCorrectly) {
   static constexpr char kExpectedReportBody[] =
       R"({"aggregation_service_payloads":"not generated prior to send",)"
-      R"("attribution_destination":"https://conversion.test",)"
-      R"("shared_info":"not generated prior to send",)"
-      R"("source_registration_time":"1234483200"})";
+      R"("shared_info":"not generated prior to send"})";
 
   AttributionReport report =
       ReportBuilder(AttributionInfoBuilder(
@@ -645,9 +643,7 @@ TEST_F(AttributionReportNetworkSenderTest,
        DebugAggregatableReportSent_ReportUrlAndBodySetCorrectly) {
   static constexpr char kExpectedReportBody[] =
       R"({"aggregation_service_payloads":"not generated prior to send",)"
-      R"("attribution_destination":"https://conversion.test",)"
-      R"("shared_info":"not generated prior to send",)"
-      R"("source_registration_time":"1234483200"})";
+      R"("shared_info":"not generated prior to send"})";
 
   AttributionReport report =
       ReportBuilder(AttributionInfoBuilder(

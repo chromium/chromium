@@ -300,19 +300,6 @@ TEST(AggregatableReportTest, RequestCreatedWithInvalidReportId_Failed) {
   EXPECT_FALSE(request.has_value());
 }
 
-TEST(AggregatableReportTest, RequestCreatedWithInvalidPrivacyBudgetKey_Failed) {
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest();
-  AggregatableReportSharedInfo shared_info = example_request.shared_info();
-  shared_info.privacy_budget_key = {static_cast<char>(0xC0)};
-
-  absl::optional<AggregatableReportRequest> request =
-      AggregatableReportRequest::Create(example_request.payload_contents(),
-                                        std::move(shared_info));
-
-  EXPECT_FALSE(request.has_value());
-}
-
 TEST(AggregatableReportTest, RequestCreatedWithZeroContributions) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
@@ -419,15 +406,13 @@ TEST(AggregatableReportTest,
      SharedInfoDebugModeDisabled_SerializeAsJsonReturnsExpectedString) {
   AggregatableReportSharedInfo shared_info(
       base::Time::FromJavaTime(1234567890123),
-      /*privacy_budget_key=*/"example_pbk",
       /*report_id=*/
       base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
-      AggregatableReportSharedInfo::DebugMode::kDisabled);
+      AggregatableReportSharedInfo::DebugMode::kDisabled, base::Value::Dict());
 
   const char kExpectedString[] =
       R"({)"
-      R"("privacy_budget_key":"example_pbk",)"
       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
       R"("reporting_origin":"https://reporting.example",)"
       R"("scheduled_report_time":"1234567890",)"
@@ -441,16 +426,42 @@ TEST(AggregatableReportTest,
      SharedInfoDebugModeEnabled_SerializeAsJsonReturnsExpectedString) {
   AggregatableReportSharedInfo shared_info(
       base::Time::FromJavaTime(1234567890123),
-      /*privacy_budget_key=*/"example_pbk",
       /*report_id=*/
       base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
-      AggregatableReportSharedInfo::DebugMode::kEnabled);
+      AggregatableReportSharedInfo::DebugMode::kEnabled, base::Value::Dict());
 
   const char kExpectedString[] =
       R"({)"
       R"("debug_mode":"enabled",)"
-      R"("privacy_budget_key":"example_pbk",)"
+      R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+      R"("reporting_origin":"https://reporting.example",)"
+      R"("scheduled_report_time":"1234567890",)"
+      R"("version":"")"
+      R"(})";
+
+  EXPECT_EQ(shared_info.SerializeAsJson(), kExpectedString);
+}
+
+TEST(AggregatableReportTest, SharedInfoAdditionalFields) {
+  base::Value::Dict additional_fields;
+  additional_fields.Set("foo", "1");
+  additional_fields.Set("bar", "2");
+  additional_fields.Set("baz", "3");
+  AggregatableReportSharedInfo shared_info(
+      base::Time::FromJavaTime(1234567890123),
+      /*report_id=*/
+      base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
+      url::Origin::Create(GURL("https://reporting.example")),
+      AggregatableReportSharedInfo::DebugMode::kEnabled,
+      std::move(additional_fields));
+
+  const char kExpectedString[] =
+      R"({)"
+      R"("bar":"2",)"
+      R"("baz":"3",)"
+      R"("debug_mode":"enabled",)"
+      R"("foo":"1",)"
       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
       R"("reporting_origin":"https://reporting.example",)"
       R"("scheduled_report_time":"1234567890",)"

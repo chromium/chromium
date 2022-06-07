@@ -1,0 +1,13 @@
+{
+  "aggregation_service_payloads": [ {
+     "debug_cleartext_payload": "omRkYXRhgaJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAWlvcGVyYXRpb25paGlzdG9ncmFt",
+     "key_id": "example_id",
+     "payload": "cVrsURY6QvrT1fsdPxWOXb3bjlzB6ih3APjLpydjyRoAJ6FTyZf9AUj1l5VlDweb3fssxCaMkz5jr5oHPlehnBVjrKLiSvtX3mTJ3CJD9DEp3uiiKV5Fsjv4G4RJcdwZERnJN/8s1OWJ6syEqKnJ"
+  } ],
+  "attribution_destination": "https://conversion.test",
+  "shared_info": "{\"debug_mode\":\"enabled\",\"privacy_budget_key\":\"aOEbtVxG8dYzAR2K/xuW/OppNaQikp5RdjAXshOQ9w8=\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"version\":\"\"}",
+  "source_debug_key": "123",
+  "source_registration_time": "1234483200",
+  "source_site": "https://impression.test",
+  "trigger_debug_key": "456"
+}
