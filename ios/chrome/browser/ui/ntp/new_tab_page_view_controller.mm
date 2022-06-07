@@ -353,7 +353,10 @@
                          : self.discoverFeedWrapperViewController;
   // Configures the feed header in the view hierarchy if it is visible.
   if (self.feedHeaderViewController) {
-    self.feedHeaderViewController.view.layer.zPosition = FLT_MAX;
+    // Ensure that sticky header is not covered by omnibox.
+    if ([self.ntpContentDelegate isContentHeaderSticky]) {
+      self.feedHeaderViewController.view.layer.zPosition = FLT_MAX;
+    }
     [self addViewController:self.feedHeaderViewController
         toParentViewController:parentViewController];
   }
