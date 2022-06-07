@@ -495,7 +495,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
   } else if (use_media_store_filter) {
     // ArcSelectFile is opening the dialog: add 'media-store-files-only' filter
     // to only show volumes in File Manager UI that are indexed by the Android
-    // MediaStore and have a permanent Android content:URI.
+    // MediaStore.
     volume_filter.push_back("media-store-files-only");
   }
 
