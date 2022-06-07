@@ -888,6 +888,7 @@ TEST_F(LoadingPredictorTabHelperTestCollectorFencedFramesTest,
       content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
                                                          fenced_frame_root);
   navigation_simulator->Commit();
+  fenced_frame_root = navigation_simulator->GetFinalRenderFrameHost();
 
   EXPECT_EQ(0u, test_collector_->count_resource_loads_completed());
 

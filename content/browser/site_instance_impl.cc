@@ -213,6 +213,34 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForGuest(
 }
 
 // static
+scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
+    SiteInstanceImpl* embedder_site_instance) {
+  DCHECK(embedder_site_instance);
+  BrowserContext* browser_context = embedder_site_instance->GetBrowserContext();
+
+  if (embedder_site_instance->IsGuest()) {
+    return CreateForGuest(browser_context,
+                          embedder_site_instance->GetStoragePartitionConfig());
+  }
+
+  // Give the new fenced frame SiteInstance the same site url as its embedder's
+  // SiteInstance to allow it to reuse its embedder's process. We avoid doing
+  // this in the default SiteInstance case as the url will be invalid; process
+  // reuse will still happen below though, as the embedder's SiteInstance's
+  // process will not be locked to any site.
+  scoped_refptr<SiteInstanceImpl> site_instance =
+      base::WrapRefCounted(new SiteInstanceImpl(new BrowsingInstance(
+          browser_context, embedder_site_instance->GetWebExposedIsolationInfo(),
+          embedder_site_instance->IsGuest())));
+  if (!embedder_site_instance->IsDefaultSiteInstance()) {
+    site_instance->SetSite(embedder_site_instance->GetSiteInfo());
+  }
+  site_instance->ReuseCurrentProcessIfPossible(
+      embedder_site_instance->GetProcess());
+  return site_instance;
+}
+
+// static
 scoped_refptr<SiteInstanceImpl>
 SiteInstanceImpl::CreateReusableInstanceForTesting(
     BrowserContext* browser_context,

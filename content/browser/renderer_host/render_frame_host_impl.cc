@@ -2798,14 +2798,15 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
   }
 
   // The initial empty document inherits its policy container from its creator.
-  // The creator is either its parent for iframes or its opener for new windows.
+  // The creator is either its parent for subframes and embedded frames, or its
+  // opener for new windows.
   //
   // Note 1: For normal document created from a navigation, the policy container
   // is computed from the NavigationRequest and assigned in
   // DidCommitNewDocument().
-
-  if (parent_) {
-    SetPolicyContainerHost(parent_->policy_container_host()->Clone());
+  if (GetParentOrOuterDocument()) {
+    SetPolicyContainerHost(
+        GetParentOrOuterDocument()->policy_container_host()->Clone());
   } else if (frame_tree_node_->opener()) {
     SetPolicyContainerHost(frame_tree_node_->opener()
                                ->current_frame_host()

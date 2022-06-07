@@ -4558,6 +4558,8 @@ TEST_F(NavigationControllerFencedFrameTest, NoURLRewriteForFencedFrames) {
   std::unique_ptr<NavigationSimulator> navigation_simulator =
       NavigationSimulator::CreateForFencedFrame(kUrl2, fenced_frame_root);
   navigation_simulator->Commit();
+  fenced_frame_root = static_cast<RenderFrameHostImpl*>(
+      navigation_simulator->GetFinalRenderFrameHost());
 
   // Simulate the fenced frame receiving a request from a RenderFrameProxyHost
   // to navigate to `kTestRewriteURL`.

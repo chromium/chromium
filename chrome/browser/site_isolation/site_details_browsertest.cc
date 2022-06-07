@@ -875,6 +875,7 @@ class FencedFrameSiteDetailsBrowserTest : public InProcessBrowserTest {
       const FencedFrameSiteDetailsBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -892,12 +893,13 @@ class FencedFrameSiteDetailsBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(FencedFrameSiteDetailsBrowserTest,
                        MemoryDetailsForFencedFrame) {
-  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  auto initial_url = embedded_test_server()->GetURL("a.com", "/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Load a fenced frame.
   GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/iframe.html");
+      embedded_test_server()->GetURL("b.com", "/fenced_frames/iframe.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           web_contents()->GetMainFrame(), fenced_frame_url);

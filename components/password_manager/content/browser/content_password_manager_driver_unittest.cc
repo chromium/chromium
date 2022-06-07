@@ -410,6 +410,7 @@ TEST_F(ContentPasswordManagerDriverFencedFramesTest,
       content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
                                                          fenced_frame_root);
   navigation_simulator->Commit();
+  fenced_frame_root = navigation_simulator->GetFinalRenderFrameHost();
 
   autofill::FormData initial_form;
   autofill::FormData form_in_fenced_frame =

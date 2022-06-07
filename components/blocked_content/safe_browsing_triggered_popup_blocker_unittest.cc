@@ -590,6 +590,7 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerFencedFrameTest,
       content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
                                                          fenced_frame_root);
   navigation_simulator->Commit();
+  fenced_frame_root = navigation_simulator->GetFinalRenderFrameHost();
 
   // The popup blocker is not triggered for a fenced frame.
   EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker(

@@ -1749,6 +1749,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerFencedFrameTest,
             throttle_manager);
 
   navigation_simulator()->Commit();
+  fenced_frame_root = navigation_simulator()->GetFinalRenderFrameHost();
 
   // Committing the fenced frame navigation should not change the Page's
   // throttle manager.

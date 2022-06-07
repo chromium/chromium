@@ -70,6 +70,8 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
   // frame if the removal-and-stop-loading scenario is a useful one to test.
   EXPECT_EQ(previous_fenced_frame_count + 1,
             fenced_frame_parent_rfh->GetFencedFrames().size());
+  if (url.is_empty())
+    return fenced_frame->GetInnerRoot();
   return NavigateFrameInFencedFrameTree(fenced_frame->GetInnerRoot(), url,
                                         expected_error_code);
 }

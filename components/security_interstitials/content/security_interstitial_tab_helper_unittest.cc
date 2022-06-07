@@ -263,6 +263,7 @@ TEST_F(SecurityInterstitialTabHelperFencedFrameTest,
       content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
                                                          fenced_frame_rfh);
   navigation_simulator->Commit();
+  fenced_frame_rfh = navigation_simulator->GetFinalRenderFrameHost();
   EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
   EXPECT_FALSE(blocking_page_destroyed);
   EXPECT_TRUE(helper->IsDisplayingInterstitial());
