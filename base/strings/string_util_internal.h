@@ -242,28 +242,6 @@ inline bool DoIsStringUTF8(StringPiece str) {
   return true;
 }
 
-// Implementation note: Normally this function will be called with a hardcoded
-// constant for the lowercase_ascii parameter. Constructing a StringPiece from
-// a C constant requires running strlen, so the result will be two passes
-// through the buffers, one to file the length of lowercase_ascii, and one to
-// compare each letter.
-//
-// This function could have taken a const char* to avoid this and only do one
-// pass through the string. But the strlen is faster than the case-insensitive
-// compares and lets us early-exit in the case that the strings are different
-// lengths (will often be the case for non-matches). So whether one approach or
-// the other will be faster depends on the case.
-//
-// The hardcoded strings are typically very short so it doesn't matter, and the
-// string piece gives additional flexibility for the caller (doesn't have to be
-// null terminated) so we choose the StringPiece route.
-template <typename T, typename CharT = typename T::value_type>
-inline bool DoLowerCaseEqualsASCII(T str, StringPiece lowercase_ascii) {
-  return std::equal(
-      str.begin(), str.end(), lowercase_ascii.begin(), lowercase_ascii.end(),
-      [](auto lhs, auto rhs) { return ToLowerASCII(lhs) == rhs; });
-}
-
 template <typename T, typename CharT = typename T::value_type>
 bool StartsWithT(T str, T search_for, CompareCase case_sensitivity) {
   if (search_for.size() > str.size())

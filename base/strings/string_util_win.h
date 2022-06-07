@@ -157,9 +157,6 @@ BASE_EXPORT std::wstring CollapseWhitespace(
 
 BASE_EXPORT bool ContainsOnlyChars(WStringPiece input, WStringPiece characters);
 
-BASE_EXPORT bool LowerCaseEqualsASCII(WStringPiece str,
-                                      StringPiece lowercase_ascii);
-
 BASE_EXPORT bool EqualsASCII(StringPiece16 str, StringPiece ascii);
 
 BASE_EXPORT bool StartsWith(

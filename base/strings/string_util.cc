@@ -254,14 +254,6 @@ bool IsStringUTF8AllowingNoncharacters(StringPiece str) {
   return internal::DoIsStringUTF8<IsValidCodepoint>(str);
 }
 
-bool LowerCaseEqualsASCII(StringPiece str, StringPiece lowercase_ascii) {
-  return internal::DoLowerCaseEqualsASCII(str, lowercase_ascii);
-}
-
-bool LowerCaseEqualsASCII(StringPiece16 str, StringPiece lowercase_ascii) {
-  return internal::DoLowerCaseEqualsASCII(str, lowercase_ascii);
-}
-
 bool EqualsASCII(StringPiece16 str, StringPiece ascii) {
   return std::equal(ascii.begin(), ascii.end(), str.begin(), str.end());
 }

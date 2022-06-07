@@ -660,22 +660,6 @@ TEST(StringUtilTest, ToUpperASCII) {
   EXPECT_EQ(u"CC2", ToUpperASCII(u"Cc2"));
 }
 
-TEST(StringUtilTest, LowerCaseEqualsASCII) {
-  static const struct {
-    const char*    src_a;
-    const char*    dst;
-  } lowercase_cases[] = {
-    { "FoO", "foo" },
-    { "foo", "foo" },
-    { "FOO", "foo" },
-  };
-
-  for (const auto& i : lowercase_cases) {
-    EXPECT_TRUE(LowerCaseEqualsASCII(ASCIIToUTF16(i.src_a), i.dst));
-    EXPECT_TRUE(LowerCaseEqualsASCII(i.src_a, i.dst));
-  }
-}
-
 TEST(StringUtilTest, FormatBytesUnlocalized) {
   static const struct {
     int64_t bytes;

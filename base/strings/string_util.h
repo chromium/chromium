@@ -337,13 +337,6 @@ BASE_EXPORT bool IsStringASCII(StringPiece16 str);
 BASE_EXPORT bool IsStringASCII(WStringPiece str);
 #endif
 
-// Compare the lower-case form of the given string against the given
-// previously-lower-cased ASCII string (typically a constant).
-BASE_EXPORT bool LowerCaseEqualsASCII(StringPiece str,
-                                      StringPiece lowercase_ascii);
-BASE_EXPORT bool LowerCaseEqualsASCII(StringPiece16 str,
-                                      StringPiece lowercase_ascii);
-
 // Performs a case-sensitive string compare of the given 16-bit string against
 // the given 8-bit ASCII string (typically a constant). The behavior is
 // undefined if the |ascii| string is not ASCII.
