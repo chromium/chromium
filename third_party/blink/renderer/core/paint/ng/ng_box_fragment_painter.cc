@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
+#include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
@@ -385,10 +386,15 @@ NGInlinePaintContext& NGBoxFragmentPainter::EnsureInlineContext() {
 void NGBoxFragmentPainter::Paint(const PaintInfo& paint_info) {
   if (PhysicalFragment().IsHiddenForPaint())
     return;
+  auto* layout_object = box_fragment_.GetLayoutObject();
   if (PhysicalFragment().IsPaintedAtomically() &&
       !box_fragment_.HasSelfPaintingLayer() &&
       paint_info.phase != PaintPhase::kOverlayOverflowControls) {
     PaintAllPhasesAtomically(paint_info);
+  } else if (layout_object && layout_object->IsNGSVGForeignObject()) {
+    ScopedSVGPaintState paint_state(*layout_object, paint_info);
+    PaintTiming::From(layout_object->GetDocument()).MarkFirstContentfulPaint();
+    PaintInternal(paint_info);
   } else {
     PaintInternal(paint_info);
   }

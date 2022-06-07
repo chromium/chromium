@@ -48,6 +48,7 @@ void SVGForeignObjectPainter::PaintLayer(const PaintInfo& paint_info) {
 }
 
 void SVGForeignObjectPainter::Paint(const PaintInfo& paint_info) {
+  DCHECK(layout_svg_foreign_object_.IsSVGForeignObject());
   // ScopedSVGPaintState only applies masks (and clips-within-clips) here.
   ScopedSVGPaintState paint_state(layout_svg_foreign_object_, paint_info);
 
