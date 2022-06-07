@@ -80,7 +80,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private QueryTileSection mQueryTileSection;
 
     /**
-     * This flag should be reset once {@link MostVisitedTilesCoordinator#destroyMVTiles} is called.
+     * This flag should be reset once {@link MostVisitedTilesCoordinator#destroyMvtiles} is called.
      */
     private boolean mIsMVTilesInitialized;
 
@@ -281,7 +281,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         }
 
         if (mMostVisitedCoordinator != null) {
-            mMostVisitedCoordinator.destroyMVTiles();
+            mMostVisitedCoordinator.destroyMvtiles();
             mIsMVTilesInitialized = false;
         }
 

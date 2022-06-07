@@ -570,12 +570,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             view.setLayoutParams(layoutParams);
         }
 
-        // Apply negative margin to the top of the N logo (which would otherwise be the height of
-        // the top toolbar) when Duet is enabled to remove some of the empty space.
-        mNewTabPageLayout.setSearchProviderTopMargin((layoutParams.bottomMargin == 0)
-                        ? view.getResources().getDimensionPixelSize(R.dimen.ntp_logo_margin_top)
-                        : -view.getResources().getDimensionPixelSize(
-                                R.dimen.duet_ntp_logo_top_margin));
+        // Apply the height of the top toolbar as the margin to the top of the N logo.
+        mNewTabPageLayout.setSearchProviderTopMargin(getLogoMargin(true));
+        mNewTabPageLayout.setSearchProviderBottomMargin(getLogoMargin(false));
     }
 
     // TODO(sinansahin): This is the same as {@link ToolbarManager#getToolbarExtraYOffset}. So, we
@@ -615,6 +612,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         setSearchProviderInfoOnView(mSearchProviderHasLogo,
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle());
         mNewTabPageLayout.loadSearchProviderLogo();
+        // TODO(https://crbug.com/1329288): Remove this call when the Feed position experiment is
+        // cleaned up.
+        updateMargins();
     }
 
     /**
@@ -976,5 +976,19 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     @VisibleForTesting
     public NewTabPageManager getNewTabPageManagerForTesting() {
         return mNewTabPageManager;
+    }
+
+    /**
+     * @param isTopMargin True to return the top margin; False to return bottom margin.
+     * @return The top margin or bottom margin of the logo.
+     */
+    // TODO(https://crbug.com/1329288): Remove this method when the Feed position experiment is
+    // cleaned up.
+    private int getLogoMargin(boolean isTopMargin) {
+        if (FeedPositionUtils.isFeedPullUpEnabled() && mSearchProviderHasLogo) return 0;
+        return isTopMargin ? mNewTabPageLayout.getResources().getDimensionPixelSize(
+                       R.dimen.ntp_logo_margin_top)
+                           : mNewTabPageLayout.getResources().getDimensionPixelSize(
+                                   R.dimen.ntp_logo_margin_bottom);
     }
 }

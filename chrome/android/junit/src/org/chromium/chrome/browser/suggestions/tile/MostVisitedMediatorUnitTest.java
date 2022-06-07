@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
@@ -117,11 +118,6 @@ public class MostVisitedMediatorUnitTest {
         when(mTileView.getData()).thenReturn(mData);
         when(mTile.getData()).thenReturn(mData);
 
-        mMvTilesLayout.addView(mTileView);
-        when(mMvTilesLayout.getChildCount()).thenReturn(1);
-        when(mMvTilesLayout.getChildAt(0)).thenReturn(mTileView);
-        when(mNoMvPlaceholderStub.inflate()).thenReturn(mNoMvPlaceholder);
-
         mMostVisitedSites = new FakeMostVisitedSites();
         doAnswer(invocation -> {
             mMostVisitedSites.setObserver(
@@ -148,14 +144,19 @@ public class MostVisitedMediatorUnitTest {
 
     @Test
     public void testOnTileCountChanged() {
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
+        ArrayList<SiteSuggestion> array = new ArrayList<>();
+        array.add(mData);
+        mMostVisitedSites.setTileSuggestions(array);
+
         createMediator();
 
+        Assert.assertFalse(mMediator.isMVTilesCleanedUp());
         Assert.assertTrue(mModel.get(IS_MVT_LAYOUT_VISIBLE));
         Assert.assertNull(mModel.get(PLACEHOLDER_VIEW));
 
         // When there's no mv tile and the default search engine doesn't have logo, the placeholder
         // should be shown and the mv tiles layout should be hidden.
-        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
         mMostVisitedSites.setTileSuggestions(new ArrayList<>());
 
         mMediator.onTileCountChanged();
@@ -194,6 +195,7 @@ public class MostVisitedMediatorUnitTest {
 
     @Test
     public void testOnTemplateURLServiceChanged() {
+        mMostVisitedSites.setTileSuggestions(new ArrayList<>());
         createMediator();
 
         Assert.assertTrue(mModel.get(IS_MVT_LAYOUT_VISIBLE));
@@ -201,7 +203,6 @@ public class MostVisitedMediatorUnitTest {
 
         // When the default search engine has logo and there's no mv tile, the placeholder
         // should be hidden and the mv tiles layout should be shown.
-        mMostVisitedSites.setTileSuggestions(new ArrayList<>());
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
 
         mMediator.onTemplateURLServiceChanged();
@@ -283,8 +284,19 @@ public class MostVisitedMediatorUnitTest {
         mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
         createMediator(/*isScrollableMVTEnabled=*/false);
         mMediator.onTileDataChanged();
+
         Assert.assertNull(mModel.get(HORIZONTAL_EDGE_PADDINGS));
         Assert.assertNull(mModel.get(HORIZONTAL_INTERVAL_PADDINGS));
+    }
+
+    @Test
+    public void testDestroy_ScrollableMVT() {
+        createMediator();
+
+        mMediator.destroy();
+
+        verify((MostVisitedTilesCarouselLayout) mMvTilesLayout).destroy();
+        verify(mTemplateUrlService).removeObserver(mMediator);
     }
 
     private void createMediator() {
@@ -292,6 +304,17 @@ public class MostVisitedMediatorUnitTest {
     }
 
     private void createMediator(boolean isScrollableMVTEnabled) {
+        if (!isScrollableMVTEnabled) {
+            mMvTilesLayout = Mockito.mock(MostVisitedTilesGridLayout.class);
+        } else {
+            mMvTilesLayout = Mockito.mock(MostVisitedTilesCarouselLayout.class);
+        }
+
+        mMvTilesLayout.addView(mTileView);
+        when(mMvTilesLayout.getChildCount()).thenReturn(1);
+        when(mMvTilesLayout.getChildAt(0)).thenReturn(mTileView);
+        when(mNoMvPlaceholderStub.inflate()).thenReturn(mNoMvPlaceholder);
+
         mMediator = new MostVisitedTilesMediator(mResources, mUiConfig, mMvTilesLayout,
                 mNoMvPlaceholderStub, mTileRenderer, mModel, false, isScrollableMVTEnabled, false,
                 mSnapshotTileGridChangedRunnable, mTileCountChangedRunnable);

@@ -58,6 +58,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private TileRenderer mRenderer;
     private TileGroup mTileGroup;
     private boolean mInitializationComplete;
+    private boolean mSearchProviderHasLogo = true;
 
     public MostVisitedTilesMediator(Resources resources, UiConfig uiConfig, ViewGroup mvTilesLayout,
             ViewStub noMvPlaceholderStub, TileRenderer renderer, PropertyModel propertyModel,
@@ -96,7 +97,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
                 tileGroupDelegate, /*observer=*/this, offlinePageBridge);
         mTileGroup.startObserving(MAX_RESULTS);
 
-        updateTileGridPlaceholderVisibility();
+        onSearchEngineHasLogoChanged();
         TemplateUrlServiceFactory.get().addObserver(this);
 
         mInitializationComplete = true;
@@ -105,7 +106,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     // TemplateUrlServiceObserver overrides
     @Override
     public void onTemplateURLServiceChanged() {
-        updateTileGridPlaceholderVisibility();
+        onSearchEngineHasLogoChanged();
     }
 
     /* TileGroup.Observer implementation. */
@@ -126,7 +127,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     @Override
     public void onTileCountChanged() {
         if (mTileCountChangedRunnable != null) mTileCountChangedRunnable.run();
-        updateTileGridPlaceholderVisibility();
+        updateTilePlaceholderVisibility();
     }
 
     @Override
@@ -242,16 +243,30 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         mModel.set(HORIZONTAL_INTERVAL_PADDINGS, mTileViewPortraitIntervalPadding);
     }
 
+    private void onSearchEngineHasLogoChanged() {
+        boolean searchEngineHasLogo =
+                TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
+        if (mSearchProviderHasLogo == searchEngineHasLogo) return;
+
+        mSearchProviderHasLogo = searchEngineHasLogo;
+        updateTilePlaceholderVisibility();
+
+        // TODO(crbug.com/1329288): Remove this when the Feed position experiment is cleaned up.
+        if (!mIsScrollableMVTEnabled) {
+            ((MostVisitedTilesGridLayout) mMvTilesLayout)
+                    .setSearchProviderHasLogo(mSearchProviderHasLogo);
+            mMvTilesLayout.requestLayout();
+        }
+    }
+
     /**
      * Shows the most visited placeholder ("Nothing to see here") if there are no most visited
      * items and there is no search provider logo.
      */
-    private void updateTileGridPlaceholderVisibility() {
+    private void updateTilePlaceholderVisibility() {
         if (mTileGroup == null) return;
-        boolean searchProviderHasLogo =
-                TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
         boolean showPlaceholder =
-                mTileGroup.hasReceivedData() && mTileGroup.isEmpty() && !searchProviderHasLogo;
+                mTileGroup.hasReceivedData() && mTileGroup.isEmpty() && !mSearchProviderHasLogo;
 
         if (showPlaceholder && mModel.get(PLACEHOLDER_VIEW) == null) {
             mModel.set(PLACEHOLDER_VIEW, mNoMvPlaceholderStub.inflate());

@@ -156,16 +156,24 @@
 
     <!-- NTP dimensions -->
     <dimen name="tile_grid_layout_max_width">504dp</dimen>
-    <dimen name="tile_grid_layout_padding_top">24dp</dimen>
-    <dimen name="tile_grid_layout_no_logo_padding_top">20dp</dimen>
+    <dimen name="tile_grid_layout_top_margin">24dp</dimen>
+    <dimen name="tile_grid_layout_top_margin_push_down_small">36dp</dimen>
+    <dimen name="tile_grid_layout_top_margin_push_down_large">54dp</dimen>
+    <dimen name="tile_grid_layout_top_margin_pull_up">16dp</dimen>
+    <dimen name="tile_grid_layout_no_logo_top_margin">20dp</dimen>
     <dimen name="tile_grid_layout_bleed">8dp</dimen>
     <dimen name="tile_grid_layout_vertical_spacing">6dp</dimen>
+    <dimen name="tile_grid_layout_vertical_spacing_push_down_small">24dp</dimen>
+    <dimen name="tile_grid_layout_vertical_spacing_push_down_large">36dp</dimen>
     <dimen name="tile_grid_layout_min_horizontal_spacing">4dp</dimen>
     <dimen name="tile_grid_layout_bottom_margin">16dp</dimen>
+    <dimen name="tile_grid_layout_bottom_margin_push_down_small">48dp</dimen>
+    <dimen name="tile_grid_layout_bottom_margin_push_down_large">64dp</dimen>
+    <dimen name="tile_grid_layout_bottom_margin_pull_up">24dp</dimen>
     <dimen name="tile_carousel_layout_bottom_margin">24dp</dimen>
     <dimen name="ntp_logo_height">100dp</dimen>
     <dimen name="ntp_logo_margin_top">26dp</dimen>
-    <dimen name="duet_ntp_logo_top_margin">-16dp</dimen>
+    <dimen name="ntp_logo_margin_bottom">23dp</dimen>
     <dimen name="ntp_search_box_height">48dp</dimen>
     <dimen name="ntp_search_box_transition_length">16dp</dimen>
     <dimen name="experimental_explore_sites_radius">8dp</dimen>

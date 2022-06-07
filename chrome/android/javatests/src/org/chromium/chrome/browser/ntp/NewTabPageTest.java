@@ -502,7 +502,8 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    public void testPlaceholder() {
+    @ParameterAnnotations.UseMethodParameter(MVTParams.class)
+    public void testPlaceholder(boolean isScrollableMVTEnabled) {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
@@ -528,6 +529,9 @@ public class NewTabPageTest {
             when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
 
             ntpLayout.onSwitchToForeground(); // Force tile refresh.
+            // Mock to notify the template URL service observer.
+            ntpLayout.getMostVisitedTilesCoordinatorForTesting()
+                    .onTemplateURLServiceChangedForTesting();
         });
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
