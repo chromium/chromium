@@ -65,6 +65,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
          std::size(kCommercePriceTrackingWithOptimizationGuideAndOptOut),
          nullptr}};
 
+extern const base::Feature kCommerceCoupons;
 extern const base::Feature kCommerceMerchantViewer;
 extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
 extern const base::Feature kShoppingList;

@@ -64,6 +64,9 @@ const re2::RE2& GetCouponPartnerMerchantPattern() {
 
 }  // namespace
 
+const base::Feature kCommerceCoupons{"CommerceCoupons",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kCommerceMerchantViewer{"CommerceMerchantViewer",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 

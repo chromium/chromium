@@ -5883,6 +5883,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabGridLayoutAndroidVariations,
                                     "TabGridLayoutAndroid")},
 
+    {"enable-commerce-coupons", flag_descriptions::kCommerceCouponsName,
+     flag_descriptions::kCommerceCouponsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(commerce::kCommerceCoupons)},
+
     {"enable-commerce-merchant-viewer",
      flag_descriptions::kCommerceMerchantViewerAndroidName,
      flag_descriptions::kCommerceMerchantViewerAndroidDescription, kOsAndroid,

@@ -2539,6 +2539,11 @@ const char kTabGridLayoutAndroidDescription[] =
     "Allows users to see their tabs in a grid layout in the tab switcher on "
     "phones.";
 
+const char kCommerceCouponsName[] = "Coupon Annotations";
+const char kCommerceCouponsDescription[] =
+    "Allows users to view annotations for available coupons in the Tab "
+    "Switching UI and on the Tab itself when a known coupon in available";
+
 const char kCommerceDeveloperName[] = "Commerce developer mode";
 const char kCommerceDeveloperDescription[] =
     "Allows users in the allowlist to enter the developer mode";
