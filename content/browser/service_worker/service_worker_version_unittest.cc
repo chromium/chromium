@@ -50,6 +50,12 @@
 namespace content {
 namespace service_worker_version_unittest {
 
+constexpr base::TimeDelta kTestTimeoutBeyondRequestTimeout =
+    // Value of kRequestTimeout in service_worker_version.cc
+    base::Minutes(5) +
+    // A little past that.
+    base::Minutes(1);
+
 base::OnceCallback<void()> VerifyCalled(
     bool* called,
     base::OnceClosure quit_closure = base::OnceClosure()) {
@@ -1677,12 +1683,6 @@ TEST_F(ServiceWorkerVersionTest, PendingExternalRequest) {
 
 // Tests worker lifetime with ServiceWorkerVersion::StartExternalRequest.
 TEST_F(ServiceWorkerVersionTest, WorkerLifetimeWithExternalRequest) {
-  constexpr base::TimeDelta kTestTimeout =
-      // Value of kRequestTimeout in service_worker_version.cc
-      base::Minutes(5) +
-      // A little past that.
-      base::Minutes(1);
-
   base::SimpleTestTickClock tick_clock;
   SetTickClockForTesting(&tick_clock);
   absl::optional<blink::ServiceWorkerStatusCode> status;
@@ -1710,13 +1710,18 @@ TEST_F(ServiceWorkerVersionTest, WorkerLifetimeWithExternalRequest) {
         }
 
         // Now advance time to check worker's running state.
-        tick_clock.Advance(kTestTimeout);
+        tick_clock.Advance(kTestTimeoutBeyondRequestTimeout);
         version_->timeout_timer_.user_task().Run();
         base::RunLoop().RunUntilIdle();
 
-        EXPECT_EQ(expect_running, version_->timeout_timer_.IsRunning());
-        EXPECT_EQ(!expect_running,
-                  version_->running_status() == EmbeddedWorkerStatus::STOPPED);
+        version_->OnPongFromWorker();  // Avoids ping timeout.
+        const bool worker_stopped_or_stopping =
+            version_->OnRequestTermination();
+
+        EXPECT_EQ(!expect_running, worker_stopped_or_stopping);
+        const bool worker_running =
+            version_->running_status() == EmbeddedWorkerStatus::RUNNING;
+        EXPECT_EQ(expect_running, worker_running);
 
         // Ensure the worker is stopped, so that start_external_request_test()
         // works next time.
@@ -1740,6 +1745,52 @@ TEST_F(ServiceWorkerVersionTest, WorkerLifetimeWithExternalRequest) {
       // External request with kDoesNotTimeout timeout keeps the worker running
       // beyond the default timeout.
       true /* expect_running */);
+}
+
+// Tests that a worker containing external request with
+// ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout is not
+// stopped by an external request with "default" timeout.
+//
+// Regression test for https://crbug.com/1189678
+TEST_F(ServiceWorkerVersionTest,
+       DefaultTimeoutRequestDoesNotAffectMaxTimeoutRequest) {
+  base::SimpleTestTickClock tick_clock;
+  SetTickClockForTesting(&tick_clock);
+  absl::optional<blink::ServiceWorkerStatusCode> status;
+
+  using ReqTimeoutType = ServiceWorkerExternalRequestTimeoutType;
+  {
+    // Start worker.
+    base::RunLoop run_loop;
+    version_->StartWorker(
+        ServiceWorkerMetrics::EventType::UNKNOWN,
+        ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
+    ASSERT_EQ(EmbeddedWorkerStatus::STARTING, version_->running_status());
+
+    // Add an external request, with kDoesNotTimeout timeout.
+    EXPECT_EQ(ServiceWorkerExternalRequestResult::kOk,
+              version_->StartExternalRequest(base::GenerateGUID(),
+                                             ReqTimeoutType::kDoesNotTimeout));
+    run_loop.Run();
+    EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
+    EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
+
+    // Add another external request with kDefault timeout.
+    EXPECT_EQ(ServiceWorkerExternalRequestResult::kOk,
+              version_->StartExternalRequest(base::GenerateGUID(),
+                                             ReqTimeoutType::kDefault));
+  }
+
+  // Now advance time to check worker's running state.
+  tick_clock.Advance(kTestTimeoutBeyondRequestTimeout);
+  version_->timeout_timer_.user_task().Run();
+  version_->OnPongFromWorker();  // Avoids ping timeout.
+  base::RunLoop().RunUntilIdle();
+
+  // Expect the worker to be still running.
+  const bool worker_stopped_or_stopping = version_->OnRequestTermination();
+  EXPECT_FALSE(worker_stopped_or_stopping);
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
 }
 
 class ServiceWorkerVersionTerminationOnNoControlleeTest
