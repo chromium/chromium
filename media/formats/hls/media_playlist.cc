@@ -27,6 +27,19 @@
 
 namespace media::hls {
 
+struct MediaPlaylist::CtorArgs {
+  GURL uri;
+  types::DecimalInteger version;
+  bool independent_segments;
+  base::TimeDelta target_duration;
+  absl::optional<PartialSegmentInfo> partial_segment_info;
+  std::vector<MediaSegment> segments;
+  absl::optional<PlaylistType> playlist_type;
+  bool end_list;
+  bool i_frames_only;
+  bool has_media_sequence_tag;
+};
+
 MediaPlaylist::MediaPlaylist(MediaPlaylist&&) = default;
 
 MediaPlaylist& MediaPlaylist::operator=(MediaPlaylist&&) = default;
@@ -342,32 +355,27 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   }
 
   return MediaPlaylist(
-      std::move(uri), common_state.GetVersion(), independent_segments,
-      base::Seconds(target_duration_tag->duration),
-      std::move(partial_segment_info), std::move(segments), playlist_type,
-      end_list_tag.has_value(), i_frames_only_tag.has_value(),
-      media_sequence_tag.has_value());
+      CtorArgs{.uri = std::move(uri),
+               .version = common_state.GetVersion(),
+               .independent_segments = independent_segments,
+               .target_duration = base::Seconds(target_duration_tag->duration),
+               .partial_segment_info = std::move(partial_segment_info),
+               .segments = std::move(segments),
+               .playlist_type = playlist_type,
+               .end_list = end_list_tag.has_value(),
+               .i_frames_only = i_frames_only_tag.has_value(),
+               .has_media_sequence_tag = media_sequence_tag.has_value()});
 }
 
-MediaPlaylist::MediaPlaylist(
-    GURL uri,
-    types::DecimalInteger version,
-    bool independent_segments,
-    base::TimeDelta target_duration,
-    absl::optional<PartialSegmentInfo> partial_segment_info,
-    std::vector<MediaSegment> segments,
-    absl::optional<PlaylistType> playlist_type,
-    bool end_list,
-    bool i_frames_only,
-    bool has_media_sequence_tag)
-    : Playlist(std::move(uri), version, independent_segments),
-      target_duration_(target_duration),
-      partial_segment_info_(std::move(partial_segment_info)),
-      segments_(std::move(segments)),
-      playlist_type_(playlist_type),
-      end_list_(end_list),
-      i_frames_only_(i_frames_only),
-      has_media_sequence_tag_(has_media_sequence_tag) {
+MediaPlaylist::MediaPlaylist(CtorArgs args)
+    : Playlist(std::move(args.uri), args.version, args.independent_segments),
+      target_duration_(args.target_duration),
+      partial_segment_info_(std::move(args.partial_segment_info)),
+      segments_(std::move(args.segments)),
+      playlist_type_(args.playlist_type),
+      end_list_(args.end_list),
+      i_frames_only_(args.i_frames_only),
+      has_media_sequence_tag_(args.has_media_sequence_tag) {
   base::TimeDelta duration;
   for (const auto& segment : segments_) {
     duration += base::Seconds(segment.GetDuration());

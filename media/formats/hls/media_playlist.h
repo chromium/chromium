@@ -100,16 +100,8 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
       const MultivariantPlaylist* parent_playlist);
 
  private:
-  MediaPlaylist(GURL uri,
-                types::DecimalInteger version,
-                bool independent_segments,
-                base::TimeDelta target_duration,
-                absl::optional<PartialSegmentInfo> partial_segment_info,
-                std::vector<MediaSegment> segments,
-                absl::optional<PlaylistType> playlist_type,
-                bool end_list,
-                bool i_frames_only,
-                bool has_media_sequence_tag_);
+  struct CtorArgs;
+  explicit MediaPlaylist(CtorArgs);
 
   base::TimeDelta target_duration_;
   absl::optional<PartialSegmentInfo> partial_segment_info_;
