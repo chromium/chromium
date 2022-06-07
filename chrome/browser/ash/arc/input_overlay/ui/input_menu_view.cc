@@ -202,6 +202,7 @@ void InputMenuView::Init() {
         header_view.get(), /*left=*/20, /*right=*/8, /*other_spacing=*/16)));
     game_control_toggle_->SetBorder(
         views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, 0, 16)));
+    SetCustomToggleColor(game_control_toggle_);
 
     AddChildView(std::move(header_view));
     AddChildView(BuildSeparator());
@@ -260,6 +261,7 @@ void InputMenuView::Init() {
     show_hint_toggle_->SetIsOn(
         game_control_toggle_->GetIsOn() &&
         display_overlay_controller_->GetInputMappingViewVisible());
+    SetCustomToggleColor(show_hint_toggle_);
     hint_label->SetBorder(views::CreateEmptyBorder(
         CalculateInsets(hint_view.get(), /*left=*/kSideInset,
                         /*right=*/kSideInset, /*other_spacing=*/0)));
@@ -348,6 +350,21 @@ gfx::Insets InputMenuView::CalculateInsets(views::View* view,
   int right_inset =
       std::max(0, kMenuWidth - (total_width + left + right + other_spacing));
   return gfx::Insets::TLBR(0, left, 0, right_inset);
+}
+
+void InputMenuView::SetCustomToggleColor(views::ToggleButton* toggle) {
+  auto* color_provider = ash::AshColorProvider::Get();
+  if (!color_provider)
+    return;
+
+  toggle->SetThumbOnColor(color_provider->GetContentLayerColor(
+      ash::AshColorProvider::ContentLayerType::kSwitchKnobColorActive));
+  toggle->SetThumbOffColor(color_provider->GetContentLayerColor(
+      ash::AshColorProvider::ContentLayerType::kSwitchKnobColorInactive));
+  toggle->SetTrackOnColor(color_provider->GetContentLayerColor(
+      ash::AshColorProvider::ContentLayerType::kSwitchTrackColorActive));
+  toggle->SetTrackOffColor(color_provider->GetContentLayerColor(
+      ash::AshColorProvider::ContentLayerType::kSwitchTrackColorInactive));
 }
 
 }  // namespace input_overlay
