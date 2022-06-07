@@ -19,7 +19,7 @@
 // Profile with a high frequency that is prime to avoid unfortunate alignement
 // with periods of repeating tasks internal to the process. The frequency was
 // verified as supported by macOS Monterey running on Intel. See
-// https://illumos.org/books/dtrace/chp-profile.html#chp-profile-5 for details.
+// illumos.org/books/dtrace/chp-profile.html#chp-profile-5 for details.
 profile-997/(pid == $1 || ppid == $1)/
 {
   @[ustack(512)] = count();
