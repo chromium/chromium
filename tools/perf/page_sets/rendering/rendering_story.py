@@ -34,6 +34,7 @@ class RenderingStory(six.with_metaclass(_MetaRenderingStory, page.Page)):
   TAGS =[]
   PLATFORM_SPECIFIC = False
   YEAR = None
+  DISABLE_TRACING = False
 
   def __init__(self,
                page_set,
