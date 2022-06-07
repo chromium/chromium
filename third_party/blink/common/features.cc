@@ -158,14 +158,9 @@ const base::Feature kPrivacySandboxAdsAPIs{"PrivacySandboxAdsAPIs",
 const base::Feature kMixedContentAutoupgrade{"AutoupgradeMixedContent",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// An experimental replacement for the `User-Agent` header, defined in
-// https://tools.ietf.org/html/draft-west-ua-client-hints.
+// Enables User-Agent Client Hints
 const base::Feature kUserAgentClientHint{"UserAgentClientHint",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enable `sec-ch-ua-full-version-list` client hint.
-const base::Feature kUserAgentClientHintFullVersionList{
-    "UserAgentClientHintFullVersionList", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Handle prefers-color-scheme user preference media feature via client hints.
 const base::Feature kPrefersColorSchemeClientHintHeader{

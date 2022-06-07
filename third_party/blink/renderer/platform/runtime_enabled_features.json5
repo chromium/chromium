@@ -2437,10 +2437,6 @@
       status: "stable",
     },
     {
-      name: "UserAgentClientHintFullVersionList",
-      status: "stable",
-    },
-    {
       name: "UserAgentReduction",
       origin_trial_feature_name: "UserAgentReduction",
       origin_trial_allows_third_party: true,

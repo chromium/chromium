@@ -160,7 +160,6 @@
     {
       name: "ClientHintUAFullVersionList",
       permissions_policy_name: "ch-ua-full-version-list",
-      depends_on: ["UserAgentClientHintFullVersionList"],
     },
     {
       name: "ClientHintUAPlatformVersion",

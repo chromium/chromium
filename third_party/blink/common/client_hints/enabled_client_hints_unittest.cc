@@ -80,9 +80,7 @@ class EnabledClientHintsTest : public testing::Test {
     // The UserAgentClientHint feature is enabled, and the
     // PrefersColorSchemeClientHintHeader feature is disabled.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kUserAgentClientHint,
-                              blink::features::
-                                  kUserAgentClientHintFullVersionList},
+        /*enabled_features=*/{blink::features::kUserAgentClientHint},
         /*disabled_features=*/{
             blink::features::kPrefersColorSchemeClientHintHeader});
     TrialTokenValidator::SetOriginTrialPolicyGetter(

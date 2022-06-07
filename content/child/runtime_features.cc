@@ -400,8 +400,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           // launched and released to stable with no issues.
           {"AutoExpandDetailsElement",
            blink::features::kAutoExpandDetailsElement},
-          {"UserAgentClientHintFullVersionList",
-           blink::features::kUserAgentClientHintFullVersionList},
           {"ClientHintsMetaHTTPEquivAcceptCH",
            blink::features::kClientHintsMetaHTTPEquivAcceptCH},
           {"ClientHintsMetaNameAcceptCH",
