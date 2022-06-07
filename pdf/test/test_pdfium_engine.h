@@ -97,6 +97,8 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   void SetPermissions(const std::vector<DocumentPermission>& permissions);
 
+  MOCK_METHOD(void, OnDocumentCanceled, (), (override));
+
  protected:
   std::vector<DocumentAttachmentInfo>& doc_attachment_info_list() {
     return doc_attachment_info_list_;

@@ -318,32 +318,6 @@ TEST_F(PdfViewPluginBaseWithoutDocInfoTest,
             fake_plugin_.sent_messages()[0]);
 }
 
-TEST_F(PdfViewPluginBaseWithoutDocInfoTest,
-       DocumentLoadCompleteInNonFullFramePdfViewer) {
-  ASSERT_FALSE(fake_plugin_.full_frame());
-  fake_plugin_.CreateUrlLoader();
-
-  ASSERT_FALSE(fake_plugin_.IsPrintPreview());
-  ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
-            fake_plugin_.document_load_state_for_testing());
-
-  EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadSuccess"));
-  EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
-  EXPECT_CALL(fake_plugin_, DidStopLoading()).Times(0);
-  EXPECT_CALL(fake_plugin_,
-              SetContentRestrictions(fake_plugin_.GetContentRestrictions()))
-      .Times(0);
-
-  fake_plugin_.DocumentLoadComplete();
-  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
-            fake_plugin_.document_load_state_for_testing());
-
-  // Check all the sent messages.
-  ASSERT_EQ(1u, fake_plugin_.sent_messages().size());
-  EXPECT_EQ(CreateExpectedFormTextFieldFocusChangeResponse(),
-            fake_plugin_.sent_messages()[0]);
-}
-
 TEST_F(PdfViewPluginBaseWithEngineTest, HandleInputEvent) {
   auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
   EXPECT_CALL(*engine, HandleInputEvent)

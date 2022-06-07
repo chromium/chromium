@@ -603,6 +603,59 @@ TEST_F(PdfViewWebPluginFullFrameTest, CreateUrlLoaderAfterDocumentLoadFailed) {
   plugin_->CreateUrlLoader();
 }
 
+TEST_F(PdfViewWebPluginTest, DocumentLoadComplete) {
+  plugin_->CreateUrlLoader();
+
+  EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF.LoadSuccess"));
+  EXPECT_CALL(*client_ptr_, PostMessage);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "formFocusChange",
+    "focused": false,
+  })")));
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "printPreviewLoaded",
+  })")))
+      .Times(0);
+  EXPECT_CALL(*client_ptr_, DidStopLoading).Times(0);
+  EXPECT_CALL(pdf_service_, UpdateContentRestrictions).Times(0);
+  plugin_->DocumentLoadComplete();
+
+  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
+            plugin_->document_load_state_for_testing());
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginFullFrameTest, DocumentLoadComplete) {
+  // Must flush IPCs after `CreateUrlLoader()` in full-frame mode, otherwise
+  // there's an unexpected `UpdateContentRestrictions()` call (see the
+  // `PdfViewWebPluginFullFrameTest.CreateUrlLoader` test).
+  plugin_->CreateUrlLoader();
+  pdf_receiver_.FlushForTesting();
+
+  EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF.LoadSuccess"));
+  EXPECT_CALL(*client_ptr_, PostMessage);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "formFocusChange",
+    "focused": false,
+  })")));
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "printPreviewLoaded",
+  })")))
+      .Times(0);
+  EXPECT_CALL(*client_ptr_, DidStopLoading);
+  EXPECT_CALL(pdf_service_, UpdateContentRestrictions(kContentRestrictionPrint |
+                                                      kContentRestrictionPaste |
+                                                      kContentRestrictionCut |
+                                                      kContentRestrictionCopy));
+  plugin_->DocumentLoadComplete();
+
+  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
+            plugin_->document_load_state_for_testing());
+  pdf_receiver_.FlushForTesting();
+}
+
 TEST_F(PdfViewWebPluginTest, DocumentLoadFailed) {
   plugin_->CreateUrlLoader();
 
@@ -1144,7 +1197,7 @@ TEST_F(PdfViewWebPluginTest, NotifyNumberOfFindResultsChanged) {
   plugin_->NotifyNumberOfFindResultsChanged(/*total=*/5, /*final_result=*/true);
 }
 
-TEST_F(PdfViewWebPluginTest, DocumentLoadCompletePostMessages) {
+TEST_F(PdfViewWebPluginTest, OnDocumentLoadComplete) {
   base::Value::Dict metadata;
   metadata.Set("fileSize", "0 B");
   metadata.Set("linearized", false);
@@ -1313,7 +1366,7 @@ class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {
   }
 };
 
-TEST_F(PdfViewWebPluginWithDocInfoTest, DocumentLoadCompletePostMessages) {
+TEST_F(PdfViewWebPluginWithDocInfoTest, OnDocumentLoadComplete) {
   const base::Value::Dict expect_attachments =
       CreateExpectedAttachmentsResponse();
   const base::Value::Dict expect_bookmarks =
@@ -1643,6 +1696,34 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
     "pageCount": 1,
   })");
   plugin_->OnMessage(message.GetDict());
+}
+
+TEST_F(PdfViewWebPluginPrintPreviewTest, DocumentLoadComplete) {
+  base::Value reset_message = base::test::ParseJson(R"({
+    "type": "resetPrintPreviewMode",
+    "url": "chrome-untrusted://print/0/0/print.pdf",
+    "grayscale": false,
+    "pageCount": 1,
+  })");
+  plugin_->OnMessage(reset_message.GetDict());
+
+  EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF.LoadSuccess"));
+  EXPECT_CALL(*client_ptr_, PostMessage);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "formFocusChange",
+    "focused": false,
+  })")));
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "printPreviewLoaded",
+  })")));
+  EXPECT_CALL(*client_ptr_, DidStopLoading).Times(0);
+  EXPECT_CALL(pdf_service_, UpdateContentRestrictions).Times(0);
+  plugin_->DocumentLoadComplete();
+
+  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
+            plugin_->document_load_state_for_testing());
+  pdf_receiver_.FlushForTesting();
 }
 
 TEST_F(PdfViewWebPluginPrintPreviewTest,
