@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/forms/step_range.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/platform/theme_types.h"
 
 namespace blink {
 
@@ -311,6 +312,8 @@ class CORE_EXPORT HTMLInputElement
 
   bool MatchesReadOnlyPseudoClass() const final;
   bool MatchesReadWritePseudoClass() const final;
+  ControlPart AutoAppearance() const;
+
   void setRangeText(const String& replacement, ExceptionState&) final;
   void setRangeText(const String& replacement,
                     unsigned start,

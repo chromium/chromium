@@ -70,6 +70,7 @@ class TextFieldInputType : public InputType,
   void CustomStyleForLayoutObject(ComputedStyle& style) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&,
                                    LegacyLayout) const override;
+  ControlPart AutoAppearance() const override;
 
   virtual bool NeedsContainer() const { return false; }
   virtual String ConvertFromVisibleValue(const String&) const;

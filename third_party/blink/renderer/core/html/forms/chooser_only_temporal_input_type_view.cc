@@ -76,6 +76,10 @@ void ChooserOnlyTemporalInputTypeView::HandleDOMActivateEvent(Event& event) {
   OpenPopupView();
 }
 
+ControlPart ChooserOnlyTemporalInputTypeView::AutoAppearance() const {
+  return kMenulistPart;
+}
+
 void ChooserOnlyTemporalInputTypeView::OpenPopupView() {
   DateTimeChooserParameters parameters;
   if (GetElement().SetupDateTimeChooserParameters(parameters)) {

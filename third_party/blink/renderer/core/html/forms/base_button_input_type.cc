@@ -75,6 +75,10 @@ bool BaseButtonInputType::ShouldSaveAndRestoreFormControlState() const {
 
 void BaseButtonInputType::AppendToFormData(FormData&) const {}
 
+ControlPart BaseButtonInputType::AutoAppearance() const {
+  return kPushButtonPart;
+}
+
 LayoutObject* BaseButtonInputType::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) const {

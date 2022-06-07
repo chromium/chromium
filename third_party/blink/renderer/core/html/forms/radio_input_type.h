@@ -46,6 +46,7 @@ class RadioInputType final : public BaseCheckableInputType {
  private:
   void CountUsage() override;
   const AtomicString& FormControlType() const override;
+  ControlPart AutoAppearance() const override;
   void WillUpdateCheckedness(bool new_checked) override;
   bool ValueMissing(const String&) const override;
   String ValueMissingText() const override;

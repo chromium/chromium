@@ -105,6 +105,10 @@ void ImageInputType::HandleDOMActivateEvent(Event& event) {
   event.SetDefaultHandled();
 }
 
+ControlPart ImageInputType::AutoAppearance() const {
+  return kNoControlPart;
+}
+
 LayoutObject* ImageInputType::CreateLayoutObject(const ComputedStyle& style,
                                                  LegacyLayout legacy) const {
   if (use_fallback_content_)

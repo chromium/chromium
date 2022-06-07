@@ -299,6 +299,10 @@ LayoutObject* TextFieldInputType::CreateLayoutObject(
                                                           legacy);
 }
 
+ControlPart TextFieldInputType::AutoAppearance() const {
+  return kTextFieldPart;
+}
+
 void TextFieldInputType::CreateShadowSubtree() {
   DCHECK(IsShadowHost(GetElement()));
   ShadowRoot* shadow_root = GetElement().UserAgentShadowRoot();

@@ -298,6 +298,10 @@ void RangeInputType::DidSetValue(const String&, bool value_changed) {
     GetElement().UpdateView();
 }
 
+ControlPart RangeInputType::AutoAppearance() const {
+  return kSliderHorizontalPart;
+}
+
 void RangeInputType::UpdateView() {
   GetSliderThumbElement()->SetPositionFromValue();
 }

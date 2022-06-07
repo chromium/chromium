@@ -62,6 +62,10 @@ const AtomicString& SearchInputType::FormControlType() const {
   return input_type_names::kSearch;
 }
 
+ControlPart SearchInputType::AutoAppearance() const {
+  return kSearchFieldPart;
+}
+
 bool SearchInputType::NeedsContainer() const {
   return true;
 }

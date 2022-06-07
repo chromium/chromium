@@ -170,6 +170,12 @@ void ColorInputType::HandleDOMActivateEvent(Event& event) {
   event.SetDefaultHandled();
 }
 
+ControlPart ColorInputType::AutoAppearance() const {
+  return GetElement().FastHasAttribute(html_names::kListAttr)
+             ? kMenulistPart
+             : kSquareButtonPart;
+}
+
 void ColorInputType::OpenPopupView() {
   ChromeClient* chrome_client = GetChromeClient();
   Document& document = GetElement().GetDocument();

@@ -57,6 +57,10 @@ const AtomicString& RadioInputType::FormControlType() const {
   return input_type_names::kRadio;
 }
 
+ControlPart RadioInputType::AutoAppearance() const {
+  return kRadioPart;
+}
+
 bool RadioInputType::ValueMissing(const String&) const {
   HTMLInputElement& input = GetElement();
   if (auto* scope = input.GetRadioButtonGroupScope())

@@ -100,6 +100,10 @@ LayoutObject* InputTypeView::CreateLayoutObject(const ComputedStyle& style,
 
 void InputTypeView::CustomStyleForLayoutObject(ComputedStyle&) {}
 
+ControlPart InputTypeView::AutoAppearance() const {
+  return kNoControlPart;
+}
+
 TextDirection InputTypeView::ComputedTextDirection() {
   return GetElement().ComputedStyleRef().Direction();
 }

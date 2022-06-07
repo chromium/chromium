@@ -83,40 +83,8 @@ ControlPart AutoAppearanceFor(const Element& element) {
   if (const auto* select = DynamicTo<HTMLSelectElement>(element))
     return select->UsesMenuList() ? kMenulistPart : kListboxPart;
 
-  if (const auto* input = DynamicTo<HTMLInputElement>(element)) {
-    const AtomicString& type = input->type();
-    if (type == input_type_names::kCheckbox)
-      return kCheckboxPart;
-    if (type == input_type_names::kRadio)
-      return kRadioPart;
-    if (input->IsTextButton())
-      return kPushButtonPart;
-    if (type == input_type_names::kColor) {
-      return input->FastHasAttribute(html_names::kListAttr) ? kMenulistPart
-                                                            : kSquareButtonPart;
-    }
-    if (type == input_type_names::kRange)
-      return kSliderHorizontalPart;
-    if (type == input_type_names::kSearch)
-      return kSearchFieldPart;
-    if (type == input_type_names::kDate ||
-        type == input_type_names::kDatetimeLocal ||
-        type == input_type_names::kMonth || type == input_type_names::kTime ||
-        type == input_type_names::kWeek) {
-#if BUILDFLAG(IS_ANDROID)
-      return kMenulistPart;
-#else
-      return kTextFieldPart;
-#endif
-    }
-    if (type == input_type_names::kEmail || type == input_type_names::kNumber ||
-        type == input_type_names::kPassword || type == input_type_names::kTel ||
-        type == input_type_names::kText || type == input_type_names::kUrl)
-      return kTextFieldPart;
-
-    // Type=hidden/image/file.
-    return kNoControlPart;
-  }
+  if (const auto* input = DynamicTo<HTMLInputElement>(element))
+    return input->AutoAppearance();
 
   if (element.IsInUserAgentShadowRoot()) {
     const AtomicString& id_value =
