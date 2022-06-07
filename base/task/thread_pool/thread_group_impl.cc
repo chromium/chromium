@@ -387,8 +387,8 @@ ThreadGroupImpl::ThreadGroupImpl(StringPiece histogram_label,
 }
 
 void ThreadGroupImpl::Start(
-    int max_tasks,
-    int max_best_effort_tasks,
+    size_t max_tasks,
+    size_t max_best_effort_tasks,
     TimeDelta suggested_reclaim_time,
     scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
     WorkerThreadObserver* worker_thread_observer,
@@ -763,7 +763,8 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::CleanupLockRequired(
   if (outer_->num_tasks_before_detach_histogram_) {
     executor->ScheduleAddHistogramSample(
         outer_->num_tasks_before_detach_histogram_,
-        worker_only().num_tasks_since_last_detach);
+        saturated_cast<HistogramBase::Sample>(
+            worker_only().num_tasks_since_last_detach));
   }
   worker->Cleanup();
   outer_->idle_workers_stack_.Remove(worker);

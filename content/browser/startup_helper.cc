@@ -49,16 +49,16 @@ std::unique_ptr<base::FieldTrialList> SetUpFieldTrialsAndFeatureList() {
 namespace {
 #if BUILDFLAG(IS_ANDROID)
 // Mobile config, for iOS see ios/web/app/web_main_loop.cc.
-constexpr int kThreadPoolDefaultMin = 6;
-constexpr int kThreadPoolMax = 8;
+constexpr size_t kThreadPoolDefaultMin = 6;
+constexpr size_t kThreadPoolMax = 8;
 constexpr double kThreadPoolCoresMultiplier = 0.6;
-constexpr int kThreadPoolOffset = 0;
+constexpr size_t kThreadPoolOffset = 0;
 #else
 // Desktop config.
-constexpr int kThreadPoolDefaultMin = 16;
-constexpr int kThreadPoolMax = 32;
+constexpr size_t kThreadPoolDefaultMin = 16;
+constexpr size_t kThreadPoolMax = 32;
 constexpr double kThreadPoolCoresMultiplier = 0.6;
-constexpr int kThreadPoolOffset = 0;
+constexpr size_t kThreadPoolOffset = 0;
 #endif
 
 const base::Feature kBrowserThreadPoolAdjustment{
@@ -73,7 +73,7 @@ const base::FeatureParam<int> kBrowserThreadPoolMin{
 void StartBrowserThreadPool() {
   // Ensure we always support at least one thread regardless of the field trial
   // param setting.
-  int min = std::max(kBrowserThreadPoolMin.Get(), 1);
+  auto min = static_cast<size_t>(std::max(kBrowserThreadPoolMin.Get(), 1));
   base::ThreadPoolInstance::InitParams thread_pool_init_params = {
       base::RecommendedMaxNumberOfThreadsInThreadGroup(
           min, kThreadPoolMax, kThreadPoolCoresMultiplier, kThreadPoolOffset)};

@@ -110,7 +110,8 @@ ThreadController::RunLevelTracker::RunLevel::~RunLevel() {
   // thread_controller_sample_metadata_ when yielding back to a parent RunLevel
   // (which is active by definition as it is currently running this one).
   if (is_nested_) {
-    thread_controller_sample_metadata_.Set(++thread_controller_active_id_);
+    thread_controller_sample_metadata_.Set(
+        static_cast<int64_t>(++thread_controller_active_id_));
   }
 }
 
@@ -144,7 +145,8 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(State new_state) {
     TRACE_EVENT_BEGIN0("base", "ThreadController active");
     // Overriding the annotation from the previous RunLevel is intentional. Only
     // the top RunLevel is ever updated, which holds the relevant state.
-    thread_controller_sample_metadata_.Set(++thread_controller_active_id_);
+    thread_controller_sample_metadata_.Set(
+        static_cast<int64_t>(++thread_controller_active_id_));
   } else {
     thread_controller_sample_metadata_.Remove();
     TRACE_EVENT_END0("base", "ThreadController active");

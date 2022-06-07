@@ -1453,7 +1453,7 @@ bool TestLauncher::Init(CommandLine* command_line) {
   fprintf(stdout, "Using %zu parallel jobs.\n", parallel_jobs_);
   fflush(stdout);
 
-  CreateAndStartThreadPool(static_cast<int>(parallel_jobs_));
+  CreateAndStartThreadPool(parallel_jobs_);
 
   std::vector<std::string> positive_file_filter;
   std::vector<std::string> positive_gtest_filter;
@@ -1747,7 +1747,7 @@ bool TestLauncher::ProcessAndValidateTests() {
   return result;
 }
 
-void TestLauncher::CreateAndStartThreadPool(int num_parallel_jobs) {
+void TestLauncher::CreateAndStartThreadPool(size_t num_parallel_jobs) {
   base::ThreadPoolInstance::Create("TestLauncher");
   base::ThreadPoolInstance::Get()->Start({num_parallel_jobs});
 }

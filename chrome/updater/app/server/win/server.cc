@@ -228,8 +228,8 @@ void ComServerApp::InitializeThreadPool() {
   base::ThreadPoolInstance::Create(kThreadPoolName);
 
   // Reuses the logic in base::ThreadPoolInstance::StartWithDefaultParams.
-  const int num_cores = base::SysInfo::NumberOfProcessors();
-  const int max_num_foreground_threads = std::max(3, num_cores - 1);
+  const size_t max_num_foreground_threads =
+      static_cast<size_t>(std::max(3, base::SysInfo::NumberOfProcessors() - 1));
   base::ThreadPoolInstance::InitParams init_params(max_num_foreground_threads);
   init_params.common_thread_pool_environment = base::ThreadPoolInstance::
       InitParams::CommonThreadPoolEnvironment::COM_MTA;

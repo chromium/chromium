@@ -105,10 +105,6 @@ const double kTaskSamplingRateForRecordingCPUTime = 0.01;
 // enabling advanced metrics.
 const double kThreadSamplingRateForRecordingCPUTime = 0.0001;
 
-// Magic value to protect against memory corruption and bail out
-// early when detected.
-constexpr int kMemoryCorruptionSentinelValue = 0xdeadbeef;
-
 void ReclaimMemoryFromQueue(internal::TaskQueueImpl* queue, LazyNow* lazy_now) {
   queue->ReclaimMemory(lazy_now->Now());
   // If the queue was shut down as a side-effect of reclaiming memory, |queue|
@@ -213,7 +209,6 @@ SequenceManagerImpl::SequenceManagerImpl(
       add_queue_time_to_tasks_(settings_.add_queue_time_to_tasks),
 
       empty_queues_to_reload_(associated_thread_),
-      memory_corruption_sentinel_(kMemoryCorruptionSentinelValue),
       main_thread_only_(this, associated_thread_, settings_, settings_.clock),
       clock_(settings_.clock) {
   TRACE_EVENT_OBJECT_CREATED_WITH_ID(
@@ -647,8 +642,6 @@ void SequenceManagerImpl::LogTaskDebugInfo(
 absl::optional<SequenceManagerImpl::SelectedTask>
 SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
                                         SelectTaskOption option) {
-  CHECK(Validate());
-
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                "SequenceManagerImpl::SelectNextTask");
@@ -1251,10 +1244,6 @@ bool SequenceManagerImpl::IsType(MessagePumpType type) const {
   return settings_.message_loop_type == type;
 }
 
-NOINLINE bool SequenceManagerImpl::Validate() {
-  return memory_corruption_sentinel_ == kMemoryCorruptionSentinelValue;
-}
-
 void SequenceManagerImpl::EnableCrashKeys(const char* async_stack_crash_key) {
   DCHECK(!main_thread_only().async_stack_crash_key);
 #if !BUILDFLAG(IS_NACL)
@@ -1295,8 +1284,9 @@ void SequenceManagerImpl::RecordCrashKeys(const PendingTask& pending_task) {
   *(--pos) = ' ';
   pos = PrependHexAddress(pos - 1, pending_task.posted_from.program_counter());
   DCHECK_GE(pos, buffer);
-  debug::SetCrashKeyString(main_thread_only().async_stack_crash_key,
-                           StringPiece(pos, buffer_end - pos));
+  debug::SetCrashKeyString(
+      main_thread_only().async_stack_crash_key,
+      StringPiece(pos, static_cast<size_t>(buffer_end - pos)));
 #endif  // BUILDFLAG(IS_NACL)
 }
 

@@ -23,7 +23,7 @@ ThreadPoolInstance* g_thread_pool = nullptr;
 
 }  // namespace
 
-ThreadPoolInstance::InitParams::InitParams(int max_num_foreground_threads_in)
+ThreadPoolInstance::InitParams::InitParams(size_t max_num_foreground_threads_in)
     : max_num_foreground_threads(max_num_foreground_threads_in) {}
 
 ThreadPoolInstance::InitParams::~InitParams() = default;
@@ -64,8 +64,8 @@ void ThreadPoolInstance::StartWithDefaultParams() {
   // * The system is utilized maximally by foreground threads.
   // * The main thread is assumed to be busy, cap foreground workers at
   //   |num_cores - 1|.
-  const int num_cores = SysInfo::NumberOfProcessors();
-  const int max_num_foreground_threads = std::max(3, num_cores - 1);
+  const size_t max_num_foreground_threads =
+      static_cast<size_t>(std::max(3, SysInfo::NumberOfProcessors() - 1));
   Start({max_num_foreground_threads});
 }
 #endif  // !BUILDFLAG(IS_NACL)

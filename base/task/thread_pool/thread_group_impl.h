@@ -78,8 +78,8 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // `synchronous_thread_start_for_testing` is true if this ThreadGroupImpl
   // should synchronously wait for OnMainEntry() after starting each worker. Can
   // only be called once. CHECKs on failure.
-  void Start(int max_tasks,
-             int max_best_effort_tasks,
+  void Start(size_t max_tasks,
+             size_t max_best_effort_tasks,
              TimeDelta suggested_reclaim_time,
              scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
              WorkerThreadObserver* worker_thread_observer,

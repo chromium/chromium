@@ -52,7 +52,7 @@ constexpr EnvironmentParams kForegroundPoolEnvironmentParams{
 constexpr EnvironmentParams kBackgroundPoolEnvironmentParams{
     "Background", base::ThreadPriority::BACKGROUND};
 
-constexpr int kMaxBestEffortTasks = 2;
+constexpr size_t kMaxBestEffortTasks = 2;
 
 // Indicates whether BEST_EFFORT tasks are disabled by a command line switch.
 bool HasDisableBestEffortTasksSwitch() {
@@ -135,7 +135,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
 
   // The max number of concurrent BEST_EFFORT tasks is |kMaxBestEffortTasks|,
   // unless the max number of foreground threads is lower.
-  const int max_best_effort_tasks =
+  const size_t max_best_effort_tasks =
       std::min(kMaxBestEffortTasks, init_params.max_num_foreground_threads);
 
   // Start the service thread. On platforms that support it (POSIX except NaCL
@@ -322,7 +322,7 @@ void ThreadPoolImpl::SetSynchronousThreadStartForTesting(bool enabled) {
   g_synchronous_thread_start_for_testing = enabled;
 }
 
-int ThreadPoolImpl::GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+size_t ThreadPoolImpl::GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
     const TaskTraits& traits) const {
   // This method does not support getting the maximum number of BEST_EFFORT
   // tasks that can run concurrently in a pool.

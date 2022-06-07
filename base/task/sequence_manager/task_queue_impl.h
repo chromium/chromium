@@ -594,7 +594,7 @@ class BASE_EXPORT TaskQueueImpl {
     // to index into
     // SequenceManager::Settings::per_priority_cross_thread_task_delay to apply
     // a priority specific delay for debugging purposes.
-    int queue_set_index = 0;
+    size_t queue_set_index = 0;
 #endif
 
     TracingOnly tracing_only;

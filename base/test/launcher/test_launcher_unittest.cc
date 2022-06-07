@@ -73,7 +73,7 @@ class MockTestLauncher : public TestLauncher {
                    size_t parallel_jobs)
       : TestLauncher(launcher_delegate, parallel_jobs) {}
 
-  void CreateAndStartThreadPool(int parallel_jobs) override {}
+  void CreateAndStartThreadPool(size_t parallel_jobs) override {}
 
   MOCK_METHOD4(LaunchChildGTestProcess,
                void(scoped_refptr<TaskRunner> task_runner,

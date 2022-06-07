@@ -57,12 +57,12 @@ class BASE_EXPORT ThreadPoolInstance {
 #endif  // BUILDFLAG(IS_WIN)
     };
 
-    InitParams(int max_num_foreground_threads_in);
+    InitParams(size_t max_num_foreground_threads_in);
     ~InitParams();
 
     // Maximum number of unblocked tasks that can run concurrently in the
     // foreground thread group.
-    int max_num_foreground_threads;
+    size_t max_num_foreground_threads;
 
     // Whether COM is initialized when running sequenced and parallel tasks.
     CommonThreadPoolEnvironment common_thread_pool_environment =
@@ -244,7 +244,7 @@ class BASE_EXPORT ThreadPoolInstance {
   // n/GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated() items.
   //
   // TODO(fdoray): Remove this method. https://crbug.com/687264
-  virtual int GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+  virtual size_t GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
       const TaskTraits& traits) const = 0;
 
   // Starts/stops a fence that prevents scheduling of tasks of any / BEST_EFFORT

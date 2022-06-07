@@ -63,7 +63,7 @@ namespace internal {
 
 namespace {
 
-constexpr int kMaxNumForegroundThreads = 4;
+constexpr size_t kMaxNumForegroundThreads = 4;
 
 struct TraitsExecutionModePair {
   TraitsExecutionModePair(const TaskTraits& traits,
@@ -304,7 +304,7 @@ class ThreadPoolImplTestBase : public testing::Test {
   }
 
   void StartThreadPool(
-      int max_num_foreground_threads = kMaxNumForegroundThreads,
+      size_t max_num_foreground_threads = kMaxNumForegroundThreads,
       TimeDelta reclaim_time = Seconds(30)) {
     SetupFeatures();
 
@@ -817,10 +817,10 @@ TEST_P(ThreadPoolImplTest,
         {MayBlock(), TaskPriority::BEST_EFFORT});
   });
 
-  const int expected_max =
+  const size_t expected_max =
       GetGroupTypes().foreground_type == test::GroupType::GENERIC
           ? kMaxNumForegroundThreads
-          : std::max(3, SysInfo::NumberOfProcessors() - 1);
+          : static_cast<size_t>(std::max(3, SysInfo::NumberOfProcessors() - 1));
 
   EXPECT_EQ(expected_max,
             thread_pool_->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
@@ -1437,7 +1437,7 @@ void TestUpdatePrioritySequenceNotScheduled(ThreadPoolImplTest* test,
   // thread per pool, it is possible that tasks don't run in order even if
   // threads got tasks from the PriorityQueue in order. Therefore, enforce a
   // maximum of 1 thread per pool.
-  constexpr int kLocalMaxNumForegroundThreads = 1;
+  constexpr size_t kLocalMaxNumForegroundThreads = 1;
 
   test->StartThreadPool(kLocalMaxNumForegroundThreads);
   auto task_runners_and_events =

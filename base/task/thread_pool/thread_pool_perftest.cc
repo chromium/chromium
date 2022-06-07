@@ -148,7 +148,7 @@ class ThreadPoolPerfTest : public testing::Test {
   void StartThreadPool(size_t num_running_threads,
                        size_t num_posting_threads,
                        base::RepeatingClosure post_action) {
-    ThreadPoolInstance::Get()->Start({static_cast<int>(num_running_threads)});
+    ThreadPoolInstance::Get()->Start({num_running_threads});
 
     base::RepeatingClosure done = BarrierClosure(
         num_posting_threads,

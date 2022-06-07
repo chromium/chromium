@@ -460,12 +460,6 @@ class BASE_EXPORT SequenceManagerImpl
 
   AtomicFlagSet empty_queues_to_reload_;
 
-  // A check to bail out early during memory corruption.
-  // https://crbug.com/757940
-  bool Validate();
-
-  volatile int32_t memory_corruption_sentinel_;
-
   MainThreadOnly main_thread_only_;
   MainThreadOnly& main_thread_only() {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);

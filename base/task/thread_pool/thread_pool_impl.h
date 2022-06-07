@@ -66,7 +66,7 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
              WorkerThreadObserver* worker_thread_observer) override;
   bool WasStarted() const final;
   bool WasStartedUnsafe() const final;
-  int GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+  size_t GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
       const TaskTraits& traits) const override;
   void Shutdown() override;
   void FlushForTesting() override;

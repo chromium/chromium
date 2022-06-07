@@ -43,7 +43,7 @@ SingleThreadTaskExecutor::task_runner() const {
   return default_task_queue_->task_runner();
 }
 
-void SingleThreadTaskExecutor::SetWorkBatchSize(size_t work_batch_size) {
+void SingleThreadTaskExecutor::SetWorkBatchSize(int work_batch_size) {
   sequence_manager_->SetWorkBatchSize(work_batch_size);
 }
 

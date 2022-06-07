@@ -172,8 +172,7 @@ size_t ThreadGroupNative::GetMaxConcurrentNonBlockedTasksDeprecated() const {
   // active at one time. Consequently, we cannot report a true value here.
   // Instead, the values were chosen to match
   // ThreadPoolInstance::StartWithDefaultParams.
-  const int num_cores = SysInfo::NumberOfProcessors();
-  return std::max(3, num_cores - 1);
+  return static_cast<size_t>(std::max(3, SysInfo::NumberOfProcessors() - 1));
 }
 
 void ThreadGroupNative::DidUpdateCanRunPolicy() {
