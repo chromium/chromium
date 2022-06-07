@@ -1005,11 +1005,10 @@ void InvokeTestServiceFunction(
 }
 
 void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
-  base::FilePath source_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  base::FilePath exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   base::FilePath old_updater_path =
-      source_path.Append(FILE_PATH_LITERAL("third_party"))
-          .Append(FILE_PATH_LITERAL("updater"));
+      exe_path.Append(FILE_PATH_LITERAL("old_updater"));
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_X86_64)
   old_updater_path =

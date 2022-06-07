@@ -331,10 +331,9 @@ void WaitForUpdaterExit(UpdaterScope /*scope*/) {
 }
 
 void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
-  base::FilePath source_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
-  base::FilePath old_updater_path =
-      source_path.Append("third_party").Append("updater");
+  base::FilePath exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  base::FilePath old_updater_path = exe_path.Append("old_updater");
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
   old_updater_path =
