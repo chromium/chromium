@@ -40,6 +40,15 @@
     @assert ctx.fillStyle =~ /^rgba\(255, 255, 255, 0\.4\d+\)$/;
     t.done();
 
+- name: 2d.fillStyle.get.halftransparent
+  testing:
+  - 2d.colours.getcolour
+  - 2d.serializecolour.transparent
+  code: |
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    @assert ctx.fillStyle === 'rgba(255, 255, 255, 0.5)';
+
+
 - name: 2d.fillStyle.get.transparent
   testing:
   - 2d.colours.getcolour
@@ -1755,4 +1764,3 @@
     @assert pixel 1,48 == 0,255,0,255;
     @assert pixel 98,48 == 0,255,0,255;
     t.done();
-
