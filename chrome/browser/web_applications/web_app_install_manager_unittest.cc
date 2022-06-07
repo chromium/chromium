@@ -227,14 +227,23 @@ class WebAppInstallManagerTest
   InstallResult InstallSubApp(const AppId& parent_app_id,
                               const GURL& install_url) {
     UseDefaultDataRetriever(install_url);
-    url_loader().AddPrepareForLoadResults(
-        {WebAppUrlLoader::Result::kUrlLoaded});
     url_loader().SetNextLoadUrlResult(install_url,
                                       WebAppUrlLoader::Result::kUrlLoaded);
     InstallResult result;
     base::RunLoop run_loop;
     install_manager().InstallSubApp(
         parent_app_id, install_url,
+        GenerateAppId(/*manifest_id=*/{}, install_url),
+        /*dialog_callback=*/
+        base::BindLambdaForTesting(
+            [](content::WebContents* initiator_web_contents,
+               std::unique_ptr<WebAppInstallInfo> web_app_info,
+               web_app::WebAppInstallationAcceptanceCallback
+                   acceptance_callback) {
+              std::move(acceptance_callback)
+                  .Run(/*user_accepted=*/true, std::move(web_app_info));
+            }),
+        /*install_callback=*/
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
                                        webapps::InstallResultCode code) {
           result.app_id = installed_app_id;

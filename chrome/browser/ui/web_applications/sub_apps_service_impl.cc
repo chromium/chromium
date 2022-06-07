@@ -10,7 +10,9 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/sub_app_install_command.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -31,37 +33,51 @@ namespace web_app {
 
 namespace {
 
+std::vector<blink::mojom::SubAppsServiceAddResultPtr> ResultsToMojo(
+    std::vector<
+        std::pair<UnhashedAppId, blink::mojom::SubAppsServiceAddResultCode>>
+        sub_apps_idl) {
+  std::vector<blink::mojom::SubAppsServiceAddResultPtr> subapps;
+  for (const auto& [app_id, install_result_code] : sub_apps_idl) {
+    blink::mojom::SubAppsServiceAddResultPtr mojom_pair =
+        blink::mojom::SubAppsServiceAddResult::New();
+    mojom_pair->unhashed_app_id = app_id;
+    mojom_pair->result_code = install_result_code;
+    subapps.push_back(std::move(mojom_pair));
+  }
+  return subapps;
+}
+
+std::vector<std::pair<UnhashedAppId, GURL>> InstallParamsFromMojo(
+    std::vector<blink::mojom::SubAppsServiceAddInfoPtr> sub_apps_mojo) {
+  std::vector<std::pair<UnhashedAppId, GURL>> subapps;
+  for (const auto& pair : sub_apps_mojo) {
+    subapps.emplace_back(UnhashedAppId(pair->unhashed_app_id),
+                         pair->install_url);
+  }
+  return subapps;
+}
+
 WebAppProvider* GetWebAppProvider(content::RenderFrameHost* render_frame_host) {
   auto* const initiator_web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   return web_app::WebAppProvider::GetForWebContents(initiator_web_contents);
 }
 
-absl::optional<AppId> GetAppId(content::RenderFrameHost* render_frame_host) {
+absl::optional<AppId> GetAppIdForLastCommittedURL(
+    content::RenderFrameHost* render_frame_host) {
   GURL parent_url = render_frame_host->GetLastCommittedURL();
-  WebAppRegistrar& web_app_registrar =
-      GetWebAppProvider(render_frame_host)->registrar();
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host);
+  DCHECK(provider);
+  WebAppRegistrar& web_app_registrar = provider->registrar();
   return web_app_registrar.FindAppWithUrlInScope(parent_url);
 }
 
-// Resolve the install_path in the context of the calling app to get the full
-// URL. This looks a bit convoluted to guarantee that the resulting URL
-// *always* has the same *origin* as the calling app (normally the renderer
-// should only send the path, but a compromised renderer might send a full URL
-// instead and we guard against that here).
-GURL ResolvePathWithOrigin(const std::string& path, const GURL& origin) {
-  return origin.Resolve(origin.Resolve(path).PathForRequest());
-}
-
-void OnAdd(SubAppsServiceImpl::AddCallback result_callback,
-           const AppId& app_id,
-           webapps::InstallResultCode code) {
-  if (code == webapps::InstallResultCode::kSuccessAlreadyInstalled ||
-      code == webapps::InstallResultCode::kSuccessNewInstall) {
-    std::move(result_callback).Run(SubAppsServiceResult::kSuccess);
-  } else {
-    std::move(result_callback).Run(SubAppsServiceResult::kFailure);
-  }
+void OnAdd(
+    SubAppsServiceImpl::AddCallback result_callback,
+    std::vector<std::pair<UnhashedAppId,
+                          blink::mojom::SubAppsServiceAddResultCode>> results) {
+  std::move(result_callback).Run(ResultsToMojo(std::move(results)));
 }
 
 void OnRemove(SubAppsServiceImpl::RemoveCallback result_callback,
@@ -101,39 +117,91 @@ void SubAppsServiceImpl::CreateIfAllowed(
   new SubAppsServiceImpl(render_frame_host, std::move(receiver));
 }
 
-void SubAppsServiceImpl::Add(const std::string& install_path,
-                             AddCallback result_callback) {
+void SubAppsServiceImpl::Add(
+    std::vector<blink::mojom::SubAppsServiceAddInfoPtr> sub_apps,
+    AddCallback result_callback) {
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
+  DCHECK(provider);
+  if (!provider->on_registry_ready().is_signaled()) {
+    provider->on_registry_ready().Post(
+        FROM_HERE,
+        base::BindOnce(&SubAppsServiceImpl::Add, weak_ptr_factory_.GetWeakPtr(),
+                       std::move(sub_apps), std::move(result_callback)));
+    return;
+  }
+
+  absl::optional<AppId> parent_app_id =
+      GetAppIdForLastCommittedURL(render_frame_host());
   // Verify that the calling app is installed itself. This check is done here
   // and not in `CreateIfAllowed` because of a potential race between doing the
   // check there and then running the current function, and the parent app being
   // installed/uninstalled.
-  absl::optional<AppId> parent_app_id = GetAppId(render_frame_host());
-  if (!parent_app_id.has_value()) {
-    return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
+  if (!parent_app_id) {
+    std::move(result_callback).Run(/*mojom_results=*/{});
+    return;
   }
 
-  // Resolve the install_path in the origin context of the calling app.
-  GURL install_url = ResolvePathWithOrigin(install_path, origin().GetURL());
+  const GURL& parent_app_url = render_frame_host()->GetLastCommittedURL();
 
-  GetWebAppProvider(render_frame_host())
-      ->install_manager()
-      .InstallSubApp(*parent_app_id, install_url,
-                     base::BindOnce(&OnAdd, std::move(result_callback)));
+  // Check that each sub app's install url has the same origin as the parent
+  // app and that the unhashed app id is a valid URL.
+  for (const blink::mojom::SubAppsServiceAddInfoPtr& sub_app : sub_apps) {
+    GURL sub_app_install_url(sub_app->install_url);
+    if (!url::IsSameOriginWith(sub_app_install_url, parent_app_url)) {
+      std::move(result_callback).Run(/*mojom_results=*/{});
+      ReportBadMessageAndDeleteThis(
+          "Unexpected request: Add calls only supported for sub apps on the "
+          "same origin as the calling app.");
+      return;
+    }
+
+    if (!GURL(sub_app->unhashed_app_id).is_valid()) {
+      std::move(result_callback).Run(/*mojom_results=*/{});
+      ReportBadMessageAndDeleteThis("App ids must be valid URLs.");
+      return;
+    }
+  }
+
+  std::vector<AppId> app_ids_vector = {*parent_app_id};
+  base::ranges::for_each(
+      sub_apps,
+      [&app_ids_vector](const blink::mojom::SubAppsServiceAddInfoPtr& sub_app) {
+        app_ids_vector.push_back(
+            GenerateAppIdFromUnhashed(sub_app->unhashed_app_id));
+      });
+  base::flat_set<AppId> app_ids =
+      base::flat_set<AppId>(std::move(app_ids_vector));
+
+  auto install_command = std::make_unique<SubAppInstallCommand>(
+      &provider->install_manager(), &provider->registrar(), *parent_app_id,
+      InstallParamsFromMojo(std::move(sub_apps)), std::move(app_ids),
+      base::BindOnce(&OnAdd, std::move(result_callback)));
+
+  provider->command_manager().ScheduleCommand(std::move(install_command));
 }
 
 void SubAppsServiceImpl::List(ListCallback result_callback) {
   // Verify that the calling app is installed itself (cf. `Add`).
-  absl::optional<AppId> parent_app_id = GetAppId(render_frame_host());
+  absl::optional<AppId> parent_app_id =
+      GetAppIdForLastCommittedURL(render_frame_host());
   if (!parent_app_id.has_value()) {
     return std::move(result_callback)
         .Run(SubAppsServiceListResult::New(SubAppsServiceResult::kFailure,
-                                           std::vector<std::string>()));
+                                           std::vector<UnhashedAppId>()));
+  }
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
+  DCHECK(provider);
+  if (!provider->on_registry_ready().is_signaled()) {
+    provider->on_registry_ready().Post(
+        FROM_HERE, base::BindOnce(&SubAppsServiceImpl::List,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(result_callback)));
+    return;
   }
 
-  WebAppRegistrar& registrar =
-      GetWebAppProvider(render_frame_host())->registrar();
+  WebAppRegistrar& registrar = provider->registrar();
 
-  std::vector<std::string> sub_app_ids;
+  std::vector<UnhashedAppId> sub_app_ids;
   for (const AppId& web_app_id : registrar.GetAllSubAppIds(*parent_app_id)) {
     const WebApp* web_app = registrar.GetAppById(web_app_id);
     sub_app_ids.push_back(
@@ -145,10 +213,21 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
                                          std::move(sub_app_ids)));
 }
 
-void SubAppsServiceImpl::Remove(const std::string& unhashed_app_id,
+void SubAppsServiceImpl::Remove(const UnhashedAppId& unhashed_app_id,
                                 RemoveCallback result_callback) {
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
+  DCHECK(provider);
+  if (!provider->on_registry_ready().is_signaled()) {
+    provider->on_registry_ready().Post(
+        FROM_HERE, base::BindOnce(&SubAppsServiceImpl::Remove,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  unhashed_app_id, std::move(result_callback)));
+    return;
+  }
+
   // Verify that the calling app is installed itself (cf. `Add`).
-  absl::optional<AppId> calling_app_id = GetAppId(render_frame_host());
+  absl::optional<AppId> calling_app_id =
+      GetAppIdForLastCommittedURL(render_frame_host());
   if (!calling_app_id.has_value()) {
     return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
   }
@@ -160,7 +239,6 @@ void SubAppsServiceImpl::Remove(const std::string& unhashed_app_id,
   }
 
   AppId sub_app_id = GenerateAppIdFromUnhashed(unhashed_app_id);
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   const WebApp* app = provider->registrar().GetAppById(sub_app_id);
 
   // Verify that the app we're trying to remove exists, that its parent_app is

@@ -68,7 +68,9 @@ class WebAppInstallManager final : public SyncInstallDelegate {
 
   void InstallSubApp(const AppId& parent_app_id,
                      const GURL& install_url,
-                     OnceInstallCallback callback);
+                     const AppId& expected_app_id,
+                     WebAppInstallDialogCallback dialog_callback,
+                     OnceInstallCallback install_callback);
 
   // Returns whether the an installation is already running with the
   // same web contents.

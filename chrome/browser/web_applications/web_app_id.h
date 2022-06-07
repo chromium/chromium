@@ -12,6 +12,11 @@ namespace web_app {
 // App ID matches Extension ID.
 using AppId = std::string;
 
+// Unhashed version of App ID. This can be hashed using
+// GenerateAppIdFromUnhashed(unhashed_app_id), see
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app_helpers.h;l=53.
+using UnhashedAppId = std::string;
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_ID_H_

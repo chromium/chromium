@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 
 #include <iterator>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -132,16 +133,14 @@ void WebAppInstallManager::LoadWebAppAndCheckManifest(
   tasks_.insert(std::move(task));
 }
 
-void WebAppInstallManager::InstallSubApp(const AppId& parent_app_id,
-                                         const GURL& install_url,
-                                         OnceInstallCallback callback) {
+void WebAppInstallManager::InstallSubApp(
+    const AppId& parent_app_id,
+    const GURL& install_url,
+    const AppId& expected_app_id,
+    WebAppInstallDialogCallback dialog_callback,
+    OnceInstallCallback install_callback) {
   if (!started_)
     return;
-
-  // Enqueue full background installation flow. Since app_id isn't available
-  // yet, duplicate installation check will be performed down the line once
-  // app_id is made available.
-
   auto task = std::make_unique<WebAppInstallTask>(
       profile_, finalizer_, data_retriever_factory_.Run(), registrar_,
       webapps::WebappInstallSource::SUB_APP);
@@ -158,14 +157,13 @@ void WebAppInstallManager::InstallSubApp(const AppId& parent_app_id,
 
   task->SetInstallParams(params);
 
-  base::OnceClosure start_task = base::BindOnce(
-      &WebAppInstallTask::LoadAndInstallSubAppFromURL, task->GetWeakPtr(),
-      install_url, EnsureWebContentsCreated(),
-      base::Unretained(url_loader_.get()),
-      base::BindOnce(&WebAppInstallManager::OnQueuedTaskCompleted, GetWeakPtr(),
-                     task.get(), std::move(callback)));
-
-  EnqueueTask(std::move(task), std::move(start_task));
+  WebAppInstallTask* task_ptr = task.get();
+  tasks_.insert(std::move(task));
+  task_ptr->LoadAndInstallSubAppFromURL(
+      install_url, expected_app_id, EnsureWebContentsCreated(),
+      url_loader_.get(), std::move(dialog_callback),
+      base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
+                     GetWeakPtr(), task_ptr, std::move(install_callback)));
 }
 
 base::WeakPtr<WebAppInstallManager> WebAppInstallManager::GetWeakPtr() {

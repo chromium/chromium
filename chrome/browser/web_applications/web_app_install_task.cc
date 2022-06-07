@@ -254,18 +254,24 @@ void WebAppInstallTask::InstallWebAppFromManifestWithFallback(
 
 void WebAppInstallTask::LoadAndInstallSubAppFromURL(
     const GURL& install_url,
+    const AppId& expected_app_id,
     content::WebContents* contents,
     WebAppUrlLoader* url_loader,
+    WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback install_callback) {
   DCHECK(AreWebAppsUserInstallable(profile_));
   CheckInstallPreconditions();
 
   Observe(contents);
+
   if (ShouldStopInstall())
     return;
 
-  background_installation_ = true;
-  log_entry_.set_background_installation(true);
+  ExpectAppId(expected_app_id);
+
+  // TODO(https://crbug.com/1326843): Change to background installation in case
+  // of relevant policy.
+  dialog_callback_ = std::move(dialog_callback);
   install_callback_ = std::move(install_callback);
 
   url_loader->LoadUrl(
@@ -465,19 +471,19 @@ void WebAppInstallTask::OnWebAppUrlLoadedGetWebAppInstallInfo(
   }
 
   if (result == WebAppUrlLoader::Result::kRedirectedUrlLoaded) {
-    CallInstallCallback(AppId(),
+    CallInstallCallback(expected_app_id_.value_or(AppId()),
                         webapps::InstallResultCode::kInstallURLRedirected);
     return;
   }
 
   if (result == WebAppUrlLoader::Result::kFailedPageTookTooLong) {
-    CallInstallCallback(AppId(),
+    CallInstallCallback(expected_app_id_.value_or(AppId()),
                         webapps::InstallResultCode::kInstallURLLoadTimeOut);
     return;
   }
 
   if (result != WebAppUrlLoader::Result::kUrlLoaded) {
-    CallInstallCallback(AppId(),
+    CallInstallCallback(expected_app_id_.value_or(AppId()),
                         webapps::InstallResultCode::kInstallURLLoadFailed);
     return;
   }
@@ -500,19 +506,19 @@ void WebAppInstallTask::OnWebAppUrlLoadedCheckAndRetrieveManifest(
   }
 
   if (result == WebAppUrlLoader::Result::kRedirectedUrlLoaded) {
-    CallInstallCallback(AppId(),
+    CallInstallCallback(expected_app_id_.value_or(AppId()),
                         webapps::InstallResultCode::kInstallURLRedirected);
     return;
   }
 
   if (result == WebAppUrlLoader::Result::kFailedPageTookTooLong) {
-    CallInstallCallback(AppId(),
+    CallInstallCallback(expected_app_id_.value_or(AppId()),
                         webapps::InstallResultCode::kInstallURLLoadTimeOut);
     return;
   }
 
   if (result != WebAppUrlLoader::Result::kUrlLoaded) {
-    CallInstallCallback(AppId(),
+    CallInstallCallback(expected_app_id_.value_or(AppId()),
                         webapps::InstallResultCode::kInstallURLLoadFailed);
     return;
   }
@@ -638,8 +644,9 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
     log_entry_.LogExpectedAppIdError("OnDidPerformInstallableCheck",
                                      web_app_info->start_url.spec(), app_id,
                                      expected_app_id_.value());
-    CallInstallCallback(std::move(app_id),
+    CallInstallCallback(*expected_app_id_,
                         webapps::InstallResultCode::kExpectedAppIdCheckFailed);
+
     return;
   }
 
@@ -939,7 +946,8 @@ void WebAppInstallTask::OnInstallFinalizedMaybeReparentTab(
     DCHECK(background_installation_);
   }
 
-  if (!background_installation_) {
+  if (!background_installation_ &&
+      install_surface_ != webapps::WebappInstallSource::SUB_APP) {
     bool error = os_hooks_errors[OsHookType::kShortcuts];
     const bool can_reparent_tab =
         install_finalizer_->CanReparentTab(app_id, !error);

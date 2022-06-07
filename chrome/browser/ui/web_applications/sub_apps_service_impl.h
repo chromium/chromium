@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_SUB_APPS_SERVICE_IMPL_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_SUB_APPS_SERVICE_IMPL_H_
 
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "content/public/browser/document_service.h"
 #include "third_party/blink/public/mojom/subapps/sub_apps_service.mojom.h"
 
@@ -28,16 +29,18 @@ class SubAppsServiceImpl
       mojo::PendingReceiver<blink::mojom::SubAppsService> receiver);
 
   // blink::mojom::SubAppsService
-  void Add(const std::string& install_path,
+  void Add(std::vector<blink::mojom::SubAppsServiceAddInfoPtr> sub_apps,
            AddCallback result_callback) override;
+
   void List(ListCallback result_callback) override;
-  void Remove(const std::string& unhashed_app_id,
+  void Remove(const UnhashedAppId& unhashed_app_id,
               RemoveCallback result_callback) override;
 
  private:
   SubAppsServiceImpl(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::SubAppsService> receiver);
+  base::WeakPtrFactory<SubAppsServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app

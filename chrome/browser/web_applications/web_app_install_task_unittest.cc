@@ -1281,7 +1281,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_ExpectAppId) {
     InstallResult result = InstallWebAppFromManifestWithFallbackAndGetResults();
     EXPECT_EQ(webapps::InstallResultCode::kExpectedAppIdCheckFailed,
               result.code);
-    EXPECT_EQ(app_id2, result.app_id);
+    EXPECT_EQ(app_id1, result.app_id);
     EXPECT_FALSE(registrar().GetAppById(app_id2));
   }
 }

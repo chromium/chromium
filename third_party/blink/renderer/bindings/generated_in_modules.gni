@@ -2295,6 +2295,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_storage_manager.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sub_apps.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sub_apps.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_add_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_add_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_subtle_crypto.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_subtle_crypto.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_svg_element.cc",

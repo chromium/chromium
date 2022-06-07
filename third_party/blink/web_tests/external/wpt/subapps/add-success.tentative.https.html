@@ -7,15 +7,14 @@
 
 subapps_test(async (t, mockSubAppsService) => {
   const same_origin_url = document.location.origin + '/sub-app';
-  await navigator.subApps.add(same_origin_url);
-}, 'Same origin fully qualified URL.');
 
-subapps_test(async (t, mockSubAppsService) => {
-  await navigator.subApps.add('sub/app');
-}, 'Relative path.');
+  let subapp = {};
+  let install_options = {};
+  install_options["install_url"] = same_origin_url;
+  subapp[same_origin_url] = install_options;
 
-subapps_test(async (t, mockSubAppsService) => {
-  await navigator.subApps.add('/sub/app');
-}, 'Absolute path.');
+  await navigator.subApps.add(subapp);
+}, 'Add API call works.');
+
 
 </script>

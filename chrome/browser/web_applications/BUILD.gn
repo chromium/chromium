@@ -27,6 +27,8 @@ source_set("web_applications") {
     "commands/install_web_app_with_params_command.h",
     "commands/run_on_os_login_command.cc",
     "commands/run_on_os_login_command.h",
+    "commands/sub_app_install_command.cc",
+    "commands/sub_app_install_command.h",
     "commands/web_app_command.cc",
     "commands/web_app_command.h",
     "commands/web_app_install_command.cc",

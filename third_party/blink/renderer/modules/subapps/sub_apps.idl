@@ -4,12 +4,25 @@
 
 // https://github.com/ivansandrk/multi-apps/blob/main/explainer.md
 
+
+enum SubAppsServiceAddResultCode {
+  // Success category:
+  "success-new-install",
+  "success-already-installed",
+
+  // // Failure category:
+  "user-install-declined",
+  "expected-app-id-check-failed",
+  "parent-app-uninstalled",
+  "failure",
+};
+
 [
   Exposed=Window,
   SecureContext,
   RuntimeEnabled=DesktopPWAsSubApps
 ] interface SubApps {
-  [CallWith=ScriptState, RaisesException] Promise<void> add(DOMString install_url);
+  [CallWith=ScriptState, RaisesException] Promise<record<DOMString, SubAppsServiceAddResultCode>> add(record<DOMString, SubAppsAddOptions> sub_apps);
   [CallWith=ScriptState, RaisesException] Promise<FrozenArray<DOMString>> list();
   [CallWith=ScriptState, RaisesException] Promise<void> remove(DOMString app_id);
 };
