@@ -53,6 +53,11 @@ void APCInternalsHandler::RegisterMessages() {
       "refresh-script-cache",
       base::BindRepeating(&APCInternalsHandler::OnRefreshScriptCacheRequested,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "set-autofill-assistant-url",
+      base::BindRepeating(&APCInternalsHandler::OnSetAutofillAssistantUrl,
+                          base::Unretained(this)));
 }
 
 void APCInternalsHandler::OnLoaded(const base::Value::List& args) {
@@ -63,6 +68,10 @@ void APCInternalsHandler::OnLoaded(const base::Value::List& args) {
                     base::Value(GetAPCRelatedFlags()));
   FireWebUIListener("on-script-fetching-information-received",
                     base::Value(GetPasswordScriptFetcherInformation()));
+  UpdateAutofillAssistantInformation();
+}
+
+void APCInternalsHandler::UpdateAutofillAssistantInformation() {
   FireWebUIListener("on-autofill-assistant-information-received",
                     base::Value(GetAutofillAssistantInformation()));
 }
@@ -78,6 +87,23 @@ void APCInternalsHandler::OnRefreshScriptCacheRequested(
   if (PasswordScriptsFetcher* scripts_fetcher = GetPasswordScriptsFetcher();
       scripts_fetcher) {
     scripts_fetcher->PrewarmCache();
+  }
+}
+
+void APCInternalsHandler::OnSetAutofillAssistantUrl(
+    const base::Value::List& args) {
+  if (args.size() == 1 && args.front().is_string()) {
+    const std::string& autofill_assistant_url = args.front().GetString();
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+
+    command_line->RemoveSwitch(
+        autofill_assistant::switches::kAutofillAssistantUrl);
+
+    command_line->AppendSwitchASCII(
+        autofill_assistant::switches::kAutofillAssistantUrl,
+        autofill_assistant_url);
+
+    UpdateAutofillAssistantInformation();
   }
 }
 

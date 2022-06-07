@@ -35,6 +35,14 @@ class APCInternalsHandler : public content::WebUIMessageHandler {
   // Called by user-triggered DOM event.
   void OnRefreshScriptCacheRequested(const base::Value::List& args);
 
+  // Fires "on-autofill-assistant-information-received" to update Autofill
+  // Assistant Information on the page.
+  void UpdateAutofillAssistantInformation();
+
+  // Responds to requests for setting the Autofill Assistant URL. Called by
+  // user-triggered DOM event.
+  void OnSetAutofillAssistantUrl(const base::Value::List& args);
+
   // Returns a raw pointer to the |PasswordScriptsFetcher| keyed service.
   password_manager::PasswordScriptsFetcher* GetPasswordScriptsFetcher();
 

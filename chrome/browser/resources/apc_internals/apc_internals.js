@@ -46,6 +46,9 @@ function onAutofillAssistantInfoReceived(autofillAssistantInfo) {
     return;
   }
   const table = $('autofill-assistant-table');
+  while (table.firstChild) {
+    table.removeChild(table.lastChild);
+  }
   for (const [key, value] of Object.entries(autofillAssistantInfo)) {
     table.appendChild(createTableRow(key, value));
   }
@@ -62,6 +65,11 @@ function showScriptCache() {
 
 function refreshScriptCache() {
   chrome.send('refresh-script-cache');
+}
+
+function setAutofillAssistantUrl() {
+  const autofillAssistantUrl = $('autofill-assistant-url').value;
+  chrome.send('set-autofill-assistant-url', [autofillAssistantUrl]);
 }
 
 function onScriptCacheReceived(scriptsCacheInfo) {
@@ -97,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   $('script-cache-hide').onclick = hideScriptCache;
   $('script-cache-show').onclick = showScriptCache;
   $('script-cache-refresh').onclick = refreshScriptCache;
+  $('set-autofill-assistant-url').onclick = setAutofillAssistantUrl;
 
   chrome.send('loaded');
 });
