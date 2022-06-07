@@ -134,7 +134,7 @@ NativeFileUtil::CopyOrMoveMode NativeFileUtil::CopyOrMoveModeForDestination(
 }
 
 base::File NativeFileUtil::CreateOrOpen(const base::FilePath& path,
-                                        int file_flags) {
+                                        uint32_t file_flags) {
   if (!base::DirectoryExists(path.DirName())) {
     // If its parent does not exist, should return NOT_FOUND error.
     return base::File(base::File::FILE_ERROR_NOT_FOUND);

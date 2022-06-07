@@ -36,7 +36,7 @@ class ArcDocumentsProviderAsyncFileUtil : public storage::AsyncFileUtil {
   void CreateOrOpen(
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& url,
-      int file_flags,
+      uint32_t file_flags,
       CreateOrOpenCallback callback) override;
   void EnsureFileExists(
       std::unique_ptr<storage::FileSystemOperationContext> context,

@@ -308,7 +308,7 @@ bool DeviceMediaAsyncFileUtil::SupportsStreaming(
 void DeviceMediaAsyncFileUtil::CreateOrOpen(
     std::unique_ptr<FileSystemOperationContext> context,
     const FileSystemURL& url,
-    int file_flags,
+    uint32_t file_flags,
     CreateOrOpenCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   // Returns an error if any unsupported flag is found.

@@ -88,7 +88,7 @@ DWORD DeleteFileRecursive(const FilePath& path,
         (recursive || !info.IsDirectory())) {
       ::SetFileAttributes(
           current.value().c_str(),
-          info.find_data().dwFileAttributes & ~FILE_ATTRIBUTE_READONLY);
+          info.find_data().dwFileAttributes & ~DWORD{FILE_ATTRIBUTE_READONLY});
     }
 
     DWORD this_result = ERROR_SUCCESS;
@@ -151,7 +151,7 @@ bool DoCopyFile(const FilePath& from_path,
     return false;
   }
   if (attrs & FILE_ATTRIBUTE_READONLY) {
-    SetFileAttributes(dest, attrs & ~FILE_ATTRIBUTE_READONLY);
+    SetFileAttributes(dest, attrs & ~DWORD{FILE_ATTRIBUTE_READONLY});
   }
   return true;
 }
@@ -274,7 +274,7 @@ DWORD DoDeleteFile(const FilePath& path, bool recursive) {
   // Clear the read-only bit if it is set.
   if ((attr & FILE_ATTRIBUTE_READONLY) &&
       !::SetFileAttributes(path.value().c_str(),
-                           attr & ~FILE_ATTRIBUTE_READONLY)) {
+                           attr & ~DWORD{FILE_ATTRIBUTE_READONLY})) {
     // It's possible for |path| to be gone now under a race with other deleters.
     return ReturnLastErrorOrSuccessOnNotFound();
   }
@@ -812,7 +812,9 @@ bool GetFileInfo(const FilePath& file_path, File::Info* results) {
   ULARGE_INTEGER size;
   size.HighPart = attr.nFileSizeHigh;
   size.LowPart = attr.nFileSizeLow;
-  results->size = size.QuadPart;
+  // TODO(crbug.com/1333521): Change Info::size to uint64_t and eliminate this
+  // cast.
+  results->size = checked_cast<int64_t>(size.QuadPart);
 
   results->is_directory =
       (attr.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
@@ -879,12 +881,15 @@ int ReadFile(const FilePath& filename, char* data, int max_size) {
                                     FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
                                     OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN,
                                     NULL));
-  if (!file.is_valid())
+  if (!file.is_valid() || max_size < 0)
     return -1;
 
   DWORD read;
-  if (::ReadFile(file.get(), data, max_size, &read, NULL))
-    return read;
+  if (::ReadFile(file.get(), data, static_cast<DWORD>(max_size), &read, NULL)) {
+    // TODO(crbug.com/1333521): Change to return some type with a uint64_t size
+    // and eliminate this cast.
+    return checked_cast<int>(read);
+  }
 
   return -1;
 }
@@ -894,15 +899,16 @@ int WriteFile(const FilePath& filename, const char* data, int size) {
   win::ScopedHandle file(CreateFile(filename.value().c_str(), GENERIC_WRITE, 0,
                                     NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
                                     NULL));
-  if (!file.is_valid()) {
-    DPLOG(WARNING) << "CreateFile failed for path " << filename.value();
+  if (!file.is_valid() || size < 0) {
+    DPLOG(WARNING) << "WriteFile failed for path " << filename.value();
     return -1;
   }
 
   DWORD written;
-  BOOL result = ::WriteFile(file.get(), data, size, &written, NULL);
+  BOOL result =
+      ::WriteFile(file.get(), data, static_cast<DWORD>(size), &written, NULL);
   if (result && static_cast<int>(written) == size)
-    return written;
+    return static_cast<int>(written);
 
   if (!result) {
     // WriteFile failed.
@@ -995,7 +1001,8 @@ bool CopyFile(const FilePath& from_path, const FilePath& to_path) {
 
 bool SetNonBlocking(int fd) {
   unsigned long nonblocking = 1;
-  if (ioctlsocket(fd, FIONBIO, &nonblocking) == 0)
+  if (ioctlsocket(static_cast<SOCKET>(fd), static_cast<long>(FIONBIO),
+                  &nonblocking) == 0)
     return true;
   return false;
 }

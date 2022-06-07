@@ -250,7 +250,7 @@ void FileSystemOperationImpl::TouchFile(const FileSystemURL& url,
 }
 
 void FileSystemOperationImpl::OpenFile(const FileSystemURL& url,
-                                       int file_flags,
+                                       uint32_t file_flags,
                                        OpenFileCallback callback) {
   DCHECK(SetPendingOperationType(kOperationOpenFile));
 
@@ -515,7 +515,7 @@ void FileSystemOperationImpl::DoTruncate(const FileSystemURL& url,
 
 void FileSystemOperationImpl::DoOpenFile(const FileSystemURL& url,
                                          OpenFileCallback callback,
-                                         int file_flags) {
+                                         uint32_t file_flags) {
   async_file_util_->CreateOrOpen(
       std::move(operation_context_), url, file_flags,
       base::BindOnce(&DidOpenFile, file_system_context_, weak_ptr_,

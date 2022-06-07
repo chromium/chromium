@@ -116,7 +116,7 @@ void OpenFileCallbackWrapperIO(
 void CallOpenFile(
     PepperFileSystemBrowserHost::GetOperationRunnerCallback get_runner,
     const storage::FileSystemURL& url,
-    int file_flags,
+    uint32_t file_flags,
     storage::FileSystemOperationRunner::OpenFileCallback callback) {
   get_runner.Run()->OpenFile(
       url, file_flags,
@@ -182,7 +182,7 @@ int32_t PepperFileIOHost::OnHostMsgOpen(
   if (rv != PP_OK)
     return rv;
 
-  int platform_file_flags = 0;
+  uint32_t platform_file_flags = 0;
   if (!ppapi::PepperFileOpenFlagsToPlatformFileFlags(open_flags,
                                                      &platform_file_flags))
     return PP_ERROR_BADARGUMENT;
@@ -246,7 +246,7 @@ int32_t PepperFileIOHost::OnHostMsgOpen(
 
 void PepperFileIOHost::GotUIThreadStuffForInternalFileSystems(
     ppapi::host::ReplyMessageContext reply_context,
-    int platform_file_flags,
+    uint32_t platform_file_flags,
     UIThreadStuff ui_thread_stuff) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   resolved_render_process_id_ = ui_thread_stuff.resolved_render_process_id;
@@ -309,7 +309,7 @@ void PepperFileIOHost::DidOpenInternalFile(
 void PepperFileIOHost::GotResolvedRenderProcessId(
     ppapi::host::ReplyMessageContext reply_context,
     base::FilePath path,
-    int file_flags,
+    uint32_t file_flags,
     base::ProcessId resolved_render_process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   resolved_render_process_id_ = resolved_render_process_id;

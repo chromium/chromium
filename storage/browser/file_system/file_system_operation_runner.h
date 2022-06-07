@@ -171,7 +171,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
   // all situation e.g. it will always fail for the sandboxed system when in
   // Incognito mode.
   OperationID OpenFile(const FileSystemURL& url,
-                       int file_flags,
+                       uint32_t file_flags,
                        OpenFileCallback callback);
 
   // Creates a local snapshot file for a given |url| and returns the

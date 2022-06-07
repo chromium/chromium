@@ -48,7 +48,7 @@ ObfuscatedFileUtilDiskDelegate::CopyOrMoveModeForDestination(
 
 base::File ObfuscatedFileUtilDiskDelegate::CreateOrOpen(
     const base::FilePath& path,
-    int file_flags) {
+    uint32_t file_flags) {
   return NativeFileUtil::CreateOrOpen(path, file_flags);
 }
 

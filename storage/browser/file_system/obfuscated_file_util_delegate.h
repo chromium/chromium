@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilDelegate {
       const FileSystemURL& dest_url,
       bool copy) = 0;
   virtual base::File CreateOrOpen(const base::FilePath& path,
-                                  int file_flags) = 0;
+                                  uint32_t file_flags) = 0;
   virtual base::File::Error EnsureFileExists(const base::FilePath& path,
                                              bool* created) = 0;
   virtual base::File::Error CreateDirectory(const base::FilePath& path,

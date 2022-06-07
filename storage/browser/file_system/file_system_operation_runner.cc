@@ -383,7 +383,7 @@ OperationID FileSystemOperationRunner::TouchFile(
 }
 
 OperationID FileSystemOperationRunner::OpenFile(const FileSystemURL& url,
-                                                int file_flags,
+                                                uint32_t file_flags,
                                                 OpenFileCallback callback) {
   base::File::Error error = base::File::FILE_OK;
   std::unique_ptr<FileSystemOperation> operation =

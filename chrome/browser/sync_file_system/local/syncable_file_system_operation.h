@@ -94,7 +94,7 @@ class SyncableFileSystemOperation : public storage::FileSystemOperation {
                  const base::Time& last_modified_time,
                  StatusCallback callback) override;
   void OpenFile(const storage::FileSystemURL& url,
-                int file_flags,
+                uint32_t file_flags,
                 OpenFileCallback callback) override;
   void Cancel(StatusCallback cancel_callback) override;
   void CreateSnapshotFile(const storage::FileSystemURL& path,

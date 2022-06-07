@@ -193,7 +193,8 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
   int bytes_written = 0;
   for (const char *scan = data.data(), *const end = scan + data.length();
        scan < end; scan += bytes_written) {
-    const int write_amount = std::min(kMaxWriteAmount, end - scan);
+    const int write_amount =
+        static_cast<int>(std::min(kMaxWriteAmount, end - scan));
     bytes_written = tmp_file.WriteAtCurrentPos(scan, write_amount);
     if (bytes_written != write_amount) {
       DPLOG(WARNING) << "Failed to write " << write_amount << " bytes to temp "

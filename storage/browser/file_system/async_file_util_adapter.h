@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) AsyncFileUtilAdapter
   // AsyncFileUtil overrides.
   void CreateOrOpen(std::unique_ptr<FileSystemOperationContext> context,
                     const FileSystemURL& url,
-                    int file_flags,
+                    uint32_t file_flags,
                     CreateOrOpenCallback callback) override;
   void EnsureFileExists(std::unique_ptr<FileSystemOperationContext> context,
                         const FileSystemURL& url,
