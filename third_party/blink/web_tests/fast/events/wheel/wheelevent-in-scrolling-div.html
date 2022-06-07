@@ -15,11 +15,12 @@
 
   // scroll diagonally for 1 tick.
   const SCROLL_AMOUNT = pixelsPerTick();
-  const PIXELS_TO_SCROLL = calculatePixelsToScroll(overflowElement, SCROLL_AMOUNT,
-                                                   SCROLL_AMOUNT).y;
-  const EXPECTED_WHEEL_DELTA = -PIXELS_TO_SCROLL / pixelsPerTick() *
-                                LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER *
-                                window.devicePixelRatio;
+  const EXPECTED_DELTA = isPercentBasedScrollingEnabled() ?
+    WHEEL_DELTA : SCROLL_AMOUNT;
+
+  const { x: expectedScrollLeft, y: expectedScrollTop } = (
+    calculateExpectedScroll(overflowElement, SCROLL_AMOUNT, SCROLL_AMOUNT)
+  );
 
   var eventHandlerResolve;
   eventHandlerPromise = new Promise(function(resolve) {
@@ -30,8 +31,8 @@
     var x = overflowElement.offsetLeft + 5;
     var y = overflowElement.offsetTop + 5
     await mouseMoveTo(x, y);
-    await percentBasedSmoothScroll(SCROLL_AMOUNT, x, y, GestureSourceType.MOUSE_INPUT,
-      "downright", SPEED_INSTANT, overflowElement);
+    await smoothScroll(SCROLL_AMOUNT, x, y, GestureSourceType.MOUSE_INPUT,
+      "downright", SPEED_INSTANT);
     await waitForAnimationEndTimeBased(() => {
       return overflowElement.scrollTop;
     });
@@ -39,19 +40,20 @@
       return overflowElement.scrollLeft;
     });
 
-    assert_approx_equals(overflowElement.scrollTop, SCROLL_AMOUNT, 0.2);
-    assert_approx_equals(overflowElement.scrollLeft, SCROLL_AMOUNT, 0.2);
+    assert_approx_equals(overflowElement.scrollTop, expectedScrollTop, 0.001);
+    assert_approx_equals(overflowElement.scrollLeft, expectedScrollLeft, 0.001);
     // The test will timeout if the event handler doesn't resolve this promise.
     await eventHandlerPromise;
   });
 
   function mousewheelHandler(e) {
-    const approxeq = (a, b) => Math.abs(a-b) <= 0.2;
     // e.wheelDeltaX/Y is equal to number of ticks * 120. See kTickMultiplier
     // in src/third_party/blink/renderer/core/events/wheel_event.h
-    if (approxeq(e.wheelDeltaY, EXPECTED_WHEEL_DELTA) &&
-        approxeq(e.wheelDeltaX, EXPECTED_WHEEL_DELTA) &&
-        approxeq(e.wheelDelta, EXPECTED_WHEEL_DELTA)) {
+    if (e.deltaY == EXPECTED_DELTA && e.deltaX == EXPECTED_DELTA
+        && e.wheelDeltaY == -LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER
+        && e.wheelDeltaX == -LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER
+        && e.wheelDelta == -LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER
+    ) {
       eventHandlerResolve();
     }
   }

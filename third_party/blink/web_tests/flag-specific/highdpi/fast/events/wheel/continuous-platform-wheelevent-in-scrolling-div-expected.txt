@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL This test checks the wheel delta value of wheel events, which should be the number of ticks multiplies the legacy mouse wheel tick multiplier. assert_equals: expected -226 but got -339
+Harness: the test ran to completion.
+
