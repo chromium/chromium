@@ -25,9 +25,5 @@ interface TouchToFillResourceProvider {
      *
      * @return A {@link DrawableRes} that is never 0.
      */
-    public default @DrawableRes int getWebAuthnIconId() {
-        /* TODO(https://crbug.com/1331066): Remove the default method
-         * implementation as soon as a downstream update is landed. */
-        return R.drawable.touch_to_fill_webauthn_icon;
-    }
+    public @DrawableRes int getWebAuthnIconId();
 }
