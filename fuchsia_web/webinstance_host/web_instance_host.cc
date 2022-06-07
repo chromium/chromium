@@ -24,7 +24,6 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -36,29 +35,21 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/values.h"
 #include "build/build_config.h"
-#include "cc/base/switches.h"
-#include "components/embedder_support/switches.h"
 #include "components/fuchsia_component_support/config_reader.h"
 #include "components/fuchsia_component_support/feedback_registration.h"
-#include "components/viz/common/features.h"
-#include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
 #include "fuchsia/base/string_util.h"
 #include "fuchsia_web/webengine/features.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "gpu/config/gpu_switches.h"
 #include "media/base/key_system_names.h"
 #include "media/base/media_switches.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "third_party/blink/public/common/switches.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
-#include "ui/display/display_switches.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -340,76 +331,6 @@ bool HandleKeyboardFeatureFlags(fuchsia::web::ContextFeatureFlags features,
   return true;
 }
 
-// Returns false if the config is present but has invalid contents.
-bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
-                                       base::CommandLine* command_line) {
-  const base::Value* args = config.FindDictKey("command-line-args");
-  if (!args)
-    return true;
-
-  static const base::StringPiece kAllowedArgs[] = {
-      blink::switches::kSharedArrayBufferAllowedOrigins,
-      blink::switches::kGpuRasterizationMSAASampleCount,
-      blink::switches::kMinHeightForGpuRasterTile,
-      cc::switches::kEnableClippedImageScaling,
-      cc::switches::kEnableGpuBenchmarking,
-      embedder_support::kOriginTrialPublicKey,
-      embedder_support::kOriginTrialDisabledFeatures,
-      embedder_support::kOriginTrialDisabledTokens,
-      switches::kDisableFeatures,
-      switches::kDisableGpuWatchdog,
-      switches::kDisableMipmapGeneration,
-      // TODO(crbug.com/1082821): Remove this switch from the allow-list.
-      switches::kEnableCastStreamingReceiver,
-      switches::kEnableFeatures,
-      switches::kEnableLowEndDeviceMode,
-      switches::kForceDeviceScaleFactor,
-      switches::kForceGpuMemAvailableMb,
-      switches::kForceGpuMemDiscardableLimitMb,
-      switches::kForceMaxTextureSize,
-      switches::kGoogleApiKey,
-      switches::kMaxDecodedImageSizeMb,
-      switches::kOzonePlatform,
-      switches::kRendererProcessLimit,
-      switches::kUseCmdDecoder,
-      switches::kV,
-      switches::kVModule,
-      switches::kVulkanHeapMemoryLimitMb,
-      switches::kVulkanSyncCpuMemoryLimitMb,
-      switches::kWebglAntialiasingMode,
-      switches::kWebglMSAASampleCount,
-  };
-
-  for (const auto arg : args->DictItems()) {
-    if (!base::Contains(kAllowedArgs, arg.first)) {
-      // TODO(https://crbug.com/1032439): Increase severity and return false
-      // once we have a mechanism for soft transitions of supported arguments.
-      LOG(WARNING) << "Unknown command-line arg: '" << arg.first
-                   << "'. Config file and WebEngine version may not match.";
-      continue;
-    }
-
-    DCHECK(!command_line->HasSwitch(arg.first));
-    if (arg.second.is_none()) {
-      command_line->AppendSwitch(arg.first);
-    } else if (arg.second.is_string()) {
-      command_line->AppendSwitchNative(arg.first, arg.second.GetString());
-    } else {
-      LOG(ERROR) << "Config command-line arg must be a string: " << arg.first;
-      return false;
-    }
-
-    // TODO(https://crbug.com/1023012): enable-low-end-device-mode currently
-    // fakes 512MB total physical memory, which triggers RGB4444 textures,
-    // which
-    // we don't yet support.
-    if (arg.first == switches::kEnableLowEndDeviceMode)
-      command_line->AppendSwitch(blink::switches::kDisableRGBA4444Textures);
-  }
-
-  return true;
-}
-
 // Returns true if DRM is supported in current configuration. Currently we
 // assume that it is supported on ARM64, but not on x64.
 //
@@ -570,20 +491,6 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
           : kWebInstanceComponentUrl;
   launch_info.flat_namespace = fuchsia::sys::FlatNamespace::New();
 
-  // Process command-line settings specified in our package config-data.
-  base::Value web_engine_config;
-  if (config_for_test_.is_none()) {
-    const absl::optional<base::Value>& config =
-        fuchsia_component_support::LoadPackageConfig();
-    web_engine_config =
-        config ? config->Clone() : base::Value(base::Value::Type::DICTIONARY);
-  } else {
-    web_engine_config = std::move(config_for_test_);
-  }
-  if (!MaybeAddCommandLineArgsFromConfig(web_engine_config, &launch_args)) {
-    return ZX_ERR_INTERNAL;
-  }
-
   fuchsia::web::ContextFeatureFlags features = {};
   if (params.has_features())
     features = params.features();
@@ -648,41 +555,6 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
     enable_widevine = false;
   }
 
-  bool allow_protected_graphics =
-      web_engine_config.FindBoolPath("allow-protected-graphics")
-          .value_or(false);
-  bool force_protected_graphics =
-      web_engine_config.FindBoolPath("force-protected-graphics")
-          .value_or(false);
-  bool enable_protected_graphics =
-      ((enable_playready || enable_widevine) && allow_protected_graphics) ||
-      force_protected_graphics;
-  bool use_overlays_for_video =
-      web_engine_config.FindBoolPath("use-overlays-for-video").value_or(false);
-
-  if (enable_protected_graphics) {
-    launch_args.AppendSwitch(switches::kEnableVulkanProtectedMemory);
-    launch_args.AppendSwitch(switches::kEnableProtectedVideoBuffers);
-    bool force_protected_video_buffers =
-        web_engine_config.FindBoolPath("force-protected-video-buffers")
-            .value_or(false);
-    if (force_protected_video_buffers) {
-      launch_args.AppendSwitch(switches::kForceProtectedVideoOutputBuffers);
-    }
-  }
-
-  if (use_overlays_for_video) {
-    // Overlays are only available if OutputPresenterFuchsia is in use.
-    AppendToSwitch(switches::kEnableFeatures,
-                   features::kUseSkiaOutputDeviceBufferQueue.name,
-                   &launch_args);
-    AppendToSwitch(switches::kEnableFeatures,
-                   features::kUseRealBuffersForPageFlipTest.name, &launch_args);
-    launch_args.AppendSwitchASCII(switches::kEnableHardwareOverlays,
-                                  "underlay");
-    launch_args.AppendSwitch(switches::kUseOverlaysForVideo);
-  }
-
   if (enable_vulkan) {
     if (is_headless) {
       DLOG(ERROR) << "VULKAN and HEADLESS features cannot be used together.";
@@ -690,6 +562,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
     }
 
     VLOG(1) << "Enabling Vulkan GPU acceleration.";
+
     // Vulkan requires use of SkiaRenderer, configured to a use Vulkan context.
     launch_args.AppendSwitch(switches::kUseVulkan);
     AppendToSwitch(switches::kEnableFeatures, features::kVulkan.name,

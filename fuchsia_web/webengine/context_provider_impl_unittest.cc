@@ -57,8 +57,6 @@ constexpr char kTitle[] = "Palindrome";
 constexpr uint64_t kTestQuotaBytes = 1024;
 constexpr char kTestQuotaBytesSwitchValue[] = "1024";
 
-constexpr char kCommandLineArgs[] = "command-line-args";
-
 MULTIPROCESS_TEST_MAIN(SpawnContextServer) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO);
@@ -284,15 +282,6 @@ fuchsia::web::CreateContextParams BuildCreateContextParams() {
       output.mutable_service_directory()->NewRequest().TakeChannel().release());
   ZX_CHECK(result == ZX_OK, result) << "Failed to open /svc";
   return output;
-}
-
-base::Value CreateConfigWithSwitchValue(std::string switch_name,
-                                        std::string switch_value) {
-  base::Value config_dict(base::Value::Type::DICTIONARY);
-  base::Value args(base::Value::Type::DICTIONARY);
-  args.SetStringKey(switch_name, switch_value);
-  config_dict.SetKey(kCommandLineArgs, std::move(args));
-  return config_dict;
 }
 
 fidl::InterfaceHandle<fuchsia::io::Directory> OpenCacheDirectory() {
@@ -586,80 +575,6 @@ TEST_F(ContextProviderImplTest, FailsDataDirectoryIsFile) {
   CheckContextUnresponsive(&context);
 }
 
-TEST_F(ContextProviderImplTest, WithConfigWithCommandLineArgs) {
-  // Specify a configuration that sets valid args with valid strings.
-  base::Value config_dict =
-      CreateConfigWithSwitchValue("renderer-process-limit", "0");
-
-  base::RunLoop loop;
-  provider_->set_config_for_test(std::move(config_dict));
-  fake_environment_.fake_launcher().set_create_component_callback(
-      base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
-        loop.Quit();
-        EXPECT_TRUE(command.HasSwitch("renderer-process-limit"));
-      }));
-
-  fuchsia::web::ContextPtr context;
-  context.set_error_handler([&loop](zx_status_t status) {
-    loop.Quit();
-    ZX_LOG(ERROR, status);
-    ADD_FAILURE();
-  });
-  provider_ptr_->Create(BuildCreateContextParams(), context.NewRequest());
-
-  loop.Run();
-}
-
-TEST_F(ContextProviderImplTest, WithConfigWithDisallowedCommandLineArgs) {
-  // Specify a configuration that sets a disallowed command-line argument.
-  base::Value config_dict =
-      CreateConfigWithSwitchValue("kittens-are-nice", "0");
-
-  base::RunLoop loop;
-  provider_->set_config_for_test(std::move(config_dict));
-  fake_environment_.fake_launcher().set_create_component_callback(
-      base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
-        loop.Quit();
-        EXPECT_FALSE(command.HasSwitch("kittens-are-nice"));
-      }));
-
-  fuchsia::web::ContextPtr context;
-  context.set_error_handler([&loop](zx_status_t status) {
-    loop.Quit();
-    ZX_LOG(ERROR, status);
-    ADD_FAILURE();
-  });
-  provider_ptr_->Create(BuildCreateContextParams(), context.NewRequest());
-
-  loop.Run();
-}
-
-TEST_F(ContextProviderImplTest, WithConfigWithWronglyTypedCommandLineArgs) {
-  base::Value config_dict(base::Value::Type::DICTIONARY);
-
-  // Specify a configuration that sets valid args with invalid value.
-  base::Value args(base::Value::Type::DICTIONARY);
-  args.SetBoolKey("renderer-process-limit", false);
-  config_dict.SetKey(kCommandLineArgs, std::move(args));
-
-  base::RunLoop loop;
-  provider_->set_config_for_test(std::move(config_dict));
-  fake_environment_.fake_launcher().set_create_component_callback(
-      base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
-        loop.Quit();
-        ADD_FAILURE();
-      }));
-
-  fuchsia::web::ContextPtr context;
-  context.set_error_handler([&loop](zx_status_t status) {
-    loop.Quit();
-    EXPECT_EQ(status, ZX_ERR_INTERNAL);
-  });
-  provider_ptr_->Create(BuildCreateContextParams(), context.NewRequest());
-
-  loop.Run();
-}
-
 // Tests that unsafely_treat_insecure_origins_as_secure properly adds the right
 // command-line arguments to the Context process.
 TEST_F(ContextProviderImplTest, WithInsecureOriginsAsSecure) {
@@ -717,33 +632,6 @@ TEST_F(ContextProviderImplTest, WithDataQuotaBytes) {
       base::OpenDirectoryHandle(profile_temp_dir.GetPath()));
   create_params.set_data_quota_bytes(kTestQuotaBytes);
   provider_ptr_->Create(std::move(create_params), context.NewRequest());
-
-  loop.Run();
-}
-
-TEST_F(ContextProviderImplTest, WithGoogleApiKeyValue) {
-  constexpr char kDummyApiKey[] = "apikey123";
-
-  base::Value config_dict =
-      CreateConfigWithSwitchValue("google-api-key", kDummyApiKey);
-
-  base::RunLoop loop;
-  provider_->set_config_for_test(std::move(config_dict));
-  fake_environment_.fake_launcher().set_create_component_callback(
-      base::BindLambdaForTesting(
-          [&loop, kDummyApiKey](const base::CommandLine& command) {
-            loop.Quit();
-            EXPECT_EQ(command.GetSwitchValueASCII(switches::kGoogleApiKey),
-                      kDummyApiKey);
-          }));
-
-  fuchsia::web::ContextPtr context;
-  context.set_error_handler([&loop](zx_status_t status) {
-    loop.Quit();
-    ZX_LOG(ERROR, status);
-    ADD_FAILURE();
-  });
-  provider_ptr_->Create(BuildCreateContextParams(), context.NewRequest());
 
   loop.Run();
 }

@@ -1,5 +1,6 @@
 include_rules = [
   # Do NOT add components/cast or other Cast-specific code to this file.
+  "+cc/base",
   "+components/client_hints/browser",
   "+components/favicon/content",
   "+components/favicon/core",
@@ -14,8 +15,10 @@ include_rules = [
   "+components/url_rewrite/browser",
   "+components/url_rewrite/common",
   "+components/url_rewrite/mojom",
+  "+components/viz/common",
   "+content/public/common",
   "+content/public/browser",
+  "+gpu/config",
   "+media/base",
   "+media/capabilities",
   "+media/fuchsia/cdm/service",
@@ -41,6 +44,7 @@ include_rules = [
   "+ui/display",
   "+ui/events",
   "+ui/gfx",
+  "+ui/gl",
   "+ui/ozone/public",
   "+ui/platform_window",
   "+ui/wm/core",
