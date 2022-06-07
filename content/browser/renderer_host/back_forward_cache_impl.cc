@@ -510,6 +510,10 @@ base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache() {
 size_t BackForwardCacheImpl::GetCacheSize() {
   if (!IsBackForwardCacheEnabled())
     return 0;
+  auto cache_size = GetFieldTrialParamByFeatureAsOptionalInt(
+      kBackForwardCacheSize, "cache_size");
+  if (cache_size.has_value())
+    return cache_size.value();
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kBackForwardCache, "cache_size", kDefaultBackForwardCacheSize);
 }
@@ -518,6 +522,10 @@ size_t BackForwardCacheImpl::GetCacheSize() {
 size_t BackForwardCacheImpl::GetForegroundedEntriesCacheSize() {
   if (!IsBackForwardCacheEnabled())
     return 0;
+  auto foreground_cache_size = GetFieldTrialParamByFeatureAsOptionalInt(
+      kBackForwardCacheSize, "foreground_cache_size");
+  if (foreground_cache_size.has_value())
+    return foreground_cache_size.value();
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kBackForwardCache, "foreground_cache_size",
       kDefaultForegroundBackForwardCacheSize);

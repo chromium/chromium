@@ -67,6 +67,11 @@ const base::Feature kCacheControlNoStoreEnterBackForwardCache{
 const base::Feature kBackForwardCacheTimeToLiveControl{
     "BackForwardCacheTimeToLiveControl", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows overriding the sizes of back/forward cache.
+// Sizes set via this feature's parameters take precedence over others.
+const base::Feature kBackForwardCacheSize{"BackForwardCacheSize",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Combines a flattened list and a tree of the reasons why each document cannot
 // enter the back/forward cache (might be empty if it can). The tree saves the
 // reasons for each document in the tree (including those without the reasons)
