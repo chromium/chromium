@@ -108,7 +108,6 @@
 #include "content/browser/process_lock.h"
 #include "content/browser/push_messaging/push_messaging_manager.h"
 #include "content/browser/quota/quota_context.h"
-#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
 #include "content/browser/renderer_host/media/media_stream_track_metrics_host.h"
 #include "content/browser/renderer_host/p2p/socket_dispatcher_host.h"
@@ -1500,8 +1499,6 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       is_unused_(true),
       delayed_cleanup_needed_(false),
       within_process_died_observer_(false),
-      code_cache_host_receivers_(
-          storage_partition_impl_->GetGeneratedCodeCacheContext()),
       channel_connected_(false),
       sent_render_process_ready_(false),
       shutdown_exit_code_(-1) {
@@ -2343,11 +2340,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 
   AddUIThreadInterface(
       registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::CreateCodeCacheHost,
-                          instance_weak_factory_.GetWeakPtr()));
-
-  AddUIThreadInterface(
-      registry.get(),
       base::BindRepeating(&RenderProcessHostImpl::CreateMediaLogRecordHost,
                           instance_weak_factory_.GetWeakPtr()));
 
@@ -2442,17 +2434,6 @@ void RenderProcessHostImpl::CreateDomStorageProvider(
     mojo::PendingReceiver<blink::mojom::DomStorageProvider> receiver) {
   DCHECK(!dom_storage_provider_receiver_.is_bound());
   dom_storage_provider_receiver_.Bind(std::move(receiver));
-}
-
-void RenderProcessHostImpl::CreateCodeCacheHost(
-    mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  // TODO(crbug/1213818): This interface is used by worklets. Once worklets
-  // are fixed to uuse context specific code cache interface remove this code.
-  code_cache_host_receivers_.Add(GetID(), net::NetworkIsolationKey(),
-                                 std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindMediaInterfaceProxy(
@@ -4710,12 +4691,6 @@ void RenderProcessHostImpl::ResetIPC() {
     storage_partition_impl_->UnbindDomStorage(receiver_id);
 
   instance_weak_factory_.InvalidateWeakPtrs();
-
-  // If RenderProcessHostImpl is reused, the next renderer will send a new
-  // request for CodeCacheHost.  Make sure that we clear the stale
-  // object so that we can clearly create the new CodeCacheHostImpl while
-  // asserting we don't have any duplicates.
-  code_cache_host_receivers_.Clear();
 
   // It's important not to wait for the DeleteTask to delete the channel
   // proxy. Kill it off now. That way, in case the profile is going away, the

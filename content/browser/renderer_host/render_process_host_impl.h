@@ -28,7 +28,6 @@
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/child_process_launcher.h"
-#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/media/aec_dump_manager_impl.h"
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/browser/storage_partition_impl.h"
@@ -787,8 +786,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<viz::mojom::CompositingModeReporter> receiver);
   void CreateDomStorageProvider(
       mojo::PendingReceiver<blink::mojom::DomStorageProvider> receiver);
-  void CreateCodeCacheHost(
-      mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
   void CreateRendererHost(
       mojo::PendingAssociatedReceiver<mojom::RendererHost> receiver);
   void BindMediaInterfaceProxy(
@@ -1118,14 +1115,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // The memory allocator, if any, in which the renderer will write its metrics.
   std::unique_ptr<base::PersistentMemoryAllocator> metrics_allocator_;
-
-  // TODO(mythria): Currently we are in the process of migrating CodeCacheHost
-  // interface to use execution specific contexts. Once the migration is
-  // complete remove CodeCacheHost interface from the RenderProcessHost.
-  // Currently fetching code caches from main thread use the interface
-  // associated with the RenderFrameHost. All others (fetches from worker
-  // threads, writing into code caches) use per-process interface.
-  CodeCacheHostImpl::ReceiverSet code_cache_host_receivers_;
 
   bool channel_connected_;
   bool sent_render_process_ready_;
