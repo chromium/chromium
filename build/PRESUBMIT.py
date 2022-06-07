@@ -17,7 +17,9 @@ def CheckNoBadDeps(input_api, output_api):
       r'(.+/)?BUILD\.gn',
       r'.+\.gni',
   ]
-  bad_pattern = input_api.re.compile(r'^[^#]*//(base|third_party|components)')
+  blocklist_pattern = input_api.re.compile(
+      r'^[^#]*//(?:base|third_party|components)')
+  allowlist_pattern = input_api.re.compile(r'^[^#]*//third_party/junit')
 
   warning_message = textwrap.dedent("""
       The //build directory is meant to be as hermetic as possible so that
@@ -36,7 +38,7 @@ def CheckNoBadDeps(input_api, output_api):
   for f in input_api.AffectedSourceFiles(FilterFile):
     local_path = f.LocalPath()
     for line_number, line in f.ChangedContents():
-      if (bad_pattern.search(line)):
+      if blocklist_pattern.search(line) and not allowlist_pattern.search(line):
         problems.append('%s:%d\n    %s' %
                         (local_path, line_number, line.strip()))
   if problems:

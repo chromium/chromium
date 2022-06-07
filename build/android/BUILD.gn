@@ -53,6 +53,14 @@ if (enable_java_templates) {
     # be created when creating an apk.
     jar_excluded_patterns += [ "*/NativeLibraries.class" ]
   }
+
+  junit_binary("build_junit_tests") {
+    sources = [ "junit/src/org/chromium/build/IncrementalJavacTest.java" ]
+    deps = [
+      "//build/android/test/incremental_javac_gn:no_signature_change_prebuilt_java",
+      "//third_party/junit",
+    ]
+  }
 }
 
 python_library("devil_chromium_py") {
