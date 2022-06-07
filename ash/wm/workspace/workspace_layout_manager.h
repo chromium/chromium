@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shell_observer.h"
@@ -33,7 +34,8 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
                                           public display::DisplayObserver,
                                           public ShellObserver,
                                           public WindowStateObserver,
-                                          public ShelfObserver {
+                                          public ShelfObserver,
+                                          public AppListControllerObserver {
  public:
   // |window| is the container for this layout manager.
   explicit WorkspaceLayoutManager(aura::Window* window);
@@ -97,11 +99,15 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   void OnFullscreenStateChanged(bool is_fullscreen,
                                 aura::Window* container) override;
   void OnPinnedStateChanged(aura::Window* pinned_window) override;
+  void OnShellDestroying() override;
 
   // ShelfObserver:
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
   void OnHotseatStateChanged(HotseatState old_state,
                              HotseatState new_state) override;
+
+  // AppListControllerObserver:
+  void OnAppListVisibilityChanged(bool shown, int64_t display_id) override;
 
  private:
   friend class WorkspaceControllerTestApi;

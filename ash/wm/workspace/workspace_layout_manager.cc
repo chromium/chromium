@@ -9,6 +9,8 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
+#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -117,9 +119,14 @@ WorkspaceLayoutManager::WorkspaceLayoutManager(aura::Window* window)
   shelf_container_ =
       window->GetRootWindow()->GetChildById(kShellWindowId_ShelfContainer);
   root_window_controller_->shelf()->AddObserver(this);
+  Shell::Get()->app_list_controller()->AddObserver(this);
 }
 
 WorkspaceLayoutManager::~WorkspaceLayoutManager() {
+  // WorkspaceLayoutManagers for the primary display are destroyed after
+  // AppListControllerImpl. Their observers are removed in OnShellDestroying().
+  if (Shell::Get()->app_list_controller())
+    Shell::Get()->app_list_controller()->RemoveObserver(this);
   root_window_controller_->shelf()->RemoveObserver(this);
   if (root_window_)
     root_window_->RemoveObserver(this);
@@ -466,8 +473,13 @@ void WorkspaceLayoutManager::OnPinnedStateChanged(aura::Window* pinned_window) {
   UpdateAlwaysOnTop(is_pinned ? pinned_window : nullptr);
 }
 
+void WorkspaceLayoutManager::OnShellDestroying() {
+  Shell::Get()->app_list_controller()->RemoveObserver(this);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // WorkspaceLayoutManager, ShelfObserver implementation:
+
 void WorkspaceLayoutManager::OnAutoHideStateChanged(
     ShelfAutoHideState new_state) {
   NotifySystemUiAreaChanged();
@@ -476,6 +488,22 @@ void WorkspaceLayoutManager::OnAutoHideStateChanged(
 void WorkspaceLayoutManager::OnHotseatStateChanged(HotseatState old_state,
                                                    HotseatState new_state) {
   NotifySystemUiAreaChanged();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// WorkspaceLayoutManager, AppListControllerObserver implementation:
+
+void WorkspaceLayoutManager::OnAppListVisibilityChanged(bool shown,
+                                                        int64_t display_id) {
+  if (display::Screen::GetScreen()->GetDisplayNearestWindow(window_).id() !=
+      display_id) {
+    return;
+  }
+  if (features::IsProductivityLauncherEnabled() &&
+      !Shell::Get()->IsInTabletMode()) {
+    // Adjust PIP window if needed.
+    NotifySystemUiAreaChanged();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////

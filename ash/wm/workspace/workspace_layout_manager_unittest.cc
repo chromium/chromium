@@ -17,6 +17,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
+#include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -54,6 +55,7 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
@@ -2004,6 +2006,22 @@ TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
   test_state()->reset_num_system_ui_area_changes();
 
   unified_system_tray->CloseBubble();
+  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
+}
+
+// Expect that showing the clamshell bubble launcher triggers as system UI area
+// change event.
+TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
+       SystemUiAreaChangeOnClamshellLauncherVisibilityChange) {
+  base::test::ScopedFeatureList feature_list(features::kProductivityLauncher);
+  ASSERT_FALSE(Shell::Get()->IsInTabletMode());
+
+  AppListController* app_list_controller = AppListController::Get();
+  app_list_controller->ShowAppList();
+  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
+  test_state()->reset_num_system_ui_area_changes();
+
+  app_list_controller->DismissAppList();
   EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
 }
 
