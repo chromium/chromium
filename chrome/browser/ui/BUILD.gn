@@ -1482,6 +1482,8 @@ static_library("ui") {
       "webui/commander/commander_handler.h",
       "webui/commander/commander_ui.cc",
       "webui/commander/commander_ui.h",
+      "webui/cr_components/history_clusters/history_clusters_util.cc",
+      "webui/cr_components/history_clusters/history_clusters_util.h",
       "webui/cr_components/most_visited/most_visited_handler.cc",
       "webui/cr_components/most_visited/most_visited_handler.h",
       "webui/customize_themes/chrome_customize_themes_handler.cc",

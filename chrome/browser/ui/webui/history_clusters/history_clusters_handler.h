@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 
 class Profile;
@@ -58,8 +59,13 @@ class HistoryClustersHandler : public mojom::PageHandler,
   HistoryClustersHandler& operator=(const HistoryClustersHandler&) = delete;
   ~HistoryClustersHandler() override;
 
+  void SetSidePanelUIEmbedder(
+      base::WeakPtr<ui::MojoBubbleWebUIController::Embedder>
+          side_panel_embedder);
+
   // mojom::PageHandler:
   void SetPage(mojo::PendingRemote<mojom::Page> pending_page) override;
+  void ShowSidePanelUI() override;
   void ToggleVisibility(bool visible,
                         ToggleVisibilityCallback callback) override;
   void StartQueryClusters(const std::string& query) override;
@@ -89,6 +95,9 @@ class HistoryClustersHandler : public mojom::PageHandler,
   // Called with the result of querying clusters. Subsequently, `query_result`
   // is sent to the JS to update the UI.
   void OnClustersQueryResult(mojom::QueryResultPtr query_result);
+
+  base::WeakPtr<ui::MojoBubbleWebUIController::Embedder>
+      history_clusters_side_panel_embedder_;
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;

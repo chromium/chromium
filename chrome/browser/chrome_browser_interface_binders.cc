@@ -161,6 +161,7 @@
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
+#include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
@@ -828,8 +829,15 @@ void PopulateChromeWebUIFrameBinders(
           render_frame_host->GetProcess()->GetBrowserContext());
   if (history_clusters_service &&
       history_clusters_service->IsJourneysEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<history_clusters::mojom::PageHandler,
-                                           HistoryUI>(map);
+    if (base::FeatureList::IsEnabled(features::kSidePanelJourneys) &&
+        base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+      RegisterWebUIControllerInterfaceBinder<
+          history_clusters::mojom::PageHandler, HistoryUI,
+          HistoryClustersSidePanelUI>(map);
+    } else {
+      RegisterWebUIControllerInterfaceBinder<
+          history_clusters::mojom::PageHandler, HistoryUI>(map);
+    }
   }
 
   RegisterWebUIControllerInterfaceBinder<

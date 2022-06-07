@@ -39,6 +39,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 #include "url/gurl.h"
 
@@ -213,9 +214,21 @@ HistoryClustersHandler::HistoryClustersHandler(
 
 HistoryClustersHandler::~HistoryClustersHandler() = default;
 
+void HistoryClustersHandler::SetSidePanelUIEmbedder(
+    base::WeakPtr<ui::MojoBubbleWebUIController::Embedder>
+        side_panel_embedder) {
+  history_clusters_side_panel_embedder_ = side_panel_embedder;
+}
+
 void HistoryClustersHandler::SetPage(
     mojo::PendingRemote<mojom::Page> pending_page) {
   page_.Bind(std::move(pending_page));
+}
+
+void HistoryClustersHandler::ShowSidePanelUI() {
+  if (history_clusters_side_panel_embedder_) {
+    history_clusters_side_panel_embedder_->ShowUI();
+  }
 }
 
 void HistoryClustersHandler::ToggleVisibility(
