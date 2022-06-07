@@ -106,6 +106,7 @@ source_set("test_support") {
   deps = [
     ":auth",
     "//base",
+    "//chromeos/dbus/userdataauth",
     "//chromeos/login/login_state",
     "//components/account_id",
     "//google_apis",
@@ -117,6 +118,8 @@ source_set("test_support") {
   sources = [
     "fake_extended_authenticator.cc",
     "fake_extended_authenticator.h",
+    "mock_auth_performer.cc",
+    "mock_auth_performer.h",
     "mock_auth_status_consumer.cc",
     "mock_auth_status_consumer.h",
   ]

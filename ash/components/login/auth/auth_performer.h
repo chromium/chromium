@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
   AuthPerformer(const AuthPerformer&) = delete;
   AuthPerformer& operator=(const AuthPerformer&) = delete;
 
-  ~AuthPerformer();
+  virtual ~AuthPerformer();
 
   using StartSessionCallback =
       base::OnceCallback<void(bool /* user_exists */,
@@ -50,9 +50,9 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
   // fills information about supported (and configured if user exists) keys.
   // `Context` should not have associated auth session.
   // Does not authenticate new session.
-  void StartAuthSession(std::unique_ptr<UserContext> context,
-                        bool ephemeral,
-                        StartSessionCallback callback);
+  virtual void StartAuthSession(std::unique_ptr<UserContext> context,
+                                bool ephemeral,
+                                StartSessionCallback callback);
 
   // Attempts to authenticate session using Key in `context`.
   // If key is a plain text, it is assumed that it is a knowledge-based key,
@@ -75,10 +75,10 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
   // Attempts to authenticate session using plain text password.
   // Does not fill any password-related fields in `context`.
   // Session will become authenticated upon success.
-  void AuthenticateWithPassword(const std::string& key_label,
-                                const std::string& password,
-                                std::unique_ptr<UserContext> context,
-                                AuthOperationCallback callback);
+  virtual void AuthenticateWithPassword(const std::string& key_label,
+                                        const std::string& password,
+                                        std::unique_ptr<UserContext> context,
+                                        AuthOperationCallback callback);
 
   // Attempts to authenticate session using PIN as a factor.
   // PINs use custom salt stored in LocalState, this salt should be provided

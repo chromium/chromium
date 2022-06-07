@@ -7,11 +7,14 @@
 
 #include <memory>
 
+#include "ash/components/login/auth/auth_performer.h"
 #include "ash/components/login/auth/user_context.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
+#include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "components/account_id/account_id.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -29,10 +32,25 @@ struct CryptohomeError;
 // support all configured forms of authentication on the system.
 class AuthenticationDialog : public views::DialogDelegateView {
  public:
+  class TestApi {
+   public:
+    explicit TestApi(AuthenticationDialog* dialog) : dialog_(dialog) {}
+
+    views::Textfield* GetPasswordTextfield() {
+      return dialog_->password_field_;
+    }
+
+   private:
+    base::raw_ptr<AuthenticationDialog> const dialog_;
+  };
+
   // |on_auth_complete| is called when the user has been authenticated
   // or when the dialog has been aborted
   explicit AuthenticationDialog(
-      InSessionAuthDialogController::OnAuthComplete on_auth_complete);
+      InSessionAuthDialogController::OnAuthComplete on_auth_complete,
+      InSessionAuthTokenProvider* auth_token_provider,
+      std::unique_ptr<AuthPerformer> auth_performer,
+      const AccountId& account_id);
 
   ~AuthenticationDialog() override;
 
@@ -80,6 +98,20 @@ class AuthenticationDialog : public views::DialogDelegateView {
   // error message label.
   void ConfigureChildViews();
 
+  // Passed as a callback to `AuthPerformer::StartAuthSession` in
+  // `OnAuthFactorValidityChecked` when trying to validate the password
+  // and discovering that the auth session is no longer active
+  void OnAuthSessionInvalid(bool user_exists,
+                            std::unique_ptr<UserContext> user_context,
+                            absl::optional<CryptohomeError> cryptohome_error);
+
+  // Passed as a callback to `AuthPerformer::StartAuthSession`. Saves the
+  // password key label to pass it later to authentication attempts and handles
+  // errors from cryptohome
+  void OnAuthSessionStarted(bool user_exists,
+                            std::unique_ptr<UserContext> user_context,
+                            absl::optional<CryptohomeError> cryptohome_error);
+
   base::raw_ptr<views::Textfield> password_field_;
   base::raw_ptr<views::Label> invalid_password_label_;
 
@@ -87,6 +119,20 @@ class AuthenticationDialog : public views::DialogDelegateView {
   bool is_closing_ = false;
 
   InSessionAuthDialogController::OnAuthComplete on_auth_complete_;
+
+  // Called when user submits an auth factor to check its validity
+  std::unique_ptr<AuthPerformer> auth_performer_;
+
+  // Non owning pointer, initialized and owned by
+  // `ChromeBrowserMainExtraPartsAsh`.
+  // `auth_token_provider_` will outlive this dialog since it will
+  // be destroyed after `AshShellInit`, which owns the aura
+  // window hierarchy.
+  base::raw_ptr<InSessionAuthTokenProvider> auth_token_provider_;
+
+  std::unique_ptr<UserContext> user_context_;
+
+  base::WeakPtrFactory<AuthenticationDialog> weak_factory_{this};
 };
 
 }  // namespace ash

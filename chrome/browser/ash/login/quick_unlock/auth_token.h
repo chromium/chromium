@@ -38,6 +38,10 @@ class AuthToken {
   // instance has not changed. Returns nullopt if Reset() was called.
   absl::optional<std::string> Identifier() const;
 
+  // Similar to the above, but returns the strongly typed
+  // `base::UnguessableToken` instead
+  absl::optional<base::UnguessableToken> GetUnguessableToken() const;
+
   // Time since token was created or `absl::nullopt` if Reset() was called.
   absl::optional<base::TimeDelta> GetAge() const;
 

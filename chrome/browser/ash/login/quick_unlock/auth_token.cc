@@ -31,6 +31,12 @@ absl::optional<std::string> AuthToken::Identifier() const {
   return identifier_.ToString();
 }
 
+absl::optional<base::UnguessableToken> AuthToken::GetUnguessableToken() const {
+  if (!user_context_)
+    return absl::nullopt;
+  return identifier_;
+}
+
 absl::optional<base::TimeDelta> AuthToken::GetAge() const {
   if (!user_context_)
     return absl::nullopt;

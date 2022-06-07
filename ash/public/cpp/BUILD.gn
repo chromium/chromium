@@ -158,6 +158,7 @@ component("cpp") {
     "ime_info.h",
     "in_session_auth_dialog_client.h",
     "in_session_auth_dialog_controller.h",
+    "in_session_auth_token_provider.h",
     "keyboard/arc/arc_input_method_bounds_tracker.cc",
     "keyboard/arc/arc_input_method_bounds_tracker.h",
     "keyboard/keyboard_config.h",
@@ -400,6 +401,7 @@ component("cpp") {
 
   public_deps = [
     "//ash/components/arc/mojom:notifications",
+    "//ash/components/login/auth",
     "//ash/public/mojom",
     "//ash/services/cellular_setup/public/mojom",
     "//ash/webui/personalization_app/proto",
@@ -460,6 +462,8 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "test/mock_in_session_auth_token_provider.cc",
+    "test/mock_in_session_auth_token_provider.h",
     "test/mock_projector_controller.cc",
     "test/mock_projector_controller.h",
     "test/test_app_list_color_provider.cc",

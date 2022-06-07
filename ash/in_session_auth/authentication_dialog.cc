@@ -6,12 +6,16 @@
 
 #include <memory>
 
+#include "ash/components/login/auth/auth_performer.h"
 #include "ash/components/login/auth/cryptohome_error.h"
+#include "ash/components/login/auth/cryptohome_key_constants.h"
 #include "ash/components/login/auth/user_context.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
+#include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -69,10 +73,15 @@ void CenterWidgetOnPrimaryDisplay(views::Widget* widget) {
 }  // namespace
 
 AuthenticationDialog::AuthenticationDialog(
-    InSessionAuthDialogController::OnAuthComplete on_auth_complete)
+    InSessionAuthDialogController::OnAuthComplete on_auth_complete,
+    InSessionAuthTokenProvider* auth_token_provider,
+    std::unique_ptr<AuthPerformer> auth_performer,
+    const AccountId& account_id)
     : password_field_(AddChildView(std::make_unique<views::Textfield>())),
       invalid_password_label_(AddChildView(std::make_unique<views::Label>())),
-      on_auth_complete_(std::move(on_auth_complete)) {
+      on_auth_complete_(std::move(on_auth_complete)),
+      auth_performer_(std::move(auth_performer)),
+      auth_token_provider_(auth_token_provider) {
   // Dialog setup
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH));
@@ -90,6 +99,18 @@ AuthenticationDialog::AuthenticationDialog(
       .SetCollapseMargins(true);
 
   ConfigureChildViews();
+
+  // We don't want the user to submit an auth factor to cryptohome before the
+  // auth session has started. We re-enable the UI in `OnAuthSessionStarted`
+  SetUIDisabled(true);
+
+  auto user_context = std::make_unique<UserContext>();
+  user_context->SetAccountId(account_id);
+
+  auth_performer_->StartAuthSession(
+      std::move(user_context), /*ephemeral=*/false,
+      base::BindOnce(&AuthenticationDialog::OnAuthSessionStarted,
+                     weak_factory_.GetWeakPtr()));
 }
 
 AuthenticationDialog::~AuthenticationDialog() = default;
@@ -121,12 +142,12 @@ void AuthenticationDialog::ConfigureOkButton() {
   ok_button->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   ok_button->SetCallback(base::BindRepeating(
-      &AuthenticationDialog::ValidateAuthFactor, base::Unretained(this)));
+      &AuthenticationDialog::ValidateAuthFactor, weak_factory_.GetWeakPtr()));
 }
 
 void AuthenticationDialog::SetUIDisabled(bool is_disabled) {
-  SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_OK, is_disabled);
-  SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_CANCEL, is_disabled);
+  SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_OK, !is_disabled);
+  SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_CANCEL, !is_disabled);
   password_field_->SetReadOnly(is_disabled);
 }
 
@@ -136,16 +157,33 @@ void AuthenticationDialog::ValidateAuthFactor() {
 
   SetUIDisabled(true);
 
-  auto user_context = std::make_unique<UserContext>();
-  // TODO(b/231568585): call AuthPerformer::AuthenticateWithPassword
-  // Right now, we just assume that the password is correct no matter what
-  OnAuthFactorValidityChecked(std::move(user_context), absl::nullopt);
+  // Create a copy of `user_context_` so that we don't lose it to std::move
+  // for future auth attempts
+  auth_performer_->AuthenticateWithPassword(
+      user_context_->GetAuthFactorsData().FindOnlinePasswordKey()->label,
+      base::UTF16ToUTF8(password_field_->GetText()),
+      std::make_unique<UserContext>(*user_context_),
+      base::BindOnce(&AuthenticationDialog::OnAuthFactorValidityChecked,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void AuthenticationDialog::OnAuthFactorValidityChecked(
     std::unique_ptr<UserContext> user_context,
     absl::optional<CryptohomeError> cryptohome_error) {
   if (cryptohome_error.has_value()) {
+    if (cryptohome_error.value().error_code ==
+        user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
+      // Auth session expired for some reason, start it again and reattempt
+      // authentication.
+      auth_performer_->StartAuthSession(
+          std::move(user_context), /*ephemeral=*/false,
+          base::BindOnce(&AuthenticationDialog::OnAuthSessionInvalid,
+                         weak_factory_.GetWeakPtr()));
+      return;
+    }
+    LOG(ERROR) << "An error happened during the attempt to validate"
+                  "the password: "
+               << cryptohome_error.value().error_code;
     password_field_->SetInvalid(true);
     password_field_->SelectAll(false);
     invalid_password_label_->SetText(
@@ -155,6 +193,13 @@ void AuthenticationDialog::OnAuthFactorValidityChecked(
   }
 
   is_closing_ = true;
+
+  auth_token_provider_->ExchangeForToken(
+      std::move(user_context),
+      base::BindOnce(&AuthenticationDialog::NotifyResult,
+                     weak_factory_.GetWeakPtr(), /*success=*/true));
+
+  SetUIDisabled(false);
   CancelDialog();
   return;
 }
@@ -171,6 +216,32 @@ void AuthenticationDialog::CancelAuthAttempt() {
 void AuthenticationDialog::ConfigureChildViews() {
   ConfigurePasswordField(password_field_);
   ConfigureInvalidPasswordLabel(invalid_password_label_);
+}
+
+void AuthenticationDialog::OnAuthSessionInvalid(
+    bool user_exists,
+    std::unique_ptr<UserContext> user_context,
+    absl::optional<CryptohomeError> cryptohome_error) {
+  OnAuthSessionStarted(user_exists, std::move(user_context), cryptohome_error);
+  ValidateAuthFactor();
+}
+
+void AuthenticationDialog::OnAuthSessionStarted(
+    bool user_exists,
+    std::unique_ptr<UserContext> user_context,
+    absl::optional<CryptohomeError> cryptohome_error) {
+  if (cryptohome_error.has_value()) {
+    LOG(ERROR) << "Error starting authsession for in session authentication: "
+               << cryptohome_error.value().error_code;
+    CancelAuthAttempt();
+  } else if (!user_exists) {
+    LOG(ERROR) << "Attempting to authenticate a user which does not exist. "
+                  "Aborting authentication attempt";
+    CancelAuthAttempt();
+  } else {
+    user_context_ = std::move(user_context);
+    SetUIDisabled(false);
+  }
 }
 
 }  // namespace ash
