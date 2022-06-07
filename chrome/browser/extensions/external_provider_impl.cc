@@ -160,7 +160,8 @@ void ExternalProviderImpl::SetPrefs(
 
   // Check if the service is still alive. It is possible that it went
   // away while |loader_| was working on the FILE thread.
-  if (!service_) return;
+  if (!service_)
+    return;
 
   InstallStageTracker* install_stage_tracker =
       InstallStageTracker::Get(profile_);
@@ -170,8 +171,7 @@ void ExternalProviderImpl::SetPrefs(
         InstallStageTracker::InstallCreationStage::SEEN_BY_EXTERNAL_PROVIDER);
   }
 
-  prefs_ = std::make_unique<base::Value::DictStorage>(
-      std::move(*prefs).TakeDictDeprecated());
+  prefs_ = std::make_unique<base::Value::Dict>(std::move(prefs->GetDict()));
   ready_ = true;  // Queries for extensions are allowed from this point.
 
   NotifyServiceOnExternalExtensionsFound();
@@ -217,7 +217,7 @@ void ExternalProviderImpl::UpdatePrefs(
 
   std::set<std::string> removed_extensions;
   // Find extensions that were removed by this ExternalProvider.
-  for (auto& pref : *prefs_) {
+  for (auto pref : *prefs_) {
     const std::string& extension_id = pref.first;
     // Don't bother about invalid ids.
     if (!crx_file::id_util::IdIsValid(extension_id))
@@ -226,8 +226,7 @@ void ExternalProviderImpl::UpdatePrefs(
       removed_extensions.insert(extension_id);
   }
 
-  prefs_ = std::make_unique<base::Value::DictStorage>(
-      std::move(*prefs).TakeDictDeprecated());
+  prefs_ = std::make_unique<base::Value::Dict>(std::move(prefs->GetDict()));
 
   std::vector<ExternalInstallInfoUpdateUrl> external_update_url_extensions;
   std::vector<ExternalInstallInfoFile> external_file_extensions;
@@ -251,7 +250,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       InstallStageTracker::Get(profile_);
 
   // Discover all the extensions this provider has.
-  for (auto& pref : *prefs_) {
+  for (auto pref : *prefs_) {
     const std::string& extension_id = pref.first;
     const base::DictionaryValue* extension_dict = nullptr;
 
@@ -524,7 +523,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
        it != unsupported_extensions.end(); ++it) {
     // Remove extension for the list of know external extensions. The extension
     // will be uninstalled later because provider doesn't provide it anymore.
-    prefs_->erase(prefs_->find(*it));
+    prefs_->Remove(*it);
   }
 }
 
@@ -541,7 +540,7 @@ bool ExternalProviderImpl::HasExtension(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(prefs_.get());
   CHECK(ready_);
-  return prefs_->find(id) != prefs_->end();
+  return prefs_->contains(id);
 }
 
 bool ExternalProviderImpl::GetExtensionDetails(
@@ -551,19 +550,18 @@ bool ExternalProviderImpl::GetExtensionDetails(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(prefs_.get());
   CHECK(ready_);
-  auto it = prefs_->find(id);
-  if (it == prefs_->end() || !it->second.is_dict())
+  base::Value::Dict* dict = prefs_->FindDict(id);
+  if (!dict)
     return false;
 
   ManifestLocation loc = ManifestLocation::kInvalidLocation;
-  if (it->second.FindKey(kExternalUpdateUrl)) {
+  if (dict->contains(kExternalUpdateUrl)) {
     loc = download_location_;
 
-  } else if (it->second.FindKey(kExternalCrx)) {
+  } else if (dict->contains(kExternalCrx)) {
     loc = crx_location_;
 
-    const std::string* external_version =
-        it->second.FindStringKey(kExternalVersion);
+    const std::string* external_version = dict->FindString(kExternalVersion);
     if (!external_version)
       return false;
 

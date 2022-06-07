@@ -133,7 +133,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   raw_ptr<VisitorInterface> service_;  // weak
 
   // Dictionary of the external extensions that are provided by this provider.
-  std::unique_ptr<base::Value::DictStorage> prefs_;
+  std::unique_ptr<base::Value::Dict> prefs_;
 
   // Indicates that the extensions provided by this provider are loaded
   // entirely.
