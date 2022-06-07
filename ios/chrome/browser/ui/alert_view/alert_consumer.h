@@ -20,7 +20,7 @@
 - (void)setMessage:(NSString*)message;
 
 // Sets the text field configurations for this alert. One text field will be
-// created for each |TextFieldConfiguration|.
+// created for each `TextFieldConfiguration`.
 - (void)setTextFieldConfigurations:
     (NSArray<TextFieldConfiguration*>*)textFieldConfigurations;
 
