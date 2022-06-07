@@ -9,6 +9,10 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // IS_CHROMEOS
+
 namespace web_app {
 
 // A hard coded list of features available for externally installed apps to
@@ -21,6 +25,7 @@ constexpr const base::Feature* kPreinstalledAppInstallFeatures[] = {
 #if BUILDFLAG(IS_CHROMEOS)
     &kCursiveStylusPreinstall,
     &kMessagesPreinstall,
+    &::chromeos::features::kCloudGamingDevice,
 #endif
 };
 

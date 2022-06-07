@@ -379,6 +379,10 @@ source_set("web_applications") {
     ]
   }
 
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants:constants" ]
+  }
+
   public_deps = [
     "//chrome/browser/web_applications/proto",
     "//components/permissions:permissions",
