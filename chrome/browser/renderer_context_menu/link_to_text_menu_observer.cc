@@ -95,8 +95,8 @@ LinkToTextMenuObserver::LinkToTextMenuObserver(
     RenderViewContextMenuProxy* proxy,
     content::RenderFrameHost* render_frame_host,
     CompletionCallback callback)
-    : proxy_(proxy),
-      render_frame_host_(render_frame_host),
+    : content::DocumentUserData<LinkToTextMenuObserver>(render_frame_host),
+      proxy_(proxy),
       completion_callback_(std::move(callback)) {}
 
 LinkToTextMenuObserver::~LinkToTextMenuObserver() = default;
@@ -181,7 +181,7 @@ void LinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
   if (status == LinkGenerationStatus::kSuccess) {
     DCHECK_EQ(error, LinkGenerationError::kNone);
     shared_highlighting::LogRequestedSuccessMetrics(
-        render_frame_host_->GetPageUkmSourceId());
+        render_frame_host().GetPageUkmSourceId());
   } else {
     DCHECK_NE(error, LinkGenerationError::kNone);
     CompleteWithError(error);
@@ -284,7 +284,7 @@ void LinkToTextMenuObserver::Timeout() {
 void LinkToTextMenuObserver::CompleteWithError(LinkGenerationError error) {
   is_generation_complete_ = true;
   shared_highlighting::LogRequestedFailureMetrics(
-      render_frame_host_->GetPageUkmSourceId(), error);
+      render_frame_host().GetPageUkmSourceId(), error);
 
   execute_command_pending_ = false;
   NotifyLinkToTextMenuCompleted();
@@ -372,7 +372,7 @@ void LinkToTextMenuObserver::RemoveHighlights() {
 mojo::Remote<blink::mojom::TextFragmentReceiver>&
 LinkToTextMenuObserver::GetRemote() {
   if (!remote_.is_bound()) {
-    render_frame_host_->GetRemoteInterfaces()->GetInterface(
+    render_frame_host().GetRemoteInterfaces()->GetInterface(
         remote_.BindNewPipeAndPassReceiver());
   }
   return remote_;
@@ -380,9 +380,9 @@ LinkToTextMenuObserver::GetRemote() {
 
 void LinkToTextMenuObserver::CopyTextToClipboard(const std::string& text) {
   std::unique_ptr<ui::DataTransferEndpoint> data_transfer_endpoint =
-      !render_frame_host_->GetBrowserContext()->IsOffTheRecord()
+      !render_frame_host().GetBrowserContext()->IsOffTheRecord()
           ? std::make_unique<ui::DataTransferEndpoint>(
-                render_frame_host_->GetMainFrame()->GetLastCommittedURL())
+                render_frame_host().GetMainFrame()->GetLastCommittedURL())
           : nullptr;
 
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
@@ -398,3 +398,5 @@ void LinkToTextMenuObserver::NotifyLinkToTextMenuCompleted() {
     std::move(completion_callback_).Run();
   }
 }
+
+DOCUMENT_USER_DATA_KEY_IMPL(LinkToTextMenuObserver);
