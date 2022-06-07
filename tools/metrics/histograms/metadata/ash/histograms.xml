@@ -204,6 +204,26 @@ chromium-metrics-reviews@google.com.
   <token key="Theme" variants="AmbientModeThemes"/>
 </histogram>
 
+<histogram name="Ash.AmbientMode.EngagementTime.{Theme}.{Orientation}"
+    units="ms" expires_after="2022-12-01">
+  <owner>esum@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Among eligible users with ambient mode enabled, records the accumulated
+    duration spent in {Orientation} mode during a single ambient mode session
+    rendering the {Theme} UI. For example, say ambient mode starts in landscape
+    for A ms, switches to portrait for B ms, then back to landscape for C ms
+    before ambient mode ends. A + C will be emitted for landscape mode, and B
+    will be emitted for portrait mode. Emitted once per observed orientation
+    each time the user exits ambient mode.
+  </summary>
+  <token key="Orientation">
+    <variant name="Landscape" summary="landscape"/>
+    <variant name="Portrait" summary="portrait"/>
+  </token>
+  <token key="Theme" variants="AmbientModeThemes"/>
+</histogram>
+
 <histogram name="Ash.AmbientMode.LottieAnimationSmoothness.{Theme}" units="%"
     expires_after="2022-12-01">
   <owner>esum@google.com</owner>

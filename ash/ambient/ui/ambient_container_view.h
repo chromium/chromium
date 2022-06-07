@@ -5,6 +5,8 @@
 #ifndef ASH_AMBIENT_UI_AMBIENT_CONTAINER_VIEW_H_
 #define ASH_AMBIENT_UI_AMBIENT_CONTAINER_VIEW_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "ui/views/view.h"
 
@@ -12,6 +14,10 @@ namespace ash {
 
 class AmbientAnimationStaticResources;
 class AmbientViewDelegateImpl;
+
+namespace ambient {
+class AmbientOrientationMetricsRecorder;
+}  // namespace ambient
 
 // Container view to display all Ambient Mode related views, i.e. photo frame,
 // weather info.
@@ -29,6 +35,9 @@ class ASH_EXPORT AmbientContainerView : public views::View {
 
  private:
   friend class AmbientAshTestBase;
+
+  std::unique_ptr<ambient::AmbientOrientationMetricsRecorder>
+      orientation_metrics_recorder_;
 };
 
 }  // namespace ash
