@@ -17,7 +17,11 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/content_mock_cert_verifier.h"
+#include "net/base/net_errors.h"
+#include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -294,7 +298,9 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
  public:
   TelemetryExtensionApiGuardRealDelegateBrowserTest()
-      : fake_hardware_info_delegate_factory_("HP") {
+      : fake_hardware_info_delegate_factory_("HP"),
+        https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     // Make sure device manufacturer is allowlisted.
     HardwareInfoDelegate::Factory::SetForTesting(
         &fake_hardware_info_delegate_factory_);
@@ -307,6 +313,12 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
       const TelemetryExtensionApiGuardRealDelegateBrowserTest&) = delete;
 
   // BaseTelemetryExtensionBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BaseTelemetryExtensionBrowserTest::SetUpCommandLine(command_line);
+
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
   void SetUpOnMainThread() override {
     // Skip BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() as it sets up
     // a FakeApiGuardDelegate instance.
@@ -315,6 +327,8 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
     // Must be initialized before dealing with UserManager.
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
+
+    ASSERT_TRUE(https_server_.Start());
 
     // This is needed when navigating to a network URL (e.g.
     // ui_test_utils::NavigateToURL). Rules can only be added before
@@ -334,14 +348,42 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
     BaseTelemetryExtensionBrowserTest::TearDownOnMainThread();
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    BaseTelemetryExtensionBrowserTest::SetUpInProcessBrowserTestFixture();
+
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+
+    BaseTelemetryExtensionBrowserTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  content::ContentMockCertVerifier::CertVerifier* mock_cert_verifier() {
+    return mock_cert_verifier_.mock_cert_verifier();
+  }
+
+  void SetUpMockCertVerifierForHttpsServer() {
+    mock_cert_verifier()->set_default_result(net::OK);
+  }
+
  protected:
   ash::FakeChromeUserManager* GetFakeUserManager() const {
     return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 
+  GURL GetPwaGURL() const { return https_server_.GetURL("/ssl/google.html"); }
+
+  // BaseTelemetryExtensionBrowserTest:
+  std::string pwa_page_url() const override { return GetPwaGURL().spec(); }
+  std::string matches_origin() const override { return GetPwaGURL().spec(); }
+
   FakeHardwareInfoDelegate::Factory fake_hardware_info_delegate_factory_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  net::EmbeddedTestServer https_server_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
 };
 
 // Smoke test to verify that real ApiGuardDelegate works in prod.
@@ -355,7 +397,13 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
   user_manager->SwitchActiveUser(account_id);
   user_manager->SetOwnerId(account_id);
 
-  // Make sure PWA UI is open.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      chromeos::switches::kTelemetryExtensionPwaOriginOverrideForTesting,
+      pwa_page_url());
+
+  SetUpMockCertVerifierForHttpsServer();
+
+  // Make sure PWA UI is open and secure.
   auto* pwa_page_rfh =
       ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url()));
   ASSERT_TRUE(pwa_page_rfh);
