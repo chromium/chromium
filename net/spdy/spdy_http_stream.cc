@@ -704,11 +704,11 @@ void SpdyHttpStream::DoResponseCallback(int rv) {
   std::move(response_callback_).Run(rv);
 }
 
-bool SpdyHttpStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
+int SpdyHttpStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
   if (!spdy_session_)
-    return false;
+    return ERR_SOCKET_NOT_CONNECTED;
 
-  return spdy_session_->GetPeerAddress(endpoint) == OK;
+  return spdy_session_->GetPeerAddress(endpoint);
 }
 
 void SpdyHttpStream::PopulateNetErrorDetails(NetErrorDetails* details) {

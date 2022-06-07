@@ -176,11 +176,11 @@ void HttpBasicStream::GetSSLCertRequestInfo(
   parser()->GetSSLCertRequestInfo(cert_request_info);
 }
 
-bool HttpBasicStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
+int HttpBasicStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
   if (!state_.connection() || !state_.connection()->socket())
-    return false;
+    return ERR_SOCKET_NOT_CONNECTED;
 
-  return state_.connection()->socket()->GetPeerAddress(endpoint) == OK;
+  return state_.connection()->socket()->GetPeerAddress(endpoint);
 }
 
 void HttpBasicStream::Drain(HttpNetworkSession* session) {

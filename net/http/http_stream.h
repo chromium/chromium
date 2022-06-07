@@ -171,9 +171,9 @@ class NET_EXPORT_PRIVATE HttpStream {
   virtual void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) = 0;
 
   // Gets the remote endpoint of the socket that the HTTP stream is using, if
-  // any. Returns true and fills in |endpoint| if it is available; returns false
-  // and does not modify |endpoint| if it is unavailable.
-  virtual bool GetRemoteEndpoint(IPEndPoint* endpoint) = 0;
+  // any. Returns OK and fills in |endpoint| if it is available; returns an
+  // error and does not modify |endpoint| otherwise.
+  virtual int GetRemoteEndpoint(IPEndPoint* endpoint) = 0;
 
   // In the case of an HTTP error or redirect, flush the response body (usually
   // a simple error or "this page has moved") so that we can re-use the

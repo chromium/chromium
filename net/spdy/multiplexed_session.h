@@ -26,9 +26,9 @@ class NET_EXPORT_PRIVATE MultiplexedSession {
   virtual bool GetSSLInfo(SSLInfo* ssl_info) const = 0;
 
   // Gets the remote endpoint of the socket that the HTTP stream is using, if
-  // any. Returns true and fills in |endpoint| if it is available; returns false
-  // and does not modify |endpoint| if it is unavailable.
-  virtual bool GetRemoteEndpoint(IPEndPoint* endpoint) = 0;
+  // any. Returns OK and fills in |endpoint| if it is available; returns an
+  // error and does not modify |endpoint| otherwise.
+  virtual int GetRemoteEndpoint(IPEndPoint* endpoint) = 0;
 
   // The value corresponding to |scheme_host_port| in the ACCEPT_CH frame
   // received during TLS handshake via the ALPS extension, or the empty string
@@ -50,9 +50,9 @@ class NET_EXPORT_PRIVATE MultiplexedSessionHandle {
   virtual ~MultiplexedSessionHandle();
 
   // Gets the remote endpoint of the socket that the HTTP stream is using, if
-  // any. Returns true and fills in |endpoint| if it is available; returns false
-  // and does not modify |endpoint| if it is unavailable.
-  bool GetRemoteEndpoint(IPEndPoint* endpoint);
+  // any. Returns OK and fills in |endpoint| if it is available; returns an
+  // error and does not modify |endpoint| otherwise.
+  int GetRemoteEndpoint(IPEndPoint* endpoint);
 
   // Fills SSL info in |ssl_info| and returns true when SSL is in use.
   bool GetSSLInfo(SSLInfo* ssl_info) const;

@@ -219,8 +219,11 @@ void WebSocketHttp2HandshakeStream::GetSSLCertRequestInfo(
   NOTREACHED();
 }
 
-bool WebSocketHttp2HandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
-  return session_ && session_->GetRemoteEndpoint(endpoint);
+int WebSocketHttp2HandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
+  if (!session_)
+    return ERR_SOCKET_NOT_CONNECTED;
+
+  return session_->GetRemoteEndpoint(endpoint);
 }
 
 void WebSocketHttp2HandshakeStream::PopulateNetErrorDetails(

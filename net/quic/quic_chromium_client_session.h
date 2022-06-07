@@ -699,7 +699,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void OnStreamClosed(quic::QuicStreamId stream_id) override;
 
   // MultiplexedSession methods:
-  bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
+  int GetRemoteEndpoint(IPEndPoint* endpoint) override;
   bool GetSSLInfo(SSLInfo* ssl_info) const override;
   base::StringPiece GetAcceptChViaAlps(
       const url::SchemeHostPort& scheme_host_port) const override;
