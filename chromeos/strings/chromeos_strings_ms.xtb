@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">Tetapkan sebagai kertas dinding</translation>
 <translation id="1578784163189013834">Pilih latar penyelamat skrin</translation>
 <translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Jalankan Ujian cas</translation>
 <translation id="1631385268983122904">Jangan masukkan semula bateri lagi</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
@@ -259,6 +260,7 @@
 <translation id="3413935475507503304">Untuk meneruskan kemaskinian, klik Seterusnya.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Keselamatan</translation>
+<translation id="3441653493275994384">Skrin</translation>
 <translation id="3456078764689556234">Mencetak halaman <ph name="PRINTED_PAGES" /> daripada <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Mengimbas halaman <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% selesai.</translation>
 <translation id="3459509316159669723">Mencetak</translation>
@@ -281,6 +283,7 @@
 <translation id="3604713164406837697">Tukar kertas dinding</translation>
 <translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
 <translation id="3606583719724308068">Kependaman tinggi ke laman web HTTPS</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Togol skrin privasi</translation>
 <translation id="3643810137582748570">Langkau penentukuran</translation>
@@ -330,6 +333,7 @@
 <translation id="4140251671072434548">Lakukan Buka Kunci Pelayan RMA</translation>
 <translation id="4145784616224233563">Tembok Api HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">Paparan</translation>
 <translation id="4155551848414053977">Pastikan pengimbas dihidupkan dan tersedia melalui rangkaian anda atau sambungan langsung</translation>
 <translation id="4159784952369912983">Ungu</translation>
 <translation id="4170180284036919717">Ambil foto</translation>
@@ -426,6 +430,7 @@
 <translation id="4915052247106771211">Tindakan ini akan menetapkan semula peranti kepada tetapan kilang (Powerwash).</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4917889632206600977">Dihentikan - Kehabisan kertas</translation>
+<translation id="491791267030419270">Petua menulis maklum balas</translation>
 <translation id="4921665434385737356">Dicas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
 <translation id="4930320165497208503">Untuk menyediakan atau mengemas kini sambungan, pergi ke <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tarikh</translation>
@@ -746,6 +751,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7960831585769876809">Suhu</translation>
 <translation id="7977800524392185497">Untuk menyertai rangkaian <ph name="NETWORK_NAME" />, pergi ke Tetapan</translation>
 <translation id="7978412674231730200">Kunci persendirian</translation>
+<translation id="7982789257301363584">Rangkaian</translation>
 <translation id="7994702968232966508">Kaedah EAP</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -840,6 +846,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8834539327799336565">Tersambung pada masa ini</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8855781559874488009">Tidak dapat menyambung melalui tembok api ke laman web HTTP</translation>
+<translation id="885701979325669005">Storan</translation>
 <translation id="8863170912498892583">Dayakan tema gelap</translation>
 <translation id="8863888432376731307">Dapatkan <ph name="INTENT" /> untuk "<ph name="QUERY" />" dan pelbagai lagi</translation>
 <translation id="8868741746785112895">GUID</translation>

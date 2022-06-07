@@ -1424,7 +1424,6 @@
     ຫາກທ່ານຕັດສິນໃຈໃນພາຍຫຼັງວ່າ Voice Match ບໍ່ເໝາະສຳລັບລູກຂອງທ່ານ, ກໍພຽງລຶບມັນອອກໃນການຕັ້ງຄ່າຜູ້ຊ່ວຍຂອງເຂົາເຈົ້າ. ເພື່ອເບິ່ງ ຫຼື ລຶບຄລິບສຽງທີ່ລູກຂອງທ່ານບັນທຶກໃນລະຫວ່າງການຕັ້ງຄ່າ Voice Match, ໃຫ້ເຂົ້າໄປ <ph name="VOICE_MATCH_SETTINGS_URL" /> ຈາກບັນຊີຂອງລູກທ່ານ.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">ຊອກຫາບາງສ່ວນຂອງໜ້າດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">ເວັບໄຊນີ້ໄດ້ຖືກບລັອກບໍ່ໃຫ້ເຂົ້າເຖິງເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ ຫຼື ແສງຂອງທ່ານ.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL ຂອງໜ້າ</translation>
@@ -2048,7 +2047,6 @@
 <translation id="289695669188700754">ID ປຸ່ມ: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ລະບົບຈະລຶບການຕັ້ງຄ່າແບບກຳນົດເອງນີ້ອອກເມື່ອທ່ານປິດໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນທັງໝົດຂອງທ່ານ</translation>
 <translation id="2897878306272793870">ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການເປີດແຖບ <ph name="TAB_COUNT" />?</translation>
-<translation id="2900477968385519153">ຊອກຫາໜ້າຈໍຂອງທ່ານດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">ໄຟລ໌ໃຊ້ຄຸນສົມບັດທີ່ບໍ່ຮອງຮັບ</translation>
 <translation id="2901348420151309559">ຮູບພາບ ແລະ ແອັບຫຼ້າສຸດ</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> ບໍ່​ສາ​ມາດ​ສື່​ສານ​ກັບ​ເຄື່ອງ​ພິມ​ນີ້​. ໃຫ້​ແນ່​ໃຈວ່​າ​​ໄດ້​ສຽບເຄື່ອງພິມແລ້ວ ແລະລອງໃໝ່ອີກຄັ້ງ​.</translation>
@@ -2921,7 +2919,6 @@
 <translation id="3778740492972734840">ເຄື່ອງ​ມື​ຜູ້ພັດ​ທະ​ນາ</translation>
 <translation id="3778868487658107119">ຖາມມັນຄຳຖາມຕ່າງໆ. ບອກມັນເຮັດສິ່ງຕ່າງໆ. ມັນແມ່ນ Google ສ່ວນຕົວຂອງທ່ານ, ພ້ອມຊ່ວຍທ່ານຕະຫຼອດເວລາ.</translation>
 <translation id="3781742599892759500">ສິດເຂົ້າເຖິງໄມໂຄຣໂຟນ Linux</translation>
-<translation id="378312418865624974">ອ່ານຕົວກໍານົດສະເພາະສໍາລັບຄອມພິວເຕີນີ້</translation>
 <translation id="3784472333786002075">ຄຸກກີ້ແມ່ນໄຟລ໌ທີ່ເວັບໄຊສ້າງຂຶ້ນ. ມີຄຸກກີ້ຢູ່ສອງປະເພດຄື: ຄຸກກີ້ພາກສ່ວນທຳອິດຖືກສ້າງຂຶ້ນໂດຍເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ. ເວັບໄຊປາກົດໃນແຖບທີ່ຢູ່. ຄຸກກີ້ພາກສ່ວນທີສາມຖືກສ້າງຂຶ້ນໂດຍເວັບໄຊອື່ນ. ເວັບໄຊເຫຼົ່ານີ້ເປັນເຈົ້າຂອງບາງເນື້ອຫາ ເຊັ່ນ: ໂຄສະນາ ຫຼື ຮູບພາບ ທີ່ທ່ານເຫັນໃນເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ.</translation>
 <translation id="3785308913036335955">ສະ​ແດງ​ທາງລັດແອັບ</translation>
 <translation id="3785727820640310185">ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບເວັບໄຊນີ້</translation>
@@ -3574,7 +3571,6 @@
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (aka NIST P-384)</translation>
 <translation id="4416450511678320850">ບໍ່ມີແອັບທີ່ສາມາດໃຊ້ໄດ້ສຳລັບເນື້ອຫານີ້</translation>
 <translation id="4416582610654027550">ພິມ URL ທີ່ຖືກຕ້ອງ</translation>
-<translation id="4417162649853416189">ລາກຜ່ານຮູບເພື່ອຊອກຫາດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">ອະນຸຍາດໃຫ້ <ph name="HOST" /> ຕັ້ງຄຸກກີ້ທຸກຄັ້ງ</translation>
 <translation id="4421932782753506458">ຟູ</translation>
 <translation id="4423376891418188461">ກູ້ຄືນການຕັ້ງຄ່າ</translation>
@@ -3714,7 +3710,6 @@
 <translation id="4550926046134589611">ລິ້ງທີ່ຮອງຮັບບາງຢ່າງຈະຍັງຄົງເປີດໃນ <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">ກົດ <ph name="MODIFIER_KEY_DESCRIPTION" /> ເພື່ອຍົກເລີກ</translation>
 <translation id="4553526521109675518">ທ່ານຕ້ອງຣີສະຕາດ Chromebook ຂອງທ່ານເພື່ອປ່ຽນພາສາຂອງອຸປະກອນ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">ລາກຜ່ານຮູບເພື່ອຊອກຫາດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">ສ່ວນຂະຫຍາຍທາງນອກເປັນລຸ້ນຄືກັນກັບ ຫຼືຕໍ່າກ່ວາ ເມື່ອປຽບທຽບກັບອັນທີ່ມີຢູ່ແລ້ວ.</translation>
 <translation id="4555769855065597957">ເງົາ</translation>
 <translation id="4555863373929230635">ເພື່ອບັນທຶກລະຫັດຜ່ານໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລະ ເປີດການຊິ້ງຂໍ້ມູນ.</translation>
@@ -4564,7 +4559,6 @@
 <translation id="5427459444770871191">ໝຸນຕາມເຂັມໂມງ</translation>
 <translation id="542750953150239272">ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານຍິນຍອມໃຫ້ອຸປະກອນນີ້ສາມາດດາວໂຫຼດ ແລະ ຕິດຕັ້ງອັບເດດ ແລະ ແອັບຈາກ Google, ຜູ້ໃຫ້ບໍລິການຂອງທ່ານ ແລະ ຜູ້ຜະລິດອຸປະກອນຂອງທ່ານໄດ້ໂດຍອັດຕະໂນມັດ, ເຊິ່ງເປັນໄປໄດ້ວ່າຈະໃຊ້ອິນເຕີເນັດມືຖື. ແອັບເຫຼົ່ານີ້ບາງອັນອາດສະເໜີການຊື້ໃນແອັບ.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (ມີອັບເດດໃຫ້ຢູ່)</translation>
-<translation id="5429373054983029602">ຊອກຫາໜ້າຈໍຂອງທ່ານດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">ຈຳເປັນຕ້ອງຕິດຕັ້ງການອັບເດດສຳລັບເຟີມແວໂມດູນແພລດຟອມທີ່ເຊື່ອຖືໄດ້. ເບິ່ງ <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">ການປ່ອຍສັນຍານທັນທີ</translation>
 <translation id="5431318178759467895">ສີ</translation>
@@ -4637,7 +4631,6 @@
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="5495466433285976480">ອັນນີ້ຈະເອົາຜູ້ໃຊ້ພາຍໃນ, ໄຟລ໌, ຂໍ້ມູນ ແລະການຕັ້ງຄ່າອື່ນໆທັງໝົດອອກໄປ ຫຼັງຈາກການປິດເປີດໃໝ່ຄັ້ງຕໍ່ໄປຂອງທ່ານ. ຜູ້ໃຊ້ທຸກຄົນຕ້ອງໄດ້ລົງຊື່ເຂົ້າ​ໃຊ້ອີກ.</translation>
 <translation id="5495597166260341369">ຮັກສາໃຫ້ໜ້າຈໍເປີດຢູ່</translation>
-<translation id="549580971452855947">ລາກເພື່ອຊອກຫາດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">ຈັດຕັ້ງ</translation>
 <translation id="5496730470963166430">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ສົ່ງປັອບອັບ ຫຼື ໃຊ້ການປ່ຽນເສັ້ນທາງ</translation>
 <translation id="5497251278400702716">ໄຟລ໌ນີ້</translation>
@@ -5748,7 +5741,6 @@
 ທ່ານມີລະຫັດຜ່ານທີ່ຖືກລະເມີດອີກ # ລາຍການ. ຕົວຈັດການລະຫັດຜ່ານ Google ແນະນຳໃຫ້ກວດສອບລະຫັດຜ່ານນີ້ດຽວນີ້.}other{ປ່ຽນລະຫັດຜ່ານທີ່ຖືກລະເມີດສຳເລັດແລ້ວ.
 
 ທ່ານມີລະຫັດຜ່ານທີ່ຖືກລະເມີດອີກ # ລາຍການ. ຕົວຈັດການລະຫັດຜ່ານ Google ແນະນຳໃຫ້ກວດສອບລະຫັດຜ່ານເຫຼົ່ານີ້ດຽວນີ້.}}</translation>
-<translation id="6595792813574514527">ລາກເພື່ອຊອກຫາດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">ທາງເລືອກການໃສ່ລະຫັດ</translation>
 <translation id="6596816719288285829">ທີ່​ຢູ່ IP</translation>
 <translation id="6597017209724497268">ຕົວ​ຢ່າງ</translation>
@@ -7367,7 +7359,6 @@
 <translation id="8184318863960255706">ຂໍ້ມູນເພີ່ມເຕີມ</translation>
 <translation id="8184472985242519288">ແບບດຽວກັນ</translation>
 <translation id="8186609076106987817">ເຊີບເວີບໍ່​ສາ​ມາດ​ຊອກ​ຫາ​ໄຟລ​໌​ໄດ້.</translation>
-<translation id="8186704951085064172">ຊອກຫາບາງສ່ວນຂອງໜ້າດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">ກວດເບິ່ງການຕັ້ງຄ່າອຸປະກອນຂອງທ່ານ ແລະ ເປີດມັນເພື່ອສືບຕໍ່</translation>
 <translation id="8188742492803591566">ໃສ່ລະ​ຫັດ​ການ​ເຂົ້າ​ຫາທີ່ສະແດງຢູ່ Chromecast ຫຼື ໂທລະທັດເພື່ອເລີ່ມການສົ່ງສັນຍານໜ້າຈໍຂອງທ່ານ.</translation>
 <translation id="8189306097519446565">ບັນຊີໂຮງຮຽນ</translation>

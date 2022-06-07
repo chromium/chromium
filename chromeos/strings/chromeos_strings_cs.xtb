@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Spouštěč</translation>
 <translation id="1512982610995527443">Zařízení se za 5 sekund vypne</translation>
 <translation id="1522984060396982789">Oprava byla úspěšná. Zařízení můžete vypnout nebo provést nějaké další akce.</translation>
+<translation id="1526389707933164996">Animace spořiče obrazovky</translation>
 <translation id="152892567002884378">Zvýšit hlasitost</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -76,6 +77,7 @@
 <translation id="1572585716423026576">Nastavit jako tapetu</translation>
 <translation id="1578784163189013834">Vybrat pozadí spořiče obrazovky</translation>
 <translation id="1615335640928990664">Využití dat od <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Spustit test nabití</translation>
 <translation id="1631385268983122904">Zařízení zatím nechte rozebrané</translation>
 <translation id="1639239467298939599">Načítání</translation>
@@ -257,6 +259,7 @@
 <translation id="3413935475507503304">Pokud chcete pokračovat v aktualizaci, klikněte na Další.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Zabezpečení</translation>
+<translation id="3441653493275994384">Obrazovka</translation>
 <translation id="3456078764689556234">Vytisknuta stránka <ph name="PRINTED_PAGES" /> z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skenování stránky <ph name="PAGE_NUM" />. Hotovo <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Tisk</translation>
@@ -279,6 +282,7 @@
 <translation id="3604713164406837697">Změnit tapetu</translation>
 <translation id="360565022852130722">Síť Wi-Fi je zabezpečena slabým protokolem WEP 802.1x</translation>
 <translation id="3606583719724308068">Vysoká latence připojení k webům HTTPS</translation>
+<translation id="3616113530831147358">Zvuk</translation>
 <translation id="3621202678540785336">Vstup</translation>
 <translation id="3632579075709132555">Přepínač obrazovky s ochranou soukromí</translation>
 <translation id="3643810137582748570">Přeskočit kalibraci</translation>
@@ -300,6 +304,7 @@
 <translation id="3858860766373142691">Název</translation>
 <translation id="3865414814144988605">Rozlišení</translation>
 <translation id="387301095347517405">Údaj, kolikrát baterie prošla celým cyklem nabíjení</translation>
+<translation id="3885327323343477505">Změnit spořič obrazovky</translation>
 <translation id="3923184630988645767">Využití dat</translation>
 <translation id="3924044641767672375">K usnadnění procesu opravy doporučujeme připojení k Wi-Fi. Síť bude uložena.</translation>
 <translation id="3932043219784172185">Není připojeno žádné zařízení</translation>
@@ -327,6 +332,7 @@
 <translation id="4140251671072434548">Odemkněte server pomocí čísla RMA</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Fotky Google</translation>
+<translation id="4150201353443180367">Displej</translation>
 <translation id="4155551848414053977">Zkontrolujte, zda je skener zapnutý a dostupný v síti nebo přes přímé připojení.</translation>
 <translation id="4159784952369912983">Nachová</translation>
 <translation id="4170180284036919717">Pořídit fotku</translation>
@@ -418,6 +424,7 @@
 <translation id="4890353053343094602">Ihned si zvolte nové</translation>
 <translation id="4891842000192098784">Zátěž</translation>
 <translation id="4897058166682006107">Stav baterie levého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4905998861748258752">Pokud chcete vybrat možnosti spořiče obrazovky, zapněte tuto funkci</translation>
 <translation id="4908030561598728899">Instalace firmwaru…</translation>
 <translation id="4915052247106771211">Zařízení se resetuje do továrního nastavení (Powerwash).</translation>
 <translation id="4917385247580444890">Silný</translation>
@@ -742,6 +749,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7960831585769876809">Teplota</translation>
 <translation id="7977800524392185497">Pokud se chcete připojit k síti <ph name="NETWORK_NAME" />, přejděte do sekce Nastavení</translation>
 <translation id="7978412674231730200">Soukromý klíč</translation>
+<translation id="7982789257301363584">Síť</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
 <translation id="802154636333426148">Stažení se nezdařilo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -836,6 +844,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8834539327799336565">Momentálně připojeno</translation>
 <translation id="8845001906332463065">Nápověda</translation>
 <translation id="8855781559874488009">Přes firewall se nelze připojit k webům HTTP</translation>
+<translation id="885701979325669005">Úložiště</translation>
 <translation id="8863170912498892583">Aktivovat tmavý motiv</translation>
 <translation id="8863888432376731307">Získejte <ph name="INTENT" /> na dotaz „<ph name="QUERY" />“ a mnohem víc</translation>
 <translation id="8868741746785112895">GUID</translation>
@@ -861,6 +870,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8997710128084572139">Stav baterie zařízení je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frekvence</translation>
 <translation id="9025198690966128418">Použít jako osobní zařízení</translation>
+<translation id="9028832514430399253">Zapnutím přepínače vyberete možnosti spořiče obrazovky</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Překlad záznamů DNS má vysokou latenci</translation>
 <translation id="9063121522582193837">Některé komponenty se nepodařilo zkalibrovat</translation>

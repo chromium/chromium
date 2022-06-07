@@ -1414,7 +1414,6 @@
     Voice Match ඔබගේ දරුවාට සුදුසු නොවන බව ඔබ පසුව තීරණය කළහොත්, එය ඔවුන්ගේ සහායක සැකසීම් තුළ ඉවත් කරන්න. Voice Match පිහිටුවීම අතරතුර ඔබගේ දරුවා පටිගත කරන ලද ශ්‍රව්‍ය පසුරු බැලීමට හෝ මැකීමට, ඔබගේ දරුවාගේ ගිණුමෙන් <ph name="VOICE_MATCH_SETTINGS_URL" /> වෙත යන්න.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> සමඟ පිටුවේ කොටසක් සොයන්න</translation>
 <translation id="2309620859903500144">මෙම අඩවිය ඔබේ චලන හෝ ආලෝක සංවේදක වෙත පිවිසීමෙන් මෙම පිටුව අවහිර කර තිබේ.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">පිටු URL</translation>
@@ -2037,7 +2036,6 @@
 <translation id="289695669188700754">යතුරු ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ඔබ ඔබගේ සියලු අප්‍රසිද්ධ කවුළු වැසූ විට මෙම අභිරුචි සැකසීම ඉවත් කරනු ඇත</translation>
 <translation id="2897878306272793870">ඔබට ටැබ <ph name="TAB_COUNT" />ක් විවෘත කිරීමට අවශ්‍ය බව ඔබට විශ්වාසද?</translation>
-<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> සමග ඔබගේ තිරය සොයන්න</translation>
 <translation id="290105521672621980">ගොනුව සහාය නොදක්වන විශේෂාංග භාවිත කරයි</translation>
 <translation id="2901348420151309559">මෑත ඡායාරූප සහ දැනුම්දීම්</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> මෙම මුද්‍රණ යන්ත්‍රය සමග සම්බන්ධ වීමට නොහැකි විය. මුද්‍රණ යන්ත්‍රය පේනුගත කර ඇති බව සහතික කරගෙන නැවත උත්සාහ කරන්න.</translation>
@@ -2910,7 +2908,6 @@
 <translation id="3778740492972734840">ප්‍රවර්ධක මෙවලම්</translation>
 <translation id="3778868487658107119">එයින් ප්‍රශ්න අසන්න. දේවල් කිරීමට එයට කියන්න. එය හැමවිටම උදවු කිරීමට සූදානම්, ඔබේම Google වේ.</translation>
 <translation id="3781742599892759500">ලිනක්ස් මයික්‍රොෆෝන ප්‍රවේශය</translation>
-<translation id="378312418865624974">මෙම පරිගණකය සඳහා අනුපම අනන්‍යකාරකයක් කියවන්න</translation>
 <translation id="3784472333786002075">කුකී යනු වෙබ් අඩවිවලින් නිර්මාණ කෙරෙන ගොනු වේ. කුකී වර්ග දෙකක් තිබේ: පළවෙනි පාර්ශ්ව කුකී ඔබ පැමිණෙන වෙබ් අඩවියෙන් නිර්මාණ කෙරේ. වෙබ් අඩවිය ලිපින තීරුවේ පෙන්වනු ලැබේ. තෙවන පාර්ශ්ව කුකී වෙනත් වෙබ් අඩවිවලින් නිර්මාණ කෙරේ. මෙම වෙබ් අඩවිවලට ඔබ පැමිණෙන වෙබ් අඩවිය මත ඔබ දකින රූප හෝ දැන්වීම් වැනි සමහර අන්තර්ගත හිමි වේ.</translation>
 <translation id="3785308913036335955">යෙදුම් කෙටිමං පෙන්වන්න</translation>
 <translation id="3785727820640310185">මෙම අඩවිය සඳහා සුරැකි මුරපද</translation>
@@ -3564,7 +3561,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4415748029120993980">SECG ඉලිප්සාකාර වක්‍ර secp384r1 (එනම් NIST P-384)</translation>
 <translation id="4416450511678320850">මෙම අන්තර්ගතය සඳහා යෙදුම් නොමැත</translation>
 <translation id="4416582610654027550">වලංගු URL එකක් යතුරු ලියන්න</translation>
-<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" /> සමග සෙවීමට රූපවලට උඩින් අදින්න</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> හට කුකී සැකසීමට සැමවිට ඉඩ දෙන්න</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">සැකසීම් ප්‍රතිසාධනය කරන්න</translation>
@@ -3703,7 +3699,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4550926046134589611">සමහර සහාය දක්වන සබැඳි තවම <ph name="APP_NAME" /> තුළ විවෘතව තිබෙනු ඇත.</translation>
 <translation id="4551763574344810652">අස් කිරීමට <ph name="MODIFIER_KEY_DESCRIPTION" /> ඔබන්න</translation>
 <translation id="4553526521109675518">උපාංග භාෂාව වෙනස් කිරීමට ඔබ ඔබේ Chromebook යළි ඇරඹීමට අවශ්‍යයි. <ph name="BEGIN_LINK_LEARN_MORE" />තවත් දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> සමග සෙවීමට රූපවලට උඩින් අදින්න</translation>
 <translation id="4554591392113183336">පවතින දිගුවට සාපේක්ශව බාහිර දිගුව සමාන හෝ පහත අනුවාදනයකි.</translation>
 <translation id="4555769855065597957">ඡායාව</translation>
 <translation id="4555863373929230635">මුරපද ඔබේ Google ගිණුමට සුරැකීමට, පුරනය වී සමමුහූර්තය සක්‍රීය කරන්න.</translation>
@@ -4554,7 +4549,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5427459444770871191">දක්ෂිණාවර්ථව කරකවන්න</translation>
 <translation id="542750953150239272">ඉදිරියට යාමෙන්, බොහෝ විට සෙලියුලර් දත්ත භාවිතයෙන් මෙම උපාංගයට Google, ඔබගේ වාහකය සහ ඔබගේ උපාංගයේ නිෂ්පාදක වෙතින් යාවත්කාලීන සහ යෙදුම් ස්වයංක්‍රියව බාගෙන ස්ථාපනය කළ හැකි බවටද ඔබ එකඟ වේ. මෙම යෙදුම්වලින් සමහරක් යෙදුම තුළ මිලදී ගැනීම් පිරිනැමිය හැකිය.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (යාවත් පවතී)</translation>
-<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> සමග ඔබගේ තිරය සොයන්න</translation>
 <translation id="542948651837270806">විශ්වාසදායී වේදිකා මොඩියුල ස්ථිරාංගය සඳහා යාවත්කාලීනයක් ස්ථාපන කිරීමට අවශ්‍යයි. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> බලන්න</translation>
 <translation id="5430931332414098647">ක්ෂණික ටෙදරින්</translation>
 <translation id="5431318178759467895">වර්ණය</translation>
@@ -4627,7 +4621,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
 <translation id="5495466433285976480">මෙය ඔබේ ඊලඟ ආරම්භයේදී සියළු දේශීය පරිශීලකයන්, ගොනු දත්ත හා වෙනත් සැකසුම් ඉවත් කරයි, සියළුම පරීශීලකයන්ට නැවත පිවිසීමට සිදුවේ.</translation>
 <translation id="5495597166260341369">සංදර්ශකය ක්‍රියාත්මකව තබන්න</translation>
-<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" /> සමග රූප සෙවීමට අදින්න</translation>
 <translation id="5496587651328244253">සංවිධානය කරන්න</translation>
 <translation id="5496730470963166430">උත්පතන එවීමට සහ ප්‍රතියොමු කිරීම් භාවිත කිරීමට ඉඩ නොදේ</translation>
 <translation id="5497251278400702716">මෙම ගොනුව</translation>
@@ -5739,7 +5732,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 ඔබට අවදානමට පත් වූ මුරපද තව #ක් ඇත. Google මුරපද කළමනාකරු මෙම මුරපද දැන් පරීක්ෂා කිරීම නිර්දේශ කරයි.}other{අවදානමට පත් වූ මුරපදය සාර්ථකව වෙනස් කරන ලදි.
 
 ඔබට අවදානමට පත් වූ මුරපද තව #ක් ඇත. Google මුරපද කළමනාකරු මෙම මුරපද දැන් පරීක්ෂා කිරීම නිර්දේශ කරයි.}}</translation>
-<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> සමග රූප සෙවීමට අදින්න</translation>
 <translation id="6596325263575161958">සංකේතනය කිරීමේ විකල්ප</translation>
 <translation id="6596816719288285829">IP ලිපිනය</translation>
 <translation id="6597017209724497268">සාම්පල</translation>
@@ -7357,7 +7349,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8184318863960255706">තවත් තතු</translation>
 <translation id="8184472985242519288">ඒකරූපී</translation>
 <translation id="8186609076106987817">සර්වරයට ගොනුව සොයා ගත නොහැක.</translation>
-<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> සමඟ පිටුවේ කොටසක් සොයන්න</translation>
 <translation id="8188389033983459049">ඔබගේ උපාංග සැකසීම් පරීක්ෂා කර දිගටම කරගෙන යාමට එය ක්‍රියාත්මක කරන්න</translation>
 <translation id="8188742492803591566">ඔබගේ තිරය විකාශය කිරීම ආරම්භ කිරීමට Chromecast හෝ TV හි පෙන්වා ඇති ප්‍රවේශ කේතය ඇතුළු කරන්න.</translation>
 <translation id="8189306097519446565">පාසල් ගිණුම්</translation>

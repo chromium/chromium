@@ -1428,7 +1428,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
     Če pozneje ugotovite, da Voice Match vašemu otroku ne ustreza, ga preprosto odstranite v njegovih nastavitvah Pomočnika. Če želite pregledati ali izbrisati zvočne posnetke, ki jih otrok ustvari med nastavitvijo Voice Matcha, v otrokovem računu odprite <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Išči del strani s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Temu spletnemu mestu je onemogočen dostop do tipal gibanja ali svetlobe.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL strani</translation>
@@ -2052,7 +2051,6 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="289695669188700754">ID ključa: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Ta nastavitev po meri bo odstranjena, ko zaprete vsa anonimna okna.</translation>
 <translation id="2897878306272793870">Ali ste prepričani, da želite odpreti naslednje število zavihkov: <ph name="TAB_COUNT" /></translation>
-<translation id="2900477968385519153">Išči po zaslonu s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Datoteka uporablja nepodprte funkcije</translation>
 <translation id="2901348420151309559">Nedavne fotografije in aplikacije</translation>
 <translation id="2902127500170292085">Komunikacija razširitve <ph name="EXTENSION_NAME" /> s tem tiskalnikom ni bila mogoča. Poskrbite, da je tiskalnik priključen, in poskusite znova.</translation>
@@ -2925,7 +2923,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3778740492972734840">&amp;Orodja za razvijalce</translation>
 <translation id="3778868487658107119">Postavite mu vprašanja ali mu naročite, kaj naj naredi. Je vaš osebni Google, ki vam je vedno pripravljen priskočiti na pomoč.</translation>
 <translation id="3781742599892759500">Dostop do mikrofona v Linuxu</translation>
-<translation id="378312418865624974">Branje enoličnega identifikatorja za ta računalnik</translation>
 <translation id="3784472333786002075">Piškotki so datoteke, ki jih ustvarijo spletna mesta. Obstajata dve vrsti piškotkov: Piškotke domene ustvari spletno mesto, ki ga obiščete. Spletno mesto je prikazano v naslovni vrstici. Piškotke drugih spletnih mest ustvarijo druga spletna mesta. Ta spletna mesta imajo v lasti nekatero vsebino, na primer oglase ali slike, ki jo vidite na spletnem mestu, ki ga obiščete.</translation>
 <translation id="3785308913036335955">Pokaži bližnjico do aplikacij</translation>
 <translation id="3785727820640310185">Shranjena gesla za to spletno mesto</translation>
@@ -3578,7 +3575,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4415748029120993980">Eliptična krivulja SECG secp384r1 (oziroma NIST P-384)</translation>
 <translation id="4416450511678320850">Za to vsebino ni na voljo aplikacij.</translation>
 <translation id="4416582610654027550">Vnesite veljaven URL</translation>
-<translation id="4417162649853416189">Povlecite čez slike za iskanje s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Vedno dovoli, da <ph name="HOST" /> nastavi piškotke</translation>
 <translation id="4421932782753506458">Puhek</translation>
 <translation id="4423376891418188461">Obnovi nastavitve</translation>
@@ -3717,7 +3713,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4550926046134589611">Nekatere podprte povezave se bodo še vedno odprle v aplikaciji <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Pritisnite <ph name="MODIFIER_KEY_DESCRIPTION" /> za razveljavitev</translation>
 <translation id="4553526521109675518">Če želite spremeniti jezik naprave, morate znova zagnati Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Povlecite čez slike za iskanje s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Zunanja razširitev je iste ali starejše različice kot trenutna.</translation>
 <translation id="4555769855065597957">Senca</translation>
 <translation id="4555863373929230635">Če želite shraniti gesla v račun Google, se prijavite in vklopite sinhronizacijo.</translation>
@@ -4568,7 +4563,6 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5427459444770871191">&amp;Zasukaj v smeri urinega kazalca</translation>
 <translation id="542750953150239272">Če nadaljujete, se strinjate, da lahko ta naprava tudi samodejno prenese in namesti posodobitve ter aplikacije, ki jih zagotavljajo Google, vaš operater in proizvajalec vaše naprave – morda s prenosom podatkov v mobilnih omrežjih. Nekatere od teh aplikacij morda ponujajo nakupe v aplikaciji.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (posodobitev je na voljo)</translation>
-<translation id="5429373054983029602">Išči po zaslonu s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Namestiti morate posodobitev za vdelano programsko opremo modula Trusted Platform Module. Oglejte si <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Takojšnji internet prek mobilnega telefona</translation>
 <translation id="5431318178759467895">Barvno</translation>
@@ -4641,7 +4635,6 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5494920125229734069">Izberi vse</translation>
 <translation id="5495466433285976480">S tem bodo po naslednjem vnovičnem zagonu odstranjeni vsi lokalni uporabniki, datoteke, podatki in druge nastavitve. Vsi uporabniki se bodo morali še enkrat prijaviti.</translation>
 <translation id="5495597166260341369">Naj bo zaslon vklopljen</translation>
-<translation id="549580971452855947">Povlecite za iskanje slik s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Urejanje</translation>
 <translation id="5496730470963166430">Ni dovoljeno pošiljanje pojavnih oken ali uporaba preusmeritev</translation>
 <translation id="5497251278400702716">Ta datoteka</translation>
@@ -5760,7 +5753,6 @@ Imate še # ogroženi gesli. Googlov upravitelj gesel priporoča, da takoj preve
 Imate še # ogrožena gesla. Googlov upravitelj gesel priporoča, da takoj preverite ta gesla.}other{Ogroženo geslo je bilo uspešno spremenjeno.
 
 Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj preverite ta gesla.}}</translation>
-<translation id="6595792813574514527">Povlecite za iskanje slik s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Možnosti šifriranja</translation>
 <translation id="6596816719288285829">Naslov IP</translation>
 <translation id="6597017209724497268">Vzorci</translation>
@@ -7381,7 +7373,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8184318863960255706">Več informacij</translation>
 <translation id="8184472985242519288">Enotno</translation>
 <translation id="8186609076106987817">Strežnik ni mogel najti datoteke.</translation>
-<translation id="8186704951085064172">Išči del strani s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Preverite nastavitve naprave in jo vklopite, če želite nadaljevati</translation>
 <translation id="8188742492803591566">Če želite začeti predvajati svoj zaslon, vnesite kodo za dostop, prikazano v Chromecastu ali na televizorju.</translation>
 <translation id="8189306097519446565">Šolski računi</translation>

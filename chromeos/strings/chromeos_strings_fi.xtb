@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">Aseta taustakuvaksi</translation>
 <translation id="1578784163189013834">Valitse näytönsäästäjän tausta</translation>
 <translation id="1615335640928990664">Datan käyttö <ph name="FRIENDLY_DATE" /> jälkeen</translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Suorita lataustesti</translation>
 <translation id="1631385268983122904">Älä kokoa laitetta vielä</translation>
 <translation id="1639239467298939599">Ladataan</translation>
@@ -94,6 +95,7 @@
 <translation id="1717874160321062422">Ylläpitäjät: <ph name="FIRST_MANAGER" /> ja <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nimipalvelimet</translation>
 <translation id="1731082422893354635">Bluetooth-kosketuslevy</translation>
+<translation id="1745577949879301685">Kuvien lataaminen epäonnistui. Tarkista verkkoyhteytesi tai kokeile kuvien lataamista uudelleen.</translation>
 <translation id="1751249301761991853">Henkilökohtainen</translation>
 <translation id="1753496554272155572">Poistu taustakuvan esikatselusta</translation>
 <translation id="175763766237925754">Hyvä (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -258,6 +260,7 @@
 <translation id="3413935475507503304">Jatka päivitystä valitsemalla Seuraava</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Suojaus</translation>
+<translation id="3441653493275994384">Näyttö</translation>
 <translation id="3456078764689556234">Tulostettu <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> sivua.</translation>
 <translation id="345898999683440380">Skannataan sivu <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % valmis.</translation>
 <translation id="3459509316159669723">Tulostaminen</translation>
@@ -280,6 +283,7 @@
 <translation id="3604713164406837697">Vaihda taustakuva</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
 <translation id="3606583719724308068">Pitkä viive HTTPS-sivustoille</translation>
+<translation id="3616113530831147358">Ääni</translation>
 <translation id="3621202678540785336">Äänitulo:</translation>
 <translation id="3632579075709132555">Yksityinen näkyvyys päälle/pois</translation>
 <translation id="3643810137582748570">Ohita kalibrointi</translation>
@@ -329,6 +333,7 @@
 <translation id="4140251671072434548">Avaa palvelin tuotepalautusvaltuutusta varten</translation>
 <translation id="4145784616224233563">HTTP-palomuuri</translation>
 <translation id="4147897805161313378">Google Kuvat</translation>
+<translation id="4150201353443180367">Näyttö</translation>
 <translation id="4155551848414053977">Varmista, että skanneri on päällä ja käytettävissä verkkosi tai suoran yhteyden kautta</translation>
 <translation id="4159784952369912983">Violetti</translation>
 <translation id="4170180284036919717">Ota kuva</translation>
@@ -745,6 +750,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7960831585769876809">Lämpötila</translation>
 <translation id="7977800524392185497">Liity <ph name="NETWORK_NAME" />-verkkoon avaamalla Asetukset</translation>
 <translation id="7978412674231730200">Yksityinen avain</translation>
+<translation id="7982789257301363584">Verkko</translation>
 <translation id="7994702968232966508">EAP-tapa</translation>
 <translation id="802154636333426148">Lataus epäonnistui.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +845,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8834539327799336565">Yhdistetty tällä hetkellä</translation>
 <translation id="8845001906332463065">Hae ohjeita</translation>
 <translation id="8855781559874488009">HTTP-sivustoihin ei voi yhdistää palomuurin läpi</translation>
+<translation id="885701979325669005">Tallennus</translation>
 <translation id="8863170912498892583">Ota tumma teema käyttöön</translation>
 <translation id="8863888432376731307">Hae <ph name="INTENT" />: "<ph name="QUERY" />" ja muita</translation>
 <translation id="8868741746785112895">GUID</translation>

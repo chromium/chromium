@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
 <translation id="1512982610995527443">Ierīce tiks izslēgta pēc piecām sekundēm</translation>
 <translation id="1522984060396982789">Remonts bija sekmīgs. Varat izslēgt ierīci vai veikt papildu darbības.</translation>
+<translation id="1526389707933164996">Ekrānsaudzētāja animācija</translation>
 <translation id="152892567002884378">Palielināt skaļumu</translation>
 <translation id="1555130319947370107">Zila</translation>
 <translation id="155865706765934889">Skārienpaliktnis</translation>
@@ -76,6 +77,7 @@
 <translation id="1572585716423026576">Iestatīt kā fona tapeti</translation>
 <translation id="1578784163189013834">Izvēlēties ekrānsaudzētāja fonu</translation>
 <translation id="1615335640928990664">Datu lietojums kopš šī datuma: <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Veikt uzlādes pārbaudi</translation>
 <translation id="1631385268983122904">Vēl neievietojiet akumulatoru ierīcē</translation>
 <translation id="1639239467298939599">Notiek ielāde</translation>
@@ -257,6 +259,7 @@
 <translation id="3413935475507503304">Lai veiktu atjaunināšanu, noklikšķiniet uz “Tālāk”.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Drošība</translation>
+<translation id="3441653493275994384">Ekrāns</translation>
 <translation id="3456078764689556234">Izdrukāto lapu skaits: <ph name="PRINTED_PAGES" /> no<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Notiek <ph name="PAGE_NUM" />. lapas skenēšana. Pabeigti: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Drukāšana</translation>
@@ -279,6 +282,7 @@
 <translation id="3604713164406837697">Fona tapetes mainīšana</translation>
 <translation id="360565022852130722">Wi-Fi tīklu sargā nedrošs protokols WEP 802.1x</translation>
 <translation id="3606583719724308068">Augsts latentums HTTPS vietnēs</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Ievade</translation>
 <translation id="3632579075709132555">Konfidencialitātes ekrāna slēdzis</translation>
 <translation id="3643810137582748570">Izlaist kalibrēšanu</translation>
@@ -300,6 +304,7 @@
 <translation id="3858860766373142691">Nosaukums</translation>
 <translation id="3865414814144988605">Izšķirtspēja</translation>
 <translation id="387301095347517405">Cik pilnu uzlādes ciklu ir bijis jūsu akumulatoram</translation>
+<translation id="3885327323343477505">Mainīt ekrānsaudzētāju</translation>
 <translation id="3923184630988645767">Datu lietojums</translation>
 <translation id="3924044641767672375">Ieteicams izveidot savienojumu ar Wi-Fi tīklu, lai atvieglotu labošanu. Jūsu tīkls tiks saglabāts.</translation>
 <translation id="3932043219784172185">Nav pievienota neviena ierīce</translation>
@@ -327,6 +332,7 @@
 <translation id="4140251671072434548">RMA servera atbloķēšana</translation>
 <translation id="4145784616224233563">HTTP ugunsmūris</translation>
 <translation id="4147897805161313378">Google fotoattēli</translation>
+<translation id="4150201353443180367">Displejs</translation>
 <translation id="4155551848414053977">Skenerim ir jābūt ieslēgtam un ar to ir jāizveido savienojums tīklā vai tiešs savienojums.</translation>
 <translation id="4159784952369912983">Violets</translation>
 <translation id="4170180284036919717">Uzņemt fotoattēlu</translation>
@@ -418,6 +424,7 @@
 <translation id="4890353053343094602">Nekavējoties izvēlieties jaunu</translation>
 <translation id="4891842000192098784">Izturība</translation>
 <translation id="4897058166682006107">Kreisās austiņas akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4905998861748258752">Ieslēdziet funkciju, lai atlasītu ekrānsaudzētāja opcijas.</translation>
 <translation id="4908030561598728899">Notiek aparātprogrammatūras instalēšana…</translation>
 <translation id="4915052247106771211">Ierīcē tiks atjaunoti rūpnīcas iestatījumi (tiks izmantota funkcija Powerwash).</translation>
 <translation id="4917385247580444890">Spēcīgs</translation>
@@ -742,6 +749,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7960831585769876809">Temperatūra</translation>
 <translation id="7977800524392185497">Lai izveidotu savienojumu ar <ph name="NETWORK_NAME" /> tīklu, pārejiet uz iestatījumiem.</translation>
 <translation id="7978412674231730200">Privātā atslēga</translation>
+<translation id="7982789257301363584">Tīkls</translation>
 <translation id="7994702968232966508">EAP metode</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -836,6 +844,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8834539327799336565">Ierīces, ar kurām pašlaik izveidots savienojums</translation>
 <translation id="8845001906332463065">Saņemt palīdzību</translation>
 <translation id="8855781559874488009">Nevar izveidot savienojumu ar HTTP vietnēm, ja ir iespējots ugunsmūris</translation>
+<translation id="885701979325669005">Krātuve</translation>
 <translation id="8863170912498892583">Iespējot tumšo motīvu</translation>
 <translation id="8863888432376731307">Pieejama informācija par vaicājumu “<ph name="QUERY" />”: <ph name="INTENT" /> un daudz kas cits</translation>
 <translation id="8868741746785112895">GUID</translation>
@@ -861,6 +870,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8997710128084572139">Ierīces akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Frekvence</translation>
 <translation id="9025198690966128418">Izmantot kā personīgo ierīci</translation>
+<translation id="9028832514430399253">Ieslēdziet slēdzi, lai atlasītu ekrānsaudzētāja opcijas.</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS atrisei ir augsts latentums</translation>
 <translation id="9063121522582193837">Nevarēja kalibrēt dažus komponentus</translation>

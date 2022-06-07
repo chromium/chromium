@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Kizindua</translation>
 <translation id="1512982610995527443">Kifaa kitazima ndani ya sekunde 5</translation>
 <translation id="1522984060396982789">Umefanikiwa kurekebisha. Unaweza kuzima kifaa au kuchukua hatua kadhaa za ziada.</translation>
+<translation id="1526389707933164996">Uhuishaji wa taswira ya skrini</translation>
 <translation id="152892567002884378">Ongeza sauti</translation>
 <translation id="1555130319947370107">Samawati</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -76,6 +77,7 @@
 <translation id="1572585716423026576">Weka kama mandhari</translation>
 <translation id="1578784163189013834">Chagua mandharinyuma ya taswira ya skrini</translation>
 <translation id="1615335640928990664">Matumizi ya data tangu <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Tekeleza jaribio la Kuchaji</translation>
 <translation id="1631385268983122904">Usirudishie betri ya kifaa kwanza</translation>
 <translation id="1639239467298939599">Inapakia</translation>
@@ -257,6 +259,7 @@
 <translation id="3413935475507503304">Ili uendelee na sasisho, bofya Inayofuata.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Usalama</translation>
+<translation id="3441653493275994384">Skrini</translation>
 <translation id="3456078764689556234">Imechapisha ukurasa wa <ph name="PRINTED_PAGES" /> kati ya <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Inachanganua ukurasa wa <ph name="PAGE_NUM" />. Asilimia <ph name="PERCENTAGE_VALUE" /> imekamilika.</translation>
 <translation id="3459509316159669723">Kuchapisha</translation>
@@ -279,6 +282,7 @@
 <translation id="3604713164406837697">Badilisha mandhari</translation>
 <translation id="360565022852130722">Mtandao wa WiFi umelindwa kwa kutumia itifaki hafifu ya WEP 802.1x</translation>
 <translation id="3606583719724308068">Muda mwingi wa kusubiri maombi ya tovuti za HTTPS</translation>
+<translation id="3616113530831147358">Sauti</translation>
 <translation id="3621202678540785336">Ingizo</translation>
 <translation id="3632579075709132555">Kugeuza skrini ya faragha</translation>
 <translation id="3643810137582748570">Ruka marekebisho</translation>
@@ -300,6 +304,7 @@
 <translation id="3858860766373142691">Jina</translation>
 <translation id="3865414814144988605">Ubora</translation>
 <translation id="387301095347517405">Mara ambazo betri yako imekamilisha mzunguko kamili wa chaji</translation>
+<translation id="3885327323343477505">Badilisha taswira ya skrini</translation>
 <translation id="3923184630988645767">Matumizi ya data</translation>
 <translation id="3924044641767672375">Tunapendekeza uunganishe kwenye Wi-Fi ili urahisishe mchakato wa kurekebisha. Mtandao wako utahifadhiwa.</translation>
 <translation id="3932043219784172185">Hakuna kifaa kilichounganishwa</translation>
@@ -327,6 +332,7 @@
 <translation id="4140251671072434548">Tekeleza Mchakato wa Kufungua Seva ya RMA</translation>
 <translation id="4145784616224233563">Kinga mtandao ya HTTP</translation>
 <translation id="4147897805161313378">Picha kwenye Google</translation>
+<translation id="4150201353443180367">Onyesho</translation>
 <translation id="4155551848414053977">Hakikisha kichanganuzi kimewashwa na kinapatikana kupitia mtandao wako au muunganisho wa moja kwa moja</translation>
 <translation id="4159784952369912983">Zambarau</translation>
 <translation id="4170180284036919717">Piga picha</translation>
@@ -418,6 +424,7 @@
 <translation id="4890353053343094602">Chagua nenosiri jipya mara moja</translation>
 <translation id="4891842000192098784">Shinikizo</translation>
 <translation id="4897058166682006107">Kiwango cha chaji cha spika ya masikioni ya kushoto ni asilimia <ph name="BATTERY_PERCENTAGE" />.</translation>
+<translation id="4905998861748258752">Washa kipengele ili uchague chaguo za taswira ya skrini</translation>
 <translation id="4908030561598728899">Inasakinisha programu dhibiti...</translation>
 <translation id="4915052247106771211">Hatua hii itarejesha kifaa katika mipangilio kiliyotokanayo kiwandani (Powerwash).</translation>
 <translation id="4917385247580444890">Thabiti</translation>
@@ -741,6 +748,7 @@
 <translation id="7960831585769876809">Halijoto</translation>
 <translation id="7977800524392185497">Ili ujiunge kwenye mtandao wa <ph name="NETWORK_NAME" />, nenda kwenye Mipangilio</translation>
 <translation id="7978412674231730200">Ufunguo binafsi</translation>
+<translation id="7982789257301363584">Mtandao</translation>
 <translation id="7994702968232966508">Mbinu ya EAP</translation>
 <translation id="802154636333426148">Haikuweza kupakua</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -835,6 +843,7 @@
 <translation id="8834539327799336565">Vilivyounganishwa kwa sasa</translation>
 <translation id="8845001906332463065">Pata usaidizi</translation>
 <translation id="8855781559874488009">Imeshindwa kuunganisha kwenye tovuti za HTTP kupitia kinga mtandao</translation>
+<translation id="885701979325669005">Hifadhi</translation>
 <translation id="8863170912498892583">Washa mandhari meusi</translation>
 <translation id="8863888432376731307">Pata <ph name="INTENT" /> wa "<ph name="QUERY" />" na mengine mengi</translation>
 <translation id="8868741746785112895">GUID</translation>
@@ -860,6 +869,7 @@
 <translation id="8997710128084572139">Kiwango cha chaji ya betri kwenye kifaa ni asilimia <ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="9003704114456258138">Masafa</translation>
 <translation id="9025198690966128418">Tumia kama kifaa binafsi</translation>
+<translation id="9028832514430399253">Washa kitufe cha geuza ili uchague chaguo za taswira ya skrini</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Usuluhishaji wa DNS una muda mrefu wa kusubiri</translation>
 <translation id="9063121522582193837">Imeshindwa kurekebisha baadhi ya vipengele</translation>

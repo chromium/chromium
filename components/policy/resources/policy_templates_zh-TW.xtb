@@ -1820,6 +1820,7 @@
 
       如果未設定這項政策，系統會套用 <ph name="ASK_GEOLOCATION_POLICY_NAME" /> 政策，但使用者可以變更這項設定。</translation>
 <translation id="2922511125678964398">允許網頁認證入口驗證機制忽略 Proxy 設定</translation>
+<translation id="2926813071464307947">停用轉譯器應用程式容器沙箱</translation>
 <translation id="2931888116345994552">如果將這項政策設為啟用或不設定，就會允許更新 <ph name="PRODUCT_NAME" /> 中的所有元件。
 
       如果將這項政策設為停用，則會禁止更新元件。不過，部分元件不受本政策規範：只要元件更新不含可執行的程式碼，且對瀏覽器安全性至關重要，就不會遭到禁止。
@@ -2255,6 +2256,11 @@
           如果這項政策設為非空白字串，該字串就會成為「<ph name="PRODUCT_NAME" />」目的地的名稱，否則目的地名稱將會是裝置名稱。如果未設定這項政策，則目的地名稱會是裝置名稱，且裝置擁有者 (或裝置管理網域中的使用者) 可進行變更。名稱長度上限為 24 個字元。</translation>
 <translation id="3329063005964041553">封鎖這些網頁應用程式上的 File Handling API</translation>
 <translation id="3329401415394648069">允許使用 U2F Security Key API。</translation>
+<translation id="3329976499753286262">如果將這項政策設為啟用或不設定，系統會在支援的平台上啟用轉譯器應用程式容器設定。
+
+      將這項政策設為停用會對 <ph name="PRODUCT_NAME" /> 的安全性和穩定性造成危害，因為這會減弱轉譯器程序使用的沙箱機制。建議只有必須在轉譯器程序中執行的第三方軟體發生相容性問題時，才停用這項政策。
+
+      注意：如要進一步瞭解程序寬鬆檢查機制政策，請前往 https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies。</translation>
 <translation id="3339271789059866414">設定系統 Proxy 服務的可用性和系統服務的 Proxy 憑證。
       如果不設定這項政策，將無法使用系統 Proxy 服務。</translation>
 <translation id="3348799281602260763">如果啟用這項政策，WebRTC 對等互連可降級至傳輸層安全標準 (TLS)/DTLS 通訊協定的過時版本 (DTLS 1.0、TLS 1.0 和 TLS 1.1)。
@@ -4151,6 +4157,7 @@
 <translation id="5625771176514429288">系統會允許 Chrome 應用程式在這些平台上執行。</translation>
 <translation id="5630352020869108293">還原上次工作階段</translation>
 <translation id="5633871703004128675">啟用插入點醒目顯示無障礙功能</translation>
+<translation id="5634032995857968056">啟用轉譯器應用程式容器沙箱</translation>
 <translation id="5639454129004500060">如果設定這項政策，該政策會納入用來下載桌面範本檔案的資訊。檔案中有要為當前使用者佈建的桌面範本。
       如果未設定這項政策，桌面範本清單中就不會加入任何預先設定的桌面範本。如果 <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" /> 政策不是設為 true，則這項政策不會有任何作用。</translation>
 <translation id="5641279111657132737">這項政策已遭淘汰，請改用「<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />」政策。
@@ -7007,6 +7014,7 @@
 <translation id="8763716376920670835">自 M101 起，WebSQL 預設為啟用，但你仍然可以透過 Chrome 旗標將其停用。
           如果將這項政策設為 False 或未設定，系統就可停用 WebSQL。
           如果將這項政策設為 True，系統將無法停用 WebSQL。</translation>
+<translation id="8766910236040529804">啟用轉譯器應用程式容器</translation>
 <translation id="8767743923206070405">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 的工具列上會顯示「首頁」按鈕。如果將這項政策設為停用，則不會顯示「首頁」按鈕。
 
       如果設定這項政策，使用者將無法在 <ph name="PRODUCT_NAME" /> 中進行變更。如果未設定，使用者可選擇是否要顯示「首頁」按鈕。</translation>

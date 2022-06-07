@@ -1407,7 +1407,6 @@
     Егер Voice Match функциясы балаңызға керек болмаса, оны Assistant параметрлерінен өшіре салыңыз. Voice Match реттеген кезде сақталған жазбаларды көру немесе жою үшін балаңыздың аккаунтынан <ph name="VOICE_MATCH_SETTINGS_URL" /> бетіне өтіңіз.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> арқылы бет бөлігін іздеу</translation>
 <translation id="2309620859903500144">Бұл сайттың қозғалыс не жарық датчиктеріңізге кіруіне тыйым салынды.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Беттің URL сілтемесі</translation>
@@ -2030,7 +2029,6 @@
 <translation id="289695669188700754">Кілт индентификаторы: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Сіз барлық инкогнито терезесін жапқан кезде, бұл арнаулы параметр өз күшін жояды.</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> қойындыны ашқыңыз келе ме?</translation>
-<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> арқылы экраннан іздеу</translation>
 <translation id="290105521672621980">Файл қолдау көрсетілмеген мүмкіндіктерді пайдаланады</translation>
 <translation id="2901348420151309559">Соңғы фотосуреттер мен қолданбалар</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> бұл принтермен байланыса алмады. Принтер жалғанғанын тескеріп, әрекетті қайталап көріңіз.</translation>
@@ -2903,7 +2901,6 @@
 <translation id="3778740492972734840">&amp;Әзірлеуші құралдары</translation>
 <translation id="3778868487658107119">Оған сұрақтар қойыңыз. Тапсырмалар беріңіз. Ол – әрқашан көмекке дайын жеке Google қызметіңіз.</translation>
 <translation id="3781742599892759500">Linux жүйесінде микрофонды пайдалану</translation>
-<translation id="378312418865624974">Осы компьютерге арналған бірегей идентификаторды оқу</translation>
 <translation id="3784472333786002075">Cookie файлдары веб-сайттарда жасалады. Олардың екі түрі бар: сіз кірген сайт жасаған меншікті cookie файлдары. Сайт мекенжай жолағында көрсетіледі. Үшінші тараптың cookie файлдары басқа сайттарда жасалады. Бұл сайттарда сіз кірген сайттың мазмұны (мысалы, жарнамалар немесе суреттер) болады.</translation>
 <translation id="3785308913036335955">Қолданбалар таңбашасын көрсету</translation>
 <translation id="3785727820640310185">Бұл сайтқа арналған құпия сөздер сақталды</translation>
@@ -3556,7 +3553,6 @@
 <translation id="4415748029120993980">SECG эллипстік қисық сызығы, secp384r1 (aka NIST P-384)</translation>
 <translation id="4416450511678320850">Бұл мазмұн үшін қолжетімді қолданба жоқ</translation>
 <translation id="4416582610654027550">URL сілтемесін дұрыс теріңіз</translation>
-<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" /> арқылы іздеу үшін суреттерді сүйреу</translation>
 <translation id="4419409365248380979">Әрқашан <ph name="HOST" /> хостына cookie файлдарын орнату рұқсатын беру</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">Параметрлерді қалпына келтіру</translation>
@@ -3694,7 +3690,6 @@
 <translation id="4550926046134589611">Кейбір қолдау көрсету сілтемелері <ph name="APP_NAME" /> қолданбасында ашық болады.</translation>
 <translation id="4551763574344810652">Қайтару үшін <ph name="MODIFIER_KEY_DESCRIPTION" /> пернелерін басыңыз.</translation>
 <translation id="4553526521109675518">Құрылғының тілін өзгерту үшін Chromebook құрылғысын өшіріп, қосуыңыз керек. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> арқылы іздеу үшін суреттерді сүйреу</translation>
 <translation id="4554591392113183336">Сыртқы кеңейтім бар нұсқамен бірдей немесе онымен салыстырғанда төменірек нұсқа болып табылады.</translation>
 <translation id="4555769855065597957">Көлеңке</translation>
 <translation id="4555863373929230635">Құпия сөздерді Google аккаунтыңызға сақтау үшін оған кіріп, синхрондауды қосыңыз.</translation>
@@ -4545,7 +4540,6 @@
 <translation id="5427459444770871191">&amp;Сағат тілімен бұру</translation>
 <translation id="542750953150239272">Жалғастыру арқылы бұл құрылғының Google қызметінен, оператордан және құрылғы өндірушісінен жаңа нұсқалар мен қолданбаларды автоматты түрде жүктеп алуына және орнатуына келісім бересіз (мобильдік интернет пайдаланылуы мүмкін). Бұл қолданбалардың кейбірінде қолданба арқылы сатып алу ұсынылуы мүмкін.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Жаңарту қолжетімді)</translation>
-<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> арқылы экраннан іздеу</translation>
 <translation id="542948651837270806">Trusted Platform Module микробағдарламасының жаңа нұсқасы орнатылуы тиіс. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> сілтемесін қараңыз.</translation>
 <translation id="5430931332414098647">Жылдам тетеринг</translation>
 <translation id="5431318178759467895">Түс</translation>
@@ -4618,7 +4612,6 @@
 <translation id="5494920125229734069">Барлығын таңдау</translation>
 <translation id="5495466433285976480">Келесі жолы қайта іске қосқаннан кейін, барлық жергілікті пайдаланушылар, файлдар, деректер және басқа параметрлер жойылады. Барлық пайдаланушылар жүйеге қайта кіруі керек болады.</translation>
 <translation id="5495597166260341369">Дисплейді қосулы қалдыру</translation>
-<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" /> арқылы суреттерді іздеу үшін сүйреу</translation>
 <translation id="5496587651328244253">Ұйымдастыру</translation>
 <translation id="5496730470963166430">Қалқымалы терезелерді жіберу мен бағытты ауыстыру функцияларын пайдалануға рұқсаты жоқтар</translation>
 <translation id="5497251278400702716">Осы файл</translation>
@@ -5726,7 +5719,6 @@
 Тағы # құпия сөзіңіз ұрланған. Google Құпия сөз менеджері бұл құпия сөзді дереу тексеруді ұсынады.}other{Ұрланған құпия сөз өзгертілді.
 
 Тағы # құпия сөзіңіз ұрланған. Google Құпия сөз менеджері бұл құпия сөздерді дереу тексеруді ұсынады.}}</translation>
-<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> арқылы суреттерді іздеу үшін сүйреу</translation>
 <translation id="6596325263575161958">Шифрлау опциялары</translation>
 <translation id="6596816719288285829">IP мекенжайы</translation>
 <translation id="6597017209724497268">Үлгілер</translation>
@@ -7345,7 +7337,6 @@
 <translation id="8184318863960255706">Қосымша ақпарат</translation>
 <translation id="8184472985242519288">Бірыңғай</translation>
 <translation id="8186609076106987817">Сервер файлды таба алмады.</translation>
-<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> арқылы бет бөлігін іздеу</translation>
 <translation id="8188389033983459049">Құрылғы параметрлерін тексеріңіз және жалғастыру үшін оны іске қосыңыз</translation>
 <translation id="8188742492803591566">Экранды трансляциялай бастау үшін Chromecast құрылғысында немесе теледидарда көрсетілген рұқсат кодын енгізіңіз.</translation>
 <translation id="8189306097519446565">Мектеп аккаунттары</translation>

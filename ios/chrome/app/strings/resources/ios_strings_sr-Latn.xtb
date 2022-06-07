@@ -18,7 +18,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1066060668811609597">Upravljajte sinhronizacijom</translation>
 <translation id="1076421457278169141">Skenirali ste kôd</translation>
 <translation id="1084365883616172403">Facebook post je dovršen.</translation>
-<translation id="1086486568852410168">Pretražite pomoću Google objektiva</translation>
 <translation id="1103523840287552314">Uvek prevodi <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Prihvati i nastavi</translation>
 <translation id="110724200315609752">Pređi na otvoren prozor</translation>
@@ -739,6 +738,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7099761977003084116">Nedavne kartice</translation>
 <translation id="7102005569666697658"><ph name="FILE_SIZE" /> se preuzima…</translation>
 <translation id="7108338896283013870">Sakrij</translation>
+<translation id="7108762695052995889">Idi na sajt</translation>
 <translation id="7133798577887235672">Ime i prezime</translation>
 <translation id="7136892417564438900">Kamera je nedostupna</translation>
 <translation id="7153999225810839758">Čita se za <ph name="TIME" /> min</translation>

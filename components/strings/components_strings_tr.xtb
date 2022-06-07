@@ -119,6 +119,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1270502636509132238">Alma Yöntemi</translation>
 <translation id="1281476433249504884">Yığınlayıcı 1</translation>
 <translation id="1285320974508926690">Bu siteyi hiçbir zaman çevirme</translation>
+<translation id="1288548991597756084">Kartı güvenli bir şekilde kaydedin</translation>
 <translation id="1292571435393770077">Tepsi 16</translation>
 <translation id="1292701964462482250">"Bilgisayarınızdaki yazılım, Chrome'un web'e güvenli bir şekilde bağlanmasını engelliyor" (yalnızca Windows bilgisayarlar)</translation>
 <translation id="1294154142200295408">Komut satırı varyasyonları</translation>
@@ -223,6 +224,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
     &lt;p&gt;Hatayı gidermek için, açmaya çalıştığınız sayfada &lt;strong&gt;Bağlan&lt;/strong&gt;'ı tıklayın.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Peyzaj tasarımı</translation>
 <translation id="1513706915089223971">Geçmiş girişlerin listesi</translation>
+<translation id="1516097932025103760">Kart bilgileri şifrelenir ve güvenli bir şekilde kaydedilir. CVC ise hiçbir zaman saklanmaz.</translation>
 <translation id="1517433312004943670">Telefon numarası gerekli</translation>
 <translation id="1519264250979466059">Oluşturma Tarihi</translation>
 <translation id="1521159554480556801">Fiber ve kumaş sanatları</translation>
@@ -1409,6 +1411,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="483241715238664915">Uyarıları açın</translation>
 <translation id="4834250788637067901">Google Pay'i kullanan ödeme yöntemleri, teklifler ve adresler</translation>
 <translation id="4838327282952368871">Hayalperest</translation>
+<translation id="4839087176073128681">Google'ın sektör lideri güvenliği sayesinde bir dahaki sefer daha hızlı ödeme yapın ve kartınızı koruyun.</translation>
 <translation id="4840250757394056958">Chrome geçmişimi göster</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> ve diğer satıcılardan indirimli alışveriş yapın</translation>

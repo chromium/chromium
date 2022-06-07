@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">वालपेपरका रूपमा सेट गर्नुहोस्</translation>
 <translation id="1578784163189013834">स्क्रिन सेभरको ब्याकग्राउन्ड चयन गर्नुहोस्</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> देखि प्रयोग गरिएको डेटा</translation>
+<translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1621067168122174824">ब्याट्रीको चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
 <translation id="1631385268983122904">डिभाइसमा अहिले नै ब्याट्री नहाल्नुहोस्</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
@@ -94,6 +95,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> र <ph name="SECOND_MANAGER" /> ले व्यवस्थापन गरेका</translation>
 <translation id="1726100011689679555">नामका सर्भरहरू</translation>
 <translation id="1731082422893354635">ब्लुटुथ भएको टचप्याड</translation>
+<translation id="1745577949879301685">फोटोहरू लोड गर्न सकिएन। आफ्नो नेटवर्क कनेक्सन जाँच्नुहोस् वा ती फोटोहरू फेरि लोड गरी हेर्नुहोस्।</translation>
 <translation id="1751249301761991853">व्यक्तिगत</translation>
 <translation id="1753496554272155572">वालपेपरको प्रिभ्यूबाट बाहिरिनुहोस्</translation>
 <translation id="175763766237925754">राम्रो (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -258,6 +260,7 @@
 <translation id="3413935475507503304">तपाईं यो अपडेट प्राप्त गर्न चाहनुहुन्छ भने अर्को नामक बटन क्लिक गर्नुहोस्।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
+<translation id="3441653493275994384">स्क्रिन</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> मध्ये <ph name="PRINTED_PAGES" /> पृष्ठहरू प्रिन्ट गरिए</translation>
 <translation id="345898999683440380">पेज <ph name="PAGE_NUM" /> स्क्यान गरिँदै छ। <ph name="PERCENTAGE_VALUE" />% पूरा भयो।</translation>
 <translation id="3459509316159669723">प्रिन्टिङ</translation>
@@ -280,6 +283,7 @@
 <translation id="3604713164406837697">वालपेपर परिवर्तन गर्नुहोस्</translation>
 <translation id="360565022852130722">WiFi नेटवर्क WEP 802.1x नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटहरू लोड हुन धेरै समय लागिरहेको छ</translation>
+<translation id="3616113530831147358">अडियो</translation>
 <translation id="3621202678540785336">आगत</translation>
 <translation id="3632579075709132555">प्राइभेसी स्क्रिन टगल</translation>
 <translation id="3643810137582748570">क्यालिब्रेट नगरिकन अगाडि बढ्नुहोस्</translation>
@@ -329,6 +333,7 @@
 <translation id="4140251671072434548">RMA सर्भर अनलक गर्नुहोस्</translation>
 <translation id="4145784616224233563">HTTP फायरवाल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">प्रदर्शन</translation>
 <translation id="4155551848414053977">स्क्यानर अन छ र उक्त स्क्यानर तपाईंको नेटवर्क वा कुनै डाइरेक्ट कनेक्सनमार्फत प्रयोग गर्न मिल्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="4159784952369912983">बैजनी</translation>
 <translation id="4170180284036919717">फोटो खिच्नुहोस्</translation>
@@ -744,6 +749,7 @@
 <translation id="7960831585769876809">तापक्रम</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> नेटवर्कमा कनेक्ट गर्न सेटिङमा जानुहोस्</translation>
 <translation id="7978412674231730200">निजी कुञ्जी</translation>
+<translation id="7982789257301363584">सञ्जाल</translation>
 <translation id="7994702968232966508">EAP विधि</translation>
 <translation id="802154636333426148">डाउनलोड गर्न सकिएन</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -838,6 +844,7 @@
 <translation id="8834539327799336565">हाल कनेक्ट गरिएका डिभाइस</translation>
 <translation id="8845001906332463065">मद्दत प्राप्त गर्नुहोस्</translation>
 <translation id="8855781559874488009">फायरवाल पार गरेर HTTP वेबसाइटहरूमा कनेक्ट गर्न सकिएन</translation>
+<translation id="885701979325669005">भण्डारण</translation>
 <translation id="8863170912498892583">अँध्यारो थिम अन गर्नुहोस्</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" को <ph name="INTENT" /> र अन्य कुरा हेर्नुहोस्</translation>
 <translation id="8868741746785112895">GUID</translation>

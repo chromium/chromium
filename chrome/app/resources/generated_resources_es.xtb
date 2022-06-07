@@ -1411,7 +1411,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
     Si en algún momento quieres que tu hijo/a deje de usar Voice Match, basta con que lo inhabilites en los ajustes del Asistente. Para ver o eliminar los audios que ha grabado tu hijo/a durante la configuración de Voice Match, accede a <ph name="VOICE_MATCH_SETTINGS_URL" /> con su cuenta.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Buscar parte de la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Esta página no tiene permiso para acceder a los sensores de luz y movimiento.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL de la página</translation>
@@ -2034,7 +2033,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="289695669188700754">ID de clave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Este ajuste personalizado se quitará cuando cierres todas tus ventanas de incógnito</translation>
 <translation id="2897878306272793870">¿Seguro que quieres abrir <ph name="TAB_COUNT" /> pestañas?</translation>
-<translation id="2900477968385519153">Buscar en la pantalla con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">El archivo utiliza funciones no admitidas</translation>
 <translation id="2901348420151309559">Fotos y aplicaciones recientes</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> no ha podido establecer comunicación con la impresora. Comprueba que la impresora esté conectada e inténtalo de nuevo.</translation>
@@ -2907,7 +2905,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3778740492972734840">&amp;Herramientas para desarrolladores</translation>
 <translation id="3778868487658107119">Puedes hacerle preguntas e indicarle tareas para que las realice. Esta función, siempre lista para ayudarte, te permite utilizar Google de forma personalizada.</translation>
 <translation id="3781742599892759500">Acceso a micrófono en Linux</translation>
-<translation id="378312418865624974">Leer un identificador único para este ordenador</translation>
 <translation id="3784472333786002075">Las cookies son archivos que crean los sitios web. Existen dos tipos de cookies: las cookies propias las crea el sitio web al que accedes. El sitio web se muestra en la barra de direcciones. Las cookies de terceros las crean otros sitios web. Parte del contenido que ves en el sitio web que visitas, como anuncios o imágenes, pertenece a esos otros sitios web.</translation>
 <translation id="3785308913036335955">Mostrar acceso directo de aplicaciones</translation>
 <translation id="3785727820640310185">Contraseñas guardadas de este sitio web</translation>
@@ -3559,7 +3556,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4415748029120993980">Curva elíptica SECG secp384r1 (también denominada NIST P-384)</translation>
 <translation id="4416450511678320850">No hay aplicaciones disponibles para este contenido</translation>
 <translation id="4416582610654027550">Escribe una URL válida</translation>
-<translation id="4417162649853416189">Seleccionar la parte de una imagen para buscar con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Permitir siempre que <ph name="HOST" /> pueda establecer cookies.</translation>
 <translation id="4421932782753506458">Gatito</translation>
 <translation id="4423376891418188461">Restaurar configuración</translation>
@@ -3697,7 +3693,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4550926046134589611">Algunos enlaces compatibles se seguirán abriendo en <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Pulsa <ph name="MODIFIER_KEY_DESCRIPTION" /> para deshacer</translation>
 <translation id="4553526521109675518">Debes reiniciar tu Chromebook para cambiar el idioma del dispositivo. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Seleccionar la parte de una imagen para buscar con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">La versión de la extensión externa es igual o anterior a la actual.</translation>
 <translation id="4555769855065597957">Sombra</translation>
 <translation id="4555863373929230635">Para guardar contraseñas en tu cuenta de Google, inicia sesión y activa la sincronización.</translation>
@@ -4548,7 +4543,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5427459444770871191">Girar a la &amp;derecha</translation>
 <translation id="542750953150239272">Al continuar, aceptas que el dispositivo pueda descargar e instalar actualizaciones de aplicaciones de Google, de tu operador y del fabricante del dispositivo automáticamente, y que incluso pueda usar datos móviles. Es posible que algunas de estas aplicaciones ofrezcan compras en la aplicación.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (actualización disponible)</translation>
-<translation id="5429373054983029602">Buscar en la pantalla con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Se necesita instalar una actualización para el firmware del módulo de plataforma de confianza. Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Conexión compartida instantánea</translation>
 <translation id="5431318178759467895">Color</translation>
@@ -4621,7 +4615,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5495466433285976480">Esta acción eliminará todos los archivos, datos y usuarios locales, entre otras opciones, la próxima vez que reinicies. Todos los usuarios deberán volver a iniciar sesión.</translation>
 <translation id="5495597166260341369">Mantener la pantalla activada</translation>
-<translation id="549580971452855947">Seleccionar para buscar imágenes con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Organizar</translation>
 <translation id="5496730470963166430">No puede enviar ventanas emergentes ni usar redirecciones</translation>
 <translation id="5497251278400702716">Este archivo</translation>
@@ -5401,7 +5394,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6271780480930459892">Ponte en contacto con tu administrador para obtener la versión más reciente.</translation>
 <translation id="6272643420381259437">Se ha producido un error (<ph name="ERROR" />) al descargar el complemento</translation>
 <translation id="6273677812470008672">Calidad</translation>
-<translation id="6274202259872570803">Captura de vídeo</translation>
+<translation id="6274202259872570803">Grabación de pantalla</translation>
 <translation id="6276210637549544171">El proxy <ph name="PROXY_SERVER" /> requiere un nombre de usuario y una contraseña.</translation>
 <translation id="6277105963844135994">Tiempo de espera de red agotado</translation>
 <translation id="6277518330158259200">H&amp;acer captura de pantalla</translation>
@@ -5732,7 +5725,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 Tienes # contraseña vulnerada más. El gestor de contraseñas de Google te recomienda que compruebes esa contraseña ahora.}other{Contraseña vulnerada cambiada correctamente.
 
 Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te recomienda que compruebes esas contraseñas ahora.}}</translation>
-<translation id="6595792813574514527">Seleccionar para buscar imágenes con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Opciones de cifrado</translation>
 <translation id="6596816719288285829">Dirección IP</translation>
 <translation id="6597017209724497268">Ejemplos</translation>
@@ -7353,7 +7345,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8184318863960255706">Más información</translation>
 <translation id="8184472985242519288">Uniforme</translation>
 <translation id="8186609076106987817">El servidor no ha podido encontrar el archivo.</translation>
-<translation id="8186704951085064172">Buscar parte de la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Comprueba los ajustes del dispositivo y actívalo para continuar</translation>
 <translation id="8188742492803591566">Introduce el código de acceso mostrado en el Chromecast o en la televisión para empezar a enviar tu pantalla.</translation>
 <translation id="8189306097519446565">Cuentas de centros educativos</translation>

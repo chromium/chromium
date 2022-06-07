@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">ওয়ালপেপার হিসেবে সেট করুন</translation>
 <translation id="1578784163189013834">স্ক্রিন সেভারের ব্যাকগ্রাউন্ড বেছে নিন</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> পর্যন্ত ডেটার ব্যবহার</translation>
+<translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1621067168122174824">চার্জ টেস্ট করুন</translation>
 <translation id="1631385268983122904">এখনই ডিভাইসের সাথে ব্যাটারি ব্যবহার করবেন না</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
@@ -94,6 +95,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> এবং <ph name="SECOND_MANAGER" /> ম্যানেজ করে</translation>
 <translation id="1726100011689679555">নেম সার্ভারগুলি</translation>
 <translation id="1731082422893354635">ব্লুটুথ টাচপ্যাড</translation>
+<translation id="1745577949879301685">ছবি লোড করা যায়নি। আপনার নেটওয়ার্ক কানেকশন চেক করুন বা আবার ছবি লোড করার চেষ্টা করুন।</translation>
 <translation id="1751249301761991853">ব্যক্তিগত</translation>
 <translation id="1753496554272155572">ওয়ালপেপার প্রিভিউ থেকে বেরিয়ে আসুন</translation>
 <translation id="175763766237925754">ভাল (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -258,6 +260,7 @@
 <translation id="3413935475507503304">আপডেটগুলি ব্যবহার করে চালিয়ে যাওয়ার জন্য, 'পরবর্তী' বিকল্পে ক্লিক করুন।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
+<translation id="3441653493275994384">বাছাই করুন</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />টি পৃষ্ঠার মধ্যে <ph name="PRINTED_PAGES" /> নম্বর পৃষ্ঠা প্রিন্ট করা হয়েছে।</translation>
 <translation id="345898999683440380">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUM" />। <ph name="PERCENTAGE_VALUE" />% হয়ে গেছে।</translation>
 <translation id="3459509316159669723">প্রিন্ট হচ্ছে</translation>
@@ -280,6 +283,7 @@
 <translation id="3604713164406837697">ওয়ালপেপার পরিবর্তন করুন</translation>
 <translation id="360565022852130722">দুর্বল WEP 802.1x প্রোটোকল ব্যবহার করে ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত করা হয়েছে</translation>
 <translation id="3606583719724308068">HTTPS ওয়েবসাইটে হাই লেটেন্সি</translation>
+<translation id="3616113530831147358">অডিও</translation>
 <translation id="3621202678540785336">ইনপুট</translation>
 <translation id="3632579075709132555">প্রাইভেসি স্ক্রিন টগল করার বোতাম</translation>
 <translation id="3643810137582748570">ক্যালিব্রেশন এড়িয়ে যান</translation>
@@ -329,6 +333,7 @@
 <translation id="4140251671072434548">RMA সার্ভার আনলক পারফর্ম করুন</translation>
 <translation id="4145784616224233563">HTTP ফায়ারওয়াল</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">প্রদর্শন</translation>
 <translation id="4155551848414053977">আপনার স্ক্যানার চালু এবং নেটওয়ার্ক বা সরাসরি কানেকশনের মাধ্যমে উপলভ্য রয়েছে তা দেখে নিন</translation>
 <translation id="4159784952369912983">বেগুনি</translation>
 <translation id="4170180284036919717">ফটো তুলুন</translation>
@@ -425,6 +430,7 @@
 <translation id="4915052247106771211">এটি ডিভাইসটিকে ফ্যাক্টরি সেটিংসে (পাওয়ারওয়াশ) রিসেট করবে।</translation>
 <translation id="4917385247580444890">জোরালো</translation>
 <translation id="4917889632206600977">বন্ধ হয়ে গেছে - কাগজ শেষ হয়ে গেছে</translation>
+<translation id="491791267030419270">প্রতিক্রিয়া লেখা সংক্রান্ত পরামর্শ</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> সেকেন্ডে <ph name="RATE" /> চার্জ হয়েছে।</translation>
 <translation id="4930320165497208503">কানেকশন আপডেট করতে বা সেট আপ করতে<ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্পে যান।</translation>
 <translation id="4932733599132424254">তারিখ</translation>
@@ -744,6 +750,7 @@
 <translation id="7960831585769876809">তাপমাত্রা</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> নেটওয়ার্কে যোগ দিতে, সেটিংস বিকল্পে যান</translation>
 <translation id="7978412674231730200">ব্যক্তিগত কী</translation>
+<translation id="7982789257301363584">নেটওয়ার্ক</translation>
 <translation id="7994702968232966508">EAP পদ্ধতি</translation>
 <translation id="802154636333426148">ডাউনলোড করা যায়নি</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -838,6 +845,7 @@
 <translation id="8834539327799336565">এখন কানেক্ট করা রয়েছে</translation>
 <translation id="8845001906332463065">সাহায্য পান</translation>
 <translation id="8855781559874488009">ফায়ারওয়ালের সাহায্যে HTTP ওয়েবসাইটের সাথে কানেক্ট করা যাচ্ছে না</translation>
+<translation id="885701979325669005">স্টোরেজ</translation>
 <translation id="8863170912498892583">ডার্ক থিম চালু করুন</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" এবং অনেক কিছুর জন্য <ph name="INTENT" /> পান</translation>
 <translation id="8868741746785112895">গ্লোবালি ইউনিক আইডেন্টিফায়ার (GUID)</translation>

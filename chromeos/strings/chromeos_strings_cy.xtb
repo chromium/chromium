@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">Gosod fel papur wal</translation>
 <translation id="1578784163189013834">Dewis cefndir yr arbedydd sgrîn</translation>
 <translation id="1615335640928990664">Defnydd data ers <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Camera</translation>
 <translation id="1621067168122174824">Rhedeg prawf Gwefru</translation>
 <translation id="1631385268983122904">Peidiwch â rhoi'r ddyfais yn ôl at ei gilydd eto</translation>
 <translation id="1639239467298939599">Wrthi'n llwytho</translation>
@@ -258,6 +259,7 @@
 <translation id="3413935475507503304">I barhau gyda'r diweddariad, cliciwch Nesaf.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Diogelwch</translation>
+<translation id="3441653493275994384">Sgrîn</translation>
 <translation id="3456078764689556234">Argraffwyd tudalen <ph name="PRINTED_PAGES" /> allan o <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Wrthi'n sganio tudalen <ph name="PAGE_NUM" />. Wedi cwblhau <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Wrthi'n argraffu</translation>
@@ -280,6 +282,7 @@
 <translation id="3604713164406837697">Newid y papur wal</translation>
 <translation id="360565022852130722">Diogelir y rhwydwaith Wi-Fi gyda'r protocol gwan WEP 802.1x</translation>
 <translation id="3606583719724308068">Cuddni uchel i wefannau HTTPS</translation>
+<translation id="3616113530831147358">Sain</translation>
 <translation id="3621202678540785336">Mewnbwn</translation>
 <translation id="3632579075709132555">Togl sgrîn preifatrwydd</translation>
 <translation id="3643810137582748570">Hepgor calibradu</translation>
@@ -329,6 +332,7 @@
 <translation id="4140251671072434548">Perfformio Datgloi Gweinydd RMA</translation>
 <translation id="4145784616224233563">Wal dân HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">Sgrîn</translation>
 <translation id="4155551848414053977">Gwnewch yn siŵr bod y sganiwr wedi'i droi ymlaen a'i fod ar gael drwy'ch rhwydwaith neu gysylltiad uniongyrchol</translation>
 <translation id="4159784952369912983">Porffor</translation>
 <translation id="4170180284036919717">Tynnu llun</translation>
@@ -745,6 +749,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="7960831585769876809">Tymheredd</translation>
 <translation id="7977800524392185497">I ymuno â rhwydwaith <ph name="NETWORK_NAME" />, ewch i'r Gosodiadau</translation>
 <translation id="7978412674231730200">Allwedd breifat</translation>
+<translation id="7982789257301363584">Rhwydwaith</translation>
 <translation id="7994702968232966508">Dull EAP</translation>
 <translation id="802154636333426148">Wedi methu â lawrlwytho</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +844,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8834539327799336565">Wedi'i gysylltu ar hyn o bryd</translation>
 <translation id="8845001906332463065">Cael help</translation>
 <translation id="8855781559874488009">Methu â chysylltu â gwefannau HTTP drwy fur cadarn</translation>
+<translation id="885701979325669005">Storfa</translation>
 <translation id="8863170912498892583">Galluogi'r thema dywyll</translation>
 <translation id="8863888432376731307">Cael y <ph name="INTENT" /> ar gyfer "<ph name="QUERY" />" a rhagor</translation>
 <translation id="8868741746785112895">GUID</translation>

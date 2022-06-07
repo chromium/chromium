@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">Itakda bilang wallpaper</translation>
 <translation id="1578784163189013834">Pumili ng background ng screen saver</translation>
 <translation id="1615335640928990664">Paggamit ng data simula noong <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Camera</translation>
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
 <translation id="1631385268983122904">Huwag munang i-assemble ulit ang device</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
@@ -94,6 +95,7 @@
 <translation id="1717874160321062422">Pinapamahalaan ng <ph name="FIRST_MANAGER" /> at <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Mga name server</translation>
 <translation id="1731082422893354635">Bluetooth na touchpad</translation>
+<translation id="1745577949879301685">Hindi ma-load ang mga larawan. Suriin ang iyong koneksyon sa network o subukang i-load ulit ang mga larawan.</translation>
 <translation id="1751249301761991853">Personal</translation>
 <translation id="1753496554272155572">Lumabas sa preview ng wallpaper</translation>
 <translation id="175763766237925754">Mabilis (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -258,6 +260,7 @@
 <translation id="3413935475507503304">Para magpatuloy sa update, i-click ang Susunod.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Seguridad</translation>
+<translation id="3441653493275994384">Screen</translation>
 <translation id="3456078764689556234">Na-print ang page <ph name="PRINTED_PAGES" /> sa <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Sina-scan ang pahina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% na ang natapos.</translation>
 <translation id="3459509316159669723">Pagpi-print</translation>
@@ -280,6 +283,7 @@
 <translation id="3604713164406837697">Palitan ang wallpaper</translation>
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
 <translation id="3606583719724308068">Mataas ang latency sa mga HTTPS na website</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Toggle ng Privacy screen</translation>
 <translation id="3643810137582748570">Laktawan ang pag-calibrate</translation>
@@ -329,6 +333,7 @@
 <translation id="4140251671072434548">I-unlock ang RMA Server</translation>
 <translation id="4145784616224233563">Firewall ng HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">Display</translation>
 <translation id="4155551848414053977">Tiyaking naka-on ang scanner at available ito sa pamamagitan ng iyong network o ng isang direktang koneksyon</translation>
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4170180284036919717">Kumuha ng larawan</translation>
@@ -745,6 +750,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7977800524392185497">Para sumali sa isang <ph name="NETWORK_NAME" /> network, pumunta sa Mga Setting</translation>
 <translation id="7978412674231730200">Private na key</translation>
+<translation id="7982789257301363584">Network</translation>
 <translation id="7994702968232966508">Pamamaraang EAP</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +845,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8834539327799336565">Kasalukuyang nakakonekta</translation>
 <translation id="8845001906332463065">Humingi ng tulong</translation>
 <translation id="8855781559874488009">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTP na website</translation>
+<translation id="885701979325669005">Storage</translation>
 <translation id="8863170912498892583">I-enable ng madilim na tema</translation>
 <translation id="8863888432376731307">Kunin ang <ph name="INTENT" /> para sa "<ph name="QUERY" />" at higit pa</translation>
 <translation id="8868741746785112895">GUID</translation>

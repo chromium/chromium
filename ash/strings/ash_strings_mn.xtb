@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">Календарь</translation>
 <translation id="1153356358378277386">Хослуулсан төхөөрөмж</translation>
 <translation id="1165712434476988950">Шинэчлэлтийг ашиглахын тулд төхөөрөмжөө дахин эхлүүлэх шаардлагатай.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Таны USB-C кабель дэлгэцүүдэд зохих ёсоор холбогдохгүй байж магадгүй</translation>
 <translation id="1175572348579024023">Гүйлгэх</translation>
 <translation id="1178581264944972037">Түр зогсоох</translation>
@@ -239,6 +240,7 @@
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2367186422933365202">Таны Chromebook-д нэвтрэх боломжгүй</translation>
 <translation id="2369165858548251131">"Сайн байна уу?"-г хятад хэлээр</translation>
+<translation id="2375445874393996153">Google Туслахаар миний дэлгэцэн дээр юу байгааг хайхыг цаашид дэмжихээ больсон.</translation>
 <translation id="2390318262976603432">Хэл болон улсын кодын тохиргоо</translation>
 <translation id="240006516586367791">Медиа хяналт</translation>
 <translation id="2402411679569069051">Chromebook-нхээ түгжээг тайлахын тулд хурууны хээгээ ашиглах эсвэл утасныхаа түгжээг тайлна уу</translation>

@@ -110,6 +110,7 @@
 <translation id="1513352483775369820">Էջանիշներ և վեբ պատմություն</translation>
 <translation id="1513814250881909472">Կատարեք համաժամացում, որպեսզի ձեր մյուս սարքերի ներդիրները հասանելի դառնան։</translation>
 <translation id="1513858653616922153">Ջնջել գաղտնաբառը</translation>
+<translation id="1514552811327923157">Privacy Sandbox հարցումը բացված է ամբողջությամբ</translation>
 <translation id="1518421282666914498">Զմայլիկով GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Այսօր ակտիվ է եղել</translation>
 <translation id="1538801903729528855">Օգտագործեք ձայնային ներածումը համացանցում</translation>
@@ -321,6 +322,7 @@
 <translation id="2711073837061989559">Փորձնական տարբերակներ</translation>
 <translation id="2718352093833049315">Միայն Wi-Fi-ով</translation>
 <translation id="2718846868787000099">Ձեր նախընտրած լեզուներով բովանդակություն ցուցադրելու համար կայքերը, որոնք այցելում եք, կարող են տեսնել ձեր կարգավորումները</translation>
+<translation id="2722945394406572875">Privacy Sandbox հարցումը փակ է</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Թույլատրեք օգտագործել Օգնականը ձայնային որոնման համար</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -791,6 +793,7 @@
 <translation id="5342314432463739672">Թույլտվությունների հարցումներ</translation>
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="5368227114232678694">Օգտագործեք ինկոգնիտո ռեժիմը, որպեսզի ձեր այցելությունների պատմությունը չպահվի</translation>
+<translation id="5371717687506906963">Privacy Sandbox հարցում</translation>
 <translation id="5375577065097716013">Որոնել Google Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Արձագանքը փոփոխվել է</translation>
 <translation id="5401851137404501592">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։</translation>
@@ -894,6 +897,7 @@
 <translation id="5906513782029855931">Երբ Google Օգնականը ճանաչում է կայքերի URL-ները, այն կարող է օգնել ձեզ առաջադրանքներ կատարել։ Օգնականը կարող եք անջատել Chrome-ի կարգավորումներում։</translation>
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="5919204609460789179">Թարմացրեք <ph name="PRODUCT_NAME" />-ը՝ համաժամացումը սկսելու համար</translation>
+<translation id="593625682991400408">Փորձարկումների ընթացքում Chrome-ն ուսումասիրում է եղանակները, որոնք թույլ են տալիս սահմանափակել սպամը, խարդախությունները և կայքերի միջև տեղեկությունների փոխանակումը։ Chrome-ը նաև <ph name="BEGIN_LINK" />որոշում է ձեր հետաքրքրությունները<ph name="END_LINK" />, որոնք կայքերը կարող են օգտագործել՝ ձեզ գովազդ ցուցադրելու համար։ Ձեր հետաքրքրությունները կարող եք կառավարել կարգավորումներում։</translation>
 <translation id="5938820472109305350">Ավելացնել «<ph name="INTEREST" />» հետաքրքրությունը</translation>
 <translation id="5942872142862698679">Օգտագործվում է Google որոնման համակարգը</translation>
 <translation id="5945035219773565305">Ընթացիկ առաջարկը՝ <ph name="RECOMMENDATION" /></translation>
@@ -1512,10 +1516,10 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="9106148373857059373">Էջանիշի պահման էջը փակված է</translation>
 <translation id="9108312223223904744">Հեռախոսի օգտագործում որպես անվտանգության բանալի</translation>
 <translation id="9108808586816295166">Ապահով DNS-ը կարող է ամբողջ ընթացքում հասանելի չլինել</translation>
+<translation id="9128984223251192329">Privacy Sandbox հարցումը բացված է կիսով չափ</translation>
 <translation id="9133397713400217035">Դիտել անցանց ռեժիմում</translation>
 <translation id="9137013805542155359">Ցույց տալ բնօրինակը</translation>
 <translation id="9148126808321036104">Նորից մուտք գործել</translation>
-<translation id="9155898266292537608">Կարող եք նաև որոնել՝ սեղմելով բառի վրա</translation>
 <translation id="9158770349521403363">Կիսվել միայն բովանդակությամբ</translation>
 <translation id="9159716826369098114">Վերականգնել <ph name="TAB_COUNT" /> ներդիրից բաղկացած խումբը որպես ներդիրների նոր ֆոնային խումբ։</translation>
 <translation id="916446198114569890">Ձեր այցելած կայքերի URL-ները պահվում են ձեր Google հաշվում</translation>

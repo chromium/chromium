@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">वॉलपेपर के तौर पर सेट करें</translation>
 <translation id="1578784163189013834">स्क्रीन सेवर का बैकग्राउंड चुनें</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> से लेकर अब तक इस्तेमाल किया गया डेटा</translation>
+<translation id="1620510694547887537">कैमरा</translation>
 <translation id="1621067168122174824">चार्ज टेस्ट चलाएं</translation>
 <translation id="1631385268983122904">डिवाइस में अभी बैटरी न लगाएं</translation>
 <translation id="1639239467298939599">लोड हो रहा है</translation>
@@ -94,6 +95,7 @@
 <translation id="1717874160321062422">इसे <ph name="FIRST_MANAGER" /> और<ph name="SECOND_MANAGER" /> मैनेज करते हैं</translation>
 <translation id="1726100011689679555">नाम सर्वर</translation>
 <translation id="1731082422893354635">ब्लूटूथ टचपैड</translation>
+<translation id="1745577949879301685">इमेज लोड नहीं की जा सकीं. अपने इंटरनेट कनेक्शन की जांच करें या इमेज फिर से लोड करके देखें.</translation>
 <translation id="1751249301761991853">मनमुताबिक सेटिंग</translation>
 <translation id="1753496554272155572">वॉलपेपर की झलक से बाहर निकलें</translation>
 <translation id="175763766237925754">सिग्नल अच्छा है (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -258,6 +260,7 @@
 <translation id="3413935475507503304">अपडेट करने के लिए 'आगे बढ़ें' पर क्लिक करें.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
+<translation id="3441653493275994384">स्क्रीन</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> में से <ph name="PRINTED_PAGES" /> पेज प्रिंट किए गए.</translation>
 <translation id="345898999683440380">पेज <ph name="PAGE_NUM" /> को स्कैन किया जा रहा है. <ph name="PERCENTAGE_VALUE" />% पूरा हो गया.</translation>
 <translation id="3459509316159669723">प्रिंट करना</translation>
@@ -280,6 +283,7 @@
 <translation id="3604713164406837697">वॉलपेपर बदलें</translation>
 <translation id="360565022852130722">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP 802.1x से सुरक्षित है</translation>
 <translation id="3606583719724308068">एचटीटीपीएस वेबसाइटों के लिए, इंतज़ार का समय ज़्यादा है</translation>
+<translation id="3616113530831147358">ऑडियो</translation>
 <translation id="3621202678540785336">इनपुट</translation>
 <translation id="3632579075709132555">निजता स्क्रीन टॉगल करने वाला बटन</translation>
 <translation id="3643810137582748570">अभी कैलिब्रेट न करें</translation>
@@ -329,6 +333,7 @@
 <translation id="4140251671072434548">आरएमए सर्वर को अनलॉक करें</translation>
 <translation id="4145784616224233563">एचटीटीपी फ़ायरवॉल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">डिसप्ले</translation>
 <translation id="4155551848414053977">पक्का करें कि स्कैनर चालू हो और आपके नेटवर्क या डायरेक्ट कनेक्शन के ज़रिए उपलब्ध हो</translation>
 <translation id="4159784952369912983">बैंगनी</translation>
 <translation id="4170180284036919717">फ़ोटो लें</translation>
@@ -745,6 +750,7 @@
 <translation id="7960831585769876809">तापमान</translation>
 <translation id="7977800524392185497">किसी <ph name="NETWORK_NAME" /> नेटवर्क से जुड़ने के लिए, सेटिंग पर जाएं</translation>
 <translation id="7978412674231730200">निजी कुंजी</translation>
+<translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7994702968232966508">EAP विधि</translation>
 <translation id="802154636333426148">डाउनलोड विफल रहा</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +845,7 @@
 <translation id="8834539327799336565">फ़िलहाल, कनेक्ट किए गए डिवाइस</translation>
 <translation id="8845001906332463065">सहायता पाएं</translation>
 <translation id="8855781559874488009">फ़ायरवॉल के ज़रिए, एचटीटीपी वेबसाइटों से नहीं जोड़ा जा सकता</translation>
+<translation id="885701979325669005">मेमोरी</translation>
 <translation id="8863170912498892583">गहरे रंग वाली थीम चालू करें</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" और बाकी चीज़ों के लिए <ph name="INTENT" /> पाएं</translation>
 <translation id="8868741746785112895">GUID (ग्लोबली यूनीक आइडेंटिफ़ायर)</translation>

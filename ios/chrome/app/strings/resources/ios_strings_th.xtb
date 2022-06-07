@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">จัดการการซิงค์</translation>
 <translation id="1076421457278169141">สแกนโค้ดแล้ว</translation>
 <translation id="1084365883616172403">โพสต์ใน Facebook แล้ว</translation>
-<translation id="1086486568852410168">ค้นหาด้วย Google Lens</translation>
 <translation id="1103523840287552314">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
 <translation id="1104948393051856124">ยอมรับและดำเนินการต่อ</translation>
 <translation id="110724200315609752">เปลี่ยนเพื่อเปิดหน้าต่าง</translation>
@@ -66,6 +65,7 @@
 <translation id="1434356225517321998">เบราว์เซอร์ของคุณมีการจัดการ <ph name="BEGIN_LINK" />รายละเอียด<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">ซ่อนรหัสผ่าน</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> รายการ</translation>
+<translation id="1450170672351507823">การปกป้องแบบมาตรฐานเปิดอยู่ ใช้การปกป้องที่ปรับปรุงแล้วเพื่อความปลอดภัยมากขึ้น</translation>
 <translation id="149095475893949513">เว็บไซต์นี้พยายามดาวน์โหลดโปรไฟล์การกำหนดค่า</translation>
 <translation id="1491277525950327607">แตะ 2 ครั้งเพื่อสลับการตั้งค่า</translation>
 <translation id="1492417797159476138">คุณบันทึกชื่อผู้ใช้นี้สำหรับเว็บไซต์นี้แล้ว</translation>
@@ -739,6 +739,7 @@
 <translation id="7099761977003084116">แท็บล่าสุด</translation>
 <translation id="7102005569666697658">กำลังดาวน์โหลด… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">ซ่อน</translation>
+<translation id="7108762695052995889">เข้าชมเว็บไซต์</translation>
 <translation id="7133798577887235672">ชื่อและนามสกุล</translation>
 <translation id="7136892417564438900">กล้องถ่ายรูปไม่พร้อมใช้งาน</translation>
 <translation id="7153999225810839758">ใช้เวลาอ่าน <ph name="TIME" /> นาที</translation>

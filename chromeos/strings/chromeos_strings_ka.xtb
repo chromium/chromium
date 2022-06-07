@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">ფონად დაყენება</translation>
 <translation id="1578784163189013834">ეკრანმზოგის ფონის არჩევა</translation>
 <translation id="1615335640928990664">მონაცემთა მოხმარება <ph name="FRIENDLY_DATE" />-დან</translation>
+<translation id="1620510694547887537">კამერა</translation>
 <translation id="1621067168122174824">დატენის ტესტის გაშვება</translation>
 <translation id="1631385268983122904">ჯერ ნუ ააწყობთ მოწყობილობას</translation>
 <translation id="1639239467298939599">იტვირთება</translation>
@@ -94,6 +95,7 @@
 <translation id="1717874160321062422">მართავს <ph name="FIRST_MANAGER" /> და <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">სახელთა სერვერები</translation>
 <translation id="1731082422893354635">Bluetooth სენსორული პანელი</translation>
+<translation id="1745577949879301685">სურათები ვერ ჩაიტვირთა. შეამოწმეთ კავშირი ქსელთან, ან ხელახლა ცადეთ სურათების ჩატვირთვა.</translation>
 <translation id="1751249301761991853">პირადი</translation>
 <translation id="1753496554272155572">ფონის გადახედვის რეჟიმიდან გასვლა</translation>
 <translation id="175763766237925754">კარგი (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -258,6 +260,7 @@
 <translation id="3413935475507503304">განახლების გასაგრძელებლად დაწკაპუნებით აირჩიეთ „შემდეგი“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">უსაფრთხოება</translation>
+<translation id="3441653493275994384">ეკრანი</translation>
 <translation id="3456078764689556234">ამობეჭდილი გვერდი <ph name="PRINTED_PAGES" /> / <ph name="TOTAL_PAGES" />-დან.</translation>
 <translation id="345898999683440380">სკანირდება გვერდი <ph name="PAGE_NUM" />. დასრულებულია <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">ბეჭდვა</translation>
@@ -280,6 +283,7 @@
 <translation id="3604713164406837697">ფონის შეცვლა</translation>
 <translation id="360565022852130722">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP 802.1x</translation>
 <translation id="3606583719724308068">HTTPS ვებსაიტების რეაგირების დიდი დრო</translation>
+<translation id="3616113530831147358">აუდიო</translation>
 <translation id="3621202678540785336">შეყვანა</translation>
 <translation id="3632579075709132555">კონფიდენციალური ეკრანის გადართვა</translation>
 <translation id="3643810137582748570">კალიბრაციის გამოტოვება</translation>
@@ -329,6 +333,7 @@
 <translation id="4140251671072434548">RMA სერვერის განბლოკვა</translation>
 <translation id="4145784616224233563">HTTP ქსელის დაცვა</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">ჩვენება</translation>
 <translation id="4155551848414053977">დარწმუნდით, რომ სკანერი ჩართულია და ხელმისაწვდომია თქვენი ქსელისა თუ პირდაპირი კავშირის მეშვეობით</translation>
 <translation id="4159784952369912983">მეწამული</translation>
 <translation id="4170180284036919717">ფოტოს გადაღება</translation>
@@ -425,6 +430,7 @@
 <translation id="4915052247106771211">ეს მოქმედება დააბრუნებს მოწყობილობას ქარხნული პარამეტრებზე (შესრულდება Powerwash).</translation>
 <translation id="4917385247580444890">ძლიერი</translation>
 <translation id="4917889632206600977">გაჩერდა — ქაღალდი გათავდა</translation>
+<translation id="491791267030419270">მინიშნებები გამოხმაურების დაწერის შესახებ</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> დაიტენა <ph name="NUM_SECONDS" /> წამში.</translation>
 <translation id="4930320165497208503">კავშირის დასაყენებლად ან გასაახლებლად გადადით <ph name="BEGIN_LINK" />პარამეტრებზე<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">თარიღი</translation>
@@ -745,6 +751,7 @@
 <translation id="7960831585769876809">ტემპერატურა</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ქსელთან მისაერთებლად გადადით პარამეტრებზე</translation>
 <translation id="7978412674231730200">პირადი გასაღები</translation>
+<translation id="7982789257301363584">ქსელი</translation>
 <translation id="7994702968232966508">EAP მეთოდი</translation>
 <translation id="802154636333426148">ჩამოტვირთვა ვერ მოხერხდა</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +846,7 @@
 <translation id="8834539327799336565">ამჟამად დაკავშირებული</translation>
 <translation id="8845001906332463065">დახმარების მიღება</translation>
 <translation id="8855781559874488009">ქსელის დაცვიდან HTTP ვებსაიტებთან დაკავშირება ვერ ხერხდება</translation>
+<translation id="885701979325669005">შენახვა</translation>
 <translation id="8863170912498892583">მუქი თემის ჩართვა</translation>
 <translation id="8863888432376731307">მიიღეთ <ph name="INTENT" /> მოთხოვნისთვის „<ph name="QUERY" />“ და სხვა</translation>
 <translation id="8868741746785112895">GUID</translation>

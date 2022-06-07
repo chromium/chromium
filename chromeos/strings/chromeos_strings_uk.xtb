@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Панель запуску</translation>
 <translation id="1512982610995527443">Пристрій завершить роботу через 5 секунд</translation>
 <translation id="1522984060396982789">Ремонт виконано. Ви можете завершити роботу пристрою або виконати інші дії.</translation>
+<translation id="1526389707933164996">Анімація для заставки</translation>
 <translation id="152892567002884378">Збільшити гучність</translation>
 <translation id="1555130319947370107">Синій</translation>
 <translation id="155865706765934889">Сенсорна панель</translation>
@@ -76,6 +77,7 @@
 <translation id="1572585716423026576">Зробити фоновим малюнком</translation>
 <translation id="1578784163189013834">Вибрати фон для заставки</translation>
 <translation id="1615335640928990664">Використання трафіку з <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Камера</translation>
 <translation id="1621067168122174824">Почати перевірку заряджання</translation>
 <translation id="1631385268983122904">Поки не збирайте пристрій</translation>
 <translation id="1639239467298939599">Завантаження</translation>
@@ -257,6 +259,7 @@
 <translation id="3413935475507503304">Щоб оновити, натисніть "Далі".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Безпека</translation>
+<translation id="3441653493275994384">Екран</translation>
 <translation id="3456078764689556234">Надруковано сторінку <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканування сторінки <ph name="PAGE_NUM" />. Виконано <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Друк</translation>
@@ -279,6 +282,7 @@
 <translation id="3604713164406837697">Змінити фоновий малюнок</translation>
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
 <translation id="3606583719724308068">Велика затримка для веб-сайтів HTTPS</translation>
+<translation id="3616113530831147358">Аудіо</translation>
 <translation id="3621202678540785336">Вхід</translation>
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
 <translation id="3643810137582748570">Пропустити калібрування</translation>
@@ -300,6 +304,7 @@
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3865414814144988605">Роздільна здатність</translation>
 <translation id="387301095347517405">Кількість повних циклів заряджання акумулятора</translation>
+<translation id="3885327323343477505">Змінити заставку</translation>
 <translation id="3923184630988645767">Використання трафіку</translation>
 <translation id="3924044641767672375">Щоб спростити ремонт, рекомендовано підключитися до Wi-Fi. Мережу буде збережено.</translation>
 <translation id="3932043219784172185">Немає підключених пристроїв</translation>
@@ -327,6 +332,7 @@
 <translation id="4140251671072434548">Виконайте серверне розблокування RMA</translation>
 <translation id="4145784616224233563">Брандмауер HTTP</translation>
 <translation id="4147897805161313378">Google Фото</translation>
+<translation id="4150201353443180367">Екран</translation>
 <translation id="4155551848414053977">Переконайтеся, що сканер увімкнений і доступний у мережі або через пряме з'єднання</translation>
 <translation id="4159784952369912983">Пурпуровий</translation>
 <translation id="4170180284036919717">Як зробити фотографію</translation>
@@ -418,6 +424,7 @@
 <translation id="4890353053343094602">Негайно виберіть новий</translation>
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4897058166682006107">Рівень заряду акумулятора лівого навушника – <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4905998861748258752">Увімкніть функцію, щоб вибрати параметри заставки</translation>
 <translation id="4908030561598728899">Встановлюється мікропрограма…</translation>
 <translation id="4915052247106771211">Буде відновлено заводські налаштування пристрою (Powerwash).</translation>
 <translation id="4917385247580444890">Потужний</translation>
@@ -742,6 +749,7 @@
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7977800524392185497">Щоб приєднатися до мережі <ph name="NETWORK_NAME" />, перейдіть у налаштування</translation>
 <translation id="7978412674231730200">Секретний ключ</translation>
+<translation id="7982789257301363584">Мережа</translation>
 <translation id="7994702968232966508">Метод EAP</translation>
 <translation id="802154636333426148">Не вдалося завантажити</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -836,6 +844,7 @@
 <translation id="8834539327799336565">Підключено</translation>
 <translation id="8845001906332463065">Отримати довідку</translation>
 <translation id="8855781559874488009">Не вдається підключитися до веб-сайтів HTTP через брандмауер</translation>
+<translation id="885701979325669005">Обсяг пам’яті</translation>
 <translation id="8863170912498892583">Увімкнути темну тему</translation>
 <translation id="8863888432376731307">Шукати <ph name="INTENT" /> для запиту "<ph name="QUERY" />" тощо</translation>
 <translation id="8868741746785112895">GUID</translation>
@@ -861,6 +870,7 @@
 <translation id="8997710128084572139">Рівень заряду акумулятора пристрою – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="9025198690966128418">Використовувати як особистий пристрій</translation>
+<translation id="9028832514430399253">Увімкніть перемикач, щоб вибрати варіанти заставки</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Велика затримка перетворення DNS</translation>
 <translation id="9063121522582193837">Не вдалося відкалібрувати деякі компоненти</translation>

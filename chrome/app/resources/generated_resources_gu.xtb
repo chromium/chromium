@@ -1408,7 +1408,6 @@
     જો ભવિષ્યમાં તમને લાગે કે Voice Matchની સુવિધા તમારા બાળક માટે યોગ્ય નથી, તો Assistantના સેટિંગમાં જઈને તમે તેને સરળતાથી કાઢી શકો છો. Voice Matchના સેટઅપ દરમિયાન તમારા બાળકે રેકૉર્ડ કરેલી ઑડિયો ક્લિપ જોવા કે તેને ડિલીટ કરવા માટે તમારા બાળકના એકાઉન્ટમાંથી <ph name="VOICE_MATCH_SETTINGS_URL" /> પર જાઓ.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે પેજનો ભાગ શોધો</translation>
 <translation id="2309620859903500144">આ સાઇટને તમારા મોશન અથવા લાઇટ સેન્સરને ઍક્સેસ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">પેજનું URL</translation>
@@ -2032,7 +2031,6 @@
 <translation id="289695669188700754">કી ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">જ્યારે તમે તમારી બધી છુપી વિન્ડો બંધ કરશો, ત્યારે આ કસ્ટમ સેટિંગ કાઢી નાખવામાં આવશે</translation>
 <translation id="2897878306272793870">શું તમે ખરેખર <ph name="TAB_COUNT" /> ટૅબ્સ ખોલવા માંગો છો?</translation>
-<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે તમારી સ્ક્રીન શોધો</translation>
 <translation id="290105521672621980">ફાઇલ અસમર્થિત સુવિધાઓનો ઉપયોગ કરે છે</translation>
 <translation id="2901348420151309559">તાજેતરના ફોટા અને ઍપ</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" />, આ પ્રિન્ટર સાથે સંચાર કરી શક્યું નથી. ખાતરી કરો કે પ્રિન્ટર પ્લગ ઇન છે અને ફરી પ્રયાસ કરો.</translation>
@@ -2905,7 +2903,6 @@
 <translation id="3778740492972734840">&amp;વિકાસકર્તા  ટુલ્સ</translation>
 <translation id="3778868487658107119">તેને પ્રશ્નો પૂછો. તેને વસ્તુઓ કરવા માટે કહો. આ તમારું વ્યક્તિગત Google છે, હંમેશા મદદ કરવા માટે તૈયાર છે.</translation>
 <translation id="3781742599892759500">માઇક્રોફોનને Linuxનો ઍક્સેસ આપવાના સેટિંગ</translation>
-<translation id="378312418865624974">આ કમ્પ્યુટર માટે અનન્ય ઓળખકર્તાને વાંચો</translation>
 <translation id="3784472333786002075">કુકી એ વેબસાઇટ દ્વારા બનાવવામાં આવેલી ફાઇલો છે. કુકી બે પ્રકારની હોય છે: પહેલા પક્ષની કુકી જે તમે મુલાકાત લો છો તે સાઇટ દ્વારા બનાવવામાં આવે છે. સાઇટ ઍડ્રેસ બાર પર બતાવવામાં આવે છે. ત્રીજા પક્ષની કુકી અન્ય સાઇટ દ્વારા બનાવવામાં આવે છે. અમુક પ્રકારનું કન્ટેન્ટ આ સાઇટની માલિકીનું હોય છે, જેમ કે તમે મુલાકાત લો છો તે વેબસાઇટ પર તમે જુઓ છો તે જાહેરાતો અથવા છબીઓ.</translation>
 <translation id="3785308913036335955">ઍપ્લિકેશનો શોર્ટકટ બતાવો</translation>
 <translation id="3785727820640310185">આ સાઇટ માટે પાસવર્ડ સાચવેલા છે</translation>
@@ -3558,7 +3555,6 @@
 <translation id="4415748029120993980">SECG એલિપ્ટિક કર્વ secp384r1 (ઉર્ફ NIST P-384)</translation>
 <translation id="4416450511678320850">આ કન્ટેન્ટ માટે કોઈ ઍપ ઉપલબ્ધ નથી</translation>
 <translation id="4416582610654027550">માન્ય URL લખો</translation>
-<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે શોધવા માટે છબીઓની ઉપર ખેંચો</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> ને હંમેશા કૂકીઝ સેટ કરવાની મંજૂરી આપો</translation>
 <translation id="4421932782753506458">ફ્લફી</translation>
 <translation id="4423376891418188461">સેટિંગ રિસ્ટોર કરો</translation>
@@ -3629,6 +3625,7 @@
 <translation id="449232563137139956">ઑનલાઇન સ્ટોર કે નવા લેખ માટે ફોટા આપવા જેવા મુદ્દાઓ માટે ચિત્ર આપવા માટે, સાઇટ સામાન્ય રીતે છબીઓ બતાવે છે</translation>
 <translation id="4492698018379445570">તમે શૉપિંગ કાર્ટમાં શું ઉમેર્યું તે જુઓ અને જ્યારે તમે તૈયાર હો, ત્યારે ચેક આઉટ કરો</translation>
 <translation id="4493468155686877504">સુઝાવ આપેલું (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="4495002167047709180"><ph name="SITE" /> પર આ એક્સ્ટેન્શનને મંજૂરી આપીએ?</translation>
 <translation id="4495419450179050807">આ પેજ પર બતાવશો નહીં</translation>
 <translation id="4497145443434063861">PC અને Chromecast અલગ વાઇ-ફાઇ નેટવર્ક પર (દા.ત. 2.4GHz વિ. 5GHz)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ક્રૅશ થયું છે</translation>
@@ -3696,7 +3693,6 @@
 <translation id="4550926046134589611">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" />માં ખૂલશે.</translation>
 <translation id="4551763574344810652">છેલ્લો ફેરફાર રદ કરવા માટે <ph name="MODIFIER_KEY_DESCRIPTION" /> દબાવો</translation>
 <translation id="4553526521109675518">ડિવાઇસની ભાષા બદલવા માટે તમારે તમારું Chromebook ફરી ચાલુ કરવું જરૂરી છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે શોધવા માટે છબીઓની ઉપર ખેંચો</translation>
 <translation id="4554591392113183336">બાહ્ય એક્સ્ટેંશન હાલના એક્સ્ટેંશનની સરખામણીએ સમાન અથવા નીચલા વર્ઝન પર છે.</translation>
 <translation id="4555769855065597957">શેડો</translation>
 <translation id="4555863373929230635">તમારા Google એકાઉન્ટમાં પાસવર્ડ સાચવવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો.</translation>
@@ -4547,7 +4543,6 @@
 <translation id="5427459444770871191">&amp;ઘડિયાળની દિશામાં ફેરવો</translation>
 <translation id="542750953150239272">આગળ વધીને, તમે સંમત થાઓ છો કે આ ડિવાઇસ Google, તમારા મોબાઇલ ઑપરેટર અને તમારા ડિવાઇસના નિર્માતા તરફથી સંભવિત રીતે સેલ્યુલર ડેટાનો ઉપયોગ કરીને, અપડેટ અને ઍપને ઑટોમૅટિક રીતે ડાઉનલોડ અને ઇન્સ્ટૉલ પણ કરી શકે છે. આમાંની અમુક ઍપ, ઍપમાંથી ખરીદીઓની ઑફર કરી શકે છે.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (અપડેટ ઉપલબ્ધ છે)</translation>
-<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે તમારી સ્ક્રીન શોધો</translation>
 <translation id="542948651837270806">વિશ્વસનીય પ્લૅટફૉર્મ મૉડ્યૂલ ફર્મવેયર માટે અપડેટ ઇન્સ્ટૉલ કરવું જરૂરી છે. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> જુઓ</translation>
 <translation id="5430931332414098647">ફટાફટ ટિથરિંગ</translation>
 <translation id="5431318178759467895">રંગ</translation>
@@ -4620,7 +4615,6 @@
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
 <translation id="5495466433285976480">આ તમારા રિસ્ટાર્ટ કર્યા પછી બધા સ્થાનિક વપરાશકર્તાઓ, ફાઇલો, ડેટા અને અન્ય સેટિંગને કાઢી નાખશે. બધા વપરાશકર્તાઓને ફરી સાઇન ઇન કરવાની જરૂર પડશે.</translation>
 <translation id="5495597166260341369">ડિસ્પ્લે ચાલુ રાખે છે</translation>
-<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે છબીઓ શોધવા માટે ખેંચો</translation>
 <translation id="5496587651328244253">ગોઠવો</translation>
 <translation id="5496730470963166430">પૉપ-અપ મોકલવા અથવા રીડાયરેક્ટનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="5497251278400702716">આ ફાઇલ</translation>
@@ -5735,7 +5729,6 @@ USB ડિવાઇસ</translation>
 તમે ચેડાં કરાયેલો વધુ # પાસવર્ડ ધરાવો છો. Google Password Manager હમણાં જ આ પાસવર્ડ ચેક કરવાનો સુઝાવ આપે છે.}other{ચેડાં કરાયેલો પાસવર્ડ સફળતાપૂર્વક બદલ્યો.
 
 તમે ચેડાં કરાયેલા વધુ # પાસવર્ડ ધરાવો છો. Google Password Manager હમણાં જ આ પાસવર્ડ ચેક કરવાનો સુઝાવ આપે છે.}}</translation>
-<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે છબીઓ શોધવા માટે ખેંચો</translation>
 <translation id="6596325263575161958">એન્ક્રિપ્શન વિકલ્પો</translation>
 <translation id="6596816719288285829">IP સરનામું</translation>
 <translation id="6597017209724497268">નમૂના</translation>
@@ -7350,7 +7343,6 @@ USB ડિવાઇસ</translation>
 <translation id="8184318863960255706">વધુ માહિતી</translation>
 <translation id="8184472985242519288">સમાન</translation>
 <translation id="8186609076106987817">સર્વર ફાઇલને શોધી શક્યું નથી.</translation>
-<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે પેજનો ભાગ શોધો</translation>
 <translation id="8188389033983459049">તમારા ઉપકરણની સેટિંગ તપાસો અને ચાલુ રાખવા માટે તેને ચાલુ કરો</translation>
 <translation id="8188742492803591566">તમારી સ્ક્રીન કાસ્ટ કરવાનું શરૂ કરવા માટે, તમારા Chromecast કે ટીવી પર બતાવવામાં આવેલો ઍક્સેસ કોડ દાખલ કરો.</translation>
 <translation id="8189306097519446565">સ્કૂલ એકાઉન્ટ</translation>

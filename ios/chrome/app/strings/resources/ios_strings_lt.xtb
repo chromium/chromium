@@ -18,7 +18,6 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="1066060668811609597">Sinchronizavimo tvarkymas</translation>
 <translation id="1076421457278169141">Kodas nuskaitytas</translation>
 <translation id="1084365883616172403">„Facebook“ įrašas paskelbtas.</translation>
-<translation id="1086486568852410168">Paieška naudojant „Google Lens“</translation>
 <translation id="1103523840287552314">Visada versti <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Sutikti ir tęsti</translation>
 <translation id="110724200315609752">Perjungti į atidarytą langą</translation>
@@ -163,6 +162,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="236977714248711277">Svetainės negali naudoti slapukų, kad pagerintų naršymo kokybę, pvz., kad liktumėte prisijungę ar būtų įsimintos pirkinių krepšelyje esančios prekės.
 
 Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtingose svetainėse, pvz., kad galėtų suasmeninti skelbimus.</translation>
+<translation id="2375243552872247702">Jums skirto turinio peržiūra</translation>
 <translation id="2381405137052800939">Pagrindiniai</translation>
 <translation id="2386793615875593361">Pasirinkta: 1</translation>
 <translation id="2421004566762153674">Blokuojami trečiosios šalies slapukai</translation>
@@ -602,6 +602,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6136914049981179737">Prieš sek.</translation>
 <translation id="6144589619057374135">Atidaryti ${url} inkognito režimu</translation>
 <translation id="6149061208933997199">Naudoti slaptažodį</translation>
+<translation id="6152406514676263192">Sinchronizuokite, kad būtų pateikiamas labiausiai su jūsų pomėgiais susijęs turinys.</translation>
 <translation id="6159839020698489198">nebūtinas</translation>
 <translation id="6177442314419606057">Paieška naršyklėje „Chrome“</translation>
 <translation id="6184086493125982861">Rodyti skirtukus</translation>
@@ -749,6 +750,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7189598951263744875">Bendrinti...</translation>
 <translation id="7192050974311852563">Pradėti registravimą</translation>
 <translation id="7203585745079012652">Sakyti atsakymus</translation>
+<translation id="7207023858769244910">Sinchronizuokite, kad gautumėte turinio pagal savo pomėgius.</translation>
 <translation id="7207383424303353046">Naujiena: automatiškai atidarykite svetaines naršyklėje „Chrome“, nustatę ją kaip numatytąją naršyklės programą. <ph name="BEGIN_LINK" />Atidarykite skiltį „Nustatymai“<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Netinkamas kortelės slapyvardis</translation>
 <translation id="722454870747268814">Naujas inkognito skirtukas</translation>

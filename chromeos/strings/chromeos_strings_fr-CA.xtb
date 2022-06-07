@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
 <translation id="1578784163189013834">Choisir l'arrière-plan de l'écran de veille</translation>
 <translation id="1615335640928990664">Utilisation de données depuis le <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Caméra</translation>
 <translation id="1621067168122174824">Exécuter le test de recharge</translation>
 <translation id="1631385268983122904">Ne remettez pas la pile tout de suite</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
@@ -94,6 +95,7 @@
 <translation id="1717874160321062422">Géré par <ph name="FIRST_MANAGER" /> et par <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Serveurs de noms</translation>
 <translation id="1731082422893354635">Pavé tactile Bluethooth</translation>
+<translation id="1745577949879301685">Impossible de charger les images. Vérifiez votre connexion réseau ou essayez de charger les images à nouveau.</translation>
 <translation id="1751249301761991853">Personnel</translation>
 <translation id="1753496554272155572">Quitter l'aperçu des fonds d'écran</translation>
 <translation id="175763766237925754">Bon (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -258,6 +260,7 @@
 <translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur Suivant.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sécurité</translation>
+<translation id="3441653493275994384">Écran</translation>
 <translation id="3456078764689556234">Page imprimée <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Numérisation de la page <ph name="PAGE_NUM" /> en cours… Progression : <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Impression</translation>
@@ -280,6 +283,7 @@
 <translation id="3604713164406837697">Changer de fond d'écran</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée pour les sites Web utilisant le protocole HTTPS</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Entrée</translation>
 <translation id="3632579075709132555">Commutateur de l'écran de confidentialité</translation>
 <translation id="3643810137582748570">Ignorer le calibrage</translation>
@@ -329,6 +333,7 @@
 <translation id="4140251671072434548">Effectuer le déverrouillage du serveur ARM</translation>
 <translation id="4145784616224233563">Pare-feu HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">Affichage</translation>
 <translation id="4155551848414053977">Assurez-vous que le numériseur est allumé et accessible par le biais de votre réseau ou d'une connexion directe</translation>
 <translation id="4159784952369912983">Mauve</translation>
 <translation id="4170180284036919717">Prendre une photo</translation>
@@ -745,6 +750,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7960831585769876809">Température</translation>
 <translation id="7977800524392185497">Pour vous connecter à un réseau <ph name="NETWORK_NAME" />, accédez à Paramètres</translation>
 <translation id="7978412674231730200">Clé privée</translation>
+<translation id="7982789257301363584">Réseau</translation>
 <translation id="7994702968232966508">Méthode EAP</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +845,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8834539327799336565">Actuellement connecté</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8855781559874488009">Impossible de se connecter à travers le pare-feu à des sites Web utilisant le protocole HTTP</translation>
+<translation id="885701979325669005">Stockage</translation>
 <translation id="8863170912498892583">Activer le thème sombre</translation>
 <translation id="8863888432376731307">Obtenir la <ph name="INTENT" /> du terme « <ph name="QUERY" /> » et plus</translation>
 <translation id="8868741746785112895">GUID</translation>

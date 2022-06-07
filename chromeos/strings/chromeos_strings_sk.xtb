@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">Nastaviť ako tapetu</translation>
 <translation id="1578784163189013834">Vybrať pozadie šetriča obrazovky</translation>
 <translation id="1615335640928990664">Spotreba dát od <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Spustiť test nabitia</translation>
 <translation id="1631385268983122904">Zariadenie zatiaľ znova neskladajte</translation>
 <translation id="1639239467298939599">Prebieha načítavanie</translation>
@@ -258,6 +259,7 @@
 <translation id="3413935475507503304">Ak chcete pokračovať v aktualizácii, kliknite na Ďalej.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Bezpečnosť</translation>
+<translation id="3441653493275994384">Obrazovka</translation>
 <translation id="3456078764689556234">Bola vytlačená <ph name="PRINTED_PAGES" />. strana z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skenuje sa <ph name="PAGE_NUM" />. strana. Dokončené: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Tlač</translation>
@@ -280,6 +282,7 @@
 <translation id="3604713164406837697">Zmeniť tapetu</translation>
 <translation id="360565022852130722">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Vysoká latencia na weboch HTTPS</translation>
+<translation id="3616113530831147358">Zvuk</translation>
 <translation id="3621202678540785336">Vstup</translation>
 <translation id="3632579075709132555">Prepínanie zámky na ochranu súkromia</translation>
 <translation id="3643810137582748570">Preskočiť kalibráciu</translation>
@@ -329,6 +332,7 @@
 <translation id="4140251671072434548">Odblokujte server povolení na vrátenie tovaru</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Fotky Google</translation>
+<translation id="4150201353443180367">Displej</translation>
 <translation id="4155551848414053977">Skontrolujte, či je skener zapnutý a dostupný prostredníctvom vašej siete alebo priameho pripojenia</translation>
 <translation id="4159784952369912983">Purpurová</translation>
 <translation id="4170180284036919717">Nasnímať fotku</translation>
@@ -745,6 +749,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7960831585769876809">Teplota</translation>
 <translation id="7977800524392185497">Ak sa chcete pripojiť k sieti <ph name="NETWORK_NAME" />, prejdite do Nastavení</translation>
 <translation id="7978412674231730200">Súkromný kľúč</translation>
+<translation id="7982789257301363584">Sieť</translation>
 <translation id="7994702968232966508">Metóda EAP</translation>
 <translation id="802154636333426148">Stiahnutie zlyhalo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +844,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8834539327799336565">Aktuálne pripojené</translation>
 <translation id="8845001906332463065">Získať pomoc</translation>
 <translation id="8855781559874488009">Prostredníctvom brány firewall sa nedá pripojiť k webom HTTP</translation>
+<translation id="885701979325669005">Úložisko</translation>
 <translation id="8863170912498892583">Zapnúť tmavý motív</translation>
 <translation id="8863888432376731307">Získajte <ph name="INTENT" /> pre dopyt <ph name="QUERY" /> a ešte viac</translation>
 <translation id="8868741746785112895">GUID</translation>

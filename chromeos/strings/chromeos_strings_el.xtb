@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">Ορισμός ως ταπετσαρία</translation>
 <translation id="1578784163189013834">Επιλέξτε το παρασκήνιο της προφύλαξης οθόνης</translation>
 <translation id="1615335640928990664">Χρήση δεδομένων από τις <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1621067168122174824">Εκτέλεση δοκιμής φόρτισης</translation>
 <translation id="1631385268983122904">Μην συναρμολογήσετε τη συσκευή ακόμα</translation>
 <translation id="1639239467298939599">Γίνεται φόρτωση</translation>
@@ -94,6 +95,7 @@
 <translation id="1717874160321062422">Διαχειρίζεται από <ph name="FIRST_MANAGER" /> και <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Διακομιστές ονομάτων</translation>
 <translation id="1731082422893354635">Επιφάνεια αφής Bluetooth</translation>
+<translation id="1745577949879301685">Δεν ήταν δυνατή η φόρτωση των εικόνων. Ελέγξτε τη σύνδεση δικτύου ή δοκιμάστε να φορτώσετε ξανά τις εικόνες.</translation>
 <translation id="1751249301761991853">Προσωπικές</translation>
 <translation id="1753496554272155572">Έξοδος από προεπισκόπηση ταπετσαρίας</translation>
 <translation id="175763766237925754">Καλό (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -258,6 +260,7 @@
 <translation id="3413935475507503304">Για να συνεχίσετε με την ενημέρωση, κάντε κλικ στο Επόμενο.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Ασφάλεια</translation>
+<translation id="3441653493275994384">Έλεγχος</translation>
 <translation id="3456078764689556234">Εκτυπώθηκε η σελίδα <ph name="PRINTED_PAGES" /> από <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Σάρωση σελίδας <ph name="PAGE_NUM" />. Ολοκληρώθηκε το <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Εκτύπωση</translation>
@@ -280,6 +283,7 @@
 <translation id="3604713164406837697">Αλλαγή ταπετσαρίας</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
 <translation id="3606583719724308068">Υψηλός λανθάνων χρόνος σε ιστοτόπους HTTPS</translation>
+<translation id="3616113530831147358">Ήχος</translation>
 <translation id="3621202678540785336">Είσοδος</translation>
 <translation id="3632579075709132555">Εναλλαγή οθόνης απορρήτου</translation>
 <translation id="3643810137582748570">Παράβλεψη βαθμονόμησης</translation>
@@ -329,6 +333,7 @@
 <translation id="4140251671072434548">Εκτέλεση ξεκλειδώματος διακομιστή εξουσιοδότησης επιστροφής εμπορικών προϊόντων (RMA)</translation>
 <translation id="4145784616224233563">Τείχος προστασίας HTTP</translation>
 <translation id="4147897805161313378">Φωτογραφίες Google</translation>
+<translation id="4150201353443180367">Οθόνη</translation>
 <translation id="4155551848414053977">Βεβαιωθείτε ότι ο σαρωτής είναι ενεργοποιημένος και διαθέσιμος μέσω του δικτύου σας ή μέσω άμεσης σύνδεσης.</translation>
 <translation id="4159784952369912983">Μοβ</translation>
 <translation id="4170180284036919717">Λήψη φωτογραφίας</translation>
@@ -745,6 +750,7 @@
 <translation id="7960831585769876809">Θερμοκρασία</translation>
 <translation id="7977800524392185497">Για να συμμετάσχετε σε ένα δίκτυο <ph name="NETWORK_NAME" />, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="7978412674231730200">Ιδιωτικό κλειδί</translation>
+<translation id="7982789257301363584">Δίκτυο</translation>
 <translation id="7994702968232966508">Μέθοδος EAP</translation>
 <translation id="802154636333426148">Η λήψη απέτυχε</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +845,7 @@
 <translation id="8834539327799336565">Συνδεδεμένες αυτήν τη στιγμή</translation>
 <translation id="8845001906332463065">Λήψη βοήθειας</translation>
 <translation id="8855781559874488009">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTP.</translation>
+<translation id="885701979325669005">Αποθήκευση</translation>
 <translation id="8863170912498892583">Ενεργοποίηση σκούρου θέματος</translation>
 <translation id="8863888432376731307">Αποκτήστε το <ph name="INTENT" /> για "<ph name="QUERY" />" και περισσότερα</translation>
 <translation id="8868741746785112895">GUID</translation>

@@ -204,6 +204,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1188807932851744811">Nhật ký chưa được tải lên.</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Truy cập một tệp được lưu trữ trên máy tính của bạn}other{Truy cập # tệp được lưu trữ trên máy tính của bạn}}</translation>
 <translation id="119092896208640858">Để chỉ xóa dữ liệu duyệt web khỏi thiết bị này nhưng vẫn lưu giữ trong Tài khoản Google của bạn, hãy <ph name="BEGIN_LINK" />đăng xuất<ph name="END_LINK" />.</translation>
+<translation id="1191353342579061195">Chọn giao diện phù hợp với nhu cầu của bạn. Để thay đổi giao diện, hình nền, trình bảo vệ màn hình, v.v., bạn chỉ cần nhấp chuột phải vào màn hình.</translation>
 <translation id="1192706927100816598">{0,plural, =1{Bạn sẽ tự động đăng xuất sau # giây.
 <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}other{Bạn sẽ tự động đăng xuất sau # giây.
 <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}}</translation>
@@ -1305,6 +1306,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2220409419896228519">Thêm dấu trang vào các ứng dụng của Google mà bạn ưa thích</translation>
 <translation id="2220529011494928058">Báo cáo sự cố</translation>
 <translation id="2220572644011485463">Mã PIN hoặc mật khẩu</translation>
+<translation id="222115440608612541">Chuyển đổi giao diện lúc bình minh và hoàng hôn</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Nguồn phương tiện nghe nhìn chưa đặt tên</translation>
 <translation id="2224444042887712269">Cài đặt này thuộc về <ph name="OWNER_EMAIL" />.</translation>
@@ -1426,7 +1428,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
     Nếu sau này bạn quyết định rằng tính năng Voice Match không phù hợp với con mình, thì chỉ cần xóa tính năng này trong phần Cài đặt của Trợ lý trên thiết bị của con bạn. Để xem hoặc xóa các đoạn âm thanh mà con bạn ghi lại trong quá trình thiết lập tính năng Voice Match, hãy truy cập <ph name="VOICE_MATCH_SETTINGS_URL" /> bằng tài khoản của con bạn.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Tìm kiếm trên một phần của trang bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Trang web này đã bị chặn sử dụng cảm biến chuyển động hoặc ánh sáng của thiết bị.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL của trang</translation>
@@ -1534,6 +1535,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="241082044617551207">Plugin không rõ</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Phím chức năng trên bàn phím</translation>
+<translation id="2418307627282545839">Giữ cho mọi thứ luôn sáng sủa và thoáng mát</translation>
 <translation id="2419131370336513030">Xem các ứng dụng đã cài đặt</translation>
 <translation id="2419706071571366386">Vì lý do bảo mật, hãy đăng xuất khi bạn không sử dụng máy tính.</translation>
 <translation id="2422125132043002186">Đã hủy quá trình khôi phục Linux</translation>
@@ -2050,7 +2052,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="289695669188700754">ID Khoá: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Chế độ cài đặt tùy chỉnh này sẽ bị xóa khi bạn đóng tất cả Cửa sổ ẩn danh</translation>
 <translation id="2897878306272793870">Bạn có chắc chắn muốn mở <ph name="TAB_COUNT" /> thẻ không?</translation>
-<translation id="2900477968385519153">Tìm kiếm trên Màn hình của bạn bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Tệp sử dụng các tính năng không được hỗ trợ</translation>
 <translation id="2901348420151309559">Ảnh và ứng dụng gần đây</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> không thể giao tiếp với máy in này. Hãy đảm bảo rằng bạn đã cắm máy in rồi thử lại.</translation>
@@ -2923,7 +2924,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3778740492972734840">Công cụ dành cho &amp;Nhà phát triển</translation>
 <translation id="3778868487658107119">Đặt câu hỏi cho Trợ lý. Yêu cầu Trợ lý làm mọi việc. Đó là Google của riêng bạn, luôn sẵn sàng trợ giúp bạn.</translation>
 <translation id="3781742599892759500">Quyền truy cập vào micrô của Linux</translation>
-<translation id="378312418865624974">Đọc mã số nhận dạng duy nhất dành cho máy tính này</translation>
 <translation id="3784472333786002075">Cookie là tệp do các trang web tạo ra. Có 2 loại cookie: Cookie của bên thứ nhất do trang web mà bạn truy cập tạo ra. Trang web này hiển thị trên thanh địa chỉ. Cookie của bên thứ ba do các trang web khác tạo ra. Các trang web này sở hữu một số nội dung như quảng cáo hoặc hình ảnh mà bạn thấy trên trang web mình truy cập.</translation>
 <translation id="3785308913036335955">Hiển thị lối tắt cho ứng dụng</translation>
 <translation id="3785727820640310185">Đã lưu mật khẩu cho trang web này</translation>
@@ -3577,7 +3577,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4415748029120993980">Đường cong elip SECG secp384r1 (aka NIST P-384)</translation>
 <translation id="4416450511678320850">Không có ứng dụng nào cho nội dung này</translation>
 <translation id="4416582610654027550">Nhập một URL hợp lệ</translation>
-<translation id="4417162649853416189">Kéo qua phần Hình ảnh để Tìm kiếm bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Luôn cho phép <ph name="HOST" /> đặt cookie</translation>
 <translation id="4421932782753506458">Mèo con dễ thương</translation>
 <translation id="4423376891418188461">Khôi phục cài đặt</translation>
@@ -3716,7 +3715,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4550926046134589611">Một số đường liên kết được hỗ trợ vẫn sẽ mở trong <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Nhấn <ph name="MODIFIER_KEY_DESCRIPTION" /> để hủy thao tác</translation>
 <translation id="4553526521109675518">Bạn cần khởi động lại Chromebook để thay đổi ngôn ngữ của thiết bị. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Kéo qua phần hình ảnh để tìm kiếm bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Tiện ích bên ngoài có cùng phiên bản hoặc phiên bản thấp hơn so với tiện ích hiện có.</translation>
 <translation id="4555769855065597957">Bóng</translation>
 <translation id="4555863373929230635">Để lưu mật khẩu vào Tài khoản Google của bạn, hãy đăng nhập và bật tính năng đồng bộ hóa.</translation>
@@ -4567,7 +4565,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5427459444770871191">Xoay &amp;theo chiều kim đồng hồ</translation>
 <translation id="542750953150239272">Bằng cách tiếp tục, bạn đồng ý rằng thiết bị này cũng có thể tự động tải xuống và cài đặt các bản cập nhật và ứng dụng của Google, nhà mạng của bạn và nhà sản xuất thiết bị (có thể dùng dữ liệu di động). Một vài ứng dụng trong số này có thể cung cấp lựa chọn mua hàng trong ứng dụng.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Có bản cập nhật)</translation>
-<translation id="5429373054983029602">Tìm kiếm trên màn hình của bạn bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Bạn cần cài đặt bản cập nhật của chương trình cơ sở Mô-đun nền tảng đáng tin cậy. Hãy truy cập vào <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Chia sẻ Internet tức thì</translation>
 <translation id="5431318178759467895">Màu</translation>
@@ -4640,7 +4637,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5494920125229734069">Chọn tất cả</translation>
 <translation id="5495466433285976480">Quá trình này sẽ xóa tất cả dữ liệu, tệp, người dùng trên máy và các cài đặt khác sau khi bạn khởi động lại vào lần kế tiếp. Tất cả người dùng sẽ cần đăng nhập lại.</translation>
 <translation id="5495597166260341369">Luôn bật màn hình</translation>
-<translation id="549580971452855947">Kéo để tìm kiếm hình ảnh bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Tổ chức</translation>
 <translation id="5496730470963166430">Không được phép gửi cửa sổ bật lên hoặc dùng lệnh chuyển hướng</translation>
 <translation id="5497251278400702716">Tệp này</translation>
@@ -5751,7 +5747,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của Google khuyên bạn nên kiểm tra mật khẩu này ngay.}other{Đã đổi thành công mật khẩu bị lộ.
 
 Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của Google khuyên bạn nên kiểm tra mật khẩu này ngay.}}</translation>
-<translation id="6595792813574514527">Kéo để Tìm kiếm hình ảnh bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Tùy chọn mã hóa</translation>
 <translation id="6596816719288285829">Địa chỉ IP</translation>
 <translation id="6597017209724497268">Mẫu</translation>
@@ -6052,6 +6047,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6895032998810961280">Báo cáo chi tiết cho Google về các quy trình, tùy chọn cài đặt hệ thống và phần mềm có hại được phát hiện trên máy tính của bạn trong quá trình làm sạch này</translation>
 <translation id="6896758677409633944">Sao chép</translation>
 <translation id="6897363604023044284">Chọn các trang web có dữ liệu cần xóa</translation>
+<translation id="6897688156970667447">Hữu ích trong điều kiện ánh sáng yếu và tiết kiệm pin</translation>
 <translation id="6898440773573063262">Ứng dụng kiosk giờ đây có thể được định cấu hình để tự động chạy trên thiết bị này.</translation>
 <translation id="6900284862687837908">Ứng dụng nền: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Chế độ bảo vệ nâng cao</translation>
@@ -7372,7 +7368,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8184318863960255706">Thông tin khác</translation>
 <translation id="8184472985242519288">Đồng nhất</translation>
 <translation id="8186609076106987817">Máy chủ không thể tìm thấy tệp.</translation>
-<translation id="8186704951085064172">Tìm kiếm trên một phần của Trang bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Kiểm tra mục cài đặt thiết bị và bật Bluetooth để tiếp tục</translation>
 <translation id="8188742492803591566">Nhập mã truy cập xuất hiện trên Chromecast hoặc TV để bắt đầu truyền tới màn hình.</translation>
 <translation id="8189306097519446565">Tài khoản trường học</translation>
@@ -7541,6 +7536,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8358685469073206162">Bạn có muốn khôi phục trang không?</translation>
 <translation id="8358912028636606457">Thiết bị này không hỗ trợ truyền âm thanh của thẻ.</translation>
 <translation id="835951711479681002">Lưu trong Tài khoản Google</translation>
+<translation id="8360140320636871023">Cá nhân hoá giao diện hiển thị</translation>
 <translation id="8363095875018065315">chính thức</translation>
 <translation id="8363142353806532503">Micrô bị chặn</translation>
 <translation id="8366396658833131068">Kết nối mạng của bạn đã được khôi phục. Hãy chọn mạng khác hoặc nhấn nút 'Tiếp tục' bên dưới để khởi chạy ứng dụng kiosk của bạn.</translation>

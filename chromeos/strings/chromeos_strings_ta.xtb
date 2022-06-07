@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">வால்பேப்பராக அமை</translation>
 <translation id="1578784163189013834">ஸ்கிரீன் சேவர் பின்புலத்தைத் தேர்வுசெய்தல்</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> வரையிலான டேட்டா உபயோகம்</translation>
+<translation id="1620510694547887537">கேமரா</translation>
 <translation id="1621067168122174824">சார்ஜ் சோதனையை இயக்கு</translation>
 <translation id="1631385268983122904">இப்போது சாதனத்தில் பேட்டரியைப் பொருத்த வேண்டாம்</translation>
 <translation id="1639239467298939599">ஏற்றுகிறது</translation>
@@ -94,6 +95,7 @@
 <translation id="1717874160321062422">நிர்வகிப்பது: <ph name="FIRST_MANAGER" />, <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">பெயர் சேவையகங்கள்</translation>
 <translation id="1731082422893354635">புளூடூத் டச்பேட்</translation>
+<translation id="1745577949879301685">படங்களை ஏற்ற முடியவில்லை. இணைய இணைப்பைச் சரிபார்க்கவும் அல்லது மீண்டும் படங்களை ஏற்ற முயலவும்.</translation>
 <translation id="1751249301761991853">தனிப்பட்டவை</translation>
 <translation id="1753496554272155572">வால்பேப்பர் மாதிரிக்காட்சியில் இருந்து வெளியேறும்</translation>
 <translation id="175763766237925754">நன்றாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -258,6 +260,7 @@
 <translation id="3413935475507503304">புதுப்பிப்பைத் தொடர, அடுத்து என்பதைக் கிளிக் செய்யவும்.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">பாதுகாப்பு</translation>
+<translation id="3441653493275994384">பார்</translation>
 <translation id="3456078764689556234">அச்சிடப்பட்ட பக்கங்கள்: <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% முடிந்தது.</translation>
 <translation id="3459509316159669723">அச்சிடல்</translation>
@@ -280,6 +283,7 @@
 <translation id="3604713164406837697">வால்பேப்பரை மாற்று</translation>
 <translation id="360565022852130722">WEP 802.1x என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="3606583719724308068">HTTPS இணையதளங்களில் அதிகளவு தாமதம் ஏற்படுகிறது</translation>
+<translation id="3616113530831147358">ஆடியோ</translation>
 <translation id="3621202678540785336">உள்ளீடு</translation>
 <translation id="3632579075709132555">தனிப்பட்ட திரையை இயக்கும்/முடக்கும்</translation>
 <translation id="3643810137582748570">சரிசெய்தலைத் தவிர்</translation>
@@ -329,6 +333,7 @@
 <translation id="4140251671072434548">RMA சேவையக அன்லாக்கைச் செயல்படுத்துங்கள்</translation>
 <translation id="4145784616224233563">HTTP ஃபயர்வால்</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">திரை</translation>
 <translation id="4155551848414053977">ஸ்கேனர் இயக்கப்பட்டிருப்பதையும் அது உங்கள் நெட்வொர்க் மூலமாகவோ நேரடியாகவோ இணைக்கப்பட்டிருப்பதையும் உறுதிசெய்துகொள்ளவும்</translation>
 <translation id="4159784952369912983">பர்பிள்</translation>
 <translation id="4170180284036919717">படமெடு</translation>
@@ -745,6 +750,7 @@
 <translation id="7960831585769876809">வெப்பநிலை</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> நெட்வொர்க்கில் இணைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="7978412674231730200">தனிப்பட்ட விசை</translation>
+<translation id="7982789257301363584">நெட்வொர்க்</translation>
 <translation id="7994702968232966508">EAP முறை</translation>
 <translation id="802154636333426148">பதிவிறக்க முடியவில்லை</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +845,7 @@
 <translation id="8834539327799336565">தற்போது இணைக்கப்பட்டுள்ளவை</translation>
 <translation id="8845001906332463065">உதவி பெறுக</translation>
 <translation id="8855781559874488009">HTTP இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>
+<translation id="885701979325669005">சேமிப்பிடம்</translation>
 <translation id="8863170912498892583">டார்க் தீமினை இயக்குதல்</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />", மேலும் பலவற்றுக்கான <ph name="INTENT" /> பெறுங்கள்</translation>
 <translation id="8868741746785112895">GUID</translation>

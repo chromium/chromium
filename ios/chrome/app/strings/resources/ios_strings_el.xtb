@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">Διαχείριση συγχρονισμού</translation>
 <translation id="1076421457278169141">Ο κώδικας σαρώθηκε</translation>
 <translation id="1084365883616172403">Η ανάρτηση στο Facebook ολοκληρώθηκε.</translation>
-<translation id="1086486568852410168">Αναζήτηση με Google Lens</translation>
 <translation id="1103523840287552314">Να μεταφράζονται πάντα τα <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Αποδοχή και συνέχεια</translation>
 <translation id="110724200315609752">Εναλλαγή σε ανοικτό παράθυρο</translation>
@@ -66,6 +65,7 @@
 <translation id="1434356225517321998">Το πρόγραμμα περιήγησής σας είναι διαχειριζόμενο. <ph name="BEGIN_LINK" />Λεπτομέρειες<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Απόκρυψη κωδικού πρόσβασης</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> στοιχεία</translation>
+<translation id="1450170672351507823">Η Βασική προστασία είναι ενεργή. Για ακόμη μεγαλύτερη ασφάλεια, χρησιμοποιήστε τη Βελτιωμένη προστασία.</translation>
 <translation id="149095475893949513">Αυτός ο ιστότοπος προσπαθεί να κατεβάσει ένα προφίλ διαμόρφωσης.</translation>
 <translation id="1491277525950327607">Πατήστε δύο φορές για εναλλαγή της ρύθμισης</translation>
 <translation id="1492417797159476138">Έχετε αποθηκεύσει ήδη αυτό το όνομα χρήστη για αυτόν τον ιστότοπο.</translation>
@@ -740,6 +740,7 @@
 <translation id="7099761977003084116">Πρόσφατες καρτέλες</translation>
 <translation id="7102005569666697658">Λήψη… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Απόκρυψη</translation>
+<translation id="7108762695052995889">Επίσκεψη στον ιστότοπο</translation>
 <translation id="7133798577887235672">Ονοματεπώνυμο</translation>
 <translation id="7136892417564438900">Η κάμερα δεν είναι διαθέσιμη</translation>
 <translation id="7153999225810839758"><ph name="TIME" /> λεπτό για ανάγνωση</translation>

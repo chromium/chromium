@@ -1408,7 +1408,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
     Nëse vendos më vonë se Voice Match nuk është i përshtatshëm për fëmijën tënd, thjesht hiqe atë nga "Cilësimet" e "Asistentit". Për të parë ose fshirë klipet e audios që regjistron fëmija yt gjatë konfigurimit të Voice Match, shko te <ph name="VOICE_MATCH_SETTINGS_URL" /> nga llogaria e fëmijës tënd.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Kërko në një pjesë të faqes me <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Kësaj faqeje i është bllokuar qasja te sensorët e lëvizjes ose të dritës.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL-ja e faqes</translation>
@@ -2031,7 +2030,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="289695669188700754">ID-ja e çelësit: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Ky cilësim i parazgjedhur do të hiqet kur të mbyllësh të gjitha dritaret "e fshehta"</translation>
 <translation id="2897878306272793870">Je i sigurt se dëshiron të hapësh <ph name="TAB_COUNT" /> skeda?</translation>
-<translation id="2900477968385519153">Kërko ekranin tënd me <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Skedari përdor funksione që nuk mbështeten</translation>
 <translation id="2901348420151309559">Fotografitë dhe aplikacionet e fundit</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> nuk mund të komunikonte me këtë printer. Sigurohu që printeri të jetë i lidhur dhe provo përsëri.</translation>
@@ -2904,7 +2902,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3778740492972734840">&amp;Mjetet e zhvilluesit</translation>
 <translation id="3778868487658107119">Bëji pyetje. Thuaji që të bëjë gjëra. Është Google yt personal, gjithmonë gati për të të ndihmuar.</translation>
 <translation id="3781742599892759500">Qasja te mikrofoni i Linux</translation>
-<translation id="378312418865624974">Lexo një identifikues unik për këtë kompjuter</translation>
 <translation id="3784472333786002075">Kukit janë skedarë të krijuar nga sajtet e uebit. Ka dy lloje kukish: Kukit e palëve të para krijohen nga sajti që viziton ti. Sajti shfaqet në shiritin e adresës. Kukit e palëve të treta krijohen nga sajte të tjera. Këto sajte zotërojnë disa nga përmbajtjet, si p.sh. reklamat ose imazhet që ti shikon në sajtin e uebit që viziton.</translation>
 <translation id="3785308913036335955">Shfaq shkurtoren e aplikacioneve</translation>
 <translation id="3785727820640310185">Fjalëkalimet e ruajtura për këtë sajt</translation>
@@ -3557,7 +3554,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4415748029120993980">Kurba eliptike SECG secp384r1 (e njohur edhe si NIST P-384)</translation>
 <translation id="4416450511678320850">Nuk ka aplikacione të disponueshme për këtë përmbajtje</translation>
 <translation id="4416582610654027550">Shkruaj një URL të vlefshme</translation>
-<translation id="4417162649853416189">Zvarrit mbi imazhe për të kërkuar me <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Lejo gjithmonë që <ph name="HOST" /> të caktojë kuki</translation>
 <translation id="4421932782753506458">Mace</translation>
 <translation id="4423376891418188461">Restauro cilësimet</translation>
@@ -3695,7 +3691,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4550926046134589611">Disa lidhje të mbështetura do të vazhdojnë të hapen në <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Shtyp <ph name="MODIFIER_KEY_DESCRIPTION" /> për ta zhbërë</translation>
 <translation id="4553526521109675518">Duhet të rinisësh pajisjen tënde Chromebook për të ndryshuar gjuhën e pajisjes. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Zvarrit mbi imazhe për të kërkuar me <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Shtesa e jashtme është në të njëjtin version ose më të ulët në krahasim me ekzistuesin.</translation>
 <translation id="4555769855065597957">Hije</translation>
 <translation id="4555863373929230635">Për të ruajtur fjalëkalimet në "Llogarinë tënde të Google", identifikohu dhe aktivizo sinkronizimin.</translation>
@@ -4546,7 +4541,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5427459444770871191">Rrotullo në drejtim &amp;të akrepave të orës</translation>
 <translation id="542750953150239272">Duke vazhduar, ti pranon që kjo pajisje mund të shkarkojë dhe të instalojë po ashtu automatikisht përditësime dhe aplikacione nga Google, operatori yt celular dhe nga prodhuesi pajisjes sate, mundësisht duke përdorur të dhënat celulare. Disa prej këtyre aplikacioneve mund të ofrojnë blerje përmes aplikacionit. Disa prej këtyre aplikacioneve mund të ofrojnë blerje përmes aplikacionit.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (ofrohet përditësim)</translation>
-<translation id="5429373054983029602">Kërko ekranin tënd me <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Duhet të instalohet një përditësim për firmuerin e "Modulit të platformës së besuar". Shiko <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Ndarja e internetit në çast</translation>
 <translation id="5431318178759467895">Ngjyra</translation>
@@ -4619,7 +4613,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5495466433285976480">Kjo do të heqë të gjithë përdoruesit lokalë, skedarët, të dhënat dhe cilësimet e tjera pas rinisjes së radhës. Të gjithë përdoruesit do të duhet të identifikohen sërish.</translation>
 <translation id="5495597166260341369">Mbaje ekranin të ndezur</translation>
-<translation id="549580971452855947">Zvarrit për të kërkuar imazhe me <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Organizo</translation>
 <translation id="5496730470963166430">Nuk lejohen të dërgojnë dritare kërcyese ose të përdorin ridrejtimet</translation>
 <translation id="5497251278400702716">Ky skedar</translation>
@@ -5730,7 +5723,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 Ke edhe # fjalëkalim tjetër të komprometuar. "Menaxheri i fjalëkalimeve" i Google rekomandon ta kontrollosh këtë fjalëkalim tani.}other{Fjalëkalimi i komprometuar u ndryshua me sukses.
 
 Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve" i Google rekomandon t'i kontrollosh këto fjalëkalime tani.}}</translation>
-<translation id="6595792813574514527">Zvarrit për të kërkuar imazhe me <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Opsionet e enkriptimit</translation>
 <translation id="6596816719288285829">Adresa e IP-së</translation>
 <translation id="6597017209724497268">Shembuj</translation>
@@ -7348,7 +7340,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8184318863960255706">Më shumë informacione</translation>
 <translation id="8184472985242519288">Uniform</translation>
 <translation id="8186609076106987817">Serveri nuk mund të gjejë skedarin.</translation>
-<translation id="8186704951085064172">Kërko në një pjesë të faqes me <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Kontrollo cilësimet e pajisjes dhe aktivizoje për të vazhduar</translation>
 <translation id="8188742492803591566">Fut kodin e qasjes që shfaqet në Chromecast ose në televizor për të filluar transmetimin në ekran.</translation>
 <translation id="8189306097519446565">Llogaritë e shkollës</translation>

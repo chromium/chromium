@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Grants, scholarships and financial aid</translation>
 <translation id="1048785276086539861">When you edit annotations, this document will return to single-page view</translation>
 <translation id="1050038467049342496">Close other apps</translation>
+<translation id="1053959602163383901">You chose to verify with an authenticator device on websites that use <ph name="PROVIDER_ORIGIN" />. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Undo add</translation>
 <translation id="1056663316309890343">Photo software</translation>
 <translation id="1056898198331236512">Warning</translation>
@@ -425,6 +426,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2053111141626950936">Pages in <ph name="LANGUAGE" /> will not be translated.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{When this control is on and the status is active, Chrome determines which large group of people, or 'cohort', your recent browsing activity is most similar to. Advertisers can select ads for the group, and your browsing activity is kept private on your device. Your group is updated every day.}=1{When this control is on and the status is active, Chrome determines which large group of people, or 'cohort', your recent browsing activity is most similar to. Advertisers can select ads for the group, and your browsing activity is kept private on your device. Your group is updated every day.}other{When this control is on and the status is active, Chrome determines which large group of people, or 'cohort', your recent browsing activity is most similar to. Advertisers can select ads for the group, and your browsing activity is kept private on your device. Your group is updated every {NUM_DAYS} days.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}other{# suggestions}}</translation>
+<translation id="2066915425250589881">request to be deleted</translation>
 <translation id="2068528718802935086">Babies and toddlers</translation>
 <translation id="2071156619270205202">This card is not eligible for virtual card number.</translation>
 <translation id="2071692954027939183">Notifications were automatically blocked because you usually don't allow them</translation>
@@ -581,6 +583,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2512101340618156538">Not allowed (default)</translation>
 <translation id="2512413427717747692">Set Chrome as default browser button, press Enter to set Chrome as the system's default browser in iOS settings</translation>
 <translation id="2515629240566999685">Checking the signal in your area</translation>
+<translation id="2515761554693942801">You chose to verify with Touch ID on websites that use <ph name="PROVIDER_ORIGIN" />. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Staple bottom right</translation>
 <translation id="2521736961081452453">Create form</translation>
 <translation id="2523886232349826891">Saved on this device only</translation>
@@ -1500,6 +1503,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5051305769747448211">Live comedy</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{To send this file using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}other{To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}}</translation>
 <translation id="5056549851600133418">Articles for you</translation>
+<translation id="5060483733937416656">You chose to verify with Windows Hello on websites that use <ph name="PROVIDER_ORIGIN" />. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Did you mean <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Printing history</translation>
 <translation id="5068234115460527047">Hedge funds</translation>

@@ -18,7 +18,6 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1066060668811609597">Gerir a sincronização</translation>
 <translation id="1076421457278169141">Código digitalizado</translation>
 <translation id="1084365883616172403">Publicação no Facebook concluída.</translation>
-<translation id="1086486568852410168">Pesquisar com o Google Lens</translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Aceitar e Continuar</translation>
 <translation id="110724200315609752">Mudar para a janela aberta</translation>
@@ -164,6 +163,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="236977714248711277">Os sites não podem utilizar cookies para melhorar a experiência de navegação, por exemplo, para manter a sua sessão iniciada ou memorizar os artigos no seu carrinho de compras.
 
 Os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
+<translation id="2375243552872247702">Veja conteúdo para si</translation>
 <translation id="2381405137052800939">Noções básicas</translation>
 <translation id="2386793615875593361">1 selecionada</translation>
 <translation id="2421004566762153674">Bloquear cookies de terceiros</translation>
@@ -603,6 +603,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6136914049981179737">Há segundos</translation>
 <translation id="6144589619057374135">Abrir ${url} na Navegação anónima</translation>
 <translation id="6149061208933997199">Util. palavra-passe</translation>
+<translation id="6152406514676263192">Sincronize para obter o conteúdo mais relevante com base nos seus interesses.</translation>
 <translation id="6159839020698489198">opcional</translation>
 <translation id="6177442314419606057">Pesquisar no Chrome</translation>
 <translation id="6184086493125982861">Mostrar Separadores</translation>
@@ -740,6 +741,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7099761977003084116">Separadores recentes</translation>
 <translation id="7102005569666697658">A transferir… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ocultar</translation>
+<translation id="7108762695052995889">Visitar site</translation>
 <translation id="7133798577887235672">Nome completo</translation>
 <translation id="7136892417564438900">A câmara não está disponível</translation>
 <translation id="7153999225810839758">Leitura de <ph name="TIME" /> minuto(s)</translation>
@@ -750,6 +752,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7189598951263744875">Partilhar...</translation>
 <translation id="7192050974311852563">Iniciar registo</translation>
 <translation id="7203585745079012652">Ouvir Respostas</translation>
+<translation id="7207023858769244910">Sincronize para obter conteúdo com base nos seus interesses.</translation>
 <translation id="7207383424303353046">Novidade: abra automaticamente os sites no Chrome ao torná-lo a sua app de navegador predefinida. <ph name="BEGIN_LINK" />Abra as Definições<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Alcunha do cartão inválido</translation>
 <translation id="722454870747268814">Novo separador de navegação anónima</translation>

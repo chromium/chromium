@@ -1403,7 +1403,6 @@
     如果您日后又改变了想法，觉得 Voice Match 功能不适合您的孩子，只需在孩子的 Google 助理设置中关闭该功能即可。如需查看或删除您孩子在设置 Voice Match 时录制的音频剪辑，请使用孩子的帐号访问 <ph name="VOICE_MATCH_SETTINGS_URL" />。
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索网页的某个部分</translation>
 <translation id="2309620859903500144">此网站已被禁止使用您的动态传感器或光传感器。</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">网页网址</translation>
@@ -2025,7 +2024,6 @@
 <translation id="289695669188700754">密钥 ID：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">当您关闭所有无痕式窗口后，系统将会撤消这项自定义设置</translation>
 <translation id="2897878306272793870">是否确实要打开 <ph name="TAB_COUNT" /> 个标签页？</translation>
-<translation id="2900477968385519153">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索您的屏幕上的内容</translation>
 <translation id="290105521672621980">文件使用了不支持的功能</translation>
 <translation id="2901348420151309559">近期的照片和应用</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" />无法与此打印机通信。请确保此打印机已插好并重试。</translation>
@@ -2898,7 +2896,6 @@
 <translation id="3778740492972734840">开发者工具(&amp;D)</translation>
 <translation id="3778868487658107119">您可以向它询问各种问题，指示它处理各种事务。它是专门为您配置的 Google 助手，随时为您提供帮助。</translation>
 <translation id="3781742599892759500">Linux 麦克风使用权限</translation>
-<translation id="378312418865624974">读取此计算机的专属标识符</translation>
 <translation id="3784472333786002075">Cookie 是由网站创建的文件。这些文件分为两类：第一方 Cookie 是由您访问过的网站创建而成，其网站会显示在地址栏中；第三方 Cookie 是由其他网站创建而成，这些网站拥有您在所访问网站上看到的部分内容（比如广告或图片）。</translation>
 <translation id="3785308913036335955">显示应用快捷方式</translation>
 <translation id="3785727820640310185">已保存用于登录此网站的密码</translation>
@@ -3548,7 +3545,6 @@
 <translation id="4415748029120993980">SECG 椭圆曲线 secp384r1（又称 NIST P-384）</translation>
 <translation id="4416450511678320850">这里没有可用来分享此内容的应用</translation>
 <translation id="4416582610654027550">请输入一个有效网址</translation>
-<translation id="4417162649853416189">在图片上拖动光标即可使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索</translation>
 <translation id="4419409365248380979">总是允许 <ph name="HOST" /> 设置 Cookie</translation>
 <translation id="4421932782753506458">猫咪</translation>
 <translation id="4423376891418188461">还原设置</translation>
@@ -3686,7 +3682,6 @@
 <translation id="4550926046134589611">部分受支持的链接仍会在“<ph name="APP_NAME" />”中打开。</translation>
 <translation id="4551763574344810652">按 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可撤消</translation>
 <translation id="4553526521109675518">您需要重启 Chromebook 才能更改设备语言。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">在图片上拖动光标即可使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索</translation>
 <translation id="4554591392113183336">外部扩展程序的版本与现有版本相同或更低。</translation>
 <translation id="4555769855065597957">阴影</translation>
 <translation id="4555863373929230635">若想将密码保存到您的 Google 帐号中，请登录帐号并开启同步功能。</translation>
@@ -4537,7 +4532,6 @@
 <translation id="5427459444770871191">顺时针旋转(&amp;C)</translation>
 <translation id="542750953150239272">继续操作即表示您同意：此设备还可自动下载并安装来自 Google、您的运营商和此设备的制造商的更新及应用（期间可能会使用移动数据网络），其中的部分应用可能会提供应用内购商品。</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />（可进行更新）</translation>
-<translation id="5429373054983029602">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索您的屏幕上的内容</translation>
 <translation id="542948651837270806">需为“可信平台模块”固件安装更新。请访问 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">即时网络共享</translation>
 <translation id="5431318178759467895">彩色</translation>
@@ -4610,7 +4604,6 @@
 <translation id="5494920125229734069">全选</translation>
 <translation id="5495466433285976480">执行此操作后，所有本地用户、文件、数据和其他设置都将遭到删除，下次重启后您将再也看不到这些内容。所有用户均必须重新登录。</translation>
 <translation id="5495597166260341369">不关闭显示屏</translation>
-<translation id="549580971452855947">拖动光标即可使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="5496587651328244253">整理</translation>
 <translation id="5496730470963166430">不允许发送弹出式窗口或使用重定向</translation>
 <translation id="5497251278400702716">此文件</translation>
@@ -5718,7 +5711,6 @@
 您还有 # 个已泄露的密码。Google 密码管理工具建议您立即检查此密码。}other{已成功更改这个已泄露的密码。
 
 您还有 # 个已泄露的密码。Google 密码管理工具建议您立即检查这些密码。}}</translation>
-<translation id="6595792813574514527">拖动光标即可使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="6596325263575161958">加密选项</translation>
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6597017209724497268">个样本的平均值</translation>
@@ -7338,7 +7330,6 @@
 <translation id="8184318863960255706">更多信息</translation>
 <translation id="8184472985242519288">均匀</translation>
 <translation id="8186609076106987817">服务器找不到该文件。</translation>
-<translation id="8186704951085064172">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索网页的某个部分</translation>
 <translation id="8188389033983459049">请检查您的设备设置，并开启蓝牙以继续</translation>
 <translation id="8188742492803591566">只需输入 Chromecast 或电视上显示的访问代码，即可开始投射您的屏幕。</translation>
 <translation id="8189306097519446565">学校帐号</translation>

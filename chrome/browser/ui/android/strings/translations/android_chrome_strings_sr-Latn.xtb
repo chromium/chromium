@@ -110,6 +110,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="1513352483775369820">Obeleživači i veb-istorija</translation>
 <translation id="1513814250881909472">Sinhronizujte podatke da bi vam bile dostupne kartice sa drugih uređaja</translation>
 <translation id="1513858653616922153">Izbriši lozinku</translation>
+<translation id="1514552811327923157">Upit za zaštićeno okruženje privatnosti otvoren je na celom ekranu</translation>
 <translation id="1518421282666914498">GIF za emocije <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Aktivan je danas</translation>
 <translation id="1538801903729528855">Ostvarite bolji doživljaj pri glasovnoj pretrazi na vebu</translation>
@@ -321,6 +322,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="2711073837061989559">Probe</translation>
 <translation id="2718352093833049315">Samo na WiFi-ju</translation>
 <translation id="2718846868787000099">Da bi vam prikazivali sadržaj na željenim jezicima, sajtovi koje posećujete mogu da vide podešavanja</translation>
+<translation id="2722945394406572875">Upit za zaštićeno okruženje privatnosti je zatvoren</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Dobijte bolji glasovni doživljaj</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -791,6 +793,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5342314432463739672">Zahtevi za dozvolu</translation>
 <translation id="5355191726083956201">Poboljšana zaštita je uključena</translation>
 <translation id="5368227114232678694">Da biste privatno pregledali na ovom uređaju, isprobajte režim bez arhiviranja</translation>
+<translation id="5371717687506906963">Upit za zaštićeno okruženje privatnosti</translation>
 <translation id="5375577065097716013">Tražite sliku uz Google objektiv <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Reakcija je promenjena</translation>
 <translation id="5401851137404501592">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će deliti vaše ime, imejl adresu i sliku profila sa ovim sajtom.</translation>
@@ -894,6 +897,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5906513782029855931">Kada Google pomoćnik zna URL-ove sajtova, može da vam pomogne da dovršite zadatke. Pomoćnik možete da isključite u podešavanjima Chrome-a.</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5919204609460789179">Ažurirajte <ph name="PRODUCT_NAME" /> da biste započeli sinhronizaciju</translation>
+<translation id="593625682991400408">Tokom probnih perioda Chrome istražuje načine da ograniči nepoželjan sadržaj, prevaru i deljenje između sajtova. Chrome <ph name="BEGIN_LINK" />procenjuje i vaša interesovanja<ph name="END_LINK" /> koja sajtovi mogu da koriste da bi vam prikazivali oglase. Interesovanjima možete da upravljate u podešavanjima.</translation>
 <translation id="5938820472109305350">Dodajte: <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Koristite Google za pretragu</translation>
 <translation id="5945035219773565305">Aktuelna preporuka: <ph name="RECOMMENDATION" /></translation>
@@ -1512,10 +1516,10 @@ Pouzdani tokeni poboljšavaju privatnost na vebu i ne mogu da se koriste za otkr
 <translation id="9106148373857059373">Tok čuvanja obeleživača je zatvoren</translation>
 <translation id="9108312223223904744">Podrška za telefon kao bezbednosni ključ</translation>
 <translation id="9108808586816295166">Bezbedni DNS možda neće uvek biti dostupan</translation>
+<translation id="9128984223251192329">Upit za zaštićeno okruženje privatnosti otvoren je do polovine ekrana</translation>
 <translation id="9133397713400217035">Istražujte oflajn</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
 <translation id="9148126808321036104">Prijavi me ponovo</translation>
-<translation id="9155898266292537608">Možete i kratko da dodirnete reč da biste je pretražili</translation>
 <translation id="9158770349521403363">Delite samo sadržaj</translation>
 <translation id="9159716826369098114">Vratite grupu kartica (<ph name="TAB_COUNT" />) kao novu grupu kartica u pozadini.</translation>
 <translation id="916446198114569890">URL-ovi koje posećujete se čuvaju na Google nalogu</translation>

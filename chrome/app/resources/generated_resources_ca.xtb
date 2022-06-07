@@ -1410,7 +1410,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
     Si més tard decideixes que la funció Voice Match no és adequada per al teu fill o filla, només cal que la suprimeixis a la seva configuració de l'Assistent. Per veure o suprimir els clips d'àudio que gravi el teu fill o filla durant la configuració de Voice Match, ves a <ph name="VOICE_MATCH_SETTINGS_URL" /> des del seu compte.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Cerca una part de la pàgina amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Aquest lloc web no té permís per accedir als sensors de llum o moviment.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL de la pàgina</translation>
@@ -2034,7 +2033,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="289695669188700754">Identificador de clau: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Aquesta configuració personalitzada se suprimirà quan tanquis totes les finestres d'incògnit</translation>
 <translation id="2897878306272793870">Confirmes que vols obrir <ph name="TAB_COUNT" /> pestanyes?</translation>
-<translation id="2900477968385519153">Cerca a la pantalla amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">El fitxer utilitza funcions no compatibles</translation>
 <translation id="2901348420151309559">Fotos i aplicacions recents</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> no ha pogut comunicar-se amb aquesta impressora. Comproveu que la impressora estigui connectada i torneu-ho a provar.</translation>
@@ -2907,7 +2905,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3778740492972734840">Eines per a &amp;desenvolupadors</translation>
 <translation id="3778868487658107119">Fes-li preguntes o demana-li que faci coses. És el teu Google personal, sempre a punt per ajudar-te.</translation>
 <translation id="3781742599892759500">Accés al micròfon de Linux</translation>
-<translation id="378312418865624974">Llegeix un identificador únic per a aquest ordinador</translation>
 <translation id="3784472333786002075">Les galetes són fitxers que creen els llocs web. N'hi ha de dos tipus: les galetes pròpies són les que crea el lloc web que visites. El lloc web es mostra a la barra d'adreces. Les galetes de tercers són les que creen altres llocs web. Aquests llocs web són els propietaris de part del contingut que es mostra al lloc web que visites, com ara els anuncis o les imatges.</translation>
 <translation id="3785308913036335955">Mostra la drecera d'aplicacions</translation>
 <translation id="3785727820640310185">Contrasenyes desades per a aquest lloc web</translation>
@@ -3559,7 +3556,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4415748029120993980">Corba el·líptica secp384r1 d'SECG (també coneguda com a NIST P-384)</translation>
 <translation id="4416450511678320850">No hi ha cap aplicació disponible per a aquest contingut</translation>
 <translation id="4416582610654027550">Escriu un URL vàlid</translation>
-<translation id="4417162649853416189">Arrossega imatges per cercar amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Permet sempre que <ph name="HOST" /> pugui emmagatzemar galetes</translation>
 <translation id="4421932782753506458">Gatet</translation>
 <translation id="4423376891418188461">Restaura la configuració</translation>
@@ -3698,7 +3694,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4550926046134589611">Alguns enllaços admesos es continuaran obrint a <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Prem <ph name="MODIFIER_KEY_DESCRIPTION" /> per desfer l'acció</translation>
 <translation id="4553526521109675518">Has de reiniciar el Chromebook per canviar-ne l'idioma. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Arrossega imatges per cercar amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">L'extensió externa té la mateixa versió, o una d'anterior, en comparació amb l'existent.</translation>
 <translation id="4555769855065597957">Ombra</translation>
 <translation id="4555863373929230635">Per desar les contrasenyes al teu Compte de Google, inicia-hi la sessió i activa la sincronització.</translation>
@@ -4550,7 +4545,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5427459444770871191">Gira en el sentit de les &amp;agulles del rellotge</translation>
 <translation id="542750953150239272">En continuar, acceptes que aquest dispositiu també pugui baixar i instal·lar automàticament actualitzacions i aplicacions de Google, de l'operador i del fabricant del dispositiu, i que és possible que ho faci utilitzant dades mòbils. Pot ser que algunes d'aquestes aplicacions ofereixin compres des de l'aplicació.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (l'actualització està disponible)</translation>
-<translation id="5429373054983029602">Cerca a la pantalla amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Cal instal·lar una actualització per al microprogramari del mòdul de plataforma de confiança. Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
 <translation id="5430931332414098647">Compartició de xarxa instantània</translation>
 <translation id="5431318178759467895">Color</translation>
@@ -4623,7 +4617,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
 <translation id="5495466433285976480">Això suprimirà tots els usuaris, els fitxers i les dades locals, així com qualsevol altra configuració la pròxima vegada que reiniciïs. Tots els usuaris hauran de tornar a iniciar la sessió.</translation>
 <translation id="5495597166260341369">Mantén la pantalla activa</translation>
-<translation id="549580971452855947">Arrossega per cercar imatges amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Organitza</translation>
 <translation id="5496730470963166430">Sense permís per enviar finestres emergents o utilitzar redireccions</translation>
 <translation id="5497251278400702716">Aquest fitxer</translation>
@@ -5732,7 +5725,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 Tens # contrasenya més en perill. El gestor de contrasenyes de Google recomana que la comprovis ara.}other{Les contrasenyes en perill s'han canviat correctament.
 
 Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana que les comprovis ara.}}</translation>
-<translation id="6595792813574514527">Arrossega per cercar imatges amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Opcions d'encriptació</translation>
 <translation id="6596816719288285829">Adreça IP</translation>
 <translation id="6597017209724497268">Mostres</translation>
@@ -7353,7 +7345,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8184318863960255706">Més informació</translation>
 <translation id="8184472985242519288">Uniforme</translation>
 <translation id="8186609076106987817">El servidor no ha pogut trobar el fitxer.</translation>
-<translation id="8186704951085064172">Cerca una part de la pàgina amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Comprova la configuració del dispositiu i activa'l per continuar</translation>
 <translation id="8188742492803591566">Introdueix el codi d'accés que es mostra al Chromecast o al televisor per començar a emetre a la pantalla.</translation>
 <translation id="8189306097519446565">Comptes de centre educatiu</translation>

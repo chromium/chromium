@@ -1407,7 +1407,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
     Si en algún momento a tu hijo deja de interesarle la función Voice Match, solo debes quitarla de la Configuración de Asistente. Puedes ver o borrar los fragmentos de audio que grabó tu hijo durante la configuración de Voice Match en <ph name="VOICE_MATCH_SETTINGS_URL" /> desde su cuenta.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Buscar parte de la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Este sitio no tiene permiso para acceder a los sensores de movimiento y luz.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL de la página</translation>
@@ -2031,7 +2030,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="289695669188700754">ID de clave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Se quitará esta configuración personalizada cuando cierres todas las ventanas de incógnito</translation>
 <translation id="2897878306272793870">¿Estás seguro de que deseas abrir <ph name="TAB_COUNT" /> pestañas?</translation>
-<translation id="2900477968385519153">Buscar en la pantalla con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">El archivo utiliza funciones no compatibles</translation>
 <translation id="2901348420151309559">Fotos y apps recientes</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> no pudo comunicarse con esta impresora. Asegúrate de que la impresora esté conectada y vuelve a intentarlo.</translation>
@@ -2904,7 +2902,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3778740492972734840">&amp;Herramientas del desarrollador</translation>
 <translation id="3778868487658107119">Hazle preguntas. Encárgale tareas. Es tu versión personal de Google, está siempre lista para ayudarte.</translation>
 <translation id="3781742599892759500">Acceso al micrófono en Linux</translation>
-<translation id="378312418865624974">Leer un identificador único para esta computadora</translation>
 <translation id="3784472333786002075">Las cookies son archivos que crean los sitios web. Existen dos tipos de cookies. Las propias son aquellas que crea el sitio que visitas. El sitio se muestra en la barra de direcciones. Las cookies de terceros son las que se generan desde otros sitios, a los cuales pertenece parte del contenido que ves en el sitio web que visitas (como anuncios o imágenes).</translation>
 <translation id="3785308913036335955">Mostrar acceso directo a las aplicaciones</translation>
 <translation id="3785727820640310185">Se guardaron contraseñas para este sitio</translation>
@@ -3557,7 +3554,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4415748029120993980">Curva elíptica SECG secp384r1 (también conocido como NIST P-384)</translation>
 <translation id="4416450511678320850">No hay apps disponibles para este contenido</translation>
 <translation id="4416582610654027550">Escribe una URL válida</translation>
-<translation id="4417162649853416189">Arrastrar imágenes para buscar con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Permitir siempre que <ph name="HOST" /> configure las cookies</translation>
 <translation id="4421932782753506458">Peludito</translation>
 <translation id="4423376891418188461">Restaurar configuración</translation>
@@ -3695,7 +3691,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4550926046134589611">Algunos vínculos compatibles se seguirán abriendo en <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Presiona <ph name="MODIFIER_KEY_DESCRIPTION" /> para deshacer</translation>
 <translation id="4553526521109675518">Para cambiar el idioma del dispositivo, debes reiniciar la Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Arrastrar imágenes para buscar con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">La versión de la extensión externa es igual o anterior a la actual.</translation>
 <translation id="4555769855065597957">Sombra</translation>
 <translation id="4555863373929230635">Para guardar contraseñas en tu Cuenta de Google, accede a ella y activa la sincronización.</translation>
@@ -4546,7 +4541,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5427459444770871191">Girar &amp;a la derecha</translation>
 <translation id="542750953150239272">Si continúas, aceptas que este dispositivo también descargue e instale automáticamente actualizaciones y apps de Google, tu operador y el fabricante del dispositivo usando datos móviles. Es posible que algunas de estas apps ofrezcan compras directas desde la aplicación.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (actualización disponible)</translation>
-<translation id="5429373054983029602">Buscar en la pantalla con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Debe instalarse una actualización del firmware del Módulo de plataforma de confianza. Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
 <translation id="5430931332414098647">Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="5431318178759467895">Color</translation>
@@ -4619,7 +4613,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5495466433285976480">Esta acción eliminará todos los archivos, los datos y los usuarios locales, entre otros parámetros de configuración, la próxima vez que reinicies. Todos los usuarios deberán volver a acceder.</translation>
 <translation id="5495597166260341369">Pantalla encendida</translation>
-<translation id="549580971452855947">Arrastrar para buscar imágenes con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Organizar</translation>
 <translation id="5496730470963166430">No puede enviar ventanas emergentes ni usar redireccionamientos</translation>
 <translation id="5497251278400702716">Este archivo</translation>
@@ -5730,7 +5723,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 Tienes # contraseña hackeada más. El Administrador de contraseñas de Google te recomienda revisar la contraseña ahora.}other{Cambiaste correctamente la contraseña hackeada.
 
 Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Google te recomienda revisar las contraseñas ahora.}}</translation>
-<translation id="6595792813574514527">Arrastrar para buscar imágenes con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Opciones de encriptación</translation>
 <translation id="6596816719288285829">Dirección IP</translation>
 <translation id="6597017209724497268">Muestras</translation>
@@ -7351,7 +7343,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8184318863960255706">Más información</translation>
 <translation id="8184472985242519288">Uniforme</translation>
 <translation id="8186609076106987817">El servidor no pudo encontrar el archivo.</translation>
-<translation id="8186704951085064172">Buscar parte de la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Revisa la configuración del dispositivo y activa la conexión Bluetooth para continuar</translation>
 <translation id="8188742492803591566">Ingresa el código de acceso que se muestra en el Chromecast o la TV para empezar a transmitir tu pantalla.</translation>
 <translation id="8189306097519446565">Cuentas de instituciones educativas</translation>

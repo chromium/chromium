@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">Ustaw jako tapetę</translation>
 <translation id="1578784163189013834">Wybierz tło wygaszacza ekranu</translation>
 <translation id="1615335640928990664">Użycie danych od <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Przeprowadź test ładowania</translation>
 <translation id="1631385268983122904">Jeszcze nie składaj urządzenia z powrotem</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
@@ -259,6 +260,7 @@
 <translation id="3413935475507503304">Aby rozpocząć aktualizację, kliknij Dalej.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
+<translation id="3441653493275994384">Ekran</translation>
 <translation id="3456078764689556234">Wydrukowano stronę <ph name="PRINTED_PAGES" /> z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skanuję stronę <ph name="PAGE_NUM" />. Ukończono <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Drukowanie</translation>
@@ -281,6 +283,7 @@
 <translation id="3604713164406837697">Zmień tapetę</translation>
 <translation id="360565022852130722">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP 802.1x</translation>
 <translation id="3606583719724308068">Duże opóźnienie połączeń z witrynami HTTPS</translation>
+<translation id="3616113530831147358">Dźwięk</translation>
 <translation id="3621202678540785336">Urządzenie wejściowe</translation>
 <translation id="3632579075709132555">Przełącznik filtra prywatności</translation>
 <translation id="3643810137582748570">Pomiń kalibrację</translation>
@@ -330,6 +333,7 @@
 <translation id="4140251671072434548">Przeprowadź odblokowanie serwera RMA</translation>
 <translation id="4145784616224233563">Zapora sieciowa HTTP</translation>
 <translation id="4147897805161313378">Zdjęcia Google</translation>
+<translation id="4150201353443180367">Wyświetlacz</translation>
 <translation id="4155551848414053977">Upewnij się, że skaner jest włączony i dostępny przez sieć lub połączenie bezpośrednie</translation>
 <translation id="4159784952369912983">Purpurowy</translation>
 <translation id="4170180284036919717">Zrób zdjęcie</translation>
@@ -746,6 +750,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7977800524392185497">Aby połączyć się z siecią <ph name="NETWORK_NAME" />, otwórz Ustawienia</translation>
 <translation id="7978412674231730200">Klucz prywatny</translation>
+<translation id="7982789257301363584">Sieć</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -840,6 +845,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8834539327799336565">Obecnie połączone</translation>
 <translation id="8845001906332463065">Uzyskaj pomoc</translation>
 <translation id="8855781559874488009">Nie udało się połączyć z witrynami HTTP przez zaporę sieciową</translation>
+<translation id="885701979325669005">Pamięć</translation>
 <translation id="8863170912498892583">Włącz ciemny motyw</translation>
 <translation id="8863888432376731307">Pobierz <ph name="INTENT" />, aby znajdować odpowiedzi na pytania takie jak „<ph name="QUERY" />” i inne</translation>
 <translation id="8868741746785112895">GUID</translation>

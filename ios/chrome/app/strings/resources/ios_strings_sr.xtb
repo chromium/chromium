@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">Управљајте синхронизацијом</translation>
 <translation id="1076421457278169141">Скенирали сте кôд</translation>
 <translation id="1084365883616172403">Facebook пост је довршен.</translation>
-<translation id="1086486568852410168">Претражите помоћу Google објектива</translation>
 <translation id="1103523840287552314">Увек преводи <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Прихвати и настави</translation>
 <translation id="110724200315609752">Пређи на отворен прозор</translation>
@@ -739,6 +738,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7099761977003084116">Недавне картице</translation>
 <translation id="7102005569666697658"><ph name="FILE_SIZE" /> се преузима…</translation>
 <translation id="7108338896283013870">Сакриј</translation>
+<translation id="7108762695052995889">Иди на сајт</translation>
 <translation id="7133798577887235672">Име и презиме</translation>
 <translation id="7136892417564438900">Камера је недоступна</translation>
 <translation id="7153999225810839758">Чита се за <ph name="TIME" /> мин</translation>

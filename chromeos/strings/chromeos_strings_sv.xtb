@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">Använd som bakgrund</translation>
 <translation id="1578784163189013834">Välj bakgrund för skärmsläckare</translation>
 <translation id="1615335640928990664">Dataanvändning sedan <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Kör laddningstest</translation>
 <translation id="1631385268983122904">Sätt inte tillbaka batteriet i enheten än</translation>
 <translation id="1639239467298939599">Läser in</translation>
@@ -258,6 +259,7 @@
 <translation id="3413935475507503304">Klicka på Nästa om du vill fortsätta med uppdateringen.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Säkerhet</translation>
+<translation id="3441653493275994384">Skärm</translation>
 <translation id="3456078764689556234">Sida <ph name="PRINTED_PAGES" /> av <ph name="TOTAL_PAGES" /> har skrivits ut.</translation>
 <translation id="345898999683440380">Skannar sida <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % har slutförts.</translation>
 <translation id="3459509316159669723">Skriva ut</translation>
@@ -280,6 +282,7 @@
 <translation id="3604713164406837697">Ändra bakgrund</translation>
 <translation id="360565022852130722">wifi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
 <translation id="3606583719724308068">Hög fördröjning till HTTPS-webbplatser</translation>
+<translation id="3616113530831147358">Ljud</translation>
 <translation id="3621202678540785336">Ingång</translation>
 <translation id="3632579075709132555">Tangenten som aktiverar och inaktiverar sekretesskärmen</translation>
 <translation id="3643810137582748570">Hoppa över kalibrering</translation>
@@ -329,6 +332,7 @@
 <translation id="4140251671072434548">Utför RMA Server Unlock</translation>
 <translation id="4145784616224233563">HTTP-brandvägg</translation>
 <translation id="4147897805161313378">Google Foto</translation>
+<translation id="4150201353443180367">Skärm</translation>
 <translation id="4155551848414053977">Kontrollera att skannern är på och tillgänglig via nätverket eller med direktanslutning</translation>
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4170180284036919717">Ta ett foto</translation>
@@ -745,6 +749,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7960831585769876809">Temperatur</translation>
 <translation id="7977800524392185497">Öppna inställningarna om du vill ansluta till ett <ph name="NETWORK_NAME" />-nätverk</translation>
 <translation id="7978412674231730200">Privat nyckel</translation>
+<translation id="7982789257301363584">Nätverk</translation>
 <translation id="7994702968232966508">EAP-metod</translation>
 <translation id="802154636333426148">Nedladdningen misslyckades</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +844,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8834539327799336565">Anslutna just nu</translation>
 <translation id="8845001906332463065">Få hjälp</translation>
 <translation id="8855781559874488009">Det gick inte att ansluta till HTTP-webbplatser genom brandvägg</translation>
+<translation id="885701979325669005">Lagring</translation>
 <translation id="8863170912498892583">Aktivera mörkt tema</translation>
 <translation id="8863888432376731307">Be om en <ph name="INTENT" /> av <ph name="QUERY" /> och annat</translation>
 <translation id="8868741746785112895">GUID</translation>

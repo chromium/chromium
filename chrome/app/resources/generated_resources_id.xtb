@@ -1425,7 +1425,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
     Jika nantinya Anda memutuskan bahwa Voice Match tidak cocok untuk anak Anda, cukup nonaktifkan fitur tersebut di Setelan Asisten. Untuk melihat atau menghapus klip audio yang direkam oleh anak Anda selama penyiapan Voice Match, buka <ph name="VOICE_MATCH_SETTINGS_URL" /> dari akunnya.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Telusuri bagian halaman dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Situs ini telah diblokir agar tidak dapat mengakses sensor gerakan atau sensor cahaya.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL Halaman</translation>
@@ -2049,7 +2048,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="289695669188700754">ID Kunci: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Setelan khusus ini akan dihapus saat Anda menutup semua jendela Samaran</translation>
 <translation id="2897878306272793870">Anda yakin ingin membuka <ph name="TAB_COUNT" /> tab?</translation>
-<translation id="2900477968385519153">Telusuri Layar Anda dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">File menggunakan fitur yang tidak didukung</translation>
 <translation id="2901348420151309559">Aplikasi dan foto terbaru</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> tidak dapat berkomunikasi dengan printer ini. Pastikan printer dicolokkan dan coba lagi.</translation>
@@ -2922,7 +2920,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3778740492972734840">Alat &amp;pengembang</translation>
 <translation id="3778868487658107119">Ajukan pertanyaan. Minta untuk melakukan berbagai hal. Ini adalah Google pribadi Anda yang selalu siap membantu.</translation>
 <translation id="3781742599892759500">Akses mikrofon Linux</translation>
-<translation id="378312418865624974">Membaca pengenal unik untuk komputer ini</translation>
 <translation id="3784472333786002075">Cookie adalah file yang dibuat oleh situs. Terdapat dua jenis cookie: Cookie pihak pertama dibuat oleh situs yang Anda kunjungi. Situs tersebut ditampilkan di kolom URL. Cookie pihak ketiga dibuat oleh situs lain. Situs ini memiliki beberapa konten, seperti iklan atau gambar, yang dilihat di situs yang Anda kunjungi.</translation>
 <translation id="3785308913036335955">Tampilkan Pintasan Aplikasi</translation>
 <translation id="3785727820640310185">Sandi yang tersimpan untuk situs ini</translation>
@@ -3575,7 +3572,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4415748029120993980">Kurva eliptis SECG secp384r1 (alias NIST P-384)</translation>
 <translation id="4416450511678320850">Tidak ada aplikasi yang tersedia untuk konten ini</translation>
 <translation id="4416582610654027550">Ketik URL yang valid</translation>
-<translation id="4417162649853416189">Tarik Gambar untuk Menelusuri dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Selalu izinkan <ph name="HOST" /> untuk menetapkan cookie</translation>
 <translation id="4421932782753506458">Si Manis</translation>
 <translation id="4423376891418188461">Pulihkan Setelan</translation>
@@ -3714,7 +3710,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4550926046134589611">Beberapa link yang didukung akan tetap dibuka di <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Tekan <ph name="MODIFIER_KEY_DESCRIPTION" /> untuk mengurungkan</translation>
 <translation id="4553526521109675518">Anda perlu memulai ulang Chromebook untuk mengubah bahasa perangkat. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Tarik gambar untuk menelusuri dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Versi ekstensi eksternal sama atau lebih rendah dibandingkan yang sudah ada.</translation>
 <translation id="4555769855065597957">Bayangan</translation>
 <translation id="4555863373929230635">Untuk menyimpan sandi ke Akun Google Anda, login dan aktifkan sinkronisasi.</translation>
@@ -4565,7 +4560,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5427459444770871191">Putar &amp;Searah Jarum Jam</translation>
 <translation id="542750953150239272">Dengan melanjutkan, Anda setuju bahwa perangkat ini juga dapat otomatis mendownload serta menginstal update dan aplikasi dari Google, operator Anda, dan produsen perangkat Anda, yang mungkin menggunakan data seluler. Sebagian aplikasi tersebut mungkin menawarkan pembelian dalam aplikasi.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Pembaruan tersedia)</translation>
-<translation id="5429373054983029602">Telusuri layar Anda dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Update untuk firmware Trusted Platform Module yang perlu diinstal. Lihat <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Tethering Instan</translation>
 <translation id="5431318178759467895">Warna</translation>
@@ -4638,7 +4632,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5495466433285976480">Hal ini akan menghapus semua pengguna lokal, file, data, dan setelan lain setelah Anda memulai ulang lagi. Semua pengguna perlu masuk kembali.</translation>
 <translation id="5495597166260341369">Biarkan layar tetap menyala</translation>
-<translation id="549580971452855947">Tarik untuk menelusuri gambar dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Atur</translation>
 <translation id="5496730470963166430">Tidak diizinkan mengirimkan pop-up atau menggunakan pengalihan</translation>
 <translation id="5497251278400702716">File ini</translation>
@@ -5749,7 +5742,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekomendasikan untuk memeriksa sandi ini sekarang.}other{Berhasil mengubah sandi yang telah dibobol.
 
 Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekomendasikan untuk memeriksa sandi ini sekarang.}}</translation>
-<translation id="6595792813574514527">Tarik untuk Menelusuri Gambar dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Opsi enkripsi</translation>
 <translation id="6596816719288285829">Alamat IP</translation>
 <translation id="6597017209724497268">Contoh</translation>
@@ -7370,7 +7362,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8184318863960255706">Info selengkapnya</translation>
 <translation id="8184472985242519288">Seragam</translation>
 <translation id="8186609076106987817">Server tidak dapat menemukan file.</translation>
-<translation id="8186704951085064172">Telusuri Bagian Halaman dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Periksa setelan perangkat Anda dan aktifkan untuk melanjutkan</translation>
 <translation id="8188742492803591566">Masukkan kode akses yang ditampilkan di Chromecast atau TV untuk mulai mentransmisikan layar.</translation>
 <translation id="8189306097519446565">Akun sekolah</translation>

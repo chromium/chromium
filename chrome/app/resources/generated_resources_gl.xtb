@@ -1409,7 +1409,6 @@ O Asistente rexistra gravacións da voz do teu fillo ou filla para crear un mode
 Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice Match, só tes que quitalo da configuración do Asistente. Para ver ou eliminar os clips de audio que o teu fillo ou filla gravase durante a configuración de Voice Match, vai a <ph name="VOICE_MATCH_SETTINGS_URL" /> coa súa conta.
     <ph name="BR" />
 <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Buscar parte da páxina con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Bloqueouse o acceso deste sitio aos teus sensores de movemento ou luz.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL da páxina</translation>
@@ -2032,7 +2031,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="289695669188700754">ID da clave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Esta opción de configuración personalizada quitarase cando peches todas as ventás do modo de incógnito</translation>
 <translation id="2897878306272793870">Seguro que queres abrir <ph name="TAB_COUNT" /> pestanas?</translation>
-<translation id="2900477968385519153">Buscar a túa pantalla con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">O ficheiro utiliza funcións que non son compatibles</translation>
 <translation id="2901348420151309559">Aplicacións e fotos recentes</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> non se puido comunicar con esta impresora. Asegúrate de que a impresora estea conectada e téntao de novo.</translation>
@@ -2905,7 +2903,6 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3778740492972734840">&amp;Ferramentas para programadores</translation>
 <translation id="3778868487658107119">Faille preguntas e pídelle que faga cousas. Esta función personalizada de Google sempre está lista para axudarche.</translation>
 <translation id="3781742599892759500">Acceso ao micrófono de Linux</translation>
-<translation id="378312418865624974">Ler un identificador único para este ordenador</translation>
 <translation id="3784472333786002075">As cookies son ficheiros creados polos sitios web e poden ser de dous tipos: propias ou de terceiros. As propias son as que crean os sitios que visitas. Neste caso, o sitio en cuestión aparece na barra de enderezos. As de terceiros son as que crean outros sitios. Parte do contido que ves nos sitios que visitas, como anuncios ou imaxes, pertence a esoutros sitios.</translation>
 <translation id="3785308913036335955">Mostrar o atallo das aplicacións</translation>
 <translation id="3785727820640310185">Gardáronse os contrasinais para este sitio</translation>
@@ -3558,7 +3555,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4415748029120993980">SECG Elliptic Curve secp384r1 (tamén se denomina NIST P-384)</translation>
 <translation id="4416450511678320850">Non hai ningunha aplicación dispoñible para este contido</translation>
 <translation id="4416582610654027550">Escribe un URL válido</translation>
-<translation id="4417162649853416189">Arrastrar cursor sobre imaxes para facer buscas con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Permitir sempre a <ph name="HOST" /> establecer cookies</translation>
 <translation id="4421932782753506458">Gatiño</translation>
 <translation id="4423376891418188461">Restaurar configuración</translation>
@@ -3696,7 +3692,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4550926046134589611">Algunhas ligazóns compatibles seguirán abríndose na aplicación <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Preme <ph name="MODIFIER_KEY_DESCRIPTION" /> para desfacer a acción</translation>
 <translation id="4553526521109675518">Para cambiar o idioma do teu Chromebook, debes reiniciar o dispositivo. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Arrastrar cursor sobre imaxes para facer buscas con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">A extensión externa ten a mesma versión ou unha inferior en comparación coa existente.</translation>
 <translation id="4555769855065597957">Sombra</translation>
 <translation id="4555863373929230635">Para gardar os contrasinais na túa Conta de Google, inicia sesión e activa a sincronización.</translation>
@@ -4547,7 +4542,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5427459444770871191">Xirar á &amp;dereita</translation>
 <translation id="542750953150239272">Ao continuar, aceptas que este dispositivo tamén poida descargar e instalar automaticamente actualizacións e aplicacións de Google, do teu operador e do fabricante do teu dispositivo; posiblemente usando datos móbiles. Algunhas destas aplicacións poden ofrecer compras integradas.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (hai unha actualización dispoñible)</translation>
-<translation id="5429373054983029602">Buscar a túa pantalla con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">É necesario instalar unha actualización do firmware de Trusted Platform Module (Módulo de plataforma fiable). Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Conexión compartida instantánea</translation>
 <translation id="5431318178759467895">Cor</translation>
@@ -4620,7 +4614,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5495466433285976480">Esta acción eliminará todos os usuarios, ficheiros, datos e outras configuracións locais a próxima vez que reinicies. Todos os usuarios deberán iniciar sesión de novo.</translation>
 <translation id="5495597166260341369">Manter a pantalla activada</translation>
-<translation id="549580971452855947">Arrastrar para buscar imaxes con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Organizar</translation>
 <translation id="5496730470963166430">Sitios que non poden mostrar ventás emerxentes ou usar redireccións</translation>
 <translation id="5497251278400702716">Este ficheiro</translation>
@@ -5728,7 +5721,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 Quédache # máis. O xestor de contrasinais de Google recomenda que comprobes este contrasinal de inmediato.}other{Cambiouse correctamente o contrasinal vulnerado.
 
 Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes estes contrasinais de inmediato.}}</translation>
-<translation id="6595792813574514527">Arrastrar para buscar imaxes con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Opcións de cifrado</translation>
 <translation id="6596816719288285829">Enderezo IP</translation>
 <translation id="6597017209724497268">Mostras</translation>
@@ -7347,7 +7339,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8184318863960255706">Máis información</translation>
 <translation id="8184472985242519288">Uniforme</translation>
 <translation id="8186609076106987817">O servidor non puido atopar o ficheiro.</translation>
-<translation id="8186704951085064172">Buscar parte da páxina con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Comproba a configuración do teu dispositivo e activa a función para continuar</translation>
 <translation id="8188742492803591566">Para comezar a emitir o contido da túa pantalla, mete o código de acceso que se mostra no Chromecast ou na televisión.</translation>
 <translation id="8189306097519446565">Contas de centro educativo</translation>

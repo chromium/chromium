@@ -110,6 +110,7 @@
 <translation id="1513352483775369820">บุ๊กมาร์กและประวัติเว็บ</translation>
 <translation id="1513814250881909472">ซิงค์เพื่อรับแท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="1513858653616922153">ลบรหัสผ่าน</translation>
+<translation id="1514552811327923157">ข้อความแจ้งเกี่ยวกับ Privacy Sandbox เปิดอยู่แบบเต็มหน้า</translation>
 <translation id="1518421282666914498">GIF แสดงอารมณ์ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">ใช้งานวันนี้</translation>
 <translation id="1538801903729528855">รับประสบการณ์ใช้งานด้วยเสียงที่ดียิ่งขึ้นบนเว็บ</translation>
@@ -321,6 +322,7 @@
 <translation id="2711073837061989559">การทดลองใช้</translation>
 <translation id="2718352093833049315">Wi-Fi เท่านั้น</translation>
 <translation id="2718846868787000099">เว็บไซต์ที่คุณเข้าชมสามารถดูค่ากำหนดเพื่อแสดงเนื้อหาในภาษาที่คุณต้องการ</translation>
+<translation id="2722945394406572875">ปิดข้อความแจ้งเกี่ยวกับ Privacy Sandbox แล้ว</translation>
 <translation id="2723001399770238859">เสียง</translation>
 <translation id="2732063072010454421">รับประสบการณ์ใช้งานด้วยเสียงที่ดียิ่งขึ้น</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -791,6 +793,7 @@
 <translation id="5342314432463739672">คำขอสิทธิ์</translation>
 <translation id="5355191726083956201">การปกป้องที่ปรับปรุงแล้วเปิดอยู่</translation>
 <translation id="5368227114232678694">ลองใช้โหมดไม่ระบุตัวตนเพื่อท่องเว็บอย่างเป็นส่วนตัวในอุปกรณ์นี้</translation>
+<translation id="5371717687506906963">ข้อความแจ้งเกี่ยวกับ Privacy Sandbox</translation>
 <translation id="5375577065097716013">ค้นหาภาพด้วย Google Lens <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">เปลี่ยนความรู้สึกแล้ว</translation>
 <translation id="5401851137404501592">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้</translation>
@@ -894,6 +897,7 @@
 <translation id="5906513782029855931">หากทราบ URL ของเว็บไซต์ Google Assistant จะช่วยทำงานที่ต้องการให้เสร็จสิ้นได้ คุณปิด Assistant ได้ในการตั้งค่า Chrome</translation>
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5919204609460789179">อัปเดต <ph name="PRODUCT_NAME" /> เพื่อเริ่มซิงค์</translation>
+<translation id="593625682991400408">ระหว่างช่วงทดลองใช้ Chrome จะสำรวจวิธีจำกัดสแปม การประพฤติมิชอบ และการแชร์ระหว่างเว็บไซต์ Chrome ยังจะ<ph name="BEGIN_LINK" />คาดคะเนความสนใจของคุณ<ph name="END_LINK" />ซึ่งเว็บไซต์สามารถนำไปใช้เพื่อแสดงโฆษณาให้คุณได้อีกด้วย คุณจัดการความสนใจได้ในการตั้งค่า</translation>
 <translation id="5938820472109305350">เพิ่ม<ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">กำลังใช้ Google ในการค้นหา</translation>
 <translation id="5945035219773565305">คำแนะนำปัจจุบัน: <ph name="RECOMMENDATION" /></translation>
@@ -1512,10 +1516,10 @@
 <translation id="9106148373857059373">ขั้นตอนการบันทึกบุ๊กมาร์กปิดอยู่</translation>
 <translation id="9108312223223904744">โทรศัพท์เป็นการรองรับคีย์ความปลอดภัย</translation>
 <translation id="9108808586816295166">DNS ที่ปลอดภัยอาจไม่พร้อมใช้งานในบางครั้ง</translation>
+<translation id="9128984223251192329">ข้อความแจ้งเกี่ยวกับ Privacy Sandbox เปิดอยู่แบบครึ่งหน้า</translation>
 <translation id="9133397713400217035">สำรวจแบบออฟไลน์</translation>
 <translation id="9137013805542155359">แสดงหน้าเว็บเดิม</translation>
 <translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>
-<translation id="9155898266292537608">หรือคุณจะค้นหาด้วยการแตะอย่างรวดเร็วที่คำๆ หนึ่งก็ได้เช่นกัน</translation>
 <translation id="9158770349521403363">แชร์เนื้อหาเท่านั้น</translation>
 <translation id="9159716826369098114">คืนค่ากลุ่มแท็บ <ph name="TAB_COUNT" /> แท็บเป็นกลุ่มแท็บใหม่ในเบื้องหลัง</translation>
 <translation id="916446198114569890">ระบบจะบันทึก URL ที่เข้าชมไว้ในบัญชี Google ของคุณ</translation>

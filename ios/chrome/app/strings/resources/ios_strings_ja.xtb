@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">同期の管理</translation>
 <translation id="1076421457278169141">コードをスキャンしました</translation>
 <translation id="1084365883616172403">Facebookへの投稿が完了しました。</translation>
-<translation id="1086486568852410168">Google レンズで検索</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
 <translation id="1104948393051856124">同意して続行</translation>
 <translation id="110724200315609752">開いているウィンドウに切り替え</translation>
@@ -66,6 +65,7 @@
 <translation id="1434356225517321998">お使いのブラウザは管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">パスワードを非表示にします</translation>
 <translation id="145015347812617860"><ph name="COUNT" />個のアイテム</translation>
+<translation id="1450170672351507823">標準保護機能がオンになっています。セキュリティをさらに強化するには、保護強化機能を使用してください。</translation>
 <translation id="149095475893949513">このウェブサイトが設定プロファイルをダウンロードしようとしています。</translation>
 <translation id="1491277525950327607">設定を切り替えるにはダブルタップします</translation>
 <translation id="1492417797159476138">このユーザー名はこのサイトですでに保存されています</translation>

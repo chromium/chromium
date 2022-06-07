@@ -1426,7 +1426,6 @@
     अगर बाद में आपको लगता है कि वॉइस मैच की सुविधा आपके बच्चे के लिए सही नहीं है, तो Assistant की सेटिंग में जाकर, इस सुविधा को आसानी से बंद किया जा सकता है. वॉइस मैच की सुविधा सेट अप करने के दौरान, अपने बच्चे की रिकॉर्ड की गई ऑडियो क्लिप देखने या मिटाने के लिए, अपने बच्चे के खाते से <ph name="VOICE_MATCH_SETTINGS_URL" /> पर जाएं.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से पेज का हिस्सा खोजें</translation>
 <translation id="2309620859903500144">इस साइट को आपके डिवाइस के गति या रोशनी के सेंसर ऐक्सेस करने से ब्लॉक कर दिया गया है.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">पेज का यूआरएल</translation>
@@ -2049,7 +2048,6 @@
 <translation id="289695669188700754">कुंजी ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">इस कस्टम सेटिंग को तब हटाया जाएगा, जब आप अपने सभी गुप्त विंडो बंद करेंगे</translation>
 <translation id="2897878306272793870">क्या आप वाकई <ph name="TAB_COUNT" /> टैब खोलना चाहते हैं?</translation>
-<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से स्क्रीन खोजें</translation>
 <translation id="290105521672621980">फ़ाइल असमर्थित सुविधाओं का उपयोग कर‍‍ती है</translation>
 <translation id="2901348420151309559">हाल ही के फ़ोटो और ऐप्लिकेशन</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> इस प्रिंटर के साथ जुड़ नहीं सका. पक्का करें कि प्रिंटर को प्लग इन किया गया है और पुनः प्रयास करें.</translation>
@@ -2922,7 +2920,6 @@
 <translation id="3778740492972734840">&amp;डेवलपर टूल</translation>
 <translation id="3778868487658107119">इससे प्रश्न पूछें. इसे कुछ काम करने को कहें. यह आपका व्यक्तिगत Google है, जो हमेशा सहायता के लिए तैयार रहता है.</translation>
 <translation id="3781742599892759500">Linux में माइक्रोफ़ोन का ऐक्सेस</translation>
-<translation id="378312418865624974">इस कंप्यूटर का अद्वितीय पहचानकर्ता पढ़ें</translation>
 <translation id="3784472333786002075">कुकी ऐसी फ़ाइलें होती हैं जिन्हें वेबसाइटें बनाती हैं. कुकी दो तरह की होती हैं: पहले पक्ष की कुकी वह साइट बनाती है जिस पर आप जाते हैं. यह साइट, पता बार में दिखती है. तीसरे पक्ष की कुकी, अन्य साइटें बनाती हैं. इन साइटों पर विज्ञापन या इमेज जैसी कुछ ऐसी चीज़ें होती हैं जो उस वेबसाइट पर दिखती हैं जिस पर आप जाते हैं.</translation>
 <translation id="3785308913036335955">ऐप्स  शॉर्टकट दिखाएं</translation>
 <translation id="3785727820640310185">इस साइट के लिए सेव किए गए पासवर्ड</translation>
@@ -3574,7 +3571,6 @@
 <translation id="4415748029120993980">SECG अंडाकार वक्र secp384r1 (अर्थात NIST P-384)</translation>
 <translation id="4416450511678320850">इस कॉन्टेंट के लिए कोई भी ऐप्लिकेशन उपलब्ध नहीं है</translation>
 <translation id="4416582610654027550">एक मान्य यूआरएल टाइप करें</translation>
-<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से खोजने के लिए, खींचें और इमेज पर छोड़ें</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> को हमेशा कुकी सेट करने की अनुमति दें</translation>
 <translation id="4421932782753506458">फ्लफ़ी</translation>
 <translation id="4423376891418188461">सेटिंग फिर से स्थापित करें</translation>
@@ -3645,6 +3641,7 @@
 <translation id="449232563137139956">आम तौर पर, साइटें उदाहरण देने के लिए इमेज दिखाती हैं. जैसे कि ऑनलाइन स्टोर या समाचार लेखों के लिए फ़ोटो</translation>
 <translation id="4492698018379445570">देखें कि आपने शॉपिंग कार्ट में किन चीज़ों को जोड़ा है और सभी चीज़ें जांचने के बाद पैसे चुकाएं</translation>
 <translation id="4493468155686877504">(<ph name="INSTALL_SIZE" />) सुझाया गया</translation>
+<translation id="4495002167047709180">क्या <ph name="SITE" /> पर इस एक्सटेंशन को चलाने की अनुमति देनी है?</translation>
 <translation id="4495419450179050807">इस पेज पर न दिखाएं</translation>
 <translation id="4497145443434063861">अलग-अलग वाई-फ़ाई नेटवर्क पर PC और Chromecast (जैसे कि 2.4GHz
     बनाम 5GHz)</translation>
@@ -3713,7 +3710,6 @@
 <translation id="4550926046134589611">कुछ सहायता लिंक <ph name="APP_NAME" /> में अब भी खुलेंगे.</translation>
 <translation id="4551763574344810652">पहले जैसा करने के लिए <ph name="MODIFIER_KEY_DESCRIPTION" /> दबाएं</translation>
 <translation id="4553526521109675518">आपको डिवाइस की भाषा बदलने के लिए, अपने Chromebook को रीस्टार्ट करना होगा. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से खोजने के लिए, खींचें और इमेज पर छोड़ें</translation>
 <translation id="4554591392113183336">बाहरी एक्‍सटेंशन मौजूदा की तुलना में समान या निम्नतर संस्‍करण पर है.</translation>
 <translation id="4555769855065597957">परछाई</translation>
 <translation id="4555863373929230635">अपने Google खाते में पासवर्ड सेव करने के लिए, साइन इन करें और सिंक करना चालू करें.</translation>
@@ -4564,7 +4560,6 @@
 <translation id="5427459444770871191">&amp;घड़ी की दिशा में घुमाएं</translation>
 <translation id="542750953150239272">जारी रखने का मतलब है कि यह डिवाइस, Google, आपके मोबाइल पर नेटवर्क सेवा देने वाली कंपनी, और इस डिवाइस को बनाने वाली कंपनी से मिलने वाले अपडेट और ऐप्लिकेशन को अपने-आप डाउनलोड और इंस्टॉल भी कर सकता है. ऐसा करने के लिए, हो सकता है कि डिवाइस मोबाइल डेटा का इस्तेमाल करे. इनमें से कुछ ऐप्लिकेशन, इन-ऐप्लिकेशन खरीदारी का ऑफ़र दे सकते हैं.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (अपडेट उपलब्‍ध है)</translation>
-<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से स्क्रीन खोजें</translation>
 <translation id="542948651837270806">भरोसेमंद प्लैटफ़ॉर्म मॉड्यूल फ़र्मवेयर के लिए अपडेट इंस्टॉल करने की ज़रूरत है. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> देखें</translation>
 <translation id="5430931332414098647">इंस्टैंट टेदरिंग</translation>
 <translation id="5431318178759467895">रंग</translation>
@@ -4637,7 +4632,6 @@
 <translation id="5494920125229734069">सभी को चुनें</translation>
 <translation id="5495466433285976480">आपके अगली बार फिर से शुरू करने के बाद ये सभी स्थानीय उपयोगकर्ताओं, फ़ाइलों, डेटा, और अन्य सेटिंग को हटा देगा. सभी उपयोगकर्ताओं को फिर से साइन इन करना होगा.</translation>
 <translation id="5495597166260341369">डिसप्ले चालू रखें</translation>
-<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजने के लिए, खींचें और छोड़ें</translation>
 <translation id="5496587651328244253">व्यवस्थित करें</translation>
 <translation id="5496730470963166430">पॉप-अप भेजने या दूसरे वेबलिंक पर भेजने वाले यूआरएल इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="5497251278400702716">इस फ़ाइल</translation>
@@ -5750,7 +5744,6 @@
 आपका # और पासवर्ड या तो हैक हुआ है या चोरी हुआ है. Google Password Manager, इस पासवर्ड को तुरंत बदलने का सुझाव देता है.}other{हैक किए गए या चोरी हुए पासवर्ड बदल दिए गए हैं.
 
 आपके # और पासवर्ड या तो हैक हुए हैं या चोरी हुए हैं. Google Password Manager, इन पासवर्ड को तुरंत बदलने का सुझाव देता है.}}</translation>
-<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजने के लिए, खींचें और छोड़ें</translation>
 <translation id="6596325263575161958">सुरक्षित करने के तरीकों के विकल्प</translation>
 <translation id="6596816719288285829">आईपी पता</translation>
 <translation id="6597017209724497268">नमूने</translation>
@@ -7370,7 +7363,6 @@
 <translation id="8184318863960255706">ज़्यादा जानकारी</translation>
 <translation id="8184472985242519288">एक जैसा</translation>
 <translation id="8186609076106987817">सर्वर को फ़ाइल नहीं मिल सकी.</translation>
-<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से पेज का हिस्सा खोजें</translation>
 <translation id="8188389033983459049">अपनी डिवाइस सेटिंग जांचें और जारी रखने के लिए उसे चालू करें</translation>
 <translation id="8188742492803591566">स्क्रीन को कास्ट करने के लिए, Chromecast या टीवी पर दिख रहा ऐक्सेस कोड डालें.</translation>
 <translation id="8189306097519446565">स्कूल वाले खाते</translation>

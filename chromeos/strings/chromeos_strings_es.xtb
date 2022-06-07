@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
 <translation id="1512982610995527443">El dispositivo se apagará en 5 segundos</translation>
 <translation id="1522984060396982789">La reparación se ha completado correctamente. Puedes apagar el dispositivo o llevar a cabo algunas acciones adicionales.</translation>
+<translation id="1526389707933164996">Animación del salvapantallas</translation>
 <translation id="152892567002884378">Subir el volumen</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="155865706765934889">Panel táctil</translation>
@@ -76,6 +77,7 @@
 <translation id="1572585716423026576">Configurar como fondo de pantalla</translation>
 <translation id="1578784163189013834">Elegir fondo del salvapantallas</translation>
 <translation id="1615335640928990664">Uso de datos desde el <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Cámara</translation>
 <translation id="1621067168122174824">Realizar prueba de carga</translation>
 <translation id="1631385268983122904">No montes el dispositivo todavía</translation>
 <translation id="1639239467298939599">Cargando</translation>
@@ -257,6 +259,7 @@
 <translation id="3413935475507503304">Para continuar con la actualización, haz clic en Siguiente.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Seguridad</translation>
+<translation id="3441653493275994384">Pantalla</translation>
 <translation id="3456078764689556234">Se ha impreso la página <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Escaneando página <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % completado.</translation>
 <translation id="3459509316159669723">Imprimir</translation>
@@ -279,6 +282,7 @@
 <translation id="3604713164406837697">Cambiar fondo de pantalla</translation>
 <translation id="360565022852130722">La red Wi-Fi está protegida con un protocolo poco seguro WEP 802.1x</translation>
 <translation id="3606583719724308068">Latencia alta a sitios web HTTPS</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Activar o desactivar Pantalla de privacidad</translation>
 <translation id="3643810137582748570">Omitir calibración</translation>
@@ -300,6 +304,7 @@
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="387301095347517405">El número de veces que la batería ha tenido un ciclo de carga completo</translation>
+<translation id="3885327323343477505">Cambiar salvapantallas</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
 <translation id="3924044641767672375">Se recomienda conectarse a la red Wi‑Fi para facilitar el proceso de reparación. Tu red se guardará.</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
@@ -327,6 +332,7 @@
 <translation id="4140251671072434548">Realizar RMA Server Unlock</translation>
 <translation id="4145784616224233563">Cortafuegos de HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
+<translation id="4150201353443180367">Pantalla</translation>
 <translation id="4155551848414053977">Comprueba que el escáner esté activado y que esté disponible a través de tu red o de una conexión directa</translation>
 <translation id="4159784952369912983">Morado</translation>
 <translation id="4170180284036919717">Hacer foto</translation>
@@ -418,6 +424,7 @@
 <translation id="4890353053343094602">Selecciona otra inmediatamente</translation>
 <translation id="4891842000192098784">Esfuerzo</translation>
 <translation id="4897058166682006107">Nivel de batería del auricular izquierdo del dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4905998861748258752">Activa la función para seleccionar las opciones del salvapantallas</translation>
 <translation id="4908030561598728899">Instalando firmware...</translation>
 <translation id="4915052247106771211">Si seleccionas esta opción, se restablecerán los ajustes de fábrica del dispositivo (Powerwash).</translation>
 <translation id="4917385247580444890">Buena</translation>
@@ -741,6 +748,7 @@
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7977800524392185497">Para unirte a una red <ph name="NETWORK_NAME" />, ve a Configuración</translation>
 <translation id="7978412674231730200">Clave privada</translation>
+<translation id="7982789257301363584">Red</translation>
 <translation id="7994702968232966508">Método EAP</translation>
 <translation id="802154636333426148">No se ha podido descargar el archivo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -835,6 +843,7 @@
 <translation id="8834539327799336565">Conectado ahora</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8855781559874488009">No se puede conectar con sitios web HTTP usando un cortafuegos</translation>
+<translation id="885701979325669005">Almacenamiento</translation>
 <translation id="8863170912498892583">Habilitar tema oscuro</translation>
 <translation id="8863888432376731307">Consulta información sobre "<ph name="QUERY" />", como su <ph name="INTENT" /></translation>
 <translation id="8868741746785112895">GUID</translation>
@@ -860,6 +869,7 @@
 <translation id="8997710128084572139">Nivel de batería del dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frecuencia</translation>
 <translation id="9025198690966128418">Usar como dispositivo personal</translation>
+<translation id="9028832514430399253">Activa el interruptor para seleccionar las opciones del salvapantallas</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">La resolución de DNS tiene una latencia alta</translation>
 <translation id="9063121522582193837">No se han podido calibrar algunos componentes</translation>

@@ -1410,7 +1410,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
     Se in un secondo momento decidi che la funzionalità Voice Match non è adatta alle esigenze di tuo figlio, puoi disattivarla dalle impostazioni del suo assistente. Per visualizzare o eliminare i clip audio registrati da tuo figlio durante la configurazione di Voice Match, visita la pagina <ph name="VOICE_MATCH_SETTINGS_URL" /> dal suo account.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Esegui ricerche in una parte della pagina con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">A questo sito è stato impedito l'accesso ai sensori di movimento o della luce.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL della pagina</translation>
@@ -2034,7 +2033,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="289695669188700754">ID chiave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Questa impostazione personalizzata verrà rimossa quando chiuderai tutte le finestre di navigazione in incognito</translation>
 <translation id="2897878306272793870">Aprire <ph name="TAB_COUNT" /> schede?</translation>
-<translation id="2900477968385519153">Esegui ricerche sullo schermo con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Il file utilizza funzioni non supportate</translation>
 <translation id="2901348420151309559">App e foto recenti</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> non riesce a comunicare con questa stampante. Assicurati che la stampante sia collegata e riprova.</translation>
@@ -2907,7 +2905,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3778740492972734840">&amp;Strumenti per sviluppatori</translation>
 <translation id="3778868487658107119">Chiedigli tutto quello che vuoi e fatti aiutare nelle tue attività. Google è personalizzato per te ed è sempre al tuo fianco.</translation>
 <translation id="3781742599892759500">Accesso al microfono su Linux</translation>
-<translation id="378312418865624974">Leggere un identificatore univoco di questo computer</translation>
 <translation id="3784472333786002075">I cookie sono file creati dai siti web. Esistono due tipi di cookie: i cookie originali, che vengono creati dal sito visitato, visualizzato nella barra degli indirizzi, e i cookie di terze parti, che vengono creati da altri siti. Questi ultimi sono proprietari di alcuni dei contenuti, ad esempio annunci o immagini, che vengono visualizzati sul sito web che visiti.</translation>
 <translation id="3785308913036335955">Mostra scorciatoia app</translation>
 <translation id="3785727820640310185">Password salvate per questo sito</translation>
@@ -3560,7 +3557,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4415748029120993980">Curva ellittica SECG secp384r1 (anche nota come NIST P-384)</translation>
 <translation id="4416450511678320850">Nessuna app disponibile per questi contenuti</translation>
 <translation id="4416582610654027550">Digita un URL valido</translation>
-<translation id="4417162649853416189">Trascina il puntatore del mouse sulle immagini per eseguire ricerche con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Consenti sempre a <ph name="HOST" /> di impostare cookie</translation>
 <translation id="4421932782753506458">Micio</translation>
 <translation id="4423376891418188461">Ripristina impostazioni</translation>
@@ -3698,7 +3694,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4550926046134589611">Alcuni link supportati saranno comunque aperti nell'app <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Premi <ph name="MODIFIER_KEY_DESCRIPTION" /> per annullare</translation>
 <translation id="4553526521109675518">Per cambiare la lingua del dispositivo, devi riavviare il Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Trascina il puntatore del mouse sulle immagini per eseguire ricerche con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">La versione dell'estensione esterna è pari o precedente a quella dell'estensione esistente.</translation>
 <translation id="4555769855065597957">Ombra</translation>
 <translation id="4555863373929230635">Per salvare le password nel tuo Account Google, accedi e attiva la sincronizzazione.</translation>
@@ -4549,7 +4544,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5427459444770871191">Ruota in senso o&amp;rario</translation>
 <translation id="542750953150239272">Se continui, accetti che questo dispositivo possa anche scaricare e installare automaticamente aggiornamenti e app da Google, dal tuo operatore e dal produttore del tuo dispositivo, utilizzando eventualmente la rete dati. Alcune di queste app potrebbero offrire acquisti in-app.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (aggiornamento disponibile)</translation>
-<translation id="5429373054983029602">Esegui ricerche sullo schermo con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">È necessario installare un aggiornamento del firmware Trusted Platform Module. Visita il sito <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Tethering istantaneo</translation>
 <translation id="5431318178759467895">A colori</translation>
@@ -4622,7 +4616,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
 <translation id="5495466433285976480">Questa operazione rimuoverà tutti gli utenti, i file e i dati locali nonché altre impostazioni al successivo riavvio. Tutti gli utenti dovranno eseguire di nuovo l'accesso.</translation>
 <translation id="5495597166260341369">Mantieni attivo lo schermo</translation>
-<translation id="549580971452855947">Trascina per cercare immagini con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Organizza</translation>
 <translation id="5496730470963166430">Non possono inviare popup o utilizzare reindirizzamenti</translation>
 <translation id="5497251278400702716">Questo file</translation>
@@ -5730,7 +5723,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 Hai # altra password compromessa. Gestore delle password di Google consiglia di controllarla subito.}other{Password compromessa cambiata.
 
 Hai altre # password compromesse. Gestore delle password di Google consiglia di controllarle subito.}}</translation>
-<translation id="6595792813574514527">Trascina per cercare immagini con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Opzioni di crittografia</translation>
 <translation id="6596816719288285829">Indirizzo IP</translation>
 <translation id="6597017209724497268">Esempi</translation>
@@ -7351,7 +7343,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8184318863960255706">Ulteriori informazioni</translation>
 <translation id="8184472985242519288">Uniforme</translation>
 <translation id="8186609076106987817">Impossibile trovare il file sul server.</translation>
-<translation id="8186704951085064172">Esegui ricerche in una parte della pagina con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Controlla le impostazioni sul dispositivo e attivalo per continuare</translation>
 <translation id="8188742492803591566">Inserisci il codice di accesso mostrato su Chromecast o sulla TV per iniziare a trasmettere il tuo schermo.</translation>
 <translation id="8189306097519446565">Account della scuola</translation>

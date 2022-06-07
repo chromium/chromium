@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Subsídios, bolsas e assistência financeira</translation>
 <translation id="1048785276086539861">Quando edita anotações, este documento volta à vista de página única.</translation>
 <translation id="1050038467049342496">Fechar outras aplicações</translation>
+<translation id="1053959602163383901">Optou por validar com um dispositivo autenticador nos Websites que usam o fornecedor <ph name="PROVIDER_ORIGIN" />. Este fornecedor pode ter armazenado informações sobre o seu método de pagamento, que pode <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Anular adição</translation>
 <translation id="1056663316309890343">Software de foto</translation>
 <translation id="1056898198331236512">Aviso</translation>
@@ -426,6 +427,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2053111141626950936">As páginas em <ph name="LANGUAGE" /> não serão traduzidas.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado todos os dias.}=1{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado todos os dias.}other{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado a cada {NUM_DAYS} dias.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugestão}other{# sugestões}}</translation>
+<translation id="2066915425250589881">pedir para eliminar</translation>
 <translation id="2068528718802935086">Bebés e crianças pequenas</translation>
 <translation id="2071156619270205202">Este cartão não é elegível para um número de cartão virtual.</translation>
 <translation id="2071692954027939183">As notificações foram automaticamente bloqueadas porque, geralmente, não as permite.</translation>
@@ -582,6 +584,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2512101340618156538">Não permitidos (predefinição)</translation>
 <translation id="2512413427717747692">Botão para definir o Chrome como o navegador predefinido, prima Enter para definir o Chrome como o navegador predefinido do sistema nas definições do iOS</translation>
 <translation id="2515629240566999685">Verificar o sinal na área</translation>
+<translation id="2515761554693942801">Optou por validar com o Touch ID em Websites que usam o fornecedor <ph name="PROVIDER_ORIGIN" />. Este fornecedor pode ter armazenado informações sobre o seu método de pagamento, que pode <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Agrafar parte inferior direita</translation>
 <translation id="2521736961081452453">Criar formulário</translation>
 <translation id="2523886232349826891">Guardado apenas neste dispositivo.</translation>
@@ -1501,6 +1504,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5051305769747448211">Comédia ao vivo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes ficheiros através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
 <translation id="5056549851600133418">Artigos para si</translation>
+<translation id="5060483733937416656">Optou por validar com o Windows Hello em Websites que usam o fornecedor <ph name="PROVIDER_ORIGIN" />. Este fornecedor pode ter armazenado informações sobre o seu método de pagamento, que pode <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Será que quis dizer <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Histórico de impressão</translation>
 <translation id="5068234115460527047">Fundos especulativos</translation>

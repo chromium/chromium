@@ -110,6 +110,7 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="1513352483775369820">Oznake i Google povijest</translation>
 <translation id="1513814250881909472">Uključite sinkronizaciju da bi se kartice prikazale na drugim uređajima</translation>
 <translation id="1513858653616922153">Izbriši zaporku</translation>
+<translation id="1514552811327923157">Upit za Privacy Sandbox otvoren je u punoj visini</translation>
 <translation id="1518421282666914498">GIF emocija <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Aktivan danas</translation>
 <translation id="1538801903729528855">Ostvarite bolji glasovni doživljaj na webu</translation>
@@ -321,6 +322,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="2711073837061989559">Probe</translation>
 <translation id="2718352093833049315">Samo na Wi-Fiju</translation>
 <translation id="2718846868787000099">Da bi prikazivale sadržaj na jezicima koje preferirate, web-lokacije koje posjećujete mogu vidjeti vaše preferencije</translation>
+<translation id="2722945394406572875">Zatvoren je upit za Privacy Sandbox</translation>
 <translation id="2723001399770238859">zvuk</translation>
 <translation id="2732063072010454421">Bolji doživljaj glasovnog pretraživanja</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -791,6 +793,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5342314432463739672">Zahtjevi za dopuštenja</translation>
 <translation id="5355191726083956201">Uključena je Poboljšana zaštita</translation>
 <translation id="5368227114232678694">Da biste pregledavali u privatnosti na ovom uređaju, isprobajte anonimni način.</translation>
+<translation id="5371717687506906963">Upit za Privacy Sandbox</translation>
 <translation id="5375577065097716013">Pretraži sliku pomoću Google objektiva <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Reakcija je promijenjena</translation>
 <translation id="5401851137404501592">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> podijelit će vaše ime, e-adresu i profilnu sliku s ovom web-lokacijom.</translation>
@@ -894,6 +897,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5906513782029855931">Dopustite Google asistentu pristup URL-ovima web-lokacija kako bi vam pomogao s izvršavanjem zadataka. Asistenta možete isključiti u Chromeovim postavkama.</translation>
 <translation id="5916664084637901428">Uključi</translation>
 <translation id="5919204609460789179">Ažurirajte <ph name="PRODUCT_NAME" /> za pokretanje sinkronizacije</translation>
+<translation id="593625682991400408">Tijekom proba Chrome istražuje načine za ograničavanje neželjenog sadržaja, prijevara i dijeljenja između web-lokacija. Chrome također <ph name="BEGIN_LINK" />procjenjuje vaše interese<ph name="END_LINK" /> koje web-lokacije mogu upotrijebiti da bi vam prikazivale oglase. Svojim interesima možete upravljati u postavkama.</translation>
 <translation id="5938820472109305350">Dodaj <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Za pretraživanje se upotrebljava Google</translation>
 <translation id="5945035219773565305">Trenutačna preporuka: <ph name="RECOMMENDATION" /></translation>
@@ -1512,10 +1516,10 @@ Oznake povjerenja poboljšavaju privatnost na webu i ne mogu se upotrebljavati d
 <translation id="9106148373857059373">Tijek spremanja oznake je zatvoren</translation>
 <translation id="9108312223223904744">Podrška za telefon kao sigurnosni ključ</translation>
 <translation id="9108808586816295166">Sigurni DNS možda neće biti dostupan cijelo vrijeme</translation>
+<translation id="9128984223251192329">Upit za Privacy Sandbox otvoren je na pola visine</translation>
 <translation id="9133397713400217035">Istraživanje izvan mreže</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
 <translation id="9148126808321036104">Prijavite se ponovno</translation>
-<translation id="9155898266292537608">Možete i kratko dodirnuti riječ da biste je pretražili</translation>
 <translation id="9158770349521403363">Podijeli samo sadržaj</translation>
 <translation id="9159716826369098114">Vratite grupu od <ph name="TAB_COUNT" /> kartica kao novu pozadinsku grupu kartica.</translation>
 <translation id="916446198114569890">URL-ovi koje posjećujete spremaju se na vaš Google račun</translation>

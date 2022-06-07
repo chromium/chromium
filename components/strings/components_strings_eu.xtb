@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Bekak eta dirulaguntzak</translation>
 <translation id="1048785276086539861">Oharpenak editatzen dituzunean, orri bakarreko ikuspegira itzuliko da dokumentua</translation>
 <translation id="1050038467049342496">Itxi beste aplikazio batzuk</translation>
+<translation id="1053959602163383901"><ph name="PROVIDER_ORIGIN" /> darabilten webguneetan gailu autentifikatzaile batekin egiaztatzea aukeratu duzu. Baliteke hornitzaile horrek zure ordainketa-metodoari buruzko informazioa gorde izatea, baina <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Desegin gehitzea</translation>
 <translation id="1056663316309890343">Argazkietarako softwareak</translation>
 <translation id="1056898198331236512">Abisua</translation>
@@ -422,6 +423,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2053111141626950936">Ez dira itzuliko <ph name="LANGUAGE" /> darabilten orriak.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kontrolatzeko aukera abian denean eta aktibo dagoenean, duela gutxi egin dituzun arakatze-jardueren antz handiena duen talde demografikoa zein den zehaztuko du Chrome-k. Iragarleek talde horretarako iragarkiak hauta ditzakete, eta arakatze-historia pribatu mantenduko da gailuan. Egunero eguneratuko da taldea.}=1{Kontrolatzeko aukera abian denean eta aktibo dagoenean, duela gutxi egin dituzun arakatze-jardueren antz handiena duen talde demografikoa zein den zehaztuko du Chrome-k. Iragarleek talde horretarako iragarkiak hauta ditzakete, eta arakatze-historia pribatu mantenduko da gailuan. Egunero eguneratuko da taldea.}other{Kontrolatzeko aukera abian denean eta aktibo dagoenean, duela gutxi egin dituzun arakatze-jardueren antz handiena duen talde demografikoa zein den zehaztuko du Chrome-k. Iragarleek talde horretarako iragarkiak hauta ditzakete, eta arakatze-historia pribatu mantenduko da gailuan. {NUM_DAYS} egunetik behin eguneratuko da taldea.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 iradokizun}other{# iradokizun}}</translation>
+<translation id="2066915425250589881">hura ezabatzea eska dezakezu</translation>
 <translation id="2068528718802935086">Haurtxoak eta ume txikiak</translation>
 <translation id="2071156619270205202">Txartela ez da egokia txartel birtualaren zenbaki bat izateko.</translation>
 <translation id="2071692954027939183">Automatikoki blokeatu dira jakinarazpenak, normalean ez dituzulako onartzen</translation>
@@ -578,6 +580,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2512101340618156538">Baimenik gabe (lehenetsia)</translation>
 <translation id="2512413427717747692">Chrome arakatzaile lehenetsi gisa ezartzeko botoia: sakatu "Sartu" Chrome sistemaren arakatzaile lehenetsi gisa ezartzeko iOS-en ezarpenetan</translation>
 <translation id="2515629240566999685">Seinalea egiaztatu.</translation>
+<translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" /> darabilten webguneetan Touch ID-rekin egiaztatzea aukeratu duzu. Baliteke hornitzaile horrek zure ordainketa-metodoari buruzko informazioa gorde izatea, baina <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Grapa bat behean, eskuinetara</translation>
 <translation id="2521736961081452453">Sortu inprimaki bat</translation>
 <translation id="2523886232349826891">Gailu honetan soilik gordeko da</translation>
@@ -1488,6 +1491,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5051305769747448211">Zuzeneko komedia</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Fitxategia Nearby Share bidez bidaltzeko, egin tokia (<ph name="DISK_SPACE_SIZE" />) gailuan}other{Fitxategiak Nearby Share bidez bidaltzeko, egin tokia (<ph name="DISK_SPACE_SIZE" />) gailuan}}</translation>
 <translation id="5056549851600133418">Zuretzako artikuluak</translation>
+<translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> darabilten webguneetan Windows Hello-rekin egiaztatzea aukeratu duzu. Baliteke hornitzaile horrek zure ordainketa-metodoari buruzko informazioa gorde izatea, baina <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> esan nahi al zenuen?</translation>
 <translation id="5066056036849835175">Inprimaketa-historia</translation>
 <translation id="5068234115460527047">Estaldura-funtsak</translation>

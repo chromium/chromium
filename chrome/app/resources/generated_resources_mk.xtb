@@ -182,6 +182,7 @@
 <translation id="1166583374608765787">Прегледајте го ажурирањето на името</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> припаѓа на работната површина <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Ќе се отвори за <ph name="TIME_REMAINING" />...</translation>
+<translation id="1169266963600477608">Контроли за игри</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> содржи чувствителни или опасни податоци. Порака од администраторот: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="1171135284592304528">Нагласи го предметот со фокус на тастатурата кога се менува</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> сака да се поврзе со HID-уред</translation>
@@ -1426,7 +1427,6 @@
     Ако подоцна одлучите дека Voice Match не е за вашето дете, едноставно отстранете го од поставките за „Помошникот“ на детето. За да ги прегледате или избришете аудиоисечоците коишто вашето дете ги снима при поставувањето на Voice Match, одете на <ph name="VOICE_MATCH_SETTINGS_URL" /> од сметката на детето.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Пребарајте дел од страницата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Пристапот на сајтов до сензорите за движење или светлина е блокиран.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL на страницата</translation>
@@ -2050,7 +2050,6 @@
 <translation id="289695669188700754">ИД на клуч: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Оваа приспособена поставка ќе биде отстранета кога ќе ги затворите сите ваши прозорци „Инкогнито“</translation>
 <translation id="2897878306272793870">Дали сте сигурни дека сакате да отворите <ph name="TAB_COUNT" /> картички?</translation>
-<translation id="2900477968385519153">Пребарајте го екранот со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Датотеката користи неподдржани функции</translation>
 <translation id="2901348420151309559">Неодамнешни фотографии и апликации</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> не може да комуницира со печатачов. Погрижете се печатачот да е приклучен и обидете се повторно.</translation>
@@ -2923,7 +2922,6 @@
 <translation id="3778740492972734840">&amp;Програмерски алатки</translation>
 <translation id="3778868487658107119">Поставувајте му прашања. Кажувајте му што да направи. Тој е вашиот личен Google, секогаш подготвен да помогне.</translation>
 <translation id="3781742599892759500">Пристап до микрофонот на Linux</translation>
-<translation id="378312418865624974">Прочитајте го уникатниот идентификатор за овој компјутер</translation>
 <translation id="3784472333786002075">Колачињата се датотеки што ги создаваат веб-сајтовите. Има два типа колачиња: првиот тип колачиња ги создава сајтот што го посетувате. Сајтот се прикажува во лентата за адреси. Вториот тип колачиња ги создаваат други сајтови. Овие сајтови се сопственици на дел од содржините, како рекламите или сликите што ги гледате на веб-сајтот што го посетувате.</translation>
 <translation id="3785308913036335955">Покажи кратенка за Апликации</translation>
 <translation id="3785727820640310185">Зачувани лозинки за сајтов</translation>
@@ -3382,6 +3380,7 @@
 <translation id="4227605727325220318">Додајте нов телефон со Android</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Екстензијава не е дозволена}one{Некои екстензии не се дозволени}other{Некои екстензии не се дозволени}}</translation>
 <translation id="4231095370974836764">Инсталирајте апликации и игри од Google Play на вашиот <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
+<translation id="4231141543165771749">Затвори ги контролите за игри</translation>
 <translation id="4232375817808480934">Конфигурирајте го Kerberos</translation>
 <translation id="4235965441080806197">Откажи најавување</translation>
 <translation id="4236163961381003811">Откријте други екстензии</translation>
@@ -3576,7 +3575,6 @@
 <translation id="4415748029120993980">SECG елиптична крива secp384r1 (наречена NIST P-384)</translation>
 <translation id="4416450511678320850">Нема достапни апликации за содржиниве</translation>
 <translation id="4416582610654027550">Внесете валидна URL</translation>
-<translation id="4417162649853416189">Повлечете преку сликите за да пребарате со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Секогаш дозволи <ph name="HOST" /> да поставува колачиња</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">Обнови поставки</translation>
@@ -3716,7 +3714,6 @@
 <translation id="4550926046134589611">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Притиснете <ph name="MODIFIER_KEY_DESCRIPTION" /> за да се врати</translation>
 <translation id="4553526521109675518">Треба да го рестартирате вашиот Chromebook за да го промените јазикот на уредот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Повлечете преку сликите за да пребарате со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Надворешната наставка е иста или пониска верзија споредена со постоечката.</translation>
 <translation id="4555769855065597957">Сенка</translation>
 <translation id="4555863373929230635">За да се зачувуваат лозинки во сметката на Google, најавете се и вклучете синхронизација.</translation>
@@ -4567,7 +4564,6 @@
 <translation id="5427459444770871191">Ротирај &amp;надесно</translation>
 <translation id="542750953150239272">Ако продолжите, се согласувате дека уредов може и автоматски да презема и инсталира ажурирања и апликации од Google, од вашиот оператор и од производителот на уредот, веројатно со користење мобилен интернет. Некои од овие апликации може да нудат купувања во апликациите.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Достапно е ажурирање)</translation>
-<translation id="5429373054983029602">Пребарајте го екранот со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Треба да се инсталира ажурирање за фирмверот на Trusted Platform Module. Видете <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Инстант врзување</translation>
 <translation id="5431318178759467895">Боја</translation>
@@ -4640,7 +4636,6 @@
 <translation id="5494920125229734069">Избери сè</translation>
 <translation id="5495466433285976480">Ова ќе ги отстрани сите локални корисници, датотеки, податоци и други поставки по вашето следно рестартирање. Сите корисници ќе треба да се пријават повторно.</translation>
 <translation id="5495597166260341369">Држи го екранот вклучен</translation>
-<translation id="549580971452855947">Повлечете за да пребарате слики со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Организирај</translation>
 <translation id="5496730470963166430">Не им е дозволено да испраќаат скокачки програми, ниту да користат пренасочувања</translation>
 <translation id="5497251278400702716">Оваа датотека</translation>
@@ -5753,7 +5748,6 @@
 Имате уште # компромитирана лозинка. „Управникот со лозинки на Google“ препорачува веднаш да ги проверите лозинкиве.}other{Успешно ја променивте компромитираната лозинка.
 
 Имате уште # компромитирани лозинки. „Управникот со лозинки на Google“ препорачува веднаш да ги проверите лозинкиве.}}</translation>
-<translation id="6595792813574514527">Повлечете за да пребарате слики со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Опции за шифрирање</translation>
 <translation id="6596816719288285829">IP-адреса</translation>
 <translation id="6597017209724497268">Примероци</translation>
@@ -7373,7 +7367,6 @@
 <translation id="8184318863960255706">Повеќе информации</translation>
 <translation id="8184472985242519288">Унифициран</translation>
 <translation id="8186609076106987817">Серверот не може да ја најде датотеката.</translation>
-<translation id="8186704951085064172">Пребарајте дел од страницата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Проверете ги поставките на уредот и вклучете го за да продолжите</translation>
 <translation id="8188742492803591566">Внесете го кодот за пристап прикажан на Chromecast или на телевизорот за да започнете со емитување на екранот.</translation>
 <translation id="8189306097519446565">Училишни сметки</translation>

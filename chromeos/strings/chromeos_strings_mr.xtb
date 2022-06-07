@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">वॉलपेपर म्हणून सेट करा</translation>
 <translation id="1578784163189013834">स्क्रीन सेव्हर बॅकग्राउंड निवडा</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> पासूनचा डेटा वापर</translation>
+<translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="1621067168122174824">चार्ज चाचणी रन करा</translation>
 <translation id="1631385268983122904">अद्याप डिव्हाइस परत एकत्र करू नका</translation>
 <translation id="1639239467298939599">लोड करीत आहे</translation>
@@ -258,6 +259,7 @@
 <translation id="3413935475507503304">अपडेटसह पुढे सुरू ठेवण्यासाठी, पुढील वर क्लिक करा.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
+<translation id="3441653493275994384">तपासा</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> पैकी <ph name="PRINTED_PAGES" /> पेज प्रिंट केली.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> पेज स्कॅन करत आहे. <ph name="PERCENTAGE_VALUE" />% पूर्ण झाले.</translation>
 <translation id="3459509316159669723">प्रिंट</translation>
@@ -280,6 +282,7 @@
 <translation id="3604713164406837697">वॉलपेपर बदला</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटवर लेटन्सी जास्त आहे</translation>
+<translation id="3616113530831147358">ऑडिओ</translation>
 <translation id="3621202678540785336">इनपुट</translation>
 <translation id="3632579075709132555">गोपनीयता स्क्रीन टॉगल करा</translation>
 <translation id="3643810137582748570">कॅलिब्रेशन वगळा</translation>
@@ -329,6 +332,7 @@
 <translation id="4140251671072434548">RMA सर्व्हर अनलॉक परफॉर्म करा</translation>
 <translation id="4145784616224233563">HTTP फायरवॉल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">डिस्प्ले करा</translation>
 <translation id="4155551848414053977">तुमच्या नेटवर्क किंवा थेट कनेक्शनद्वारे स्कॅनर सुरू आणि उपलब्ध असल्याची खात्री करा</translation>
 <translation id="4159784952369912983">जांभळा</translation>
 <translation id="4170180284036919717">फोटो काढा</translation>
@@ -745,6 +749,7 @@
 <translation id="7960831585769876809">तापमान</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> नेटवर्कमध्ये सामील होण्यासाठी, सेटिंग्ज वर जा</translation>
 <translation id="7978412674231730200">प्रायव्हेट की</translation>
+<translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7994702968232966508">EAP पद्धत</translation>
 <translation id="802154636333426148">डाउनलोड अयशस्वी झाले</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +844,7 @@
 <translation id="8834539327799336565">सध्या कनेक्ट केलेली</translation>
 <translation id="8845001906332463065">मदत मिळवा</translation>
 <translation id="8855781559874488009">फायरवॉलद्वारे HTTP वेबसाइटशी कनेक्ट करू शकत नाही</translation>
+<translation id="885701979325669005">स्टोरेज</translation>
 <translation id="8863170912498892583">गडद थीम सुरू करा</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" आणि आणखी बऱ्याच गोष्टींसाठी <ph name="INTENT" /> मिळवा</translation>
 <translation id="8868741746785112895">GUID</translation>

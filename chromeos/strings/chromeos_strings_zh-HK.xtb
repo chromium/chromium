@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">設為桌布</translation>
 <translation id="1578784163189013834">選取螢幕保護程式背景</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />至今的數據用量</translation>
+<translation id="1620510694547887537">相機</translation>
 <translation id="1621067168122174824">執行充電測試</translation>
 <translation id="1631385268983122904">請暫時不要將電池放回裝置</translation>
 <translation id="1639239467298939599">載入中</translation>
@@ -259,6 +260,7 @@
 <translation id="3413935475507503304">如要繼續進行更新，請按一下 [下一步]。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">安全性</translation>
+<translation id="3441653493275994384">螢幕</translation>
 <translation id="3456078764689556234">印咗 <ph name="PRINTED_PAGES" /> 頁，總共有 <ph name="TOTAL_PAGES" /> 頁。</translation>
 <translation id="345898999683440380">掃瞄緊第 <ph name="PAGE_NUM" /> 頁。完成咗 <ph name="PERCENTAGE_VALUE" />%。</translation>
 <translation id="3459509316159669723">列印</translation>
@@ -281,6 +283,7 @@
 <translation id="3604713164406837697">變更桌布</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網絡</translation>
 <translation id="3606583719724308068">連線至 HTTPS 網站延遲時間過長</translation>
+<translation id="3616113530831147358">音效檔案</translation>
 <translation id="3621202678540785336">輸入</translation>
 <translation id="3632579075709132555">私隱保護畫面切換</translation>
 <translation id="3643810137582748570">略過校正</translation>
@@ -330,6 +333,7 @@
 <translation id="4140251671072434548">執行 RMA Server Unlock</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
 <translation id="4147897805161313378">Google 相片</translation>
+<translation id="4150201353443180367">顯示屏</translation>
 <translation id="4155551848414053977">請確認掃瞄器已開啟，並可供透過網絡或直接連線使用</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4170180284036919717">拍攝相片</translation>
@@ -746,6 +750,7 @@
 <translation id="7960831585769876809">溫度</translation>
 <translation id="7977800524392185497">如要加入 <ph name="NETWORK_NAME" /> 網絡，請前往「設定」頁面</translation>
 <translation id="7978412674231730200">私密金鑰</translation>
+<translation id="7982789257301363584">網絡</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -840,6 +845,7 @@
 <translation id="8834539327799336565">目前已連接的裝置</translation>
 <translation id="8845001906332463065">取得說明</translation>
 <translation id="8855781559874488009">無法透過防火牆連線至 HTTP 網站</translation>
+<translation id="885701979325669005">儲存設備</translation>
 <translation id="8863170912498892583">啟用深色主題背景</translation>
 <translation id="8863888432376731307">取得「<ph name="QUERY" />」和其他查詢內容的<ph name="INTENT" /></translation>
 <translation id="8868741746785112895">GUID</translation>

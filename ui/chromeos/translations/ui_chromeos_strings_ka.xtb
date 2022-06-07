@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">ჟანრი</translation>
 <translation id="1254593899333212300">პირდაპირი ინტერნეტ კავშირი</translation>
 <translation id="1272293450992660632">PIN-კოდების მნიშვნელობები არ ემთხვევა.</translation>
+<translation id="127650757582748357">BZIP2 შეკუმშული არქივი</translation>
 <translation id="1280820357415527819">მიმდინარეობს მობილური ქსელების ძიება</translation>
 <translation id="1291603679744561561">SIM ბარათი ჩაკეტილია</translation>
 <translation id="1293556467332435079">ფაილები</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">ყველი</translation>
 <translation id="2781645665747935084">ბელგიური</translation>
 <translation id="2782104745158847185">შეცდომა Linux აპლიკაციის ინსტალაციისას</translation>
+<translation id="2788520643285360081">7-Zip არქივი</translation>
 <translation id="2803375539583399270">შეიყვანეთ PIN-კოდი</translation>
 <translation id="2820957248982571256">მიმდინარეობს სკანირება...</translation>
+<translation id="2822595620066756134">GZIP შეკუმშული არქივი</translation>
 <translation id="2830077785865012357">ჩინური ბოპომოფო</translation>
 <translation id="2843806747483486897">ნაგულისხმევის შეცვლა…</translation>
 <translation id="2850124913210091882">სარეზერვო მეხსიერება</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">ლიტვური</translation>
 <translation id="3587482841069643663">ყველა</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> ხაზგარეშე რეჟიმში ხელმისაწვდომად ვერ გარდაიქმნა</translation>
+<translation id="3593874215226880809">LZIP შეკუმშული არქივი</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">კანადური ფრანგული</translation>
 <translation id="3606220979431771195">თურქული-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">გაუქმდეს <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, არააქტიური, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერეა <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="3691184985318546178">სინჰალური</translation>
+<translation id="3703620396751288986">ZIP არქივი</translation>
 <translation id="3726463242007121105">ამ მოწყობილობის გახსნა შეუძლებელია, რადგან მისი ფაილური სისტემა არ არის მხარდაჭერილი.</translation>
 <translation id="3727148787322499904">ამ პარამეტრის შეცვლა ყველა გაზიარებულ ქსელზე აისახება</translation>
 <translation id="3737576078404241332">გვერდითი ზოლიდან წაშლა</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">ჩეხური Qwerty კლავიატურით</translation>
 <translation id="4656777537938206294">აქციეთ ფაილები ხაზგარეშე რეჟიმში ხელმისაწვდომად</translation>
 <translation id="4658782175094886150">პიროვნება თოვლში</translation>
+<translation id="4661996069183330363">TAR არქივი</translation>
 <translation id="4669606053856530811">„<ph name="SOURCE_NAME" />“-ის წევრები დაკარგავენ წვდომას, თუ ეს ერთეულები არ იქნება გაზიარებული მათთან.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">შვედურო</translation>
@@ -929,6 +935,7 @@
 <translation id="8903931173357132290">კურსდამთავრებული</translation>
 <translation id="8912078710089354287">ძაღლი, რომელიც კუდს აქიცინებს</translation>
 <translation id="8919081441417203123">დანიური</translation>
+<translation id="8965273390142984105">LZOP შეკუმშული არქივი</translation>
 <translation id="8965697826696209160">საკმარისი ადგილი არ არის.</translation>
 <translation id="8997962250644902079">ჩინური (ტრადიციული) პინ-ინი</translation>
 <translation id="9003940392834790328">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, მართავს თქვენი ადმინისტრატორი, დეტალები</translation>

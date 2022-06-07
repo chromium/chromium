@@ -1405,7 +1405,6 @@
     Voice Match はお子様には必要ないと判断された場合は、お子様の [アシスタントの設定] で削除してください。Voice Match のセットアップ中にお子様が録音した音声クリップを確認または削除するには、お子様のアカウントから <ph name="VOICE_MATCH_SETTINGS_URL" /> にアクセスしてください。
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> でページの一部を検索</translation>
 <translation id="2309620859903500144">このサイトではモーション センサーまたは光センサーへのアクセスがブロックされています。</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">ページの URL</translation>
@@ -2028,7 +2027,6 @@
 <translation id="289695669188700754">キー ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">このカスタム設定はシークレット ウィンドウをすべて閉じると削除されます</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> 個のタブが開きます。本当によろしいですか？</translation>
-<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> で画面を検索</translation>
 <translation id="290105521672621980">サポートされていない機能がファイルで使用されています</translation>
 <translation id="2901348420151309559">最近の写真とアプリ</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> はこのプリンタと通信できませんでした。プリンタが接続されていることを確認して、もう一度お試しください。</translation>
@@ -2900,7 +2898,6 @@
 <translation id="3778740492972734840">デベロッパー ツール(&amp;D)</translation>
 <translation id="3778868487658107119">あなただけの Google が、知りたいこと、やりたいことをサポートします。なんでも話してみてください。</translation>
 <translation id="3781742599892759500">Linux のマイクへのアクセス</translation>
-<translation id="378312418865624974">このパソコンの一意の識別子の読み取り</translation>
 <translation id="3784472333786002075">Cookie はウェブサイトによって作成されるファイルです。Cookie には 2 種類あります。1 つ目の「ファーストパーティの Cookie」は、現在アクセスしているサイト、つまりアドレスバーに表示されているサイトによって作成されます。2 つ目の「サードパーティの Cookie」は、他のサイト、つまりアクセス中のウェブサイトに表示されているコンテンツの一部（広告、画像など）を所有しているサイトによって作成されます。</translation>
 <translation id="3785308913036335955">アプリのショートカットを表示</translation>
 <translation id="3785727820640310185">このサイト用に保存されているパスワード</translation>
@@ -3549,7 +3546,6 @@
 <translation id="4415748029120993980">SECG 楕円曲線 secp384r1（別名 NIST P-384）</translation>
 <translation id="4416450511678320850">このコンテンツで使用できるアプリはありません</translation>
 <translation id="4416582610654027550">有効な URL を入力してください</translation>
-<translation id="4417162649853416189">画像上をドラッグして <ph name="VISUAL_SEARCH_PROVIDER" /> で検索</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> による Cookie 設定を常に許可する</translation>
 <translation id="4421932782753506458">フワフワ</translation>
 <translation id="4423376891418188461">設定を元に戻す</translation>
@@ -3620,6 +3616,7 @@
 <translation id="449232563137139956">多くのサイトは、オンライン ショップやニュース記事の写真や挿絵として使用するために画像を表示します。</translation>
 <translation id="4492698018379445570">ショッピング カートに追加したアイテムを確認して、ご購入手続きに進むことができます</translation>
 <translation id="4493468155686877504">推奨（<ph name="INSTALL_SIZE" />）</translation>
+<translation id="4495002167047709180"><ph name="SITE" /> でこの拡張機能を許可しますか？</translation>
 <translation id="4495419450179050807">このページに表示しない</translation>
 <translation id="4497145443434063861">PC と Chromecast が別の Wi-Fi ネットワークに接続している（例: 2.4 GHz と 5 GHz）</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> で問題が発生しました</translation>
@@ -3687,7 +3684,6 @@
 <translation id="4550926046134589611">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" /> で開かれます。</translation>
 <translation id="4551763574344810652">元に戻すには <ph name="MODIFIER_KEY_DESCRIPTION" /> を押します</translation>
 <translation id="4553526521109675518">デバイスの言語を変更するには Chromebook を再起動する必要があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">画像上をドラッグして <ph name="VISUAL_SEARCH_PROVIDER" /> で検索</translation>
 <translation id="4554591392113183336">外部の拡張機能のバージョンが既存のバージョン以下です。</translation>
 <translation id="4555769855065597957">シャドウ</translation>
 <translation id="4555863373929230635">パスワードを Google アカウントに保存するには、ログインして同期を有効にします。</translation>
@@ -4535,7 +4531,6 @@
 <translation id="5427459444770871191">時計回りに回転(&amp;C)</translation>
 <translation id="542750953150239272">続行すると、Google、ご利用の携帯通信会社、デバイスの製造元からのアップデートやアプリもデバイスで自動的にダウンロードおよびインストールされる場合があることについて、同意したものと見なされます（ダウンロードの際にはモバイルデータ通信が使用される可能性もあります）。こうしたアプリの一部ではアプリ内購入が提案される場合もあります。</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />（アップデート利用可）</translation>
-<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> で画面を検索</translation>
 <translation id="542948651837270806">Trusted Platform Module ファームウェアのアップデートをインストールする必要があります。<ph name="TPM_FIRMWARE_UPDATE_LINK" /> をご覧ください。</translation>
 <translation id="5430931332414098647">インスタント テザリング</translation>
 <translation id="5431318178759467895">カラー</translation>
@@ -4608,7 +4603,6 @@
 <translation id="5494920125229734069">すべて選択する</translation>
 <translation id="5495466433285976480">すべてのローカル ユーザー、ファイル、データ、およびその他の設定が次回の再起動後に削除されます。すべてのユーザーは、もう一度ログインする必要があります。</translation>
 <translation id="5495597166260341369">画面をオンのままにする</translation>
-<translation id="549580971452855947">ドラッグして <ph name="VISUAL_SEARCH_PROVIDER" /> で画像を検索</translation>
 <translation id="5496587651328244253">管理</translation>
 <translation id="5496730470963166430">ポップアップの送信やリダイレクトの使用を許可しないサイト</translation>
 <translation id="5497251278400702716">このファイル</translation>
@@ -5715,7 +5709,6 @@
 不正使用されたパスワードは他にも # 件あります。Google パスワード マネージャーでは、このパスワードを今すぐ確認することをおすすめします。}other{不正使用されたパスワードを変更しました。
 
 不正使用されたパスワードは他にも # 件あります。Google パスワード マネージャーでは、これらのパスワードを今すぐ確認することをおすすめします。}}</translation>
-<translation id="6595792813574514527">ドラッグして <ph name="VISUAL_SEARCH_PROVIDER" /> で画像を検索</translation>
 <translation id="6596325263575161958">暗号化オプション</translation>
 <translation id="6596816719288285829">IP アドレス</translation>
 <translation id="6597017209724497268">サンプル</translation>
@@ -7332,7 +7325,6 @@
 <translation id="8184318863960255706">詳細</translation>
 <translation id="8184472985242519288">均一</translation>
 <translation id="8186609076106987817">お探しのファイルはサーバーにはありません。</translation>
-<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> でページの一部を検索</translation>
 <translation id="8188389033983459049">続行するには、デバイスの設定で Bluetooth をオンにしてください</translation>
 <translation id="8188742492803591566">Chromecast またはテレビに表示されたアクセスコードを入力すると画面でキャストを開始できます。</translation>
 <translation id="8189306097519446565">学校用アカウント</translation>

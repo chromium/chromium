@@ -1207,9 +1207,9 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Si no estableces la política, se aplicará la protección predeterminada de la Navegación segura en todos los recursos.
 
-      Se debe establecer esta política como una lista de nombres de dominio completamente calificados. No permite expresiones regulares, ni permitirá incluir subdominios de dominios enumerados en dicha lista.
+      Se debe establecer esta política como una lista de nombres de dominio completamente calificados. No permite expresiones regulares ni permitirá incluir subdominios de dominios enumerados en dicha lista.
 
-      En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
+      En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="2221779615493499989">Informa a los usuarios sobre el estado de red en dispositivos inscritos.
 
       Si estableces la política como falsa, no se informarán los eventos.

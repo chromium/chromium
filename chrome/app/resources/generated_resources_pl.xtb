@@ -1397,7 +1397,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
     Jeśli później uznasz, że funkcja Voice Match nie jest odpowiednia dla Twojego dziecka, po prostu usuń ją w ustawieniach Asystenta. Aby zobaczyć lub usunąć klipy audio utworzone przez dziecko podczas konfigurowania Voice Match, wejdź na <ph name="VOICE_MATCH_SETTINGS_URL" /> na jego koncie.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Przeszukaj część strony narzędziem <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Ta witryna ma zablokowany dostęp do czujników ruchu i oświetlenia.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL strony</translation>
@@ -2020,7 +2019,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="289695669188700754">Identyfikator klucza: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Gdy zamkniesz wszystkie okna incognito, to niestandardowe ustawienie zostanie usunięte</translation>
 <translation id="2897878306272793870">Czy na pewno chcesz otworzyć <ph name="TAB_COUNT" /> zakładki?</translation>
-<translation id="2900477968385519153">Przeszukaj ekran narzędziem <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Plik korzysta z nieobsługiwanych funkcji</translation>
 <translation id="2901348420151309559">Ostatnie zdjęcia i aplikacje</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> nie może skomunikować się z drukarką. Upewnij się, że jest ona podłączona, i spróbuj ponownie.</translation>
@@ -2893,7 +2891,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3778740492972734840">&amp;Narzędzia dla deweloperów</translation>
 <translation id="3778868487658107119">Zadawaj mu pytania i wydawaj polecenia. To Twój osobisty asystent, zawsze gotowy do pomocy.</translation>
 <translation id="3781742599892759500">Dostęp do mikrofonu dla Linuksa</translation>
-<translation id="378312418865624974">Odczyt unikalnego identyfikatora tego komputera</translation>
 <translation id="3784472333786002075">Pliki cookie są tworzone przez strony internetowe. Dzielą się na dwa typy: własne pliki cookie są zapisywane przez odwiedzaną stronę. Jej adres znajdziesz w pasku adresu. Pliki cookie innych firm są tworzone przez inne strony. Na tych stronach znajdują się niektóre treści, np. reklamy i obrazy, które wyświetlają się na odwiedzanej stronie.</translation>
 <translation id="3785308913036335955">Pokaż skrót do aplikacji</translation>
 <translation id="3785727820640310185">Zapisano hasła do tej strony</translation>
@@ -3546,7 +3543,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4415748029120993980">Kryptografia krzywych eliptycznych SECG secp384r1 (inna nazwa: NIST P-384)</translation>
 <translation id="4416450511678320850">Brak aplikacji obsługujących tę zawartość</translation>
 <translation id="4416582610654027550">Wpisz prawidłowy URL</translation>
-<translation id="4417162649853416189">Przeciągnij po obrazie, aby wyszukać narzędziem <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Zawsze zezwalaj witrynie <ph name="HOST" /> na zapisywanie plików cookie</translation>
 <translation id="4421932782753506458">Puszysty</translation>
 <translation id="4423376891418188461">Przywróć ustawienia</translation>
@@ -3685,7 +3681,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4550926046134589611">Niektóre obsługiwane linki nadal będą się otwierać w aplikacji <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Naciśnij <ph name="MODIFIER_KEY_DESCRIPTION" />, by cofnąć</translation>
 <translation id="4553526521109675518">Aby zmienić język, musisz ponownie uruchomić Chromebooka. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Przeciągnij po obrazie, aby wyszukać narzędziem <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Wersja rozszerzenia zewnętrznego jest starsza lub taka sama jak wersja obecna.</translation>
 <translation id="4555769855065597957">Cień</translation>
 <translation id="4555863373929230635">Aby zapisywać hasła na swoim koncie Google, zaloguj się i włącz synchronizację.</translation>
@@ -4535,7 +4530,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5427459444770871191">Obróć w &amp;prawo</translation>
 <translation id="542750953150239272">Kontynuując, zgadzasz się na to, żeby to urządzenie mogło automatycznie pobierać oraz instalować aktualizacje i aplikacje od Google, operatora sieci komórkowej i producenta urządzenia, oraz żeby mogło używać w tym celu komórkowej transmisji danych. Niektóre z aplikacji umożliwiają robienie zakupów.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (dostępna aktualizacja)</translation>
-<translation id="5429373054983029602">Przeszukaj ekran narzędziem <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Trzeba zainstalować aktualizację oprogramowania Trusted Platform Module. Zobacz: <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Kolor</translation>
@@ -4608,7 +4602,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5494920125229734069">Wybierz wszystko</translation>
 <translation id="5495466433285976480">To spowoduje usunięcie wszystkich lokalnych użytkowników, plików, danych i innych ustawień po ponownym uruchomieniu. Wszyscy użytkownicy będą musieli zalogować się od nowa.</translation>
 <translation id="5495597166260341369">Nie wyłączaj ekranu</translation>
-<translation id="549580971452855947">Przeciągnij, aby przeszukać obrazy narzędziem <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Organizuj</translation>
 <translation id="5496730470963166430">Nie zezwolono na wysyłanie wyskakujących okienek ani używanie przekierowań</translation>
 <translation id="5497251278400702716">Ten plik</translation>
@@ -5723,7 +5716,6 @@ Masz jeszcze # przejęte hasła. Menedżer haseł Google zaleca, aby jak najszy
 Masz jeszcze # przejętych haseł. Menedżer haseł Google zaleca, aby jak najszybciej je sprawdzić.}other{Zmieniono przejęte hasło.
 
 Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najszybciej je sprawdzić.}}</translation>
-<translation id="6595792813574514527">Przeciągnij, aby przeszukać obrazy narzędziem <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Opcje szyfrowania</translation>
 <translation id="6596816719288285829">Adres IP</translation>
 <translation id="6597017209724497268">Przykłady</translation>
@@ -7344,7 +7336,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8184318863960255706">Więcej informacji</translation>
 <translation id="8184472985242519288">Jednolity</translation>
 <translation id="8186609076106987817">Serwer nie znalazł pliku.</translation>
-<translation id="8186704951085064172">Przeszukaj część strony narzędziem <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Sprawdź ustawienia urządzenia i włącz tę opcję, by kontynuować</translation>
 <translation id="8188742492803591566">Aby rozpocząć przesyłanie ekranu, wpisz kod dostępu widoczny na urządzeniu Chromecast lub telewizorze.</translation>
 <translation id="8189306097519446565">Konta szkolne</translation>

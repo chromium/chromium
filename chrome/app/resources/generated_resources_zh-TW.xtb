@@ -180,6 +180,7 @@
 <translation id="1166583374608765787">檢查新名稱</translation>
 <translation id="1166596238782048887">「<ph name="TAB_TITLE" />」分頁屬於「<ph name="DESK_TITLE" />」桌面</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 內開啟...</translation>
+<translation id="1169266963600477608">遊戲控制項</translation>
 <translation id="1169435433292653700">「<ph name="FILE_NAME" />」含有機密或危險的資料。管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
 <translation id="1171135284592304528">鍵盤焦點所在物件變更時醒目顯示</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> 要求與 HID 裝置連線</translation>
@@ -1410,7 +1411,6 @@
     如果你稍後決定不讓孩子使用 Voice Match，只要從他們的 Google 助理設定中移除這項功能即可。如要查看或刪除孩子設定 Voice Match 時錄製的語音片段，請登入孩子的帳戶並前往 <ph name="VOICE_MATCH_SETTINGS_URL" />。
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋頁面上的部分內容</translation>
 <translation id="2309620859903500144">這個網站已遭封鎖，無法存取你的動作感應器或光源感應器。</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">網頁網址</translation>
@@ -2034,7 +2034,6 @@
 <translation id="289695669188700754">金鑰識別碼：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">所有無痕式視窗關閉後，這項自訂設定將會移除</translation>
 <translation id="2897878306272793870">你確定要開啟 <ph name="TAB_COUNT" /> 分頁嗎？</translation>
-<translation id="2900477968385519153">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋螢幕畫面</translation>
 <translation id="290105521672621980">檔案使用不受支援的功能</translation>
 <translation id="2901348420151309559">最近的相片和應用程式</translation>
 <translation id="2902127500170292085">「<ph name="EXTENSION_NAME" />」無法與這部印表機進行通訊，請確認您已插上印表機，然後再試一次。</translation>
@@ -2907,7 +2906,6 @@
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3778868487658107119">Google 助理可根據你的問題提供解答，或是依指令執行各種操作。它是你專屬的 Google 服務，隨時為你提供協助。</translation>
 <translation id="3781742599892759500">Linux 麥克風存取權</translation>
-<translation id="378312418865624974">讀取這台電腦的專屬 ID</translation>
 <translation id="3784472333786002075">Cookie 是網站所建立的檔案，可分為兩種類型：第一方 Cookie 由你造訪過的網站所建立，也就是網址列所顯示的網站。第三方 Cookie 由其他網站所建立。這類網站通常是在你造訪的網站上提供部分內容 (例如廣告或圖片) 的其他網站。</translation>
 <translation id="3785308913036335955">顯示應用程式捷徑</translation>
 <translation id="3785727820640310185">已儲存這個網站的密碼</translation>
@@ -3365,6 +3363,7 @@
 <translation id="4227605727325220318">新增 Android 手機</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充功能}other{已封鎖部分擴充功能}}</translation>
 <translation id="4231095370974836764">在你的 <ph name="DEVICE_TYPE" /> 上透過 Google Play 安裝應用程式和遊戲。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="4231141543165771749">關閉遊戲控制項</translation>
 <translation id="4232375817808480934">設定 Kerberos</translation>
 <translation id="4235965441080806197">取消登入</translation>
 <translation id="4236163961381003811">探索其他擴充功能</translation>
@@ -3559,7 +3558,6 @@
 <translation id="4415748029120993980">SECG 橢圓曲線 secp384r1 (亦稱為 NIST P-384)</translation>
 <translation id="4416450511678320850">沒有與這個內容相關的應用程式</translation>
 <translation id="4416582610654027550">請輸入有效的網址</translation>
-<translation id="4417162649853416189">在圖片上拖曳游標以使用 <ph name="VISUAL_SEARCH_PROVIDER" />的搜尋功能</translation>
 <translation id="4419409365248380979">一律允許 <ph name="HOST" /> 設定 Coockie</translation>
 <translation id="4421932782753506458">毛毛</translation>
 <translation id="4423376891418188461">還原設定</translation>
@@ -3697,7 +3695,6 @@
 <translation id="4550926046134589611">某些支援連結仍會在「<ph name="APP_NAME" />」中開啟。</translation>
 <translation id="4551763574344810652">按下 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可復原</translation>
 <translation id="4553526521109675518">你需要重新啟動 Chromebook 才能變更裝置語言。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">在圖片上拖曳游標以使用 <ph name="VISUAL_SEARCH_PROVIDER" />的搜尋功能</translation>
 <translation id="4554591392113183336">外部擴充功能與現有擴充功能的版本相同，或版本較低。</translation>
 <translation id="4555769855065597957">陰影</translation>
 <translation id="4555863373929230635">如要將密碼儲存到你的 Google 帳戶，請登入並開啟同步功能。</translation>
@@ -4548,7 +4545,6 @@
 <translation id="5427459444770871191">順時針旋轉(&amp;C)</translation>
 <translation id="542750953150239272">如果選擇繼續，即表示您允許這部裝置自動下載及安裝來自 Google、您的電信業者和裝置製造商的更新內容和應用程式，上述程序可能會使用行動數據。這類應用程式中，有些可能會提供應用程式內購。</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (有可用的更新)</translation>
-<translation id="5429373054983029602">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋螢幕畫面</translation>
 <translation id="542948651837270806">必須安裝可信任平台模組韌體的更新項目。詳情請參閱 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">即時網路共用</translation>
 <translation id="5431318178759467895">彩色</translation>
@@ -4621,7 +4617,6 @@
 <translation id="5494920125229734069">全選</translation>
 <translation id="5495466433285976480">這樣會在下次重新啟動時移除所有本機使用者、檔案、資料和其他設定。所有使用者都必須重新登入。</translation>
 <translation id="5495597166260341369">保持開啟螢幕</translation>
-<translation id="549580971452855947">拖曳游標以使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
 <translation id="5496587651328244253">整理</translation>
 <translation id="5496730470963166430">不得傳送彈出式視窗或使用重新導向</translation>
 <translation id="5497251278400702716">這個檔案</translation>
@@ -5729,7 +5724,6 @@
 你還有 # 組遭外洩的密碼，Google 密碼管理工具建議你立即變更這組密碼。}other{已成功變更遭外洩的密碼。
 
 你還有 # 組遭外洩的密碼，Google 密碼管理工具建議你立即變更這些密碼。}}</translation>
-<translation id="6595792813574514527">拖曳游標以使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
 <translation id="6596325263575161958">加密選項</translation>
 <translation id="6596816719288285829">IP 位址</translation>
 <translation id="6597017209724497268">個樣本</translation>
@@ -7350,7 +7344,6 @@
 <translation id="8184318863960255706">更多資訊</translation>
 <translation id="8184472985242519288">平均</translation>
 <translation id="8186609076106987817">伺服器找不到檔案。</translation>
-<translation id="8186704951085064172">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋頁面上的部分內容</translation>
 <translation id="8188389033983459049">檢查裝置設定並開啟藍牙功能，以便繼續操作</translation>
 <translation id="8188742492803591566">輸入顯示在 Chromecast 或電視上的存取碼，即可開始投放畫面。</translation>
 <translation id="8189306097519446565">學校帳戶</translation>

@@ -182,6 +182,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1166583374608765787">Suriin ang update sa pangalan</translation>
 <translation id="1166596238782048887">Kabilang ang <ph name="TAB_TITLE" /> sa desk na <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Binubuksan sa <ph name="TIME_REMAINING" />...</translation>
+<translation id="1169266963600477608">Mga kontrol ng laro</translation>
 <translation id="1169435433292653700">May sensitibo o mapanganib na data ang <ph name="FILE_NAME" /> Sabi ng iyong administrator: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171135284592304528">I-highlight ang object gamit ang keyboard focus kapag nagbago ito</translation>
 <translation id="1171515578268894665">Gustong kumonekta ng <ph name="ORIGIN" /> sa isang HID device</translation>
@@ -1426,7 +1427,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
     Kung mapagpapasyahan mo sa ibang pagkakataon na hindi naaangkop sa iyong anak ang Voice Match, alisin lang ito sa kanyang Mga Setting ng Assistant. Para tingnan o i-delete ang mga audio clip na na-record ng iyong anak habang sine-set up ang Voice Match, pumunta sa <ph name="VOICE_MATCH_SETTINGS_URL" /> mula sa account ng anak mo.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Hanapin ang bahagi ng page gamit ang <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Na-block ang site na ito sa pag-access sa iyong sensor ng paggalaw o liwanag.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL ng Page</translation>
@@ -2050,7 +2050,6 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="289695669188700754">Key ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Maaalis ang custom na setting na ito kapag isinara mo ang lahat ng iyong Incognito window</translation>
 <translation id="2897878306272793870">Sigurado ka bang gusto mong buksan ang <ph name="TAB_COUNT" /> tab?</translation>
-<translation id="2900477968385519153">Maghanap sa Iyong Screen gamit ang <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Gumagamit ang file ng mga hindi sinusuportahang feature</translation>
 <translation id="2901348420151309559">Mga kamakailang larawan at app</translation>
 <translation id="2902127500170292085">Ang <ph name="EXTENSION_NAME" /> ay hindi magawang makipag-ugnayan sa printer na ito. Tiyaking naka-plug in ang printer at subukang muli.</translation>
@@ -2923,7 +2922,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3778740492972734840">Mga tool ng Nag-&amp;develop</translation>
 <translation id="3778868487658107119">Tanungin ito. Utusan ito. Ito ang iyong personal na Google, laging handang tumulong.</translation>
 <translation id="3781742599892759500">Access sa mikropono ng Linux</translation>
-<translation id="378312418865624974">Magbasa ng natatanging identifier para sa computer na ito</translation>
 <translation id="3784472333786002075">Ang cookies ay mga file na ginawa ng mga website. May dalawang uri ng cookies: Ginagawa ng site na iyong binibisita ang cookies ng first-party. Ipinapakita ang site sa address bar. Ginagawa ng iba pang site ang third-party na cookies. Pagmamay-ari ng mga site na ito ang ilan sa content, tulad ng mga ad o larawan, na nakikita mo sa website na iyong binibisita.</translation>
 <translation id="3785308913036335955">Ipakita ang Shortcut ng Apps</translation>
 <translation id="3785727820640310185">Mga naka-save na password para sa site na ito</translation>
@@ -3382,6 +3380,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4227605727325220318">Magdagdag ng bagong Android phone</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Hindi pinapayagan ang extension na ito}one{Hindi pinapayagan ang ilang extension}other{Hindi pinapayagan ang ilang extension}}</translation>
 <translation id="4231095370974836764">Mag-install ng mga app at laro mula sa Google Play sa iyong <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
+<translation id="4231141543165771749">Isara ang mga kontrol sa laro</translation>
 <translation id="4232375817808480934">I-configure ang Kerberos</translation>
 <translation id="4235965441080806197">Kanselahin ang pag-sign in</translation>
 <translation id="4236163961381003811">Tumuklas ng higit pang extension</translation>
@@ -3576,7 +3575,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (na tinatawag ding NIST P-384)</translation>
 <translation id="4416450511678320850">Walang available na app para sa content na ito</translation>
 <translation id="4416582610654027550">Mag-type ng valid na URL</translation>
-<translation id="4417162649853416189">Mag-drag ng Mga Larawan para Maghanap gamit ang <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Laging payagan ang <ph name="HOST" /> na magset ng cookies</translation>
 <translation id="4421932782753506458">Mingming</translation>
 <translation id="4423376891418188461">I-restore ang Mga Setting</translation>
@@ -3647,6 +3645,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="449232563137139956">Karaniwang nagpapakita ng mga larawan ang mga site bilang ilustrasyon, gaya ng mga litrato para sa mga online na store o artikulo ng balita</translation>
 <translation id="4492698018379445570">Makita ang idinagdag mo sa mga shopping cart at mag-check out kapag handa ka na</translation>
 <translation id="4493468155686877504">Inirerekomenda (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="4495002167047709180">Payagan ang extension na ito sa <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Huwag ipakita sa pahinang ito</translation>
 <translation id="4497145443434063861">PC at Chromecast sa magkakaibang Wi-Fi network (hal. 2.4GHz
     vs. 5GHz)</translation>
@@ -3715,7 +3714,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4550926046134589611">Bubukas pa rin ang ilang sinusuportahang link sa <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Pindutin ang <ph name="MODIFIER_KEY_DESCRIPTION" /> para i-undo</translation>
 <translation id="4553526521109675518">Kailangan mong i-restart ang iyong Chromebook para mapalitan ang wika ng device. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Mag-drag ng mga larawan para maghanap gamit ang <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Pareho o mas mababa ang bersyon ng external na extension kumpara sa umiiral nang extension.</translation>
 <translation id="4555769855065597957">Shadow</translation>
 <translation id="4555863373929230635">Para mag-save ng mga password sa iyong Google Account, mag-sign in at i-on ang pag-sync.</translation>
@@ -4566,7 +4564,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5427459444770871191">I-rotate &amp;Pakanan</translation>
 <translation id="542750953150239272">Sa pamamagitan ng pagpapatuloy, sumasang-ayon kang ang device na ito ay puwede ring awtomatikong mag-download at mag-install ng mga update at app mula sa Google, iyong carrier, at manufacturer ng device mo, nang posibleng gamit ang cellular data. Posibleng mag-alok ng mga in-app na pagbili ang ilan sa mga app na ito.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Available ang update)</translation>
-<translation id="5429373054983029602">Maghanap sa iyong screen gamit ang <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">May kailangang i-install na update para sa Trusted Platform Module firmware. Tingnan ang <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Instant na Pag-tether</translation>
 <translation id="5431318178759467895">Kulay</translation>
@@ -4639,7 +4636,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
 <translation id="5495466433285976480">Tatanggalin nito ang lahat ng lokal na user, file, data, at iba pang mga setting sa iyong susunod na pag-restart. Kakailanganing mag-sign in muli ng lahat ng user.</translation>
 <translation id="5495597166260341369">Panatilihing naka-on ang display</translation>
-<translation id="549580971452855947">Mag-drag para maghanap ng mga larawan gamit ang <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Isaayos</translation>
 <translation id="5496730470963166430">Hindi pinapayagang magpadala ng mga pop-up o gumamit ng mga pag-redirect</translation>
 <translation id="5497251278400702716">File na ito</translation>
@@ -5752,7 +5748,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager na tingnan na ngayon ang mga password na ito.}other{Napalitan ang nakompromisong password.
 
 May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager na tingnan na ngayon ang mga password na ito.}}</translation>
-<translation id="6595792813574514527">Mag-drag para Maghanap ng Mga Larawan gamit ang <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Mga pagpipilian sa pag-encrypt</translation>
 <translation id="6596816719288285829">IP Address</translation>
 <translation id="6597017209724497268">Mga Sample</translation>
@@ -7373,7 +7368,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8184318863960255706">Higit pang impormasyon</translation>
 <translation id="8184472985242519288">Magkapareho</translation>
 <translation id="8186609076106987817">Hindi makita ng server ang file.</translation>
-<translation id="8186704951085064172">Hanapin ang Bahagi ng Page gamit ang <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Suriin ang mga setting ng iyong device at i-on ito para magpatuloy</translation>
 <translation id="8188742492803591566">Ilagay ang access code na ipinapakita sa Chromecast o TV para simulan ang pag-cast sa iyong screen.</translation>
 <translation id="8189306097519446565">Mga pampaaralang account</translation>

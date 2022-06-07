@@ -18,7 +18,6 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="1066060668811609597">Sinxronizatsiyani boshqarish</translation>
 <translation id="1076421457278169141">Kod skanerlandi</translation>
 <translation id="1084365883616172403">Facebook’ka joylandi.</translation>
-<translation id="1086486568852410168">Google Lens orqali qidirish</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> tilidan har doim tarjima qilinsin</translation>
 <translation id="1104948393051856124">Davom etish</translation>
 <translation id="110724200315609752">Yopilmagan oynalarga oʻtish</translation>
@@ -164,6 +163,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="236977714248711277">Saytlar sahifalarni kezishingizni yaxshilash, jumladan, kirish axborotingiz yoki xarid qutingizni eslab qolish uchun cookie fayllardan foydalana olmaydi.
 
 Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzata olmaydi.</translation>
+<translation id="2375243552872247702">Siz uchun kontent</translation>
 <translation id="2381405137052800939">Asosiy</translation>
 <translation id="2386793615875593361">1 ta belgilandi</translation>
 <translation id="2421004566762153674">Tashqi cookie fayllarni bloklash</translation>
@@ -603,6 +603,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6136914049981179737">Yaqinda</translation>
 <translation id="6144589619057374135">${url} sahifasini Inkognito rejimida ochish</translation>
 <translation id="6149061208933997199">Paroldan foydalanish</translation>
+<translation id="6152406514676263192">Qiziqishlar asosida eng mos kontent chiqishini sinxronlash.</translation>
 <translation id="6159839020698489198">ixtiyoriy</translation>
 <translation id="6177442314419606057">Chromedan qidirish</translation>
 <translation id="6184086493125982861">Tablarni ko‘rsatish</translation>
@@ -750,6 +751,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7189598951263744875">Ulashish…</translation>
 <translation id="7192050974311852563">Yozib olishni boshlash</translation>
 <translation id="7203585745079012652">Qidiruv natijalari o‘qilsin</translation>
+<translation id="7207023858769244910">Qiziqishlar asosida yangi kontent chiqishini sinxronlash.</translation>
 <translation id="7207383424303353046">Yangi: Saytlar Chrome brauzerida avtomatik ochilishi uchun uni birlamchi brauzer etib tayinlash kifoya. <ph name="BEGIN_LINK" />Sozlamalarni ochish<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Karta nomi yaroqsiz</translation>
 <translation id="722454870747268814">Yangi inkognito sahifa</translation>

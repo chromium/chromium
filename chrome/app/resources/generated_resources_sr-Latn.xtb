@@ -180,6 +180,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1166583374608765787">Pregledajte ažuriranje naziva</translation>
 <translation id="1166596238782048887">Kartica <ph name="TAB_TITLE" /> pripada radnoj površini <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Otvaranje za <ph name="TIME_REMAINING" />...</translation>
+<translation id="1169266963600477608">Kontrole igre</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> sadrži osetljive ili opasne podatke. Administrator kaže: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="1171135284592304528">Istakni objekat pomoću fokusa tastature kada se promeni</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> želi da se poveže sa HID uređajem</translation>
@@ -1409,7 +1410,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
     Ako kasnije odlučite da Voice Match ne odgovara vašem detetu, jednostavno ga uklonite iz podešavanja Pomoćnika. Da biste pregledali ili izbrisali audio snimke koje dete snimi tokom podešavanja Voice Match-a, idite na <ph name="VOICE_MATCH_SETTINGS_URL" /> sa detetovog naloga.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Pretraži deo stranice pomoću: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Ovom sajtu je zabranjen pristup senzorima za pokret ili svetlo.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL stranice</translation>
@@ -2033,7 +2033,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="289695669188700754">ID ključa: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Ovo prilagođeno podešavanje se uklanja kada zatvorite sve prozore bez arhiviranja</translation>
 <translation id="2897878306272793870">Želite li stvarno da otvorite <ph name="TAB_COUNT" /> kartica?</translation>
-<translation id="2900477968385519153">Pretraži ekran pomoću: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Datoteka koristi funkcije koje nisu podržane</translation>
 <translation id="2901348420151309559">Nedavne slike i aplikacije</translation>
 <translation id="2902127500170292085">Komunikacija dodatka <ph name="EXTENSION_NAME" /> sa ovim štampačem nije uspela. Proverite da li je štampač priključen i pokušajte ponovo.</translation>
@@ -2906,7 +2905,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3778740492972734840">&amp;Alatke za programere</translation>
 <translation id="3778868487658107119">Postavljajte mu pitanja. Dajte mu da radi nešto. To je vaš lični Google, uvek na usluzi.</translation>
 <translation id="3781742599892759500">Pristup mikrofonu za Linux</translation>
-<translation id="378312418865624974">Čitanje jedinstvenog identifikatora za ovaj računar</translation>
 <translation id="3784472333786002075">Kolačići su datoteke koje prave veb-sajtovi. Postoje dva tipa kolačića: Kolačiće prve strane pravi sajt koji posećujete. Sajt je prikazan na traci za adresu. Kolačiće treće strane prave drugi sajtovi. Ti sajtovi su vlasnici delova sadržaja koji vidite na posećenom veb-sajtu, poput oglasa ili slika.</translation>
 <translation id="3785308913036335955">Prikaži prečicu za aplikacije</translation>
 <translation id="3785727820640310185">Sačuvane lozinke za ovaj sajt</translation>
@@ -3365,6 +3363,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4227605727325220318">Dodajte novi Android telefon</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Ovaj dodatak nije dozvoljen}one{Neki dodaci nisu dozvoljeni}few{Neki dodaci nisu dozvoljeni}other{Neki dodaci nisu dozvoljeni}}</translation>
 <translation id="4231095370974836764">Instalirajte aplikacije i igre sa Google Play-a na uređaju <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="4231141543165771749">Zatvori kontrole igara</translation>
 <translation id="4232375817808480934">Konfigurišite Kerberos</translation>
 <translation id="4235965441080806197">Otkaži prijavljivanje</translation>
 <translation id="4236163961381003811">Otkrijte još dodataka</translation>
@@ -3559,7 +3558,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4415748029120993980">Eliptična kriva SECG secp384r1 (takođe poznata kao NIST P-384)</translation>
 <translation id="4416450511678320850">Nema dostupnih aplikacija za ovaj sadržaj</translation>
 <translation id="4416582610654027550">Unesite važeći URL</translation>
-<translation id="4417162649853416189">Prevlači preko slika radi pretrage pomoću: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Uvek dozvoli da <ph name="HOST" /> podešava kolačiće</translation>
 <translation id="4421932782753506458">Pufnica</translation>
 <translation id="4423376891418188461">Vrati podešavanja</translation>
@@ -3697,7 +3695,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4550926046134589611">Neki podržani linkovi će se i dalje otvarati u <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Pritisnite <ph name="MODIFIER_KEY_DESCRIPTION" /> da biste opozvali</translation>
 <translation id="4553526521109675518">Morate da restartujete Chromebook da biste promenili jezik uređaja. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Prevlači preko slika radi pretrage pomoću: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Verzija spoljnog dodatka je ista ili starija od postojećeg.</translation>
 <translation id="4555769855065597957">Novi profil</translation>
 <translation id="4555863373929230635">Da biste sačuvali lozinke na Google nalogu, prijavite se i uključite sinhronizaciju.</translation>
@@ -3889,7 +3886,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4742970037960872810">Ukloni isticanje</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Saznajte kako da ažurirate aplikacije<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Uključi zvuk sajta}one{Uključi zvuk sajtova}few{Uključi zvuk sajtova}other{Uključi zvuk sajtova}}</translation>
-<translation id="474609389162964566">Pristupajte Pomoćniku pomoću fraze „Hej Google“</translation>
+<translation id="474609389162964566">Pristupajte Pomoćniku frazom „Hej Google“</translation>
 <translation id="4746351372139058112">Poruke</translation>
 <translation id="4748783296226936791">Sajtovi se obično povezuju sa HID uređajima za potrebe funkcija koje koriste neuobičajene tastature, kontrolere za igre i druge uređaje</translation>
 <translation id="4750185073185658673">Idite na telefon da biste pregledali još nekoliko dozvola. Uverite se da su Bluetooth i WiFi telefona uključeni.</translation>
@@ -4547,7 +4544,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5427459444770871191">Okreći &amp;u smeru kretanja kazaljke na satu</translation>
 <translation id="542750953150239272">Ako nastavite, slažete se da ovaj uređaj može i da automatski preuzima i instalira ažuriranja i aplikacije od Google-a, mobilnog operatera i proizvođača uređaja, uz moguće korišćenje mobilnih podataka. Neke od ovih aplikacija mogu da nude kupovine u aplikacijama.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Dostupno je ažuriranje)</translation>
-<translation id="5429373054983029602">Pretraži ekran pomoću: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Treba da instalirate ažuriranje firmvera za Modul pouzdane platforme. Posetite <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Trenutno privezivanje</translation>
 <translation id="5431318178759467895">U boji</translation>
@@ -4620,7 +4616,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5494920125229734069">Izbor svih stavki</translation>
 <translation id="5495466433285976480">Ovim ćete ukloniti sve lokalne korisnike, datoteke, podatke i druga podešavanja posle sledećeg ponovnog pokretanja. Svi korisnici će morati ponovo da se prijave.</translation>
 <translation id="5495597166260341369">Kada je ekran uključen</translation>
-<translation id="549580971452855947">Prevlači radi pretrage slika pomoću: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Organizovanje</translation>
 <translation id="5496730470963166430">Nije im dozvoljeno da šalju iskačuće prozore ili da koriste preusmeravanja</translation>
 <translation id="5497251278400702716">Ova datoteka</translation>
@@ -5736,7 +5731,6 @@ Imate još # ugroženu lozinku. Google menadžer lozinki preporučuje da odmah p
 Imate još # ugrožene lozinke. Google menadžer lozinki preporučuje da odmah proverite ove lozinke.}other{Promenili ste ugroženu lozinku.
 
 Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah proverite ove lozinke.}}</translation>
-<translation id="6595792813574514527">Prevlači radi pretrage slika pomoću: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Opcije šifrovanja</translation>
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6597017209724497268">Uzorci</translation>
@@ -7356,7 +7350,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8184318863960255706">Više informacija</translation>
 <translation id="8184472985242519288">Jednoobrazno</translation>
 <translation id="8186609076106987817">Server nije mogao da pronađe datoteku.</translation>
-<translation id="8186704951085064172">Pretraži deo stranice pomoću: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Proverite podešavanja uređaja i uključite ga da biste nastavili</translation>
 <translation id="8188742492803591566">Unesite pristupni kôd prikazan na Chromecast-u ili TV-u da biste počeli da prebacujete sadržaj ekrana.</translation>
 <translation id="8189306097519446565">Školski nalozi</translation>

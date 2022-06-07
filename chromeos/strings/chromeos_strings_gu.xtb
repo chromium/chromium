@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">લૉન્ચર</translation>
 <translation id="1512982610995527443">5 સેકન્ડમાં ડિવાઇસ શટ ડાઉન થઈ જશે</translation>
 <translation id="1522984060396982789">તમારી રિપેરની પ્રક્રિયા પૂર્ણ થઈ. તમે ડિવાઇસ શટ ડાઉન કરી શકો છો અથવા થોડા વધારાના પગલાં લઈ શકો છો.</translation>
+<translation id="1526389707933164996">સ્ક્રીન સેવર ઍનિમેશન</translation>
 <translation id="152892567002884378">વૉલ્યૂમ વધારો</translation>
 <translation id="1555130319947370107">વાદળી</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -76,6 +77,7 @@
 <translation id="1572585716423026576">વૉલપેપર તરીકે સેટ કરો</translation>
 <translation id="1578784163189013834">સ્ક્રીન સેવરનું બૅકગ્રાઉન્ડ પસંદ કરો</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />થી ડેટા વપરાશ</translation>
+<translation id="1620510694547887537">કૅમેરા</translation>
 <translation id="1621067168122174824">ચાર્જિંગનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="1631385268983122904">ડિવાઇસને હમણાં પાછું જોડશો નહીં</translation>
 <translation id="1639239467298939599">લોડ કરી રહ્યું છે</translation>
@@ -93,6 +95,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> અને <ph name="SECOND_MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="1726100011689679555">નામ સર્વર</translation>
 <translation id="1731082422893354635">બ્લૂટૂથ ટચપૅડ</translation>
+<translation id="1745577949879301685">છબીઓ લોડ કરી શકાઈ નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અથવા છબીઓ ફરી લોડ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="1751249301761991853">વ્યક્તિગત</translation>
 <translation id="1753496554272155572">વૉલપેપર પ્રીવ્યૂમાંથી બહાર નીકળો</translation>
 <translation id="175763766237925754">સારું (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -257,6 +260,7 @@
 <translation id="3413935475507503304">અપડેટમાં આગળ વધવા માટે આગળ પર ક્લિક કરો.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
+<translation id="3441653493275994384">સ્કિન</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />માંથી <ph name="PRINTED_PAGES" /> પેજ પ્રિન્ટ કર્યા.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ. <ph name="PERCENTAGE_VALUE" />% પૂર્ણ થયું.</translation>
 <translation id="3459509316159669723">છાપવું</translation>
@@ -279,6 +283,7 @@
 <translation id="3604713164406837697">વૉલપેપર બદલો</translation>
 <translation id="360565022852130722">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP 802.1x પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
 <translation id="3606583719724308068">HTTPS વેબસાઇટ માટે વિલંબતાનો સમય ઘણો વધુ છે</translation>
+<translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3621202678540785336">ઇનપુટ</translation>
 <translation id="3632579075709132555">પ્રાઇવસી સ્ક્રીન ટૉગલ કરો</translation>
 <translation id="3643810137582748570">કેલિબ્રેશન છોડો</translation>
@@ -300,6 +305,7 @@
 <translation id="3858860766373142691">નામ</translation>
 <translation id="3865414814144988605">રિઝોલ્યુશન</translation>
 <translation id="387301095347517405">તમારી બૅટરી પૂર્ણ ચાર્જિંગ સાયકલમાંથી પસાર થયાની સંખ્યા</translation>
+<translation id="3885327323343477505">સ્ક્રીન સેવર બદલો</translation>
 <translation id="3923184630988645767">ડેટા વપરાશ</translation>
 <translation id="3924044641767672375">ઠીક કરવાની પ્રક્રિયા વધુ સરળ બનાવવા માટે, વાઇ-ફાઇ સાથે કનેક્ટ કરવાનો સુઝાવ આપવામાં આવે છે. તમારું નેટવર્ક સાચવવામાં આવશે.</translation>
 <translation id="3932043219784172185">કોઈ ડિવાઇસ કનેક્ટ કરેલું નથી</translation>
@@ -327,6 +333,7 @@
 <translation id="4140251671072434548">RMA સર્વર અનલૉક કરો</translation>
 <translation id="4145784616224233563">HTTP ફાયરવૉલ</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">ડિસ્પ્લે</translation>
 <translation id="4155551848414053977">ખાતરી કરો કે સ્કૅનર ચાલુ કરેલું છે અને તમારા નેટવર્ક અથવા સીધા જોડાણ મારફતે ઉપલબ્ધ છે</translation>
 <translation id="4159784952369912983">જાંબલી</translation>
 <translation id="4170180284036919717">ફોટો લો</translation>
@@ -418,6 +425,7 @@
 <translation id="4890353053343094602">તરત જ નવો પાસવર્ડ પસંદ કરો</translation>
 <translation id="4891842000192098784">તાણ</translation>
 <translation id="4897058166682006107">ડિવાઇસના ડાબા ઇયરબડમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
+<translation id="4905998861748258752">સ્ક્રીન સેવરના વિકલ્પો પસંદ કરવા માટે ઍમ્બિઅન્ટ મોડની સુવિધા ચાલુ કરો</translation>
 <translation id="4908030561598728899">ફર્મવેયર ઇન્સ્ટૉલ કરી રહ્યાં છીએ...</translation>
 <translation id="4915052247106771211">આને કારણે ડિવાઇસને ફેક્ટરી સેટિંગ (પાવરવોશ) પર રીસેટ કરવામાં આવશે.</translation>
 <translation id="4917385247580444890">સશક્ત</translation>
@@ -741,6 +749,7 @@
 <translation id="7960831585769876809">તાપમાન</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> નેટવર્ક સાથે જોડાવા માટે, સેટિંગમાં જાઓ</translation>
 <translation id="7978412674231730200">ખાનગી કી</translation>
+<translation id="7982789257301363584">નેટવર્ક</translation>
 <translation id="7994702968232966508">EAP પદ્ધતિ</translation>
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -835,6 +844,7 @@
 <translation id="8834539327799336565">હાલમાં કનેક્ટેડ</translation>
 <translation id="8845001906332463065">સહાય મેળવો</translation>
 <translation id="8855781559874488009">ફાયરવૉલ મારફતે HTTP વેબસાઇટ સાથે કનેક્ટ કરી શકતા નથી</translation>
+<translation id="885701979325669005">સ્ટોરેજ</translation>
 <translation id="8863170912498892583">ઘેરી થીમ ચાલુ કરો</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" માટે <ph name="INTENT" /> અને વધુ મેળવો</translation>
 <translation id="8868741746785112895">GUID</translation>
@@ -860,6 +870,7 @@
 <translation id="8997710128084572139">ડિવાઇસમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="9003704114456258138">આવર્તન</translation>
 <translation id="9025198690966128418">વ્યક્તિગત ડિવાઇસ તરીકે ઉપયોગ કરો</translation>
+<translation id="9028832514430399253">સ્ક્રીન સેવરના વિકલ્પો પસંદ કરવા માટે ટૉગલને ચાલુ કરો</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNSના રિઝોલ્યુશનની વિલંબતાનો સમય ઘણો વધુ છે</translation>
 <translation id="9063121522582193837">કેટલાક ઘટકો કેલિબ્રેટ કરી શક્યાં નથી</translation>

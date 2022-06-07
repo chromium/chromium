@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">Postavi kao pozadinu</translation>
 <translation id="1578784163189013834">Odabir pozadine čuvara zaslona</translation>
 <translation id="1615335640928990664">Potrošnja podatkovnog prometa od <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="1621067168122174824">Pokreni test napunjenosti</translation>
 <translation id="1631385268983122904">Još nemojte sastavljati uređaj</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
@@ -94,6 +95,7 @@
 <translation id="1717874160321062422">Upravljaju <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Poslužitelji naziva</translation>
 <translation id="1731082422893354635">Bluetooth dodirna podloga</translation>
+<translation id="1745577949879301685">Učitavanje slika nije uspjelo. Provjerite mrežnu vezu ili pokušajte ponovo učitati slike.</translation>
 <translation id="1751249301761991853">Osobno</translation>
 <translation id="1753496554272155572">Zatvaranje pregleda pozadina</translation>
 <translation id="175763766237925754">Dobar (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -258,6 +260,7 @@
 <translation id="3413935475507503304">Da biste nastavili s ažuriranjem, kliknite Dalje.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Sigurnost</translation>
+<translation id="3441653493275994384">Zaslon</translation>
 <translation id="3456078764689556234">Ispisane stranice: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skeniranje stranice <ph name="PAGE_NUM" />. Dovršeno je <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Ispis</translation>
@@ -280,6 +283,7 @@
 <translation id="3604713164406837697">Promjena pozadinske slike</translation>
 <translation id="360565022852130722">Wi-Fi mreža zaštićena je slabim protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Visoka latencija do HTTPS web-lokacija</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Ulaz</translation>
 <translation id="3632579075709132555">Prekidač zaslona privatnosti</translation>
 <translation id="3643810137582748570">Preskoči kalibraciju</translation>
@@ -329,6 +333,7 @@
 <translation id="4140251671072434548">Otključavanje RMA poslužitelja</translation>
 <translation id="4145784616224233563">Vatrozid za HTTP</translation>
 <translation id="4147897805161313378">Google fotografije</translation>
+<translation id="4150201353443180367">Zaslon</translation>
 <translation id="4155551848414053977">Provjerite je li skener uključen i dostupan putem vaše mreže ili izravne veze</translation>
 <translation id="4159784952369912983">Ljubičasto</translation>
 <translation id="4170180284036919717">Fotografiraj</translation>
@@ -745,6 +750,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7977800524392185497">Da biste se pridružili <ph name="NETWORK_NAME" /> mreži, otvorite postavke</translation>
 <translation id="7978412674231730200">Osobni ključ</translation>
+<translation id="7982789257301363584">Mreža</translation>
 <translation id="7994702968232966508">EAP metoda</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +845,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8834539327799336565">Trenutačno povezano</translation>
 <translation id="8845001906332463065">Zatražite pomoć</translation>
 <translation id="8855781559874488009">Povezivanje s HTTP web-lokacijama putem vatrozida nije uspjelo</translation>
+<translation id="885701979325669005">Prostor za pohranu</translation>
 <translation id="8863170912498892583">Omogućivanje tamne teme</translation>
 <translation id="8863888432376731307">Pogledajte <ph name="INTENT" /> za "<ph name="QUERY" />" i još mnogo toga</translation>
 <translation id="8868741746785112895">GUID</translation>

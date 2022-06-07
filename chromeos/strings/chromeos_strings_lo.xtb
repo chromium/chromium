@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">ຕັ້ງເປັນພາບພື້ນຫຼັງ</translation>
 <translation id="1578784163189013834">ເລືອກພື້ນຫຼັງສະກຣີນເຊັບເວີ</translation>
 <translation id="1615335640928990664">ການນຳໃຊ້ອິນເຕີເນັດນັບຕັ້ງແຕ່ <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="1621067168122174824">ເອີ້ນໃຊ້ການທົດສອບການສາກ</translation>
 <translation id="1631385268983122904">ຢ່າປະກອບອຸປະກອນເຂົ້າກັນເທື່ອ</translation>
 <translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
@@ -259,6 +260,7 @@
 <translation id="3413935475507503304">ເພື່ອດຳເນີນການຕໍ່ກັບອັບເດດ, ໃຫ້ຄລິກຕໍ່ໄປ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">ຄວາມ​ປອດ​ໄພ</translation>
+<translation id="3441653493275994384">ຫນ້າ​ຈໍ</translation>
 <translation id="3456078764689556234">ພິມໜ້າ <ph name="PRINTED_PAGES" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUM" />. ສຳເລັດແລ້ວ <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">ກໍາລັງພິມ</translation>
@@ -281,6 +283,7 @@
 <translation id="3604713164406837697">ປ່ຽນພາບພື້ນຫຼັງ</translation>
 <translation id="360565022852130722">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP 802.1x ທີ່ບໍ່ຮັດກຸມ</translation>
 <translation id="3606583719724308068">ເວລາຕອບສະໜອງຫາເວັບໄຊ HTTPS ສູງ</translation>
+<translation id="3616113530831147358">ສຽງ</translation>
 <translation id="3621202678540785336">ການປ້ອນເຂົ້າ</translation>
 <translation id="3632579075709132555">ສະຫຼັບໜ້າຈໍຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="3643810137582748570">ຂ້າມການປັບທຽບ</translation>
@@ -330,6 +333,7 @@
 <translation id="4140251671072434548">ດຳເນີນການປົດລັອກເຊີບເວີ RMA</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google ຮູບພາບ</translation>
+<translation id="4150201353443180367">ການສະແດງຜົນ</translation>
 <translation id="4155551848414053977">ກວດໃຫ້ແນ່ໃຈວ່າເຄື່ອງສະແກນເປີດຢູ່ ແລະ ມີໃຫ້ຜ່ານເຄືອຂ່າຍຂອງທ່ານ ຫຼື ການເຊື່ອມຕໍ່ໂດຍກົງ</translation>
 <translation id="4159784952369912983">ສີມ່ວງ</translation>
 <translation id="4170180284036919717">ຖ່າຍຮູບ</translation>
@@ -748,6 +752,7 @@
 <translation id="7960831585769876809">ອຸນຫະພູມ</translation>
 <translation id="7977800524392185497">ເພື່ອເຂົ້າຮ່ວມເຄືອຂ່າຍ <ph name="NETWORK_NAME" />, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="7978412674231730200">ປຸ່ມສ່ວນຕົວ</translation>
+<translation id="7982789257301363584">ເຄືອ​ຂ່າຍ</translation>
 <translation id="7994702968232966508">ວິທີການ EAP</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -842,6 +847,7 @@
 <translation id="8834539327799336565">ຕອນນີ້ເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="8845001906332463065">ຂໍການຊ່ວຍເຫຼືອ</translation>
 <translation id="8855781559874488009">ບໍ່ສາມາດເຊື່ອມຕໍ່ຜ່ານ firewall ຫາເວັບໄຊ HTTP ໄດ້</translation>
+<translation id="885701979325669005">ການເກັບຂໍ້ມູນ</translation>
 <translation id="8863170912498892583">ເປີດການນຳໃຊ້ຮູບແບບສີສັນມືດ</translation>
 <translation id="8863888432376731307">ຮັບ <ph name="INTENT" /> ສຳລັບ "<ph name="QUERY" />" ແລະ ອື່ນໆ</translation>
 <translation id="8868741746785112895">GUID</translation>

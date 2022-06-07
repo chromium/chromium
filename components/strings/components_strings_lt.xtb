@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Dotacijos, stipendijos ir finansinė pagalba</translation>
 <translation id="1048785276086539861">Kai redaguosite komentarus, bus pateikta šio dokumento vieno puslapio peržiūra</translation>
 <translation id="1050038467049342496">Uždarykite kitas programas</translation>
+<translation id="1053959602163383901">Svetainėse, kuriose naudojama <ph name="PROVIDER_ORIGIN" />, pasirinkote patvirtinti naudodami autentifikavimo priemonės įrenginį. Šis teikėjas galėjo išsaugoti informaciją apie jūsų mokėjimo metodą, ir galite <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Anuliuoti pridėjimą</translation>
 <translation id="1056663316309890343">Nuotraukų programinė įranga</translation>
 <translation id="1056898198331236512">Įspėjimas</translation>
@@ -426,6 +427,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2053111141626950936">Puslapiai, parašyti <ph name="LANGUAGE" />, verčiami nebus.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kiekvieną dieną.}=1{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kiekvieną dieną.}one{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dieną.}few{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dienas.}many{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dienos.}other{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dienų.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 pasiūlymas}one{# pasiūlymas}few{# pasiūlymai}many{# pasiūlymo}other{# pasiūlymų}}</translation>
+<translation id="2066915425250589881">pateikti užklausą ją ištrinti</translation>
 <translation id="2068528718802935086">Kūdikiai ir pradedantys vaikščioti vaikai</translation>
 <translation id="2071156619270205202">Šiai kortelei negali būti suteiktas virtualios kortelės numeris.</translation>
 <translation id="2071692954027939183">Pranešimai automatiškai užblokuoti, nes įprastai jų neleidžiate</translation>
@@ -582,6 +584,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2512101340618156538">Neleidžiama (numatytasis nustatymas)</translation>
 <translation id="2512413427717747692">„Chrome“ nustatymo kaip numatytosios naršyklės režimas; paspauskite „Enter“, kad nustatytumėte „Chrome“ kaip numatytąją sistemos naršyklę „iOS“ nustatymuose</translation>
 <translation id="2515629240566999685">Patikrinti signalo stiprumą savo srityje</translation>
+<translation id="2515761554693942801">Svetainėse, kuriose naudojama <ph name="PROVIDER_ORIGIN" />, pasirinkote patvirtinti naudodami „Touch ID“. Šis teikėjas galėjo išsaugoti informaciją apie jūsų mokėjimo metodą, ir galite <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Sankabėlė apačioje dešinėje</translation>
 <translation id="2521736961081452453">Sukurti formą</translation>
 <translation id="2523886232349826891">Išsaugota tik šiame įrenginyje</translation>
@@ -1502,6 +1505,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5051305769747448211">Komedija gyvai</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Jei norite siųsti šį failą naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}one{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}few{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}many{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}other{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}}</translation>
 <translation id="5056549851600133418">Jums skirti straipsniai</translation>
+<translation id="5060483733937416656">Svetainėse, kuriose naudojama <ph name="PROVIDER_ORIGIN" />, pasirinkote patvirtinti naudodami „Windows Hello“. Šis teikėjas galėjo išsaugoti informaciją apie jūsų mokėjimo metodą, ir galite <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Turėjote omenyje <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Spausdinimo istorija</translation>
 <translation id="5068234115460527047">Rizikos draudimo fondai</translation>

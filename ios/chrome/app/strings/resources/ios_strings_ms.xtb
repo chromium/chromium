@@ -18,7 +18,6 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1066060668811609597">Urus Penyegerakan</translation>
 <translation id="1076421457278169141">Kod diimbas</translation>
 <translation id="1084365883616172403">Catatan Facebook selesai.</translation>
-<translation id="1086486568852410168">Cari dengan Google Lens</translation>
 <translation id="1103523840287552314">Sentiasa terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Terima &amp; Teruskan</translation>
 <translation id="110724200315609752">Tukar kepada Tetingkap Terbuka</translation>
@@ -164,6 +163,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="236977714248711277">Tapak tidak boleh menggunakan kuki untuk memperbaik pengalaman penyemakan imbas anda, contohnya, untuk mengekalkan log masuk anda atau untuk mengingati item dalam troli beli-belah anda.
 
 Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda pada tapak lain, contohnya, untuk memperibadikan iklan.</translation>
+<translation id="2375243552872247702">Lihat Kandungan untuk Anda</translation>
 <translation id="2381405137052800939">Asas</translation>
 <translation id="2386793615875593361">1 dipilih</translation>
 <translation id="2421004566762153674">Menyekat kuki pihak ketiga</translation>
@@ -603,6 +603,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6136914049981179737">Bbrp saat lalu</translation>
 <translation id="6144589619057374135">Buka ${url} dalam Inkognito</translation>
 <translation id="6149061208933997199">Gunakan Kata Laluan</translation>
+<translation id="6152406514676263192">Segerakkan kandungan yang paling berkaitan berdasarkan minat anda.</translation>
 <translation id="6159839020698489198">pilihan</translation>
 <translation id="6177442314419606057">Cari dalam Chrome</translation>
 <translation id="6184086493125982861">Paparkan Tab</translation>
@@ -740,6 +741,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7099761977003084116">Tab Terbaharu</translation>
 <translation id="7102005569666697658">Memuat turun… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
+<translation id="7108762695052995889">Lawati Laman</translation>
 <translation id="7133798577887235672">Nama Penuh</translation>
 <translation id="7136892417564438900">Kamera tidak tersedia</translation>
 <translation id="7153999225810839758">Bacaan <ph name="TIME" /> minit</translation>
@@ -750,6 +752,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7189598951263744875">Kongsi...</translation>
 <translation id="7192050974311852563">Mula Mengelog</translation>
 <translation id="7203585745079012652">Sebut Kembali Jawapan</translation>
+<translation id="7207023858769244910">Segerakkan untuk mendapatkan kandungan berdasarkan minat anda.</translation>
 <translation id="7207383424303353046">Baharu: Buka tapak dalam Chrome secara automatik dengan menjadikan Chrome Apl Penyemak Imbas Lalai anda. <ph name="BEGIN_LINK" />Buka Tetapan<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nama Panggilan Kad Tidak Sah</translation>
 <translation id="722454870747268814">Tab Inkognito Baharu</translation>

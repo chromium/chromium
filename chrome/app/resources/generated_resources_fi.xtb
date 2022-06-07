@@ -1424,7 +1424,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
     Jos lapsi haluaa myöhemmin lopettaa Voice Matchin käytön, voi sen helposti poistaa sen Assistantin asetuksista. Jos haluat tarkastella tai poistaa lapsen Voice Matchin käyttöönoton aikana tallentamia ääniklippejä, siirry osoitteeseen <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Hae sivun osasta: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Tältä sivustolta on estetty liikkeen- tai valontunnistimien käyttö.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Sivun URL-osoite</translation>
@@ -2048,7 +2047,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="289695669188700754">Avaimen tunnus: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Tämä oma asetus poistetaan, kun suljet kaikki incognito-ikkunat</translation>
 <translation id="2897878306272793870">Haluatko varmasti avata <ph name="TAB_COUNT" /> välilehteä?</translation>
-<translation id="2900477968385519153">Hae näytöltä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Tiedosto käyttää tukemattomia ominaisuuksia.</translation>
 <translation id="2901348420151309559">Viimeisimmät kuvat ja sovellukset</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> ei saanut yhteyttä tähän tulostimeen. Varmista, että tulostin on kytketty pistorasiaan, ja yritä uudelleen.</translation>
@@ -2921,7 +2919,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3778740492972734840">&amp;Kehittäjän työkalut</translation>
 <translation id="3778868487658107119">Voit kysyä siltä tietoa ja pyytää asioita – se on henkilökohtainen Googlesi ja aina valmiina auttamaan.</translation>
 <translation id="3781742599892759500">Linuxin mikrofonin käyttöoikeus</translation>
-<translation id="378312418865624974">Käyttää tämän tietokoneen yksilöllistä tunnusta</translation>
 <translation id="3784472333786002075">Evästeet ovat verkkosivustojen luomia tiedostoja. Evästeitä on kahdentyyppisiä: ensimmäisen osapuolen evästeet luo sivusto, jolla käyt. Sivusto näkyy osoitepalkissa. Kolmannen osapuolen evästeet luo muut sivustot. Nämä sivustot omistavat mainoksia, kuvia tai muita sisältöjä, joita näet avaamallasi sivulla.</translation>
 <translation id="3785308913036335955">Näytä Apps-oikopolku</translation>
 <translation id="3785727820640310185">Tämän sivuston tallennetut salasanat</translation>
@@ -3571,7 +3568,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4415748029120993980">SECG elliptinen käyrä secp384r1 (eli NIST P-384)</translation>
 <translation id="4416450511678320850">Ei sovelluksia saatavilla tälle sisällölle</translation>
 <translation id="4416582610654027550">Kirjoita kelvollinen URL-osoite</translation>
-<translation id="4417162649853416189">Hae vetämällä hiirellä kuvien päällä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Salli aina verkkotunnuksen <ph name="HOST" /> asettamat evästeet</translation>
 <translation id="4421932782753506458">Pörrö</translation>
 <translation id="4423376891418188461">Palauta asetukset</translation>
@@ -3642,6 +3638,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="449232563137139956">Sivustot näyttävät yleensä kuvituskuvia, esim. kuvia uutisjutun ohessa tai verkkokaupassa</translation>
 <translation id="4492698018379445570">Katso ostoskoreihin lisäämäsi tuotteet ja maksa, kun olet valmis</translation>
 <translation id="4493468155686877504">Suositus (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="4495002167047709180">Sallitaanko laajennukset sivustolla <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Älä näytä tällä sivulla</translation>
 <translation id="4497145443434063861">PC ja Chromecast eri langattomissa verkoissa (esim. 2,4 GHz
     vs. 5 GHz)</translation>
@@ -3710,7 +3707,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4550926046134589611">Jotkin tuetut linkit avautuvat edelleen tässä sovelluksessa: <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Kumoa painamalla <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
 <translation id="4553526521109675518">Chromebook on käynnistettävä uudelleen, jotta laitteen kieli vaihtuu. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Hae vetämällä hiirellä kuvien päällä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Ulkoinen laajennus on sama tai aiempi versio kuin nykyinen.</translation>
 <translation id="4555769855065597957">Varjo</translation>
 <translation id="4555863373929230635">Jos haluat tallentaa salasanoja Google-tilillesi, kirjaudu sisään ja ota synkronointi käyttöön.</translation>
@@ -4561,7 +4557,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5427459444770871191">Käännä &amp;myötäpäivään</translation>
 <translation id="542750953150239272">Jatkamalla hyväksyt, että laite voi automaattisesti ladata ja asentaa Googlen, operaattorisi tai laitevalmistajan päivityksiä ja sovelluksia, mahdollisesti mobiilidatayhteyden välityksellä. Jotkin näistä sovelluksista voivat tarjota sovelluksen sisäisiä ostoksia.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (päivitys on saatavilla)</translation>
-<translation id="5429373054983029602">Hae näytöltä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Trusted Platform Modulen päivitys on asennettava. Näytä <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Yhteyden pikajakaminen</translation>
 <translation id="5431318178759467895">Väri</translation>
@@ -4634,7 +4629,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5494920125229734069">Valitse kaikki</translation>
 <translation id="5495466433285976480">Tämä poistaa kaikki paikalliset käyttäjät, tiedostot, tiedot ja muut asetukset seuraavan uudelleenkäynnistyksesi jälkeen. Kaikkien käyttäjien on kirjauduttava sisään uudelleen.</translation>
 <translation id="5495597166260341369">Älä sulje näyttöä</translation>
-<translation id="549580971452855947">Hae kuvia vetämällä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Järjestä</translation>
 <translation id="5496730470963166430">Ponnahdusikkunat tai uudelleenohjaukset kielletty</translation>
 <translation id="5497251278400702716">Tämä tiedosto</translation>
@@ -5745,7 +5739,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 Sinulla on vielä # vaarantunut salasana. Google Salasanat suosittelee, että tarkistat sen heti.}other{Vaarantunut salasana vaihdettu onnistuneesti.
 
 Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että tarkistat salasanat heti.}}</translation>
-<translation id="6595792813574514527">Hae kuvia vetämällä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Salausasetukset</translation>
 <translation id="6596816719288285829">IP-osoite</translation>
 <translation id="6597017209724497268">Esimerkit</translation>
@@ -7365,7 +7358,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8184318863960255706">Lisätietoja</translation>
 <translation id="8184472985242519288">Yhdenmukainen</translation>
 <translation id="8186609076106987817">Palvelin ei löydä tiedostoa.</translation>
-<translation id="8186704951085064172">Hae sivun osasta: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Tarkista laitteesi asetukset ja ota se käyttöön jatkaaksesi</translation>
 <translation id="8188742492803591566">Striimaa näytölle lisäämällä Chromecastissa tai televisiossa näkyvä käyttökoodi.</translation>
 <translation id="8189306097519446565">Koulutilit</translation>

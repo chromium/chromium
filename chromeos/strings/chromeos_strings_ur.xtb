@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">لانچر</translation>
 <translation id="1512982610995527443">آلہ 5 سیکنڈ میں شٹ ڈاؤن ہو جائے گا</translation>
 <translation id="1522984060396982789">آپ کی مرمت کا عمل کامیاب ہو گیا۔ آپ آلے کو شٹ ڈاؤن کر سکتے ہیں یا کچھ اضافی کاروائیاں کر سکتے ہیں۔</translation>
+<translation id="1526389707933164996">اسکرین سیور اینیمیشن</translation>
 <translation id="152892567002884378">والیوم بڑھائیں</translation>
 <translation id="1555130319947370107">نیلا</translation>
 <translation id="155865706765934889">ٹچ پیڈ</translation>
@@ -76,6 +77,7 @@
 <translation id="1572585716423026576">بطور وال پیپر سیٹ کریں</translation>
 <translation id="1578784163189013834">اسکرین سیور کا پس منظر منتخب کریں</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> سے ڈیٹا کا استعمال</translation>
+<translation id="1620510694547887537">کیمرا</translation>
 <translation id="1621067168122174824">چارج ٹیسٹ چلائیں</translation>
 <translation id="1631385268983122904">ابھی تک بیٹری نہ لگائیں</translation>
 <translation id="1639239467298939599">لوڈ ہو رہی ہے</translation>
@@ -258,6 +260,7 @@
 <translation id="3413935475507503304">اپ ڈیٹ کے ساتھ آگے بڑھنے کے لیے اگلے پر کلک کریں۔</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">سیکیورٹی</translation>
+<translation id="3441653493275994384">اسکرین</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> میں سے <ph name="PRINTED_PAGES" /> پرنٹ کئے ہوئے صفحات۔</translation>
 <translation id="345898999683440380">صفحہ <ph name="PAGE_NUM" /> اسکین ہو رہا ہے۔ <ph name="PERCENTAGE_VALUE" />% مکمل ہو گیا۔</translation>
 <translation id="3459509316159669723">پرنٹ کیا جا رہا ہے</translation>
@@ -280,6 +283,7 @@
 <translation id="3604713164406837697">وال پیپر تبدیل کریں</translation>
 <translation id="360565022852130722">‏WiFi نیٹ ورک کمزور پروٹوکول WEP 802.1x کے ساتھ محفوظ ہے</translation>
 <translation id="3606583719724308068">‏HTTPS ویب سائٹس پر زیادہ تاخیر</translation>
+<translation id="3616113530831147358">آڈیو</translation>
 <translation id="3621202678540785336">ان پٹ</translation>
 <translation id="3632579075709132555">رازداری کی اسکرین کو ٹوگل کرنے کی کلید</translation>
 <translation id="3643810137582748570">کیلیبریشن کو نظر انداز کریں</translation>
@@ -301,6 +305,7 @@
 <translation id="3858860766373142691">نام</translation>
 <translation id="3865414814144988605">ریزولیوشن</translation>
 <translation id="387301095347517405">آپ کی بیٹری کے مکمل طور پر چارج ہونے کی تعداد</translation>
+<translation id="3885327323343477505">اسکرین سیور تبدیل کریں</translation>
 <translation id="3923184630988645767">ڈیٹا کا استعمال</translation>
 <translation id="3924044641767672375">‏مرمت کے عمل کو آسان بنانے کے لیے Wi-Fi سے منسلک ہونے کی تجویز کی جاتی ہے۔ آپ کے نیٹ ورک کو محفوظ کیا جائے گا۔</translation>
 <translation id="3932043219784172185">کوئی آلہ منسلک نہیں ہے</translation>
@@ -328,6 +333,7 @@
 <translation id="4140251671072434548">‏RMA سرور انلاک انجام دیں</translation>
 <translation id="4145784616224233563">‏HTTP فائروال</translation>
 <translation id="4147897805161313378">‏Google تصاویر</translation>
+<translation id="4150201353443180367">ڈسپلے</translation>
 <translation id="4155551848414053977">یقینی بنائیں کہ اسکینر آن ہے اور آپ کے نیٹ ورک یا براہ راست کنکشن کے ذریعے دستیاب ہے</translation>
 <translation id="4159784952369912983">جامنی</translation>
 <translation id="4170180284036919717">ایک تصویر لیں</translation>
@@ -419,6 +425,7 @@
 <translation id="4890353053343094602">فوری طور پر نیا پاس ورڈ منتخب کریں</translation>
 <translation id="4891842000192098784">اسٹریس</translation>
 <translation id="4897058166682006107">آلے کے بائیں بڈ میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
+<translation id="4905998861748258752">اسکرین سیور کے اختیارات کو منتخب کرنے کے لیے خصوصیت کو آن کریں</translation>
 <translation id="4908030561598728899">فرم ویئر کو انسٹال کیا جا رہا ہے...</translation>
 <translation id="4915052247106771211">‏اس سے آلہ فیکٹری کی ترتیبات (Powerwash) پر ری سیٹ ہو جائے گا۔</translation>
 <translation id="4917385247580444890">مضبوط</translation>
@@ -742,6 +749,7 @@
 <translation id="7960831585769876809">درجہ حرارت</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> نیٹ ورک میں شامل ہونے کیلئے، ترتیبات پر جائیں</translation>
 <translation id="7978412674231730200">نجی کلید</translation>
+<translation id="7982789257301363584">نیٹ ورک</translation>
 <translation id="7994702968232966508">‏EAP طریقہ</translation>
 <translation id="802154636333426148">ڈاؤن لوڈ ناکام ہوگیا</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -836,6 +844,7 @@
 <translation id="8834539327799336565">فی الحال منسلک ہے</translation>
 <translation id="8845001906332463065">مدد حاصل کریں</translation>
 <translation id="8855781559874488009">‏فائر وال کے ذریعے HTTP ویب سائٹس سے رابطہ منسلک نہیں کیا جا سکتا</translation>
+<translation id="885701979325669005">اسٹوریج</translation>
 <translation id="8863170912498892583">گہری تھیم فعال کریں</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" اور مزید کے لیے <ph name="INTENT" /> حاصل کریں</translation>
 <translation id="8868741746785112895">GUID</translation>
@@ -861,6 +870,7 @@
 <translation id="8997710128084572139">آلے میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
 <translation id="9003704114456258138">فریکوئنسی</translation>
 <translation id="9025198690966128418">ذاتی آلے کے طور پر استعمال کریں</translation>
+<translation id="9028832514430399253">اسکرین سیور کے اختیارات کو منتخب کرنے کے لیے ٹوگل آن کریں</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">‏DNS ریزولیوشن کی تاخیر بہت زیادہ ہے</translation>
 <translation id="9063121522582193837">کچھ اجزاء کو کیلیبریٹ نہیں کیا جا سکا</translation>

@@ -31,6 +31,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1150989369772528668">Calendário</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
 <translation id="1165712434476988950">É necessário reiniciar o dispositivo para aplicar a atualização.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">O cabo USB-C pode não ser ligado a ecrãs corretamente</translation>
 <translation id="1175572348579024023">Deslocar</translation>
 <translation id="1178581264944972037">Pausa</translation>
@@ -239,6 +240,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2367186422933365202">Não é possível iniciar sessão no Chromebook</translation>
 <translation id="2369165858548251131">"Olá" em chinês</translation>
+<translation id="2375445874393996153">A funcionalidade para pesquisar o que está no ecrã com o Assistente Google já não é suportada.</translation>
 <translation id="2390318262976603432">Definições locais</translation>
 <translation id="240006516586367791">Controlos de multimédia</translation>
 <translation id="2402411679569069051">Para desbloquear o Chromebook, utilize a sua impressão digital ou desbloqueie o telemóvel</translation>

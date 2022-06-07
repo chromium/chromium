@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">启动器</translation>
 <translation id="1512982610995527443">设备将在 5 秒后关机</translation>
 <translation id="1522984060396982789">已成功修复。您可将设备关机或执行一些其他操作。</translation>
+<translation id="1526389707933164996">屏保动画</translation>
 <translation id="152892567002884378">调高音量</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="155865706765934889">触控板</translation>
@@ -76,6 +77,7 @@
 <translation id="1572585716423026576">设为壁纸</translation>
 <translation id="1578784163189013834">选择屏保背景</translation>
 <translation id="1615335640928990664">自 <ph name="FRIENDLY_DATE" />开始的流量使用情况</translation>
+<translation id="1620510694547887537">摄像头</translation>
 <translation id="1621067168122174824">运行充电测试</translation>
 <translation id="1631385268983122904">暂勿将设备组装回原样</translation>
 <translation id="1639239467298939599">正在加载</translation>
@@ -257,6 +259,7 @@
 <translation id="3413935475507503304">若要继续更新，请点击“下一步”。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">安全</translation>
+<translation id="3441653493275994384">屏幕</translation>
 <translation id="3456078764689556234">已打印 <ph name="PRINTED_PAGES" /> 页（共 <ph name="TOTAL_PAGES" /> 页）。</translation>
 <translation id="345898999683440380">正在扫描第 <ph name="PAGE_NUM" /> 页。已完成 <ph name="PERCENTAGE_VALUE" />%。</translation>
 <translation id="3459509316159669723">打印</translation>
@@ -279,6 +282,7 @@
 <translation id="3604713164406837697">更换壁纸</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
 <translation id="3606583719724308068">HTTPS 网站的延迟时间较长</translation>
+<translation id="3616113530831147358">音频</translation>
 <translation id="3621202678540785336">输入</translation>
 <translation id="3632579075709132555">隐私保护屏幕开关</translation>
 <translation id="3643810137582748570">跳过校准</translation>
@@ -300,6 +304,7 @@
 <translation id="3858860766373142691">名称</translation>
 <translation id="3865414814144988605">分辨率</translation>
 <translation id="387301095347517405">您的电池已经历的完整充电循环次数</translation>
+<translation id="3885327323343477505">更换屏保</translation>
 <translation id="3923184630988645767">流量使用</translation>
 <translation id="3924044641767672375">为简化维修过程，建议您连接到 Wi-Fi。系统会保存您的网络信息。</translation>
 <translation id="3932043219784172185">未连接任何设备</translation>
@@ -327,6 +332,7 @@
 <translation id="4140251671072434548">执行 RMA 服务器解锁</translation>
 <translation id="4145784616224233563">HTTP 防火墙</translation>
 <translation id="4147897805161313378">Google 相册</translation>
+<translation id="4150201353443180367">显示</translation>
 <translation id="4155551848414053977">请确保扫描仪已开机，且已直接或通过网络连接到设备</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4170180284036919717">拍照</translation>
@@ -418,6 +424,7 @@
 <translation id="4890353053343094602">请立即设置一个新密码</translation>
 <translation id="4891842000192098784">压力</translation>
 <translation id="4897058166682006107">设备左侧耳机的剩余电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
+<translation id="4905998861748258752">开启此功能即可选择屏保选项</translation>
 <translation id="4908030561598728899">正在安装固件…</translation>
 <translation id="4915052247106771211">选择此选项会将设备恢复出厂设置 (Powerwash)。</translation>
 <translation id="4917385247580444890">强</translation>
@@ -742,6 +749,7 @@
 <translation id="7960831585769876809">温度</translation>
 <translation id="7977800524392185497">若要加入“<ph name="NETWORK_NAME" />”网络，请转到“设置”</translation>
 <translation id="7978412674231730200">私有密钥</translation>
+<translation id="7982789257301363584">网络</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -836,6 +844,7 @@
 <translation id="8834539327799336565">目前已连接</translation>
 <translation id="8845001906332463065">获取帮助</translation>
 <translation id="8855781559874488009">无法通过防火墙连接到 HTTP 网站</translation>
+<translation id="885701979325669005">存储数据</translation>
 <translation id="8863170912498892583">启用深色主题</translation>
 <translation id="8863888432376731307">获取“<ph name="QUERY" />”的<ph name="INTENT" />，等等</translation>
 <translation id="8868741746785112895">GUID</translation>
@@ -861,6 +870,7 @@
 <translation id="8997710128084572139">设备电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="9003704114456258138">频率</translation>
 <translation id="9025198690966128418">用作个人设备</translation>
+<translation id="9028832514430399253">将切换开关上的滑块滑至开启位置即可选择屏保选项</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS 解析延迟时间较长</translation>
 <translation id="9063121522582193837">无法校准某些组件</translation>

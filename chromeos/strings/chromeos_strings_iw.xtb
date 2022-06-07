@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">הגדרה כטפט</translation>
 <translation id="1578784163189013834">בחירת רקע לשומר המסך</translation>
 <translation id="1615335640928990664">שימוש בחבילת הגלישה מאז <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">מצלמה</translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
 <translation id="1631385268983122904">אין להרכיב חזרה את חלקי המכשיר</translation>
 <translation id="1639239467298939599">בטעינה</translation>
@@ -258,6 +259,7 @@
 <translation id="3413935475507503304">צריך ללחוץ על 'הבא' כדי להמשיך בעדכון.</translation>
 <translation id="3434107140712555581">‎<ph name="BATTERY_PERCENTAGE" />%‎</translation>
 <translation id="3435738964857648380">אבטחה</translation>
+<translation id="3441653493275994384">מסך</translation>
 <translation id="3456078764689556234">הודפס עמוד <ph name="PRINTED_PAGES" /> מתוך <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">מתבצעת סריקה של עמוד <ph name="PAGE_NUM" />. החלק שהושלם: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">הדפסה</translation>
@@ -280,6 +282,7 @@
 <translation id="3604713164406837697">החלפת הטפט</translation>
 <translation id="360565022852130722">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש.</translation>
 <translation id="3606583719724308068">‏זמן אחזור ארוך לאתרי HTTPS</translation>
+<translation id="3616113530831147358">אודיו</translation>
 <translation id="3621202678540785336">קלט</translation>
 <translation id="3632579075709132555">לחצן להחלפת מצב של מסך הפרטיות</translation>
 <translation id="3643810137582748570">דילוג על הכיול</translation>
@@ -329,6 +332,7 @@
 <translation id="4140251671072434548">‏ביטול הנעילה של שרת ה-RMA</translation>
 <translation id="4145784616224233563">‏חומת אש מסוג HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">תצוגה</translation>
 <translation id="4155551848414053977">יש לוודא שהסורק מופעל וזמין דרך הרשת או דרך חיבור ישיר</translation>
 <translation id="4159784952369912983">סגול</translation>
 <translation id="4170180284036919717">צילום תמונה</translation>
@@ -745,6 +749,7 @@
 <translation id="7960831585769876809">טמפרטורה</translation>
 <translation id="7977800524392185497">כדי להצטרף לרשת <ph name="NETWORK_NAME" />, צריך לעבור להגדרות</translation>
 <translation id="7978412674231730200">מפתח פרטי</translation>
+<translation id="7982789257301363584">רשת</translation>
 <translation id="7994702968232966508">‏שיטת EAP</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +844,7 @@
 <translation id="8834539327799336565">מחובר עכשיו</translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>
 <translation id="8855781559874488009">‏לא ניתן להתחבר עם חומת אש לאתרי HTTP</translation>
+<translation id="885701979325669005">אחסון</translation>
 <translation id="8863170912498892583">הפעלת העיצוב הכהה</translation>
 <translation id="8863888432376731307">לקבלת ה<ph name="INTENT" /> עבור "<ph name="QUERY" />" ועוד</translation>
 <translation id="8868741746785112895">GUID</translation>

@@ -180,6 +180,7 @@
 <translation id="1166583374608765787">Դիտեք անվան փոփոխությունները</translation>
 <translation id="1166596238782048887">«<ph name="TAB_TITLE" />» ներդիրը պատկանում է «<ph name="DESK_TITLE" />» աշխատասեղանին</translation>
 <translation id="1168020859489941584">Բացվում է <ph name="TIME_REMAINING" />-ից…</translation>
+<translation id="1169266963600477608">Խաղի կարգավորումներ</translation>
 <translation id="1169435433292653700">«<ph name="FILE_NAME" />» ֆայլը պարունակում է խիստ անձնական կամ վտանգավոր տվյալներ։ Հաղորդագրություն ձեր ադմինիստրատորից․ «<ph name="CUSTOM_MESSAGE" />»։</translation>
 <translation id="1171135284592304528">Ընդգծել ստեղնաշարի միջոցով ընտրված օբյեկտները, երբ դրանք փոխվում են</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> կայքն ուզում է միանալ HID սարքին</translation>
@@ -1412,7 +1413,6 @@
     Ցանկության դեպքում Voice Match գործառույթը կարող եք անջատել Օգնականի կարգավորումներում։ Voice Match-ի կարգավորման ժամանակ երեխայի կողմից արված ձայնագրությունները լսելու կամ ջնջելու համար նրա հաշվից անցեք <ph name="VOICE_MATCH_SETTINGS_URL" /> էջ։
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Որոնել էջի հատվածում <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="2309620859903500144">Այս կայքին արգելված է օգտագործել շարժման և լույսի ձեր տվիչները:</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Էջի URL</translation>
@@ -2035,7 +2035,6 @@
 <translation id="289695669188700754">Բանալու ID` <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Այս հատուկ կարգավորումը կհեռացվի, երբ դուք փակեք ձեր բոլոր ինկոգնիտո պատուհանները</translation>
 <translation id="2897878306272793870">Իսկապե՞ս ուզում եք բացել <ph name="TAB_COUNT" /> ներդիր:</translation>
-<translation id="2900477968385519153">Որոնել էկրանին <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="290105521672621980">Ֆայլն օգտագործում է չաջակցվող գործառույթներ</translation>
 <translation id="2901348420151309559">Նոր լուսանկարներ և հավելվածներ</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" />-ին չհաջողվեց կապվել այս տպիչի հետ: Համոզվեք, որ տպիչը միացված է և նորից փորձեք:</translation>
@@ -2907,7 +2906,6 @@
 <translation id="3778740492972734840">&amp;Մշակողի գործիքներ</translation>
 <translation id="3778868487658107119">Տվեք հարցեր և առաջադրանքներ: Ձեր անձնական Google Օգնականը միշտ պատրաստ է օգնել ձեզ:</translation>
 <translation id="3781742599892759500">Խոսափողի օգտագործման թույլտվություն Լինուքսում</translation>
-<translation id="378312418865624974">Դիտել այս համակարգչի եզակի նույնացուցիչը</translation>
 <translation id="3784472333786002075">Քուքիները ֆայլեր են, որոնք ստեղծվում են կայքերի կողմից։ Քուքիների երկու տեսակ կա. առաջին կողմի քուքիները ստեղծվում են ձեր այցելած կայքի կողմից։ Կայքը ցուցադրվում է հասցեագոտում։ Երրորդ կողմի քուքիները ստեղծվում են այլ կայքերի կողմից։ Այս կայքերն ունեն որոշակի բովանդակություն, օր․՝ գովազդ կամ պատկերներ, որոնք դուք տեսնում եք ձեր այցելած կայքում։</translation>
 <translation id="3785308913036335955">Ցուցադրել հավելվածների դյուրանցումը</translation>
 <translation id="3785727820640310185">Այս կայքի պահված գաղտնաբառերը</translation>
@@ -3366,6 +3364,7 @@
 <translation id="4227605727325220318">Ավելացնել նոր Android հեռախոս</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Այս ընդլայնումը չի թույլատրվում օգտագործել}one{Այս ընդլայնումը չի թույլատրվում օգտագործել}other{Այս ընդլայնումները չի թույլատրվում օգտագործել}}</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> սարքում տեղադրեք հավելվածներ ու խաղեր Google Play-ից։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
+<translation id="4231141543165771749">Փակել խաղի կարգավորումները</translation>
 <translation id="4232375817808480934">Kerberos-ի կարգավորում</translation>
 <translation id="4235965441080806197">Չեղարկել մուտքը</translation>
 <translation id="4236163961381003811">Բացահայտեք այլ ընդլայնումներ</translation>
@@ -3560,7 +3559,6 @@
 <translation id="4415748029120993980">SECG օվալաձև կոր secp384r1 (հայտնի է նաև որպես NIST P-384)</translation>
 <translation id="4416450511678320850">Հասանելի հավելվածներ չկան</translation>
 <translation id="4416582610654027550">Մուտքագրեք վավեր URL</translation>
-<translation id="4417162649853416189">Քաշել տարածքը և որոնել ըստ պատկերների <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="4419409365248380979">Միշտ թույլատրել <ph name="HOST" /> խնամորդին կայել քուքիները</translation>
 <translation id="4421932782753506458">Փափկամազիկ</translation>
 <translation id="4423376891418188461">Վերականգնել կարգավորումները</translation>
@@ -3698,7 +3696,6 @@
 <translation id="4550926046134589611">Որոշ աջակցվող հղումներ նախկինի պես կբացվեն <ph name="APP_NAME" /> հավելվածում։</translation>
 <translation id="4551763574344810652">Հետարկելու համար սեղմեք <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
 <translation id="4553526521109675518">Սարքի լեզուն փոխելու համար վերագործարկեք Chromebook-ը։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Քաշել տարածքը և որոնել ըստ պատկերների <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="4554591392113183336">Արտաքին ընդլայնումը ընթացիկի համեմատ ունի նույն կամ ավելի հին տարբերակ:</translation>
 <translation id="4555769855065597957">Ստվեր</translation>
 <translation id="4555863373929230635">Գաղտնաբառերը ձեր Google հաշվում պահելու համար մտեք հաշիվ և միացրեք համաժամացումը։</translation>
@@ -4551,7 +4548,6 @@
 <translation id="5427459444770871191">Պտտել &amp;ժամացույցի սլաքի ուղղությամբ</translation>
 <translation id="542750953150239272">Շարունակելով՝ դուք համաձայնում եք, որ այս սարքը նույնպես կարող է ավտոմատ ներբեռնել և տեղադրել Google-ի, ձեր օպերատորի և սարքի արտադրողի կողմից տրամադրվող թարմացումները և հավելվածները (նաև բջջային ինտերնետի միջոցով)։ Որոշ հավելվածներում կարող է առաջարկվել վճարովի բովանդակություն։</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (մատչելի է թարմացում)</translation>
-<translation id="5429373054983029602">Որոնել էկրանին <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="542948651837270806">Անհրաժեշտ է տեղադրել Trusted Platform Module-ի ներկառուցված ծրագրի թարմացում։ Անցեք <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Անկթարթային մուտքի կետ</translation>
 <translation id="5431318178759467895">Գունավոր</translation>
@@ -4624,7 +4620,6 @@
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
 <translation id="5495466433285976480">Հաջորդ վերագործարկումից հետո այս գործողությունը կջնջի բոլոր տեղային օգտատերերին, ֆայլերը, տվյալները և այլ կարգավորումները: Բոլոր օգտատերերը պետք է նորից մուտք գործեն:</translation>
 <translation id="5495597166260341369">Չանջատել էկրանը</translation>
-<translation id="549580971452855947">Քաշել պատկերները՝ <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով որոնելու համար</translation>
 <translation id="5496587651328244253">Կազմակերպել</translation>
 <translation id="5496730470963166430">Չի թույլատրվում ցուցադրել ելնող պատուհաններ և օգտագործել վերահասցեավորումներ</translation>
 <translation id="5497251278400702716">Այս ֆայլը</translation>
@@ -5734,7 +5729,6 @@
 Դուք ունեք ևս # կոտրված գաղտնաբառ։ Google գաղտնաբառերի կառավարիչը խորհուրդ է տալիս ստուգել այս գաղտնաբառը։}other{Կոտրված գաղտնաբառը փոխվեց։
 
 Դուք ունեք ևս # կոտրված գաղտնաբառ։ Google գաղտնաբառերի կառավարիչը խորհուրդ է տալիս ստուգել այս գաղտնաբառերը։}}</translation>
-<translation id="6595792813574514527">Քաշել պատկերները՝ <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով որոնելու համար</translation>
 <translation id="6596325263575161958">Գաղտնագրման ընտրանքներ</translation>
 <translation id="6596816719288285829">IP հասցե</translation>
 <translation id="6597017209724497268">Նմուշներ</translation>
@@ -7352,7 +7346,6 @@
 <translation id="8184318863960255706">Լրացուցիչ տեղեկություններ</translation>
 <translation id="8184472985242519288">Միանման</translation>
 <translation id="8186609076106987817">Սերվերը չկարողացավ գտնել ֆայլը:</translation>
-<translation id="8186704951085064172">Որոնել էջի հատվածում <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="8188389033983459049">Շարունակելու համար ստուգեք սարքի կարգավորումները և միացրեք Bluetooth-ը</translation>
 <translation id="8188742492803591566">Էկրանի հեռարձակումը սկսելու համար մուտքագրեք Chromecast-ում կամ հեռուստացույցի էկրանին ցուցադրված մուտքի կոդը։</translation>
 <translation id="8189306097519446565">Ուսումնական հաշիվներ</translation>

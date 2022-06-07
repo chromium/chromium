@@ -1412,7 +1412,6 @@
     اگر آپ بعد میں فیصلہ کرتے ہیں کہ Voice Match آپ کے بچے کے لیے صحیح نہیں ہے تو اسے بس اس کی اسسٹنٹ کی ترتیبات سے ہٹائیں۔ Voice Match سیٹ اپ کے دوران جو آڈیو کلپس آپ کا بچہ ریکارڈ کرتا ہے انہیں ملاحظہ کرنے یا حذف کرنے کے لیے اپنے بچے کے اکاؤنٹ سے <ph name="VOICE_MATCH_SETTINGS_URL" /> پر جائیں۔
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ صفحہ کا حصہ تلاش کریں</translation>
 <translation id="2309620859903500144">اس سائٹ کو آپ کے موشن اور لائٹ سینسرز تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">‏صفحہ کا URL</translation>
@@ -2035,7 +2034,6 @@
 <translation id="289695669188700754">‏کلید ‎ID: <ph name="KEY_ID" />‎</translation>
 <translation id="2897713966423243833">آپ کے اپنی سبھی پوشیدگی ونڈوز بند کرنے پر اس حسب ضرورت ترتیب کو ہٹا دیا جائے گا</translation>
 <translation id="2897878306272793870">کیا آپ واقعی <ph name="TAB_COUNT" /> ٹیبز کھولنا چاہتے ہیں؟</translation>
-<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ اپنی اسکرین تلاش کریں</translation>
 <translation id="290105521672621980">فائل غیر تعاون یافتہ خصوصیات کا استعمال کرتی ہے</translation>
 <translation id="2901348420151309559">حالیہ تصاویر اور ایپس</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> اس پرنٹر کے ساتھ مواصلت نہیں کر سکا۔ پرنٹر کے پلگ ان ہونے کو یقینی بنائیں اور دوبارہ کوشش کریں۔</translation>
@@ -2908,7 +2906,6 @@
 <translation id="3778740492972734840">&amp;ڈیولپر ٹولز</translation>
 <translation id="3778868487658107119">‏اس سے سوالات پوچھیں۔ اسے کام کرنے کو کہیں۔ یہ آپ کا ذاتی Google ہے، ہمیشہ مدد کرنے کیلئے تیار۔</translation>
 <translation id="3781742599892759500">‏Linux مائیکروفون کی رسائی</translation>
-<translation id="378312418865624974">اس کمپیوٹر کیلئے ایک منفرد شناخت کار پڑھیں</translation>
 <translation id="3784472333786002075">کوکیز ایسی فائلز ہوتی ہیں جنہیں ویب سائٹس تخلیق کرتی ہیں۔ کوکیز کی دو قسمیں ہوتی ہیں: فریق اول کی کوکیز جنہیں آپ کی ملاحظہ کی جانے والی سائٹ تخلیق کرتی ہے۔ سائٹ ایڈریس بار پر دکھائی گئی ہے۔ فریق ثالث کوکیز دیگر سائٹس کے ذریعے تخلیق کی جاتی ہیں۔ یہ سائٹس کچھ مواد کی مالک ہوتی ہیں، جیسے اشتہارات یا تصاویر جنہیں آپ ملاحظہ کی جانے والی ویب سائٹ پر دیکھتے ہیں۔</translation>
 <translation id="3785308913036335955">ایپس شارٹ کٹ دکھائیں</translation>
 <translation id="3785727820640310185">اس سائٹ کے لیے محفوظ کردہ پاسورڈز</translation>
@@ -3561,7 +3558,6 @@
 <translation id="4415748029120993980">‏SECG elliptic curve secp384r1 (المعروف NIST P-384)</translation>
 <translation id="4416450511678320850">اس مواد کے لیے کوئی ایپ دستیاب نہیں ہے</translation>
 <translation id="4416582610654027550">‏ایک درست URL ٹائپ کریں</translation>
-<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ تلاش کرنے کیلئے تصاویر پر گھسیٹیں</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> کو کوکیز سیٹ کرنے کی ہمیشہ اجازت دیں</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">ترتیبات بحال کریں</translation>
@@ -3700,7 +3696,6 @@
 <translation id="4550926046134589611">کچھ تعاون یافتہ لنکس اب بھی <ph name="APP_NAME" /> میں کھلیں گے۔</translation>
 <translation id="4551763574344810652">کالعدم کرنے کے لیے <ph name="MODIFIER_KEY_DESCRIPTION" /> دبائيں</translation>
 <translation id="4553526521109675518">‏آلہ کی زبان تبدیل کرنے کے لیے آپ کو اپنا Chromebook ری سٹارٹ کرنا ہوگا۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ تلاش کرنے کیلئے تصاویر پر گھسیٹیں</translation>
 <translation id="4554591392113183336">بیرونی ایکسٹینشن موجودہ ورژن کے مقابلہ ویسا ہی یا اس سے کم تر ورژن پر ہے۔</translation>
 <translation id="4555769855065597957">سایہ</translation>
 <translation id="4555863373929230635">‏اپنے Google اکاؤنٹ میں پاس ورڈز محفوظ کرنے کیلئے، سائن ان کریں اور مطابقت پذیری آن کریں۔</translation>
@@ -4550,7 +4545,6 @@
 <translation id="5427459444770871191">&amp;گھڑی وار گھمائیں</translation>
 <translation id="542750953150239272">‏جاری رکھ کر، آپ اتفاق کرتے ہیں کہ یہ آلہ ممکنہ طور پر سیلولر ڈیٹا استعمال کر کے Google، آپ کے کیریئر، اور آپ کے آلہ کے مینوفیکچرر سے اپ ڈیٹس اور ایپس خودکار طور پر ڈاؤن لوڈ اور انسٹال کر سکتا ہے۔ ان میں سے کچھ ایپس درون ایپ خریداریوں کی پیشکش کر سکتی ہیں۔</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (اپ ڈیٹ دستیاب ہے)</translation>
-<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ اپنی اسکرین تلاش کریں</translation>
 <translation id="542948651837270806">بھروسہ مند پلیٹ فارم ماڈیول فرم ویئر کے لیے اپ ڈیٹ انسٹال کرنے کی ضرورت ہے۔ <ph name="TPM_FIRMWARE_UPDATE_LINK" /> دیکھیں</translation>
 <translation id="5430931332414098647">فوری ٹیدرنگ</translation>
 <translation id="5431318178759467895">رنگ</translation>
@@ -4623,7 +4617,6 @@
 <translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
 <translation id="5495466433285976480">اس سے آپ کی جانب سے اگلی بار دوبارہ شروع کرنے کے بعد سبھی مقامی صارفین، فائلیں، ڈیٹا اور دیگر ترتیبات ہٹ جائیں گی۔ سبھی صارفین کو دوبارہ سائن ان کرنے کی ضرورت ہوگی۔</translation>
 <translation id="5495597166260341369">ڈسپلے آن رکھیں</translation>
-<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ تصاویر تلاش کرنے کیلئے گھسیٹیں</translation>
 <translation id="5496587651328244253">منظم کریں</translation>
 <translation id="5496730470963166430">ری ڈائریکٹس استعمال کرنے یا پاپ اپس بھیجنے کی اجازت نہیں ہے</translation>
 <translation id="5497251278400702716">یہ فائل</translation>
@@ -5734,7 +5727,6 @@
 آپ کے پاس # متاثرہ پاس ورڈ ہے۔ Google پاس ورڈ مینیجر اس پاس ورڈ کو ابھی چیک کرنے کی تجویز کرتا ہے۔}other{‏متاثرہ پاس ورڈ کو کامیابی کے ساتھ تبدیل کر دیا گیا۔
 
 آپ کے پاس # متاثرہ پاس ورڈز ہیں۔ Google پاس ورڈ مینیجر ان پاس ورڈز کو ابھی چیک کرنے کی تجویز کرتا ہے۔}}</translation>
-<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ تصاویر تلاش کرنے کیلئے گھسیٹیں</translation>
 <translation id="6596325263575161958">مرموزکاری کے اختیارات</translation>
 <translation id="6596816719288285829">‏IP پتہ</translation>
 <translation id="6597017209724497268">نمونے</translation>
@@ -7353,7 +7345,6 @@
 <translation id="8184318863960255706">مزید معلومات</translation>
 <translation id="8184472985242519288">یکساں</translation>
 <translation id="8186609076106987817">سرور فائل کو تلاش نہیں کر سکا۔</translation>
-<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ صفحہ کا حصہ تلاش کریں</translation>
 <translation id="8188389033983459049">اپنے آلے کی ترتیبات چیک کریں اور جاری رکھنے کیلئے اسے آن کریں</translation>
 <translation id="8188742492803591566">‏اپنی اسکرین کاسٹ کرنا شروع کرنے کے لیے Chromecast یا TV پر دکھایا گیا رسائی کوڈ درج کریں۔</translation>
 <translation id="8189306097519446565">اسکول اکاؤنٹس</translation>

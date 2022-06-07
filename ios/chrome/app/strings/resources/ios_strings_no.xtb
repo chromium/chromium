@@ -18,7 +18,6 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1066060668811609597">Administrer synkronisering</translation>
 <translation id="1076421457278169141">Koden er skannet</translation>
 <translation id="1084365883616172403">Facebook-innlegget er fullført.</translation>
-<translation id="1086486568852410168">Søk med Google Lens</translation>
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Godta og fortsett</translation>
 <translation id="110724200315609752">Bytt til åpent vindu</translation>
@@ -66,6 +65,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1434356225517321998">Nettleseren din administreres. <ph name="BEGIN_LINK" />Detaljer<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Skjul passordet</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementer</translation>
+<translation id="1450170672351507823">Standardbeskyttelse er på. Bruk økt beskyttelse om du vil ha enda mer sikkerhet.</translation>
 <translation id="149095475893949513">Dette nettstedet prøver å laste ned en konfigurasjonsprofil.</translation>
 <translation id="1491277525950327607">Dobbelttrykk for å slå innstillingen av/på</translation>
 <translation id="1492417797159476138">Du har allerede lagret dette brukernavnet for dette nettstedet</translation>
@@ -163,6 +163,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="236977714248711277">Nettsteder kan ikke bruke informasjonskapsler for å gi deg en bedre surfeopplevelse, for eksempel for å holde deg pålogget eller huske varene i handlekurven din.
 
 Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser.</translation>
+<translation id="2375243552872247702">Se innhold for deg</translation>
 <translation id="2381405137052800939">Grunninnstillinger</translation>
 <translation id="2386793615875593361">1 er valgt</translation>
 <translation id="2421004566762153674">Blokkerer informasjonskapsler fra tredjeparter</translation>
@@ -602,6 +603,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6136914049981179737">For noen sekunder siden</translation>
 <translation id="6144589619057374135">Åpne ${url} i inkognitomodus</translation>
 <translation id="6149061208933997199">Bruk passord</translation>
+<translation id="6152406514676263192">Synkroniser for å få det mest relevante innholdet basert på interessene dine.</translation>
 <translation id="6159839020698489198">valgfritt</translation>
 <translation id="6177442314419606057">Søk i Chrome</translation>
 <translation id="6184086493125982861">Vis faner</translation>
@@ -739,6 +741,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7099761977003084116">Nylige faner</translation>
 <translation id="7102005569666697658">Laster ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Skjul</translation>
+<translation id="7108762695052995889">Besøk nettstedet</translation>
 <translation id="7133798577887235672">Fullt navn</translation>
 <translation id="7136892417564438900">Kameraet er utilgjengelig</translation>
 <translation id="7153999225810839758"><ph name="TIME" /> minutt(er) å lese</translation>
@@ -749,6 +752,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7189598951263744875">Del</translation>
 <translation id="7192050974311852563">Start loggføring</translation>
 <translation id="7203585745079012652">Svar med tale</translation>
+<translation id="7207023858769244910">Synkroniser for å få innhold basert på interessene dine.</translation>
 <translation id="7207383424303353046">Nyhet: Åpne nettsteder i Chrome automatisk ved å angi den som standard nettleserapp. <ph name="BEGIN_LINK" />Åpne Innstillinger<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Ugyldig kallenavn på kortet</translation>
 <translation id="722454870747268814">Ny inkognitofane</translation>

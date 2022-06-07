@@ -110,6 +110,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="1513352483775369820">Penanda halaman dan sejarah web</translation>
 <translation id="1513814250881909472">Segerakkan untuk mendapatkan tab anda daripada peranti anda yang lain</translation>
 <translation id="1513858653616922153">Padam kata laluan</translation>
+<translation id="1514552811327923157">Gesaan Kotak Pasir Privasi dibuka pada ketinggian penuh</translation>
 <translation id="1518421282666914498">GIF emosi <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Aktif hari ini</translation>
 <translation id="1538801903729528855">Dapatkan pengalaman suara yang lebih baik pada web</translation>
@@ -321,6 +322,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="2711073837061989559">Percubaan</translation>
 <translation id="2718352093833049315">Hanya pada Wi-Fi</translation>
 <translation id="2718846868787000099">Untuk memaparkan kandungan dalam bahasa pilihan anda, tapak yang anda lawati dapat melihat pilihan anda</translation>
+<translation id="2722945394406572875">Kotak Pasir Privasi segera ditutup</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Dapatkan pengalaman suara yang lebih baik</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -791,6 +793,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5342314432463739672">Permintaan kebenaran</translation>
 <translation id="5355191726083956201">Perlindungan Dipertingkat dihidupkan</translation>
 <translation id="5368227114232678694">Untuk menyemak imbas secara peribadi pada peranti ini, cubalah Inkognito</translation>
+<translation id="5371717687506906963">Gesaan Kotak Pasir Privasi</translation>
 <translation id="5375577065097716013">Cari imej dengan Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Reaksi diubah</translation>
 <translation id="5401851137404501592">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini.</translation>
@@ -894,6 +897,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5906513782029855931">Mengetahui URL bagi laman membolehkan Google Assistant membantu anda menyelesaikan tugas. Anda boleh mematikan Assistant dalam tetapan Chrome.</translation>
 <translation id="5916664084637901428">Hidupkan</translation>
 <translation id="5919204609460789179">Kemas kini <ph name="PRODUCT_NAME" /> untuk memulakan penyegerakan</translation>
+<translation id="593625682991400408">Semasa percubaan, Chrome sedang meneroka cara untuk mengehadkan spam, penipuan dan perkongsian antara laman. Chrome juga <ph name="BEGIN_LINK" />menganggarkan minat anda<ph name="END_LINK" /> laman tersebut boleh digunakan untuk memaparkan iklan kepada anda. Anda boleh mengurus minat anda dalam tetapan.</translation>
 <translation id="5938820472109305350">Tambah <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Menggunakan Google untuk carian</translation>
 <translation id="5945035219773565305">Syor semasa:  <ph name="RECOMMENDATION" /></translation>
@@ -1512,10 +1516,10 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="9106148373857059373">Aliran penyimpanan penanda halaman ditutup</translation>
 <translation id="9108312223223904744">Telefon sebagai Sokongan Kunci Keselamatan</translation>
 <translation id="9108808586816295166">DNS selamat mungkin tidak tersedia sepanjang masa</translation>
+<translation id="9128984223251192329">Gesaan Kotak Pasir Privasi dibuka pada ketinggian separuh</translation>
 <translation id="9133397713400217035">Teroka Luar Talian</translation>
 <translation id="9137013805542155359">Paparkan asal</translation>
 <translation id="9148126808321036104">Log masuk semula</translation>
-<translation id="9155898266292537608">Anda juga boleh mencari dengan mengetik pantas pada perkataan</translation>
 <translation id="9158770349521403363">Kongsi kandungan sahaja</translation>
 <translation id="9159716826369098114">Pulihkan kumpulan tab <ph name="TAB_COUNT" /> tab sebagai kumpulan tab latar baharu.</translation>
 <translation id="916446198114569890">URL yang anda lawati disimpan pada akaun Google anda</translation>

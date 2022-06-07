@@ -1426,7 +1426,6 @@
     ਜੇ ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਇਹ ਫ਼ੈਸਲਾ ਕਰਦੇ ਹੋ ਕਿ Voice Match ਤੁਹਾਡੇ ਬੱਚੇ ਲਈ ਸਹੀ ਨਹੀਂ ਹੈ, ਤਾਂ ਬਸ ਇਸ ਨੂੰ ਉਨ੍ਹਾਂ ਦੀਆਂ Assistant ਸੈਟਿੰਗਾਂ ਤੋਂ ਹਟਾ ਦਿਓ। Voice Match ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਵੇਲੇ ਆਪਣੇ ਬੱਚੇ ਦੀਆਂ ਰਿਕਾਰਡ ਕੀਤੀਆਂ ਆਡੀਓ ਕਲਿੱਪਾਂ ਦੇਖਣ ਜਾਂ ਮਿਟਾਉਣ ਲਈ, ਆਪਣੇ ਬੱਚੇ ਦੇ ਖਾਤੇ ਤੋਂ <ph name="VOICE_MATCH_SETTINGS_URL" /> 'ਤੇ ਜਾਓ।
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਪੰਨੇ ਦਾ ਹਿੱਸਾ ਖੋਜੋ</translation>
 <translation id="2309620859903500144">ਇਸ ਸਾਈਟ ਨੂੰ ਤੁਹਾਡੇ ਮੋਸ਼ਨ ਜਾਂ ਲਾਈਟ ਸੈਂਸਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL ਪੰਨਾ</translation>
@@ -2050,7 +2049,6 @@
 <translation id="289695669188700754">ਕੁੰਜੀ ਆਈ.ਡੀ.: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੀ ਸਾਰੀਆਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰਨ 'ਤੇ ਇਸ ਵਿਉਂਤਬੱਧ ਸੈਟਿੰਗ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="2897878306272793870">ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ ਤੇ <ph name="TAB_COUNT" /> ਟੈਬਸ ਖੋਲ੍ਹਣੀਆਂ ਹਨ?</translation>
-<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਆਪਣੀ ਸਕ੍ਰੀਨ ਖੋਜੋ</translation>
 <translation id="290105521672621980">ਫ਼ਾਈਲ ਅਸਮਰਥਿਤ ਵਿਸੇਸ਼ਤਾਵਾਂ ਵਰਤਦੀ ਹੈ</translation>
 <translation id="2901348420151309559">ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ ਅਤੇ ਐਪਾਂ</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> ਇਸ ਪ੍ਰਿੰਟਰ ਨਾਲ ਸੰਚਾਰ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਪ੍ਰਿੰਟਰ ਪਲਗ ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -2922,7 +2920,6 @@
 <translation id="3778740492972734840">&amp;ਵਿਕਾਸਕਾਰ ਟੂਲ</translation>
 <translation id="3778868487658107119">ਇਸਨੂੰ ਸਵਾਲ ਪੁੱਛੋ। ਇਸਨੂੰ ਕੰਮ ਕਰਨ ਲਈ ਕਹੋ। ਇਹ ਤੁਹਾਡਾ ਆਪਣਾ Google ਹੈ, ਜੋ ਹਮੇਸ਼ਾ ਮਦਦ ਲਈ ਤਿਆਰ ਹੈ।</translation>
 <translation id="3781742599892759500">Linux ਦੀ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ</translation>
-<translation id="378312418865624974">ਇਸ ਕੰਪਿਊਟਰ ਲਈ ਕਿਸੇ ਵਿਲੱਖਣ ਪਛਾਣਕਰਤਾ ਨੂੰ ਪੜ੍ਹੋ</translation>
 <translation id="3784472333786002075">ਕੁਕੀਜ਼ ਉਹ ਫ਼ਾਈਲਾਂ ਹਨ ਜੋ ਵੈੱਬਸਾਈਟਾਂ ਵੱਲੋਂ ਬਣਾਈਆਂ ਜਾਂਦੀਆਂ ਹਨ। ਕੁਕੀਜ਼ ਦੋ ਕਿਸਮਾਂ ਦੀਆਂ ਹੁੰਦੀਆਂ ਹਨ: ਪਹਿਲੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀ ਸਾਈਟ ਵੱਲੋਂ ਬਣਾਈਆਂ ਜਾਂਦੀਆਂ ਹਨ। ਸਾਈਟ ਪਤਾ ਬਾਰ 'ਤੇ ਦਿਖਾਈ ਜਾਂਦੀ ਹੈ। ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਹੋਰ ਸਾਈਟਾਂ ਵੱਲੋਂ ਬਣਾਈਆਂ ਜਾਂਦੀਆਂ ਹਨ। ਇਹ ਸਾਈਟਾਂ ਵਿਗਿਆਪਨਾਂ ਜਾਂ ਚਿੱਤਰਾਂ ਵਰਗੀ ਕੁਝ ਸਮੱਗਰੀ ਦੀਆਂ ਮਾਲਕ ਹੁੰਦੀਆਂ ਹਨ, ਜੋ ਤੁਸੀਂ ਵੈੱਬਸਾਈਟ 'ਤੇ ਦੇਖਦੇ ਹੋ।</translation>
 <translation id="3785308913036335955">ਐਪ ਸ਼ਾਰਟਕੱਟ ਦਿਖਾਓ</translation>
 <translation id="3785727820640310185">ਇਸ ਸਾਈਟ ਲਈ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ</translation>
@@ -3575,7 +3572,6 @@
 <translation id="4415748029120993980">SECG ਅੰਡਾਕਾਰ ਘੁਮਾਓ secp384r1 (aka NIST P-384)</translation>
 <translation id="4416450511678320850">ਇਸ ਸਮੱਗਰੀ ਲਈ ਕੋਈ ਐਪ ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="4416582610654027550">ਕੋਈ ਵੈਧ URL ਟਾਈਪ ਕਰੋ</translation>
-<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਖੋਜਣ ਲਈ ਚਿੱਤਰਾਂ 'ਤੇ ਘਸੀਟੋ</translation>
 <translation id="4419409365248380979">ਹਮੇਸ਼ਾਂ <ph name="HOST" /> ਨੂੰ ਕੁਕੀਜ਼ ਸੈਟ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">ਸੈਟਿੰਗਾਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
@@ -3646,6 +3642,7 @@
 <translation id="449232563137139956">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਉਦਾਹਰਨ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ ਚਿੱਤਰ ਦਿਖਾਉਂਦੀਆਂ ਹਨ ਜਿਵੇਂ ਕਿ ਆਨਲਾਈਨ ਸਟੋਰਾਂ ਜਾਂ ਖਬਰ ਲੇਖਾਂ ਲਈ ਫ਼ੋਟੋਆਂ</translation>
 <translation id="4492698018379445570">ਲੱਭੋ ਕਿ ਖਰੀਦਦਾਰੀ ਕਾਰਟਾਂ ਵਿੱਚ ਤੁਸੀਂ ਕੀ ਸ਼ਾਮਲ ਕੀਤਾ ਹੈ ਅਤੇ ਜਦੋਂ ਤੁਸੀਂ ਤਿਆਰ ਹੋਵੋ, ਤਾਂ ਚੈੱਕ-ਆਊਟ ਕਰੋ</translation>
 <translation id="4493468155686877504">ਸਿਫ਼ਾਰਸ਼ੀ (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="4495002167047709180">ਕੀ <ph name="SITE" /> 'ਤੇ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="4495419450179050807">ਇਸ ਸਫ਼ੇ ਤੇ ਨਾ ਦਿਖਾਓ</translation>
 <translation id="4497145443434063861">PC ਅਤੇ Chromecast ਵੱਖ-ਵੱਖ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕਾਂ 'ਤੇ ਹਨ (ਜਿਵੇਂ ਕਿ 2.4GHz
     ਬਨਾਮ 5GHz)</translation>
@@ -3714,7 +3711,6 @@
 <translation id="4550926046134589611">ਕੁਝ ਸਮਰਥਿਤ ਲਿੰਕ ਹਾਲੇ ਵੀ <ph name="APP_NAME" /> ਵਿੱਚ ਖੁੱਲ੍ਹਣਗੇ।</translation>
 <translation id="4551763574344810652">ਅਣਕੀਤਾ ਕਰਨ ਲਈ <ph name="MODIFIER_KEY_DESCRIPTION" /> ਨੂੰ ਦਬਾਓ</translation>
 <translation id="4553526521109675518">ਤੁਹਾਨੂੰ ਡੀਵਾਈਸ ਦੀ ਭਾਸ਼ਾ ਬਦਲਣ ਲਈ Chromebook ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਖੋਜਣ ਲਈ ਚਿੱਤਰਾਂ 'ਤੇ ਘਸੀਟੋ</translation>
 <translation id="4554591392113183336">ਬਾਹਰੀ ਐਕਸਟੈਂਸ਼ਨ ਮੌਜੂਦਾ ਜਾਂ ਘੱਟ ਵਰਜਨ ਦੀ ਹੈ।</translation>
 <translation id="4555769855065597957">ਸ਼ੈਡੋ</translation>
 <translation id="4555863373929230635">ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਸਾਈਨ-ਇਨ ਕਰੋ ਅਤੇ ਸਿੰਕ ਚਾਲੂ ਕਰੋ।</translation>
@@ -4565,7 +4561,6 @@
 <translation id="5427459444770871191">&amp;ਕਲੌਕਵਾਈਜ ਰੋਟੇਟ ਕਰੋ</translation>
 <translation id="542750953150239272">ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ ਸਹਿਮਤੀ ਦਿੰਦੇ ਹੋ ਕਿ ਇਹ ਡੀਵਾਈਸ ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਸੈਲਿਊਲਰ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਨਾਲ Google, ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਅਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੇ ਨਿਰਮਾਤਾ ਤੋਂ ਵੀ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅੱਪਡੇਟ ਅਤੇ ਐਪਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਅਤੇ ਸਥਾਪਤ ਕਰ ਸਕਦਾ ਹੈ। ਇਨ੍ਹਾਂ ਐਪਾਂ ਵਿੱਚੋਂ ਕੁਝ ਐਪ-ਅੰਦਰ ਖਰੀਦਾਂ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ)</translation>
-<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਆਪਣੀ ਸਕ੍ਰੀਨ ਖੋਜੋ</translation>
 <translation id="542948651837270806">ਭਰੋਸੇਯੋਗ ਪਲੇਟਫਾਰਮ ਮਾਡਿਊਲ ਫ਼ਰਮਵੇਅਰ ਲਈ ਇੱਕ ਅੱਪਡੇਟ ਸਥਾਪਤ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। <ph name="TPM_FIRMWARE_UPDATE_LINK" /> ਦੇਖੋ</translation>
 <translation id="5430931332414098647">ਤਤਕਾਲ ਟੈਦਰਿੰਗ</translation>
 <translation id="5431318178759467895">ਰੰਗ</translation>
@@ -4638,7 +4633,6 @@
 <translation id="5494920125229734069">ਸਾਰੇ ਚੁਣੋ</translation>
 <translation id="5495466433285976480">ਇੰਝ ਕਰਨ ਨਾਲ ਅਗਲੀ ਵਾਰ ਸਿਸਟਮ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਤੋਂ ਬਾਅਦ ਸਾਰੇ ਸਥਾਨਕ ਵਰਤੋਂਕਾਰਾਂ, ਫ਼ਾਈਲਾਂ, ਡਾਟੇ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਨੂੰ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਲੋੜ ਪਵੇਗੀ।</translation>
 <translation id="5495597166260341369">ਡਿਸਪਲੇ ਚਾਲੂ ਰੱਖੋ</translation>
-<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਚਿੱਤਰ ਖੋਜਣ ਲਈ ਘਸੀਟੋ</translation>
 <translation id="5496587651328244253">ਪ੍ਰਬੰਧ ਕਰੋ</translation>
 <translation id="5496730470963166430">ਪੌਪ-ਅੱਪ ਭੇਜਣ ਜਾਂ ਰੀਡਾਇਰੈਕਟ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="5497251278400702716">ਇਹ ਫ਼ਾਈਲ</translation>
@@ -5751,7 +5745,6 @@
 ਤੁਹਾਡੇ ਕੋਲ # ਹੋਰ ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਹੈ। Google Password Manager ਹੁਣੇ ਇਸ ਪਾਸਵਰਡ ਦੀ ਜਾਂਚ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।}other{ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਸਫਲਤਾਪੂਰਕ ਬਦਲਿਆ ਗਿਆ।
 
 ਤੁਹਾਡੇ ਕੋਲ # ਹੋਰ ਛੇੜਛਾੜ ਵਾਲੇ ਪਾਸਵਰਡ ਹਨ। Google Password Manager ਹੁਣੇ ਇਨ੍ਹਾਂ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।}}</translation>
-<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਚਿੱਤਰ ਖੋਜਣ ਲਈ ਘਸੀਟੋ</translation>
 <translation id="6596325263575161958">ਐਨਕ੍ਰਿਪਸ਼ਨ ਚੋਣਾਂ</translation>
 <translation id="6596816719288285829">IP ਪਤਾ</translation>
 <translation id="6597017209724497268">ਨਮੂਨੇ</translation>
@@ -7371,7 +7364,6 @@
 <translation id="8184318863960255706">ਹੋਰ ਜਾਣਕਾਰੀ</translation>
 <translation id="8184472985242519288">ਇੱਕ-ਸਮਾਨ</translation>
 <translation id="8186609076106987817">ਸਰਵਰ ਫਾਈਲ ਨਹੀਂ ਲੱਭ ਸਕਿਆ।</translation>
-<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਪੰਨੇ ਦਾ ਹਿੱਸਾ ਖੋਜੋ</translation>
 <translation id="8188389033983459049">ਆਪਣੇ ਡੀਵਾਈਸ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਜਾਰੀ ਰੱਖਣ ਲਈ ਇਸਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8188742492803591566">ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕਾਸਟ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰਨ ਲਈ Chromecast ਜਾਂ ਟੀਵੀ 'ਤੇ ਦਿਖਾਇਆ ਗਿਆ ਪਹੁੰਚ ਕੋਡ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="8189306097519446565">ਸਕੂਲੀ ਖਾਤੇ</translation>

@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">शैली</translation>
 <translation id="1254593899333212300">थेट इंटरनेट कनेक्शन</translation>
 <translation id="1272293450992660632">पिन मूल्ये जुळत नाहीत.</translation>
+<translation id="127650757582748357">काँप्रेस केलेले BZIP2 संग्रहण</translation>
 <translation id="1280820357415527819">मोबाइल नेटवर्क शोधत आहे</translation>
 <translation id="1291603679744561561">सिम लॉक केले आहे</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">चीज</translation>
 <translation id="2781645665747935084">बेल्जियन</translation>
 <translation id="2782104745158847185">Linux ॲप्लिकेशन इंस्टॉल करताना एरर आली</translation>
+<translation id="2788520643285360081">7-Zip संग्रहण</translation>
 <translation id="2803375539583399270">पिन एंटर करा</translation>
 <translation id="2820957248982571256">स्कॅन होत आहे...</translation>
+<translation id="2822595620066756134">काँप्रेस केलेले GZIP संग्रहण</translation>
 <translation id="2830077785865012357">चीनी झुयिन</translation>
 <translation id="2843806747483486897">डीफॉल्ट बदला...</translation>
 <translation id="2850124913210091882">बॅकअप घ्या</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">लिथुआनियन</translation>
 <translation id="3587482841069643663">सर्व</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> ऑफलाइन उपलब्ध करता आली नाही</translation>
+<translation id="3593874215226880809">काँप्रेस केलेले LZIP संग्रहण</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">कॅनेडियन फ्रेंच</translation>
 <translation id="3606220979431771195">तुर्की-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द करा.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_NAME" /> चे <ph name="NETWORK_INDEX" /> पैकी <ph name="NETWORK_COUNT" /> नेटवर्क, ॲक्टिव्हेट केलेले नाही, <ph name="CONNECTION_STATUS" /> सिग्नलची क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
 <translation id="3691184985318546178">सिंहली</translation>
+<translation id="3703620396751288986">ZIP संग्रहण</translation>
 <translation id="3726463242007121105">हे डिव्हाइस उघडले जाऊ शकत नाही कारण त्याचे फाइलसिस्टम समर्थित नाही.</translation>
 <translation id="3727148787322499904">हे सेटिंग बदलल्याने सर्व शेअर केलेले नेटवर्क प्रभावित होतील</translation>
 <translation id="3737576078404241332">साइडबारमधून काढून टाका</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">क्वर्टी कीबोर्डसह झेक</translation>
 <translation id="4656777537938206294">फाइल ऑफलाइन उपलब्ध करा</translation>
 <translation id="4658782175094886150">हिमवर्षावात उभी व्यक्ती</translation>
+<translation id="4661996069183330363">TAR संग्रहण</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' च्या सदस्यांशी हे आयटम शेअर केले जात नाही तोवर त्यांना ॲक्सेस असणार नाही.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">स्वीडिश</translation>
@@ -930,6 +936,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8903931173357132290">पदवीधर</translation>
 <translation id="8912078710089354287">शेपुट हलवत असलेला कुत्रा</translation>
 <translation id="8919081441417203123">डॅनिश</translation>
+<translation id="8965273390142984105">काँप्रेस केलेले LZOP संग्रहण</translation>
 <translation id="8965697826696209160">पुरेशी जागा नाही.</translation>
 <translation id="8997962250644902079">चीनी (पारंपरिक) पिनयिन</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>

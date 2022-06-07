@@ -1409,7 +1409,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
     Nə vaxtsa Voice Match'in övladınıza uyğun olmadığına qərar versəniz, Assistent Ayarlarında onu silə bilərsiniz. Voice Match'i ayarlayarkən övladınızın yazdığı səslərə baxmaq və ya silmək üçün övladınızın hesabından<ph name="VOICE_MATCH_SETTINGS_URL" /> ünvanına keçin.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Səhifənin bir hissəsini <ph name="VISUAL_SEARCH_PROVIDER" /> ilə axtarın</translation>
 <translation id="2309620859903500144">Bu saytın hərəkət və zəif sensorlarınıza girişi blok edilib.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Səhifə keçidi</translation>
@@ -2032,7 +2031,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="289695669188700754">Əsas ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Bu fərdi ayar bütün Anonim pəncərələri bağladığınızda silinəcəkdir</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> panellərini açmaq istədiyinizə əminsiniz?</translation>
-<translation id="2900477968385519153">Ekranınızı <ph name="VISUAL_SEARCH_PROVIDER" /> ilə Axtarın</translation>
 <translation id="290105521672621980">Fayl dəstəklənməyən funksiyalar işlədir</translation>
 <translation id="2901348420151309559">Son fotolar və tətbiqlər</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> bu printerə qoşula bilmədi. Printerin qoşulduğuna əmin olun və yenidən cəhd edin.</translation>
@@ -2905,7 +2903,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3778740492972734840">&amp;Developer alətləri</translation>
 <translation id="3778868487658107119">Ona suallar verin və iş tapşırın. Bu Sizin şəxsi Google'dur, hər zaman kömək etməyə hazırdır.</translation>
 <translation id="3781742599892759500">Linux mikrofona girişi</translation>
-<translation id="378312418865624974">Bu kompüter üçün unikal identifikatoru oxuyun</translation>
 <translation id="3784472333786002075">Kukilər vebsaytların yaratdığı fayllardır. İki növ kuki var: Birinci tərəf kukilər ziyarət etdiyiniz sayt tərəfindən yaradılır. Sayt ünvan panelində göstərilir. Üçüncü tərəf kukilər başqa saytlar tərəfindən yaradılır. Bu saytlar ziyarət etdiyiniz vebsaytda gördüyünüz reklam və ya şəkillər kimi bəzi məzmunun sahibidir.</translation>
 <translation id="3785308913036335955">Tətbiqlərin qısayollarını göstərin</translation>
 <translation id="3785727820640310185">Bu sayt üçün yadda saxlanmış parollar</translation>
@@ -3556,7 +3553,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4415748029120993980">SECG oval əyrisi secp384r1 (aka NIST P-384)</translation>
 <translation id="4416450511678320850">Bu kontent üçün tətbiqlər əlçatan deyil</translation>
 <translation id="4416582610654027550">Düzgün link daxil edin</translation>
-<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" /> ilə Axtarış Etmək üçün Şəkillərin üzərindən Sürüşdürün</translation>
 <translation id="4419409365248380979">Kukiləri ayarlamaq üçün <ph name="HOST" /> hostuna icazə verin</translation>
 <translation id="4421932782753506458">Tüklü</translation>
 <translation id="4423376891418188461">Ayarları Bərpa Edin</translation>
@@ -3627,6 +3623,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="449232563137139956">Saytlar adətən onlayn mağazalar və ya xəbər məqalələri üçün fotolar kimi illustrasiyaları təmin etmək məqsədilə şəkillər göstərir</translation>
 <translation id="4492698018379445570">Hazır olduğunuz zaman alış-veriş arabalarına əlavə etdiklərinizi tapın və ödəniş edin</translation>
 <translation id="4493468155686877504">Tövsiyə olunur (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="4495002167047709180"><ph name="SITE" /> saytında bu artırmaya icazə verilsin?</translation>
 <translation id="4495419450179050807">Bu səhifədə göstərməyin</translation>
 <translation id="4497145443434063861">PC və Chromecast müxtəlif Wi-Fi şəbəkələrindədir (məsələn, 2.4GHz və ya 5GHz)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ilə bağlı xəta oldu</translation>
@@ -3694,7 +3691,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4550926046134589611">Bəzi dəstəklənən keçidlər hələ də <ph name="APP_NAME" /> tətbiqində açılacaq.</translation>
 <translation id="4551763574344810652">Geri qaytarmaq üçün <ph name="MODIFIER_KEY_DESCRIPTION" /> qısayoluna klikləyin</translation>
 <translation id="4553526521109675518">Cihaz dilini dəyişmək üçün Chromebook'u yenidən başlatmalısınız. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> ilə axtarış etmək üçün şəkillərin üzərindən sürüşdürün</translation>
 <translation id="4554591392113183336">Xarici artırma eyni və ya köhnə versiyadadır.</translation>
 <translation id="4555769855065597957">Kölgə</translation>
 <translation id="4555863373929230635">Parolları Google Hesabınızda saxlamaq üçün giriş edin və sinxronlaşdırmanı aktiv edin.</translation>
@@ -4545,7 +4541,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5427459444770871191">Saat istiqamətində fırladın</translation>
 <translation id="542750953150239272">Davam edərək razılaşırsınız ki, bu cihaz Google, operatorunuz və cihaz istehsalçınızdan avtomatik olaraq yeniləmələri və tətbiqləri endirə və quraşdıra bilər, bu zaman mobil datadan istifadə edilə bilər. Bu tətbiqlərin bəzilərində tətbiqdaxili satınalmalar təklif edilə bilər.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Güncəllənmə var)</translation>
-<translation id="5429373054983029602">Ekranınızı <ph name="VISUAL_SEARCH_PROVIDER" /> ilə axtarın</translation>
 <translation id="542948651837270806">Etibarlı Platforma Modulu üzrə təhlükəsizlik divarı üçün yeniləmə quraşdırılmalıdır. Baxın: <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Cəld modem rejimi</translation>
 <translation id="5431318178759467895">Rəng</translation>
@@ -4618,7 +4613,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5494920125229734069">Hamısını seçin</translation>
 <translation id="5495466433285976480">Növbəti başlatmanızdan sonra bu bütün yerli istifadəçilər, data və digər ayarlar silinəcək. Bütün istifadəçilər yenidən daxil olmalıdır.</translation>
 <translation id="5495597166260341369">Ekranı aktiv saxlayın</translation>
-<translation id="549580971452855947">Şəkilləri <ph name="VISUAL_SEARCH_PROVIDER" /> ilə axtarmaq üçün sürüşdürün</translation>
 <translation id="5496587651328244253">Təşkil etmək</translation>
 <translation id="5496730470963166430">Anidən görünən bildirişlər göndərmək və ya yönləndirmələrdən istifadə etməyə icazə verilmir</translation>
 <translation id="5497251278400702716">Bu fayl</translation>
@@ -5727,7 +5721,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolu indi yoxlamağı tövsiyə edir.}other{Oğurlanmış parol uğurla dəyişdirildi.
 
 Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yoxlamağı tövsiyə edir.}}</translation>
-<translation id="6595792813574514527">Şəkilləri <ph name="VISUAL_SEARCH_PROVIDER" /> ilə Axtarmaq üçün Sürüşdürün</translation>
 <translation id="6596325263575161958">Şifrələmə variantları</translation>
 <translation id="6596816719288285829">IP Ünvanı</translation>
 <translation id="6597017209724497268">Nümunələr</translation>
@@ -7346,7 +7339,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8184318863960255706">Daha ətraflı</translation>
 <translation id="8184472985242519288">Uniforma</translation>
 <translation id="8186609076106987817">Server faylı tapa bilmədi.</translation>
-<translation id="8186704951085064172">Səhifənin Bir Hissəsini <ph name="VISUAL_SEARCH_PROVIDER" /> ilə Axtarın</translation>
 <translation id="8188389033983459049">Cihaz ayarlarını yoxlayın və aktiv edərək davam edin</translation>
 <translation id="8188742492803591566">Ekranı yayımlamağa başlamaq üçün Chromecast və ya TV'də göstərilən giriş kodunu daxil edin.</translation>
 <translation id="8189306097519446565">Məktəb hesabları</translation>

@@ -18,7 +18,6 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1066060668811609597">Gérer la synchronisation</translation>
 <translation id="1076421457278169141">Code numérisé</translation>
 <translation id="1084365883616172403">Message Facebook terminé.</translation>
-<translation id="1086486568852410168">Rechercher avec Lentille Google</translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Accepter et continuer</translation>
 <translation id="110724200315609752">Retourner à la fenêtre ouverte</translation>
@@ -66,6 +65,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1434356225517321998">Votre navigateur est géré. <ph name="BEGIN_LINK" />Détails<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Masquer le mot de passe</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> éléments</translation>
+<translation id="1450170672351507823">La protection standard est activée. Pour profiter d'une sécurité accrue, servez-vous de la protection améliorée.</translation>
 <translation id="149095475893949513">Ce site Web tente de télécharger un profil de configuration.</translation>
 <translation id="1491277525950327607">Touchez deux fois pour activer ou désactiver le paramètre</translation>
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>

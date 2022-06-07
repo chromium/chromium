@@ -180,6 +180,7 @@
 <translation id="1166583374608765787">ตรวจสอบการอัปเดตชื่อ</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> อยู่ในเดสก์ <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">กำลังจะเปิดภายใน <ph name="TIME_REMAINING" />...</translation>
+<translation id="1169266963600477608">การควบคุมเกม</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> มีข้อมูลที่ละเอียดอ่อนหรือเป็นอันตราย ผู้ดูแลระบบบอกว่า "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171135284592304528">ไฮไลต์วัตถุที่มีโฟกัสของแป้นพิมพ์เมื่อมีการเปลี่ยนแปลง</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> ต้องการเชื่อมต่อกับอุปกรณ์ HID</translation>
@@ -1410,7 +1411,6 @@
     หากภายหลังคุณคิดว่า Voice Match ไม่เหมาะใช้งานสำหรับบุตรหลาน ก็แค่นำฟีเจอร์นี้ออกจากการตั้งค่า Assistant หากต้องการดูหรือลบคลิปเสียงที่บุตรหลานบันทึกไว้ระหว่างการตั้งค่า Voice Match ให้ไปที่ <ph name="VOICE_MATCH_SETTINGS_URL" /> จากบัญชีของบุตรหลาน
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">ค้นหาบางส่วนของหน้าด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">เว็บไซต์นี้ถูกบล็อกไม่ให้เข้าถึงเซ็นเซอร์ตรวจจับการเคลื่อนไหวหรือแสง</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL ของหน้าเว็บ</translation>
@@ -2034,7 +2034,6 @@
 <translation id="289695669188700754">รหัสคีย์: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ระบบจะนำการตั้งค่าที่กำหนดเองนี้ออกเมื่อคุณปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="2897878306272793870">คุณแน่ใจหรือไม่ว่าต้องการเปิด <ph name="TAB_COUNT" /> แท็บ</translation>
-<translation id="2900477968385519153">ค้นหาบนหน้าจอของคุณด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">ไฟล์ใช้ฟีเจอร์ที่ไม่รองรับ</translation>
 <translation id="2901348420151309559">รูปภาพและแอปล่าสุด</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> ไม่สามารถสื่อสารกับเครื่องพิมพ์นี้ โปรดตรวจสอบว่าเครื่องพิมพ์เสียบปลั๊กอยู่และลองอีกครั้ง</translation>
@@ -2907,7 +2906,6 @@
 <translation id="3778740492972734840">&amp;เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="3778868487658107119">ถามคำถามและบอกให้ทำสิ่งต่างๆ ได้เหมือนเป็น Google ส่วนตัวที่พร้อมช่วยเหลือคุณเสมอ</translation>
 <translation id="3781742599892759500">การเข้าถึงไมโครโฟนใน Linux</translation>
-<translation id="378312418865624974">อ่านตัวระบุเฉพาะสำหรับคอมพิวเตอร์เครื่องนี้</translation>
 <translation id="3784472333786002075">คุกกี้คือไฟล์ที่เว็บไซต์ต่างๆ สร้างขึ้น มีคุกกี้อยู่ 2 ประเภท ได้แก่ คุกกี้ของบุคคลที่หนึ่งซึ่งเว็บไซต์ที่คุณเข้าชมเป็นผู้สร้างขึ้น เว็บไซต์จะแสดงอยู่ในแถบที่อยู่ คุกกี้ของบุคคลที่สามซึ่งเว็บไซต์อื่นๆ เป็นผู้สร้างขึ้น เว็บไซต์เหล่านี้เป็นเจ้าของเนื้อหาบางอย่าง เช่น โฆษณาหรือรูปภาพที่คุณเห็นในเว็บไซต์ที่เข้าชม</translation>
 <translation id="3785308913036335955">แสดงทางลัดแอป</translation>
 <translation id="3785727820640310185">รหัสผ่านที่บันทึกไว้สำหรับเว็บไซต์นี้</translation>
@@ -3366,6 +3364,7 @@
 <translation id="4227605727325220318">เพิ่มโทรศัพท์ Android เครื่องใหม่</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ไม่อนุญาตส่วนขยายนี้}other{ไม่อนุญาตส่วนขยายบางรายการ}}</translation>
 <translation id="4231095370974836764">ติดตั้งแอปและเกมจาก Google Play ใน <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
+<translation id="4231141543165771749">ปิดการควบคุมเกม</translation>
 <translation id="4232375817808480934">กำหนดค่า Kerberos</translation>
 <translation id="4235965441080806197">ยกเลิกการลงชื่อเข้าใช้</translation>
 <translation id="4236163961381003811">สำรวจส่วนขยายเพิ่มเติม</translation>
@@ -3560,7 +3559,6 @@
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (เรียกอีกอย่างว่า NIST P-384)</translation>
 <translation id="4416450511678320850">ไม่มีแอปที่ใช้ได้กับเนื้อหานี้</translation>
 <translation id="4416582610654027550">พิมพ์ URL ที่ถูกต้อง</translation>
-<translation id="4417162649853416189">ลากไปบนรูปภาพเพื่อค้นหาด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">อนุญาตให้ <ph name="HOST" /> ตั้งค่าคุกกี้ได้ตลอดเวลา</translation>
 <translation id="4421932782753506458">ฟลัฟฟี</translation>
 <translation id="4423376891418188461">กู้คืนการตั้งค่า</translation>
@@ -3631,6 +3629,7 @@
 <translation id="449232563137139956">โดยปกติแล้วเว็บไซต์จะแสดงรูปภาพประกอบ เช่น รูปภาพสำหรับร้านค้าออนไลน์หรือบทความข่าว</translation>
 <translation id="4492698018379445570">หาสิ่งที่คุณใส่ไว้ในรถเข็นช็อปปิ้งและชำระเงินเมื่อพร้อม</translation>
 <translation id="4493468155686877504">แนะนำ (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="4495002167047709180">อนุญาตให้ใช้ส่วนขยายนี้ใน <ph name="SITE" /> ไหม</translation>
 <translation id="4495419450179050807">ไม่แสดงในหน้านี้อีก</translation>
 <translation id="4497145443434063861">PC และ Chromecast ใช้เครือข่าย Wi-Fi ต่างกัน (เช่น 2.4 GHz กับ 5 GHz)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ขัดข้อง</translation>
@@ -3698,7 +3697,6 @@
 <translation id="4550926046134589611">ลิงก์ที่รองรับบางลิงก์จะยังคงเปิดใน <ph name="APP_NAME" /></translation>
 <translation id="4551763574344810652">กด <ph name="MODIFIER_KEY_DESCRIPTION" /> เพื่อเลิกทำ</translation>
 <translation id="4553526521109675518">คุณต้องรีสตาร์ท Chromebook เพื่อเปลี่ยนภาษาของอุปกรณ์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">ลากไปบนรูปภาพเพื่อค้นหาด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">ส่วนขยายภายนอกเป็นเวอร์ชันเดียวกันหรือต่ำกว่าเมื่อเปรียบเทียบกับส่วนขยายที่มีอยู่</translation>
 <translation id="4555769855065597957">เงา</translation>
 <translation id="4555863373929230635">หากต้องการบันทึกรหัสผ่านลงในบัญชี Google ให้ลงชื่อเข้าใช้และเปิดการซิงค์</translation>
@@ -4549,7 +4547,6 @@
 <translation id="5427459444770871191">หมุน&amp;ตามเข็มนาฬิกา</translation>
 <translation id="542750953150239272">การดำเนินการต่อเป็นการยอมรับว่าอุปกรณ์นี้อาจใช้อินเทอร์เน็ตมือถือดาวน์โหลดและติดตั้งการอัปเดตและแอปจาก Google, ผู้ให้บริการของคุณ และผู้ผลิตอุปกรณ์โดยอัตโนมัติด้วย บางแอปเหล่านี้อาจมีการซื้อในแอป</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (มีการอัปเดต)</translation>
-<translation id="5429373054983029602">ค้นหาบนหน้าจอของคุณด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">ต้องติดตั้งอัปเดตเฟิร์มแวร์ของโมดูลแพลตฟอร์มที่เชื่อถือได้ ดู <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
 <translation id="5431318178759467895">สี</translation>
@@ -4622,7 +4619,6 @@
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
 <translation id="5495466433285976480">การดำเนินการนี้จะลบผู้ใช้ท้องถิ่น ไฟล์ ข้อมูล และการตั้งค่าอื่นๆ ทั้งหมดหลังจากการรีสตาร์ทครั้งถัดไปของคุณ ผู้ใช้ทุกคนจะต้องลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="5495597166260341369">เปิดจอแสดงผลค้างไว้</translation>
-<translation id="549580971452855947">ลากเพื่อค้นหารูปภาพด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">จัดระเบียบ</translation>
 <translation id="5496730470963166430">ไม่ได้รับอนุญาตให้ส่งป๊อปอัปหรือใช้การเปลี่ยนเส้นทาง</translation>
 <translation id="5497251278400702716">ไฟล์นี้</translation>
@@ -5730,7 +5726,6 @@
 คุณมีรหัสผ่านที่ถูกละเมิดอีก # รายการ Google เครื่องมือจัดการรหัสผ่านแนะนำให้ตรวจสอบรหัสผ่านนี้ทันที}other{เปลี่ยนรหัสผ่านที่ถูกละเมิดเรียบร้อยแล้ว
 
 คุณมีรหัสผ่านที่ถูกละเมิดอีก # รายการ Google เครื่องมือจัดการรหัสผ่านแนะนำให้ตรวจสอบรหัสผ่านเหล่านี้ทันที}}</translation>
-<translation id="6595792813574514527">ลากเพื่อค้นหารูปภาพด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">ตัวเลือกการเข้ารหัส</translation>
 <translation id="6596816719288285829">ที่อยู่ IP</translation>
 <translation id="6597017209724497268">ตัวอย่าง</translation>
@@ -7350,7 +7345,6 @@
 <translation id="8184318863960255706">ข้อมูลเพิ่มเติม</translation>
 <translation id="8184472985242519288">แบบเดียวกัน</translation>
 <translation id="8186609076106987817">เซิร์ฟเวอร์ไม่พบไฟล์</translation>
-<translation id="8186704951085064172">ค้นหาบางส่วนของหน้าด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">ตรวจสอบการตั้งค่าอุปกรณ์และเปิดบลูทูธเพื่อดำเนินการต่อ</translation>
 <translation id="8188742492803591566">ป้อนรหัสการเข้าถึงที่แสดงใน Chromecast หรือทีวีเพื่อเริ่มแคสต์หน้าจอ</translation>
 <translation id="8189306097519446565">บัญชีโรงเรียน</translation>

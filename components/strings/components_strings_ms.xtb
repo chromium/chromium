@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Geran, biasiswa &amp; bantuan kewangan</translation>
 <translation id="1048785276086539861">Apabila anda mengedit anotasi, dokumen ini akan kembali kepada paparan satu halaman</translation>
 <translation id="1050038467049342496">Tutup apl lain</translation>
+<translation id="1053959602163383901">Anda memilih untuk mengesahkan dengan peranti pengesah pada laman web yang menggunakan <ph name="PROVIDER_ORIGIN" />. Pembekal ini mungkin telah menyimpan maklumat tentang kaedah pembayaran anda, yang boleh anda <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Buat Asal Tambahkan</translation>
 <translation id="1056663316309890343">Perisian foto</translation>
 <translation id="1056898198331236512">Amaran</translation>
@@ -426,6 +427,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2053111141626950936">Halaman dalam <ph name="LANGUAGE" /> tidak akan diterjemah.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap hari.}=1{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap hari.}other{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap {NUM_DAYS} hari.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 cadangan}other{# cadangan}}</translation>
+<translation id="2066915425250589881">permintaan untuk dipadamkan</translation>
 <translation id="2068528718802935086">Bayi &amp; kanak-kanak kecil</translation>
 <translation id="2071156619270205202">Kad ini tidak layak untuk nombor kad maya.</translation>
 <translation id="2071692954027939183">Pemberitahuan disekat secara automatik kerana biasanya anda tidak membenarkan pemberitahuan</translation>
@@ -582,6 +584,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2512101340618156538">Tidak dibenarkan (lalai)</translation>
 <translation id="2512413427717747692">Tetapkan Chrome sebagai butang penyemak imbas lalai, tekan Enter untuk menetapkan Chrome sebagai penyemak imbas lalai sistem dalam tetapan iOS</translation>
 <translation id="2515629240566999685">Semak isyarat di kawasan anda</translation>
+<translation id="2515761554693942801">Anda memilih untuk mengesahkan dengan Touch ID pada laman web yang menggunakan <ph name="PROVIDER_ORIGIN" />. Pembekal ini mungkin telah menyimpan maklumat tentang kaedah pembayaran anda, yang boleh anda <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Kokot bawah sebelah kanan</translation>
 <translation id="2521736961081452453">Buat borang</translation>
 <translation id="2523886232349826891">Disimpan pada peranti ini sahaja</translation>
@@ -1502,6 +1505,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5051305769747448211">Jenaka langsung</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}other{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}}</translation>
 <translation id="5056549851600133418">Artikel untuk anda</translation>
+<translation id="5060483733937416656">Anda memilih untuk mengesahkan dengan Windows Hello pada laman web yang menggunakan <ph name="PROVIDER_ORIGIN" />. Pembekal ini mungkin telah menyimpan maklumat tentang kaedah pembayaran anda, yang boleh anda <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Adakah anda maksudkan <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Sejarah pencetakan</translation>
 <translation id="5068234115460527047">Dana lindung nilai</translation>

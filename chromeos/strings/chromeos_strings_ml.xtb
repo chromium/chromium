@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">വാൾപേപ്പറായി സജ്ജീകരിക്കുക</translation>
 <translation id="1578784163189013834">സ്ക്രീൻ സേവർ പശ്ചാത്തലം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> മുതലുള്ള ഡാറ്റാ ഉപയോഗം</translation>
+<translation id="1620510694547887537">ക്യാമറ</translation>
 <translation id="1621067168122174824">ചാർജ് ടെസ്റ്റ് റൺ ചെയ്യുക</translation>
 <translation id="1631385268983122904">ഇപ്പോൾ, ഉപകരണം വേർപെടുത്തിയ നിലയിൽ തുടരുക</translation>
 <translation id="1639239467298939599">ലോഡുചെയ്യുന്നു</translation>
@@ -94,6 +95,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" />, <ph name="SECOND_MANAGER" /> എന്നിവ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="1726100011689679555">നെയിം സെർവറുകൾ</translation>
 <translation id="1731082422893354635">Bluetooth ടച്ച്പാഡ്</translation>
+<translation id="1745577949879301685">ചിത്രങ്ങൾ ലോഡ് ചെയ്യാനാകുന്നില്ല. നിങ്ങളുടെ നെറ്റ്‌വർക്ക് കണക്ഷൻ പരിശോധിക്കുകയോ ചിത്രങ്ങൾ വീണ്ടും ലോഡ് ചെയ്യാൻ ശ്രമിക്കുകയോ ചെയ്യുക.</translation>
 <translation id="1751249301761991853">വ്യക്തിപരമാക്കൽ</translation>
 <translation id="1753496554272155572">വാൾപേപ്പർ പ്രിവ്യൂവിൽ നിന്ന് പുറത്ത് കടക്കുക</translation>
 <translation id="175763766237925754">നല്ലത് (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -258,6 +260,7 @@
 <translation id="3413935475507503304">അപ്‌ഡേറ്റുമായി മുന്നോട്ട് പോകാൻ, 'അടുത്തത്' ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="3434107140712555581">ബാറ്ററി: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">സുരക്ഷ</translation>
+<translation id="3441653493275994384">സ്ക്രീന്‍‌</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />-ൽ <ph name="PRINTED_PAGES" /> പേജ് പ്രിന്റ് ചെയ്‌തു.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു. <ph name="PERCENTAGE_VALUE" />% പൂർത്തിയായി.</translation>
 <translation id="3459509316159669723">പ്രിന്റിംഗ്</translation>
@@ -280,6 +283,7 @@
 <translation id="3604713164406837697">വാൾപേപ്പർ മാറ്റുക</translation>
 <translation id="360565022852130722">ദുർബലമായ WEP 802.1x പ്രോട്ടോക്കോൾ ഉപയോഗിച്ചാണ് വെെഫെെ നെറ്റ്‌വർക്ക് സുരക്ഷിതമാക്കിയിരിക്കുന്നത്</translation>
 <translation id="3606583719724308068">HTTPS വെബ്‌സൈറ്റുകളിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ഉയർന്ന പ്രതികരണ സമയം</translation>
+<translation id="3616113530831147358">ഓഡിയോ</translation>
 <translation id="3621202678540785336">ഇൻപുട്ട്</translation>
 <translation id="3632579075709132555">സ്വകാര്യതാ സ്‌ക്രീൻ ടോഗിൾ</translation>
 <translation id="3643810137582748570">കാലിബ്രേറ്റ് ചെയ്യുന്നത് ഒഴിവാക്കുക</translation>
@@ -329,6 +333,7 @@
 <translation id="4140251671072434548">RMA സെർവർ അൺലോക്ക് നിറവേറ്റുക</translation>
 <translation id="4145784616224233563">HTTP ഫയര്‍വാള്‍</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">ഡിസ്‌പ്ലേ</translation>
 <translation id="4155551848414053977">സ്‌കാനർ ഓണാക്കിയിട്ടുണ്ടെന്നും നിങ്ങളുടെ നെറ്റ്‌വർക്കോ നേരിട്ടുള്ള കണക്ഷനോ വഴി അത് ലഭ്യമാണെന്നും ഉറപ്പാക്കുക</translation>
 <translation id="4159784952369912983">പര്‍പ്പിള്‍</translation>
 <translation id="4170180284036919717">ഫോട്ടോ എടുക്കുക</translation>
@@ -425,6 +430,7 @@
 <translation id="4915052247106771211">ഇത് ഉപകരണത്തെ ഫാക്‌ടറി ക്രമീകരണത്തിലേക്ക് റീസെറ്റ് ചെയ്യും (Powerwash).</translation>
 <translation id="4917385247580444890">ശക്തം</translation>
 <translation id="4917889632206600977">പ്രിന്റ് ജോലി നിർത്തി - പേപ്പറില്ല</translation>
+<translation id="491791267030419270">ഫീഡ്ബാക്ക് എഴുതുന്നതിനുള്ള നുറുങ്ങുകൾ</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> സെക്കന്റിൽ <ph name="RATE" /> ചാർജ് ചെയ്‌തു.</translation>
 <translation id="4930320165497208503">കണക്ഷൻ സജ്ജീകരിക്കാനോ അപ്ഡേറ്റ് ചെയ്യാനോ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിലേക്ക്<ph name="END_LINK" /> പോകുക.</translation>
 <translation id="4932733599132424254">തീയതി</translation>
@@ -744,6 +750,7 @@
 <translation id="7960831585769876809">താപനില</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> നെറ്റ്‌വർക്കിൽ ചേരാൻ, ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="7978412674231730200">സ്വകാര്യ കീ</translation>
+<translation id="7982789257301363584">നെറ്റ്‌വർക്ക്</translation>
 <translation id="7994702968232966508">EAP രീതി</translation>
 <translation id="802154636333426148">ഡൗൺലോഡ് പരാജയപ്പെട്ടു</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -838,6 +845,7 @@
 <translation id="8834539327799336565">നിലവിൽ കണക്റ്റ് ചെയ്‌തവ</translation>
 <translation id="8845001906332463065">സഹായം നേടുക</translation>
 <translation id="8855781559874488009">HTTP വെബ്സൈറ്റുകളിലേക്ക് ഫയര്‍വാള്‍ മുഖേന കണക്റ്റ് ചെയ്യാനാകുന്നില്ല</translation>
+<translation id="885701979325669005">സംഭരണം</translation>
 <translation id="8863170912498892583">ഡാർക്ക് തീം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" എന്നതിനും മറ്റുമുള്ള <ph name="INTENT" /> നേടുക</translation>
 <translation id="8868741746785112895">GUID</translation>

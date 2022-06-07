@@ -1412,7 +1412,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
     Ja vēlāk vairs nevēlēsieties, lai bērns izmanto funkciju Voice Match, varēsiet to vienkārši noņemt no Asistenta iestatījumiem. Lai skatītu vai dzēstu audioklipus, ko bērns ieraksta funkcijas Voice Match iestatīšanas laikā, atveriet vietni <ph name="VOICE_MATCH_SETTINGS_URL" />, izmantojot bērna kontu.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Meklēt lapas daļā, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Šīs vietnes piekļuve kustību vai gaismas sensoriem ir bloķēta.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Lapas URL</translation>
@@ -2036,7 +2035,6 @@ bet, lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas tausti
 <translation id="289695669188700754">Atslēgas ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Aizverot visus inkognito režīma logus, šis pielāgotais iestatījums tiks noņemts.</translation>
 <translation id="2897878306272793870">Vai tiešām vēlaties atvērt <ph name="TAB_COUNT" /> cilnes?</translation>
-<translation id="2900477968385519153">Meklēt ekrānā, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Failā tiek izmantotas neatbalstītas funkcijas.</translation>
 <translation id="2901348420151309559">Jaunākie fotoattēli un lietotnes</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> nevarēja sazināties ar šo printeri. Pārbaudiet, vai printeris ir pievienots, un mēģiniet vēlreiz.</translation>
@@ -2909,7 +2907,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3778740492972734840">Izstrā&amp;dātāja rīki</translation>
 <translation id="3778868487658107119">Uzdodiet tam jautājumus. Lieciet tam veikt darbības. Pakalpojums Google darbojas jūsu labā — vienmēr gatavs palīdzēt.</translation>
 <translation id="3781742599892759500">Linux piekļuve mikrofonam</translation>
-<translation id="378312418865624974">Lasīt unikālu šī datora identifikatoru</translation>
 <translation id="3784472333786002075">Sīkfaili ir faili, ko izveido vietnes. Ir divu veidu sīkfaili. Pirmās puses sīkfailus izveido jūsu apmeklētā vietne. Šī vietne ir redzama adreses joslā. Trešo pušu sīkfailus izveido citas vietnes. Jūsu apmeklētajā vietnē var būt ietverts citu vietņu saturs, piemēram, reklāmas vai attēli.</translation>
 <translation id="3785308913036335955">Rādīt lietotņu saīsnes</translation>
 <translation id="3785727820640310185">Saglabātās paroles šai vietnei</translation>
@@ -3562,7 +3559,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4415748029120993980">SECG eliptiska līkne secp384r1 (jeb NIST P-384)</translation>
 <translation id="4416450511678320850">Šim saturam nav pieejama neviena lietotne</translation>
 <translation id="4416582610654027550">Ievadiet derīgu URL.</translation>
-<translation id="4417162649853416189">Vilkt kursoru pār attēliem, lai meklēšanai izmantotu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Vienmēr var <ph name="HOST" /> iestatīt sīkfailus</translation>
 <translation id="4421932782753506458">Minka</translation>
 <translation id="4423376891418188461">Atjaunot iestatījumus</translation>
@@ -3700,7 +3696,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4550926046134589611">Dažas atbalstītas saites joprojām tiks atvērtas lietotnē <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Lai atsauktu, nospiediet <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
 <translation id="4553526521109675518">Lai mainītu ierīces valodu, jums ir jārestartē Chromebook dators. <ph name="BEGIN_LINK_LEARN_MORE" />Uzzināt vairāk<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Vilkt kursoru pār attēliem, lai meklēšanai izmantotu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Ārējā paplašinājuma versija ir tāda pati vai vecāka nekā pašreizējā paplašinājuma versija.</translation>
 <translation id="4555769855065597957">Ēna</translation>
 <translation id="4555863373929230635">Lai saglabātu paroles savā Google kontā, pierakstieties un ieslēdziet sinhronizāciju.</translation>
@@ -4551,7 +4546,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5427459444770871191">Pagriezt &amp;pulksteņrādītāju kustības virzienā</translation>
 <translation id="542750953150239272">Turpinot jūs piekrītat, ka šajā ierīcē drīkst arī automātiski lejupielādēt un instalēt atjauninājumus un lietotnes, ko nodrošina Google, jūsu mobilo sakaru operators un ierīces ražotājs. Iespējams, tiks izmantoti mobilie dati. Dažās lietotnēs var tikt piedāvāti pirkumi.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (ir pieejams atjauninājums)</translation>
-<translation id="5429373054983029602">Meklēt ekrānā, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Ir jāinstalē uzticama platformas moduļa aparātprogrammatūras atjauninājums. Skatiet: <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
 <translation id="5430931332414098647">Tūlītēja piesaiste</translation>
 <translation id="5431318178759467895">Krāsās</translation>
@@ -4624,7 +4618,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5494920125229734069">Atlasīt visu</translation>
 <translation id="5495466433285976480">Šādi pēc nākamās restartēšanas reizes tiks noņemti visi lokālie lietotāji, faili, dati un citi iestatījumi. Visiem lietotājiem būs atkārtoti jāpierakstās.</translation>
 <translation id="5495597166260341369">Paturēt displeju ieslēgtu</translation>
-<translation id="549580971452855947">Vilkt, lai attēlu meklēšanai izmantotu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Sakārtot</translation>
 <translation id="5496730470963166430">Nedrīkst rādīt uznirstošos elementus vai veikt novirzīšanu</translation>
 <translation id="5497251278400702716">(šis fails)</translation>
@@ -5736,7 +5729,6 @@ Jums ir vēl # uzlauztu paroļu. Google paroļu pārvaldnieks iesaka nekavējoti
 Jums ir vēl # uzlauzta parole. Google paroļu pārvaldnieks iesaka nekavējoties pārbaudīt šīs paroles.}other{Uzlauztā parole tika sekmīgi nomainīta.
 
 Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējoties pārbaudīt šīs paroles.}}</translation>
-<translation id="6595792813574514527">Vilkt, lai attēlu meklēšanai izmantotu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Šifrēšanas opcijas</translation>
 <translation id="6596816719288285829">IP adrese</translation>
 <translation id="6597017209724497268">Paraugi</translation>
@@ -7356,7 +7348,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8184318863960255706">Plašāka informācija</translation>
 <translation id="8184472985242519288">Vienota</translation>
 <translation id="8186609076106987817">Serveris nevarēja atrast failu.</translation>
-<translation id="8186704951085064172">Meklēt lapas daļā, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Lai turpinātu, pārbaudiet ierīces iestatījumus un ieslēdziet to.</translation>
 <translation id="8188742492803591566">Lai sāktu ekrāna apraidi, ievadiet piekļuves kodu, kas norādīts Chromecast ierīcē vai televizorā.</translation>
 <translation id="8189306097519446565">Mācību iestāžu konti</translation>

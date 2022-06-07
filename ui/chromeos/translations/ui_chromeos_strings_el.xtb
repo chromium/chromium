@@ -36,6 +36,7 @@
 <translation id="1249250836236328755">Είδος</translation>
 <translation id="1254593899333212300">Άμεση σύνδεση στο διαδίκτυο</translation>
 <translation id="1272293450992660632">Οι τιμές PIN δεν ταιριάζουν.</translation>
+<translation id="127650757582748357">Συμπιεσμένο αρχείο BZIP2</translation>
 <translation id="1280820357415527819">Αναζήτηση για δίκτυα κινητής τηλεφωνίας</translation>
 <translation id="1291603679744561561">Η κάρτα SIM είναι κλειδωμένη</translation>
 <translation id="1293556467332435079">Αρχεία</translation>
@@ -209,8 +210,10 @@
 <translation id="2771816809568414714">Τυρί</translation>
 <translation id="2781645665747935084">Βελγικά</translation>
 <translation id="2782104745158847185">Παρουσιάστηκε σφάλμα κατά την εγκατάσταση της εφαρμογής Linux</translation>
+<translation id="2788520643285360081">Αρχείο 7-Zip</translation>
 <translation id="2803375539583399270">Εισαγωγή PIN</translation>
 <translation id="2820957248982571256">Σάρωση…</translation>
+<translation id="2822595620066756134">Συμπιεσμένο αρχείο GZIP</translation>
 <translation id="2830077785865012357">Κινεζικά Zhuyin</translation>
 <translation id="2843806747483486897">Αλλαγή προεπιλογής...</translation>
 <translation id="2850124913210091882">Δημιουργία αντιγράφων ασφαλείας</translation>
@@ -307,6 +310,7 @@
 </translation>
 <translation id="3587482841069643663">Όλες</translation>
 <translation id="3592251141500063301">Το αρχείο <ph name="FILE_NAME" /> δεν μπορεί να γίνει διαθέσιμο εκτός σύνδεσης.</translation>
+<translation id="3593874215226880809">Συμπιεσμένο αρχείο LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Γαλλικά Καναδά</translation>
 <translation id="3606220979431771195">Τουρκικά-F</translation>
@@ -319,6 +323,7 @@
 <translation id="3689865792480713551">Ακύρωση <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Απενεργοποιημένο, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="3691184985318546178">Σινχάλα</translation>
+<translation id="3703620396751288986">Αρχείο ZIP</translation>
 <translation id="3726463242007121105">Δεν είναι δυνατό το άνοιγμα αυτής της συσκευής επειδή δεν υποστηρίζεται το σύστημα αρχείων της.</translation>
 <translation id="3727148787322499904">Η αλλαγή αυτής της ρύθμισης θα επηρεάσει όλα τα κοινόχρηστα δίκτυα</translation>
 <translation id="3737576078404241332">Κατάργηση από την πλευρική γραμμή</translation>
@@ -421,6 +426,7 @@
 <translation id="4646813851450205600">Τσεχικά με πληκτρολόγιο QWERTY</translation>
 <translation id="4656777537938206294">Κάντε τα αρχεία διαθέσιμα εκτός σύνδεσης</translation>
 <translation id="4658782175094886150">Άτομο στο χιόνι</translation>
+<translation id="4661996069183330363">Αρχείο TAR</translation>
 <translation id="4669606053856530811">Τα μέλη του "<ph name="SOURCE_NAME" />" θα χάσουν την πρόσβαση, εκτός εάν αυτά τα στοιχεία είναι κοινόχρηστα για τα συγκεκριμένα μέλη.</translation>
 <translation id="467809019005607715">Παρουσιάσεις Google</translation>
 <translation id="4690246192099372265">Σουηδικά</translation>
@@ -953,6 +959,7 @@
 <translation id="8912078710089354287">Σκύλος που κουνάει την ουρά του</translation>
 <translation id="8919081441417203123">Δανικά
 </translation>
+<translation id="8965273390142984105">Συμπιεσμένο αρχείο LZOP</translation>
 <translation id="8965697826696209160">Δεν υπάρχει αρκετός χώρος.</translation>
 <translation id="8997962250644902079">Κινεζικά (Παραδοσιακά) Pinyin</translation>
 <translation id="9003940392834790328">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή, Λεπτομέρειες</translation>

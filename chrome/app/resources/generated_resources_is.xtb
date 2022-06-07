@@ -1426,7 +1426,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
     Ef þú ákveður síðar að Voice Match sé ekki fyrir barnið skaltu einfaldlega fjarlægja raddlíkanið í stillingum Hjálparans. Til að skoða eða eyða hljóðbútum sem eru teknir upp af rödd barnsins við uppsetningu Voice Match skaltu fara á <ph name="VOICE_MATCH_SETTINGS_URL" /> á reikningi barnsins.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Leita á hluta síðunnar með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Lokað hefur verið á aðgang þessa vefsvæðis að hreyfi- eða birtuskynjara.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Vefslóð síðu</translation>
@@ -2049,7 +2048,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="289695669188700754">Lykilsauðkenni: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Þessi sérstilling verður fjarlægð þegar þú lokar öllum huliðsgluggum</translation>
 <translation id="2897878306272793870">Viltu örugglega opna <ph name="TAB_COUNT" /> flipa?</translation>
-<translation id="2900477968385519153">Leitaðu á skjánum með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Skráin notast við óstudda eiginleika</translation>
 <translation id="2901348420151309559">Nýlegar myndir og forrit</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> gat ekki átt samskipti við þennan prentara. Gættu þess að prentarinn sé í sambandi og reyndu aftur.</translation>
@@ -2922,7 +2920,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3778740492972734840">Forritunartól</translation>
 <translation id="3778868487658107119">Spyrðu hann spurninga. Biddu hann um að gera eitthvað fyrir þig. Þetta er þitt eigið Google, alltaf reiðubúið til aðstoðar.</translation>
 <translation id="3781742599892759500">Aðgangur að hljóðnema í Linux</translation>
-<translation id="378312418865624974">Lesa einkvæmt auðkenni fyrir þessa tölvu</translation>
 <translation id="3784472333786002075">Fótspor eru skrár sem vefsvæði búa til. Það eru tvær tegundir af fótsporum: Fótspor frá fyrsta aðila eru búin til af vefsvæðinu sem þú heimsækir. Vefsvæðið kemur fram á veffangastikunni. Fótspor frá þriðja aðila eru búin til af öðrum vefsvæðum. Þessi vefsvæði eiga eitthvað af efninu, eins og auglýsingar eða myndir, sem þú sérð á vefsvæðinu sem þú heimsækir.</translation>
 <translation id="3785308913036335955">Sýna flýtileiðir í forrit</translation>
 <translation id="3785727820640310185">Vistuð aðgangsorð fyrir þetta vefsvæði</translation>
@@ -3575,7 +3572,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4415748029120993980">SECG sporger ferill secp384r1 (e.þ.s. NIST P-384)</translation>
 <translation id="4416450511678320850">Engin forrit í boði fyrir þetta efni</translation>
 <translation id="4416582610654027550">Sláðu inn gilda vefslóð</translation>
-<translation id="4417162649853416189">Dragðu yfir myndir til að leita með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Leyfa <ph name="HOST" /> alltaf að vista fótspor</translation>
 <translation id="4421932782753506458">Flippkisi</translation>
 <translation id="4423376891418188461">Endurheimta stillingar</translation>
@@ -3714,7 +3710,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4550926046134589611">Sumir studdir tenglar munu áfram opnast í <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Ýttu á <ph name="MODIFIER_KEY_DESCRIPTION" /> til að afturkalla</translation>
 <translation id="4553526521109675518">Endurræsa þarf Chromebook til að breyta tungumáli tækisins. <ph name="BEGIN_LINK_LEARN_MORE" />Frekari upplýsingar<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Dragðu yfir myndir til að leita með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Útgáfa ytri viðbótar er hin sama og eða eldri en útgáfa fyrirliggjandi viðbótar.</translation>
 <translation id="4555769855065597957">Móri</translation>
 <translation id="4555863373929230635">Skráðu þig inn og kveiktu á samstillingu til að vista aðgangsorð á Google reikningnum þínum.</translation>
@@ -4565,7 +4560,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5427459444770871191">Snúa réttsælis</translation>
 <translation id="542750953150239272">Með því að halda áfram samþykkirðu að þetta tæki megi einnig hlaða sjálfkrafa niður og setja upp uppfærslur og forrit frá Google, símafyrirtækinu þínu og framleiðanda tækisins, hugsanlega með því að nota farsímagögn. Einhver þessara forrita gætu boðið upp á innkaup í forriti.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (uppfærsla er í boði)</translation>
-<translation id="5429373054983029602">Leitaðu á skjánum með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Setja þarf upp uppfærslu fyrir TPM-fastbúnaðinn (Trusted Platform Module). Sjá <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Skynditjóðrun</translation>
 <translation id="5431318178759467895">Í lit</translation>
@@ -4638,7 +4632,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5494920125229734069">Velja allt</translation>
 <translation id="5495466433285976480">Þetta mun fjarlægja alla notendur, skrár, gögn og aðrar stillingar tækisins næst þegar þú endurræsir. Allir notendur þurfa að skrá sig inn aftur.</translation>
 <translation id="5495597166260341369">Hafa kveikt á skjá</translation>
-<translation id="549580971452855947">Dragðu til að leita í myndum með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Skipuleggja</translation>
 <translation id="5496730470963166430">Mega ekki senda sprettiglugga eða nota framsendingu</translation>
 <translation id="5497251278400702716">Þessi skrá</translation>
@@ -5751,7 +5744,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 # aðgangsorð í viðbót er í hættu. Aðgangsorðastjórnun Google mælir með að þessi aðgangsorð verði athuguð núna.}other{Aðgangsorði í hættu var breytt.
 
 # aðgangsorð í viðbót eru í hættu. Aðgangsorðastjórnun Google mælir með að þessi aðgangsorð verði athuguð núna.}}</translation>
-<translation id="6595792813574514527">Dragðu til að leita í myndum með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Dulkóðunarvalkostir</translation>
 <translation id="6596816719288285829">IP-tala</translation>
 <translation id="6597017209724497268">Dæmi</translation>
@@ -7371,7 +7363,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8184318863960255706">Frekari upplýsingar</translation>
 <translation id="8184472985242519288">Jafnt</translation>
 <translation id="8186609076106987817">Þjónninn fann ekki skrána.</translation>
-<translation id="8186704951085064172">Leita á hluta síðunnar með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Athugaðu tækjastillingar þínar og kveiktu á Bluetooth til að halda áfram</translation>
 <translation id="8188742492803591566">Sláðu inn aðgangskóðann sem birtist í Chromecast eða sjónvarpinu til að senda út af skjánum.</translation>
 <translation id="8189306097519446565">Skólareikningar</translation>

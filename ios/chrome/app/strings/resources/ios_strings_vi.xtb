@@ -18,7 +18,6 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="1066060668811609597">Quản lý dữ liệu đồng bộ hóa</translation>
 <translation id="1076421457278169141">Đã quét mã</translation>
 <translation id="1084365883616172403">Đã đăng lên Facebook.</translation>
-<translation id="1086486568852410168">Tìm kiếm bằng Google Ống kính</translation>
 <translation id="1103523840287552314">Luôn dịch <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Chấp nhận và tiếp tục</translation>
 <translation id="110724200315609752">Chuyển sang Cửa sổ đang mở</translation>
@@ -163,6 +162,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="236977714248711277">Các trang web không thể dùng cookie để cải thiện trải nghiệm duyệt web của bạn, chẳng hạn như để duy trì trạng thái đăng nhập hoặc ghi nhớ các mặt hàng có trong giỏ hàng.
 
 Các trang web không thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn như để điều chỉnh quảng cáo cho phù hợp với bạn.</translation>
+<translation id="2375243552872247702">Xem Nội dung dành cho bạn</translation>
 <translation id="2381405137052800939">Thông tin cơ bản</translation>
 <translation id="2386793615875593361">Đã chọn 1</translation>
 <translation id="2421004566762153674">Chặn cookie của bên thứ ba</translation>
@@ -602,6 +602,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="6136914049981179737">Giây trước</translation>
 <translation id="6144589619057374135">Mở ${url} ở Chế độ ẩn danh</translation>
 <translation id="6149061208933997199">Sử dụng mật khẩu</translation>
+<translation id="6152406514676263192">Đồng bộ hóa cho nội dung phù hợp nhất dựa trên mối quan tâm của bạn.</translation>
 <translation id="6159839020698489198">không bắt buộc</translation>
 <translation id="6177442314419606057">Tìm kiếm trong Chrome</translation>
 <translation id="6184086493125982861">Hiển thị thẻ</translation>
@@ -750,6 +751,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7189598951263744875">Chia sẻ...</translation>
 <translation id="7192050974311852563">Bắt đầu ghi nhật ký</translation>
 <translation id="7203585745079012652">Trả lời bằng giọng nói</translation>
+<translation id="7207023858769244910">Đồng bộ hóa để nhận nội dung dựa trên mối quan tâm của bạn.</translation>
 <translation id="7207383424303353046">Mới: Tự động mở các trang web trên Chrome bằng cách đặt Chrome làm Ứng dụng trình duyệt mặc định. <ph name="BEGIN_LINK" />Mở phần Cài đặt<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Biệt hiệu của thẻ không hợp lệ</translation>
 <translation id="722454870747268814">Thẻ ẩn danh mới</translation>

@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Legater, stipender og økonomisk støtte</translation>
 <translation id="1048785276086539861">Når du redigerer annoteringer, går dette dokumentet tilbake til enkeltsidevisning</translation>
 <translation id="1050038467049342496">Lukk andre apper</translation>
+<translation id="1053959602163383901">Du har valgt å bekrefte med en autentiseringsenhet på nettsteder som bruker <ph name="PROVIDER_ORIGIN" />. Denne leverandøren kan ha lagret informasjon om betalingsmåten din, som du kan <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Angre tilleggingen</translation>
 <translation id="1056663316309890343">Fotoprogramvare</translation>
 <translation id="1056898198331236512">Advarsel</translation>
@@ -426,6 +427,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2053111141626950936">Sider på <ph name="LANGUAGE" /> oversettes ikke.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Når denne kontrollen er på og statusen er aktiv, bestemmer Chrome hvilken stor gruppe mennesker, eller "kohort", den siste nettleseraktiviteten din ligner mest på. Annonsører kan velge annonser for gruppen, og nettlesingsaktiviteten din holdes privat på enheten din. Gruppen din oppdateres hver dag.}=1{Når denne kontrollen er på og statusen er aktiv, bestemmer Chrome hvilken stor gruppe mennesker, eller "kohort", den siste nettleseraktiviteten din ligner mest på. Annonsører kan velge annonser for gruppen, og nettlesingsaktiviteten din holdes privat på enheten din. Gruppen din oppdateres hver dag.}other{Når denne kontrollen er på og statusen er aktiv, bestemmer Chrome hvilken stor gruppe mennesker, eller "kohort", den siste nettleseraktiviteten din ligner mest på. Annonsører kan velge annonser for gruppen, og nettlesingsaktiviteten din holdes privat på enheten din. Gruppen oppdateres hver {NUM_DAYS}. dag.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 forslag}other{# forslag}}</translation>
+<translation id="2066915425250589881">be om å få slettet</translation>
 <translation id="2068528718802935086">Babyer og småbarn</translation>
 <translation id="2071156619270205202">Dette kortet er ikke kvalifisert for virtuelt kortnummer.</translation>
 <translation id="2071692954027939183">Varsler ble blokkert automatisk fordi du vanligvis ikke tillater dem</translation>
@@ -582,6 +584,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2512101340618156538">Ikke tillatt (standard)</translation>
 <translation id="2512413427717747692">Knappen «Angi Chrome som standardnettleser» – trykk på Enter for å angi Chrome som systemets standardnettleser i iOS-innstillingene</translation>
 <translation id="2515629240566999685">Sjekk signalet i området ditt</translation>
+<translation id="2515761554693942801">Du har valgt å bekrefte med Touch ID på nettsteder som bruker <ph name="PROVIDER_ORIGIN" />. Denne leverandøren kan ha lagret informasjon om betalingsmåten din, som du kan <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Stift nede til høyre</translation>
 <translation id="2521736961081452453">Opprett skjema</translation>
 <translation id="2523886232349826891">Kun lagret på denne enheten</translation>
@@ -1501,6 +1504,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5051305769747448211">Livekomedie</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{For å sende denne filen med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}other{For å sende disse filene med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
 <translation id="5056549851600133418">Artikler for deg</translation>
+<translation id="5060483733937416656">Du har valgt å bekrefte med Windows Hello på nettsteder som bruker <ph name="PROVIDER_ORIGIN" />. Denne leverandøren kan ha lagret informasjon om betalingsmåten din, som du kan <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Mente du <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Utskriftslogg</translation>
 <translation id="5068234115460527047">Hedgefond</translation>

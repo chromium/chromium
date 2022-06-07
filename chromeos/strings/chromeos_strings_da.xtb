@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">Angiv som baggrund</translation>
 <translation id="1578784163189013834">Vælg baggrund til Pauseskærm</translation>
 <translation id="1615335640928990664">Dataforbrug siden <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Kør opladningstest</translation>
 <translation id="1631385268983122904">Du skal ikke samle enheden endnu.</translation>
 <translation id="1639239467298939599">Indlæser...</translation>
@@ -258,6 +259,7 @@
 <translation id="3413935475507503304">Klik på Næste for at fortsætte med opdateringen.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
+<translation id="3441653493275994384">Skærm</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> ud af <ph name="TOTAL_PAGES" /> er blevet udskrevet.</translation>
 <translation id="345898999683440380">Scanner side <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % er blevet scannet.</translation>
 <translation id="3459509316159669723">Udskrivning</translation>
@@ -280,6 +282,7 @@
 <translation id="3604713164406837697">Skift baggrund</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
 <translation id="3606583719724308068">Stor forsinkelse til HTTPS-websites</translation>
+<translation id="3616113530831147358">Lyd</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Slå Privatlivsskærm til/fra</translation>
 <translation id="3643810137582748570">Spring kalibreringen over</translation>
@@ -329,6 +332,7 @@
 <translation id="4140251671072434548">Lås server til godkendelse af varereturnering op</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
+<translation id="4150201353443180367">Skærm</translation>
 <translation id="4155551848414053977">Tjek, at scanneren er tændt og tilgængelig via dit netværk eller en direkte forbindelse</translation>
 <translation id="4159784952369912983">Lilla</translation>
 <translation id="4170180284036919717">Tag et billede</translation>
@@ -744,6 +748,7 @@
 <translation id="7960831585769876809">Temperatur</translation>
 <translation id="7977800524392185497">Gå til Indstillinger for at oprette forbindelse til et <ph name="NETWORK_NAME" />-netværk</translation>
 <translation id="7978412674231730200">Privat nøgle</translation>
+<translation id="7982789257301363584">Netværk</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
 <translation id="802154636333426148">Download mislykkedes</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -838,6 +843,7 @@
 <translation id="8834539327799336565">Forbundet lige nu</translation>
 <translation id="8845001906332463065">Få hjælp</translation>
 <translation id="8855781559874488009">Der kan ikke oprettes forbindelse via firewallen til HTTPS-websites</translation>
+<translation id="885701979325669005">Lagerplads</translation>
 <translation id="8863170912498892583">Aktivér Mørkt tema</translation>
 <translation id="8863888432376731307">Få <ph name="INTENT" /> på "<ph name="QUERY" />" m.m.</translation>
 <translation id="8868741746785112895">GUID</translation>

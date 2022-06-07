@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Žanr</translation>
 <translation id="1254593899333212300">Direktna internetska veza</translation>
 <translation id="1272293450992660632">Vrijednosti PIN-a se ne podudaraju.</translation>
+<translation id="127650757582748357">Kompresirana BZIP2 arhiva</translation>
 <translation id="1280820357415527819">Traženje mobilnih mreža</translation>
 <translation id="1291603679744561561">SIM je zaključan</translation>
 <translation id="1293556467332435079">Fajlovi</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Sir</translation>
 <translation id="2781645665747935084">belgijska</translation>
 <translation id="2782104745158847185">Greška prilikom instalacije Linux aplikacije</translation>
+<translation id="2788520643285360081">7-Zip arhiva</translation>
 <translation id="2803375539583399270">Unesite PIN</translation>
 <translation id="2820957248982571256">Skeniranje...</translation>
+<translation id="2822595620066756134">Kompresirana GZIP arhiva</translation>
 <translation id="2830077785865012357">kineski zhuyin</translation>
 <translation id="2843806747483486897">Promijenite zadano...</translation>
 <translation id="2850124913210091882">Napravi sigurnosnu kopiju</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Litvanska</translation>
 <translation id="3587482841069643663">Sve</translation>
 <translation id="3592251141500063301">Fajl <ph name="FILE_NAME" /> nismo uspjeli učiniti dostupnim offline</translation>
+<translation id="3593874215226880809">Kompresirana LZIP arhiva</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Kanadska francuska</translation>
 <translation id="3606220979431771195">Turska-f</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">Otkaži <ph name="ACTIVITY_DESCRIPTION" /></translation>
 <translation id="3690128548376345212">Mreže: <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Deaktivirano, <ph name="CONNECTION_STATUS" />, Jačina signala <ph name="SIGNAL_STRENGTH" />%, Detalji</translation>
 <translation id="3691184985318546178">sinhaleški</translation>
+<translation id="3703620396751288986">ZIP arhiva</translation>
 <translation id="3726463242007121105">Nije moguće otvoriti uređaj jer sistem fajlova nije podržan.</translation>
 <translation id="3727148787322499904">Promjenom ove postavke uticat ćete na sve dijeljene mreže</translation>
 <translation id="3737576078404241332">Ukloni s bočne trake</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">češki s Qwerty tastaturom</translation>
 <translation id="4656777537938206294">Učinite fajlove dostupnim offline</translation>
 <translation id="4658782175094886150">Osoba na snijegu</translation>
+<translation id="4661996069183330363">TAR arhiva</translation>
 <translation id="4669606053856530811">Članovi tima „<ph name="SOURCE_NAME" />“ će izgubiti pristup osim ako se ove stavke ne dijele s njima.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Švedska</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">Diplomac</translation>
 <translation id="8912078710089354287">Pas maše repom</translation>
 <translation id="8919081441417203123">danski</translation>
+<translation id="8965273390142984105">Kompresirana LZOP arhiva</translation>
 <translation id="8965697826696209160">Nema dovoljno prostora.</translation>
 <translation id="8997962250644902079">kineski (tradicionalni) pinyin</translation>
 <translation id="9003940392834790328">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja vaš administrator, detalji</translation>

@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">နောက်ခံအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="1578784163189013834">ဖန်သားပြင်နားချိန် နောက်ခံရွေးရန်</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> မှစ၍ ဒေတာသုံးစွဲမှု</translation>
+<translation id="1620510694547887537">ကင်မရာ</translation>
 <translation id="1621067168122174824">အားဝင်ရောက်မှု စစ်ဆေးရန်</translation>
 <translation id="1631385268983122904">ဘက်ထရီ ပြန်မတပ်ပါနှင့်ဦး</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
@@ -94,6 +95,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> နှင့် <ph name="SECOND_MANAGER" /> က စီမံခန့်ခွဲသည်</translation>
 <translation id="1726100011689679555">အမည်ဆာဗာများ</translation>
 <translation id="1731082422893354635">Bluetooth တာ့ချ်ပက်</translation>
+<translation id="1745577949879301685">ပုံများဖွင့်၍ မရပါ။ ကွန်ရက်ချိတ်ဆက်မှုကို စစ်ဆေးပါ (သို့) ပုံများကို ထပ်ဖွင့်ကြည့်ပါ။</translation>
 <translation id="1751249301761991853">ကိုယ်ပိုင်</translation>
 <translation id="1753496554272155572">နောက်ခံအစမ်းကြည့်ရှုခြင်းမှ ထွက်ရန်</translation>
 <translation id="175763766237925754">ကောင်း (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -258,6 +260,7 @@
 <translation id="3413935475507503304">ရှေ့ဆက်၍ အပ်ဒိတ်လုပ်ရန် ‘ရှေ့သို့’ ကို နှိပ်ပါ။</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">လုံခြုံရေး</translation>
+<translation id="3441653493275994384">မျက်နှာပြင်</translation>
 <translation id="3456078764689556234">စာမျက်နှာ <ph name="TOTAL_PAGES" /> မျက်နှာအနက် <ph name="PRINTED_PAGES" /> မျက်နှာကို ပုံနှိပ်ထုတ်ထားသည်။</translation>
 <translation id="345898999683440380">စာမျက်နှာ <ph name="PAGE_NUM" /> ကို စကင်ဖတ်နေသည်။ <ph name="PERCENTAGE_VALUE" />% ပြီးသွားပါပြီ။</translation>
 <translation id="3459509316159669723">ပုံနှိပ်နေသည်</translation>
@@ -280,6 +283,7 @@
 <translation id="3604713164406837697">နောက်ခံပုံ ပြောင်းရန်</translation>
 <translation id="360565022852130722">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP 802.1x ဖြင့် လုံခြုံအောင်ထားသည်</translation>
 <translation id="3606583719724308068">HTTPS ဝဘ်ဆိုက်များသို့ တုံ့ပြန်ချိန်မြင့်သည်</translation>
+<translation id="3616113530831147358">အသံ</translation>
 <translation id="3621202678540785336">ထည့်သွင်းမှု</translation>
 <translation id="3632579075709132555">အချက်အလက်ကာကွယ်ရေး ဖန်သားပြင်ပြောင်းရန်</translation>
 <translation id="3643810137582748570">ချိန်ညှိမှုကို ကျော်ရန်</translation>
@@ -329,6 +333,7 @@
 <translation id="4140251671072434548">RMA ဆာဗာ လော့ခ်ဖွင့်ပါ</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">မျက်နှာပြင်ပြသမှု</translation>
 <translation id="4155551848414053977">စကင်ဖတ်စက်ဖွင့်ထားပြီး သင့်ကွန်ရက် (သို့) တိုက်ရိုက်ချိတ်ဆက်မှုမှတစ်ဆင့် သုံးနိုင်ကြောင်း သေချာပါစေ</translation>
 <translation id="4159784952369912983">ခရမ်း</translation>
 <translation id="4170180284036919717">ဓာတ်ပုံရိုက်ရန်</translation>
@@ -425,6 +430,7 @@
 <translation id="4915052247106771211">၎င်းက စက်ကို စက်ရုံထုတ် ဆက်တင်များ သို့ ပြင်ဆင်သတ်မှတ်ပါမည် (Powerwash)။</translation>
 <translation id="4917385247580444890">အားကောင်းသည်</translation>
 <translation id="4917889632206600977">ရပ်သွားသည် - စာရွက်ကုန်နေသည်</translation>
+<translation id="491791267030419270">တုံ့ပြန်ချက်ရေးနည်း အကြံပြုချက်</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားသွင်းထားသည်။</translation>
 <translation id="4930320165497208503">ချိတ်ဆက်မှု စနစ်ထည့်သွင်းရန် (သို့) အပ်ဒိတ်လုပ်ရန် <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> သို့ သွားပါ။</translation>
 <translation id="4932733599132424254">ရက်စွဲ</translation>
@@ -744,6 +750,7 @@
 <translation id="7960831585769876809">အပူချိန်</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ကွန်ရက်သို့ ချိတ်ဆက်ရန် ဆက်တင်များသို့ သွားပါ</translation>
 <translation id="7978412674231730200">ကိုယ်ပိုင် သော့</translation>
+<translation id="7982789257301363584">ကွန်ရက်</translation>
 <translation id="7994702968232966508">EAP နည်းလမ်း</translation>
 <translation id="802154636333426148">ဒေါင်းလုဒ်လုပ်မှု မအောင်မြင်ပါ</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -838,6 +845,7 @@
 <translation id="8834539327799336565">လက်ရှိ ချိတ်ဆက်ထားသည်</translation>
 <translation id="8845001906332463065">အကူအညီရယူပါ</translation>
 <translation id="8855781559874488009">HTTP ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>
+<translation id="885701979325669005">သိုလှောင်ခန်း</translation>
 <translation id="8863170912498892583">မှောင်သည့် အပြင်အဆင် ဖွင့်ရန်</translation>
 <translation id="8863888432376731307">“<ph name="QUERY" />” စသည်တို့အတွက် <ph name="INTENT" /> ရယူပါ</translation>
 <translation id="8868741746785112895">GUID</translation>

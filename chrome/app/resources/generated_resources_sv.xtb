@@ -1425,7 +1425,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
     Om du vill att barnet ska sluta använda Voice Match vid ett senare tillfälle tar du helt enkelt bort funktionen från Assistent-inställningarna. Öppna <ph name="VOICE_MATCH_SETTINGS_URL" /> i barnets konto om du vill visa eller radera ljudklipp från konfigurationen av Voice Match.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Sök i en del av sidan med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Den här webbplatsen får inte använda enhetens rörelse- eller ljussensor.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Sidans webbadress</translation>
@@ -2049,7 +2048,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="289695669188700754">Nyckel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Den här anpassade inställningen tas bort när du stänger alla inkognitofönster</translation>
 <translation id="2897878306272793870">Vill du verkligen öppna <ph name="TAB_COUNT" /> flikar?</translation>
-<translation id="2900477968385519153">Sök på skärmen med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Funktioner som inte stöds används i filer</translation>
 <translation id="2901348420151309559">Senaste foton och appar</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> kunde inte kommunicera med den här skrivaren. Kontrollera att skrivaren är ansluten och försök igen.</translation>
@@ -2922,7 +2920,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3778740492972734840">&amp;Verktyg för programmerare</translation>
 <translation id="3778868487658107119">Ställ frågor. Be den att göra saker. Det är Google anpassat just för dig, alltid redo att hjälpa dig.</translation>
 <translation id="3781742599892759500">Mikrofonåtkomst i Linux</translation>
-<translation id="378312418865624974">Läsa en unik identifierare för den här datorn</translation>
 <translation id="3784472333786002075">Cookies är filer som har skapats av webbplatser. Det finns två sorters cookies. Cookies från första part skapas av webbplatsen du besöker. Webbplatsen visas i adressfältet. Cookies från tredje part skapas av andra webbplatser. Dessa webbplatser äger en del av innehållet som visas på webbplatsen du besöker, till exempel annonser eller bilder.</translation>
 <translation id="3785308913036335955">Visa genväg för appar</translation>
 <translation id="3785727820640310185">Sparade lösenord för den här webbplatsen</translation>
@@ -3575,7 +3572,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4415748029120993980">SECG med elliptisk kurva secp384r1 (kallas även NIST P-384)</translation>
 <translation id="4416450511678320850">Inga appar tillgängliga för detta innehåll</translation>
 <translation id="4416582610654027550">Ange en giltig webbadress</translation>
-<translation id="4417162649853416189">Tryck och dra över bilder för att söka med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Tillåt alltid <ph name="HOST" /> att använda cookies</translation>
 <translation id="4421932782753506458">Misse</translation>
 <translation id="4423376891418188461">Återställ inställningar</translation>
@@ -3714,7 +3710,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4550926046134589611">Vissa länkar som stöds öppnas fortfarande i <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Tryck på <ph name="MODIFIER_KEY_DESCRIPTION" /> för att ångra</translation>
 <translation id="4553526521109675518">Om du vill byta språk på Chromebook måste du starta om enheten. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Tryck och dra över bilder för att söka med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Det externa tillägget har samma eller lägre version än det som redan finns.</translation>
 <translation id="4555769855065597957">Skugga</translation>
 <translation id="4555863373929230635">Logga in och aktivera synkronisering om du vill spara lösenord i Google-kontot.</translation>
@@ -4565,7 +4560,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5427459444770871191">Rotera &amp;medurs</translation>
 <translation id="542750953150239272">Genom att fortsätta godkänner du att enheten kan ladda ned och installera uppdateringar och appar automatiskt från Google, operatören och enhetstillverkaren, eventuellt genom att använda mobildata. Det kan hända att köp i appar erbjuds.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (uppdatering tillgänglig)</translation>
-<translation id="5429373054983029602">Sök på skärmen med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">En uppdatering av Trusted Platform Module-firmware måste installeras. Se <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Direktinternetdelning</translation>
 <translation id="5431318178759467895">Färg</translation>
@@ -4638,7 +4632,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5494920125229734069">Markera alla</translation>
 <translation id="5495466433285976480">Om du gör detta tas alla lokala användare, filer, data och andra inställningar bort efter nästa omstart. Alla användare måste logga in igen.</translation>
 <translation id="5495597166260341369">Låt skärmen vara på</translation>
-<translation id="549580971452855947">Tryck och dra för att söka efter bilder med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Ordna</translation>
 <translation id="5496730470963166430">Får inte öppna popup-fönster eller använda omdirigering</translation>
 <translation id="5497251278400702716">Denna fil</translation>
@@ -5749,7 +5742,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 Det finns # utsatt lösenord till. Du rekommenderas av Google Lösenordshantering att kontrollera detta lösenord nu.}other{Det utsatta lösenordet har ändrats.
 
 Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshantering att kontrollera dessa lösenord nu.}}</translation>
-<translation id="6595792813574514527">Tryck och dra för att söka efter bilder med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Krypteringsalternativ</translation>
 <translation id="6596816719288285829">IP-adress</translation>
 <translation id="6597017209724497268">Stickprov</translation>
@@ -7370,7 +7362,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8184318863960255706">Mer info</translation>
 <translation id="8184472985242519288">Jämnhög</translation>
 <translation id="8186609076106987817">Servern kunde inte hitta filen.</translation>
-<translation id="8186704951085064172">Sök i en del av sidan med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Kontrollera enhetsinställningarna och aktivera Bluetooth om du vill fortsätta</translation>
 <translation id="8188742492803591566">Ange åtkomstkoden som visas på Chromecast-enheten eller tv:n om du vill börja casta skärmen</translation>
 <translation id="8189306097519446565">Skolkonton</translation>

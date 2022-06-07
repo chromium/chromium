@@ -1413,7 +1413,6 @@
     إذا قرّرت لاحقًا عدم استخدام ميزة Voice Match لأنها غير مناسبة لطفلك، ما عليك سوى إيقافها من خلال إعدادات "مساعد Google" على أجهزة طفلك. ولعرض أو حذف المقاطع الصوتية التي يسجّلها طفلك أثناء إعداد ميزة Voice Match، انتقِل إلى <ph name="VOICE_MATCH_SETTINGS_URL" /> من حساب طفلك.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">البحث في جزء من الصفحة باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="2309620859903500144">تم حظر هذا الموقع من الوصول إلى أجهزة استشعار الإضاءة أو الحركة.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">‏عنوان URL للصفحة</translation>
@@ -2038,7 +2037,6 @@
 <translation id="289695669188700754">معرّف المفتاح: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ستتم إزالة هذا الإعداد المخصّص عند إغلاق جميع نوافذ التصفّح المتخفي.</translation>
 <translation id="2897878306272793870">هل تريد فعلًا فتح هذا العدد من علامات التبويب<ph name="TAB_COUNT" />؟</translation>
-<translation id="2900477968385519153">البحث عن محتوى شاشتك باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="290105521672621980">يستخدم الملف ميزات غير معتمدة</translation>
 <translation id="2901348420151309559">الصور والتطبيقات الحديثة</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> يتعذر الاتصال بهذه الطابعة. تأكد من توصيل الطابعة، ثم أعد المحاولة.</translation>
@@ -2912,7 +2910,6 @@
 <translation id="3778740492972734840">أ&amp;دوات مطوري البرامج</translation>
 <translation id="3778868487658107119">‏يمكنك طرح الأسئلة، وطلب تنفيذ المهام. إنه مساعدك الشخصي من Google، وهو على استعداد كامل لتقديم المساعدة.</translation>
 <translation id="3781742599892759500">‏الوصول إلى ميكروفون نظام التشغيل Linux</translation>
-<translation id="378312418865624974">الاطّلاع على معرّف فريد لهذا الكمبيوتر</translation>
 <translation id="3784472333786002075">ملفات تعريف الارتباط هي ملفات تُنشئها المواقع الإلكترونية. ثمة نوعان من ملفات تعريف الارتباط. الأول هو ملفات تعريف الارتباط للطرف الأول التي يُنشئها الموقع الإلكتروني الذي تزوره. ويتم عرض الموقع الإلكتروني في شريط العناوين. والنوع الثاني هو ملفات تعريف الارتباط التابعة لجهات خارجية وتُنشئها مواقع إلكترونية أخرى. وتمتلك هذه المواقع الإلكترونية بعضًا من المحتوى الذي تراه على الموقع الذي تزوره، مثل الإعلانات أو الصور.</translation>
 <translation id="3785308913036335955">إظهار اختصار التطبيقات</translation>
 <translation id="3785727820640310185">كلمات المرور المحفوظة لهذا الموقع</translation>
@@ -3562,7 +3559,6 @@
 <translation id="4415748029120993980">‏منحنى SECG ناقص المقطع secp384r1‏ (aka NIST P-384)</translation>
 <translation id="4416450511678320850">لا تتوفّر تطبيقات لهذا المحتوى</translation>
 <translation id="4416582610654027550">‏يُرجى كتابة عنوان URL صالح</translation>
-<translation id="4417162649853416189">سحب الماوس فوق الصور للبحث عنها باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="4419409365248380979">السماح للموقع <ph name="HOST" /> بتعيين ملفات تعريف الارتباط دومًا</translation>
 <translation id="4421932782753506458">الانتفاش</translation>
 <translation id="4423376891418188461">استعادة الإعدادات</translation>
@@ -3700,7 +3696,6 @@
 <translation id="4550926046134589611">ستظل بعض الروابط المتوافقة مفتوحة في تطبيق <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">اضغط على <ph name="MODIFIER_KEY_DESCRIPTION" /> للتراجع</translation>
 <translation id="4553526521109675518">‏عليك إعادة تشغيل جهاز Chromebook لتغيير لغة الجهاز. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">سحب الماوس فوق الصور للبحث عنها باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="4554591392113183336">الإضافة الخارجية في نفس الإصدار أو إصدار أقل مقارنة بالموجودة حاليًا.</translation>
 <translation id="4555769855065597957">ظل</translation>
 <translation id="4555863373929230635">‏لحفظ كلمات المرور في حسابك على Google، عليك تسجيل الدخول وتفعيل المزامنة.</translation>
@@ -4551,7 +4546,6 @@
 <translation id="5427459444770871191">تدوير &amp;في اتجاه عقارب الساعة</translation>
 <translation id="542750953150239272">‏تعني متابعتك أنّك توافق على منح هذا الجهاز إذنًا بتنزيل التحديثات والتطبيقات وتثبيتها تلقائيًا من Google ومشغّل شبكة الجوّال والشركة المصنّعة لجهازك، مع احتمالية استخدام بيانات شبكة الجوّال. قد تتيح بعض هذه التطبيقات عمليات شراء داخل التطبيق.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (هناك تحديث متاح)</translation>
-<translation id="5429373054983029602">البحث عن محتوى شاشتك باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="542948651837270806">يجب تثبيت الإصدار المُحدَّث من البرامج الثابتة لوحدة للنظام الأساسي الموثوق به. الاطّلاع على <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">التوصيل الفوري</translation>
 <translation id="5431318178759467895">بالألوان</translation>
@@ -4624,7 +4618,6 @@
 <translation id="5494920125229734069">اختيار الكل</translation>
 <translation id="5495466433285976480">سيؤدي ذلك إلى إزالة جميع المستخدمين والملفات والبيانات والإعدادات الأخرى على المستوى المحلي بعد عملية إعادة التشغيل. وسيحتاج جميع المستخدمين إلى تسجيل الدخول من جديد.</translation>
 <translation id="5495597166260341369">استمرار تشغيل الشاشة</translation>
-<translation id="549580971452855947">سحب الماوس للبحث عن الصور باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="5496587651328244253">تنظيم</translation>
 <translation id="5496730470963166430">المواقع الإلكترونية التي لا يُسمح لها بإرسال النوافذ المنبثقة أو استخدام عمليات إعادة التوجيه</translation>
 <translation id="5497251278400702716">هذا الملف</translation>
@@ -5743,7 +5736,6 @@
 لديك # كلمة مرور أخرى يُحتمَل تعرّضها للاختراق. ينصح "مدير كلمات المرور في Google" بالتحقّق من كلمات المرور هذه الآن.}other{‏تمّ بنجاح تغيير كلمة المرور المحتمَل تعرّضها للاختراق.
 
 لديك # كلمة مرور أخرى يُحتمَل تعرّضها للاختراق. ينصح "مدير كلمات المرور في Google" بالتحقّق من كلمات المرور هذه الآن.}}</translation>
-<translation id="6595792813574514527">سحب الماوس للبحث عن الصور باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="6596325263575161958">خيارات التشفير</translation>
 <translation id="6596816719288285829">‏عنوان IP</translation>
 <translation id="6597017209724497268">نماذج</translation>
@@ -7365,7 +7357,6 @@
 <translation id="8184318863960255706">مزيد من المعلومات</translation>
 <translation id="8184472985242519288">مُوحَّدة</translation>
 <translation id="8186609076106987817">تعذر على الخادم العثور على الملف.</translation>
-<translation id="8186704951085064172">البحث في جزء من الصفحة باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="8188389033983459049">التحقُّق من إعدادات جهازك وتفعيلها للاستمرار</translation>
 <translation id="8188742492803591566">‏عليك إدخال رمز الدخول المعروض على جهاز Chromecast أو التلفزيون لبدء بث محتوى شاشتك.</translation>
 <translation id="8189306097519446565">حسابات المؤسسات التعليمية</translation>

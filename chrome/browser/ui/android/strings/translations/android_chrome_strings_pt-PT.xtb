@@ -110,6 +110,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="1513352483775369820">Marcadores e histórico da Web</translation>
 <translation id="1513814250881909472">Sincronize para obter os separadores dos seus outros dispositivos</translation>
 <translation id="1513858653616922153">Eliminar palavra-passe</translation>
+<translation id="1514552811327923157">Pedido do Privacy Sandbox aberto à altura total</translation>
 <translation id="1518421282666914498">GIF expressivo <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Ativo hoje</translation>
 <translation id="1538801903729528855">Obtenha uma melhor experiência de voz na Web</translation>
@@ -321,6 +322,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2711073837061989559">Avaliações</translation>
 <translation id="2718352093833049315">Apenas em Wi-Fi</translation>
 <translation id="2718846868787000099">Para apresentar conteúdo nos seus idiomas preferidos, os sites que visitar podem ver as suas preferências.</translation>
+<translation id="2722945394406572875">Pedido do Privacy Sandbox fechado</translation>
 <translation id="2723001399770238859">áudio</translation>
 <translation id="2732063072010454421">Obtenha uma experiência de voz melhorada</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -791,6 +793,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5342314432463739672">Pedidos de autorização</translation>
 <translation id="5355191726083956201">A Proteção melhorada está ativada.</translation>
 <translation id="5368227114232678694">Para navegar em privado neste dispositivo, experimente a Navegação anónima</translation>
+<translation id="5371717687506906963">Pedido do Privacy Sandbox</translation>
 <translation id="5375577065097716013">Pesquisar imagem com Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Reação alterada</translation>
 <translation id="5401851137404501592">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site.</translation>
@@ -894,6 +897,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5906513782029855931">Conhecer os URLs dos sites permite que o Assistente Google ajude a concluir tarefas. Pode desativar o Assistente nas definições do Chrome.</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5919204609460789179">Atualizar <ph name="PRODUCT_NAME" /> para iniciar a sincronização</translation>
+<translation id="593625682991400408">Durante as avaliações, o Chrome explora formas de limitar o spam, as fraudes e a partilha entre sites. O Chrome também <ph name="BEGIN_LINK" />faz uma estimativa dos seus interesses<ph name="END_LINK" /> que os sites podem usar para lhe mostrar anúncios. Pode gerir os seus interesses nas definições.</translation>
 <translation id="5938820472109305350">Adicionar <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">A utilizar o Google para pesquisa</translation>
 <translation id="5945035219773565305">Recomendação atual:  <ph name="RECOMMENDATION" /></translation>
@@ -1512,10 +1516,10 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="9106148373857059373">Fluxo de armazenamento de marcadores fechado</translation>
 <translation id="9108312223223904744">Telemóvel como suporte de chave de segurança</translation>
 <translation id="9108808586816295166">O DNS seguro pode não estar sempre disponível.</translation>
+<translation id="9128984223251192329">Pedido do Privacy Sandbox aberto a meia altura</translation>
 <translation id="9133397713400217035">Explorar offline</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9148126808321036104">Iniciar sessão novamente</translation>
-<translation id="9155898266292537608">Também pode pesquisar ao tocar rapidamente numa palavra.</translation>
 <translation id="9158770349521403363">Apenas partilhar conteúdo</translation>
 <translation id="9159716826369098114">Restaure o grupo de <ph name="TAB_COUNT" /> separadores como um novo grupo de separadores em segundo plano.</translation>
 <translation id="916446198114569890">Os URLs que visita são guardados na sua Conta Google</translation>

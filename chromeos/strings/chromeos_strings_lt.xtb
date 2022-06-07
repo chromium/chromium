@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">Nustatyti kaip foną</translation>
 <translation id="1578784163189013834">Pasirinkti ekrano užsklandos foną</translation>
 <translation id="1615335640928990664">Duomenų naudojimas nuo <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
 <translation id="1631385268983122904">Dar nesurinkite įrenginio</translation>
 <translation id="1639239467298939599">Įkeliama</translation>
@@ -258,6 +259,7 @@
 <translation id="3413935475507503304">Jei norite tęsti atnaujinimo procesą, spustelėkite „Kitas“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="3435738964857648380">Sauga</translation>
+<translation id="3441653493275994384">Ekranas</translation>
 <translation id="3456078764689556234">Atspausdinta <ph name="PRINTED_PAGES" /> iš <ph name="TOTAL_PAGES" /> psl.</translation>
 <translation id="345898999683440380">Nuskaitomas <ph name="PAGE_NUM" /> psl. Atlikta: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Spausdinimas</translation>
@@ -280,6 +282,7 @@
 <translation id="3604713164406837697">Pakeisti ekrano foną</translation>
 <translation id="360565022852130722">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP 802.1x</translation>
 <translation id="3606583719724308068">Didelė HTTPS svetainių delsa</translation>
+<translation id="3616113530831147358">Garsas</translation>
 <translation id="3621202678540785336">Įvestis</translation>
 <translation id="3632579075709132555">Privatumo ekrano perjungimas</translation>
 <translation id="3643810137582748570">Praleisti kalibravimą</translation>
@@ -329,6 +332,7 @@
 <translation id="4140251671072434548">RMA serverio atrakinimas</translation>
 <translation id="4145784616224233563">HTTP užkarda</translation>
 <translation id="4147897805161313378">„Google“ nuotraukos</translation>
+<translation id="4150201353443180367">Pateiktis</translation>
 <translation id="4155551848414053977">Įsitikinkite, kad skaitytuvas įjungtas ir pasiekiamas tinkle arba tiesioginiu ryšiu</translation>
 <translation id="4159784952369912983">Violetinė</translation>
 <translation id="4170180284036919717">Fotografuoti</translation>
@@ -425,6 +429,7 @@
 <translation id="4915052247106771211">Bus atkurti gamykliniai įrenginio nustatymai („Powerwash“).</translation>
 <translation id="4917385247580444890">Stiprus</translation>
 <translation id="4917889632206600977">Sustabdyta – baigėsi popierius</translation>
+<translation id="491791267030419270">Patarimai, kaip rašyti atsiliepimus</translation>
 <translation id="4921665434385737356">Įkrauta: <ph name="RATE" /> per <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="4930320165497208503">Norėdami nustatyti ar atnaujinti ryšį, eikite į <ph name="BEGIN_LINK" />Nustatymus<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
@@ -745,6 +750,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7960831585769876809">Temperatūra</translation>
 <translation id="7977800524392185497">Norėdami prisijungti prie „<ph name="NETWORK_NAME" />“ tinklo, eikite į Nustatymus</translation>
 <translation id="7978412674231730200">Asmeninis raktas</translation>
+<translation id="7982789257301363584">Tinklas</translation>
 <translation id="7994702968232966508">EAP metodas</translation>
 <translation id="802154636333426148">Įvyko atsisiuntimo klaida</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -839,6 +845,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8834539327799336565">Šiuo metu susieti</translation>
 <translation id="8845001906332463065">Gauti pagalbos</translation>
 <translation id="8855781559874488009">Nepavyko prisijungti per užkardą prie HTTP svetainių</translation>
+<translation id="885701979325669005">Saugykla</translation>
 <translation id="8863170912498892583">Įgalinti tamsiąją temą</translation>
 <translation id="8863888432376731307">Jums bus pateiktas „<ph name="QUERY" />“ <ph name="INTENT" /> ir dar daugiau</translation>
 <translation id="8868741746785112895">GUID</translation>

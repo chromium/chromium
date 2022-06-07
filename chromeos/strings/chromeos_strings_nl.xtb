@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1512982610995527443">Apparaat wordt over 5 seconden uitgezet</translation>
 <translation id="1522984060396982789">De reparatie is geslaagd. Je kunt het apparaat uitzetten of bepaalde aanvullende acties uitvoeren.</translation>
+<translation id="1526389707933164996">Screensaveranimatie</translation>
 <translation id="152892567002884378">Volume omhoog</translation>
 <translation id="1555130319947370107">Blauw</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -76,6 +77,7 @@
 <translation id="1572585716423026576">Instellen als achtergrond</translation>
 <translation id="1578784163189013834">Achtergrond voor screensaver selecteren</translation>
 <translation id="1615335640928990664">Datagebruik sinds <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Camera</translation>
 <translation id="1621067168122174824">Batterijlading testen</translation>
 <translation id="1631385268983122904">Zet het apparaat nog niet weer in elkaar</translation>
 <translation id="1639239467298939599">Laden</translation>
@@ -93,6 +95,7 @@
 <translation id="1717874160321062422">Beheerd door <ph name="FIRST_MANAGER" /> en <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Naamservers</translation>
 <translation id="1731082422893354635">Bluetooth-touchpad</translation>
+<translation id="1745577949879301685">Kan afbeeldingen niet laden. Check de netwerkverbinding of probeer de afbeeldingen opnieuw te laden.</translation>
 <translation id="1751249301761991853">Persoonlijk</translation>
 <translation id="1753496554272155572">Achtergrondvoorbeeld sluiten</translation>
 <translation id="175763766237925754">Goed (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -257,6 +260,7 @@
 <translation id="3413935475507503304">Klik op Volgende om door te gaan met de update.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
+<translation id="3441653493275994384">Beeldscherm</translation>
 <translation id="3456078764689556234">Pagina <ph name="PRINTED_PAGES" /> van <ph name="TOTAL_PAGES" /> afgedrukt.</translation>
 <translation id="345898999683440380">Pagina <ph name="PAGE_NUM" /> scannen. <ph name="PERCENTAGE_VALUE" />% voltooid.</translation>
 <translation id="3459509316159669723">Afdrukken</translation>
@@ -279,6 +283,7 @@
 <translation id="3604713164406837697">Achtergrond wijzigen</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
 <translation id="3606583719724308068">Lange vertraging voor HTTPS-websites</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Ingang</translation>
 <translation id="3632579075709132555">Privacyscherm schakelen</translation>
 <translation id="3643810137582748570">Kalibratie overslaan</translation>
@@ -300,6 +305,7 @@
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3865414814144988605">Resolutie</translation>
 <translation id="387301095347517405">Het aantal keren dat de batterij een volledige oplaadcyclus heeft doorlopen</translation>
+<translation id="3885327323343477505">Screensaver wijzigen</translation>
 <translation id="3923184630988645767">Datagebruik</translation>
 <translation id="3924044641767672375">Verbinding met wifi wordt aanbevolen om het reparatieproces makkelijker te maken. Je netwerk wordt opgeslagen.</translation>
 <translation id="3932043219784172185">Geen apparaat aangesloten</translation>
@@ -327,6 +333,7 @@
 <translation id="4140251671072434548">RMA Server Unlock uitvoeren</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4147897805161313378">Google Foto's</translation>
+<translation id="4150201353443180367">Weergave</translation>
 <translation id="4155551848414053977">Zorg dat de scanner aanstaat en beschikbaar is via je netwerk of een directe verbinding.</translation>
 <translation id="4159784952369912983">Paars</translation>
 <translation id="4170180284036919717">Foto maken</translation>
@@ -418,6 +425,7 @@
 <translation id="4890353053343094602">Kies onmiddellijk een nieuw wachtwoord</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het linkeroordopje.</translation>
+<translation id="4905998861748258752">Zet de functie aan om screensaveropties te selecteren</translation>
 <translation id="4908030561598728899">Firmware installeren...</translation>
 <translation id="4915052247106771211">Hierdoor wordt het apparaat teruggezet naar de fabrieksinstellingen (Powerwash).</translation>
 <translation id="4917385247580444890">Sterk</translation>
@@ -742,6 +750,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
 <translation id="7977800524392185497">Ga naar Instellingen als je verbinding wilt maken met een <ph name="NETWORK_NAME" />-netwerk</translation>
 <translation id="7978412674231730200">Privésleutel</translation>
+<translation id="7982789257301363584">Netwerk</translation>
 <translation id="7994702968232966508">EAP-methode</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -836,6 +845,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8834539327799336565">Momenteel verbonden</translation>
 <translation id="8845001906332463065">Hulp nodig?</translation>
 <translation id="8855781559874488009">Kan geen verbinding maken met HTTP-websites via een firewall</translation>
+<translation id="885701979325669005">Opslag</translation>
 <translation id="8863170912498892583">Donker thema aanzetten</translation>
 <translation id="8863888432376731307"><ph name="INTENT" /> ophalen voor <ph name="QUERY" /> en meer</translation>
 <translation id="8868741746785112895">GUID</translation>
@@ -861,6 +871,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8997710128084572139">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading.</translation>
 <translation id="9003704114456258138">Frequentie</translation>
 <translation id="9025198690966128418">Gebruiken als persoonlijk apparaat</translation>
+<translation id="9028832514430399253">Gebruik de schakelaar om de screensaveropties te selecteren</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-omzetting heeft een lange vertraging</translation>
 <translation id="9063121522582193837">Kan bepaalde componenten niet kalibreren</translation>

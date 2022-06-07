@@ -68,6 +68,7 @@
 <translation id="1510238584712386396">Başlatıcı</translation>
 <translation id="1512982610995527443">Cihaz 5 saniye sonra kapanacak</translation>
 <translation id="1522984060396982789">Onarımınız başarıyla tamamlandı. Cihazı kapatabilir veya başka işlemler yapabilirsiniz.</translation>
+<translation id="1526389707933164996">Ekran koruyucu animasyon</translation>
 <translation id="152892567002884378">Sesi açar</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="155865706765934889">Dokunmatik Tuş Takımı</translation>
@@ -76,6 +77,7 @@
 <translation id="1572585716423026576">Duvar kağıdı yap</translation>
 <translation id="1578784163189013834">Ekran koruyucu arka planı seç</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sonrası veri kullanımı</translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Şarj testini çalıştır</translation>
 <translation id="1631385268983122904">Cihaz parçalarını henüz geri takmayın</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
@@ -257,6 +259,7 @@
 <translation id="3413935475507503304">Güncelleme işlemine devam etmek için İleri'yi tıklayın.</translation>
 <translation id="3434107140712555581">%<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="3435738964857648380">Güvenlik</translation>
+<translation id="3441653493275994384">Ekran</translation>
 <translation id="3456078764689556234">Yazdırılan sayfa: <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />. sayfa taranıyor %<ph name="PERCENTAGE_VALUE" /> tamamlandı</translation>
 <translation id="3459509316159669723">Yazdırma</translation>
@@ -279,6 +282,7 @@
 <translation id="3604713164406837697">Duvar kağıdını değiştir</translation>
 <translation id="360565022852130722">Kablosuz ağ, zayıf bir protokol olan WEP 802.1x ile güvenlik altına alınmış</translation>
 <translation id="3606583719724308068">HTTPS web sitelerinde yüksek gecikme süresi</translation>
+<translation id="3616113530831147358">Ses</translation>
 <translation id="3621202678540785336">Giriş</translation>
 <translation id="3632579075709132555">Gizlilik ekranını aç/kapat</translation>
 <translation id="3643810137582748570">Kalibrasyonu atla</translation>
@@ -300,6 +304,7 @@
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3865414814144988605">Çözünürlük</translation>
 <translation id="387301095347517405">Pilinizin tam şarj döngüsünden geçme sayısı</translation>
+<translation id="3885327323343477505">Ekran koruyucuyu değiştir</translation>
 <translation id="3923184630988645767">Veri kullanımı</translation>
 <translation id="3924044641767672375">Onarım sürecini kolaylaştırmak için kablosuz ağa bağlanmanız önerilir. Ağınız kaydedilir.</translation>
 <translation id="3932043219784172185">Bağlı cihaz yok</translation>
@@ -327,6 +332,7 @@
 <translation id="4140251671072434548">RMA Sunucu Kilidini Açma İşlemi Yapın</translation>
 <translation id="4145784616224233563">HTTP Güvenlik Duvarı</translation>
 <translation id="4147897805161313378">Google Fotoğraflar</translation>
+<translation id="4150201353443180367">Ekran</translation>
 <translation id="4155551848414053977">Tarayıcının açık ve ağınız üzerinden veya doğrudan bağlantı ile kullanılabilir olduğundan emin olun</translation>
 <translation id="4159784952369912983">Mor</translation>
 <translation id="4170180284036919717">Fotoğraf çek</translation>
@@ -418,6 +424,7 @@
 <translation id="4890353053343094602">Hemen yeni bir tane seçin</translation>
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4897058166682006107">Cihazın sol kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
+<translation id="4905998861748258752">Ekran koruyucu seçeneklerini belirlemek için özelliği açın</translation>
 <translation id="4908030561598728899">Donanım yazılımı yükleniyor...</translation>
 <translation id="4915052247106771211">Bu işlemden sonra cihaz fabrika ayarlarına sıfırlanır (Powerwash).</translation>
 <translation id="4917385247580444890">Güçlü</translation>
@@ -742,6 +749,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7960831585769876809">Sıcaklık</translation>
 <translation id="7977800524392185497">Bir <ph name="NETWORK_NAME" /> ağına katılmak için Ayarlar'a gidin</translation>
 <translation id="7978412674231730200">Özel anahtar</translation>
+<translation id="7982789257301363584">Ağ</translation>
 <translation id="7994702968232966508">EAP yöntemi</translation>
 <translation id="802154636333426148">İndirilemedi</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -836,6 +844,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8834539327799336565">Şu anda bağlı</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8855781559874488009">HTTP web sitelerine güvenlik duvarı aracılığıyla bağlanılamıyor</translation>
+<translation id="885701979325669005">Depolama</translation>
 <translation id="8863170912498892583">Koyu temayı etkinleştir</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" için <ph name="INTENT" /> ve daha fazlasını alın</translation>
 <translation id="8868741746785112895">GUID</translation>
@@ -861,6 +870,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8997710128084572139">Cihazın pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="9003704114456258138">Frekans</translation>
 <translation id="9025198690966128418">Kişisel cihaz olarak kullan</translation>
+<translation id="9028832514430399253">Ekran koruyucu seçeneklerini belirlemek için geçiş yapma düğmesini açın</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS çözümleme, yüksek gecikme süresine sahip</translation>
 <translation id="9063121522582193837">Bazı bileşenler kalibre edilemedi</translation>

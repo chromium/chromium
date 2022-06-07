@@ -110,6 +110,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="1513352483775369820">Bookmark at history ng web</translation>
 <translation id="1513814250881909472">Mag-sync para makuha ang iyong mga tab mula sa iba pang device mo</translation>
 <translation id="1513858653616922153">I-delete ang password</translation>
+<translation id="1514552811327923157">Binuksan ang prompt ng Privacy Sandbox prompt nang buo ang taas</translation>
 <translation id="1518421282666914498">GIF ng emosyon <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Aktibo ngayong araw</translation>
 <translation id="1538801903729528855">Makakuha ng mas magandang karanasan sa boses sa web</translation>
@@ -321,6 +322,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2711073837061989559">Mga Trial</translation>
 <translation id="2718352093833049315">Sa Wi-Fi lang</translation>
 <translation id="2718846868787000099">Para ipakita ang content sa iyong mga gustong wika, makikita ng mga site na binibisita mo ang iyong mga kagustuhan</translation>
+<translation id="2722945394406572875">Isinara ang prompt ng Privacy Sandbox</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Mas magandang karanasan sa paghahanap gamit ang boses</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -791,6 +793,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5342314432463739672">Mga kahilingan sa pahintulot</translation>
 <translation id="5355191726083956201">Naka-on ang Enhanced Protection</translation>
 <translation id="5368227114232678694">Para mag-browse nang pribado sa device na ito, subukan ang Incognito</translation>
+<translation id="5371717687506906963">Prompt ng Privacy Sandbox</translation>
 <translation id="5375577065097716013">Hanapin sa Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Binago ang reaksyon</translation>
 <translation id="5401851137404501592">Para magpatuloy, ibabahagi ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong pangalan, email address, at larawan sa profile sa site na ito.</translation>
@@ -894,6 +897,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5906513782029855931">Kapag alam ang mga URL ng mga site, matutulungan ka ng Google Assistant na tumapos ng mga gawain. Puwede mong i-off ang Assistant sa mga setting ng Chrome.</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5919204609460789179">I-update ang <ph name="PRODUCT_NAME" /> upang simulan ang pag-sync</translation>
+<translation id="593625682991400408">Sa panahon ng mga trial, ine-explore ng Chrome ang mga paraan para limitahan ang spam, panloloko, at pagbabahagi sa pagitan ng mga site. Tinatantya rin ng Chrome ang <ph name="BEGIN_LINK" />iyong mga interes<ph name="END_LINK" /> na puwedeng gamitin ng mga site para magpakita sa iyo ng mga ad. Puwede mong pamahalaan ang iyong mga interes sa mga setting.</translation>
 <translation id="5938820472109305350">Idagdag ang <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Ginagamit ang Google para sa paghahanap</translation>
 <translation id="5945035219773565305">Kasalukuyang rekomendasyon:  <ph name="RECOMMENDATION" /></translation>
@@ -1512,10 +1516,10 @@ Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito
 <translation id="9106148373857059373">Nakasara ang proseso ng pag-save ng bookmark</translation>
 <translation id="9108312223223904744">Telepono bilang Security Key Support</translation>
 <translation id="9108808586816295166">Posibleng hindi available sa lahat ng oras ang secure na DNS</translation>
+<translation id="9128984223251192329">Binuksan ang prompt ng Privacy Sandbox nang kalahati ang taas</translation>
 <translation id="9133397713400217035">I-explore Offline</translation>
 <translation id="9137013805542155359">Ipakita ang orihinal</translation>
 <translation id="9148126808321036104">Muling mag-sign in</translation>
-<translation id="9155898266292537608">Makakapaghanap ka rin gamit ang mabilisang pag-tap sa isang salita</translation>
 <translation id="9158770349521403363">Ibahagi lang ang content</translation>
 <translation id="9159716826369098114">I-restore ang grupo ng tab na <ph name="TAB_COUNT" /> (na) tab bilang bagong background na grupo ng tab.</translation>
 <translation id="916446198114569890">Naka-save sa iyong Google account ang mga URL na binibisita mo</translation>

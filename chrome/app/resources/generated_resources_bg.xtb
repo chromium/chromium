@@ -1421,7 +1421,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
     Ако по-късно решите, че функцията Voice Match не е подходяща за детето ви, трябва само да я премахнете от настройките на Асистент в профила му. За да прегледате или изтриете аудиооткъсите, които детето ви записва по време на настройването на Voice Match, посетете <ph name="VOICE_MATCH_SETTINGS_URL" /> от профила му.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Търсене в част от страницата посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">Достъпът на този сайт до сензорите ви за движение или светлина е блокиран.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL адрес на страницата</translation>
@@ -2045,7 +2044,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="289695669188700754">Идентификатор (ИД) на ключ: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Тази персонализирана настройка ще бъде премахната, когато затворите всички прозорци в режим „инкогнито“</translation>
 <translation id="2897878306272793870">Наистина ли искате да отворите <ph name="TAB_COUNT" /> раздела?</translation>
-<translation id="2900477968385519153">Търсене в екрана посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Файлът използва неподдържани функции</translation>
 <translation id="2901348420151309559">Скорошни снимки и приложения</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> не можа да установи връзка с този принтер. Уверете се, че той е включен, и опитайте отново.</translation>
@@ -2918,7 +2916,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3778740492972734840">&amp;Инструменти за програмисти</translation>
 <translation id="3778868487658107119">Вашият личен помощник от Google – винаги на разположение, за да отговаря на въпросите ви и да изпълнява желанията ви.</translation>
 <translation id="3781742599892759500">Достъп на Linux до микрофона</translation>
-<translation id="378312418865624974">Четене на уникалния идентификатор на този компютър</translation>
 <translation id="3784472333786002075">„Бисквитките“ са файлове, създавани от уебсайтовете. Има два типа „бисквитки“: тези на посещавания домейн се създават от сайта, който преглеждате. Той се показва в адресната лента. „Бисквитките“ на трети страни се създават от други сайтове. Те притежават част от съдържанието, като например реклами или изображения, което виждате на посетения от вас уебсайт.</translation>
 <translation id="3785308913036335955">Показване на прекия път към приложенията</translation>
 <translation id="3785727820640310185">Запазени пароли за този сайт</translation>
@@ -3572,7 +3569,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4415748029120993980">Елиптична крива secp384r1 по SECG (позната и като NIST P-384)</translation>
 <translation id="4416450511678320850">За това съдържание няма налични приложения</translation>
 <translation id="4416582610654027550">Въведете валиден URL адрес</translation>
-<translation id="4417162649853416189">Плъзгане върху изображения с цел търсене посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Да се разреши на <ph name="HOST" /> винаги да задава „бисквитки“</translation>
 <translation id="4421932782753506458">Пухчо</translation>
 <translation id="4423376891418188461">Възстановяване на настройките</translation>
@@ -3712,7 +3708,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4550926046134589611">Някои поддържани връзки ще продължат да се отварят в(ъв) <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Натиснете <ph name="MODIFIER_KEY_DESCRIPTION" /> за отмяна</translation>
 <translation id="4553526521109675518">Трябва да рестартирате своя Chromebook, за да промените езика на устройството. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Плъзгане върху изображения с цел търсене посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Версията на външното разширение е същата или по-стара в сравнение със съществуващата.</translation>
 <translation id="4555769855065597957">Сянка</translation>
 <translation id="4555863373929230635">За да запазвате пароли в профила си в Google, влезте в него и включете синхронизирането.</translation>
@@ -4563,7 +4558,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5427459444770871191">Завъртане &amp;по часовниковата стрелка</translation>
 <translation id="542750953150239272">С продължаването си приемате, че това устройство може също автоматично да изтегля и инсталира актуализации и приложения от Google, оператора ви и производителя си, при което е възможно да използва мобилни данни. В някои от тези приложения може да се предлагат покупки.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Налице е актуализация)</translation>
-<translation id="5429373054983029602">Търсене в екрана посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Трябва да бъде инсталирана актуализация на фърмуера на модула за надеждна платформа. Вижте информацията на адрес <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Незабавен тетъринг</translation>
 <translation id="5431318178759467895">Цветно</translation>
@@ -4636,7 +4630,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="5495466433285976480">По този начин при следващото рестартиране ще се премахнат всички локални потребители, файлове, данни и други настройки. Всички потребители ще трябва да влязат отново.</translation>
 <translation id="5495597166260341369">Без изключване на екрана</translation>
-<translation id="549580971452855947">Плъзгане с цел търсене на изображения посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Организиране</translation>
 <translation id="5496730470963166430">Сайтове без разрешение за изпращане на изскачащи прозорци или използване на пренасочвания</translation>
 <translation id="5497251278400702716">Този файл</translation>
@@ -5748,7 +5741,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 Имате още # компрометирана парола. Google Мениджър на пароли ви препоръчва да я проверите сега.}other{Успешно променихте компрометираната парола.
 
 Имате още # компрометирани пароли. Google Мениджър на пароли ви препоръчва да ги проверите сега.}}</translation>
-<translation id="6595792813574514527">Плъзгане с цел търсене на изображения посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Опции за шифроване</translation>
 <translation id="6596816719288285829">IP адрес</translation>
 <translation id="6597017209724497268">Извадки</translation>
@@ -7369,7 +7361,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8184318863960255706">Още информация</translation>
 <translation id="8184472985242519288">Еднородна</translation>
 <translation id="8186609076106987817">Сървърът не можа да намери файла.</translation>
-<translation id="8186704951085064172">Търсене в част от страницата посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Проверете настройките на устройството си и я включете, за да продължите</translation>
 <translation id="8188742492803591566">Въведете кода за достъп, показан от Chromecast или телевизора, за да започнете да предавате екрана си.</translation>
 <translation id="8189306097519446565">Училищни профили</translation>

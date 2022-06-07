@@ -77,6 +77,7 @@
 <translation id="1572585716423026576">Setează ca imagine de fundal</translation>
 <translation id="1578784163189013834">Alege fundalul screensaverului</translation>
 <translation id="1615335640928990664">Utilizarea datelor începând de <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Cameră</translation>
 <translation id="1621067168122174824">Rulează testul Încărcare</translation>
 <translation id="1631385268983122904">Încă nu reasambla dispozitivul</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
@@ -259,6 +260,7 @@
 <translation id="3413935475507503304">Ca să continui cu actualizarea, dă clic pe Înainte.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Securitate</translation>
+<translation id="3441653493275994384">Ecran</translation>
 <translation id="3456078764689556234">S-a printat pagina <ph name="PRINTED_PAGES" /> din <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Se scanează pagina <ph name="PAGE_NUM" />. Progres: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Printare</translation>
@@ -281,6 +283,7 @@
 <translation id="3604713164406837697">Schimbă imaginea de fundal</translation>
 <translation id="360565022852130722">Rețeaua Wi-Fi este securizată cu protocolul slab WEP 802.1x</translation>
 <translation id="3606583719724308068">Latență mare pe site-urile HTTPS</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Intrări</translation>
 <translation id="3632579075709132555">Activarea / dezactivarea ecranului de confidențialitate</translation>
 <translation id="3643810137582748570">Omite calibrarea</translation>
@@ -330,6 +333,7 @@
 <translation id="4140251671072434548">Deblocați serverul RMA</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
+<translation id="4150201353443180367">Ecran</translation>
 <translation id="4155551848414053977">Scanerul trebuie să fie pornit și disponibil prin rețea sau prin conexiune directă</translation>
 <translation id="4159784952369912983">Mov</translation>
 <translation id="4170180284036919717">Fotografiază</translation>
@@ -746,6 +750,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7960831585769876809">Temperatură</translation>
 <translation id="7977800524392185497">Pentru a te conecta la o rețea <ph name="NETWORK_NAME" />, accesează Setările</translation>
 <translation id="7978412674231730200">Cheie privată</translation>
+<translation id="7982789257301363584">Rețea</translation>
 <translation id="7994702968232966508">Metodă EAP</translation>
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
@@ -840,6 +845,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8834539327799336565">Conectat</translation>
 <translation id="8845001906332463065">Obține ajutor</translation>
 <translation id="8855781559874488009">Nu se poate conecta la site-uri HTTP prin firewall</translation>
+<translation id="885701979325669005">Stocare</translation>
 <translation id="8863170912498892583">Activează tema întunecată</translation>
 <translation id="8863888432376731307">Vezi <ph name="INTENT" /> pentru <ph name="QUERY" /> și altele</translation>
 <translation id="8868741746785112895">GUID</translation>

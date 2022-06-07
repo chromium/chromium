@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">Kudeatu sinkronizazioa</translation>
 <translation id="1076421457278169141">Eskaneatu da kodea</translation>
 <translation id="1084365883616172403">Mezua Facebook-en argitaratu da.</translation>
-<translation id="1086486568852410168">Bilatu Google Lens bidez</translation>
 <translation id="1103523840287552314">Itzuli <ph name="LANGUAGE" /> beti</translation>
 <translation id="1104948393051856124">Onartu eta jarraitu</translation>
 <translation id="110724200315609752">Erabili irekita dagoen leihoa</translation>
@@ -163,6 +162,7 @@
 <translation id="236977714248711277">Webguneek ezin dituzte erabili cookieak arakatze-zerbitzua hobetzeko; adibidez, saioa hasita mantentzeko edo erosketa-saskiko produktuak gogoratzeko.
 
 Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko.</translation>
+<translation id="2375243552872247702">Ikusi zuretzako edukia</translation>
 <translation id="2381405137052800939">Oinarrizkoak</translation>
 <translation id="2386793615875593361">Bat hautatu da</translation>
 <translation id="2421004566762153674">Hirugarrenen cookieak blokeatzea</translation>
@@ -602,6 +602,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6136914049981179737">Duela segundo gutxi</translation>
 <translation id="6144589619057374135">Ireki ${url} ezkutuko moduan</translation>
 <translation id="6149061208933997199">Erabili pasahitza</translation>
+<translation id="6152406514676263192">Zure interesetan oinarritutako eduki egokiena lortzeko, sinkronizatu.</translation>
 <translation id="6159839020698489198">aukerakoa</translation>
 <translation id="6177442314419606057">Bilatu Chrome-n</translation>
 <translation id="6184086493125982861">Erakutsi fitxak</translation>
@@ -749,6 +750,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7189598951263744875">Partekatu…</translation>
 <translation id="7192050974311852563">Hasi erregistratzen</translation>
 <translation id="7203585745079012652">Erantzun ahots bidez</translation>
+<translation id="7207023858769244910">Interesetan oinarritutako edukia lortzeko, sinkronizatu.</translation>
 <translation id="7207383424303353046">Berria: ezarri Chrome arakatzaile lehenetsi gisa eta ireki webguneak bertan automatikoki. <ph name="BEGIN_LINK" />Ireki ezarpenak<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Txartelaren goitizenak ez du balio</translation>
 <translation id="722454870747268814">Ezkutuko moduko fitxa berria</translation>

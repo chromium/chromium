@@ -203,6 +203,7 @@
 <translation id="1188807932851744811">লগ আপলোড করা হয়নি।</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{আপনার কম্পিউটারে সঞ্চিত একটি ফাইল অ্যাক্সেস করে}one{আপনার কম্পিউটারে সঞ্চিত #টি ফাইল অ্যাক্সেস করে}other{আপনার কম্পিউটারে সঞ্চিত #টি ফাইল অ্যাক্সেস করে}}</translation>
 <translation id="119092896208640858">Google অ্যাকাউন্ট থেকে ব্রাউজিং ডেটা খালি না করে শুধুমাত্র এই ডিভাইস থেকে খালি করতে <ph name="BEGIN_LINK" />সাইন-আউট করুন<ph name="END_LINK" />।</translation>
+<translation id="1191353342579061195">আপনার প্রয়োজনের সাথে মানানসই থিম বেছে নিন। আপনার থিম, ওয়ালপেপার, স্ক্রিন সেভার এবং আরও অনেক কিছু পরিবর্তন করতে, শুধু ডেস্কটপে ডানদিকের বোতামে ক্লিক করুন।</translation>
 <translation id="1192706927100816598">{0,plural, =1{আপনি # সেকেন্ডে অটোমেটিক সাইন-আউট হয়ে যাবেন।
 <ph name="DOMAIN" />-এর জন্য আপনার স্মার্ট কার্ড প্রবেশ করিয়ে রাখতে হবে।}one{আপনি # সেকেন্ডে অটোমেটিক সাইন-আউট হয়ে যাবেন।
 <ph name="DOMAIN" />-এর জন্য আপনার স্মার্ট কার্ড প্রবেশ করিয়ে রাখতে হবে।}other{আপনি # সেকেন্ডে অটোমেটিক সাইন-আউট হয়ে যাবেন।
@@ -1305,6 +1306,7 @@
 <translation id="2220409419896228519">আপনার পছন্দের Google অ্যাপে বুকমার্ক যোগ করুন</translation>
 <translation id="2220529011494928058">কোনো সমস্যার অভিযোগ করুন</translation>
 <translation id="2220572644011485463">PIN বা পাসওয়ার্ড</translation>
+<translation id="222115440608612541">সূর্যোদয় এবং সূর্যাস্তের থিমে পাল্টান</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">নামবিহীন মিডিয়া সোর্স</translation>
 <translation id="2224444042887712269">এই সেটিংটি <ph name="OWNER_EMAIL" /> এর৷</translation>
@@ -1426,7 +1428,6 @@
     আপনি যদি মনে করেন আপনার বাচ্চার পক্ষে Voice Match-এর বিষয়টি সঠিক নয়, তাহলে তার Assistant সেটিংস থেকে এটি সরিয়ে দিন। Voice Match সেট আপ করার সময় আপনার বাচ্চার রেকর্ড করা অডিও ক্লিপ দেখতে বা মুছে ফেলতে, আপনার বাচ্চার অ্যাকাউন্ট থেকে <ph name="VOICE_MATCH_SETTINGS_URL" /> লিঙ্কে যান।
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> ব্যবহার করে পৃষ্ঠার অংশ সার্চ করুন</translation>
 <translation id="2309620859903500144">এই সাইটটি আপনার মোশন এবং লাইট সেন্সর অ্যাক্সেস করতে পারবে না।</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">পৃষ্ঠার ইউআরএল</translation>
@@ -1534,6 +1535,7 @@
 <translation id="241082044617551207">অজানা প্লাগ-ইন</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">কীবোর্ডের ফাংশন কী</translation>
+<translation id="2418307627282545839">যথেষ্ট আলোকময় ও খোলামেলা রাখুন</translation>
 <translation id="2419131370336513030">ইনস্টল করা অ্যাপ দেখুন</translation>
 <translation id="2419706071571366386">নিরাপত্তার কারণে, আপনার কম্পিউটার ব্যবহার করা না হলে সাইন-আউট করুন।</translation>
 <translation id="2422125132043002186">Linux ফিরিয়ে আনা বাতিল করা হয়ছে</translation>
@@ -2049,7 +2051,6 @@
 <translation id="289695669188700754">কী ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">আপনি সমস্ত 'ছদ্মবেশী' উইন্ডো বন্ধ করলে এই কাস্টম সেটিং মুছে ফেলা হবে</translation>
 <translation id="2897878306272793870">আপনি কি <ph name="TAB_COUNT" />টি ট্যাব খোলার ব্যাপারে নিশ্চিত?</translation>
-<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> ব্যবহার করে আপনার স্ক্রিন সার্চ করুন</translation>
 <translation id="290105521672621980">ফাইলের বৈশিষ্ট্যগুলি অসমর্থিত</translation>
 <translation id="2901348420151309559">সাম্প্রতিক ফটো ও অ্যাপ</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> এই প্রিন্টারের সঙ্গে যোগাযোগ করতে পারেনি। প্রিন্টারটি প্লাগ ইন করা আছে কিনা তা নিশ্চিত করে আবার চেষ্টা করুন।</translation>
@@ -2922,7 +2923,6 @@
 <translation id="3778740492972734840">&amp;ডেভেলপার টুল</translation>
 <translation id="3778868487658107119">প্রশ্ন করুন। কিছু করতে বলুন। এটি আপনার নিজস্ব Google যেটি সবসময় আপনাকে সাহায্য করে।</translation>
 <translation id="3781742599892759500">Linux-এ মাইক্রোফোনের অ্যাক্সেস</translation>
-<translation id="378312418865624974">এই কম্পিউটারের জন্য একটি অনন্য শনাক্তকারী পড়ুন</translation>
 <translation id="3784472333786002075">ওয়েবসাইট যে ফাইলগুলি তৈরি করে তাকে কুকি বলা হয়। কুকি দুই ধরনের: আপনার ব্রাউজ করা ওয়েবসাইট ফার্স্ট-পার্টি কুকি তৈরি করে। অ্যাড্রেস বারে সাইটটি দেখা যায়। অন্যান্য সাইট থার্ড-পার্টি কুকি তৈরি করে। এই সাইটগুলিতে বিজ্ঞাপন এবং ছবির মতো কিছু কন্টেন্ট থাকে যা আপনি আপনার ভিজিট করা ওয়েবসাইটে দেখতে পান।</translation>
 <translation id="3785308913036335955">অ্যাপ্লিকেশানগুলির শর্টকাট দেখান</translation>
 <translation id="3785727820640310185">এই সাইটের জন্য সেভ করা পাসওয়ার্ড</translation>
@@ -3575,7 +3575,6 @@
 <translation id="4415748029120993980">SECG এলিপ্টিক কার্ভ secp384r1 (ওরফে NIST P-384)</translation>
 <translation id="4416450511678320850">এই কন্টেন্টের জন্য কোনও অ্যাপ উপলভ্য নেই</translation>
 <translation id="4416582610654027550">একটি সঠিক URL লিখুন</translation>
-<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" /> ব্যবহার করে সার্চ করতে ছবির উপরে টেনে আনুন</translation>
 <translation id="4419409365248380979">কুকিজ সেট করতে <ph name="HOST" />-কে সব সময় অনুমতি দিন</translation>
 <translation id="4421932782753506458">ফুঁয়োফুঁয়ো</translation>
 <translation id="4423376891418188461">সেটিংস পুনরুদ্ধার করুন</translation>
@@ -3646,6 +3645,7 @@
 <translation id="449232563137139956">ইলাস্ট্রেশনের জন্য সাইট সাধারণত ছবি দেখায়, যেমন অনলাইন স্টোর অথবা খবরের নিবন্ধ সংক্রান্ত ছবি</translation>
 <translation id="4492698018379445570">শপিং কার্টে আপনি কী কী যোগ করেছেন তা দেখুন এবং সব কিছু চেক করা করে নেওয়ার পরেই পেমেন্ট করুন</translation>
 <translation id="4493468155686877504">সাজেস্ট করা হয়েছে (<ph name="INSTALL_SIZE" />)</translation>
+<translation id="4495002167047709180"><ph name="SITE" />-এ এই এক্সটেনশনে অনুমতি দেবেন?</translation>
 <translation id="4495419450179050807">এই পৃষ্ঠাতে দেখাবেন না</translation>
 <translation id="4497145443434063861">PC ও Chromecast আলাদা ওয়াই-ফাই নেটওয়ার্কে আছে (যেমন ২.৪ GHz
     বনাম ৫ GHz)</translation>
@@ -3714,7 +3714,6 @@
 <translation id="4550926046134589611">কিছু সহায়তা প্রদান করার লিঙ্ক <ph name="APP_NAME" /> এখনও খুলবে।</translation>
 <translation id="4551763574344810652">আগের অবস্থায় ফিরে যেতে <ph name="MODIFIER_KEY_DESCRIPTION" /> টিপুন</translation>
 <translation id="4553526521109675518">ডিভাইসের ভাষা পরিবর্তন করতে, আপনাকে Chromebook রিস্টার্ট করতে হবে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> ব্যবহার করে সার্চ করতে ছবির উপরে টেনে আনুন</translation>
 <translation id="4554591392113183336">বিদ্যমানটির তুলনায় বাহ্যিক এক্সটেনশনটি একই বা আরও পুরনো ভার্সনের৷</translation>
 <translation id="4555769855065597957">ছায়া</translation>
 <translation id="4555863373929230635">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড সেভ করতে, সাইন-ইন করে সিঙ্ক চালু করুন।</translation>
@@ -4566,7 +4565,6 @@
 <translation id="5427459444770871191">&amp;ঘড়ির কাঁটার দিকে ঘোরান</translation>
 <translation id="542750953150239272">এছাড়াও চালিয়ে যাওয়ার অর্থ আপনি সম্মতি জানাচ্ছেন যে Google, আপনার পরিষেবা প্রদানকারী এবং ডিভাইসের প্রস্তুতকারকের থেকে এই ডিভাইস আপডেট অটোমেটিক ডাউনলোড ও ইনস্টল করতে পারে এবং সেটি করার জন্য খুব সম্ভবত মোবাইল ডেটা ব্যবহার করতে পারে। এর মধ্যে কিছু অ্যাপে অ্যাপ-মধ্যস্থ কেনাকাটা অফার করা হতে পারে।</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (আপডেট উপলব্ধ আছে)</translation>
-<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> ব্যবহার করে আপনার স্ক্রিন সার্চ করুন</translation>
 <translation id="542948651837270806">বিশ্বস্ত প্ল্যাটফর্ম মডিউল ফার্মওয়্যারের জন্য একটি আপডেট ইনস্টল করতে হবে। <ph name="TPM_FIRMWARE_UPDATE_LINK" /> দেখুন</translation>
 <translation id="5430931332414098647">ঝটপট টিথারিং</translation>
 <translation id="5431318178759467895">রঙ</translation>
@@ -4639,7 +4637,6 @@
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
 <translation id="5495466433285976480">আপনি যখন পরবর্তীতে রিস্টার্ট করবেন তখন এটি সমস্ত স্থানীয় ব্যবহারকারী, ফাইল, ডেটা, এবং অন্যান্য সেটিংস সরিয়ে ফেলবে৷ সকল ব্যবহারকারীকে আবার সাইন-ইন করতে হবে৷</translation>
 <translation id="5495597166260341369">ডিসপ্লে চালু রাখুন</translation>
-<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" /> ব্যবহার করে ছবি সার্চ করতে টেনে আনুন</translation>
 <translation id="5496587651328244253">সংগঠিত করুন</translation>
 <translation id="5496730470963166430">পপ-আপ পাঠানো ও রিডাইরেক্ট করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="5497251278400702716">এই ফাইল</translation>
@@ -5754,7 +5751,6 @@
 আপনার আরও #টি পাসওয়ার্ড চুরি হয়েছে। Google পাসওয়ার্ড ম্যানেজার আপনার পাসওয়ার্ড এখনই চেক করার সাজেস্ট করছে।}other{চুরি হয়ে যাওয়া পাসওয়ার্ড পরিবর্তন করা হয়েছে।
 
 আপনার আরও #টি পাসওয়ার্ড চুরি হয়েছে। Google পাসওয়ার্ড ম্যানেজার আপনার পাসওয়ার্ড এখনই চেক করার সাজেস্ট করছে।}}</translation>
-<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> ব্যবহার করে ছবি সার্চ করতে টেনে আনুন</translation>
 <translation id="6596325263575161958">এনক্রিপশন বিকল্পগুলি</translation>
 <translation id="6596816719288285829">আইপি অ্যাড্রেস</translation>
 <translation id="6597017209724497268">নমুনাগুলি</translation>
@@ -6055,6 +6051,7 @@
 <translation id="6895032998810961280">পরিষ্কার করার সময় আপনার কম্পিউটারে পাওয়া ক্ষতিকারক সফ্টওয়্যার, সিস্টেম সেটিংস ও প্রসেসের বিবরণ Google-কে জানান।</translation>
 <translation id="6896758677409633944">কপি</translation>
 <translation id="6897363604023044284">কোন কোন সাইটের ডেটা মুছবেন তা বেছে নিন</translation>
+<translation id="6897688156970667447">কম আলোতে সহায়ক এবং ব্যাটারি সাশ্রয় করে</translation>
 <translation id="6898440773573063262">Kiosk অ্যাপ্লিকেশনগুলিকে এখন এই ডিভাইসে স্বয়ংক্রিয়ভাবে লঞ্চ করতে কনফিগার করা যাবে৷</translation>
 <translation id="6900284862687837908">পটভূমিতে কাজ করা অ্যাপ্লিকেশান: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">উন্নত সুরক্ষা</translation>
@@ -7374,7 +7371,6 @@
 <translation id="8184318863960255706">আরও তথ্য</translation>
 <translation id="8184472985242519288">সব জায়গায় একরকম</translation>
 <translation id="8186609076106987817">সার্ভার ফাইলটি খুঁজে পায়নি৷</translation>
-<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> ব্যবহার করে পৃষ্ঠার অংশ সার্চ করুন</translation>
 <translation id="8188389033983459049">আপনার ডিভাইসের সেটিংস চেক করুন এবং চালিয়ে যেতে এটি চালু করুন</translation>
 <translation id="8188742492803591566">আপনার স্ক্রিন কাস্ট করা শুরু করতে Chromecast বা TV-তে দেখানো অ্যাক্সেস কোড লিখুন।</translation>
 <translation id="8189306097519446565">স্কুল অ্যাকাউন্ট</translation>
@@ -7543,6 +7539,7 @@
 <translation id="8358685469073206162">পৃষ্ঠাগুলি পুনরুদ্ধার করবেন?</translation>
 <translation id="8358912028636606457">এই ডিভাইসে ট্যাব থেকে অডিও কাস্ট করার সুবিধা নেই।</translation>
 <translation id="835951711479681002">আপনার Google অ্যাকাউন্টে সেভ করুন</translation>
+<translation id="8360140320636871023">আপনার ডিসপ্লে থিম পছন্দমতো সেট করুন</translation>
 <translation id="8363095875018065315">স্থায়ী</translation>
 <translation id="8363142353806532503">মাইক্রোফোনের ব্যবহার ব্লক করা হয়েছে</translation>
 <translation id="8366396658833131068">আপনার নেটওয়ার্ক আবার কানেক্ট করা হয়েছে৷ আপনার কিয়স্ক অ্যাপ লঞ্চ করার জন্য অনুগ্রহ করে একটি ভিন্ন নেটওয়ার্ক বেছে নিন অথবা নীচের 'অবিরত থাকুন' বোতাম টিপুন৷</translation>

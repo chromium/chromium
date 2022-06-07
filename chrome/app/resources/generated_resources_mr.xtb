@@ -182,6 +182,7 @@
 <translation id="1166583374608765787">अपडेट केलेल्या नावाचे पुनरावलोकन करा</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> हा <ph name="DESK_TITLE" /> डेस्‍कशी कनेक्ट केलेला आहे</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> मध्ये उघडत आहे...</translation>
+<translation id="1169266963600477608">गेम नियंत्रणे</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> मध्ये संवेदनशील किंवा धोकादायक डेटा आहे. तुमच्या अ‍ॅडमिनिस्ट्रेटरनुसार: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171135284592304528">ऑब्जेक्ट बदलते तेव्हा ते कीबोर्ड फोकससह हायलाइट करा</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> ला HID डिव्हाइसशी कनेक्ट करायचे आहे</translation>
@@ -1424,7 +1425,6 @@
     Voice Match हे तुमच्या लहान मुलासाठी योग्य नाही असे तुम्हाला नंतर वाटल्यास, ते फक्त त्यांच्या Assistant सेटिंग्ज मधून काढून टाका. Voice Match सेट करताना तुमच्या लहान मुलाने रेकॉर्ड केलेल्या ऑडिओ क्लिप पाहण्यासाठी किंवा त्या हटवण्यासाठी, तुमच्या लहान मुलाच्या खात्यामधून <ph name="VOICE_MATCH_SETTINGS_URL" /> वर जा.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून पेजचा काही भाग शोधा</translation>
 <translation id="2309620859903500144">या साइटला तुमचे गती किंवा प्रकाश सेन्सर ॲक्सेस करण्यापासून ब्लॉक केले गेले आहे.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">पेज URL</translation>
@@ -2048,7 +2048,6 @@
 <translation id="289695669188700754">की आयडी: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">तुम्ही तुमच्या सर्व गुप्त विंडो बंद केल्यास, हे कस्टम सेटिंग काढून टाकले जाईल</translation>
 <translation id="2897878306272793870">तुमची खात्री आहे की तुम्ही <ph name="TAB_COUNT" /> टॅब उघडू इच्छिता?</translation>
-<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून तुमची स्क्रीन शोधा</translation>
 <translation id="290105521672621980">फाइल अ‍समर्थित वैशिष्ट्यांचा वापर करीत आहे</translation>
 <translation id="2901348420151309559">अलीकडील फोटो आणि अ‍ॅप्स</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> ला या प्रिंटरसह संवाद प्रस्थापित करणे शक्य झाले नाही. प्रिंटर प्लग इन केले आहे हे सुनिश्चित करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -2921,7 +2920,6 @@
 <translation id="3778740492972734840">&amp;विकसक साधने</translation>
 <translation id="3778868487658107119">त्याला प्रश्न विचारा. त्याला गोष्टी करण्यास सांगा. ते खास तुमचे Google आहे, मदतीसाठी सदैव तत्पर.</translation>
 <translation id="3781742599892759500">Linux मायक्रोफोन अ‍ॅक्सेस</translation>
-<translation id="378312418865624974">या कॉंप्युटरचा एक अद्वितीय आयडेंटिफायर रीड करा</translation>
 <translation id="3784472333786002075">कुकी म्हणजे वेबसाइटने तयार केलेल्या फाइल. दोन प्रकारच्या कुकी आहेत: पहिल्या पक्षाच्या कुकी तुम्ही भेट दिलेल्या साइटद्वारे तयार केल्या जातात. साइट अ‍ॅड्रेस बारवर दाखवली जाते. तृतीय पक्षीय कुकी इतर साइटद्वारे तयार केल्या जातात. या साइटमध्ये जाहिराती किंवा इमेज यांसारखा काही आशय आहे जो तुम्ही भेट देत असलेल्या वेबसाइटवर दिसतो.</translation>
 <translation id="3785308913036335955">अ‍ॅप्स शॉर्टकट दर्शवा</translation>
 <translation id="3785727820640310185">या साइटसाठी सेव्ह केलेले पासवर्ड</translation>
@@ -3378,6 +3376,7 @@
 <translation id="4227605727325220318">नवीन Android फोन जोडा</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{या एक्स्टेंशनला अनुमती नाही}other{काही एक्स्टेंशनला अनुमती नाही}}</translation>
 <translation id="4231095370974836764">Google Play वरून तुमच्या <ph name="DEVICE_TYPE" /> वर ॲप्स आणि गेम इंस्टॉल करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="4231141543165771749">गेम नियंत्रणे बंद करा</translation>
 <translation id="4232375817808480934">Kerberos कॉंफिगर करा</translation>
 <translation id="4235965441080806197">साइन इन रद्द करा</translation>
 <translation id="4236163961381003811">आणखी एक्स्टेंशन शोधा</translation>
@@ -3572,7 +3571,6 @@
 <translation id="4415748029120993980">SECG एल्लिपटिक कर्व्ह secp384r1 (aka NIST P-384)</translation>
 <translation id="4416450511678320850">या आशयासाठी कोणतीही अ‍ॅप्स उपलब्ध नाहीत</translation>
 <translation id="4416582610654027550">योग्य URL टाइप करा</translation>
-<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून शोधण्यासाठी इमेजवर ड्रॅग करा</translation>
 <translation id="4419409365248380979">कुकी सेट करण्यासाठी <ph name="HOST" />ना नेहमी परवानगी द्या </translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">सेटिंग्ज पुनर्संचयित करा</translation>
@@ -3711,7 +3709,6 @@
 <translation id="4550926046134589611">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" /> मध्ये उघडतील.</translation>
 <translation id="4551763574344810652">पहिल्यासारखे करण्यासाठी <ph name="MODIFIER_KEY_DESCRIPTION" /> दाबा</translation>
 <translation id="4553526521109675518">डिव्हाइसची भाषा बदलण्यासाठी तुम्हाला तुमचे Chromebook रीस्टार्ट करावे लागेल. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून शोधण्यासाठी इमेजवर ड्रॅग करा</translation>
 <translation id="4554591392113183336">बाह्य एक्स्टेंशन अस्‍तित्वात असलेल्‍याच्या तुलनेत समान किंवा कमी आवृत्तीवर आहे.</translation>
 <translation id="4555769855065597957">शॅडो</translation>
 <translation id="4555863373929230635">तुमच्या Google खाते मध्ये पासवर्ड सेव्ह करण्यासाठी साइन इन करा आणि सिंक सुरू करा.</translation>
@@ -4562,7 +4559,6 @@
 <translation id="5427459444770871191">&amp;घड्याळाच्या दिशेने फिरवा</translation>
 <translation id="542750953150239272">पुढे सुरू ठेवून, तुम्ही सहमती दर्शवता, की हे डिव्हाइस कदाचित मोबाइल डेटा वापरून Google, तुमचा वाहक आणि तुमच्या डिव्हाइसच्या उत्पादकाकडूनदेखील अपडेट व अ‍ॅप्स आपोआप डाउनलोड आणि इंस्टॉल करू शकते. यांपैकी काही अ‍ॅप्स अ‍ॅप्समधील खरेदीचा पर्याय देऊ करू शकतात.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (अपडेट उपलब्ध आहे)</translation>
-<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून तुमची स्क्रीन शोधा</translation>
 <translation id="542948651837270806">विश्वासू प्लॅटफॉर्म मॉड्युल फर्मवेयरचा एखादा अपडेट इंस्टॉल करणे आवश्यक आहे. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> पहा</translation>
 <translation id="5430931332414098647">झटपट टेदरिंग</translation>
 <translation id="5431318178759467895">रंग</translation>
@@ -4635,7 +4631,6 @@
 <translation id="5494920125229734069">सर्व निवडा</translation>
 <translation id="5495466433285976480">तुम्हाला पुढील रीस्टार्टनंतर हे सर्व स्थानिक वापरकर्ते, फाइल, डेटा आणि अन्य सेटिंग्ज काढेल. सर्व वापरकर्त्यांना पुन्हा साइन इन करण्याची आवश्यकता असेल.</translation>
 <translation id="5495597166260341369">डिस्प्ले सुरू ठेवा</translation>
-<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून इमेज शोधण्यासाठी ड्रॅग करा</translation>
 <translation id="5496587651328244253">संयोजित करा</translation>
 <translation id="5496730470963166430">पॉप-अप पाठवण्याची आणि रीडिरेक्‍ट वापरण्याची अनुमती नाही</translation>
 <translation id="5497251278400702716">ही फाइल</translation>
@@ -5747,7 +5742,6 @@
 तुमच्याकडे धोक्यात असलेला आणखी # पासवर्ड आहे. हा पासवर्ड आता तपासण्याची शिफारस Google Password Manager करते.}other{धोक्यात असलेला पासवर्ड यशस्वीरीत्या बदलला.
 
 तुमच्याकडे धोक्यात असलेले आणखी # पासवर्ड आहेत. हे पासवर्ड आता तपासण्याची शिफारस Google Password Manager करते.}}</translation>
-<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून इमेज शोधण्यासाठी ड्रॅग करा</translation>
 <translation id="6596325263575161958">एंक्रिप्शन पर्याय</translation>
 <translation id="6596816719288285829">IP पत्ता</translation>
 <translation id="6597017209724497268">नमुने</translation>
@@ -7366,7 +7360,6 @@
 <translation id="8184318863960255706">अधिक माहिती</translation>
 <translation id="8184472985242519288">एकसमान</translation>
 <translation id="8186609076106987817">सर्व्हर फाइल शोधू शकले नाही.</translation>
-<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून पेजचा काही भाग शोधा</translation>
 <translation id="8188389033983459049">तुमची डिव्हाइस सेटिंग्ज तपासा आणि सुरू ठेवण्यासाठी ती सुरू करा</translation>
 <translation id="8188742492803591566">तुमची स्क्रीन कास्ट करणे सुरू करण्यासाठी Chromecast किंवा TV वर दाखवलेला अ‍ॅक्सेस कोड एंटर करा.</translation>
 <translation id="8189306097519446565">शाळेची खाती</translation>

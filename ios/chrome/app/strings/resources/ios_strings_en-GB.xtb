@@ -18,7 +18,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1066060668811609597">Manage Sync</translation>
 <translation id="1076421457278169141">Code scanned</translation>
 <translation id="1084365883616172403">Facebook post completed.</translation>
-<translation id="1086486568852410168">Search with Google Lens</translation>
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Accept &amp; Continue</translation>
 <translation id="110724200315609752">Switch to open window</translation>
@@ -164,6 +163,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="236977714248711277">Sites can't use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.
 
 Sites can't use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
+<translation id="2375243552872247702">See content for you</translation>
 <translation id="2381405137052800939">Basics</translation>
 <translation id="2386793615875593361">1 selected</translation>
 <translation id="2421004566762153674">Blocking third-party cookies</translation>
@@ -603,6 +603,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6136914049981179737">Seconds ago</translation>
 <translation id="6144589619057374135">Open ${url} in Incognito</translation>
 <translation id="6149061208933997199">Use Password</translation>
+<translation id="6152406514676263192">Sync for the most relevant content based on your interests.</translation>
 <translation id="6159839020698489198">optional</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>
 <translation id="6184086493125982861">Show Tabs</translation>
@@ -751,6 +752,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7189598951263744875">Share...</translation>
 <translation id="7192050974311852563">Start logging</translation>
 <translation id="7203585745079012652">Speak Answers Back</translation>
+<translation id="7207023858769244910">Sync to get content based on your interests.</translation>
 <translation id="7207383424303353046">New: Open sites in Chrome automatically by making it your default browser app. <ph name="BEGIN_LINK" />Open settings<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Invalid card nickname</translation>
 <translation id="722454870747268814">New Incognito Tab</translation>

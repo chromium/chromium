@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">Pamahalaan ang Pag-sync</translation>
 <translation id="1076421457278169141">Na-scan na ang code</translation>
 <translation id="1084365883616172403">Kumpleto na ang pag-post sa Facebook.</translation>
-<translation id="1086486568852410168">Maghanap gamit ang Google Lens</translation>
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Tanggapin at Magpatuloy</translation>
 <translation id="110724200315609752">Lumipat sa Nakabukas na Window</translation>
@@ -66,6 +65,7 @@
 <translation id="1434356225517321998">Pinapamahalaan ang iyong browser. <ph name="BEGIN_LINK" />Mga Detalye<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Itago ang Password</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> (na) item</translation>
+<translation id="1450170672351507823">Naka-on ang standard na proteksyon. Para sa higit pang seguridad, gamitin ang Pinahusay na proteksyon.</translation>
 <translation id="149095475893949513">Sinusubukan ng website na ito na mag-download ng profile ng configuration.</translation>
 <translation id="1491277525950327607">I-double tap upang i-toggle ang setting</translation>
 <translation id="1492417797159476138">Na-save mo na ang username na ito para sa site na ito</translation>
@@ -739,6 +739,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7099761977003084116">Mga Kamakailang Tab</translation>
 <translation id="7102005569666697658">Dina-download… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Itago</translation>
+<translation id="7108762695052995889">Bisitahin ang Site</translation>
 <translation id="7133798577887235672">Buong Pangalan</translation>
 <translation id="7136892417564438900">Hindi available ang camera</translation>
 <translation id="7153999225810839758"><ph name="TIME" /> (na) minutong pagbabasa</translation>

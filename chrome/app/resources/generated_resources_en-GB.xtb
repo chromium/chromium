@@ -204,6 +204,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1188807932851744811">Log not uploaded.</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Access a file stored on your computer}other{Access # files stored on your computer}}</translation>
 <translation id="119092896208640858">To clear browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK" />sign out<ph name="END_LINK" />.</translation>
+<translation id="1191353342579061195">Choose the theme that fits your needs. To change your theme, wallpaper, screen saver and more, just right-click on the desktop.</translation>
 <translation id="1192706927100816598">{0,plural, =1{You will be automatically signed out in # second.
 <ph name="DOMAIN" /> requires you to keep your smart card inserted.}other{You will be automatically signed out in # seconds.
 <ph name="DOMAIN" /> requires you to keep your smart card inserted.}}</translation>
@@ -1305,6 +1306,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2220409419896228519">Add bookmarks to your favourite Google apps</translation>
 <translation id="2220529011494928058">Report an issue</translation>
 <translation id="2220572644011485463">PIN or password</translation>
+<translation id="222115440608612541">Switch themes at sunrise and sunset</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Unnamed media source</translation>
 <translation id="2224444042887712269">This setting belongs to <ph name="OWNER_EMAIL" />.</translation>
@@ -1426,7 +1428,6 @@ You can manage this account’s settings by installing the Family Link app on yo
     If you decide later that Voice Match isn’t right for your child, simply remove it in their Assistant settings. To view or delete the audio clips that your child records during Voice Match setup, go to <ph name="VOICE_MATCH_SETTINGS_URL" /> from your child’s account.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">Search part of the page with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">This site has been blocked from accessing your motion or light sensors.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Page URL</translation>
@@ -1534,6 +1535,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="241082044617551207">Unknown plug-in</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Keyboard function keys</translation>
+<translation id="2418307627282545839">Keep things bright and airy</translation>
 <translation id="2419131370336513030">View installed apps</translation>
 <translation id="2419706071571366386">For security, sign out when your computer isn't being used.</translation>
 <translation id="2422125132043002186">Linux restore cancelled</translation>
@@ -2050,7 +2052,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="289695669188700754">Key ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">This custom setting will be removed when you close all your incognito windows</translation>
 <translation id="2897878306272793870">Are you sure that you want to open <ph name="TAB_COUNT" /> tabs?</translation>
-<translation id="2900477968385519153">Search Your Screen with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">File uses unsupported features</translation>
 <translation id="2901348420151309559">Recent photos and apps</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> could not communicate with this printer. Make sure that the printer is plugged in and try again.</translation>
@@ -2923,7 +2924,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3778740492972734840">&amp;Developer tools</translation>
 <translation id="3778868487658107119">Ask it questions. Tell it to do things. It's your personal Google, always ready to help.</translation>
 <translation id="3781742599892759500">Linux microphone access</translation>
-<translation id="378312418865624974">Read a unique identifier for this computer</translation>
 <translation id="3784472333786002075">Cookies are files created by websites. There are two types of cookies: first-party cookies are created by the site that you visit. The site is shown on the address bar. Third-party cookies are created by other sites. These sites own some of the content, like ads or images, that you see on the website that you visit.</translation>
 <translation id="3785308913036335955">Show Apps Shortcut</translation>
 <translation id="3785727820640310185">Saved passwords for this site</translation>
@@ -3577,7 +3577,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (aka NIST P-384)</translation>
 <translation id="4416450511678320850">No apps available for this content</translation>
 <translation id="4416582610654027550">Type a valid URL</translation>
-<translation id="4417162649853416189">Drag over Images to Search with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Always allow <ph name="HOST" /> to set cookies</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">Restore Settings</translation>
@@ -3717,7 +3716,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4550926046134589611">Some supported links will still open in <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Press <ph name="MODIFIER_KEY_DESCRIPTION" /> to undo</translation>
 <translation id="4553526521109675518">You need to restart your Chromebook to change the device language. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="4554491709904933912">Drag over images to search with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">External extension is at the same or lower version compared to the existing one.</translation>
 <translation id="4555769855065597957">Shadow</translation>
 <translation id="4555863373929230635">To save passwords to your Google account, sign in and turn on sync.</translation>
@@ -4568,7 +4566,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5427459444770871191">Rotate &amp;clockwise</translation>
 <translation id="542750953150239272">By continuing, you agree that this device may also automatically download and install updates and apps from Google, your operator and your device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Update is available)</translation>
-<translation id="5429373054983029602">Search your screen with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">An update for the trusted platform module firmware needs to be installed. See <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Colour</translation>
@@ -4641,7 +4638,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5495466433285976480">This will remove all local users, files, data and other settings after your next restart. All users will need to sign in again.</translation>
 <translation id="5495597166260341369">Keep display on</translation>
-<translation id="549580971452855947">Drag to search images with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Organise</translation>
 <translation id="5496730470963166430">Not allowed to send pop-ups or use redirects</translation>
 <translation id="5497251278400702716">This file</translation>
@@ -5752,7 +5748,6 @@ You can assign multiple switches to this action.</translation>
 You have # more compromised password. Google Password Manager recommends checking this password now.}other{Successfully changed the compromised password.
 
 You have # more compromised passwords. Google Password Manager recommends checking these passwords now.}}</translation>
-<translation id="6595792813574514527">Drag to Search Images with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Encryption options</translation>
 <translation id="6596816719288285829">IP Address</translation>
 <translation id="6597017209724497268">Samples</translation>
@@ -6053,6 +6048,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6895032998810961280">Report details to Google about harmful software, system settings and processes that were found on your computer during this clean up</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6897363604023044284">Choose sites to clear</translation>
+<translation id="6897688156970667447">Helpful in low light and saves battery</translation>
 <translation id="6898440773573063262">Kiosk applications can now be configured to auto-launch on this device.</translation>
 <translation id="6900284862687837908">Background App: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Enhanced protection</translation>
@@ -7373,7 +7369,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8184318863960255706">More info</translation>
 <translation id="8184472985242519288">Uniform</translation>
 <translation id="8186609076106987817">The server could not find the file.</translation>
-<translation id="8186704951085064172">Search Part of the Page with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Check your device settings and turn it on to continue</translation>
 <translation id="8188742492803591566">Enter the access code shown on the Chromecast or TV to start casting your screen.</translation>
 <translation id="8189306097519446565">School accounts</translation>
@@ -7542,6 +7537,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8358685469073206162">Restore pages?</translation>
 <translation id="8358912028636606457">Casting tab audio is not supported on this device.</translation>
 <translation id="835951711479681002">Save in your Google Account</translation>
+<translation id="8360140320636871023">Personalise your display theme</translation>
 <translation id="8363095875018065315">stable</translation>
 <translation id="8363142353806532503">Microphone blocked</translation>
 <translation id="8366396658833131068">Your network connectivity is restored. Please select a different network or press 'Continue' button below to launch your kiosk app.</translation>
