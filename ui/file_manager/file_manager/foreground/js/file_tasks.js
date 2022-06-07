@@ -920,31 +920,35 @@ export class FileTasks {
     item.type = ProgressItemType.MOUNT_ARCHIVE;
     item.message = strf('ARCHIVE_MOUNT_MESSAGE', filename);
 
-    item.cancelCallback = () => {
-      this.volumeManager_.cancelMounting(url);
+    item.cancelCallback = async () => {
+      // Remove progress panel.
+      item.state = ProgressItemState.CANCELED;
+      this.progressCenter_.updateItem(item);
+
+      // Cancel archive mounting.
+      try {
+        await this.volumeManager_.cancelMounting(url);
+      } catch (error) {
+        console.warn('Cannot cancel archive (redacted):', error);
+        console.log(`Cannot cancel archive '${url}':`, error);
+      }
     };
 
     // Display progress panel.
     item.state = ProgressItemState.PROGRESSING;
     this.progressCenter_.updateItem(item);
 
-    let wasCancelled = false;
-
     // First time, try without providing a password.
     try {
       return await this.volumeManager_.mountArchive(url);
     } catch (error) {
       // If error is not about needing a password, propagate it.
-      if (error === VolumeManagerCommon.VolumeError.CANCELLED) {
-        wasCancelled = true;
-      }
       if (error !== VolumeManagerCommon.VolumeError.NEED_PASSWORD) {
         throw error;
       }
     } finally {
       // Remove progress panel.
-      item.state = wasCancelled ? ProgressItemState.CANCELED :
-                                  ProgressItemState.COMPLETED;
+      item.state = ProgressItemState.COMPLETED;
       this.progressCenter_.updateItem(item);
     }
 
