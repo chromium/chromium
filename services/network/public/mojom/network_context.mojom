@@ -1052,7 +1052,7 @@ interface NetworkContext {
               mojo_base.mojom.UnguessableToken? reporting_source,
               NetworkIsolationKey network_isolation_key,
               string? user_agent,
-              mojo_base.mojom.DeprecatedDictionaryValue body);
+              mojo_base.mojom.DictionaryValue body);
 
   // Queues a signed exchange report.
   //

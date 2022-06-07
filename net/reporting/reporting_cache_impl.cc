@@ -34,7 +34,7 @@ void ReportingCacheImpl::AddReport(
     const std::string& user_agent,
     const std::string& group_name,
     const std::string& type,
-    std::unique_ptr<const base::Value> body,
+    base::Value::Dict body,
     int depth,
     base::TimeTicks queued,
     int attempts) {
@@ -51,7 +51,8 @@ void ReportingCacheImpl::AddReport(
 
   auto report = std::make_unique<ReportingReport>(
       reporting_source, network_isolation_key, url, user_agent, group_name,
-      type, std::move(body), depth, queued, attempts);
+      type, std::make_unique<base::Value>(std::move(body)), depth, queued,
+      attempts);
 
   auto inserted = reports_.insert(std::move(report));
   DCHECK(inserted.second);

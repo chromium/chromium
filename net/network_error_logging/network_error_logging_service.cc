@@ -246,31 +246,26 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   }
 
   base::Value StatusAsValue() const override {
-    base::Value dict(base::Value::Type::DICTIONARY);
-    std::vector<base::Value> policy_list;
+    base::Value::Dict dict;
+    base::Value::List policy_list;
     // We wanted sorted (or at least reproducible) output; luckily, policies_ is
     // a std::map, and therefore already sorted.
     for (const auto& key_and_policy : policies_) {
       const NelPolicyKey& key = key_and_policy.first;
       const NelPolicy& policy = key_and_policy.second;
-      base::Value policy_dict(base::Value::Type::DICTIONARY);
-      policy_dict.SetKey(
-          "networkIsolationKey",
-          base::Value(key.network_isolation_key.ToDebugString()));
-      policy_dict.SetKey("origin", base::Value(key.origin.Serialize()));
-      policy_dict.SetKey("includeSubdomains",
-                         base::Value(policy.include_subdomains));
-      policy_dict.SetKey("reportTo", base::Value(policy.report_to));
-      policy_dict.SetKey("expires",
-                         base::Value(NetLog::TimeToString(policy.expires)));
-      policy_dict.SetKey("successFraction",
-                         base::Value(policy.success_fraction));
-      policy_dict.SetKey("failureFraction",
-                         base::Value(policy.failure_fraction));
-      policy_list.push_back(std::move(policy_dict));
+      base::Value::Dict policy_dict;
+      policy_dict.Set("networkIsolationKey",
+                      key.network_isolation_key.ToDebugString());
+      policy_dict.Set("origin", key.origin.Serialize());
+      policy_dict.Set("includeSubdomains", policy.include_subdomains);
+      policy_dict.Set("reportTo", policy.report_to);
+      policy_dict.Set("expires", NetLog::TimeToString(policy.expires));
+      policy_dict.Set("successFraction", policy.success_fraction);
+      policy_dict.Set("failureFraction", policy.failure_fraction);
+      policy_list.Append(std::move(policy_dict));
     }
-    dict.SetKey("originPolicies", base::Value(std::move(policy_list)));
-    return dict;
+    dict.Set("originPolicies", std::move(policy_list));
+    return base::Value(std::move(dict));
   }
 
   std::set<NelPolicyKey> GetPolicyKeysForTesting() override {
@@ -591,23 +586,24 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     if (json_value.size() > kMaxJsonSize)
       return false;
 
-    std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(
-        json_value, base::JSON_PARSE_RFC, kMaxJsonDepth);
+    absl::optional<base::Value> value =
+        base::JSONReader::Read(json_value, base::JSON_PARSE_RFC, kMaxJsonDepth);
     if (!value)
       return false;
 
-    if (!value->is_dict())
+    base::Value::Dict* dict = value->GetIfDict();
+    if (!value)
       return false;
 
     // Max-Age property is missing or malformed.
-    int max_age_sec = value->FindIntKey(kMaxAgeKey).value_or(-1);
+    int max_age_sec = dict->FindInt(kMaxAgeKey).value_or(-1);
     if (max_age_sec < 0)
       return false;
 
     // Report-To property is missing or malformed.
     std::string report_to;
     if (max_age_sec > 0) {
-      std::string* maybe_report_to = value->FindStringKey(kReportToKey);
+      std::string* maybe_report_to = dict->FindString(kReportToKey);
       if (!maybe_report_to)
         return false;
       report_to = *maybe_report_to;
@@ -616,19 +612,19 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     // include_subdomains is optional and defaults to false, so it's okay if
     // GetBoolean fails.
     bool include_subdomains =
-        value->FindBoolKey(kIncludeSubdomainsKey).value_or(false);
+        dict->FindBool(kIncludeSubdomainsKey).value_or(false);
 
     // TODO(chlily): According to the spec we should restrict these sampling
     // fractions to [0.0, 1.0].
     // success_fraction is optional and defaults to 0.0, so it's okay if
     // GetDouble fails.
     double success_fraction =
-        value->FindDoubleKey(kSuccessFractionKey).value_or(0.0);
+        dict->FindDouble(kSuccessFractionKey).value_or(0.0);
 
     // failure_fraction is optional and defaults to 1.0, so it's okay if
     // GetDouble fails.
     double failure_fraction =
-        value->FindDoubleKey(kFailureFractionKey).value_or(1.0);
+        dict->FindDouble(kFailureFractionKey).value_or(1.0);
 
     policy_out->report_to = report_to;
     policy_out->include_subdomains = include_subdomains;
@@ -775,52 +771,53 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     RemovePolicy(stalest_it);
   }
 
-  std::unique_ptr<const base::Value> CreateReportBody(
-      const std::string& phase,
-      const std::string& type,
-      double sampling_fraction,
-      const RequestDetails& details) const {
-    auto body = std::make_unique<base::DictionaryValue>();
+  static base::Value::Dict CreateReportBody(const std::string& phase,
+                                            const std::string& type,
+                                            double sampling_fraction,
+                                            const RequestDetails& details) {
+    base::Value::Dict body;
 
-    body->SetString(kReferrerKey, details.referrer.spec());
-    body->SetDouble(kSamplingFractionKey, sampling_fraction);
-    body->SetString(kServerIpKey, details.server_ip.ToString());
-    body->SetString(kProtocolKey, details.protocol);
-    body->SetString(kMethodKey, details.method);
-    body->SetInteger(kStatusCodeKey, details.status_code);
-    body->SetInteger(kElapsedTimeKey, details.elapsed_time.InMilliseconds());
-    body->SetString(kPhaseKey, phase);
-    body->SetString(kTypeKey, type);
+    body.Set(kReferrerKey, details.referrer.spec());
+    body.Set(kSamplingFractionKey, sampling_fraction);
+    body.Set(kServerIpKey, details.server_ip.ToString());
+    body.Set(kProtocolKey, details.protocol);
+    body.Set(kMethodKey, details.method);
+    body.Set(kStatusCodeKey, details.status_code);
+    body.Set(kElapsedTimeKey,
+             static_cast<int>(details.elapsed_time.InMilliseconds()));
+    body.Set(kPhaseKey, phase);
+    body.Set(kTypeKey, type);
 
-    return std::move(body);
+    return body;
   }
 
-  std::unique_ptr<const base::Value> CreateSignedExchangeReportBody(
+  static base::Value::Dict CreateSignedExchangeReportBody(
       const SignedExchangeReportDetails& details,
-      double sampling_fraction) const {
-    auto body = std::make_unique<base::DictionaryValue>();
-    body->SetString(kPhaseKey, kSignedExchangePhaseValue);
-    body->SetString(kTypeKey, details.type);
-    body->SetDouble(kSamplingFractionKey, sampling_fraction);
-    body->SetString(kReferrerKey, details.referrer);
-    body->SetString(kServerIpKey, details.server_ip_address.ToString());
-    body->SetString(kProtocolKey, details.protocol);
-    body->SetString(kMethodKey, details.method);
-    body->SetInteger(kStatusCodeKey, details.status_code);
-    body->SetInteger(kElapsedTimeKey, details.elapsed_time.InMilliseconds());
+      double sampling_fraction) {
+    base::Value::Dict body;
+    body.Set(kPhaseKey, kSignedExchangePhaseValue);
+    body.Set(kTypeKey, details.type);
+    body.Set(kSamplingFractionKey, sampling_fraction);
+    body.Set(kReferrerKey, details.referrer);
+    body.Set(kServerIpKey, details.server_ip_address.ToString());
+    body.Set(kProtocolKey, details.protocol);
+    body.Set(kMethodKey, details.method);
+    body.Set(kStatusCodeKey, details.status_code);
+    body.Set(kElapsedTimeKey,
+             static_cast<int>(details.elapsed_time.InMilliseconds()));
 
-    auto* sxg_body = body->SetKey(kSignedExchangeBodyKey,
-                                  base::Value(base::Value::Type::DICTIONARY));
-    sxg_body->SetKey(kOuterUrlKey, base::Value(details.outer_url.spec()));
+    base::Value::Dict sxg_body;
+    sxg_body.Set(kOuterUrlKey, details.outer_url.spec());
     if (details.inner_url.is_valid())
-      sxg_body->SetKey(kInnerUrlKey, base::Value(details.inner_url.spec()));
+      sxg_body.Set(kInnerUrlKey, details.inner_url.spec());
 
-    base::Value cert_url_list = base::Value(base::Value::Type::LIST);
+    base::Value::List cert_url_list;
     if (details.cert_url.is_valid())
-      cert_url_list.Append(base::Value(details.cert_url.spec()));
-    sxg_body->SetKey(kCertUrlKey, std::move(cert_url_list));
+      cert_url_list.Append(details.cert_url.spec());
+    sxg_body.Set(kCertUrlKey, std::move(cert_url_list));
+    body.Set(kSignedExchangeBodyKey, std::move(sxg_body));
 
-    return std::move(body);
+    return body;
   }
 
   bool IsMismatchingSubdomainReport(const NelPolicy& policy,

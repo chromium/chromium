@@ -53,17 +53,18 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
     policy.endpoint_backoff_policy.entry_lifetime_ms = 0;
     policy.endpoint_backoff_policy.always_use_initial_delay = false;
     UsePolicy(policy);
-    report_body_.GetDict().Set("key", "value");
   }
 
   void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
                  const NetworkIsolationKey& network_isolation_key,
                  const GURL& url,
                  const std::string& group) {
-    cache()->AddReport(
-        reporting_source, network_isolation_key, url, kUserAgent_, group,
-        kType_, std::make_unique<base::Value>(report_body_.Clone()),
-        0 /* depth */, tick_clock()->NowTicks() /* queued */, 0 /* attempts */);
+    base::Value::Dict report_body;
+    report_body.Set("key", "value");
+    cache()->AddReport(reporting_source, network_isolation_key, url,
+                       kUserAgent_, group, kType_, std::move(report_body),
+                       0 /* depth */, tick_clock()->NowTicks() /* queued */,
+                       0 /* attempts */);
   }
 
   // The first report added to the cache is uploaded immediately, and a timer is
@@ -108,7 +109,6 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
 
   base::test::ScopedFeatureList feature_list_;
 
-  base::Value report_body_{base::Value::Type::DICT};
   const GURL kUrl_ = GURL("https://origin/path");
   const GURL kOtherUrl_ = GURL("https://other-origin/path");
   const GURL kSubdomainUrl_ = GURL("https://sub.origin/path");

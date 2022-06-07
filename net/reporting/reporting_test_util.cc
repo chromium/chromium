@@ -339,10 +339,11 @@ void TestReportingService::QueueReport(
     const std::string& user_agent,
     const std::string& group,
     const std::string& type,
-    std::unique_ptr<const base::Value> body,
+    base::Value::Dict body,
     int depth) {
-  reports_.emplace_back(Report(url, network_isolation_key, user_agent, group,
-                               type, std::move(body), depth));
+  reports_.emplace_back(
+      Report(url, network_isolation_key, user_agent, group, type,
+             std::make_unique<base::Value>(std::move(body)), depth));
 }
 
 void TestReportingService::ProcessReportToHeader(

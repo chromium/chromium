@@ -61,8 +61,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       body.Set("lineNumber", line_number);
     if (column_number)
       body.Set("columnNumber", column_number);
-    QueueReport(url, "default", "intervention",
-                std::make_unique<base::Value>(std::move(body)));
+    QueueReport(url, "default", "intervention", std::move(body));
   }
 
   void QueueDeprecationReport(const GURL& url,
@@ -85,8 +84,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       body.Set("lineNumber", line_number);
     if (column_number)
       body.Set("columnNumber", column_number);
-    QueueReport(url, "default", "deprecation",
-                std::make_unique<base::Value>(std::move(body)));
+    QueueReport(url, "default", "deprecation", std::move(body));
   }
 
   void QueueCspViolationReport(const GURL& url,
@@ -120,8 +118,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       body.Set("lineNumber", line_number);
     if (column_number)
       body.Set("columnNumber", column_number);
-    QueueReport(url, group, "csp-violation",
-                std::make_unique<base::Value>(std::move(body)));
+    QueueReport(url, group, "csp-violation", std::move(body));
   }
 
   void QueuePermissionsPolicyViolationReport(
@@ -144,7 +141,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
     if (column_number)
       body.Set("columnNumber", column_number);
     QueueReport(url, "default", "permissions-policy-violation",
-                std::make_unique<base::Value>(std::move(body)));
+                std::move(body));
   }
 
   void QueueDocumentPolicyViolationReport(
@@ -167,8 +164,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       body.Set("lineNumber", line_number);
     if (column_number)
       body.Set("columnNumber", column_number);
-    QueueReport(url, group, "document-policy-violation",
-                std::make_unique<base::Value>(std::move(body)));
+    QueueReport(url, group, "document-policy-violation", std::move(body));
   }
 
   int render_process_id() const { return render_process_id_; }
@@ -177,14 +173,13 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
   void QueueReport(const GURL& url,
                    const std::string& group,
                    const std::string& type,
-                   std::unique_ptr<base::Value> body) {
+                   base::Value::Dict body) {
     auto* rph = RenderProcessHost::FromID(render_process_id_);
     if (!rph)
       return;
     rph->GetStoragePartition()->GetNetworkContext()->QueueReport(
         type, group, url, reporting_source_, network_isolation_key_,
-        /*user_agent=*/absl::nullopt,
-        base::Value::FromUniquePtrValue(std::move(body)));
+        /*user_agent=*/absl::nullopt, std::move(body));
   }
 
   const int render_process_id_;

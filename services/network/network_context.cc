@@ -1113,16 +1113,12 @@ void NetworkContext::QueueReport(
     const absl::optional<base::UnguessableToken>& reporting_source,
     const net::NetworkIsolationKey& network_isolation_key,
     const absl::optional<std::string>& user_agent,
-    base::Value body) {
+    base::Value::Dict body) {
 #if BUILDFLAG(ENABLE_REPORTING)
   // If |reporting_source| is provided, it must not be empty.
   DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
   if (require_network_isolation_key_)
     DCHECK(!network_isolation_key.IsEmpty());
-
-  DCHECK(body.is_dict());
-  if (!body.is_dict())
-    return;
 
   // Get the ReportingService.
   net::URLRequestContext* request_context = url_request_context();
@@ -1140,9 +1136,9 @@ void NetworkContext::QueueReport(
         request_context->http_user_agent_settings()->GetUserAgent();
   }
 
-  reporting_service->QueueReport(
-      url, reporting_source, network_isolation_key, reported_user_agent, group,
-      type, base::Value::ToUniquePtrValue(std::move(body)), 0 /* depth */);
+  reporting_service->QueueReport(url, reporting_source, network_isolation_key,
+                                 reported_user_agent, group, type,
+                                 std::move(body), 0 /* depth */);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 }
 

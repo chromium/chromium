@@ -11653,9 +11653,9 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   }
 
   // Construct the crash report.
-  auto body = base::DictionaryValue();
+  base::Value::Dict body;
   if (!reason.empty())
-    body.SetString("reason", reason);
+    body.Set("reason", reason);
 
   // Send the crash report to the Reporting API.
   GetProcess()->GetStoragePartition()->GetNetworkContext()->QueueReport(

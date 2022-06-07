@@ -2270,7 +2270,7 @@ TEST_F(NetworkContextTest, ClearReportingCacheReports) {
   GURL domain("http://google.com");
   network_context->url_request_context()->reporting_service()->QueueReport(
       domain, absl::nullopt, net::NetworkIsolationKey(), "Mozilla/1.0", "group",
-      "type", nullptr, 0);
+      "type", base::Value::Dict(), 0);
 
   std::vector<const net::ReportingReport*> reports;
   reporting_cache->GetReports(&reports);
@@ -2299,11 +2299,11 @@ TEST_F(NetworkContextTest, ClearReportingCacheReportsWithFilter) {
   GURL url1("http://google.com");
   reporting_service->QueueReport(url1, absl::nullopt,
                                  net::NetworkIsolationKey(), "Mozilla/1.0",
-                                 "group", "type", nullptr, 0);
+                                 "group", "type", base::Value::Dict(), 0);
   GURL url2("http://chromium.org");
   reporting_service->QueueReport(url2, absl::nullopt,
                                  net::NetworkIsolationKey(), "Mozilla/1.0",
-                                 "group", "type", nullptr, 0);
+                                 "group", "type", base::Value::Dict(), 0);
 
   std::vector<const net::ReportingReport*> reports;
   reporting_cache->GetReports(&reports);
@@ -2338,11 +2338,11 @@ TEST_F(NetworkContextTest,
   GURL url1("http://192.168.0.1");
   reporting_service->QueueReport(url1, absl::nullopt,
                                  net::NetworkIsolationKey(), "Mozilla/1.0",
-                                 "group", "type", nullptr, 0);
+                                 "group", "type", base::Value::Dict(), 0);
   GURL url2("http://192.168.0.2");
   reporting_service->QueueReport(url2, absl::nullopt,
                                  net::NetworkIsolationKey(), "Mozilla/1.0",
-                                 "group", "type", nullptr, 0);
+                                 "group", "type", base::Value::Dict(), 0);
 
   std::vector<const net::ReportingReport*> reports;
   reporting_cache->GetReports(&reports);

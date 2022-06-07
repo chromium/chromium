@@ -112,11 +112,11 @@ void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
         kType, context_url_, blink::mojom::ReportBody::New(std::move(list))));
   }
   if (endpoint) {
-    base::DictionaryValue body_to_pass;
+    base::Value::Dict body_to_pass;
     for (const auto& pair : body) {
-      body_to_pass.SetString(pair.first, pair.second);
+      body_to_pass.Set(pair.first, pair.second);
     }
-    body_to_pass.SetString("disposition", disposition);
+    body_to_pass.Set("disposition", disposition);
 
     if (auto* storage_partition = storage_partition_.get()) {
       storage_partition->GetNetworkContext()->QueueReport(

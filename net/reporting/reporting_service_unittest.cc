@@ -112,9 +112,8 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
 };
 
 TEST_P(ReportingServiceTest, QueueReport) {
-  service()->QueueReport(
-      kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_, kType_,
-      std::make_unique<base::Value>(base::Value::Type::DICT), 0);
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, base::Value::Dict(), 0);
   FinishLoading(true /* load_success */);
 
   std::vector<const ReportingReport*> reports;
@@ -130,9 +129,8 @@ TEST_P(ReportingServiceTest, QueueReport) {
 TEST_P(ReportingServiceTest, QueueReportSanitizeUrl) {
   // Same as kUrl_ but with username, password, and fragment.
   GURL url = GURL("https://username:password@origin/path#fragment");
-  service()->QueueReport(
-      url, kReportingSource_, kNik_, kUserAgent_, kGroup_, kType_,
-      std::make_unique<base::Value>(base::Value::Type::DICT), 0);
+  service()->QueueReport(url, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, base::Value::Dict(), 0);
   FinishLoading(true /* load_success */);
 
   std::vector<const ReportingReport*> reports;
@@ -149,9 +147,8 @@ TEST_P(ReportingServiceTest, DontQueueReportInvalidUrl) {
   GURL url = GURL("https://");
   // This does not trigger an attempt to load from the store because the url
   // is immediately rejected as invalid.
-  service()->QueueReport(
-      url, kReportingSource_, kNik_, kUserAgent_, kGroup_, kType_,
-      std::make_unique<base::Value>(base::Value::Type::DICT), 0);
+  service()->QueueReport(url, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, base::Value::Dict(), 0);
 
   std::vector<const ReportingReport*> reports;
   context()->cache()->GetReports(&reports);
@@ -166,9 +163,8 @@ TEST_P(ReportingServiceTest, QueueReportNetworkIsolationKeyDisabled) {
   // Re-create the store, so it reads the new feature value.
   Init();
 
-  service()->QueueReport(
-      kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_, kType_,
-      std::make_unique<base::Value>(base::Value::Type::DICT), 0);
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, base::Value::Dict(), 0);
   FinishLoading(true /* load_success */);
 
   std::vector<const ReportingReport*> reports;
@@ -260,9 +256,8 @@ TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {
   service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
                                            kIsolationInfo_, *parsed_header);
   // This report should be sent immediately, starting the delivery agent timer.
-  service()->QueueReport(
-      kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_, kType_,
-      std::make_unique<base::Value>(base::Value::Type::DICT), 0);
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, base::Value::Dict(), 0);
 
   FinishLoading(true /* load_success */);
 
@@ -296,9 +291,8 @@ TEST_P(ReportingServiceTest, SendReportsAndRemoveSourceWithPendingReports) {
   service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
                                            kIsolationInfo_, *parsed_header);
   // This report should be sent immediately, starting the delivery agent timer.
-  service()->QueueReport(
-      kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_, kType_,
-      std::make_unique<base::Value>(base::Value::Type::DICT), 0);
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, base::Value::Dict(), 0);
 
   FinishLoading(true /* load_success */);
 
@@ -311,9 +305,8 @@ TEST_P(ReportingServiceTest, SendReportsAndRemoveSourceWithPendingReports) {
                     ReportingReport::Status::PENDING));
 
   // Queue another report, which should remain queued.
-  service()->QueueReport(
-      kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_, kType_,
-      std::make_unique<base::Value>(base::Value::Type::DICT), 0);
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, base::Value::Dict(), 0);
   EXPECT_EQ(1u, context()->cache()->GetReportCountWithStatusForTesting(
                     ReportingReport::Status::QUEUED));
   EXPECT_EQ(1u, context()->cache()->GetReportCountWithStatusForTesting(
@@ -467,9 +460,8 @@ TEST_P(ReportingServiceTest, WriteToStore) {
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 
-  service()->QueueReport(
-      kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_, kType_,
-      std::make_unique<base::Value>(base::Value::Type::DICT), 0);
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, base::Value::Dict(), 0);
   expected_commands.emplace_back(
       CommandType::UPDATE_REPORTING_ENDPOINT_GROUP_ACCESS_TIME, kGroupKey_);
   EXPECT_THAT(store()->GetAllCommands(),
@@ -529,9 +521,8 @@ TEST_P(ReportingServiceTest, WaitUntilLoadFinishesBeforeWritingToStore) {
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 
-  service()->QueueReport(
-      kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_, kType_,
-      std::make_unique<base::Value>(base::Value::Type::DICT), 0);
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, base::Value::Dict(), 0);
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 

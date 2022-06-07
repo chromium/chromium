@@ -993,7 +993,7 @@ class MockReportingService : public net::ReportingService {
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      std::unique_ptr<const base::Value> body,
+      base::Value::Dict body,
       int depth) override {
     NOTREACHED();
   }

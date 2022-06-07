@@ -77,7 +77,7 @@ class NET_EXPORT ReportingService {
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      std::unique_ptr<const base::Value> body,
+      base::Value::Dict body,
       int depth) = 0;
 
   // Processes a Report-To header. |origin| is the Origin of the URL that the

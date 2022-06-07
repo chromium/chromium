@@ -128,7 +128,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       const absl::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkIsolationKey& network_isolation_key,
       const absl::optional<std::string>& user_agent,
-      base::Value body) override {}
+      base::Value::Dict body) override {}
   void QueueSignedExchangeReport(
       mojom::SignedExchangeReportPtr report,
       const net::NetworkIsolationKey& network_isolation_key) override {}
