@@ -594,6 +594,18 @@
       },
     },
   },
+  'ios_runtime_cache_16_0': {
+    '$mixin_append': {
+      'swarming': {
+        'named_caches': [
+          {
+            'name': 'runtime_ios_16_0',
+            'path': 'Runtime-ios-16.0',
+          },
+        ],
+      },
+    },
+  },
   'isolate_profile_data': {
     'isolate_profile_data': True,
   },
@@ -1347,6 +1359,23 @@
       'named_caches': [
         {
           'name': 'xcode_ios_13c100',
+          'path': 'Xcode.app',
+        },
+      ],
+    },
+  },
+  # Default Xcode 14 beta 1.
+  'xcode_14_beta': {
+    '$mixin_append': {
+      'args': [
+        '--xcode-build-version',
+        '14a5228q'
+      ],
+    },
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'xcode_ios_14a5228q',
           'path': 'Xcode.app',
         },
       ],
