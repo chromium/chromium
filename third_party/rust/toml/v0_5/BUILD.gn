@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("test_support") {
+  crate_name = "toml"
+  epoch = "0.5"
+  crate_type = "rlib"
+  testonly = "true"
+  crate_root = "crate/src/lib.rs"
+  build_native_rust_unit_tests = false
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2018"
+  cargo_pkg_version = "0.5.9"
+  cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>"
+  cargo_pkg_name = "toml"
+  cargo_pkg_description = "A native Rust encoder and decoder of TOML-formatted files and streams. Providesimplementations of the standard Serialize/Deserialize traits for TOML data tofacilitate deserializing and serializing Rust structures."
+  deps = [ "//third_party/rust/serde/v1:lib" ]
+}

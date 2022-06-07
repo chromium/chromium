@@ -75,3 +75,6 @@ build-script-outputs = [ "tables.rs" ]
 rstest = "0.12"
 small_ctor = "0.1"
 syn = {version = "1", features = ["full"]}
+
+# Used in Rust tool for BUILD.gn generation.
+toml = "0.5"
