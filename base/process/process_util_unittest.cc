@@ -1432,7 +1432,8 @@ MULTIPROCESS_TEST_MAIN(CheckPidProcess) {
 }
 
 #if defined(CLONE_NEWUSER) && defined(CLONE_NEWPID)
-TEST_F(ProcessUtilTest, CloneFlags) {
+// TODO(crbug.com/1334073) Enable the test once the bug is fixed.
+TEST_F(ProcessUtilTest, DISABLED_CloneFlags) {
   if (!PathExists(FilePath("/proc/self/ns/user")) ||
       !PathExists(FilePath("/proc/self/ns/pid"))) {
     // User or PID namespaces are not supported.
