@@ -562,7 +562,7 @@ tab_strip::mojom::TabGroupVisualDataPtr TabStripPageHandler::GetTabGroupData(
   // (https://crbug.com/1060398).
   const int group_color_id =
       GetThumbnailTabStripTabGroupColorId(visual_data->color(), true);
-  const SkColor group_color = embedder_->GetColor(group_color_id);
+  const SkColor group_color = embedder_->GetColorProviderColor(group_color_id);
   tab_group->color = color_utils::SkColorToRgbString(group_color);
   // TODO(tluk): Incorporate the text color into the ColorProvider.
   tab_group->text_color = color_utils::SkColorToRgbString(
