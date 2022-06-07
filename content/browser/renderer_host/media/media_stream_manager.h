@@ -161,7 +161,7 @@ class CONTENT_EXPORT MediaStreamManager
   // Used to access AudioInputDeviceManager.
   AudioInputDeviceManager* audio_input_device_manager() const;
 
-  // Used to access AudioServiceListener, must be called on IO thread.
+  // Used to access AudioServiceListener, must be called on UI thread.
   AudioServiceListener* audio_service_listener();
 
   // Used to access MediaDevicesManager.
