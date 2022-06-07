@@ -131,7 +131,13 @@
           "r_webrtc_git": "${webrtc_got_rev}"
         },
         "swarming": {
-          "can_use_on_swarming_builders": false
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -343,7 +349,14 @@
           "r_webrtc_git": "${webrtc_got_rev}"
         },
         "swarming": {
-          "can_use_on_swarming_builders": false
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -562,7 +575,8 @@
           "r_webrtc_git": "${webrtc_got_rev}"
         },
         "swarming": {
-          "can_use_on_swarming_builders": false
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"

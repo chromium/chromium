@@ -5215,9 +5215,6 @@
           'a_default_rev': 'r_webrtc_git',
           'r_webrtc_git': '${webrtc_got_rev}'
         },
-        'swarming': {
-          'can_use_on_swarming_builders': False,
-        },
       },
       # Run capture unittests as well since our bots have real webcams.
       'capture_unittests': {
