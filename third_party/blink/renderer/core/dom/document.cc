@@ -2663,7 +2663,7 @@ void Document::EnsurePaintLocationDataValidForNode(
   if (!node->InActiveDocument())
     return;
 
-  GetDisplayLockDocumentState().UnlockShapingDeferredElements();
+  GetDisplayLockDocumentState().UnlockShapingDeferredElements(*node);
 
   DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
       node, DisplayLockContext::ForcedPhase::kLayout);

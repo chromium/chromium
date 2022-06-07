@@ -5440,7 +5440,7 @@ bool Element::IsAutofocusable() const {
 
 bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
   auto& state = GetDocument().GetDisplayLockDocumentState();
-  state.UnlockShapingDeferredElements();
+  state.UnlockShapingDeferredElements(*this);
   if (state.LockedDisplayLockCount() ==
       state.DisplayLockBlockingAllActivationCount())
     return false;

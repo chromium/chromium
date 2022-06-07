@@ -420,6 +420,8 @@ void DisplayLockDocumentState::UnlockShapingDeferredElements(
     return;
   // Need to update layout tree because we access the tree and style.
   target.GetDocument().UpdateStyleAndLayoutTreeForNode(&target);
+  if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+    return;
   LayoutObject* target_object = target.GetLayoutObject();
   if (!target_object)
     return;
@@ -493,12 +495,18 @@ void DisplayLockDocumentState::UnlockShapingDeferredElements(
         UnlockToDetermineWidth(*target_object->ContainingBlock());
       return;
 
-    default:
-      // No optimization.  Unlock everything.
-      for (auto& context : display_lock_contexts_) {
-        if (context->HasElement() && context->IsShapingDeferred())
-          context->SetRequestedState(EContentVisibility::kVisible);
-      }
+    default: {
+      LayoutObject* object = target_object;
+      while (!object->ContainingBlock()->IsLayoutView())
+        object = object->ContainingBlock();
+      const ComputedStyle& style = object->StyleRef();
+      if (object->IsOutOfFlowPositioned() &&
+          (!style.Left().IsAuto() || !style.Right().IsAuto()) &&
+          (!style.Top().IsAuto() || !style.Bottom().IsAuto()))
+        UnlockShapingDeferredInclusiveDescendants(*object);
+      else
+        UnlockShapingDeferredElements();
+    }
   }
 }
 

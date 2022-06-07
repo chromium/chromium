@@ -174,8 +174,11 @@ class CORE_EXPORT DisplayLockDocumentState final
   void UnlockShapingDeferredElements();
   // Unlock shaping-deferred elements so that |target| can return the precise
   // value of |property_id|.
-  void UnlockShapingDeferredElements(const Node& target,
-                                     CSSPropertyID property_id);
+  // If |property_id| is kInvalid, this function unlocks elements necessary for
+  // any geometry of the target node.
+  void UnlockShapingDeferredElements(
+      const Node& target,
+      CSSPropertyID property_id = CSSPropertyID::kInvalid);
   // Unlock shaping-deferred elements so that |object| can return the precise
   // width.
   void UnlockToDetermineWidth(const LayoutObject& object);

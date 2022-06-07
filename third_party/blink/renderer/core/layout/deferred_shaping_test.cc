@@ -486,7 +486,9 @@ TEST_F(DeferredShapingTest, ElementGeometryMinimumUnlock) {
 <p id="ancestor">IFC
 <span id="inline_target">inline</span>
 </p>
-<div id="block_target"><p id="inner">IFC</p></div>)HTML");
+<div id="block_target"><p id="inner">IFC</p></div>
+<div id="abs_block" style="position:absolute; right:10px; bottom:42px"></div>
+)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("previous"));
   EXPECT_TRUE(IsLocked("previous"));
@@ -506,6 +508,12 @@ TEST_F(DeferredShapingTest, ElementGeometryMinimumUnlock) {
   EXPECT_TRUE(IsLocked("previous"));
   EXPECT_FALSE(IsDefer("inner"));
   EXPECT_FALSE(IsLocked("inner"));
+
+  To<HTMLElement>(GetElementById("abs_block"))->getBoundingClientRect();
+  EXPECT_TRUE(IsDefer("previous"));
+  EXPECT_TRUE(IsLocked("previous"));
+  EXPECT_FALSE(IsDefer("abs_block"));
+  EXPECT_FALSE(IsLocked("abs_block"));
 }
 
 TEST_F(DeferredShapingTest, RangeGetClientRects) {
