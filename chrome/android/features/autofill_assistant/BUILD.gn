@@ -161,5 +161,8 @@ android_library("test_java") {
     "//url:gurl_java",
   ]
 
+  # Add tests from "guided_browsing" sub-component.
+  deps += [ "guided_browsing:test_java" ]
+
   data = [ "//components/test/data/autofill_assistant/" ]
 }
