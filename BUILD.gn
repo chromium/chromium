@@ -691,11 +691,14 @@ group("gn_all") {
     deps += [ "//chromecast:cast_test_lists" ]
 
     if (!is_fuchsia) {
-      deps += [ "//chromecast:cast_shell" ]
-      deps += [ "//chromecast/cast_core:core_runtime_simple" ]
-    }
-    if (enable_extensions && use_aura) {
-      deps += [ "//chrome/browser/resources/chromeos/accessibility:build" ]
+      deps += [
+        "//chromecast:cast_shell",
+        "//chromecast/cast_core:core_runtime_simple",
+      ]
+
+      if (enable_extensions && use_aura) {
+        deps += [ "//chrome/browser/resources/chromeos/accessibility:build" ]
+      }
     }
   }
 
