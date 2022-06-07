@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_BOOKMARKS_BOOKMARK_BRIDGE_H_
-#define CHROME_BROWSER_ANDROID_BOOKMARKS_BOOKMARK_BRIDGE_H_
+#ifndef CHROME_BROWSER_BOOKMARKS_ANDROID_BOOKMARK_BRIDGE_H_
+#define CHROME_BROWSER_BOOKMARKS_ANDROID_BOOKMARK_BRIDGE_H_
 
 #include <memory>
 #include <set>
@@ -31,7 +31,7 @@ namespace bookmarks {
 class BookmarkModel;
 class ManagedBookmarkService;
 class ScopedGroupBookmarkActions;
-}
+}  // namespace bookmarks
 
 class OptimizationGuideKeyedService;
 class Profile;
@@ -238,9 +238,8 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& j_bookmark_id_obj);
 
-  void RemoveAllUserBookmarks(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void RemoveAllUserBookmarks(JNIEnv* env,
+                              const base::android::JavaParamRef<jobject>& obj);
 
   void MoveBookmark(
       JNIEnv* env,
@@ -406,4 +405,4 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   base::WeakPtrFactory<BookmarkBridge> weak_ptr_factory_;
 };
 
-#endif  // CHROME_BROWSER_ANDROID_BOOKMARKS_BOOKMARK_BRIDGE_H_
+#endif  // CHROME_BROWSER_BOOKMARKS_ANDROID_BOOKMARK_BRIDGE_H_
