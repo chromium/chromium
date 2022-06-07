@@ -548,10 +548,7 @@ class CONTENT_EXPORT RenderThreadImpl
   std::unique_ptr<VariationsRenderThreadObserver> variations_observer_;
 
   // Compositor settings.
-  int gpu_rasterization_msaa_sample_count_;
   bool is_lcd_text_enabled_;
-  bool is_zero_copy_enabled_;
-  bool is_gpu_memory_buffer_compositor_resources_enabled_;
   bool is_partial_raster_enabled_;
   bool is_elastic_overscroll_enabled_;
   bool is_threaded_animation_enabled_;
