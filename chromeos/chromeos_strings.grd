@@ -3333,7 +3333,7 @@ Try tapping the mic to ask me anything.
 
       <!-- Feedback Tool-->
       <!-- Search Page -->
-      <message name="IDS_FEEDBACK_TOOL_CONTINUE_BUTTON_LABEL" translateable="false" desc="Label of the continue button.">
+      <message name="IDS_FEEDBACK_TOOL_CONTINUE_BUTTON_LABEL" desc="Label of the continue button.">
         Continue
       </message>
       <message name="IDS_FEEDBACK_TOOL_DESCRIPTION_LABEL" translateable="false" desc="Label of the text box where users can describe a problem they are having">
