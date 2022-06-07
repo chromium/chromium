@@ -1632,7 +1632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.VirtualMemoryCageSizeGB" units="GB"
-    expires_after="2022-09-30">
+    expires_after="2022-12-04">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>

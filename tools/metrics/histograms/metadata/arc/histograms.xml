@@ -271,7 +271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.App.LowMemoryKills.Pressure.CachedCount10Minutes"
-    units="Apps" expires_after="2022-10-04">
+    units="Apps" expires_after="2022-12-04">
   <owner>cwd@google.com</owner>
   <owner>cros-platform-kernel-core@google.com</owner>
   <summary>
@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.App.LowMemoryKills.Pressure.PerceptibleCount10Minutes"
-    units="Apps" expires_after="2022-10-04">
+    units="Apps" expires_after="2022-12-04">
   <owner>cwd@google.com</owner>
   <owner>cros-platform-kernel-core@google.com</owner>
   <summary>
