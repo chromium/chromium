@@ -259,9 +259,7 @@ public class TabListCoordinator
         }
 
         if (mMode == TabListMode.GRID && selectionDelegateProvider == null) {
-            // TODO(crbug.com/964406): unregister the listener when we don't need it.
             mGlobalLayoutListener = this::updateThumbnailAndSpanCount;
-            mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
         }
     }
 
@@ -393,11 +391,17 @@ public class TabListCoordinator
     }
 
     void prepareTabSwitcherView() {
+        if (mGlobalLayoutListener != null) {
+            mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
+        }
         mRecyclerView.prepareTabSwitcherView();
         mMediator.prepareTabSwitcherView();
     }
 
     void postHiding() {
+        if (mGlobalLayoutListener != null) {
+            mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(mGlobalLayoutListener);
+        }
         mRecyclerView.postHiding();
         mMediator.postHiding();
     }
