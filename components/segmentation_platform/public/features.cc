@@ -4,6 +4,8 @@
 
 #include "components/segmentation_platform/public/features.h"
 
+#include "build/build_config.h"
+
 namespace segmentation_platform::features {
 
 const base::Feature kSegmentationPlatformFeature{
@@ -23,8 +25,14 @@ const base::Feature kSegmentationPlatformLowEngagementFeature{
     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSegmentationPlatformFeedSegmentFeature{
-    "SegmentationPlatformFeedSegmentFeature",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+  "SegmentationPlatformFeedSegmentFeature",
+#if BUILDFLAG(IS_ANDROID)
+      base::FEATURE_ENABLED_BY_DEFAULT
+};
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+};
+#endif
 
 const base::Feature kContextualPageActionsWithPriceTracking{
     "ContextualPageActionsWithPriceTracking",

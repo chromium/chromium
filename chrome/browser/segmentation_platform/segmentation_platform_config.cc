@@ -231,7 +231,7 @@ std::unique_ptr<Config> GetConfigForFeedSegments() {
 std::unique_ptr<ModelProvider> GetFeedUserSegmentDefautlModel() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
           features::kSegmentationPlatformFeedSegmentFeature,
-          kDefaultModelEnabledParam, false)) {
+          kDefaultModelEnabledParam, true)) {
     return nullptr;
   }
   return std::make_unique<FeedUserSegment>();
