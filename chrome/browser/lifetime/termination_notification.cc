@@ -38,6 +38,7 @@ base::CallbackListSubscription AddAppTerminatingCallback(
       std::move(app_terminating_callback));
 }
 void NotifyAppTerminating() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   static bool notified = false;
   if (notified)
     return;
@@ -52,6 +53,7 @@ void NotifyAppTerminating() {
 }
 
 void NotifyAndTerminate(bool fast_path) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static bool notified = false;
   // Return if a shutdown request has already been sent.
