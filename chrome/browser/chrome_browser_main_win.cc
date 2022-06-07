@@ -49,6 +49,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/critical_policy_section_metrics_win.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -95,6 +96,7 @@
 #include "components/crash/core/app/dump_hung_process_with_ptype.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/os_crypt/os_crypt.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
@@ -538,7 +540,12 @@ int ChromeBrowserMainPartsWin::PreCreateThreads() {
   // be used to better identify whether crashes are from enterprise users.
   static crash_reporter::CrashKeyString<4> is_enterprise_managed(
       "is-enterprise-managed");
-  is_enterprise_managed.Set(base::IsManagedOrEnterpriseDevice() ? "yes" : "no");
+  is_enterprise_managed.Set(
+      policy::ManagementServiceFactory::GetForPlatform()
+                  ->GetManagementAuthorityTrustworthiness() >=
+              policy::ManagementAuthorityTrustworthiness::TRUSTED
+          ? "yes"
+          : "no");
 
   // Set crash keys containing the registry values used to determine Chrome's
   // update channel at process startup; see https://crbug.com/579504.
