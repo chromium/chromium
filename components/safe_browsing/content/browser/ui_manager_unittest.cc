@@ -235,7 +235,7 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
       const char* url,
       bool is_subresource) {
     const content::GlobalRenderFrameHostId primary_main_frame_id =
-        web_contents()->GetMainFrame()->GetGlobalId();
+        web_contents()->GetPrimaryMainFrame()->GetGlobalId();
     security_interstitials::UnsafeResource resource;
     resource.url = GURL(url);
     resource.is_subresource = is_subresource;

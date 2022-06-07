@@ -149,7 +149,7 @@ class PaymentRequestStateTestBase : public testing::Test,
         /*observer=*/nullptr, "en-US");
     PaymentAppServiceFactory::SetForTesting(std::move(app_service));
     state_ = std::make_unique<PaymentRequestState>(
-        web_contents_->GetMainFrame(), GURL("https://example.com"),
+        web_contents_->GetPrimaryMainFrame(), GURL("https://example.com"),
         GURL("https://example.com/pay"),
         url::Origin::Create(GURL("https://example.com")), spec_->AsWeakPtr(),
         weak_ptr_factory_.GetWeakPtr(), "en-US", &test_personal_data_manager_,

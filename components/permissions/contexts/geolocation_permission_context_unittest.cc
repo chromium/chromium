@@ -209,8 +209,8 @@ class GeolocationPermissionContextTests
 PermissionRequestID GeolocationPermissionContextTests::RequestID(
     int request_id) {
   return PermissionRequestID(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
       PermissionRequestID::RequestLocalId(request_id));
 }
 
@@ -218,8 +218,8 @@ PermissionRequestID GeolocationPermissionContextTests::RequestIDForTab(
     int tab,
     int request_id) {
   return PermissionRequestID(
-      extra_tabs_[tab]->GetMainFrame()->GetProcess()->GetID(),
-      extra_tabs_[tab]->GetMainFrame()->GetRoutingID(),
+      extra_tabs_[tab]->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      extra_tabs_[tab]->GetPrimaryMainFrame()->GetRoutingID(),
       PermissionRequestID::RequestLocalId(request_id));
 }
 
@@ -276,7 +276,7 @@ void GeolocationPermissionContextTests::CheckPermissionMessageSentForTab(
     bool allowed) {
   CheckPermissionMessageSentInternal(
       static_cast<MockRenderProcessHost*>(
-          extra_tabs_[tab]->GetMainFrame()->GetProcess()),
+          extra_tabs_[tab]->GetPrimaryMainFrame()->GetProcess()),
       request_id, allowed);
 }
 
@@ -305,7 +305,7 @@ void GeolocationPermissionContextTests::CheckTabContentsState(
     ContentSetting expected_content_setting) {
   auto* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
 
   expected_content_setting == CONTENT_SETTING_BLOCK
       ? content_settings->IsContentBlocked(ContentSettingsType::GEOLOCATION)

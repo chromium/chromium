@@ -266,7 +266,8 @@ void AccessibilityBridge::OnAccessibilityActionRequested(
     action_data.scroll_behavior = ax::mojom::ScrollBehavior::kScrollIfVisible;
   }
 
-  auto* frame = web_contents_->GetMainFrame()->FromAXTreeID(ax_id->first);
+  auto* frame =
+      web_contents_->GetPrimaryMainFrame()->FromAXTreeID(ax_id->first);
   if (!frame) {
     // Fuchsia targeted a tree that does not exist.
     callback(false);
@@ -280,7 +281,8 @@ void AccessibilityBridge::OnAccessibilityActionRequested(
     // Perform an action with a corresponding event to signal the action has
     // been pumped through.
     action_data.action = ax::mojom::Action::kSignalEndOfTest;
-    web_contents_->GetMainFrame()->AccessibilityPerformAction(action_data);
+    web_contents_->GetPrimaryMainFrame()->AccessibilityPerformAction(
+        action_data);
   }
 }
 
@@ -296,7 +298,7 @@ void AccessibilityBridge::HitTest(fuchsia::math::PointF local_point,
   action_data.hit_test_event_to_fire = ax::mojom::Event::kHitTestResult;
   pending_hit_test_callbacks_[action_data.request_id] = std::move(callback);
 
-  web_contents_->GetMainFrame()->AccessibilityPerformAction(action_data);
+  web_contents_->GetPrimaryMainFrame()->AccessibilityPerformAction(action_data);
 }
 
 void AccessibilityBridge::OnSemanticsModeChanged(
@@ -420,7 +422,8 @@ void AccessibilityBridge::OnAtomicUpdateFinished(
     MaybeDisconnectTreeFromParentTree(tree);
 
   const bool is_main_frame_tree =
-      tree->GetAXTreeID() == web_contents_->GetMainFrame()->GetAXTreeID();
+      tree->GetAXTreeID() ==
+      web_contents_->GetPrimaryMainFrame()->GetAXTreeID();
   if (is_main_frame_tree)
     root_id_ = tree->root()->id();
 
@@ -578,7 +581,8 @@ void AccessibilityBridge::UpdateFocus() {
 }
 
 bool AccessibilityBridge::ShouldHoldCommit() {
-  const auto& main_frame_tree_id = web_contents_->GetMainFrame()->GetAXTreeID();
+  const auto& main_frame_tree_id =
+      web_contents_->GetPrimaryMainFrame()->GetAXTreeID();
   auto main_tree_it = ax_trees_.find(main_frame_tree_id);
   if (main_tree_it == ax_trees_.end()) {
     // The main tree is not present yet, commit should be held.
@@ -681,7 +685,8 @@ void AccessibilityBridge::MaybeDisconnectTreeFromParentTree(ui::AXTree* tree) {
 
 absl::optional<AccessibilityBridge::AXNodeID>
 AccessibilityBridge::GetFocusedNodeId() const {
-  const auto& main_frame_tree_id = web_contents_->GetMainFrame()->GetAXTreeID();
+  const auto& main_frame_tree_id =
+      web_contents_->GetPrimaryMainFrame()->GetAXTreeID();
   const auto main_tree_it = ax_trees_.find(main_frame_tree_id);
   if (main_tree_it == ax_trees_.end())
     return absl::nullopt;
@@ -785,7 +790,8 @@ AccessibilityBridge::EnsureAndGetUpdatedNode(const ui::AXTreeID& tree_id,
   DCHECK(container);
 
   const bool is_main_frame_tree =
-      tree->GetAXTreeID() == web_contents_->GetMainFrame()->GetAXTreeID();
+      tree->GetAXTreeID() ==
+      web_contents_->GetPrimaryMainFrame()->GetAXTreeID();
   const bool is_root = is_main_frame_tree ? node_id == root_id_ : false;
   float device_scale_factor =
       ax_node->id() == tree->root()->id() ? GetDeviceScaleFactor() : 0.0f;

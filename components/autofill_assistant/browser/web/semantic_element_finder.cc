@@ -102,7 +102,7 @@ void SemanticElementFinder::Start(const ElementFinderResult& start_element,
 
   auto* start_frame = start_element.render_frame_host();
   if (!start_frame) {
-    start_frame = web_contents_->GetMainFrame();
+    start_frame = web_contents_->GetPrimaryMainFrame();
   }
   RunAnnotateDomModel(start_frame);
 }

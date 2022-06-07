@@ -156,7 +156,8 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
 
   if (disable_ui_) {
     return OnAccuracyTipClosed(
-        base::TimeTicks(), web_contents->GetMainFrame()->GetPageUkmSourceId(),
+        base::TimeTicks(),
+        web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
         AccuracyTipInteraction::kDisabledByExperiment);
   }
 
@@ -171,9 +172,10 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
   delegate_->ShowAccuracyTip(
       web_contents, AccuracyTipStatus::kShowAccuracyTip,
       /*show_opt_out=*/show_opt_out,
-      base::BindOnce(&AccuracyService::OnAccuracyTipClosed,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now(),
-                     web_contents->GetMainFrame()->GetPageUkmSourceId()));
+      base::BindOnce(
+          &AccuracyService::OnAccuracyTipClosed, weak_factory_.GetWeakPtr(),
+          base::TimeTicks::Now(),
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
   for (Observer& observer : observers_)
     observer.OnAccuracyTipShown();
 }

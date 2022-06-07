@@ -678,9 +678,11 @@ TEST_F(UmaPageLoadMetricsObserverTest, BytesAndResourcesCounted) {
 
 TEST_F(UmaPageLoadMetricsObserverTest, CpuUsageCounted) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
-  OnCpuTimingUpdate(web_contents()->GetMainFrame(), base::Milliseconds(750));
+  OnCpuTimingUpdate(web_contents()->GetPrimaryMainFrame(),
+                    base::Milliseconds(750));
   web_contents()->WasHidden();  // Set the web contents as backgrounded.
-  OnCpuTimingUpdate(web_contents()->GetMainFrame(), base::Milliseconds(250));
+  OnCpuTimingUpdate(web_contents()->GetPrimaryMainFrame(),
+                    base::Milliseconds(250));
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
   tester()->histogram_tester().ExpectUniqueSample(
@@ -784,7 +786,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -827,7 +829,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -864,7 +866,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -910,7 +912,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -955,7 +957,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -996,7 +998,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -1044,7 +1046,7 @@ TEST_F(
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -1399,7 +1401,7 @@ TEST_F(UmaPageLoadMetricsObserverTest, SingleSubFrame_MaxMemoryBytesRecorded) {
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL("https://google.com/subframe.html"),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Notify that memory measurements are available for each frame.
@@ -1430,12 +1432,12 @@ TEST_F(UmaPageLoadMetricsObserverTest, MultiSubFrames_MaxMemoryBytesRecorded) {
   RenderFrameHost* subframe1 =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL("https://google.com/subframe.html"),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe1"));
   RenderFrameHost* subframe2 =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL("https://google.com/subframe2.html"),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe2"));
   RenderFrameHost* subframe3 =
       NavigationSimulator::NavigateAndCommitFromDocument(
@@ -1502,7 +1504,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -1545,7 +1547,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -1599,12 +1601,12 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   RenderFrameHost* first_party_subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSameSiteSubFrameTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe1"));
   RenderFrameHost* cross_site_subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kCrossSiteSubFrameTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe2"));
 
   // Simulate timing updates in the main frame and the subframe.

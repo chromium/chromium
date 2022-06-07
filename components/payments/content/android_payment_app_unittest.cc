@@ -54,7 +54,7 @@ class AndroidPaymentAppTest : public testing::Test,
         GURL("https://top-level-origin.com"),
         GURL("https://payment-request-origin.com"), "payment-request-id",
         std::move(description), communication,
-        web_contents->GetMainFrame()->GetGlobalId());
+        web_contents->GetPrimaryMainFrame()->GetGlobalId());
   }
 
   AndroidPaymentAppTest()

@@ -465,7 +465,8 @@ absl::optional<std::string> WebsiteLoginManagerImpl::GeneratePassword(
   // TODO(crbug.com/1043132): Add support for non-main frames. If another
   // frame has a different origin than the main frame, passwords-related
   // features may not work.
-  auto* driver = factory->GetDriverForFrame(web_contents_->GetMainFrame());
+  auto* driver =
+      factory->GetDriverForFrame(web_contents_->GetPrimaryMainFrame());
   if (!driver) {
     return absl::nullopt;
   }

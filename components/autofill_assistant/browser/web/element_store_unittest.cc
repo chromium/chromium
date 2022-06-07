@@ -34,8 +34,9 @@ class ElementStoreTest : public testing::Test {
       const std::string& object_id) {
     auto element = std::make_unique<ElementFinderResult>();
     element->SetObjectId(object_id);
-    element->SetNodeFrameId(
-        web_contents_->GetMainFrame()->GetDevToolsFrameToken().ToString());
+    element->SetNodeFrameId(web_contents_->GetPrimaryMainFrame()
+                                ->GetDevToolsFrameToken()
+                                .ToString());
     return element;
   }
 
@@ -93,7 +94,7 @@ TEST_F(ElementStoreTest, GetElementFromStoreWithNoFrameId) {
   ElementFinderResult result;
   EXPECT_EQ(ACTION_APPLIED,
             element_store_->GetElement("1", &result).proto_status());
-  EXPECT_EQ(web_contents_->GetMainFrame(), result.render_frame_host());
+  EXPECT_EQ(web_contents_->GetPrimaryMainFrame(), result.render_frame_host());
 }
 
 TEST_F(ElementStoreTest, AddElementToStoreOverwrites) {

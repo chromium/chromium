@@ -471,8 +471,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, TreeModificationsAreForwarded) {
 
   // Fetch the AXTreeID of the main frame (the page just loaded). This ID will
   // be used in the operations that follow to simulate new data coming in.
-  auto tree_id =
-      frame_impl_->web_contents_for_test()->GetMainFrame()->GetAXTreeID();
+  auto tree_id = frame_impl_->web_contents_for_test()
+                     ->GetPrimaryMainFrame()
+                     ->GetAXTreeID();
 
   AccessibilityBridge* bridge = frame_impl_->accessibility_bridge_for_test();
   size_t tree_size = 5;
@@ -658,8 +659,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
 
   // Fetch the AXTreeID of the main frame (the page just loaded). This ID will
   // be used in the operations that follow to simulate new data coming in.
-  auto tree_id =
-      frame_impl_->web_contents_for_test()->GetMainFrame()->GetAXTreeID();
+  auto tree_id = frame_impl_->web_contents_for_test()
+                     ->GetPrimaryMainFrame()
+                     ->GetAXTreeID();
 
   AccessibilityBridge* bridge = frame_impl_->accessibility_bridge_for_test();
   size_t tree_size = 5;
@@ -818,8 +820,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
 
   // Fetch the AXTreeID of the main frame (the page just loaded). This ID will
   // be used in the operations that follow to simulate new data coming in.
-  auto tree_id =
-      frame_impl_->web_contents_for_test()->GetMainFrame()->GetAXTreeID();
+  auto tree_id = frame_impl_->web_contents_for_test()
+                     ->GetPrimaryMainFrame()
+                     ->GetAXTreeID();
 
   AccessibilityBridge* bridge = frame_impl_->accessibility_bridge_for_test();
   size_t tree_size = 5;
@@ -902,8 +905,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
 
   // Fetch the AXTreeID of the main frame (the page just loaded). This ID will
   // be used in the operations that follow to simulate new data coming in.
-  auto tree_id =
-      frame_impl_->web_contents_for_test()->GetMainFrame()->GetAXTreeID();
+  auto tree_id = frame_impl_->web_contents_for_test()
+                     ->GetPrimaryMainFrame()
+                     ->GetAXTreeID();
 
   AccessibilityBridge* bridge = frame_impl_->accessibility_bridge_for_test();
   size_t tree_size = 5;
@@ -974,8 +978,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OneUpdatePerNode) {
 
   // Fetch the AXTreeID of the main frame (the page just loaded). This ID will
   // be used in the operations that follow to simulate new data coming in.
-  auto tree_id =
-      frame_impl_->web_contents_for_test()->GetMainFrame()->GetAXTreeID();
+  auto tree_id = frame_impl_->web_contents_for_test()
+                     ->GetPrimaryMainFrame()
+                     ->GetAXTreeID();
 
   AccessibilityBridge* bridge = frame_impl_->accessibility_bridge_for_test();
   size_t tree_size = 5;
@@ -1157,7 +1162,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, UpdatesFocusInformation) {
   action_data.target_node_id = bridge->ax_tree_for_test()->root()->id();
 
   frame_impl_->web_contents_for_test()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->AccessibilityPerformAction(action_data);
 
   FakeSemanticTree* semantic_tree = semantics_manager_.semantic_tree();
@@ -1186,7 +1191,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, UpdatesFocusInformation) {
       bridge->node_id_mapper_for_test()->ToAXNodeID(new_focus_id)->second;
 
   frame_impl_->web_contents_for_test()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->AccessibilityPerformAction(action_data);
 
   semantic_tree->RunUntilConditionIsTrue(

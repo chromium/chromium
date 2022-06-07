@@ -442,7 +442,7 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
     bool should_classify) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (should_classify) {
-    content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
+    content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 
     phishing_detector_.reset();
     rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector_);
@@ -569,7 +569,7 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
     DCHECK(web_contents());
     if (ui_manager_.get()) {
       const content::GlobalRenderFrameHostId primary_main_frame_id =
-          web_contents()->GetMainFrame()->GetGlobalId();
+          web_contents()->GetPrimaryMainFrame()->GetGlobalId();
 
       security_interstitials::UnsafeResource resource;
       resource.url = phishing_url;

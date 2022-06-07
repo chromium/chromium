@@ -199,8 +199,8 @@ ClientMapEntryUpdater::ClientMapEntryUpdater(JNIEnv* env,
   DCHECK(web_contents);
   DCHECK(jdelegate);
 
-  if (web_contents->GetMainFrame())
-    RenderFrameCreated(web_contents->GetMainFrame());
+  if (web_contents->GetPrimaryMainFrame())
+    RenderFrameCreated(web_contents->GetPrimaryMainFrame());
 }
 
 void ClientMapEntryUpdater::RenderFrameCreated(RenderFrameHost* rfh) {

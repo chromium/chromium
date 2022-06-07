@@ -131,7 +131,7 @@ class MediaDrmStorageImplTest : public content::RenderViewHostTestHarness {
   }
 
   content::RenderFrameHost* SimulateNavigation(const GURL& url) {
-    content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
+    content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
     content::RenderFrameHostTester::For(rfh)->InitializeRenderFrameIfNeeded();
 
     auto navigation_simulator =

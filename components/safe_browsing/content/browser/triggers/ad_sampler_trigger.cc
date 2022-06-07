@@ -134,7 +134,7 @@ void AdSamplerTrigger::CreateAdSampleReport() {
       TriggerManager::GetSBErrorDisplayOptions(*prefs_, web_contents());
 
   const content::GlobalRenderFrameHostId primary_main_frame_id =
-      web_contents()->GetMainFrame()->GetGlobalId();
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId();
   security_interstitials::UnsafeResource resource;
   resource.threat_type = SB_THREAT_TYPE_AD_SAMPLE;
   resource.url = web_contents()->GetURL();

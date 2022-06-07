@@ -419,7 +419,7 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
 
   if (web_contents_) {
     ukm::builders::PageInfoBubble(
-        web_contents_->GetMainFrame()->GetPageUkmSourceId())
+        web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId())
         .SetActionTaken(action)
         .Record(ukm::UkmRecorder::Get());
   }
@@ -1288,7 +1288,7 @@ PageInfo::GetPageSpecificContentSettings() const {
   // anything?
   DCHECK(web_contents_);
   return content_settings::PageSpecificContentSettings::GetForFrame(
-      web_contents_->GetMainFrame());
+      web_contents_->GetPrimaryMainFrame());
 }
 
 bool PageInfo::HasContentSettingChangedViaPageInfo(ContentSettingsType type) {

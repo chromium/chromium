@@ -31,12 +31,12 @@ bool WebContentsWrapper::IsOffTheRecord() {
 void WebContentsWrapper::RunJavascript(
     const std::u16string& script,
     base::OnceCallback<void(const base::Value)> callback) {
-  if (!web_contents_ && web_contents_->GetMainFrame()) {
+  if (!web_contents_ && web_contents_->GetPrimaryMainFrame()) {
     std::move(callback).Run(base::Value());
     return;
   }
 
-  web_contents_->GetMainFrame()->ExecuteJavaScriptInIsolatedWorld(
+  web_contents_->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
       script, std::move(callback), js_world_id_);
 }
 

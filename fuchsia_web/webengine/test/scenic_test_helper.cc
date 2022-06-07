@@ -46,7 +46,8 @@ void ScenicTestHelper::CreateScenicView(FrameImpl* frame_impl,
 
 void ScenicTestHelper::SetUpViewForInteraction(
     content::WebContents* web_contents) {
-  content::RenderWidgetHostView* view = web_contents->GetMainFrame()->GetView();
+  content::RenderWidgetHostView* view =
+      web_contents->GetPrimaryMainFrame()->GetView();
   view->SetBounds(kBounds);
   view->Focus();
   base::RunLoop().RunUntilIdle();

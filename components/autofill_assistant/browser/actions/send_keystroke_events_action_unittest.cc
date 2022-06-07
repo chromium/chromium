@@ -120,7 +120,7 @@ TEST_F(SendKeystrokeEventsActionTest, PasswordTextValueReturnLastTimeUsed) {
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL(kUrl));
   element.SetObjectId("id");
-  element.SetRenderFrameHost(web_contents_->GetMainFrame());
+  element.SetRenderFrameHost(web_contents_->GetPrimaryMainFrame());
   mock_action_delegate_.GetElementStore()->AddElement("e",
                                                       element.dom_object());
 
@@ -161,7 +161,7 @@ TEST_F(SendKeystrokeEventsActionTest,
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL(kUrl));
   element.SetObjectId("id");
-  element.SetRenderFrameHost(web_contents_->GetMainFrame());
+  element.SetRenderFrameHost(web_contents_->GetPrimaryMainFrame());
   mock_action_delegate_.GetElementStore()->AddElement("e",
                                                       element.dom_object());
 

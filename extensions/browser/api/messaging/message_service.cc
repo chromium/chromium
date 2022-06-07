@@ -532,7 +532,8 @@ void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
     return;
   }
 
-  MaybeDisableBackForwardCacheForMessaging(receiver_contents->GetMainFrame());
+  MaybeDisableBackForwardCacheForMessaging(
+      receiver_contents->GetPrimaryMainFrame());
 
   const PortId receiver_port_id = source_port_id.GetOppositePortId();
   std::unique_ptr<MessagePort> receiver =

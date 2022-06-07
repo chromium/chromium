@@ -102,7 +102,7 @@ void PopupOpenerTabHelper::MaybeLogPagePopupContentSettings() {
     return;
 
   const ukm::SourceId source_id =
-      web_contents()->GetMainFrame()->GetPageUkmSourceId();
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   // Do not record duplicate Popup.Page events for popups opened in succession
   // from the same opener.

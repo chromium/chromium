@@ -131,7 +131,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     ProcessManager* process_manager = ProcessManager::Get(browser_context);
     DCHECK(process_manager);
     ExtensionHost* host = process_manager->GetExtensionHostForRenderFrameHost(
-        web_contents->GetMainFrame());
+        web_contents->GetPrimaryMainFrame());
 
     // Navigation throttles don't intercept same document navigations, hence we
     // can ignore that case.

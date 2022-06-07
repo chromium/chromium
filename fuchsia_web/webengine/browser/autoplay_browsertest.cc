@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(
   context_impl()
       ->GetFrameImplForTest(&frame.ptr())
       ->web_contents_for_test()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->NotifyUserActivation(
           blink::mojom::UserActivationNotificationType::kTest);
 

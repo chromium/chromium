@@ -69,8 +69,8 @@ static void JNI_ContentCaptureTestSupport_SimulateDidUpdateFaviconURL(
         ToType(*icon.FindKey("type")->GetIfString()), sizes));
   }
   CHECK(!favicon_urls.empty());
-  provider->NotifyFaviconURLUpdatedForTesting(web_contents->GetMainFrame(),
-                                              favicon_urls);
+  provider->NotifyFaviconURLUpdatedForTesting(
+      web_contents->GetPrimaryMainFrame(), favicon_urls);
 }
 
 }  // namespace content_capture

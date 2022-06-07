@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderFencedFrameBrowserTest,
   const GURL fenced_frame_url = embedded_test_server()->GetURL("/title2.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          shell()->web_contents()->GetMainFrame(), fenced_frame_url,
+          shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url,
           net::ERR_BLOCKED_BY_RESPONSE);
 
   // The fenced frame navigation failed since it doesn't have the

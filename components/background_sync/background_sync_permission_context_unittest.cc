@@ -43,8 +43,8 @@ class BackgroundSyncPermissionContextTest
     base::RunLoop run_loop;
 
     const permissions::PermissionRequestID id(
-        web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
         permissions::PermissionRequestID::RequestLocalId());
     permission_context->RequestPermission(
         id, url, /* user_gesture= */ false,

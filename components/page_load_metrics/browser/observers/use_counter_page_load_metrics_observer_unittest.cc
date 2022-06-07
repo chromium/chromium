@@ -88,7 +88,8 @@ class UseCounterPageLoadMetricsObserverTest
 
     if (WithFencedFrames()) {
       content::RenderFrameHost* fenced_frame_root =
-          content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          content::RenderFrameHostTester::For(
+              web_contents()->GetPrimaryMainFrame())
               ->AppendFencedFrame();
       ASSERT_TRUE(fenced_frame_root->IsFencedFrameRoot());
 

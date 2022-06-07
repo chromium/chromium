@@ -152,7 +152,7 @@ void AwRenderViewHostExt::UpdateHitTestData(
 
   // Make sense from any frame of the current frame tree, because a focused
   // node could be in either the mainframe or a subframe.
-  if (main_frame_host != web_contents()->GetMainFrame())
+  if (main_frame_host != web_contents()->GetPrimaryMainFrame())
     return;
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -165,7 +165,7 @@ void AwRenderViewHostExt::ContentsSizeChanged(const gfx::Size& contents_size) {
       frame_host_receivers_.GetCurrentTargetFrame();
 
   // Only makes sense coming from the main frame of the current frame tree.
-  if (render_frame_host != web_contents()->GetMainFrame())
+  if (render_frame_host != web_contents()->GetPrimaryMainFrame())
     return;
 
   client_->OnWebLayoutContentsSizeChanged(contents_size);
@@ -203,7 +203,7 @@ mojom::LocalMainFrame* AwRenderViewHostExt::GetLocalMainFrameRemote() {
   // RenderFrameCreated/RenderFrameHostChanged events but the timings of when
   // this class gets called vs others using this class might cause a TOU
   // problem, so we validate it each time before use.
-  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   content::GlobalRenderFrameHostId main_frame_id = main_frame->GetGlobalId();
   if (main_frame_global_id_ == main_frame_id) {
     return local_main_frame_remote_.get();

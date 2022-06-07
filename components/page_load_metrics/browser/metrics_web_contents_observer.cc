@@ -249,7 +249,8 @@ MetricsWebContentsObserver::MetricsWebContentsObserver(
   if (embedder_interface_->IsNoStatePrefetch(web_contents))
     in_foreground_ = false;
 
-  RegisterInputEventObserver(web_contents->GetMainFrame()->GetRenderViewHost());
+  RegisterInputEventObserver(
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost());
 }
 
 void MetricsWebContentsObserver::WillStartNavigationRequestImpl(

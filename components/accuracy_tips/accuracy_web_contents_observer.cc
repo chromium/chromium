@@ -43,7 +43,7 @@ void AccuracyWebContentsObserver::DidFinishNavigation(
     return;
   }
 
-  if (web_contents()->GetMainFrame()->GetVisibilityState() !=
+  if (web_contents()->GetPrimaryMainFrame()->GetVisibilityState() !=
       content::PageVisibilityState::kVisible) {
     return;
   }
@@ -75,7 +75,7 @@ void AccuracyWebContentsObserver::OnAccuracyStatusObtained(
 
   UMA_HISTOGRAM_ENUMERATION("Privacy.AccuracyTip.PageStatus", result);
   ukm::builders::AccuracyTipStatus(
-      web_contents()->GetMainFrame()->GetPageUkmSourceId())
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId())
       .SetStatus(static_cast<int>(result))
       .Record(ukm::UkmRecorder::Get());
 

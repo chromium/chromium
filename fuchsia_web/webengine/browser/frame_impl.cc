@@ -393,8 +393,8 @@ void FrameImpl::ExecuteJavaScriptInternal(std::vector<std::string> origins,
         std::move(callback));
   }
 
-  web_contents_->GetMainFrame()->ExecuteJavaScript(*script_utf16,
-                                                   std::move(result_callback));
+  web_contents_->GetPrimaryMainFrame()->ExecuteJavaScript(
+      *script_utf16, std::move(result_callback));
 
   if (!need_result) {
     // If no result is required then invoke callback() immediately.
@@ -1014,7 +1014,7 @@ void FrameImpl::MediaStoppedPlaying(
 }
 
 void FrameImpl::GetPrivateMemorySize(GetPrivateMemorySizeCallback callback) {
-  if (!web_contents_->GetMainFrame()->GetProcess()->IsReady()) {
+  if (!web_contents_->GetPrimaryMainFrame()->GetProcess()->IsReady()) {
     // Renderer process is not yet started.
     callback(0);
     return;
@@ -1022,7 +1022,7 @@ void FrameImpl::GetPrivateMemorySize(GetPrivateMemorySizeCallback callback) {
 
   zx_info_task_stats_t task_stats;
   zx_status_t status = zx_object_get_info(
-      web_contents_->GetMainFrame()->GetProcess()->GetProcess().Handle(),
+      web_contents_->GetPrimaryMainFrame()->GetProcess()->GetProcess().Handle(),
       ZX_INFO_TASK_STATS, &task_stats, sizeof(task_stats), nullptr, nullptr);
 
   if (status != ZX_OK) {

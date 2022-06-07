@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationListenerRendererProcessGone) {
       context_impl()
           ->GetFrameImplForTest(&frame.ptr())
           ->web_contents()
-          ->GetMainFrame()
+          ->GetPrimaryMainFrame()
           ->GetProcess();
 
   content::RenderProcessHostWatcher(
@@ -689,8 +689,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationState_RendererGone) {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
 
     content::RenderFrameDeletedObserver crash_observer(
-        web_contents->GetMainFrame());
-    web_contents->GetMainFrame()->GetProcess()->Shutdown(1);
+        web_contents->GetPrimaryMainFrame());
+    web_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(1);
     crash_observer.WaitUntilDeleted();
   }
 

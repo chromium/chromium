@@ -83,8 +83,8 @@ class NfcPermissionContextTests : public content::RenderViewHostTestHarness {
 
 PermissionRequestID NfcPermissionContextTests::RequestID(int request_id) {
   return PermissionRequestID(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
       permissions::PermissionRequestID::RequestLocalId(request_id));
 }
 

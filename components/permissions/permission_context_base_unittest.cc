@@ -228,8 +228,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     base::HistogramTester histograms;
 
     const PermissionRequestID id(
-        web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
         PermissionRequestID::RequestLocalId());
     permission_context.SetRespondPermissionCallback(base::BindOnce(
         &PermissionContextBaseTests::RespondToPermission,
@@ -328,8 +328,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
       TestPermissionContext permission_context(browser_context(),
                                                content_settings_type);
       const PermissionRequestID id(
-          web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID(),
+          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           PermissionRequestID::RequestLocalId());
 
       permission_context.SetRespondPermissionCallback(
@@ -381,8 +381,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     TestPermissionContext permission_context(browser_context(),
                                              content_settings_type);
     const PermissionRequestID id(
-        web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
         PermissionRequestID::RequestLocalId());
 
     permission_context.SetRespondPermissionCallback(
@@ -421,8 +421,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
             browser_context(), ContentSettingsType::GEOLOCATION);
 
         const PermissionRequestID id(
-            web_contents()->GetMainFrame()->GetProcess()->GetID(),
-            web_contents()->GetMainFrame()->GetRoutingID(),
+            web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
             PermissionRequestID::RequestLocalId(i + 1));
 
         permission_context.SetRespondPermissionCallback(
@@ -496,8 +496,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                                                ContentSettingsType::MIDI_SYSEX);
 
       const PermissionRequestID id(
-          web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID(),
+          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           PermissionRequestID::RequestLocalId(i + 1));
       permission_context.SetRespondPermissionCallback(
           base::BindOnce(&PermissionContextBaseTests::RespondToPermission,
@@ -558,8 +558,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                          std::string());
 
     const PermissionRequestID id(
-        web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
         PermissionRequestID::RequestLocalId());
     permission_context.RequestPermission(
         id, url, true /* user_gesture */,
@@ -583,8 +583,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     SetUpUrl(url);
 
     const PermissionRequestID id(
-        web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
         PermissionRequestID::RequestLocalId());
     permission_context.SetRespondPermissionCallback(
         base::BindOnce(&PermissionContextBaseTests::RespondToPermission,
@@ -666,12 +666,12 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     SetUpUrl(url);
 
     const PermissionRequestID id1(
-        web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
         PermissionRequestID::RequestLocalId(1));
     const PermissionRequestID id2(
-        web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
         PermissionRequestID::RequestLocalId(2));
 
     // Request a permission without setting the callback to DecidePermission.
@@ -711,7 +711,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         virtual_url);
 
     PermissionResult result = permission_context.GetPermissionStatus(
-        web_contents()->GetMainFrame(), virtual_url, virtual_url);
+        web_contents()->GetPrimaryMainFrame(), virtual_url, virtual_url);
     EXPECT_EQ(result.content_setting, want_response);
     EXPECT_EQ(result.source, want_source);
   }

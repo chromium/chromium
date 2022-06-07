@@ -112,7 +112,7 @@ class MetricsWebContentsObserverTest
   }
 
   void SimulateTimingUpdate(const mojom::PageLoadTiming& timing) {
-    SimulateTimingUpdate(timing, web_contents()->GetMainFrame());
+    SimulateTimingUpdate(timing, web_contents()->GetPrimaryMainFrame());
   }
 
   void SimulateCpuTimingUpdate(const mojom::CpuTiming& timing,
@@ -1294,14 +1294,14 @@ TEST_F(MetricsWebContentsObserverTest, OnLoadedResource_MainFrame) {
 
   auto navigation_simulator =
       content::NavigationSimulator::CreateRendererInitiated(
-          main_resource_url, web_contents()->GetMainFrame());
+          main_resource_url, web_contents()->GetPrimaryMainFrame());
   navigation_simulator->Start();
   navigation_simulator->Commit();
 
   const auto request_id = navigation_simulator->GetGlobalRequestID();
 
   observer()->ResourceLoadComplete(
-      web_contents()->GetMainFrame(), request_id,
+      web_contents()->GetPrimaryMainFrame(), request_id,
       *CreateResourceLoadInfo(main_resource_url,
                               network::mojom::RequestDestination::kFrame));
   EXPECT_EQ(1u, loaded_resources().size());
@@ -1313,7 +1313,7 @@ TEST_F(MetricsWebContentsObserverTest, OnLoadedResource_MainFrame) {
   // Deliver a second main frame resource. This one should be ignored, since the
   // specified |request_id| is no longer associated with any tracked page loads.
   observer()->ResourceLoadComplete(
-      web_contents()->GetMainFrame(), request_id,
+      web_contents()->GetPrimaryMainFrame(), request_id,
       *CreateResourceLoadInfo(main_resource_url,
                               network::mojom::RequestDestination::kFrame));
   EXPECT_EQ(1u, loaded_resources().size());
@@ -1326,7 +1326,7 @@ TEST_F(MetricsWebContentsObserverTest, OnLoadedResource_Subresource) {
       web_contents(), GURL(kDefaultTestUrl));
   GURL loaded_resource_url("http://www.other.com/");
   observer()->ResourceLoadComplete(
-      web_contents()->GetMainFrame(), content::GlobalRequestID(),
+      web_contents()->GetPrimaryMainFrame(), content::GlobalRequestID(),
       *CreateResourceLoadInfo(loaded_resource_url,
                               network::mojom::RequestDestination::kScript));
 
@@ -1340,7 +1340,7 @@ TEST_F(MetricsWebContentsObserverTest,
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL(kDefaultTestUrl));
 
-  content::RenderFrameHost* old_rfh = web_contents()->GetMainFrame();
+  content::RenderFrameHost* old_rfh = web_contents()->GetPrimaryMainFrame();
   content::LeaveInPendingDeletionState(old_rfh);
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -1361,7 +1361,7 @@ TEST_F(MetricsWebContentsObserverTest,
       web_contents(), GURL(kDefaultTestUrl));
   GURL loaded_resource_url("data:text/html,Hello world");
   observer()->ResourceLoadComplete(
-      web_contents()->GetMainFrame(), content::GlobalRequestID(),
+      web_contents()->GetPrimaryMainFrame(), content::GlobalRequestID(),
       *CreateResourceLoadInfo(loaded_resource_url,
                               network::mojom::RequestDestination::kScript));
 

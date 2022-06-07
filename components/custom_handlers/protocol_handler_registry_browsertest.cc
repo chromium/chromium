@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, FencedFrame) {
   // Create a FencedFrame.
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(),
+          web_contents()->GetPrimaryMainFrame(),
           embedded_test_server()->GetURL("/fenced_frames/title1.html"));
   ASSERT_TRUE(fenced_frame_host);
 

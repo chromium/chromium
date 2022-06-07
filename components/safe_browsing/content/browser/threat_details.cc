@@ -635,8 +635,9 @@ void ThreatDetails::StartCollection() {
     // OnReceivedThreatDOMDetails will be called when the renderer replies.
     // TODO(mattm): In theory, if the user proceeds through the warning DOM
     // detail collection could be started once the page loads.
-    web_contents_->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-        &ThreatDetails::RequestThreatDOMDetails, GetWeakPtr()));
+    web_contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+        base::BindRepeating(&ThreatDetails::RequestThreatDOMDetails,
+                            GetWeakPtr()));
   }
 }
 
@@ -865,7 +866,7 @@ void ThreatDetails::MaybeFillReferrerChain() {
   // We would have cancelled a prerender if it was blocked, so we can use the
   // primary main frame here.
   referrer_chain_provider_->IdentifyReferrerChainByRenderFrameHost(
-      web_contents_->GetMainFrame(), kThreatDetailsUserGestureLimit,
+      web_contents_->GetPrimaryMainFrame(), kThreatDetailsUserGestureLimit,
       report_->mutable_referrer_chain());
 }
 

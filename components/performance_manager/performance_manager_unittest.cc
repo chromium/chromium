@@ -50,7 +50,7 @@ class PerformanceManagerTest : public PerformanceManagerTestHarness {
 
 TEST_F(PerformanceManagerTest, NodeAccessors) {
   auto contents = CreateTestWebContents();
-  content::RenderFrameHost* rfh = contents->GetMainFrame();
+  content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
   ASSERT_TRUE(rfh);
   content::RenderProcessHost* rph = rfh->GetProcess();
   ASSERT_TRUE(rph);

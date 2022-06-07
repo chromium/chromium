@@ -341,11 +341,11 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
     test_autofill_client_ = std::make_unique<MockAutofillClient>();
     router_ = std::make_unique<ContentAutofillRouter>();
     driver_ = std::make_unique<TestContentAutofillDriver>(
-        web_contents()->GetMainFrame(), router_.get(),
+        web_contents()->GetPrimaryMainFrame(), router_.get(),
         test_autofill_client_.get());
 
     blink::AssociatedInterfaceProvider* remote_interfaces =
-        web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces();
+        web_contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces();
     remote_interfaces->OverrideBinderForTesting(
         mojom::AutofillAgent::Name_,
         base::BindRepeating(&FakeAutofillAgent::BindPendingReceiver,
@@ -430,17 +430,19 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
 
   EXPECT_EQ(
       form.host_frame,
-      LocalFrameToken(web_contents()->GetMainFrame()->GetFrameToken().value()));
+      LocalFrameToken(
+          web_contents()->GetPrimaryMainFrame()->GetFrameToken().value()));
   EXPECT_EQ(form.url, GURL("https://hostname/path"));
   EXPECT_EQ(form.full_url, GURL());
   EXPECT_EQ(form.main_frame_origin,
-            web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(form.main_frame_origin,
             url::Origin::CreateFromNormalizedTuple("https", "hostname", 443));
   ASSERT_EQ(form.fields.size(), 1u);
   EXPECT_EQ(
       form.fields.front().host_frame,
-      LocalFrameToken(web_contents()->GetMainFrame()->GetFrameToken().value()));
+      LocalFrameToken(
+          web_contents()->GetPrimaryMainFrame()->GetFrameToken().value()));
 
   EXPECT_EQ(form2.host_frame, form.host_frame);
   EXPECT_EQ(form2.url, form.url);
@@ -517,7 +519,8 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
   EXPECT_NE(signature_without_meta_data, CalculateFormSignature(form));
   EXPECT_EQ(
       field.host_frame,
-      LocalFrameToken(web_contents()->GetMainFrame()->GetFrameToken().value()));
+      LocalFrameToken(
+          web_contents()->GetPrimaryMainFrame()->GetFrameToken().value()));
   EXPECT_EQ(field.host_form_id, form.unique_renderer_id);
   EXPECT_EQ(field.host_form_signature, CalculateFormSignature(form));
 

@@ -205,7 +205,8 @@ class TestPageTextObserver : public PageTextObserver {
   }
 
   void CallDidFinishLoad() {
-    PageTextObserver::DidFinishLoad(web_contents()->GetMainFrame(), GURL());
+    PageTextObserver::DidFinishLoad(web_contents()->GetPrimaryMainFrame(),
+                                    GURL());
   }
 
  private:
@@ -273,7 +274,7 @@ TEST_F(PageTextObserverTest, ConsumerNotCalledSubframe) {
 
   content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("http://subframe.com"),
-      content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+      content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
           ->AppendChild("subframe"));
 
   EXPECT_FALSE(consumer.was_called());
@@ -1112,7 +1113,7 @@ TEST_F(PageTextObserverWithPrerenderTest,
 
   // Activate the prerendered page.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      prerender_url, web_contents()->GetMainFrame());
+      prerender_url, web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ(prerender_frame->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kActive);
   EXPECT_TRUE(consumer.was_called());

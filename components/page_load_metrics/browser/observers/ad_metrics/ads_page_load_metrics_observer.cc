@@ -613,7 +613,8 @@ void AdsPageLoadMetricsObserver::OnMainFrameIntersectionRectChanged(
     content::RenderFrameHost* render_frame_host,
     const gfx::Rect& main_frame_intersection_rect) {
   int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
-  if (render_frame_host == GetDelegate().GetWebContents()->GetMainFrame()) {
+  if (render_frame_host ==
+      GetDelegate().GetWebContents()->GetPrimaryMainFrame()) {
     page_ad_density_tracker_.UpdateMainFrameRect(main_frame_intersection_rect);
     return;
   }
@@ -661,7 +662,7 @@ void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
     // violations after the first are ignored. Ad frame violations are
     // attributed to the main frame url.
     throttle_manager->OnAdsViolationTriggered(
-        GetDelegate().GetWebContents()->GetMainFrame(),
+        GetDelegate().GetWebContents()->GetPrimaryMainFrame(),
         subresource_filter::mojom::AdsViolation::
             kMobileAdDensityByHeightAbove30);
   }
@@ -1211,7 +1212,7 @@ void AdsPageLoadMetricsObserver::MaybeTriggerStrictHeavyAdIntervention() {
   // violations after the first are ignored. Ad frame violations are
   // attributed to the main frame url.
   throttle_manager->OnAdsViolationTriggered(
-      GetDelegate().GetWebContents()->GetMainFrame(),
+      GetDelegate().GetWebContents()->GetPrimaryMainFrame(),
       subresource_filter::mojom::AdsViolation::
           kHeavyAdsInterventionAtHostLimit);
 }

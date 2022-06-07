@@ -79,7 +79,7 @@ void TestPermissionsClient::GetUkmSourceId(
     GetUkmSourceIdCallback callback) {
   if (web_contents) {
     ukm::SourceId source_id =
-        web_contents->GetMainFrame()->GetPageUkmSourceId();
+        web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
     std::move(callback).Run(source_id);
   } else {
     std::move(callback).Run(absl::nullopt);

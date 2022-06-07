@@ -560,11 +560,11 @@ class WebControllerBrowserTest : public autofill_assistant::BaseBrowserTest,
   void CheckFindElementResult(const ElementFinderResult& result,
                               bool is_main_frame) {
     if (is_main_frame) {
-      EXPECT_EQ(shell()->web_contents()->GetMainFrame(),
+      EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame(),
                 result.render_frame_host());
       EXPECT_EQ(result.frame_stack().size(), 0u);
     } else {
-      EXPECT_NE(shell()->web_contents()->GetMainFrame(),
+      EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame(),
                 result.render_frame_host());
       EXPECT_GE(result.frame_stack().size(), 1u);
     }
@@ -2702,7 +2702,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   // This makes the devtools action fail.
   ElementFinderResult element;
   element.SetNodeFrameId("doesnotexist");
-  element.SetRenderFrameHost(web_contents()->GetMainFrame());
+  element.SetRenderFrameHost(web_contents()->GetPrimaryMainFrame());
 
   EXPECT_EQ(ELEMENT_POSITION_NOT_FOUND,
             WaitUntilElementIsStable(element, 10, base::Milliseconds(100))

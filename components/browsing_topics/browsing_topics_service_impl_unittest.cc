@@ -225,7 +225,7 @@ class BrowsingTopicsServiceImplTest
 
   content::BrowsingTopicsSiteDataManager* topics_site_data_manager() {
     return web_contents()
-        ->GetMainFrame()
+        ->GetPrimaryMainFrame()
         ->GetProcess()
         ->GetStoragePartition()
         ->GetBrowsingTopicsSiteDataManager();
@@ -561,7 +561,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
                   ->GetBrowsingTopicsForJsApi(
                       /*context_origin=*/url::Origin::Create(
                           GURL("https://www.bar.com")),
-                      web_contents()->GetMainFrame())
+                      web_contents()->GetPrimaryMainFrame())
                   .empty());
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
@@ -589,7 +589,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
                    ->GetBrowsingTopicsForJsApi(
                        /*context_origin=*/url::Origin::Create(
                            GURL("https://www.bar.com")),
-                       web_contents()->GetMainFrame())
+                       web_contents()->GetPrimaryMainFrame())
                    .empty());
   EXPECT_FALSE(browsing_topics_service_
                    ->GetTopicsForSiteForDisplay(
@@ -802,7 +802,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
                   ->GetBrowsingTopicsForJsApi(
                       /*context_origin=*/url::Origin::Create(
                           GURL("https://www.bar.com")),
-                      web_contents()->GetMainFrame())
+                      web_contents()->GetPrimaryMainFrame())
                   .empty());
 
   auto entries = ukm_recorder.GetEntriesByName(
@@ -838,7 +838,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsForJsApi_OneEpoch) {
   std::vector<blink::mojom::EpochTopicPtr> result =
       browsing_topics_service_->GetBrowsingTopicsForJsApi(
           /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
 
   EXPECT_TRUE(result.empty());
 
@@ -857,7 +857,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsForJsApi_OneEpoch) {
 
   result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
 
   EXPECT_EQ(result.size(), 1u);
   EXPECT_EQ(result[0]->topic, 2);
@@ -891,7 +891,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   std::vector<blink::mojom::EpochTopicPtr> result =
       browsing_topics_service_->GetBrowsingTopicsForJsApi(
           /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
 
   EXPECT_TRUE(result.empty());
 
@@ -927,7 +927,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   std::vector<blink::mojom::EpochTopicPtr> result =
       browsing_topics_service_->GetBrowsingTopicsForJsApi(
           /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
 
   EXPECT_TRUE(result.empty());
 
@@ -939,7 +939,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
 
   result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
 
   EXPECT_TRUE(result.empty());
 }
@@ -988,7 +988,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsForJsApi_FourEpochs) {
   std::vector<blink::mojom::EpochTopicPtr> result =
       browsing_topics_service_->GetBrowsingTopicsForJsApi(
           /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
 
   EXPECT_EQ(result.size(), 3u);
   std::set<int> result_set;
@@ -1002,7 +1002,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsForJsApi_FourEpochs) {
 
   result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
 
   EXPECT_EQ(result.size(), 3u);
   result_set.clear();
@@ -1057,7 +1057,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   std::vector<blink::mojom::EpochTopicPtr> result =
       browsing_topics_service_->GetBrowsingTopicsForJsApi(
           /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
 
   EXPECT_EQ(result.size(), 2u);
   std::set<int> result_set;
@@ -1070,7 +1070,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
 
   result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
 
   EXPECT_EQ(result.size(), 2u);
   result_set.clear();
@@ -1133,7 +1133,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
     std::vector<blink::mojom::EpochTopicPtr> result =
         browsing_topics_service_->GetBrowsingTopicsForJsApi(
             /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-            web_contents()->GetMainFrame());
+            web_contents()->GetPrimaryMainFrame());
 
     EXPECT_EQ(result.size(), 2u);
     std::set<int> result_set;
@@ -1170,7 +1170,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   NavigateToPage(GURL("https://www.foo.com"));
   browsing_topics_service_->GetBrowsingTopicsForJsApi(
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
 
   std::vector<ApiUsageContext> api_usage_contexts =
       content::GetBrowsingTopicsApiUsage(topics_site_data_manager());
@@ -1210,7 +1210,7 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_ZeroAndOneTopic) {
   // any metrics.
   browsing_topics_service_->GetBrowsingTopicsForJsApi(
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
 
   entries = ukm_recorder.GetEntriesByName(
       ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
@@ -1232,7 +1232,7 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_ZeroAndOneTopic) {
 
   browsing_topics_service_->GetBrowsingTopicsForJsApi(
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
 
   entries = ukm_recorder.GetEntriesByName(
       ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
@@ -1315,7 +1315,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
 
   browsing_topics_service_->GetBrowsingTopicsForJsApi(
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
 
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
@@ -1399,7 +1399,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetTopicsForSiteForDisplay) {
   // Current time is before the epoch switch time.
   std::vector<privacy_sandbox::CanonicalTopic> result =
       browsing_topics_service_->GetTopicsForSiteForDisplay(
-          web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+          web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   EXPECT_EQ(result.size(), 2u);
   EXPECT_EQ(result[0].topic_id(), Topic(2));
@@ -1744,7 +1744,7 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopicsDataForOrigin) {
   std::vector<blink::mojom::EpochTopicPtr> api_call_result =
       browsing_topics_service_->GetBrowsingTopicsForJsApi(
           /*context_origin=*/url::Origin::Create(GURL("https://b.com")),
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
 
   EXPECT_EQ(api_call_result.size(), 1u);
   EXPECT_EQ(api_call_result[0]->topic, 3);
@@ -1772,7 +1772,7 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopicsDataForOrigin) {
   // the same context domain was seen in the page before.
   api_call_result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
       /*context_origin=*/url::Origin::Create(GURL("https://b.com")),
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
 
   // Since the domain "b.com" is removed. The candidate topic won't be returned.
   EXPECT_TRUE(api_call_result.empty());

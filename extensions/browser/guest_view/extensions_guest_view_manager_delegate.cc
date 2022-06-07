@@ -77,7 +77,7 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
     return;  // Could happen at tab shutdown.
 
   EventRouter::DispatchEventToSender(
-      owner->GetMainFrame()->GetProcess(), guest->browser_context(),
+      owner->GetPrimaryMainFrame()->GetProcess(), guest->browser_context(),
       guest->owner_host(), histogram_value, event_name,
       content::ChildProcessHost::kInvalidUniqueID, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId, std::move(event_args),
@@ -103,10 +103,12 @@ bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContext(
   // Ok for |owner_extension| to be nullptr, the embedder might be WebUI.
   Feature::Availability availability = feature->IsAvailableToContext(
       owner_extension,
-      process_map->GetMostLikelyContextType(
-          owner_extension,
-          guest->owner_web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          &owner_site_url),
+      process_map->GetMostLikelyContextType(owner_extension,
+                                            guest->owner_web_contents()
+                                                ->GetPrimaryMainFrame()
+                                                ->GetProcess()
+                                                ->GetID(),
+                                            &owner_site_url),
       owner_site_url, util::GetBrowserContextId(context_));
 
   return availability.is_available();

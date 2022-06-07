@@ -108,7 +108,7 @@ void CssElementFinder::Start(const ElementFinderResult& start_element,
 
   current_frame_ = start_element.render_frame_host();
   if (current_frame_ == nullptr) {
-    current_frame_ = web_contents_->GetMainFrame();
+    current_frame_ = web_contents_->GetPrimaryMainFrame();
   }
   current_frame_id_ = start_element.node_frame_id();
   frame_stack_ = start_element.frame_stack();

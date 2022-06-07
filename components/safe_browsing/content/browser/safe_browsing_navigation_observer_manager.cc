@@ -687,9 +687,10 @@ void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
       nav_event->initiator_outermost_main_frame_id =
           source_render_frame_host->GetOutermostMainFrame()->GetGlobalId();
     }
-    nav_event->outermost_main_frame_id = target_web_contents->GetMainFrame()
-                                             ->GetOutermostMainFrame()
-                                             ->GetGlobalId();
+    nav_event->outermost_main_frame_id =
+        target_web_contents->GetPrimaryMainFrame()
+            ->GetOutermostMainFrame()
+            ->GetGlobalId();
   }
 
   nav_event->source_tab_id =

@@ -218,7 +218,7 @@ TEST_F(ActionDelegateUtilTest, PerformWithPasswordManagerValue) {
   auto element = std::make_unique<ElementFinderResult>();
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL("https://www.example.com"));
-  element->SetRenderFrameHost(web_contents_->GetMainFrame());
+  element->SetRenderFrameHost(web_contents_->GetPrimaryMainFrame());
 
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
@@ -241,7 +241,7 @@ TEST_F(ActionDelegateUtilTest, PerformWithPasswordManagerValue) {
 
 TEST_F(ActionDelegateUtilTest, PerformWithFailingPasswordManagerValue) {
   auto element = std::make_unique<ElementFinderResult>();
-  element->SetRenderFrameHost(web_contents_->GetMainFrame());
+  element->SetRenderFrameHost(web_contents_->GetPrimaryMainFrame());
 
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");

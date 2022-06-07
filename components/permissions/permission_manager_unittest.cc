@@ -690,7 +690,8 @@ TEST_F(PermissionManagerTest, InsecureOrigin) {
 
   PermissionResult result =
       GetPermissionManager()->GetPermissionStatusForCurrentDocument(
-          ContentSettingsType::GEOLOCATION, web_contents()->GetMainFrame());
+          ContentSettingsType::GEOLOCATION,
+          web_contents()->GetPrimaryMainFrame());
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK, result.content_setting);
   EXPECT_EQ(PermissionStatusSource::INSECURE_ORIGIN, result.source);
@@ -699,7 +700,7 @@ TEST_F(PermissionManagerTest, InsecureOrigin) {
   NavigateAndCommit(secure_frame);
 
   result = GetPermissionManager()->GetPermissionStatusForCurrentDocument(
-      ContentSettingsType::GEOLOCATION, web_contents()->GetMainFrame());
+      ContentSettingsType::GEOLOCATION, web_contents()->GetPrimaryMainFrame());
 
   EXPECT_EQ(CONTENT_SETTING_ASK, result.content_setting);
   EXPECT_EQ(PermissionStatusSource::UNSPECIFIED, result.source);

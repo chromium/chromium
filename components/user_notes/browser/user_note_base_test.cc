@@ -64,7 +64,7 @@ void UserNoteBaseTest::AddPartialNotesToService(size_t count) {
 UserNoteManager* UserNoteBaseTest::ConfigureNewManager() {
   // Create a test frame and navigate it to a unique URL.
   std::unique_ptr<content::WebContents> wc = CreateTestWebContents();
-  content::RenderFrameHostTester::For(wc->GetMainFrame())
+  content::RenderFrameHostTester::For(wc->GetPrimaryMainFrame())
       ->InitializeRenderFrameIfNeeded();
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       wc.get(),

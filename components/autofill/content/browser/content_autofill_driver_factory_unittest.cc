@@ -126,7 +126,7 @@ class ContentAutofillDriverFactoryTest
 
     agent_ = std::make_unique<MockAutofillAgent>();
     blink::AssociatedInterfaceProvider* remote_interfaces =
-        web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces();
+        web_contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces();
     remote_interfaces->OverrideBinderForTesting(
         mojom::AutofillAgent::Name_,
         base::BindRepeating(&MockAutofillAgent::BindPendingReceiver,

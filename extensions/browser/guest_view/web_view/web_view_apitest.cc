@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestContextMenu) {
   // before RenderFrameHost receives.
   auto context_menu_interceptor =
       std::make_unique<content::ContextMenuInterceptor>(
-          guest_web_contents->GetMainFrame());
+          guest_web_contents->GetPrimaryMainFrame());
 
   // Trigger the context menu. AppShell doesn't show a context menu; this is
   // just a sanity check that nothing breaks.
@@ -770,8 +770,9 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestRemoveWebviewOnExit) {
                                      "runTest('testRemoveWebviewOnExit')"));
 
   content::WebContents* guest_web_contents = GetGuestWebContents();
-  EXPECT_TRUE(
-      guest_web_contents->GetMainFrame()->GetProcess()->IsForGuestsOnly());
+  EXPECT_TRUE(guest_web_contents->GetPrimaryMainFrame()
+                  ->GetProcess()
+                  ->IsForGuestsOnly());
   ASSERT_TRUE(guest_loaded_listener.WaitUntilSatisfied());
 
   content::WebContentsDestroyedWatcher destroyed_watcher(guest_web_contents);

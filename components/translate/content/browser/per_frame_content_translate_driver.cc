@@ -151,9 +151,10 @@ void PerFrameContentTranslateDriver::TranslatePage(
   stats_.Clear();
   translate_seq_no_ = IncrementSeqNo(translate_seq_no_);
 
-  web_contents()->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      &PerFrameContentTranslateDriver::TranslateFrame, base::Unretained(this),
-      translate_script, source_lang, target_lang, translate_seq_no_));
+  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating(&PerFrameContentTranslateDriver::TranslateFrame,
+                          base::Unretained(this), translate_script, source_lang,
+                          target_lang, translate_seq_no_));
 }
 
 void PerFrameContentTranslateDriver::TranslateFrame(
@@ -189,8 +190,9 @@ void PerFrameContentTranslateDriver::RevertTranslation(int page_seq_no) {
   stats_.Clear();
   translate_seq_no_ = IncrementSeqNo(translate_seq_no_);
 
-  web_contents()->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      &PerFrameContentTranslateDriver::RevertFrame, base::Unretained(this)));
+  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating(&PerFrameContentTranslateDriver::RevertFrame,
+                          base::Unretained(this)));
 }
 
 void PerFrameContentTranslateDriver::RevertFrame(
@@ -355,8 +357,10 @@ void PerFrameContentTranslateDriver::StartLanguageDetection() {
   // Kick off language detection by first requesting web language details.
   details_ = LanguageDetectionDetails();
   mojo::AssociatedRemote<mojom::TranslateAgent> frame_agent;
-  web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
-      &frame_agent);
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->GetRemoteAssociatedInterfaces()
+      ->GetInterface(&frame_agent);
   mojom::TranslateAgent* frame_agent_ptr = frame_agent.get();
   frame_agent_ptr->GetWebLanguageDetectionDetails(base::BindOnce(
       &PerFrameContentTranslateDriver::OnWebLanguageDetectionDetails,

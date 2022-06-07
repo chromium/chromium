@@ -381,7 +381,7 @@ void MimeHandlerViewGuest::EnterFullscreenModeForTab(
   if (SetFullscreenState(true)) {
     if (auto* delegate = embedder_web_contents()->GetDelegate()) {
       delegate->EnterFullscreenModeForTab(
-          embedder_web_contents()->GetMainFrame(), options);
+          embedder_web_contents()->GetPrimaryMainFrame(), options);
     }
   }
 }

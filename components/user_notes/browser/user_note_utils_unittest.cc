@@ -285,7 +285,7 @@ class UserNoteUtilsTest
 
     // Create a test frame and navigate it to the specified URL.
     std::unique_ptr<content::WebContents> wc = CreateTestWebContents();
-    content::RenderFrameHostTester::For(wc->GetMainFrame())
+    content::RenderFrameHostTester::For(wc->GetPrimaryMainFrame())
         ->InitializeRenderFrameIfNeeded();
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         wc.get(), GURL(frame_config.url));
@@ -313,8 +313,8 @@ class UserNoteUtilsTest
       }
     }
 
-    frame_to_config_.emplace(wc->GetMainFrame(), frame_config);
-    config_to_frame_.emplace(frame_config, wc->GetMainFrame());
+    frame_to_config_.emplace(wc->GetPrimaryMainFrame(), frame_config);
+    config_to_frame_.emplace(frame_config, wc->GetPrimaryMainFrame());
     web_contents_list_.emplace_back(std::move(wc));
   }
 

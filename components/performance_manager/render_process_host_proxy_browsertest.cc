@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostProxyTest,
 
   // Get the RPH associated with the main frame.
   content::RenderProcessHost* host =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
 
   // And its associated ProcessNode.
   auto* render_process_user_data =

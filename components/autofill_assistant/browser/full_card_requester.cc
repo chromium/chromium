@@ -38,7 +38,7 @@ void FullCardRequester::GetFullCard(
   }
 
   autofill::ContentAutofillDriver* driver =
-      factory->DriverForFrame(web_contents->GetMainFrame());
+      factory->DriverForFrame(web_contents->GetPrimaryMainFrame());
   if (!driver) {
     OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
     return;

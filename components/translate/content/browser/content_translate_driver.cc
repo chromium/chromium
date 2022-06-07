@@ -164,7 +164,7 @@ const GURL& ContentTranslateDriver::GetVisibleURL() {
 }
 
 ukm::SourceId ContentTranslateDriver::GetUkmSourceId() {
-  return web_contents()->GetMainFrame()->GetPageUkmSourceId();
+  return web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 }
 
 bool ContentTranslateDriver::HasCurrentPage() {

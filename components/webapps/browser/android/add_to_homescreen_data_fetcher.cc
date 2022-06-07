@@ -133,8 +133,9 @@ AddToHomescreenDataFetcher::AddToHomescreenDataFetcher(
 
   // Send a message to the renderer to retrieve information about the page.
   mojo::AssociatedRemote<mojom::WebPageMetadataAgent> metadata_agent;
-  web_contents->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
-      &metadata_agent);
+  web_contents->GetPrimaryMainFrame()
+      ->GetRemoteAssociatedInterfaces()
+      ->GetInterface(&metadata_agent);
   // Bind the InterfacePtr into the callback so that it's kept alive until
   // there's either a connection error or a response.
   auto* web_page_metadata_proxy = metadata_agent.get();

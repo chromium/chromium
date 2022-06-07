@@ -168,7 +168,7 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
 
   // Add a fenced frame.
   content::RenderFrameHost* fenced_frame_root =
-      content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+      content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
           ->AppendFencedFrame();
   {
     const char kFencedFramesUrl[] = "https://a.test/fenced_frames";
@@ -246,7 +246,7 @@ TEST_F(PageLoadTrackerTest, FencedFramesPageType) {
 
   // Add a fenced frame.
   content::RenderFrameHost* fenced_frame_root =
-      content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+      content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
           ->AppendFencedFrame();
   {
     auto simulator = content::NavigationSimulator::CreateRendererInitiated(
@@ -318,7 +318,7 @@ TEST_F(PageLoadTrackerTest, StopObservingOnFencedFrames) {
 
   // Add a fenced frame.
   content::RenderFrameHost* fenced_frame_root =
-      content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+      content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
           ->AppendFencedFrame();
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL(kFencedFramesUrl), fenced_frame_root);

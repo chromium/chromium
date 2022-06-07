@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, OpeningAbsoluteURLs) {
       (*app_windows.begin())->web_contents();
   EXPECT_EQ(GURL("chrome://version"),
             app_window_contents->GetLastCommittedURL());
-  EXPECT_FALSE(app_window_contents->GetMainFrame()->IsErrorDocument());
+  EXPECT_FALSE(app_window_contents->GetPrimaryMainFrame()->IsErrorDocument());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

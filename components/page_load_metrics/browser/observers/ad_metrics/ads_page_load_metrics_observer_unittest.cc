@@ -482,7 +482,7 @@ class AdsPageLoadMetricsObserverTest
 
   // Returns the final RenderFrameHost after navigation commits.
   RenderFrameHost* NavigateMainFrame(const std::string& url) {
-    return NavigateFrame(url, web_contents()->GetMainFrame());
+    return NavigateFrame(url, web_contents()->GetPrimaryMainFrame());
   }
 
   void OnCpuTimingUpdate(RenderFrameHost* render_frame_host,
@@ -1245,8 +1245,8 @@ TEST_P(AdsPageLoadMetricsObserverTest, UntaggingAdFrame) {
 
 TEST_P(AdsPageLoadMetricsObserverTest, MainFrameResource) {
   // Start main-frame navigation
-  auto navigation_simulator =
-      CreateNavigationSimulator(kNonAdUrl, web_contents()->GetMainFrame());
+  auto navigation_simulator = CreateNavigationSimulator(
+      kNonAdUrl, web_contents()->GetPrimaryMainFrame());
   navigation_simulator->Start();
   navigation_simulator->Commit();
 
@@ -1290,8 +1290,8 @@ TEST_P(AdsPageLoadMetricsObserverTest, MainFrameResource) {
 
 TEST_P(AdsPageLoadMetricsObserverTest, NoBytesLoaded_NoHistogramsRecorded) {
   // Start main-frame navigation
-  auto navigation_simulator =
-      CreateNavigationSimulator(kNonAdUrl, web_contents()->GetMainFrame());
+  auto navigation_simulator = CreateNavigationSimulator(
+      kNonAdUrl, web_contents()->GetPrimaryMainFrame());
   navigation_simulator->Start();
   navigation_simulator->Commit();
 

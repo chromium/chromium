@@ -322,7 +322,7 @@ void RenderViewContextMenuBase::RemoveSeparatorBeforeMenuItem(int command_id) {
 }
 
 RenderViewHost* RenderViewContextMenuBase::GetRenderViewHost() const {
-  return source_web_contents_->GetMainFrame()->GetRenderViewHost();
+  return source_web_contents_->GetPrimaryMainFrame()->GetRenderViewHost();
 }
 
 WebContents* RenderViewContextMenuBase::GetWebContents() const {

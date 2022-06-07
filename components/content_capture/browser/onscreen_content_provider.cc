@@ -144,8 +144,8 @@ void OnscreenContentProvider::ReadyToCommitNavigation(
 
 void OnscreenContentProvider::TitleWasSet(content::NavigationEntry* entry) {
   // Set the title to the mainframe.
-  if (auto* receiver =
-          ContentCaptureReceiverForFrame(web_contents()->GetMainFrame())) {
+  if (auto* receiver = ContentCaptureReceiverForFrame(
+          web_contents()->GetPrimaryMainFrame())) {
     // To match what the user sees, intentionally get the title from WebContents
     // instead of NavigationEntry, though they might be same.
     receiver->SetTitle(web_contents()->GetTitle());
@@ -290,8 +290,8 @@ bool OnscreenContentProvider::BuildContentCaptureSessionLastSeen(
 
 bool OnscreenContentProvider::BuildContentCaptureSessionForMainFrame(
     ContentCaptureSession* session) {
-  if (auto* receiver =
-          ContentCaptureReceiverForFrame(web_contents()->GetMainFrame())) {
+  if (auto* receiver = ContentCaptureReceiverForFrame(
+          web_contents()->GetPrimaryMainFrame())) {
     session->push_back(receiver->GetContentCaptureFrame());
     return true;
   }

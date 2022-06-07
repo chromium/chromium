@@ -68,7 +68,7 @@ class AdSamplerTriggerTest : public content::RenderViewHostTestHarness {
 
   // Returns the final RenderFrameHost after navigation commits.
   RenderFrameHost* NavigateMainFrame(const std::string& url) {
-    return NavigateFrame(url, web_contents()->GetMainFrame());
+    return NavigateFrame(url, web_contents()->GetPrimaryMainFrame());
   }
 
   // Returns the final RenderFrameHost after navigation commits.

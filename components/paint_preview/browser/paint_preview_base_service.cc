@@ -38,7 +38,7 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
   content::WebContents* web_contents = capture_params.web_contents;
   content::RenderFrameHost* render_frame_host =
       capture_params.render_frame_host ? capture_params.render_frame_host
-                                       : web_contents->GetMainFrame();
+                                       : web_contents->GetPrimaryMainFrame();
   if (policy_ && !policy_->SupportedForContents(web_contents)) {
     std::move(callback).Run(CaptureStatus::kContentUnsupported, {});
     return;
@@ -57,7 +57,7 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
   }
   params.inner.clip_rect = capture_params.clip_rect;
   params.inner.is_main_frame =
-      (render_frame_host == web_contents->GetMainFrame());
+      (render_frame_host == web_contents->GetPrimaryMainFrame());
   params.inner.capture_links = capture_params.capture_links;
   params.inner.max_capture_size = capture_params.max_per_capture_size;
   params.inner.max_decoded_image_size_bytes =

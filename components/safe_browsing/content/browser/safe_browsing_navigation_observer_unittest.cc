@@ -375,7 +375,7 @@ TEST_F(SBNavigationObserverTest, BasicNavigationAndCommit) {
 
 TEST_F(SBNavigationObserverTest, ServerRedirect) {
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
-      GURL("http://foo/3"), web_contents()->GetMainFrame());
+      GURL("http://foo/3"), web_contents()->GetPrimaryMainFrame());
   auto* nav_list = navigation_event_list();
   SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
 
@@ -446,8 +446,10 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleNavigationEvents) {
       base::Time::FromDoubleT(now.ToDoubleT() + 60.0 * 60.0);  // Invalid
   GURL url_0("http://foo/0");
   GURL url_1("http://foo/1");
-  content::MockNavigationHandle handle_0(url_0, web_contents()->GetMainFrame());
-  content::MockNavigationHandle handle_1(url_1, web_contents()->GetMainFrame());
+  content::MockNavigationHandle handle_0(url_0,
+                                         web_contents()->GetPrimaryMainFrame());
+  content::MockNavigationHandle handle_1(url_1,
+                                         web_contents()->GetPrimaryMainFrame());
   navigation_event_list()->RecordNavigationEvent(
       CreateNavigationEventUniquePtr(url_0, in_an_hour));
   navigation_event_list()->RecordNavigationEvent(
@@ -875,9 +877,12 @@ TEST_F(SBNavigationObserverTest, TestGetLatestPendingNavigationEvent) {
   base::Time one_minute_ago = base::Time::FromDoubleT(now.ToDoubleT() - 60.0);
   base::Time two_minute_ago = base::Time::FromDoubleT(now.ToDoubleT() - 120.0);
   GURL url("http://foo/0");
-  content::MockNavigationHandle handle_0(url, web_contents()->GetMainFrame());
-  content::MockNavigationHandle handle_1(url, web_contents()->GetMainFrame());
-  content::MockNavigationHandle handle_2(url, web_contents()->GetMainFrame());
+  content::MockNavigationHandle handle_0(url,
+                                         web_contents()->GetPrimaryMainFrame());
+  content::MockNavigationHandle handle_1(url,
+                                         web_contents()->GetPrimaryMainFrame());
+  content::MockNavigationHandle handle_2(url,
+                                         web_contents()->GetPrimaryMainFrame());
   navigation_event_list()->RecordPendingNavigationEvent(
       &handle_0, CreateNavigationEventUniquePtr(url, one_minute_ago));
   navigation_event_list()->RecordPendingNavigationEvent(

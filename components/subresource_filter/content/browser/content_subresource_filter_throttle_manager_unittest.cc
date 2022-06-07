@@ -209,7 +209,7 @@ class ContentSubresourceFilterThrottleManagerTest
     content::RenderViewHostTestHarness::SetUp();
     content::WebContents* web_contents =
         RenderViewHostTestHarness::web_contents();
-    CreateAgentForHost(web_contents->GetMainFrame());
+    CreateAgentForHost(web_contents->GetPrimaryMainFrame());
 
     // Initialize the ruleset dealer. Allowlisted URLs must also match a
     // disallowed rule in order to work correctly.
@@ -340,7 +340,8 @@ class ContentSubresourceFilterThrottleManagerTest
   bool ads_blocked_in_content_settings() {
     auto* content_settings =
         content_settings::PageSpecificContentSettings::GetForFrame(
-            content::RenderViewHostTestHarness::web_contents()->GetMainFrame());
+            content::RenderViewHostTestHarness::web_contents()
+                ->GetPrimaryMainFrame());
 
     return content_settings->IsContentBlocked(ContentSettingsType::ADS);
   }

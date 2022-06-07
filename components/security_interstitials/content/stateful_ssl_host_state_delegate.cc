@@ -226,7 +226,7 @@ void StatefulSSLHostStateDelegate::AllowCert(
   DCHECK(web_contents);
   content::StoragePartition* storage_partition =
       browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
+          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
           false /* can_create */);
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {
@@ -292,7 +292,7 @@ StatefulSSLHostStateDelegate::QueryPolicy(const std::string& host,
 
   content::StoragePartition* storage_partition =
       browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
+          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
           false /* can_create */);
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {
@@ -373,7 +373,7 @@ void StatefulSSLHostStateDelegate::AllowHttpForHost(
 
   content::StoragePartition* storage_partition =
       browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
+          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
           /*can_create=*/false);
   bool is_nondefault_storage =
       !storage_partition ||
@@ -386,7 +386,7 @@ bool StatefulSSLHostStateDelegate::IsHttpAllowedForHost(
     content::WebContents* web_contents) {
   content::StoragePartition* storage_partition =
       browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
+          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
           /*can_create=*/false);
   bool is_nondefault_storage =
       !storage_partition ||
@@ -541,7 +541,7 @@ bool StatefulSSLHostStateDelegate::HasCertAllowException(
     content::WebContents* web_contents) {
   content::StoragePartition* storage_partition =
       browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
+          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
           false /* can_create */);
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {

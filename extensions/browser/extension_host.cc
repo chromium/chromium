@@ -63,7 +63,7 @@ ExtensionHost::ExtensionHost(const Extension* extension,
   content::WebContentsObserver::Observe(host_contents_.get());
   host_contents_->SetDelegate(this);
   SetViewType(host_contents_.get(), host_type);
-  main_frame_host_ = host_contents_->GetMainFrame();
+  main_frame_host_ = host_contents_->GetPrimaryMainFrame();
 
   // Listen for when an extension is unloaded from the same profile, as it may
   // be the same extension that this points to.
@@ -211,7 +211,7 @@ void ExtensionHost::PrimaryMainFrameRenderProcessGone(
   // process, so it is expected to lose our connection to the render view.
   // Do nothing.
   RenderProcessHost* process_host =
-      host_contents_->GetMainFrame()->GetProcess();
+      host_contents_->GetPrimaryMainFrame()->GetProcess();
   if (process_host && process_host->FastShutdownStarted())
     return;
 

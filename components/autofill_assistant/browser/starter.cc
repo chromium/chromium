@@ -179,7 +179,7 @@ Starter::Starter(content::WebContents* web_contents,
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<Starter>(*web_contents),
       current_ukm_source_id_(
-          web_contents->GetMainFrame()->GetPageUkmSourceId()),
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()),
       cached_failed_trigger_script_fetches_(
           GetOrCreateFailedTriggerScriptFetchesCache()),
       user_denylisted_domains_(kMaxUserDenylistedCacheSize),
@@ -425,7 +425,7 @@ void Starter::Init() {
              fetch_trigger_scripts_on_navigation_) {
     MaybeStartImplicitlyForUrl(
         web_contents()->GetLastCommittedURL(),
-        web_contents()->GetMainFrame()->GetPageUkmSourceId());
+        web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
 }
 
@@ -513,7 +513,7 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
 
   if (IsTriggerScriptContext(*pending_trigger_context_) &&
       !url_utils::IsSamePublicSuffixDomain(
-          web_contents()->GetMainFrame()->GetLastCommittedURL(),
+          web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
           startup_url.value_or(GURL()))) {
     waiting_for_deeplink_navigation_ = true;
     return;

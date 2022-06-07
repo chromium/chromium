@@ -39,7 +39,7 @@ void TestFetchFaviconForPage(
       ContentFaviconDriver::FromWebContents(web_contents);
   content::WebContentsTester::For(web_contents)->NavigateAndCommit(page_url);
   static_cast<content::WebContentsObserver*>(favicon_driver)
-      ->DidUpdateFaviconURL(web_contents->GetMainFrame(), candidates);
+      ->DidUpdateFaviconURL(web_contents->GetPrimaryMainFrame(), candidates);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -116,13 +116,14 @@ TEST_F(ContentFaviconDriverTest, IgnoreManifestURLBeforeOnLoad) {
   navigation->SetKeepLoading(true);
   navigation->Commit();
   GURL manifest_url = kFakeManifestURL;
-  auto* rfh_tester =
-      content::RenderFrameHostTester::For(web_contents()->GetMainFrame());
+  auto* rfh_tester = content::RenderFrameHostTester::For(
+      web_contents()->GetPrimaryMainFrame());
   rfh_tester->SimulateManifestURLUpdate(manifest_url);
   static_cast<content::WebContentsObserver*>(favicon_driver)
-      ->DidUpdateWebManifestURL(web_contents()->GetMainFrame(), manifest_url);
-  EXPECT_EQ(GURL(),
-            favicon_driver->GetManifestURL(web_contents()->GetMainFrame()));
+      ->DidUpdateWebManifestURL(web_contents()->GetPrimaryMainFrame(),
+                                manifest_url);
+  EXPECT_EQ(GURL(), favicon_driver->GetManifestURL(
+                        web_contents()->GetPrimaryMainFrame()));
 }
 
 // Ensures that we use a manifest URL if it arrives after the onload handler
@@ -136,13 +137,14 @@ TEST_F(ContentFaviconDriverTest, UseManifestURLAFterOnLoad) {
   navigation->Commit();
   navigation->StopLoading();
   GURL manifest_url = kFakeManifestURL;
-  auto* rfh_tester =
-      content::RenderFrameHostTester::For(web_contents()->GetMainFrame());
+  auto* rfh_tester = content::RenderFrameHostTester::For(
+      web_contents()->GetPrimaryMainFrame());
   rfh_tester->SimulateManifestURLUpdate(manifest_url);
   static_cast<content::WebContentsObserver*>(favicon_driver)
-      ->DidUpdateWebManifestURL(web_contents()->GetMainFrame(), manifest_url);
-  EXPECT_EQ(kFakeManifestURL,
-            favicon_driver->GetManifestURL(web_contents()->GetMainFrame()));
+      ->DidUpdateWebManifestURL(web_contents()->GetPrimaryMainFrame(),
+                                manifest_url);
+  EXPECT_EQ(kFakeManifestURL, favicon_driver->GetManifestURL(
+                                  web_contents()->GetPrimaryMainFrame()));
 }
 
 // Test that no download is initiated when
@@ -159,7 +161,8 @@ TEST_F(ContentFaviconDriverTest, ShouldNotCauseImageDownload) {
   favicon_urls.push_back(blink::mojom::FaviconURL::New(
       kIconURL, blink::mojom::FaviconIconType::kFavicon, kEmptyIconSizes));
   static_cast<content::WebContentsObserver*>(favicon_driver)
-      ->DidUpdateFaviconURL(web_contents()->GetMainFrame(), favicon_urls);
+      ->DidUpdateFaviconURL(web_contents()->GetPrimaryMainFrame(),
+                            favicon_urls);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kIconURL));
@@ -223,7 +226,7 @@ TEST_F(ContentFaviconDriverTestNoFaviconService,
 
   // Trigger downloading a manifest.
   static_cast<content::WebContentsObserver*>(driver)->DidUpdateWebManifestURL(
-      web_contents()->GetMainFrame(), GURL("http://bad.manifest.com"));
+      web_contents()->GetPrimaryMainFrame(), GURL("http://bad.manifest.com"));
 
   // The request for the manifest is still pending, delete the WebContents,
   // which should trigger notifying the callback for the manifest and *not*

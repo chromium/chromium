@@ -417,7 +417,7 @@ ScopedJavaLocalRef<jobject> AwContents::GetRenderProcess(
     const JavaParamRef<jobject>& obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   content::RenderProcessHost* host =
-      web_contents_->GetMainFrame()->GetProcess();
+      web_contents_->GetPrimaryMainFrame()->GetProcess();
   if (host->run_renderer_in_process()) {
     return ScopedJavaLocalRef<jobject>();
   }
@@ -794,7 +794,7 @@ void AwContents::ClearCache(JNIEnv* env,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   AwRenderProcess* aw_render_process =
       AwRenderProcess::GetInstanceForRenderProcessHost(
-          web_contents_->GetMainFrame()->GetProcess());
+          web_contents_->GetPrimaryMainFrame()->GetProcess());
 
   aw_render_process->ClearCache();
 
@@ -1358,7 +1358,7 @@ void AwContents::InsertVisualStateCallback(
     jlong request_id,
     const JavaParamRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  web_contents_->GetMainFrame()->InsertVisualStateCallback(
+  web_contents_->GetPrimaryMainFrame()->InsertVisualStateCallback(
       base::BindOnce(&InvokeVisualStateCallback, java_ref_, request_id,
                      ScopedJavaGlobalRef<jobject>(env, callback)));
 }
@@ -1366,8 +1366,9 @@ void AwContents::InsertVisualStateCallback(
 jint AwContents::GetEffectivePriority(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  switch (
-      web_contents_->GetMainFrame()->GetProcess()->GetEffectiveImportance()) {
+  switch (web_contents_->GetPrimaryMainFrame()
+              ->GetProcess()
+              ->GetEffectiveImportance()) {
     case content::ChildProcessImportance::NORMAL:
       return static_cast<jint>(RendererPriority::WAIVED);
     case content::ChildProcessImportance::MODERATE:
@@ -1480,7 +1481,7 @@ void AwContents::SetJsOnlineProperty(JNIEnv* env,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   AwRenderProcess* aw_render_process =
       AwRenderProcess::GetInstanceForRenderProcessHost(
-          web_contents_->GetMainFrame()->GetProcess());
+          web_contents_->GetPrimaryMainFrame()->GetProcess());
 
   aw_render_process->SetJsOnlineProperty(network_up);
 }
@@ -1515,7 +1516,8 @@ void AwContents::GrantFileSchemeAccesstoChildProcess(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
-      web_contents_->GetMainFrame()->GetProcess()->GetID(), url::kFileScheme);
+      web_contents_->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      url::kFileScheme);
 }
 
 void AwContents::ResumeLoadingCreatedPopupWebContents(

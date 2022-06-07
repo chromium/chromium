@@ -82,7 +82,7 @@ TEST_F(FencedFramesPageLoadMetricsObserverTest, Foreground) {
   NavigateAndCommit(GURL(kTestUrl));
 
   content::RenderFrameHost* fenced_frame_root =
-      content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+      content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
           ->AppendFencedFrame();
   ASSERT_TRUE(fenced_frame_root->IsFencedFrameRoot());
 
@@ -129,7 +129,7 @@ TEST_F(FencedFramesPageLoadMetricsObserverTest, Background) {
   web_contents()->WasHidden();
 
   content::RenderFrameHost* fenced_frame_root =
-      content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+      content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
           ->AppendFencedFrame();
   ASSERT_TRUE(fenced_frame_root->IsFencedFrameRoot());
 

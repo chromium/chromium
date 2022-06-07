@@ -698,8 +698,9 @@ void CollectUserDataAction::UpdateMetrics(
   DCHECK(user_data);
   if (!shown_to_user_) {
     shown_to_user_ = true;
-    metrics_data_.source_id =
-        delegate_->GetWebContents()->GetMainFrame()->GetPageUkmSourceId();
+    metrics_data_.source_id = delegate_->GetWebContents()
+                                  ->GetPrimaryMainFrame()
+                                  ->GetPageUkmSourceId();
     metrics_data_.user_data_source = user_data_source;
     FillInitialDataStateForMetrics(user_data->available_contacts_,
                                    user_data->available_addresses_,

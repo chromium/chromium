@@ -210,7 +210,7 @@ void ExtensionWebContentsObserver::ReadyToCommitNavigation(
       ExtensionRegistry::Get(browser_context_);
 
   const Extension* const extension =
-      GetExtensionFromFrame(web_contents()->GetMainFrame(), false);
+      GetExtensionFromFrame(web_contents()->GetPrimaryMainFrame(), false);
   KioskDelegate* const kiosk_delegate =
       ExtensionsBrowserClient::Get()->GetKioskDelegate();
   DCHECK(kiosk_delegate);

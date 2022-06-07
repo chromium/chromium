@@ -192,7 +192,7 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
   for (const auto& test_case : kTestCases) {
     std::unique_ptr<content::NavigationSimulator> simulator =
         content::NavigationSimulator::CreateRendererInitiated(
-            test_case.initial_url, web_contents()->GetMainFrame());
+            test_case.initial_url, web_contents()->GetPrimaryMainFrame());
     simulator->Start();
     simulator->Redirect(test_case.redirect_url);
     simulator->Commit();

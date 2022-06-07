@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameOriginIframeAttributionData) {
       NavigateAndWaitForConsoleMessage(contents, urla, "a.html loaded"));
 
   // Get pointers to the RFHs for each frame.
-  content::RenderFrameHost* main_rfh = contents->GetMainFrame();
+  content::RenderFrameHost* main_rfh = contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child_rfh = ChildFrameAt(main_rfh, 0);
   ASSERT_TRUE(child_rfh);
 
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, CrossOriginIframeAttributionData) {
       NavigateAndWaitForConsoleMessage(contents, urla, "b.html loaded"));
 
   // Get pointers to the RFHs for each frame.
-  content::RenderFrameHost* main_rfh = contents->GetMainFrame();
+  content::RenderFrameHost* main_rfh = contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child_rfh = ChildFrameAt(main_rfh, 0);
   ASSERT_TRUE(child_rfh);
   auto frame_node =
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameDocNavigation) {
   ExpectCounts(2, 2, 0, 0);
 
   // Get pointers to the RFHs for each frame.
-  content::RenderFrameHost* rfha = contents->GetMainFrame();
+  content::RenderFrameHost* rfha = contents->GetPrimaryMainFrame();
   content::RenderFrameHost* rfhb = ChildFrameAt(rfha, 0);
 
   // Execute a same document navigation in the child frame. This causes a
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, DetachedContext) {
   ExpectCounts(2, 2, 0, 0);
 
   // Get pointers to the RFHs for each frame.
-  content::RenderFrameHost* rfha = contents->GetMainFrame();
+  content::RenderFrameHost* rfha = contents->GetPrimaryMainFrame();
 
   // Keep a pointer to the window associated with the child iframe, but
   // unload it.

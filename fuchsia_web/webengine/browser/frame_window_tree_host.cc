@@ -136,8 +136,8 @@ void FrameWindowTreeHost::OnWindowStateChanged(
 void FrameWindowTreeHost::OnWindowBoundsChanged(const BoundsChange& bounds) {
   aura::WindowTreeHostPlatform::OnBoundsChanged(bounds);
 
-  if (web_contents_->GetMainFrame()->IsRenderFrameLive()) {
-    web_contents_->GetMainFrame()->GetView()->SetInsets(
+  if (web_contents_->GetPrimaryMainFrame()->IsRenderFrameLive()) {
+    web_contents_->GetPrimaryMainFrame()->GetView()->SetInsets(
         bounds.system_ui_overlap);
   }
 }
