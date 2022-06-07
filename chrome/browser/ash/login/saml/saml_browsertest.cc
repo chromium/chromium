@@ -1173,6 +1173,7 @@ class SAMLPolicyTest : public SamlTestWithRedirectToDefaultIdPFeature {
   void ClickBackOnSAMLInterstitialPage();
   void ClickNextOnSAMLInterstitialPage();
   void ShowSAMLLoginForm();
+  void MaybeWaitForSAMLToLoad();
   void ClickBackOnSAMLPage();
   void LogInWithSAML(const std::string& user_id,
                      const std::string& auth_sid_cookie,
@@ -1375,6 +1376,19 @@ void SAMLPolicyTest::ShowSAMLLoginForm() {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kSigninFrameDialog)->Wait();
   test::OobeJS().CreateVisibilityWaiter(false, kGaiaLoading)->Wait();
+}
+
+void SAMLPolicyTest::MaybeWaitForSAMLToLoad() {
+  // If SAML already loaded return and otherwise wait for the SamlLoaded
+  // message.
+  if (test::OobeJS().GetAttributeBool("isSamlForTesting()", {"gaia-signin"}))
+    return;
+  content::DOMMessageQueue message_queue;
+  SetupAuthFlowChangeListener();
+  std::string message;
+  do {
+    ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  } while (message != "\"SamlLoaded\"");
   test::OobeJS().ExpectAttributeEQ("isSamlForTesting()", {"gaia-signin"}, true);
 }
 
@@ -1616,13 +1630,14 @@ IN_PROC_BROWSER_TEST_P(SAMLPolicyTest, SAMLInterstitialChangeAccount) {
 // When GetParam() is false:
 // Tests that clicking "Next" in the SAML interstitial page successfully
 // triggers a SAML redirect request, and the SAML IdP authentication page is
-// loaded and authenticaing there is successful.
-// TODO(https://crbug.com/1102738) flaky test
+// loaded and authenticating there is successful.
 //
 // When GetParam() is true:
 // Tests that clicking back on the SAML page successfully closes the oobe
 // dialog. Reopens a dialog and checks that SAML IdP authentication page is
-// loaded and authenticaing there is successful.
+// loaded and authenticating there is successful.
+// TODO(https://crbug.com/1102738) flaky test - partially fixed but keeping the
+// test disabled since there is still some instabillity observed under load.
 IN_PROC_BROWSER_TEST_P(SAMLPolicyTest, DISABLED_SAMLInterstitialNext) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   fake_gaia_.fake_gaia()->SetFakeMergeSessionParams(
@@ -1644,6 +1659,7 @@ IN_PROC_BROWSER_TEST_P(SAMLPolicyTest, DISABLED_SAMLInterstitialNext) {
 
   if (GetParam()) {
     ShowSAMLLoginForm();
+    MaybeWaitForSAMLToLoad();
   } else {
     ShowSAMLInterstitial();
     ClickNextOnSAMLInterstitialPage();
