@@ -105,6 +105,8 @@ public final class ProductionSupportedFlagList {
             Flag.commandLine(AwSwitches.WEBVIEW_SHADOW_DOM_FENCED_FRAMES,
                     "Enables ShadowDOM-based fenced frames. Also implies SharedStorageAPI, "
                             + "and PrivacySandboxAdsAPIsOverride"),
+            Flag.commandLine(AwSwitches.WEBVIEW_DISABLE_APP_RECOVERY,
+                    "Disables WebView from checking for app recovery mitigations."),
             Flag.commandLine(AwSwitches.WEBVIEW_ENABLE_APP_RECOVERY,
                     "Enables WebView to check for app recovery mitigations."),
             Flag.baseFeature(GpuFeatures.WEBVIEW_VULKAN,
