@@ -14,7 +14,7 @@
 - (void)dismissViewControllerAnimated:(BOOL)animated
                            completion:(void (^)())completion;
 
-// Asks the delegate to send the current tab to the device with |cacheGuid|.
+// Asks the delegate to send the current tab to the device with `cacheGuid`.
 - (void)sendTabToTargetDeviceCacheGUID:(NSString*)cacheGuid
                       targetDeviceName:(NSString*)deviceName;
 

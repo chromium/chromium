@@ -142,7 +142,7 @@ const CGFloat kAvatarSize = 24;
         [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
   };
-  // Opening the link is handled by the delegate, so |NSLinkAttributeName|
+  // Opening the link is handled by the delegate, so `NSLinkAttributeName`
   // can be arbitrary.
   NSDictionary* linkAttributes = @{NSLinkAttributeName : @""};
   accountCell.linkAndEmailTextView.attributedText =
