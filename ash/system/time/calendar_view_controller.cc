@@ -95,7 +95,7 @@ void CalendarViewController::UpdateMonth(
     observer.OnMonthChanged();
 }
 
-base::Time CalendarViewController::GetOnScreenMonthFirstDayLocal() {
+base::Time CalendarViewController::GetOnScreenMonthFirstDayUTC() {
   base::TimeDelta time_difference =
       calendar_utils::GetTimeDifference(currently_shown_date_);
   return calendar_utils::GetFirstDayOfMonth(currently_shown_date_ +
@@ -103,10 +103,9 @@ base::Time CalendarViewController::GetOnScreenMonthFirstDayLocal() {
          time_difference;
 }
 
-base::Time CalendarViewController::GetPreviousMonthFirstDayLocal(
+base::Time CalendarViewController::GetPreviousMonthFirstDayUTC(
     unsigned int num_months) {
-  base::Time prev,
-      current = ApplyTimeDifference(GetOnScreenMonthFirstDayLocal());
+  base::Time prev, current = ApplyTimeDifference(GetOnScreenMonthFirstDayUTC());
 
   DCHECK_GE(num_months, 1UL);
 
@@ -117,10 +116,9 @@ base::Time CalendarViewController::GetPreviousMonthFirstDayLocal(
   return prev - calendar_utils::GetTimeDifference(prev);
 }
 
-base::Time CalendarViewController::GetNextMonthFirstDayLocal(
+base::Time CalendarViewController::GetNextMonthFirstDayUTC(
     unsigned int num_months) {
-  base::Time next,
-      current = ApplyTimeDifference(GetOnScreenMonthFirstDayLocal());
+  base::Time next, current = ApplyTimeDifference(GetOnScreenMonthFirstDayUTC());
 
   DCHECK_GE(num_months, 1UL);
 
@@ -132,11 +130,11 @@ base::Time CalendarViewController::GetNextMonthFirstDayLocal(
 }
 
 std::u16string CalendarViewController::GetPreviousMonthName() {
-  return calendar_utils::GetMonthName(GetPreviousMonthFirstDayLocal(1));
+  return calendar_utils::GetMonthName(GetPreviousMonthFirstDayUTC(1));
 }
 
 std::u16string CalendarViewController::GetNextMonthName(int num_months) {
-  return calendar_utils::GetMonthName(GetNextMonthFirstDayLocal(num_months));
+  return calendar_utils::GetMonthName(GetNextMonthFirstDayUTC(num_months));
 }
 
 std::u16string CalendarViewController::GetOnScreenMonthName() const {
@@ -228,6 +226,13 @@ bool CalendarViewController::IsSelectedDateInCurrentMonth() {
 
   return calendar_utils::GetMonthNameAndYear(currently_shown_date_) ==
          calendar_utils::GetMonthNameAndYear(selected_date_.value());
+}
+
+bool CalendarViewController::isSuccessfullyFetched(base::Time start_of_month) {
+  return Shell::Get()
+             ->system_tray_model()
+             ->calendar_model()
+             ->FindFetchingStatus(start_of_month) == CalendarModel::kSuccess;
 }
 
 base::Time CalendarViewController::ApplyTimeDifference(base::Time date) {

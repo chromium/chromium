@@ -83,7 +83,7 @@ class CalendarMonthViewTest : public AshTestBase {
   }
 
   void UploadEvents() {
-    Shell::Get()->system_tray_model()->calendar_model()->InsertEventsForTesting(
+    calendar_month_view_->calendar_model_->InsertEventsForTesting(
         CreateMockEventList().get());
   }
 
@@ -95,6 +95,26 @@ class CalendarMonthViewTest : public AshTestBase {
 
   CalendarMonthView* month_view() { return calendar_month_view_.get(); }
   CalendarViewController* controller() { return controller_.get(); }
+
+  void InsertPendingFetches(base::Time start_of_month) {
+    calendar_month_view_->calendar_model_->InsertPendingFetchesForTesting(
+        start_of_month);
+  }
+
+  void DeletePendingFetches(base::Time start_of_month) {
+    calendar_month_view_->calendar_model_->DeletePendingFetchesForTesting(
+        start_of_month);
+  }
+
+  void NotifyObservers(base::Time start_of_month) {
+    for (auto& observer : calendar_month_view_->calendar_model_->observers_)
+      observer.OnEventsFetched(CalendarModel::kSuccess, start_of_month,
+                               nullptr);
+  }
+
+  CalendarModel::MonthToEventsMap event_months() {
+    return calendar_month_view_->calendar_model_->event_months_;
+  }
 
   static base::Time FakeTimeNow() { return fake_time_; }
   static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
@@ -260,6 +280,8 @@ TEST_F(CalendarMonthViewTest, UpdateEvents) {
       /*thread_ticks_override=*/nullptr);
 
   CreateMonthView(date, u"America/Los_Angeles");
+  // Used to fetch events and notify observers.
+  base::Time date_midnight = date.UTCMidnight();
 
   TriggerPaint();
   // Grayed out cell. Sep 2nd is the 33 one in this calendar, which is with
@@ -274,30 +296,50 @@ TEST_F(CalendarMonthViewTest, UpdateEvents) {
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
-  EXPECT_EQ(u"Wednesday, August 18, 2021, 0 events",
+  EXPECT_EQ(u"Wednesday, August 18, 2021, Loading events.",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
 
-  // After events are fetched before re-painting the event number is not
-  // updated.
-  UploadEvents();
+  InsertPendingFetches(date_midnight);
+  // Grayed out cell. Sep 2nd is the 33 one in this calendar, which is with
+  // index 32.
   EXPECT_EQ(u"2",
             static_cast<CalendarDateCellView*>(month_view()->children()[32])
                 ->GetText());
   EXPECT_EQ(u"",
             static_cast<CalendarDateCellView*>(month_view()->children()[32])
                 ->GetTooltipText());
+  // Regular cell. The 18th child is the cell 18 which is with index 17.
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
-  EXPECT_EQ(u"Wednesday, August 18, 2021, 0 events",
+  EXPECT_EQ(u"Wednesday, August 18, 2021, Loading events.",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
 
-  // After re-painting, the event numbers are updated for regular cells, not for
-  // grayed out cells.
-  month_view()->SchedulePaintChildren();
-  TriggerPaint();
+  // After events are fetched before the observers are notified the event number
+  // is not updated.
+  DeletePendingFetches(date_midnight);
+  UploadEvents();
+  // Grayed out cell. Sep 2nd is the 33 one in this calendar, which is with
+  // index 32.
+  EXPECT_EQ(u"2",
+            static_cast<CalendarDateCellView*>(month_view()->children()[32])
+                ->GetText());
+  EXPECT_EQ(u"",
+            static_cast<CalendarDateCellView*>(month_view()->children()[32])
+                ->GetTooltipText());
+  // Regular cell. The 18th child is the cell 18 which is with index 17.
+  EXPECT_EQ(u"18",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetText());
+  EXPECT_EQ(u"Wednesday, August 18, 2021, Loading events.",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetTooltipText());
+
+  // After notifying observers and repainting, the event numbers are updated for
+  // regular cells, not for grayed out cells.
+  NotifyObservers(date_midnight);
   EXPECT_EQ(u"2",
             static_cast<CalendarDateCellView*>(month_view()->children()[32])
                 ->GetText());
@@ -326,12 +368,14 @@ TEST_F(CalendarMonthViewTest, TimeZone) {
       &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
+  // Used to fetch events and notify observers.
+  base::Time date_midnight = date.UTCMidnight();
+
   // Sets the timezone to "America/Los_Angeles";
   CreateMonthView(date, u"America/Los_Angeles");
   TriggerPaint();
   UploadEvents();
-  month_view()->SchedulePaintChildren();
-  TriggerPaint();
+  NotifyObservers(date_midnight);
 
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
@@ -374,10 +418,12 @@ TEST_F(CalendarMonthViewTest, InactiveUserSession) {
       /*thread_ticks_override=*/nullptr);
 
   CreateMonthView(date, u"America/Los_Angeles");
+  // Used to fetch events and notify observers.
+  base::Time date_midnight = date.UTCMidnight();
+
   TriggerPaint();
   UploadEvents();
-  month_view()->SchedulePaintChildren();
-  TriggerPaint();
+  NotifyObservers(date_midnight);
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
@@ -388,7 +434,7 @@ TEST_F(CalendarMonthViewTest, InactiveUserSession) {
   // Changes user session to inactive. Should not show event number.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::OOBE);
-  month_view()->SchedulePaintChildren();
+  month_view()->UpdateIsFetchedAndRepaint(false);
   TriggerPaint();
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
@@ -399,7 +445,7 @@ TEST_F(CalendarMonthViewTest, InactiveUserSession) {
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
-  month_view()->SchedulePaintChildren();
+  month_view()->UpdateIsFetchedAndRepaint(false);
   TriggerPaint();
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])

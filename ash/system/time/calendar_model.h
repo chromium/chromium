@@ -33,7 +33,10 @@ using SingleDayEventList = std::list<google_apis::calendar::CalendarEvent>;
 // Controller of the `CalendarView`.
 class ASH_EXPORT CalendarModel : public SessionObserver {
  public:
-  enum FetchingStatus { kNever, kFetching, kSuccess, kError };
+  // kNa is used to represent the fetching status when on the non-logged-in
+  // screens. If kNa is returned, the loading bar won't be shown since events
+  // are not being fetched.
+  enum FetchingStatus { kNever, kFetching, kSuccess, kError, kNa };
 
   CalendarModel();
   CalendarModel(const CalendarModel& other) = delete;
@@ -125,6 +128,8 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   friend class CalendarViewEventListViewTest;
   friend class CalendarMonthViewTest;
   friend class CalendarModelFunctionTest;
+  friend class CalendarViewTest;
+  friend class CalendarViewAnimationTest;
 
   // Methods for dumping various event containers/representations to logs.
   void DebugDumpEventLarge(const char* prefix,
@@ -206,6 +211,12 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   void OnEventFetchFailedInternalError(
       base::Time start_of_month,
       CalendarEventFetchInternalErrorCode error);
+
+  // Inserts month into `pending_fetches_`. For testing only.
+  void InsertPendingFetchesForTesting(base::Time start_of_month);
+
+  // Deletes month from `pending_fetches_`. For testing only.
+  void DeletePendingFetchesForTesting(base::Time start_of_month);
 
   // Internal storage for fetched events, with each fetched month having a
   // map of days to events.

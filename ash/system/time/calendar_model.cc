@@ -518,6 +518,9 @@ SingleDayEventList CalendarModel::FindEvents(base::Time day) const {
 
 CalendarModel::FetchingStatus CalendarModel::FindFetchingStatus(
     base::Time start_time) const {
+  if (!calendar_utils::IsActiveUser())
+    return kNa;
+
   if (pending_fetches_.count(start_time))
     return kFetching;
 
@@ -657,6 +660,14 @@ void CalendarModel::PruneEventCache() {
     months_fetched_.erase(lru_month);
     mru_months_.pop_back();
   }
+}
+
+void CalendarModel::InsertPendingFetchesForTesting(base::Time start_of_month) {
+  pending_fetches_.emplace(start_of_month, nullptr);
+}
+
+void CalendarModel::DeletePendingFetchesForTesting(base::Time start_of_month) {
+  pending_fetches_.erase(start_of_month);
 }
 
 }  // namespace ash

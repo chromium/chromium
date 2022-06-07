@@ -30,7 +30,8 @@ class CalendarDateCellView : public CalendarViewController::Observer,
                        base::Time date,
                        base::TimeDelta time_difference,
                        bool is_grayed_out_date,
-                       int row_index);
+                       int row_index,
+                       bool is_fetched);
   CalendarDateCellView(const CalendarDateCellView& other) = delete;
   CalendarDateCellView& operator=(const CalendarDateCellView& other) = delete;
   ~CalendarDateCellView() override;
@@ -55,8 +56,8 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   // Sets the tooltip label and a11y label based on the `event_number_`.
   void SetTooltipAndAccessibleName();
 
-  // Schedule paint the cell to show the event dot.
-  void MaybeSchedulePaint();
+  // Updates the fetching status and checks if needs to repaint.
+  void UpdateFetchStatus(bool is_fetched);
 
   // When focusing on the date cell for the first time, it shows "Use arrow keys
   // to navigate between dates" as instructions.
@@ -89,6 +90,9 @@ class CalendarDateCellView : public CalendarViewController::Observer,
 
   // The row index in the current month for this date cell. Starts from 0.
   const int row_index_;
+
+  // If the events of this date cell's month view have been fetched.
+  bool is_fetched_;
 
   // If the current cell is selected.
   bool is_selected_ = false;
@@ -132,9 +136,6 @@ class ASH_EXPORT CalendarMonthView : public views::View,
   // Disable each cell's focus behavior.
   void DisableFocus();
 
-  // Re-paints the child cells.
-  void SchedulePaintChildren();
-
   // Gets the cells of each row that should be first focused on.
   std::vector<CalendarDateCellView*> focused_cells() { return focused_cells_; }
 
@@ -144,13 +145,19 @@ class ASH_EXPORT CalendarMonthView : public views::View,
   // Returns the index of this month view's last row.
   int last_row_index() const { return last_row_index_; }
 
+  // Updates is_fetched_ for each date cell and schedules repaint.
+  void UpdateIsFetchedAndRepaint(bool updated_is_fetched);
+
  private:
+  // For unit tests.
+  friend class CalendarMonthViewTest;
   // Adds the `current_date`'s `CalendarDateCellView` to the table layout and
   // returns it.
   CalendarDateCellView* AddDateCellToLayout(base::Time current_date,
                                             int column,
                                             bool is_in_current_month,
-                                            int row_index);
+                                            int row_index,
+                                            bool is_fetched);
 
   // Fetches events.
   void FetchEvents(const base::Time& month);

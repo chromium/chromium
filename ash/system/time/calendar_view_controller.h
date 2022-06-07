@@ -52,16 +52,17 @@ class ASH_EXPORT CalendarViewController {
   // Updates the `currently_shown_date_`.
   void UpdateMonth(const base::Time current_month_first_date);
 
-  // Gets the first day of the `currently_shown_date_`'s month, in local time.
-  base::Time GetOnScreenMonthFirstDayLocal();
+  // Gets the first day of the `currently_shown_date_`'s month, in UTC time.
+  // Time difference is applied.
+  base::Time GetOnScreenMonthFirstDayUTC();
 
   // Gets the first day of the nth-previous month based on the
-  // `currently_shown_date_`'s month, in local time.
-  base::Time GetPreviousMonthFirstDayLocal(unsigned int num_months);
+  // `currently_shown_date_`'s month, in UTC time. Time difference is applied.
+  base::Time GetPreviousMonthFirstDayUTC(unsigned int num_months);
 
   // Gets the first day of the nth-next month based on the
-  // `currently_shown_date_`'s month, in local time.
-  base::Time GetNextMonthFirstDayLocal(unsigned int num_months);
+  // `currently_shown_date_`'s month, in UTC time. Time difference is applied.
+  base::Time GetNextMonthFirstDayUTC(unsigned int num_months);
 
   // Gets the month name of the `currently_shown_date_`'s month.
   std::u16string GetOnScreenMonthName() const;
@@ -140,6 +141,9 @@ class ASH_EXPORT CalendarViewController {
   // If the selected date in the current month. This is used to inform the
   // `CalendarView` if the month should be updated when a date is selected.
   bool IsSelectedDateInCurrentMonth();
+
+  // Returns whether the events for `start_of_month` is fetched or not.
+  bool isSuccessfullyFetched(base::Time start_of_month);
 
  private:
   // For unit tests.

@@ -200,7 +200,10 @@ NetworkStateListDetailedView::NetworkStateListDetailedView(
       model_(Shell::Get()->system_tray_model()->network_state_model()),
       info_button_(nullptr),
       settings_button_(nullptr),
-      info_bubble_(nullptr) {}
+      info_bubble_(nullptr) {
+  OverrideProgressBarAccessibleName(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NETWORK_PROGRESS_ACCESSIBLE_NAME));
+}
 
 NetworkStateListDetailedView::~NetworkStateListDetailedView() {
   model_->RemoveObserver(this);

@@ -240,7 +240,7 @@ ASH_EXPORT base::Time GetStartOfNextMonthUTC(base::Time date) {
   return GetStartOfMonthUTC(GetStartOfMonthUTC(date) + base::Days(33));
 }
 
-bool IsActiveUser() {
+ASH_EXPORT bool IsActiveUser() {
   absl::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
   return (user_type && *user_type == user_manager::USER_TYPE_REGULAR) &&

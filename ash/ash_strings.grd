@@ -1756,7 +1756,7 @@ This file contains the strings for ash.
         Toggle marker. <ph name="STATE_TEXT">$1<ex>Marker is on.</ex></ph>
       </message>
 
-      <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE" desc="The accessible title for the projector marker button in the system tray, telling the user how to use the marker."> 
+      <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE" desc="The accessible title for the projector marker button in the system tray, telling the user how to use the marker.">
         Toggle marker. <ph name="STATE_TEXT">$1<ex>Marker is on.</ex></ph> Use the trackpad, touchscreen, or stylus to draw onscreen.
       </message>
 
@@ -3563,6 +3563,10 @@ Connect your device to power.
         <ph name="date">$1<ex>August 31, 2021</ex></ph>, <ph name="number">$2<ex>8</ex></ph> events
       </message>
 
+      <message name="IDS_ASH_CALENDAR_DATE_CELL_LOADING_TOOLTIP" desc="The tooltip of a calendar date cell when the events are loading.">
+        <ph name="date">$1<ex>August 31, 2021</ex></ph>, Loading events.
+      </message>
+
       <message name="IDS_ASH_CALENDAR_DATE_CELL_ON_FOCUS_ACCESSIBLE_DESCRIPTION" desc="The accessible label of a calendar date cell, which is on focused for the first time.">
         <ph name="date_cell_tool_tip">$1<ex>August 31, 2021, 2 events</ex></ph>. Use arrow keys to navigate between dates.
       </message>
@@ -3576,9 +3580,9 @@ Connect your device to power.
       </message>
 
       <message name="IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION" desc="The accessible label of a calendar event entry.">
-        <ph name="start_time">$1<ex>12 PM</ex></ph> to 
-        <ph name="end_time">$2<ex>1 PM</ex></ph>, 
-        <ph name="time_zone">$3<ex>Pacific time</ex></ph>, 
+        <ph name="start_time">$1<ex>12 PM</ex></ph> to
+        <ph name="end_time">$2<ex>1 PM</ex></ph>,
+        <ph name="time_zone">$3<ex>Pacific time</ex></ph>,
         <ph name="event_summary">$4<ex>Lunch break</ex></ph>. Select for more details in Google Calendar.
       </message>
 
@@ -3600,6 +3604,10 @@ Connect your device to power.
 
       <message name="IDS_ASH_CALENDAR_NO_EVENTS" desc="Text that appears on the event list when there are no events.">
         Open in Google calendar
+      </message>
+
+      <message name="IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME" desc="The accessible name for the progress bar shown in the status tray.">
+        Loading
       </message>
 
       <!-- Power off menu  -->
