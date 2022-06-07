@@ -74,7 +74,11 @@ class MODULES_EXPORT MediaDevices final
                               const CaptureHandleConfig*,
                               ExceptionState&);
 
-  ScriptPromise produceCropId(ScriptState*, Element*, ExceptionState&);
+  // Using ProduceCropTarget(), CropTarget.fromElement() can communicate
+  // with the browser process through the mojom pipe that `this` owns.
+  // TODO(crbug.com/1332628): Move most of the logic into crop_target.cc/h,
+  // leaving only communication in MediaDevices.
+  ScriptPromise ProduceCropTarget(ScriptState*, Element*, ExceptionState&);
 
   // EventTarget overrides.
   const AtomicString& InterfaceName() const override;

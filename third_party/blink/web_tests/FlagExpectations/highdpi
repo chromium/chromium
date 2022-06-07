@@ -914,7 +914,7 @@ external/wpt/mediacapture-fromelement/HTMLCanvasElement-getImageData-noframe.htm
 external/wpt/mediacapture-image/MediaStreamTrack-getCapabilities-fast.html [ Pass ]
 external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-in-service-worker.https.html [ Pass ]
 external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Pass ]
-external/wpt/mediacapture-region/MediaDevices-produceCropId.https.html [ Pass ]
+external/wpt/mediacapture-region/CropTarget-fromElement.https.html [ Pass ]
 external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Pass ]
 external/wpt/mediacapture-streams/crashtests/enumerateDevices-after-discard-1.https.html [ Pass ]
 external/wpt/mediasession/setmicrophoneactive.html [ Pass ]

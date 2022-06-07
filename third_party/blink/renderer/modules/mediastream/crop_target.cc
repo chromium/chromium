@@ -68,9 +68,9 @@ ScriptPromise CropTarget::fromElement(ScriptState* script_state,
 
   // TODO(crbug.com/1332628): Perform the following clean-up steps:
   // 1. Stop Web-exposing produceCropId.
-  // 2. Rename it to clarify that it's not Web-exposed (uppercase first letter).
-  // 3. Move some of the error-testing here, leaving MediaDevices with DCHECKs.
-  return media_devices->produceCropId(script_state, element, exception_state);
+  // 2. Move some of the error-testing here, leaving MediaDevices with DCHECKs.
+  return media_devices->ProduceCropTarget(script_state, element,
+                                          exception_state);
 #endif
 }
 

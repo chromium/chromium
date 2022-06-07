@@ -22,17 +22,17 @@
         }
       }
 
-      async function produceCropId(elementId) {
+      async function cropTargetFromElement(elementId) {
         const element = document.getElementById(elementId);
         let cropId;
         try {
-          cropId = await navigator.mediaDevices.produceCropId(element);
+          cropId = await CropTarget.fromElement(element);
           // Explicitly note emptiness to make it clear this is genuine emptiness
           // and not a test error on the C++/JS boundary.
           window.domAutomationController.send(
-              cropId == "" ? "empty-crop-id" : cropId);
+              cropId == "" ? "empty-crop-target" : cropId);
         } catch (e) {
-          window.domAutomationController.send("embedded-produce-crop-id-error");
+          window.domAutomationController.send("embedded-produce-crop-target-error");
         }
       }
 
@@ -51,7 +51,7 @@
         }
       }
 
-      // Allows creating new div-elements for which new crop-IDs may be created.
+      // Allows creating new div-elements for which new crop-targets may be created.
       async function createNewDivElement(divId) {
         let newDiv = document.createElement("div");
         newDiv.id = divId;
@@ -62,8 +62,8 @@
       window.addEventListener("message", (event) => {
         if (event.data == "start-capture") {
           startCapture();
-        } else if (event.data.startsWith("produce-crop-id:")) {
-          produceCropId(event.data.substr("produce-crop-id:".length));
+        } else if (event.data.startsWith("produce-crop-target:")) {
+          cropTargetFromElement(event.data.substr("produce-crop-target:".length));
         } else if (event.data.startsWith("crop-to:")) {
           crop(event.data.substr("crop-to:".length));
         } else if (event.data.startsWith("create-new-div-element:")) {
@@ -80,7 +80,7 @@
   </head>
   <body onload="reportEmbeddingSuccess();">
     <div id="div">
-      <!-- This DIV is just a convenient target for produceCropId. -->
+      <!-- This DIV is just a convenient target for cropTargetFromElement. -->
       <h1>Region Capture Test - Page 1 (Embedded)</h1>
     </div>
   </body>

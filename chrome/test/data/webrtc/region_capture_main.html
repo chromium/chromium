@@ -36,24 +36,24 @@
         // window.domAutomationController.send() called by embedded page.
       }
 
-      async function produceCropId(targetFrame, elementId) {
+      async function cropTargetFromElement(targetFrame, elementId) {
         if (targetFrame == "top") {
           const element = document.getElementById(elementId);
           let cropId;
           try {
-            cropId = await navigator.mediaDevices.produceCropId(element);
+            cropId = await CropTarget.fromElement(element);
           } catch (e) {
-            window.domAutomationController.send("top-level-produce-crop-id-error");
+            window.domAutomationController.send("top-level-produce-crop-target-error");
             return;
           }
           // Explicitly note emptiness so as to make it clear that this is
           // genuine emptiness and not a test error on the C++/JS boundary.
           window.domAutomationController.send(
-              cropId == "" ? "empty-crop-id" : cropId);
+              cropId == "" ? "empty-crop-target" : cropId);
         } else {
           document
             .getElementById("embedded_frame")
-            .contentWindow.postMessage("produce-crop-id:" + elementId, "*");
+            .contentWindow.postMessage("produce-crop-target:" + elementId, "*");
           // window.domAutomationController.send() called by embedded page.
         }
       }
@@ -75,7 +75,7 @@
         }
       }
 
-      // Allows creating new div-elements for which new crop-IDs may be created.
+      // Allows creating new div-elements for which new crop-targets may be created.
       async function createNewDivElement(targetFrame, divId) {
         if (targetFrame == "top") {
           let newDiv = document.createElement("div");
@@ -93,7 +93,7 @@
   </head>
   <body>
     <div id="div">
-      <!-- This DIV is just a convenient target for produceCropId. -->
+      <!-- This DIV is just a convenient target for cropTargetFromElement. -->
       <h1>Region Capture Test - Page 1 (Main)</h1>
       <br/>
     </div>

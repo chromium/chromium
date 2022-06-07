@@ -734,7 +734,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdUnsupportedOnAndroid) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById("test-div");
-  const ScriptPromise div_promise = media_devices->produceCropId(
+  const ScriptPromise div_promise = media_devices->ProduceCropTarget(
       scope.GetScriptState(), div, scope.GetExceptionState());
   platform()->RunUntilIdle();
 #if BUILDFLAG(IS_ANDROID)
@@ -758,14 +758,14 @@ TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById("test-div");
-  const ScriptPromise div_promise = media_devices->produceCropId(
+  const ScriptPromise div_promise = media_devices->ProduceCropTarget(
       scope.GetScriptState(), div, scope.GetExceptionState());
   platform()->RunUntilIdle();
   EXPECT_FALSE(div_promise.IsEmpty());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
   Element* const iframe = document.getElementById("test-iframe");
-  const ScriptPromise iframe_promise = media_devices->produceCropId(
+  const ScriptPromise iframe_promise = media_devices->ProduceCropTarget(
       scope.GetScriptState(), iframe, scope.GetExceptionState());
   platform()->RunUntilIdle();
   EXPECT_FALSE(iframe_promise.IsEmpty());
@@ -784,7 +784,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfUnsupportedElementType) {
 
   Document& document = GetDocument();
   Element* const button = document.getElementById("test-button");
-  const ScriptPromise button_promise = media_devices->produceCropId(
+  const ScriptPromise button_promise = media_devices->ProduceCropTarget(
       scope.GetScriptState(), button, scope.GetExceptionState());
   platform()->RunUntilIdle();
   EXPECT_TRUE(button_promise.IsEmpty());
@@ -808,7 +808,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfDifferentWindow) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById("test-div");
-  const ScriptPromise element_promise = media_devices->produceCropId(
+  const ScriptPromise element_promise = media_devices->ProduceCropTarget(
       scope.GetScriptState(), div, scope.GetExceptionState());
   platform()->RunUntilIdle();
   EXPECT_TRUE(element_promise.IsEmpty());
@@ -833,7 +833,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdDuplicate) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById("test-div");
-  const ScriptPromise first_promise = media_devices->produceCropId(
+  const ScriptPromise first_promise = media_devices->ProduceCropTarget(
       scope.GetScriptState(), div, scope.GetExceptionState());
   ScriptPromiseTester first_tester(scope.GetScriptState(), first_promise);
   first_tester.WaitUntilSettled();
@@ -841,7 +841,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdDuplicate) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
   // The second call to |produceCropId| should return the same ID.
-  const ScriptPromise second_promise = media_devices->produceCropId(
+  const ScriptPromise second_promise = media_devices->ProduceCropTarget(
       scope.GetScriptState(), div, scope.GetExceptionState());
   ScriptPromiseTester second_tester(scope.GetScriptState(), second_promise);
   second_tester.WaitUntilSettled();
@@ -867,7 +867,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
   Element* const div = document.getElementById("test-div");
   dispatcher_host().SetNextCropId(
       String(base::GUID::GenerateRandomV4().AsLowercaseString()));
-  const ScriptPromise promise = media_devices->produceCropId(
+  const ScriptPromise promise = media_devices->ProduceCropTarget(
       scope.GetScriptState(), div, scope.GetExceptionState());
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
