@@ -22,7 +22,8 @@ frame tree and its frame tree appears as it would for the web exposed
 Building on the concept above that a `FrameTree` can have an embedded
 `FrameTree` (and many nesting levels of them), there is the concept of
 the `OutermostMainFrame`. The OutermostMainFrame is the main frame (root)
-of a FrameTree that is not embedded in other FrameTrees.[^1]
+of a FrameTree that is not embedded in other FrameTrees.
+[See footnote 1.](#footnote_1)
 
 So that does mean there can be __multiple main frames__ in a displayed
 tab to the user. For features like `fencedframes` the inner `FrameTree`
@@ -31,10 +32,11 @@ has a main frame but it will not be an `OutermostMainFrame`.
 To determine whether something is a main frame `RenderFrameHost::GetParent`
 is typically used. Likewise there is a `RenderFrameHost::GetParentOrOuterDocument` to determine if something is an `OutermostMainFrame`.
 
+```
 Example Frame Tree:
     A
      B (iframe)
-     C (fenced frame - placeholder frame)[^2]
+     C (fenced frame - placeholder frame) [See footnote 2.]
       C* (main frame in fenced frame).
 
     C* GetParent returns null.
@@ -42,6 +44,7 @@ Example Frame Tree:
     C GetParent & GetParentOrOuterDocument returns A.
     B GetParent & GetParentOrOuterDocument returns A.
     A GetParent & GetParentOrOuterDocument returns nullptr.
+```
 
 ## Can I have multiple outermost main frames?
 
@@ -71,11 +74,13 @@ The primary page can change over time (see
 navigating, a `Page` is restored from the `BackForwardCache` or from the
 prendering pages.
 
-[^1] GuestViews (embedding of a WebContents inside another WebContents) are
+## Footnotes
+
+<a name="footnote_1"></a>1: GuestViews (embedding of a WebContents inside another WebContents) are
 considered embedded FrameTrees as well. However for consideration of
 OutermostMainFrames (ie. GetParentOrOuterDocument, Primary page) they do not
 escape the WebContents boundary because of the logical embedding boundary.
 
-[^2] The placeholder RenderFrameHost is generally not exposed outside
+<a name="footnote_2"></a>2: The placeholder RenderFrameHost is generally not exposed outside
 of the content boundary. Iteration APIs such as ForEachRenderFrameHost
 do not visit this node.
