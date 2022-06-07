@@ -3363,6 +3363,9 @@ namespace gl {
              'memcmp(this_bytes, this_bytes + 1, sizeof(*this) - 1) == 0);\n');
   file.write('\n')
 
+  def BindingsAreAllStatic(api_set_name):
+    return api_set_name == 'egl'
+
   def WriteFuncBinding(file, known_as, version_name):
     file.write(
         '  fn.%sFn = reinterpret_cast<%sProc>(GetGLProcAddress("%s"));\n' %
@@ -3371,7 +3374,7 @@ namespace gl {
   for func in functions:
     if 'static_binding' in func:
       WriteFuncBinding(file, func['known_as'], func['static_binding'])
-    elif set_name == 'egl':
+    elif BindingsAreAllStatic(set_name):
       assert len(func['versions']) == 1
       version = func['versions'][0]
       WriteFuncBinding(file, func['known_as'], version['name'])
@@ -3468,8 +3471,8 @@ void Driver%s::InitializeExtensionBindings() {
   OutputExtensionSettings(
     'extensions',
     sorted(used_client_extensions),
-    '' if set_name == 'egl' else 'ext.')
-  if set_name == 'gl' or set_name == 'glx':
+    '' if BindingsAreAllStatic(set_name) else 'ext.')
+  if not BindingsAreAllStatic(set_name):
     OutputExtensionBindings(
       [ f for f in functions if IsClientExtensionFunc(f) ])
 
@@ -3487,8 +3490,8 @@ void ExtensionsEGL::InitializeExtensionSettings(GLDisplayEGL* display) {
   OutputExtensionSettings(
     'extensions',
     sorted(used_extensions),
-    '' if set_name == 'egl' else 'ext.')
-  if set_name == 'gl' or set_name == 'glx':
+    '' if BindingsAreAllStatic(set_name) else 'ext.')
+  if not BindingsAreAllStatic(set_name):
     OutputExtensionBindings(
       [ f for f in functions if not IsClientExtensionFunc(f) ])
   file.write('}\n')
