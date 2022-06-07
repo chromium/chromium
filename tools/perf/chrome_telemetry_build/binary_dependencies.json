@@ -31,30 +31,6 @@
         }
       }
     },
-    "flash": {
-      "file_info": {
-        "linux_x86_64": {
-          "local_paths": [
-            "../../../third_party/adobe/flash/binaries/ppapi/linux_64/libpepflashplayer.so"
-          ]
-        },
-        "mac_x86_64": {
-          "local_paths": [
-            "../../../third_party/adobe/flash/binaries/ppapi/mac_64/PepperFlashPlayer.plugin"
-          ]
-        },
-        "win_AMD64": {
-          "local_paths": [
-            "../../../third_party/adobe/flash/binaries/ppapi/win_x64/pepflashplayer.dll"
-          ]
-        },
-        "win_x86": {
-          "local_paths": [
-            "../../../third_party/adobe/flash/binaries/ppapi/win/pepflashplayer.dll"
-          ]
-        }
-      }
-    },
     "generate_breakpad_symbols": {
       "file_info": {
         "mac_arm64": {
