@@ -7,7 +7,6 @@ import 'chrome://whats-new/whats_new_app.js';
 import {CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
@@ -44,7 +43,6 @@ suite('WhatsNewAppTest', function() {
   });
 
   test('with query parameters', async () => {
-    loadTimeData.overrideValues({'showFeedbackButton': true});
     const proxy = new TestWhatsNewProxy(whatsNewURL);
     WhatsNewProxyImpl.setInstance(proxy);
     window.history.replaceState({}, '', '?auto=true');
@@ -58,13 +56,11 @@ suite('WhatsNewAppTest', function() {
     assertTrue(!!iframe);
     // iframe has latest=true URL query parameter except on CrOS
     assertEquals(
-        whatsNewURL + (isChromeOS ? '?latest=false' : '?latest=true') +
-            '&feedback=true',
+        whatsNewURL + (isChromeOS ? '?latest=false' : '?latest=true'),
         iframe.src);
   });
 
   test('with version as query parameter', async () => {
-    loadTimeData.overrideValues({'showFeedbackButton': true});
     const proxy = new TestWhatsNewProxy(whatsNewURL + '?version=m98');
     WhatsNewProxyImpl.setInstance(proxy);
     window.history.replaceState({}, '', '?auto=true');
@@ -79,12 +75,11 @@ suite('WhatsNewAppTest', function() {
     // iframe has latest=true URL query parameter except on CrOS
     assertEquals(
         whatsNewURL + '?version=m98' +
-            (isChromeOS ? '&latest=false' : '&latest=true') + '&feedback=true',
+            (isChromeOS ? '&latest=false' : '&latest=true'),
         iframe.src);
   });
 
   test('no query parameters', async () => {
-    loadTimeData.overrideValues({'showFeedbackButton': false});
     const proxy = new TestWhatsNewProxy(whatsNewURL);
     WhatsNewProxyImpl.setInstance(proxy);
     window.history.replaceState({}, '', '/');
@@ -96,7 +91,7 @@ suite('WhatsNewAppTest', function() {
     const iframe =
         whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
     assertTrue(!!iframe);
-    assertEquals(whatsNewURL + '?latest=false&feedback=false', iframe.src);
+    assertEquals(whatsNewURL + '?latest=false', iframe.src);
   });
 
   test('with command', async () => {

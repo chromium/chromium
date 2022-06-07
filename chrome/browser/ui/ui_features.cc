@@ -41,10 +41,6 @@ const base::Feature kChromeWhatsNewUI {
 #endif
 };
 
-// Whether to show a feedback button in the What's New UI.
-const base::FeatureParam<bool> kChromeWhatsNewUIFeedbackButton{
-    &kChromeWhatsNewUI, "ChromeWhatsNewUIFeedbackButton", false};
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Enables "new" badge for "Chrome What's New" in Main Chrome Menu | Help.
 const base::Feature kChromeWhatsNewInMainMenuNewBadge{
