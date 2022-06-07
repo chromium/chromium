@@ -112,6 +112,12 @@ class MockQuotaManager : public QuotaManager {
   // calls to this function.
   void NotifyWriteFailed(const blink::StorageKey& storage_key) override;
 
+  void CreateBucketForTesting(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      blink::mojom::StorageType storage_type,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
+
   // Helper method for updating internal quota info.
   void SetQuota(const blink::StorageKey& storage_key,
                 blink::mojom::StorageType type,

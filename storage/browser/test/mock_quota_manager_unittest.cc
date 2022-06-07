@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -95,6 +96,16 @@ class MockQuotaManagerTest : public testing::Test {
         }));
     run_loop.Run();
     return result;
+  }
+
+  QuotaErrorOr<BucketInfo> CreateBucketForTesting(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      blink::mojom::StorageType type) {
+    base::test::TestFuture<QuotaErrorOr<BucketInfo>> bucket_future;
+    manager_->CreateBucketForTesting(storage_key, bucket_name, type,
+                                     bucket_future.GetCallback());
+    return bucket_future.Take();
   }
 
   void GetModifiedBuckets(StorageType type, base::Time begin, base::Time end) {
@@ -200,6 +211,41 @@ TEST_F(MockQuotaManagerTest, GetOrCreateBucket) {
     EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), client_type));
     EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), client_type));
   }
+}
+
+TEST_F(MockQuotaManagerTest, CreateBucketForTesting) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://host2:1/");
+  const char kBucketName[] = "bucket_name";
+
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 0);
+  EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
+
+  QuotaErrorOr<BucketInfo> bucket1 =
+      CreateBucketForTesting(kStorageKey1, kBucketName, kTemporary);
+  EXPECT_TRUE(bucket1.ok());
+  EXPECT_EQ(bucket1->storage_key, kStorageKey1);
+  EXPECT_EQ(bucket1->name, kBucketName);
+  EXPECT_EQ(bucket1->type, kTemporary);
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 1);
+  EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), kClientFile));
+
+  QuotaErrorOr<BucketInfo> bucket2 =
+      CreateBucketForTesting(kStorageKey2, kBucketName, kTemporary);
+  EXPECT_TRUE(bucket2.ok());
+  EXPECT_EQ(bucket2->storage_key, kStorageKey2);
+  EXPECT_EQ(bucket2->name, kBucketName);
+  EXPECT_EQ(bucket2->type, kTemporary);
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
+  EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), kClientFile));
+
+  QuotaErrorOr<BucketInfo> dupe_bucket =
+      GetOrCreateBucket(kStorageKey1, kBucketName);
+  EXPECT_TRUE(dupe_bucket.ok());
+  EXPECT_EQ(dupe_bucket.value(), bucket1.value());
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
 }
 
 TEST_F(MockQuotaManagerTest, GetBucket) {

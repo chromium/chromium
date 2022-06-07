@@ -76,6 +76,18 @@ void MockQuotaManager::UpdateOrCreateBucket(
   std::move(callback).Run(std::move(bucket));
 }
 
+void MockQuotaManager::CreateBucketForTesting(
+    const blink::StorageKey& storage_key,
+    const std::string& bucket_name,
+    blink::mojom::StorageType storage_type,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  const BucketInitParams params = BucketInitParams(storage_key, bucket_name);
+  BucketInfo bucket = CreateBucket(params, storage_type);
+  buckets_.emplace_back(
+      BucketData(bucket, storage::AllQuotaClientTypes(), base::Time::Now()));
+  std::move(callback).Run(std::move(bucket));
+}
+
 void MockQuotaManager::GetOrCreateBucketDeprecated(
     const BucketInitParams& params,
     blink::mojom::StorageType type,

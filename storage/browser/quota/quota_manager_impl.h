@@ -203,7 +203,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   //
   // TODO(crbug.com/1208141): Remove `storage_type` when the only supported
   // StorageType is kTemporary.
-  void CreateBucketForTesting(
+  virtual void CreateBucketForTesting(
       const blink::StorageKey& storage_key,
       const std::string& bucket_name,
       blink::mojom::StorageType storage_type,
