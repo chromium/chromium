@@ -123,9 +123,16 @@ const base::Feature kSystemCaptionStyle{"SystemCaptionStyle",
 
 // When enabled, the feature will query the OS for a default cursor size,
 // to be used in determining the concrete object size of a custom cursor in
-// blink.
+// blink. Currently enabled by default on Windows only.
+// TODO(crbug.com/1333523) - Implement for other platforms.
 const base::Feature kSystemCursorSizeSupported{
-    "SystemCursorSizeSupported", base::FEATURE_DISABLED_BY_DEFAULT};
+  "SystemCursorSizeSupported",
+#if BUILDFLAG(IS_WIN)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 bool IsSystemCursorSizeSupported() {
   return base::FeatureList::IsEnabled(kSystemCursorSizeSupported);
