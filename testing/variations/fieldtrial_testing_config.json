@@ -8813,6 +8813,11 @@
             "experiments": [
                 {
                     "name": "Vulkan",
+                    "params": {
+                        "BlockListByBoard": "RM67*|RM68*|k68*|mt6*|oppo67*|oppo68*|QM215|rk30sdk|secret|maltose|rosemary|HLTE322E*|lisbon|lancelot|Infinix-X695|g2062upt_v1_gd_sh2_gq_eea_r|cannong|TECNO-CG8",
+                        "disable_by_gl_driver": "324.0|331.0|334.0|378.0|415.0|420.0|444.0",
+                        "disable_by_gl_renderer": "*Mali-G72*|*Mali-G?? M*"
+                    },
                     "enable_features": [
                         "Vulkan"
                     ],
