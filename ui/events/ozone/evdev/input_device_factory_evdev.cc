@@ -545,7 +545,9 @@ void InputDeviceFactoryEvdev::NotifyMouseDevicesUpdated() {
   for (auto it = converters_.begin(); it != converters_.end(); ++it) {
     if (it->second->HasMouse()) {
       mice.push_back(it->second->input_device());
-      has_mouse = true;
+      // Some I2C touchpads falsely claim to be mice, see b/205272718
+      if (it->second->type() != ui::InputDeviceType::INPUT_DEVICE_INTERNAL)
+        has_mouse = true;
     } else if (it->second->HasPointingStick()) {
       mice.push_back(it->second->input_device());
       has_pointing_stick = true;

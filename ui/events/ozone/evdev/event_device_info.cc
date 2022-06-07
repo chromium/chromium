@@ -770,6 +770,7 @@ bool EventDeviceInfo::HasMouse() const {
       input_id_.product == kSteelSeriesStratusDuoBluetoothProductId) {
     return false;
   }
+
   return HasRelXY() && !HasProp(INPUT_PROP_POINTING_STICK);
 }
 
