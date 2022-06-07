@@ -3351,7 +3351,7 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_SUGGESTED_HELP_CONTENT" translateable="false" desc="Label for help content when there are matched results.">
         Suggested help content
       </message>
-      <message name="IDS_FEEDBACK_TOOL_DESCRIPTION_REQUIRED" translateable="false" desc="Label showing error message when clicking continue button without a description.">
+      <message name="IDS_FEEDBACK_TOOL_DESCRIPTION_REQUIRED" desc="Label showing error message when clicking continue button without a description.">
         Description is required
       </message>
       <message name="IDS_FEEDBACK_TOOL_FEEDBACK_HELP_LINK_LABEL" desc="The text used for the link that navigates to the feedback help webpage.">
