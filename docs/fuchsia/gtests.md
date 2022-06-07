@@ -108,7 +108,7 @@ up the connection between the host and the remote device.
 
 ```bash
 $ out/fuchsia/bin/run_base_unittests -d \
-  --host=localhost --ssh-config=/path/to/ssh/config
+  --host=::1 --port=8022 --ssh-config=/path/to/ssh/config
 ```
 
 ## Troubleshooting a test
