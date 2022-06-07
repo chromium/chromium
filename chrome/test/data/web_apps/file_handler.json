@@ -1,6 +1,6 @@
 {
   "name": "Web app with file handlers",
-  "start_url": "file_handler_start.html",
+  "start_url": "file_handler_index.html",
   "display": "standalone",
   "file_handlers": [
     {
