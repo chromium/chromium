@@ -324,9 +324,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
     usage_cache()->Delete(sandbox_file_system_.GetUsageCachePath());
   }
 
-  int64_t SizeByQuotaUtil() {
-    return sandbox_file_system_.GetCachedStorageKeyUsage();
-  }
+  int64_t SizeByQuotaUtil() { return sandbox_file_system_.GetCachedUsage(); }
 
   int64_t SizeInUsageFile() {
     task_environment_.RunUntilIdle();
@@ -478,8 +476,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
    private:
     void Check() {
-      ASSERT_EQ(expected_usage_,
-                sandbox_file_system_->GetCachedStorageKeyUsage());
+      ASSERT_EQ(expected_usage_, sandbox_file_system_->GetCachedUsage());
     }
 
     std::unique_ptr<FileSystemOperationContext> context_;
@@ -490,7 +487,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
   std::unique_ptr<UsageVerifyHelper> AllowUsageIncrease(
       int64_t requested_growth) {
-    int64_t usage = sandbox_file_system_.GetCachedStorageKeyUsage();
+    int64_t usage = sandbox_file_system_.GetCachedUsage();
     return std::make_unique<UsageVerifyHelper>(LimitedContext(requested_growth),
                                                &sandbox_file_system_,
                                                usage + requested_growth, this);
@@ -498,7 +495,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
   std::unique_ptr<UsageVerifyHelper> DisallowUsageIncrease(
       int64_t requested_growth) {
-    int64_t usage = sandbox_file_system_.GetCachedStorageKeyUsage();
+    int64_t usage = sandbox_file_system_.GetCachedUsage();
     return std::make_unique<UsageVerifyHelper>(
         LimitedContext(requested_growth - 1), &sandbox_file_system_, usage,
         this);

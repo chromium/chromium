@@ -232,6 +232,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   bool is_incognito() { return is_incognito_; }
 
   ObfuscatedFileUtilDelegate* delegate() { return delegate_.get(); }
+  // Not owned.
+  SandboxFileSystemBackendDelegate* sandbox_delegate() {
+    return sandbox_delegate_;
+  }
 
  private:
   using FileId = SandboxDirectoryDatabase::FileId;

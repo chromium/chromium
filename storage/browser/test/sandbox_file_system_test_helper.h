@@ -40,8 +40,8 @@ class QuotaManagerProxy;
 namespace storage {
 
 // Filesystem test helper class that encapsulates test environment for
-// a given {origin, type} pair.  This helper only works for sandboxed
-// file systems (Temporary or Persistent).
+// a given {StorageKey, (optional) BucketLocator, type} pair.  This helper only
+// works for sandboxed file systems (Temporary or Persistent).
 class SandboxFileSystemTestHelper {
  public:
   SandboxFileSystemTestHelper(const blink::StorageKey& storage_key,
@@ -55,11 +55,15 @@ class SandboxFileSystemTestHelper {
   // have multiple databases fighting over the lock to the origin directory
   // [deep down inside ObfuscatedFileUtil].
   void SetUp(scoped_refptr<FileSystemContext> file_system_context);
+  void SetUp(scoped_refptr<FileSystemContext> file_system_context,
+             const blink::StorageKey& storage_key);
+  void SetUp(scoped_refptr<FileSystemContext> file_system_context,
+             const BucketLocator& bucket_locator);
   void SetUp(const base::FilePath& base_dir,
              scoped_refptr<QuotaManagerProxy> quota_manager_proxy);
   void TearDown();
 
-  base::FilePath GetStorageKeyRootPath();
+  base::FilePath GetRootPath();
   base::FilePath GetLocalPath(const base::FilePath& path);
   base::FilePath GetLocalPathFromASCII(const std::string& path);
 
@@ -72,7 +76,7 @@ class SandboxFileSystemTestHelper {
   }
 
   // This returns cached usage size returned by QuotaUtil.
-  int64_t GetCachedStorageKeyUsage() const;
+  int64_t GetCachedUsage() const;
 
   // This doesn't work with OFSFU.
   int64_t ComputeCurrentStorageKeyUsage();
@@ -90,6 +94,7 @@ class SandboxFileSystemTestHelper {
   }
 
   const blink::StorageKey& storage_key() const { return storage_key_; }
+
   FileSystemType type() const { return type_; }
   blink::mojom::StorageType storage_type() const {
     return FileSystemTypeToQuotaStorageType(type_);
@@ -103,8 +108,9 @@ class SandboxFileSystemTestHelper {
   void SetUpFileSystem();
 
   scoped_refptr<FileSystemContext> file_system_context_;
+  absl::optional<BucketLocator> bucket_locator_;
 
-  const blink::StorageKey storage_key_;
+  blink::StorageKey storage_key_;
   const FileSystemType type_;
   raw_ptr<FileSystemFileUtil> file_util_;
 };
