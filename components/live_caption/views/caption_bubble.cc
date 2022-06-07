@@ -1071,8 +1071,6 @@ void CaptionBubble::OnInactivityTimeout() {
   if (HasMediaFoundationError())
     return;
 
-  Hide();
-
   // Clear the partial and final text in the caption bubble model and the label.
   // Does not affect the speech service. The speech service will emit a final
   // result after ~10-15 seconds of no audio which the caption bubble will
@@ -1082,6 +1080,8 @@ void CaptionBubble::OnInactivityTimeout() {
   // contain text cleared by the UI.
   if (model_)
     model_->ClearText();
+
+  Hide();
 }
 
 void CaptionBubble::MediaFoundationErrorCheckboxPressed() {

@@ -132,6 +132,11 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     return controller_ && controller_->IsWidgetVisibleForTesting();
   }
 
+  bool HasMediaFoundationError() {
+    return controller_ &&
+           controller_->caption_bubble_->HasMediaFoundationError();
+  }
+
   void DestroyController() { controller_.reset(nullptr); }
 
   void ClickButton(views::Button* button) {
@@ -170,6 +175,19 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   void OnError(CaptionBubbleContext* caption_bubble_context) {
     GetController()->OnError(
         caption_bubble_context, CaptionBubbleErrorType::GENERIC,
+        base::RepeatingClosure(),
+        base::BindRepeating(
+            [](CaptionBubbleErrorType error_type, bool checked) {}));
+  }
+
+  void OnMediaFoundationError() {
+    OnMediaFoundationError(GetCaptionBubbleContext());
+  }
+
+  void OnMediaFoundationError(CaptionBubbleContext* caption_bubble_context) {
+    GetController()->OnError(
+        caption_bubble_context,
+        CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED,
         base::RepeatingClosure(),
         base::BindRepeating(
             [](CaptionBubbleErrorType error_type, bool checked) {}));
@@ -1099,6 +1117,37 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
   // TODO(crbug.com/1055150): Test that browser window is active. It works in
   // app but the tests aren't working.
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       ErrorHidesAfterInactivity) {
+  // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer with
+  // a mock tick clock that replaces the default tick clock with mock time.
+  base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
+  SetTickClockForTesting(test_task_runner->GetMockTickClock());
+
+  OnError();
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_FALSE(HasMediaFoundationError());
+  EXPECT_EQ("", GetLabelText());
+  ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
+
+  // Verify that the caption bubble hides due to inactivity.
+  test_task_runner->FastForwardBy(base::Seconds(15));
+  EXPECT_FALSE(IsWidgetVisible());
+  EXPECT_EQ("", GetLabelText());
+
+  OnMediaFoundationError();
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_TRUE(HasMediaFoundationError());
+  EXPECT_EQ("", GetLabelText());
+  ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
+
+  // The Media Foundation renderer unsupported error should not hide to due
+  // inactivity.
+  test_task_runner->FastForwardBy(base::Seconds(15));
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_EQ("", GetLabelText());
 }
 
 }  // namespace captions
