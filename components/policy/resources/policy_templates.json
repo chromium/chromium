@@ -9731,7 +9731,7 @@
           'caption': 'Do not allow CRD to execute WebAuthn API requests proxied from a remote host.',
         },
       ],
-      'future_on': ['chrome.*', 'chrome_os'],
+      'supported_on': ['chrome.*:103-', 'chrome_os:103-'],
       'features': {
         'dynamic_refresh': True,
         'internal_only': True,  # Not available outside of Google.
