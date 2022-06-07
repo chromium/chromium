@@ -163,30 +163,29 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     return RespondNow(Error(constants::kErrorUtteranceTooLong));
   }
 
-  std::unique_ptr<base::DictionaryValue> options(new base::DictionaryValue());
-  if (args().size() >= 2 && args()[1].is_dict()) {
-    const base::DictionaryValue& temp_options =
-        base::Value::AsDictionaryValue(args()[1]);
-    options.reset(temp_options.DeepCopy());
-  }
+  base::Value::Dict options;
+  if (args().size() >= 2 && args()[1].is_dict())
+    options = args()[1].GetDict().Clone();
 
   std::string voice_name;
-  if (options->HasKey(constants::kVoiceNameKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetString(constants::kVoiceNameKey, &voice_name));
+  if (base::Value* voice_name_value = options.Find(constants::kVoiceNameKey)) {
+    EXTENSION_FUNCTION_VALIDATE(voice_name_value->is_string());
+    voice_name = voice_name_value->GetString();
   }
 
   std::string lang;
-  if (options->HasKey(constants::kLangKey))
-    EXTENSION_FUNCTION_VALIDATE(options->GetString(constants::kLangKey, &lang));
+  if (base::Value* lang_value = options.Find(constants::kLangKey)) {
+    EXTENSION_FUNCTION_VALIDATE(lang_value->is_string());
+    lang = lang_value->GetString();
+  }
   if (!lang.empty() && !l10n_util::IsValidLocaleSyntax(lang)) {
     return RespondNow(Error(constants::kErrorInvalidLang));
   }
 
   double rate = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (options->HasKey(constants::kRateKey)) {
+  if (options.contains(constants::kRateKey)) {
     absl::optional<double> rate_option =
-        options->FindDoubleKey(constants::kRateKey);
+        options.FindDouble(constants::kRateKey);
     EXTENSION_FUNCTION_VALIDATE(rate_option);
     if (rate_option)
       rate = *rate_option;
@@ -196,9 +195,9 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   double pitch = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (options->HasKey(constants::kPitchKey)) {
+  if (options.contains(constants::kPitchKey)) {
     absl::optional<double> pitch_option =
-        options->FindDoubleKey(constants::kPitchKey);
+        options.FindDouble(constants::kPitchKey);
     EXTENSION_FUNCTION_VALIDATE(pitch_option);
     if (pitch_option)
       pitch = *pitch_option;
@@ -208,9 +207,9 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   double volume = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (options->HasKey(constants::kVolumeKey)) {
+  if (options.contains(constants::kVolumeKey)) {
     absl::optional<double> volume_option =
-        options->FindDoubleKey(constants::kVolumeKey);
+        options.FindDouble(constants::kVolumeKey);
     EXTENSION_FUNCTION_VALIDATE(volume_option);
     if (volume_option)
       volume = *volume_option;
@@ -219,18 +218,17 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     }
   }
 
-  bool can_enqueue =
-      options->FindBoolKey(constants::kEnqueueKey).value_or(false);
-  if (base::Value* value = options->FindKey(constants::kEnqueueKey)) {
+  bool can_enqueue = options.FindBool(constants::kEnqueueKey).value_or(false);
+  if (base::Value* value = options.Find(constants::kEnqueueKey)) {
     EXTENSION_FUNCTION_VALIDATE(value->is_bool());
   }
 
   std::set<content::TtsEventType> required_event_types;
-  if (options->HasKey(constants::kRequiredEventTypesKey)) {
-    const base::Value* list =
-        options->FindListKey(constants::kRequiredEventTypesKey);
+  if (options.contains(constants::kRequiredEventTypesKey)) {
+    const base::Value::List* list =
+        options.FindList(constants::kRequiredEventTypesKey);
     EXTENSION_FUNCTION_VALIDATE(list);
-    for (const base::Value& i : list->GetListDeprecated()) {
+    for (const base::Value& i : *list) {
       const std::string* event_type = i.GetIfString();
       if (event_type) {
         required_event_types.insert(
@@ -240,11 +238,11 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   std::set<content::TtsEventType> desired_event_types;
-  if (options->HasKey(constants::kDesiredEventTypesKey)) {
-    const base::Value* list =
-        options->FindListKey(constants::kDesiredEventTypesKey);
+  if (options.contains(constants::kDesiredEventTypesKey)) {
+    const base::Value::List* list =
+        options.FindList(constants::kDesiredEventTypesKey);
     EXTENSION_FUNCTION_VALIDATE(list);
-    for (const base::Value& i : list->GetListDeprecated()) {
+    for (const base::Value& i : *list) {
       const std::string* event_type = i.GetIfString();
       if (event_type)
         desired_event_types.insert(TtsEventTypeFromString(event_type->c_str()));
@@ -252,15 +250,17 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   std::string voice_extension_id;
-  if (options->HasKey(constants::kExtensionIdKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetString(constants::kExtensionIdKey, &voice_extension_id));
+  if (base::Value* voice_extension_id_value =
+          options.Find(constants::kExtensionIdKey)) {
+    EXTENSION_FUNCTION_VALIDATE(voice_extension_id_value->is_string());
+    voice_extension_id = voice_extension_id_value->GetString();
   }
 
   int src_id = -1;
-  if (options->HasKey(constants::kSrcIdKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetInteger(constants::kSrcIdKey, &src_id));
+  if (options.contains(constants::kSrcIdKey)) {
+    absl::optional<int> srd_id_option = options.FindInt(constants::kSrcIdKey);
+    EXTENSION_FUNCTION_VALIDATE(srd_id_option);
+    src_id = *srd_id_option;
   }
 
   // If we got this far, the arguments were all in the valid format, so
@@ -281,7 +281,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   utterance->SetRequiredEventTypes(required_event_types);
   utterance->SetDesiredEventTypes(desired_event_types);
   utterance->SetEngineId(voice_extension_id);
-  utterance->SetOptions(options.get());
+  utterance->SetOptions(std::move(options));
   utterance->SetEventDelegate(new TtsExtensionEventHandler(extension_id()));
 
   content::TtsController* controller = content::TtsController::GetInstance();

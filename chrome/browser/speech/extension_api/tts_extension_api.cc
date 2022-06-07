@@ -191,39 +191,27 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     return RespondNow(Error(constants::kErrorUtteranceTooLong));
   }
 
-  std::unique_ptr<base::DictionaryValue> options(new base::DictionaryValue());
-  if (args().size() >= 2) {
-    if (args()[1].is_dict()) {
-      const base::DictionaryValue& temp_options =
-          base::Value::AsDictionaryValue(args()[1]);
-      options.reset(temp_options.DeepCopy());
-    }
-  }
+  base::Value::Dict options;
+  if (args().size() >= 2 && args()[1].is_dict())
+    options = args()[1].GetDict().Clone();
 
   std::string voice_name;
-  if (options->FindKey(constants::kVoiceNameKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetString(constants::kVoiceNameKey, &voice_name));
+  if (base::Value* voice_name_value = options.Find(constants::kVoiceNameKey)) {
+    EXTENSION_FUNCTION_VALIDATE(voice_name_value->is_string());
+    voice_name = voice_name_value->GetString();
   }
 
   std::string lang;
-  if (options->FindKey(constants::kLangKey))
-    EXTENSION_FUNCTION_VALIDATE(options->GetString(constants::kLangKey, &lang));
+  if (base::Value* lang_value = options.Find(constants::kLangKey)) {
+    EXTENSION_FUNCTION_VALIDATE(lang_value->is_string());
+    lang = lang_value->GetString();
+  }
   if (!lang.empty() && !l10n_util::IsValidLocaleSyntax(lang)) {
     return RespondNow(Error(constants::kErrorInvalidLang));
   }
 
-  // TODO(katie): Remove this after M73. This is just used to track how the
-  // gender deprecation is progressing.
-  std::string gender_str;
-  if (options->FindKey(constants::kGenderKey))
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetString(constants::kGenderKey, &gender_str));
-  UMA_HISTOGRAM_BOOLEAN("TextToSpeech.Utterance.HasGender",
-                        !gender_str.empty());
-
   double rate = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (base::Value* rate_value = options->FindKey(constants::kRateKey)) {
+  if (base::Value* rate_value = options.Find(constants::kRateKey)) {
     EXTENSION_FUNCTION_VALIDATE(rate_value->GetIfDouble());
     rate = rate_value->GetIfDouble().value_or(rate);
     if (rate < 0.1 || rate > 10.0) {
@@ -232,7 +220,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   double pitch = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (base::Value* pitch_value = options->FindKey(constants::kPitchKey)) {
+  if (base::Value* pitch_value = options.Find(constants::kPitchKey)) {
     EXTENSION_FUNCTION_VALIDATE(pitch_value->GetIfDouble());
     pitch = pitch_value->GetIfDouble().value_or(pitch);
     if (pitch < 0.0 || pitch > 2.0) {
@@ -241,7 +229,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   double volume = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (base::Value* volume_value = options->FindKey(constants::kVolumeKey)) {
+  if (base::Value* volume_value = options.Find(constants::kVolumeKey)) {
     EXTENSION_FUNCTION_VALIDATE(volume_value->GetIfDouble());
     volume = volume_value->GetIfDouble().value_or(volume);
     if (volume < 0.0 || volume > 1.0) {
@@ -249,18 +237,17 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     }
   }
 
-  bool can_enqueue =
-      options->FindBoolKey(constants::kEnqueueKey).value_or(false);
-  if (base::Value* value = options->FindKey(constants::kEnqueueKey)) {
+  bool can_enqueue = options.FindBool(constants::kEnqueueKey).value_or(false);
+  if (base::Value* value = options.Find(constants::kEnqueueKey)) {
     EXTENSION_FUNCTION_VALIDATE(value->is_bool());
   }
 
   std::set<content::TtsEventType> required_event_types;
-  if (options->FindKey(constants::kRequiredEventTypesKey)) {
-    base::ListValue* list;
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetList(constants::kRequiredEventTypesKey, &list));
-    for (const base::Value& i : list->GetListDeprecated()) {
+  if (options.contains(constants::kRequiredEventTypesKey)) {
+    base::Value::List* list =
+        options.FindList(constants::kRequiredEventTypesKey);
+    EXTENSION_FUNCTION_VALIDATE(list);
+    for (const base::Value& i : *list) {
       const std::string* event_type = i.GetIfString();
       if (event_type) {
         required_event_types.insert(
@@ -270,11 +257,11 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   std::set<content::TtsEventType> desired_event_types;
-  if (options->FindKey(constants::kDesiredEventTypesKey)) {
-    base::ListValue* list;
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetList(constants::kDesiredEventTypesKey, &list));
-    for (const base::Value& i : list->GetListDeprecated()) {
+  if (options.contains(constants::kDesiredEventTypesKey)) {
+    base::Value::List* list =
+        options.FindList(constants::kDesiredEventTypesKey);
+    EXTENSION_FUNCTION_VALIDATE(list);
+    for (const base::Value& i : *list) {
       const std::string* event_type = i.GetIfString();
       if (event_type)
         desired_event_types.insert(TtsEventTypeFromString(event_type->c_str()));
@@ -282,13 +269,14 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   std::string voice_extension_id;
-  if (options->FindKey(constants::kExtensionIdKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetString(constants::kExtensionIdKey, &voice_extension_id));
+  if (base::Value* voice_extension_id_value =
+          options.Find(constants::kExtensionIdKey)) {
+    EXTENSION_FUNCTION_VALIDATE(voice_extension_id_value);
+    voice_extension_id = voice_extension_id_value->GetString();
   }
 
   int src_id = -1;
-  base::Value* src_id_value = options->FindKey(constants::kSrcIdKey);
+  base::Value* src_id_value = options.Find(constants::kSrcIdKey);
   if (src_id_value) {
     EXTENSION_FUNCTION_VALIDATE(src_id_value->is_int());
     src_id = src_id_value->GetInt();
@@ -334,7 +322,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   utterance->SetRequiredEventTypes(required_event_types);
   utterance->SetDesiredEventTypes(desired_event_types);
   utterance->SetEngineId(voice_extension_id);
-  utterance->SetOptions(options.get());
+  utterance->SetOptions(std::move(options));
   if (extension())
     utterance->SetEventDelegate(new TtsExtensionEventHandler(extension_id()));
 
