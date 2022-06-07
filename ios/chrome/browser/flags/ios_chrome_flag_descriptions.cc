@@ -266,7 +266,7 @@ const char kEnableFREUIModuleIOSDescription[] =
 
 const char kEnableFullscreenAPIName[] = "Enable Fullscreen API";
 const char kEnableFullscreenAPIDescription[] =
-    "Enable the Fullscreen API for web content (iOS 15.4+).";
+    "Enable the Fullscreen API for web content (iOS 16.0+).";
 
 const char kEnableLongMessageDurationName[] = "Enable long message duration";
 const char kEnableLongMessageDurationDescription[] =
