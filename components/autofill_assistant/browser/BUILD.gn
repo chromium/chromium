@@ -404,6 +404,8 @@ static_library("unit_test_support") {
   sources = [
     "actions/mock_action_delegate.cc",
     "actions/mock_action_delegate.h",
+    "actions/wait_for_dom_test_base.cc",
+    "actions/wait_for_dom_test_base.h",
     "fake_script_executor_delegate.cc",
     "fake_script_executor_delegate.h",
     "fake_script_executor_ui_delegate.cc",
