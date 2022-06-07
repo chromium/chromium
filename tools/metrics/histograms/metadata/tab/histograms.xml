@@ -1950,6 +1950,7 @@ chromium-metrics-reviews@google.com.
     on Android. This is recorded when destroying the Recent Tabs page if any
     entires of {RecentlyClosedType} type were shown.
   </summary>
+  <token key="RecentlyClosedType" variants="RecentlyClosedType"/>
 </histogram>
 
 <histogram name="Tabs.RecentlyClosed.EntriesShownInPage.{RecentlyClosedType}"
@@ -1961,6 +1962,7 @@ chromium-metrics-reviews@google.com.
     {RecentlyClosedType} type shown in one Recent Tabs page session on Android.
     This is recorded when destroying the Recent Tabs page.
   </summary>
+  <token key="RecentlyClosedType" variants="RecentlyClosedType"/>
 </histogram>
 
 <histogram name="Tabs.RecentlyClosed.HistoricalSaverCloseType"
@@ -1987,6 +1989,7 @@ chromium-metrics-reviews@google.com.
     session on Android. This is recorded when destroying the Recent Tabs page if
     any entires of {RecentlyClosedType} type were shown.
   </summary>
+  <token key="RecentlyClosedType" variants="RecentlyClosedType"/>
 </histogram>
 
 <histogram name="Tabs.SadTab.Feedback.Event" enum="SadTabEvent"
