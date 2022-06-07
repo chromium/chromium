@@ -163,7 +163,8 @@ TEST(AggregatableReportTest,
 
   AggregationServicePayloadContents expected_payload_contents =
       request.payload_contents();
-  AggregatableReportSharedInfo expected_shared_info = request.shared_info();
+  AggregatableReportSharedInfo expected_shared_info =
+      request.shared_info().Clone();
   size_t expected_num_processing_urls = request.processing_urls().size();
   std::vector<aggregation_service::TestHpkeKey> hpke_keys = {
       aggregation_service::GenerateKey("id123"),
@@ -185,7 +186,8 @@ TEST(AggregatableReportTest, ValidTeeBasedRequest_ValidReportReturned) {
 
   AggregationServicePayloadContents expected_payload_contents =
       request.payload_contents();
-  AggregatableReportSharedInfo expected_shared_info = request.shared_info();
+  AggregatableReportSharedInfo expected_shared_info =
+      request.shared_info().Clone();
   size_t expected_num_processing_urls = request.processing_urls().size();
 
   aggregation_service::TestHpkeKey hpke_key =
@@ -216,10 +218,11 @@ TEST(AggregatableReportTest,
 
   absl::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(expected_payload_contents,
-                                        example_request.shared_info());
+                                        example_request.shared_info().Clone());
   ASSERT_TRUE(request.has_value());
 
-  AggregatableReportSharedInfo expected_shared_info = request->shared_info();
+  AggregatableReportSharedInfo expected_shared_info =
+      request->shared_info().Clone();
   size_t expected_num_processing_urls = request->processing_urls().size();
 
   aggregation_service::TestHpkeKey hpke_key =
@@ -238,12 +241,12 @@ TEST(AggregatableReportTest, ValidDebugModeEnabledRequest_ValidReportReturned) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
   AggregatableReportSharedInfo expected_shared_info =
-      example_request.shared_info();
+      example_request.shared_info().Clone();
   expected_shared_info.debug_mode =
       AggregatableReportSharedInfo::DebugMode::kEnabled;
   absl::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(example_request.payload_contents(),
-                                        expected_shared_info);
+                                        expected_shared_info.Clone());
   ASSERT_TRUE(request.has_value());
 
   AggregationServicePayloadContents expected_payload_contents =
@@ -268,14 +271,15 @@ TEST(AggregatableReportTest,
       aggregation_service::CreateExampleRequest();
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
-  AggregatableReportSharedInfo shared_info = example_request.shared_info();
+  AggregatableReportSharedInfo shared_info =
+      example_request.shared_info().Clone();
 
   AggregationServicePayloadContents zero_value_payload_contents =
       payload_contents;
   zero_value_payload_contents.contributions[0].value = 0;
   absl::optional<AggregatableReportRequest> zero_value_request =
       AggregatableReportRequest::Create(zero_value_payload_contents,
-                                        shared_info);
+                                        shared_info.Clone());
   EXPECT_TRUE(zero_value_request.has_value());
 
   AggregationServicePayloadContents negative_value_payload_contents =
@@ -283,14 +287,15 @@ TEST(AggregatableReportTest,
   negative_value_payload_contents.contributions[0].value = -1;
   absl::optional<AggregatableReportRequest> negative_value_request =
       AggregatableReportRequest::Create(negative_value_payload_contents,
-                                        shared_info);
+                                        shared_info.Clone());
   EXPECT_FALSE(negative_value_request.has_value());
 }
 
 TEST(AggregatableReportTest, RequestCreatedWithInvalidReportId_Failed) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
-  AggregatableReportSharedInfo shared_info = example_request.shared_info();
+  AggregatableReportSharedInfo shared_info =
+      example_request.shared_info().Clone();
   shared_info.report_id = base::GUID();
 
   absl::optional<AggregatableReportRequest> request =
@@ -310,7 +315,7 @@ TEST(AggregatableReportTest, RequestCreatedWithZeroContributions) {
   payload_contents.contributions.clear();
   absl::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(payload_contents,
-                                        example_request.shared_info());
+                                        example_request.shared_info().Clone());
   ASSERT_FALSE(request.has_value());
 }
 
@@ -330,7 +335,7 @@ TEST(AggregatableReportTest, RequestCreatedWithTooManyContributions) {
 
   absl::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(payload_contents,
-                                        example_request.shared_info());
+                                        example_request.shared_info().Clone());
   ASSERT_FALSE(request.has_value());
 }
 

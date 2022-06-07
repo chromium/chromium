@@ -290,25 +290,16 @@ AggregatableReportSharedInfo::AggregatableReportSharedInfo(
       additional_fields(std::move(additional_fields)) {}
 
 AggregatableReportSharedInfo::AggregatableReportSharedInfo(
-    const AggregatableReportSharedInfo& other) {
-  *this = other;
-}
-
-AggregatableReportSharedInfo& AggregatableReportSharedInfo::operator=(
-    const AggregatableReportSharedInfo& other) {
-  scheduled_report_time = other.scheduled_report_time;
-  report_id = other.report_id;
-  reporting_origin = other.reporting_origin;
-  debug_mode = other.debug_mode;
-  additional_fields = other.additional_fields.Clone();
-  return *this;
-}
-
-AggregatableReportSharedInfo::AggregatableReportSharedInfo(
     AggregatableReportSharedInfo&& other) = default;
 AggregatableReportSharedInfo& AggregatableReportSharedInfo::operator=(
     AggregatableReportSharedInfo&& other) = default;
 AggregatableReportSharedInfo::~AggregatableReportSharedInfo() = default;
+
+AggregatableReportSharedInfo AggregatableReportSharedInfo::Clone() const {
+  return AggregatableReportSharedInfo(scheduled_report_time, report_id,
+                                      reporting_origin, debug_mode,
+                                      additional_fields.Clone());
+}
 
 std::string AggregatableReportSharedInfo::SerializeAsJson() const {
   base::Value::Dict value;

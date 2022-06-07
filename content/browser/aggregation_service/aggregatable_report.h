@@ -90,14 +90,16 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
                                DebugMode debug_mode,
                                base::Value::Dict additional_fields);
 
-  // TODO(csharrison,linnan): Consider making this move-only with a Clone()
-  // method.
-  AggregatableReportSharedInfo(const AggregatableReportSharedInfo& other);
+  AggregatableReportSharedInfo(const AggregatableReportSharedInfo& other) =
+      delete;
   AggregatableReportSharedInfo& operator=(
-      const AggregatableReportSharedInfo& other);
+      const AggregatableReportSharedInfo& other) = delete;
   AggregatableReportSharedInfo(AggregatableReportSharedInfo&& other);
   AggregatableReportSharedInfo& operator=(AggregatableReportSharedInfo&& other);
   ~AggregatableReportSharedInfo();
+
+  // Creates a deep copy of this object.
+  AggregatableReportSharedInfo Clone() const;
 
   // Serializes to a JSON dictionary, represented as a string.
   std::string SerializeAsJson() const;
@@ -107,8 +109,6 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
   url::Origin reporting_origin;
   DebugMode debug_mode;
   base::Value::Dict additional_fields;
-
-  // Please update operator= if new fields are added.
 };
 
 // An AggregatableReport contains all the information needed for sending the

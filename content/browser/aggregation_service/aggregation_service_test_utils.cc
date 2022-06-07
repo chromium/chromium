@@ -207,9 +207,9 @@ AggregatableReportRequest CreateExampleRequest(
 
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request) {
-  return AggregatableReportRequest::CreateForTesting(request.processing_urls(),
-                                                     request.payload_contents(),
-                                                     request.shared_info())
+  return AggregatableReportRequest::CreateForTesting(
+             request.processing_urls(), request.payload_contents(),
+             request.shared_info().Clone())
       .value();
 }
 
