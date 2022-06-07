@@ -238,6 +238,10 @@ void PipelineIntegrationTestBase::OnError(PipelineStatus status) {
     std::move(on_error_closure_).Run();
 }
 
+void PipelineIntegrationTestBase::OnFallback(PipelineStatus status) {
+  DCHECK(status != PIPELINE_OK);
+}
+
 void PipelineIntegrationTestBase::SetCreateRendererCB(
     CreateRendererCB create_renderer_cb) {
   create_renderer_cb_ = std::move(create_renderer_cb);

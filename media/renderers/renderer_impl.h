@@ -197,6 +197,10 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   // Callback executed when a runtime error happens.
   void OnError(PipelineStatus error);
 
+  // Callback executed when there is a fallback somewhere in the pipeline which
+  // should be recorded for metrics analysis.
+  void OnFallback(PipelineStatus fallback);
+
   void OnWaiting(WaitingReason reason);
   void OnVideoNaturalSizeChange(const gfx::Size& size);
   void OnAudioConfigChange(const AudioDecoderConfig& config);

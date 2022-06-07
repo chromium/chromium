@@ -41,6 +41,9 @@ class RendererImpl::RendererClientInternal final : public RendererClient {
   }
 
   void OnError(PipelineStatus error) override { renderer_->OnError(error); }
+  void OnFallback(PipelineStatus error) override {
+    renderer_->OnFallback(std::move(error).AddHere());
+  }
   void OnEnded() override { renderer_->OnRendererEnded(type_); }
   void OnStatisticsUpdate(const PipelineStatistics& stats) override {
     renderer_->OnStatisticsUpdate(stats);
@@ -902,6 +905,10 @@ void RendererImpl::RunEndedCallbackIfNeeded() {
     PausePlayback();
 
   client_->OnEnded();
+}
+
+void RendererImpl::OnFallback(PipelineStatus fallback) {
+  client_->OnFallback(std::move(fallback).AddHere());
 }
 
 void RendererImpl::OnError(PipelineStatus error) {

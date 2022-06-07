@@ -94,6 +94,7 @@ class RendererClientImpl final : public RendererClient {
 
   // RendererClient implementation.
   void OnError(PipelineStatus status) override {}
+  void OnFallback(PipelineStatus status) override {}
   void OnEnded() override {}
   MOCK_METHOD1(OnStatisticsUpdate, void(const PipelineStatistics& stats));
   MOCK_METHOD2(OnBufferingStateChange,

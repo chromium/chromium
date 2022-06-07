@@ -157,6 +157,10 @@ void MojoRendererService::OnError(PipelineStatus error) {
   client_->OnError(std::move(error));
 }
 
+void MojoRendererService::OnFallback(PipelineStatus error) {
+  NOTREACHED();
+}
+
 void MojoRendererService::OnEnded() {
   DVLOG(1) << __func__;
   CancelPeriodicMediaTimeUpdates();

@@ -1875,6 +1875,10 @@ void WebMediaPlayerImpl::OnMemoryPressure(
                                 memory_pressure_level, force_instant_gc));
 }
 
+void WebMediaPlayerImpl::OnFallback(media::PipelineStatus status) {
+  media_metrics_provider_->OnFallback(std::move(status).AddHere());
+}
+
 void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
   DVLOG(1) << __func__ << ": status=" << status;
   DCHECK(main_task_runner_->BelongsToCurrentThread());

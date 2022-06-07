@@ -39,6 +39,11 @@ class MEDIA_EXPORT Pipeline {
     // NOTE: The client is responsible for calling Pipeline::Stop().
     virtual void OnError(PipelineStatus status) = 0;
 
+    // Executed whenever some fallback-enabled portion of the pipeline (Just
+    // Decoders and Renderers for now) fails in such a way that a fallback
+    // is still possible without a fatal pipeline error.
+    virtual void OnFallback(PipelineStatus status) = 0;
+
     // Executed whenever the media reaches the end.
     virtual void OnEnded() = 0;
 

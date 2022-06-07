@@ -115,6 +115,10 @@ class MEDIA_EXPORT VideoRendererImpl
   // RenderClient of the new config.
   void OnConfigChange(const VideoDecoderConfig& config);
 
+  // Called when the decoder stream and selector have a fallback after failed
+  // decode.
+  void OnFallback(PipelineStatus status);
+
   // Callback for |video_decoder_stream_| to deliver decoded video frames and
   // report video decoding status.
   void FrameReady(VideoDecoderStream::ReadResult result);

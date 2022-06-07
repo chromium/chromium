@@ -277,6 +277,11 @@ void MediaFoundationRendererClient::OnError(PipelineStatus status) {
   client_->OnError(status);
 }
 
+void MediaFoundationRendererClient::OnFallback(PipelineStatus fallback) {
+  SignalMediaPlayingStateChange(false);
+  client_->OnFallback(std::move(fallback).AddHere());
+}
+
 void MediaFoundationRendererClient::OnEnded() {
   SignalMediaPlayingStateChange(false);
   client_->OnEnded();

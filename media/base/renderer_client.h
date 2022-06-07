@@ -23,6 +23,9 @@ class MEDIA_EXPORT RendererClient {
   // Executed if any error was encountered after Renderer initialization.
   virtual void OnError(PipelineStatus status) = 0;
 
+  // Executed if there is a non-fatal fallback that should be reported
+  virtual void OnFallback(PipelineStatus status) = 0;
+
   // Executed when rendering has reached the end of stream.
   virtual void OnEnded() = 0;
 

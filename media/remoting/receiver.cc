@@ -243,6 +243,10 @@ void Receiver::OnError(PipelineStatus status) {
   SendRpcMessageOnMainThread(std::move(rpc));
 }
 
+void Receiver::OnFallback(PipelineStatus status) {
+  NOTREACHED();
+}
+
 void Receiver::OnEnded() {
   auto rpc = cast_streaming::remoting::CreateMessageForMediaEnded();
   rpc->set_handle(remote_handle_);

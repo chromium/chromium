@@ -135,6 +135,10 @@ class MEDIA_EXPORT DecoderStream {
     decoder_change_observer_cb_ = std::move(decoder_change_observer_cb);
   }
 
+  void set_fallback_observer(PipelineStatusCB fallback_cb) {
+    fallback_cb_ = std::move(fallback_cb);
+  }
+
   int get_pending_buffers_size_for_testing() const {
     return pending_buffers_.size();
   }
@@ -237,6 +241,7 @@ class MEDIA_EXPORT DecoderStream {
   StatisticsCB statistics_cb_;
   InitCB init_cb_;
   WaitingCB waiting_cb_;
+  PipelineStatusCB fallback_cb_;
 
   ReadCB read_cb_;
   base::OnceClosure reset_cb_;

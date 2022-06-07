@@ -152,6 +152,7 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
 
   // RendererClient implementation.
   void OnError(PipelineStatus error) final;
+  void OnFallback(PipelineStatus status) final;
   void OnEnded() final;
   void OnStatisticsUpdate(const PipelineStatistics& stats) final;
   void OnBufferingStateChange(BufferingState state,
@@ -653,6 +654,13 @@ void PipelineImpl::RendererWrapper::OnError(PipelineStatus error) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(error_cb_);
   media_task_runner_->PostTask(FROM_HERE, base::BindOnce(error_cb_, error));
+}
+
+void PipelineImpl::RendererWrapper::OnFallback(PipelineStatus fallback) {
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  main_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&PipelineImpl::OnFallback, weak_pipeline_,
+                                std::move(fallback).AddHere()));
 }
 
 void PipelineImpl::RendererWrapper::OnEnded() {
@@ -1583,6 +1591,10 @@ void PipelineImpl::OnError(PipelineStatus error) {
 
   DCHECK(client_);
   client_->OnError(error);
+}
+
+void PipelineImpl::OnFallback(PipelineStatus status) {
+  client_->OnFallback(std::move(status).AddHere());
 }
 
 void PipelineImpl::OnEnded() {

@@ -181,6 +181,8 @@ void VideoRendererImpl::Initialize(
       task_runner_, create_video_decoders_cb_, media_log_);
   video_decoder_stream_->set_config_change_observer(base::BindRepeating(
       &VideoRendererImpl::OnConfigChange, weak_factory_.GetWeakPtr()));
+  video_decoder_stream_->set_fallback_observer(base::BindRepeating(
+      &VideoRendererImpl::OnFallback, weak_factory_.GetWeakPtr()));
   if (gpu_memory_buffer_pool_) {
     video_decoder_stream_->SetPrepareCB(base::BindRepeating(
         &GpuMemoryBufferVideoFramePool::MaybeCreateHardwareFrame,
@@ -383,6 +385,11 @@ void VideoRendererImpl::OnConfigChange(const VideoDecoderConfig& config) {
     current_decoder_config_ = config;
     client_->OnVideoConfigChange(config);
   }
+}
+
+void VideoRendererImpl::OnFallback(PipelineStatus status) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  client_->OnFallback(std::move(status).AddHere());
 }
 
 void VideoRendererImpl::SetTickClockForTesting(

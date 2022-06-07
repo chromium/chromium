@@ -263,6 +263,16 @@ void MediaMetricsProvider::OnError(const PipelineStatus& status) {
   uma_info_.last_pipeline_status = status.code();
 }
 
+void MediaMetricsProvider::OnFallback(const PipelineStatus& status) {
+  DCHECK(initialized_);
+  if (is_shutting_down_cb_.Run()) {
+    DVLOG(1) << __func__ << ": Error " << PipelineStatusToString(status)
+             << " ignored since it is reported during shutdown.";
+    return;
+  }
+  // Do nothing for now.
+}
+
 void MediaMetricsProvider::SetIsEME() {
   // This may be called before Initialize().
   uma_info_.is_eme = true;

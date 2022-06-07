@@ -353,6 +353,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   // media::Pipeline::Client overrides.
   void OnError(media::PipelineStatus status) override;
+  void OnFallback(media::PipelineStatus status) override;
   void OnEnded() override;
   void OnMetadata(const media::PipelineMetadata& metadata) override;
   void OnBufferingStateChange(

@@ -627,6 +627,12 @@ void DecoderStream<StreamType>::OnDecodeDone(
         pending_decode_requests_ = 0;
         decoding_eos_ = false;
         state_ = STATE_REINITIALIZING_DECODER;
+        if (fallback_cb_) {
+          DecoderStatus copy = status;
+          PipelineStatus fallback_status = {
+              PipelineStatus::Codes::PIPELINE_ERROR_DECODE, std::move(copy)};
+          fallback_cb_.Run(fallback_status);
+        }
         ResumeDecoderSelection(std::move(status));
       } else {
         media_log_->NotifyError(status);

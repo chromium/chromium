@@ -57,6 +57,7 @@ class MockPipelineClient : public Pipeline::Client {
   ~MockPipelineClient();
 
   MOCK_METHOD1(OnError, void(PipelineStatus));
+  MOCK_METHOD1(OnFallback, void(PipelineStatus));
   MOCK_METHOD0(OnEnded, void());
   MOCK_METHOD1(OnMetadata, void(const PipelineMetadata&));
   MOCK_METHOD2(OnBufferingStateChange,
@@ -404,6 +405,7 @@ class MockRendererClient : public RendererClient {
 
   // RendererClient implementation.
   MOCK_METHOD1(OnError, void(PipelineStatus));
+  MOCK_METHOD1(OnFallback, void(PipelineStatus));
   MOCK_METHOD0(OnEnded, void());
   MOCK_METHOD1(OnStatisticsUpdate, void(const PipelineStatistics&));
   MOCK_METHOD2(OnBufferingStateChange,

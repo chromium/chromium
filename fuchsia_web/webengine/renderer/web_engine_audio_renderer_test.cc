@@ -358,6 +358,8 @@ class TestRendererClient : public media::RendererClient {
     expected_error_ = media::PIPELINE_OK;
   }
 
+  void OnFallback(media::PipelineStatus status) override {}
+
   void OnEnded() override {
     EXPECT_TRUE(expect_eos_);
     expect_eos_ = false;
