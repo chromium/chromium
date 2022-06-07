@@ -45,6 +45,9 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
       override;
   void WaitGetEventData(device_test::mojom::XRTestHook::WaitGetEventDataCallback
                             callback) override;
+  void WaitGetCanCreateSession(
+      device_test::mojom::XRTestHook::WaitGetCanCreateSessionCallback callback)
+      override;
 
   // MockXRDeviceHookBase
   void TerminateDeviceServiceProcessForTesting();
@@ -57,6 +60,7 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
       device::ControllerRole role);
   void PopulateEvent(device_test::mojom::EventData data);
   void StopHooking();
+  void SetCanCreateSession(bool can_create_session);
 
  protected:
   device_test::mojom::TrackedDeviceClass
@@ -68,6 +72,7 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
  private:
   mojo::Receiver<device_test::mojom::XRTestHook> receiver_{this};
   mojo::Remote<device_test::mojom::XRServiceTestHook> service_test_hook_;
+  bool can_create_session_ = true;
 };
 
 #endif  // CHROME_BROWSER_VR_TEST_MOCK_XR_DEVICE_HOOK_BASE_H_
