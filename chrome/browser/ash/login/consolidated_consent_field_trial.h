@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/version_info.h"
 
 namespace ash::consolidated_consent_field_trial {
 
@@ -43,6 +44,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 //
 // The rollout plan for this feature is 50% for dev/beta.
 void Create(base::FeatureList* feature_list, PrefService* local_state);
+
+// Whether trial should be enabled or not.
+bool ShouldEnableTrial(version_info::Channel channel);
 
 }  // namespace ash::consolidated_consent_field_trial
 
