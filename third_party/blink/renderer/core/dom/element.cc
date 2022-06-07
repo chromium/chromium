@@ -3755,6 +3755,17 @@ scoped_refptr<ComputedStyle> Element::PropagateInheritedProperties() {
     // of whether the property was inherited or not.
     return nullptr;
   }
+  if (style->TextDecorationsInEffect() != TextDecorationLine::kNone) {
+    // If we have text decorations, they can depend on currentColor,
+    // and are normally updated by the StyleAdjuster. We can, however,
+    // reach this path when color is modified, leading to the decoration
+    // being the wrong color (see crbug.com/1330953). We could rerun
+    // the right part of the StyleAdjuster here, but it's simpler just to
+    // disable the optimization in such cases (especially as we have already
+    // disabled it for links, which are the main causes of text decorations),
+    // so we do that.
+    return nullptr;
+  }
   scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(*style);
   new_style->PropagateIndependentInheritedProperties(*parent_style);
   INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
