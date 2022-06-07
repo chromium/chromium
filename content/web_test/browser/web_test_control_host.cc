@@ -1349,10 +1349,6 @@ void WebTestControlHost::OnImageDump(const std::string& actual_pixel_hash,
     std::vector<unsigned char> png;
 
     bool discard_transparency = true;
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kForceOverlayFullscreenVideo)) {
-      discard_transparency = false;
-    }
     if (web_test_runtime_flags().dump_drag_image())
       discard_transparency = false;
 

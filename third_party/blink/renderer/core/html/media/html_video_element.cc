@@ -424,14 +424,6 @@ bool HTMLVideoElement::webkitDisplayingFullscreen() {
   return IsFullscreen();
 }
 
-bool HTMLVideoElement::UsesOverlayFullscreenVideo() const {
-  if (RuntimeEnabledFeatures::ForceOverlayFullscreenVideoEnabled())
-    return true;
-
-  return GetWebMediaPlayer() &&
-         GetWebMediaPlayer()->SupportsOverlayFullscreenVideo();
-}
-
 void HTMLVideoElement::DidEnterFullscreen() {
   UpdateControlsVisibility();
 

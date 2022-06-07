@@ -787,8 +787,8 @@ class CORE_EXPORT LocalFrameView final
 
   bool HasDominantVideoElement() const;
 
-  // Gets the fullscreen overlay layer if present, or nullptr if there is none.
-  PaintLayer* GetFullScreenOverlayLayer() const;
+  // Gets the xr overlay layer if present, or nullptr if there is none.
+  PaintLayer* GetXROverlayLayer() const;
 
   void RunPaintBenchmark(int repeat_count, cc::PaintBenchmarkResult& result);
 

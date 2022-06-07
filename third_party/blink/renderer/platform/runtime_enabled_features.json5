@@ -1147,11 +1147,6 @@
       name:"ForceEagerMeasureMemory",
     },
     {
-      // For simulating Android's overlay fullscreen video in web tests on
-      // Linux.
-      name: "ForceOverlayFullscreenVideo",
-    },
-    {
       // https://github.com/flackr/reduce-motion/blob/main/explainer.md
       name: "ForceReduceMotion",
     },

@@ -177,7 +177,6 @@
     "args": ["--enable-features=OverlayScrollbar",
              "--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text",
-             "--force-overlay-fullscreen-video",
              "--enable-overscroll-notifications",
              "--enable-viewport",
              "--disable-canvas-aa",

@@ -2939,8 +2939,8 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
       visual_viewport_or_overlay_needs_repaint_) {
     GraphicsContext graphics_context(*paint_controller_);
 
-    // Draw the overlay layer (video or WebXR DOM overlay) if present.
-    if (PaintLayer* full_screen_layer = GetFullScreenOverlayLayer()) {
+    // Draw the WebXR DOM overlay if present.
+    if (PaintLayer* full_screen_layer = GetXROverlayLayer()) {
       PaintLayerPainter(*full_screen_layer).Paint(graphics_context);
     } else {
       PaintFrame(graphics_context);
@@ -4812,24 +4812,6 @@ StickyAdDetector& LocalFrameView::EnsureStickyAdDetector() {
   return *sticky_ad_detector_.get();
 }
 
-static PaintLayer* GetFullScreenOverlayVideoLayer(Document& document) {
-  // Recursively find the document that is in fullscreen.
-  Document* content_document = &document;
-  Element* fullscreen_element =
-      Fullscreen::FullscreenElementFrom(*content_document);
-  while (auto* frame_owner =
-             DynamicTo<HTMLFrameOwnerElement>(fullscreen_element)) {
-    content_document = frame_owner->contentDocument();
-    if (!content_document)
-      return nullptr;
-    fullscreen_element = Fullscreen::FullscreenElementFrom(*content_document);
-  }
-  auto* video_element = DynamicTo<HTMLVideoElement>(fullscreen_element);
-  if (!video_element || !video_element->UsesOverlayFullscreenVideo())
-    return nullptr;
-  return video_element->GetLayoutBoxModelObject()->Layer();
-}
-
 static PaintLayer* GetXrOverlayLayer(Document& document) {
   // immersive-ar DOM overlay mode is very similar to fullscreen video, using
   // the AR camera image instead of a video element as a background that's
@@ -4871,7 +4853,7 @@ static PaintLayer* GetXrOverlayLayer(Document& document) {
   return object->Layer();
 }
 
-PaintLayer* LocalFrameView::GetFullScreenOverlayLayer() const {
+PaintLayer* LocalFrameView::GetXROverlayLayer() const {
   Document* doc = frame_->GetDocument();
   DCHECK(doc);
 
@@ -4882,10 +4864,7 @@ PaintLayer* LocalFrameView::GetFullScreenOverlayLayer() const {
   if (doc->IsXrOverlay())
     return GetXrOverlayLayer(*doc);
 
-  // Fullscreen overlay video layers are only used for the main frame.
-  if (!frame_->IsMainFrame())
-    return nullptr;
-  return GetFullScreenOverlayVideoLayer(*doc);
+  return nullptr;
 }
 
 void LocalFrameView::RunPaintBenchmark(int repeat_count,

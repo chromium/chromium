@@ -144,7 +144,6 @@ CONTENT_EXPORT extern const char kEnableWebVR[];
 CONTENT_EXPORT extern const char kFileUrlPathAlias[];
 CONTENT_EXPORT extern const char kForceDisplayList2dCanvas[];
 CONTENT_EXPORT extern const char kForceMajorVersionToMinorPosition[];
-CONTENT_EXPORT extern const char kForceOverlayFullscreenVideo[];
 CONTENT_EXPORT extern const char kForcePresentationReceiverForTesting[];
 CONTENT_EXPORT extern const char kForceRendererAccessibility[];
 CONTENT_EXPORT extern const char kForceWebRtcIPHandlingPolicy[];

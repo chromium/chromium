@@ -225,10 +225,6 @@ CompositingReasons LayoutVideo::AdditionalCompositingReasons() const {
   if (!RuntimeEnabledFeatures::CompositeVideoElementEnabled())
     return CompositingReason::kNone;
 
-  auto* element = To<HTMLMediaElement>(GetNode());
-  if (element->IsFullscreen() && element->UsesOverlayFullscreenVideo())
-    return CompositingReason::kVideo;
-
   if (GetDisplayMode() == kVideo && SupportsAcceleratedRendering())
     return CompositingReason::kVideo;
 

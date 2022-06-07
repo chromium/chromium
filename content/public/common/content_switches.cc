@@ -467,10 +467,6 @@ const char kFileUrlPathAlias[] = "file-url-path-alias";
 // string. Locks major version to 99.
 const char kForceMajorVersionToMinorPosition[] = "force-major-version-to-minor";
 
-// Forces use of hardware overlay for fullscreen video playback. Useful for
-// testing the Android overlay fullscreen functionality on other platforms.
-const char kForceOverlayFullscreenVideo[]   = "force-overlay-fullscreen-video";
-
 // This forces pages to be loaded as presentation receivers.  Useful for testing
 // behavior specific to presentation receivers.
 // Spec: https://www.w3.org/TR/presentation-api/#interface-presentationreceiver

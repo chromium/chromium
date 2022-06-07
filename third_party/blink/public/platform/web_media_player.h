@@ -291,11 +291,6 @@ class WebMediaPlayer {
   // Sets the poster image URL.
   virtual void SetPoster(const WebURL& poster) {}
 
-  // Whether the WebMediaPlayer supports overlay fullscreen video mode. When
-  // this is true, the video layer will be removed from the layer tree when
-  // entering fullscreen, and the WebMediaPlayer is responsible for displaying
-  // the video in enteredFullscreen().
-  virtual bool SupportsOverlayFullscreenVideo() { return false; }
   // Inform WebMediaPlayer when the element has entered/exited fullscreen.
   virtual void EnteredFullscreen() {}
   virtual void ExitedFullscreen() {}

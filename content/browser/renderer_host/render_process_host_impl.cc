@@ -3263,7 +3263,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kForceDisplayColorProfile,
     switches::kForceGpuMemAvailableMb,
     switches::kForceHighContrast,
-    switches::kForceOverlayFullscreenVideo,
     switches::kForceRasterColorProfile,
     switches::kForceVideoOverlays,
     switches::kFullMemoryCrashReport,

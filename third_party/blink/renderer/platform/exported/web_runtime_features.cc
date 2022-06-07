@@ -345,10 +345,6 @@ void WebRuntimeFeatures::EnableOverlayScrollbars(bool enable) {
   ScrollbarThemeSettings::SetOverlayScrollbarsEnabled(enable);
 }
 
-void WebRuntimeFeatures::ForceOverlayFullscreenVideo(bool enable) {
-  RuntimeEnabledFeatures::SetForceOverlayFullscreenVideoEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableSharedArrayBuffer(bool enable) {
   RuntimeEnabledFeatures::SetSharedArrayBufferEnabled(enable);
 }

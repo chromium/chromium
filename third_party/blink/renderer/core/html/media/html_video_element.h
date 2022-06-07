@@ -77,7 +77,6 @@ class CORE_EXPORT HTMLVideoElement final
   void webkitExitFullscreen();
   bool webkitSupportsFullscreen();
   bool webkitDisplayingFullscreen();
-  bool UsesOverlayFullscreenVideo() const override;
   void DidEnterFullscreen();
   void DidExitFullscreen();
 
