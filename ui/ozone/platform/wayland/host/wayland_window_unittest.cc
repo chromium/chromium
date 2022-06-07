@@ -1748,6 +1748,8 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
                         menu_window_surface->resource(), 0, 0);
   wl_touch_send_up(server_.seat()->touch()->resource(), ++serial, 1000,
                    0 /* id */);
+  wl_touch_send_frame(server_.seat()->touch()->resource());
+
   wl_keyboard_send_leave(server_.seat()->keyboard()->resource(), ++serial,
                          toplevel_surface->resource());
 
@@ -2956,6 +2958,7 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
 
     wl_touch_send_up(server_.seat()->touch()->resource(), touch_up_serial, 1000,
                      0 /* id */);
+    wl_touch_send_frame(server_.seat()->touch()->resource());
 
     Sync();
 
@@ -3580,6 +3583,7 @@ TEST_P(WaylandWindowTest, DISABLED_BlockingTouchDownUp_NoCrash) {
                        wl_fixed_from_int(100), wl_fixed_from_int(100));
     wl_touch_send_up(server_.seat()->touch()->resource(), ++serial, 2000,
                      0 /* id */);
+    wl_touch_send_frame(server_.seat()->touch()->resource());
     Sync();
 
     std::move(closure).Run();
@@ -3592,6 +3596,7 @@ TEST_P(WaylandWindowTest, DISABLED_BlockingTouchDownUp_NoCrash) {
                      wl_fixed_from_int(50), wl_fixed_from_int(50));
   wl_touch_send_up(server_.seat()->touch()->resource(), ++serial, 1000,
                    0 /* id */);
+  wl_touch_send_frame(server_.seat()->touch()->resource());
   Sync();
 }
 

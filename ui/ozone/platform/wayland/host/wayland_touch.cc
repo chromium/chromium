@@ -68,7 +68,8 @@ void WaylandTouch::Up(void* data,
   DCHECK(touch);
 
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
-  touch->delegate_->OnTouchReleaseEvent(timestamp, id);
+  touch->delegate_->OnTouchReleaseEvent(
+      timestamp, id, Delegate::EventDispatchPolicy::kOnFrame);
 }
 
 void WaylandTouch::Motion(void* data,

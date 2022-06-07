@@ -503,8 +503,9 @@ void WaylandWindowDragController::HandleDropAndResetState() {
   } else {
     auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
     DCHECK_EQ(touch_pointer_ids.size(), 1u);
-    touch_delegate_->OnTouchReleaseEvent(base::TimeTicks::Now(),
-                                         touch_pointer_ids[0]);
+    touch_delegate_->OnTouchReleaseEvent(
+        base::TimeTicks::Now(), touch_pointer_ids[0],
+        WaylandTouch::Delegate::EventDispatchPolicy::kImmediate);
   }
 
   pointer_grab_owner_ = nullptr;

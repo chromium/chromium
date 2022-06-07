@@ -93,6 +93,7 @@ TEST_P(WaylandTouchTest, TouchPressAndMotion) {
   CheckEventType(ui::ET_TOUCH_MOVED, event.get());
 
   wl_touch_send_up(touch_->resource(), 1, 1000, 0 /* id */);
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
   CheckEventType(ui::ET_TOUCH_RELEASED, event.get());
@@ -122,6 +123,7 @@ TEST_P(WaylandTouchTest, TouchPressAndMotionWithStylus) {
   CheckEventType(ui::ET_TOUCH_MOVED, event.get(), ui::EventPointerType::kPen);
 
   wl_touch_send_up(touch_->resource(), 1, 1000, 0 /* id */);
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
   CheckEventType(ui::ET_TOUCH_RELEASED, event.get());
@@ -144,6 +146,7 @@ TEST_P(WaylandTouchTest, CheckTouchFocus) {
   EXPECT_TRUE(window_->has_touch_focus());
 
   wl_touch_send_up(touch_->resource(), ++serial, ++time, touch_id1);
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
 
@@ -169,18 +172,21 @@ TEST_P(WaylandTouchTest, CheckTouchFocus) {
   EXPECT_TRUE(window_->has_touch_focus());
 
   wl_touch_send_up(touch_->resource(), ++serial, ++time, touch_id2);
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
 
   EXPECT_TRUE(window_->has_touch_focus());
 
   wl_touch_send_up(touch_->resource(), ++serial, ++time, touch_id1);
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
 
   EXPECT_TRUE(window_->has_touch_focus());
 
   wl_touch_send_up(touch_->resource(), ++serial, ++time, touch_id3);
+  wl_touch_send_frame(touch_->resource());
 
   Sync();
 
@@ -243,7 +249,9 @@ TEST_P(WaylandTouchTest, KeyboardFlagsSet) {
   EXPECT_TRUE(event->flags() & ui::EF_CONTROL_DOWN);
 
   wl_touch_send_up(touch_->resource(), ++serial, ++timestamp, 0 /* id */);
+  wl_touch_send_frame(touch_->resource());
   Sync();
+
   CheckEventType(ui::ET_TOUCH_RELEASED, event.get());
   EXPECT_TRUE(event->flags() & ui::EF_CONTROL_DOWN);
 
@@ -268,6 +276,7 @@ TEST_P(WaylandTouchTest, KeyboardFlagsSet) {
   EXPECT_FALSE(event->flags() & ui::EF_CONTROL_DOWN);
 
   wl_touch_send_up(touch_->resource(), ++serial, ++timestamp, 0 /* id */);
+  wl_touch_send_frame(touch_->resource());
   Sync();
   CheckEventType(ui::ET_TOUCH_RELEASED, event.get());
   EXPECT_FALSE(event->flags() & ui::EF_CONTROL_DOWN);

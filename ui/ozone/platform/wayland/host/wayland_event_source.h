@@ -122,7 +122,9 @@ class WaylandEventSource : public PlatformEventSource,
                          base::TimeTicks timestamp,
                          PointerId id,
                          EventDispatchPolicy dispatch_policy) override;
-  void OnTouchReleaseEvent(base::TimeTicks timestamp, PointerId id) override;
+  void OnTouchReleaseEvent(base::TimeTicks timestamp,
+                           PointerId id,
+                           EventDispatchPolicy dispatch_policy) override;
   void OnTouchMotionEvent(const gfx::PointF& location,
                           base::TimeTicks timestamp,
                           PointerId id,
@@ -196,6 +198,9 @@ class WaylandEventSource : public PlatformEventSource,
 
   // For touch events.
   PointerDetails PointerDetailsForDispatching(PointerId pointer_id) const;
+
+  // Wrap up method to support async touch release processing.
+  void OnTouchReleaseInternal(PointerId id);
 
   WaylandWindowManager* const window_manager_;
 

@@ -108,6 +108,7 @@ void WaylandDragDropTest::SendTouchDown(WaylandWindow* window,
 
 void WaylandDragDropTest::SendTouchUp(int id) {
   wl_touch_send_up(touch_->resource(), NextSerial(), NextTime(), id);
+  wl_touch_send_frame(touch_->resource());
 }
 
 void WaylandDragDropTest::SendTouchMotion(WaylandWindow* window,

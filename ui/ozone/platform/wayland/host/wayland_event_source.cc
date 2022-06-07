@@ -359,8 +359,10 @@ void WaylandEventSource::OnTouchPressEvent(
       std::make_unique<TouchFrame>(event, base::NullCallback()));
 }
 
-void WaylandEventSource::OnTouchReleaseEvent(base::TimeTicks timestamp,
-                                             PointerId id) {
+void WaylandEventSource::OnTouchReleaseEvent(
+    base::TimeTicks timestamp,
+    PointerId id,
+    EventDispatchPolicy dispatch_policy) {
   // Make sure this touch point was present before.
   const auto it = touch_points_.find(id);
   if (it == touch_points_.end()) {
@@ -374,8 +376,17 @@ void WaylandEventSource::OnTouchReleaseEvent(base::TimeTicks timestamp,
 
   TouchEvent event(ET_TOUCH_RELEASED, location, location, timestamp, details,
                    keyboard_modifiers_);
-  DispatchEvent(&event);
+  if (dispatch_policy == EventDispatchPolicy::kImmediate) {
+    DispatchEvent(&event);
+    OnTouchReleaseInternal(id);
+  } else {
+    touch_frames_.push_front(std::make_unique<TouchFrame>(
+        event, base::BindOnce(&WaylandEventSource::OnTouchReleaseInternal,
+                              base::Unretained(this), id)));
+  }
+}
 
+void WaylandEventSource::OnTouchReleaseInternal(PointerId id) {
   // It is possible that an user interaction triggers nested loops
   // in higher levels of the application stack in order to process a
   // given touch down/up action.
@@ -384,11 +395,13 @@ void WaylandEventSource::OnTouchReleaseEvent(base::TimeTicks timestamp,
   // The auxiliary flow might clear entries in touch_points_.
   //
   // Hence, we check whether the TouchId is still being held.
-  if (touch_points_.find(id) == touch_points_.end()) {
+  const auto it = touch_points_.find(id);
+  if (it == touch_points_.end()) {
     LOG(WARNING) << "Touch has been released during processing.";
     return;
   }
 
+  TouchPoint* touch_point = it->second.get();
   HandleTouchFocusChange(touch_point->window, false, id);
   touch_points_.erase(it);
 

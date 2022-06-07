@@ -93,7 +93,9 @@ class WaylandTouch::Delegate {
                                  base::TimeTicks timestamp,
                                  PointerId id,
                                  EventDispatchPolicy dispatch_policy) = 0;
-  virtual void OnTouchReleaseEvent(base::TimeTicks timestamp, PointerId id) = 0;
+  virtual void OnTouchReleaseEvent(base::TimeTicks timestamp,
+                                   PointerId id,
+                                   EventDispatchPolicy dispatch_policy) = 0;
   virtual void OnTouchMotionEvent(const gfx::PointF& location,
                                   base::TimeTicks timestamp,
                                   PointerId id,
