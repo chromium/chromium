@@ -46,8 +46,12 @@ bool SupervisedUserCrosSettingsProvider::HandlesSetting(
   if (user_manager->GetUsers().empty())
     return false;
 
-  auto* device_owner =
-      user_manager->FindUser(user_manager->GetOwnerAccountId());
+  const AccountId owner_account_id = user_manager->GetOwnerAccountId();
+  if (!owner_account_id.is_valid()) {
+    // Unowned or admin-owned device.
+    return false;
+  }
+  auto* device_owner = user_manager->FindUser(owner_account_id);
 
   if (device_owner && device_owner->IsChild()) {
     return base::Contains(child_user_restrictions_, path);
