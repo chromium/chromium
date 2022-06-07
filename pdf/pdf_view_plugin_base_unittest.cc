@@ -56,9 +56,7 @@ using ::testing::SaveArg;
 class FakePdfViewPluginBase : public PdfViewPluginBase {
  public:
   // Public for testing.
-  using PdfViewPluginBase::accessibility_state;
   using PdfViewPluginBase::engine;
-  using PdfViewPluginBase::full_frame;
   using PdfViewPluginBase::HandleInputEvent;
   using PdfViewPluginBase::HandleMessage;
   using PdfViewPluginBase::PrintBegin;
@@ -166,13 +164,6 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   base::WeakPtrFactory<FakePdfViewPluginBase> weak_factory_{this};
 };
 
-base::Value CreateExpectedFormTextFieldFocusChangeResponse() {
-  base::Value::Dict message;
-  message.Set("type", "formFocusChange");
-  message.Set("focused", false);
-  return base::Value(std::move(message));
-}
-
 }  // namespace
 
 class PdfViewPluginBaseTest : public testing::Test {
@@ -213,9 +204,6 @@ class PdfViewPluginBaseWithScopedLocaleTest
   base::test::ScopedRestoreDefaultTimezone la_time_{"America/Los_Angeles"};
 };
 
-using PdfViewPluginBaseWithoutDocInfoTest =
-    PdfViewPluginBaseWithScopedLocaleTest;
-
 TEST_F(PdfViewPluginBaseTest, DocumentLoadProgress) {
   fake_plugin_.DocumentLoadProgress(10, 200);
 
@@ -245,77 +233,6 @@ TEST_F(PdfViewPluginBaseTest, DocumentLoadProgressMultipleSmall) {
     "type": "loadProgress",
     "progress": 4.0,
   })")));
-}
-
-TEST_F(PdfViewPluginBaseWithoutDocInfoTest,
-       DocumentLoadCompleteInFullFramePdfViewerWithAccessibilityEnabled) {
-  // Notify the render frame about document loading.
-  fake_plugin_.set_full_frame_for_testing(true);
-  ASSERT_TRUE(fake_plugin_.full_frame());
-  fake_plugin_.CreateUrlLoader();
-
-  ASSERT_FALSE(fake_plugin_.IsPrintPreview());
-  ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
-            fake_plugin_.document_load_state_for_testing());
-
-  // Change the accessibility state to pending so that accessibility can be
-  // loaded later.
-  fake_plugin_.EnableAccessibility();
-  EXPECT_EQ(PdfViewPluginBase::AccessibilityState::kPending,
-            fake_plugin_.accessibility_state());
-
-  EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadSuccess"));
-  EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
-  EXPECT_CALL(fake_plugin_, DidStopLoading());
-  EXPECT_CALL(fake_plugin_,
-              SetContentRestrictions(fake_plugin_.GetContentRestrictions()));
-  EXPECT_CALL(fake_plugin_,
-              SetAccessibilityDocInfo(fake_plugin_.GetAccessibilityDocInfo()));
-
-  fake_plugin_.DocumentLoadComplete();
-  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
-            fake_plugin_.document_load_state_for_testing());
-  EXPECT_EQ(PdfViewPluginBase::AccessibilityState::kLoaded,
-            fake_plugin_.accessibility_state());
-
-  // Check all the sent messages.
-  ASSERT_EQ(1u, fake_plugin_.sent_messages().size());
-  EXPECT_EQ(CreateExpectedFormTextFieldFocusChangeResponse(),
-            fake_plugin_.sent_messages()[0]);
-}
-
-TEST_F(PdfViewPluginBaseWithoutDocInfoTest,
-       DocumentLoadCompleteInFullFramePdfViewerWithAccessibilityDisabled) {
-  // Notify the render frame about document loading.
-  fake_plugin_.set_full_frame_for_testing(true);
-  ASSERT_TRUE(fake_plugin_.full_frame());
-  fake_plugin_.CreateUrlLoader();
-
-  ASSERT_FALSE(fake_plugin_.IsPrintPreview());
-  ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
-            fake_plugin_.document_load_state_for_testing());
-  ASSERT_EQ(PdfViewPluginBase::AccessibilityState::kOff,
-            fake_plugin_.accessibility_state());
-
-  EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadSuccess"));
-  EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
-  EXPECT_CALL(fake_plugin_, DidStopLoading());
-  EXPECT_CALL(fake_plugin_,
-              SetContentRestrictions(fake_plugin_.GetContentRestrictions()));
-  EXPECT_CALL(fake_plugin_,
-              SetAccessibilityDocInfo(fake_plugin_.GetAccessibilityDocInfo()))
-      .Times(0);
-
-  fake_plugin_.DocumentLoadComplete();
-  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
-            fake_plugin_.document_load_state_for_testing());
-  EXPECT_EQ(PdfViewPluginBase::AccessibilityState::kOff,
-            fake_plugin_.accessibility_state());
-
-  // Check all the sent messages.
-  ASSERT_EQ(1u, fake_plugin_.sent_messages().size());
-  EXPECT_EQ(CreateExpectedFormTextFieldFocusChangeResponse(),
-            fake_plugin_.sent_messages()[0]);
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, HandleInputEvent) {

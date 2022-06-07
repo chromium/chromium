@@ -773,6 +773,49 @@ TEST_F(PdfViewWebPluginFullFrameTest,
   pdf_receiver_.FlushForTesting();
 }
 
+TEST_F(PdfViewWebPluginTest, EnableAccessibilityBeforeDocumentLoadComplete) {
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
+      .Times(0);
+  plugin_->EnableAccessibility();
+
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo);
+  plugin_->CreateUrlLoader();
+  plugin_->DocumentLoadComplete();
+}
+
+TEST_F(PdfViewWebPluginTest,
+       EnableAccessibilityBeforeDocumentLoadCompleteRepeated) {
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
+      .Times(0);
+  plugin_->EnableAccessibility();
+  plugin_->EnableAccessibility();
+
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo);
+  plugin_->CreateUrlLoader();
+  plugin_->DocumentLoadComplete();
+}
+
+TEST_F(PdfViewWebPluginTest, EnableAccessibilityAfterDocumentLoadComplete) {
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
+      .Times(0);
+  plugin_->CreateUrlLoader();
+  plugin_->DocumentLoadComplete();
+
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo);
+  plugin_->EnableAccessibility();
+}
+
+TEST_F(PdfViewWebPluginTest,
+       EnableAccessibilityAfterDocumentLoadCompleteRepeated) {
+  plugin_->CreateUrlLoader();
+  plugin_->DocumentLoadComplete();
+  plugin_->EnableAccessibility();
+
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
+      .Times(0);
+  plugin_->EnableAccessibility();
+}
+
 TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {
   EXPECT_CALL(*engine_ptr_, ZoomUpdated(2.0f));
   TestUpdateGeometrySetsPluginRect(

@@ -141,8 +141,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   void InitializeEngineForTesting(std::unique_ptr<PDFiumEngine> engine);
 
-  void set_full_frame_for_testing(bool full_frame) { full_frame_ = full_frame; }
-
   DocumentLoadState document_load_state_for_testing() const {
     return document_load_state_;
   }
@@ -341,10 +339,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   double zoom() const { return zoom_; }
 
   float device_scale() const { return device_scale_; }
-
-  AccessibilityState accessibility_state() const {
-    return accessibility_state_;
-  }
 
   static constexpr bool IsSaveDataSizeValid(size_t size) {
     return size > 0 && size <= kMaximumSavedFileSize;
