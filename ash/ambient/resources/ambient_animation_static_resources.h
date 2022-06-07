@@ -36,8 +36,14 @@ class ASH_EXPORT AmbientAnimationStaticResources {
  public:
   // Creates an AmbientAnimationStaticResources instance that loads resources
   // for the given |theme|. Returns nullptr if |theme| is not supported.
+  //
+  // If |serializable| is true, GetSkottieWrapper() will return an animation
+  // that can be used for out-of-process rasterization in the graphics pipeline.
+  // If false, resource creation is cheaper and uses less memory but cannot be
+  // used for OOP rasterization.
   static std::unique_ptr<AmbientAnimationStaticResources> Create(
-      AmbientAnimationTheme theme);
+      AmbientAnimationTheme theme,
+      bool serializable);
 
   virtual ~AmbientAnimationStaticResources() = default;
 

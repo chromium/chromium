@@ -907,6 +907,12 @@ TEST_P(AmbientControllerTestForAnyTheme, ShowsOnMultipleDisplays) {
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetNumDisplays(), 2);
   EXPECT_EQ(GetContainerViews().size(), 2u);
+  AmbientViewID expected_child_view_id =
+      GetParam() == AmbientAnimationTheme::kSlideshow
+          ? AmbientViewID::kAmbientPhotoView
+          : AmbientViewID::kAmbientAnimationView;
+  EXPECT_TRUE(GetContainerViews().front()->GetViewByID(expected_child_view_id));
+  EXPECT_TRUE(GetContainerViews().back()->GetViewByID(expected_child_view_id));
   // Check that each root controller has an ambient widget.
   for (auto* ctrl : RootWindowController::root_window_controllers())
     EXPECT_TRUE(ctrl->ambient_widget_for_testing() &&

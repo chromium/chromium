@@ -615,7 +615,10 @@ void AmbientController::OnEnabledPrefChanged() {
     DCHECK(AmbientClient::Get());
     ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
         *AmbientClient::Get(), access_token_controller_, delegate_,
-        CreatePhotoConfigForCurrentTheme());
+        // The type of photo config specified here is actually irrelevant as it
+        // always gets reset with the correct configuration anyways in
+        // StartRefreshingImages() before ambient mode starts.
+        CreateAmbientSlideshowPhotoConfig());
 
     ambient_ui_model_observer_.Observe(&ambient_ui_model_);
 
@@ -785,8 +788,10 @@ void AmbientController::OnImagesFailed() {
 
 std::unique_ptr<views::Widget> AmbientController::CreateWidget(
     aura::Window* container) {
+  AmbientAnimationTheme current_theme = GetCurrentTheme();
   auto container_view = std::make_unique<AmbientContainerView>(
-      &delegate_, std::move(pending_animation_static_resources_));
+      &delegate_, AmbientAnimationStaticResources::Create(
+                      current_theme, /*serializable=*/true));
   auto* widget_delegate = new AmbientWidgetDelegate();
   widget_delegate->SetInitiallyFocusedView(container_view.get());
 
@@ -816,7 +821,7 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
 
   DCHECK(start_time_);
   ambient::RecordAmbientModeStartupTime(base::Time::Now() - *start_time_,
-                                        GetCurrentTheme());
+                                        current_theme);
 
   // Only announce for the primary window.
   if (Shell::GetPrimaryRootWindow() == container->GetRootWindow()) {
@@ -843,39 +848,33 @@ void AmbientController::StartRefreshingImages() {
   // model/controller with the appropriate config each time before calling
   // StartScreenUpdate().
   DCHECK(!ambient_photo_controller_->IsScreenUpdateActive());
-  ambient_photo_controller_->ambient_backend_model()->SetPhotoConfig(
-      CreatePhotoConfigForCurrentTheme());
+  AmbientAnimationTheme current_theme = GetCurrentTheme();
+  DVLOG(4) << "Loaded ambient theme " << ToString(current_theme);
+
+  AmbientPhotoConfig photo_config;
   std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate;
-  if (pending_animation_static_resources_) {
-    topic_queue_delegate = std::make_unique<AmbientTopicQueueAnimationDelegate>(
-        pending_animation_static_resources_->GetSkottieWrapper()
-            ->GetImageAssetMetadata());
-  } else {
+  if (current_theme == AmbientAnimationTheme::kSlideshow) {
+    photo_config = CreateAmbientSlideshowPhotoConfig();
     topic_queue_delegate =
         std::make_unique<AmbientTopicQueueSlideshowDelegate>();
+  } else {
+    scoped_refptr<cc::SkottieWrapper> animation =
+        AmbientAnimationStaticResources::Create(current_theme,
+                                                /*serializable=*/false)
+            ->GetSkottieWrapper();
+    photo_config =
+        CreateAmbientAnimationPhotoConfig(animation->GetImageAssetMetadata());
+    topic_queue_delegate = std::make_unique<AmbientTopicQueueAnimationDelegate>(
+        animation->GetImageAssetMetadata());
   }
+  ambient_photo_controller_->ambient_backend_model()->SetPhotoConfig(
+      std::move(photo_config));
   ambient_photo_controller_->StartScreenUpdate(std::move(topic_queue_delegate));
 }
 
 void AmbientController::StopRefreshingImages() {
   DCHECK(ambient_photo_controller_);
   ambient_photo_controller_->StopScreenUpdate();
-}
-
-AmbientPhotoConfig AmbientController::CreatePhotoConfigForCurrentTheme() {
-  AmbientAnimationTheme current_theme = GetCurrentTheme();
-  DVLOG(4) << "Loaded ambient theme " << ToString(current_theme);
-
-  pending_animation_static_resources_.reset();
-  if (current_theme == AmbientAnimationTheme::kSlideshow) {
-    return CreateAmbientSlideshowPhotoConfig();
-  } else {
-    pending_animation_static_resources_ =
-        AmbientAnimationStaticResources::Create(current_theme);
-    return CreateAmbientAnimationPhotoConfig(
-        pending_animation_static_resources_->GetSkottieWrapper()
-            ->GetImageAssetMetadata());
-  }
 }
 
 AmbientAnimationTheme AmbientController::GetCurrentTheme() const {
