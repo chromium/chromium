@@ -33,7 +33,6 @@ preprocess_if_expr("preprocess_src") {
     "menu.css",
     "roboto.css",
     "spinner.css",
-    "tabs.css",
     "text_defaults.css",
     "text_defaults_md.css",
     "throbber.css",

@@ -41,7 +41,6 @@ preprocess_if_expr("preprocess_src") {
     "focus_outline_manager.js",
     "splitter.js",
     "store.js",
-    "tabs.js",
     "tree.js",
   ]
 
@@ -337,7 +336,6 @@ js_type_check("ui_resources_modules") {
     ":splitter",
     ":store",
     ":store_client",
-    ":tabs",
     ":tree",
   ]
 }
@@ -560,15 +558,6 @@ js_library("store_client") {
   deps = [
     ":store",
     "../..:assert.m",
-  ]
-}
-
-js_library("tabs") {
-  deps = [
-    ":focus_outline_manager.m",
-    "..:ui.m",
-    "../..:cr.m",
-    "../..:util.m",
   ]
 }
 
