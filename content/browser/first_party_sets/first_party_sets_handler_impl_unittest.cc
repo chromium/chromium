@@ -333,16 +333,12 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
         FILE_PATH_LITERAL("persisted_first_party_sets.json"));
   }
 
-  void SetPublicFirstPartySetsAndWait(base::StringPiece content) {
-    base::ScopedTempDir temp_dir;
-    CHECK(temp_dir.CreateUniqueTempDir());
+  base::File WritePublicSetsFile(base::StringPiece content) {
     base::FilePath path =
-        temp_dir.GetPath().Append(FILE_PATH_LITERAL("sets_file.json"));
+        scoped_dir_.GetPath().Append(FILE_PATH_LITERAL("sets_file.json"));
     CHECK(base::WriteFile(path, content));
 
-    FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
-        base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ));
-    env_.RunUntilIdle();
+    return base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   }
 
   void TearDown() override {
@@ -407,7 +403,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   const std::string input = R"({"owner": "https://foo.test", )"
                             R"("members": ["https://member2.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
-  SetPublicFirstPartySetsAndWait(input);
+  FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
+      WritePublicSetsFile(input));
 
   auto expected_sets = UnorderedElementsAre(
       Pair(SerializesTo("https://example.test"),
@@ -440,7 +437,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, Successful_PersistedSetsEmpty) {
   const std::string input = R"({"owner": "https://foo.test", )"
                             R"("members": ["https://member2.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
-  SetPublicFirstPartySetsAndWait(input);
+  FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
+      WritePublicSetsFile(input));
 
   auto expected_sets = UnorderedElementsAre(
       Pair(SerializesTo("https://example.test"),
@@ -474,7 +472,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   const std::string input = R"({"owner": "https://example.test", )"
                             R"("members": ["https://member.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
-  SetPublicFirstPartySetsAndWait(input);
+  FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
+      WritePublicSetsFile(input));
 
   auto expected_sets =
       UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
@@ -520,7 +519,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   const std::string input = R"({"owner": "https://example.test", )"
                             R"("members": ["https://member.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
-  SetPublicFirstPartySetsAndWait(input);
+  FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
+      WritePublicSetsFile(input));
 
   EXPECT_THAT(future.Get(),
               UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
