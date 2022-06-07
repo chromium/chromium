@@ -90,6 +90,7 @@ void InstalledWebappBridge::DecidePermission(const GURL& origin_url,
 
 void InstalledWebappBridge::DecidePermission(ContentSettingsType type,
                                              const GURL& origin_url,
+                                             const GURL& last_committed_url,
                                              PermissionCallback callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -100,9 +101,11 @@ void InstalledWebappBridge::DecidePermission(ContentSettingsType type,
   // be destroyed in RunPermissionCallback.
   auto* callback_ptr = new PermissionCallback(std::move(callback));
 
-  ScopedJavaLocalRef<jstring> j_origin =
+  ScopedJavaLocalRef<jstring> j_origin_url =
       base::android::ConvertUTF8ToJavaString(env, origin_url.spec());
+  ScopedJavaLocalRef<jstring> j_last_committed_url =
+      base::android::ConvertUTF8ToJavaString(env, last_committed_url.spec());
   Java_InstalledWebappBridge_decidePermissionSetting(
-      env, static_cast<int>(type), j_origin,
+      env, static_cast<int>(type), j_origin_url, j_last_committed_url,
       reinterpret_cast<jlong>(callback_ptr));
 }

@@ -26,6 +26,8 @@
         android:minSdkVersion="23"
         android:targetSdkVersion="31" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
@@ -98,6 +100,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+        </activity>
+        <activity android:name="org.chromium.webapk.shell_apk.NotificationPermissionRequestActivity"
+                  android:theme="@style/PermissionRequestTheme">
         </activity>
 
         {{#share_template}}

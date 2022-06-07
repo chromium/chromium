@@ -22,6 +22,7 @@ public interface IWebApkApi extends android.os.IInterface
         public void cancelNotification(java.lang.String platformTag, int platformID)
                 throws android.os.RemoteException {}
         // Get if notification permission is enabled.
+        // DEPRECATED: Use checkNotificationPermission instead.
         @Override
         public boolean notificationPermissionEnabled() throws android.os.RemoteException {
             return false;
@@ -35,6 +36,17 @@ public interface IWebApkApi extends android.os.IInterface
         @Override
         public boolean finishAndRemoveTaskSdk23() throws android.os.RemoteException {
             return false;
+        }
+        // Gets the notification permission status.
+        @Override
+        public int checkNotificationPermission() throws android.os.RemoteException {
+            return 0;
+        }
+        // Creates a pending intent for requesting notification permission.
+        @Override
+        public android.app.PendingIntent requestNotificationPermission(java.lang.String channelName,
+                java.lang.String channelId) throws android.os.RemoteException {
+            return null;
         }
         @Override
         public android.os.IBinder asBinder() {
@@ -134,6 +146,24 @@ public interface IWebApkApi extends android.os.IInterface
                     reply.writeInt(((_result) ? (1) : (0)));
                     break;
                 }
+                case TRANSACTION_checkNotificationPermission: {
+                    int _result = this.checkNotificationPermission();
+                    reply.writeNoException();
+                    reply.writeInt(_result);
+                    break;
+                }
+                case TRANSACTION_requestNotificationPermission: {
+                    java.lang.String _arg0;
+                    _arg0 = data.readString();
+                    java.lang.String _arg1;
+                    _arg1 = data.readString();
+                    android.app.PendingIntent _result =
+                            this.requestNotificationPermission(_arg0, _arg1);
+                    reply.writeNoException();
+                    _Parcel.writeTypedObject(
+                            reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+                    break;
+                }
                 default: {
                     return super.onTransact(code, data, reply, flags);
                 }
@@ -209,6 +239,7 @@ public interface IWebApkApi extends android.os.IInterface
                 }
             }
             // Get if notification permission is enabled.
+            // DEPRECATED: Use checkNotificationPermission instead.
             @Override
             public boolean notificationPermissionEnabled() throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
@@ -265,6 +296,46 @@ public interface IWebApkApi extends android.os.IInterface
                 }
                 return _result;
             }
+            // Gets the notification permission status.
+            @Override
+            public int checkNotificationPermission() throws android.os.RemoteException {
+                android.os.Parcel _data = android.os.Parcel.obtain();
+                android.os.Parcel _reply = android.os.Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    boolean _status = mRemote.transact(
+                            Stub.TRANSACTION_checkNotificationPermission, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+            }
+            // Creates a pending intent for requesting notification permission.
+            @Override
+            public android.app.PendingIntent requestNotificationPermission(
+                    java.lang.String channelName, java.lang.String channelId)
+                    throws android.os.RemoteException {
+                android.os.Parcel _data = android.os.Parcel.obtain();
+                android.os.Parcel _reply = android.os.Parcel.obtain();
+                android.app.PendingIntent _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(channelName);
+                    _data.writeString(channelId);
+                    boolean _status = mRemote.transact(
+                            Stub.TRANSACTION_requestNotificationPermission, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _Parcel.readTypedObject(_reply, android.app.PendingIntent.CREATOR);
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+            }
         }
         static final int TRANSACTION_getSmallIconId =
                 (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -278,6 +349,10 @@ public interface IWebApkApi extends android.os.IInterface
                 (android.os.IBinder.FIRST_CALL_TRANSACTION + 4);
         static final int TRANSACTION_finishAndRemoveTaskSdk23 =
                 (android.os.IBinder.FIRST_CALL_TRANSACTION + 5);
+        static final int TRANSACTION_checkNotificationPermission =
+                (android.os.IBinder.FIRST_CALL_TRANSACTION + 6);
+        static final int TRANSACTION_requestNotificationPermission =
+                (android.os.IBinder.FIRST_CALL_TRANSACTION + 7);
     }
     public static final java.lang.String DESCRIPTOR =
             "org.chromium.webapk.lib.runtime_library.IWebApkApi";
@@ -291,6 +366,7 @@ public interface IWebApkApi extends android.os.IInterface
     public void cancelNotification(java.lang.String platformTag, int platformID)
             throws android.os.RemoteException;
     // Get if notification permission is enabled.
+    // DEPRECATED: Use checkNotificationPermission instead.
     public boolean notificationPermissionEnabled() throws android.os.RemoteException;
     // Display a notification with a specified channel name.
     public void notifyNotificationWithChannel(java.lang.String platformTag, int platformID,
@@ -298,6 +374,11 @@ public interface IWebApkApi extends android.os.IInterface
             throws android.os.RemoteException;
     // Finishes and removes the WebAPK's task. Returns true on success.
     public boolean finishAndRemoveTaskSdk23() throws android.os.RemoteException;
+    // Gets the notification permission status.
+    public int checkNotificationPermission() throws android.os.RemoteException;
+    // Creates a pending intent for requesting notification permission.
+    public android.app.PendingIntent requestNotificationPermission(java.lang.String channelName,
+            java.lang.String channelId) throws android.os.RemoteException;
     /** @hide */
     static class _Parcel {
         static private <T> T readTypedObject(

@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.webapps;
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
+import org.chromium.components.embedder_support.util.Origin;
 
 import javax.inject.Inject;
 
@@ -55,6 +57,13 @@ public class WebApkActivityCoordinator implements DestroyObserver {
         storage.incrementLaunchCount();
 
         mWebApkUpdateManager.get().updateIfNeeded(storage, mIntentDataProvider);
+
+        // The scope should not be empty here, this is for a WebAPK that just launched.
+        String scope = storage.getScope();
+        assert !scope.isEmpty();
+
+        PermissionUpdater.get().onWebApkLaunch(
+                Origin.create(scope), storage.getWebApkPackageName());
     }
 
     @Override

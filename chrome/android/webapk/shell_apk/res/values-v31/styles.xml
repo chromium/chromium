@@ -11,4 +11,8 @@
     <!-- This disables the Android S default splash screen. -->
     <item name="android:windowIsTranslucent">true</item>
   </style>
+  <style name="PermissionRequestTheme" parent="@android:style/Theme.Translucent.NoTitleBar">
+    <item name="android:windowIsFloating">true</item>
+    <item name="android:backgroundDimEnabled">false</item>
+  </style>
 </resources>

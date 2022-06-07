@@ -65,11 +65,11 @@ public class InstalledWebappPermissionStore {
             "geolocation_permission_setting.";
     private static final String KEY_PACKAGE_NAME_PREFIX = "package_name.";
     private static final String KEY_APP_NAME_PREFIX = "app_name.";
-    private static final String KEY_PRE_TWA_NOTIFICATION_PERMISSION_PREFIX =
+    private static final String KEY_PRE_INSTALL_NOTIFICATION_PERMISSION_PREFIX =
             "pre_twa_notification_permission.";
-    private static final String KEY_PRE_TWA_NOTIFICATION_PERMISSION_SETTING_PREFIX =
+    private static final String KEY_PRE_INSTALL_NOTIFICATION_PERMISSION_SETTING_PREFIX =
             "pre_twa_notification_permission_setting.";
-    private static final String KEY_ALL_DELEGATE_APPS = "all_delegate_apps.";
+    private static final String KEY_ALL_DELEGATE_APPS_PREFIX = "all_delegate_apps.";
 
     private final SharedPreferences mPreferences;
 
@@ -253,30 +253,30 @@ public class InstalledWebappPermissionStore {
     }
 
     /**
-     * Stores the notification state the origin had before the TWA was installed.
+     * Stores the notification state the origin had before the app was installed.
      * TODO(crbug.com/1320272): Delete this method when the new flow is complete.
      */
-    void setPreTwaNotificationState(Origin origin, boolean enabled) {
+    void setPreInstallNotificationState(Origin origin, boolean enabled) {
         mPreferences.edit()
-                .putBoolean(createNotificationPreTwaPermissionKey(origin), enabled)
+                .putBoolean(createNotificationPreInstallPermissionKey(origin), enabled)
                 .apply();
     }
 
-    /** Stores the notification permission setting the origin had before the TWA was installed. */
-    void setPreTwaNotificationPermissionSetting(
+    /** Stores the notification permission setting the origin had before the app was installed. */
+    void setPreInstallNotificationPermissionSetting(
             Origin origin, @ContentSettingValues int settingValue) {
         mPreferences.edit()
-                .putInt(createPreTwaNotificationPermissionSettingKey(origin), settingValue)
+                .putInt(createPreInstallNotificationPermissionSettingKey(origin), settingValue)
                 .apply();
     }
 
     /**
-     * Retrieves the notification state the origin had before the TWA was installed. {@code null} if
+     * Retrieves the notification state the origin had before the app was installed. {@code null} if
      * no state is stored. If a value was stored, calling this method removes it.
      */
     @Nullable
-    Boolean getPreTwaNotificationState(Origin origin) {
-        String key = createNotificationPreTwaPermissionKey(origin);
+    Boolean getPreInstallNotificationState(Origin origin) {
+        String key = createNotificationPreInstallPermissionKey(origin);
         if (!mPreferences.contains(key)) return null;
 
         boolean enabled = mPreferences.getBoolean(key, false);
@@ -287,17 +287,17 @@ public class InstalledWebappPermissionStore {
     }
 
     /**
-     * Retrieves the notification permission setting the origin had before the TWA was installed.
+     * Retrieves the notification permission setting the origin had before the app was installed.
      * {@code null} if no setting is stored. If a setting was stored, calling this method removes
      * it.
      */
     @Nullable
     @ContentSettingValues
-    Integer getAndRemovePreTwaNotificationPermission(Origin origin) {
-        String key = createPreTwaNotificationPermissionSettingKey(origin);
+    Integer getAndRemovePreInstallNotificationPermission(Origin origin) {
+        String key = createPreInstallNotificationPermissionSettingKey(origin);
         if (!mPreferences.contains(key)) {
             // TODO(crbug.com/1323183): Clean up this fallback.
-            Boolean enabled = getPreTwaNotificationState(origin);
+            Boolean enabled = getPreInstallNotificationState(origin);
             if (enabled == null) {
                 return null;
             }
@@ -353,12 +353,12 @@ public class InstalledWebappPermissionStore {
         return getPermissionSettingKeyPrefix(type) + origin.toString();
     }
 
-    private static String createNotificationPreTwaPermissionKey(Origin origin) {
-        return KEY_PRE_TWA_NOTIFICATION_PERMISSION_PREFIX + origin.toString();
+    private static String createNotificationPreInstallPermissionKey(Origin origin) {
+        return KEY_PRE_INSTALL_NOTIFICATION_PERMISSION_PREFIX + origin.toString();
     }
 
-    private static String createPreTwaNotificationPermissionSettingKey(Origin origin) {
-        return KEY_PRE_TWA_NOTIFICATION_PERMISSION_SETTING_PREFIX + origin.toString();
+    private static String createPreInstallNotificationPermissionSettingKey(Origin origin) {
+        return KEY_PRE_INSTALL_NOTIFICATION_PERMISSION_SETTING_PREFIX + origin.toString();
     }
 
     private static String createPackageNameKey(Origin origin) {
@@ -370,7 +370,7 @@ public class InstalledWebappPermissionStore {
     }
 
     private static String createAllDelegateAppsKey(Origin origin) {
-        return KEY_ALL_DELEGATE_APPS + origin.toString();
+        return KEY_ALL_DELEGATE_APPS_PREFIX + origin.toString();
     }
 
     private static byte[] stringToByteArray(String string) {

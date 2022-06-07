@@ -5,27 +5,37 @@
 package org.chromium.chrome.browser.webapps;
 
 import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Messenger;
 import android.os.RemoteException;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionStatus;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.webapk.lib.client.WebApkServiceConnectionManager;
 import org.chromium.webapk.lib.runtime_library.IWebApkApi;
@@ -60,6 +70,12 @@ public class WebApkServiceClient {
     public static final String CATEGORY_WEBAPK_API = "android.intent.category.WEBAPK_API";
     private static final String TAG = "WebApk";
 
+    // An intent extra for a {@link Messenger}.
+    private static final String EXTRA_MESSENGER = "messenger";
+
+    // A bundle key for a {@link PermissionStatus}.
+    private static final String KEY_PERMISSION_STATUS = "permissionStatus";
+
     private static WebApkServiceClient sInstance;
 
     /** Manages connections between the browser application and WebAPK services. */
@@ -78,6 +94,59 @@ public class WebApkServiceClient {
     }
 
     /**
+     * Gets the notification permission setting for the package.
+     * @param permissionCallback To be called on a background thread with a permission setting, one
+     *         of {@link ContentSettingValues}.
+     */
+    public void checkNotificationPermission(
+            String webApkPackage, Callback<Integer> permissionCallback) {
+        connect(webApkPackage, api -> {
+            @ContentSettingValues
+            int settingValue = toContentSettingValue(api.checkNotificationPermission());
+            permissionCallback.onResult(settingValue);
+        });
+    }
+
+    /**
+     * Requests the notification permission for the package.
+     * @param permissionCallback To be called on a background thread with a permission setting, one
+     *         of {@link ContentSettingValues}.
+     */
+    public void requestNotificationPermission(
+            String webApkPackage, Callback<Integer> permissionCallback) {
+        if (!BuildInfo.isAtLeastT()) {
+            Log.w(TAG, "Requesting notification permission is not supported before T.");
+            return;
+        }
+        connect(webApkPackage, api -> {
+            String channelName = ContextUtils.getApplicationContext().getString(
+                    R.string.webapk_notification_channel_name);
+
+            PendingIntent permissionRequestIntent = api.requestNotificationPermission(
+                    channelName, ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
+            if (permissionRequestIntent == null) {
+                permissionCallback.onResult(ContentSettingValues.ASK);
+                return;
+            }
+
+            Handler handler = new Handler(Looper.getMainLooper(), message -> {
+                @ContentSettingValues
+                int settingValue = toContentSettingValue(
+                        message.getData().getInt(KEY_PERMISSION_STATUS, PermissionStatus.BLOCK));
+                permissionCallback.onResult(settingValue);
+                return true;
+            });
+            Intent extraIntent = new Intent();
+            extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
+            try {
+                permissionRequestIntent.send(ContextUtils.getApplicationContext(), 0, extraIntent);
+            } catch (PendingIntent.CanceledException e) {
+                Log.e(TAG, "The PendingIntent was canceled.", e);
+            }
+        });
+    }
+
+    /**
      * Connects to a WebAPK's bound service, builds a notification and hands it over to the WebAPK
      * to display. Handing over the notification makes the notification look like it originated from
      * the WebAPK - not Chrome - in the Android UI.
@@ -89,22 +158,25 @@ public class WebApkServiceClient {
             fallbackToWebApkIconIfNecessary(
                     notificationBuilder, webApkPackage, api.getSmallIconId());
 
-            boolean notificationPermissionEnabled = api.notificationPermissionEnabled();
-            if (notificationPermissionEnabled) {
-                String channelName = null;
-                if (webApkTargetsAtLeastO(webApkPackage)) {
-                    notificationBuilder.setChannelId(ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
-                    channelName = ContextUtils.getApplicationContext().getString(
-                            org.chromium.chrome.R.string.webapk_notification_channel_name);
-                }
-                NotificationMetadata metadata = new NotificationMetadata(
-                        NotificationUmaTracker.SystemNotificationType.WEBAPK, platformTag,
-                        platformID);
+            @ContentSettingValues
+            int settingValue = toContentSettingValue(api.checkNotificationPermission());
+            WebApkUmaRecorder.recordNotificationPermissionStatus(settingValue);
 
-                api.notifyNotificationWithChannel(platformTag, platformID,
-                        notificationBuilder.build(metadata).getNotification(), channelName);
+            if (settingValue != ContentSettingValues.ALLOW) {
+                return;
             }
-            WebApkUmaRecorder.recordNotificationPermissionStatus(notificationPermissionEnabled);
+
+            String channelName = null;
+            if (webApkTargetsAtLeastO(webApkPackage)) {
+                notificationBuilder.setChannelId(ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
+                channelName = ContextUtils.getApplicationContext().getString(
+                        R.string.webapk_notification_channel_name);
+            }
+            NotificationMetadata metadata = new NotificationMetadata(
+                    NotificationUmaTracker.SystemNotificationType.WEBAPK, platformTag, platformID);
+
+            api.notifyNotificationWithChannel(platformTag, platformID,
+                    notificationBuilder.build(metadata).getNotification(), channelName);
         });
     }
 
@@ -179,5 +251,18 @@ public class WebApkServiceClient {
     private void connect(String webApkPackage, ApiUseCallback connectionCallback) {
         mConnectionManager.connect(
                 ContextUtils.getApplicationContext(), webApkPackage, connectionCallback);
+    }
+
+    @ContentSettingValues
+    private static int toContentSettingValue(@PermissionStatus int permissionStatus) {
+        if (permissionStatus == PermissionStatus.ALLOW) {
+            return ContentSettingValues.ALLOW;
+        }
+
+        if (permissionStatus == PermissionStatus.ASK) {
+            return ContentSettingValues.ASK;
+        }
+
+        return ContentSettingValues.BLOCK;
     }
 }

@@ -94,9 +94,9 @@ public class InstalledWebappBridge {
     }
 
     @CalledByNative
-    private static void decidePermissionSetting(
-            @ContentSettingsType int type, String url, long callback) {
-        Origin origin = Origin.create(Uri.parse(url));
+    private static void decidePermissionSetting(@ContentSettingsType int type, String originUrl,
+            String lastCommittedUrl, long callback) {
+        Origin origin = Origin.create(Uri.parse(originUrl));
         if (origin == null) {
             runPermissionCallback(callback, ContentSettingValues.BLOCK);
             return;
@@ -106,7 +106,8 @@ public class InstalledWebappBridge {
                 PermissionUpdater.get().getLocationPermission(origin, callback);
                 break;
             case ContentSettingsType.NOTIFICATIONS:
-                PermissionUpdater.get().requestNotificationPermission(origin, callback);
+                PermissionUpdater.get().requestNotificationPermission(
+                        origin, lastCommittedUrl, callback);
                 break;
             default:
                 throw new IllegalStateException("Unsupported permission type.");

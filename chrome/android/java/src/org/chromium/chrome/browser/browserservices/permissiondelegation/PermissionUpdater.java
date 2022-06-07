@@ -24,7 +24,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class PermissionUpdater {
-    private static final String TAG = "TWAPermission";
+    private static final String TAG = "PermissionUpdater";
 
     private final InstalledWebappPermissionManager mPermissionManager;
 
@@ -62,6 +62,10 @@ public class PermissionUpdater {
         mNotificationPermissionUpdater.onOriginVerified(origin, packageName);
     }
 
+    public void onWebApkLaunch(Origin origin, String packageName) {
+        mNotificationPermissionUpdater.onWebApkLaunch(origin, packageName);
+    }
+
     public void onClientAppUninstalled(Origin origin) {
         mNotificationPermissionUpdater.onClientAppUninstalled(origin);
         mLocationPermissionUpdater.onClientAppUninstalled(origin);
@@ -84,7 +88,7 @@ public class PermissionUpdater {
         mLocationPermissionUpdater.checkPermission(origin, callback);
     }
 
-    void requestNotificationPermission(Origin origin, long callback) {
-        mNotificationPermissionUpdater.requestPermission(origin, callback);
+    void requestNotificationPermission(Origin origin, String lastCommittedUrl, long callback) {
+        mNotificationPermissionUpdater.requestPermission(origin, lastCommittedUrl, callback);
     }
 }

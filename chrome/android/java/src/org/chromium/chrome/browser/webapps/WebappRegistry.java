@@ -73,6 +73,7 @@ public class WebappRegistry {
 
     private boolean mIsInitialized;
 
+    /** Maps webapp ids to storages. */
     private HashMap<String, WebappDataStorage> mStorages;
     private SharedPreferences mPreferences;
     private InstalledWebappPermissionStore mPermissionStore;
@@ -192,10 +193,11 @@ public class WebappRegistry {
     }
 
     /**
-     * Returns a string representation of the WebApk origin.
-     * @param storage The WebappDataStorage to extract origin for.
+     * Returns a string representation of the WebAPK scope URL, or the empty string if the storage
+     * is not for a WebAPK.
+     * @param storage The storage to extract the scope URL from.
      */
-    private String getScopeFromStorage(WebappDataStorage storage) {
+    private String getWebApkScopeFromStorage(WebappDataStorage storage) {
         if (!storage.getId().startsWith(WebApkConstants.WEBAPK_ID_PREFIX)) {
             return "";
         }
@@ -216,7 +218,7 @@ public class WebappRegistry {
         for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
             WebappDataStorage storage = entry.getValue();
 
-            String scope = getScopeFromStorage(storage);
+            String scope = getWebApkScopeFromStorage(storage);
             if (scope.isEmpty()) continue;
 
             if (scope.startsWith(origin)) return true;
@@ -232,7 +234,7 @@ public class WebappRegistry {
         for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
             WebappDataStorage storage = entry.getValue();
 
-            String scope = getScopeFromStorage(storage);
+            String scope = getWebApkScopeFromStorage(storage);
             if (scope.isEmpty()) continue;
 
             origins.add(Origin.create(scope).toString());
