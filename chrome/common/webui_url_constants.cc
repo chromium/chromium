@@ -33,7 +33,7 @@ const char kChromeUIAppIconURL[] = "chrome://app-icon/";
 const char kChromeUIAppLauncherPageHost[] = "apps";
 const char kChromeUIAppsURL[] = "chrome://apps/";
 const char kChromeUIAppsWithDeprecationDialogURL[] =
-    "chrome://apps?showDeletionDialog";
+    "chrome://apps?showDeletionDialog=";
 const char kChromeUIAppsWithForceInstalledDeprecationDialogURL[] =
     "chrome://apps?showForceInstallDialog=";
 const char kChromeUIAutofillInternalsHost[] = "autofill-internals";

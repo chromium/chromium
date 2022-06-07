@@ -7,11 +7,13 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/tab_dialogs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_id.h"
@@ -40,10 +42,20 @@ class DeprecatedAppsDialogView : public views::DialogDelegateView {
   DeprecatedAppsDialogView& operator=(const DeprecatedAppsDialogView&) = delete;
   ~DeprecatedAppsDialogView() override;
 
-  // Create the dialog metadata and show it.
+  // Create the dialog metadata and show it. Some behavior specializations:
+  // * If the `optional_launched_extension_id` is passed, then the dialog will
+  //   show the name of that chrome app in the title.
+  // * If `optional_launched_extension_id` is empty and `deprecated_app_ids`
+  //   only has one entry, then the dialog will display the name of the one
+  //   deprecated chrome app.
+  // * If `optional_launched_extension_id` is empty and `deprecated_app_ids` has
+  //   more than one entry, then the title will just contain the number of
+  //   deprecated chrome apps.
   static DeprecatedAppsDialogView* CreateAndShowDialog(
+      const extensions::ExtensionId& optional_launched_extension_id,
       const std::set<extensions::ExtensionId>& deprecated_app_ids,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      base::OnceClosure launch_anyways);
 
   base::WeakPtr<DeprecatedAppsDialogView> AsWeakPtr();
 
@@ -55,8 +67,10 @@ class DeprecatedAppsDialogView : public views::DialogDelegateView {
  private:
   class DeprecatedAppsTableModel;
   DeprecatedAppsDialogView(
+      const extensions::ExtensionId& optional_launched_extension_id,
       const std::set<extensions::ExtensionId>& deprecated_app_ids,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      base::OnceClosure launch_anyways);
 
   // Initialize the dialog when the object is instantiated.
   void InitDialog();
@@ -69,7 +83,8 @@ class DeprecatedAppsDialogView : public views::DialogDelegateView {
 
   // Callback that runs when accept button is clicked to
   // uninstall all extensions.
-  void UninstallExtensions();
+  void OnAccept();
+  void OnCancel();
 
   // Controls the table view within the dialog box.
   raw_ptr<views::TableView> deprecated_apps_table_view_;
@@ -79,7 +94,10 @@ class DeprecatedAppsDialogView : public views::DialogDelegateView {
 
   raw_ptr<views::Label> info_label_;
 
+  absl::optional<std::u16string> launched_extension_name_;
   std::set<extensions::ExtensionId> deprecated_app_ids_;
+  absl::optional<std::u16string> single_app_name_;
+  base::OnceClosure launch_anyways_;
 
   raw_ptr<content::WebContents> web_contents_;
 

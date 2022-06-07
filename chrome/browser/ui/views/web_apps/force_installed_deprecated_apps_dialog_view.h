@@ -21,11 +21,11 @@ class ForceInstalledDeprecatedAppsDialogView : public views::View {
 
   // Create the dialog metadata and show it.
   static void CreateAndShowDialog(extensions::ExtensionId app_id,
-                                  content::WebContents* web_contents);
+                                  content::WebContents* web_contents,
+                                  base::OnceClosure launch_anyways);
 
  private:
   ForceInstalledDeprecatedAppsDialogView(std::u16string app_name,
-                                         bool is_preinstalled_app,
                                          content::WebContents* web_contents);
 
   std::u16string app_name_;

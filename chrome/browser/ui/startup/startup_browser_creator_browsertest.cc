@@ -657,16 +657,14 @@ class StartupBrowserCreatorChromeAppShortcutTest
     }
   }
 
-  void ExpectBlockLaunch(
-      const std::string& force_installed_app_id = std::string()) {
+  void ExpectBlockLaunch(const std::string& app_id, bool force_install_dialog) {
     ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
     auto waiter = views::NamedWidgetShownWaiter(
         views::test::AnyWidgetTestPasskey{},
-        force_installed_app_id.empty()
-            ? "DeprecatedAppsDialogView"
-            : "ForceInstalledDeprecatedAppsDialogView");
+        force_install_dialog ? "ForceInstalledDeprecatedAppsDialogView"
+                             : "DeprecatedAppsDialogView");
 #endif
     // Should have opened the requested homepage about:blank in 1st window.
     TabStripModel* tab_strip = browser()->tab_strip_model();
@@ -686,10 +684,12 @@ class StartupBrowserCreatorChromeAppShortcutTest
     BUILDFLAG(IS_FUCHSIA)
 
     GURL expected_url =
-        force_installed_app_id.empty()
-            ? GURL(chrome::kChromeUIAppsWithDeprecationDialogURL)
-            : GURL(chrome::kChromeUIAppsWithForceInstalledDeprecationDialogURL +
-                   force_installed_app_id);
+        force_install_dialog
+            ? GURL(chrome::kChromeUIAppsWithForceInstalledDeprecationDialogURL +
+                   app_id)
+            : GURL(chrome::kChromeUIAppsWithDeprecationDialogURL + app_id);
+    EXPECT_EQ(expected_url,
+              other_tab_strip->GetWebContentsAt(0)->GetVisibleURL());
     EXPECT_EQ(expected_url,
               other_tab_strip->GetWebContentsAt(0)->GetVisibleURL());
 
@@ -762,7 +762,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
                                         expected_title);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   } else {
-    ExpectBlockLaunch();
+    ExpectBlockLaunch(extension_app->id(), /*force_install_dialog=*/false);
   }
 }
 
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
               std::string::npos)
         << new_browser->app_name();
   } else {
-    ExpectBlockLaunch();
+    ExpectBlockLaunch(extension_app->id(), /*force_install_dialog=*/false);
   }
 }
 
@@ -844,7 +844,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
                                         expected_title);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   } else {
-    ExpectBlockLaunch();
+    ExpectBlockLaunch(extension_app->id(), /*force_install_dialog=*/false);
   }
 }
 
@@ -898,7 +898,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
                                         expected_title);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   } else {
-    ExpectBlockLaunch(extension_app->id());
+    ExpectBlockLaunch(extension_app->id(), /*force_install_dialog=*/true);
   }
 }
 

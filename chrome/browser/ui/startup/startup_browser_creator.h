@@ -206,6 +206,14 @@ class StartupBrowserCreator {
                            OpenAppShortcutWindowPref);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorChromeAppShortcutTest,
                            OpenPolicyForcedAppShortcut);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
+                           OpenAppShortcutNoPref);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
+                           OpenAppShortcutTabPref);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
+                           OpenAppShortcutWindowPref);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
+                           OpenPolicyForcedAppShortcut);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, OpenAppUrlShortcut);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
                            OpenAppUrlIncognitoShortcut);

@@ -5295,55 +5295,54 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <!-- End Extension Settings Overridden Dialog strings. -->
       <!-- Force Installed Deprecated Apps Deletion Dialog strings. -->
       <message name="IDS_FORCE_INSTALLED_DEPRECATED_APPS_CONTENT" desc="Content of the force installed deprecated app dialog">
-        Your administrator installed "<ph name="EXTENSION_NAME">$1<ex>Google Docs</ex></ph>" but this Chrome App is no longer supported. Contact your administrator to remove it.
-      </message>
-      <message name="IDS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APPS_TITLE" desc="Title of the force installed and pre-installed deprecated app dialog">
-        <ph name="EXTENSION_NAME">$1<ex>Google Docs</ex></ph> needs to be updated
-      </message>
-      <message name="IDS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APPS_CONTENT" desc="Content of the force installed and pre-installed deprecated app dialog">
-        Contact your administrator for the newest version.
-      </message>
-      <message name="IDS_FORCE_INSTALLED_DEPRECATED_APPS_LEARN_MORE_AX_LABEL" desc="Accessibility label text for IDS_DEPRECATED_APPS_LEARN_MORE link">
-        Learn more about unsupported Chrome Apps
+        Old versions of Chrome Apps won't open after December 2022. Contact your administrator to update to a new version or remove this app.
       </message>
       <!-- End Force Installed Deprecated Apps Deletion Dialog strings. -->
       <!-- Deprecated Apps Deletion Dialog strings. -->
-      <message name="IDS_DEPRECATED_APPS_RENDERER_TITLE" desc="The title of the deprecated app dialog">
-        {NUM_APPS, plural,
-        =1 {Unsupported App}
-        other {Unsupported Apps}}
+      <message name="IDS_DEPRECATED_APPS_RENDERER_TITLE_PLURAL" desc="The title of the deprecated app dialog">
+        <ph name="APPS">$1<ex>2</ex></ph> apps are no longer supported
       </message>
-      <message name="IDS_DEPRECATED_APPS_MONITOR_RENDERER" desc="States how many deprecated apps are present, with a link to a help article">
-        {NUM_APPS, plural,
-        =1 {1 of your apps is no longer supported.}
-        other {# of your apps are no longer supported.}}
+      <message name="IDS_DEPRECATED_APPS_RENDERER_TITLE_WITH_APP_NAME" desc="The title of the deprecated app dialog with the app name">
+        "<ph name="EXTENSION_NAME">$1<ex>Google Docs</ex></ph>" is no longer supported
+      </message>
+      <message name="IDS_DEPRECATED_APPS_MONITOR_RENDERER" desc="Dialog content that educates users that Chrome Apps will soon no longer launch.">
+        Old versions of Chrome apps won't open after December 2022. You can check if there's a new version available.
       </message>
       <message name="IDS_DEPRECATED_APPS_LEARN_MORE" desc="Redirects to a link with more information on chrome apps deprecation">
         Learn more
       </message>
+      <message name="IDS_DEPRECATED_APPS_LEARN_MORE_AX_LABEL" desc="Accessibility label text for IDS_DEPRECATED_APPS_LEARN_MORE link">
+        Learn more about unsupported Chrome apps
+      </message>
       <message name="IDS_DEPRECATED_APPS_DELETION_LINK" desc="Contains link to trigger the deprecated apps deletion dialog from chrome://apps">
         {NUM_APPS, plural,
-        =1 {Delete 1 unsupported app}
-        other {Delete # unsupported apps}}
+        =1 {Remove 1 unsupported app}
+        other {Remove # unsupported apps}}
       </message>
       <if expr="use_titlecase">
-        <message name="IDS_DEPRECATED_APPS_OK_LABEL" desc="Label for OK button on deprecated apps dialog">
+        <message name="IDS_DEPRECATED_APPS_OK_LABEL" desc="Label for OK button to delete deprecated apps on deprecated apps dialog">
           {NUM_APPS, plural,
-          =1 {Delete App Now}
-          other {Delete Apps Now}}
+          =1 {Remove App}
+          other {Remove Apps}}
         </message>
         <message name="IDS_DEPRECATED_APPS_CANCEL_LABEL" desc="Label for Cancel button on deprecated apps dialog">
-          Ask Next Time
+          Cancel
+        </message>
+        <message name="IDS_DEPRECATED_APPS_LAUNCH_ANYWAY_LABEL" desc="Label for button cancel button to launch the app anyways in the deprecated apps dialog">
+          Open Anyway
         </message>
       </if>
         <if expr="not use_titlecase">
-        <message name="IDS_DEPRECATED_APPS_OK_LABEL" desc="Label for OK button on deprecated apps dialog">
+        <message name="IDS_DEPRECATED_APPS_OK_LABEL" desc="Label for OK button to delete deprecated apps on deprecated apps dialog">
           {NUM_APPS, plural,
-          =1 {Delete app now}
-          other {Delete apps now}}
+          =1 {Remove app}
+          other {Remove apps}}
         </message>
         <message name="IDS_DEPRECATED_APPS_CANCEL_LABEL" desc="Label for Cancel button on deprecated apps dialog">
-          Ask next time
+          Cancel
+        </message>
+        <message name="IDS_DEPRECATED_APPS_LAUNCH_ANYWAY_LABEL" desc="Label for button cancel button to launch the app anyways in the deprecated apps dialog">
+          Open anyway
         </message>
       </if>
       <!-- End Deprecated Apps Deletion Dialog strings. -->
