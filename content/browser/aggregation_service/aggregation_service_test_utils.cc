@@ -201,7 +201,8 @@ AggregatableReportRequest CreateExampleRequest(
                  base::GUID::GenerateRandomV4(),
                  url::Origin::Create(GURL("https://reporting.example")),
                  AggregatableReportSharedInfo::DebugMode::kDisabled,
-                 /*additional_fields=*/base::Value::Dict()))
+                 /*additional_fields=*/base::Value::Dict(),
+                 /*api_version=*/""))
       .value();
 }
 

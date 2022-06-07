@@ -88,7 +88,8 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
                                base::GUID report_id,
                                url::Origin reporting_origin,
                                DebugMode debug_mode,
-                               base::Value::Dict additional_fields);
+                               base::Value::Dict additional_fields,
+                               std::string api_version);
 
   AggregatableReportSharedInfo(const AggregatableReportSharedInfo& other) =
       delete;
@@ -109,6 +110,7 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
   url::Origin reporting_origin;
   DebugMode debug_mode;
   base::Value::Dict additional_fields;
+  std::string api_version;
 };
 
 // An AggregatableReport contains all the information needed for sending the

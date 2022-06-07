@@ -22,7 +22,8 @@ TestAggregationService::AssembleRequest::AssembleRequest(
     url::Origin reporting_origin,
     std::vector<GURL> processing_urls,
     bool is_debug_mode_enabled,
-    base::Value::Dict additional_fields)
+    base::Value::Dict additional_fields,
+    std::string api_version)
     : operation(operation),
       bucket(bucket),
       value(value),
@@ -30,7 +31,8 @@ TestAggregationService::AssembleRequest::AssembleRequest(
       reporting_origin(std::move(reporting_origin)),
       processing_urls(std::move(processing_urls)),
       is_debug_mode_enabled(is_debug_mode_enabled),
-      additional_fields(std::move(additional_fields)) {}
+      additional_fields(std::move(additional_fields)),
+      api_version(std::move(api_version)) {}
 
 TestAggregationService::AssembleRequest::AssembleRequest(
     AssembleRequest&& other) = default;

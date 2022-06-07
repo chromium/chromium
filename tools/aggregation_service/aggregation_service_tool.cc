@@ -123,7 +123,8 @@ base::Value::Dict AggregationServiceTool::AssembleReport(
     url::Origin reporting_origin,
     std::vector<GURL> processing_urls,
     bool is_debug_mode_enabled,
-    base::Value::Dict additional_fields) {
+    base::Value::Dict additional_fields,
+    std::string api_version) {
   base::Value::Dict result;
 
   absl::optional<content::TestAggregationService::Operation> operation =
@@ -160,7 +161,8 @@ base::Value::Dict AggregationServiceTool::AssembleReport(
   content::TestAggregationService::AssembleRequest request(
       operation.value(), bucket, value, aggregation_mode.value(),
       std::move(reporting_origin), std::move(processing_urls),
-      is_debug_mode_enabled, std::move(additional_fields));
+      is_debug_mode_enabled, std::move(additional_fields),
+      std::move(api_version));
 
   base::RunLoop run_loop;
   agg_service_->AssembleReport(

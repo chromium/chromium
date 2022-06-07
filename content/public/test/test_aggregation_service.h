@@ -58,7 +58,8 @@ class TestAggregationService {
                     url::Origin reporting_origin,
                     std::vector<GURL> processing_urls,
                     bool is_debug_mode_enabled,
-                    base::Value::Dict additional_fields);
+                    base::Value::Dict additional_fields,
+                    std::string api_version);
     AssembleRequest(AssembleRequest&& other);
     AssembleRequest& operator=(AssembleRequest&& other);
     ~AssembleRequest();
@@ -82,6 +83,9 @@ class TestAggregationService {
 
     // Additional fields to add to shared_info.
     base::Value::Dict additional_fields;
+
+    // Specifies the API version.
+    std::string api_version;
   };
 
   virtual ~TestAggregationService() = default;

@@ -157,7 +157,8 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
       AggregatableReportSharedInfo(
           data->initial_report_time, report.external_report_id(),
           attribution_info.source.common_info().reporting_origin(), debug_mode,
-          std::move(additional_fields)));
+          std::move(additional_fields),
+          AttributionReport::AggregatableAttributionData::kVersion));
 }
 
 }  // namespace content

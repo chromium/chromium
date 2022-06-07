@@ -414,14 +414,15 @@ TEST(AggregatableReportTest,
       /*report_id=*/
       base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
-      AggregatableReportSharedInfo::DebugMode::kDisabled, base::Value::Dict());
+      AggregatableReportSharedInfo::DebugMode::kDisabled, base::Value::Dict(),
+      /*api_version=*/"1.0");
 
   const char kExpectedString[] =
       R"({)"
       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
       R"("reporting_origin":"https://reporting.example",)"
       R"("scheduled_report_time":"1234567890",)"
-      R"("version":"")"
+      R"("version":"1.0")"
       R"(})";
 
   EXPECT_EQ(shared_info.SerializeAsJson(), kExpectedString);
@@ -434,7 +435,8 @@ TEST(AggregatableReportTest,
       /*report_id=*/
       base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
-      AggregatableReportSharedInfo::DebugMode::kEnabled, base::Value::Dict());
+      AggregatableReportSharedInfo::DebugMode::kEnabled, base::Value::Dict(),
+      /*api_version=*/"1.0");
 
   const char kExpectedString[] =
       R"({)"
@@ -442,7 +444,7 @@ TEST(AggregatableReportTest,
       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
       R"("reporting_origin":"https://reporting.example",)"
       R"("scheduled_report_time":"1234567890",)"
-      R"("version":"")"
+      R"("version":"1.0")"
       R"(})";
 
   EXPECT_EQ(shared_info.SerializeAsJson(), kExpectedString);
@@ -459,7 +461,8 @@ TEST(AggregatableReportTest, SharedInfoAdditionalFields) {
       base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
       AggregatableReportSharedInfo::DebugMode::kEnabled,
-      std::move(additional_fields));
+      std::move(additional_fields),
+      /*api_version=*/"1.0");
 
   const char kExpectedString[] =
       R"({)"
@@ -470,7 +473,7 @@ TEST(AggregatableReportTest, SharedInfoAdditionalFields) {
       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
       R"("reporting_origin":"https://reporting.example",)"
       R"("scheduled_report_time":"1234567890",)"
-      R"("version":"")"
+      R"("version":"1.0")"
       R"(})";
 
   EXPECT_EQ(shared_info.SerializeAsJson(), kExpectedString);

@@ -124,8 +124,10 @@ class AttributionAggregatableReportGoldenTest : public testing::Test {
               EXPECT_TRUE(VerifyReport(
                   report.ReportBody(), std::move(expected_report.GetDict()),
                   *base64_encoded_expected_cleartext_payload))
-                  << "There was an error, actual output for " << report_file
-                  << " is:\n"
+                  << "There was an error, consider bumping "
+                     "AttributionReport::AggregatableAttributionData::kVersion,"
+                     " actual output for "
+                  << report_file << " is:\n"
                   << SerializeAttributionJson(report.ReportBody(),
                                               /*pretty_print=*/true);
               run_loop.Quit();

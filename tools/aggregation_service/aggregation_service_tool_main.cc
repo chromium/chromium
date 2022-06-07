@@ -43,6 +43,7 @@ constexpr char kSwitchAdditionalFields[] = "additional-fields";
 constexpr char kSwitchAdditionalSharedInfoFields[] =
     "additional-shared-info-fields";
 constexpr char kSwitchEnableDebugMode[] = "enable-debug-mode";
+constexpr char kSwitchApiVersion[] = "api-version";
 
 constexpr char kHelpMsg[] = R"(
   aggregation_service_tool [--operation=<operation>] --bucket=<bucket>
@@ -52,13 +53,13 @@ constexpr char kHelpMsg[] = R"(
   [--output-url=<output_url>] [--disable-payload-encryption]
   [--additional-fields=<additional_fields>]
   [--additional-shared-info-fields=<additional_shared_info_fields]
-  [--debug-mode]
+  [--debug-mode] [--api-version=<api_version>]
 
   Examples:
   aggregation_service_tool --operation="histogram" --bucket=1234 --value=5
   --alternative-aggregation-mode="experimental-poplar" --reporting-origin="https://example.com"
   --helper-key-urls="https://a.com/keys.json https://b.com/path/to/keys.json"
-  --output-file="output.json" --enable-debug-mode
+  --output-file="output.json" --enable-debug-mode --api-version="1.0"
   --additional-fields=
   "source_site=https://publisher.example,attribution_destination=https://advertiser.example"
   or
@@ -107,6 +108,7 @@ constexpr char kHelpMsg[] = R"(
                                  serialization.
   --enable-debug-mode = Optional switch. If provided, debug mode is enabled.
                         Otherwise, it is disabled.
+  --api-version = Optional switch to specify the API version. Default is "".
 )";
 
 void PrintHelp() {
@@ -147,7 +149,8 @@ int main(int argc, char* argv[]) {
       kSwitchDisablePayloadEncryption,
       kSwitchAdditionalFields,
       kSwitchAdditionalSharedInfoFields,
-      kSwitchEnableDebugMode};
+      kSwitchEnableDebugMode,
+      kSwitchApiVersion};
   for (const auto& provided_switch : command_line.GetSwitches()) {
     if (!base::Contains(kAllowedSwitches, provided_switch.first)) {
       LOG(ERROR) << "aggregation_service_tool did not expect "
@@ -280,12 +283,17 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  std::string api_version =
+      command_line.HasSwitch(kSwitchApiVersion)
+          ? command_line.GetSwitchValueASCII(kSwitchApiVersion)
+          : "";
+
   base::Value::Dict report_dict = tool.AssembleReport(
       std::move(operation), command_line.GetSwitchValueASCII(kSwitchBucket),
       command_line.GetSwitchValueASCII(kSwitchValue),
       std::move(aggregation_mode), std::move(reporting_origin),
       std::move(processing_urls), is_debug_mode_enabled,
-      std::move(additional_shared_info_fields));
+      std::move(additional_shared_info_fields), std::move(api_version));
   if (report_dict.empty()) {
     LOG(ERROR)
         << "aggregation_service_tool failed to create the aggregatable report.";

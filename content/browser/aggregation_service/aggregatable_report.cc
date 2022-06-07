@@ -282,12 +282,14 @@ AggregatableReportSharedInfo::AggregatableReportSharedInfo(
     base::GUID report_id,
     url::Origin reporting_origin,
     DebugMode debug_mode,
-    base::Value::Dict additional_fields)
+    base::Value::Dict additional_fields,
+    std::string api_version)
     : scheduled_report_time(scheduled_report_time),
       report_id(std::move(report_id)),
       reporting_origin(std::move(reporting_origin)),
       debug_mode(debug_mode),
-      additional_fields(std::move(additional_fields)) {}
+      additional_fields(std::move(additional_fields)),
+      api_version(std::move(api_version)) {}
 
 AggregatableReportSharedInfo::AggregatableReportSharedInfo(
     AggregatableReportSharedInfo&& other) = default;
@@ -298,7 +300,7 @@ AggregatableReportSharedInfo::~AggregatableReportSharedInfo() = default;
 AggregatableReportSharedInfo AggregatableReportSharedInfo::Clone() const {
   return AggregatableReportSharedInfo(scheduled_report_time, report_id,
                                       reporting_origin, debug_mode,
-                                      additional_fields.Clone());
+                                      additional_fields.Clone(), api_version);
 }
 
 std::string AggregatableReportSharedInfo::SerializeAsJson() const {
@@ -316,8 +318,8 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
   value.Set("scheduled_report_time",
             base::NumberToString(scheduled_report_time.ToJavaTime() /
                                  base::Time::kMillisecondsPerSecond));
-  // TODO(alexmt): Replace with a real version once a version string is decided.
-  value.Set("version", "");
+
+  value.Set("version", api_version);
 
   // Only include the field if enabled.
   if (debug_mode == DebugMode::kEnabled) {

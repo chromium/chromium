@@ -90,6 +90,10 @@ class CONTENT_EXPORT AttributionReport {
     // Returns the sum of the contributions (values) across all buckets.
     base::CheckedNumeric<int64_t> BudgetRequired() const;
 
+    // TODO(linnan): Replace with a real version once a version string is
+    // decided.
+    static constexpr char kVersion[] = "";
+
     // The historgram contributions.
     std::vector<AggregatableHistogramContribution> contributions;
 

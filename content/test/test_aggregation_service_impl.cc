@@ -135,7 +135,7 @@ void TestAggregationServiceImpl::AssembleReport(
       request.is_debug_mode_enabled
           ? AggregatableReportSharedInfo::DebugMode::kEnabled
           : AggregatableReportSharedInfo::DebugMode::kDisabled,
-      std::move(request.additional_fields));
+      std::move(request.additional_fields), std::move(request.api_version));
 
   absl::optional<AggregatableReportRequest> report_request =
       AggregatableReportRequest::CreateForTesting(
