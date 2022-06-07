@@ -35,7 +35,7 @@ constexpr const char* GetDispatchBreakdownName(
           return "RendererCompositorToMain";
         default:
           NOTREACHED();
-          return nullptr;
+          return "";
       }
     case EventMetrics::DispatchStage::kRendererCompositorStarted:
       DCHECK_EQ(end_stage,
@@ -49,7 +49,7 @@ constexpr const char* GetDispatchBreakdownName(
       return "RendererMainProcessing";
     case EventMetrics::DispatchStage::kRendererMainFinished:
       NOTREACHED();
-      return nullptr;
+      return "";
   }
 }
 
@@ -80,7 +80,7 @@ constexpr const char* GetDispatchToCompositorBreakdownName(
           return "RendererCompositorFinishedToSubmitCompositorFrame";
         default:
           NOTREACHED();
-          return nullptr;
+          return "";
       }
     case EventMetrics::DispatchStage::kRendererMainFinished:
       switch (compositor_stage) {
@@ -103,11 +103,11 @@ constexpr const char* GetDispatchToCompositorBreakdownName(
           return "RendererMainFinishedToSubmitCompositorFrame";
         default:
           NOTREACHED();
-          return nullptr;
+          return "";
       }
     default:
       NOTREACHED();
-      return nullptr;
+      return "";
   }
 }
 
@@ -128,7 +128,7 @@ constexpr const char* GetDispatchToTerminationBreakdownName(
       return "RendererMainFinishedToTermination";
     default:
       NOTREACHED();
-      return nullptr;
+      return "";
   }
 }
 
