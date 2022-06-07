@@ -2175,6 +2175,58 @@ TEST_F(CaptureModeTest, RotateDisplayWhileRecording) {
   EXPECT_EQ(gfx::Size(100, 200), test_delegate->GetCurrentVideoSize());
 }
 
+// Regression test for https://crbug.com/1331095.
+TEST_F(CaptureModeTest, CornerRegionWithScreenRotation) {
+  UpdateDisplay("800x600");
+
+  // Pick a region at the bottom right corner of the landscape screen, so that
+  // when the screen is rotated to portrait, the unadjusted region becomes
+  // outside the new portrait bounds.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
+  SelectRegion(gfx::Rect(700, 400, 100, 200));
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  CaptureModeTestApi test_api;
+  test_api.FlushRecordingServiceForTesting();
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+
+  EXPECT_EQ(gfx::Size(100, 200), test_delegate->GetCurrentVideoSize());
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto* recording_watcher = controller->video_recording_watcher_for_testing();
+  gfx::Rect effective_region_bounds =
+      recording_watcher->GetEffectivePartialRegionBounds();
+  EXPECT_FALSE(effective_region_bounds.IsEmpty());
+  EXPECT_TRUE(root_window->bounds().Contains(effective_region_bounds));
+
+  // Verifies that the bounds of the visible rect of the frame is within the
+  // bounds of the root window.
+  auto verify_video_frame = [&](const media::VideoFrame& frame,
+                                const gfx::Rect& content_rect) {
+    EXPECT_TRUE(root_window->bounds().Contains(frame.visible_rect()));
+  };
+
+  test_delegate->recording_service()->RequestAndWaitForVideoFrame(
+      base::BindLambdaForTesting(verify_video_frame));
+
+  // Rotate by 90 degree, the adjusted region bounds should not be empty and
+  // should remain within the bounds of the new portrait root window bounds.
+  Shell::Get()->display_manager()->SetDisplayRotation(
+      WindowTreeHostManager::GetPrimaryDisplayId(), display::Display::ROTATE_90,
+      display::Display::RotationSource::USER);
+  test_api.FlushRecordingServiceForTesting();
+  EXPECT_EQ(gfx::Size(100, 200), test_delegate->GetCurrentVideoSize());
+
+  effective_region_bounds =
+      recording_watcher->GetEffectivePartialRegionBounds();
+  EXPECT_FALSE(effective_region_bounds.IsEmpty());
+  EXPECT_TRUE(root_window->bounds().Contains(effective_region_bounds));
+  test_delegate->recording_service()->RequestAndWaitForVideoFrame(
+      base::BindLambdaForTesting(verify_video_frame));
+}
+
 // Tests that the video frames delivered to the service for recorded windows are
 // valid (i.e. they have the correct size, and suffer from no letterboxing, even
 // when the window gets resized).

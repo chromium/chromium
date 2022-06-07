@@ -558,8 +558,12 @@ void VideoRecordingWatcher::OnCursorCompositingStateChanged(bool enabled) {
 
 gfx::Rect VideoRecordingWatcher::GetEffectivePartialRegionBounds() const {
   DCHECK_EQ(recording_source_, CaptureModeSource::kRegion);
-  gfx::Rect result = current_root_->bounds();
-  result.Intersect(partial_region_bounds_);
+  // TODO(afakhry): Consider having the region to anchor to the nearest corner,
+  // so that screen rotation doesn't result in the apparent change of the region
+  // position. Discussion with PM/UX determined that this is a low priority for
+  // now.
+  gfx::Rect result = partial_region_bounds_;
+  result.AdjustToFit(current_root_->bounds());
   return result;
 }
 
