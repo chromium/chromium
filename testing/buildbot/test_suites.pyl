@@ -3909,6 +3909,16 @@
       },
     },
 
+    'lacros_skylab_amd64_fyi': {
+      'lacros_fyi_tast_tests': {
+        'tast_expr': '("group:mainline" && "dep:lacros" && !informational || "name:lacros.VariationSmoke")',
+        'timeout_sec': 10800,
+      },
+      'ozone_unittests': {
+        'timeout_sec': 3600,
+      },
+    },
+
     # TODO(crbug.com/1283076): ozone_unittests and viz_unittests have failures
     # remove the filter when the tests are shown to be stable in
     # lacros-arm-generic-chrome-fyi
@@ -7380,7 +7390,7 @@
     },
 
     'lacros_skylab_tests_amd64_generic_fyi': {
-      'lacros_skylab_poc': {
+      'lacros_skylab_amd64_fyi': {
         'variants': [
           'CROS_OCTOPUS_RELEASE_LKGM',
           'CROS_OCTOPUS_RELEASE_DEV',
