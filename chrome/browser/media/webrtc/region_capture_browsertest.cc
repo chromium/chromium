@@ -351,9 +351,10 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, CropToAllowedToUncrop) {
   EXPECT_EQ(tab.CropTo("undefined"), "top-level-crop-success");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    RegionCaptureBrowserTest,
-    CropToForUncroppingRejectedIfCropTargetFromElementWasCalledButTrackUncropped) {
+// TODO(crbug.com/1333319): Align implementation and specification.
+// This is discussed in: https://github.com/w3c/mediacapture-region/issues/60
+IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
+                       CropToForUncroppingAllowedOnUncroppedTracks) {
   SetUpTest(Frame::kTopLevelDocument, /*self_capture=*/true);
   TabInfo& tab = tabs_[kMainTab];
 
@@ -363,7 +364,6 @@ IN_PROC_BROWSER_TEST_F(
   // CropTo(cropTarget) is intentionally not called.
   // Instead, the test immediately calls CropTo(undefined) on a still-uncropped
   // track, attempting to stop cropping when no cropping was ever specified.
-  // TODO(crbug.com/1333319): Fix this test by expecting *failure*.
   EXPECT_EQ(tab.CropTo("undefined"), "top-level-crop-success");
 }
 
