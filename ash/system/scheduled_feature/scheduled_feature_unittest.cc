@@ -449,7 +449,13 @@ TEST_F(ScheduledFeatureTest, SunsetSunrise) {
 
 // Tests that scheduled start time and end time of sunset-to-sunrise feature
 // are updated correctly if the geoposition changes.
-TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
+// TODO(crbug.com/1334047) Fix flakiness and re-enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SunsetSunriseGeoposition DISABLED_SunsetSunriseGeoposition
+#else
+#define MAYBE_SunsetSunriseGeoposition SunsetSunriseGeoposition
+#endif
+TEST_F(ScheduledFeatureTest, MAYBE_SunsetSunriseGeoposition) {
   constexpr double kFakePosition1_Latitude = 23.5;
   constexpr double kFakePosition1_Longitude = 55.88;
   constexpr double kFakePosition2_Latitude = 23.5;
