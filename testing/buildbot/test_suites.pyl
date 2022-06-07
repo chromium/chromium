@@ -982,11 +982,6 @@
           'nougat-x86-emulator',
         ],
       },
-      'build_junit_tests':{
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
       'chrome_java_test_pagecontroller_junit_tests': {
         'remove_mixins': [
           'nougat-x86-emulator',
@@ -1008,6 +1003,11 @@
         ],
       },
       'device_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'incremental_javac_junit_tests':{
         'remove_mixins': [
           'nougat-x86-emulator',
         ],

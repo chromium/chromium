@@ -8329,16 +8329,6 @@
         "test_id_prefix": "ninja://base:base_junit_tests/"
       },
       {
-        "name": "build_junit_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "test": "build_junit_tests",
-        "test_id_prefix": "ninja://build/android/test:build_junit_tests/"
-      },
-      {
         "name": "chrome_java_test_pagecontroller_junit_tests",
         "resultdb": {
           "enable": true,
@@ -8387,6 +8377,16 @@
         "swarming": {},
         "test": "device_junit_tests",
         "test_id_prefix": "ninja://device:device_junit_tests/"
+      },
+      {
+        "name": "incremental_javac_junit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "incremental_javac_junit_tests",
+        "test_id_prefix": "ninja://build/android/test:incremental_javac_junit_tests/"
       },
       {
         "name": "junit_unit_tests",

@@ -307,10 +307,6 @@
     "type": "windowed_test_launcher",
     "executable": "browser_tests",
   },
-  "build_junit_tests": {
-    "label": "//build/android/test:build_junit_tests",
-    "type": "junit_test",
-  },
   "captured_sites_interactive_tests": {
     "label": "//chrome/test:captured_sites_interactive_tests",
     "type": "windowed_test_launcher",
@@ -953,6 +949,10 @@
   "headless_unittests": {
     "label": "//headless:headless_unittests",
     "type": "console_test_launcher",
+  },
+  "incremental_javac_junit_tests": {
+    "label": "//build/android/test:incremental_javac_junit_tests",
+    "type": "junit_test",
   },
   "install_static_unittests": {
     "label": "//chrome/install_static:install_static_unittests",
