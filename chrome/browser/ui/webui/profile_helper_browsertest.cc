@@ -100,7 +100,7 @@ class BrowserAddedObserver : public BrowserListObserver {
   }
 
  private:
-  raw_ptr<Browser> browser_;
+  raw_ptr<Browser> browser_ = nullptr;
   base::RunLoop run_loop_;
 };
 
@@ -213,6 +213,12 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
   EXPECT_EQ(2U, browser_list->size());
   CloseBrowserSynchronously(original_browser);
   EXPECT_EQ(1u, browser_list->size());
+  EXPECT_EQ(additional_profile, browser_list->get(0)->profile());
+  // Ensure the last active browser and the`LastUsedProfile` is set.
+  browser_list->get(0)->window()->Show();
+  EXPECT_EQ(g_browser_process->profile_manager()->GetLastUsedProfileDir(),
+            additional_profile->GetPath());
+
   // Original browser now belongs to the additional profile.
   original_browser = browser_list->get(0);
 #endif
@@ -221,7 +227,6 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
   webui::DeleteProfileAtPath(original_browser->profile()->GetPath(),
                              ProfileMetrics::DELETE_PROFILE_SETTINGS);
   ui_test_utils::WaitForBrowserToClose(original_browser);
-
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(1u, browser_list->size());
