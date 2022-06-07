@@ -13,7 +13,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"
-#include "components/version_info/version_info.h"
 
 namespace ash::consolidated_consent_field_trial {
 
@@ -88,15 +87,19 @@ void CreateSubsequentRunTrial(base::FeatureList* feature_list,
 
 }  // namespace
 
+// Experiment is currently disabled on all channels due to a bug. Storing the
+// pref before the experiment is enabled would cause a skew when this experiment
+// is rolled out as existing clients would be in the |kDisabled| group.
+bool ShouldEnableTrial(version_info::Channel channel) {
+  return false;
+}
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kTrialGroupPrefName, std::string());
 }
 
 void Create(base::FeatureList* feature_list, PrefService* local_state) {
-  // Experiment is currently disabled on STABLE channel. Storing the pref would
-  // cause a skew in STABLE when this experiment is rolled out to stable channel
-  // as existing clients would be in the |kDisabled| group.
-  if (chrome::GetChannel() == version_info::Channel::STABLE)
+  if (!ShouldEnableTrial(chrome::GetChannel()))
     return;
 
   // Load the trial group from local state. Groups should be consistent once

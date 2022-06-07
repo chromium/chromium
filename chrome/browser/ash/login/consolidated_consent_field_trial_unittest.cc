@@ -44,9 +44,8 @@ TEST_F(ConsolidatedConsentFieldTrialTest,
   const std::string expected_pref_value =
       local_state()->GetString(kTrialGroupPrefName);
 
-  // Experiment should not be active on STABLE channel. This check is here in
-  // case there are any test that run in the stable channel.
-  if (chrome::GetChannel() != version_info::Channel::STABLE) {
+  // This check is here in case experiment is disabled.
+  if (ShouldEnableTrial(chrome::GetChannel())) {
     EXPECT_TRUE(expected_pref_value == kEnabledGroup ||
                 expected_pref_value == kDisabledGroup);
 
@@ -82,9 +81,8 @@ TEST_P(ConsolidatedConsentFieldTrialExistingGroupTest,
   local_state()->SetString(kTrialGroupPrefName, group_name);
   Create(&feature_list, local_state());
 
-  // Experiment should not be active on STABLE channel. This check is here in
-  // case there are any test that run in the stable channel.
-  if (chrome::GetChannel() != version_info::Channel::STABLE) {
+  // This check is here in case experiment is disabled.
+  if (ShouldEnableTrial(chrome::GetChannel())) {
     // Pref should not change.
     const std::string expected_pref_value =
         local_state()->GetString(kTrialGroupPrefName);
