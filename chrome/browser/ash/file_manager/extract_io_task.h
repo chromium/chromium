@@ -58,7 +58,7 @@ class ExtractIOTask : public IOTask {
  private:
   void Complete();
 
-  void FinishedExtraction(bool success);
+  void FinishedExtraction(base::FilePath directory, bool success);
 
   void ZipExtractCallback(base::FilePath destination_directory, bool success);
 

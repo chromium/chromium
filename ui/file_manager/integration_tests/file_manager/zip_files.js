@@ -311,6 +311,14 @@ testcase.zipCreateFileUsb = async () => {
  */
 testcase.zipExtractShowPanel = async () => {
   const entry = ENTRIES.zipArchive;
+  const targetDirectoryName = entry.nameText.split('.')[0];
+
+  // Make sure the test extension handles the new window creation properly.
+  await sendTestMessage({
+    name: 'expectFileTask',
+    fileNames: [targetDirectoryName],
+    openType: 'launch'
+  });
 
   // Open files app.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
@@ -478,6 +486,14 @@ testcase.zipExtractSelectionMenus = async () => {
  */
 testcase.zipExtractCheckContent = async () => {
   const entry = ENTRIES.zipArchive;
+  const targetDirectoryName = entry.nameText.split('.')[0];
+
+  // Make sure the test extension handles the new window creation properly.
+  await sendTestMessage({
+    name: 'expectFileTask',
+    fileNames: [targetDirectoryName],
+    openType: 'launch'
+  });
 
   // Open files app.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
@@ -501,8 +517,7 @@ testcase.zipExtractCheckContent = async () => {
       !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
       'fakeMouseClick failed');
 
-  const directoryQuery =
-      '#file-list [file-name="' + entry.nameText.split('.')[0] + '"]';
+  const directoryQuery = '#file-list [file-name="' + targetDirectoryName + '"]';
   // Check: the extract directory should appear.
   await remoteCall.waitForElement(appId, directoryQuery);
 
@@ -526,6 +541,11 @@ testcase.zipExtractCheckContent = async () => {
  */
 testcase.zipExtractCheckDuplicates = async () => {
   const entry = ENTRIES.zipArchive;
+  const directory = entry.nameText.split('.')[0];
+
+  // Make sure the test extension handles the new window creation properly.
+  await sendTestMessage(
+      {name: 'expectFileTask', fileNames: [directory], openType: 'launch'});
 
   // Open files app.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
@@ -549,10 +569,13 @@ testcase.zipExtractCheckDuplicates = async () => {
       !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
       'fakeMouseClick failed');
 
-  const directory = entry.nameText.split('.')[0];
   let directoryQuery = '#file-list [file-name="' + directory + '"]';
   // Check: the extract directory should appear.
   await remoteCall.waitForElement(appId, directoryQuery);
+
+  // Prepare for the second window being opened.
+  await sendTestMessage(
+      {name: 'expectFileTask', fileNames: [directory], openType: 'launch'});
 
   // Right-click the selected file.
   chrome.test.assertTrue(
@@ -592,6 +615,14 @@ testcase.zipExtractCheckDuplicates = async () => {
  */
 testcase.zipExtractCheckEncodings = async () => {
   const entry = ENTRIES.zipSJISArchive;
+  const targetDirectoryName = entry.nameText.split('.')[0];
+
+  // Make sure the test extension handles the new window creation properly.
+  await sendTestMessage({
+    name: 'expectFileTask',
+    fileNames: [targetDirectoryName],
+    openType: 'launch'
+  });
 
   // Open files app.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
@@ -615,8 +646,7 @@ testcase.zipExtractCheckEncodings = async () => {
       !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
       'fakeMouseClick failed');
 
-  const directoryQuery =
-      '#file-list [file-name="' + entry.nameText.split('.')[0] + '"]';
+  const directoryQuery = '#file-list [file-name="' + targetDirectoryName + '"]';
   // Check: the extract directory should appear.
   await remoteCall.waitForElement(appId, directoryQuery);
 
@@ -717,6 +747,15 @@ testcase.zipExtractNotEnoughSpace = async () => {
  */
 testcase.zipExtractFromReadOnly = async () => {
   const entry = ENTRIES.readOnlyZipFile;
+  const targetDirectoryName = entry.nameText.split('.')[0];
+
+  // Make sure the test extension handles the new window creation properly.
+  await sendTestMessage({
+    name: 'expectFileTask',
+    fileNames: [targetDirectoryName],
+    openType: 'launch'
+  });
+
   // Open files app.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
 
@@ -752,8 +791,7 @@ testcase.zipExtractFromReadOnly = async () => {
   // Navigate to My Files.
   await navigateWithDirectoryTree(appId, '/My files');
 
-  const directoryQuery =
-      '#file-list [file-name="' + entry.nameText.split('.')[0] + '"]';
+  const directoryQuery = '#file-list [file-name="' + targetDirectoryName + '"]';
   // Check: the extract directory should appear.
   await remoteCall.waitForElement(appId, directoryQuery);
 

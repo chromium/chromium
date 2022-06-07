@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
+#include "chrome/browser/platform_util.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
@@ -70,8 +71,12 @@ void ExtractIOTask::ZipListenerCallback(uint64_t bytes) {
   progress_callback_.Run(progress_);
 }
 
-void ExtractIOTask::FinishedExtraction(bool success) {
+void ExtractIOTask::FinishedExtraction(base::FilePath directory, bool success) {
   progress_.state = success ? State::kSuccess : State::kError;
+  if (success) {
+    // Open a new window to show the extracted content.
+    platform_util::ShowItemInFolder(profile_, directory);
+  }
   DCHECK_GT(extractCount_, 0);
   if (--extractCount_ == 0) {
     RecordUmaExtractStatus(progress_.state == State::kSuccess
@@ -104,7 +109,7 @@ void ExtractIOTask::ZipExtractCallback(base::FilePath destination_directory,
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&SetDirectoryPermissions, destination_directory, success),
       base::BindOnce(&ExtractIOTask::FinishedExtraction,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), destination_directory));
 }
 
 void ExtractIOTask::ExtractIntoNewDirectory(
