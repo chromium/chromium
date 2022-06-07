@@ -245,12 +245,16 @@ void CredentialProviderService::SyncStore(bool set_first_time_sync_flag) {
 
 void CredentialProviderService::AddCredentials(
     std::vector<std::unique_ptr<PasswordForm>> forms) {
+  // User is adding a password (not batch add from user login).
+  const bool should_skip_max_verification = forms.size() == 1;
+
   for (const auto& form : forms) {
     NSString* favicon_key = nil;
     if (IsFaviconEnabled()) {
       favicon_key = GetFaviconFileKey(form->url);
       // Fetch the favicon and save it to the storage.
-      FetchFaviconForURLToPath(favicon_loader_, form->url, favicon_key);
+      FetchFaviconForURLToPath(favicon_loader_, form->url, favicon_key,
+                               should_skip_max_verification);
     }
 
     ArchivableCredential* credential =

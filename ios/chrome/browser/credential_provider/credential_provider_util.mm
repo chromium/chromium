@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/credential_provider/credential_provider_util.h"
 
 #include <CommonCrypto/CommonDigest.h>
+
+#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -26,6 +28,19 @@
 
 using base::SysUTF16ToNSString;
 using base::UTF8ToUTF16;
+
+namespace {
+
+// Max number of stored favicons.
+int const kMaxNumberOfFavicons = 2000;
+
+// Key used to store the favicons last sync date in the user preferences.
+NSString* const kFaviconsLastSyncDatePrefKey = @"FaviconsLastSyncDatePrefKey";
+
+// The minimum number of days between the last sync and today.
+constexpr base::TimeDelta kResyncInterval = base::Days(7);
+
+}  // namespace
 
 NSString* RecordIdentifierForPasswordForm(
     const password_manager::PasswordForm& form) {
@@ -84,11 +99,29 @@ void SaveFaviconToSharedAppContainer(FaviconAttributes* attributes,
       std::move(write_image));
 }
 
-void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
-                              const GURL& site_url,
-                              NSString* filename) {
-  DCHECK(favicon_loader);
-  DCHECK(filename);
+// Returns true to continue fetching favicon if the app group storage does not
+// contain more than the max number of favicons or if the verification is
+// skipped.
+bool ShouldContinueFetchingFavicon() {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+  return
+      [[[NSFileManager defaultManager]
+          contentsOfDirectoryAtPath:app_group::SharedFaviconAttributesFolder()
+                                        .path
+                              error:nil] count] < kMaxNumberOfFavicons;
+}
+
+// Fetches favicon from site URL and saves it to `filename`.
+void ContinueFetchingFavicon(base::WeakPtr<FaviconLoader> weak_favicon_loader,
+                             const GURL& site_url,
+                             NSString* filename,
+                             bool continue_fetching) {
+  FaviconLoader* favicon_loader = weak_favicon_loader.get();
+  if (!continue_fetching || !favicon_loader) {
+    // Reached max number of stored favicons or favicon loader is null.
+    return;
+  }
   favicon_loader->FaviconForPageUrl(
       site_url, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
@@ -96,8 +129,48 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
       });
 }
 
-// Clean up obsolete favicons from the Chrome app group storage.
-void CleanUpFavicons() {
+void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
+                              const GURL& site_url,
+                              NSString* filename,
+                              bool skip_max_verification) {
+  DCHECK(favicon_loader);
+  DCHECK(filename);
+  if (skip_max_verification) {
+    ContinueFetchingFavicon(favicon_loader->AsWeakPtr(), site_url, filename,
+                            /* continue_fetching */ YES);
+  } else {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&ShouldContinueFetchingFavicon),
+        base::BindOnce(&ContinueFetchingFavicon, favicon_loader->AsWeakPtr(),
+                       site_url, filename));
+  }
+}
+
+// Gets the last sync date for favicons in the app group storage.
+base::Time GetFaviconsLastSyncDate() {
+  NSDate* last_sync_date =
+      base::mac::ObjCCast<NSDate>([[NSUserDefaults standardUserDefaults]
+          objectForKey:kFaviconsLastSyncDatePrefKey]);
+  // If no value stored in the NSUserDefaults, consider that the last sync
+  // happened forever ago.
+  if (!last_sync_date)
+    return base::Time();
+  return base::Time::FromNSDate(last_sync_date);
+}
+
+// Sets the value of the last sync date for favicons in the app group storage.
+void SetFaviconsLastSyncDate(base::Time sync_time) {
+  [[NSUserDefaults standardUserDefaults]
+      setObject:sync_time.ToNSDate()
+         forKey:kFaviconsLastSyncDatePrefKey];
+}
+
+// Cleans up obsolete favicons from the Chrome app group storage.
+void CleanUpFavicons(NSSet* excess_favicons_filenames) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
   // TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag
   // is removed.
   NSFileManager* file_manager = [NSFileManager defaultManager];
@@ -108,6 +181,11 @@ void CleanUpFavicons() {
     if ([file_manager fileExistsAtPath:path]) {
       [file_manager removeItemAtPath:path error:nil];
     }
+
+    // Remove last sync date when the flag is disabled.
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kFaviconsLastSyncDatePrefKey];
+
     return;
   }
 
@@ -125,7 +203,8 @@ void CleanUpFavicons() {
   NSMutableSet* credential_favicon_filename_set =
       [[NSMutableSet alloc] initWithCapacity:all_credentials.count];
   for (id<Credential> credential in all_credentials) {
-    if (credential.favicon) {
+    if (credential.favicon &&
+        ![excess_favicons_filenames containsObject:credential.favicon]) {
       [credential_favicon_filename_set addObject:credential.favicon];
     }
   }
@@ -142,64 +221,98 @@ void CleanUpFavicons() {
       }
     }
   }
-}
 
-void CleanUpFaviconsInBackground() {
-  base::OnceCallback<void()> favicon_cleanup = base::BindOnce(^{
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::WILL_BLOCK);
-    CleanUpFavicons();
-  });
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      std::move(favicon_cleanup));
+  // Store the last sync date.
+  SetFaviconsLastSyncDate(base::Time::Now());
 }
 
 void UpdateFaviconsStorage(FaviconLoader* favicon_loader) {
-  if (base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           password_manager::features::kEnableFaviconForPasswords)) {
-    ArchivableCredentialStore* archivable_store =
-        [[ArchivableCredentialStore alloc]
-            initWithFileURL:CredentialProviderSharedArchivableStoreURL()];
-    NSArray<id<Credential>>* all_credentials = archivable_store.credentials;
+    // Call clean up to remove the repo when the flag is off.
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&CleanUpFavicons, [[NSMutableSet alloc] init]));
+    return;
+  }
 
-    for (id<Credential> credential : all_credentials) {
-      GURL url = GURL(base::SysNSStringToUTF8(credential.serviceIdentifier));
-      NSString* filename = credential.favicon;
-      if (!credential.favicon) {
-        // Add favicon name to the credential and update the store.
-        filename = GetFaviconFileKey(url);
-        ArchivableCredential* newCredential = [[ArchivableCredential alloc]
-                 initWithFavicon:filename
-              keychainIdentifier:credential.keychainIdentifier
-                            rank:credential.rank
-                recordIdentifier:credential.recordIdentifier
-               serviceIdentifier:credential.serviceIdentifier
-                     serviceName:credential.serviceName
-                            user:credential.user
-            validationIdentifier:credential.validationIdentifier];
-        if ([archivable_store
-                credentialWithRecordIdentifier:newCredential
-                                                   .recordIdentifier]) {
-          [archivable_store updateCredential:newCredential];
-        } else {
-          [archivable_store addCredential:newCredential];
+  // Verify if the app group storage for favicons needs to be synced and
+  // cleaned up by checking the last sync date.
+  const base::TimeDelta time_elapsed_since_last_sync =
+      base::Time::Now() - GetFaviconsLastSyncDate();
+  if (time_elapsed_since_last_sync < kResyncInterval) {
+    return;
+  }
+  ArchivableCredentialStore* archivable_store =
+      [[ArchivableCredentialStore alloc]
+          initWithFileURL:CredentialProviderSharedArchivableStoreURL()];
+  NSArray<id<Credential>>* all_credentials = archivable_store.credentials;
+
+  // Sort by highest rank.
+  NSArray<id<Credential>>* all_credentials_rank =
+      [all_credentials sortedArrayUsingComparator:^NSComparisonResult(
+                           id<Credential> c1, id<Credential> c2) {
+        if (c1.rank == c2.rank) {
+          return NSOrderedSame;
         }
-      }
+        return c1.rank > c2.rank ? NSOrderedAscending : NSOrderedDescending;
+      }];
 
-      // Fetch the favicon and save it to the app group storage.
-      if (filename) {
-        FetchFaviconForURLToPath(favicon_loader, url, filename);
+  // Truncate array if it is larger than the maximum and add the favicons
+  // file name to be removed in a set.
+  NSMutableSet* excess_favicons_filenames = [[NSMutableSet alloc] init];
+  if ([all_credentials_rank count] > kMaxNumberOfFavicons) {
+    for (NSUInteger i = kMaxNumberOfFavicons; i < all_credentials_rank.count;
+         i++) {
+      if ([all_credentials_rank objectAtIndex:i].favicon) {
+        [excess_favicons_filenames
+            addObject:[all_credentials_rank objectAtIndex:i].favicon];
+      }
+    }
+    all_credentials_rank = [all_credentials_rank
+        subarrayWithRange:NSMakeRange(0, kMaxNumberOfFavicons)];
+  }
+
+  for (id<Credential> credential : all_credentials_rank) {
+    GURL url = GURL(base::SysNSStringToUTF8(credential.serviceIdentifier));
+    NSString* filename = credential.favicon;
+    if (!credential.favicon) {
+      // Add favicon name to the credential and update the store.
+      filename = GetFaviconFileKey(url);
+      ArchivableCredential* newCredential = [[ArchivableCredential alloc]
+               initWithFavicon:filename
+            keychainIdentifier:credential.keychainIdentifier
+                          rank:credential.rank
+              recordIdentifier:credential.recordIdentifier
+             serviceIdentifier:credential.serviceIdentifier
+                   serviceName:credential.serviceName
+                          user:credential.user
+          validationIdentifier:credential.validationIdentifier];
+      if ([archivable_store
+              credentialWithRecordIdentifier:newCredential.recordIdentifier]) {
+        [archivable_store updateCredential:newCredential];
+      } else {
+        [archivable_store addCredential:newCredential];
       }
     }
 
-    // Save changes in the credential store and call the clean up method to
-    // remove obsolete favicons from the Chrome app group storage.
-    [archivable_store saveDataWithCompletion:^(NSError* error) {
-      CleanUpFaviconsInBackground();
-    }];
-  } else {
-    // Call clean up to remove the repo when the flag is off.
-    CleanUpFaviconsInBackground();
+    // Fetch the favicon and save it to the app group storage.
+    if (filename) {
+      FetchFaviconForURLToPath(favicon_loader, url, filename, YES);
+
+      // Remove file name duplicate because it is part of the top
+      // `kMaxNumberOfFavicons` credentials used by the user.
+      if ([excess_favicons_filenames containsObject:filename]) {
+        [excess_favicons_filenames removeObject:filename];
+      }
+    }
   }
+
+  // Save changes in the credential store and call the clean up method to
+  // remove obsolete favicons from the Chrome app group storage.
+  [archivable_store saveDataWithCompletion:^(NSError* error) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&CleanUpFavicons, excess_favicons_filenames));
+  }];
 }

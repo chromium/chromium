@@ -77,6 +77,9 @@ class FaviconLoader : public KeyedService {
   // Cancel all incomplete requests.
   void CancellAllRequests();
 
+  // Return a weak pointer to the current object.
+  base::WeakPtr<FaviconLoader> AsWeakPtr();
+
  private:
   // The LargeIconService used to retrieve favicon.
   favicon::LargeIconService* large_icon_service_;
@@ -88,6 +91,8 @@ class FaviconLoader : public KeyedService {
   // removed during low-memory conditions based on its inherent LRU removal
   // algorithm. Keyed by NSString of URL (page URL or icon URL) spec.
   NSCache<NSString*, FaviconAttributes*>* favicon_cache_;
+
+  base::WeakPtrFactory<FaviconLoader> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_FAVICON_LOADER_H_
