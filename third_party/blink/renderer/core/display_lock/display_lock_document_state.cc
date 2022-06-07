@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
@@ -396,9 +397,17 @@ void DisplayLockDocumentState::UnlockShapingDeferredElements() {
     return;
   if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
     return;
+
+  size_t count = 0;
   for (auto& context : display_lock_contexts_) {
-    if (context->HasElement() && context->IsShapingDeferred())
+    if (context->HasElement() && context->IsShapingDeferred()) {
       context->SetRequestedState(EContentVisibility::kVisible);
+      ++count;
+    }
+  }
+  if (count > 0) {
+    UseCounter::Count(document_,
+                      WebFeature::kDeferredShapingReshapedByForceLayout);
   }
 }
 

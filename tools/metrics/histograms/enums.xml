@@ -40267,6 +40267,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4256" label="EventTimingInteractionId"/>
   <int value="4257" label="SecurePaymentConfirmationOptOut"/>
   <int value="4258" label="AnyPopupAttribute"/>
+  <int value="4259" label="DeferredShapingWorked"/>
+  <int value="4260" label="DeferredShapingReshapedByForceLayout"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

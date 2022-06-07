@@ -1937,6 +1937,7 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
       context.SetRequestedState(EContentVisibility::kAuto);
     }
     deferred_to_be_locked_.resize(0);
+    UseCounter::Count(document, WebFeature::kDeferredShapingWorked);
   }
 }
 
