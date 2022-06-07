@@ -21,6 +21,7 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "content/public/test/browser_test.h"
@@ -503,8 +504,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 class TwoClientPasswordsSyncTestWithNotes : public SyncTest {
  public:
   TwoClientPasswordsSyncTestWithNotes() : SyncTest(TWO_CLIENT) {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordNotes);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{password_manager::features::kPasswordNotes,
+                              syncer::kReadWritePasswordNotesBackupField},
+        /*disabled_features=*/{});
   }
   ~TwoClientPasswordsSyncTestWithNotes() override = default;
 
@@ -545,5 +548,31 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithNotes,
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
+}
+
+// This tests the  logic for reading and writing the notes backup blob when
+// notes are empty.
+IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithNotes,
+                       SyncPasswordWithEmptyNotesBetweenDevices) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(AllProfilesContainSamePasswordForms());
+
+  // Add a password with note to Client 0.
+  PasswordForm form = CreateTestPasswordForm(0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
+
+  // Wait until Client 1 picks up changes.
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
+
+  // Update the password in Client 1.
+  form.password_value = u"new_password";
+  GetProfilePasswordStoreInterface(1)->UpdateLogin(form);
+
+  // Wait until Client 0 picks up changes.
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)),
               ElementsAre(Pointee(form)));
 }

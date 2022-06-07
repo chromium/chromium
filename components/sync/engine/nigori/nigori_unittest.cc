@@ -126,6 +126,22 @@ TEST(SyncNigoriTest, EncryptDecrypt) {
   EXPECT_EQ(plaintext, decrypted);
 }
 
+TEST(SyncNigoriTest, EncryptDecryptEmptyString) {
+  std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
+      KeyDerivationParams::CreateForPbkdf2(), "password");
+  ASSERT_THAT(nigori, NotNull());
+
+  std::string plaintext;
+
+  std::string encrypted;
+  EXPECT_TRUE(nigori->Encrypt(plaintext, &encrypted));
+
+  std::string decrypted;
+  EXPECT_TRUE(nigori->Decrypt(encrypted, &decrypted));
+
+  EXPECT_EQ(plaintext, decrypted);
+}
+
 TEST(SyncNigoriTest, CorruptedIv) {
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
       KeyDerivationParams::CreateForPbkdf2(), "password");
