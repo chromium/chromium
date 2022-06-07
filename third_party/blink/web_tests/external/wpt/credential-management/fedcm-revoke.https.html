@@ -2,17 +2,16 @@
 <meta charset="utf-8">
 <title>FederatedCredential.revoke() promise resolution</title>
 <link rel="author" title="Christian Biesinger" href="mailto:cbiesinger@chromium.org">
-<link rel="help" href="https://fedidcg.github.io/FedCM/#browser-api-revocation">
+<link rel="help" href="https://wicg.github.io/FedCM/#browser-api-revocation">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
 <script type="module">
-  import {set_fedcm_cookie} from './support/fedcm-helper.js';
-  const url_prefix = 'https://{{host}}:{{ports[https][0]}}/credential-management/support/';
+  import {fedcm_test} from './support/fedcm-helper.js';
 
   async function getCredential(provider_url) {
     const provider = {
-      url: provider_url || url_prefix,
+      url: provider_url || "https://idp.example/",
       clientId: "1234",
     };
     return await navigator.credentials.get({
@@ -22,34 +21,24 @@
     });
   }
 
-  promise_test(async t => {
-    await set_fedcm_cookie();
-    await (await getCredential()).login({nonce: '1'});
-    await (await getCredential()).revoke("1234");
-
-    // Second revoke should now fail since the first revoke should revoke
-    // the permission.
-    const result = (await getCredential()).revoke("1234");
-    return promise_rejects_dom(t, "NetworkError", result);
+  fedcm_test(async (t, mock) => {
+    mock.revokeReturn("kSuccess");
+    await (await getCredential()).revoke("foo@bar.com");
   }, "Successfully revoking a token should resolve the promise.");
 
-  promise_test(async t => {
-    // Have to first login or the request will be rejected before it reaches
-    // the server.
-    await set_fedcm_cookie();
-    await (await getCredential()).login({nonce: '1'});
-    await (await getCredential()).revoke("1234");
-
-    const result = (await getCredential()).revoke("fail");
+  fedcm_test(async (t, mock) => {
+    mock.revokeReturn("kError");
+    const result = (await getCredential()).revoke("foo@bar.com");
     return promise_rejects_dom(t, "NetworkError", result);
   }, "Error should reject the promise.");
 
-  promise_test(async t => {
+  fedcm_test(async (t, mock) => {
+    mock.revokeReturn("kError");
     const result = (await getCredential()).revoke("");
     return promise_rejects_dom(t, "InvalidStateError", result);
   }, "Empty hint should reject the promise.");
 
-  promise_test(async t => {
+  fedcm_test(async (t, mock) => {
     const result = getCredential("https://other-idp.example/").then((c) => c.revoke("foo@bar.com"));
     return promise_rejects_dom(t, "NetworkError", result);
   }, "Provider URL should honor Content-Security-Policy.");
