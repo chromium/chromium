@@ -1119,7 +1119,7 @@ const base::Feature kAutofillShadowDOM{"AutofillShadowDOM",
 // Allows read/write of custom formats with unsanitized clipboard content. See
 // crbug.com/106449.
 const base::Feature kClipboardCustomFormats{"ClipboardCustomFormats",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Uses page viewport instead of frame viewport in the Largest Contentful Paint
 // heuristic where images occupying the full viewport are ignored.
