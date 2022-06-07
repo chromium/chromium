@@ -56,6 +56,15 @@ class ViewSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
       views::View* view,
       const ui::test::SkiaGoldMatchingAlgorithm* algorithm = nullptr) const;
 
+  // Similar to `CompareViewScreenshot()`. But the screenshot is taken within
+  // the specified bounds on `window`. `snapshot_bounds` is based on `window`'s
+  // local coordinates.
+  bool CompareNativeWindowScreenshot(
+      const std::string& screenshot_name,
+      gfx::NativeWindow window,
+      const gfx::Rect& snapshot_bounds,
+      const ui::test::SkiaGoldMatchingAlgorithm* algorithm = nullptr) const;
+
  protected:
   // Takes a screenshot of `window` within the specified area and stores the
   // screenshot in `image`. Returns true if succeeding.

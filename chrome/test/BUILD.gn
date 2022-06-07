@@ -579,7 +579,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     public_deps += [
       "//ui/base:pixel_diff_test_support",
       "//ui/views:view_pixel_diff_test_support",

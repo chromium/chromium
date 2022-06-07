@@ -3181,6 +3181,7 @@ test("ash_pixeltests") {
     "//chromeos/dbus/power:power_manager_proto",
     "//components/viz/test:test_support",
     "//mojo/core/embedder:embedder",
+    "//ui/views:view_pixel_diff_test_support",
   ]
 }
 

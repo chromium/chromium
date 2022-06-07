@@ -9,6 +9,7 @@
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/icu_test_util.h"
+#include "ui/views/test/view_skia_gold_pixel_diff.h"
 
 namespace ash {
 
@@ -35,8 +36,14 @@ class AshPixelDiffTestBase : public AshTestBase {
   AshPixelDiffTestBase& operator=(const AshPixelDiffTestBase&) = delete;
   ~AshPixelDiffTestBase() override;
 
+  // Takes a screenshot of the primary fullscreen then uploads it to the Skia
+  // Gold to perform pixel comparison. Returns the comparison result.
+  bool ComparePrimaryFullScreen(const std::string& screenshot_name);
+
   // AshTestBase:
   void SetUp() override;
+
+  views::ViewSkiaGoldPixelDiff* pixel_diff() { return &pixel_diff_; }
 
  private:
   // Sets a pure color wallpaper.
@@ -64,6 +71,12 @@ class AshPixelDiffTestBase : public AshTestBase {
 
   // Overrides the current time.
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
+
+  // Used to take screenshots and upload images to the Skia Gold server to
+  // perform pixel comparison.
+  // NOTE: the user of `ViewSkiaGoldPixelDiff` has the duty to initialize
+  // `pixel_diff` before performing any pixel comparison.
+  views::ViewSkiaGoldPixelDiff pixel_diff_;
 };
 
 }  // namespace ash

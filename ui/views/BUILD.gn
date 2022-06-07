@@ -905,8 +905,7 @@ component("views") {
   }
 }
 
-# TODO(crbug.com/1091985): Support CrOS.
-if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+if (is_win || is_mac || is_linux || is_chromeos) {
   static_library("view_pixel_diff_test_support") {
     testonly = true
     sources = [
@@ -1425,7 +1424,7 @@ test("views_unittests") {
     sources += [ "color_chooser/color_chooser_unittest.cc" ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [ "test/view_skia_gold_pixel_diff_unittest.cc" ]
     deps += [ "//ui/views:view_pixel_diff_test_support" ]
   }

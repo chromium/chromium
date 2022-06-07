@@ -64,6 +64,14 @@ AshPixelDiffTestBase::AshPixelDiffTestBase(
 
 AshPixelDiffTestBase::~AshPixelDiffTestBase() = default;
 
+bool AshPixelDiffTestBase::ComparePrimaryFullScreen(
+    const std::string& screenshot_name) {
+  aura::Window* primary_root_window = Shell::Get()->GetPrimaryRootWindow();
+  return pixel_diff_.CompareNativeWindowScreenshot(
+      screenshot_name, primary_root_window,
+      gfx::Rect(primary_root_window->bounds().size()));
+}
+
 void AshPixelDiffTestBase::SetUp() {
   // In ash_pixeltests, we want to take screenshots then compare them with the
   // benchmark images. Therefore, enable pixel output in tests.

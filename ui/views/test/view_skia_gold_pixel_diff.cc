@@ -38,14 +38,28 @@ bool ViewSkiaGoldPixelDiff::CompareViewScreenshot(
     views::View* view,
     const ui::test::SkiaGoldMatchingAlgorithm* algorithm) const {
   DCHECK(Initialized()) << "Initialize the class before using this method.";
+
+  // Calculate the snapshot bounds in the widget's coordinates.
   gfx::Rect rc = view->GetBoundsInScreen();
   views::Widget* widget = view->GetWidget();
   gfx::Rect bounds_in_screen = widget->GetRootView()->GetBoundsInScreen();
   gfx::Rect bounds = widget->GetRootView()->bounds();
   rc.Offset(bounds.x() - bounds_in_screen.x(),
             bounds.y() - bounds_in_screen.y());
+
+  return CompareNativeWindowScreenshot(
+      screenshot_name, widget->GetNativeWindow(), rc, algorithm);
+}
+
+bool ViewSkiaGoldPixelDiff::CompareNativeWindowScreenshot(
+    const std::string& screenshot_name,
+    gfx::NativeWindow window,
+    const gfx::Rect& snapshot_bounds,
+    const ui::test::SkiaGoldMatchingAlgorithm* algorithm) const {
+  DCHECK(Initialized()) << "Initialize the class before using this method.";
+
   gfx::Image image;
-  bool ret = GrabWindowSnapshotInternal(widget->GetNativeWindow(), rc, &image);
+  bool ret = GrabWindowSnapshotInternal(window, snapshot_bounds, &image);
   if (!ret) {
     LOG(ERROR) << "Grab screenshot failed.";
     return false;
