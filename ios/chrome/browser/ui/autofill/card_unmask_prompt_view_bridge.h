@@ -23,7 +23,7 @@ class CardUnmaskPromptController;
 // iOS implementation of the unmask prompt UI.
 class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
  public:
-  // |base_view_controller| is a weak reference to the view controller used to
+  // `base_view_controller` is a weak reference to the view controller used to
   // present UI.
   CardUnmaskPromptViewBridge(CardUnmaskPromptController* controller,
                              UIViewController* base_view_controller);
@@ -54,7 +54,7 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   CardUnmaskPromptViewController* view_controller_;
 
  private:
-  // The controller |this| queries for logic and state.
+  // The controller `this` queries for logic and state.
   CardUnmaskPromptController* controller_;  // weak
 
   // Weak reference to the view controller used to present UI.
@@ -67,7 +67,7 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
 
 @interface CardUnmaskPromptViewController : CollectionViewController
 
-// Designated initializer. |bridge| must not be null.
+// Designated initializer. `bridge` must not be null.
 - (instancetype)initWithBridge:(autofill::CardUnmaskPromptViewBridge*)bridge
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithLayout:(UICollectionViewLayout*)layout

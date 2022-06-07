@@ -25,7 +25,7 @@
 
 // A left-aligned round badge showing the account avatar.
 @property(nonatomic, readonly, strong) UIImageView* avatarBadge;
-// A label for the account email, shown to the right of |avatarBadge| and to
+// A label for the account email, shown to the right of `avatarBadge` and to
 // the left of the Google pay icon.
 @property(nonatomic, readonly, strong) UILabel* emailLabel;
 

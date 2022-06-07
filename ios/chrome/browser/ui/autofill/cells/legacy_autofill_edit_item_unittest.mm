@@ -17,7 +17,7 @@ namespace {
 using LegacyAutofillEditItemTest = PlatformTest;
 
 // Tests that the label and text field are set properly after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(LegacyAutofillEditItemTest, ConfigureCell) {
   LegacyAutofillEditItem* item =
       [[LegacyAutofillEditItem alloc] initWithType:0];

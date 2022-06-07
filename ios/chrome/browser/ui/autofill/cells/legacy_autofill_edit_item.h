@@ -64,10 +64,10 @@
 @property(nonatomic, strong) UILabel* textLabel;
 
 // Text field at the trailing edge of the cell. It displays the item's
-// |textFieldValue|.
+// `textFieldValue`.
 @property(nonatomic, readonly, strong) UITextField* textField;
 
-// UIImageView containing the icon identifying |textField| or its current value.
+// UIImageView containing the icon identifying `textField` or its current value.
 @property(nonatomic, readonly, strong) UIImageView* identifyingIconView;
 
 @end

@@ -38,7 +38,7 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Returns the number of profiles (addresses) in the data manager.
 + (NSInteger)profilesCount;
 
-// Used to automatically import addresses without a prompt when |autoAccept| is
+// Used to automatically import addresses without a prompt when `autoAccept` is
 // YES.
 + (void)setAutoAcceptAddressImports:(BOOL)autoAccept;
 
@@ -55,7 +55,7 @@ enum CreditCardSaveManagerObserverEvent : int {
 + (void)clearCreditCardStore;
 
 // Saves a local credit card that doesn't require CVC to be used.
-// Returns the |card.NetworkAndLastFourDigits| of the card used in the UIs.
+// Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.
 + (NSString*)saveLocalCreditCard;
 
 // Returns the number of credit cards in the local store.
@@ -83,7 +83,7 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Wait until all expected events are triggered.
 + (BOOL)waitForEvents [[nodiscard]];
 
-// Sets the next response of the payments server for |request|.
+// Sets the next response of the payments server for `request`.
 + (void)setPaymentsResponse:(NSString*)response
                  forRequest:(NSString*)request
               withErrorCode:(int)error;

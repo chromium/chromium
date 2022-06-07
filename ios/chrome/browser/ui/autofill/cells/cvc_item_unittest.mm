@@ -23,7 +23,7 @@ namespace {
 using CVCItemTest = PlatformTest;
 
 // Tests that the cell subviews are set properly after a call to
-// |configureCell:| in the different states possible.
+// `configureCell:` in the different states possible.
 TEST_F(CVCItemTest, ConfigureCell) {
   CVCItem* item = [[CVCItem alloc] initWithType:0];
   NSString* instructionsText = @"Instructions Test Text";

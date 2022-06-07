@@ -20,15 +20,15 @@
 // The optional error message to display.
 @property(nonatomic, copy) NSString* errorMessage;
 
-// The month text appearing in the |monthInput| of the cell, if |showDateInput|
+// The month text appearing in the `monthInput` of the cell, if `showDateInput`
 // is true.
 @property(nonatomic, copy) NSString* monthText;
 
-// The year text appearing in the |yearInput| of the cell, if |showDateInput|
+// The year text appearing in the `yearInput` of the cell, if `showDateInput`
 // is true.
 @property(nonatomic, copy) NSString* yearText;
 
-// The CVC text appearing in the |CVCInput| of the cell.
+// The CVC text appearing in the `CVCInput` of the cell.
 @property(nonatomic, copy) NSString* CVCText;
 
 // Whether the cell should show the date inputs.
@@ -66,7 +66,7 @@
 // The text field for entering the CVC.
 @property(nonatomic, readonly, strong) UITextField* CVCInput;
 
-// The image view to display the CVC image with the |CVCResourceID|.
+// The image view to display the CVC image with the `CVCResourceID`.
 @property(nonatomic, readonly, strong) UIImageView* CVCImageView;
 
 // The "New Card?" button.

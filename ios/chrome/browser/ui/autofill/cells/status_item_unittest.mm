@@ -20,7 +20,7 @@ namespace {
 using StatusItemTest = PlatformTest;
 
 // Tests that the cell subviews are set properly after a call to
-// |configureCell:| in the different states.
+// `configureCell:` in the different states.
 TEST_F(StatusItemTest, ConfigureCell) {
   StatusItem* item = [[StatusItem alloc] initWithType:0];
   NSString* text = @"Test Text";
