@@ -384,6 +384,7 @@ ios_builder(
     mirrors = [
         "ci/ios16-sdk-simulator",
     ],
+    xcode = xcode.x14betabots,
 )
 
 try_.gpu.optional_tests_builder(

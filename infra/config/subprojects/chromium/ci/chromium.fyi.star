@@ -1503,6 +1503,7 @@ fyi_ios_builder(
     os = os.MAC_DEFAULT,
     schedule = "0 2,6,10,14,18,22 * * *",
     triggered_by = [],
+    xcode = xcode.x14betabots,
 )
 
 ci.builder(
