@@ -7564,7 +7564,7 @@
             ],
             "experiments": [
                 {
-                    "name": "SideSearchDesktop",
+                    "name": "Stable_Desktop_M102_SideSearchChromeOS_Enabled",
                     "enable_features": [
                         "SidePanelImprovedClobbering",
                         "SideSearchDSESupport"
