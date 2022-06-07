@@ -884,6 +884,11 @@ public final class ChromePreferenceKeys {
      */
     public static final KeyPrefix WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX =
             new KeyPrefix("Chrome.WebFeed.IntroWebFeedIdShownTimeMs.*");
+    /**
+     * Key used to save the number of times the WebFeed intro for the WebFeed ID was shown.
+     */
+    public static final KeyPrefix WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_COUNT_PREFIX =
+            new KeyPrefix("Chrome.WebFeed.IntroWebFeedIdShownCount.*");
 
     public static final String LOCK_ICON_IN_ADDRESS_BAR_ENABLED =
             "omnibox.lock_icon_in_address_bar_enabled";
@@ -1056,6 +1061,7 @@ public final class ChromePreferenceKeys {
                 VIDEO_TUTORIALS_SHARE_URL_SET,
                 WEB_FEED_INTRO_LAST_SHOWN_TIME_MS,
                 WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.pattern(),
+                WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_COUNT_PREFIX.pattern(),
                 WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT
         );
         // clang-format on
