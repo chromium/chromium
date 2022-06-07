@@ -60,7 +60,11 @@ class ActionView : public views::View {
   gfx::Point GetEditMenuPosition(gfx::Size menu_size);
   void RemoveEditMenu();
   // Show error message for action.
-  void ShowErrorMsg(base::StringPiece error_msg, ActionLabel* editing_label);
+  void ShowErrorMsg(const base::StringPiece& message,
+                    ActionLabel* editing_label);
+  // Show info/edu message.
+  void ShowInfoMsg(const base::StringPiece& message,
+                   ActionLabel* editing_label);
   // Change binding for |action| binding to |input_element| and set
   // |kEditedSuccess| on |action_label| if |action_label| is not nullptr.
   // Otherwise, set |kEditedSuccess| to all |ActionLabel|.

@@ -37,7 +37,7 @@ class ActionLabel : public views::LabelButton {
   void SetTextActionLabel(const std::string& text);
   void SetImageActionLabel(MouseAction mouse_action);
   void SetDisplayMode(DisplayMode mode);
-  void ShowErrorMsg(base::StringPiece error_msg);
+  void ShowErrorMsg(const base::StringPiece& message);
   void OnKeyBindingChange(ui::DomCode code);
 
   // views::View:

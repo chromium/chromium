@@ -48,6 +48,8 @@ constexpr float kHaloThickness = 4;
 // TODO(cuicuiruan): move the strings to chrome/app/generated_resources.grd
 // after UX/UI strings are confirmed.
 constexpr base::StringPiece kEditErrorSameKey("Same key");
+constexpr base::StringPiece kEditInfoMessage(
+    "Click on any key, then press a keyboard key to customize");
 
 // Arrow symbols for arrow keys.
 constexpr char kLeftArrow[] = "←";
@@ -249,6 +251,8 @@ void ActionLabel::OnMouseExited(const ui::MouseEvent& event) {
 void ActionLabel::OnFocus() {
   SetToEditFocus();
   LabelButton::OnFocus();
+  auto* parent_view = static_cast<ActionView*>(parent());
+  parent_view->ShowInfoMsg(kEditInfoMessage, this);
 }
 
 void ActionLabel::OnBlur() {

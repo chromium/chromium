@@ -389,8 +389,10 @@ void DisplayOverlayController::RemoveActionEditMenu() {
   action_edit_menu_ = nullptr;
 }
 
-void DisplayOverlayController::AddEditErrorMsg(ActionView* action_view,
-                                               base::StringPiece error_msg) {
+void DisplayOverlayController::AddEditMessage(ActionView* action_view,
+                                              const base::StringPiece& message,
+                                              MessageType message_type) {
+  RemoveEditMessage();
   auto* overlay_widget = GetOverlayWidget();
   DCHECK(overlay_widget);
   if (!overlay_widget)
@@ -399,15 +401,14 @@ void DisplayOverlayController::AddEditErrorMsg(ActionView* action_view,
   DCHECK(parent_view);
   if (!parent_view)
     return;
-  auto error = std::make_unique<MessageView>(this, action_view, error_msg);
-  error_ = parent_view->AddChildView(std::move(error));
+  message_ = MessageView::Show(this, parent_view, message, message_type);
 }
 
-void DisplayOverlayController::RemoveEditErrorMsg() {
-  if (!error_)
+void DisplayOverlayController::RemoveEditMessage() {
+  if (!message_)
     return;
-  error_->parent()->RemoveChildViewT(error_);
-  error_ = nullptr;
+  message_->parent()->RemoveChildViewT(message_);
+  message_ = nullptr;
 }
 
 void DisplayOverlayController::OnBindingChange(
@@ -487,7 +488,7 @@ bool DisplayOverlayController::GetTouchInjectorEnable() {
 
 void DisplayOverlayController::ProcessPressedEvent(
     const ui::LocatedEvent& event) {
-  if (!action_edit_menu_ && !error_ && !input_menu_view_ && !nudge_view_)
+  if (!action_edit_menu_ && !message_ && !input_menu_view_ && !nudge_view_)
     return;
 
   auto root_location = event.root_location();
@@ -498,10 +499,10 @@ void DisplayOverlayController::ProcessPressedEvent(
       RemoveActionEditMenu();
   }
 
-  if (error_) {
-    auto bounds = error_->GetBoundsInScreen();
+  if (message_) {
+    auto bounds = message_->GetBoundsInScreen();
     if (!bounds.Contains(root_location))
-      RemoveEditErrorMsg();
+      RemoveEditMessage();
   }
 
   if (input_menu_view_) {

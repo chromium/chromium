@@ -54,6 +54,14 @@ enum class ActionType {
   kMove,
 };
 
+// Message types for UI displaying different types of messages.
+enum class MessageType {
+  // |kInfo| is the type for info message.
+  kInfo,
+  // |kError| is the type for error message.
+  kError,
+};
+
 }  // namespace input_overlay
 }  // namespace arc
 

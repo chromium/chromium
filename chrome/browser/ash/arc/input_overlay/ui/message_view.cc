@@ -6,6 +6,7 @@
 
 #include "ash/ambient/util/ambient_util.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 
@@ -14,55 +15,61 @@ namespace input_overlay {
 
 namespace {
 // UI specs.
-constexpr int kWidthPadding = 10;
-constexpr int kMinHeight = 32;
-constexpr int kSpaceToActionView = 8;
-constexpr char kFontStyle[] = "Google Sans";
-constexpr int kFontSize = 14;
-constexpr SkColor kTextColor = gfx::kGoogleRed300;
-
+constexpr char kFontStyle[] = "Roboto";
+constexpr int kFontSize = 13;
+constexpr int kLineHeight = 20;
+constexpr int kCornerRadius = 12;
+constexpr int kShadowElevation = 2;
+constexpr int kSideInset = 24;
+constexpr int kTopMargin = 24;
+constexpr int kMinHeight = 72;
+constexpr SkColor kTextColor = gfx::kGoogleGrey200;
+constexpr SkColor kBackgroundColor = gfx::kGoogleGrey900;
+constexpr SkColor kForegroundColor = SkColorSetA(SK_ColorWHITE, 0x0F);
 }  // namespace
 
+// static
+MessageView* MessageView::Show(DisplayOverlayController* controller,
+                               views::View* parent,
+                               const base::StringPiece& message,
+                               MessageType message_type) {
+  auto* view_ptr = parent->AddChildView(std::make_unique<MessageView>(
+      controller, parent->size(), message, message_type));
+  view_ptr->AddShadow();
+  return view_ptr;
+}
+
 MessageView::MessageView(DisplayOverlayController* controller,
-                         ActionView* view,
-                         base::StringPiece text)
-    : views::Label(base::UTF8ToUTF16(text)),
-      display_overlay_controller_(controller) {
+                         const gfx::Size& parent_size,
+                         const base::StringPiece& message,
+                         MessageType message_type)
+    : views::LabelButton(), display_overlay_controller_(controller) {
   DCHECK(display_overlay_controller_);
   if (display_overlay_controller_)
-    display_overlay_controller_->RemoveEditErrorMsg();
-  SetBackground(nullptr);
-  SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,
-                            gfx::Font::Weight::MEDIUM));
-  SetAutoColorReadabilityEnabled(false);
-  SetEnabledColor(kTextColor);
-  // Default shadow elevation value is 2 which is expected.
-  SetShadows(ash::ambient::util::GetTextShadowValues(GetColorProvider()));
+    display_overlay_controller_->RemoveEditMessage();
+  SetBackground(views::CreateRoundedRectBackground(
+      color_utils::GetResultingPaintColor(kForegroundColor, kBackgroundColor),
+      kCornerRadius));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kSideInset)));
 
-  auto preferred_size = GetPreferredSize();
-  auto content_bounds = view->parent()->bounds();
-  auto action_view_bounds = view->bounds();
-  int x = action_view_bounds.x();
-  if (content_bounds.width() - x < preferred_size.width())
-    x = content_bounds.width() - preferred_size.width();
-  x = std::max(0, x);
+  SetText(base::UTF8ToUTF16(message));
+  SetEnabledTextColors(kTextColor);
+  label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,
+                                     gfx::Font::Weight::NORMAL));
+  label()->SetLineHeight(kLineHeight);
 
-  int y = action_view_bounds.bottom() + kSpaceToActionView;
-  if (content_bounds.height() - y < preferred_size.height())
-    y = action_view_bounds.y() - preferred_size.height() - kSpaceToActionView;
-  y = std::max(0, y);
-
-  SetPosition(gfx::Point(x, y));
-  SetSize(preferred_size);
+  auto preferred_size = CalculatePreferredSize();
+  SetSize(gfx::Size(preferred_size.width(), kMinHeight));
+  SetPosition(gfx::Point(
+      std::max(0, (parent_size.width() - preferred_size.width()) / 2),
+      kTopMargin));
 }
 
 MessageView::~MessageView() = default;
 
-gfx::Size MessageView::CalculatePreferredSize() const {
-  auto size = Label::CalculatePreferredSize();
-  size.set_width(size.width() + kWidthPadding);
-  size.set_height(std::max(size.height(), kMinHeight));
-  return size;
+void MessageView::AddShadow() {
+  view_shadow_ = std::make_unique<ash::ViewShadow>(this, kShadowElevation);
+  view_shadow_->SetRoundedCornerRadius(kCornerRadius);
 }
 
 }  // namespace input_overlay

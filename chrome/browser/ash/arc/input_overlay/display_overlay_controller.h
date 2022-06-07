@@ -55,8 +55,10 @@ class DisplayOverlayController : public ui::EventHandler {
   void AddActionEditMenu(ActionView* anchor, ActionType action_type);
   void RemoveActionEditMenu();
 
-  void AddEditErrorMsg(ActionView* action_view, base::StringPiece error_msg);
-  void RemoveEditErrorMsg();
+  void AddEditMessage(ActionView* action_view,
+                      const base::StringPiece& message,
+                      MessageType message_type);
+  void RemoveEditMessage();
 
   void OnBindingChange(Action* action,
                        std::unique_ptr<InputElement> input_element);
@@ -140,7 +142,7 @@ class DisplayOverlayController : public ui::EventHandler {
   raw_ptr<views::ImageButton> menu_entry_ = nullptr;
   raw_ptr<ActionEditMenu> action_edit_menu_ = nullptr;
   raw_ptr<EditFinishView> edit_finish_view_ = nullptr;
-  raw_ptr<MessageView> error_ = nullptr;
+  raw_ptr<MessageView> message_ = nullptr;
   raw_ptr<EducationalView> educational_view_ = nullptr;
   raw_ptr<ash::PillButton> nudge_view_ = nullptr;
 
