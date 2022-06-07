@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
+#include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
@@ -94,6 +95,8 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
       return ReadEncodedVideoChunk();
     case kMediaStreamTrack:
       return ReadMediaStreamTrack();
+    case kCropTargetTag:
+      return ReadCropTarget();
     default:
       break;
   }
@@ -557,6 +560,20 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
                         .muted = static_cast<bool>(muted),
                         .content_hint = DeserializeContentHint(contentHint),
                         .ready_state = DeserializeReadyState(readyState)});
+}
+
+CropTarget* V8ScriptValueDeserializerForModules::ReadCropTarget() {
+  if (!RuntimeEnabledFeatures::RegionCaptureEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    return nullptr;
+  }
+
+  String crop_id;
+  if (!ReadUTF8String(&crop_id)) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<CropTarget>(crop_id);
 }
 
 }  // namespace blink

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/serialized_track_params.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/web_crypto_sub_tags.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dom_file_system.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk.h"
@@ -31,6 +32,7 @@
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
+#include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
@@ -237,6 +239,18 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
 
     return WriteMediaStreamTrack(wrappable->ToImpl<MediaStreamTrack>(),
                                  exception_state);
+  }
+  if (wrapper_type_info == V8CropTarget::GetWrapperTypeInfo() &&
+      RuntimeEnabledFeatures::RegionCaptureEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    if (IsForStorage()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "A CropTarget cannot be serialized for storage.");
+      return false;
+    }
+
+    return WriteCropTarget(wrappable->ToImpl<CropTarget>());
   }
   return false;
 }
@@ -523,6 +537,13 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
   WriteUint32Enum(SerializeContentHint(track->Component()->ContentHint()));
   WriteUint32Enum(
       SerializeReadyState(track->Component()->Source()->GetReadyState()));
+  return true;
+}
+
+bool V8ScriptValueSerializerForModules::WriteCropTarget(
+    CropTarget* crop_target) {
+  WriteTag(kCropTargetTag);
+  WriteUTF8String(crop_target->GetCropId());
   return true;
 }
 

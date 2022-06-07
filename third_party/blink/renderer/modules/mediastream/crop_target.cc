@@ -12,8 +12,6 @@
 
 namespace blink {
 
-CropTarget::CropTarget() = default;
-
 ScriptPromise CropTarget::fromElement(ScriptState* script_state,
                                       Element* element,
                                       ExceptionState& exception_state) {
@@ -73,5 +71,7 @@ ScriptPromise CropTarget::fromElement(ScriptState* script_state,
                                           exception_state);
 #endif
 }
+
+CropTarget::CropTarget(String crop_id) : crop_id_(std::move(crop_id)) {}
 
 }  // namespace blink

@@ -22,8 +22,17 @@ class MODULES_EXPORT CropTarget final : public ScriptWrappable {
                                    Element* element,
                                    ExceptionState& exception_state);
 
+  // Not Web-exposed.
+  explicit CropTarget(String crop_id);
+
+  // The crop-ID is a UUID. CropTarget wraps it and abstracts it away for JS,
+  // but internally, the implementation is based on this implementation detail.
+  const String& GetCropId() const { return crop_id_; }
+
  private:
-  CropTarget();
+  // TODO(crbug.com/1332628): Wrap the base::Token instead of wrapping its
+  // string representation.
+  const String crop_id_;
 };
 
 }  // namespace blink
