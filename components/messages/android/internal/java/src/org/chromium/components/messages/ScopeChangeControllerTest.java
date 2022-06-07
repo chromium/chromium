@@ -5,12 +5,10 @@
 package org.chromium.components.messages;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
@@ -22,18 +20,20 @@ import org.mockito.Mockito;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
-import org.chromium.content_public.browser.LoadCommittedDetails;
-import org.chromium.content_public.browser.NavigationController;
-import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
-import org.chromium.ui.base.PageTransition;
 
 /**
  * A test for {@link ScopeChangeController}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ScopeChangeControllerTest {
+    private static final boolean IS_MAIN_FRAME = true;
+    private static final boolean IS_SAME_DOCUMENT = true;
+    private static final boolean IS_RELOAD = true;
+    private static final boolean DID_COMMIT = true;
+
     @Test
     @SmallTest
     public void testNavigationScopeChange() {
@@ -42,12 +42,6 @@ public class ScopeChangeControllerTest {
         ScopeChangeController controller = new ScopeChangeController(delegate);
 
         MockWebContents webContents = mock(MockWebContents.class);
-        NavigationController navigationController = mock(NavigationController.class);
-        NavigationEntry entry = mock(NavigationEntry.class);
-        when(webContents.getNavigationController()).thenReturn(navigationController);
-        when(navigationController.getLastCommittedEntryIndex()).thenReturn(1);
-        when(navigationController.getEntryAtIndex(anyInt())).thenReturn(entry);
-        when(entry.getTransition()).thenReturn(PageTransition.HOME_PAGE);
 
         int expectedOnScopeChangeCalls = 0;
         ScopeKey key = new ScopeKey(MessageScopeType.NAVIGATION, webContents);
@@ -89,14 +83,36 @@ public class ScopeChangeControllerTest {
         Assert.assertEquals("Scope type should be inactive when page is hidden",
                 ChangeType.INACTIVE, captor.getValue().changeType);
 
-        observer.navigationEntryCommitted(createLoadCommittedDetails(true));
+        observer.didFinishNavigation(
+                createNavigationHandle(IS_MAIN_FRAME, !IS_SAME_DOCUMENT, IS_RELOAD, DID_COMMIT));
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
-                        .description("Delegate should not be called when entry is replaced"))
+                        .description("Delegate should not be called for a refresh"))
                 .onScopeChange(any());
 
-        observer.navigationEntryCommitted(createLoadCommittedDetails(false));
+        observer.didFinishNavigation(
+                createNavigationHandle(!IS_MAIN_FRAME, !IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
+        verify(delegate,
+                times(expectedOnScopeChangeCalls)
+                        .description("Delegate should not be called for a subframe"))
+                .onScopeChange(any());
 
+        observer.didFinishNavigation(
+                createNavigationHandle(IS_MAIN_FRAME, !IS_SAME_DOCUMENT, !IS_RELOAD, !DID_COMMIT));
+        verify(delegate,
+                times(expectedOnScopeChangeCalls)
+                        .description("Delegate should not be called for uncommitted navigations"))
+                .onScopeChange(any());
+
+        observer.didFinishNavigation(
+                createNavigationHandle(IS_MAIN_FRAME, IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
+        verify(delegate,
+                times(expectedOnScopeChangeCalls)
+                        .description("Delegate should not be called for same document navigations"))
+                .onScopeChange(any());
+
+        observer.didFinishNavigation(
+                createNavigationHandle(IS_MAIN_FRAME, !IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
         expectedOnScopeChangeCalls++;
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
@@ -107,7 +123,6 @@ public class ScopeChangeControllerTest {
                 ChangeType.DESTROY, captor.getValue().changeType);
 
         observer.onTopLevelNativeWindowChanged(null);
-
         expectedOnScopeChangeCalls++;
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
@@ -143,13 +158,18 @@ public class ScopeChangeControllerTest {
         Assert.assertEquals("Scope type should be inactive when page is hidden",
                 ChangeType.INACTIVE, captor.getValue().changeType);
 
-        observer.navigationEntryCommitted(createLoadCommittedDetails(false));
+        observer.didFinishNavigation(
+                createNavigationHandle(IS_MAIN_FRAME, !IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
         verify(delegate,
                 times(1).description("Delegate should not be called when navigation is ignored"))
                 .onScopeChange(any());
     }
 
-    private LoadCommittedDetails createLoadCommittedDetails(boolean didReplaceEntry) {
-        return new LoadCommittedDetails(-1, null, didReplaceEntry, false, true, -1);
+    private NavigationHandle createNavigationHandle(
+            boolean isMainFrame, boolean isSameDocument, boolean isReload, boolean didCommit) {
+        NavigationHandle handle = new NavigationHandle(0, null, null, null, isMainFrame,
+                isSameDocument, true, null, 0, false, false, false, false, -1, false, isReload);
+        handle.didFinish(null, false, didCommit, false, false, false, 0, 0, 0);
+        return handle;
     }
 }

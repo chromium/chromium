@@ -10,13 +10,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ActivityState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
-import org.chromium.content_public.browser.LoadCommittedDetails;
-import org.chromium.content_public.browser.NavigationController;
-import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
@@ -112,24 +109,17 @@ class ScopeChangeController {
         }
 
         @Override
-        public void navigationEntryCommitted(LoadCommittedDetails details) {
+        public void didFinishNavigation(NavigationHandle navigationHandle) {
             if (mScopeKey.scopeType != MessageScopeType.NAVIGATION) {
                 return;
             }
-            if (!details.isMainFrame() || details.isSameDocument() || details.didReplaceEntry()) {
+
+            if (!navigationHandle.isInPrimaryMainFrame() || navigationHandle.isSameDocument()
+                    || !navigationHandle.hasCommitted() || navigationHandle.isReload()) {
                 return;
             }
-            super.navigationEntryCommitted(details);
 
-            NavigationController controller = mScopeKey.webContents.getNavigationController();
-            NavigationEntry entry =
-                    controller.getEntryAtIndex(controller.getLastCommittedEntryIndex());
-
-            int transition = entry.getTransition();
-            if ((transition & PageTransition.RELOAD) != PageTransition.RELOAD
-                    && (transition & PageTransition.IS_REDIRECT_MASK) == 0) {
-                destroy();
-            }
+            destroy();
         }
 
         @Override

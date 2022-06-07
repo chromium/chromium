@@ -42,7 +42,8 @@ NavigationHandleProxy::NavigationHandleProxy(
       cpp_navigation_handle_->WasServerRedirect(),
       cpp_navigation_handle_->IsExternalProtocol(),
       cpp_navigation_handle_->GetNavigationId(),
-      cpp_navigation_handle_->IsPageActivation());
+      cpp_navigation_handle_->IsPageActivation(),
+      cpp_navigation_handle_->GetReloadType() != content::ReloadType::NONE);
 }
 
 void NavigationHandleProxy::DidRedirect() {

@@ -41,6 +41,7 @@ public class NavigationHandle {
     private final boolean mIsExternalProtocol;
     private final long mNavigationId;
     private final boolean mIsPageActivation;
+    private final boolean mIsReload;
 
     @CalledByNative
     public NavigationHandle(long nativeNavigationHandleProxy, @NonNull GURL url,
@@ -48,7 +49,7 @@ public class NavigationHandle {
             boolean isInPrimaryMainFrame, boolean isSameDocument, boolean isRendererInitiated,
             Origin initiatorOrigin, @PageTransition int transition, boolean isPost,
             boolean hasUserGesture, boolean isRedirect, boolean isExternalProtocol,
-            long navigationId, boolean isPageActivation) {
+            long navigationId, boolean isPageActivation, boolean isReload) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
         mReferrerUrl = referrerUrl;
@@ -64,6 +65,7 @@ public class NavigationHandle {
         mIsExternalProtocol = isExternalProtocol;
         mNavigationId = navigationId;
         mIsPageActivation = isPageActivation;
+        mIsReload = isReload;
     }
 
     /**
@@ -307,6 +309,13 @@ public class NavigationHandle {
      */
     public void setUserGestureForCarryover(boolean hasUserGesture) {
         mHasUserGesture = hasUserGesture;
+    }
+
+    /**
+     * Whether this navigation was initiated by a page reload.
+     */
+    public boolean isReload() {
+        return mIsReload;
     }
 
     @NativeMethods

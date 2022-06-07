@@ -49,7 +49,7 @@ public abstract class InterceptNavigationDelegate {
                 transition, false /* isPost */, hasUserGesture, false /* isRedirect */,
                 true /* isExternalProtocol */,
                 0 /* navigationId - doesn't correspond to a native NavigationHandle*/,
-                false /* isPageActivation */);
+                false /* isPageActivation */, false /* isReload */);
         shouldIgnoreNavigation(navigationHandle, escapedUrl, false);
     }
 }

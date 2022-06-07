@@ -399,7 +399,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 true /* isInPrimaryMainFrame */, false /* isSameDocument*/,
                 true /* isRendererInitiated */, null /* initiatorOrigin */, PageTransition.LINK,
                 false /* isPost */, true /* hasUserGesture */, false /* isRedirect */,
-                true /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */);
+                true /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */,
+                false /* isReload */);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
@@ -437,7 +438,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 false /* isSameDocument*/, true /* isRendererInitiated */,
                 null /* initiatorOrigin */, PageTransition.LINK, false /* isPost */,
                 true /* hasUserGesture */, false /* isRedirect */, false /* isExternalProtocol */,
-                0 /* navigationId */, false /* isPageActivation */);
+                0 /* navigationId */, false /* isPageActivation */, false /* isReload */);
 
         GURL redirectUrl =
                 new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end");
@@ -447,7 +448,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 false /* isSameDocument*/, true /* isRendererInitiated */,
                 null /* initiatorOrigin */, PageTransition.LINK, false /* isPost */,
                 false /* hasUserGesture */, true /* isRedirect */, true /* isExternalProtocol */,
-                0 /* navigationId */, false /* isPageActivation */);
+                0 /* navigationId */, false /* isPageActivation */, false /* isReload */);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
@@ -486,7 +487,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 false /* isSameDocument*/, true /* isRendererInitiated */,
                 null /* initiatorOrigin */, PageTransition.LINK, false /* isPost */,
                 false /* hasUserGesture */, false /* isRedirect */, true /* isExternalProtocol */,
-                0 /* navigationId */, false /* isPageActivation */);
+                0 /* navigationId */, false /* isPageActivation */, false /* isReload */);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
