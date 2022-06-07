@@ -70,7 +70,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   scoped_refptr<network::WrapperSharedURLLoaderFactory>
   GetRefCountedTrustedURLLoaderFactory();
 
-  // AuctionRunner::Delegate implementation:
+  // AuctionWorkletManager::Delegate implementation:
   network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override;
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override;
   RenderFrameHostImpl* GetFrame() override;
