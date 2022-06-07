@@ -4231,6 +4231,10 @@ TEST_F(PersonalDataManagerTest, UpdateCardsBillingAddressReference) {
   guids_merge_map.insert(std::pair<std::string, std::string>("B", "E"));
   guids_merge_map.insert(std::pair<std::string, std::string>("D", "E"));
 
+  // Create a credit card without a billing address id
+  CreditCard* credit_card0 =
+      new CreditCard(base::GenerateGUID(), test::kEmptyOrigin);
+
   // Create cards that use A, D, E and F as their billing address id.
   CreditCard* credit_card1 =
       new CreditCard(base::GenerateGUID(), test::kEmptyOrigin);
@@ -4246,6 +4250,8 @@ TEST_F(PersonalDataManagerTest, UpdateCardsBillingAddressReference) {
   credit_card4->set_billing_address_id("F");
 
   // Add the credit cards to the database.
+  personal_data_->local_credit_cards_.push_back(
+      std::unique_ptr<CreditCard>(credit_card0));
   personal_data_->local_credit_cards_.push_back(
       std::unique_ptr<CreditCard>(credit_card1));
   personal_data_->server_credit_cards_.push_back(

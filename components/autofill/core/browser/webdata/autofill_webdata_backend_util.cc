@@ -177,7 +177,7 @@ void UpdateCardsBillingAddressReference(
   for (std::unique_ptr<CreditCard>& credit_card : credit_cards) {
     // If the credit card is not associated with a billing address, skip it.
     if (credit_card->billing_address_id().empty())
-      break;
+      continue;
 
     // If the billing address profile associated with the card has been merged,
     // replace it by the id of the profile in which it was merged. Repeat the
