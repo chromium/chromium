@@ -645,10 +645,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     getWindowAndroid().getApplicationBottomInsetProvider(),
                     mManualFillingComponentSupplier.get().getBottomInsetSupplier());
 
-            ShareDelegate shareDelegate = new ShareDelegateImpl(
-                    mRootUiCoordinator.getBottomSheetController(), getLifecycleDispatcher(),
-                    getActivityTabProvider(), getTabModelSelectorSupplier(),
-                    new ShareDelegateImpl.ShareSheetDelegate(), isCustomTab());
+            ShareDelegate shareDelegate =
+                    new ShareDelegateImpl(mRootUiCoordinator.getBottomSheetController(),
+                            getLifecycleDispatcher(), getActivityTabProvider(),
+                            getTabModelSelectorSupplier(), mTabModelProfileSupplier,
+                            new ShareDelegateImpl.ShareSheetDelegate(), isCustomTab());
             mShareDelegateSupplier.set(shareDelegate);
 
             // If onStart was called before postLayoutInflation (because inflation was done in a

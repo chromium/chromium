@@ -15,12 +15,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareSheetDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -121,8 +123,8 @@ public class ShareDelegateImplIntegrationTest {
                         BottomSheetController controller,
                         ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
                         Supplier<TabModelSelector> tabModelSelectorProvider,
-                        Callback<Tab> printCallback, int shareOrigin, long shareStartTime,
-                        boolean sharingHubEnabled) {
+                        Supplier<Profile> profileSupplier, Callback<Tab> printCallback,
+                        int shareOrigin, long shareStartTime, boolean sharingHubEnabled) {
                     paramsRef.set(params);
                     helper.notifyCalled();
                 }
@@ -133,7 +135,8 @@ public class ShareDelegateImplIntegrationTest {
                                           .getBottomSheetController(),
                     mActivityTestRule.getActivity().getLifecycleDispatcher(),
                     mActivityTestRule.getActivity().getActivityTabProvider(),
-                    mActivityTestRule.getActivity().getTabModelSelectorSupplier(), delegate, false)
+                    mActivityTestRule.getActivity().getTabModelSelectorSupplier(),
+                    new ObservableSupplierImpl<>(), delegate, false)
                     .share(mActivityTestRule.getActivity().getActivityTab(), false,
                             /*shareOrigin=*/0);
         });
