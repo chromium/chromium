@@ -44,8 +44,7 @@ const base::Feature kQuickAnswersV2SettingsSubToggle{
 
 // Controls whether to always trigger Quick Answers with single word selection.
 const base::Feature kQuickAnswersAlwaysTriggerForSingleWord{
-    "QuickAnswersAlwaysTriggerForSingleWord",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    "QuickAnswersAlwaysTriggerForSingleWord", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables Quick Answers for more locales.
 const base::Feature kQuickAnswersForMoreLocales{
