@@ -22,16 +22,10 @@ struct AttributionFilterData {
 
 // Struct containing the trigger-side aggregatable data.
 struct AttributionAggregatableTriggerData {
-  mojo_base.mojom.Uint128 key;
+  mojo_base.mojom.Uint128 key_piece;
   array<string> source_keys;
   AttributionFilterData filters;
   AttributionFilterData not_filters;
-};
-
-// Struct containing all the aggregatable trigger data and values.
-struct AttributionAggregatableTrigger {
-  array<AttributionAggregatableTriggerData> trigger_data;
-  map<string, uint32> values;
 };
 
 struct AttributionSourceData {
@@ -112,9 +106,12 @@ struct AttributionTriggerData {
   // filter data matches.
   AttributionFilterData filters;
 
-  // Contains a list of trigger data that generates trigger-side aggregatable
-  // key pieces and the values.
-  AttributionAggregatableTrigger aggregatable_trigger;
+  // List of all aggregatable trigger data objects declared by the trigger
+  // header.
+  array<AttributionAggregatableTriggerData> aggregatable_trigger_data;
+
+  // A map of aggregation key identifier and the corresponding value.
+  map<string, uint32> aggregatable_values;
 
   // A key that is propagated through the Attribution Reporting API for
   // debugging purposes.

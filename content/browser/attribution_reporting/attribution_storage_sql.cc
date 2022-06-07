@@ -770,8 +770,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                   std::move(new_aggregatable_report));
       };
 
-  if (trigger.aggregatable_trigger().trigger_data().empty() &&
-      trigger.aggregatable_trigger().values().empty()) {
+  if (trigger.aggregatable_trigger_data().empty() &&
+      trigger.aggregatable_values().values().empty()) {
     aggregatable_status = AggregatableResult::kNotRegistered;
   }
 
@@ -2589,7 +2589,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
       CreateAggregatableHistogram(
           attribution_info.source.common_info().filter_data(),
           attribution_info.source.common_info().aggregatable_source(),
-          trigger.aggregatable_trigger());
+          trigger.aggregatable_trigger_data(), trigger.aggregatable_values());
   if (contributions.empty())
     return AggregatableResult::kNoHistograms;
 

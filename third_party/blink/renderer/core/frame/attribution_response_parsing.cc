@@ -385,8 +385,10 @@ bool ParseAttributionAggregatableTriggerData(
 
     auto data = mojom::blink::AttributionAggregatableTriggerData::New();
 
-    if (!ParseAttributionAggregatableKey(object->Get("key_piece"), &data->key))
+    if (!ParseAttributionAggregatableKey(object->Get("key_piece"),
+                                         &data->key_piece)) {
       return false;
+    }
 
     JSONArray* source_keys_val = object->GetArray("source_keys");
     if (!source_keys_val ||
@@ -490,18 +492,14 @@ bool ParseTriggerRegistrationHeader(
     return false;
   }
 
-  trigger_data.aggregatable_trigger =
-      mojom::blink::AttributionAggregatableTrigger::New();
-
   if (!ParseAttributionAggregatableTriggerData(
           object->Get("aggregatable_trigger_data"),
-          trigger_data.aggregatable_trigger->trigger_data)) {
+          trigger_data.aggregatable_trigger_data)) {
     return false;
   }
 
-  if (!ParseAttributionAggregatableValues(
-          object->Get("aggregatable_values"),
-          trigger_data.aggregatable_trigger->values)) {
+  if (!ParseAttributionAggregatableValues(object->Get("aggregatable_values"),
+                                          trigger_data.aggregatable_values)) {
     return false;
   }
 

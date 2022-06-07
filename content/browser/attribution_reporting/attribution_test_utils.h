@@ -24,7 +24,8 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
@@ -525,8 +526,12 @@ class TriggerBuilder {
 
   TriggerBuilder& SetDebugKey(absl::optional<uint64_t> debug_key);
 
-  TriggerBuilder& SetAggregatableTrigger(
-      AttributionAggregatableTrigger aggregatable_trigger);
+  TriggerBuilder& SetAggregatableTriggerData(
+      std::vector<AttributionAggregatableTriggerData>
+          aggregatable_trigger_data);
+
+  TriggerBuilder& SetAggregatableValues(
+      AttributionAggregatableValues aggregatable_values);
 
   AttributionTrigger Build() const;
 
@@ -538,7 +543,8 @@ class TriggerBuilder {
   int64_t priority_ = 0;
   absl::optional<uint64_t> dedup_key_;
   absl::optional<uint64_t> debug_key_;
-  AttributionAggregatableTrigger aggregatable_trigger_;
+  std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data_;
+  AttributionAggregatableValues aggregatable_values_;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.
@@ -638,8 +644,8 @@ bool operator==(const SendResult& a, const SendResult& b);
 bool operator==(const AttributionAggregatableTriggerData& a,
                 const AttributionAggregatableTriggerData& b);
 
-bool operator==(const AttributionAggregatableTrigger& a,
-                const AttributionAggregatableTrigger& b);
+bool operator==(const AttributionAggregatableValues& a,
+                const AttributionAggregatableValues& b);
 
 std::ostream& operator<<(std::ostream& out,
                          AttributionTrigger::EventLevelResult status);
@@ -704,9 +710,8 @@ std::ostream& operator<<(
     std::ostream& out,
     const AttributionAggregatableTriggerData& trigger_data);
 
-std::ostream& operator<<(
-    std::ostream& out,
-    const AttributionAggregatableTrigger& aggregatable_trigger);
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionAggregatableValues& values);
 
 bool operator==(const AttributionAggregatableSource& a,
                 const AttributionAggregatableSource& b);

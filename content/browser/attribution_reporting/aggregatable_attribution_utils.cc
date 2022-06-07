@@ -18,7 +18,8 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -49,7 +50,9 @@ std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
 std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const AttributionFilterData& source_filter_data,
     const AttributionAggregatableSource& source,
-    const AttributionAggregatableTrigger& trigger) {
+    const std::vector<AttributionAggregatableTriggerData>&
+        aggregatable_trigger_data,
+    const AttributionAggregatableValues& aggregatable_values) {
   int num_trigger_data_filtered = 0;
 
   AttributionAggregatableSource::Keys buckets = source.keys();
@@ -57,7 +60,7 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
   // For each piece of trigger data specified, check if its filters/not_filters
   // match for the given source, and if applicable modify the bucket based on
   // the given key piece.
-  for (const auto& data : trigger.trigger_data()) {
+  for (const auto& data : aggregatable_trigger_data) {
     if (!AttributionFiltersMatch(source_filter_data, data.filters(),
                                  data.not_filters())) {
       ++num_trigger_data_filtered;
@@ -69,23 +72,26 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
       if (bucket == buckets.end())
         continue;
 
-      bucket->second |= data.key();
+      bucket->second |= data.key_piece();
     }
   }
 
+  const AttributionAggregatableValues::Values& values =
+      aggregatable_values.values();
+
   std::vector<AggregatableHistogramContribution> contributions;
   for (const auto& [key_id, key] : buckets) {
-    auto value = trigger.values().find(key_id);
-    if (value == trigger.values().end())
+    auto value = values.find(key_id);
+    if (value == values.end())
       continue;
 
     contributions.emplace_back(key, value->second);
   }
 
-  if (!trigger.trigger_data().empty()) {
+  if (!aggregatable_trigger_data.empty()) {
     base::UmaHistogramPercentage(
         "Conversions.AggregatableReport.FilteredTriggerDataPercentage",
-        100 * num_trigger_data_filtered / trigger.trigger_data().size());
+        100 * num_trigger_data_filtered / aggregatable_trigger_data.size());
   }
 
   DCHECK(!buckets.empty());

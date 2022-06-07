@@ -12,7 +12,8 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/values.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -23,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -332,15 +334,6 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
   base::Value value = base::test::ParseJson(kJson);
   std::ostringstream error_stream;
 
-  std::vector<blink::mojom::AttributionAggregatableTriggerDataPtr>
-      aggregatable_trigger_data;
-  aggregatable_trigger_data.push_back(
-      blink::mojom::AttributionAggregatableTriggerData::New(
-          absl::MakeUint128(/*high=*/0, /*low=*/1),
-          std::vector<std::string>{"a"},
-          blink::mojom::AttributionFilterData::New(),
-          blink::mojom::AttributionFilterData::New()));
-
   EXPECT_THAT(
       ParseAttributionSimulationInput(std::move(value), kOffsetTime,
                                       error_stream),
@@ -377,7 +370,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                               /*filters=*/AttributionFilterData(),
                               /*not_filters=*/AttributionFilterData()),
                       },
-                      AttributionAggregatableTrigger()),
+                      /*aggregatable_trigger_data=*/{},
+                      /*aggregatable_values=*/AttributionAggregatableValues()),
                   .time = kOffsetTime + base::Milliseconds(1643235576123),
               },
               _),
@@ -390,7 +384,9 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       url::Origin::Create(GURL("https://b.r.test")),
                       AttributionFilterData(),
                       /*debug_key=*/absl::nullopt,
-                      /*event_triggers=*/{}, AttributionAggregatableTrigger()),
+                      /*event_triggers=*/{},
+                      /*aggregatable_trigger_data=*/{},
+                      /*aggregatable_values=*/AttributionAggregatableValues()),
                   .time = kOffsetTime + base::Milliseconds(1643235575123),
               },
               _),
@@ -404,11 +400,14 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       AttributionFilterData(),
                       /*debug_key=*/absl::nullopt,
                       /*event_triggers=*/{},
-                      *AttributionAggregatableTrigger::FromMojo(
-                          blink::mojom::AttributionAggregatableTrigger::New(
-                              std::move(aggregatable_trigger_data),
-                              AttributionAggregatableTrigger::Values{
-                                  {"a", 1}}))),
+                      {AttributionAggregatableTriggerData::CreateForTesting(
+                          absl::MakeUint128(/*high=*/0, /*low=*/1),
+                          /*source_keys=*/{"a"},
+                          /*filters=*/AttributionFilterData(),
+                          /*not_filters=*/AttributionFilterData())},
+                      /*aggregatable_values=*/
+                      AttributionAggregatableValues::CreateForTesting(
+                          {{"a", 1}})),
                   .time = kOffsetTime + base::Milliseconds(1643235574123),
               },
               _))));
@@ -531,6 +530,48 @@ TEST(AttributionSimulatorInputParserTest, ValidDataClearParses) {
                    }),
                _))));
   EXPECT_THAT(error_stream.str(), IsEmpty());
+}
+
+TEST(AttributionSimulatorInputParserTest, InvalidAggregatableTriggerDataSize) {
+  const struct {
+    size_t size;
+    bool valid;
+  } kTestCases[]{
+      {blink::kMaxAttributionAggregatableTriggerDataPerTrigger, true},
+      {blink::kMaxAttributionAggregatableTriggerDataPerTrigger + 1, false},
+  };
+
+  static constexpr char kError[] =
+      R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_trigger_data"]: too many elements)";
+
+  for (const auto test_case : kTestCases) {
+    base::Value::List list;
+    for (size_t i = 0; i < test_case.size; ++i) {
+      list.Append("");
+    }
+    base::Value::Dict trigger;
+    trigger.Set("aggregatable_trigger_data", std::move(list));
+
+    base::Value::Dict dict;
+    dict.Set("Attribution-Reporting-Register-Trigger", std::move(trigger));
+
+    base::Value::List triggers;
+    triggers.Append(std::move(dict));
+
+    base::Value::Dict input;
+    input.Set("triggers", std::move(triggers));
+
+    std::ostringstream error_stream;
+    EXPECT_EQ(ParseAttributionSimulationInput(base::Value(std::move(input)),
+                                              kOffsetTime, error_stream),
+              absl::nullopt);
+
+    if (test_case.valid) {
+      EXPECT_THAT(error_stream.str(), Not(HasSubstr(kError)));
+    } else {
+      EXPECT_THAT(error_stream.str(), HasSubstr(kError));
+    }
+  }
 }
 
 struct ParseErrorTestCase {

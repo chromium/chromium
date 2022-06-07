@@ -50,8 +50,8 @@ using ::testing::Pointee;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
-MATCHER_P(AggregatableKeyIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.key, result_listener);
+MATCHER_P(AggregationKeyPieceIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.key_piece, result_listener);
 }
 
 MATCHER_P(SourceKeysAre, matcher, "") {
@@ -691,9 +691,8 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
   EXPECT_THAT(
       trigger_data.front()->event_triggers.front()->not_filters->filter_values,
       IsEmpty());
-  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->trigger_data,
-              IsEmpty());
-  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->values, IsEmpty());
+  EXPECT_THAT(trigger_data.front()->aggregatable_trigger_data, IsEmpty());
+  EXPECT_THAT(trigger_data.front()->aggregatable_values, IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -769,12 +768,12 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       event_trigger_datas.back()->not_filters->filter_values,
       ElementsAre(Pair("d", ElementsAre("e", "f")), Pair("g", IsEmpty())));
 
-  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->trigger_data,
-              ElementsAre(Pointee(AllOf(
-                  AggregatableKeyIs(absl::MakeUint128(/*high=*/0, /*low=*/1)),
-                  SourceKeysAre(ElementsAre("key"))))));
+  EXPECT_THAT(trigger_data.front()->aggregatable_trigger_data,
+              ElementsAre(Pointee(AllOf(AggregationKeyPieceIs(absl::MakeUint128(
+                                            /*high=*/0, /*low=*/1)),
+                                        SourceKeysAre(ElementsAre("key"))))));
 
-  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->values,
+  EXPECT_THAT(trigger_data.front()->aggregatable_values,
               ElementsAre(Pair("key", 123)));
 }
 
@@ -810,24 +809,24 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(trigger_data.front()->event_triggers, IsEmpty());
 
   EXPECT_THAT(
-      trigger_data.front()->aggregatable_trigger->trigger_data,
+      trigger_data.front()->aggregatable_trigger_data,
       ElementsAre(
           Pointee(AllOf(
-              AggregatableKeyIs(absl::MakeUint128(/*high=*/0, /*low=*/1)),
+              AggregationKeyPieceIs(absl::MakeUint128(/*high=*/0, /*low=*/1)),
               SourceKeysAre(ElementsAre("key1")),
               FiltersAre(Pointee(
                   FilterValuesAre(ElementsAre(Pair("a", ElementsAre("b")))))),
               NotFiltersAre(Pointee(
                   FilterValuesAre(ElementsAre(Pair("c", IsEmpty()))))))),
           Pointee(AllOf(
-              AggregatableKeyIs(absl::MakeUint128(/*high=*/0, /*low=*/0)),
+              AggregationKeyPieceIs(absl::MakeUint128(/*high=*/0, /*low=*/0)),
               SourceKeysAre(IsEmpty()),
               FiltersAre(Pointee(FilterValuesAre(IsEmpty()))),
               NotFiltersAre(Pointee(
                   FilterValuesAre(ElementsAre(Pair("d", ElementsAre("e", "f")),
                                               Pair("g", IsEmpty())))))))));
 
-  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->values,
+  EXPECT_THAT(trigger_data.front()->aggregatable_values,
               ElementsAre(Pair("key1", 123), Pair("key2", 456)));
 }
 
@@ -916,9 +915,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   // Only the second trigger is registered.
   EXPECT_EQ(trigger_data.size(), 1u);
-  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->trigger_data,
-              SizeIs(2));
-  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->values, SizeIs(2));
+  EXPECT_THAT(trigger_data.front()->aggregatable_trigger_data, SizeIs(2));
+  EXPECT_THAT(trigger_data.front()->aggregatable_values, SizeIs(2));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,

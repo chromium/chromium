@@ -15,6 +15,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
@@ -887,19 +889,20 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               /*not_filters=*/
               AttributionFilterData::CreateForTesting({{"e", {"f"}}})),
       },
-      AttributionAggregatableTrigger::CreateForTesting(
-          {AttributionAggregatableTriggerData::CreateForTesting(
-               /*key=*/345,
-               /*source_keys=*/{"a"},
-               /*filters=*/
-               AttributionFilterData::CreateForTesting({{"c", {"d"}}}),
-               /*not_filters=*/AttributionFilterData()),
-           AttributionAggregatableTriggerData::CreateForTesting(
-               /*key=*/678,
-               /*source_keys=*/{"b"},
-               /*filters=*/AttributionFilterData(),
-               /*not_filters=*/
-               AttributionFilterData::CreateForTesting({{"e", {"f"}}}))},
+      {AttributionAggregatableTriggerData::CreateForTesting(
+           /*key_piece=*/345,
+           /*source_keys=*/{"a"},
+           /*filters=*/
+           AttributionFilterData::CreateForTesting({{"c", {"d"}}}),
+           /*not_filters=*/AttributionFilterData()),
+       AttributionAggregatableTriggerData::CreateForTesting(
+           /*key_piece=*/678,
+           /*source_keys=*/{"b"},
+           /*filters=*/AttributionFilterData(),
+           /*not_filters=*/
+           AttributionFilterData::CreateForTesting({{"e", {"f"}}}))},
+      /*aggregatable_values=*/
+      AttributionAggregatableValues::CreateForTesting(
           {{"a", 123}, {"b", 456}}));
 
   static constexpr char kWantEventTriggerJSON[] =

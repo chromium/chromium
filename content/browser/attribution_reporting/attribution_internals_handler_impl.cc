@@ -435,10 +435,11 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
   }
 
   for (const auto& aggregatable_trigger_data :
-       trigger.aggregatable_trigger().trigger_data()) {
+       trigger.aggregatable_trigger_data()) {
     web_ui_trigger->aggregatable_triggers.emplace_back(
         absl::in_place,
-        /*key_piece=*/HexEncodeAggregatableKey(aggregatable_trigger_data.key()),
+        /*key_piece=*/
+        HexEncodeAggregatableKey(aggregatable_trigger_data.key_piece()),
         /*source_keys=*/
         std::vector<std::string>(
             aggregatable_trigger_data.source_keys().begin(),
@@ -448,7 +449,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
         aggregatable_trigger_data.not_filters().filter_values());
   }
 
-  web_ui_trigger->aggregatable_values = trigger.aggregatable_trigger().values();
+  web_ui_trigger->aggregatable_values = trigger.aggregatable_values().values();
 
   for (auto& observer : observers_) {
     observer->OnTriggerHandled(web_ui_trigger.Clone());
