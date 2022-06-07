@@ -88,7 +88,10 @@
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_MAC)
+#include "base/debug/crash_logging.h"
 #include "base/mac/mach_port_rendezvous.h"
+#include "base/no_destructor.h"
+#include "content/common/mac/task_port_policy.h"
 #endif
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
@@ -299,6 +302,20 @@ class ChildThreadImpl::IOThreadState
 
 #if BUILDFLAG(IS_MAC)
   void GetTaskPort(GetTaskPortCallback callback) override {
+    static const base::NoDestructor<MachTaskPortPolicy> policy{
+        GetMachTaskPortPolicy()};
+    SCOPED_CRASH_KEY_STRING64(
+        "get-task-port", "amfi-status",
+        base::StringPrintf("sandbox_ms=%d amfi_status=0x%llx",
+                           policy->amfi_status_retval, policy->amfi_status));
+    SCOPED_CRASH_KEY_STRING32("get-task-port", "amfi-boot-arg",
+                              policy->boot_args);
+    SCOPED_CRASH_KEY_STRING32(
+        "get-task-port", "csr-kernel-debugger",
+        base::StringPrintf("ret=%d errno=%d",
+                           policy->csr_kernel_debugger_retval,
+                           policy->csr_kernel_debugger_errno));
+
     mojo::PlatformHandle task_port(
         (base::mac::ScopedMachSendRight(task_self_trap())));
     std::move(callback).Run(std::move(task_port));
