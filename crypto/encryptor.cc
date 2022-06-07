@@ -64,24 +64,20 @@ bool Encryptor::Init(const SymmetricKey* key,
 }
 
 bool Encryptor::Encrypt(base::StringPiece plaintext, std::string* ciphertext) {
-  CHECK(!plaintext.empty() || mode_ == CBC);
   return CryptString(/*do_encrypt=*/true, plaintext, ciphertext);
 }
 
 bool Encryptor::Encrypt(base::span<const uint8_t> plaintext,
                         std::vector<uint8_t>* ciphertext) {
-  CHECK(!plaintext.empty() || mode_ == CBC);
   return CryptBytes(/*do_encrypt=*/true, plaintext, ciphertext);
 }
 
 bool Encryptor::Decrypt(base::StringPiece ciphertext, std::string* plaintext) {
-  CHECK(!ciphertext.empty());
   return CryptString(/*do_encrypt=*/false, ciphertext, plaintext);
 }
 
 bool Encryptor::Decrypt(base::span<const uint8_t> ciphertext,
                         std::vector<uint8_t>* plaintext) {
-  CHECK(!ciphertext.empty());
   return CryptBytes(/*do_encrypt=*/false, ciphertext, plaintext);
 }
 
@@ -102,18 +98,13 @@ bool Encryptor::SetCounter(base::span<const uint8_t> counter) {
 bool Encryptor::CryptString(bool do_encrypt,
                             base::StringPiece input,
                             std::string* output) {
-  size_t out_size = MaxOutput(do_encrypt, input.size());
-  CHECK_GT(out_size + 1, out_size);  // Overflow
-  std::string result;
-  uint8_t* out_ptr =
-      reinterpret_cast<uint8_t*>(base::WriteInto(&result, out_size + 1));
-
+  std::string result(MaxOutput(do_encrypt, input.size()), '\0');
   absl::optional<size_t> len =
       (mode_ == CTR)
           ? CryptCTR(do_encrypt, base::as_bytes(base::make_span(input)),
-                     base::make_span(out_ptr, out_size))
+                     base::as_writable_bytes(base::make_span(result)))
           : Crypt(do_encrypt, base::as_bytes(base::make_span(input)),
-                  base::make_span(out_ptr, out_size));
+                  base::as_writable_bytes(base::make_span(result)));
   if (!len)
     return false;
 

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "crypto/symmetric_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -466,7 +467,7 @@ TEST(EncryptorTest, UnsupportedIV) {
   EXPECT_FALSE(encryptor.Init(sym_key.get(), crypto::Encryptor::CBC, iv));
 }
 
-TEST(EncryptorTest, EmptyEncrypt) {
+TEST(EncryptorTest, EmptyEncryptCBC) {
   std::string key = "128=SixteenBytes";
   std::string iv = "Sweet Sixteen IV";
   std::string plaintext;
@@ -477,7 +478,7 @@ TEST(EncryptorTest, EmptyEncrypt) {
   ASSERT_TRUE(sym_key.get());
 
   crypto::Encryptor encryptor;
-  // The IV must be exactly as long a the cipher block size.
+  // The IV must be exactly as long as the cipher block size.
   EXPECT_EQ(16U, iv.size());
   EXPECT_TRUE(encryptor.Init(sym_key.get(), crypto::Encryptor::CBC, iv));
 
@@ -485,6 +486,64 @@ TEST(EncryptorTest, EmptyEncrypt) {
   EXPECT_TRUE(encryptor.Encrypt(plaintext, &ciphertext));
   EXPECT_EQ(expected_ciphertext_hex, base::HexEncode(ciphertext.data(),
                                                      ciphertext.size()));
+
+  std::string decrypted;
+  EXPECT_TRUE(encryptor.Decrypt(ciphertext, &decrypted));
+  EXPECT_EQ(decrypted, plaintext);
+
+  // Decrypting the empty string should fail. Our formulation of CBC expects a
+  // full block of padding for CBC.
+  EXPECT_FALSE(encryptor.Decrypt(std::string(), &decrypted));
+
+  // Repeat the test with the byte-based API.
+  EXPECT_TRUE(encryptor.Init(sym_key.get(), crypto::Encryptor::CBC, iv));
+  std::vector<uint8_t> ciphertext_bytes;
+  EXPECT_TRUE(
+      encryptor.Encrypt(base::span<const uint8_t>(), &ciphertext_bytes));
+  EXPECT_EQ(expected_ciphertext_hex, base::HexEncode(ciphertext_bytes));
+
+  std::vector<uint8_t> decrypted_bytes;
+  EXPECT_TRUE(encryptor.Decrypt(ciphertext_bytes, &decrypted_bytes));
+  EXPECT_EQ(decrypted_bytes.size(), 0u);
+
+  // Decrypting the empty string should fail. Our formulation of CBC expects a
+  // full block of padding for CBC.
+  EXPECT_FALSE(
+      encryptor.Decrypt(base::span<const uint8_t>(), &decrypted_bytes));
+}
+
+TEST(EncryptorTest, EmptyEncryptCTR) {
+  std::string key = "128=SixteenBytes";
+  std::string iv = "Sweet Sixteen IV";
+  std::string plaintext;
+  std::string expected_ciphertext;
+
+  std::unique_ptr<crypto::SymmetricKey> sym_key(
+      crypto::SymmetricKey::Import(crypto::SymmetricKey::AES, key));
+  ASSERT_TRUE(sym_key.get());
+
+  crypto::Encryptor encryptor;
+  EXPECT_TRUE(encryptor.Init(sym_key.get(), crypto::Encryptor::CTR, ""));
+  ASSERT_TRUE(encryptor.SetCounter(iv));
+
+  std::string ciphertext;
+  EXPECT_TRUE(encryptor.Encrypt(plaintext, &ciphertext));
+  EXPECT_EQ(expected_ciphertext, ciphertext);
+
+  std::string decrypted;
+  EXPECT_TRUE(encryptor.Decrypt(ciphertext, &decrypted));
+  EXPECT_EQ(decrypted, plaintext);
+
+  // Repeat the test with the byte-based API.
+  ASSERT_TRUE(encryptor.SetCounter(iv));
+  std::vector<uint8_t> ciphertext_bytes;
+  EXPECT_TRUE(
+      encryptor.Encrypt(base::span<const uint8_t>(), &ciphertext_bytes));
+  EXPECT_EQ(ciphertext_bytes.size(), 0u);
+
+  std::vector<uint8_t> decrypted_bytes;
+  EXPECT_TRUE(encryptor.Decrypt(base::span<const uint8_t>(), &decrypted_bytes));
+  EXPECT_EQ(decrypted_bytes.size(), 0u);
 }
 
 TEST(EncryptorTest, CipherTextNotMultipleOfBlockSize) {
