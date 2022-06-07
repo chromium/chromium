@@ -7,8 +7,6 @@
 
 #include "ipcz/ipcz.h"
 #include "reference_drivers/blob.h"
-#include "reference_drivers/memory.h"
-#include "reference_drivers/os_handle.h"
 #include "test/multinode_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "util/ref_counted.h"
@@ -16,48 +14,63 @@
 namespace ipcz {
 namespace {
 
-using BoxTestNode = test::TestNode;
-using BoxTest = test::MultinodeTest<BoxTestNode>;
-
 using Blob = reference_drivers::Blob;
 
-// Creates a test driver Blob object with an inlined data payload and a shared
-// memory object with an embedded message.
-IpczDriverHandle CreateTestBlob(std::string_view inline_message,
-                                std::string_view shm_message) {
-  reference_drivers::Memory memory(shm_message.size());
-  auto mapping = memory.Map();
-  memcpy(mapping.base(), shm_message.data(), shm_message.size());
-  reference_drivers::OSHandle memory_handle = memory.TakeHandle();
-  return Blob::ReleaseAsHandle(
-      MakeRefCounted<Blob>(inline_message, absl::MakeSpan(&memory_handle, 1)));
-}
+class BoxTestNode : public test::TestNode {
+ protected:
+  // Creates a test driver Blob object with an inlined data payload and a shared
+  // memory object with an embedded message.
+  IpczDriverHandle CreateTestBlob(std::string_view inline_message,
+                                  std::string_view shm_message) {
+    IpczDriverHandle memory;
+    EXPECT_EQ(IPCZ_RESULT_OK,
+              GetDriver().AllocateSharedMemory(
+                  shm_message.size(), IPCZ_NO_FLAGS, nullptr, &memory));
 
-bool BlobContentsMatch(IpczDriverHandle blob_handle,
-                       std::string_view expected_inline_message,
-                       std::string_view expected_shm_message) {
-  Ref<Blob> blob = Blob::TakeFromHandle(blob_handle);
-  if (expected_inline_message != blob->message()) {
-    return false;
+    void* address;
+    IpczDriverHandle mapping;
+    EXPECT_EQ(IPCZ_RESULT_OK,
+              GetDriver().MapSharedMemory(memory, IPCZ_NO_FLAGS, nullptr,
+                                          &address, &mapping));
+    memcpy(address, shm_message.data(), shm_message.size());
+    EXPECT_EQ(IPCZ_RESULT_OK,
+              GetDriver().Close(mapping, IPCZ_NO_FLAGS, nullptr));
+
+    return Blob::ReleaseAsHandle(MakeRefCounted<Blob>(
+        GetDriver(), inline_message, absl::MakeSpan(&memory, 1)));
   }
 
-  ABSL_ASSERT(blob->handles().size() == 1);
-  ABSL_ASSERT(blob->handles()[0].is_valid());
-  reference_drivers::Memory memory = reference_drivers::Memory(
-      std::move(blob->handles()[0]), expected_shm_message.size());
+  bool BlobContentsMatch(IpczDriverHandle blob_handle,
+                         std::string_view expected_inline_message,
+                         std::string_view expected_shm_message) {
+    Ref<Blob> blob = Blob::TakeFromHandle(blob_handle);
+    if (expected_inline_message != blob->message()) {
+      return false;
+    }
 
-  auto new_mapping = memory.Map();
-  if (expected_shm_message != std::string_view(new_mapping.As<char>())) {
-    return false;
+    ABSL_ASSERT(blob->handles().size() == 1);
+    ABSL_ASSERT(blob->handles()[0] != IPCZ_INVALID_DRIVER_HANDLE);
+
+    void* address;
+    IpczDriverHandle mapping;
+    EXPECT_EQ(IPCZ_RESULT_OK,
+              GetDriver().MapSharedMemory(blob->handles()[0], IPCZ_NO_FLAGS,
+                                          nullptr, &address, &mapping));
+    std::string_view shm_message(static_cast<char*>(address),
+                                 expected_shm_message.size());
+    const bool matched = (shm_message == expected_shm_message);
+    EXPECT_EQ(IPCZ_RESULT_OK,
+              GetDriver().Close(mapping, IPCZ_NO_FLAGS, nullptr));
+    return matched;
   }
+};
 
-  return true;
-}
+using BoxTest = test::MultinodeTest<BoxTestNode>;
 
 TEST_P(BoxTest, BoxAndUnbox) {
   constexpr const char kMessage[] = "Hello, world?";
   IpczDriverHandle blob_handle =
-      Blob::ReleaseAsHandle(MakeRefCounted<Blob>(kMessage));
+      Blob::ReleaseAsHandle(MakeRefCounted<Blob>(GetDriver(), kMessage));
 
   IpczHandle box;
   EXPECT_EQ(IPCZ_RESULT_OK,
@@ -72,7 +85,7 @@ TEST_P(BoxTest, BoxAndUnbox) {
 }
 
 TEST_P(BoxTest, CloseBox) {
-  Ref<Blob> blob = MakeRefCounted<Blob>("meh");
+  Ref<Blob> blob = MakeRefCounted<Blob>(GetDriver(), "meh");
   Ref<Blob::RefCountedFlag> destroyed = blob->destruction_flag_for_testing();
   IpczDriverHandle blob_handle = Blob::ReleaseAsHandle(std::move(blob));
 
@@ -88,7 +101,7 @@ TEST_P(BoxTest, CloseBox) {
 TEST_P(BoxTest, Peek) {
   constexpr const char kMessage[] = "Hello, world?";
   IpczDriverHandle blob_handle =
-      Blob::ReleaseAsHandle(MakeRefCounted<Blob>(kMessage));
+      Blob::ReleaseAsHandle(MakeRefCounted<Blob>(GetDriver(), kMessage));
   IpczHandle box;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().Box(node(), blob_handle, IPCZ_NO_FLAGS, nullptr, &box));

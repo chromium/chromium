@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "reference_drivers/memory.h"
+#include "reference_drivers/memfd_memory.h"
 
 #include <tuple>
 
@@ -11,13 +11,13 @@
 namespace ipcz::reference_drivers {
 namespace {
 
-using MemoryTest = testing::Test;
+using MemfdMemoryTest = testing::Test;
 
-TEST_F(MemoryTest, CreateAndMap) {
-  Memory memory(64);
+TEST_F(MemfdMemoryTest, CreateAndMap) {
+  MemfdMemory memory(64);
 
-  Memory::Mapping mapping0 = memory.Map();
-  Memory::Mapping mapping1 = memory.Map();
+  MemfdMemory::Mapping mapping0 = memory.Map();
+  MemfdMemory::Mapping mapping1 = memory.Map();
 
   int* data0 = mapping0.As<int>();
   int* data1 = mapping1.As<int>();
@@ -31,11 +31,11 @@ TEST_F(MemoryTest, CreateAndMap) {
   EXPECT_EQ(42, data1[0]);
 }
 
-TEST_F(MemoryTest, CreateMapClose) {
-  Memory memory(64);
+TEST_F(MemfdMemoryTest, CreateMapClose) {
+  MemfdMemory memory(64);
 
-  Memory::Mapping mapping0 = memory.Map();
-  Memory::Mapping mapping1 = memory.Map();
+  MemfdMemory::Mapping mapping0 = memory.Map();
+  MemfdMemory::Mapping mapping1 = memory.Map();
 
   // Even with the memfd closed, the mappings above should persist.
   memory.reset();
@@ -48,12 +48,12 @@ TEST_F(MemoryTest, CreateMapClose) {
   EXPECT_EQ(42, data1[0]);
 }
 
-TEST_F(MemoryTest, CreateCloneMapClose) {
-  Memory memory(64);
-  Memory clone = memory.Clone();
+TEST_F(MemfdMemoryTest, CreateCloneMapClose) {
+  MemfdMemory memory(64);
+  MemfdMemory clone = memory.Clone();
 
-  Memory::Mapping mapping0 = memory.Map();
-  Memory::Mapping mapping1 = clone.Map();
+  MemfdMemory::Mapping mapping0 = memory.Map();
+  MemfdMemory::Mapping mapping1 = clone.Map();
 
   memory.reset();
   clone.reset();

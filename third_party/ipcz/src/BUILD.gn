@@ -5,10 +5,6 @@
 import("//build_overrides/ipcz.gni")
 import("//testing/test.gni")
 
-# ipcz will not implement a multiprocess reference driver or its supporting
-# primitives for iOS or NaCl platforms. Note that this only affects ipcz tests.
-enable_ipcz_multiprocess_test_support = !is_ios && !is_nacl
-
 shared_library("ipcz_shared") {
   output_name = "ipcz"
   sources = [
@@ -132,9 +128,13 @@ ipcz_source_set("ipcz") {
 ipcz_source_set("reference_drivers") {
   testonly = true
 
-  public = [ "reference_drivers/single_process_reference_driver.h" ]
+  public = [
+    "reference_drivers/blob.h",
+    "reference_drivers/single_process_reference_driver.h",
+  ]
 
   sources = [
+    "reference_drivers/blob.cc",
     "reference_drivers/object.cc",
     "reference_drivers/object.h",
     "reference_drivers/random.cc",
@@ -142,48 +142,15 @@ ipcz_source_set("reference_drivers") {
     "reference_drivers/single_process_reference_driver.cc",
   ]
 
-  if (enable_ipcz_multiprocess_test_support) {
+  if (is_linux) {
     public += [
-      "reference_drivers/blob.h",
-      "reference_drivers/memory.h",
-      "reference_drivers/os_handle.h",
+      "reference_drivers/file_descriptor.h",
+      "reference_drivers/memfd_memory.h",
     ]
     sources += [
-      "reference_drivers/blob.cc",
-      "reference_drivers/memory.cc",
+      "reference_drivers/file_descriptor.cc",
+      "reference_drivers/memfd_memory.cc",
     ]
-
-    if (is_android) {
-      sources += [
-        "reference_drivers/memory_android.cc",
-        "reference_drivers/os_handle_posix.cc",
-        "reference_drivers/os_handle_posix.h",
-      ]
-    } else if (is_mac) {
-      sources += [
-        "reference_drivers/memory_mac.cc",
-        "reference_drivers/os_handle_mac.cc",
-        "reference_drivers/os_handle_mac.h",
-      ]
-    } else if (is_win) {
-      sources += [
-        "reference_drivers/memory_win.cc",
-        "reference_drivers/os_handle_win.cc",
-        "reference_drivers/os_handle_win.h",
-      ]
-    } else if (is_fuchsia) {
-      sources += [
-        "reference_drivers/memory_fuchsia.cc",
-        "reference_drivers/os_handle_fuchsia.cc",
-        "reference_drivers/os_handle_fuchsia.h",
-      ]
-    } else if (is_posix) {
-      sources += [
-        "reference_drivers/memory_posix.cc",
-        "reference_drivers/os_handle_posix.cc",
-        "reference_drivers/os_handle_posix.h",
-      ]
-    }
   }
 
   ipcz_deps = [
@@ -333,6 +300,7 @@ ipcz_source_set("ipcz_tests_sources") {
 
   sources = [
     "api_test.cc",
+    "box_test.cc",
     "connect_test.cc",
     "ipcz/block_allocator_test.cc",
     "ipcz/buffer_pool_test.cc",
@@ -360,13 +328,8 @@ ipcz_source_set("ipcz_tests_sources") {
     "util/stack_trace_test.cc",
   ]
 
-  if (enable_ipcz_multiprocess_test_support) {
-    sources += [
-      # Box tests rely on the Blob driver object, which itself requires
-      # multiprocess test support.
-      "box_test.cc",
-      "reference_drivers/memory_test.cc",
-    ]
+  if (is_linux) {
+    sources += [ "reference_drivers/memfd_memory_test.cc" ]
   }
 
   deps = [

@@ -14,12 +14,19 @@ Blob::RefCountedFlag::RefCountedFlag() = default;
 
 Blob::RefCountedFlag::~RefCountedFlag() = default;
 
-Blob::Blob(std::string_view message, absl::Span<OSHandle> handles)
-    : message_(message),
+Blob::Blob(const IpczDriver& driver,
+           std::string_view message,
+           absl::Span<IpczDriverHandle> handles)
+    : driver_(driver),
+      message_(message),
       handles_(std::move_iterator(handles.begin()),
                std::move_iterator(handles.end())) {}
 
-Blob::~Blob() = default;
+Blob::~Blob() {
+  for (IpczDriverHandle handle : handles_) {
+    driver_.Close(handle, IPCZ_NO_FLAGS, nullptr);
+  }
+}
 
 IpczResult Blob::Close() {
   destruction_flag_for_testing_->set(true);

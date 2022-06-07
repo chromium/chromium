@@ -10,15 +10,14 @@
 #include <vector>
 
 #include "reference_drivers/object.h"
-#include "reference_drivers/os_handle.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
 
 namespace ipcz::reference_drivers {
 
 // A driver-managed object which packages an arbitrary collection of string data
-// and OS handles. Blobs are serializable by both reference drivers and are used
-// to exercise driver object boxing in tests.
+// and transmissible driver handles. Blobs are used to exercise driver object
+// boxing in tests.
 //
 // Note that unlike the transport and memory objects defined by the reference
 // drivers, a blob is not a type of object known to ipcz. Instead it is used to
@@ -38,13 +37,15 @@ class Blob : public ObjectImpl<Blob, Object::kBlob> {
     bool flag_ = false;
   };
 
-  explicit Blob(std::string_view message, absl::Span<OSHandle> handles = {});
+  Blob(const IpczDriver& driver,
+       std::string_view message,
+       absl::Span<IpczDriverHandle> handles = {});
 
   // Object:
   IpczResult Close() override;
 
   std::string& message() { return message_; }
-  std::vector<OSHandle>& handles() { return handles_; }
+  std::vector<IpczDriverHandle>& handles() { return handles_; }
 
   const Ref<RefCountedFlag>& destruction_flag_for_testing() const {
     return destruction_flag_for_testing_;
@@ -57,8 +58,9 @@ class Blob : public ObjectImpl<Blob, Object::kBlob> {
   ~Blob() override;
 
  private:
+  const IpczDriver& driver_;
   std::string message_;
-  std::vector<OSHandle> handles_;
+  std::vector<IpczDriverHandle> handles_;
   const Ref<RefCountedFlag> destruction_flag_for_testing_{
       MakeRefCounted<RefCountedFlag>()};
 };
