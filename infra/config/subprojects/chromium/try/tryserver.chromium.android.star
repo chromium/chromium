@@ -340,6 +340,14 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "android-pie-arm64-rel",
+    mirrors = [
+        "ci/android-pie-arm64-rel",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
     compilator = "android-pie-arm64-rel-compilator",
     check_for_flakiness = True,
     branch_selector = branches.STANDARD_MILESTONE,

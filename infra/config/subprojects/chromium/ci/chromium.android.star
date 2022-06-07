@@ -1139,6 +1139,28 @@ ci.builder(
 ci.builder(
     name = "android-pie-arm64-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "on_cq",
         short_name = "P",
