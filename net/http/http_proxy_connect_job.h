@@ -222,13 +222,13 @@ class NET_EXPORT_PRIVATE HttpProxyConnectJob : public ConnectJob,
 
   scoped_refptr<SSLCertRequestInfo> ssl_cert_request_info_;
 
-  State next_state_;
+  State next_state_ = STATE_NONE;
 
-  bool has_restarted_;
+  bool has_restarted_ = false;
 
   // Set to true once a connection has been successfully established. Remains
   // true even if a new socket is being connected to retry with auth.
-  bool has_established_connection_;
+  bool has_established_connection_ = false;
 
   ResolveErrorInfo resolve_error_info_;
 

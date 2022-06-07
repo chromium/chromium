@@ -215,8 +215,7 @@ int TestTransactionConsumer::quit_counter_ = 0;
 
 TestTransactionConsumer::TestTransactionConsumer(
     RequestPriority priority,
-    HttpTransactionFactory* factory)
-    : state_(State::kIdle), error_(OK) {
+    HttpTransactionFactory* factory) {
   // Disregard the error code.
   factory->CreateTransaction(priority, &trans_);
   ++quit_counter_;
@@ -286,18 +285,9 @@ void TestTransactionConsumer::OnIOComplete(int result) {
 
 MockNetworkTransaction::MockNetworkTransaction(RequestPriority priority,
                                                MockNetworkLayer* factory)
-    : request_(nullptr),
-      data_cursor_(0),
-      content_length_(0),
-      priority_(priority),
-      read_handler_(nullptr),
-      websocket_handshake_stream_create_helper_(nullptr),
+    : priority_(priority),
       transaction_factory_(factory->AsWeakPtr()),
-      received_bytes_(0),
-      sent_bytes_(0),
-      socket_log_id_(NetLogSource::kInvalidId),
-      done_reading_called_(false),
-      reading_(false) {}
+      socket_log_id_(NetLogSource::kInvalidId) {}
 
 MockNetworkTransaction::~MockNetworkTransaction() {
   // Use request_ as in ~HttpNetworkTransaction to make sure its valid and not
@@ -597,13 +587,7 @@ void MockNetworkTransaction::RunCallback(CompletionOnceCallback callback,
   std::move(callback).Run(result);
 }
 
-MockNetworkLayer::MockNetworkLayer()
-    : transaction_count_(0),
-      done_reading_called_(false),
-      stop_caching_called_(false),
-      last_create_transaction_priority_(DEFAULT_PRIORITY),
-      clock_(nullptr) {
-}
+MockNetworkLayer::MockNetworkLayer() = default;
 
 MockNetworkLayer::~MockNetworkLayer() = default;
 

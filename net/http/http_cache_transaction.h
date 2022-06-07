@@ -24,6 +24,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
+#include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_request_headers.h"
@@ -202,7 +203,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Helper struct to pair a header name with its value, for
   // headers used to validate cache entries.
   struct ValidationHeaders {
-    ValidationHeaders() : initialized(false) {}
+    ValidationHeaders() = default;
 
     std::string values[kNumValidationHeaders];
     void Reset() {
@@ -210,7 +211,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
       for (auto& value : values)
         value.clear();
     }
-    bool initialized;
+    bool initialized = false;
   };
 
   struct NetworkTransactionInfo {
@@ -624,7 +625,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   ValidationHeaders external_validation_;
   base::WeakPtr<HttpCache> cache_;
   raw_ptr<HttpCache::ActiveEntry> entry_;
-  HttpCache::ActiveEntry* new_entry_;
+  HttpCache::ActiveEntry* new_entry_ = nullptr;
   std::unique_ptr<HttpTransaction> network_trans_;
   CompletionOnceCallback callback_;  // Consumer's callback.
   HttpResponseInfo response_;
@@ -641,56 +642,60 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
 
   raw_ptr<const HttpResponseInfo> new_response_;
   std::string cache_key_;
-  Mode mode_;
-  bool reading_;  // We are already reading. Never reverts to false once set.
-  bool invalid_range_;  // We may bypass the cache for this request.
-  bool truncated_;  // We don't have all the response data.
-  bool is_sparse_;  // The data is stored in sparse byte ranges.
-  bool range_requested_;  // The user requested a byte range.
-  bool handling_206_;  // We must deal with this 206 response.
-  bool cache_pending_;  // We are waiting for the HttpCache.
+  Mode mode_ = NONE;
+  bool reading_ = false;          // We are already reading. Never reverts to
+                                  // false once set.
+  bool invalid_range_ = false;    // We may bypass the cache for this request.
+  bool truncated_ = false;        // We don't have all the response data.
+  bool is_sparse_ = false;        // The data is stored in sparse byte ranges.
+  bool range_requested_ = false;  // The user requested a byte range.
+  bool handling_206_ = false;     // We must deal with this 206 response.
+  bool cache_pending_ = false;    // We are waiting for the HttpCache.
 
   // Headers have been received from the network and it's not a match with the
   // existing entry.
-  bool done_headers_create_new_entry_;
+  bool done_headers_create_new_entry_ = false;
 
-  bool vary_mismatch_;  // The request doesn't match the stored vary data.
-  bool couldnt_conditionalize_request_;
-  bool bypass_lock_for_test_;  // A test is exercising the cache lock.
-  bool bypass_lock_after_headers_for_test_;  // A test is exercising the cache
-                                             // lock.
-  bool fail_conditionalization_for_test_;  // Fail ConditionalizeRequest.
+  bool vary_mismatch_ = false;  // The request doesn't match the stored vary
+                                // data.
+  bool couldnt_conditionalize_request_ = false;
+  bool bypass_lock_for_test_ = false;  // A test is exercising the cache lock.
+  bool bypass_lock_after_headers_for_test_ = false;  // A test is exercising the
+                                                     // cache lock.
+  bool fail_conditionalization_for_test_ =
+      false;  // Fail ConditionalizeRequest.
   bool mark_single_keyed_cache_entry_unusable_ =
       false;  // Set single_keyed_cache_entry_unusable.
 
   scoped_refptr<IOBuffer> read_buf_;
 
   // Length of the buffer passed in Read().
-  int read_buf_len_;
+  int read_buf_len_ = 0;
 
-  int io_buf_len_;
-  int read_offset_;
-  int effective_load_flags_;
+  int io_buf_len_ = 0;
+  int read_offset_ = 0;
+  int effective_load_flags_ = 0;
   std::unique_ptr<PartialData> partial_;  // We are dealing with range requests.
   CompletionRepeatingCallback io_callback_;
 
   // Error code to be returned from a subsequent Read call if shared writing
   // failed in a separate transaction.
-  int shared_writing_error_;
+  int shared_writing_error_ = OK;
 
   // Members used to track data for histograms.
   // This cache_entry_status_ takes precedence over
   // response_.cache_entry_status. In fact, response_.cache_entry_status must be
   // kept in sync with cache_entry_status_ (via SetResponse and
   // UpdateCacheEntryStatus).
-  HttpResponseInfo::CacheEntryStatus cache_entry_status_;
-  ValidationCause validation_cause_;
+  HttpResponseInfo::CacheEntryStatus cache_entry_status_ =
+      HttpResponseInfo::CacheEntryStatus::ENTRY_UNDEFINED;
+  ValidationCause validation_cause_ = VALIDATION_CAUSE_UNDEFINED;
   base::TimeTicks entry_lock_waiting_since_;
   base::TimeTicks first_cache_access_since_;
   base::TimeTicks send_request_since_;
   base::TimeTicks read_headers_since_;
   base::Time open_entry_last_used_;
-  bool recorded_histograms_;
+  bool recorded_histograms_ = false;
   bool has_opened_or_created_entry_ = false;
   bool record_entry_open_or_creation_time_ = false;
 
@@ -703,7 +708,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // TODO(shivanisha) Note that if this transaction dies mid-way and there are
   // other writer transactions, no transaction then accounts for those
   // statistics.
-  bool moved_network_transaction_to_writers_;
+  bool moved_network_transaction_to_writers_ = false;
 
   // The helper object to use to create WebSocketHandshakeStreamBase
   // objects. Only relevant when establishing a WebSocket connection.
@@ -724,7 +729,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   ResponseHeadersCallback response_headers_callback_;
 
   // True if the Transaction is currently processing the DoLoop.
-  bool in_do_loop_;
+  bool in_do_loop_ = false;
 
   base::WeakPtrFactory<Transaction> weak_factory_{this};
 };

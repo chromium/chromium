@@ -78,34 +78,9 @@ spdy::SettingsMap AddDefaultHttp2Settings(spdy::SettingsMap http2_settings) {
 }  // unnamed namespace
 
 HttpNetworkSessionParams::HttpNetworkSessionParams()
-    : enable_server_push_cancellation(false),
-      ignore_certificate_errors(false),
-      testing_fixed_http_port(0),
-      testing_fixed_https_port(0),
-      enable_user_alternate_protocol_ports(false),
-      enable_spdy_ping_based_connection_checking(true),
-      enable_http2(true),
-      spdy_session_max_recv_window_size(kSpdySessionMaxRecvWindowSize),
+    : spdy_session_max_recv_window_size(kSpdySessionMaxRecvWindowSize),
       spdy_session_max_queued_capped_frames(kSpdySessionMaxQueuedCappedFrames),
-// For OSs that terminate TCP connections upon relevant network changes,
-// attempt to preserve active streams by marking all sessions as going
-// away, rather than explicitly closing them. Streams may still fail due
-// to a generated TCP reset.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
-      spdy_go_away_on_ip_change(true),
-#else
-      spdy_go_away_on_ip_change(false),
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
-      enable_http2_settings_grease(false),
-      http2_end_stream_with_data_frame(false),
-      time_func(&base::TimeTicks::Now),
-      enable_http2_alternative_service(false),
-      enable_quic(true),
-      enable_quic_proxies_for_https_urls(false),
-      disable_idle_sockets_close_on_memory_pressure(false),
-      key_auth_cache_server_entries_by_network_isolation_key(false),
-      enable_priority_update(false),
-      ignore_ip_address_changes(false) {
+      time_func(&base::TimeTicks::Now) {
   enable_early_data =
       base::FeatureList::IsEnabled(features::kEnableTLS13EarlyData);
 }

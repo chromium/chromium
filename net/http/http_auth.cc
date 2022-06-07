@@ -29,7 +29,7 @@ const char* const kSchemeNames[] = {kBasicAuthScheme,     kDigestAuthScheme,
                                     kSpdyProxyAuthScheme, kMockAuthScheme};
 }  // namespace
 
-HttpAuth::Identity::Identity() : source(IDENT_SRC_NONE), invalid(true) {}
+HttpAuth::Identity::Identity() = default;
 
 // static
 void HttpAuth::ChooseBestChallenge(

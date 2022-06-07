@@ -52,10 +52,7 @@ MockHttpStreamFactoryJob::MockHttpStreamFactoryJob(
 
 MockHttpStreamFactoryJob::~MockHttpStreamFactoryJob() = default;
 
-TestJobFactory::TestJobFactory()
-    : main_job_(nullptr),
-      alternative_job_(nullptr),
-      override_main_job_url_(false) {}
+TestJobFactory::TestJobFactory() = default;
 
 TestJobFactory::~TestJobFactory() = default;
 

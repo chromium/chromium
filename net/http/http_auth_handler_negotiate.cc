@@ -150,10 +150,7 @@ HttpAuthHandlerNegotiate::HttpAuthHandlerNegotiate(
     HostResolver* resolver)
     : auth_system_(std::move(auth_system)),
       resolver_(resolver),
-      already_called_(false),
-      has_credentials_(false),
       auth_token_(nullptr),
-      next_state_(STATE_NONE),
       http_auth_preferences_(prefs) {}
 
 HttpAuthHandlerNegotiate::~HttpAuthHandlerNegotiate() = default;

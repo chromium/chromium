@@ -115,12 +115,7 @@ bool ShouldTryReadingOnUploadError(int error_code) {
 class HttpStreamParser::SeekableIOBuffer : public IOBuffer {
  public:
   explicit SeekableIOBuffer(int capacity)
-    : IOBuffer(capacity),
-      real_data_(data_),
-      capacity_(capacity),
-      size_(0),
-      used_(0) {
-  }
+      : IOBuffer(capacity), real_data_(data_), capacity_(capacity) {}
 
   // DidConsume() changes the |data_| pointer so that |data_| always points
   // to the first unconsumed byte.
@@ -173,8 +168,8 @@ class HttpStreamParser::SeekableIOBuffer : public IOBuffer {
 
   raw_ptr<char> real_data_;
   const int capacity_;
-  int size_;
-  int used_;
+  int size_ = 0;
+  int used_ = 0;
 };
 
 // 2 CRLFs + max of 8 hex chars.
@@ -185,26 +180,15 @@ HttpStreamParser::HttpStreamParser(StreamSocket* stream_socket,
                                    const HttpRequestInfo* request,
                                    GrowableIOBuffer* read_buffer,
                                    const NetLogWithSource& net_log)
-    : io_state_(STATE_NONE),
-      request_(request),
+    : request_(request),
       request_headers_(nullptr),
-      request_headers_length_(0),
       read_buf_(read_buffer),
-      read_buf_unused_offset_(0),
       response_header_start_offset_(std::string::npos),
-      received_bytes_(0),
-      sent_bytes_(0),
       response_(nullptr),
-      response_body_length_(-1),
-      response_is_keep_alive_(false),
-      response_body_read_(0),
       user_read_buf_(nullptr),
-      user_read_buf_len_(0),
       stream_socket_(stream_socket),
       connection_is_reused_(connection_is_reused),
-      net_log_(net_log),
-      sent_last_chunk_(false),
-      upload_error_(OK) {
+      net_log_(net_log) {
   io_callback_ = base::BindRepeating(&HttpStreamParser::OnIOComplete,
                                      weak_ptr_factory_.GetWeakPtr());
 }

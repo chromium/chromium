@@ -174,9 +174,9 @@ class TestJobFactory : public HttpStreamFactory::JobFactory {
   }
 
  private:
-  raw_ptr<MockHttpStreamFactoryJob> main_job_;
-  raw_ptr<MockHttpStreamFactoryJob> alternative_job_;
-  bool override_main_job_url_;
+  raw_ptr<MockHttpStreamFactoryJob> main_job_ = nullptr;
+  raw_ptr<MockHttpStreamFactoryJob> alternative_job_ = nullptr;
+  bool override_main_job_url_ = false;
   GURL main_job_alternative_url_;
 };
 

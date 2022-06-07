@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/net_errors.h"
 #include "net/base/privacy_mode.h"
 #include "net/http/http_stream_factory_job.h"
 #include "net/http/http_stream_request.h"
@@ -279,7 +280,7 @@ class HttpStreamFactory::JobController
   // reference and is safe as |request_| will notify |this| JobController
   // when it's destructed by calling OnRequestComplete(), which nulls
   // |request_|.
-  raw_ptr<HttpStreamRequest> request_;
+  raw_ptr<HttpStreamRequest> request_ = nullptr;
 
   const raw_ptr<HttpStreamRequest::Delegate> delegate_;
 
@@ -307,23 +308,23 @@ class HttpStreamFactory::JobController
 
   // Error status used for alternative service brokenness reporting.
   // Net error code of the main job. Set to OK by default.
-  int main_job_net_error_;
+  int main_job_net_error_ = OK;
   // Net error code of the alternative job. Set to OK by default.
-  int alternative_job_net_error_;
+  int alternative_job_net_error_ = OK;
   // Set to true if the alternative job failed on the default network.
-  bool alternative_job_failed_on_default_network_;
+  bool alternative_job_failed_on_default_network_ = false;
 
   // True if a Job has ever been bound to the |request_|.
-  bool job_bound_;
+  bool job_bound_ = false;
 
   // True if the main job has to wait for the alternative job: i.e., the main
   // job must not create a connection until it is resumed.
-  bool main_job_is_blocked_;
+  bool main_job_is_blocked_ = false;
 
   // Handle for cancelling any posted delayed ResumeMainJob() task.
   base::CancelableOnceClosure resume_main_job_callback_;
   // True if the main job was blocked and has been resumed in ResumeMainJob().
-  bool main_job_is_resumed_;
+  bool main_job_is_resumed_ = false;
 
   // If true, delay main job even the request can be sent immediately on an
   // available SPDY session.
@@ -334,17 +335,17 @@ class HttpStreamFactory::JobController
 
   // At the point where a Job is irrevocably tied to |request_|, we set this.
   // It will be nulled when the |request_| is finished.
-  raw_ptr<Job> bound_job_;
+  raw_ptr<Job> bound_job_ = nullptr;
 
-  State next_state_;
+  State next_state_ = STATE_RESOLVE_PROXY;
   std::unique_ptr<ProxyResolutionRequest> proxy_resolve_request_;
   const HttpRequestInfo request_info_;
   ProxyInfo proxy_info_;
   const SSLConfig server_ssl_config_;
   const SSLConfig proxy_ssl_config_;
-  int num_streams_;
+  int num_streams_ = 0;
   HttpStreamRequest::StreamType stream_type_;
-  RequestPriority priority_;
+  RequestPriority priority_ = IDLE;
   const NetLogWithSource net_log_;
 
   base::WeakPtrFactory<JobController> ptr_factory_{this};

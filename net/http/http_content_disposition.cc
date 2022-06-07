@@ -334,9 +334,8 @@ bool DecodeExtValue(const std::string& param_value, std::string* decoded) {
 } // namespace
 
 HttpContentDisposition::HttpContentDisposition(
-    const std::string& header, const std::string& referrer_charset)
-  : type_(INLINE),
-    parse_result_flags_(INVALID) {
+    const std::string& header,
+    const std::string& referrer_charset) {
   Parse(header, referrer_charset);
 }
 

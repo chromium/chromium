@@ -1227,10 +1227,9 @@ class SimpleGetRunner {
  public:
   SimpleGetRunner()
       : url_("http://localhost"),
-        read_buffer_(base::MakeRefCounted<GrowableIOBuffer>()),
-        sequence_number_(0) {
-    writes_.push_back(MockWrite(
-        SYNCHRONOUS, sequence_number_++, "GET / HTTP/1.1\r\n\r\n"));
+        read_buffer_(base::MakeRefCounted<GrowableIOBuffer>()) {
+    writes_.emplace_back(
+        MockWrite(SYNCHRONOUS, sequence_number_++, "GET / HTTP/1.1\r\n\r\n"));
   }
 
   void set_url(const GURL& url) { url_ = url; }
@@ -1313,7 +1312,7 @@ class SimpleGetRunner {
   std::unique_ptr<StreamSocket> stream_socket_;
   std::unique_ptr<SequencedSocketData> data_;
   std::unique_ptr<HttpStreamParser> parser_;
-  int sequence_number_;
+  int sequence_number_ = 0;
 };
 
 // Test that HTTP/0.9 works as expected, only on ports where it should be

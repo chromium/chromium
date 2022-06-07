@@ -355,7 +355,7 @@ class HttpStreamFactory::Job
   std::unique_ptr<ClientSocketHandle> connection_;
   const raw_ptr<HttpNetworkSession> session_;
 
-  State next_state_;
+  State next_state_ = STATE_NONE;
 
   // The server we are trying to reach, could be that of the origin or of the
   // alternative service (after applying host mapping rules).
@@ -405,37 +405,37 @@ class HttpStreamFactory::Job
   // True if Job actually uses HTTP/2. Note this describes both using HTTP/2
   // with an HTTPS origin, and proxying a cleartext HTTP request over an HTTP/2
   // proxy. This differs from `using_ssl_`, which only describes the origin.
-  bool using_spdy_;
+  bool using_spdy_ = false;
 
   // True if this job might succeed with a different proxy config.
-  bool should_reconsider_proxy_;
+  bool should_reconsider_proxy_ = false;
 
   QuicStreamRequest quic_request_;
 
   // Only valid for a QUIC job. Set when a QUIC connection is started. If true,
   // then OnQuicHostResolution() is expected to be called in the future.
-  bool expect_on_quic_host_resolution_;
+  bool expect_on_quic_host_resolution_ = false;
 
   // True if this job used an existing QUIC session.
-  bool using_existing_quic_session_;
+  bool using_existing_quic_session_ = false;
 
   // True when the tunnel is in the process of being established - we can't
   // read from the socket until the tunnel is done.
-  bool establishing_tunnel_;
+  bool establishing_tunnel_ = false;
 
   std::unique_ptr<HttpStream> stream_;
   std::unique_ptr<WebSocketHandshakeStreamBase> websocket_stream_;
   std::unique_ptr<BidirectionalStreamImpl> bidirectional_stream_impl_;
 
   // True if we negotiated ALPN.
-  bool was_alpn_negotiated_;
+  bool was_alpn_negotiated_ = false;
 
   // Protocol negotiated with the server.
-  NextProto negotiated_protocol_;
+  NextProto negotiated_protocol_ = kProtoUnknown;
 
   // 0 if we're not preconnecting. Otherwise, the number of streams to
   // preconnect.
-  int num_streams_;
+  int num_streams_ = 0;
 
   // Initialized when we have an existing SpdySession.
   base::WeakPtr<SpdySession> existing_spdy_session_;
@@ -451,10 +451,11 @@ class HttpStreamFactory::Job
   const SpdySessionKey spdy_session_key_;
 
   // Type of stream that is requested.
-  HttpStreamRequest::StreamType stream_type_;
+  HttpStreamRequest::StreamType stream_type_ =
+      HttpStreamRequest::BIDIRECTIONAL_STREAM;
 
   // Whether Job has continued to DoInitConnection().
-  bool init_connection_already_resumed_;
+  bool init_connection_already_resumed_ = false;
 
   base::OnceClosure restart_with_auth_callback_;
 

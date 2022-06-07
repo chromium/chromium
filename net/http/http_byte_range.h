@@ -64,7 +64,7 @@ class NET_EXPORT HttpByteRange {
   int64_t first_byte_position_;
   int64_t last_byte_position_;
   int64_t suffix_length_;
-  bool has_computed_bounds_;
+  bool has_computed_bounds_ = false;
 };
 
 }  // namespace net

@@ -23,8 +23,7 @@
 namespace net {
 
 HttpNetworkLayer::HttpNetworkLayer(HttpNetworkSession* session)
-    : session_(session),
-      suspended_(false) {
+    : session_(session) {
   DCHECK(session_);
 #if BUILDFLAG(IS_WIN)
   base::PowerMonitor::AddPowerSuspendObserver(this);

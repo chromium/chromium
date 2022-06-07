@@ -179,7 +179,7 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   struct WaitingForRead {
     scoped_refptr<IOBuffer> read_buf;
     int read_buf_len;
-    int write_len;
+    int write_len = 0;
     CompletionOnceCallback callback;
     WaitingForRead(scoped_refptr<IOBuffer> read_buf,
                    int len,

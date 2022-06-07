@@ -685,9 +685,9 @@ struct Response {
 };
 
 struct Context {
-  Context() : result(ERR_IO_PENDING) {}
+  Context() = default;
 
-  int result;
+  int result = ERR_IO_PENDING;
   TestCompletionCallback callback;
   std::unique_ptr<HttpTransaction> trans;
 };

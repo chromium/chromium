@@ -155,12 +155,11 @@ bool HttpCache::ActiveEntry::TransactionInReaders(
 // This structure keeps track of work items that are attempting to create or
 // open cache entries or the backend itself.
 struct HttpCache::PendingOp {
-  PendingOp()
-      : entry(nullptr), entry_opened(false), callback_will_delete(false) {}
+  PendingOp() = default;
   ~PendingOp() = default;
 
-  raw_ptr<disk_cache::Entry> entry;
-  bool entry_opened;  // rather than created.
+  raw_ptr<disk_cache::Entry> entry = nullptr;
+  bool entry_opened = false;  // rather than created.
 
   std::unique_ptr<disk_cache::Backend> backend;
   std::unique_ptr<WorkItem> writer;
@@ -168,7 +167,7 @@ struct HttpCache::PendingOp {
   // |this| without removing it from |pending_ops_|.  Note that since
   // OnPendingOpComplete() is static, it will not get cancelled when HttpCache
   // is destroyed.
-  bool callback_will_delete;
+  bool callback_will_delete = false;
   WorkItemList pending_queue;
 };
 
@@ -241,11 +240,7 @@ HttpCache::HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
                      std::unique_ptr<BackendFactory> backend_factory)
     : net_log_(nullptr),
       backend_factory_(std::move(backend_factory)),
-      building_backend_(false),
-      bypass_lock_for_test_(false),
-      bypass_lock_after_headers_for_test_(false),
-      fail_conditionalization_for_test_(false),
-      mode_(NORMAL),
+
       network_layer_(std::move(network_layer)),
       clock_(base::DefaultClock::GetInstance()) {
   g_init_cache = true;

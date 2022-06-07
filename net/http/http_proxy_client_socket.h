@@ -128,7 +128,7 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   bool CheckDone();
 
   CompletionRepeatingCallback io_callback_;
-  State next_state_;
+  State next_state_ = STATE_NONE;
 
   // Stores the callback provided by the caller of async operations.
   CompletionOnceCallback user_callback_;
@@ -144,7 +144,7 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
 
   // Whether or not |socket_| has been previously used. Once auth credentials
   // are sent, set to true.
-  bool is_reused_;
+  bool is_reused_ = false;
 
   // The hostname and port of the endpoint.  This is not necessarily the one
   // specified by the URL, due to Alternate-Protocol or fixed testing ports.

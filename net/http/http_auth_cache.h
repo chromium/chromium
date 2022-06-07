@@ -98,13 +98,13 @@ class NET_EXPORT HttpAuthCache {
     // SchemeHostPort of the server.
     url::SchemeHostPort scheme_host_port_;
     std::string realm_;
-    HttpAuth::Scheme scheme_;
+    HttpAuth::Scheme scheme_ = HttpAuth::AUTH_SCHEME_MAX;
 
     // Identity.
     std::string auth_challenge_;
     AuthCredentials credentials_;
 
-    int nonce_count_;
+    int nonce_count_ = 0;
 
     // List of paths that define the realm's protection space.
     PathList paths_;

@@ -15,8 +15,7 @@
 
 namespace net {
 
-HttpVaryData::HttpVaryData() : is_valid_(false) {
-}
+HttpVaryData::HttpVaryData() = default;
 
 bool HttpVaryData::Init(const HttpRequestInfo& request_info,
                         const HttpResponseHeaders& response_headers) {

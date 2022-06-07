@@ -143,7 +143,6 @@ HttpServerProperties::HttpServerProperties(
       use_network_isolation_key_(base::FeatureList::IsEnabled(
           features::kPartitionHttpServerPropertiesByNetworkIsolationKey)),
       is_initialized_(pref_delegate.get() == nullptr),
-      queue_write_on_load_(false),
       properties_manager_(
           pref_delegate
               ? std::make_unique<HttpServerPropertiesManager>(

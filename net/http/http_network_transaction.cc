@@ -113,32 +113,11 @@ const int HttpNetworkTransaction::kDrainBodyBufferSize;
 
 HttpNetworkTransaction::HttpNetworkTransaction(RequestPriority priority,
                                                HttpNetworkSession* session)
-    : pending_auth_target_(HttpAuth::AUTH_NONE),
-      io_callback_(base::BindRepeating(&HttpNetworkTransaction::OnIOComplete,
+    : io_callback_(base::BindRepeating(&HttpNetworkTransaction::OnIOComplete,
                                        base::Unretained(this))),
       session_(session),
       request_(nullptr),
-      priority_(priority),
-      headers_valid_(false),
-      can_send_early_data_(false),
-      configured_client_cert_for_server_(false),
-      request_headers_(),
-#if BUILDFLAG(ENABLE_REPORTING)
-      network_error_logging_report_generated_(false),
-      request_reporting_upload_depth_(0),
-#endif  // BUILDFLAG(ENABLE_REPORTING)
-      read_buf_len_(0),
-      total_received_bytes_(0),
-      total_sent_bytes_(0),
-      next_state_(STATE_NONE),
-      establishing_tunnel_(false),
-      enable_ip_based_pooling_(true),
-      enable_alternative_services_(true),
-      websocket_handshake_stream_base_create_helper_(nullptr),
-      net_error_details_(),
-      retry_attempts_(0),
-      num_restarts_(0) {
-}
+      priority_(priority) {}
 
 HttpNetworkTransaction::~HttpNetworkTransaction() {
 #if BUILDFLAG(ENABLE_REPORTING)

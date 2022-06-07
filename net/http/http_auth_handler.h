@@ -208,7 +208,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandler {
       HttpAuthChallengeTokenizer* challenge) = 0;
 
   // The auth-scheme as an enumerated value.
-  HttpAuth::Scheme auth_scheme_;
+  HttpAuth::Scheme auth_scheme_ = HttpAuth::AUTH_SCHEME_MAX;
 
   // The realm, encoded as UTF-8. Used by "basic" and "digest".
   std::string realm_;
@@ -221,14 +221,14 @@ class NET_EXPORT_PRIVATE HttpAuthHandler {
   url::SchemeHostPort scheme_host_port_;
 
   // The score for this challenge. Higher numbers are better.
-  int score_;
+  int score_ = -1;
 
   // Whether this authentication request is for a proxy server, or an
   // origin server.
-  HttpAuth::Target target_;
+  HttpAuth::Target target_ = HttpAuth::AUTH_NONE;
 
   // A bitmask of the properties of the authentication scheme.
-  int properties_;
+  int properties_ = -1;
 
  private:
   void OnGenerateAuthTokenComplete(int rv);

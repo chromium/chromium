@@ -16,12 +16,7 @@
 
 namespace net {
 
-HttpAuthHandler::HttpAuthHandler()
-    : auth_scheme_(HttpAuth::AUTH_SCHEME_MAX),
-      score_(-1),
-      target_(HttpAuth::AUTH_NONE),
-      properties_(-1) {
-}
+HttpAuthHandler::HttpAuthHandler() = default;
 
 HttpAuthHandler::~HttpAuthHandler() = default;
 

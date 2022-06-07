@@ -167,12 +167,9 @@ HttpAuth::AuthorizationResult HttpAuthHandlerDigest::HandleAnotherChallengeImpl(
 }
 
 HttpAuthHandlerDigest::HttpAuthHandlerDigest(
-    int nonce_count, const NonceGenerator* nonce_generator)
-    : stale_(false),
-      algorithm_(ALGORITHM_UNSPECIFIED),
-      qop_(QOP_UNSPECIFIED),
-      nonce_count_(nonce_count),
-      nonce_generator_(nonce_generator) {
+    int nonce_count,
+    const NonceGenerator* nonce_generator)
+    : nonce_count_(nonce_count), nonce_generator_(nonce_generator) {
   DCHECK(nonce_generator_);
 }
 

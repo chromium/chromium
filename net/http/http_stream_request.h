@@ -226,11 +226,11 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
       websocket_handshake_stream_create_helper_;
   const NetLogWithSource net_log_;
 
-  bool completed_;
-  bool was_alpn_negotiated_;
+  bool completed_ = false;
+  bool was_alpn_negotiated_ = false;
   // Protocol negotiated with the server.
-  NextProto negotiated_protocol_;
-  bool using_spdy_;
+  NextProto negotiated_protocol_ = kProtoUnknown;
+  bool using_spdy_ = false;
   ConnectionAttempts connection_attempts_;
   const StreamType stream_type_;
 };

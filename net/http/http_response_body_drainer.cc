@@ -20,10 +20,7 @@ const int HttpResponseBodyDrainer::kDrainBodyBufferSize;
 const int HttpResponseBodyDrainer::kTimeoutInSeconds;
 
 HttpResponseBodyDrainer::HttpResponseBodyDrainer(HttpStream* stream)
-    : stream_(stream),
-      next_state_(STATE_NONE),
-      total_read_(0),
-      session_(nullptr) {}
+    : stream_(stream) {}
 
 HttpResponseBodyDrainer::~HttpResponseBodyDrainer() = default;
 

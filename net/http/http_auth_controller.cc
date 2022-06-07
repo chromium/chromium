@@ -52,8 +52,6 @@ HttpAuthController::HttpAuthController(
       auth_scheme_host_port_(auth_url),
       auth_path_(auth_url.path()),
       network_isolation_key_(network_isolation_key),
-      embedded_identity_used_(false),
-      default_credentials_used_(false),
       http_auth_cache_(http_auth_cache),
       http_auth_handler_factory_(http_auth_handler_factory),
       host_resolver_(host_resolver) {

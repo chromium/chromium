@@ -187,19 +187,7 @@ HttpResponseInfo::ConnectionInfoCoarse HttpResponseInfo::ConnectionInfoToCoarse(
   return CONNECTION_INFO_COARSE_OTHER;
 }
 
-HttpResponseInfo::HttpResponseInfo()
-    : was_cached(false),
-      cache_entry_status(CacheEntryStatus::ENTRY_UNDEFINED),
-      network_accessed(false),
-      was_fetched_via_spdy(false),
-      was_alpn_negotiated(false),
-      was_fetched_via_proxy(false),
-      did_use_http_auth(false),
-      unused_since_prefetch(false),
-      restricted_prefetch(false),
-      async_revalidation_requested(false),
-      single_keyed_cache_entry_unusable(false),
-      connection_info(CONNECTION_INFO_UNKNOWN) {}
+HttpResponseInfo::HttpResponseInfo() = default;
 
 HttpResponseInfo::HttpResponseInfo(const HttpResponseInfo& rhs) = default;
 

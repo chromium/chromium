@@ -79,7 +79,7 @@ class NET_EXPORT_PRIVATE HttpVaryData {
   base::MD5Digest request_digest_;
 
   // True when request_digest_ contains meaningful data.
-  bool is_valid_;
+  bool is_valid_ = false;
 };
 
 }  // namespace net

@@ -339,7 +339,6 @@ HttpCache::Writers::WaitingForRead::WaitingForRead(
     CompletionOnceCallback consumer_callback)
     : read_buf(std::move(buf)),
       read_buf_len(len),
-      write_len(0),
       callback(std::move(consumer_callback)) {
   DCHECK(read_buf);
   DCHECK_GT(len, 0);
