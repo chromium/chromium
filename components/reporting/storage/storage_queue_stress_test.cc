@@ -64,6 +64,7 @@ class TestUploadClient : public UploaderInterface {
       : last_record_digest_map_(last_record_digest_map) {}
 
   void ProcessRecord(EncryptedRecord encrypted_record,
+                     ScopedReservation scoped_reservation,
                      base::OnceCallback<void(bool)> processed_cb) override {
     WrappedRecord wrapped_record;
     ASSERT_TRUE(wrapped_record.ParseFromString(

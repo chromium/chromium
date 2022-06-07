@@ -267,6 +267,9 @@ class StorageQueueTest
             .WillOnce(DoAll(
                 WithoutArgs(
                     Invoke(waiter_.get(), &test::TestCallbackWaiter::Signal)),
+                WithArg<1>(Invoke([](Status status) {
+                  LOG(ERROR) << "Completion signaled with status=" << status;
+                })),
                 WithoutArgs(
                     Invoke([]() { LOG(ERROR) << "Completion signaled"; }))));
         return std::move(uploader_);
@@ -363,6 +366,7 @@ class StorageQueueTest
     }
 
     void ProcessRecord(EncryptedRecord encrypted_record,
+                       ScopedReservation scoped_reservation,
                        base::OnceCallback<void(bool)> processed_cb) override {
       DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
       auto sequence_information = encrypted_record.sequence_information();
@@ -1813,6 +1817,40 @@ TEST_P(StorageQueueTest, WriteRecordWithInsufficientMemory) {
   options_.memory_resource()->Test_SetTotal(original_total_memory);
   EXPECT_FALSE(write_result.ok());
   EXPECT_EQ(write_result.error_code(), error::RESOURCE_EXHAUSTED);
+}
+
+TEST_P(StorageQueueTest, UploadWithInsufficientMemory) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kData[0]);
+
+  // Set uploader expectations.
+  test::TestCallbackAutoWaiter waiter;
+  EXPECT_CALL(set_mock_uploader_expectations_,
+              Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(&waiter, this)
+            .Complete(Status(error::RESOURCE_EXHAUSTED,
+                             "Insufficient memory for upload"));
+      }))
+      .RetiresOnSaturation();
+  EXPECT_CALL(set_mock_uploader_expectations_,
+              Call(Eq(UploaderInterface::UploadReason::FAILURE_RETRY)))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(&waiter, this)
+            .Required(0, kData[0])
+            .Complete();
+      }))
+      .RetiresOnSaturation();
+
+  // Update total memory to a low amount.
+  const auto original_total_memory = options_.memory_resource()->GetTotal();
+  options_.memory_resource()->Test_SetTotal(100);
+  // Trigger upload.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  // Reset after running upload so it does not affect other tests.
+  options_.memory_resource()->Test_SetTotal(original_total_memory);
+  // Trigger another upload.
+  task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 INSTANTIATE_TEST_SUITE_P(

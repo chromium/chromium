@@ -90,9 +90,11 @@ class ReportingClient::Uploader : public UploaderInterface {
   Uploader& operator=(const Uploader& other) = delete;
 
   void ProcessRecord(EncryptedRecord data,
+                     ScopedReservation scoped_reservation,
                      base::OnceCallback<void(bool)> processed_cb) override {
     helper_.AsyncCall(&Helper::ProcessRecord)
-        .WithArgs(std::move(data), std::move(processed_cb));
+        .WithArgs(std::move(data), std::move(scoped_reservation),
+                  std::move(processed_cb));
   }
   void ProcessGap(SequenceInformation start,
                   uint64_t count,
@@ -113,6 +115,7 @@ class ReportingClient::Uploader : public UploaderInterface {
     Helper(const Helper& other) = delete;
     Helper& operator=(const Helper& other) = delete;
     void ProcessRecord(EncryptedRecord data,
+                       ScopedReservation scoped_reservation,
                        base::OnceCallback<void(bool)> processed_cb);
     void ProcessGap(SequenceInformation start,
                     uint64_t count,
@@ -143,6 +146,7 @@ ReportingClient::Uploader::Helper::Helper(
 
 void ReportingClient::Uploader::Helper::ProcessRecord(
     EncryptedRecord data,
+    ScopedReservation scoped_reservation,  // TODO(b/233089187): Use it.
     base::OnceCallback<void(bool)> processed_cb) {
   if (completed_) {
     std::move(processed_cb).Run(false);

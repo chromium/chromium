@@ -162,12 +162,14 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
   }
 
   void ProcessRecord(EncryptedRecord encrypted_record,
+                     ScopedReservation scoped_reservation,
                      base::OnceCallback<void(bool)> processed_cb) override {
     // Update sequence information: add Priority.
     SequenceInformation* const sequence_info =
         encrypted_record.mutable_sequence_information();
     sequence_info->set_priority(priority_);
     storage_interface_->ProcessRecord(std::move(encrypted_record),
+                                      std::move(scoped_reservation),
                                       std::move(processed_cb));
   }
 

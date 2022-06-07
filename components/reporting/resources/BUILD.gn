@@ -5,7 +5,10 @@
 import("//build/config/features.gni")
 
 static_library("resource_interface") {
-  visibility = [ "//components/reporting/*" ]
+  visibility = [
+    "//chrome/browser/*",
+    "//components/reporting/*",
+  ]
   sources = [
     "disk_resource_impl.cc",
     "disk_resource_impl.h",
