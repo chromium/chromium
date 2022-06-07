@@ -498,8 +498,14 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
   }
 }
 
+// Fails on Window, see https://crbug.com/1268787
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_IncludesMetadata DISABLED_IncludesMetadata
+#else
+#define MAYBE_IncludesMetadata IncludesMetadata
+#endif
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithScopedConfig,
-                       IncludesMetadata) {
+                       MAYBE_IncludesMetadata) {
   ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
   ASSERT_TRUE(EnableUkmRecording());
 
