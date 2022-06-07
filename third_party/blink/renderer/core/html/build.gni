@@ -613,6 +613,7 @@ blink_core_hot_sources_html = [
   "parser/html_view_source_parser.cc",
   "parser/html_view_source_parser.h",
   "parser/input_stream_preprocessor.h",
+  "parser/literal_buffer.cc",
   "parser/literal_buffer.h",
   "parser/markup_tokenizer_inlines.h",
   "parser/parser_scripting_flag_policy.h",

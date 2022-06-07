@@ -133,8 +133,14 @@ String AttemptStaticStringCreation(const UChar*, wtf_size_t, CharacterWidth);
 
 template <wtf_size_t inlineCapacity>
 inline static String AttemptStaticStringCreation(
-    const LiteralBuffer<UChar, inlineCapacity>& vector,
+    const UCharLiteralBuffer<inlineCapacity>& vector,
     CharacterWidth width) {
+  if (g_literal_buffer_create_string_with_encoding) {
+    // TODO(sky): once this is made the default, remove `width` parameter.
+    return AttemptStaticStringCreation(
+        vector.data(), vector.size(),
+        vector.Is8Bit() ? kForce8Bit : kForce16Bit);
+  }
   return AttemptStaticStringCreation(vector.data(), vector.size(), width);
 }
 

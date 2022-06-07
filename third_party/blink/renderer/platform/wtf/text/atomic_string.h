@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -74,7 +75,10 @@ class WTF_EXPORT AtomicString {
   AtomicString(const char* chars)
       : AtomicString(reinterpret_cast<const LChar*>(chars)) {}
   AtomicString(const LChar* chars, unsigned length);
-  AtomicString(const UChar* chars, unsigned length);
+  AtomicString(
+      const UChar* chars,
+      unsigned length,
+      AtomicStringUCharEncoding encoding = AtomicStringUCharEncoding::kUnknown);
   AtomicString(const UChar* chars);
 
   // Constructing an AtomicString from a String / StringImpl can be expensive if

@@ -42,13 +42,16 @@ AtomicString::AtomicString(const LChar* chars, size_t length)
 AtomicString::AtomicString(const LChar* chars, unsigned length)
     : string_(AtomicStringTable::Instance().Add(chars, length)) {}
 
-AtomicString::AtomicString(const UChar* chars, unsigned length)
-    : string_(AtomicStringTable::Instance().Add(chars, length)) {}
+AtomicString::AtomicString(const UChar* chars,
+                           unsigned length,
+                           AtomicStringUCharEncoding encoding)
+    : string_(AtomicStringTable::Instance().Add(chars, length, encoding)) {}
 
 AtomicString::AtomicString(const UChar* chars)
     : string_(AtomicStringTable::Instance().Add(
           chars,
-          chars ? LengthOfNullTerminatedString(chars) : 0)) {}
+          chars ? LengthOfNullTerminatedString(chars) : 0,
+          AtomicStringUCharEncoding::kUnknown)) {}
 
 scoped_refptr<StringImpl> AtomicString::AddSlowCase(
     scoped_refptr<StringImpl>&& string) {

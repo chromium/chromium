@@ -113,6 +113,7 @@ component("wtf") {
     "text/atomic_string.cc",
     "text/atomic_string.h",
     "text/atomic_string_cf.cc",
+    "text/atomic_string_encoding.h",
     "text/atomic_string_hash.h",
     "text/atomic_string_table.cc",
     "text/atomic_string_table.h",
