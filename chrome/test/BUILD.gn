@@ -4716,9 +4716,6 @@ group("telemetry_perf_unittests_base") {
     # For tests in tools/perf/process_perf_results_unittest.py
     "//build/android/pylib/",
     "//third_party/logdog/logdog",
-
-    # For representative perf testing run_rendering_benchmark_with_gated_performance.py
-    "//testing/scripts/run_rendering_benchmark_with_gated_performance.py",
   ]
 
   data_deps = [ "//testing:test_scripts_shared" ]
@@ -4800,12 +4797,7 @@ group("ct_telemetry_perf_tests_without_chrome") {
   testonly = true
   deps = [ "//tools/perf/:perf_without_chrome" ]
 
-  data = [
-    # crbug.com/1048153
-    "//testing/scripts/run_rendering_benchmark_with_gated_performance.py",
-
-    "//tools/perf/contrib/cluster_telemetry/",
-  ]
+  data = [ "//tools/perf/contrib/cluster_telemetry/" ]
 
   data_deps = [
     "//components/subresource_filter/tools:index_ruleset",
@@ -10353,49 +10345,6 @@ if (is_chromeos_ash) {
     visibility = [ ":usage_time_limit_unittests" ]
     sources = [ "../browser/ash/child_accounts/time_limit_consistency_test/goldens/consistency_golden.proto" ]
     generate_python = false
-  }
-}
-
-if (is_mac || is_win || is_android) {
-  group("rendering_representative_perf_tests_base") {
-    testonly = true
-    data = [
-      "//build/android/pylib",
-      "//chrome/test/data/perf",
-      "//components/variations/service/generate_ui_string_overrider.py",
-      "//testing/scripts",
-      "//third_party/catapult",
-      "//tools/perf",
-    ]
-    data_deps = [ "//testing:test_scripts_shared" ]
-  }
-
-  if (!is_android) {
-    group("rendering_representative_perf_tests") {
-      testonly = true
-      data_deps = [
-        ":rendering_representative_perf_tests_base",
-        "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
-      ]
-    }
-  } else {
-    template("rendering_representative_perf_tests_android_template") {
-      forward_variables_from(invoker, [ "telemetry_target_suffix" ])
-      group(target_name) {
-        testonly = true
-        data_deps = [
-          ":rendering_representative_perf_tests_base",
-          "//tools/perf/chrome_telemetry_build:telemetry_chrome_test${telemetry_target_suffix}",
-        ]
-      }
-    }
-
-    foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
-      rendering_representative_perf_tests_android_template(
-          "rendering_representative_perf_tests${_target_suffix}") {
-        telemetry_target_suffix = _target_suffix
-      }
-    }
   }
 }
 

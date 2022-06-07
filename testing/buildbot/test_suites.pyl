@@ -4539,45 +4539,6 @@
       },
     },
 
-    'rendering_desktop_representative_perf_tests_isolated_scripts': {
-      'rendering_representative_perf_tests': {
-        'isolate_name': 'rendering_representative_perf_tests',
-        'args': [
-          "../../tools/perf/run_benchmark",
-          "--benchmarks=rendering.desktop",
-        ],
-        'check_flakiness_for_new_tests': False,
-        'swarming': {},
-      }
-    },
-
-    'rendering_mobile_representative_perf_tests_isolated_scripts': {
-      'rendering_representative_perf_tests': {
-        'isolate_name': 'rendering_representative_perf_tests_android_chrome',
-        'args': [
-          "../../tools/perf/run_benchmark",
-          "--benchmarks=rendering.mobile",
-          "--browser=android-chromium"
-        ],
-        'check_flakiness_for_new_tests': False,
-        'swarming': {},
-      }
-    },
-
-    'rendering_mobile_representative_perf_tests_isolated_scripts_experimental': {
-      'rendering_representative_perf_tests': {
-        'isolate_name': 'rendering_representative_perf_tests_android_chrome',
-        'args': [
-          "../../tools/perf/run_benchmark",
-          "--benchmarks=rendering.mobile",
-          "--browser=android-chromium"
-        ],
-        'check_flakiness_for_new_tests': False,
-        'swarming': {},
-        'experiment_percentage': 10,
-      }
-    },
-
     'rust_gtests': {
       'base_unittests': {},
       'rust_gtest_interop_unittests': {},
@@ -6291,10 +6252,6 @@
       'gpu_desktop_specific_gtests',
     ],
 
-    'gpu_desktop_representative_perf_fyi_isolated_scripts': [
-      'rendering_desktop_representative_perf_tests_isolated_scripts',
-    ],
-
     'gpu_fuchsia_telemetry_experimental_tests': [
       'gpu_fuchsia_common_telemetry_tests',
       'gpu_mediapipe_validating_telemetry_tests',
@@ -6521,9 +6478,8 @@
       'gpu_win_intel_specific_telemetry_tests',
     ],
 
-    'gpu_fyi_win_optional_and_representative_perf_isolated_scripts': [
+    'gpu_fyi_win_optional_isolated_scripts': [
       'gpu_command_buffer_perf_passthrough_isolated_scripts',
-      'rendering_desktop_representative_perf_tests_isolated_scripts',
     ],
 
     'gpu_fyi_win_release_telemetry_tests': [
@@ -6534,10 +6490,6 @@
       'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
-    ],
-
-    'gpu_mobile_representative_perf_fyi_isolated_scripts': [
-      'rendering_mobile_representative_perf_tests_isolated_scripts',
     ],
 
     'gpu_nexus5x_telemetry_tests': [

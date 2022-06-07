@@ -1551,26 +1551,6 @@
     "label": "//remoting:remoting_unittests",
     "type": "console_test_launcher",
   },
-  "rendering_representative_perf_tests": {
-    "args": [
-      "--output-format=csv",
-      "--browser=release",
-      "--upload-results",
-    ],
-    "label": "//chrome/test:rendering_representative_perf_tests",
-    "script": "//testing/scripts/run_rendering_benchmark_with_gated_performance.py",
-    "type": "script",
-  },
-  "rendering_representative_perf_tests_android_chrome": {
-    "args": [
-      "--output-format=csv",
-      "--browser=release",
-      "--upload-results",
-    ],
-    "label": "//chrome/test:rendering_representative_perf_tests_android_chrome",
-    "script": "//testing/scripts/run_rendering_benchmark_with_gated_performance.py",
-    "type": "script",
-  },
   "resource_sizes_chrome_modern_public_minimal_apks": {
     "label": "//chrome/android:resource_sizes_chrome_modern_public_minimal_apks",
     "type": "generated_script",
