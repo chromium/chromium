@@ -86,32 +86,8 @@ void DeskTemplate::SetDeskIndex(int desk_index) {
   desk_restore_data_->SetDeskIndex(desk_index);
 }
 
-// TODO(crbug.com/1328850): Factor out common elements between ToString and
-// ToDebugString.
 std::string DeskTemplate::ToString() const {
-  std::string result =
-      "Template name: " + base::UTF16ToUTF8(template_name_) + "\n";
-  result += "Source: ";
-  switch (source_) {
-    case DeskTemplateSource::kUnknownSource:
-      result += "unknown\n";
-      break;
-    case DeskTemplateSource::kUser:
-      result += "user\n";
-      break;
-    case DeskTemplateSource::kPolicy:
-      result += "policy\n";
-      break;
-  }
-  result += "Type: ";
-  switch (type_) {
-    case DeskTemplateType::kTemplate:
-      result += "template\n";
-      break;
-    case DeskTemplateType::kSaveAndRecall:
-      result += "save and recall\n";
-      break;
-  }
+  std::string result = GetDeskTemplateInfo(/*for_debugging=*/false);
 
   if (desk_restore_data_)
     result += desk_restore_data_->ToString();
@@ -119,30 +95,8 @@ std::string DeskTemplate::ToString() const {
 }
 
 std::string DeskTemplate::ToDebugString() const {
-  std::string result =
-      "Template name: " + base::UTF16ToUTF8(template_name_) + "\n";
-  result += "GUID: " + uuid_.AsLowercaseString() + "\n";
-  result += "Source: ";
-  switch (source_) {
-    case DeskTemplateSource::kUnknownSource:
-      result += "unknown\n";
-      break;
-    case DeskTemplateSource::kUser:
-      result += "user\n";
-      break;
-    case DeskTemplateSource::kPolicy:
-      result += "policy\n";
-      break;
-  }
-  result += "Type: ";
-  switch (type_) {
-    case DeskTemplateType::kTemplate:
-      result += "template\n";
-      break;
-    case DeskTemplateType::kSaveAndRecall:
-      result += "save and recall\n";
-      break;
-  }
+  std::string result = GetDeskTemplateInfo(/*for_debugging=*/true);
+
   result += "Time created: " + base::TimeFormatHTTP(created_time_) + "\n";
   result += "Time updated: " + base::TimeFormatHTTP(updated_time_) + "\n";
   result += "launch id: " + base::NumberToString(launch_id_) + "\n";
@@ -153,6 +107,35 @@ std::string DeskTemplate::ToDebugString() const {
   if (desk_restore_data_) {
     result += desk_restore_data_->ConvertToValue().DebugString();
     result += TabGroupDataToString(desk_restore_data_.get());
+  }
+  return result;
+}
+
+std::string DeskTemplate::GetDeskTemplateInfo(bool for_debugging) const {
+  std::string result =
+      "Template name: " + base::UTF16ToUTF8(template_name_) + "\n";
+  if (for_debugging)
+    result += "GUID: " + uuid_.AsLowercaseString() + "\n";
+  result += "Source: ";
+  switch (source_) {
+    case DeskTemplateSource::kUnknownSource:
+      result += "unknown\n";
+      break;
+    case DeskTemplateSource::kUser:
+      result += "user\n";
+      break;
+    case DeskTemplateSource::kPolicy:
+      result += "policy\n";
+      break;
+  }
+  result += "Type: ";
+  switch (type_) {
+    case DeskTemplateType::kTemplate:
+      result += "template\n";
+      break;
+    case DeskTemplateType::kSaveAndRecall:
+      result += "save and recall\n";
+      break;
   }
   return result;
 }

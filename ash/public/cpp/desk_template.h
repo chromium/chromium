@@ -120,6 +120,10 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   std::string ToDebugString() const;
 
  private:
+  // Returns a string containing basic information for `this`. It could be used
+  // for `ToString` and `ToDebugString` according to the given `for_debugging`.
+  std::string GetDeskTemplateInfo(bool for_debugging) const;
+
   const base::GUID uuid_;  // We utilize the string based base::GUID to uniquely
                            // identify the template.
 
