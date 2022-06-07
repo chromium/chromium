@@ -62,9 +62,7 @@ IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest, NoInputEvent) {
       PageLoad::kInteractiveTiming_TotalAdjustedInputDelayName, int64_t(0), 0);
 }
 
-// Flaky on multiple platforms. https://crbug.com/1163677
-IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest,
-                       DISABLED_MultipleInputEvents) {
+IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest, MultipleInputEvents) {
   LoadHTML(R"HTML(
     <script type="text/javascript">
     let eventCounts = {mouseup: 0, pointerup: 0, click: 0};
