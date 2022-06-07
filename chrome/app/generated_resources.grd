@@ -2533,6 +2533,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="When a download is finished, let the user know.">
         Done
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_DONE"
+               desc="When a download has finished deep scanning and the result is safe, let the user know.">
+        Done, no issues found
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_BLOCKED"
                desc="When a download is blocked because of warnings, let the user know.">
         Blocked
@@ -2696,6 +2700,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_SCANNING"
                desc="Status text for a download item that is being scanned.">
         Scanning...
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_SCANNING_ENTERPRISE"
+               desc="Status text for a download item that is being scanned by enterprise policy.">
+        Checking with your organization's security policies...
       </message>
 
       <!-- Desktop omnibox PWA install icon -->

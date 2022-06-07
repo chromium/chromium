@@ -11,6 +11,8 @@ namespace download {
 
 bool IsDownloadBubbleEnabled(Profile* profile);
 
+bool IsDownloadConnectorEnabled(Profile* profile);
+
 }  // namespace download
 
 #endif  // CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_PREFS_H_

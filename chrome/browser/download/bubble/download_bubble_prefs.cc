@@ -43,4 +43,13 @@ bool IsDownloadBubbleEnabled(Profile* profile) {
   return true;
 }
 
+bool IsDownloadConnectorEnabled(Profile* profile) {
+  auto* connector_service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          profile);
+  return connector_service &&
+         connector_service->IsConnectorEnabled(
+             enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
+}
+
 }  // namespace download

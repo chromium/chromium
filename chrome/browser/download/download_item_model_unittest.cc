@@ -19,6 +19,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/download_item_reroute_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -611,6 +612,11 @@ TEST_F(DownloadItemModelTest, CompletedStatus) {
     EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
               test_case.expected_bubble_status_msg);
   }
+
+  EXPECT_CALL(item(), GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE));
+  EXPECT_EQ("2 B \xE2\x80\xA2 Done, no issues found",
+            base::UTF16ToUTF8(model().GetStatusText()));
 
 #if BUILDFLAG(IS_MAC)
   EXPECT_EQ("Show in Finder", base::UTF16ToUTF8(model().GetShowInFolderText()));
