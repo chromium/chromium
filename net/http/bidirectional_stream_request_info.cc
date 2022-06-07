@@ -6,11 +6,7 @@
 
 namespace net {
 
-BidirectionalStreamRequestInfo::BidirectionalStreamRequestInfo()
-    : allow_early_data_override(false),
-      priority(LOW),
-      end_stream_on_headers(false),
-      detect_broken_connection(false) {}
+BidirectionalStreamRequestInfo::BidirectionalStreamRequestInfo() = default;
 
 BidirectionalStreamRequestInfo::~BidirectionalStreamRequestInfo() = default;
 

@@ -1388,9 +1388,7 @@ void TransportSecurityState::AddOrUpdateEnabledExpectCTHosts(
       hashed_host, network_isolation_key)] = state;
 }
 
-TransportSecurityState::STSState::STSState()
-    : upgrade_mode(MODE_DEFAULT), include_subdomains(false) {
-}
+TransportSecurityState::STSState::STSState() = default;
 
 TransportSecurityState::STSState::~STSState() = default;
 
@@ -1406,14 +1404,13 @@ TransportSecurityState::STSStateIterator::STSStateIterator(
 
 TransportSecurityState::STSStateIterator::~STSStateIterator() = default;
 
-TransportSecurityState::PKPState::PKPState() : include_subdomains(false) {
-}
+TransportSecurityState::PKPState::PKPState() = default;
 
 TransportSecurityState::PKPState::PKPState(const PKPState& other) = default;
 
 TransportSecurityState::PKPState::~PKPState() = default;
 
-TransportSecurityState::ExpectCTState::ExpectCTState() : enforce(false) {}
+TransportSecurityState::ExpectCTState::ExpectCTState() = default;
 
 TransportSecurityState::ExpectCTState::~ExpectCTState() = default;
 

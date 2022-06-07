@@ -82,8 +82,7 @@ BrokenAlternativeServices::BrokenAlternativeServices(
       clock_(clock),
       recently_broken_alternative_services_(
           max_recently_broken_alternative_service_entries),
-      initial_delay_(kDefaultBrokenAlternativeProtocolDelay),
-      exponential_backoff_on_initial_delay_(true) {
+      initial_delay_(kDefaultBrokenAlternativeProtocolDelay) {
   DCHECK(delegate_);
   DCHECK(clock_);
 }

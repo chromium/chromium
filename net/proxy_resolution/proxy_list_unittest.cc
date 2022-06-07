@@ -173,7 +173,6 @@ TEST(ProxyListTest, DeprioritizeBadProxies) {
 }
 
 TEST(ProxyListTest, UpdateRetryInfoOnFallback) {
-  ProxyRetryInfo proxy_retry_info;
   // Retrying should put the first proxy on the retry list.
   {
     ProxyList list;

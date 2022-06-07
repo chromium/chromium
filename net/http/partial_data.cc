@@ -31,18 +31,7 @@ const int kDataStream = 1;
 
 }  // namespace
 
-PartialData::PartialData()
-    : current_range_start_(0),
-      current_range_end_(0),
-      cached_start_(0),
-      cached_min_len_(0),
-      resource_size_(0),
-      range_requested_(false),
-      range_present_(false),
-      final_range_(false),
-      sparse_entry_(true),
-      truncated_(false),
-      initial_validation_(false) {}
+PartialData::PartialData() = default;
 
 PartialData::~PartialData() = default;
 

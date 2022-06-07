@@ -610,7 +610,7 @@ class SequencedSocketData : public SocketDataProvider {
 template <typename T>
 class SocketDataProviderArray {
  public:
-  SocketDataProviderArray() : next_index_(0) {}
+  SocketDataProviderArray() = default;
 
   T* GetNext() {
     DCHECK_LT(next_index_, data_providers_.size());
@@ -639,7 +639,7 @@ class SocketDataProviderArray {
  private:
   // Index of the next |data_providers_| element to use. Not an iterator
   // because those are invalidated on vector reallocation.
-  size_t next_index_;
+  size_t next_index_ = 0;
 
   // SocketDataProviders to be returned.
   std::vector<T*> data_providers_;

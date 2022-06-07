@@ -229,7 +229,7 @@ class NET_EXPORT_PRIVATE BrokenAlternativeServices {
   // initial_delay_for_broken_alternative_service * (1 << broken_count).
   // Otherwise, the delay would be initial_delay_for_broken_alternative_service,
   // 5min, 10min.. and so on.
-  bool exponential_backoff_on_initial_delay_;
+  bool exponential_backoff_on_initial_delay_ = true;
 
   base::WeakPtrFactory<BrokenAlternativeServices> weak_ptr_factory_{this};
 };
