@@ -38,7 +38,7 @@
     "coop": "same-origin; foo=bar",
   }
 ].forEach(variant => {
-  popup_test(`Parsing ${variant.title}`, SAME_ORIGIN, variant.coop, "severed");
+  popup_test(`Parsing ${variant.title}`, SAME_ORIGIN, { coop: variant.coop }, "severed");
 });
 
 </script>

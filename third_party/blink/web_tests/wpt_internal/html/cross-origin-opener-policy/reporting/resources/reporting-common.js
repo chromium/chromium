@@ -180,8 +180,7 @@ function replaceTokensInReceivedReport(str) {
   return str.replace(/.{8}-.{4}-.{4}-.{4}-.{12}/g, `(uuid)`);
 }
 
-// Run a test (such as coop_coep_test from ./common.js) then check that all
-// expected reports are present.
+// Run a test then check that all expected reports are present.
 async function reportingTest(testFunction, executorToken, expectedReports) {
   await new Promise(testFunction);
   expectedReports = Array.from(

@@ -5,14 +5,16 @@
 // - "/common/dispatcher/dispatcher.js" for cross-origin messaging.
 // - "/common/utils.js" for token().
 
-function getExecutorPath(uuid, origin, coop) {
+function getExecutorPath(uuid, origin, headers) {
   const executor_path = '/common/dispatcher/executor.html?';
-  const coop_header =
-    `|header(Cross-Origin-Opener-Policy,${encodeURIComponent(coop)})`;
+  const coop_header = headers.coop ?
+    `|header(Cross-Origin-Opener-Policy,${encodeURIComponent(headers.coop)})` : '';
+  const coep_header = headers.coep ?
+    `|header(Cross-Origin-Embedder-Policy,${encodeURIComponent(headers.coep)})` : '';
   return origin +
          executor_path +
          `uuid=${uuid}` +
-         '&pipe=' + coop_header;
+         '&pipe=' + coop_header + coep_header;
 }
 
 function getPopupHasOpener(popup_token) {
@@ -31,9 +33,9 @@ function canAccessProperty(object, property) {
   }
 }
 
-// Verifies that a popup with origin `origin` and coop header `coop_header` has
+// Verifies that a popup with origin `origin` and headers `headers` has
 // the expected `opener_state` after being opened.
-async function popup_test(description, origin, coop_header, expected_opener_state) {
+async function popup_test(description, origin, headers, expected_opener_state) {
   promise_test(async t => {
     const popup_token = token();
     const reply_token = token();
@@ -41,7 +43,7 @@ async function popup_test(description, origin, coop_header, expected_opener_stat
     const popup_url = getExecutorPath(
       popup_token,
       origin.origin,
-      coop_header);
+      headers);
 
     // We open popup and then ping it, it will respond after loading.
     const popup = window.open(popup_url);

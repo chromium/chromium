@@ -84,7 +84,7 @@
     "coop": "*same-origin ",
   }
 ].forEach(variant => {
-  subsetTest(popup_test, `Parsing ${variant.title}`, SAME_ORIGIN, variant.coop, "preserved");
+  subsetTest(popup_test, `Parsing ${variant.title}`, SAME_ORIGIN, { coop: variant.coop }, "preserved");
 });
 
 </script>

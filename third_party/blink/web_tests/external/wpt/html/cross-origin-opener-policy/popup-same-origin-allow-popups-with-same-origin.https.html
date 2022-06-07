@@ -52,7 +52,7 @@
     "opener": "preserved"
   }
 ].forEach(variant => {
-  popup_test(`Same-origin ${variant.title}`, SAME_ORIGIN, variant.coop, variant.opener);
+  popup_test(`Same-origin ${variant.title}`, SAME_ORIGIN, { coop : variant.coop }, variant.opener);
 });
 
 </script>

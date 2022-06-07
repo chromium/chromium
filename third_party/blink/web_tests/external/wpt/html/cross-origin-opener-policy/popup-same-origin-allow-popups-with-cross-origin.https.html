@@ -52,7 +52,7 @@
     "opener": "severed"
   }
 ].forEach(variant => {
-  popup_test(`Cross-origin ${variant.title}`, CROSS_ORIGIN, variant.coop, variant.opener);
+  popup_test(`Cross-origin ${variant.title}`, CROSS_ORIGIN, { coop : variant.coop }, variant.opener);
 });
 
 </script>

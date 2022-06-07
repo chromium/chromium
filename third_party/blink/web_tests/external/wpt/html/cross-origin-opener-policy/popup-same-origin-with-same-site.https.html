@@ -52,7 +52,7 @@
     "opener": "severed"
   }
 ].forEach(variant => {
-  popup_test(`Same-site ${variant.title}`, SAME_SITE, variant.coop, variant.opener);
+  popup_test(`Same-site ${variant.title}`, SAME_SITE, { coop: variant.coop }, variant.opener);
 });
 
 </script>
