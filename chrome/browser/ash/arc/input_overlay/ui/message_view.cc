@@ -6,8 +6,10 @@
 
 #include "ash/ambient/util/ambient_util.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 
 namespace arc {
@@ -26,6 +28,12 @@ constexpr int kMinHeight = 72;
 constexpr SkColor kTextColor = gfx::kGoogleGrey200;
 constexpr SkColor kBackgroundColor = gfx::kGoogleGrey900;
 constexpr SkColor kForegroundColor = SkColorSetA(SK_ColorWHITE, 0x0F);
+
+// About Icon.
+constexpr int kIconSize = 32;
+constexpr int kImageLabelSpace = 24;
+constexpr SkColor kInfoIconColor = gfx::kGoogleBlue300;
+constexpr SkColor kErrorIconColor = gfx::kGoogleRed300;
 }  // namespace
 
 // static
@@ -58,8 +66,30 @@ MessageView::MessageView(DisplayOverlayController* controller,
                                      gfx::Font::Weight::NORMAL));
   label()->SetLineHeight(kLineHeight);
 
+  SetImageLabelSpacing(kImageLabelSpace);
+  image()->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
+  switch (message_type) {
+    case MessageType::kInfo:
+      SetImage(views::Button::STATE_NORMAL,
+               gfx::CreateVectorIcon(gfx::IconDescription(
+                   vector_icons::kInfoOutlineIcon, kIconSize, kInfoIconColor)));
+      break;
+    case MessageType::kError:
+      SetImage(
+          views::Button::STATE_NORMAL,
+          gfx::CreateVectorIcon(gfx::IconDescription(
+              vector_icons::kErrorOutlineIcon, kIconSize, kErrorIconColor)));
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
   auto preferred_size = CalculatePreferredSize();
-  SetSize(gfx::Size(preferred_size.width(), kMinHeight));
+  preferred_size.SetSize(preferred_size.width() + kIconSize + kImageLabelSpace,
+                         kMinHeight);
+  preferred_size.SetToMin(parent_size);
+  SetSize(preferred_size);
   SetPosition(gfx::Point(
       std::max(0, (parent_size.width() - preferred_size.width()) / 2),
       kTopMargin));
