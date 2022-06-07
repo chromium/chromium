@@ -42,6 +42,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wm/wm_event.h"
 #include "base/base64.h"
 #include "base/bind.h"
@@ -5695,6 +5696,31 @@ AutotestPrivateAddLoginEventForTestingFunction::Run() {
       /*marker_name=*/"AutotestPrivateTestMarker",
       /*send_to_uma=*/false,
       /*write_to_file=*/false);
+  return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateForceAutoThemeModeFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateForceAutoThemeModeFunction::
+    AutotestPrivateForceAutoThemeModeFunction() = default;
+
+AutotestPrivateForceAutoThemeModeFunction::
+    ~AutotestPrivateForceAutoThemeModeFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateForceAutoThemeModeFunction::Run() {
+  DVLOG(1) << "AutotestPrivateForceAutoThemeModeFunction";
+
+  std::unique_ptr<api::autotest_private::ForceAutoThemeMode::Params> params(
+      api::autotest_private::ForceAutoThemeMode::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
+  DCHECK(color_provider);
+
+  color_provider->SetDarkModeEnabledForTest(params->dark_mode_enabled);
   return RespondNow(NoArguments());
 }
 

@@ -34626,6 +34626,7 @@ Called by update_extension_histograms.py.-->
   <int value="1662" label="SHAREDSTORAGEPRIVATE_REMOVE"/>
   <int value="1663" label="FILEMANAGERPRIVATEINTERNAL_GETFILESRESTRICTEDBYDLP"/>
   <int value="1664" label="WMDESKSPRIVATE_GETALLDESKS"/>
+  <int value="1665" label="AUTOTESTPRIVATE_FORCEAUTOTHEMEMODE"/>
 </enum>
 
 <enum name="ExtensionIconState">

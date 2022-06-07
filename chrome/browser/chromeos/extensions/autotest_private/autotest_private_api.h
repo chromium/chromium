@@ -1560,6 +1560,17 @@ class AutotestPrivateAddLoginEventForTestingFunction
   ResponseAction Run() override;
 };
 
+class AutotestPrivateForceAutoThemeModeFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateForceAutoThemeModeFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.forceAutoThemeMode",
+                             AUTOTESTPRIVATE_FORCEAUTOTHEMEMODE)
+
+ private:
+  ~AutotestPrivateForceAutoThemeModeFunction() override;
+  ResponseAction Run() override;
+};
+
 template <>
 KeyedService*
 BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(

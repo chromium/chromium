@@ -661,7 +661,6 @@ namespace autotestPrivate {
   callback GetLoginEventRecorderLoginEventsCallback = void
       (LoginEventRecorderData[] data);
 
-
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
     static void initializeEvents();
@@ -1331,6 +1330,9 @@ namespace autotestPrivate {
 
     // Adds login event to test LoginEventRecorderDataCollection API.
     static void addLoginEventForTesting(VoidCallback callback);
+
+    // Force auto theme mode in dark mode or light mode for testing.
+    [supportsPromises] static void forceAutoThemeMode(boolean darkModeEnabled, VoidCallback callback);
   };
 
   interface Events {
