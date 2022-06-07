@@ -441,8 +441,7 @@ public class MainSettings extends PreferenceFragmentCompat
                     return TemplateUrlServiceFactory.get().isDefaultSearchManaged();
                 }
                 if (usesUnifiedPasswordManagerUI() && PREF_PASSWORDS.equals(preference.getKey())) {
-                    return UserPrefs.get(Profile.getLastUsedRegularProfile())
-                            .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
+                    return false;
                 }
                 return isPreferenceControlledByPolicy(preference)
                         || isPreferenceControlledByCustodian(preference);
