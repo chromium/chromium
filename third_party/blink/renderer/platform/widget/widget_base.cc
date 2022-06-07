@@ -661,6 +661,13 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
         params,
     LayerTreeFrameSinkCallback callback,
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
+  if (Platform::Current()->IsGpuCompositingDisabled()) {
+    // GPU compositing was disabled after the check in
+    // WidgetBase::RequestNewLayerTreeFrameSink(). Fail and let it retry.
+    std::move(callback).Run(nullptr, nullptr);
+    return;
+  }
+
   if (!gpu_channel_host) {
     // Wait and try again. We may hear that the compositing mode has switched
     // to software in the meantime.
@@ -701,13 +708,13 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager =
       Platform::Current()->GetGpuMemoryBufferManager();
 
-  scoped_refptr<viz::ContextProviderCommandBuffer> context_provider(
-      new viz::ContextProviderCommandBuffer(
+  auto context_provider =
+      base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           gpu_channel_host, gpu_memory_buffer_manager, kGpuStreamIdDefault,
           kGpuStreamPriorityDefault, gpu::kNullSurfaceHandle, GURL(url),
           automatic_flushes, support_locking, support_grcontext, limits,
           attributes,
-          viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR));
+          viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR);
 
 #if BUILDFLAG(IS_ANDROID)
   if (Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView() &&
