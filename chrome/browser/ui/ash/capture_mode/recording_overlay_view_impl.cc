@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/bind.h"
+#include "base/location.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -23,6 +25,17 @@ RecordingOverlayViewImpl::RecordingOverlayViewImpl(Profile* profile)
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
       web_contents, SK_ColorTRANSPARENT);
 
+  // Loading the annotator app in `web_view_` can take a long time, so in order
+  // to avoid stalling the initialization of recording, we will do this
+  // asynchronously.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&RecordingOverlayViewImpl::InitializeAnnotator,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+RecordingOverlayViewImpl::~RecordingOverlayViewImpl() = default;
+
+void RecordingOverlayViewImpl::InitializeAnnotator() {
   ProjectorClientImpl::InitForProjectorAnnotator(web_view_);
 }
 
