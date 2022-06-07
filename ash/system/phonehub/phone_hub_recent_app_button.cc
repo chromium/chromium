@@ -34,6 +34,7 @@ PhoneHubRecentAppButton::PhoneHubRecentAppButton(
   TrayPopupUtils::ConfigureTrayPopupButton(this);
   views::InstallCircleHighlightPathGenerator(this);
   SetAccessibleName(visible_app_name);
+  SetTooltipText(visible_app_name);
 }
 
 PhoneHubRecentAppButton::~PhoneHubRecentAppButton() = default;
