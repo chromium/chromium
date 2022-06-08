@@ -23,4 +23,17 @@ promise_test(async t => {
   const token = await result.login({nonce: '1'});
   assert_equals(token.idToken, 'token');
 }, 'Test that COEP policy do not apply to FedCM requests');
+
+promise_test(async t => {
+  await set_fedcm_cookie();
+  const result = await navigator.credentials.get({
+    federated: {
+      providers: [{
+        url: url_prefix + "fedcm-manifest-not-in-list/",
+        clientId: '1',
+      }]
+    }
+  });
+  return promise_rejects_dom(t, 'NetworkError', result.login({nonce: '1'}));
+}, 'Test that the promise is rejected if the manifest is not in the manifest list');
 </script>
