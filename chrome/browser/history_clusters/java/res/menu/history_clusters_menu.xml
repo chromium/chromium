@@ -13,6 +13,12 @@
         android:visible="false"
         app:showAsAction="ifRoom"
         app:iconTint="@color/default_icon_color_secondary_tint_list" />
+    <item
+        android:id="@+id/close_menu_id"
+        android:icon="@drawable/btn_close"
+        android:title="@string/close"
+        app:showAsAction="ifRoom"
+        app:iconTint="@color/default_icon_color_secondary_tint_list" />
   </group>
   <group
       android:id="@+id/selection_mode_menu_group"
