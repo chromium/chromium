@@ -124,3 +124,7 @@ bool RefcountedKeyedServiceFactory::HasTestingFactory(void* context) {
 void RefcountedKeyedServiceFactory::CreateServiceNow(void* context) {
   GetServiceForContext(context, true);
 }
+
+bool RefcountedKeyedServiceFactory::IsServiceCreated(void* context) const {
+  return base::Contains(mapping_, context);
+}
