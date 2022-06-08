@@ -40,6 +40,7 @@
               "external/wpt/animation-worklet",
               "external/wpt/css/css-animations",
               "external/wpt/css/css-backgrounds",
+              "external/wpt/css/css-color/animation",
               "external/wpt/css/css-scroll-snap",
               "external/wpt/css/css-transforms/animation",
               "external/wpt/css/css-transforms/individual-transform/animation",
