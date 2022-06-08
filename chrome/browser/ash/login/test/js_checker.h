@@ -209,6 +209,7 @@ class JSChecker {
   // backwards compatibility with some OOBE UI elements that only listen to
   // tap events.
   void TapOnPath(std::initializer_list<base::StringPiece> element_ids);
+  void TapOnPathAsync(std::initializer_list<base::StringPiece> element_ids);
   void TapOn(const std::string& element_id);
 
   // Clicks on the indicated UI element that should be a link.

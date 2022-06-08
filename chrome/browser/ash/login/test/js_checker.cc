@@ -469,6 +469,12 @@ void JSChecker::TapOnPath(
   Evaluate(GetOobeElementPath(element_ids) + ".click()");
 }
 
+void JSChecker::TapOnPathAsync(
+    std::initializer_list<base::StringPiece> element_ids) {
+  ExpectVisiblePath(element_ids);
+  ExecuteAsync(GetOobeElementPath(element_ids) + ".click()");
+}
+
 void JSChecker::TapOn(const std::string& element_id) {
   TapOnPath({element_id});
 }
