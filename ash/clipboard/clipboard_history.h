@@ -72,11 +72,6 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
   // `Resume()`.
   friend class ScopedClipboardHistoryPauseImpl;
 
-  // Ensures that the clipboard buffer contains the same data as the item at the
-  // top of clipboard history. If clipboard history is empty, then the clipboard
-  // is cleared.
-  void SyncClipboardToClipboardHistory();
-
   // Adds `data` to the top of the history list if `data` is supported by
   // clipboard history. If `data` is not supported, this method no-ops. If
   // `data` is already in the history list, `data` will be moved to the top of

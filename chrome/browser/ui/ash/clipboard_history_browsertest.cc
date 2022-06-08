@@ -45,7 +45,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -240,20 +239,6 @@ bool VerifyClipboardTextData(const std::initializer_list<std::string>& texts) {
   }
 
   return true;
-}
-
-// Returns whether the clipboard buffer matches clipboard history's first item.
-// If clipboard history is empty, returns whether the clipboard buffer is empty.
-bool VerifyClipboardBufferAndHistoryInSync() {
-  auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
-  if (!clipboard)
-    return false;
-
-  ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
-  const auto* const clipboard_data = clipboard->GetClipboardData(&data_dst);
-  const auto& items = GetClipboardItems();
-  return items.empty() ? clipboard_data == nullptr
-                       : items.front().data() == *clipboard_data;
 }
 
 }  // namespace
@@ -640,21 +625,13 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   ASSERT_EQ(2, GetContextMenu()->GetMenuItemsCount());
 
   // Delete the second menu item.
-  {
-    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
-    ClickAtDeleteButton(/*index=*/1);
-  }
+  ClickAtDeleteButton(/*index=*/1);
   EXPECT_EQ(1, GetContextMenu()->GetMenuItemsCount());
   EXPECT_TRUE(VerifyClipboardTextData({"B"}));
-  EXPECT_TRUE(VerifyClipboardBufferAndHistoryInSync());
 
   // Delete the last menu item. Verify that the menu is closed.
-  {
-    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
-    ClickAtDeleteButton(/*index=*/0);
-  }
+  ClickAtDeleteButton(/*index=*/0);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  EXPECT_TRUE(VerifyClipboardBufferAndHistoryInSync());
 
   // No menu shows because of the empty clipboard history.
   ShowContextMenuViaAccelerator(/*wait_for_selection=*/false);
@@ -677,35 +654,23 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, DeleteItemViaBackspaceKey) {
 
   // Select the first menu item via key then delete it. Verify the menu and the
   // clipboard history.
-  {
-    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
-    PressAndRelease(ui::KeyboardCode::VKEY_BACK);
-  }
+  PressAndRelease(ui::KeyboardCode::VKEY_BACK);
   EXPECT_EQ(2, GetContextMenu()->GetMenuItemsCount());
   EXPECT_TRUE(VerifyClipboardTextData({"B", "A"}));
-  EXPECT_TRUE(VerifyClipboardBufferAndHistoryInSync());
 
   histogram_tester.ExpectTotalCount(
       "Ash.ClipboardHistory.ContextMenu.DisplayFormatDeleted", 1);
 
   // Select the second menu item via key then delete it. Verify the menu and the
   // clipboard history.
-  {
-    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
-    PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
-    PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
-  }
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
   EXPECT_EQ(1, GetContextMenu()->GetMenuItemsCount());
   EXPECT_TRUE(VerifyClipboardTextData({"B"}));
-  EXPECT_TRUE(VerifyClipboardBufferAndHistoryInSync());
 
   // Delete the last item. Verify that the menu is closed.
-  {
-    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
-    PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
-  }
+  PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  EXPECT_TRUE(VerifyClipboardBufferAndHistoryInSync());
 
   // Trigger the accelerator of opening the clipboard history menu. No menu
   // shows because of the empty history data.
