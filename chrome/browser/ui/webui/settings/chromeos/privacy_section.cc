@@ -321,6 +321,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"smartPrivacySnoopingNotifications",
        IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_NOTIFICATIONS},
       {"privacyHubTitle", IDS_OS_SETTINGS_PRIVACY_HUB_TITLE},
+      {"cameraToggleTitle", IDS_OS_SETTINGS_CAMERA_TOGGLE_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -463,6 +464,8 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
       IDS_OS_SETTINGS_PRIVACY_HUB_TITLE, mojom::Subpage::kPrivacyHub,
       mojom::SearchResultIcon::kShield, mojom::SearchResultDefaultRank::kMedium,
       mojom::kPrivacyHubSubpagePath);
+  RegisterNestedSettingBulk(mojom::Subpage::kPrivacyHub,
+                            {{mojom::Setting::kCameraOnOff}}, generator);
 }
 
 bool PrivacySection::AreFingerprintSettingsAllowed() {

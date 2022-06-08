@@ -71779,6 +71779,7 @@ Called by update_net_trust_anchors.py.-->
       label="Privacy: Enable/Disable peripheral data access protection"/>
   <int value="1114" label="Privacy: Snooping Protection"/>
   <int value="1115" label="Privacy: Lock On Leave"/>
+  <int value="1116" label="Privacy: Camera Software Switch"/>
   <int value="1200" label="Add Language"/>
   <int value="1201" label="Show Input Options In Shelf"/>
   <int value="1202" label="Show Personal Information Suggestions"/>

@@ -386,6 +386,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    {enabled: ['ash::features::kPersonalizationHub']}
  ],
  ['PrintingPage', 'os_printing_page_tests.js'],
+ ['PrivacyHubSubpage', 'privacy_hub_subpage_tests.js'],
  ['PrivacyPage', 'os_privacy_page_test.js'],
  ['ResetPage', 'os_reset_page_test.js'],
  ['SettingsSchedulerSlider', 'settings_scheduler_slider_test.js'],
