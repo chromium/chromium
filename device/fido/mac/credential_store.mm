@@ -235,7 +235,7 @@ TouchIdCredentialStore::FindCredentialsFromCredentialDescriptorList(
   if (credential_ids.empty()) {
     // Don't call FindCredentialsImpl(). Given an empty |credential_ids|, it
     // returns *all* credentials for |rp_id|.
-    return {};
+    return std::list<Credential>();
   }
   return FindCredentialsImpl(rp_id, credential_ids);
 }
