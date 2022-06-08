@@ -816,7 +816,7 @@ const base::Feature kTrustedWebActivityLocationDelegation{
 
 const base::Feature kTrustedWebActivityNotificationPermissionDelegation{
     "TrustedWebActivityNotificationPermissionDelegation",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTrustedWebActivityPostMessage{
     "TrustedWebActivityPostMessage", base::FEATURE_DISABLED_BY_DEFAULT};
