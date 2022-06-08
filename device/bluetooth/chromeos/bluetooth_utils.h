@@ -52,7 +52,10 @@ enum class ConnectionFailureReason {
   kUnknownConnectionError = 5,
   kUnsupportedDevice = 6,
   kNotConnectable = 7,
-  kMaxValue = kNotConnectable
+  kAuthCanceled = 8,
+  kAuthRejected = 9,
+  kInprogress = 10,
+  kMaxValue = kInprogress
 };
 
 // This enum is tied directly to a UMA enum defined in

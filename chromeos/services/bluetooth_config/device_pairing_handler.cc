@@ -43,6 +43,10 @@ mojom::PairingResult GetPairingResult(
     case device::ConnectionFailureReason::kAuthTimeout:
       [[fallthrough]];
     case device::ConnectionFailureReason::kAuthFailed:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kAuthCanceled:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kAuthRejected:
       return mojom::PairingResult::kAuthFailed;
 
     case device::ConnectionFailureReason::kUnknownError:
@@ -56,6 +60,8 @@ mojom::PairingResult GetPairingResult(
     case device::ConnectionFailureReason::kUnsupportedDevice:
       [[fallthrough]];
     case device::ConnectionFailureReason::kNotConnectable:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kInprogress:
       return mojom::PairingResult::kNonAuthFailure;
   }
 }
