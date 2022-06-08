@@ -1463,6 +1463,49 @@ TEST_F(VideoCaptureDeviceMFWinTest,
                            MF_E_VIDEO_RECORDING_DEVICE_INVALIDATED);
 }
 
+// Send random event before MF_CAPTURE_ENGINE_STOPPED
+TEST_F(VideoCaptureDeviceMFWinTest,
+       SendArbitraryMFVideoCallbackBeforeOnStoppedEvent) {
+  if (ShouldSkipTest())
+    return;
+
+  VideoCaptureDeviceDescriptor descriptor = VideoCaptureDeviceDescriptor();
+  Microsoft::WRL::ComPtr<MockMFMediaSource> media_source =
+      new MockMFMediaSource();
+  Microsoft::WRL::ComPtr<MockMFCaptureEngine> engine =
+      new MockMFCaptureEngine();
+  std::unique_ptr<VideoCaptureDeviceMFWin> device =
+      std::make_unique<VideoCaptureDeviceMFWin>(
+          descriptor, media_source,
+          /*mf_dxgi_device_manager=*/nullptr, engine);
+
+  EXPECT_CALL(*(engine.Get()), OnInitEventGuid).WillOnce([]() {
+    return MF_CAPTURE_ENGINE_INITIALIZED;
+  });
+
+  EXPECT_CALL(*(engine.Get()), OnCorrectInitializeQueued());
+
+  EXPECT_TRUE(device->Init());
+
+  PrepareMFDeviceWithOneVideoStream(MFVideoFormat_I420);
+
+  EXPECT_CALL(*(engine_.Get()), OnStartPreview());
+  EXPECT_CALL(*client_, OnStarted());
+
+  VideoCaptureFormat format(gfx::Size(640, 480), 30, media::PIXEL_FORMAT_NV12);
+  VideoCaptureParams video_capture_params;
+  video_capture_params.requested_format = format;
+  device_->AllocateAndStart(video_capture_params, std::move(client_));
+
+  // Send an arbitrary event before stopping the preview.
+  EXPECT_CALL(*(engine_.Get()), OnStopPreview()).WillRepeatedly([&]() {
+    engine->FireCaptureEvent(MF_CAPTURE_ENGINE_CAMERA_STREAM_BLOCKED, S_OK);
+  });
+
+  capture_preview_sink_->sample_callback->OnSample(nullptr);
+  device_->StopAndDeAllocate();
+}
+
 // Allocates device with flaky methods failing with MF_E_INVALIDREQUEST and
 // expects the device to retry and start correctly
 TEST_F(VideoCaptureDeviceMFWinTest, AllocateAndStartWithFlakyInvalidRequest) {
