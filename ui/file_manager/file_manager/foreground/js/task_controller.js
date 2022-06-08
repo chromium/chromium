@@ -533,27 +533,39 @@ export class TaskController {
     this.extractTasks_.delete(taskId);
   }
 
-  async startGetPasswordThenExtractTask(selectionEntries, params) {
+  /**
+   * Starts extraction for a single entry and stores the task details.
+   * @private
+   */
+  async startExtractTask_(entry, params) {
+    let taskId;
+    try {
+      taskId = await startIOTask(
+          chrome.fileManagerPrivate.IOTaskType.EXTRACT, [entry], params);
+      this.storeExtractTaskDetails(taskId, [entry], params);
+    } catch (e) {
+      console.warn('Error getting extract taskID', e);
+    }
+  }
+
+  /**
+   * Triggers a password dialog and starts an extract task with the
+   * password (unless cancel is clicked on the dialog).
+   * @private
+   */
+  async startGetPasswordThenExtractTask_(entry, params) {
     /** @type {?string} */ let password = null;
     // Ask for password.
     try {
       password = await this.ui_.passwordDialog.askForPassword(
-          selectionEntries[0].fullPath, password);
+          entry.fullPath, password);
     } catch (error) {
       console.warn('User cancelled password fetch ', error);
       return;
     }
 
     params['password'] = password;
-    let taskId;
-    try {
-      taskId = await startIOTask(
-          chrome.fileManagerPrivate.IOTaskType.EXTRACT, selectionEntries,
-          params);
-      this.storeExtractTaskDetails(taskId, selectionEntries, params);
-    } catch (e) {
-      console.warn('Error getting extract taskID', e);
-    }
+    await this.startExtractTask_(entry, params);
   }
 
   /**
@@ -564,8 +576,20 @@ export class TaskController {
   handleMissingPassword(taskId) {
     const existingOperation = this.extractTasks_.get(taskId);
     if (existingOperation) {
-      this.startGetPasswordThenExtractTask(
-          existingOperation['entries'], existingOperation['params']);
+      // If we have multiple entries (from a multi-select extract) then
+      // we need to start a new task for each of them individually so
+      // that the password dialog is presented once for every file
+      // that's encrypted.
+      const selectionEntries = existingOperation['entries'];
+      const params = existingOperation['params'];
+      if (selectionEntries.length == 1) {
+        this.startGetPasswordThenExtractTask_(
+            existingOperation['entries'][0], params);
+      } else {
+        for (const entry of selectionEntries) {
+          this.startExtractTask_(entry, params);
+        }
+      }
     }
     // Remove the failed operation reference since it's finished.
     this.deleteExtractTaskDetails(taskId);
