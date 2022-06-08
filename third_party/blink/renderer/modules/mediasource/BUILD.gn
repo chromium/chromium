@@ -16,6 +16,8 @@ blink_modules_sources("mediasource") {
     "media_source.h",
     "media_source_attachment_supplement.cc",
     "media_source_attachment_supplement.h",
+    "media_source_handle_attachment.cc",
+    "media_source_handle_attachment.h",
     "media_source_handle_impl.cc",
     "media_source_handle_impl.h",
     "media_source_registry_impl.cc",

@@ -34,6 +34,11 @@ String MediaSourceHandleImpl::GetInternalBlobURL() {
   return internal_blob_url_;
 }
 
+void MediaSourceHandleImpl::mark_serialized() {
+  DCHECK(!serialized_);
+  serialized_ = true;
+}
+
 void MediaSourceHandleImpl::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }

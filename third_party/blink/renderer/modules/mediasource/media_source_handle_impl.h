@@ -26,6 +26,8 @@ class MediaSourceHandleImpl final : public ScriptWrappable,
   scoped_refptr<MediaSourceAttachment> GetAttachment() override;
   String GetInternalBlobURL() override;
 
+  void mark_serialized();
+
   void Trace(Visitor*) const override;
 
  private:

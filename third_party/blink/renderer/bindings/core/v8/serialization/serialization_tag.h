@@ -116,6 +116,8 @@ enum SerializationTag {
 
   kCropTargetTag = 'c',  // crop_id:WebCoreString
 
+  kMediaSourceHandleTag = 'S',  // uint32_t -> transferred MediaSourceHandle
+
   // The following tags were used by the Shape Detection API implementation
   // between M71 and M81. During these milestones, the API was always behind
   // a flag. Usage was removed in https://crrev.com/c/2040378.

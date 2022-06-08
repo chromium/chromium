@@ -16,6 +16,7 @@ class CryptoKey;
 class EncodedAudioChunk;
 class EncodedVideoChunk;
 class FileSystemHandle;
+class MediaSourceHandleImpl;
 class RTCEncodedAudioFrame;
 class RTCEncodedVideoFrame;
 class VideoFrame;
@@ -59,6 +60,7 @@ class MODULES_EXPORT V8ScriptValueDeserializerForModules final
   EncodedVideoChunk* ReadEncodedVideoChunk();
   MediaStreamTrack* ReadMediaStreamTrack();
   CropTarget* ReadCropTarget();
+  MediaSourceHandleImpl* ReadMediaSourceHandle();
 };
 
 }  // namespace blink
