@@ -72,6 +72,9 @@ enum ProfileSignout : int {
   // effective on their browser if they Sync with their managed account. The
   // user has the option to sign out to avoid user policies.
   USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG = 19,
+  // The email address of the primary account on the device was updated,
+  // triggering an automatic signout followed by signin.
+  ACCOUNT_EMAIL_UPDATED = 20,
   // Keep this as the last enum.
   NUM_PROFILE_SIGNOUT_METRICS,
 };

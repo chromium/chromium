@@ -117,7 +117,7 @@ public class SigninChecker implements AccountTrackerService.Observer {
     }
 
     private void resigninAfterAccountRename(String newAccountName, boolean shouldEnableSync) {
-        mSigninManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, () -> {
+        mSigninManager.signOut(SignoutReason.ACCOUNT_EMAIL_UPDATED, () -> {
             if (shouldEnableSync) {
                 mSigninManager.signinAndEnableSync(SigninAccessPoint.ACCOUNT_RENAMED,
                         AccountUtils.createAccountFromName(newAccountName), new SignInCallback() {

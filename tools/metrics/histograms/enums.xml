@@ -86988,7 +86988,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     The preference or policy controlling if signin is valid changed during the
     signin process.
   </int>
-  <int value="3" label="User clicked signout">User clicked to signout.</int>
+  <int value="3" label="User clicked signout from settings">
+    User clicked to signout from the settings screen.
+  </int>
   <int value="4" label="Signin aborted">
     The signin process was aborted, but signin had succeeded, so signout. This
     may be due to a server response, policy definition or user action.
@@ -87034,11 +87036,25 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     Sign-out forced because the account was removed from the device after a
     device restore. iOS only.
   </int>
-  <int value="16" label="User clicked Turn off sync">
+  <int value="16" label="User clicked turn off sync">
     User clicked the 'Turn off sync' option within settings. Android only.
   </int>
-  <int value="17" label="User Clicked Signout From Profile Menu">
+  <int value="17" label="User clicked signout From profile menu">
     User Clicked Signout in the profile menu.
+  </int>
+  <int value="18" label="Retriggered from web signin">
+    User retriggered signin from the Android web sign-in bottomsheet.
+  </int>
+  <int value="19" label="User clicked signout from user policy notification">
+    User clicked on sign-out from the notification dialog for User Policy. The
+    notification informs the user that from now on user policies may be
+    effective on their browser if they Sync with their managed account. The user
+    has the option to sign out to avoid user policies.
+  </int>
+  <int value="20" label="Account email updated">
+    The email of the primary account on the device was renamed (from a non-gmail
+    to gmail address), triggering an automatic signout followed by signin.
+    Android only.
   </int>
 </enum>
 

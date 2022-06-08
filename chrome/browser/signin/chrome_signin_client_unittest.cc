@@ -295,6 +295,8 @@ bool IsSignoutDisallowedByPolicy(
     case signin_metrics::ProfileSignout::
         USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG:
       return false;
+    case signin_metrics::ProfileSignout::ACCOUNT_EMAIL_UPDATED:
+      return true;
     case signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS:
       NOTREACHED();
       return false;
@@ -436,7 +438,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::SIGNIN_RETRIGGERD_FROM_WEB_SIGNIN,
     signin_metrics::ProfileSignout::
         USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG,
-
+    signin_metrics::ProfileSignout::ACCOUNT_EMAIL_UPDATED,
 };
 static_assert(std::size(kSignoutSources) ==
                   signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS,
