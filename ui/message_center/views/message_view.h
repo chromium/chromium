@@ -279,6 +279,9 @@ class MESSAGE_CENTER_EXPORT MessageView
   // True if the slide is disabled forcibly.
   bool disable_slide_ = false;
 
+  // True if the view is in a slide.
+  bool is_sliding_ = false;
+
   raw_ptr<MessageView> parent_message_view_ = nullptr;
   raw_ptr<views::FocusManager> focus_manager_ = nullptr;
   raw_ptr<views::ScrollView> scroller_ = nullptr;
