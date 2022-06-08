@@ -9325,6 +9325,7 @@ if (!is_android) {
     if (is_chromeos_ash) {
       deps += [
         "//ash/components/login/auth",
+        "//ash/constants",
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/media/router:test_support",
         "//chromeos/dbus",
