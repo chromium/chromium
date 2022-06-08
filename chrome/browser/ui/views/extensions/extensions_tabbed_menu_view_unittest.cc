@@ -1170,6 +1170,40 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   EXPECT_FALSE(site_access_message()->GetVisible());
 }
 
+// Test extensions with activeTab are placed in the correct site access section.
+TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_ActiveTabExtension) {
+  InstallExtensionWithPermissions("Extension", {"activeTab"});
+
+  const GURL url("http://www.url.com");
+  web_contents_tester()->NavigateAndCommit(url);
+
+  ShowSiteAccessTabInMenu();
+  ASSERT_EQ(
+      GetUserSiteSetting(url),
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+
+  // activeTab extensions are labeled as requesting access since they still need
+  // a click to run.
+  EXPECT_FALSE(IsHasAccessSectionDisplayed());
+  EXPECT_TRUE(IsRequestsAccessSectionDisplayed());
+  EXPECT_FALSE(site_access_message()->GetVisible());
+
+  SelectSiteSetting(kGrantAllExtensionsIndex);
+
+  // activeTab extensions are labeled as having access but  will only run when
+  // clicked.
+  EXPECT_TRUE(IsHasAccessSectionDisplayed());
+  EXPECT_FALSE(IsRequestsAccessSectionDisplayed());
+  EXPECT_FALSE(site_access_message()->GetVisible());
+
+  SelectSiteSetting(kBlockAllExtensionsIndex);
+
+  // activeTab extensions are labeled as blocked as the rest of extensions.
+  EXPECT_FALSE(IsHasAccessSectionDisplayed());
+  EXPECT_FALSE(IsRequestsAccessSectionDisplayed());
+  EXPECT_TRUE(site_access_message()->GetVisible());
+}
+
 TEST_F(ExtensionsTabbedMenuViewUnitTest, WindowTitle) {
   InstallExtension("Test Extension");
 

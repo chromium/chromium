@@ -869,11 +869,6 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
       ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
           actions_, web_contents));
 
-  // TODO(crbug.com/1239772): The request access button should only include
-  // extensions that are requesting access to a restricted site.
-  // `SiteInteraction::kPending` includes extensions with activeTab, that can
-  // request access to restricted or non-restricted sites. Need to update the
-  // method to not take into account activeTab extensions.
   std::vector<ToolbarActionViewController*> extensions_requesting_access;
   for (const auto& action : actions_) {
     if (action->IsRequestingSiteAccess(web_contents))

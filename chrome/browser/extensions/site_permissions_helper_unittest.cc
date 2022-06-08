@@ -191,8 +191,8 @@ TEST_F(SitePermissionsHelperUnitTest, SiteAccessAndInteraction_ActiveTab) {
       /*host_permissions=*/{}, /*permissions=*/{"activeTab"});
 
   {
-    // Verify a non-restricted url has "on click" site access and "pending" site
-    // interaction when the extension only has active tab permission.
+    // Verify a non-restricted url has "on click" site access and "active tab"
+    // site interaction when the extension only has active tab permission.
     const GURL non_restricted_url("http://www.non-restricted.com");
     auto* web_contents = AddTab(non_restricted_url);
     EXPECT_EQ(
@@ -200,7 +200,7 @@ TEST_F(SitePermissionsHelperUnitTest, SiteAccessAndInteraction_ActiveTab) {
         SiteAccess::kOnClick);
     EXPECT_EQ(
         permissions_helper()->GetSiteInteraction(*extension, web_contents),
-        SiteInteraction::kPending);
+        SiteInteraction::kActiveTab);
   }
 
   {
@@ -235,7 +235,7 @@ TEST_F(SitePermissionsHelperUnitTest,
   }
 
   {
-    // Verify a non-restricted url has "on click" site access and  "pending"
+    // Verify a non-restricted url has "on click" site access and  "active tab"
     // site interaction when the extension does not request it but has active
     // tab permission.
     const GURL non_requested_url("http://www.non-requested.com");
@@ -245,7 +245,7 @@ TEST_F(SitePermissionsHelperUnitTest,
         SiteAccess::kOnClick);
     EXPECT_EQ(
         permissions_helper()->GetSiteInteraction(*extension, web_contents),
-        SiteInteraction::kPending);
+        SiteInteraction::kActiveTab);
   }
 }
 

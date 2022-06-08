@@ -262,6 +262,7 @@ ExtensionsMenuView::Section* ExtensionsMenuView::GetSectionForSiteInteraction(
       section = &cant_access_;
       break;
     case extensions::SitePermissionsHelper::SiteInteraction::kPending:
+    case extensions::SitePermissionsHelper::SiteInteraction::kActiveTab:
       section = &wants_access_;
       break;
     case extensions::SitePermissionsHelper::SiteInteraction::kActive:

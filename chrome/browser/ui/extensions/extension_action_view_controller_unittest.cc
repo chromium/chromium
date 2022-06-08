@@ -657,7 +657,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
   content::WebContents* web_contents = GetActiveWebContents();
 
   {
-    EXPECT_EQ(SiteInteraction::kPending,
+    EXPECT_EQ(SiteInteraction::kActiveTab,
               controller->GetSiteInteraction(web_contents));
     EXPECT_TRUE(controller->IsEnabled(web_contents));
     std::unique_ptr<IconWithBadgeImageSource> image_source =
@@ -702,8 +702,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
   }
 }
 
-// Tests that an extension with the activeTab permission is shown to be pending
-// user approval for normal web pages, but not for restricted URLs.
+// Tests that an extension with the activeTab permission has active tab site
+// interaction except for restricted URLs.
 TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
       "active tab", extensions::ActionInfo::TYPE_BROWSER, {"activeTab"});
@@ -717,7 +717,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
   ASSERT_TRUE(controller);
   content::WebContents* web_contents = GetActiveWebContents();
 
-  EXPECT_EQ(SiteInteraction::kPending,
+  EXPECT_EQ(SiteInteraction::kActiveTab,
             controller->GetSiteInteraction(web_contents));
 
   // Click on the action, which grants activeTab and allows the extension to
@@ -738,8 +738,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
             controller->GetSiteInteraction(web_contents));
 }
 
-// Tests that file URLs only show as pending user approval for activeTab
-// extensions if the extension has file URL access.
+// Tests that file URLs only have active tab site interaction if the extension
+// has active tab permission and file URL access.
 TEST_F(ExtensionActionViewControllerUnitTest,
        GetSiteInteractionActiveTabWithFileURL) {
   // We need to use a TestExtensionDir here to allow for the reload when giving
@@ -786,7 +786,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   ASSERT_TRUE(extension);
   // Refresh the controller as the extension has been reloaded.
   controller = GetViewControllerForId(extension->id());
-  EXPECT_EQ(SiteInteraction::kPending,
+  EXPECT_EQ(SiteInteraction::kActiveTab,
             controller->GetSiteInteraction(web_contents));
   controller->ExecuteUserAction(
       ToolbarActionViewController::InvocationSource::kToolbarButton);

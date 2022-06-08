@@ -292,3 +292,17 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
 
 // TODO(crbug.com/3671898): Add a test that checks the correct dialog is open
 // when clicking on request access button.
+
+// Tests that extensions with active tab are not taken into account for the
+// request access button visibility.
+TEST_F(ExtensionsToolbarControlsUnitTest,
+       RequestAccessButtonVisibility_ActiveTabExtensions) {
+  content::WebContentsTester* web_contents_tester =
+      AddWebContentsAndGetTester();
+  const GURL url("http://www.url.com");
+
+  web_contents_tester->NavigateAndCommit(url);
+
+  InstallExtensionWithPermissions("Extension", {"activeTab"});
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+}

@@ -40,7 +40,7 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
     return browser_view()->toolbar()->extensions_container();
   }
 
-  // Adds the specified `extension` with no host permissions.
+  // Adds the specified `extension`.
   scoped_refptr<const extensions::Extension> InstallExtension(
       const std::string& name);
 
@@ -48,6 +48,18 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
   scoped_refptr<const extensions::Extension>
   InstallExtensionWithHostPermissions(
       const std::string& name,
+      const std::vector<std::string>& host_permissions);
+
+  // Adds the specified `extension` with the given `permissions`.
+  scoped_refptr<const extensions::Extension> InstallExtensionWithPermissions(
+      const std::string& name,
+      const std::vector<std::string>& permissions);
+
+  // Adds the specified `extension` with the given `host_permissions` and
+  // `permissions`.
+  scoped_refptr<const extensions::Extension> InstallExtension(
+      const std::string& name,
+      const std::vector<std::string>& permissions,
       const std::vector<std::string>& host_permissions);
 
   // Reloads the extension of the given `extension_id`.

@@ -624,9 +624,7 @@ void ExtensionsTabbedMenuView::MaybeCreateAndInsertSiteAccessItem(
 
   // Extensions with no current site interaction don't belong to a site access
   // section and therefore do not need a site access item view.
-  auto site_interaction =
-      controller->GetSiteInteraction(GetActiveWebContents());
-  auto* section = GetSectionForSiteInteraction(site_interaction);
+  auto* section = GetSectionForAction(controller.get());
   if (!section)
     return;
 
@@ -684,8 +682,7 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessMenuItems(
     }
 
     DCHECK(section);
-    auto* new_section = GetSectionForSiteInteraction(
-        item->view_controller()->GetSiteInteraction(GetActiveWebContents()));
+    auto* new_section = GetSectionForAction(item->view_controller());
 
     // Remove item when it is no section at all.
     if (!new_section) {
@@ -815,14 +812,31 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility(
 }
 
 ExtensionsTabbedMenuView::SiteAccessSection*
-ExtensionsTabbedMenuView::GetSectionForSiteInteraction(
-    extensions::SitePermissionsHelper::SiteInteraction status) {
-  switch (status) {
+ExtensionsTabbedMenuView::GetSectionForAction(
+    ToolbarActionViewController* action) {
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  auto site_interaction = action->GetSiteInteraction(web_contents);
+  switch (site_interaction) {
     case extensions::SitePermissionsHelper::SiteInteraction::kNone:
       // Extensions with no interaction with the current site don't belong to a
       // site access section.
       return nullptr;
     case extensions::SitePermissionsHelper::SiteInteraction::kPending:
+      return &requests_access_;
+    case extensions::SitePermissionsHelper::SiteInteraction::kActiveTab:
+      // When all extensions have access, activeTab extensions are labeled as
+      // having access even though they still will only run when clicked. This
+      // is because from a user's perspective, clicking on these extensions
+      // becomes an activation process to perform an action, rather than a
+      // process by which permission is granted.
+      extensions::PermissionsManager::UserSiteSetting site_setting;
+      site_setting =
+          extensions::PermissionsManager::Get(browser_->profile())
+              ->GetUserSiteSetting(
+                  web_contents->GetMainFrame()->GetLastCommittedOrigin());
+      if (site_setting == UserSiteSetting::kGrantAllExtensions)
+        return &has_access_;
       return &requests_access_;
     case extensions::SitePermissionsHelper::SiteInteraction::kActive:
       return &has_access_;

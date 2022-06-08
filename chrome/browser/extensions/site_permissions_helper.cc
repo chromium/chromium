@@ -68,14 +68,17 @@ SitePermissionsHelper::GetSiteInteraction(
     return SiteInteraction::kActive;
   }
 
+  if (HasActiveTabAndCanAccess(extension, url)) {
+    return SiteInteraction::kActiveTab;
+  }
+
   // TODO(tjudkins): Investigate if we need to check HasBeenBlocked() for this
   // case. We do know that extensions that have been blocked should always be
   // marked pending, but those cases should be covered by the withheld page
   // access checks.
   if (page_access == PermissionsData::PageAccess::kWithheld ||
       script_access == PermissionsData::PageAccess::kWithheld ||
-      HasBeenBlocked(extension, web_contents) ||
-      HasActiveTabAndCanAccess(extension, url)) {
+      HasBeenBlocked(extension, web_contents)) {
     return SiteInteraction::kPending;
   }
 

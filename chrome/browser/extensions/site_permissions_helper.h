@@ -35,6 +35,9 @@ class SitePermissionsHelper {
     // The extension would like access to the site, but is pending user
     // approval.
     kPending,
+    // The extension has activeTab permission to run on the site, but is pending
+    // user action to run.
+    kActiveTab,
     // The extension has permission to run on the site.
     kActive,
   };

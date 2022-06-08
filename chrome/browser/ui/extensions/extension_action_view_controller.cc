@@ -193,6 +193,7 @@ std::u16string ExtensionActionViewController::GetAccessibleName(
       // No string for neither having nor wanting access.
       break;
     case extensions::SitePermissionsHelper::SiteInteraction::kPending:
+    case extensions::SitePermissionsHelper::SiteInteraction::kActiveTab:
       site_interaction_description_id = IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE;
       break;
     case extensions::SitePermissionsHelper::SiteInteraction::kActive:
@@ -219,10 +220,15 @@ bool ExtensionActionViewController::IsEnabled(
   if (!ExtensionIsValid())
     return false;
 
+  extensions::SitePermissionsHelper::SiteInteraction site_interaction =
+      GetSiteInteraction(web_contents);
+
   return extension_action_->GetIsVisible(
              sessions::SessionTabHelper::IdForTab(web_contents).id()) ||
-         GetSiteInteraction(web_contents) ==
-             extensions::SitePermissionsHelper::SiteInteraction::kPending;
+         site_interaction ==
+             extensions::SitePermissionsHelper::SiteInteraction::kPending ||
+         site_interaction ==
+             extensions::SitePermissionsHelper::SiteInteraction::kActiveTab;
 }
 
 bool ExtensionActionViewController::IsShowingPopup() const {

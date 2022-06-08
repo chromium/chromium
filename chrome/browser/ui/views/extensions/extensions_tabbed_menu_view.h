@@ -189,8 +189,7 @@ class ExtensionsTabbedMenuView
   void UpdateSiteAccessSectionsVisibility(bool show_combobox);
 
   // Returns the section corresponding to `site_interaction`, or nullptr.
-  SiteAccessSection* GetSectionForSiteInteraction(
-      extensions::SitePermissionsHelper::SiteInteraction site_interaction);
+  SiteAccessSection* GetSectionForAction(ToolbarActionViewController* action);
 
   // Returns the currently-showing menu items for `section` in the
   // site access tab, if any exists.
