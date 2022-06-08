@@ -16,13 +16,16 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/pref_types.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -381,6 +384,28 @@ void PermissionsManager::OnUserPermissionsSettingsChanged() const {
   URLPatternSet user_allowed_sites;
   for (const auto& site : user_permissions_.permitted_sites)
     user_allowed_sites.AddOrigin(Extension::kValidHostPermissionSchemes, site);
+
+  // Send the new policy to the renderers.
+  {
+    ExtensionsBrowserClient* browser_client = ExtensionsBrowserClient::Get();
+    for (content::RenderProcessHost::iterator host_iterator(
+             content::RenderProcessHost::AllHostsIterator());
+         !host_iterator.IsAtEnd(); host_iterator.Advance()) {
+      content::RenderProcessHost* host = host_iterator.GetCurrentValue();
+      if (host->IsInitializedAndNotDead() &&
+          browser_client->IsSameContext(browser_context_,
+                                        host->GetBrowserContext())) {
+        mojom::Renderer* renderer =
+            RendererStartupHelperFactory::GetForBrowserContext(
+                host->GetBrowserContext())
+                ->GetRenderer(host);
+        if (renderer) {
+          renderer->UpdateUserHostRestrictions(user_blocked_sites.Clone(),
+                                               user_allowed_sites.Clone());
+        }
+      }
+    }
+  }
 
   PermissionsData::SetUserHostRestrictions(
       util::GetBrowserContextId(browser_context_),

@@ -41,10 +41,12 @@ class UserHostRestrictionsBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
+  content::WebContents* GetActiveTab() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
   int GetActiveTabId() {
-    return sessions::SessionTabHelper::IdForTab(
-               browser()->tab_strip_model()->GetActiveWebContents())
-        .id();
+    return sessions::SessionTabHelper::IdForTab(GetActiveTab()).id();
   }
 
  private:
@@ -124,6 +126,59 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
     EXPECT_EQ("Error: Blocked", try_execute_script(GetActiveTabId()));
   } else {
     EXPECT_EQ(restricted_url.spec(), try_execute_script(GetActiveTabId()));
+  }
+}
+
+// Tests that extensions cannot run on user-restricted sites. This specifically
+// checks renderer-side permissions restrictions (with content scripts).
+IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
+                       ExtensionsCannotRunOnUserRestrictedSites_RendererCheck) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "version": "0.1",
+           "manifest_version": 3,
+           "content_scripts": [{
+             "matches": ["<all_urls>"],
+             "js": ["content_script.js"],
+             "run_at": "document_end"
+           }]
+         })";
+
+  // Change the page title if the script is injected. Since the script is
+  // injected at document_end (which happens before the page completes loading),
+  // there shouldn't be a race condition in our checks.
+  static constexpr char kContentScript[] = "document.title = 'Injected';";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const GURL allowed_url =
+      embedded_test_server()->GetURL("allowed.example", "/title1.html");
+  const GURL restricted_url =
+      embedded_test_server()->GetURL("restricted.example", "/title2.html");
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  permissions_manager->AddUserRestrictedSite(
+      url::Origin::Create(restricted_url));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+  static constexpr char16_t kInjectedTitle[] = u"Injected";
+  EXPECT_EQ(kInjectedTitle, GetActiveTab()->GetTitle());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), restricted_url));
+
+  // The extension should not be able to run on the user-restricted site iff
+  // the feature is enabled.
+  if (GetParam()) {
+    EXPECT_EQ(u"Title Of Awesomeness", GetActiveTab()->GetTitle());
+  } else {
+    EXPECT_EQ(kInjectedTitle, GetActiveTab()->GetTitle());
   }
 }
 

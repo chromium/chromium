@@ -124,7 +124,7 @@ PermissionsManagerUnittest::GetPermittedSitesFromManager() {
 std::set<std::string>
 PermissionsManagerUnittest::GetRestrictedSitesFromPermissionsData() {
   std::set<std::string> string_patterns;
-  URLPatternSet patterns = PermissionsData::GetUserBlockedHostsForTesting(
+  URLPatternSet patterns = PermissionsData::GetUserBlockedHosts(
       util::GetBrowserContextId(browser_context()));
   for (const auto& pattern : patterns)
     string_patterns.insert(pattern.GetAsString());
@@ -134,7 +134,7 @@ PermissionsManagerUnittest::GetRestrictedSitesFromPermissionsData() {
 std::set<std::string>
 PermissionsManagerUnittest::GetPermittedSitesFromPermissionsData() {
   std::set<std::string> string_patterns;
-  URLPatternSet patterns = PermissionsData::GetUserAllowedHostsForTesting(
+  URLPatternSet patterns = PermissionsData::GetUserAllowedHosts(
       util::GetBrowserContextId(browser_context()));
   for (const auto& pattern : patterns)
     string_patterns.insert(pattern.GetAsString());

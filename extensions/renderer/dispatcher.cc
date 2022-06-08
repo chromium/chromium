@@ -1223,6 +1223,18 @@ void Dispatcher::UpdateDefaultPolicyHostRestrictions(
   UpdateAllBindings();
 }
 
+void Dispatcher::UpdateUserHostRestrictions(URLPatternSet user_blocked_hosts,
+                                            URLPatternSet user_allowed_hosts) {
+  PermissionsData::SetUserHostRestrictions(kRendererProfileId,
+                                           std::move(user_blocked_hosts),
+                                           std::move(user_allowed_hosts));
+
+  // TODO(https://crbug.com/1268198): Update origin permissions and bindings as
+  // we do with policy host restrictions above.  Currently, user host
+  // restrictions aren't used in the origin access allowlist, so there's no
+  // point in updating it.
+}
+
 void Dispatcher::UpdateTabSpecificPermissions(const std::string& extension_id,
                                               URLPatternSet new_hosts,
                                               int tab_id,

@@ -266,6 +266,13 @@ class PermissionsData {
   static URLPatternSet GetDefaultPolicyBlockedHosts(int context_id);
   static URLPatternSet GetDefaultPolicyAllowedHosts(int context_id);
 
+  // Returns the list of hosts that the user has explicitly allowed or blocked
+  // all extensions from running on. As with the policy host restrictions above,
+  // accessing these should only be done for serialization and to update
+  // renderers; otherwise, rely on methods like `CanAccessPage()`.
+  static URLPatternSet GetUserAllowedHosts(int context_id);
+  static URLPatternSet GetUserBlockedHosts(int context_id);
+
   // Returns list of hosts for *this* extension that enterprise policy has
   // explicitly blocked or allowed extensions to run on. If the extension uses
   // the default set, this will fall back to `GetDefaultPolicy*Hosts()`.
@@ -287,10 +294,6 @@ class PermissionsData {
     return GetTabSpecificPermissions(tab_id);
   }
 #endif
-
-  // Testing-only helper methods to verify internal state.
-  static URLPatternSet GetUserAllowedHostsForTesting(int context_id);
-  static URLPatternSet GetUserBlockedHostsForTesting(int context_id);
 
  private:
   // Gets the tab-specific host permissions of |tab_id|, or NULL if there

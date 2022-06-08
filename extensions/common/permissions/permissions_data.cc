@@ -267,14 +267,14 @@ void PermissionsData::SetUserHostRestrictions(
 }
 
 // static
-URLPatternSet PermissionsData::GetUserAllowedHostsForTesting(int context_id) {
+URLPatternSet PermissionsData::GetUserAllowedHosts(int context_id) {
   base::AutoLock lock(GetContextPermissionsLock());
   return GetContextPermissions(context_id)
       .user_restrictions.allowed_hosts.Clone();
 }
 
 // static
-URLPatternSet PermissionsData::GetUserBlockedHostsForTesting(int context_id) {
+URLPatternSet PermissionsData::GetUserBlockedHosts(int context_id) {
   base::AutoLock lock(GetContextPermissionsLock());
   return GetContextPermissions(context_id)
       .user_restrictions.blocked_hosts.Clone();
