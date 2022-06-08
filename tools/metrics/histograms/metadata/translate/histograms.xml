@@ -337,6 +337,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Translate.LanguageDetection.TFLiteModelEvaluationDuration"
+    units="ms" expires_after="2022-11-13">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the time taken for the TFLite language detection model to determine
+    page language. Unlike Translate.LanguageDeterminedDuration, this metric does
+    not record the duration for CDL3 language detection when the TFLite model is
+    unavailable.
+  </summary>
+</histogram>
+
 <histogram name="Translate.LanguageDetectionTiming"
     enum="TranslateLanguageDetectionTiming" expires_after="M85">
   <owner>andrewhayden@chromium.org</owner>

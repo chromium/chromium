@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/prefs/pref_member.h"
 #include "components/translate/core/browser/translate_pref_names.h"
@@ -36,6 +37,9 @@ namespace translate {
 namespace {
 // Name for the UMA metric used to track text extraction time.
 const char kTranslateCaptureText[] = "Translate.CaptureText";
+// Name for the UMA metric used to track language detection evaluation duration.
+const char kTranslateLanguageDetectionTFLiteModelEvaluationDuration[] =
+    "Translate.LanguageDetection.TFLiteModelEvaluationDuration";
 // Prefix for the language detection javascript commands. Must be kept in sync
 // with language_detection.js.
 const char kCommandPrefix[] = "languageDetection";
@@ -160,10 +164,14 @@ void LanguageDetectionController::OnTextRetrieved(
         LanguageDetectionMethod::kTFLiteModelUsed);
     // TODO(crbug/1309448): Remove logging
     NSLog(@"LanguageDetectionController: Using TFLite language detection.");
+    base::ElapsedTimer timer;
     language = language_detection_model_->DeterminePageLanguage(
         http_content_language, html_lang,
         GetStringByClippingLastWord(text, kMaxIndexChars),
         &model_detected_language, &is_model_reliable, model_reliability_score);
+    base::UmaHistogramTimes(
+        kTranslateLanguageDetectionTFLiteModelEvaluationDuration,
+        timer.Elapsed());
     detection_model_version = language_detection_model_->GetModelVersion();
   } else {
     if (IsTFLiteLanguageDetectionEnabled()) {

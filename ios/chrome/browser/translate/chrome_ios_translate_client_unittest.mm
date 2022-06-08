@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "base/files/file_util.h"
 #import "base/metrics/metrics_hashes.h"
+#import "base/path_service.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/values.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/translate/core/browser/translate_metrics_logger.h"
 #import "components/translate/core/common/translate_util.h"
+#import "components/translate/core/language_detection/language_detection_model.h"
+#import "components/translate/ios/browser/language_detection_controller.h"
+#import "components/translate/ios/browser/language_detection_model_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/language/language_model_manager_factory.h"
@@ -57,6 +63,19 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   web::FakeWebState web_state_;
 };
+
+base::File GetValidModelFile() {
+  base::FilePath source_root_dir;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
+  base::FilePath model_file_path = source_root_dir.AppendASCII("components")
+                                       .AppendASCII("test")
+                                       .AppendASCII("data")
+                                       .AppendASCII("translate")
+                                       .AppendASCII("valid_model.tflite");
+  base::File file(model_file_path,
+                  (base::File::FLAG_OPEN | base::File::FLAG_READ));
+  return file;
+}
 
 TEST_F(ChromeIOSTranslateClientTest, TranslateUICreated) {
   ChromeIOSTranslateClient* translate_client =
@@ -139,4 +158,26 @@ TEST_F(ChromeIOSTranslateClientTest, PageTranslationCorrectlyUpdatesMetrics) {
                                        base::HashMetricName("ko"), 1);
   histogram_tester_.ExpectUniqueSample("Translate.PageLoad.NumTranslations", 1,
                                        1);
+}
+
+TEST_F(ChromeIOSTranslateClientTest, TFLiteLanguageDetectionDurationRecorded) {
+  ChromeIOSTranslateClient* translate_client =
+      ChromeIOSTranslateClient::FromWebState(&web_state_);
+
+  histogram_tester_.ExpectTotalCount(
+      "Translate.LanguageDetection.TFLiteModelEvaluationDuration", 0);
+
+  translate::LanguageDetectionController* language_detection_controller =
+      translate_client->GetTranslateDriver()->language_detection_controller();
+  language_detection_controller->language_detection_model_->UpdateWithFile(
+      GetValidModelFile());
+  EXPECT_TRUE(
+      language_detection_controller->language_detection_model_->IsAvailable());
+
+  base::Value text_content("hello world");
+  language_detection_controller->OnTextRetrieved(true, "en", "en", GURL(""),
+                                                 &text_content);
+
+  histogram_tester_.ExpectTotalCount(
+      "Translate.LanguageDetection.TFLiteModelEvaluationDuration", 1);
 }

@@ -82,12 +82,14 @@ source_set("unit_tests") {
   deps = [
     ":public",
     ":translate",
+    ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
     "//components/language/core/browser",
     "//components/language/ios/browser",
     "//components/translate/core/browser",
     "//components/translate/core/common",
+    "//components/translate/core/language_detection",
     "//components/translate/ios/browser",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
@@ -163,4 +165,12 @@ source_set("eg_test_support+eg2") {
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
   ]
+}
+
+bundle_data("unit_tests_bundle_data") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+  sources = [ "//components/test/data/translate/valid_model.tflite" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
