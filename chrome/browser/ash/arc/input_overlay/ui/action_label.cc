@@ -52,6 +52,8 @@ constexpr float kHaloThickness = 4;
 constexpr base::StringPiece kEditErrorSameKey("Same key");
 constexpr base::StringPiece kEditInfoMessage(
     "Click on any key, then press a keyboard key to customize");
+constexpr base::StringPiece kEditErrorUnbound(
+    "Key is missing. Press a keyboard key to customize.");
 
 // Arrow symbols for arrow keys.
 constexpr char kLeftArrow[] = "←";
@@ -253,7 +255,11 @@ void ActionLabel::OnMouseExited(const ui::MouseEvent& event) {
 void ActionLabel::OnFocus() {
   SetToEditFocus();
   LabelButton::OnFocus();
-  static_cast<ActionView*>(parent())->ShowInfoMsg(kEditInfoMessage, this);
+  if (IsUnbound()) {
+    static_cast<ActionView*>(parent())->ShowErrorMsg(kEditErrorUnbound, this);
+  } else {
+    static_cast<ActionView*>(parent())->ShowInfoMsg(kEditInfoMessage, this);
+  }
 }
 
 void ActionLabel::OnBlur() {
