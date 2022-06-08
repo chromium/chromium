@@ -330,6 +330,24 @@ const base::Value* GetGlobalConfigFromPolicy(bool for_active_user) {
       ->GetGlobalConfigFromPolicy(username_hash);
 }
 
+// Replaces user-specific string placeholders in |network_configs|, which must
+// be a list of ONC NetworkConfigurations. Currently only user name placeholders
+// are implemented, which are replaced by attributes from |user|.
+void ExpandStringPlaceholdersInNetworksForUser(const user_manager::User* user,
+                                               base::Value* network_configs) {
+  DCHECK(network_configs->is_list());
+  if (!user) {
+    // In tests no user may be logged in. It's not harmful if we just don't
+    // expand the strings.
+    return;
+  }
+
+  // Note: It is OK for the placeholders to be replaced with empty strings if
+  // that is what the getters on |user| provide.
+  VariableExpander variable_expander(GetVariableExpansionsForUser(user));
+  chromeos::onc::ExpandStringsInNetworks(variable_expander, network_configs);
+}
+
 }  // namespace
 
 NetworkTypePattern NetworkTypePatternFromOncType(const std::string& type) {
@@ -467,23 +485,13 @@ base::Value ConvertProxyConfigToOncProxySettings(
   return proxy_settings;
 }
 
-void ExpandStringPlaceholdersInNetworksForUser(const user_manager::User* user,
-                                               base::Value* network_configs) {
-  DCHECK(network_configs->is_list());
-  if (!user) {
-    // In tests no user may be logged in. It's not harmful if we just don't
-    // expand the strings.
-    return;
-  }
-
-  // Note: It is OK for the placeholders to be replaced with empty strings if
-  // that is what the getters on |user| provide.
-  base::flat_map<std::string, std::string> substitutions;
-  substitutions[::onc::substitutes::kLoginID] = user->GetAccountName(false);
-  substitutions[::onc::substitutes::kLoginEmail] =
+base::flat_map<std::string, std::string> GetVariableExpansionsForUser(
+    const user_manager::User* user) {
+  base::flat_map<std::string, std::string> expansions;
+  expansions[::onc::substitutes::kLoginID] = user->GetAccountName(false);
+  expansions[::onc::substitutes::kLoginEmail] =
       user->GetAccountId().GetUserEmail();
-  VariableExpander variable_expander(std::move(substitutions));
-  chromeos::onc::ExpandStringsInNetworks(variable_expander, network_configs);
+  return expansions;
 }
 
 int ImportNetworksForUser(const user_manager::User* user,
@@ -511,8 +519,8 @@ int ImportNetworksForUser(const user_manager::User* user,
     base::Value normalized_network = normalizer.NormalizeObject(
         &onc::kNetworkConfigurationSignature, network);
 
-    // TODO(pneubeck): Use ONC and ManagedNetworkConfigurationHandler instead.
-    // crbug.com/457936
+    // TODO(b/235297258): Use ONC and ManagedNetworkConfigurationHandler
+    // instead.
     base::Value shill_dict = onc::TranslateONCObjectToShill(
         &onc::kNetworkConfigurationSignature, normalized_network);
 

@@ -90,6 +90,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
 
   bool IsAnyPolicyApplicationRunning() const override;
 
+  void SetProfileWideVariableExpansions(
+      const std::string& userhash,
+      base::flat_map<std::string, std::string> expansions) override;
+
   const base::Value* FindPolicyByGUID(
       const std::string userhash,
       const std::string& guid,
@@ -186,6 +190,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
             NetworkDeviceHandler* network_device_handler,
             ProhibitedTechnologiesHandler* prohibitied_technologies_handler);
 
+  // Returns the ProfilePolicies for the given |userhash|, or the device
+  // policies if |userhash| is empty. Creates the ProfilePolicies entry if it
+  // does not exist yet.
+  ProfilePolicies* GetOrCreatePoliciesForUser(const std::string& userhash);
   // Returns the ProfilePolicies for the given |userhash|, or the device
   // policies if |userhash| is empty.
   const ProfilePolicies* GetPoliciesForUser(const std::string& userhash) const;

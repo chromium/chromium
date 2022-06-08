@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/components/onc/variable_expander.h"
 #include "chromeos/network/network_type_pattern.h"
@@ -51,12 +52,9 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 base::Value ConvertProxyConfigToOncProxySettings(
     const base::Value& proxy_config_value);
 
-// Replaces user-specific string placeholders in |network_configs|, which must
-// be a list of ONC NetworkConfigurations. Currently only user name placeholders
-// are implemented, which are replaced by attributes from |user|.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-void ExpandStringPlaceholdersInNetworksForUser(const user_manager::User* user,
-                                               base::Value* network_configs);
+base::flat_map<std::string, std::string> GetVariableExpansionsForUser(
+    const user_manager::User* user);
 
 // Returns the number of networks successfully imported.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)

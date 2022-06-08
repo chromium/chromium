@@ -66,6 +66,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
                     const base::Value& network_configs_onc,
                     const base::Value& global_network_config));
   MOCK_CONST_METHOD0(IsAnyPolicyApplicationRunning, bool());
+  MOCK_METHOD2(SetProfileWideVariableExpansions,
+               void(const std::string& userhash,
+                    base::flat_map<std::string, std::string> expansions));
   MOCK_CONST_METHOD3(FindPolicyByGUID,
                      const base::Value*(const std::string userhash,
                                         const std::string& guid,

@@ -20,7 +20,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"
 #include "chromeos/components/onc/onc_utils.h"
-#include "chromeos/components/onc/variable_expander.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/system/statistics_provider.h"
@@ -128,12 +127,10 @@ void DeviceNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
   substitutions[::onc::substitutes::kDeviceAssetId] =
       device_asset_id_fetcher_.Run();
 
-  chromeos::VariableExpander variable_expander(std::move(substitutions));
-  chromeos::onc::ExpandStringsInNetworks(variable_expander,
-                                         network_configs_onc);
-
+  network_config_handler_->SetProfileWideVariableExpansions(
+      /*username_hash=*/std::string(), std::move(substitutions));
   network_config_handler_->SetPolicy(
-      onc_source_, std::string() /* no username hash */, *network_configs_onc,
+      onc_source_, /*username_hash=*/std::string(), *network_configs_onc,
       *global_network_config);
 }
 

@@ -140,6 +140,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // NetworkPolicyObservers are notified about applications finishing.
   virtual bool IsAnyPolicyApplicationRunning() const = 0;
 
+  // Sets ONC variable expansions for |userhash|.
+  // These expansions are profile-wide, i.e. they will apply to all networks
+  // that belong to |userhash|.
+  // This overwrites any previously-set profile-wide variable expansions.
+  // If this call changes the effective ONC policy (after variable expansion) of
+  // any network config, it triggers re-application of that network policy.
+  virtual void SetProfileWideVariableExpansions(
+      const std::string& userhash,
+      base::flat_map<std::string, std::string> expansions) = 0;
+
   // Returns the user policy for user |userhash| or device policy, which has
   // |guid|. If |userhash| is empty, only looks for a device policy. If such
   // doesn't exist, returns NULL. Sets |onc_source| accordingly.

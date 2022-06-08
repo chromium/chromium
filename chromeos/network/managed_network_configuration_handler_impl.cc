@@ -491,15 +491,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
 
   // |userhash| must be empty for device policies.
   DCHECK(onc_source != ::onc::ONC_SOURCE_DEVICE_POLICY || userhash.empty());
-  ProfilePolicies* policies = nullptr;
-  if (base::Contains(policies_by_user_, userhash)) {
-    policies = policies_by_user_[userhash].get();
-  } else {
-    auto policies_owned = std::make_unique<ProfilePolicies>();
-    policies = policies_owned.get();
-    policies_by_user_[userhash] = std::move(policies_owned);
-  }
-
+  ProfilePolicies* policies = GetOrCreatePoliciesForUser(userhash);
   policies->SetGlobalNetworkConfig(global_network_config);
 
   // Update prohibited technologies.
@@ -566,6 +558,15 @@ bool ManagedNetworkConfigurationHandlerImpl::ApplyOrQueuePolicies(
   policy_applicators_[userhash] = std::move(policy_applicator);
   policy_applicator_unowned->Run();
   return true;
+}
+
+void ManagedNetworkConfigurationHandlerImpl::SetProfileWideVariableExpansions(
+    const std::string& userhash,
+    base::flat_map<std::string, std::string> expansions) {
+  base::flat_set<std::string> modified_policy_guids =
+      GetOrCreatePoliciesForUser(userhash)->SetProfileWideExpansions(
+          std::move(expansions));
+  ApplyOrQueuePolicies(userhash, &modified_policy_guids);
 }
 
 void ManagedNetworkConfigurationHandlerImpl::set_ui_proxy_config_service(
@@ -910,13 +911,27 @@ ManagedNetworkConfigurationHandlerImpl::GetBlockedHexSSIDs() const {
   return blocked_hex_ssids;
 }
 
+ProfilePolicies*
+ManagedNetworkConfigurationHandlerImpl::GetOrCreatePoliciesForUser(
+    const std::string& userhash) {
+  auto it = policies_by_user_.find(userhash);
+
+  ProfilePolicies* policies = nullptr;
+  if (it != policies_by_user_.end()) {
+    policies = it->second.get();
+  } else {
+    auto policies_owned = std::make_unique<ProfilePolicies>();
+    policies = policies_owned.get();
+    policies_by_user_[userhash] = std::move(policies_owned);
+  }
+  return policies;
+}
+
 const ProfilePolicies*
 ManagedNetworkConfigurationHandlerImpl::GetPoliciesForUser(
     const std::string& userhash) const {
-  UserToPoliciesMap::const_iterator it = policies_by_user_.find(userhash);
-  if (it == policies_by_user_.end())
-    return nullptr;
-  return it->second.get();
+  auto it = policies_by_user_.find(userhash);
+  return it != policies_by_user_.end() ? it->second.get() : nullptr;
 }
 
 const ProfilePolicies*
