@@ -1404,13 +1404,22 @@ TEST_F(TraceEventTestFixture, StaticStringVsString) {
     // Test that static TRACE_STR_COPY NULL string arguments are not copied.
     const char* str1 = nullptr;
     const char* str2 = nullptr;
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    // DynamicString{nullptr} is not supported in perfetto for debug-args-value.
+    // After reverting the definition of `TRACE_STR_COPY` to nop, this
+    // difference in perfetto vs non-perfetto won't be required here.
+    [[maybe_unused]] TraceEventHandle handle2 =
+        trace_event_internal::AddTraceEvent(
+            TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name2",
+            trace_event_internal::kGlobalScope, trace_event_internal::kNoId, 0,
+            trace_event_internal::kNoId, "arg1", str1, "arg2", str2);
+#else
     [[maybe_unused]] TraceEventHandle handle2 =
         trace_event_internal::AddTraceEvent(
             TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name2",
             trace_event_internal::kGlobalScope, trace_event_internal::kNoId, 0,
             trace_event_internal::kNoId, "arg1", TRACE_STR_COPY(str1), "arg2",
             TRACE_STR_COPY(str2));
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     EXPECT_GT(tracer->GetStatus().event_count, 1u);
     const TraceEvent* event1 = tracer->GetEventByHandle(handle1);
     const TraceEvent* event2 = tracer->GetEventByHandle(handle2);
@@ -1420,7 +1429,7 @@ TEST_F(TraceEventTestFixture, StaticStringVsString) {
     EXPECT_STREQ("name2", event2->name());
     EXPECT_TRUE(event1->parameter_copy_storage().empty());
     EXPECT_TRUE(event2->parameter_copy_storage().empty());
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     EndTraceAndFlush();
   }
 }
