@@ -139,11 +139,11 @@ TEST_F(DefaultAppOrderTest, ImportDefault) {
 
   std::vector<std::string> apps;
   default_app_order::Get(&apps);
-  EXPECT_EQ(default_app_order::kDefaultAppOrderCount + 2, apps.size());
+  EXPECT_EQ(default_app_order::DefaultAppCount() + 2, apps.size());
   EXPECT_EQ(std::string("app1"), apps[0]);
   EXPECT_EQ(app_constants::kChromeAppId, apps[1]);
   EXPECT_EQ(std::string("app2"),
-            apps[default_app_order::kDefaultAppOrderCount + 1]);
+            apps[default_app_order::DefaultAppCount() + 1]);
 }
 
 }  // namespace chromeos

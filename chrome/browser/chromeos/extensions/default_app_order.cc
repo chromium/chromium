@@ -38,8 +38,62 @@ const char kDefaultAttr[] = "default";
 const char kNameAttr[] = "name";
 const char kImportDefaultOrderAttr[] = "import_default_order";
 
-// Canonical ordering specified in: go/default-apps
-const char* const kDefaultAppOrder[] = {
+// Reads external ordinal json file and returned the parsed value. Returns NULL
+// if the file does not exist or could not be parsed properly. Caller takes
+// ownership of the returned value.
+std::unique_ptr<base::ListValue> ReadExternalOrdinalFile(
+    const base::FilePath& path) {
+  if (!base::PathExists(path))
+    return NULL;
+
+  JSONFileValueDeserializer deserializer(path);
+  std::string error_msg;
+  std::unique_ptr<base::Value> value =
+      deserializer.Deserialize(NULL, &error_msg);
+  if (!value) {
+    LOG(WARNING) << "Unable to deserialize default app ordinals json data:"
+                 << error_msg << ", file=" << path.value();
+    return NULL;
+  }
+
+  std::unique_ptr<base::ListValue> ordinal_list_value =
+      base::ListValue::From(std::move(value));
+  if (!ordinal_list_value)
+    LOG(WARNING) << "Expect a JSON list in file " << path.value();
+
+  return ordinal_list_value;
+}
+
+std::string GetLocaleSpecificStringImpl(const base::DictionaryValue* root,
+                                        const std::string& locale,
+                                        const std::string& dictionary_name,
+                                        const std::string& entry_name) {
+  const base::DictionaryValue* dictionary_content = NULL;
+  if (!root || !root->GetDictionary(dictionary_name, &dictionary_content))
+    return std::string();
+
+  const base::DictionaryValue* locale_dictionary = NULL;
+  if (dictionary_content->GetDictionary(locale, &locale_dictionary)) {
+    std::string result;
+    if (locale_dictionary->GetString(entry_name, &result))
+      return result;
+  }
+
+  const base::DictionaryValue* default_dictionary = NULL;
+  if (dictionary_content->GetDictionary(kDefaultAttr, &default_dictionary)) {
+    std::string result;
+    if (default_dictionary->GetString(entry_name, &result))
+      return result;
+  }
+
+  return std::string();
+}
+
+// Gets built-in default app order.
+void GetDefault(std::vector<std::string>* app_ids) {
+  // Canonical ordering specified in: go/default-apps
+  // clang-format off
+  app_ids->insert(app_ids->end(), {
     app_constants::kChromeAppId,
     arc::kPlayStoreAppId,
 
@@ -127,69 +181,19 @@ const char* const kDefaultAppOrder[] = {
     arc::kInfinitePainterAppId,
     web_app::kShowtimeAppId,
     extension_misc::kGooglePlusAppId,
-};
-
-// Reads external ordinal json file and returned the parsed value. Returns NULL
-// if the file does not exist or could not be parsed properly. Caller takes
-// ownership of the returned value.
-std::unique_ptr<base::ListValue> ReadExternalOrdinalFile(
-    const base::FilePath& path) {
-  if (!base::PathExists(path))
-    return NULL;
-
-  JSONFileValueDeserializer deserializer(path);
-  std::string error_msg;
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(NULL, &error_msg);
-  if (!value) {
-    LOG(WARNING) << "Unable to deserialize default app ordinals json data:"
-        << error_msg << ", file=" << path.value();
-    return NULL;
-  }
-
-  std::unique_ptr<base::ListValue> ordinal_list_value =
-      base::ListValue::From(std::move(value));
-  if (!ordinal_list_value)
-    LOG(WARNING) << "Expect a JSON list in file " << path.value();
-
-  return ordinal_list_value;
-}
-
-std::string GetLocaleSpecificStringImpl(
-    const base::DictionaryValue* root,
-    const std::string& locale,
-    const std::string& dictionary_name,
-    const std::string& entry_name) {
-  const base::DictionaryValue* dictionary_content = NULL;
-  if (!root || !root->GetDictionary(dictionary_name, &dictionary_content))
-    return std::string();
-
-  const base::DictionaryValue* locale_dictionary = NULL;
-  if (dictionary_content->GetDictionary(locale, &locale_dictionary)) {
-    std::string result;
-    if (locale_dictionary->GetString(entry_name, &result))
-      return result;
-  }
-
-  const base::DictionaryValue* default_dictionary = NULL;
-  if (dictionary_content->GetDictionary(kDefaultAttr, &default_dictionary)) {
-    std::string result;
-    if (default_dictionary->GetString(entry_name, &result))
-      return result;
-  }
-
-  return std::string();
-}
-
-// Gets built-in default app order.
-void GetDefault(std::vector<std::string>* app_ids) {
-  for (size_t i = 0; i < std::size(kDefaultAppOrder); ++i)
-    app_ids->push_back(std::string(kDefaultAppOrder[i]));
+  });
+  // clang-format on
 }
 
 }  // namespace
 
-const size_t kDefaultAppOrderCount = std::size(kDefaultAppOrder);
+size_t DefaultAppCount() {
+  std::vector<std::string> apps;
+
+  GetDefault(&apps);
+
+  return apps.size();
+}
 
 ExternalLoader::ExternalLoader(bool async)
     : loaded_(base::WaitableEvent::ResetPolicy::MANUAL,
