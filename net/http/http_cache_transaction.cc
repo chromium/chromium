@@ -3271,9 +3271,10 @@ int HttpCache::Transaction::DoConnectedCallback() {
     return OK;
   }
 
+  auto type = response_.was_fetched_via_proxy ? TransportType::kCachedFromProxy
+                                              : TransportType::kCached;
   return connected_callback_.Run(
-      TransportInfo(TransportType::kCached, response_.remote_endpoint, ""),
-      io_callback_);
+      TransportInfo(type, response_.remote_endpoint, ""), io_callback_);
 }
 
 int HttpCache::Transaction::DoConnectedCallbackComplete(int result) {

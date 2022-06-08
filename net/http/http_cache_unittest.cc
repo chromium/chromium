@@ -1075,6 +1075,54 @@ TEST_F(HttpCacheTest,
   }
 }
 
+// This test verifies that the callback passed to SetConnectedCallback() is
+// called with the right transport type when the cached entry was originally
+// fetched via proxy.
+TEST_F(HttpCacheTest, SimpleGET_ConnectedCallbackOnCacheHitFromProxy) {
+  MockHttpCache cache;
+
+  TransportInfo proxied_transport_info = TestTransportInfo();
+  proxied_transport_info.type = TransportType::kProxied;
+
+  {
+    // Populate the cache.
+    ScopedMockTransaction mock_transaction(kSimpleGET_Transaction);
+    mock_transaction.transport_info = proxied_transport_info;
+    RunTransactionTest(cache.http_cache(), kSimpleGET_Transaction);
+  }
+
+  // Establish a baseline.
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  // Load from the cache (only), observe the callback being called.
+
+  ConnectedHandler connected_handler;
+  MockHttpRequest request(kSimpleGET_Transaction);
+
+  std::unique_ptr<HttpTransaction> transaction;
+  EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
+  ASSERT_THAT(transaction, NotNull());
+
+  transaction->SetConnectedCallback(connected_handler.Callback());
+
+  TestCompletionCallback callback;
+  ASSERT_THAT(
+      transaction->Start(&request, callback.callback(), NetLogWithSource()),
+      IsError(ERR_IO_PENDING));
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+  // Still only 1 transaction for the previous request. The connected callback
+  // was not called by a second network transaction.
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  // The transport info mentions both the cache and the original proxy.
+  TransportInfo expected_transport_info = TestTransportInfo();
+  expected_transport_info.type = TransportType::kCachedFromProxy;
+
+  EXPECT_THAT(connected_handler.transports(),
+              ElementsAre(expected_transport_info));
+}
+
 class HttpCacheTest_SplitCacheFeature
     : public HttpCacheTest,
       public ::testing::WithParamInterface<bool> {

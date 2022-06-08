@@ -60,6 +60,11 @@ net::TransportInfo CachedTransport(const net::IPEndPoint& endpoint) {
                             kNoAcceptChFrame);
 }
 
+net::TransportInfo MakeTransport(net::TransportType type,
+                                 const net::IPEndPoint& endpoint) {
+  return net::TransportInfo(type, endpoint, kNoAcceptChFrame);
+}
+
 mojom::URLLoaderFactoryParamsPtr FactoryParamsWithClientAddressSpace(
     mojom::IPAddressSpace space) {
   auto params = mojom::URLLoaderFactoryParams::New();
@@ -482,6 +487,23 @@ TEST(PrivateNetworkAccessCheckerTest, ProxiedTransportAddressSpaceIsUnknown) {
   // This succeeds in spite of the load option, because the proxied transport
   // is not considered any less public than `kPublic`.
   EXPECT_EQ(checker.Check(ProxiedTransport(LocalEndpoint())),
+            Result::kAllowedMissingClientSecurityState);
+
+  // In fact, it is considered unknown.
+  EXPECT_EQ(checker.ResponseAddressSpace(), mojom::IPAddressSpace::kUnknown);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     CachedFromProxyTransportAddressSpaceIsUnknown) {
+  mojom::URLLoaderFactoryParams factory_params;
+
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &factory_params,
+                                      mojom::kURLLoadOptionBlockLocalRequest);
+
+  // This succeeds in spite of the load option, because the cached-from-proxy
+  // transport is not considered any less public than `kPublic`.
+  EXPECT_EQ(checker.Check(MakeTransport(net::TransportType::kCachedFromProxy,
+                                        LocalEndpoint())),
             Result::kAllowedMissingClientSecurityState);
 
   // In fact, it is considered unknown.

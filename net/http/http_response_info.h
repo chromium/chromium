@@ -162,12 +162,23 @@ class NET_EXPORT HttpResponseInfo {
   // True if ALPN was negotiated for this request.
   bool was_alpn_negotiated = false;
 
-  // True if the request was fetched via an explicit proxy.  The proxy could
+  // True if the response was fetched via an explicit proxy.  The proxy could
   // be any type of proxy, HTTP or SOCKS.  Note, we do not know if a
-  // transparent proxy may have been involved. If true, |proxy_server| contains
-  // the proxy server that was used.
-  // TODO(tbansal): crbug.com/653354. Remove |was_fetched_via_proxy|.
+  // transparent proxy may have been involved.
+  //
+  // If true and this struct was not restored from pickled data, |proxy_server|
+  // contains the proxy server that was used.
+  //
+  // TODO(https://crbug.com/653354): Remove this in favor of |proxy_server|.
   bool was_fetched_via_proxy = false;
+
+  // Information about the proxy used to fetch this response, if any.
+  //
+  // This field is not persisted by |Persist()| and not restored by
+  // |InitFromPickle()|.
+  //
+  // TODO(https://crbug.com/653354): Support this field in |Persist()| and
+  // |InitFromPickle()| then use it to replace |was_fetched_via_proxy|.
   ProxyServer proxy_server;
 
   // Whether the request use http proxy or server authentication.

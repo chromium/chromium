@@ -288,6 +288,7 @@ IPAddressSpace TransportInfoToIPAddressSpace(const net::TransportInfo& info) {
     case net::TransportType::kCached:
       return IPEndPointToIPAddressSpace(info.endpoint);
     case net::TransportType::kProxied:
+    case net::TransportType::kCachedFromProxy:
       return mojom::IPAddressSpace::kUnknown;
   }
 }

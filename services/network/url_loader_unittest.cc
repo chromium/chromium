@@ -1964,6 +1964,7 @@ mojom::IPAddressSpace ResponseAddressSpace(
     case net::TransportType::kCached:
       return params.endpoint_address_space;
     case net::TransportType::kProxied:
+    case net::TransportType::kCachedFromProxy:
       return mojom::IPAddressSpace::kUnknown;
   }
 }
@@ -2159,6 +2160,31 @@ constexpr URLLoaderFakeTransportInfoTestParams
             mojom::IPAddressSpace::kPrivate,
             mojom::IPAddressSpace::kLocal,
             net::TransportType::kProxied,
+            net::OK,
+        },
+        // TransportType: kCachedFromProxy
+        {
+            mojom::IPAddressSpace::kUnknown,
+            mojom::IPAddressSpace::kLocal,
+            net::TransportType::kCachedFromProxy,
+            net::OK,
+        },
+        {
+            mojom::IPAddressSpace::kPublic,
+            mojom::IPAddressSpace::kLocal,
+            net::TransportType::kCachedFromProxy,
+            net::OK,
+        },
+        {
+            mojom::IPAddressSpace::kPublic,
+            mojom::IPAddressSpace::kPrivate,
+            net::TransportType::kCachedFromProxy,
+            net::OK,
+        },
+        {
+            mojom::IPAddressSpace::kPrivate,
+            mojom::IPAddressSpace::kLocal,
+            net::TransportType::kCachedFromProxy,
             net::OK,
         },
         // TransportType: kCached. We only test a local target for brevity.
