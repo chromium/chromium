@@ -125,6 +125,8 @@ class Controller : public ScriptExecutorDelegate,
   GetPasswordChangeSuccessTracker() override;
   content::WebContents* GetWebContents() override;
   content::WebContents* GetWebContentsForJsExecution() override;
+  void SetJsFlowLibrary(const std::string& js_flow_library) override;
+  const std::string& GetJsFlowLibrary() const override;
   std::string GetEmailAddressForAccessTokenAccount() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   void SetTouchableElementArea(const ElementAreaProto& area) override;
@@ -443,6 +445,7 @@ class Controller : public ScriptExecutorDelegate,
 
   // Lazily instantiated in GetWebContentsForJsExecution()
   std::unique_ptr<content::WebContents> web_contents_for_js_execution_;
+  std::string js_flow_library_;
 
   base::WeakPtrFactory<Controller> weak_ptr_factory_{this};
 };

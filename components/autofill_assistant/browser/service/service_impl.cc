@@ -214,4 +214,8 @@ void ServiceImpl::UpdateAnnotateDomModelContext(int64_t model_version) {
   client_context_->UpdateAnnotateDomModelContext(model_version);
 }
 
+void ServiceImpl::UpdateJsFlowLibraryLoaded(const bool js_flow_library_loaded) {
+  client_context_->UpdateJsFlowLibraryLoaded(js_flow_library_loaded);
+}
+
 }  // namespace autofill_assistant

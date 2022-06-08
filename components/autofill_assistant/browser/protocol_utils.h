@@ -116,7 +116,8 @@ class ProtocolUtils {
                            std::string* return_script_payload,
                            std::vector<std::unique_ptr<Action>>* actions,
                            std::vector<std::unique_ptr<Script>>* scripts,
-                           bool* should_update_scripts);
+                           bool* should_update_scripts,
+                           std::string* js_flow_library);
 
   // Parses a single serialized ActionProto. Returns nullptr in the case of
   // parsing errors.

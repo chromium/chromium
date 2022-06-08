@@ -90,6 +90,11 @@ void ClientContextImpl::UpdateAnnotateDomModelContext(int64_t model_version) {
   proto_.mutable_annotate_dom_model_context()->set_model_version(model_version);
 }
 
+void ClientContextImpl::UpdateJsFlowLibraryLoaded(
+    const bool js_flow_library_loaded) {
+  proto_.set_js_flow_library_loaded(js_flow_library_loaded);
+}
+
 ClientContextProto ClientContextImpl::AsProto() const {
   return proto_;
 }

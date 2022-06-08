@@ -230,11 +230,12 @@ TEST_F(ProtocolUtilsTest, ParseActionsParseError) {
   bool unused;
   std::vector<std::unique_ptr<Action>> unused_actions;
   std::vector<std::unique_ptr<Script>> unused_scripts;
+  std::string unused_js_flow_library;
   EXPECT_FALSE(ProtocolUtils::ParseActions(
       /* delegate= */ nullptr, /* response= */ "invalid", /* run_id= */ nullptr,
-      /* global_payload= */ nullptr,
-      /* script_payload= */ nullptr, &unused_actions, &unused_scripts,
-      /* should_update_scripts= */ &unused));
+      /* return_global_payload= */ nullptr,
+      /* return_script_payload= */ nullptr, &unused_actions, &unused_scripts,
+      /* should_update_scripts= */ &unused, &unused_js_flow_library));
 }
 
 TEST_F(ProtocolUtilsTest, ParseActionParseError) {
@@ -258,10 +259,11 @@ TEST_F(ProtocolUtilsTest, ParseActionsValid) {
   bool should_update_scripts = true;
   std::vector<std::unique_ptr<Action>> actions;
   std::vector<std::unique_ptr<Script>> scripts;
+  std::string unused_js_flow_library;
 
   EXPECT_TRUE(ProtocolUtils::ParseActions(
       nullptr, proto_str, &run_id, &global_payload, &script_payload, &actions,
-      &scripts, &should_update_scripts));
+      &scripts, &should_update_scripts, &unused_js_flow_library));
   EXPECT_EQ(1u, run_id);
   EXPECT_EQ("global_payload", global_payload);
   EXPECT_EQ("script_payload", script_payload);
@@ -288,11 +290,12 @@ TEST_F(ProtocolUtilsTest, ParseActionsEmptyUpdateScriptList) {
   bool should_update_scripts = false;
   std::vector<std::unique_ptr<Script>> scripts;
   std::vector<std::unique_ptr<Action>> unused_actions;
+  std::string unused_js_flow_library;
 
   EXPECT_TRUE(ProtocolUtils::ParseActions(
       nullptr, proto_str, /* run_id= */ nullptr, /* global_payload= */ nullptr,
       /* script_payload */ nullptr, &unused_actions, &scripts,
-      &should_update_scripts));
+      &should_update_scripts, &unused_js_flow_library));
   EXPECT_TRUE(should_update_scripts);
   EXPECT_TRUE(scripts.empty());
 }
@@ -313,11 +316,13 @@ TEST_F(ProtocolUtilsTest, ParseActionsUpdateScriptListFullFeatured) {
   bool should_update_scripts = false;
   std::vector<std::unique_ptr<Script>> scripts;
   std::vector<std::unique_ptr<Action>> unused_actions;
+  std::string unused_js_flow_library;
 
   EXPECT_TRUE(ProtocolUtils::ParseActions(
-      nullptr, proto_str, /* run_id= */ nullptr, /* global_payload= */ nullptr,
-      /* script_payload= */ nullptr, &unused_actions, &scripts,
-      &should_update_scripts));
+      nullptr, proto_str, /* run_id= */ nullptr,
+      /* return_global_payload= */ nullptr,
+      /* return_script_payload= */ nullptr, &unused_actions, &scripts,
+      &should_update_scripts, &unused_js_flow_library));
   EXPECT_TRUE(should_update_scripts);
   EXPECT_THAT(scripts, SizeIs(1));
   EXPECT_THAT("a", Eq(scripts[0]->handle.path));

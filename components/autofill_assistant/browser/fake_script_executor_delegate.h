@@ -46,6 +46,8 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   GetPasswordChangeSuccessTracker() override;
   content::WebContents* GetWebContents() override;
   content::WebContents* GetWebContentsForJsExecution() override;
+  void SetJsFlowLibrary(const std::string& js_flow_library) override;
+  const std::string& GetJsFlowLibrary() const override;
   std::string GetEmailAddressForAccessTokenAccount() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   bool EnterState(AutofillAssistantState state) override;
@@ -125,6 +127,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   raw_ptr<Service> service_ = nullptr;
   raw_ptr<WebController> web_controller_ = nullptr;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
+  std::string js_flow_library_;
   std::unique_ptr<TriggerContext> trigger_context_;
   std::vector<AutofillAssistantState> state_history_;
   std::vector<ElementAreaProto> touchable_element_area_history_;
