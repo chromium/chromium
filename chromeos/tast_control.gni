@@ -253,8 +253,11 @@ tast_disabled_tests_from_chrome_all = [
 
   # http://b/229032436
   "health.DiagnosticsRun.captive_portal",
-  "health.DiagnosticsRun.cpu_stress",
   "health.DiagnosticsRun.cpu_cache",
+  "health.DiagnosticsRun.cpu_stress",
+  "health.DiagnosticsRun.dns_latency",
+  "health.DiagnosticsRun.dns_resolution",
+  "health.DiagnosticsRun.dns_resolver_present",
 
   # http://b234699971
   "crostini.AppGeditUnshareFolder",
