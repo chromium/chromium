@@ -232,6 +232,12 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   // Get whether this node is in web content.
   bool IsWebContent() const override;
 
+  // Get whether this node can be marked as read-only.
+  bool IsReadOnlySupported() const override;
+
+  // Get whether this node is marked as read-only or is disabled.
+  bool IsReadOnlyOrDisabled() const override;
+
   // Returns true if the caret or selection is visible on this object.
   bool HasVisibleCaretOrSelection() const override;
 

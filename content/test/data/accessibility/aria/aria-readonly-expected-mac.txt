@@ -11,6 +11,18 @@ AXWebArea
 ++AXTextField AXDescription='Readonly-true role unimplemented textbox'
 ++AXTextField AXDescription='Readonly-false contenteditable textbox'
 ++AXTextField AXDescription='Readonly-true contenteditable textbox'
+++AXTable
+++++AXRow
+++++++AXCell AXDescription='Readonly-false gridcell'
+++++++AXCell AXDescription='Readonly-true gridcell'
+++++++AXCell AXDescription='Readonly not specified gridcell'
+++++AXColumn
+++++++AXCell AXDescription='Readonly-false gridcell'
+++++AXColumn
+++++++AXCell AXDescription='Readonly-true gridcell'
+++++AXColumn
+++++++AXCell AXDescription='Readonly not specified gridcell'
+++++AXGroup
 ++AXCheckBox AXDescription='Readonly checkbox' AXValue=0
 ++AXComboBox AXDescription='Readonly combobox'
 ++AXList AXDescription='Readonly listbox'

@@ -681,6 +681,37 @@ bool ViewAXPlatformNodeDelegate::IsMinimized() const {
   return widget && widget->IsMinimized();
 }
 
+// TODO(accessibility): This function should call AXNode::IsReadOnlySupported
+// instead, just like in BrowserAccessibility, but ViewAccessibility objects
+// don't have a corresponding AXNode yet.
+bool ViewAXPlatformNodeDelegate::IsReadOnlySupported() const {
+  return ui::IsReadOnlySupported(GetData().role);
+}
+
+// TODO(accessibility): This function should call AXNode::IsReadOnlyOrDisabled
+// instead, just like in BrowserAccessibility, but ViewAccessibility objects
+// don't have a corresponding AXNode yet.
+bool ViewAXPlatformNodeDelegate::IsReadOnlyOrDisabled() const {
+  switch (GetData().GetRestriction()) {
+    case ax::mojom::Restriction::kReadOnly:
+    case ax::mojom::Restriction::kDisabled:
+      return true;
+    case ax::mojom::Restriction::kNone: {
+      if (HasState(ax::mojom::State::kEditable) ||
+          HasState(ax::mojom::State::kRichlyEditable)) {
+        return false;
+      }
+
+      if (ui::ShouldHaveReadonlyStateByDefault(GetData().role))
+        return true;
+
+      // When readonly is not supported, we assume that the node is always
+      // read-only and mark it as such since this is the default behavior.
+      return !IsReadOnlySupported();
+    }
+  }
+}
+
 const ui::AXUniqueId& ViewAXPlatformNodeDelegate::GetUniqueId() const {
   return ViewAccessibility::GetUniqueId();
 }

@@ -344,6 +344,14 @@ bool TestAXNodeWrapper::IsWebContent() const {
   return g_is_web_content;
 }
 
+bool TestAXNodeWrapper::IsReadOnlySupported() const {
+  return node_->IsReadOnlySupported();
+}
+
+bool TestAXNodeWrapper::IsReadOnlyOrDisabled() const {
+  return node_->IsReadOnlyOrDisabled();
+}
+
 // Walk the AXTree and ensure that all wrappers are created
 void TestAXNodeWrapper::BuildAllWrappers(AXTree* tree, AXNode* node) {
   for (auto* child : node->children()) {

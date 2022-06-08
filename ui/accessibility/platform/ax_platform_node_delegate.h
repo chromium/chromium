@@ -453,6 +453,12 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // Get whether this node is in web content.
   virtual bool IsWebContent() const = 0;
 
+  // Get whether this node can be marked as read-only.
+  virtual bool IsReadOnlySupported() const = 0;
+
+  // Get whether this node is marked as read-only or is disabled.
+  virtual bool IsReadOnlyOrDisabled() const = 0;
+
   // Returns true if the caret or selection is visible on this object.
   virtual bool HasVisibleCaretOrSelection() const = 0;
 

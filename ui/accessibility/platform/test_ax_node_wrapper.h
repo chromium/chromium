@@ -105,6 +105,8 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
   gfx::NativeViewAccessible GetFocus() const override;
   bool IsMinimized() const override;
   bool IsWebContent() const override;
+  bool IsReadOnlySupported() const override;
+  bool IsReadOnlyOrDisabled() const override;
   AXPlatformNode* GetFromNodeID(int32_t id) override;
   AXPlatformNode* GetFromTreeIDAndNodeID(const ui::AXTreeID& ax_tree_id,
                                          int32_t id) override;

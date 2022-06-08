@@ -1953,7 +1953,7 @@ bool IsAXSetter(SEL selector) {
   // remove the check here when the selector is setAccessibilitySelectedText*;
   // right now, this check serves to prevent accessibility clients from trying
   // to set the selection range, which won't work because of 692362.
-  if (_node->GetData().IsReadOnlyOrDisabled() && IsAXSetter(selector))
+  if (_node->GetDelegate()->IsReadOnlyOrDisabled() && IsAXSetter(selector))
     return NO;
 
   // TODO(https://crbug.com/386671): What about role-specific selectors?

@@ -3138,7 +3138,7 @@ IFACEMETHODIMP AXPlatformNodeWin::SetValue(LPCWSTR value) {
   if (!value)
     return E_INVALIDARG;
 
-  if (GetData().IsReadOnlyOrDisabled())
+  if (GetDelegate()->IsReadOnlyOrDisabled())
     return UIA_E_ELEMENTNOTENABLED;
 
   AXActionData data;
@@ -3152,7 +3152,7 @@ IFACEMETHODIMP AXPlatformNodeWin::SetValue(LPCWSTR value) {
 IFACEMETHODIMP AXPlatformNodeWin::get_IsReadOnly(BOOL* result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_VALUE_GET_ISREADONLY);
   UIA_VALIDATE_CALL_1_ARG(result);
-  *result = GetData().IsReadOnlyOrDisabled();
+  *result = GetDelegate()->IsReadOnlyOrDisabled();
   return S_OK;
 }
 
@@ -5631,9 +5631,10 @@ HRESULT AXPlatformNodeWin::GetTextAttributeValue(
       const AXPlatformNodeWin* text_field = static_cast<AXPlatformNodeWin*>(
           FromNativeViewAccessible(GetDelegate()->GetTextFieldAncestor()));
       if (text_field) {
-        result->Insert<VT_BOOL>(text_field->GetData().IsReadOnlyOrDisabled());
+        result->Insert<VT_BOOL>(
+            text_field->GetDelegate()->IsReadOnlyOrDisabled());
       } else {
-        result->Insert<VT_BOOL>(GetData().IsReadOnlyOrDisabled());
+        result->Insert<VT_BOOL>(GetDelegate()->IsReadOnlyOrDisabled());
       }
       break;
     }
@@ -6940,7 +6941,7 @@ std::wstring AXPlatformNodeWin::ComputeUIAProperties() {
     // on *some* document structure roles such as paragraph, heading or list
     // even if the node data isn't marked as read only, as long as the
     // node is not editable.
-    if (GetData().IsReadOnlyOrDisabled())
+    if (GetDelegate()->IsReadOnlyOrDisabled())
       properties.push_back(L"readonly=true");
   }
 

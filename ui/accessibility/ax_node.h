@@ -702,6 +702,13 @@ class AX_EXPORT AXNode final {
   // true otherwise.
   bool IsDataValid() const;
 
+  // Returns true if the node supports the read-only attribute.
+  bool IsReadOnlySupported() const;
+
+  // Returns true if the node is marked read-only or is disabled. By default,
+  // all nodes that can't be edited are read-only.
+  bool IsReadOnlyOrDisabled() const;
+
  private:
   AXTableInfo* GetAncestorTableInfo() const;
   void IdVectorToNodeVector(const std::vector<AXNodeID>& ids,

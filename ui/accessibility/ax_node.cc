@@ -1559,6 +1559,31 @@ bool AXNode::IsDataValid() const {
   return !is_data_still_uninitialized_ && !has_data_been_taken_;
 }
 
+bool AXNode::IsReadOnlySupported() const {
+  return IsCellOrHeaderOfAriaGrid() || ui::IsReadOnlySupported(GetRole());
+}
+
+bool AXNode::IsReadOnlyOrDisabled() const {
+  switch (data().GetRestriction()) {
+    case ax::mojom::Restriction::kReadOnly:
+    case ax::mojom::Restriction::kDisabled:
+      return true;
+    case ax::mojom::Restriction::kNone: {
+      if (HasState(ax::mojom::State::kEditable) ||
+          HasState(ax::mojom::State::kRichlyEditable)) {
+        return false;
+      }
+
+      if (ShouldHaveReadonlyStateByDefault(GetRole()))
+        return true;
+
+      // When readonly is not supported, we assume that the node is always
+      // read-only and mark it as such since this is the default behavior.
+      return !IsReadOnlySupported();
+    }
+  }
+}
+
 AXNode* AXNode::ComputeLastUnignoredChildRecursive() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   if (children().empty())

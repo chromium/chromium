@@ -1011,6 +1011,14 @@ bool BrowserAccessibility::IsWebContent() const {
   return true;
 }
 
+bool BrowserAccessibility::IsReadOnlySupported() const {
+  return node()->IsReadOnlySupported();
+}
+
+bool BrowserAccessibility::IsReadOnlyOrDisabled() const {
+  return node()->IsReadOnlyOrDisabled();
+}
+
 bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
   ui::AXTree::Selection unignored_selection =
       manager()->ax_tree()->GetUnignoredSelection();

@@ -3171,7 +3171,8 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
   }
 
   if (GetData().GetRestriction() != ax::mojom::Restriction::kDisabled) {
-    if (IsReadOnlySupported(GetRole()) && GetData().IsReadOnlyOrDisabled()) {
+    if (GetDelegate()->IsReadOnlySupported() &&
+        GetDelegate()->IsReadOnlyOrDisabled()) {
 #if defined(ATK_216)
       // Runtime check in case we were compiled with a newer version of ATK.
       if (PlatformSupportsState(ATK_STATE_READ_ONLY))

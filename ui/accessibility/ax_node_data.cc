@@ -1082,25 +1082,6 @@ bool AXNodeData::IsSpinnerTextField() const {
          GetStringAttribute(ax::mojom::StringAttribute::kInputType) == "number";
 }
 
-bool AXNodeData::IsReadOnlyOrDisabled() const {
-  switch (GetRestriction()) {
-    case ax::mojom::Restriction::kReadOnly:
-    case ax::mojom::Restriction::kDisabled:
-      return true;
-    case ax::mojom::Restriction::kNone: {
-      if (HasState(ax::mojom::State::kEditable) ||
-          HasState(ax::mojom::State::kRichlyEditable)) {
-        return false;
-      }
-
-      // By default, when readonly is not supported, we assume the node is never
-      // editable - then always readonly.
-      return ShouldHaveReadonlyStateByDefault(role) ||
-             !IsReadOnlySupported(role);
-    }
-  }
-}
-
 bool AXNodeData::IsRangeValueSupported() const {
   if (role == ax::mojom::Role::kSplitter) {
     // According to the ARIA spec, role="separator" acts as a splitter only

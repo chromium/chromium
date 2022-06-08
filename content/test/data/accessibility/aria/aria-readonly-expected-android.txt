@@ -11,6 +11,11 @@ android.webkit.WebView focusable focused scrollable
 ++android.widget.EditText clickable disabled editable_text focusable hint='Readonly-true role unimplemented textbox'
 ++android.widget.EditText clickable editable_text focusable hint='Readonly-false contenteditable textbox'
 ++android.widget.EditText clickable disabled editable_text focusable hint='Readonly-true contenteditable textbox'
+++android.widget.GridView role_description='table' collection row_count=1 column_count=3
+++++android.view.View
+++++++android.view.View collection_item focusable name='Readonly-false gridcell' row_span=1 column_span=1
+++++++android.view.View collection_item disabled focusable name='Readonly-true gridcell' row_span=1 column_index=1 column_span=1
+++++++android.view.View collection_item focusable name='Readonly not specified gridcell' row_span=1 column_index=2 column_span=1
 ++android.widget.CheckBox role_description='checkbox' checkable clickable disabled name='Readonly checkbox'
 ++android.widget.EditText clickable disabled editable_text focusable hint='Readonly combobox' input_type=1
 ++android.widget.ListView role_description='list box' clickable collection disabled name='Readonly listbox'

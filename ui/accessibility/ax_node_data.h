@@ -285,10 +285,6 @@ struct AX_BASE_EXPORT AXNodeData {
   // up/down arrow will change the value to the previous/next allowed value.
   bool IsSpinnerTextField() const;
 
-  // Helper to determine if |GetRestriction| is either ReadOnly or Disabled.
-  // By default, all nodes that can't be edited are readonly.
-  bool IsReadOnlyOrDisabled() const;
-
   // Helper to determine if the data belongs to a node that supports
   // range-based values.
   bool IsRangeValueSupported() const;

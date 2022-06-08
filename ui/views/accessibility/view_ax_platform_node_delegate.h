@@ -98,6 +98,9 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   bool IsOffscreen() const override;
   std::u16string GetAuthorUniqueId() const override;
   bool IsMinimized() const override;
+  bool IsReadOnlySupported() const override;
+  bool IsReadOnlyOrDisabled() const override;
+
   // Also in |ViewAccessibility|.
   const ui::AXUniqueId& GetUniqueId() const override;
   absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const override;

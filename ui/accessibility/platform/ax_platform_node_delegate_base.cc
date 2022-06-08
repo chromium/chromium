@@ -866,6 +866,14 @@ bool AXPlatformNodeDelegateBase::IsWebContent() const {
   return false;
 }
 
+bool AXPlatformNodeDelegateBase::IsReadOnlySupported() const {
+  return false;
+}
+
+bool AXPlatformNodeDelegateBase::IsReadOnlyOrDisabled() const {
+  return false;
+}
+
 bool AXPlatformNodeDelegateBase::HasVisibleCaretOrSelection() const {
   return IsDescendantOfAtomicTextField();
 }

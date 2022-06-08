@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/ax_node.h"
 
+#include <stdint.h>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -628,6 +629,87 @@ TEST(AXNodeTest, GetLowestPlatformAncestor) {
   const AXNode* inline_box_2_node = static_text_2_node->children()[0];
   ASSERT_EQ(inline_box_2.id, inline_box_2_node->id());
   EXPECT_EQ(text_field_node, inline_box_2_node->GetLowestPlatformAncestor());
+}
+
+TEST(AXNodeTest, IsGridCellReadOnlyOrDisabled) {
+  // ++kRootWebArea
+  // ++++kGrid
+  // ++++kRow
+  // ++++++kGridCell
+  // ++++++kGridCell
+  AXNodeData root;
+  AXNodeData grid;
+  AXNodeData row;
+  AXNodeData gridcell_1;
+  AXNodeData gridcell_2;
+  AXNodeData gridcell_3;
+
+  root.id = 1;
+  grid.id = 2;
+  row.id = 3;
+  gridcell_1.id = 4;
+  gridcell_2.id = 5;
+  gridcell_2.id = 6;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {grid.id};
+
+  grid.role = ax::mojom::Role::kGrid;
+  grid.child_ids = {row.id};
+
+  row.role = ax::mojom::Role::kRow;
+  row.child_ids = {gridcell_1.id, gridcell_2.id, gridcell_3.id};
+
+  gridcell_1.role = ax::mojom::Role::kCell;
+  gridcell_1.AddIntAttribute(
+      ax::mojom::IntAttribute::kRestriction,
+      static_cast<int32_t>(ax::mojom::Restriction::kNone));
+
+  gridcell_2.role = ax::mojom::Role::kCell;
+  gridcell_2.AddIntAttribute(
+      ax::mojom::IntAttribute::kRestriction,
+      static_cast<int32_t>(ax::mojom::Restriction::kReadOnly));
+
+  gridcell_3.role = ax::mojom::Role::kCell;
+  gridcell_3.AddIntAttribute(
+      ax::mojom::IntAttribute::kRestriction,
+      static_cast<int32_t>(ax::mojom::Restriction::kDisabled));
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = root.id;
+  initial_state.nodes = {root, grid, row, gridcell_1, gridcell_2, gridcell_3};
+  initial_state.has_tree_data = true;
+
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  tree_data.title = "Application";
+  initial_state.tree_data = tree_data;
+
+  AXTree tree;
+  ASSERT_TRUE(tree.Unserialize(initial_state)) << tree.error();
+
+  const AXNode* root_node = tree.root();
+  ASSERT_EQ(root.id, root_node->id());
+
+  const AXNode* grid_node = root_node->children()[0];
+  ASSERT_EQ(grid.id, grid_node->id());
+  EXPECT_FALSE(grid_node->IsReadOnlyOrDisabled());
+
+  const AXNode* row_node = grid_node->children()[0];
+  ASSERT_EQ(row.id, row_node->id());
+  EXPECT_TRUE(row_node->IsReadOnlyOrDisabled());
+
+  const AXNode* gridcell_1_node = row_node->children()[0];
+  ASSERT_EQ(gridcell_1.id, gridcell_1_node->id());
+  EXPECT_FALSE(gridcell_1_node->IsReadOnlyOrDisabled());
+
+  const AXNode* gridcell_2_node = row_node->children()[1];
+  ASSERT_EQ(gridcell_2.id, gridcell_2_node->id());
+  EXPECT_TRUE(gridcell_2_node->IsReadOnlyOrDisabled());
+
+  const AXNode* gridcell_3_node = row_node->children()[2];
+  ASSERT_EQ(gridcell_3.id, gridcell_3_node->id());
+  EXPECT_TRUE(gridcell_3_node->IsReadOnlyOrDisabled());
 }
 
 }  // namespace ui
