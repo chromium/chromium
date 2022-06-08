@@ -506,9 +506,9 @@ String MediaQueryExp::Serialize() const {
   // <mf-plain>  e.g. (width: 100px)
   if (!bounds_.IsRange()) {
     result.Append(name);
-    if (ExpValue().IsValid()) {
+    if (bounds_.right.IsValid()) {
       result.Append(": ");
-      result.Append(ExpValue().CssText());
+      result.Append(bounds_.right.value.CssText());
     }
   } else {
     if (bounds_.left.IsValid()) {

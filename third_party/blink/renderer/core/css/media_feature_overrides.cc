@@ -88,8 +88,10 @@ void MediaFeatureOverrides::SetOverride(const AtomicString& feature,
   // Note that once a real CSSParserContext is plumbed through we can use its
   // Document to get the ExecutionContext so the extra parameter should be
   // removed.
-  auto value =
-      MediaQueryExp::Create(feature, range, *fake_context, nullptr).ExpValue();
+  MediaQueryExpBounds bounds =
+      MediaQueryExp::Create(feature, range, *fake_context, nullptr).Bounds();
+  DCHECK(!bounds.left.IsValid());
+  MediaQueryExpValue value = bounds.right.value;
 
   if (feature == media_feature_names::kColorGamutMediaFeature) {
     color_gamut_ = ConvertColorGamut(value);

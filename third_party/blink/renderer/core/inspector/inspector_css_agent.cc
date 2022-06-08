@@ -1882,7 +1882,7 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
     bool has_expression_items = false;
     for (wtf_size_t j = 0; j < expressions.size(); ++j) {
       const MediaQueryExp& media_query_exp = expressions.at(j);
-      MediaQueryExpValue exp_value = media_query_exp.ExpValue();
+      MediaQueryExpValue exp_value = media_query_exp.Bounds().right.value;
       if (!exp_value.IsNumeric())
         continue;
       const char* value_name =

@@ -268,12 +268,6 @@ class CORE_EXPORT MediaQueryExp {
 
   const String& MediaFeature() const { return media_feature_; }
 
-  // TODO(crbug.com/1034465): Replace with MediaQueryExpBounds.
-  MediaQueryExpValue ExpValue() const {
-    DCHECK(!bounds_.left.IsValid());
-    return bounds_.right.value;
-  }
-
   const MediaQueryExpBounds& Bounds() const { return bounds_; }
 
   bool IsValid() const { return !media_feature_.IsNull(); }
