@@ -544,7 +544,6 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
   }
   EmitMetricIfInIncorrectState(mojom::InstallerState::kStartContainer);
   if (result != CrostiniResult::SUCCESS) {
-    LOG(ERROR) << "Failed to Start Lxd Container.";
     FinishRestart(result);
     return;
   }
@@ -753,7 +752,6 @@ void CrostiniManager::CrostiniRestarter::OnConfigureContainerFinished(
     return;
   }
   if (!success) {
-    LOG(ERROR) << "Failed to Configure Lxd Container.";
     // Failed to configure, time to abort.
     FinishRestart(CrostiniResult::CONTAINER_CONFIGURATION_FAILED);
     return;
@@ -875,7 +873,6 @@ void CrostiniManager::CrostiniRestarter::CreateLxdContainerFinished(
   }
   EmitMetricIfInIncorrectState(mojom::InstallerState::kCreateContainer);
   if (result != CrostiniResult::SUCCESS) {
-    LOG(ERROR) << "Failed to Create Lxd Container.";
     FinishRestart(result);
     return;
   }
@@ -916,6 +913,11 @@ void CrostiniManager::CrostiniRestarter::FinishRestart(CrostiniResult result) {
 
   base::OnceClosure closure;
   if (abort_callbacks_.empty()) {
+    if (!requests_.empty() && result != CrostiniResult::SUCCESS) {
+      LOG(ERROR) << "Failed to restart Crostini with error code: "
+                 << static_cast<int>(result)
+                 << ", container: " << container_id();
+    }
     closure = ExtractRequests(
         base::BindRepeating([](const RestartRequest& request) { return true; }),
         result);
@@ -1344,10 +1346,13 @@ void CrostiniManager::InstallTermina(CrostiniResultCallback callback,
             if (result == TerminaInstaller::InstallResult::Success) {
               res = CrostiniResult::SUCCESS;
             } else if (result == TerminaInstaller::InstallResult::Offline) {
+              LOG(ERROR) << "Installing Termina failed: offline";
               res = CrostiniResult::OFFLINE_WHEN_UPGRADE_REQUIRED;
             } else if (result == TerminaInstaller::InstallResult::Failure) {
+              LOG(ERROR) << "Installing Termina failed";
               res = CrostiniResult::LOAD_COMPONENT_FAILED;
             } else if (result == TerminaInstaller::InstallResult::NeedUpdate) {
+              LOG(ERROR) << "Installing Termina failed: need update";
               res = CrostiniResult::NEED_UPDATE;
             } else {
               CHECK(false)
@@ -2798,9 +2803,10 @@ void CrostiniManager::OnContainerStartupFailed(
   if (signal.owner_id() != owner_id_)
     return;
 
+  ContainerId container(signal.vm_name(), signal.container_name());
+  LOG(ERROR) << "Container startup failed for container: " << container;
   InvokeAndErasePendingContainerCallbacks(
-      &start_container_callbacks_,
-      ContainerId(signal.vm_name(), signal.container_name()),
+      &start_container_callbacks_, container,
       CrostiniResult::CONTAINER_START_FAILED);
 }
 
@@ -3034,7 +3040,7 @@ void CrostiniManager::OnStartLxdContainer(
     CrostiniResultCallback callback,
     absl::optional<vm_tools::cicerone::StartLxdContainerResponse> response) {
   if (!response) {
-    VLOG(1) << "Failed to start lxd container in vm. Empty response.";
+    LOG(ERROR) << "Failed to start lxd container in vm. Empty response.";
     std::move(callback).Run(CrostiniResult::CONTAINER_START_FAILED);
     return;
   }
@@ -3082,7 +3088,7 @@ void CrostiniManager::OnStopLxdContainer(
     CrostiniResultCallback callback,
     absl::optional<vm_tools::cicerone::StopLxdContainerResponse> response) {
   if (!response) {
-    VLOG(1) << "Failed to stop lxd container in vm. Empty response.";
+    LOG(ERROR) << "Failed to stop lxd container in vm. Empty response.";
     std::move(callback).Run(CrostiniResult::CONTAINER_STOP_FAILED);
     return;
   }
@@ -3106,7 +3112,7 @@ void CrostiniManager::OnStopLxdContainer(
       break;
 
     case vm_tools::cicerone::StopLxdContainerResponse::DOES_NOT_EXIST:
-      VLOG(1) << "Container does not exist " << container_id;
+      LOG(ERROR) << "Container does not exist " << container_id;
       std::move(callback).Run(CrostiniResult::CONTAINER_STOP_FAILED);
       break;
 
