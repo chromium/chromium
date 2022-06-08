@@ -21,6 +21,7 @@ import "services/network/public/mojom/cors_origin_pattern.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
+import "services/network/public/mojom/first_party_sets_access_delegate.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
@@ -524,6 +525,14 @@ struct NetworkContextParams {
 
   // Is true, Trust Token operations should be blocked.
   bool block_trust_tokens;
+
+  // Parameters for constructing the FirstPartySetsAccessDelegate.
+  // |first_party_sets_access_delegate_params| is the initial configuration to
+  // use. If nullptr, uses the default configuration. Updated configurations
+  // can be passed in via |first_party_sets_access_delegate_receiver|.
+  FirstPartySetsAccessDelegateParams? first_party_sets_access_delegate_params;
+  pending_receiver<FirstPartySetsAccessDelegate>?
+      first_party_sets_access_delegate_receiver;
 };
 
 struct NetworkConditions {

@@ -63,6 +63,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -961,6 +962,23 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   network_context_params->block_trust_tokens =
       !PrivacySandboxSettingsFactory::GetForProfile(profile_)
            ->IsTrustTokensAllowed();
+
+  // TODO(crbug.com/1325050): Use per-profile prefs to determine whether FPS is
+  // enabled for the given profile.
+  network_context_params->first_party_sets_access_delegate_params =
+      network::mojom::FirstPartySetsAccessDelegateParams::New();
+  network_context_params->first_party_sets_access_delegate_params->enabled =
+      true;
+
+  mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
+      fps_access_delegate_remote;
+  network_context_params->first_party_sets_access_delegate_receiver =
+      fps_access_delegate_remote.BindNewPipeAndPassReceiver();
+  // TODO(crbug.com/1325050): Call NotifyReady() here for now to match the
+  // existing behavior. NotifyReady() will be called by the remote handle owner
+  // in the follow up change.
+  fps_access_delegate_remote->NotifyReady();
+  fps_access_delegate_remote_set_.Add(std::move(fps_access_delegate_remote));
 }
 
 base::FilePath ProfileNetworkContextService::GetPartitionPath(

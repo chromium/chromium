@@ -474,6 +474,10 @@ NetworkContext::NetworkContext(
           std::make_unique<NetworkContextApplicationStatusListener>()),
 #endif
       receiver_(this, std::move(receiver)),
+      first_party_sets_access_delegate_(
+          std::move(params_->first_party_sets_access_delegate_receiver),
+          std::move(params_->first_party_sets_access_delegate_params),
+          network_service_->first_party_sets_manager()),
       cors_preflight_controller_(network_service),
       cors_non_wildcard_request_headers_support_(base::FeatureList::IsEnabled(
           features::kCorsNonWildcardRequestHeadersSupport)) {
@@ -510,8 +514,9 @@ NetworkContext::NetworkContext(
       session_cleanup_cookie_store,
       std::move(on_url_request_context_builder_configured));
   url_request_context_ = url_request_context_owner_.url_request_context.get();
+
   cookie_manager_ = std::make_unique<CookieManager>(
-      url_request_context_, network_service_->first_party_sets_manager(),
+      url_request_context_, &first_party_sets_access_delegate_,
       std::move(session_cleanup_cookie_store),
       std::move(params_->cookie_manager_params));
 
@@ -589,11 +594,15 @@ NetworkContext::NetworkContext(
           std::make_unique<NetworkContextApplicationStatusListener>()),
 #endif
       receiver_(this, std::move(receiver)),
-      cookie_manager_(
-          std::make_unique<CookieManager>(url_request_context,
-                                          nullptr,
-                                          nullptr /* first_party_sets */,
-                                          nullptr)),
+      first_party_sets_access_delegate_(
+          /*receiver=*/mojo::NullReceiver(),
+          /*params=*/nullptr,
+          /*manager=*/nullptr),
+      cookie_manager_(std::make_unique<CookieManager>(
+          url_request_context,
+          nullptr,
+          /*first_party_sets_access_delegate=*/nullptr,
+          nullptr)),
       socket_factory_(
           std::make_unique<SocketFactory>(url_request_context_->net_log(),
                                           url_request_context)),
@@ -788,7 +797,7 @@ void NetworkContext::OnComputedFirstPartySetMetadata(
           role, url_request_context_->cookie_store(),
           cookie_manager_->cookie_settings(), origin, isolation_info,
           std::move(cookie_observer),
-          network_service_->first_party_sets_manager()->is_enabled(),
+          first_party_sets_access_delegate_.is_enabled(),
           std::move(first_party_set_metadata)),
       std::move(receiver));
 }
@@ -2362,7 +2371,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     std::unique_ptr<net::CookieMonster> cookie_store =
         std::make_unique<net::CookieMonster>(
             session_cleanup_cookie_store.get(), net_log,
-            network_service_->first_party_sets_manager()->is_enabled());
+            first_party_sets_access_delegate_.is_enabled());
     if (params_->persist_session_cookies)
       cookie_store->SetPersistSessionCookies(true);
 
@@ -2580,7 +2589,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       command_line->GetSwitchValueASCII(switches::kHostResolverRules));
 
   builder.set_first_party_sets_enabled(
-      network_service_->first_party_sets_manager()->is_enabled());
+      first_party_sets_access_delegate_.is_enabled());
 
   // If `require_network_isolation_key_` is true, but the features that can
   // trigger another URLRequest are not set to respect NetworkIsolationKeys,

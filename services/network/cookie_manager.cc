@@ -52,7 +52,7 @@ void CookieManager::ListenerRegistration::DispatchCookieStoreChange(
 
 CookieManager::CookieManager(
     net::URLRequestContext* url_request_context,
-    FirstPartySetsManager* const first_party_sets_manager,
+    FirstPartySetsAccessDelegate* const first_party_sets_access_delegate,
     scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store,
     mojom::CookieManagerParamsPtr params)
     : cookie_store_(url_request_context->cookie_store()),
@@ -67,9 +67,9 @@ CookieManager::CookieManager(
                            base::DoNothing());
   }
   cookie_store_->SetCookieAccessDelegate(
-      std::make_unique<CookieAccessDelegateImpl>(cookie_access_delegate_type,
-                                                 first_party_sets_manager,
-                                                 &cookie_settings_));
+      std::make_unique<CookieAccessDelegateImpl>(
+          cookie_access_delegate_type, first_party_sets_access_delegate,
+          &cookie_settings_));
 }
 
 CookieManager::~CookieManager() {

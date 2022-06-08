@@ -42,6 +42,7 @@
 #include "net/http/http_auth_preferences.h"
 #include "net/net_buildflags.h"
 #include "services/network/cors/preflight_controller.h"
+#include "services/network/first_party_sets/first_party_sets_access_delegate.h"
 #include "services/network/http_cache_data_counter.h"
 #include "services/network/http_cache_data_remover.h"
 #include "services/network/network_qualities_pref_delegate.h"
@@ -731,6 +732,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 #endif
 
   mojo::Receiver<mojom::NetworkContext> receiver_;
+
+  FirstPartySetsAccessDelegate first_party_sets_access_delegate_;
 
   std::unique_ptr<CookieManager> cookie_manager_;
 

@@ -100,7 +100,7 @@ class FirstPartySetsManagerTest : public ::testing::Test {
 class FirstPartySetsManagerDisabledTest : public FirstPartySetsManagerTest {
  public:
   FirstPartySetsManagerDisabledTest() : FirstPartySetsManagerTest(false) {
-    // FPS setting by the browser overrules FPS setting by a profile.
+    // FPS setting by the browser overrules FPS setting by the context.
     SetFirstPartySetsContextConfig(true);
   }
 };

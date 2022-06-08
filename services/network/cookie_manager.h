@@ -29,7 +29,7 @@ class URLRequestContext;
 class GURL;
 
 namespace network {
-class FirstPartySetsManager;
+class FirstPartySetsAccessDelegate;
 class SessionCleanupCookieStore;
 
 // Wrap a cookie store in an implementation of the mojo cookie interface.
@@ -38,11 +38,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
  public:
   // Construct a CookieService that can serve mojo requests for the underlying
   // cookie store.  |url_request_context->cookie_store()| must outlive this
-  // object. `*first_party_sets_manager` must outlive
+  // object. `*first_party_sets_access_delegate` must outlive
   // `url_request_context->cookie_store()`.
   CookieManager(
       net::URLRequestContext* url_request_context,
-      FirstPartySetsManager* const first_party_sets_manager,
+      FirstPartySetsAccessDelegate* const first_party_sets_access_delegate,
       scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store,
       mojom::CookieManagerParamsPtr params);
 
