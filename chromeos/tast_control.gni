@@ -303,6 +303,9 @@ tast_disabled_tests_from_chrome_all = [
 
   # http://b234699971
   "crostini.AppGeditUnshareFolder",
+
+  # b/235279574
+  "wmp.DragAndDropWindow",
 ]
 
 # To create filters to be used on specific builders add them like this:
