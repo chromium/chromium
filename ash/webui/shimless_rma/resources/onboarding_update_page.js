@@ -16,7 +16,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusObserverReceiver, OsUpdateObserverInterface, OsUpdateObserverReceiver, OsUpdateOperation, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusObserverReceiver, OsUpdateObserverInterface, OsUpdateObserverReceiver, OsUpdateOperation, ShimlessRmaServiceInterface, StateResult, UpdateErrorCode} from './shimless_rma_types.js';
 import {disableAllButtons, enableAllButtons, enableNextButton} from './shimless_rma_util.js';
 
 /**
@@ -99,6 +99,13 @@ export class OnboardingUpdatePageElement extends
       unqualifiedComponentsText_: {
         type: String,
         value: '',
+      },
+
+
+      /** @protected */
+      osUpdateEncounteredError_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -196,8 +203,9 @@ export class OnboardingUpdatePageElement extends
    * Implements OsUpdateObserver.onOsUpdateProgressUpdated()
    * @param {!OsUpdateOperation} operation
    * @param {number} progress
+   * @param {UpdateErrorCode} error
    */
-  onOsUpdateProgressUpdated(operation, progress) {
+  onOsUpdateProgressUpdated(operation, progress, error) {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
@@ -211,6 +219,10 @@ export class OnboardingUpdatePageElement extends
         operation === OsUpdateOperation.kNeedPermissionToUpdate ||
         operation === OsUpdateOperation.kDisabled) {
       this.updateInProgress_ = false;
+
+      if (error !== UpdateErrorCode.kSuccess) {
+        this.osUpdateEncounteredError_ = true;
+      }
     }
   }
 
@@ -270,6 +282,14 @@ export class OnboardingUpdatePageElement extends
     } else {
       enableAllButtons(this);
     }
+  }
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
+  shouldShowUpdateInstructions_() {
+    return !this.updateInProgress_ && !this.osUpdateEncounteredError_;
   }
 }
 

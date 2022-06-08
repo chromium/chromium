@@ -240,14 +240,20 @@ export class FakeShimlessRmaService {
   updateOs() {
     if (this.automaticallyTriggerOsUpdateObservation_) {
       this.triggerOsUpdateObserver(
-          OsUpdateOperation.kCheckingForUpdate, 0.1, 500);
+          OsUpdateOperation.kCheckingForUpdate, 0.1, UpdateErrorCode.kSuccess,
+          500);
       this.triggerOsUpdateObserver(
-          OsUpdateOperation.kUpdateAvailable, 0.3, 1000);
-      this.triggerOsUpdateObserver(OsUpdateOperation.kDownloading, 0.5, 1500);
-      this.triggerOsUpdateObserver(OsUpdateOperation.kVerifying, 0.7, 2000);
-      this.triggerOsUpdateObserver(OsUpdateOperation.kFinalizing, 0.9, 2500);
+          OsUpdateOperation.kUpdateAvailable, 0.3, UpdateErrorCode.kSuccess,
+          1000);
       this.triggerOsUpdateObserver(
-          OsUpdateOperation.kUpdatedNeedReboot, 1.0, 3000);
+          OsUpdateOperation.kDownloading, 0.5, UpdateErrorCode.kSuccess, 1500);
+      this.triggerOsUpdateObserver(
+          OsUpdateOperation.kVerifying, 0.7, UpdateErrorCode.kSuccess, 2000);
+      this.triggerOsUpdateObserver(
+          OsUpdateOperation.kFinalizing, 0.9, UpdateErrorCode.kSuccess, 2500);
+      this.triggerOsUpdateObserver(
+          OsUpdateOperation.kUpdatedNeedReboot, 1.0, UpdateErrorCode.kSuccess,
+          3000);
     }
     return this.methods_.resolveMethod('updateOs');
   }
@@ -1088,12 +1094,13 @@ export class FakeShimlessRmaService {
    * Causes the OS update observer to fire after a delay.
    * @param {!OsUpdateOperation} operation
    * @param {number} progress
+   * @param {UpdateErrorCode} error
    * @param {number} delayMs
    */
-  triggerOsUpdateObserver(operation, progress, delayMs) {
+  triggerOsUpdateObserver(operation, progress, error, delayMs) {
     return this.triggerObserverAfterMs(
-        'OsUpdateObserver_onOsUpdateProgressUpdated', [operation, progress],
-        delayMs);
+        'OsUpdateObserver_onOsUpdateProgressUpdated',
+        [operation, progress, error], delayMs);
   }
 
   /**

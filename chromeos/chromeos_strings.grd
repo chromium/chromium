@@ -3043,6 +3043,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_UPDATING_OS_VERSION" desc="The message shown while updating the device's OS version.">
         Updating OS version
       </message>
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_ERROR_MESSAGE" desc="The message shown if there were errors while updating the OS.">
+        Couldn't download the update
+      </message>
       <!-- Manually disable wp page -->
       <message name="IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_INSTRUCTIONS" desc="The text instructions for how to manually disable write-protect on the device.">
         Disable write-protect to continue to the next screen. Go to the device manufacturer's support page for instructions.

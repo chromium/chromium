@@ -133,6 +133,7 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"updateVersionRestartLabel",
        IDS_SHIMLESS_RMA_UPDATE_VERSION_AND_RESTART},
       {"updatingOsVersionText", IDS_SHIMLESS_RMA_UPDATING_OS_VERSION},
+      {"updatingOsErrorMessage", IDS_SHIMLESS_RMA_UPDATE_OS_ERROR_MESSAGE},
       // Choose WP disable method page
       {"chooseWpDisableMethodPageTitleText",
        IDS_SHIMLESS_RMA_CHOOSE_WP_DISABLE_METHOD_PAGE_TITLE},
