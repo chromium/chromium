@@ -12,3 +12,9 @@ const base::Feature kProcessGaiaRemoveLocalAccountHeader{
 // Enables the sync promo after the sign-in intercept.
 const base::Feature kSyncPromoAfterSigninIntercept{
     "SyncPromoAfterSigninIntercept", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables showing the enterprise dialog after every signin into a managed
+// account.
+const base::Feature kShowEnterpriseDialogForAllManagedAccountsSignin{
+    "ShowEnterpriseDialogForAllManagedAccountsSignin",
+    base::FEATURE_DISABLED_BY_DEFAULT};
