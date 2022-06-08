@@ -60,9 +60,6 @@ class SimpleWebViewDialog : public views::View,
   // Inits view. Should be attached to a Widget before call.
   void Init();
 
-  // views::View:
-  gfx::Size GetMinimumSize() const override;
-
   // Implements content::PageNavigator:
   content::WebContents* OpenURL(const content::OpenURLParams& params) override;
 

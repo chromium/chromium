@@ -221,12 +221,10 @@ void SimpleWebViewDialog::Init() {
 
   location_bar_->Init();
   UpdateReload(web_view_->web_contents()->IsLoading(), true);
-}
 
-gfx::Size SimpleWebViewDialog::GetMinimumSize() const {
   gfx::Rect screen_bounds = CalculateScreenBounds(gfx::Size());
   screen_bounds.Inset(kExternalMargin);
-  return screen_bounds.size();
+  SetPreferredSize(screen_bounds.size());
 }
 
 content::WebContents* SimpleWebViewDialog::OpenURL(
