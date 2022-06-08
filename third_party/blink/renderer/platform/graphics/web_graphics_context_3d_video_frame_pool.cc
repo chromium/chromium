@@ -120,11 +120,6 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     const gpu::MailboxHolder& src_mailbox_holder,
     const gfx::ColorSpace& dst_color_space,
     FrameReadyCallback callback) {
-  // Issue `callback` with a nullptr VideoFrame if we return early.
-  base::ScopedClosureRunner failure_runner(WTF::Bind(
-      [](FrameReadyCallback* callback) { std::move(*callback).Run(nullptr); },
-      base::Unretained(&callback)));
-
   if (!weak_context_provider_)
     return false;
   auto* context_provider = weak_context_provider_->ContextProvider();
@@ -154,10 +149,15 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
       raster_context_provider, src_format, src_size, src_color_space,
       src_surface_origin, src_mailbox_holder, dst_frame.get());
-  if (!copy_succeeded)
+  if (!copy_succeeded) {
+    ri->DeleteQueriesEXT(1, &query_id);
     return false;
+  }
 
-  IgnoreResult(failure_runner.Release());
+  // QueryEXT functions are used to make sure that CopyRGBATextureToVideoFrame()
+  // texture copy before we access GMB data.
+  ri->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
+
   auto on_query_done_cb =
       [](scoped_refptr<media::VideoFrame> frame,
          base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper> ctx_wrapper,
@@ -173,9 +173,6 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
         std::move(callback).Run(std::move(frame));
       };
 
-  // QueryEXT functions are used to make sure that CopyRGBATextureToVideoFrame()
-  // texture copy before we access GMB data.
-  ri->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
   auto* context_support = raster_context_provider->ContextSupport();
   DCHECK(context_support);
   context_support->SignalQuery(

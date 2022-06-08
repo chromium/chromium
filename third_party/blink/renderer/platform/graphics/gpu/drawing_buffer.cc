@@ -1071,7 +1071,7 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
   // Use an empty sync token for `mailbox_holder` because we have already waited
   // on the required sync tokens above.
   gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), texture_target_);
-  copy_function(mailbox_holder, format, size, color_space);
+  bool succeeded = copy_function(mailbox_holder, format, size, color_space);
 
   gpu::SyncToken sync_token;
   dst_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
@@ -1081,7 +1081,7 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
         texture_id_to_restore_access,
         GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
   }
-  return true;
+  return succeeded;
 }
 
 bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
@@ -1105,7 +1105,7 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
 
   auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
                            viz::ResourceFormat, const gfx::Size&,
-                           const gfx::ColorSpace&) {
+                           const gfx::ColorSpace&) -> bool {
     GLuint src_texture = dst_gl->CreateAndTexStorage2DSharedImageCHROMIUM(
         src_mailbox.mailbox.name);
     dst_gl->BeginSharedImageAccessDirectCHROMIUM(
@@ -1118,6 +1118,7 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
         unpack_unpremultiply_alpha_needed);
     dst_gl->EndSharedImageAccessDirectCHROMIUM(src_texture);
     dst_gl->DeleteTextures(1, &src_texture);
+    return true;
   };
   return CopyToPlatformInternal(dst_gl, src_buffer, copy_function);
 }
@@ -1136,61 +1137,41 @@ bool DrawingBuffer::CopyToPlatformMailbox(
 
   auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
                            viz::ResourceFormat, const gfx::Size&,
-                           const gfx::ColorSpace&) {
+                           const gfx::ColorSpace&) -> bool {
     dst_raster_interface->CopySubTexture(
         src_mailbox.mailbox, dst_mailbox, dst_texture_target,
         dst_texture_offset.x(), dst_texture_offset.y(), src_sub_rectangle.x(),
         src_sub_rectangle.y(), src_sub_rectangle.width(),
         src_sub_rectangle.height(), flip_y, unpack_premultiply_alpha_needed);
+    return true;
   };
 
   return CopyToPlatformInternal(dst_raster_interface, src_buffer,
                                 copy_function);
 }
 
-void DrawingBuffer::CopyToVideoFrame(
+bool DrawingBuffer::CopyToVideoFrame(
     WebGraphicsContext3DVideoFramePool* frame_pool,
     SourceDrawingBuffer src_buffer,
     bool src_origin_is_top_left,
     const gfx::ColorSpace& dst_color_space,
-    WebGraphicsContext3DVideoFramePool::FrameReadyCallback& callback) {
-  const GrSurfaceOrigin src_surface_origin = src_origin_is_top_left
-                                                 ? kTopLeft_GrSurfaceOrigin
-                                                 : kBottomLeft_GrSurfaceOrigin;
-  // Split the callback so that one can be consumed by the copy if it succeeds,
-  // and the other can be used to restore the original callback reference.
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
-  // Restore the original callback; we will reset it below if the copy succeeds.
-  callback = std::move(split_callback.first);
-
-  // Frame pool copy callback that wraps the original (split) callback.
-  auto frame_pool_callback = base::BindOnce(
-      [](WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback,
-         scoped_refptr<media::VideoFrame> video_frame) {
-        // Only run callback if copy succeeds, otherwise caller will handle
-        // failure e.g. HTMLCanvasElement fallback to static bitmap image copy.
-        if (video_frame)
-          std::move(callback).Run(std::move(video_frame));
-      },
-      std::move(split_callback.second));
-
-  auto copy_function =
-      [&](const gpu::MailboxHolder& src_mailbox, viz::ResourceFormat src_format,
-          const gfx::Size& src_size, const gfx::ColorSpace& src_color_space) {
-        if (frame_pool->CopyRGBATextureToVideoFrame(
-                src_format, src_size, src_color_space, src_surface_origin,
-                src_mailbox, dst_color_space, std::move(frame_pool_callback))) {
-          // This method indicates success by consuming the callback argument
-          // so do that if the copy has consumed the wrapped split callback.
-          callback.Reset();
-        }
-      };
+    WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback) {
   // Ensure that `frame_pool` has not experienced a context loss.
   // https://crbug.com/1269230
   auto* raster_interface = frame_pool->GetRasterInterface();
   if (!raster_interface)
-    return;
-  CopyToPlatformInternal(raster_interface, src_buffer, copy_function);
+    return false;
+  const GrSurfaceOrigin src_surface_origin = src_origin_is_top_left
+                                                 ? kTopLeft_GrSurfaceOrigin
+                                                 : kBottomLeft_GrSurfaceOrigin;
+  auto copy_function =
+      [&](const gpu::MailboxHolder& src_mailbox, viz::ResourceFormat src_format,
+          const gfx::Size& src_size, const gfx::ColorSpace& src_color_space) {
+        return frame_pool->CopyRGBATextureToVideoFrame(
+            src_format, src_size, src_color_space, src_surface_origin,
+            src_mailbox, dst_color_space, std::move(callback));
+      };
+  return CopyToPlatformInternal(raster_interface, src_buffer, copy_function);
 }
 
 cc::Layer* DrawingBuffer::CcLayer() {

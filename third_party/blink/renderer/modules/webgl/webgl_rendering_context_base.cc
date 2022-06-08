@@ -1771,24 +1771,25 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   return true;
 }
 
-void WebGLRenderingContextBase::CopyRenderingResultsToVideoFrame(
+bool WebGLRenderingContextBase::CopyRenderingResultsToVideoFrame(
     WebGraphicsContext3DVideoFramePool* frame_pool,
     SourceDrawingBuffer src_buffer,
     const gfx::ColorSpace& dst_color_space,
-    VideoFrameCopyCompletedCallback& callback) {
+    VideoFrameCopyCompletedCallback callback) {
   if (!frame_pool)
-    return;
+    return false;
 
   auto* drawing_buffer = GetDrawingBuffer();
   if (!drawing_buffer)
-    return;
+    return false;
 
   ScopedFramebufferRestorer fbo_restorer(this);
   if (!drawing_buffer->ResolveAndBindForReadAndDraw())
-    return;
+    return false;
 
-  drawing_buffer->CopyToVideoFrame(frame_pool, src_buffer, is_origin_top_left_,
-                                   dst_color_space, callback);
+  return drawing_buffer->CopyToVideoFrame(frame_pool, src_buffer,
+                                          is_origin_top_left_, dst_color_space,
+                                          std::move(callback));
 }
 
 gfx::Size WebGLRenderingContextBase::DrawingBufferSize() const {

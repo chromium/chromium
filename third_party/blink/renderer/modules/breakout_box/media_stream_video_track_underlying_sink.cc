@@ -225,14 +225,14 @@ MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12GMBVideoFrame(
       &MediaStreamVideoTrackUnderlyingSink::ConvertDone, WrapPersistent(this),
       resolver, video_frame, estimated_capture_time);
   const bool success = accelerated_frame_pool_->ConvertVideoFrame(
-      std::move(video_frame), gfx::ColorSpace::CreateREC709(),
+      video_frame, gfx::ColorSpace::CreateREC709(),
       std::move(convert_done_callback));
   if (success) {
     convert_to_nv12_gmb_failure_count_ = 0;
   } else {
+    ConvertDone(resolver, video_frame, estimated_capture_time,
+                /*converted_video_frame=*/nullptr);
     convert_to_nv12_gmb_failure_count_++;
-    // Note that `ConvertVideoFrame` will call `convert_done_callback` with
-    // nullptr even if it returns false, so we still return resolver->Promise()
   }
   return resolver->Promise();
 }

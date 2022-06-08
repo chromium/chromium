@@ -213,11 +213,13 @@ class CORE_EXPORT CanvasRenderingContext
   // `callback`.
   using VideoFrameCopyCompletedCallback =
       base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>;
-  virtual void CopyRenderingResultsToVideoFrame(
+  virtual bool CopyRenderingResultsToVideoFrame(
       WebGraphicsContext3DVideoFramePool* frame_pool,
       SourceDrawingBuffer,
       const gfx::ColorSpace& dst_color_space,
-      VideoFrameCopyCompletedCallback& callback) {}
+      VideoFrameCopyCompletedCallback callback) {
+    return false;
+  }
 
   virtual cc::Layer* CcLayer() const { return nullptr; }
 
