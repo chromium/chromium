@@ -477,7 +477,7 @@ void LayoutShiftTracker::NotifyTextPrePaint(
 
 double LayoutShiftTracker::SubframeWeightingFactor() const {
   LocalFrame& frame = frame_view_->GetFrame();
-  if (frame.IsMainFrame())
+  if (frame.IsOutermostMainFrame())
     return 1;
 
   // Map the subframe view rect into the coordinate space of the local root.
