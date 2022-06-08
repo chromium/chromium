@@ -28,7 +28,7 @@ message FieldTrialProto {
 }
 
 // Context contains client environment details.
-// Next ID: 22
+// Next ID: 24
 message ClientContextProto {
   message Chrome {
     optional string chrome_version = 1;
@@ -142,6 +142,9 @@ message ClientContextProto {
     optional int64 model_version = 1;
   }
   optional AnnotateDomModelContextProto annotate_dom_model_context = 22;
+
+  // Set if the client has the JS flow library needed for JS flow execution.
+  optional bool js_flow_library_loaded = 23;
 
   reserved 19, 21;
 }
@@ -747,6 +750,11 @@ message ActionsResponseProto {
   // the backend.
   message UpdateScriptListProto { repeated SupportedScriptProto scripts = 1; }
   optional UpdateScriptListProto update_script_list = 5;
+
+  // Needs to be evaluated before each JS flow action. Contains function
+  // definitions that js flows might call.
+  // Only set if ClientContextProto::js_flow_library_loaded is false.
+  optional string js_flow_library = 13;
 
   // Id of the current run.
   optional uint64 run_id = 12;
@@ -3428,7 +3436,9 @@ message JsFlowProto {
     // field will be empty and the action will return INVALID_ACTION.
     optional string result_json = 1;
   }
-  // The JS flow to execute in a sandbox.
+
+  // The JS flow to execute in a sandbox. If present
+  // ActionsResponseProto::js_flow_library needs to be evaluated first.
   optional string js_flow = 1;
 }
 
