@@ -1365,7 +1365,7 @@ body.keyboard-navigation .dialog-buttons button:focus::after {
   border: none;
 }
 
-#spinner {
+.spinner {
   background-image: url(/images/spinner.svg);
   height: 32px;
   visibility: hidden;
@@ -1373,13 +1373,13 @@ body.keyboard-navigation .dialog-buttons button:focus::after {
   z-index: 1;
 }
 
+body:not(.mode-switching):not(.streaming).view-expert-settings .spinner {
+  visibility: visible;
+}
+
 #view-splash {
   background: no-repeat center url(/images/camera_mode_photo.svg), var(--grey-900);
   z-index: 2;
-}
-
-body:not(.mode-switching):not(.streaming) #spinner {
-  visibility: visible;
 }
 
 .hidden {

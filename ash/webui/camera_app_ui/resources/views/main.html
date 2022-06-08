@@ -22,6 +22,8 @@
     <script type="module" src="/js/init.js"></script>
   </head>
   <body class="sound mirror mic view-splash">
+    <div id="spoken_msg" class="centered-overlay" tabindex="-1"
+         aria-live="polite"></div>
     <div id="view-camera">
       <div id="preview-box">
         <div id="preview-viewport">
@@ -253,20 +255,20 @@
     </div>
     <div id="view-review" class="review-views">
       <div class="review-frame">
-        <img class="review-image">
-        <video class="review-video" controls autoplay></video>
+        <img class="review-image" hidden>
+        <video class="review-video" hidden controls autoplay></video>
       </div>
     </div>
     <div id="view-crop-document" class="review-views">
       <div id="document-corner-move-desc" i18n-text="document_corner_move_desc">
       </div>
       <div class="review-frame">
-        <div class="review-image">
+        <div class="review-image" hidden>
           <svg class="crop-area-container">
             <polygon class="crop-area"></polygon>
           </svg>
         </div>
-        <video class="review-video"></video>
+        <video class="review-video" hidden></video>
       </div>
       <div class="review-crop-rotation-button-group button-group">
         <button class="icon-button dark inkdrop"
@@ -481,7 +483,7 @@
           <span i18n-text="expert_enable_expert_mode"></span>
         </label>
       </div>
-      <div id="spinner" class="centered-overlay"></div>
+      <div class="spinner centered-overlay"></div>
     </div>
     <div id="view-flash">
       <div id="processing-indicator" class="centered-overlay">
@@ -505,8 +507,6 @@
       </div>
     </div>
     <div id="toast" class="centered-overlay" tabindex="-1"
-         aria-live="polite"></div>
-    <div id="spoken_msg" class="centered-overlay" tabindex="-1"
          aria-live="polite"></div>
     <div id="tooltip" aria-hidden="true"></div>
     <audio id="sound-tick-final" src="/sounds/tick_final.ogg"></audio>

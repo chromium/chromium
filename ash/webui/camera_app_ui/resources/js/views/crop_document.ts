@@ -336,6 +336,7 @@ export class CropDocument extends Review<boolean> {
         e.preventDefault();
       }
     });
+    this.image.hidden = false;
   }
 
   /**
