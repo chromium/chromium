@@ -46,7 +46,7 @@ TestV4Store::TestV4Store(
 
 TestV4Store::~TestV4Store() = default;
 
-bool TestV4Store::HasValidData() const {
+bool TestV4Store::HasValidData() {
   return true;
 }
 

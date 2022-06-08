@@ -31,7 +31,7 @@ class TestV4Store : public V4Store {
               const base::FilePath& store_path);
   ~TestV4Store() override;
 
-  bool HasValidData() const override;
+  bool HasValidData() override;
 
   void MarkPrefixAsBad(HashPrefix prefix);
 

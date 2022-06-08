@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -205,9 +206,14 @@ void V4Store::Initialize() {
   RecordStoreReadResult(store_read_result);
 }
 
-bool V4Store::HasValidData() const {
-  RecordBooleanWithAndWithoutSuffix("SafeBrowsing.V4Store.IsStoreValid",
-                                    has_valid_data_, store_path_);
+bool V4Store::HasValidData() {
+  // Record every 256th time (`record_has_valid_data_counter_` is 8-bit).
+  if (++record_has_valid_data_counter_ == 1 ||
+      // TODO(crbug.com/1295441): Remove the condition below.
+      !base::IsRunningCpuReductionExperiment()) {
+    RecordBooleanWithAndWithoutSuffix("SafeBrowsing.V4Store.IsStoreValid",
+                                      has_valid_data_, store_path_);
+  }
   return has_valid_data_;
 }
 

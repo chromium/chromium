@@ -2429,8 +2429,9 @@ and applied correctly. -->
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records whether a store has valid data, when it is queried. This is logged
-    each time a store is checked (a few times for each download, and once when a
-    potentially dangerous subresource is loaded).
+    once for every 256 times (a heuristic applied starting M104 for making
+    recording more efficient) a store is checked (a few times for each download,
+    and once when a potentially dangerous subresource is loaded).
   </summary>
 </histogram>
 
