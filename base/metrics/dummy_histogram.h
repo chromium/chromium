@@ -32,7 +32,7 @@ class BASE_EXPORT DummyHistogram : public HistogramBase {
   HistogramType GetHistogramType() const override;
   bool HasConstructionArguments(Sample expected_minimum,
                                 Sample expected_maximum,
-                                uint32_t expected_bucket_count) const override;
+                                size_t expected_bucket_count) const override;
   void Add(Sample value) override {}
   void AddCount(Sample value, int count) override {}
   void AddSamples(const HistogramSamples& samples) override {}

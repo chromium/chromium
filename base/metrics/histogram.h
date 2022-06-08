@@ -100,8 +100,11 @@ class SampleVectorBase;
 
 class BASE_EXPORT Histogram : public HistogramBase {
  public:
-  // Initialize maximum number of buckets in histograms as 16,384.
-  static const uint32_t kBucketCount_MAX;
+  // Initialize maximum number of buckets in histograms as 1000, plus over and
+  // under.  This must be a value that fits in a uint32_t (since that's how we
+  // serialize bucket counts) as well as a Sample (since samples can be up to
+  // this value).
+  static constexpr size_t kBucketCount_MAX = 1002;
 
   typedef std::vector<Count> Counts;
 
@@ -123,17 +126,17 @@ class BASE_EXPORT Histogram : public HistogramBase {
   static HistogramBase* FactoryGet(const std::string& name,
                                    Sample minimum,
                                    Sample maximum,
-                                   uint32_t bucket_count,
+                                   size_t bucket_count,
                                    int32_t flags);
   static HistogramBase* FactoryTimeGet(const std::string& name,
                                        base::TimeDelta minimum,
                                        base::TimeDelta maximum,
-                                       uint32_t bucket_count,
+                                       size_t bucket_count,
                                        int32_t flags);
   static HistogramBase* FactoryMicrosecondsTimeGet(const std::string& name,
                                                    base::TimeDelta minimum,
                                                    base::TimeDelta maximum,
-                                                   uint32_t bucket_count,
+                                                   size_t bucket_count,
                                                    int32_t flags);
 
   // Overloads of the above functions that take a const char* |name| param, to
@@ -142,17 +145,17 @@ class BASE_EXPORT Histogram : public HistogramBase {
   static HistogramBase* FactoryGet(const char* name,
                                    Sample minimum,
                                    Sample maximum,
-                                   uint32_t bucket_count,
+                                   size_t bucket_count,
                                    int32_t flags);
   static HistogramBase* FactoryTimeGet(const char* name,
                                        base::TimeDelta minimum,
                                        base::TimeDelta maximum,
-                                       uint32_t bucket_count,
+                                       size_t bucket_count,
                                        int32_t flags);
   static HistogramBase* FactoryMicrosecondsTimeGet(const char* name,
                                                    base::TimeDelta minimum,
                                                    base::TimeDelta maximum,
-                                                   uint32_t bucket_count,
+                                                   size_t bucket_count,
                                                    int32_t flags);
 
   // Create a histogram using data in persistent storage.
@@ -191,8 +194,8 @@ class BASE_EXPORT Histogram : public HistogramBase {
   const BucketRanges* bucket_ranges() const;
   Sample declared_min() const;
   Sample declared_max() const;
-  virtual Sample ranges(uint32_t i) const;
-  virtual uint32_t bucket_count() const;
+  virtual Sample ranges(size_t i) const;
+  virtual size_t bucket_count() const;
 
   // This function validates histogram construction arguments. It returns false
   // if some of the arguments are bad but also corrects them so they should
@@ -202,14 +205,14 @@ class BASE_EXPORT Histogram : public HistogramBase {
   static bool InspectConstructionArguments(StringPiece name,
                                            Sample* minimum,
                                            Sample* maximum,
-                                           uint32_t* bucket_count);
+                                           size_t* bucket_count);
 
   // HistogramBase implementation:
   uint64_t name_hash() const override;
   HistogramType GetHistogramType() const override;
   bool HasConstructionArguments(Sample expected_minimum,
                                 Sample expected_maximum,
-                                uint32_t expected_bucket_count) const override;
+                                size_t expected_bucket_count) const override;
   void Add(Sample value) override;
   void AddCount(Sample value, int count) override;
   std::unique_ptr<HistogramSamples> SnapshotSamples() const override;
@@ -250,7 +253,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // Return a string description of what goes in a given bucket.
   // Most commonly this is the numeric value, but in derived classes it may
   // be a name (or string description) given to the bucket.
-  virtual const std::string GetAsciiBucketRange(uint32_t it) const;
+  virtual const std::string GetAsciiBucketRange(size_t it) const;
 
  private:
   // Allow tests to corrupt our innards for testing purposes.
@@ -307,12 +310,12 @@ class BASE_EXPORT LinearHistogram : public Histogram {
   static HistogramBase* FactoryGet(const std::string& name,
                                    Sample minimum,
                                    Sample maximum,
-                                   uint32_t bucket_count,
+                                   size_t bucket_count,
                                    int32_t flags);
   static HistogramBase* FactoryTimeGet(const std::string& name,
                                        TimeDelta minimum,
                                        TimeDelta maximum,
-                                       uint32_t bucket_count,
+                                       size_t bucket_count,
                                        int32_t flags);
 
   // Overloads of the above two functions that take a const char* |name| param,
@@ -321,12 +324,12 @@ class BASE_EXPORT LinearHistogram : public Histogram {
   static HistogramBase* FactoryGet(const char* name,
                                    Sample minimum,
                                    Sample maximum,
-                                   uint32_t bucket_count,
+                                   size_t bucket_count,
                                    int32_t flags);
   static HistogramBase* FactoryTimeGet(const char* name,
                                        TimeDelta minimum,
                                        TimeDelta maximum,
-                                       uint32_t bucket_count,
+                                       size_t bucket_count,
                                        int32_t flags);
 
   // Create a histogram using data in persistent storage.
@@ -352,7 +355,7 @@ class BASE_EXPORT LinearHistogram : public Histogram {
       const std::string& name,
       Sample minimum,
       Sample maximum,
-      uint32_t bucket_count,
+      size_t bucket_count,
       int32_t flags,
       const DescriptionPair descriptions[]);
 
@@ -377,7 +380,7 @@ class BASE_EXPORT LinearHistogram : public Histogram {
 
   // If we have a description for a bucket, then return that.  Otherwise
   // let parent class provide a (numeric) description.
-  const std::string GetAsciiBucketRange(uint32_t i) const override;
+  const std::string GetAsciiBucketRange(size_t i) const override;
 
  private:
   friend BASE_EXPORT HistogramBase* DeserializeHistogramInfo(
@@ -410,13 +413,13 @@ class BASE_EXPORT ScaledLinearHistogram {
   ScaledLinearHistogram(const char* name,
                         Sample minimum,
                         Sample maximum,
-                        uint32_t bucket_count,
+                        size_t bucket_count,
                         int32_t scale,
                         int32_t flags);
   ScaledLinearHistogram(const std::string& name,
                         Sample minimum,
                         Sample maximum,
-                        uint32_t bucket_count,
+                        size_t bucket_count,
                         int32_t scale,
                         int32_t flags);
 

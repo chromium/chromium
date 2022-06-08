@@ -172,10 +172,9 @@ class BASE_EXPORT HistogramBase {
   // Whether the histogram has construction arguments as parameters specified.
   // For histograms that don't have the concept of minimum, maximum or
   // bucket_count, this function always returns false.
-  virtual bool HasConstructionArguments(
-      Sample expected_minimum,
-      Sample expected_maximum,
-      uint32_t expected_bucket_count) const = 0;
+  virtual bool HasConstructionArguments(Sample expected_minimum,
+                                        Sample expected_maximum,
+                                        size_t expected_bucket_count) const = 0;
 
   virtual void Add(Sample value) = 0;
 

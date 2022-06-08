@@ -169,7 +169,8 @@ void HistogramBase::WriteJSON(std::string* output,
   root.SetKey("params", std::move(parameters));
   if (verbosity_level != JSON_VERBOSITY_LEVEL_OMIT_BUCKETS)
     root.SetKey("buckets", std::move(count_and_bucket_data.buckets));
-  root.SetIntKey("pid", GetUniqueIdForProcess().GetUnsafeValue());
+  root.SetIntKey("pid",
+                 static_cast<int>(GetUniqueIdForProcess().GetUnsafeValue()));
   serializer.Serialize(root);
 }
 
@@ -203,7 +204,9 @@ HistogramBase::CountAndBucketData HistogramBase::GetCountAndBucketData() const {
 
     Value bucket_value(Value::Type::DICTIONARY);
     bucket_value.SetIntKey("low", bucket_min);
-    bucket_value.SetIntKey("high", bucket_max);
+    // TODO(crbug.com/1334256): Make base::Value able to hold int64_t and remove
+    // this cast.
+    bucket_value.SetIntKey("high", static_cast<int>(bucket_max));
     bucket_value.SetIntKey("count", bucket_count);
     buckets.push_back(std::move(bucket_value));
     it->Next();

@@ -858,20 +858,6 @@ class BASE_EXPORT DelayedPersistentAllocation {
   // with every Get() request to see if the allocation has already been
   // done. If reading |ref| outside of this object, be sure to do an
   // "acquire" load. Don't write to it -- leave that to this object.
-  //
-  // For convenience, methods taking both Atomic32 and std::atomic<Reference>
-  // are defined.
-  DelayedPersistentAllocation(PersistentMemoryAllocator* allocator,
-                              subtle::Atomic32* ref,
-                              uint32_t type,
-                              size_t size,
-                              bool make_iterable);
-  DelayedPersistentAllocation(PersistentMemoryAllocator* allocator,
-                              subtle::Atomic32* ref,
-                              uint32_t type,
-                              size_t size,
-                              size_t offset,
-                              bool make_iterable);
   DelayedPersistentAllocation(PersistentMemoryAllocator* allocator,
                               std::atomic<Reference>* ref,
                               uint32_t type,

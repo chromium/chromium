@@ -257,7 +257,7 @@ PickleIterator FieldTrial::FieldTrialEntry::GetPickleIterator() const {
   const char* src =
       reinterpret_cast<const char*>(this) + sizeof(FieldTrialEntry);
 
-  Pickle pickle(src, pickle_size);
+  Pickle pickle(src, checked_cast<size_t>(pickle_size));
   return PickleIterator(pickle);
 }
 
@@ -1002,7 +1002,8 @@ bool FieldTrialList::GetParamsFromSharedMemory(
 
   size_t allocated_size =
       global_->field_trial_allocator_->GetAllocSize(field_trial->ref_);
-  size_t actual_size = sizeof(FieldTrial::FieldTrialEntry) + entry->pickle_size;
+  uint64_t actual_size =
+      sizeof(FieldTrial::FieldTrialEntry) + entry->pickle_size;
   if (allocated_size < actual_size)
     return false;
 

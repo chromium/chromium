@@ -152,12 +152,12 @@ BASE_EXPORT void UmaHistogramCustomCounts(const std::string& name,
                                           int sample,
                                           int min,
                                           int exclusive_max,
-                                          int buckets);
+                                          size_t buckets);
 BASE_EXPORT void UmaHistogramCustomCounts(const char* name,
                                           int sample,
                                           int min,
                                           int exclusive_max,
-                                          int buckets);
+                                          size_t buckets);
 
 // Counts specialization for maximum counts 100, 1000, 10k, 100k, 1M and 10M.
 BASE_EXPORT void UmaHistogramCounts100(const std::string& name, int sample);
@@ -178,12 +178,12 @@ BASE_EXPORT void UmaHistogramCustomTimes(const std::string& name,
                                          TimeDelta sample,
                                          TimeDelta min,
                                          TimeDelta max,
-                                         int buckets);
+                                         size_t buckets);
 BASE_EXPORT void UmaHistogramCustomTimes(const char* name,
                                          TimeDelta sample,
                                          TimeDelta min,
                                          TimeDelta max,
-                                         int buckets);
+                                         size_t buckets);
 // For short timings from 1 ms up to 10 seconds (50 buckets).
 BASE_EXPORT void UmaHistogramTimes(const std::string& name, TimeDelta sample);
 BASE_EXPORT void UmaHistogramTimes(const char* name, TimeDelta sample);
@@ -206,12 +206,12 @@ BASE_EXPORT void UmaHistogramCustomMicrosecondsTimes(const std::string& name,
                                                      TimeDelta sample,
                                                      TimeDelta min,
                                                      TimeDelta max,
-                                                     int buckets);
+                                                     size_t buckets);
 BASE_EXPORT void UmaHistogramCustomMicrosecondsTimes(const char* name,
                                                      TimeDelta sample,
                                                      TimeDelta min,
                                                      TimeDelta max,
-                                                     int buckets);
+                                                     size_t buckets);
 
 // For microseconds timings from 1 microsecond up to 10 seconds (50 buckets).
 BASE_EXPORT void UmaHistogramMicrosecondsTimes(const std::string& name,

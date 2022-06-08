@@ -77,7 +77,7 @@ HistogramType DummyHistogram::GetHistogramType() const {
 bool DummyHistogram::HasConstructionArguments(
     Sample expected_minimum,
     Sample expected_maximum,
-    uint32_t expected_bucket_count) const {
+    size_t expected_bucket_count) const {
   return true;
 }
 

@@ -59,7 +59,7 @@ void HistogramDeltaSerialization::DeserializeAndAddSamples(
     const std::vector<std::string>& serialized_deltas) {
   for (auto it = serialized_deltas.begin(); it != serialized_deltas.end();
        ++it) {
-    Pickle pickle(it->data(), checked_cast<int>(it->size()));
+    Pickle pickle(it->data(), it->size());
     PickleIterator iter(pickle);
     DeserializeHistogramAndAddSamples(&iter);
   }

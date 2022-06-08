@@ -5,6 +5,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/base_jni_headers/NativeUmaRecorder_jni.h"
+#include "base/format_macros.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
@@ -36,7 +37,7 @@ class HistogramCache {
       case BOOLEAN_HISTOGRAM:
       case CUSTOM_HISTOGRAM: {
         Histogram* hist = static_cast<Histogram*>(histogram);
-        params_str += StringPrintf("/%d/%d/%d", hist->declared_min(),
+        params_str += StringPrintf("/%d/%d/%" PRIuS, hist->declared_min(),
                                    hist->declared_max(), hist->bucket_count());
         break;
       }
@@ -51,7 +52,7 @@ class HistogramCache {
                           jstring j_histogram_name,
                           int32_t expected_min,
                           int32_t expected_max,
-                          uint32_t expected_bucket_count,
+                          size_t expected_bucket_count,
                           HistogramBase* histogram) {
     std::string histogram_name = ConvertJavaStringToUTF8(env, j_histogram_name);
     bool valid_arguments = Histogram::InspectConstructionArguments(
@@ -87,7 +88,7 @@ class HistogramCache {
     DCHECK(j_histogram_name);
     int32_t min = static_cast<int32_t>(j_min);
     int32_t max = static_cast<int32_t>(j_max);
-    int32_t num_buckets = static_cast<int32_t>(j_num_buckets);
+    size_t num_buckets = static_cast<size_t>(j_num_buckets);
     HistogramBase* histogram = HistogramFromHint(j_histogram_hint);
     if (histogram) {
       CheckHistogramArgs(env, j_histogram_name, min, max, num_buckets,
@@ -112,7 +113,7 @@ class HistogramCache {
     DCHECK(j_histogram_name);
     int32_t min = static_cast<int32_t>(j_min);
     int32_t max = static_cast<int32_t>(j_max);
-    int32_t num_buckets = static_cast<int32_t>(j_num_buckets);
+    size_t num_buckets = static_cast<size_t>(j_num_buckets);
     HistogramBase* histogram = HistogramFromHint(j_histogram_hint);
     if (histogram) {
       CheckHistogramArgs(env, j_histogram_name, min, max, num_buckets,

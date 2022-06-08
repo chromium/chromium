@@ -139,10 +139,10 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // base::Pickle object that we unpickle and read from.
   struct BASE_EXPORT FieldTrialEntry {
     // SHA1(FieldTrialEntry): Increment this if structure changes!
-    static constexpr uint32_t kPersistentTypeId = 0xABA17E13 + 2;
+    static constexpr uint32_t kPersistentTypeId = 0xABA17E13 + 3;
 
     // Expected size for 32/64-bit check.
-    static constexpr size_t kExpectedInstanceSize = 8;
+    static constexpr size_t kExpectedInstanceSize = 16;
 
     // Whether or not this field trial is activated. This is really just a
     // boolean but using a 32 bit value for portability reasons. It should be
@@ -151,8 +151,12 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
     // thread is accessing the memory location.
     subtle::Atomic32 activated;
 
+    // On e.g. x86, alignof(uint64_t) is 4.  Ensure consistent size and
+    // alignment of `pickle_size` across platforms.
+    uint32_t padding;
+
     // Size of the pickled structure, NOT the total size of this entry.
-    uint32_t pickle_size;
+    uint64_t pickle_size;
 
     // Calling this is only valid when the entry is initialized. That is, it
     // resides in shared memory and has a pickle containing the trial name and
