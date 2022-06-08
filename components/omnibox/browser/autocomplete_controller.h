@@ -30,6 +30,7 @@
 class ClipboardProvider;
 class DocumentProvider;
 class HistoryURLProvider;
+class HistoryQuickProvider;
 class KeywordProvider;
 class SearchProvider;
 class TemplateURLService;
@@ -331,6 +332,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   Providers providers_;
 
   raw_ptr<BookmarkProvider> bookmark_provider_;
+
+  raw_ptr<HistoryQuickProvider> history_quick_provider_;
 
   raw_ptr<DocumentProvider> document_provider_;
 

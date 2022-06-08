@@ -1421,8 +1421,7 @@ bool SearchProvider::ShouldCurbDefaultSuggestions() const {
     const TemplateURL* turl = providers_.GetKeywordProviderURL();
     DCHECK(turl);
     if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
-        (turl->starter_pack_id() ==
-         TemplateURLStarterPackData::StarterPackID::kBookmarks)) {
+        (turl->starter_pack_id() > 0)) {
       return true;
     }
     return InExplicitExperimentalKeywordMode(input_,

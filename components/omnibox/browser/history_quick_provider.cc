@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
+#include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/prefs/pref_service.h"
@@ -55,7 +56,10 @@ void HistoryQuickProvider::Start(const AutocompleteInput& input,
   if ((input.type() == metrics::OmniboxInputType::EMPTY))
     return;
 
-  autocomplete_input_ = input;
+  // Remove the keyword from input if we're in keyword mode for a starter pack
+  // engine.
+  autocomplete_input_ = KeywordProvider::AdjustInputForStarterPackEngines(
+      input, client()->GetTemplateURLService());
 
   // TODO(pkasting): We should just block here until this loads.  Any time
   // someone unloads the history backend, we'll get inconsistent inline

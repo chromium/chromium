@@ -84,6 +84,13 @@ class KeywordProvider : public AutocompleteProvider {
       TemplateURLService* model,
       AutocompleteInput* input);
 
+  // Returns an AutocompleteInput with the keyword stripped if we're in keyword
+  // mode for a starter pack engine. i.e. for "@History text", input is adjusted
+  // to just be "text".  Otherwise, input is untouched and returned as is.
+  static AutocompleteInput AdjustInputForStarterPackEngines(
+      const AutocompleteInput& input,
+      TemplateURLService* model);
+
   // If |text| corresponds (in the sense of
   // TemplateURLModel::CleanUserInputKeyword()) to an enabled, substituting
   // keyword, returns that keyword; returns the empty string otherwise.

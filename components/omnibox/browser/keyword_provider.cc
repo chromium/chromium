@@ -178,6 +178,27 @@ const TemplateURL* KeywordProvider::GetSubstitutingTemplateURLForInput(
   return nullptr;
 }
 
+// static
+AutocompleteInput KeywordProvider::AdjustInputForStarterPackEngines(
+    const AutocompleteInput& input,
+    TemplateURLService* model) {
+  DCHECK(model);
+
+  // If we're in a starter pack scope, we want to run the provider with only
+  // the user text AFTER the keyword.  i.e. if the input is "@history text",
+  // set the autocomplete input to just "text".
+  AutocompleteInput keyword_input = input;
+  const TemplateURL* keyword_provider =
+      KeywordProvider::GetSubstitutingTemplateURLForInput(model,
+                                                          &keyword_input);
+  if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+      input.prefer_keyword() && keyword_provider &&
+      keyword_provider->starter_pack_id() > 0) {
+    return keyword_input;
+  }
+  return input;
+}
+
 std::u16string KeywordProvider::GetKeywordForText(
     const std::u16string& text) const {
   TemplateURLService* url_service = GetTemplateURLService();

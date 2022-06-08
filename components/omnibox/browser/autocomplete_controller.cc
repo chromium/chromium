@@ -301,8 +301,10 @@ AutocompleteController::AutocompleteController(
   }
   if (provider_types & AutocompleteProvider::TYPE_BUILTIN)
     providers_.push_back(new BuiltinProvider(provider_client_.get()));
-  if (provider_types & AutocompleteProvider::TYPE_HISTORY_QUICK)
-    providers_.push_back(new HistoryQuickProvider(provider_client_.get()));
+  if (provider_types & AutocompleteProvider::TYPE_HISTORY_QUICK) {
+    history_quick_provider_ = new HistoryQuickProvider(provider_client_.get());
+    providers_.push_back(history_quick_provider_.get());
+  }
   if (provider_types & AutocompleteProvider::TYPE_KEYWORD) {
     keyword_provider_ = new KeywordProvider(provider_client_.get(), this);
     providers_.push_back(keyword_provider_.get());
@@ -452,11 +454,12 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   expire_timer_.Stop();
   stop_timer_.Stop();
 
-  // Start the new query.
+  // Start the new query. Starter Pack engines in keyword mode only run a subset
+  // of the providers, so call `GetProvidersToRun()` to determine the subset or
+  // if we run all providers.
   in_start_ = true;
   base::TimeTicks start_time = base::TimeTicks::Now();
-  Providers providers_to_run = GetProvidersToRun();
-  for (const auto& provider : providers_to_run) {
+  for (const auto& provider : GetProvidersToRun()) {
     base::TimeTicks provider_start_time = base::TimeTicks::Now();
     provider->Start(input_, minimal_changes);
     if (!input.want_asynchronous_matches())
@@ -534,7 +537,10 @@ void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
     return;
   }
 
-  for (auto provider : providers_) {
+  // Starter Pack engines in keyword mode only run a subset of the providers, so
+  // call `GetProvidersToRun()` to determine the subset or if we run all
+  // providers (the Default case).
+  for (auto provider : GetProvidersToRun()) {
     provider->StartPrefetch(input);
   }
 }
@@ -1161,13 +1167,25 @@ AutocompleteController::Providers AutocompleteController::GetProvidersToRun() {
     const TemplateURL* keyword_turl =
         KeywordProvider::GetSubstitutingTemplateURLForInput(
             template_url_service_, &keyword_input);
-    if (keyword_turl &&
-        keyword_turl->starter_pack_id() ==
-            TemplateURLStarterPackData::StarterPackID::kBookmarks) {
-      Providers provider_subset;
+    Providers provider_subset;
+    if (keyword_turl && keyword_turl->starter_pack_id() > 0) {
+      // Search provider and keyword provider are still run because we would
+      // lose the suggestion the keyword chip is attached to otherwise. Search
+      // provider suggestions are curbed for starter pack scopes in
+      // `SearchProvider::ShouldCurbDefaultSuggestions()`.
       provider_subset.push_back(search_provider_.get());
       provider_subset.push_back(keyword_provider_.get());
-      provider_subset.push_back(bookmark_provider_.get());
+
+      switch (keyword_turl->starter_pack_id()) {
+        case TemplateURLStarterPackData::kBookmarks:
+          provider_subset.push_back(bookmark_provider_.get());
+          break;
+        case TemplateURLStarterPackData::kHistory:
+          provider_subset.push_back(history_quick_provider_.get());
+          provider_subset.push_back(history_url_provider_.get());
+          break;
+      }
+
       return provider_subset;
     }
   }

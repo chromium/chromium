@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -33,9 +34,11 @@
 #include "components/omnibox/browser/history_test_util.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/in_memory_url_index_test_util.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_terms_data.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -204,6 +207,8 @@ void HistoryQuickProviderTest::SetUp() {
   client_->set_in_memory_url_index(std::make_unique<InMemoryURLIndex>(
       client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
       history_dir_.GetPath(), SchemeSet()));
+  client_->set_template_url_service(
+      std::make_unique<TemplateURLService>(nullptr, 0));
   client_->GetInMemoryURLIndex()->Init();
   ASSERT_TRUE(client_->GetHistoryService());
 
@@ -907,6 +912,53 @@ TEST_F(HistoryQuickProviderTest, CorrectAutocompleteWithTrailingSlash) {
   EXPECT_EQ(u"cr/", ac_match.fill_into_edit);
   EXPECT_EQ(u"", ac_match.inline_autocompletion);
   EXPECT_TRUE(ac_match.allowed_to_be_default_match);
+}
+
+TEST_F(HistoryQuickProviderTest, KeywordModeExtractUserInput) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
+
+  // Populate template URL with starter pack entries
+  std::vector<std::unique_ptr<TemplateURLData>> turls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+  for (auto& turl : turls) {
+    client().GetTemplateURLService()->Add(
+        std::make_unique<TemplateURL>(std::move(*turl)));
+  }
+  // Test result for user text "google", we should get back a result for google.
+  AutocompleteInput input(u"google", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider().Start(input, false);
+  if (!provider().done())
+    base::RunLoop().Run();
+
+  ACMatches matches = provider().matches();
+  ASSERT_GT(matches.size(), 0u);
+  EXPECT_EQ(GURL("http://www.google.com/"), matches[0].destination_url);
+
+  // Test result for "@history google" while NOT in keyword mode,
+  // we should not get a result for google since the we're
+  // searching for the whole input text including "@history".
+  AutocompleteInput input2(u"@history google",
+                           metrics::OmniboxEventProto::OTHER,
+                           TestSchemeClassifier());
+  provider().Start(input2, false);
+  if (!provider().done())
+    base::RunLoop().Run();
+
+  matches = provider().matches();
+  ASSERT_EQ(matches.size(), 0u);
+
+  // Turn on keyword mode, test result again, we should get back the result for
+  // google.com since we're searching only for the user text after the keyword.
+  input2.set_prefer_keyword(true);
+  provider().Start(input2, false);
+  if (!provider().done())
+    base::RunLoop().Run();
+
+  matches = provider().matches();
+  ASSERT_GT(matches.size(), 0u);
+  EXPECT_EQ(GURL("http://www.google.com/"), matches[0].destination_url);
 }
 
 // HQPOrderingTest -------------------------------------------------------------
