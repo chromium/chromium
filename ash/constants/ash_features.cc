@@ -703,7 +703,7 @@ const base::Feature kFilesAppExperimental{"FilesAppExperimental",
 // flag controls the second tier, whose support is more experimental.
 // https://crbug.com/1216245
 const base::Feature kFilesArchivemount2{"FilesArchivemount2",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable the simple archive extraction.
 // https://crbug.com/953256

@@ -4973,8 +4973,7 @@ const char kFilesAppExperimentalDescription[] =
 
 const char kFilesArchivemount2Name[] = "Archivemount in Files App (2nd Tier)";
 const char kFilesArchivemount2Description[] =
-    "Enable mounting additional archive formats in File Manager. This has no "
-    "effect unless #files-archivemount is also enabled.";
+    "Enable mounting additional archive formats in File Manager.";
 
 const char kFilesExtractArchiveName[] = "Extract archive in Files app";
 const char kFilesExtractArchiveDescription[] =
