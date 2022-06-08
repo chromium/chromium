@@ -11,6 +11,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
@@ -46,26 +47,30 @@ constexpr auto kOpenGoogleCalendarInsets = gfx::Insets::VH(6, 16);
 // The insets for `CalendarEmptyEventListView`.
 constexpr auto kOpenGoogleCalendarContainerInsets = gfx::Insets::VH(20, 60);
 
+// Border thickness for `CalendarEmptyEventListView`.
+constexpr int kOpenGoogleCalendarBorderThickness = 1;
+
 }  // namespace
 
 // A view that's displayed when the user selects a day cell from the calendar
-// month view that has no events.  Clicking on it opens Google calendar.
-class CalendarEmptyEventListView : public views::LabelButton {
+// month view that has no events. Clicking on it opens Google calendar.
+class CalendarEmptyEventListView : public PillButton {
  public:
   explicit CalendarEmptyEventListView(CalendarViewController* controller)
-      : views::LabelButton(
-            views::Button::PressedCallback(base::BindRepeating(
-                &CalendarEmptyEventListView::OpenCalendarDefault,
-                base::Unretained(this))),
-            l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS)),
+      : PillButton(views::Button::PressedCallback(base::BindRepeating(
+                       &CalendarEmptyEventListView::OpenCalendarDefault,
+                       base::Unretained(this))),
+                   l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS),
+                   PillButton::Type::kIconlessFloating,
+                   /*icon=*/nullptr),
         controller_(controller) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     label()->SetBorder(views::CreateEmptyBorder(kOpenGoogleCalendarInsets));
     label()->SetTextContext(CONTEXT_CALENDAR_DATE);
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        GetPreferredSize().height() / 2,
-        views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/!features::IsDarkLightModeEnabled()));
+    SetBorder(views::CreateRoundedRectBorder(
+        kOpenGoogleCalendarBorderThickness, GetPreferredSize().height() / 2,
+        AshColorProvider::Get()->GetControlsLayerColor(
+            ColorProvider::ControlsLayerType::kHairlineBorderColor)));
     SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENT_BUTTON_TOOL_TIP));
   }
@@ -73,15 +78,6 @@ class CalendarEmptyEventListView : public views::LabelButton {
   CalendarEmptyEventListView& operator=(
       const CalendarEmptyEventListView& other) = delete;
   ~CalendarEmptyEventListView() override = default;
-
-  // views::View:
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    SetEnabledTextColors(calendar_utils::GetPrimaryTextColor());
-    views::FocusRing::Get(this)->SetColor(
-        ColorProvider::Get()->GetControlsLayerColor(
-            ColorProvider::ControlsLayerType::kFocusRingColor));
-  }
 
   // Callback that's invoked when the user clicks on "Open in Google calendar"
   // in an empty event list.
