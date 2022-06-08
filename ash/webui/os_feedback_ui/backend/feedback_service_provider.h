@@ -32,6 +32,7 @@ class FeedbackServiceProvider
   void GetScreenshotPng(GetScreenshotPngCallback callback) override;
   void SendReport(os_feedback_ui::mojom::ReportPtr report,
                   SendReportCallback callback) override;
+  void OpenDiagnosticsApp(OpenDiagnosticsAppCallback callback) override;
 
   void BindInterface(
       mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>

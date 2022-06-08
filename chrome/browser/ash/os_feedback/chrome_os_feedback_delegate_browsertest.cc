@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/webui/diagnostics_ui/url_constants.h"
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
@@ -17,17 +18,21 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feedback/feedback_report.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/api/feedback_private/feedback_service.h"
 #include "extensions/browser/api/feedback_private/mock_feedback_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -105,6 +110,16 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
     const unsigned char kData[] = {12, 11, 99};
     return base::MakeRefCounted<base::RefCountedBytes>(kData, std::size(kData));
   }
+
+  // Find the url of the active tab of the browser if any.
+  GURL FindActiveUrl(Browser* browser) {
+    if (browser) {
+      return browser->tab_strip_model()->GetActiveWebContents()->GetURL();
+    }
+    return GURL();
+  }
+
+  GURL diagnostics_url_ = GURL(ash::kChromeUIDiagnosticsAppUrl);
 };
 
 // Test GetApplicationLocale returns a valid locale.
@@ -219,6 +234,23 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, NoScreenshot) {
 
   const std::vector<uint8_t> result = future.Get();
   EXPECT_EQ(0, result.size());
+}
+
+// Test if Diagnostics app is opened.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenDiagnosticsApp) {
+  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
+
+  feedback_delegate_.OpenDiagnosticsApp();
+
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+
+  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+      browser()->profile(), ash::SystemWebAppType::DIAGNOSTICS);
+
+  EXPECT_TRUE(app_browser);
+  EXPECT_EQ(diagnostics_url_, FindActiveUrl(app_browser));
 }
 
 }  // namespace ash

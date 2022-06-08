@@ -39,6 +39,8 @@ class OsFeedbackDelegate {
   // Collect data and send the report to Google.
   virtual void SendReport(os_feedback_ui::mojom::ReportPtr report,
                           SendReportCallback callback) = 0;
+  // Open Diagnostics app.
+  virtual void OpenDiagnosticsApp() = 0;
 };
 
 }  // namespace ash

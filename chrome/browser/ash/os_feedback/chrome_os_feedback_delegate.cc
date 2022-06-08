@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "components/feedback/content/content_tracing_manager.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_data.h"
@@ -197,6 +199,11 @@ void ChromeOsFeedbackDelegate::OnSendFeedbackDone(SendReportCallback callback,
   const SendReportStatus send_status =
       status ? SendReportStatus::kSuccess : SendReportStatus::kDelayed;
   std::move(callback).Run(send_status);
+}
+
+void ChromeOsFeedbackDelegate::OpenDiagnosticsApp() {
+  web_app::LaunchSystemWebAppAsync(profile_,
+                                   ash::SystemWebAppType::DIAGNOSTICS);
 }
 
 }  // namespace ash

@@ -127,4 +127,6 @@ interface FeedbackServiceProvider {
   GetScreenshotPng() => (array<uint8> png_data);
   // Sends a feedback report and returns its status.
   SendReport(Report report) => (SendReportStatus status);
+  // Open Diagnostics app.
+  OpenDiagnosticsApp() => ();
 };

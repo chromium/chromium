@@ -20,6 +20,7 @@ export class FakeFeedbackServiceProvider {
     this.methods_.register('getFeedbackContext');
     this.methods_.register('getScreenshotPng');
     this.methods_.register('sendReport');
+    this.methods_.register('openDiagnosticsApp');
     // Let sendReport return success by default.
     this.methods_.setResult('sendReport', {status: SendReportStatus.kSuccess});
     // Let getScreenshotPng return an empty array by default.
@@ -36,6 +37,8 @@ export class FakeFeedbackServiceProvider {
       getScreenshotPng: 0,
       /** @type {number} */
       sendReport: 0,
+      /** @type {number} */
+      openDiagnosticsApp: 0,
     };
   }
 
@@ -114,5 +117,20 @@ export class FakeFeedbackServiceProvider {
    */
   setFakeScreenshotPng(data) {
     this.methods_.setResult('getScreenshotPng', {pngData: data});
+  }
+
+  /**
+   * @return {number}
+   */
+  getOpenDiagnosticsAppCallCount() {
+    return this.callCounts_.openDiagnosticsApp;
+  }
+
+  /**
+   * @return {!Promise<void>}
+   */
+  openDiagnosticsApp() {
+    this.callCounts_.openDiagnosticsApp++;
+    return this.methods_.resolveMethod('openDiagnosticsApp');
   }
 }

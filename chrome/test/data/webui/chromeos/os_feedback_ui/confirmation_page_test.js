@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import {ConfirmationPageElement} from 'chrome://os-feedback/confirmation_page.js';
+import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {SendReportStatus} from 'chrome://os-feedback/feedback_types.js';
+import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -30,8 +32,14 @@ export function confirmationPageTest() {
   /** @type {?ConfirmationPageElement} */
   let page = null;
 
+  /** @type {?FakeFeedbackServiceProvider} */
+  let feedbackServiceProvider = null;
+
   setup(() => {
     document.body.innerHTML = '';
+
+    feedbackServiceProvider = new FakeFeedbackServiceProvider();
+    setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   });
 
   teardown(() => {
@@ -204,5 +212,17 @@ export function confirmationPageTest() {
     await flushTasks();
 
     assertEquals(1, windowCloseCalled);
+  });
+
+  // Test clicking diagnostics app link.
+  test('openDiagnosticsApp', async () => {
+    await initializePage();
+
+    assertEquals(0, feedbackServiceProvider.getOpenDiagnosticsAppCallCount());
+
+    const link = getElement(page, '#diagnostics');
+    link.click();
+
+    assertEquals(1, feedbackServiceProvider.getOpenDiagnosticsAppCallCount());
   });
 }

@@ -11,7 +11,8 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FeedbackFlowState} from './feedback_flow.js';
-import {SendReportStatus} from './feedback_types.js';
+import {FeedbackServiceProviderInterface, SendReportStatus} from './feedback_types.js';
+import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 
 /**
  * @fileoverview
@@ -40,6 +41,9 @@ export class ConfirmationPageElement extends PolymerElement {
      * @type {?SendReportStatus}
      */
     this.sendReportStatus;
+
+    /** @private {!FeedbackServiceProviderInterface} */
+    this.feedbackServiceProvider_ = getFeedbackServiceProvider();
   }
 
   /**
@@ -99,6 +103,23 @@ export class ConfirmationPageElement extends PolymerElement {
    */
   handleDoneButtonClicked_() {
     window.close();
+  }
+
+  /**
+   * Open links, including SWA app link and web link.
+   * @param {!Event} e
+   * @protected
+   */
+  handleLinkClicked_(e) {
+    e.stopPropagation();
+
+    switch (e.target.id) {
+      case 'diagnostics':
+        this.feedbackServiceProvider_.openDiagnosticsApp();
+        break;
+      default:
+        console.warn('unexpected caller id: ', e.target.id);
+    }
   }
 }
 
