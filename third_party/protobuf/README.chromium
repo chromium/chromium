@@ -97,3 +97,9 @@ Description of the patches:
   Imports
   https://github.com/protocolbuffers/protobuf/commit/ed8b2e6f62afee17e2f8249be3b9b69eb0666532
   to remove uses of std::iterator.
+
+- 0026-remove-sprintf.patch
+
+  Imports
+  https://github.com/protocolbuffers/protobuf/commit/c0fc2e881bc36aafb0bf539bf41889611370f60c
+  to remove use of sprintf.
