@@ -192,7 +192,7 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testTapWithLanguage(@EnabledFeature int enabledFeature) throws Exception {
         // Resolving a German word should trigger translation.
         mFakeServer.setExpectations("german",

@@ -111,7 +111,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testNonResolveTrigger(@EnabledFeature int enabledFeature) throws Exception {
         if (isConfigurationForResolvingGesturesOnly()) return;
         triggerNonResolve("states");
@@ -256,7 +256,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1071080")
     public void testLongPressGestureFollowedByScrollMaintainsSelection(
             @EnabledFeature int enabledFeature) throws Exception {
@@ -350,7 +350,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testExpandBeforeSearchTermResolution(@EnabledFeature int enabledFeature)
             throws Exception {
         simulateSlowResolveSearch("states");
@@ -407,7 +407,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously flaky and disabled 4/2021.  https://crbug.com/1180304
     public void testSelectionExpansionOnSearchTermResolution(@EnabledFeature int enabledFeature)
             throws Exception {

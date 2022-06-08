@@ -235,7 +235,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
      * Tests that Contextual Search is fully disabled when offline.
      */
     @Test
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @FlakyTest(message = "Disabled in 2017.  https://crbug.com/761946")
     // @SmallTest
     // @Feature({"ContextualSearch"})

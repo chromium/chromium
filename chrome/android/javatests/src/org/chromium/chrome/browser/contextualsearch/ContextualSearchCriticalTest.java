@@ -58,7 +58,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously disabled:  https://crbug.com/1058297
     public void testResolveCausesOneLowPriorityRequest(@EnabledFeature int enabledFeature)
             throws Exception {
@@ -90,7 +90,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testPrefetchFailoverRequestMadeAfterOpen(@EnabledFeature int enabledFeature)
             throws Exception {
         mFakeServer.reset();
@@ -121,7 +121,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @DisabledTest(message = "https://crbug.com/1140413")
     public void testLivePrefetchFailoverRequestMadeAfterOpen(@EnabledFeature int enabledFeature)
             throws Exception {
@@ -159,7 +159,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously flaky and disabled 4/2021.  https://crbug.com/1192285
     public void testResolveDisablePreload(@EnabledFeature int enabledFeature) throws Exception {
         simulateSlowResolveSearch("intelligence");
@@ -180,7 +180,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously disabled: crbug.com/765403
     public void testSearchTermResolutionError(@EnabledFeature int enabledFeature) throws Exception {
         simulateSlowResolveSearch("states");
@@ -202,7 +202,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testResolveContentVisibility(@EnabledFeature int enabledFeature) throws Exception {
         // Simulate a resolving search and make sure Content is not visible.
         simulateResolveSearch();
@@ -225,7 +225,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously disabled: http://crbug.com/1296677
     public void testNonResolveContentVisibility(@EnabledFeature int enabledFeature)
             throws Exception {
@@ -251,7 +251,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously flaky. See https://crbug.com/1032955
     @DisabledTest(message = "https://crbug.com/1291558")
     public void testResolveMultipleSwipeOnlyLoadsContentOnce(@EnabledFeature int enabledFeature)
@@ -291,7 +291,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously flaky https://crbug.com/1032760 on sdk<P.
     @DisabledTest(message = "https://crbug.com/1291558")
     public void testNonResolveMultipleSwipeOnlyLoadsContentOnce(@EnabledFeature int enabledFeature)
@@ -332,7 +332,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testChainedSearchCreatesNewContent(@EnabledFeature int enabledFeature)
             throws Exception {
         // This test depends on preloading the content - which is loaded and not made visible.
@@ -377,7 +377,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testChainedSearchLoadsCorrectSearchTerm(@EnabledFeature int enabledFeature)
             throws Exception {
         // Simulate a resolving search and make sure Content is not visible.
@@ -464,7 +464,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testTapCloseRemovedFromHistory(@EnabledFeature int enabledFeature)
             throws Exception {
         // Simulate a resolving search and make sure a URL was loaded.
@@ -487,7 +487,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     //  @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1184410")
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testTapExpandNotRemovedFromHistory(@EnabledFeature int enabledFeature)
             throws Exception {
         // Simulate a resolving search and make sure a URL was loaded.
