@@ -63,6 +63,7 @@ void AppPlatformMetricsService::Start(
       profile_, app_registry_cache, instance_registry);
   app_platform_input_metrics_ = std::make_unique<apps::AppPlatformInputMetrics>(
       profile_, instance_registry);
+  website_metrics_ = std::make_unique<apps::WebsiteMetrics>();
 
   day_id_ = profile_->GetPrefs()->GetInteger(kAppPlatformMetricsDayId);
   CheckForNewDay();
