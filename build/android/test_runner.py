@@ -14,6 +14,7 @@ import itertools
 import logging
 import os
 import re
+import shlex
 import shutil
 import signal
 import sys
@@ -58,6 +59,8 @@ from lib.results import result_sink  # pylint: disable=import-error
 
 _DEVIL_STATIC_CONFIG_FILE = os.path.abspath(os.path.join(
     host_paths.DIR_SOURCE_ROOT, 'build', 'android', 'devil_config.json'))
+
+_RERUN_FAILED_TESTS_FILE = 'rerun_failed_tests.filter'
 
 
 def _RealPath(arg):
@@ -1045,6 +1048,9 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
             annotation=getattr(args, 'annotations', None),
             flakiness_server=getattr(args, 'flakiness_dashboard_server',
                                      None))
+        if iteration_results.GetNotPass():
+          _LogRerunStatement(iteration_results.GetNotPass())
+
         if args.break_on_failure and not iteration_results.DidRunPass():
           break
 
@@ -1100,6 +1106,54 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
 
   return (0 if all(r.DidRunPass() for r in all_iteration_results)
           else constants.ERROR_EXIT_CODE)
+
+
+def _LogRerunStatement(failed_tests):
+  """Logs a message that can rerun the failed tests.
+
+  Logs a copy/pasteable message that filters tests so just the failing tests
+  are run.
+
+  Args:
+    failed_tests: A set of test results that did not pass.
+  """
+  rerun_arg_list = []
+  try:
+    constants.CheckOutputDirectory()
+  # constants.CheckOutputDirectory throws bare exceptions.
+  except:  # pylint: disable=bare-except
+    logging.exception('Output directory not found. Unable to generate failing '
+                      'test filter file.')
+    return
+
+  test_filter_file = os.path.join(os.path.relpath(constants.GetOutDirectory()),
+                                  _RERUN_FAILED_TESTS_FILE)
+  index = 0
+  while index < len(sys.argv):
+    arg = sys.argv[index]
+    # Skip adding the filter and the filter arg as it's going to add its own
+    # filter arg.
+    if 'filter' in arg or arg == '-f':
+      index += 2
+      continue
+
+    rerun_arg_list.append(arg)
+    index += 1
+
+  failed_test_list = [str(t) for t in failed_tests]
+  with open(test_filter_file, 'w') as fp:
+    for t in failed_test_list:
+      # Test result names can have # in them that don't match when applied as
+      # a test name filter.
+      fp.write('%s\n' % t.replace('#', '.'))
+
+  rerun_arg_list.append('--test-launcher-filter-file=%s' % test_filter_file)
+  msg = """
+    %d Test(s) failed.
+    Rerun failed tests with copy and pastable command:
+        %s
+    """
+  logging.critical(msg, len(failed_tests), shlex.join(rerun_arg_list))
 
 
 def DumpThreadStacks(_signal, _frame):
