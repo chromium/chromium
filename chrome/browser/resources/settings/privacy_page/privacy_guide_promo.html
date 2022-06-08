@@ -26,13 +26,12 @@
 </style>
 <div id="wrapper">
   <div id="controlsColumn">
-    <h2 id="title" aria-hidden="true">$i18n{privacyGuidePromoHeader}</h2>
-    <div id="bodyText" class="cr-secondary-text" aria-hidden="true">
+    <h2 id="title">$i18n{privacyGuidePromoHeader}</h2>
+    <div id="bodyText" class="cr-secondary-text">
       $i18n{privacyGuidePromoBody}
     </div>
     <cr-button class="action-button" id="startButton" role="button"
-        aria-labelledby="title" aria-describedby="bodyText"
-        on-click="onPrivacyGuideStartClick_">
+        aria-describedby="title bodyText" on-click="onPrivacyGuideStartClick_">
       $i18n{privacyGuidePromoStartButton}
     </cr-button>
     <cr-button id="noThanksButton" role="button"
