@@ -155,20 +155,43 @@ bool FakeWebFrameImpl::ExecuteJavaScript(
     const std::u16string& script,
     base::OnceCallback<void(const base::Value*)> callback) {
   java_script_calls_.push_back(script);
-  return false;
+
+  const base::Value* result = executed_js_result_map_[script];
+
+  if (!callback.is_null()) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), result));
+  }
+
+  return result != nullptr;
 }
 
 bool FakeWebFrameImpl::ExecuteJavaScript(
     const std::u16string& script,
     base::OnceCallback<void(const base::Value*, bool)> callback) {
   java_script_calls_.push_back(script);
-  return false;
+
+  const base::Value* result = executed_js_result_map_[script];
+  bool success = result != nullptr;
+
+  if (!callback.is_null()) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), result, success));
+  }
+
+  return success;
 }
 
 void FakeWebFrameImpl::AddJsResultForFunctionCall(
     base::Value* js_result,
     const std::string& function_name) {
   result_map_[function_name] = js_result;
+}
+
+void FakeWebFrameImpl::AddResultForExecutedJs(
+    base::Value* js_result,
+    const std::u16string& executed_js) {
+  executed_js_result_map_[executed_js] = js_result;
 }
 
 JavaScriptContentWorld* FakeWebFrameImpl::last_received_content_world() {

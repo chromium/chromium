@@ -57,6 +57,13 @@ class FakeWebFrame : public WebFrame {
   virtual void AddJsResultForFunctionCall(base::Value* js_result,
                                           const std::string& function_name) = 0;
 
+  // Sets |js_result| that will be passed into callback for |executed_js|
+  // call through ExecuteJavaScript API.
+  // NOTE: The caller is responsible for keeping |js_result| alive for as
+  // long as this instance lives.
+  virtual void AddResultForExecutedJs(base::Value* js_result,
+                                      const std::u16string& executed_js) = 0;
+
   virtual void set_force_timeout(bool force_timeout) = 0;
 
   // Sets return value |can_call_function_| of CanCallJavaScriptFunction(),

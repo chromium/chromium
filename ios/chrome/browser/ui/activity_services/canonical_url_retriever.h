@@ -15,6 +15,10 @@ class WebState;
 
 namespace activity_services {
 
+// Script to access the canonical URL from a web page. This script shouldn't be
+// used directly, but is exposed for testing purposes.
+extern const char16_t kCanonicalURLScript[];
+
 // Retrieves the canonical URL in the web page represented by `web_state`.
 // This method is asynchronous and the URL is returned by calling the
 // `completion` block.

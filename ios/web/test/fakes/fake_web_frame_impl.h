@@ -56,6 +56,8 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   void set_browser_state(BrowserState* browser_state) override;
   void AddJsResultForFunctionCall(base::Value* js_result,
                                   const std::string& function_name) override;
+  void AddResultForExecutedJs(base::Value* js_result,
+                              const std::u16string& executed_js) override;
   void set_force_timeout(bool force_timeout) override;
   void set_can_call_function(bool can_call_function) override;
   void set_call_java_script_function_callback(
@@ -90,6 +92,9 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   // by JavaScript function |name| expected to be passed into
   // CallJavaScriptFunction().
   std::map<std::string, base::Value*> result_map_;
+  // Map holding values to be passed in ExecuteJavaScript() callback. Keyed by
+  // by JavaScript expected to be passed to ExecuteJavaScript().
+  std::map<std::u16string, base::Value*> executed_js_result_map_;
   // The frame identifier which uniquely identifies this frame across the
   // application's lifetime.
   std::string frame_id_;
