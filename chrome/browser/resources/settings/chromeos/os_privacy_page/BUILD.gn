@@ -12,6 +12,7 @@ js_type_check("closure_compile_module") {
   deps = [
     ":os_privacy_page",
     ":peripheral_data_access_protection_dialog",
+    ":privacy_hub_page",
     ":smart_privacy_page",
   ]
 }
@@ -64,10 +65,18 @@ js_library("smart_privacy_page") {
   ]
 }
 
+js_library("privacy_hub_page") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
 html_to_js("web_components") {
   js_files = [
     "os_privacy_page.js",
     "peripheral_data_access_protection_dialog.js",
+    "privacy_hub_page.js",
     "smart_privacy_page.js",
   ]
 }

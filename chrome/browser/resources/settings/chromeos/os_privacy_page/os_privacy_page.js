@@ -213,6 +213,18 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
         },
       },
 
+      /**
+       * Whether privacy hub should be displayed.
+       * @private
+       */
+      showPrivacyHub_: {
+        type: Boolean,
+        readOnly: true,
+        value: function() {
+          return loadTimeData.getBoolean('showPrivacyHub');
+        },
+      },
+
       // <if expr="_google_chrome">
       /**
        * The preference controlling the current user's metrics consent. This
@@ -364,6 +376,11 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
   /** @private */
   onSmartPrivacy_() {
     Router.getInstance().navigateTo(routes.SMART_PRIVACY);
+  }
+
+  /** @private */
+  onPrivacyHub_() {
+    Router.getInstance().navigateTo(routes.PRIVACY_HUB);
   }
 
   /** @private */

@@ -279,6 +279,8 @@ function createOSSettingsRoutes() {
       Subpage.kManageOtherPeopleV2);
   r.SMART_PRIVACY = createSubpage(
       r.OS_PRIVACY, mojom.SMART_PRIVACY_SUBPAGE_PATH, Subpage.kSmartPrivacy);
+  r.PRIVACY_HUB = createSubpage(
+      r.OS_PRIVACY, mojom.PRIVACY_HUB_SUBPAGE_PATH, Subpage.kPrivacyHub);
 
   // Languages and Input section.
   r.OS_LANGUAGES = createSection(

@@ -329,6 +329,9 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isQuickDimEnabled",
                           ash::features::IsQuickDimEnabled());
 
+  html_source->AddBoolean("showPrivacyHub", base::FeatureList::IsEnabled(
+                                                ::features::kCrosPrivacyHub));
+
   html_source->AddString(
       "smartPrivacyDesc",
       ui::SubstituteChromeOSDeviceType(IDS_OS_SETTINGS_SMART_PRIVACY_DESC));

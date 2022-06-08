@@ -84,6 +84,7 @@ import {Route} from '../router.js';
  *   POINTERS: !Route,
  *   POWER: !Route,
  *   PRIVACY: !Route,
+ *   PRIVACY_HUB: !Route,
  *   SEARCH: !Route,
  *   SEARCH_SUBPAGE: !Route,
  *   SMART_LOCK: !Route,
