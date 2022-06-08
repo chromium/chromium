@@ -582,9 +582,7 @@ class CORE_EXPORT RuleFeatureSet {
   // previous siblings or its ancestor previous siblings)
   // To support invalidation for a mutation on the elements, we can add features
   // in invalidation sets only for the complex selectors in :is() inside :has()
-  // as if we have another rule with simple selector. (Add features as if the
-  // non-subject part of the logical combination argument is prepended to
-  // the compound containing :has())
+  // as if we have another rule with simple selector.
   //
   // Example 1) '.a:has(:is(.b .c)) {}'
   //   - For class 'b' change, invalidate descendant '.a' ('.b .a {}')
@@ -597,15 +595,42 @@ class CORE_EXPORT RuleFeatureSet {
   //     ('.b ~ .a .d {}')
   //
   // Example 4) '.a:has(:is(.b ~ .c .d)) {}'
-  //   - For class 'b' change, invalidate descendant '.a' of sibling '.c'.
-  //     ('.b ~ .c .a {}')
-  //   - TODO(blee@igalia.com) For class 'b' change, we need to invalidate
-  //     sibling '.a' also. ('.b ~ .a {}')
+  //   - For class 'b' change, invalidate descendant '.a' of sibling '.c'
+  //     ('.b ~ .c .a {}'), and invalidate sibling '.a' ('.b ~ .a {}').
   void AddFeaturesToInvalidationSetsForHasPseudoClass(
       const CSSSelector& has_pseudo_class,
       const CSSSelector* compound_containing_has,
       InvalidationSetFeatures* sibling_features,
       InvalidationSetFeatures& descendant_features);
+
+  // There are two methods to add features for logical combinations in :has().
+  // - kForAllNonRightmostCompounds:
+  //     Add features as if the non-subject part of the logical combination
+  //     argument is prepended to the compound containing :has().
+  //     (e.g. In the above example, Example 1, 2, 3 and '.b ~ .c .a' of
+  //      Example 4)
+  // - kForCompoundImmediatelyFollowsAdjacentRelation:
+  //     Add features as if an adjacent combinator and its next compound
+  //     selector are prepended to the compound containing :has().
+  //     (e.g. In the above example, '.b ~ .a' of Example 4)
+  //
+  // Due to the difference between the two methods (how the features are
+  // updated from combinators), sibling features or descendant features for
+  // a certain compound can be different per the method.
+  // - For '.a:has(:is(.b ~ .c .d)) ~ .e',
+  //   - At '.b' when kForAllNonRightmostCompounds:
+  //     - sibling_features == '.c' / descendant_features == '.e'
+  //   - At '.b' when kForCompoundImmediatelyFollowsAdjacentRelation:
+  //     - sibling_features == descendant_features == '.e'
+  //
+  // To avoid maintaining multiple 'sibling_features' and 'descendant_features'
+  // for each compound selector, features are added separately for each method.
+  // (Call AddFeaturesToInvalidationSetsForLogicalCombinationInHas() for each
+  //  method in AddFeaturesToInvalidationSetsForHasPseudoClass())
+  enum AddFeaturesMethodForLogicalCombinationInHas {
+    kForAllNonRightmostCompounds,
+    kForCompoundImmediatelyFollowsAdjacentRelation
+  };
 
   // AddFeaturesToInvalidationSetsForLogicalCombinationInHas() is invoked for
   // each logical combination inside :has(). Same as the usual feature adding
@@ -625,18 +650,21 @@ class CORE_EXPORT RuleFeatureSet {
   // - '.d' in '.a:has(:is(.b :is(.c .d)))' is always a descendant of :has()
   //   anchor element.
   //
-  // To differentiate between the two cases, this method has a bool argument
-  // 'needs_skip_rightmost_compound'.
-  // The argument is always true when the method is called for the non-nested
-  // logical combinations in AddFeaturesToInvalidationSetsForHasPseudoClass().
-  // After the rightmost compound is skipped, the value is changed to false
-  // for the rest compounds.
+  // To differentiate between the two cases, this method has an argument
+  // 'previous_combinator' that represents the previous combinator evaluated
+  // for updating features for logical combination inside :has().
+  // The argument is always kSubSelector when the method is called for the
+  // non-nested logical combinations inside :has() (when the method is called
+  // in AddFeaturesToInvalidationSetsForHasPseudoClass()).
+  // For the rest compounds, after the rightmost compound is skipped, the value
+  // is changed to the combinator at the left of the compound.
   void AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
       const CSSSelector& logical_combination,
       const CSSSelector* compound_containing_has,
       InvalidationSetFeatures* sibling_features,
       InvalidationSetFeatures& descendant_features,
-      bool needs_skip_rightmost_compound);
+      CSSSelector::RelationType previous_combinator,
+      AddFeaturesMethodForLogicalCombinationInHas);
 
   void UpdateFeaturesFromCombinatorForLogicalCombinationInHas(
       CSSSelector::RelationType combinator,
@@ -648,12 +676,16 @@ class CORE_EXPORT RuleFeatureSet {
       const CSSSelector* compound_in_logical_combination,
       const CSSSelector* compound_containing_has,
       InvalidationSetFeatures* sibling_features,
-      InvalidationSetFeatures& descendant_features);
+      InvalidationSetFeatures& descendant_features,
+      CSSSelector::RelationType previous_combinator,
+      AddFeaturesMethodForLogicalCombinationInHas);
   const CSSSelector* AddFeaturesAndGetLastInCompoundForLogicalCombinationInHas(
       const CSSSelector* compound_in_logical_combination,
       const CSSSelector* compound_containing_has,
       InvalidationSetFeatures* sibling_features,
-      InvalidationSetFeatures& descendant_features);
+      InvalidationSetFeatures& descendant_features,
+      CSSSelector::RelationType previous_combinator,
+      AddFeaturesMethodForLogicalCombinationInHas);
 
   static InvalidationSet& EnsureMutableInvalidationSet(
       scoped_refptr<InvalidationSet>&,
@@ -708,6 +740,7 @@ class CORE_EXPORT RuleFeatureSet {
   unsigned is_alive_ : 1;
 
   friend class RuleFeatureSetTest;
+  friend struct AddFeaturesToInvalidationSetsForLogicalCombinationInHasContext;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const RuleFeatureSet&);

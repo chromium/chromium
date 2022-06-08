@@ -295,6 +295,27 @@ class RuleFeatureSetTest : public testing::Test {
     EXPECT_TRUE(descendant_classes.Contains(descendant_name));
   }
 
+  void ExpectSiblingAndSiblingDescendantInvalidationForLogicalCombinationsInHas(
+      const AtomicString& sibling_name,
+      const AtomicString& sibling_name_for_sibling_descendant,
+      const AtomicString& descendant_name,
+      InvalidationSetVector& invalidation_sets) {
+    EXPECT_EQ(1u, invalidation_sets.size());
+    const auto& sibling_invalidation_set =
+        To<SiblingInvalidationSet>(*invalidation_sets[0]);
+    HashSet<AtomicString> classes = ClassSet(sibling_invalidation_set);
+    EXPECT_EQ(2u, classes.size());
+    EXPECT_TRUE(classes.Contains(sibling_name));
+    EXPECT_TRUE(classes.Contains(sibling_name_for_sibling_descendant));
+    EXPECT_EQ(SiblingInvalidationSet::kDirectAdjacentMax,
+              sibling_invalidation_set.MaxDirectAdjacentSelectors());
+
+    HashSet<AtomicString> descendant_classes =
+        ClassSet(*sibling_invalidation_set.SiblingDescendants());
+    EXPECT_EQ(1u, descendant_classes.size());
+    EXPECT_TRUE(descendant_classes.Contains(descendant_name));
+  }
+
   void ExpectSiblingNoDescendantInvalidation(
       InvalidationSetVector& invalidation_sets) {
     EXPECT_EQ(1u, invalidation_sets.size());
@@ -2201,10 +2222,8 @@ TEST_F(RuleFeatureSetTest, isPseudoContainingComplexInsideHas7) {
     InvalidationLists invalidation_lists;
     CollectInvalidationSetsForClass(invalidation_lists, "b");
     ExpectNoInvalidation(invalidation_lists.descendants);
-    ExpectSiblingDescendantInvalidation(
-        SiblingInvalidationSet::kDirectAdjacentMax, "c", "a",
-        invalidation_lists.siblings);
-    // TODO(blee@igalia.com) Need sibling class "a" invalidation
+    ExpectSiblingAndSiblingDescendantInvalidationForLogicalCombinationsInHas(
+        "a", "c", "a", invalidation_lists.siblings);
   }
 
   {
@@ -2237,10 +2256,8 @@ TEST_F(RuleFeatureSetTest, isPseudoContainingComplexInsideHas8) {
     InvalidationLists invalidation_lists;
     CollectInvalidationSetsForClass(invalidation_lists, "b");
     ExpectNoInvalidation(invalidation_lists.descendants);
-    ExpectSiblingDescendantInvalidation(
-        SiblingInvalidationSet::kDirectAdjacentMax, "c", "a",
-        invalidation_lists.siblings);
-    // TODO(blee@igalia.com) Need sibling class "a" invalidation
+    ExpectSiblingAndSiblingDescendantInvalidationForLogicalCombinationsInHas(
+        "a", "c", "a", invalidation_lists.siblings);
   }
 
   {
@@ -2382,10 +2399,8 @@ TEST_F(RuleFeatureSetTest, isPseudoContainingComplexInsideHas13) {
     InvalidationLists invalidation_lists;
     CollectInvalidationSetsForClass(invalidation_lists, "b");
     ExpectNoInvalidation(invalidation_lists.descendants);
-    ExpectSiblingDescendantInvalidation(
-        SiblingInvalidationSet::kDirectAdjacentMax, "c", "a",
-        invalidation_lists.siblings);
-    // TODO(blee@igalia.com) Need sibling class "a" invalidation
+    ExpectSiblingAndSiblingDescendantInvalidationForLogicalCombinationsInHas(
+        "a", "c", "a", invalidation_lists.siblings);
   }
 
   {

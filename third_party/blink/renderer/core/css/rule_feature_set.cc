@@ -982,9 +982,19 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForHasPseudoClass(
         case CSSSelector::kPseudoIs:
         case CSSSelector::kPseudoWhere:
         case CSSSelector::kPseudoNot:
+          // Add features for each method to handle sibling descendant
+          // relationship in the logical combination.
+          // - For '.a:has(:is(.b ~ .c .d))',
+          //   -> '.b ~ .c .a' (kForAllNonRightmostCompounds)
+          //   -> '.b ~ .a' (kForCompoundImmediatelyFollowsAdjacentRelation)
           AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
               *simple, compound_containing_has, sibling_features,
-              descendant_features, /* needs_skip_rightmost_compound */ true);
+              descendant_features, CSSSelector::kSubSelector,
+              kForAllNonRightmostCompounds);
+          AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
+              *simple, compound_containing_has, sibling_features,
+              descendant_features, CSSSelector::kSubSelector,
+              kForCompoundImmediatelyFollowsAdjacentRelation);
           break;
         default:
           break;
@@ -998,7 +1008,9 @@ RuleFeatureSet::SkipAddingAndGetLastInCompoundForLogicalCombinationInHas(
     const CSSSelector* compound_in_logical_combination,
     const CSSSelector* compound_containing_has,
     InvalidationSetFeatures* sibling_features,
-    InvalidationSetFeatures& descendant_features) {
+    InvalidationSetFeatures& descendant_features,
+    CSSSelector::RelationType previous_combinator,
+    AddFeaturesMethodForLogicalCombinationInHas add_features_method) {
   const CSSSelector* simple = compound_in_logical_combination;
   for (; simple; simple = simple->TagHistory()) {
     switch (simple->GetPseudoType()) {
@@ -1010,7 +1022,7 @@ RuleFeatureSet::SkipAddingAndGetLastInCompoundForLogicalCombinationInHas(
         // (e.g. '.a:has(.a :is(.b :is(.c .d))) {}')
         AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
             *simple, compound_containing_has, sibling_features,
-            descendant_features, /* needs_skip_rightmost_compound */ true);
+            descendant_features, previous_combinator, add_features_method);
         break;
       default:
         break;
@@ -1026,7 +1038,9 @@ RuleFeatureSet::AddFeaturesAndGetLastInCompoundForLogicalCombinationInHas(
     const CSSSelector* compound_in_logical_combination,
     const CSSSelector* compound_containing_has,
     InvalidationSetFeatures* sibling_features,
-    InvalidationSetFeatures& descendant_features) {
+    InvalidationSetFeatures& descendant_features,
+    CSSSelector::RelationType previous_combinator,
+    AddFeaturesMethodForLogicalCombinationInHas add_features_method) {
   DCHECK(compound_in_logical_combination);
   bool compound_has_features_for_rule_set_invalidation = false;
   const CSSSelector* simple = compound_in_logical_combination;
@@ -1042,7 +1056,7 @@ RuleFeatureSet::AddFeaturesAndGetLastInCompoundForLogicalCombinationInHas(
         // (e.g. '.a:has(:is(:is(.a .b) .c)) {}')
         AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
             *simple, compound_containing_has, sibling_features,
-            descendant_features, /* needs_skip_rightmost_compound */ false);
+            descendant_features, previous_combinator, add_features_method);
         break;
       default:
         AddFeaturesToInvalidationSetsForSimpleSelector(
@@ -1071,19 +1085,101 @@ RuleFeatureSet::AddFeaturesAndGetLastInCompoundForLogicalCombinationInHas(
   return simple;
 }
 
+// Context for adding features for a compound selector in a logical combination
+// inside :has(). This struct provides these information so that the features
+// can be added correctly for the compound in logical combination.
+// - needs_skip_adding_features:
+//     - whether adding features needs to be skipped.
+// - needs_update_features:
+//     - whether updating features is needed.
+// - last_compound_in_adjacent_chain:
+//     - last compound in adjacent chain used for updating features.
+// - use_indirect_adjacent_combinator_for_updating_features:
+//     - whether we need to use adjacent combinator for updating features.
+// Please check the comments in the constructor for more details.
+struct AddFeaturesToInvalidationSetsForLogicalCombinationInHasContext {
+  bool needs_skip_adding_features;
+  bool needs_update_features;
+  const CSSSelector* last_compound_in_adjacent_chain;
+  bool use_indirect_adjacent_combinator_for_updating_features;
+
+  AddFeaturesToInvalidationSetsForLogicalCombinationInHasContext(
+      const CSSSelector* compound_in_logical_combination,
+      const CSSSelector* compound_containing_has,
+      CSSSelector::RelationType previous_combinator,
+      RuleFeatureSet::AddFeaturesMethodForLogicalCombinationInHas
+          add_features_method) {
+    last_compound_in_adjacent_chain = nullptr;
+    needs_skip_adding_features = false;
+    needs_update_features = false;
+    use_indirect_adjacent_combinator_for_updating_features = false;
+
+    bool is_in_has_argument_checking_scope =
+        previous_combinator == CSSSelector::kSubSelector;
+    bool add_features_for_compound_immediately_follows_adjacent_relation =
+        add_features_method ==
+        RuleFeatureSet::kForCompoundImmediatelyFollowsAdjacentRelation;
+
+    if (is_in_has_argument_checking_scope) {
+      // If the compound in the logical combination is for the element in the
+      // :has() argument checking scope, skip adding features.
+      needs_skip_adding_features = true;
+
+      // If the compound in the logical combination is for the element in the
+      // :has() argument checking scope, update features before moving to the
+      // next compound.
+      needs_update_features = true;
+
+      // For the rightmost compound that need to be skipped, use the compound
+      // selector containing :has() as last_compound_in_adjacent_chain for
+      // updating features so that the features can be added as if the next
+      // compounds are prepended to the compound containing :has().
+      // (e.g. '.a:has(:is(.b .c ~ .d)) .e' -> '.b .c ~ .a .e')
+      // The selector pointer of '.a:has(:is(.b .c ~ .d))' is passed though
+      // the argument 'compound_containing_has'.
+      last_compound_in_adjacent_chain = compound_containing_has;
+
+      // In case of adding features only for adjacent combinator and its
+      // next compound selector, update features as if the relation of the
+      // last-in-compound is indirect adjacent combinator ('~').
+      if (add_features_for_compound_immediately_follows_adjacent_relation)
+        use_indirect_adjacent_combinator_for_updating_features = true;
+    } else {
+      // If this method call is for the compound immediately follows an
+      // adjacent combinator in the logical combination but the compound
+      // doesn't follow any adjacent combinator, skip adding features.
+      if (add_features_for_compound_immediately_follows_adjacent_relation &&
+          !CSSSelector::IsAdjacentRelation(previous_combinator)) {
+        needs_skip_adding_features = true;
+      }
+
+      // Update features from the previous combinator when we add features
+      // for all non-rightmost compound selectors. In case of adding features
+      // only for adjacent combinator and its next compound selector, do not
+      // update features so that we can use the same features that was
+      // updated at the compound in :has() argument checking scope.
+      if (add_features_method == RuleFeatureSet::kForAllNonRightmostCompounds)
+        needs_update_features = true;
+
+      last_compound_in_adjacent_chain = compound_in_logical_combination;
+    }
+  }
+};
+
 void RuleFeatureSet::AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
     const CSSSelector& logical_combination,
     const CSSSelector* compound_containing_has,
     InvalidationSetFeatures* sibling_features,
     InvalidationSetFeatures& descendant_features,
-    bool needs_skip_rightmost_compound) {
+    CSSSelector::RelationType previous_combinator,
+    AddFeaturesMethodForLogicalCombinationInHas add_features_method) {
   DCHECK(logical_combination.SelectorList());
   DCHECK(compound_containing_has);
 
   for (const CSSSelector* complex = logical_combination.SelectorList()->First();
        complex; complex = CSSSelectorList::Next(*complex)) {
-    base::AutoReset<bool> restore_skip_rightmost(&needs_skip_rightmost_compound,
-                                                 needs_skip_rightmost_compound);
+    base::AutoReset<CSSSelector::RelationType> restore_previous_combinator(
+        &previous_combinator, previous_combinator);
     AutoRestoreMaxDirectAdjacentSelectors restore_max(sibling_features);
     AutoRestoreDescendantFeaturesDepth restore_depth(&descendant_features);
     AutoRestoreTreeBoundaryCrossingFlag restore_tree_boundary(
@@ -1091,40 +1187,42 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
     AutoRestoreInsertionPointCrossingFlag restore_insertion_point(
         descendant_features);
 
-    InvalidationSetFeatures last_compound_in_adjacent_chain_features;
     const CSSSelector* compound_in_logical_combination = complex;
-    const CSSSelector* last_in_compound;
-    const CSSSelector* last_compound_in_adjacent_chain;
+    InvalidationSetFeatures last_compound_in_adjacent_chain_features;
     while (compound_in_logical_combination) {
-      if (needs_skip_rightmost_compound) {
+      AddFeaturesToInvalidationSetsForLogicalCombinationInHasContext context(
+          compound_in_logical_combination, compound_containing_has,
+          previous_combinator, add_features_method);
+
+      const CSSSelector* last_in_compound;
+      if (context.needs_skip_adding_features) {
         last_in_compound =
             SkipAddingAndGetLastInCompoundForLogicalCombinationInHas(
                 compound_in_logical_combination, compound_containing_has,
-                sibling_features, descendant_features);
-        // For the rightmost compound that need to be skipped, use the compound
-        // selector containing :has() as last_compound_in_adjacent_chain for
-        // updating features so that the features can be added as if the next
-        // compounds are prepended to the compound containing :has().
-        // (e.g. '.a:has(:is(.b .c ~ .d)) .e' -> '.b .c ~ .a .e')
-        // The selector pointer of '.a:has(:is(.b .c ~ .d))' is passed though
-        // the argument 'compound_containing_has'.
-        last_compound_in_adjacent_chain = compound_containing_has;
+                sibling_features, descendant_features, previous_combinator,
+                add_features_method);
       } else {
         last_in_compound =
             AddFeaturesAndGetLastInCompoundForLogicalCombinationInHas(
                 compound_in_logical_combination, compound_containing_has,
-                sibling_features, descendant_features);
-        last_compound_in_adjacent_chain = compound_in_logical_combination;
+                sibling_features, descendant_features, previous_combinator,
+                add_features_method);
       }
+
       if (!last_in_compound)
         break;
 
-      needs_skip_rightmost_compound = false;
+      previous_combinator = last_in_compound->Relation();
 
-      UpdateFeaturesFromCombinatorForLogicalCombinationInHas(
-          last_in_compound->Relation(), last_compound_in_adjacent_chain,
-          last_compound_in_adjacent_chain_features, sibling_features,
-          descendant_features);
+      if (context.needs_update_features) {
+        UpdateFeaturesFromCombinatorForLogicalCombinationInHas(
+            context.use_indirect_adjacent_combinator_for_updating_features
+                ? CSSSelector::kIndirectAdjacent
+                : previous_combinator,
+            context.last_compound_in_adjacent_chain,
+            last_compound_in_adjacent_chain_features, sibling_features,
+            descendant_features);
+      }
 
       compound_in_logical_combination = last_in_compound->TagHistory();
     }
