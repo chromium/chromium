@@ -223,8 +223,11 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
   }
 
   void ToggleBatterySaverMode() override {
-    // TODO(anthonyvd): Check the finch feature and toggle the pref if it's on.
-    NOTREACHED();
+    if (base::FeatureList::IsEnabled(
+            performance_manager::features::kBatterySaverModeAvailable)) {
+      ToggleLocalStatePref(
+          performance_manager::user_tuning::prefs::kBatterySaverModeEnabled);
+    }
   }
 
  private:
