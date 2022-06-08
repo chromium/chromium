@@ -308,10 +308,11 @@ void SavedDeskPresenter::OnGetTemplateForDeskLaunch(
   const auto saved_desk_type = entry->type();
   const bool activate_desk = saved_desk_type == DeskTemplateType::kTemplate;
   DesksController::Get()->CreateNewDeskForTemplate(
-      saved_desk_name, activate_desk,
+      activate_desk,
       base::BindOnce(&SavedDeskPresenter::OnNewDeskCreatedForTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(entry),
-                     time_launch_started, delay, root_window));
+                     time_launch_started, delay, root_window),
+      saved_desk_name);
 
   if (on_update_ui_closure_for_testing)
     std::move(on_update_ui_closure_for_testing).Run();

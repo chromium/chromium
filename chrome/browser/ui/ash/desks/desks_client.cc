@@ -45,7 +45,7 @@ constexpr char kMaximumDesksOpenedError[] =
     "The maximum number of desks is already open.";
 constexpr char kMissingTemplateDataError[] =
     "The desk template has invalid or missing data.";
-constexpr char kStorageError[] = "The operation failed due to a storage error.";
+constexpr char kStorageError[] = "Storage error.";
 constexpr char kNoCurrentUserError[] = "There is no active profile.";
 constexpr char kBadProfileError[] =
     "Either the profile is not valid or there is not an active proflile.";
@@ -292,8 +292,10 @@ void DesksClient::GetTemplateJson(const std::string uuid,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void DesksClient::LaunchDeskTemplate(const std::string& template_uuid,
-                                     LaunchDeskTemplateCallback callback) {
+void DesksClient::LaunchDeskTemplate(
+    const std::string& template_uuid,
+    LaunchDeskCallback callback,
+    const std::u16string& customized_desk_name) {
   base::Time launch_started = base::Time::Now();
 
   if (!active_profile_) {
@@ -303,16 +305,26 @@ void DesksClient::LaunchDeskTemplate(const std::string& template_uuid,
 
   if (launch_template_for_test_) {
     OnGetTemplateForDeskLaunch(
-        std::move(callback), base::Time(),
+        std::move(callback), customized_desk_name, base::Time(),
         desks_storage::DeskModel::GetEntryByUuidStatus::kOk,
         launch_template_for_test_->Clone());
     return;
   }
 
   GetDeskModel()->GetEntryByUUID(
-      template_uuid, base::BindOnce(&DesksClient::OnGetTemplateForDeskLaunch,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    std::move(callback), launch_started));
+      template_uuid,
+      base::BindOnce(&DesksClient::OnGetTemplateForDeskLaunch,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     customized_desk_name, launch_started));
+}
+
+void DesksClient::LaunchEmptyDesk(LaunchDeskCallback callback,
+                                  const std::u16string& customized_desk_name) {
+  desks_controller_->CreateNewDeskForTemplate(
+      /*activate_desk=*/true,
+      base::BindOnce(&DesksClient::OnLaunchEmptyDesk,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      customized_desk_name);
 }
 
 void DesksClient::RemoveDesk(const base::GUID& desk_uuid,
@@ -342,7 +354,7 @@ void DesksClient::RemoveDesk(const base::GUID& desk_uuid,
     return;
   }
 
-  std::move(callback).Run("");
+  std::move(callback).Run(/*error=*/"");
 }
 
 void DesksClient::GetAllDesks(GetAllDesksCallback callback) {
@@ -465,7 +477,8 @@ void DesksClient::NotifyMovedSingleInstanceApp(int32_t window_id) {
 }
 
 void DesksClient::OnGetTemplateForDeskLaunch(
-    LaunchDeskTemplateCallback callback,
+    LaunchDeskCallback callback,
+    std::u16string customized_desk_name,
     base::Time time_launch_started,
     desks_storage::DeskModel::GetEntryByUuidStatus status,
     std::unique_ptr<ash::DeskTemplate> entry) {
@@ -477,15 +490,20 @@ void DesksClient::OnGetTemplateForDeskLaunch(
   const auto template_name = entry->template_name();
   const bool activate_desk = entry->type() == ash::DeskTemplateType::kTemplate;
   desks_controller_->CreateNewDeskForTemplate(
-      template_name, activate_desk,
-      base::BindOnce(&DesksClient::OnCreateAndActivateNewDesk,
+      activate_desk,
+      base::BindOnce(&DesksClient::OnCreateAndActivateNewDeskForTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(entry),
-                     std::move(callback), time_launch_started));
+                     std::move(callback), time_launch_started),
+      // We prioritize `customized_desk_name` over `template_name`. An example
+      // is that for call center application use case, we launch the same
+      // template for different customer and assign desk name to be customer's
+      // name.
+      customized_desk_name.empty() ? template_name : customized_desk_name);
 }
 
-void DesksClient::OnCreateAndActivateNewDesk(
+void DesksClient::OnCreateAndActivateNewDeskForTemplate(
     std::unique_ptr<ash::DeskTemplate> desk_template,
-    LaunchDeskTemplateCallback callback,
+    LaunchDeskCallback callback,
     base::Time time_launch_started,
     const ash::Desk* new_desk) {
   if (new_desk == nullptr) {
@@ -507,6 +525,17 @@ void DesksClient::OnCreateAndActivateNewDesk(
   LaunchAppsFromTemplate(std::move(desk_template), time_launch_started,
                          base::TimeDelta());
   std::move(callback).Run("", new_desk->uuid());
+}
+
+void DesksClient::OnLaunchEmptyDesk(LaunchDeskCallback callback,
+                                    const ash::Desk* new_desk) {
+  if (!new_desk) {
+    // This will only fail if the number of desks is at a maximum.
+    std::move(callback).Run(kMaximumDesksOpenedError, {});
+    return;
+  }
+
+  std::move(callback).Run(/*error=*/"", new_desk->uuid());
 }
 
 void DesksClient::OnCaptureActiveDeskAndSaveTemplate(

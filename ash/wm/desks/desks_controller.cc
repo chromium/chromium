@@ -1029,9 +1029,9 @@ void DesksController::CaptureActiveDeskAsTemplate(
 }
 
 void DesksController::CreateNewDeskForTemplate(
-    const std::u16string& template_name,
     bool activate_desk,
-    base::OnceCallback<void(const Desk*)> callback) {
+    base::OnceCallback<void(const Desk*)> callback,
+    const std::u16string& customized_desk_name) {
   DCHECK(!callback.is_null());
 
   if (!CanCreateDesks()) {
@@ -1044,18 +1044,27 @@ void DesksController::CreateNewDeskForTemplate(
   if (animation_)
     animation_.reset();
 
-  // Change the desk name if the current name already exists.
-  int count = 1;
-  std::u16string desk_name = template_name;
-  while (HasDeskWithName(desk_name)) {
-    desk_name = std::u16string(template_name)
-                    .append(u" (" + base::FormatNumber(count) + u")");
-    count++;
+  // Desk name was set to a default name upon creation. If
+  // `customized_desk_name` is provided, override desk name to be
+  // `customized_desk_name` or `customized_desk_name ({counter})` to resolve
+  // naming conflicts.
+  std::u16string desk_name;
+  if (!customized_desk_name.empty()) {
+    int count = 1;
+    desk_name = customized_desk_name;
+    while (HasDeskWithName(desk_name)) {
+      desk_name = std::u16string(customized_desk_name)
+                      .append(u" (" + base::FormatNumber(count) + u")");
+      count++;
+    }
   }
 
   NewDesk(DesksCreationRemovalSource::kLaunchTemplate);
   Desk* desk = desks().back().get();
-  desk->SetName(desk_name, /*set_by_user=*/true);
+
+  if (!desk_name.empty()) {
+    desk->SetName(desk_name, /*set_by_user=*/true);
+  }
   // Force update user prefs because `SetName()` does not trigger it.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 

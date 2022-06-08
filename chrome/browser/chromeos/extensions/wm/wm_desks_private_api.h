@@ -122,25 +122,24 @@ class WmDesksPrivateDeleteDeskTemplateFunction : public ExtensionFunction {
   void OnDeleteDeskTemplateCompleted(std::string error_string);
 };
 
-class WmDesksPrivateLaunchDeskTemplateFunction : public ExtensionFunction {
+class WmDesksPrivateLaunchDeskFunction : public ExtensionFunction {
  public:
-  WmDesksPrivateLaunchDeskTemplateFunction();
-  WmDesksPrivateLaunchDeskTemplateFunction(
-      const WmDesksPrivateLaunchDeskTemplateFunction&) = delete;
-  WmDesksPrivateLaunchDeskTemplateFunction& operator=(
-      const WmDesksPrivateLaunchDeskTemplateFunction&) = delete;
+  WmDesksPrivateLaunchDeskFunction();
+  WmDesksPrivateLaunchDeskFunction(const WmDesksPrivateLaunchDeskFunction&) =
+      delete;
+  WmDesksPrivateLaunchDeskFunction& operator=(
+      const WmDesksPrivateLaunchDeskFunction&) = delete;
 
-  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.launchDeskTemplate",
-                             WMDESKSPRIVATE_LAUNCHDESKTEMPLATE)
+  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.launchDesk",
+                             WMDESKSPRIVATE_LAUNCHDESK)
 
  protected:
-  ~WmDesksPrivateLaunchDeskTemplateFunction() override;
+  ~WmDesksPrivateLaunchDeskFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnLaunchDeskTemplate(std::string error_string,
-                            const base::GUID& desk_Id);
+  void OnLaunchDesk(std::string error_string, const base::GUID& desk_Id);
 };
 
 class WmDesksPrivateRemoveDeskFunction : public ExtensionFunction {
@@ -151,8 +150,8 @@ class WmDesksPrivateRemoveDeskFunction : public ExtensionFunction {
   WmDesksPrivateRemoveDeskFunction& operator=(
       const WmDesksPrivateRemoveDeskFunction&) = delete;
 
-  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.removeDeskAndCloseWindows",
-                             WMDESKSPRIVATE_REMOVEDESKANDCLOSEWINDOWS)
+  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.removeDesk",
+                             WMDESKSPRIVATE_REMOVEDESK)
  protected:
   ~WmDesksPrivateRemoveDeskFunction() override;
 

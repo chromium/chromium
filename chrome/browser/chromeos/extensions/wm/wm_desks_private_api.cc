@@ -191,26 +191,31 @@ void WmDesksPrivateDeleteDeskTemplateFunction::OnDeleteDeskTemplateCompleted(
   Respond(NoArguments());
 }
 
-WmDesksPrivateLaunchDeskTemplateFunction::
-    WmDesksPrivateLaunchDeskTemplateFunction() = default;
-WmDesksPrivateLaunchDeskTemplateFunction::
-    ~WmDesksPrivateLaunchDeskTemplateFunction() = default;
+WmDesksPrivateLaunchDeskFunction::WmDesksPrivateLaunchDeskFunction() = default;
+WmDesksPrivateLaunchDeskFunction::~WmDesksPrivateLaunchDeskFunction() = default;
 
-ExtensionFunction::ResponseAction
-WmDesksPrivateLaunchDeskTemplateFunction::Run() {
-  std::unique_ptr<api::wm_desks_private::LaunchDeskTemplate::Params> params(
-      api::wm_desks_private::LaunchDeskTemplate::Params::Create(args()));
+ExtensionFunction::ResponseAction WmDesksPrivateLaunchDeskFunction::Run() {
+  std::unique_ptr<api::wm_desks_private::LaunchDesk::Params> params(
+      api::wm_desks_private::LaunchDesk::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
-
-  DesksClient::Get()->LaunchDeskTemplate(
-      params->template_uuid,
-      base::BindOnce(
-          &WmDesksPrivateLaunchDeskTemplateFunction::OnLaunchDeskTemplate,
-          this));
-  return RespondLater();
+  auto& launch_options = params->launch_options;
+  std::u16string desk_name = launch_options.desk_name
+                                 ? base::UTF8ToUTF16(*launch_options.desk_name)
+                                 : u"";
+  if (launch_options.template_uuid) {
+    DesksClient::Get()->LaunchDeskTemplate(
+        *params->launch_options.template_uuid,
+        base::BindOnce(&WmDesksPrivateLaunchDeskFunction::OnLaunchDesk, this),
+        desk_name);
+  } else {
+    DesksClient::Get()->LaunchEmptyDesk(
+        base::BindOnce(&WmDesksPrivateLaunchDeskFunction::OnLaunchDesk, this),
+        desk_name);
+  }
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-void WmDesksPrivateLaunchDeskTemplateFunction::OnLaunchDeskTemplate(
+void WmDesksPrivateLaunchDeskFunction::OnLaunchDesk(
     std::string error_string,
     const base::GUID& desk_uuid) {
   if (!error_string.empty()) {
@@ -218,9 +223,8 @@ void WmDesksPrivateLaunchDeskTemplateFunction::OnLaunchDeskTemplate(
     return;
   }
 
-  Respond(
-      ArgumentList(api::wm_desks_private::LaunchDeskTemplate::Results::Create(
-          desk_uuid.AsLowercaseString())));
+  Respond(ArgumentList(api::wm_desks_private::LaunchDesk::Results::Create(
+      desk_uuid.AsLowercaseString())));
 }
 
 WmDesksPrivateRemoveDeskFunction::WmDesksPrivateRemoveDeskFunction() = default;

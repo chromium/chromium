@@ -10,6 +10,8 @@ namespace wmDesksPrivate {
     // The unique id for a desk template. Used internally to identify a desk
     // template.
     DOMString templateUuid;
+
+    // User readable name of the desk template.
     DOMString templateName;
   };
 
@@ -19,18 +21,28 @@ namespace wmDesksPrivate {
     boolean combineDesks;
   };
 
-   dictionary Desk {
+  dictionary Desk {
     // Unique ID for a desk.
     DOMString deskUuid;
+
     // User readable name of the desk.
     DOMString deskName;
   };
+
+  // Launch desk options
+  dictionary LaunchOptions {
+    // Unique identifier for a template
+    DOMString? templateUuid;
+
+    // User readable name of the desk
+    DOMString? deskName;
+};
 
   callback CaptureDeskAndSaveTemplateCallback =
       void (DeskTemplate deskTemplate);
   callback GetSavedDeskTemplatesCallback =
       void (DeskTemplate[] deskTemplates);
-  callback LaunchDeskTemplateCallback = void (DOMString deskId);
+  callback DeskIdCallback = void (DOMString deskId);
   callback VoidCallback = void ();
   callback GetDeskTemplateJsonCallback = void (DOMString templateJson);
   callback GetAllDesksCallback = void (Desk[] desks);
@@ -61,12 +73,11 @@ namespace wmDesksPrivate {
     static void deleteDeskTemplate(DOMString templateUuid,
                                    VoidCallback callback);
 
-    // Launches the desk template with |templateUuid| as a new desk.
-    // |templateId| should be the unique id for an existing desk template. If
-    // no such id can be found or a new desk can't be created, an error will be
-    // returned.
-    static void launchDeskTemplate(DOMString templateUuid,
-                                   LaunchDeskTemplateCallback callback);
+    // Launches a desk, if `templateUuid` is present in the options, launches a desk
+    // template, otherwise launches an empty desk. If `deskName` is present in the options,
+    // using provided name as desk name, otherwise launches with auto generated name.
+    static void launchDesk(LaunchOptions launchOptions,
+                           DeskIdCallback callback);
 
     // Gets the template associated with the templateUuid and returns its JSON
     // representation.  Returns an error if either the template could not be

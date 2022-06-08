@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -2107,6 +2108,53 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, GetAllDesks) {
       }));
 }
 
+// Tests launch an empty desk with `desk_name` provided.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
+                       LaunchEmptyDeskWithProvidedName) {
+  auto* desks_controller = ash::DesksController::Get();
+  // Should have 1 default active desk.
+  EXPECT_EQ(1, desks_controller->desks().size());
+
+  base::RunLoop loop;
+  std::u16string desk_name(u"test");
+  DesksClient::Get()->LaunchEmptyDesk(
+      base::BindLambdaForTesting(
+          [&](std::string error, const base::GUID& desk_uuid) {
+            EXPECT_TRUE(error.empty());
+            // Launch one template, desk size should increase by 1.
+            EXPECT_EQ(2, desks_controller->desks().size());
+            // `desk_name` should be set as provided
+            EXPECT_EQ(desk_name, desks_controller->desks().back()->name());
+            // `desk_uuid` should be returned.
+            EXPECT_TRUE(desk_uuid.AsLowercaseString().size() > 0);
+            loop.Quit();
+          }),
+      desk_name);
+  loop.Run();
+}
+
+// Tests launch an empty desk with default name.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
+                       LaunchEmptyDeskWithDefaultName) {
+  auto* desks_controller = ash::DesksController::Get();
+  // Should have 1 default active desk.
+  EXPECT_EQ(1, desks_controller->desks().size());
+
+  base::RunLoop loop;
+  DesksClient::Get()->LaunchEmptyDesk(base::BindLambdaForTesting(
+      [&](std::string error, const base::GUID& desk_uuid) {
+        EXPECT_TRUE(error.empty());
+        // Launch one template, desk size should increase by 1.
+        EXPECT_EQ(2, desks_controller->desks().size());
+        // `desk_name` should be set as default desk name
+        EXPECT_EQ(u"Desk 2", desks_controller->desks().back()->name());
+        // `desk_uuid` should be returned.
+        EXPECT_TRUE(desk_uuid.AsLowercaseString().size() > 0);
+        loop.Quit();
+      }));
+  loop.Run();
+}
+
 class DesksTemplatesClientArcTest : public InProcessBrowserTest {
  public:
   DesksTemplatesClientArcTest() {
@@ -2359,4 +2407,11 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
   // Verify that the admin templates is removed.
   EXPECT_FALSE(
       ContainUuidInTemplates(kTestAdminTemplateUuid, GetDeskTemplates()));
+}
+
+using DesksExtensionApiTest = extensions::ExtensionApiTest;
+IN_PROC_BROWSER_TEST_F(DesksExtensionApiTest, TestDesksClientExtension) {
+  // This loads and runs an extension from
+  // chrome/test/data/extensions/api_test/wm_desks_private.
+  ASSERT_TRUE(RunExtensionTest("wm_desks_private"));
 }

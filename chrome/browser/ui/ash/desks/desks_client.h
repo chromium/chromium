@@ -109,17 +109,28 @@ class DesksClient : public ash::SessionObserver {
                        Profile* profile,
                        GetTemplateJsonCallback callback);
 
-  using LaunchDeskTemplateCallback =
+  using LaunchDeskCallback =
       base::OnceCallback<void(std::string error, const base::GUID& desk_uuid)>;
-  // Launches the desk template with |template_uuid| as a new desk.
-  // |template_uuid| should be the unique id for an existing desk template. If
+  // Launches the desk template with `template_uuid` as a new desk.
+  // `template_uuid` should be the unique id for an existing desk template. If
   // no such id can be found or we are at the max desk limit (currently is 8)
-  // so can't create new desk for the desk template, |callback| will be invoked
-  // with a description of the error and the new desk uuid.
+  // so can't create new desk for the desk template, `callback` will be invoked
+  // with a description of the error and the new desk uuid. If
+  // `customized_desk_name` is provided, desk name will be set to
+  // `customized_desk_name` or `customized_desk_name ({counter})` to resolve
+  // naming conflicts. Otherwise, desk name will be set to auto generated name.
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
   // further uses of this method.
-  void LaunchDeskTemplate(const std::string& template_uuid,
-                          LaunchDeskTemplateCallback callback);
+  void LaunchDeskTemplate(
+      const std::string& template_uuid,
+      LaunchDeskCallback callback,
+      const std::u16string& customized_desk_name = std::u16string());
+
+  // Launches an empty new desk. Desk name will be set to `customized_desk_name`
+  // variant if it's provided, otherwise will be set to auto generated name.
+  void LaunchEmptyDesk(
+      LaunchDeskCallback callback,
+      const std::u16string& customized_desk_name = std::u16string());
 
   using CloseAllCallBack = base::OnceCallback<void(std::string error)>;
   // Remove a desk, close all windows if `close_all` set to true, otherwise
@@ -154,18 +165,24 @@ class DesksClient : public ash::SessionObserver {
 
   // Launches DeskTemplate after retrieval from storage.
   void OnGetTemplateForDeskLaunch(
-      LaunchDeskTemplateCallback callback,
+      LaunchDeskCallback callback,
+      std::u16string customized_desk_name,
       base::Time time_launch_started,
       desks_storage::DeskModel::GetEntryByUuidStatus status,
       std::unique_ptr<ash::DeskTemplate> entry);
 
-  // Callback function that is ran after a desk is created, or has failed to be
-  // created.
-  void OnCreateAndActivateNewDesk(
+  // Callback function that is run after a desk is created for a template, or
+  // has failed to be created.
+  void OnCreateAndActivateNewDeskForTemplate(
       std::unique_ptr<ash::DeskTemplate> desk_template,
-      LaunchDeskTemplateCallback callback,
+      LaunchDeskCallback callback,
       base::Time time_launch_started,
       const ash::Desk* new_desk);
+
+  // Callback function that is run after a desk is created, or has failed to
+  // be created.
+  void OnLaunchEmptyDesk(LaunchDeskCallback callback,
+                         const ash::Desk* new_desk);
 
   // Callback function that allows the |CaptureActiveDeskAndSaveTemplate|
   // |callback| to be called as a |desks_storage::AddOrUpdateEntryCallback|.
