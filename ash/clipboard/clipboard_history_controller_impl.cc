@@ -27,6 +27,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/check_op.h"
 #include "base/json/values_util.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -620,33 +621,34 @@ void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
   static int confirmed_paste_count = 0;
 
   // Here we assume that a paste operation from the clipboard history menu never
-  // interleaves with a copy operation or a paste operation from other ways (
-  // including pressing the ctrl-v accelerator or clicking a context menu
-  // option). In other words, when `pastes_to_be_confirmed_` is positive, it
-  // means that the incoming operation should be a paste from clipboard history.
-  // It should be held in most cases given that the clipboard history menu is
-  // always closed after one paste and it usually takes relatively long time for
-  // a user to conduct the next copy or paste. For this metric, we are tolerable
-  // of a small portion of erroneous recordings.
-
-  // When `pastes_to_be_confirmed_` is positive, `copy` should be
-  // false in most cases based on the assumption above. But theoretically
-  // `copy` could be true.
+  // interleaves with a user-initiated copy or paste operation from another
+  // source, such as pressing the ctrl-v accelerator or clicking a context menu
+  // option. In other words, when `pastes_to_be_confirmed_` is positive, the
+  // next confirmed operation is expected to be a paste from clipboard history.
+  // This assumption should hold in most cases given that the clipboard history
+  // menu is always closed after one paste, and it usually takes a relatively
+  // long time for a user to perform the next copy or paste. For this metric, we
+  // tolerate a small margin of error.
   if (pastes_to_be_confirmed_ > 0 && !copy) {
     ++confirmed_paste_count;
     --pastes_to_be_confirmed_;
   } else {
-    // Reset if the assumption is not held for some reasons.
-    DCHECK_LE(0, pastes_to_be_confirmed_);
-    if (pastes_to_be_confirmed_ > 0)
-      pastes_to_be_confirmed_ = 0;
-
-    DCHECK_LE(0, confirmed_paste_count);
-    if (confirmed_paste_count) {
+    // Note that both copies and pastes from the standard clipboard cause the
+    // clipboard history consecutive paste count to be emitted and reset.
+    if (confirmed_paste_count > 0) {
       base::UmaHistogramCounts100("Ash.ClipboardHistory.ConsecutivePastes",
                                   confirmed_paste_count);
       confirmed_paste_count = 0;
     }
+
+    // Verify that this operation did not interleave with a clipboard history
+    // paste.
+    DCHECK_EQ(pastes_to_be_confirmed_, 0);
+    // Whether or not the non-interleaving assumption has held, always reset
+    // `pastes_to_be_confirmed_` to prevent standard clipboard pastes from
+    // possibly being counted as clipboard history pastes, which could
+    // significantly affect the clipboard history consecutive pastes metric.
+    pastes_to_be_confirmed_ = 0;
   }
 
   if (confirmed_operation_callback_for_test_)
