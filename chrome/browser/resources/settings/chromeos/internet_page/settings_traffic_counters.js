@@ -11,14 +11,11 @@ import 'chrome://resources/cr_components/chromeos/network/network_shared_css.m.j
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
-import '//resources/cr_components/chromeos/traffic_counters/traffic_counters.js';
+import 'chrome://resources/cr_components/chromeos/traffic_counters/traffic_counters.js';
 
-import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
-import {Network, TrafficCountersAdapter} from '//resources/cr_components/chromeos/traffic_counters/traffic_counters_adapter.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrosNetworkConfig} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {Network, TrafficCountersAdapter} from 'chrome://resources/cr_components/chromeos/traffic_counters/traffic_counters_adapter.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @type {number} Default day of the month, e.g., First of January, during
@@ -284,5 +281,6 @@ export class SettingsTrafficCountersElement extends
     this.load();
   }
 }
+
 customElements.define(
     SettingsTrafficCountersElement.is, SettingsTrafficCountersElement);

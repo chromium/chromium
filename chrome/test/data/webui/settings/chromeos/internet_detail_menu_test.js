@@ -118,7 +118,8 @@ suite('InternetDetailMenu', function() {
     addEsimCellularNetwork(null, '11111111111111111111111111111111');
     await init();
 
-    let tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    let tripleDot =
+        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
     assertFalse(!!tripleDot);
 
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
@@ -128,7 +129,8 @@ suite('InternetDetailMenu', function() {
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
     await flushAsync();
-    tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    tripleDot =
+        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
     assertTrue(!!tripleDot);
   });
 
@@ -136,7 +138,8 @@ suite('InternetDetailMenu', function() {
     addEsimCellularNetwork('100000', null);
     await init();
 
-    let tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    let tripleDot =
+        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
     assertFalse(!!tripleDot);
 
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
@@ -146,7 +149,8 @@ suite('InternetDetailMenu', function() {
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
     await flushAsync();
-    tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    tripleDot =
+        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
     assertTrue(!!tripleDot);
   });
 
@@ -160,7 +164,8 @@ suite('InternetDetailMenu', function() {
     await flushAsync();
 
     // Has ICCID and EID, but not shown since the user is in guest mode.
-    assertFalse(!!internetDetailMenu.$$('#moreNetworkDetail'));
+    assertFalse(
+        !!internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail'));
   });
 
   test('Rename menu click', async function() {
@@ -172,7 +177,8 @@ suite('InternetDetailMenu', function() {
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
     await flushAsync();
-    const tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    const tripleDot =
+        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
     assertTrue(!!tripleDot);
 
     tripleDot.click();
@@ -203,7 +209,8 @@ suite('InternetDetailMenu', function() {
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
     await flushAsync();
-    const tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    const tripleDot =
+        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
     assertTrue(!!tripleDot);
 
     tripleDot.click();
@@ -234,7 +241,8 @@ suite('InternetDetailMenu', function() {
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
     await flushAsync();
-    const tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    const tripleDot =
+        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
     assertTrue(!!tripleDot);
     assertFalse(tripleDot.disabled);
 
@@ -263,7 +271,8 @@ suite('InternetDetailMenu', function() {
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
     await flushAsync();
-    const tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    const tripleDot =
+        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
     assertTrue(!!tripleDot);
     assertTrue(tripleDot.disabled);
   });
@@ -278,7 +287,8 @@ suite('InternetDetailMenu', function() {
         addEsimCellularNetwork(iccid, eid);
         init();
         await flushAsync();
-        const tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+        const tripleDot =
+            internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
         assertTrue(!!tripleDot);
         assertFalse(tripleDot.disabled);
 
@@ -315,7 +325,7 @@ suite('InternetDetailMenu', function() {
 
   test('Network state is null if no profile is found', async function() {
     const getTrippleDot = () => {
-      return internetDetailMenu.$$('#moreNetworkDetail');
+      return internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
     };
     addEsimCellularNetwork('1', '1');
     await init();

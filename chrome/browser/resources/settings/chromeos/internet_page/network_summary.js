@@ -9,98 +9,111 @@
 
 import './network_summary_item.js';
 
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.m.js';
-import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 const mojom = chromeos.networkConfig.mojom;
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'network-summary',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {NetworkListenerBehaviorInterface}
+ */
+const NetworkSummaryElementBase =
+    mixinBehaviors([NetworkListenerBehavior], PolymerElement);
 
-  behaviors: [
-    NetworkListenerBehavior,
-  ],
+/** @polymer */
+class NetworkSummaryElement extends NetworkSummaryElementBase {
+  static get is() {
+    return 'network-summary';
+  }
 
-  properties: {
-    /**
-     * Highest priority connected network or null. Set here to update
-     * internet-page which updates internet-subpage and internet-detail-page.
-     * @type {?OncMojo.NetworkStateProperties}
-     */
-    defaultNetwork: {
-      type: Object,
-      value: null,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * The device state for each network device type. We initialize this to
-     * include a disabled WiFi type since WiFi is always present. This reduces
-     * the amount of visual change on first load.
-     * @private {!Object<!OncMojo.DeviceStateProperties>}
-     */
-    deviceStates: {
-      type: Object,
-      value() {
-        const result = {};
-        result[chromeos.networkConfig.mojom.NetworkType.kWiFi] = {
-          deviceState: chromeos.networkConfig.mojom.DeviceStateType.kDisabled,
-          type: chromeos.networkConfig.mojom.NetworkType.kWiFi,
-        };
-        return result;
+  static get properties() {
+    return {
+      /**
+       * Highest priority connected network or null. Set here to update
+       * internet-page which updates internet-subpage and internet-detail-page.
+       * @type {?OncMojo.NetworkStateProperties}
+       */
+      defaultNetwork: {
+        type: Object,
+        value: null,
+        notify: true,
       },
-      notify: true,
-    },
 
-    /**
-     * Array of active network states, one per device type. Initialized to
-     * include a default WiFi state (see deviceStates comment).
-     * @private {!Array<!OncMojo.NetworkStateProperties>}
-     */
-    activeNetworkStates_: {
-      type: Array,
-      value() {
-        return [OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi)];
+      /**
+       * The device state for each network device type. We initialize this to
+       * include a disabled WiFi type since WiFi is always present. This reduces
+       * the amount of visual change on first load.
+       * @private {!Object<!OncMojo.DeviceStateProperties>}
+       */
+      deviceStates: {
+        type: Object,
+        value() {
+          const result = {};
+          result[chromeos.networkConfig.mojom.NetworkType.kWiFi] = {
+            deviceState: chromeos.networkConfig.mojom.DeviceStateType.kDisabled,
+            type: chromeos.networkConfig.mojom.NetworkType.kWiFi,
+          };
+          return result;
+        },
+        notify: true,
       },
-    },
 
-    /**
-     * List of network state data for each network type.
-     * @private {!Object<!Array<!OncMojo.NetworkStateProperties>>}
-     */
-    networkStateLists_: {
-      type: Object,
-      value() {
-        const result = {};
-        result[mojom.NetworkType.kWiFi] = [];
-        return result;
+      /**
+       * Array of active network states, one per device type. Initialized to
+       * include a default WiFi state (see deviceStates comment).
+       * @private {!Array<!OncMojo.NetworkStateProperties>}
+       */
+      activeNetworkStates_: {
+        type: Array,
+        value() {
+          return [OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi)];
+        },
       },
-    },
-  },
 
-  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
-  networkConfig_: null,
-
-  /**
-   * Set of GUIDs identifying active networks, one for each type.
-   * @private {?Set<string>}
-   */
-  activeNetworkIds_: null,
+      /**
+       * List of network state data for each network type.
+       * @private {!Object<!Array<!OncMojo.NetworkStateProperties>>}
+       */
+      networkStateLists_: {
+        type: Object,
+        value() {
+          const result = {};
+          result[mojom.NetworkType.kWiFi] = [];
+          return result;
+        },
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /**
+     * Set of GUIDs identifying active networks, one for each type.
+     * @private {?Set<string>}
+     */
+    this.activeNetworkIds_ = null;
+
+    /** @private {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.getNetworkLists_();
-  },
+  }
 
   /**
    * CrosNetworkConfigObserver impl
@@ -120,17 +133,17 @@ Polymer({
         this.set(['activeNetworkStates_', index], network);
       }
     });
-  },
+  }
 
   /** CrosNetworkConfigObserver impl */
   onNetworkStateListChanged() {
     this.getNetworkLists_();
-  },
+  }
 
   /** CrosNetworkConfigObserver impl */
   onDeviceStateListChanged() {
     this.getNetworkLists_();
-  },
+  }
 
   /*
    * Returns the network-summary-item element corresponding to the
@@ -140,8 +153,8 @@ Polymer({
    */
   getNetworkRow(networkType) {
     const networkTypeString = OncMojo.getNetworkTypeString(networkType);
-    return this.$$(`#${networkTypeString}`);
-  },
+    return this.shadowRoot.querySelector(`#${networkTypeString}`);
+  }
 
   /**
    * Requests the list of device states and network states from Chrome.
@@ -155,7 +168,7 @@ Polymer({
       // Second get the network states.
       this.getNetworkStates_(response.result);
     });
-  },
+  }
 
   /**
    * Requests the list of network states from Chrome. Updates
@@ -173,7 +186,7 @@ Polymer({
     this.networkConfig_.getNetworkStateList(filter).then(response => {
       this.updateNetworkStates_(response.result, deviceStateList);
     });
-  },
+  }
 
   /**
    * Called after network states are received from getNetworks.
@@ -271,8 +284,10 @@ Polymer({
     this.networkStateLists_ = newNetworkStateLists;
     // Set activeNetworkStates last to rebuild the dom-repeat.
     this.activeNetworkStates_ = newActiveNetworkStates;
-    this.fire('active-networks-updated');
-  },
+    const activeNetworksUpdatedEvent = new CustomEvent(
+        'active-networks-updated', {bubbles: true, composed: true});
+    this.dispatchEvent(activeNetworksUpdatedEvent);
+  }
 
   /**
    * Returns the active network state for |type| or a default network state.
@@ -290,7 +305,7 @@ Polymer({
       activeState = activeStatesByType.get(mojom.NetworkType.kTether);
     }
     return activeState || OncMojo.getDefaultNetworkState(type);
-  },
+  }
 
   /**
    * Provides an id string for summary items. Used in tests.
@@ -300,7 +315,7 @@ Polymer({
    */
   getTypeString_(network) {
     return OncMojo.getNetworkTypeString(network.type);
-  },
+  }
 
   /**
    * @param {!Object<!OncMojo.DeviceStateProperties>} deviceStates
@@ -309,5 +324,7 @@ Polymer({
    */
   getTetherDeviceState_(deviceStates) {
     return this.deviceStates[mojom.NetworkType.kTether];
-  },
-});
+  }
+}
+
+customElements.define(NetworkSummaryElement.is, NetworkSummaryElement);

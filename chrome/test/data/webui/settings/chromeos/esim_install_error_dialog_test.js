@@ -38,7 +38,7 @@ suite('EsimInstallErrorDialog', function() {
 
     await flushAsync();
 
-    doneButton = esimInstallErrorDialog.$$('#done');
+    doneButton = esimInstallErrorDialog.shadowRoot.querySelector('#done');
     assertTrue(!!doneButton);
   });
 
@@ -51,12 +51,13 @@ suite('EsimInstallErrorDialog', function() {
               .kErrorNeedsConfirmationCode;
       await flushAsync();
 
-      assertTrue(
-          !!esimInstallErrorDialog.$$('#confirmationCodeErrorContainer'));
+      assertTrue(!!esimInstallErrorDialog.shadowRoot.querySelector(
+          '#confirmationCodeErrorContainer'));
       assertTrue(esimInstallErrorDialog.$.genericErrorContainer.hidden);
       assertFalse(esimInstallErrorDialog.$.cancel.hidden);
 
-      input = esimInstallErrorDialog.$$('#confirmationCode');
+      input =
+          esimInstallErrorDialog.shadowRoot.querySelector('#confirmationCode');
       assertTrue(!!input);
       assertTrue(doneButton.disabled);
     });
@@ -119,8 +120,8 @@ suite('EsimInstallErrorDialog', function() {
           ash.cellularSetup.mojom.ProfileInstallResult.kFailure;
       await flushAsync();
 
-      assertFalse(
-          !!esimInstallErrorDialog.$$('#confirmationCodeErrorContainer'));
+      assertFalse(!!esimInstallErrorDialog.shadowRoot.querySelector(
+          '#confirmationCodeErrorContainer'));
       assertFalse(esimInstallErrorDialog.$.genericErrorContainer.hidden);
       assertTrue(esimInstallErrorDialog.$.cancel.hidden);
     });

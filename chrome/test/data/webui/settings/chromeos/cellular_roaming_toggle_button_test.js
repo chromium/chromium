@@ -100,7 +100,7 @@ suite('CellularRoamingToggleButton', function() {
     if (!allowRoamingToggle) {
       return '';
     }
-    const subLabel = allowRoamingToggle.$$('#sub-label');
+    const subLabel = allowRoamingToggle.shadowRoot.querySelector('#sub-label');
     if (!subLabel) {
       return '';
     }
@@ -113,8 +113,8 @@ suite('CellularRoamingToggleButton', function() {
     if (!allowRoamingToggle) {
       return '';
     }
-    const policyIndicator =
-        allowRoamingToggle.$$('cr-policy-network-indicator-mojo .left');
+    const policyIndicator = allowRoamingToggle.shadowRoot.querySelector(
+        'cr-policy-network-indicator-mojo .left');
     if (!policyIndicator) {
       return '';
     }
@@ -125,12 +125,13 @@ suite('CellularRoamingToggleButton', function() {
     if (!cellularRoamingToggle) {
       return false;
     }
-    const policyIndicator =
-        cellularRoamingToggle.$$('cr-policy-network-indicator-mojo');
+    const policyIndicator = cellularRoamingToggle.shadowRoot.querySelector(
+        'cr-policy-network-indicator-mojo');
     if (!policyIndicator) {
       return false;
     }
-    const policyIcon = policyIndicator.$$('cr-tooltip-icon');
+    const policyIcon =
+        policyIndicator.shadowRoot.querySelector('cr-tooltip-icon');
     return !!policyIcon && !policyIcon.hidden;
   }
 
@@ -312,7 +313,8 @@ suite('CellularRoamingToggleButton', function() {
         }
 
         assertFalse(cellularRoamingToggleButton.isRoamingProhibitedByPolicy_());
-        assertFalse(cellularRoamingToggle.$$('cr-toggle').disabled);
+        assertFalse(cellularRoamingToggle.shadowRoot.querySelector('cr-toggle')
+                        .disabled);
         assertEquals(
             enforcementCase.perNetworkPolicyEnabled,
             cellularRoamingToggleButton.isRoamingAllowedForNetwork_);

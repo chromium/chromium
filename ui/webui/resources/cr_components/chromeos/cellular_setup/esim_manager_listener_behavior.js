@@ -38,3 +38,23 @@
    */
   onProfileChanged(profile) {},
 };
+
+/** @interface */
+/* #export */ class ESimManagerListenerBehaviorInterface {
+  onAvailableEuiccListChanged() {}
+
+  /**
+   * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
+   */
+  onProfileListChanged(euicc) {}
+
+  /**
+   * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
+   */
+  onEuiccChanged(euicc) {}
+
+  /**
+   * @param {!ash.cellularSetup.mojom.ESimProfileRemote} profile
+   */
+  onProfileChanged(profile) {}
+}

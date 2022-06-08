@@ -6,86 +6,99 @@
  * @fileoverview 'settings-internet-detail-menu' is a menu that provides
  * additional actions for a network in the network detail page.
  */
-import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../../settings_shared_css.js';
 
-import {ESimManagerListenerBehavior} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_listener_behavior.m.js';
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {afterNextRender, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ESimManagerListenerBehavior, ESimManagerListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_listener_behavior.m.js';
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-internet-detail-menu',
+// TODO(crbug.com/1093185): Implement DeepLinkingBehavior and override methods
+// to show the actions for search result.
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {ESimManagerListenerBehaviorInterface}
+ * @implements {DeepLinkingBehaviorInterface}
+ */
+const SettingsInternetDetailMenuElementBase = mixinBehaviors(
+    [RouteObserverBehavior, ESimManagerListenerBehavior, DeepLinkingBehavior],
+    PolymerElement);
 
-  // TODO(crbug.com/1093185): Implement DeepLinkingBehavior and override methods
-  // to show the actions for search result.
-  behaviors: [
-    RouteObserverBehavior,
-    ESimManagerListenerBehavior,
-    DeepLinkingBehavior,
-  ],
+/** @polymer */
+class SettingsInternetDetailMenuElement extends
+    SettingsInternetDetailMenuElementBase {
+  static get is() {
+    return 'settings-internet-detail-menu';
+  }
 
-  properties: {
-    /**
-     * Device state for the network type.
-     * @type {!OncMojo.DeviceStateProperties|undefined}
-     */
-    deviceState: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Null if current network on network detail page is not an eSIM network.
-     * @private {?OncMojo.NetworkStateProperties}
-     */
-    eSimNetworkState_: {
-      type: Object,
-      value: null,
-    },
+  static get properties() {
+    return {
+      /**
+       * Device state for the network type.
+       * @type {!OncMojo.DeviceStateProperties|undefined}
+       */
+      deviceState: Object,
 
-    /** @private */
-    isGuest_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isGuest');
+      /**
+       * Null if current network on network detail page is not an eSIM network.
+       * @private {?OncMojo.NetworkStateProperties}
+       */
+      eSimNetworkState_: {
+        type: Object,
+        value: null,
       },
-    },
 
-    /** @private*/
-    guid_: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      isGuest_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isGuest');
+        },
+      },
 
-    /** @private {boolean} */
-    isESimPolicyEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('esimPolicyEnabled') &&
-            loadTimeData.getBoolean('esimPolicyEnabled');
-      }
-    },
+      /** @private*/
+      guid_: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kCellularRenameESimNetwork,
-        chromeos.settings.mojom.Setting.kCellularRemoveESimNetwork,
-      ]),
-    },
-  },
+      /** @private {boolean} */
+      isESimPolicyEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('esimPolicyEnabled') &&
+              loadTimeData.getBoolean('esimPolicyEnabled');
+        }
+      },
+
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kCellularRenameESimNetwork,
+          chromeos.settings.mojom.Setting.kCellularRemoveESimNetwork,
+        ]),
+      },
+    };
+  }
 
   /**
    * Overridden from DeepLinkingBehavior.
@@ -95,16 +108,17 @@ Polymer({
   beforeDeepLinkAttempt(settingId) {
     afterNextRender(this, () => {
       const menu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());
-      menu.showAt(/** @type {!HTMLElement} */ (this.$$('#moreNetworkDetail')));
+      menu.showAt(/** @type {!HTMLElement} */ (
+          this.shadowRoot.querySelector('#moreNetworkDetail')));
 
       // Wait for menu to open.
       afterNextRender(this, () => {
         let element;
         if (settingId ===
             chromeos.settings.mojom.Setting.kCellularRenameESimNetwork) {
-          element = this.$$('#renameBtn');
+          element = this.shadowRoot.querySelector('#renameBtn');
         } else {
-          element = this.$$('#removeBtn');
+          element = this.shadowRoot.querySelector('#removeBtn');
         }
 
         if (!element) {
@@ -119,12 +133,12 @@ Polymer({
 
     // Stop deep link attempt since we completed it manually.
     return false;
-  },
+  }
 
   /**
    * RouteObserverBehavior
    * @param {!Route} route
-   * @param {!Route} oldRoute
+   * @param {!Route=} oldRoute
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
@@ -149,7 +163,7 @@ Polymer({
     // Needed to set initial eSimNetworkState_.
     this.setESimNetworkState_();
     this.attemptDeepLink();
-  },
+  }
 
   /**
    * ESimManagerListenerBehavior override
@@ -157,7 +171,7 @@ Polymer({
    */
   onProfileChanged(profile) {
     this.setESimNetworkState_();
-  },
+  }
 
   /**
    * Gets and sets current eSIM network state.
@@ -177,7 +191,7 @@ Polymer({
       }
       this.eSimNetworkState_ = response.result;
     });
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -186,7 +200,7 @@ Polymer({
   onDotsClick_(e) {
     const menu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());
     menu.showAt(/** @type {!HTMLElement} */ (e.target));
-  },
+  }
 
   /**
    * @returns {boolean}
@@ -201,7 +215,7 @@ Polymer({
     // Show if |this.eSimNetworkState_| has been fetched. Note that this only
     // occurs if this is a cellular network with an ICCID.
     return !!this.eSimNetworkState_;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -219,7 +233,7 @@ Polymer({
       return false;
     }
     return OncMojo.deviceIsInhibited(this.deviceState);
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -227,10 +241,13 @@ Polymer({
    */
   onRenameESimProfileTap_(e) {
     this.closeMenu_();
-    this.fire(
-        'show-esim-profile-rename-dialog',
-        {networkState: this.eSimNetworkState_});
-  },
+    const event = new CustomEvent('show-esim-profile-rename-dialog', {
+      bubbles: true,
+      composed: true,
+      detail: {networkState: this.eSimNetworkState_},
+    });
+    this.dispatchEvent(event);
+  }
 
   /**
    * @param {!Event} e
@@ -238,15 +255,22 @@ Polymer({
    */
   onRemoveESimProfileTap_(e) {
     this.closeMenu_();
-    this.fire(
-        'show-esim-remove-profile-dialog',
-        {networkState: this.eSimNetworkState_});
-  },
+    const event = new CustomEvent('show-esim-remove-profile-dialog', {
+      bubbles: true,
+      composed: true,
+      detail: {networkState: this.eSimNetworkState_},
+    });
+    this.dispatchEvent(event);
+  }
 
   /** @private */
   closeMenu_() {
     const actionMenu =
-        /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'));
+        /** @type {!CrActionMenuElement} */ (
+            this.shadowRoot.querySelector('cr-action-menu'));
     actionMenu.close();
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsInternetDetailMenuElement.is, SettingsInternetDetailMenuElement);

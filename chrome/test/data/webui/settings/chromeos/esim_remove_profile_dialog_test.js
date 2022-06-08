@@ -79,7 +79,8 @@ suite('EsimRemoveProfileDialog', function() {
     let foundProfile = await getProfileForIccid(profiles, '1');
     assertTrue(!!foundProfile);
 
-    const removeBtn = esimRemoveProfileDialog.$$('#remove');
+    const removeBtn =
+        esimRemoveProfileDialog.shadowRoot.querySelector('#remove');
     assertTrue(!!removeBtn);
     removeBtn.click();
     await flushAsync();
@@ -114,7 +115,8 @@ suite('EsimRemoveProfileDialog', function() {
     const showErrorToastPromise =
         eventToPromise('show-error-toast', esimRemoveProfileDialog);
 
-    const removeBtn = esimRemoveProfileDialog.$$('#remove');
+    const removeBtn =
+        esimRemoveProfileDialog.shadowRoot.querySelector('#remove');
     assertTrue(!!removeBtn);
 
     removeBtn.click();
@@ -178,7 +180,8 @@ suite('EsimRemoveProfileDialog', function() {
   });
 
   test('Warning message visibility', function() {
-    const warningMessage = esimRemoveProfileDialog.$$('#warningMessage');
+    const warningMessage =
+        esimRemoveProfileDialog.shadowRoot.querySelector('#warningMessage');
     assertTrue(!!warningMessage);
 
     esimRemoveProfileDialog.showCellularDisconnectWarning = false;

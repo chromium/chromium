@@ -40,7 +40,7 @@ suite('EsimRenameDialog', function() {
     assertTrue(!!esimRenameDialog);
     await flushAsync();
     assertEquals(
-        esimRenameDialog.$$('#eSimprofileName')
+        esimRenameDialog.shadowRoot.querySelector('#eSimprofileName')
             .shadowRoot.querySelector('input'),
         getDeepActiveElement());
   }
@@ -76,8 +76,9 @@ suite('EsimRenameDialog', function() {
    *     format, with 2 digits
    */
   function assertInput(value, invalid, valueLength) {
-    const inputBox = esimRenameDialog.$$('#eSimprofileName');
-    const inputCount = esimRenameDialog.$$('#inputCount');
+    const inputBox =
+        esimRenameDialog.shadowRoot.querySelector('#eSimprofileName');
+    const inputCount = esimRenameDialog.shadowRoot.querySelector('#inputCount');
     assertTrue(!!inputBox);
     assertTrue(!!inputCount);
 
@@ -98,7 +99,8 @@ suite('EsimRenameDialog', function() {
     await init();
 
     return flushAsync().then(async () => {
-      const inputBox = esimRenameDialog.$$('#eSimprofileName');
+      const inputBox =
+          esimRenameDialog.shadowRoot.querySelector('#eSimprofileName');
       assertTrue(!!inputBox);
       const profileName = inputBox.value;
 
@@ -107,7 +109,7 @@ suite('EsimRenameDialog', function() {
       inputBox.value = 'new profile nickname';
       await flushAsync();
 
-      const doneBtn = esimRenameDialog.$$('#done');
+      const doneBtn = esimRenameDialog.shadowRoot.querySelector('#done');
       assertTrue(!!doneBtn);
       doneBtn.click();
       await flushAsync();
@@ -138,13 +140,15 @@ suite('EsimRenameDialog', function() {
 
     return flushAsync().then(async () => {
       await flushAsync();
-      const doneBtn = esimRenameDialog.$$('#done');
+      const doneBtn = esimRenameDialog.shadowRoot.querySelector('#done');
 
       assertTrue(!!doneBtn);
       assertFalse(doneBtn.disabled);
       assertEquals(
           'block',
-          window.getComputedStyle(esimRenameDialog.$$('#errorMessage'))
+          window
+              .getComputedStyle(
+                  esimRenameDialog.shadowRoot.querySelector('#errorMessage'))
               .display);
     });
   });
@@ -156,7 +160,8 @@ suite('EsimRenameDialog', function() {
     await init();
 
     return flushAsync().then(async () => {
-      const inputBox = esimRenameDialog.$$('#eSimprofileName');
+      const inputBox =
+          esimRenameDialog.shadowRoot.querySelector('#eSimprofileName');
       assertTrue(!!inputBox);
       const profileName = inputBox.value;
 
@@ -164,7 +169,9 @@ suite('EsimRenameDialog', function() {
 
       assertEquals(
           'none',
-          window.getComputedStyle(esimRenameDialog.$$('#errorMessage'))
+          window
+              .getComputedStyle(
+                  esimRenameDialog.shadowRoot.querySelector('#errorMessage'))
               .display);
 
       const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
@@ -179,8 +186,8 @@ suite('EsimRenameDialog', function() {
       const showErrorToastPromise =
           eventToPromise('show-error-toast', esimRenameDialog);
 
-      const doneBtn = esimRenameDialog.$$('#done');
-      const cancelBtn = esimRenameDialog.$$('#cancel');
+      const doneBtn = esimRenameDialog.shadowRoot.querySelector('#done');
+      const cancelBtn = esimRenameDialog.shadowRoot.querySelector('#cancel');
       assertTrue(!!doneBtn);
       assertTrue(!!cancelBtn);
       assertFalse(doneBtn.disabled);
@@ -212,7 +219,8 @@ suite('EsimRenameDialog', function() {
   });
 
   test('Warning message visibility', function() {
-    const warningMessage = esimRenameDialog.$$('#warningMessage');
+    const warningMessage =
+        esimRenameDialog.shadowRoot.querySelector('#warningMessage');
     assertTrue(!!warningMessage);
 
     esimRenameDialog.showCellularDisconnectWarning = false;
@@ -229,7 +237,8 @@ suite('EsimRenameDialog', function() {
     await init();
 
     await flushAsync();
-    const inputBox = esimRenameDialog.$$('#eSimprofileName');
+    const inputBox =
+        esimRenameDialog.shadowRoot.querySelector('#eSimprofileName');
     assertTrue(!!inputBox);
     const profileName = inputBox.value;
     assertEquals(profileName, 'profile1');
@@ -300,7 +309,7 @@ suite('EsimRenameDialog', function() {
 
     // Set name with emojis, above character limit
     inputBox.value = '12345678901234567890🧟';
-    const doneBtn = esimRenameDialog.$$('#done');
+    const doneBtn = esimRenameDialog.shadowRoot.querySelector('#done');
     assertTrue(!!doneBtn);
     doneBtn.click();
     await flushAsync();
@@ -320,8 +329,9 @@ suite('EsimRenameDialog', function() {
     await flushAsync();
     await init();
 
-    const inputBox = esimRenameDialog.$$('#eSimprofileName');
-    const doneBtn = esimRenameDialog.$$('#done');
+    const inputBox =
+        esimRenameDialog.shadowRoot.querySelector('#eSimprofileName');
+    const doneBtn = esimRenameDialog.shadowRoot.querySelector('#done');
     assertTrue(!!inputBox);
     assertTrue(!!doneBtn);
 

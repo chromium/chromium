@@ -7,63 +7,74 @@
  * profile, such as requiring a confirmation code.
  */
 
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/cr_elements/cr_input/cr_input.m.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
-import {getESimProfile, getESimProfileProperties, getEuicc, getNonPendingESimProfiles, getNumESimProfiles, getPendingESimProfiles} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_utils.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'esim-install-error-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const EsimInstallErrorDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-  ],
+/** @polymer */
+class EsimInstallErrorDialogElement extends EsimInstallErrorDialogElementBase {
+  static get is() {
+    return 'esim-install-error-dialog';
+  }
 
-  properties: {
-    /**
-     * The error code returned when profile install attempt was made in networks
-     * list.
-     * @type {?ash.cellularSetup.mojom.ProfileInstallResult}
-     */
-    errorCode: {
-      type: Object,
-      value: null,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {?ash.cellularSetup.mojom.ESimProfileRemote} */
-    profile: {
-      type: Object,
-      value: null,
-    },
+  static get properties() {
+    return {
+      /**
+       * The error code returned when profile install attempt was made in
+       * networks list.
+       * @type {?ash.cellularSetup.mojom.ProfileInstallResult}
+       */
+      errorCode: {
+        type: Object,
+        value: null,
+      },
 
-    /** @private {string} */
-    confirmationCode_: {
-      type: String,
-      value: '',
-      observer: 'onConfirmationCodeChanged_',
-    },
+      /** @type {?ash.cellularSetup.mojom.ESimProfileRemote} */
+      profile: {
+        type: Object,
+        value: null,
+      },
 
-    /** @private {boolean} */
-    isInstallInProgress_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {string} */
+      confirmationCode_: {
+        type: String,
+        value: '',
+        observer: 'onConfirmationCodeChanged_',
+      },
 
-    /** @private {boolean} */
-    isConfirmationCodeInvalid_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** @private {boolean} */
+      isInstallInProgress_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {boolean} */
+      isConfirmationCodeInvalid_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /** @private */
   onConfirmationCodeChanged_() {
     this.isConfirmationCodeInvalid_ = false;
-  },
+  }
 
   /**
    * @param {Event} event
@@ -88,7 +99,7 @@ Polymer({
       // error was an invalid confirmation code, else display generic error.
       this.isConfirmationCodeInvalid_ = true;
     });
-  },
+  }
 
   /**
    * @param {Event} event
@@ -96,7 +107,7 @@ Polymer({
    */
   onCancelClicked_(event) {
     this.$.installErrorDialog.close();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -107,7 +118,7 @@ Polymer({
     return this.errorCode ===
         ash.cellularSetup.mojom.ProfileInstallResult
             .kErrorNeedsConfirmationCode;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -116,5 +127,8 @@ Polymer({
   isDoneButtonDisabled_() {
     return this.isConfirmationCodeError_() &&
         (!this.confirmationCode_ || this.isInstallInProgress_);
-  },
-});
+  }
+}
+
+customElements.define(
+    EsimInstallErrorDialogElement.is, EsimInstallErrorDialogElement);

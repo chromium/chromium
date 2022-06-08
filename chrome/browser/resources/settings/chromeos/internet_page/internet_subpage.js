@@ -7,257 +7,277 @@
  * Cellular, or virtual networks.
  */
 
-import '//resources/cr_components/chromeos/network/network_list.m.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/cr_link_row/cr_link_row.js';
-import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
-import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
-import '//resources/cr_elements/md_select_css.m.js';
-import '//resources/cr_elements/shared_style_css.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_components/chromeos/network/network_list.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
+import 'chrome://resources/cr_elements/md_select_css.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_settings_icons_css.js';
 import '../../settings_shared_css.js';
-import '//resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './cellular_networks_list.js';
 import './network_always_on_vpn.js';
 
-import {CrPolicyNetworkBehaviorMojo} from '//resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.m.js';
-import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
-import {RouteOriginBehavior, RouteOriginBehaviorImpl} from '../route_origin_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteOriginBehavior, RouteOriginBehaviorImpl, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
 
-
 const mojom = chromeos.networkConfig.mojom;
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-internet-subpage',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {NetworkListenerBehaviorInterface}
+ * @implements {CrPolicyNetworkBehaviorMojoInterface}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {RouteOriginBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsInternetSubpageElementBase = mixinBehaviors(
+    [
+      NetworkListenerBehavior, CrPolicyNetworkBehaviorMojo, DeepLinkingBehavior,
+      RouteObserverBehavior, RouteOriginBehavior, I18nBehavior
+    ],
+    PolymerElement);
 
-  behaviors: [
-    NetworkListenerBehavior,
-    CrPolicyNetworkBehaviorMojo,
-    DeepLinkingBehavior,
-    RouteObserverBehavior,
-    RouteOriginBehavior,
-    I18nBehavior,
-  ],
+/** @polymer */
+class SettingsInternetSubpageElement extends
+    SettingsInternetSubpageElementBase {
+  static get is() {
+    return 'settings-internet-subpage';
+  }
 
-  properties: {
-    /**
-     * Highest priority connected network or null. Provided by
-     * settings-internet-page (but set in network-summary).
-     * @type {?OncMojo.NetworkStateProperties|undefined}
-     */
-    defaultNetwork: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Device state for the network type. Note: when both Cellular and Tether
-     * are available this will always be set to the Cellular device state and
-     * |tetherDeviceState| will be set to the Tether device state.
-     * @type {!OncMojo.DeviceStateProperties|undefined}
-     */
-    deviceState: Object,
+  static get properties() {
+    return {
+      /**
+       * Highest priority connected network or null. Provided by
+       * settings-internet-page (but set in network-summary).
+       * @type {?OncMojo.NetworkStateProperties|undefined}
+       */
+      defaultNetwork: Object,
 
-    /**
-     * If both Cellular and Tether technologies exist, we combine the subpages
-     * and set this to the device state for Tether.
-     * @type {!OncMojo.DeviceStateProperties|undefined}
-     */
-    tetherDeviceState: Object,
+      /**
+       * Device state for the network type. Note: when both Cellular and Tether
+       * are available this will always be set to the Cellular device state and
+       * |tetherDeviceState| will be set to the Tether device state.
+       * @type {!OncMojo.DeviceStateProperties|undefined}
+       */
+      deviceState: Object,
 
-    /** @type {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
-    globalPolicy: Object,
+      /**
+       * If both Cellular and Tether technologies exist, we combine the subpages
+       * and set this to the device state for Tether.
+       * @type {!OncMojo.DeviceStateProperties|undefined}
+       */
+      tetherDeviceState: Object,
 
-    /**
-     * List of third party (Extension + Arc) VPN providers.
-     * @type {!Array<!chromeos.networkConfig.mojom.VpnProvider>}
-     */
-    vpnProviders: Array,
+      /** @type {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+      globalPolicy: Object,
 
-    showSpinner: {
-      type: Boolean,
-      notify: true,
-      value: false,
-    },
+      /**
+       * List of third party (Extension + Arc) VPN providers.
+       * @type {!Array<!chromeos.networkConfig.mojom.VpnProvider>}
+       */
+      vpnProviders: Array,
 
-    isConnectedToNonCellularNetwork: {
-      type: Boolean,
-    },
-
-    isCellularSetupActive: {
-      type: Boolean,
-    },
-
-    /**
-     * List of all network state data for the network type.
-     * @private {!Array<!OncMojo.NetworkStateProperties>}
-     */
-    networkStateList_: {
-      type: Array,
-      value() {
-        return [];
+      showSpinner: {
+        type: Boolean,
+        notify: true,
+        value: false,
       },
-    },
 
-    /**
-     * Dictionary of lists of network states for third party VPNs.
-     * @private {!Object<!Array<!OncMojo.NetworkStateProperties>>}
-     */
-    thirdPartyVpns_: {
-      type: Object,
-      value() {
-        return {};
+      isConnectedToNonCellularNetwork: {
+        type: Boolean,
       },
-    },
 
-    /** @private */
-    isShowingVpn_: {
-      type: Boolean,
-      computed: 'computeIsShowingVpn_(deviceState)',
-      reflectToAttribute: true,
-    },
-
-    /**
-     * Whether the browser/ChromeOS is managed by their organization
-     * through enterprise policies.
-     * @private
-     */
-    isManaged_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isManaged');
+      isCellularSetupActive: {
+        type: Boolean,
       },
-    },
 
-    /**
-     * Whether the ESim Policy feature flag is enabled or not.
-     * @private
-     */
-    isESimPolicyEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('esimPolicyEnabled') &&
-            loadTimeData.getBoolean('esimPolicyEnabled');
-      }
-    },
-
-    /**
-     * Always-on VPN operating mode.
-     * @private {!chromeos.networkConfig.mojom.AlwaysOnVpnMode|undefined}
-     */
-    alwaysOnVpnMode_: Number,
-
-    /**
-     * Always-on VPN service automatically started on login.
-     * @private {!string|undefined}
-     */
-    alwaysOnVpnService_: String,
-
-    /**
-     * List of potential Tether hosts whose "Google Play Services" notifications
-     * are disabled (these notifications are required to use Instant Tethering).
-     * @private {!Array<string>}
-     */
-    notificationsDisabledDeviceNames_: {
-      type: Array,
-      value() {
-        return [];
+      /**
+       * List of all network state data for the network type.
+       * @private {!Array<!OncMojo.NetworkStateProperties>}
+       */
+      networkStateList_: {
+        type: Array,
+        value() {
+          return [];
+        },
       },
-    },
 
-    /**
-     * Whether to show technology badge on mobile network icons.
-     * @private
-     */
-    showTechnologyBadge_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('showTechnologyBadge') &&
-            loadTimeData.getBoolean('showTechnologyBadge');
-      }
-    },
+      /**
+       * Dictionary of lists of network states for third party VPNs.
+       * @private {!Object<!Array<!OncMojo.NetworkStateProperties>>}
+       */
+      thirdPartyVpns_: {
+        type: Object,
+        value() {
+          return {};
+        },
+      },
 
-    /** @private */
-    hasCompletedScanSinceLastEnabled_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      isShowingVpn_: {
+        type: Boolean,
+        computed: 'computeIsShowingVpn_(deviceState)',
+        reflectToAttribute: true,
+      },
 
-    /**
-     * False if VPN is disabled by policy.
-     * @private {boolean}
-     */
-    vpnIsEnabled_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Whether the browser/ChromeOS is managed by their organization
+       * through enterprise policies.
+       * @private
+       */
+      isManaged_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isManaged');
+        },
+      },
 
-    /**
-     * Contains the settingId of any deep link that wasn't able to be shown,
-     * null otherwise.
-     * @private {?chromeos.settings.mojom.Setting}
-     */
-    pendingSettingId_: {
-      type: Number,
-      value: null,
-    },
+      /**
+       * Whether the ESim Policy feature flag is enabled or not.
+       * @private
+       */
+      isESimPolicyEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('esimPolicyEnabled') &&
+              loadTimeData.getBoolean('esimPolicyEnabled');
+        }
+      },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kWifiOnOff,
-        chromeos.settings.mojom.Setting.kWifiAddNetwork,
-        chromeos.settings.mojom.Setting.kMobileOnOff,
-        chromeos.settings.mojom.Setting.kInstantTetheringOnOff,
-        chromeos.settings.mojom.Setting.kAddESimNetwork,
-      ]),
-    },
-  },
+      /**
+       * Always-on VPN operating mode.
+       * @private {!chromeos.networkConfig.mojom.AlwaysOnVpnMode|undefined}
+       */
+      alwaysOnVpnMode_: Number,
 
-  /** RouteOriginBehavior override */
-  route_: routes.INTERNET_NETWORKS,
+      /**
+       * Always-on VPN service automatically started on login.
+       * @private {!string|undefined}
+       */
+      alwaysOnVpnService_: String,
 
-  observers: [
-    'deviceStateChanged_(deviceState)',
-    'onAlwaysOnVpnChanged_(alwaysOnVpnMode_, alwaysOnVpnService_)',
-  ],
+      /**
+       * List of potential Tether hosts whose "Google Play Services"
+       * notifications are disabled (these notifications are required to use
+       * Instant Tethering).
+       * @private {!Array<string>}
+       */
+      notificationsDisabledDeviceNames_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
 
-  /** @private {number|null} */
-  scanIntervalId_: null,
+      /**
+       * Whether to show technology badge on mobile network icons.
+       * @private
+       */
+      showTechnologyBadge_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('showTechnologyBadge') &&
+              loadTimeData.getBoolean('showTechnologyBadge');
+        }
+      },
 
-  /** @private  {InternetPageBrowserProxy} */
-  browserProxy_: null,
+      /** @private */
+      hasCompletedScanSinceLastEnabled_: {
+        type: Boolean,
+        value: false,
+      },
 
-  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
-  networkConfig_: null,
+      /**
+       * False if VPN is disabled by policy.
+       * @private {boolean}
+       */
+      vpnIsEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Contains the settingId of any deep link that wasn't able to be shown,
+       * null otherwise.
+       * @private {?chromeos.settings.mojom.Setting}
+       */
+      pendingSettingId_: {
+        type: Number,
+        value: null,
+      },
+
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kWifiOnOff,
+          chromeos.settings.mojom.Setting.kWifiAddNetwork,
+          chromeos.settings.mojom.Setting.kMobileOnOff,
+          chromeos.settings.mojom.Setting.kInstantTetheringOnOff,
+          chromeos.settings.mojom.Setting.kAddESimNetwork,
+        ]),
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'deviceStateChanged_(deviceState)',
+      'onAlwaysOnVpnChanged_(alwaysOnVpnMode_, alwaysOnVpnService_)',
+    ];
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** RouteOriginBehavior override */
+    this.route_ = routes.INTERNET_NETWORKS;
+
+    /** @private {number|null} */
+    this.scanIntervalId_ = null;
+
+    /** @private  {!InternetPageBrowserProxy} */
     this.browserProxy_ = InternetPageBrowserProxyImpl.getInstance();
+
+    /** @private {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.browserProxy_.setGmsCoreNotificationsDisabledDeviceNamesCallback(
         (notificationsDisabledDeviceNames) => {
           this.notificationsDisabledDeviceNames_ =
@@ -266,12 +286,14 @@ Polymer({
     this.browserProxy_.requestGmsCoreNotificationsDisabledDeviceNames();
 
     this.addFocusConfig(routes.KNOWN_NETWORKS, '#knownNetworksSubpageButton');
-  },
+  }
 
   /** override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.stopScanning_();
-  },
+  }
 
   /**
    * Overridden from DeepLinkingBehavior.
@@ -282,7 +304,8 @@ Polymer({
     if (settingId === chromeos.settings.mojom.Setting.kAddESimNetwork) {
       afterNextRender(this, () => {
         const deepLinkElement =
-            this.$$('cellular-networks-list').getAddEsimButton();
+            this.shadowRoot.querySelector('cellular-networks-list')
+                .getAddEsimButton();
         if (!deepLinkElement || deepLinkElement.hidden) {
           console.warn(`Element with deep link id ${settingId} not focusable.`);
           return;
@@ -297,14 +320,16 @@ Polymer({
       afterNextRender(this, () => {
         // If both Cellular and Instant Tethering are enabled, we show a special
         // toggle for Instant Tethering. If it exists, deep link to it.
-        const tetherEnabled = this.$$('#tetherEnabledButton');
+        const tetherEnabled =
+            this.shadowRoot.querySelector('#tetherEnabledButton');
         if (tetherEnabled) {
           this.showDeepLinkElement(tetherEnabled);
           return;
         }
         // Otherwise, the device does not support Cellular and Instant Tethering
         // on/off is controlled by the top-level "Mobile data" toggle instead.
-        const deviceEnabled = this.$$('#deviceEnabledButton');
+        const deviceEnabled =
+            this.shadowRoot.querySelector('#deviceEnabledButton');
         if (deviceEnabled) {
           this.showDeepLinkElement(deviceEnabled);
           return;
@@ -315,12 +340,12 @@ Polymer({
       return false;
     }
     return true;
-  },
+  }
 
   /**
    * RouteObserverBehavior
    * @param {!Route} newRoute
-   * @param {!Route} oldRoute
+   * @param {!Route=} oldRoute
    * @protected
    */
   currentRouteChanged(newRoute, oldRoute) {
@@ -338,7 +363,7 @@ Polymer({
         this.pendingSettingId_ = result.pendingSettingId;
       }
     });
-  },
+  }
 
   init() {
     // Clear any stale data.
@@ -353,7 +378,7 @@ Polymer({
 
     // Get always-on VPN configuration.
     this.updateAlwaysOnVpnPreferences_();
-  },
+  }
 
   /**
    * NetworkListenerBehavior override
@@ -361,13 +386,13 @@ Polymer({
    */
   onActiveNetworksChanged(networks) {
     this.getNetworkStateList_();
-  },
+  }
 
   /** NetworkListenerBehavior override */
   onNetworkStateListChanged() {
     this.getNetworkStateList_();
     this.updateAlwaysOnVpnPreferences_();
-  },
+  }
 
   /** NetworkListenerBehavior override */
   onVpnProvidersChanged() {
@@ -375,7 +400,7 @@ Polymer({
       return;
     }
     this.getNetworkStateList_();
-  },
+  }
 
   /** @private */
   deviceStateChanged_() {
@@ -409,7 +434,7 @@ Polymer({
 
     this.getNetworkStateList_();
     this.updateScanning_();
-  },
+  }
 
   /** @private */
   updateScanning_() {
@@ -421,7 +446,7 @@ Polymer({
       this.startScanning_();
       return;
     }
-  },
+  }
 
   /**
    * @return {boolean}
@@ -442,7 +467,7 @@ Polymer({
     }
 
     return false;
-  },
+  }
 
   /** @private */
   startScanning_() {
@@ -460,7 +485,7 @@ Polymer({
     this.scanIntervalId_ = window.setInterval(() => {
       this.networkConfig_.requestNetworkScan(type);
     }, INTERVAL_MS);
-  },
+  }
 
   /** @private */
   stopScanning_() {
@@ -469,7 +494,7 @@ Polymer({
     }
     window.clearInterval(this.scanIntervalId_);
     this.scanIntervalId_ = null;
-  },
+  }
 
   /** @private */
   getNetworkStateList_() {
@@ -495,7 +520,7 @@ Polymer({
         }
       });
     });
-  },
+  }
 
   /**
    * @param {!Array<!OncMojo.NetworkStateProperties>} networkStates
@@ -552,7 +577,7 @@ Polymer({
     }
 
     this.set('networkStateList_', networkStates);
-  },
+  }
 
   /**
    * Returns an ordered list of VPN providers for all third party VPNs and any
@@ -591,7 +616,7 @@ Polymer({
       }
     }
     return configuredProviders.concat(unconfiguredProviders);
-  },
+  }
 
   /**
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
@@ -607,7 +632,7 @@ Polymer({
     return !!deviceState &&
         (deviceState.type === mojom.NetworkType.kVPN ||
          deviceState.deviceState === mojom.DeviceStateType.kEnabled);
-  },
+  }
 
   /**
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
@@ -618,7 +643,7 @@ Polymer({
    */
   getOffOnString_(deviceState, onstr, offstr) {
     return this.deviceIsEnabled_(deviceState) ? onstr : offstr;
-  },
+  }
 
   /**
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
@@ -628,7 +653,7 @@ Polymer({
   enableToggleIsVisible_(deviceState) {
     return !!deviceState && deviceState.type !== mojom.NetworkType.kEthernet &&
         deviceState.type !== mojom.NetworkType.kVPN;
-  },
+  }
 
   /**
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
@@ -647,7 +672,7 @@ Polymer({
       return false;
     }
     return !this.isDeviceInhibited_();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -658,7 +683,7 @@ Polymer({
       return false;
     }
     return OncMojo.deviceIsInhibited(this.deviceState);
-  },
+  }
 
   /**
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
@@ -678,7 +703,7 @@ Polymer({
     }
     assertNotReached();
     return '';
-  },
+  }
 
   /**
    * @param {!mojom.VpnProvider} provider
@@ -687,7 +712,7 @@ Polymer({
    */
   getAddThirdPartyVpnA11yString_(provider) {
     return this.i18n('internetAddThirdPartyVPN', provider.providerName || '');
-  },
+  }
 
   /**
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
@@ -700,7 +725,7 @@ Polymer({
       return false;
     }
     return globalPolicy && !globalPolicy.allowOnlyPolicyWifiNetworksToConnect;
-  },
+  }
 
   /**
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
@@ -713,23 +738,36 @@ Polymer({
       return false;
     }
     return this.allowAddConnection_(deviceState, globalPolicy);
-  },
+  }
+
+  /**
+   * @private
+   * @param {!string} type
+   */
+  dispatchShowConfigEvent_(type) {
+    const event = new CustomEvent('show-config', {
+      bubbles: true,
+      composed: true,
+      detail: {type},
+    });
+    this.dispatchEvent(event);
+  }
 
   /** @private */
   onAddWifiButtonTap_() {
     assert(this.deviceState, 'Device state is falsey - Wifi expected.');
     const type = this.deviceState.type;
     assert(type === mojom.NetworkType.kWiFi, 'Wifi type expected.');
-    this.fire('show-config', {type: OncMojo.getNetworkTypeString(type)});
-  },
+    this.dispatchShowConfigEvent_(OncMojo.getNetworkTypeString(type));
+  }
 
   /** @private */
   onAddVpnButtonTap_() {
     assert(this.deviceState, 'Device state is falsey - VPN expected.');
     const type = this.deviceState.type;
     assert(type === mojom.NetworkType.kVPN, 'VPN type expected.');
-    this.fire('show-config', {type: OncMojo.getNetworkTypeString(type)});
-  },
+    this.dispatchShowConfigEvent_(OncMojo.getNetworkTypeString(type));
+  }
 
   /**
    * @param {!{model: !{item: !mojom.VpnProvider}}} event
@@ -739,7 +777,7 @@ Polymer({
     const provider = event.model.item;
     this.browserProxy_.addThirdPartyVpn(provider.appId);
     recordSettingChange();
-  },
+  }
 
   /**
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
@@ -748,7 +786,7 @@ Polymer({
    */
   knownNetworksIsVisible_(deviceState) {
     return !!deviceState && deviceState.type === mojom.NetworkType.kWiFi;
-  },
+  }
 
   /**
    * Event triggered when the known networks button is clicked.
@@ -756,8 +794,13 @@ Polymer({
    */
   onKnownNetworksTap_() {
     assert(this.deviceState.type === mojom.NetworkType.kWiFi);
-    this.fire('show-known-networks', this.deviceState.type);
-  },
+    const showKnownNetworksEvent = new CustomEvent('show-known-networks', {
+      bubbles: true,
+      composed: true,
+      detail: this.deviceState.type,
+    });
+    this.dispatchEvent(showKnownNetworksEvent);
+  }
 
   /**
    * Event triggered when the enable button is toggled.
@@ -766,11 +809,17 @@ Polymer({
    */
   onDeviceEnabledChange_(event) {
     assert(this.deviceState);
-    this.fire('device-enabled-toggled', {
-      enabled: !this.deviceIsEnabled_(this.deviceState),
-      type: this.deviceState.type
-    });
-  },
+    const deviceEnabledToggledEvent =
+        new CustomEvent('device-enabled-toggled', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            enabled: !this.deviceIsEnabled_(this.deviceState),
+            type: this.deviceState.type
+          },
+        });
+    this.dispatchEvent(deviceEnabledToggledEvent);
+  }
 
   /**
    * @param {!Object<!Array<!OncMojo.NetworkStateProperties>>} thirdPartyVpns
@@ -780,7 +829,7 @@ Polymer({
    */
   getThirdPartyVpnNetworks_(thirdPartyVpns, provider) {
     return thirdPartyVpns[provider.providerId] || [];
-  },
+  }
 
   /**
    * @param {!Object<!Array<!OncMojo.NetworkStateProperties>>} thirdPartyVpns
@@ -791,7 +840,7 @@ Polymer({
   haveThirdPartyVpnNetwork_(thirdPartyVpns, provider) {
     const list = this.getThirdPartyVpnNetworks_(thirdPartyVpns, provider);
     return !!list.length;
-  },
+  }
 
   /**
    * Event triggered when a network list item is selected.
@@ -804,12 +853,23 @@ Polymer({
     const networkState = e.detail;
     e.target.blur();
     if (this.canAttemptConnection_(networkState)) {
-      this.fire('network-connect', {networkState: networkState});
+      const networkConnectEvent = new CustomEvent('network-connect', {
+        bubbles: true,
+        composed: true,
+        detail: {networkState},
+      });
+      this.dispatchEvent(networkConnectEvent);
       recordSettingChange();
       return;
     }
-    this.fire('show-detail', networkState);
-  },
+
+    const showDetailEvent = new CustomEvent('show-detail', {
+      bubbles: true,
+      composed: true,
+      detail: networkState,
+    });
+    this.dispatchEvent(showDetailEvent);
+  }
 
   /**
    * @param {!OncMojo.NetworkStateProperties} state The network state.
@@ -836,7 +896,7 @@ Polymer({
         (!!this.globalPolicy.blockedHexSsids &&
          this.globalPolicy.blockedHexSsids.includes(
              state.typeState.wifi.hexSsid));
-  },
+  }
 
   /**
    * Determines whether or not it is possible to attempt a connection to the
@@ -870,7 +930,7 @@ Polymer({
     }
 
     return true;
-  },
+  }
 
   /**
    * @param {string} typeString
@@ -881,7 +941,7 @@ Polymer({
   matchesType_(typeString, device) {
     return !!device &&
         device.type === OncMojo.getNetworkTypeFromString(typeString);
-  },
+  }
 
   /**
    * @param {!Array<!OncMojo.NetworkStateProperties>}
@@ -899,7 +959,7 @@ Polymer({
       return this.shouldShowVpnList_();
     }
     return this.networkStateList_.length > 0;
-  },
+  }
 
   /**
    * @return {boolean} True if native VPN is not disabled by policy and there
@@ -908,7 +968,7 @@ Polymer({
    */
   shouldShowVpnList_() {
     return this.vpnIsEnabled_ && this.networkStateList_.length > 0;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -918,7 +978,7 @@ Polymer({
     // Only shown if the currently-active subpage is for Cellular networks.
     return !!this.deviceState &&
         this.deviceState.type === mojom.NetworkType.kCellular;
-  },
+  }
 
   /**
    * @param {!Array<!OncMojo.NetworkStateProperties>}
@@ -929,7 +989,7 @@ Polymer({
   hideNoNetworksMessage_(networkStateList) {
     return this.shouldShowCellularNetworkList_() ||
         this.shouldShowNetworkList_(networkStateList);
-  },
+  }
 
   /**
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
@@ -958,7 +1018,7 @@ Polymer({
     return this.hasCompletedScanSinceLastEnabled_ ?
         this.i18n('internetNoNetworks') :
         this.i18n('networkScanningLabel');
-  },
+  }
 
   /**
    * @param {!Array<string>} notificationsDisabledDeviceNames
@@ -967,7 +1027,7 @@ Polymer({
    */
   showGmsCoreNotificationsSection_(notificationsDisabledDeviceNames) {
     return notificationsDisabledDeviceNames.length > 0;
-  },
+  }
 
   /**
    * @param {!Array<string>} notificationsDisabledDeviceNames
@@ -989,7 +1049,7 @@ Polymer({
     }
 
     return this.i18n('gmscoreNotificationsManyDevicesSubtitle');
-  },
+  }
 
   /**
    * @return {boolean}
@@ -1001,7 +1061,7 @@ Polymer({
     }
     return this.matchesType_(
         OncMojo.getNetworkTypeString(mojom.NetworkType.kVPN), this.deviceState);
-  },
+  }
 
   /**
    * Tells when VPN preferences section should be displayed. It is
@@ -1017,7 +1077,7 @@ Polymer({
     // displayed on managed devices while the legacy always-on VPN based on ARC
     // is not replaced/extended by the new implementation.
     return !this.isManaged_ && this.isShowingVpn_;
-  },
+  }
 
   /**
    * Generates the list of VPN services available for always-on. It keeps from
@@ -1046,7 +1106,7 @@ Polymer({
     }
 
     return alwaysOnVpnList;
-  },
+  }
 
   /**
    * Fetches the always-on VPN configuration from network config.
@@ -1061,7 +1121,7 @@ Polymer({
       this.alwaysOnVpnMode_ = result.properties.mode;
       this.alwaysOnVpnService_ = result.properties.serviceGuid;
     });
-  },
+  }
 
   /**
    * Handles a change in |alwaysOnVpnMode_| or |alwaysOnVpnService_|
@@ -1080,5 +1140,8 @@ Polymer({
       serviceGuid: this.alwaysOnVpnService_,
     };
     this.networkConfig_.setAlwaysOnVpn(properties);
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsInternetSubpageElement.is, SettingsInternetSubpageElement);

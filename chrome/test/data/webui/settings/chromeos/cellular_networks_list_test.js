@@ -147,13 +147,16 @@ suite('CellularNetworksList', function() {
 
     await flushAsync();
 
-    const eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+    const eSimNetworkList =
+        cellularNetworkList.shadowRoot.querySelector('#esimNetworkList');
     assertTrue(!!eSimNetworkList);
 
-    const pSimNetworkList = cellularNetworkList.$$('#psimNetworkList');
+    const pSimNetworkList =
+        cellularNetworkList.shadowRoot.querySelector('#psimNetworkList');
     assertTrue(!!pSimNetworkList);
 
-    const tetherNetworkList = cellularNetworkList.$$('#tetherNetworkList');
+    const tetherNetworkList =
+        cellularNetworkList.shadowRoot.querySelector('#tetherNetworkList');
     assertTrue(!!tetherNetworkList);
 
     assertEquals(2, eSimNetworkList.networks.length);
@@ -170,7 +173,7 @@ suite('CellularNetworksList', function() {
         addESimSlot();
         await flushAsync();
         const esimNoNetworkAnchor =
-            cellularNetworkList.$$('#eSimNoNetworkFound')
+            cellularNetworkList.shadowRoot.querySelector('#eSimNoNetworkFound')
                 .querySelector('localized-link')
                 .shadowRoot.querySelector('a');
         assertTrue(!!esimNoNetworkAnchor);
@@ -189,10 +192,10 @@ suite('CellularNetworksList', function() {
     init();
     addESimSlot();
     await flushAsync();
-    let eidDialog = cellularNetworkList.$$('.eid-dialog');
+    let eidDialog = cellularNetworkList.shadowRoot.querySelector('.eid-dialog');
     assertFalse(!!eidDialog);
 
-    const tripleDot = cellularNetworkList.$$('#moreESim');
+    const tripleDot = cellularNetworkList.shadowRoot.querySelector('#moreESim');
     assertTrue(!!tripleDot);
     tripleDot.click();
     await flushAsync();
@@ -207,7 +210,7 @@ suite('CellularNetworksList', function() {
     showEidBtn.click();
     await flushAsync();
 
-    eidDialog = cellularNetworkList.$$('.eid-dialog');
+    eidDialog = cellularNetworkList.shadowRoot.querySelector('.eid-dialog');
     assertTrue(!!eidDialog);
   });
 
@@ -218,25 +221,29 @@ suite('CellularNetworksList', function() {
     cellularNetworkList.isConnectedToNonCellularNetwork = true;
     await flushAsync();
 
-    let eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+    let eSimNetworkList =
+        cellularNetworkList.shadowRoot.querySelector('#esimNetworkList');
     assertTrue(!!eSimNetworkList);
 
     flush();
 
-    const listItem = eSimNetworkList.$$('network-list-item');
+    const listItem =
+        eSimNetworkList.shadowRoot.querySelector('network-list-item');
     assertTrue(!!listItem);
-    const installButton = listItem.$$('#installButton');
+    const installButton = listItem.shadowRoot.querySelector('#installButton');
     assertTrue(!!installButton);
     installButton.click();
 
     await flushAsync();
 
     // eSIM network list should now be hidden and link showing.
-    eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+    eSimNetworkList =
+        cellularNetworkList.shadowRoot.querySelector('#esimNetworkList');
     assertFalse(!!eSimNetworkList);
-    const esimNoNetworkAnchor = cellularNetworkList.$$('#eSimNoNetworkFound')
-                                    .querySelector('localized-link')
-                                    .shadowRoot.querySelector('a');
+    const esimNoNetworkAnchor =
+        cellularNetworkList.shadowRoot.querySelector('#eSimNoNetworkFound')
+            .querySelector('localized-link')
+            .shadowRoot.querySelector('a');
     assertTrue(!!esimNoNetworkAnchor);
   });
 
@@ -250,23 +257,27 @@ suite('CellularNetworksList', function() {
         flush();
         await flushAsync();
         // The list should be hidden with no EUICC or eSIM slots.
-        assertFalse(!!cellularNetworkList.$$('#esimNetworkList'));
+        assertFalse(
+            !!cellularNetworkList.shadowRoot.querySelector('#esimNetworkList'));
 
         // Add an eSIM slot.
         await addESimSlot();
         // The list should still be hidden.
-        assertFalse(!!cellularNetworkList.$$('#esimNetworkList'));
+        assertFalse(
+            !!cellularNetworkList.shadowRoot.querySelector('#esimNetworkList'));
 
         // Add an EUICC.
         eSimManagerRemote.addEuiccForTest(1);
         await flushAsync();
         // The list should now be showing
-        assertTrue(!!cellularNetworkList.$$('#esimNetworkList'));
+        assertTrue(
+            !!cellularNetworkList.shadowRoot.querySelector('#esimNetworkList'));
 
         // Remove the eSIM slot
         clearSimSlots();
         // The list should be hidden again.
-        assertFalse(!!cellularNetworkList.$$('#esimNetworkList'));
+        assertFalse(
+            !!cellularNetworkList.shadowRoot.querySelector('#esimNetworkList'));
       });
 
   test('Hide pSIM section when no pSIM slots', async () => {
@@ -275,13 +286,16 @@ suite('CellularNetworksList', function() {
       OncMojo.getDefaultManagedProperties(mojom.NetworkType.kTether, 'tether1'),
     ]);
     await flushAsync();
-    assertFalse(!!cellularNetworkList.$$('#pSimNoNetworkFound'));
+    assertFalse(
+        !!cellularNetworkList.shadowRoot.querySelector('#pSimNoNetworkFound'));
 
     addPSimSlot();
-    assertTrue(!!cellularNetworkList.$$('#pSimNoNetworkFound'));
+    assertTrue(
+        !!cellularNetworkList.shadowRoot.querySelector('#pSimNoNetworkFound'));
 
     clearSimSlots();
-    assertFalse(!!cellularNetworkList.$$('#pSimNoNetworkFound'));
+    assertFalse(
+        !!cellularNetworkList.shadowRoot.querySelector('#pSimNoNetworkFound'));
   });
 
   test(
@@ -299,7 +313,8 @@ suite('CellularNetworksList', function() {
 
         await flushAsync();
 
-        const pSimNetworkList = cellularNetworkList.$$('#psimNetworkList');
+        const pSimNetworkList =
+            cellularNetworkList.shadowRoot.querySelector('#psimNetworkList');
         assertTrue(!!pSimNetworkList);
 
         assertEquals(2, pSimNetworkList.networks.length);
@@ -307,17 +322,20 @@ suite('CellularNetworksList', function() {
 
   test('Hide instant tethering section when not enabled', async () => {
     init();
-    assertFalse(!!cellularNetworkList.$$('#tetherNetworksNotSetup'));
+    assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
+        '#tetherNetworksNotSetup'));
 
     browserProxy.setInstantTetheringStateForTest(
         MultiDeviceFeatureState.ENABLED_BY_USER);
     await flushAsync();
-    assertTrue(!!cellularNetworkList.$$('#tetherNetworksNotSetup'));
+    assertTrue(!!cellularNetworkList.shadowRoot.querySelector(
+        '#tetherNetworksNotSetup'));
 
     browserProxy.setInstantTetheringStateForTest(
         MultiDeviceFeatureState.UNAVAILABLE_NO_VERIFIED_HOST);
     await flushAsync();
-    assertFalse(!!cellularNetworkList.$$('#tetherNetworksNotSetup'));
+    assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
+        '#tetherNetworksNotSetup'));
   });
 
   test(
@@ -330,14 +348,17 @@ suite('CellularNetworksList', function() {
           allowOnlyPolicyCellularNetworks: false,
         };
         await flushAsync();
-        let eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+        let eSimNetworkList =
+            cellularNetworkList.shadowRoot.querySelector('#esimNetworkList');
         assertTrue(!!eSimNetworkList);
 
         flush();
 
-        const listItem = eSimNetworkList.$$('network-list-item');
+        const listItem =
+            eSimNetworkList.shadowRoot.querySelector('network-list-item');
         assertTrue(!!listItem);
-        const installButton = listItem.$$('#installButton');
+        const installButton =
+            listItem.shadowRoot.querySelector('#installButton');
         assertTrue(!!installButton);
 
         cellularNetworkList.globalPolicy = {
@@ -346,7 +367,8 @@ suite('CellularNetworksList', function() {
         eSimManagerRemote.addEuiccForTest(1);
         addESimSlot();
         await flushAsync();
-        eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+        eSimNetworkList =
+            cellularNetworkList.shadowRoot.querySelector('#esimNetworkList');
         assertFalse(!!eSimNetworkList);
       });
 
@@ -360,14 +382,17 @@ suite('CellularNetworksList', function() {
         cellularNetworkList.isConnectedToNonCellularNetwork = false;
         await flushAsync();
 
-        const eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+        const eSimNetworkList =
+            cellularNetworkList.shadowRoot.querySelector('#esimNetworkList');
         assertTrue(!!eSimNetworkList);
 
         flush();
 
-        const listItem = eSimNetworkList.$$('network-list-item');
+        const listItem =
+            eSimNetworkList.shadowRoot.querySelector('network-list-item');
         assertTrue(!!listItem);
-        const installButton = listItem.$$('#installButton');
+        const installButton =
+            listItem.shadowRoot.querySelector('#installButton');
         assertTrue(!!installButton);
 
         const showErrorToastPromise =
@@ -396,10 +421,12 @@ suite('CellularNetworksList', function() {
         };
         addESimSlot();
         await flushAsync();
-        const esimLocalizedLink = cellularNetworkList.$$('#eSimNoNetworkFound')
-                                      .querySelector('localized-link');
+        const esimLocalizedLink =
+            cellularNetworkList.shadowRoot.querySelector('#eSimNoNetworkFound')
+                .querySelector('localized-link');
         const noESimFoundMessage =
-            cellularNetworkList.$$('#eSimNoNetworkFound').querySelector('div');
+            cellularNetworkList.shadowRoot.querySelector('#eSimNoNetworkFound')
+                .querySelector('div');
         assertTrue(!!esimLocalizedLink);
         assertTrue(!!noESimFoundMessage);
         assertTrue(esimLocalizedLink.hidden);
@@ -419,7 +446,8 @@ suite('CellularNetworksList', function() {
         };
         addESimSlot();
         await flushAsync();
-        assertFalse(!!cellularNetworkList.$$('#eSimNoNetworkFound'));
+        assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
+            '#eSimNoNetworkFound'));
       });
 
   test('Fire show cellular setup event on add cellular clicked', async () => {
@@ -447,10 +475,12 @@ suite('CellularNetworksList', function() {
 
     // When policy is enabled add cellular button should be disabled, and policy
     // indicator should be shown.
-    let addESimButton = cellularNetworkList.$$('#addESimButton');
+    let addESimButton =
+        cellularNetworkList.shadowRoot.querySelector('#addESimButton');
     assertTrue(!!addESimButton);
     assertTrue(addESimButton.disabled);
-    let policyIcon = cellularNetworkList.$$('cr-policy-indicator');
+    let policyIcon =
+        cellularNetworkList.shadowRoot.querySelector('cr-policy-indicator');
     assertTrue(!!policyIcon);
     assertFalse(policyIcon.hidden);
 
@@ -459,10 +489,12 @@ suite('CellularNetworksList', function() {
     };
 
     await flushAsync();
-    addESimButton = cellularNetworkList.$$('#addESimButton');
+    addESimButton =
+        cellularNetworkList.shadowRoot.querySelector('#addESimButton');
     assertTrue(!!addESimButton);
     assertFalse(addESimButton.disabled);
-    policyIcon = cellularNetworkList.$$('cr-policy-indicator');
+    policyIcon =
+        cellularNetworkList.shadowRoot.querySelector('cr-policy-indicator');
     assertTrue(!!policyIcon);
     assertTrue(policyIcon.hidden);
 
@@ -507,8 +539,9 @@ suite('CellularNetworksList', function() {
 
     await flushAsync();
 
-    const esimLocalizedLink = cellularNetworkList.$$('#eSimNoNetworkFound')
-                                  .querySelector('localized-link');
+    const esimLocalizedLink =
+        cellularNetworkList.shadowRoot.querySelector('#eSimNoNetworkFound')
+            .querySelector('localized-link');
     assertFalse(esimLocalizedLink.linkDisabled);
 
     cellularNetworkList.cellularDeviceState = {
@@ -533,9 +566,10 @@ suite('CellularNetworksList', function() {
     cellularNetworkList.canShowSpinner = true;
     await flushAsync();
 
-    const inhibitedSubtext = cellularNetworkList.$$('#inhibitedSubtext');
+    const inhibitedSubtext =
+        cellularNetworkList.shadowRoot.querySelector('#inhibitedSubtext');
     const getInhibitedSpinner = () => {
-      return cellularNetworkList.$$('#inhibitedSpinner');
+      return cellularNetworkList.shadowRoot.querySelector('#inhibitedSpinner');
     };
     assertTrue(inhibitedSubtext.hidden);
     assertTrue(!!getInhibitedSpinner());
@@ -574,9 +608,11 @@ suite('CellularNetworksList', function() {
         cellularNetworkList.canShowSpinner = true;
         await flushAsync();
 
-        const inhibitedSubtext = cellularNetworkList.$$('#inhibitedSubtext');
+        const inhibitedSubtext =
+            cellularNetworkList.shadowRoot.querySelector('#inhibitedSubtext');
         const getInhibitedSpinner = () => {
-          return cellularNetworkList.$$('#inhibitedSpinner');
+          return cellularNetworkList.shadowRoot.querySelector(
+              '#inhibitedSpinner');
         };
         assertFalse(inhibitedSubtext.hidden);
         assertTrue(

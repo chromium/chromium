@@ -6,83 +6,97 @@
  * @fileoverview
  * 'internet-config' is a Settings dialog wrapper for network-config.
  */
-import '//resources/cr_components/chromeos/network/network_config.m.js';
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import 'chrome://resources/cr_components/chromeos/network/network_config.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './internet_shared_css.js';
 
-import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {HTMLEscape, listenOnce} from '//resources/js/util.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {HTMLEscape} from 'chrome://resources/js/util.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'internet-config',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const InternetConfigElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class InternetConfigElement extends InternetConfigElementBase {
+  static get is() {
+    return 'internet-config';
+  }
 
-  properties: {
-    /** @private */
-    shareAllowEnable_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('shareNetworkAllowEnable');
-      }
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    shareDefault_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('shareNetworkDefault');
-      }
-    },
+  static get properties() {
+    return {
+      /** @private */
+      shareAllowEnable_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('shareNetworkAllowEnable');
+        }
+      },
 
-    /**
-     * The GUID when an existing network is being configured. This will be
-     * empty when configuring a new network.
-     */
-    guid: {
+      /** @private */
+      shareDefault_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('shareNetworkDefault');
+        }
+      },
+
+      /**
+       * The GUID when an existing network is being configured. This will be
+       * empty when configuring a new network.
+       */
+      guid: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * The type of network to be configured as a string. May be set initially
+       * or updated by network-config.
+       */
       type: String,
-      value: '',
-    },
 
-    /**
-     * The type of network to be configured as a string. May be set initially or
-     * updated by network-config.
-     */
-    type: String,
+      /**
+       * The name of the network. May be set initially or updated by
+       * network-config.
+       */
+      name: String,
 
-    /**
-     * The name of the network. May be set initially or updated by
-     * network-config.
-     */
-    name: String,
+      /**
+       * Set to true to show the 'connect' button instead of 'save'.
+       */
+      showConnect: Boolean,
 
-    /**
-     * Set to true to show the 'connect' button instead of 'save'.
-     */
-    showConnect: Boolean,
+      /** @private */
+      enableConnect_: Boolean,
 
-    /** @private */
-    enableConnect_: Boolean,
+      /** @private */
+      enableSave_: Boolean,
 
-    /** @private */
-    enableSave_: Boolean,
-
-    /**
-     * Set by network-config when a configuration error occurs.
-     * @private
-     */
-    error_: {
-      type: String,
-      value: '',
-    },
-  },
+      /**
+       * Set by network-config when a configuration error occurs.
+       * @private
+       */
+      error_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
   open() {
     const dialog = /** @type {!CrDialogElement} */ (this.$.dialog);
@@ -91,14 +105,14 @@ Polymer({
     }
 
     this.$.networkConfig.init();
-  },
+  }
 
   close() {
     const dialog = /** @type {!CrDialogElement} */ (this.$.dialog);
     if (dialog.open) {
       dialog.close();
     }
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -106,7 +120,7 @@ Polymer({
    */
   onClose_(event) {
     this.close();
-  },
+  }
 
   /**
    * @return {string}
@@ -118,7 +132,7 @@ Polymer({
     }
     const type = this.i18n('OncType' + this.type);
     return this.i18n('internetJoinType', type);
-  },
+  }
 
   /**
    * @return {string}
@@ -129,12 +143,12 @@ Polymer({
       return this.i18n(this.error_);
     }
     return this.i18n('networkErrorUnknown');
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.close();
-  },
+  }
 
   /**
    * Note that onSaveTap_ will only be called if the user explicitly clicks
@@ -143,7 +157,7 @@ Polymer({
    */
   onSaveTap_() {
     /** @type {!NetworkConfigElement} */ (this.$.networkConfig).save();
-  },
+  }
 
   /**
    * Note that onConnectTap_ will only be called if the user explicitly clicks
@@ -152,7 +166,7 @@ Polymer({
    */
   onConnectTap_() {
     /** @type {!NetworkConfigElement} */ (this.$.networkConfig).connect();
-  },
+  }
 
   /**
    * A connect or save may be initiated within the NetworkConfigElement instead
@@ -169,5 +183,7 @@ Polymer({
     } else {
       recordSettingChange();
     }
-  },
-});
+  }
+}
+
+customElements.define(InternetConfigElement.is, InternetConfigElement);
