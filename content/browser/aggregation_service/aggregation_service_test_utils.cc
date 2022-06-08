@@ -293,9 +293,8 @@ std::vector<uint8_t> DecryptPayloadWithHpke(
       base::make_span(payload).subspan(0, X25519_PUBLIC_VALUE_LEN);
 
   std::vector<uint8_t> authenticated_info(
-      AggregatableReport::kDomainSeparationPrefix,
-      AggregatableReport::kDomainSeparationPrefix +
-          sizeof(AggregatableReport::kDomainSeparationPrefix));
+      AggregatableReport::kDomainSeparationPrefix.begin(),
+      AggregatableReport::kDomainSeparationPrefix.end());
   authenticated_info.insert(authenticated_info.end(),
                             expected_serialized_shared_info.begin(),
                             expected_serialized_shared_info.end());

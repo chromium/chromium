@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/guid.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/public_key.h"
@@ -189,7 +190,8 @@ class CONTENT_EXPORT AggregatableReport {
   // protocol unless the ciphertexts are intended to be compatible. This ensures
   // that, even if public keys are reused, the same ciphertext cannot be (i.e.
   // no cross-protocol attacks).
-  static constexpr char kDomainSeparationPrefix[] = "aggregation_service";
+  static constexpr base::StringPiece kDomainSeparationPrefix =
+      "aggregation_service";
 
   AggregatableReport(std::vector<AggregationServicePayload> payloads,
                      std::string shared_info);

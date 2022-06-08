@@ -2,7 +2,7 @@
    "aggregation_service_payloads": [ {
       "debug_cleartext_payload": "omRkYXRhgaJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAWlvcGVyYXRpb25paGlzdG9ncmFt",
       "key_id": "example_id",
-      "payload": "p7DHSnmgV3z+5/TPBsSoRYc/fBr0zW8SvvngWHCO1n4AOb2pJz6H2cGVNpfXOx2ROP3tsySpa8PWqR+hcGDPz8c5hYVsCeMhIp4myl2Rf6AzDp07VmX54Kn1d3PByvi0nxaEOh5eUTI/K4yg+ydr"
+      "payload": "7FDP06cVAta3btREURYBS+ZWXz4IaVb8zQfsUM9cNCJGFhdFejbKF5eteheg5I5XPxr9Pq+WnhF8+cHlf5b6Lkgp+urG/m8+bCIEzKz60ayzeHD3os/WN6lLqVrwHIOtqTAikXiscU0qzqSJxwfQ"
    } ],
    "shared_info": "{\"attribution_destination\":\"https://conversion.test\",\"debug_mode\":\"enabled\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"source_registration_time\":\"1234483200\",\"version\":\"0.1\"}",
    "source_debug_key": "123",

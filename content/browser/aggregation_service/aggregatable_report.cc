@@ -23,6 +23,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/cbor/values.h"
@@ -456,10 +457,6 @@ AggregatableReport& AggregatableReport::operator=(AggregatableReport&& other) =
 
 AggregatableReport::~AggregatableReport() = default;
 
-constexpr size_t AggregatableReport::kBucketDomainBitLength;
-constexpr size_t AggregatableReport::kValueDomainBitLength;
-constexpr char AggregatableReport::kDomainSeparationPrefix[];
-
 // static
 bool AggregatableReport::Provider::g_disable_encryption_for_testing_tool_ =
     false;
@@ -504,9 +501,12 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
     return absl::nullopt;
   }
 
-  std::vector<uint8_t> authenticated_info(
-      kDomainSeparationPrefix,
-      kDomainSeparationPrefix + sizeof(kDomainSeparationPrefix));
+  std::vector<uint8_t> authenticated_info(kDomainSeparationPrefix.begin(),
+                                          kDomainSeparationPrefix.end());
+
+  // No null terminator should have been copied.
+  DCHECK(!authenticated_info.empty());
+  DCHECK_NE(authenticated_info.back(), 0);
 
   std::string encoded_shared_info =
       report_request.shared_info().SerializeAsJson();
