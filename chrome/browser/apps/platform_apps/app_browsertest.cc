@@ -513,7 +513,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 }
 
 // Failing on some Win and Linux buildbots.  See crbug.com/354425.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1334427): Fix flakiness on macOS and re-enable this test.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_Iframes DISABLED_Iframes
 #else
 #define MAYBE_Iframes Iframes
