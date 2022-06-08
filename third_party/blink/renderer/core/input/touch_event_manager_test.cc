@@ -98,6 +98,11 @@ TEST_F(TouchEventManagerTest, AbosolutePosWithScrollAndZoom) {
       Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
   GetEventHandler().DispatchBufferedTouchEvents();
 
+  GetEventHandler().HandlePointerEvent(
+      CreateTouchPointerEvent(WebInputEvent::Type::kPointerUp),
+      Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
+  GetEventHandler().DispatchBufferedTouchEvents();
+
   auto* input =
       To<HTMLInputElement>(GetDocument().getElementById("slideElement"));
   // Allow off by 1 error because it may result in different value in some
