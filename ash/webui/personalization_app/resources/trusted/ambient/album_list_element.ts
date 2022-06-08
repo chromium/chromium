@@ -79,6 +79,12 @@ export class AlbumList extends WithPersonalizationStore {
     return !!album && album.checked;
   }
 
+  private getAriaSelected_(
+      changedAlbum: AmbientModeAlbum|null,
+      albums: AmbientModeAlbum[]|null): string {
+    return this.isAlbumSelected_(changedAlbum, albums).toString();
+  }
+
   private getAlbumItemClass_(
       album: AmbientModeAlbum|null, albums: AmbientModeAlbum[]|null): string {
     return album && this.isAlbumSelected_(album, albums) ?
@@ -102,6 +108,10 @@ export class AlbumList extends WithPersonalizationStore {
       return album.description;
     }
     return '';
+  }
+
+  private getAriaIndex_(index: number): number {
+    return index + 1;
   }
 }
 

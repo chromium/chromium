@@ -13,13 +13,15 @@
   }
 </style>
 
-<h3 class="ambient-subpage-element-title" aria-hidden="true">
+<h3 id="topicSourceTitle" class="ambient-subpage-element-title">
   $i18n{ambientModeTopicSourceTitle}
 </h3>
 
-<iron-list id="topicSourceList" items="[[topicSources]]">
+<iron-list id="topicSourceList" items="[[topicSources]]"
+    aria-describedby="topicSourceTitle" role="radiogroup">
   <template>
     <topic-source-item topic-source="[[item]]"
+        role="radio"
         tabindex$="[[tabIndex]]"
         has-google-photos-albums="[[hasGooglePhotosAlbums]]"
         checked="[[isSelected_(item, selectedTopicSource)]]">

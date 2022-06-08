@@ -32,7 +32,7 @@
     outline: 2px solid var(--cros-focus-ring-color);
   }
 
-  :host([aria-selected='true']) .item {
+  :host([aria-checked='true']) .item {
     background-color: rgba(
       var(--cros-color-prominent-rgb),
       var(--personalization-app-second-tone-opacity));
@@ -47,7 +47,7 @@
     width: 100%;
   }
 
-  :host([aria-selected='true']) .item img {
+  :host([aria-checked='true']) .item img {
     animation-duration:  200ms;
     animation-fill-mode: forwards;
     animation-name: img-resize;
@@ -80,7 +80,7 @@
     top: 8px;
   }
 
-  :host(:not([aria-selected='true'])) .item iron-icon {
+  :host(:not([aria-checked='true'])) .item iron-icon {
     display: none;
   }
 

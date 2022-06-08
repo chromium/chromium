@@ -301,8 +301,8 @@ suite('AmbientSubpageTest', function() {
         assertEquals(
             AnimationTheme.kFeelTheBreeze, feelTheBreeze.animationTheme);
 
-        assertEquals(feelTheBreeze.ariaSelected, 'false');
-        assertEquals(slideshow.ariaSelected, 'true');
+        assertEquals(feelTheBreeze.ariaChecked, 'false');
+        assertEquals(slideshow.ariaChecked, 'true');
 
         personalizationStore.expectAction(
             AmbientActionName.SET_ANIMATION_THEME);

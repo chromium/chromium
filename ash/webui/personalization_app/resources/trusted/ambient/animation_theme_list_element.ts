@@ -39,7 +39,7 @@ export class AnimationThemeList extends WithPersonalizationStore {
   animationThemes: Array<AnimationTheme>;
   private selectedAnimationTheme: AnimationTheme;
 
-  private getAriaSelected_(
+  private getAriaChecked_(
       animationTheme: AnimationTheme,
       selectedAnimationTheme: AnimationTheme): string {
     return (animationTheme === selectedAnimationTheme).toString();

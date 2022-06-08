@@ -6,16 +6,16 @@
   }
 </style>
 
-<h3 id="animationThemeDescription" class="ambient-subpage-element-title"
-    aria-hidden="true">
+<h3 id="animationThemeDescription" class="ambient-subpage-element-title">
   $i18n{ambientModeAnimationTitle}
 </h3>
 <iron-list items="[[animationThemes]]" as="theme" grid
-    role="listbox" aria-describedby="animationThemeDescription">
+    role="radiogroup" aria-describedby="animationThemeDescription">
   <template>
     <animation-theme-item tabindex$="[[tabIndex]]"
-        animation-theme="[[theme]]" role="option"
-        aria-selected$="[[getAriaSelected_(theme, selectedAnimationTheme)]]">
+        role="radio"
+        animation-theme="[[theme]]"
+        aria-checked$="[[getAriaChecked_(theme, selectedAnimationTheme)]]">
       </animation-theme-item>
   </template>
 </iron-list>

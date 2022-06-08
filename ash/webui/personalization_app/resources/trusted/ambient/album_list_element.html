@@ -9,10 +9,14 @@
   }
 </style>
 
-<iron-list id="grid" items="[[albums]]" as="album" grid>
+<iron-list id="grid" items="[[albums]]" as="album" grid role="listbox"
+    aria-setsize$="[[albums.length]]">
   <template>
     <wallpaper-grid-item
       aria-label$="[[album.title]]"
+      aria-posinset$="[[getAriaIndex_(index)]]"
+      aria-selected$="[[getAriaSelected_(album, albums)]]"
+      role="option"
       class$="[[getAlbumItemClass_(album, albums)]]"
       image-src="[[album.url.url]]"
       on-click="onAlbumSelected_"
