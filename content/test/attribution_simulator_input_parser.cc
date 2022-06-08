@@ -373,7 +373,8 @@ class AttributionSimulatorInputParser {
           event_triggers.emplace_back(trigger_data, priority, dedup_key,
                                       std::move(filters),
                                       std::move(not_filters));
-        }));
+        }),
+        /*max_size=*/blink::kMaxAttributionEventTriggerData);
 
     return event_triggers;
   }

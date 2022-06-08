@@ -575,6 +575,48 @@ TEST(AttributionSimulatorInputParserTest, InvalidAggregatableTriggerDataSize) {
   }
 }
 
+TEST(AttributionSimulatorInputParserTest, InvalidEventTriggerDataSize) {
+  const struct {
+    size_t size;
+    bool valid;
+  } kTestCases[]{
+      {blink::kMaxAttributionEventTriggerData, true},
+      {blink::kMaxAttributionEventTriggerData + 1, false},
+  };
+
+  static constexpr char kError[] =
+      R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["event_trigger_data"]: too many elements)";
+
+  for (const auto test_case : kTestCases) {
+    base::Value::List list;
+    for (size_t i = 0; i < test_case.size; ++i) {
+      list.Append("");
+    }
+    base::Value::Dict trigger;
+    trigger.Set("event_trigger_data", std::move(list));
+
+    base::Value::Dict dict;
+    dict.Set("Attribution-Reporting-Register-Trigger", std::move(trigger));
+
+    base::Value::List triggers;
+    triggers.Append(std::move(dict));
+
+    base::Value::Dict input;
+    input.Set("triggers", std::move(triggers));
+
+    std::ostringstream error_stream;
+    EXPECT_EQ(ParseAttributionSimulationInput(base::Value(std::move(input)),
+                                              kOffsetTime, error_stream),
+              absl::nullopt);
+
+    if (test_case.valid) {
+      EXPECT_THAT(error_stream.str(), Not(HasSubstr(kError)));
+    } else {
+      EXPECT_THAT(error_stream.str(), HasSubstr(kError));
+    }
+  }
+}
+
 struct ParseErrorTestCase {
   const char* expected_failure_substr;
   const char* json;
