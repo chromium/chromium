@@ -67,6 +67,10 @@ class DummySystemTrustStore : public SystemTrustStore {
     return false;
   }
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  int64_t chrome_root_store_version() override { return 0; }
+#endif
+
  private:
   TrustStoreCollection trust_store_;
 };
@@ -93,6 +97,10 @@ class SystemTrustStoreChrome : public SystemTrustStore {
   // opposed to a user-installed root)
   bool IsKnownRoot(const ParsedCertificate* trust_anchor) const override {
     return trust_store_chrome_->Contains(trust_anchor);
+  }
+
+  int64_t chrome_root_store_version() override {
+    return trust_store_chrome_->version();
   }
 
  private:
@@ -143,6 +151,10 @@ class SystemTrustStoreNSS : public SystemTrustStore {
     return trust_anchor->der_cert() ==
            der::Input(nss_cert->derCert.data, nss_cert->derCert.len);
   }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  int64_t chrome_root_store_version() override { return 0; }
+#endif
 
  private:
   std::unique_ptr<TrustStoreNSS> trust_store_nss_;

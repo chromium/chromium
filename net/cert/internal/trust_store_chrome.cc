@@ -60,10 +60,12 @@ ChromeRootStoreData::CreateChromeRootStoreData(
 
 TrustStoreChrome::TrustStoreChrome()
     : TrustStoreChrome(kChromeRootCertList,
-                       /*certs_are_static=*/true) {}
+                       /*certs_are_static=*/true,
+                       /*version=*/CompiledChromeRootStoreVersion()) {}
 
 TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
-                                   bool certs_are_static) {
+                                   bool certs_are_static,
+                                   int64_t version) {
   // TODO(hchao, sleevi): Explore keeping a CRYPTO_BUFFER of just the DER
   // certificate and subject name. This would hopefully save memory compared
   // to keeping the full parsed representation in memory, especially when
@@ -88,12 +90,14 @@ TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
     // gets a bad component update.
     trust_store_.AddTrustAnchor(parsed);
   }
+  version_ = version;
 }
 
 TrustStoreChrome::TrustStoreChrome(const ChromeRootStoreData& root_store_data) {
   for (const auto& anchor : root_store_data.anchors()) {
     trust_store_.AddTrustAnchor(anchor);
   }
+  version_ = root_store_data.version();
 }
 
 TrustStoreChrome::~TrustStoreChrome() = default;
@@ -115,10 +119,11 @@ bool TrustStoreChrome::Contains(const ParsedCertificate* cert) const {
 
 // static
 std::unique_ptr<TrustStoreChrome> TrustStoreChrome::CreateTrustStoreForTesting(
-    base::span<const ChromeRootCertInfo> certs) {
+    base::span<const ChromeRootCertInfo> certs,
+    int64_t version) {
   // Note: wrap_unique is used because the constructor is private.
-  return base::WrapUnique(
-      new TrustStoreChrome(certs, /*certs_are_static=*/false));
+  return base::WrapUnique(new TrustStoreChrome(
+      certs, /*certs_are_static=*/false, /*version=*/version));
 }
 
 int64_t CompiledChromeRootStoreVersion() {

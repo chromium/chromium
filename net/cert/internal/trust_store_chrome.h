@@ -35,6 +35,7 @@ class NET_EXPORT ChromeRootStoreData {
   ChromeRootStoreData& operator=(ChromeRootStoreData&& other);
 
   const ParsedCertificateList anchors() const { return anchors_; }
+  int64_t version() const { return version_; }
 
  private:
   ChromeRootStoreData();
@@ -50,7 +51,8 @@ class NET_EXPORT TrustStoreChrome : public TrustStore {
   // Creates a TrustStoreChrome that uses a copy of `certs`, instead of the
   // default Chrome Root Store.
   static std::unique_ptr<TrustStoreChrome> CreateTrustStoreForTesting(
-      base::span<const ChromeRootCertInfo> certs);
+      base::span<const ChromeRootCertInfo> certs,
+      int64_t version);
 
   // Creates a TrustStoreChrome that uses the compiled in Chrome Root Store.
   TrustStoreChrome();
@@ -73,10 +75,14 @@ class NET_EXPORT TrustStoreChrome : public TrustStore {
   // (matches by DER).
   bool Contains(const ParsedCertificate* cert) const;
 
+  int64_t version() const { return version_; }
+
  private:
   TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
-                   bool certs_are_static);
+                   bool certs_are_static,
+                   int64_t version);
   TrustStoreInMemory trust_store_;
+  int64_t version_;
 };
 
 // Returns the version # of the Chrome Root Store that was compiled into the

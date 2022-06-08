@@ -3156,17 +3156,25 @@ EVENT_TYPE(CERT_VERIFY_PROC)
 EVENT_TYPE(CERT_VERIFY_PROC_TARGET_CERT)
 
 // This event is created for each additional certificate passed into
-// CertVerifyProcBulitin.
+// CertVerifyProcBuiltin.
 // The parameters are the same as for CERT_VERIFY_PROC_TARGET_CERT.
 EVENT_TYPE(CERT_VERIFY_PROC_INPUT_CERT)
 
+// This event is created to log the Chrome Root Store version used
+// by CertVerifyProcBuiltin.
+// The event parameters are:
+//   {
+//      "version_major": <The major version of the Chrome Root Store>
+//   }
+EVENT_TYPE(CERT_VERIFY_PROC_CHROME_ROOT_STORE_VERSION)
+
 // This event is created for each additional trust anchor passed into
-// CertVerifyProcBulitin.
+// CertVerifyProcBuiltin.
 // The parameters are the same as for CERT_VERIFY_PROC_TARGET_CERT.
 EVENT_TYPE(CERT_VERIFY_PROC_ADDITIONAL_TRUST_ANCHOR)
 
 // This event is created for each path building attempt performed by
-// CertVerifyProcBulitin.
+// CertVerifyProcBuiltin.
 // The BEGIN phase contains the following information:
 // {
 //      "digest_policy": <Specifies which digest methods are accepted in this
