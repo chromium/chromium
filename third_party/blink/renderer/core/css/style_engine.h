@@ -118,7 +118,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                       public FontSelectorClient,
                                       public NameClient {
  public:
-
   class DOMRemovalScope {
     STACK_ALLOCATED();
 
@@ -575,6 +574,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   RuleSet* DefaultDocumentTransitionStyle() const;
   void InvalidateUADocumentTransitionStyle();
+
+  const ActiveStyleSheetVector& ActiveUserStyleSheetsForDebug() const {
+    return active_user_style_sheets_;
+  }
 
  private:
   // FontSelectorClient implementation.
