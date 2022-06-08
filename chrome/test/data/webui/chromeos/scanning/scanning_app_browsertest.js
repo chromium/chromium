@@ -44,7 +44,8 @@ const debug_suites_list = [
   'SourceSelect'
 ];
 
-TEST_F('ScanningAppBrowserTest', 'All', function() {
+// Flaky. See crbug.com/1334465
+TEST_F('ScanningAppBrowserTest', 'DISABLED_All', function() {
   assertDeepEquals(
       debug_suites_list, test_suites_list,
       'List of registered tests suites and debug suites do not match.\n' +
