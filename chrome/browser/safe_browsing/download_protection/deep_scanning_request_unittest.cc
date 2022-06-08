@@ -287,13 +287,20 @@ class DeepScanningRequestTest : public testing::Test {
     ASSERT_TRUE(settings.has_value());
 
     enterprise_connectors::AnalysisSettings default_settings;
-    default_settings.tags = {"malware"};
+    default_settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
     default_settings.analysis_url =
         GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan");
     default_settings.block_until_verdict =
         enterprise_connectors::BlockUntilVerdict::BLOCK;
 
-    ASSERT_EQ(settings.value().tags, default_settings.tags);
+    for (const auto& tag : settings.value().tags) {
+      ASSERT_EQ(tag.second.requires_justification,
+                default_settings.tags[tag.first].requires_justification);
+      ASSERT_EQ(tag.second.custom_message.message,
+                default_settings.tags[tag.first].custom_message.message);
+      ASSERT_EQ(tag.second.custom_message.learn_more_url,
+                default_settings.tags[tag.first].custom_message.learn_more_url);
+    }
     ASSERT_EQ(settings.value().block_large_files,
               default_settings.block_large_files);
     ASSERT_EQ(settings.value().block_password_protected_files,
@@ -359,7 +366,8 @@ TEST_P(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
   // should be sent to show features work correctly.
   auto dlp_and_malware_settings = []() {
     enterprise_connectors::AnalysisSettings settings;
-    settings.tags = {"dlp", "malware"};
+    settings.tags = {{"dlp", enterprise_connectors::TagSettings()},
+                     {"malware", enterprise_connectors::TagSettings()}};
     settings.block_until_verdict =
         enterprise_connectors::BlockUntilVerdict::BLOCK;
     return settings;
@@ -545,7 +553,7 @@ INSTANTIATE_TEST_SUITE_P(, DeepScanningAPPRequestTest, testing::Bool());
 
 TEST_P(DeepScanningAPPRequestTest, GeneratesCorrectRequestForAPP) {
   enterprise_connectors::AnalysisSettings settings;
-  settings.tags = {"malware"};
+  settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
   DeepScanningRequest request(
       &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_APP_PROMPT,
       DownloadCheckResult::SAFE, base::DoNothing(),

@@ -848,7 +848,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
           download_core_service->GetDownloadManagerDelegate();
       DCHECK(delegate);
       enterprise_connectors::AnalysisSettings settings;
-      settings.tags = {"malware"};
+      settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
       protection_service->UploadForDeepScanning(
           download_,
           base::BindRepeating(

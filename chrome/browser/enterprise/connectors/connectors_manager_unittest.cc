@@ -113,7 +113,16 @@ class ConnectorsManagerTest : public testing::Test {
     ASSERT_EQ(settings.block_large_files, expected_block_large_files_);
     ASSERT_EQ(settings.block_unsupported_file_types,
               expected_block_unsupported_file_types_);
-    ASSERT_EQ(settings.tags, expected_tags_);
+    for (const auto& expected_tag : expected_tags_) {
+      const std::string& tag = expected_tag.first;
+      ASSERT_TRUE(settings.tags.count(tag));
+      ASSERT_EQ(settings.tags.at(tag).requires_justification,
+                expected_tag.second.requires_justification);
+      ASSERT_EQ(settings.tags.at(tag).custom_message.message,
+                expected_tag.second.custom_message.message);
+      ASSERT_EQ(settings.tags.at(tag).custom_message.learn_more_url,
+                expected_tag.second.custom_message.learn_more_url);
+    }
   }
 
   void ValidateSettings(const ReportingSettings& settings) {
@@ -158,7 +167,7 @@ class ConnectorsManagerTest : public testing::Test {
   GURL url_ = GURL("https://google.com");
 
   // Set to the default value of their legacy policy.
-  std::set<std::string> expected_tags_ = {};
+  std::map<std::string, TagSettings> expected_tags_ = {};
   BlockUntilVerdict expected_block_until_verdict_ = BlockUntilVerdict::NO_BLOCK;
   bool expected_block_password_protected_files_ = false;
   bool expected_block_large_files_ = false;
@@ -209,11 +218,11 @@ class ConnectorsManagerConnectorPoliciesTest
     settings.block_unsupported_file_types = true;
 
     if (url == kDlpAndMalwareUrl)
-      settings.tags = {"dlp", "malware"};
+      settings.tags = {{"dlp", TagSettings()}, {"malware", TagSettings()}};
     else if (url == kOnlyDlpUrl)
-      settings.tags = {"dlp"};
+      settings.tags = {{"dlp", TagSettings()}};
     else if (url == kOnlyMalwareUrl)
-      settings.tags = {"malware"};
+      settings.tags = {{"malware", TagSettings()}};
 
     return settings;
   }
@@ -313,7 +322,7 @@ TEST_P(ConnectorsManagerAnalysisConnectorsTest, DynamicPolicies) {
     expected_block_password_protected_files_ = true;
     expected_block_large_files_ = true;
     expected_block_unsupported_file_types_ = true;
-    expected_tags_ = {"dlp", "malware"};
+    expected_tags_ = {{"dlp", TagSettings()}, {"malware", TagSettings()}};
     ValidateSettings(settings.value());
   }
 

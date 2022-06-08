@@ -76,7 +76,7 @@ class AnalysisServiceSettings {
 
   // Return tags found in |enabled_patterns_settings| corresponding to the
   // matches while excluding the ones in |disable_patterns_settings|.
-  std::set<std::string> GetTags(
+  std::map<std::string, TagSettings> GetTags(
       const std::set<base::MatcherStringPattern::ID>& matches) const;
 
   // The service provider matching the name given in a Connector policy. nullptr
@@ -107,10 +107,9 @@ class AnalysisServiceSettings {
   bool block_large_files_ = false;
   bool block_unsupported_file_types_ = false;
   size_t minimum_data_size_ = 100;
-  // A map from tag (dlp, malware, etc) to the custom message and "learn more"
-  // link associated with it.
-  std::map<std::string, CustomMessageData> custom_message_data_;
-  std::set<std::string> tags_requiring_justification_;
+  // A map from tag (dlp, malware, etc) to the custom message, "learn more" link
+  // and other settings associated to a specific tag.
+  std::map<std::string, TagSettings> tags_;
   std::string service_provider_name_;
 };
 

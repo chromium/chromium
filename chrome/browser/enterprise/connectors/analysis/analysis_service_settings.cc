@@ -96,7 +96,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
           value.FindStringKey(kKeyCustomMessagesLearnMoreUrl);
       data.learn_more_url = url ? GURL(*url) : GURL();
 
-      custom_message_data_[*tag] = data;
+      tags_[*tag].custom_message = std::move(data);
     }
   }
 
@@ -105,7 +105,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
   if (require_justification_tags && require_justification_tags->is_list()) {
     for (const base::Value& tag :
          require_justification_tags->GetListDeprecated()) {
-      tags_requiring_justification_.insert(tag.GetString());
+      tags_[tag.GetString()].requires_justification = true;
     }
   }
 }
@@ -155,8 +155,6 @@ absl::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
   settings.analysis_url = GURL(analysis_config_->url);
   DCHECK(settings.analysis_url.is_valid());
   settings.minimum_data_size = minimum_data_size_;
-  settings.custom_message_data = custom_message_data_;
-  settings.tags_requiring_justification = tags_requiring_justification_;
 
   return settings;
 }
@@ -169,32 +167,31 @@ bool AnalysisServiceSettings::ShouldBlockUntilVerdict() const {
 
 absl::optional<std::u16string> AnalysisServiceSettings::GetCustomMessage(
     const std::string& tag) {
-  const auto& element = custom_message_data_.find(tag);
+  const auto& element = tags_.find(tag);
 
-  if (!IsValid() || element == custom_message_data_.end() ||
-      element->second.message.empty()) {
+  if (!IsValid() || element == tags_.end() ||
+      element->second.custom_message.message.empty()) {
     return absl::nullopt;
   }
 
-  return element->second.message;
+  return element->second.custom_message.message;
 }
 
 absl::optional<GURL> AnalysisServiceSettings::GetLearnMoreUrl(
     const std::string& tag) {
-  const auto& element = custom_message_data_.find(tag);
+  const auto& element = tags_.find(tag);
 
-  if (!IsValid() || element == custom_message_data_.end() ||
-      element->second.learn_more_url.is_empty()) {
+  if (!IsValid() || element == tags_.end() ||
+      element->second.custom_message.learn_more_url.is_empty()) {
     return absl::nullopt;
   }
 
-  return element->second.learn_more_url;
+  return element->second.custom_message.learn_more_url;
 }
 
 absl::optional<bool> AnalysisServiceSettings::GetBypassJustificationRequired(
     const std::string& tag) {
-  return tags_requiring_justification_.find(tag) !=
-         tags_requiring_justification_.end();
+  return tags_.find(tag) != tags_.end() && tags_.at(tag).requires_justification;
 }
 
 void AnalysisServiceSettings::AddUrlPatternSettings(
@@ -237,7 +234,7 @@ void AnalysisServiceSettings::AddUrlPatternSettings(
     disabled_patterns_settings_[*id] = std::move(setting);
 }
 
-std::set<std::string> AnalysisServiceSettings::GetTags(
+std::map<std::string, TagSettings> AnalysisServiceSettings::GetTags(
     const std::set<base::MatcherStringPattern::ID>& matches) const {
   std::set<std::string> enable_tags;
   std::set<std::string> disable_tags;
@@ -264,7 +261,15 @@ std::set<std::string> AnalysisServiceSettings::GetTags(
   for (const std::string& tag_to_disable : disable_tags)
     enable_tags.erase(tag_to_disable);
 
-  return enable_tags;
+  std::map<std::string, TagSettings> output;
+  for (const std::string& tag : enable_tags) {
+    if (tags_.count(tag))
+      output[tag] = tags_.at(tag);
+    else
+      output[tag] = TagSettings();
+  }
+
+  return output;
 }
 
 bool AnalysisServiceSettings::IsValid() const {

@@ -465,8 +465,8 @@ void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
     request->set_content_type(file_metadata_.at(path).mime_type);
   }
 
-  for (const std::string& tag : analysis_settings_.tags)
-    request->add_tag(tag);
+  for (const auto& tag : analysis_settings_.tags)
+    request->add_tag(tag.first);
 }
 
 void DeepScanningRequest::PrepareClientDownloadRequest(

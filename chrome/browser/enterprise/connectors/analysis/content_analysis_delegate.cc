@@ -230,22 +230,22 @@ void ContentAnalysisDelegate::Cancel(bool warning) {
 
 absl::optional<std::u16string> ContentAnalysisDelegate::GetCustomMessage()
     const {
-  auto element = data_.settings.custom_message_data.find(final_result_tag_);
-  if (element != data_.settings.custom_message_data.end() &&
-      !element->second.message.empty()) {
+  auto element = data_.settings.tags.find(final_result_tag_);
+  if (element != data_.settings.tags.end() &&
+      !element->second.custom_message.message.empty()) {
     return l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
-                                      element->second.message);
+                                      element->second.custom_message.message);
   }
 
   return absl::nullopt;
 }
 
 absl::optional<GURL> ContentAnalysisDelegate::GetCustomLearnMoreUrl() const {
-  auto element = data_.settings.custom_message_data.find(final_result_tag_);
-  if (element != data_.settings.custom_message_data.end() &&
-      element->second.learn_more_url.is_valid() &&
-      !element->second.learn_more_url.is_empty()) {
-    return element->second.learn_more_url;
+  auto element = data_.settings.tags.find(final_result_tag_);
+  if (element != data_.settings.tags.end() &&
+      element->second.custom_message.learn_more_url.is_valid() &&
+      !element->second.custom_message.learn_more_url.is_empty()) {
+    return element->second.custom_message.learn_more_url;
   }
 
   return absl::nullopt;
@@ -255,8 +255,8 @@ bool ContentAnalysisDelegate::BypassRequiresJustification() const {
   if (!base::FeatureList::IsEnabled(kBypassJustificationEnabled))
     return false;
 
-  return data_.settings.tags_requiring_justification.count(final_result_tag_) >
-         0;
+  return data_.settings.tags.count(final_result_tag_) &&
+         data_.settings.tags.at(final_result_tag_).requires_justification;
 }
 
 std::u16string ContentAnalysisDelegate::GetBypassJustificationLabel() const {
@@ -646,8 +646,8 @@ void ContentAnalysisDelegate::PrepareRequest(
   request->set_url(data_.url.spec());
   request->set_tab_url(data_.url);
   request->set_per_profile_request(data_.settings.per_profile);
-  for (const std::string& tag : data_.settings.tags)
-    request->add_tag(tag);
+  for (const auto& tag : data_.settings.tags)
+    request->add_tag(tag.first);
   if (data_.settings.client_metadata)
     request->set_client_metadata(*data_.settings.client_metadata);
 }
