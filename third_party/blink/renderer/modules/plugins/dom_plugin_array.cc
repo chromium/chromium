@@ -170,7 +170,6 @@ HeapVector<Member<DOMMimeType>> DOMPluginArray::GetFixedMimeTypeArray() {
 }
 
 bool DOMPluginArray::IsPdfViewerAvailable() {
-  DCHECK(should_return_fixed_plugin_data_);
   auto* data = GetPluginData();
   if (!data)
     return false;
