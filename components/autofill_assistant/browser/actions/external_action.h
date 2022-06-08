@@ -35,7 +35,8 @@ class ExternalAction : public Action {
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
 
-  void StartDomChecks();
+  void StartDomChecks(
+      ExternalActionDelegate::DomUpdateCallback dom_update_callback);
   void SetupConditions();
   void OnPreconditionResult(
       size_t condition_index,
@@ -62,6 +63,8 @@ class ExternalAction : public Action {
   bool first_condition_notification_sent_ = false;
   // Whether there is a currently running WaitForDom.
   bool has_pending_wait_for_dom_ = false;
+  // The callback to notify element condition updates.
+  ExternalActionDelegate::DomUpdateCallback dom_update_callback_;
 
   // Whether we received a notification from the external caller to end the
   // action.

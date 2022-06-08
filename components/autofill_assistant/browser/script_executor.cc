@@ -1131,7 +1131,8 @@ bool ScriptExecutor::SupportsExternalActions() {
 
 void ScriptExecutor::RequestExternalAction(
     const ExternalActionProto& external_action,
-    base::OnceCallback<void()> start_dom_checks_callback,
+    base::OnceCallback<void(ExternalActionDelegate::DomUpdateCallback)>
+        start_dom_checks_callback,
     base::OnceCallback<void(const external::Result& result)>
         end_action_callback) {
   bool prompt = external_action.allow_interrupt() ||

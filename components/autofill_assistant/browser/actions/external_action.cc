@@ -43,13 +43,15 @@ void ExternalAction::InternalProcessAction(ProcessActionCallback callback) {
   // code after the above call.
 }
 
-void ExternalAction::StartDomChecks() {
+void ExternalAction::StartDomChecks(
+    ExternalActionDelegate::DomUpdateCallback dom_update_callback) {
   const auto& external_action = proto_.external_action();
   if (!external_action.conditions().empty() ||
       external_action.allow_interrupt()) {
     // We keep track of the fact that we have an active WaitForDom to make sure
     // we end it gracefully.
     has_pending_wait_for_dom_ = true;
+    dom_update_callback_ = std::move(dom_update_callback);
     SetupConditions();
     // TODO(b/201964908): fix time tracking.
     delegate_->WaitForDom(
@@ -141,10 +143,13 @@ void ExternalAction::OnElementChecksDone(
   // We only send the notification if there were any changes since the last
   // check.
   if (!update_proto.results().empty()) {
-    // TODO(b/201964908): send notification to the external caller.
+    first_condition_notification_sent_ = true;
+    dom_update_callback_.Run(update_proto);
   }
 
-  // Let WaitForDom know we're still waiting for an element.
+  // Whether we had satisfied element conditions or not, we run this callback
+  // with |ELEMENT_RESOLUTION_FAILED| to let the WaitForDom know that we want to
+  // keep running checks.
   std::move(wait_for_dom_callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED));
 }
 

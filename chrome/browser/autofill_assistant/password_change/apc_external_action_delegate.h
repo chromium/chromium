@@ -33,7 +33,7 @@ class ApcExternalActionDelegate
   // ExternalActionDelegate
   void OnActionRequested(
       const autofill_assistant::external::Action& action_info,
-      base::OnceCallback<void()> start_dom_checks_callback,
+      base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback,
       base::OnceCallback<void(const autofill_assistant::external::Result&
                                   result)> end_action_callback) override;
   void OnInterruptStarted() override;
