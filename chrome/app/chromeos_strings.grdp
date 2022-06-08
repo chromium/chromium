@@ -1333,6 +1333,9 @@
   <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_CONTAINS_ADS" desc="Part of an app description message.">
     Contains ads
   </message>
+  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION_EXPAND_BUTTON" desc="An expand button description message announced to ChromeVox users.">
+    More about <ph name="APP_NAME">$1<ex>Google Maps</ex></ph>
+  </message>
   <message name="IDS_LOGIN_RECOMMEND_APPS_SKIP" desc="The label on the button that skips installing any recomended apps">
     Skip
   </message>

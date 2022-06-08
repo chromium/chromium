@@ -7,9 +7,17 @@
 const MAX_IMG_LOADING_TIME_SEC = 7;
 
 /**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+const OobeAppsListBase =
+    Polymer.mixinBehaviors([OobeI18nBehavior], Polymer.Element);
+
+/**
  * @polymer
  */
-/* #export */ class OobeAppsList extends Polymer.Element {
+/* #export */ class OobeAppsList extends OobeAppsListBase {
   static get is() {
     return 'oobe-apps-list';
   }
@@ -106,6 +114,15 @@ const MAX_IMG_LOADING_TIME_SEC = 7;
         }
       </style>
     <body><img id="icon" src="` + iconUri + '"></body></html>');
+  }
+
+  /**
+   * @param {string} title the name of the application.
+   * @return {string} aria label for the expand button.
+   * @private
+   */
+  getExpandButtonAriaLabel_(title) {
+    return this.i18n('recommendAppsDescriptionExpand', title);
   }
 
   /**

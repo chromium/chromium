@@ -69,6 +69,8 @@ void RecommendAppsScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_RECOMMEND_APPS_SCREEN_WAS_INSTALLED);
   builder->Add("recommendAppsContainsAds",
                IDS_LOGIN_RECOMMEND_APPS_SCREEN_CONTAINS_ADS);
+  builder->Add("recommendAppsDescriptionExpand",
+               IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION_EXPAND_BUTTON);
 }
 
 void RecommendAppsScreenHandler::GetAdditionalParameters(

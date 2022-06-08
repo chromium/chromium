@@ -10,6 +10,8 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_scrollable_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 
+<link rel="import" href="./behaviors/oobe_i18n_behavior.html">
+
 <!--
   OOBE polymer element which is used to show a list of recommended apps.
 -->
@@ -50,10 +52,12 @@
       }
 
       #appsListContainer .app-item:not(:first-child) {
-        border-top: 1px solid var(--cros-color-primary);
+        border-top: 1px solid var(--cros-color-primary-dark);
       }
 
       cr-checkbox {
+        --cr-checkbox-checked-box-background-color: none;
+        --cr-checkbox-mark-color: var(--cr-checked-color);
         --cr-checkbox-size: var(--checkbox-size);
       }
 
@@ -123,7 +127,7 @@
       }
 
       .app-tags ul>li::before {
-        content: '|';
+        content: '|' / '';
         margin-inline-end: 6px;
         margin-inline-start: 6px;
       }
@@ -169,9 +173,11 @@
       <div id="appsList">
         <template is="dom-repeat" items="[[appList]]">
           <div class="app-item">
-            <cr-checkbox checked="{{item.checked}}"
-                on-change="updateCount_"></cr-checkbox>
-            <webview class="app-icon" src="[[getWrappedIcon_(item.icon_url)]]"
+            <cr-checkbox checked="{{item.checked}}" class="no-label"
+                aria-description="[[item.title]]" on-change="updateCount_">
+            </cr-checkbox>
+            <webview role="img" class="app-icon"
+                src="[[getWrappedIcon_(item.icon_url)]]" aria-hidden="true"
                 tabindex="-1" on-contentload="onImageLoaded_">
             </webview>
             <div class="app-title">[[item.title]]</div>
@@ -186,7 +192,9 @@
               [[item.description]]
             </div>
             <div class="expand-button">
-              <cr-expand-button on-click="onExpandClicked_"></cr-expand-button>
+              <cr-expand-button on-click="onExpandClicked_"
+                  aria-label="[[getExpandButtonAriaLabel_(item.title)]]">
+              </cr-expand-button>
             </div>
           </div>
         </template>
