@@ -7,11 +7,14 @@ package org.chromium.ui.dragdrop;
 import static org.mockito.Mockito.doReturn;
 
 import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.VectorDrawable;
 import android.os.Build.VERSION_CODES;
 import android.util.Pair;
+import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
@@ -337,6 +340,37 @@ public class DragAndDropDelegateImplUnitTest {
                 "Image ClipData should include image and URL info.", 2, clipData.getItemCount());
         Assert.assertEquals("Image URL info should match.", JUnitTestGURLs.EXAMPLE_URL,
                 clipData.getItemAt(1).getText());
+    }
+
+    @Test
+    public void testClipData_TextLink() {
+        final DropDataAndroid dropData = DropDataAndroid.create(
+                "", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), null, null, null);
+        mDragAndDropDelegateImpl.setDragAndDropBrowserDelegate(new DragAndDropBrowserDelegate() {
+            @Override
+            public boolean getSupportDropInChrome() {
+                return false;
+            }
+
+            @Override
+            public DragAndDropPermissions getDragAndDropPermissions(DragEvent dropEvent) {
+                return null;
+            }
+
+            @Override
+            public Intent createLinkIntent(String urlString) {
+                return new Intent();
+            }
+        });
+        ClipData clipData = mDragAndDropDelegateImpl.buildClipData(dropData);
+        Assert.assertTrue("Link ClipData should include plaintext MIME type.",
+                clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN));
+        Assert.assertTrue("Link ClipData should include intent MIME type.",
+                clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_INTENT));
+        Assert.assertEquals("Dragged link text should match.", JUnitTestGURLs.EXAMPLE_URL,
+                clipData.getItemAt(0).getText());
+        Assert.assertNotNull(
+                "ClipData intent should not be null.", clipData.getItemAt(0).getIntent());
     }
 
     private void doTestResizeShadowImage(

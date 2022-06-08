@@ -1941,6 +1941,9 @@ extern const char kMessagesForAndroidUpdatePasswordDescription[];
 extern const char kNetworkServiceInProcessName[];
 extern const char kNetworkServiceInProcessDescription[];
 
+extern const char kNewInstanceFromDraggedLinkName[];
+extern const char kNewInstanceFromDraggedLinkDescription[];
+
 extern const char kNewWindowAppMenuName[];
 extern const char kNewWindowAppMenuDescription[];
 

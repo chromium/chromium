@@ -3411,6 +3411,11 @@ const char kNetworkServiceInProcessDescription[] =
     "When enabled, the network service runs on the browser process. Otherwise, "
     "it runs on a dedicated process.";
 
+const char kNewInstanceFromDraggedLinkName[] =
+    "New instance creation from a dragged link";
+const char kNewInstanceFromDraggedLinkDescription[] =
+    "Enables creation of a new instance when a link is dragged out of Chrome.";
+
 const char kNewWindowAppMenuName[] = "Show a menu item 'New Window'";
 const char kNewWindowAppMenuDescription[] =
     "Show a new menu item 'New Window' on tablet-sized screen when Chrome "

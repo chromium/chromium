@@ -6,7 +6,9 @@ package org.chromium.ui.dragdrop;
 
 import android.content.ClipData;
 import android.content.ClipData.Item;
+import android.content.ClipDescription;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -72,7 +74,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     private int mShadowWidth;
     private int mShadowHeight;
     private boolean mIsDragStarted;
-    private boolean mDropInChrome;
 
     /** Whether the current drop has happened on top of the view this object tracks.  */
     private boolean mIsDropOnView;
@@ -202,6 +203,16 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                 }
                 return clipData;
             case DragTargetType.LINK:
+                if (mDragAndDropBrowserDelegate != null) {
+                    Intent intent =
+                            mDragAndDropBrowserDelegate.createLinkIntent(dropData.gurl.getSpec());
+                    if (intent != null) {
+                        return new ClipData(null,
+                                new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN,
+                                        ClipDescription.MIMETYPE_TEXT_INTENT},
+                                new Item(getTextForLinkData(dropData), intent, null));
+                    }
+                }
                 return ClipData.newPlainText(null, getTextForLinkData(dropData));
             case DragTargetType.INVALID:
                 return null;

@@ -244,6 +244,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kLensOnQuickActionSearchWidget,
     &kLocationBarModelOptimizations,
     &kMostRecentTabOnBackgroundCloseTab,
+    &kNewInstanceFromDraggedLink,
     &kNewWindowAppMenu,
     &kNotificationPermissionVariant,
     &kPageAnnotationsService,
@@ -686,6 +687,9 @@ const base::Feature kSearchEnginePromoNewDeviceV2{
 
 const base::Feature kMostRecentTabOnBackgroundCloseTab{
     "MostRecentTabOnBackgroundCloseTab", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kNewInstanceFromDraggedLink{
+    "NewInstanceFromDraggedLink", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kNewWindowAppMenu{"NewWindowAppMenu",
                                       base::FEATURE_ENABLED_BY_DEFAULT};

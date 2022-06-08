@@ -4,6 +4,7 @@
 
 package org.chromium.ui.dragdrop;
 
+import android.content.Intent;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 
@@ -16,4 +17,7 @@ public interface DragAndDropBrowserDelegate {
 
     /** Request DragAndDropPermissions. */
     DragAndDropPermissions getDragAndDropPermissions(DragEvent dropEvent);
+
+    /** Create an intent from a dragged text link. */
+    Intent createLinkIntent(String urlString);
 }
