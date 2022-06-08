@@ -261,8 +261,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckPlatformShortcutNotExists(Site site);
   void CheckRunOnOsLoginEnabled(Site site);
   void CheckRunOnOsLoginDisabled(Site site);
-  void CheckSiteHandlesFile(Site site, std::string file_extension);
-  void CheckSiteNotHandlesFile(Site site, std::string file_extension);
   void CheckUserCannotSetRunOnOsLogin(Site site);
   void CheckUserDisplayModeInternal(UserDisplayMode user_display_mode);
   void CheckWindowClosed();
@@ -333,8 +331,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   bool IsShortcutAndIconCreated(Profile* profile,
                                 const std::string& name,
                                 const AppId& id);
-
-  bool IsFileHandledBySite(Site site, std::string file_extension);
 
   void SetRunOnOsLoginMode(Site site, apps::RunOnOsLoginMode login_mode);
 
