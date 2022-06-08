@@ -124,7 +124,7 @@ bool KioskAppDataBase::LoadFromDictionary(const base::Value& dict,
 }
 
 void KioskAppDataBase::DecodeIcon() {
-  DCHECK(!icon_path_.empty());
+  DLOG_IF(ERROR, icon_path_.empty()) << "Icon path is empty";
   kiosk_app_icon_loader_ = std::make_unique<KioskAppIconLoader>(this);
   kiosk_app_icon_loader_->Start(icon_path_);
 }
