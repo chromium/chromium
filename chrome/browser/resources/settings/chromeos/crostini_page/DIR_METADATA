@@ -1,0 +1,5 @@
+buganizer {
+    # ChromeOS > Software > Guest OS > Crostini
+    component_id: 1122570
+}
+team_email: "clumptini@google.com"
