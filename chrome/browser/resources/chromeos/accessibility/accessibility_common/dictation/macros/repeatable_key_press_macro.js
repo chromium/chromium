@@ -236,3 +236,45 @@ export class DeletePrevWordMacro extends RepeatableKeyPressMacro {
     EventGenerator.sendKeyPress(KeyCode.BACK, {ctrl: true});
   }
 }
+
+/** Macro to navigate to the next word. */
+export class NavNextWordMacro extends RepeatableKeyPressMacro {
+  /**
+   * @param {boolean} isRTLLocale Whether the Dictation speech recognition
+   *     locale is right-to-left.
+   * @param {number=} repeat The number of words to move.
+   */
+  constructor(isRTLLocale, repeat = 1) {
+    super(MacroName.NAV_NEXT_WORD, repeat);
+
+    /** @private {boolean} */
+    this.isRTLLocale_ = isRTLLocale;
+  }
+
+  /** @override */
+  doKeyPress() {
+    EventGenerator.sendKeyPress(
+        this.isRTLLocale_ ? KeyCode.LEFT : KeyCode.RIGHT, {ctrl: true});
+  }
+}
+
+/** Macro to navigate to the previous word. */
+export class NavPrevWordMacro extends RepeatableKeyPressMacro {
+  /**
+   * @param {boolean} isRTLLocale Whether the Dictation speech recognition
+   *     locale is right-to-left.
+   * @param {number=} repeat The number of words to move.
+   */
+  constructor(isRTLLocale, repeat = 1) {
+    super(MacroName.NAV_PREV_WORD, repeat);
+
+    /** @private {boolean} */
+    this.isRTLLocale_ = isRTLLocale;
+  }
+
+  /** @override */
+  doKeyPress() {
+    EventGenerator.sendKeyPress(
+        this.isRTLLocale_ ? KeyCode.RIGHT : KeyCode.LEFT, {ctrl: true});
+  }
+}

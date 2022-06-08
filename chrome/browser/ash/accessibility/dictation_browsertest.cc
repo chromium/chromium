@@ -1167,6 +1167,17 @@ class DictationHiddenMacrosTest : public DictationTest {
         /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
         /*script=*/script);
   }
+
+  void RunMacroAndWaitForCaretBoundsChanged(int macro) {
+    content::AccessibilityNotificationWaiter selection_waiter(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        ui::kAXModeComplete, ax::mojom::Event::kTextSelectionChanged);
+    CaretBoundsChangedWaiter caret_waiter(
+        browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
+    RunHiddenMacro(macro);
+    caret_waiter.Wait();
+    std::ignore = selection_waiter.WaitForNotification();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1282,6 +1293,16 @@ IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest,
   SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
   RunHiddenMacro(/*DELETE_PREV_SENT*/ 18);
   WaitForTextAreaValue("Hello, world. d.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, MoveByWord) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("This is a quiz", "This is a quiz");
+  RunMacroAndWaitForCaretBoundsChanged(/*NAV_PREV_WORD*/ 20);
+  SendFinalResultAndWaitForTextAreaValue("pop ", "This is a pop quiz");
+  RunMacroAndWaitForCaretBoundsChanged(/*NAV_NEXT_WORD*/ 19);
+  SendFinalResultAndWaitForTextAreaValue("folks!", "This is a pop quiz folks!");
 }
 
 // Tests behavior of Dictation and installation of Pumpkin.

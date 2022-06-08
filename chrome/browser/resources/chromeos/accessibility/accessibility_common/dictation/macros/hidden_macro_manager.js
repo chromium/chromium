@@ -4,7 +4,7 @@
 
 import {DeletePrevSentMacro} from '/accessibility_common/dictation/macros/delete_prev_sent_macro.js';
 import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
-import {DeletePrevWordMacro} from '/accessibility_common/dictation/macros/repeatable_key_press_macro.js';
+import {DeletePrevWordMacro, NavNextWordMacro, NavPrevWordMacro} from '/accessibility_common/dictation/macros/repeatable_key_press_macro.js';
 import {StopListeningMacro} from '/accessibility_common/dictation/macros/stop_listening_macro.js';
 
 /**
@@ -33,6 +33,12 @@ export class HiddenMacroManager {
       case MacroName.DELETE_PREV_SENT:
         new DeletePrevSentMacro(this.inputController_).runMacro();
         break;
+      case MacroName.NAV_NEXT_WORD:
+        new NavNextWordMacro(/*isRtlLocale=*/ false).runMacro();
+        break;
+      case MacroName.NAV_PREV_WORD:
+        new NavPrevWordMacro(/*isRtlLocale=*/ false).runMacro();
+        break;
       default:
         throw new Error(`Unrecognized macro: ${name}`);
     }
@@ -56,4 +62,6 @@ HiddenMacroManager.HIDDEN_MACROS_ = [
   MacroName.STOP_LISTENING,
   MacroName.DELETE_PREV_WORD,
   MacroName.DELETE_PREV_SENT,
+  MacroName.NAV_NEXT_WORD,
+  MacroName.NAV_PREV_WORD,
 ];
