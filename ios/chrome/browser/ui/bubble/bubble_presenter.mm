@@ -41,19 +41,19 @@ const CGFloat kBubblePresentationDelay = 1;
 @interface BubblePresenter ()
 
 // Used to display the bottom toolbar tip in-product help promotion bubble.
-// |nil| if the tip bubble has not yet been presented. Once the bubble is
-// dismissed, it remains allocated so that |userEngaged| remains accessible.
+// `nil` if the tip bubble has not yet been presented. Once the bubble is
+// dismissed, it remains allocated so that `userEngaged` remains accessible.
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* bottomToolbarTipBubblePresenter;
 // Used to display the long press on toolbar buttons tip in-product help
-// promotion bubble. |nil| if the tip bubble has not yet been presented. Once
-// the bubble is dismissed, it remains allocated so that |userEngaged| remains
+// promotion bubble. `nil` if the tip bubble has not yet been presented. Once
+// the bubble is dismissed, it remains allocated so that `userEngaged` remains
 // accessible.
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* longPressToolbarTipBubblePresenter;
-// Used to display the new tab tip in-product help promotion bubble. |nil| if
+// Used to display the new tab tip in-product help promotion bubble. `nil` if
 // the new tab tip bubble has not yet been presented. Once the bubble is
-// dismissed, it remains allocated so that |userEngaged| remains accessible.
+// dismissed, it remains allocated so that `userEngaged` remains accessible.
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* tabTipBubblePresenter;
 @property(nonatomic, strong, readwrite)
@@ -90,7 +90,7 @@ const CGFloat kBubblePresentationDelay = 1;
 - (void)showHelpBubbleIfEligible {
   DCHECK(self.browserState);
   // Waits to present the bubbles until the feature engagement tracker database
-  // is fully initialized. This method requires that |self.browserState| is not
+  // is fully initialized. This method requires that `self.browserState` is not
   // NULL.
   __weak BubblePresenter* weakSelf = self;
   void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
@@ -115,7 +115,7 @@ const CGFloat kBubblePresentationDelay = 1;
 - (void)showLongPressHelpBubbleIfEligible {
   DCHECK(self.browserState);
   // Waits to present the bubble until the feature engagement tracker database
-  // is fully initialized. This method requires that |self.browserState| is not
+  // is fully initialized. This method requires that `self.browserState` is not
   // NULL.
   __weak BubblePresenter* weakSelf = self;
   void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
@@ -177,7 +177,7 @@ const CGFloat kBubblePresentationDelay = 1;
 
   // If the feature engagement tracker does not consider it valid to display
   // the tip, then end early to prevent the potential reassignment of the
-  // existing |discoverFeedHeaderMenuTipBubblePresenter| to nil.
+  // existing `discoverFeedHeaderMenuTipBubblePresenter` to nil.
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHDiscoverFeedHeaderFeature
                     direction:arrowDirection
@@ -204,7 +204,7 @@ const CGFloat kBubblePresentationDelay = 1;
 
   // If the feature engagement tracker does not consider it valid to display
   // the tip, then end early to prevent the potential reassignment of the
-  // existing |readingListTipBubblePresenter| to nil.
+  // existing `readingListTipBubblePresenter` to nil.
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHReadingListMessagesFeature
                     direction:arrowDirection
@@ -232,7 +232,7 @@ const CGFloat kBubblePresentationDelay = 1;
 
   // If the feature engagement tracker does not consider it valid to display
   // the tip, then end early to prevent the potential reassignment of the
-  // existing |followWhileBrowsingBubbleTipPresenter| to nil.
+  // existing `followWhileBrowsingBubbleTipPresenter` to nil.
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHFollowWhileBrowsingFeature
                     direction:arrowDirection
@@ -282,9 +282,9 @@ const CGFloat kBubblePresentationDelay = 1;
 
 - (void)presentBubbles {
   // If the tip bubble has already been presented and the user is still
-  // considered engaged, it can't be overwritten or set to |nil| or else it will
-  // reset the |userEngaged| property. Once the user is not engaged, the bubble
-  // can be safely overwritten or set to |nil|.
+  // considered engaged, it can't be overwritten or set to `nil` or else it will
+  // reset the `userEngaged` property. Once the user is not engaged, the bubble
+  // can be safely overwritten or set to `nil`.
   if (!self.tabTipBubblePresenter.userEngaged)
     [self presentNewTabTipBubble];
   if (!self.incognitoTabTipBubblePresenter.userEngaged)
@@ -312,7 +312,7 @@ const CGFloat kBubblePresentationDelay = 1;
 
   // If the feature engagement tracker does not consider it valid to display
   // the tip, then end early to prevent the potential reassignment of the
-  // existing |longPressToolbarTipBubblePresenter| to nil.
+  // existing `longPressToolbarTipBubblePresenter` to nil.
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHLongPressToolbarTipFeature
                     direction:arrowDirection
@@ -328,8 +328,8 @@ const CGFloat kBubblePresentationDelay = 1;
   self.longPressToolbarTipBubblePresenter = presenter;
 }
 
-// Presents and returns a bubble view controller for the |feature| with an arrow
-// |direction|, an arrow |alignment| and a |text| on an |anchorPoint|.
+// Presents and returns a bubble view controller for the `feature` with an arrow
+// `direction`, an arrow `alignment` and a `text` on an `anchorPoint`.
 - (BubbleViewControllerPresenter*)
 presentBubbleForFeature:(const base::Feature&)feature
               direction:(BubbleArrowDirection)direction
@@ -358,7 +358,7 @@ presentBubbleForFeature:(const base::Feature&)feature
 }
 
 // Presents a bubble associated with the bottom toolbar tip in-product help
-// promotion. This method requires that |self.browserState| is not NULL.
+// promotion. This method requires that `self.browserState` is not NULL.
 - (void)presentBottomToolbarTipBubble {
   if (!IsSplitToolbarMode(self.rootViewController))
     return;
@@ -374,7 +374,7 @@ presentBubbleForFeature:(const base::Feature&)feature
 
   // If the feature engagement tracker does not consider it valid to display
   // the tip, then end early to prevent the potential reassignment of the
-  // existing |bottomToolbarTipBubblePresenter| to nil.
+  // existing `bottomToolbarTipBubblePresenter` to nil.
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHBottomToolbarTipFeature
                     direction:arrowDirection
@@ -394,10 +394,10 @@ presentBubbleForFeature:(const base::Feature&)feature
 
 // Optionally presents a bubble associated with the new tab tip in-product help
 // promotion. If the feature engagement tracker determines it is valid to show
-// the new tab tip, then it initializes |tabTipBubblePresenter| and presents
+// the new tab tip, then it initializes `tabTipBubblePresenter` and presents
 // the bubble. If it is not valid to show the new tab tip,
-// |tabTipBubblePresenter| is set to |nil| and no bubble is shown. This method
-// requires that |self.browserState| is not NULL.
+// `tabTipBubblePresenter` is set to `nil` and no bubble is shown. This method
+// requires that `self.browserState` is not NULL.
 - (void)presentNewTabTipBubble {
   if (![self canPresentBubble])
     return;
@@ -418,7 +418,7 @@ presentBubbleForFeature:(const base::Feature&)feature
 
   // If the feature engagement tracker does not consider it valid to display
   // the new tab tip, then end early to prevent the potential reassignment
-  // of the existing |tabTipBubblePresenter| to nil.
+  // of the existing `tabTipBubblePresenter` to nil.
   BubbleViewControllerPresenter* presenter =
       [self presentBubbleForFeature:feature_engagement::kIPHNewTabTipFeature
                           direction:arrowDirection
@@ -433,7 +433,7 @@ presentBubbleForFeature:(const base::Feature&)feature
 }
 
 // Presents a bubble associated with the new incognito tab tip in-product help
-// promotion. This method requires that |self.browserState| is not NULL.
+// promotion. This method requires that `self.browserState` is not NULL.
 - (void)presentNewIncognitoTabTipBubble {
   if (![self canPresentBubble])
     return;
@@ -449,7 +449,7 @@ presentBubbleForFeature:(const base::Feature&)feature
 
   // If the feature engagement tracker does not consider it valid to display
   // the incognito tab tip, then end early to prevent the potential reassignment
-  // of the existing |incognitoTabTipBubblePresenter| to nil.
+  // of the existing `incognitoTabTipBubblePresenter` to nil.
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHNewIncognitoTabTipFeature
                     direction:arrowDirection
@@ -467,8 +467,8 @@ presentBubbleForFeature:(const base::Feature&)feature
 
 #pragma mark - Private Utils
 
-// Returns the anchor point for a bubble with an |arrowDirection| pointing to a
-// |guideName|. The point is in the window coordinates.
+// Returns the anchor point for a bubble with an `arrowDirection` pointing to a
+// `guideName`. The point is in the window coordinates.
 - (CGPoint)anchorPointToGuide:(GuideName*)guideName
                     direction:(BubbleArrowDirection)arrowDirection {
   UILayoutGuide* guide =
@@ -502,11 +502,11 @@ presentBubbleForFeature:(const base::Feature&)feature
 }
 
 // Returns a bubble associated with an in-product help promotion if
-// it is valid to show the promotion and |nil| otherwise. |feature| is the
-// base::Feature object associated with the given promotion. |direction| is the
-// direction the bubble's arrow is pointing. |alignment| is the alignment of the
-// arrow on the button. |text| is the text displayed by the bubble. This method
-// requires that |self.browserState| is not NULL.
+// it is valid to show the promotion and `nil` otherwise. `feature` is the
+// base::Feature object associated with the given promotion. `direction` is the
+// direction the bubble's arrow is pointing. `alignment` is the alignment of the
+// arrow on the button. `text` is the text displayed by the bubble. This method
+// requires that `self.browserState` is not NULL.
 - (BubbleViewControllerPresenter*)
 bubblePresenterForFeature:(const base::Feature&)feature
                 direction:(BubbleArrowDirection)direction
@@ -517,8 +517,8 @@ bubblePresenterForFeature:(const base::Feature&)feature
            ->WouldTriggerHelpUI(feature)) {
     return nil;
   }
-  // Capture |weakSelf| instead of the feature engagement tracker object
-  // because |weakSelf| will safely become |nil| if it is deallocated, whereas
+  // Capture `weakSelf` instead of the feature engagement tracker object
+  // because `weakSelf` will safely become `nil` if it is deallocated, whereas
   // the feature engagement tracker will remain pointing to invalid memory if
   // its owner (the ChromeBrowserState) is deallocated.
   __weak BubblePresenter* weakSelf = self;

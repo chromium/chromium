@@ -18,7 +18,7 @@ class ChromeBrowserState;
 @interface BubblePresenter : NSObject <HelpCommands>
 
 // Initializes a BubblePresenter whose bubbles are presented on the
-// |rootViewController|.
+// `rootViewController`.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 

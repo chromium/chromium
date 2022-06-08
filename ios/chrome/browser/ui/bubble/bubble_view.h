@@ -93,8 +93,8 @@ typedef NS_ENUM(NSInteger, BubbleViewType) {
 
 // Distance between the arrow's centerX and the (leading or trailing) edge of
 // the bubble, depending on the BubbleAlignment. If BubbleAlignment is center,
-// then |alignmentOffset| is ignored. |alignmentOffset| changes the minimum size
-// of the bubble, thus might change the value of |sizeThatFits|.
+// then `alignmentOffset` is ignored. `alignmentOffset` changes the minimum size
+// of the bubble, thus might change the value of `sizeThatFits`.
 @property(nonatomic) CGFloat alignmentOffset;
 
 @end

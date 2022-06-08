@@ -477,7 +477,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   }
   NSMutableArray<NSLayoutConstraint*>* constraints =
       [NSMutableArray arrayWithArray:@[
-        // Ensure the background view is smaller than |self.view|.
+        // Ensure the background view is smaller than `self.view`.
         [background.leadingAnchor
             constraintGreaterThanOrEqualToAnchor:self.leadingAnchor],
         [self.trailingAnchor
@@ -496,7 +496,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
         [background.trailingAnchor
             constraintGreaterThanOrEqualToAnchor:label.trailingAnchor
                                         constant:kBubbleHorizontalPadding],
-        // Enforce the arrow's size, scaling by |kArrowScaleFactor| to prevent
+        // Enforce the arrow's size, scaling by `kArrowScaleFactor` to prevent
         // gaps between the arrow and the background view.
         [arrow.widthAnchor constraintEqualToConstant:kArrowSize.width],
         [arrow.heightAnchor constraintEqualToConstant:kArrowSize.height]
@@ -597,14 +597,14 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
     (CGFloat)alignmentOffset {
   // The anchor of the bubble which is aligned with the arrow's center anchor.
   NSLayoutAnchor* anchor;
-  // The constant by which |anchor| is offset from the arrow's center anchor.
+  // The constant by which `anchor` is offset from the arrow's center anchor.
   CGFloat offset;
   switch (self.alignment) {
     case BubbleAlignmentLeading:
-      // The anchor point is at a distance of |alignmentOffset|
+      // The anchor point is at a distance of `alignmentOffset`
       // from the bubble's leading edge. Center align the arrow with the anchor
       // point by aligning the center of the arrow with the leading edge of the
-      // bubble view and adding an offset of |alignmentOffset|.
+      // bubble view and adding an offset of `alignmentOffset`.
       anchor = self.leadingAnchor;
       offset = alignmentOffset;
       break;
@@ -615,10 +615,10 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
       offset = 0.0f;
       break;
     case BubbleAlignmentTrailing:
-      // The anchor point is at a distance of |alignmentOffset|
+      // The anchor point is at a distance of `alignmentOffset`
       // from the bubble's trailing edge. Center align the arrow with the anchor
       // point by aligning the center of the arrow with the trailing edge of the
-      // bubble view and adding an offset of |-alignmentOffset|.
+      // bubble view and adding an offset of `-alignmentOffset`.
       anchor = self.trailingAnchor;
       offset = -alignmentOffset;
       break;
@@ -668,14 +668,14 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
 
 #pragma mark - UIView overrides
 
-// Override |willMoveToSuperview| to add view properties to the view hierarchy.
+// Override `willMoveToSuperview` to add view properties to the view hierarchy.
 - (void)willMoveToSuperview:(UIView*)newSuperview {
   // If constraints have not been added to the view, add them.
   if (self.needsAddConstraints) {
     [self activateConstraints];
     // Add drop shadow.
     [self addShadow];
-    // Set |needsAddConstraints| to NO to ensure that the constraints are only
+    // Set `needsAddConstraints` to NO to ensure that the constraints are only
     // added to the view hierarchy once.
     self.needsAddConstraints = NO;
   }
@@ -709,7 +709,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   return textSize;
 }
 
-// Override |sizeThatFits| to return the bubble's optimal size. Calculate
+// Override `sizeThatFits` to return the bubble's optimal size. Calculate
 // optimal size by finding the labels' optimal size, and adding inset distances
 // to the labels' dimensions. This method also enforces minimum bubble width to
 // prevent strange, undesired behaviors, and maximum labels width to preserve

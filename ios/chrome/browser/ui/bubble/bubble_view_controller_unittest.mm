@@ -36,7 +36,7 @@ class BubbleViewControllerTest : public PlatformTest {
   // The alignment of the bubble's arrow relative to the rest of the bubble.
   const BubbleAlignment alignment_;
 
-  // Tests that |bubbleViewController|'s bubbleView contains the expected
+  // Tests that `bubbleViewController`'s bubbleView contains the expected
   // subviews.
   void ExpectBubbleViewContent(BubbleViewController* bubbleViewController,
                                BOOL expectCloseButton,
