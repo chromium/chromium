@@ -17891,7 +17891,7 @@
         "note": "Check default values (no policies set)",
         "prefs": {
           "first_party_sets.enabled": {
-            "location": "local_state",
+            "location": "user_profile",
             "default_value": true
           }
         }
@@ -17903,7 +17903,7 @@
         },
         "prefs": {
           "first_party_sets.enabled": {
-            "location": "local_state",
+            "location": "user_profile",
             "value": true
           }
         }
@@ -17915,7 +17915,7 @@
         },
         "prefs": {
           "first_party_sets.enabled": {
-            "location": "local_state",
+            "location": "user_profile",
             "value": false
           }
         }

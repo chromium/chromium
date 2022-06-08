@@ -780,7 +780,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OnWebContentsCreated(content::WebContents* web_contents) override;
 
   bool IsFindInPageDisabledForOrigin(const url::Origin& origin) override;
-  bool IsFirstPartySetsEnabled() override;
   bool WillProvidePublicFirstPartySets() override;
   base::Value::Dict GetFirstPartySetsOverrides() override;
 

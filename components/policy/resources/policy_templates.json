@@ -30551,7 +30551,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'schema': { 'type': 'boolean' },
       'features' : {
         'dynamic_refresh': False,
-        'per_profile': False,
+        'per_profile': True,
       },
       'items': [
         {
@@ -30575,8 +30575,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
 
                   When this policy is set to Disabled, the First-Party Sets feature is disabled.
 
-                  The state of the First-Party Sets feature determines whether Chrome retrieves the list of First-Party Sets.
-                  It also controls whether Chrome supports First-Party Sets related features (e.g. the SameParty cookie attribute).''',
+                  It controls whether Chrome supports First-Party Sets related features (e.g. the SameParty cookie attribute).''',
     },
     {
       'name': 'FirstPartySetsOverrides',

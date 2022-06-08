@@ -27,6 +27,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
+#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -963,12 +964,11 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       !PrivacySandboxSettingsFactory::GetForProfile(profile_)
            ->IsTrustTokensAllowed();
 
-  // TODO(crbug.com/1325050): Use per-profile prefs to determine whether FPS is
-  // enabled for the given profile.
   network_context_params->first_party_sets_access_delegate_params =
       network::mojom::FirstPartySetsAccessDelegateParams::New();
   network_context_params->first_party_sets_access_delegate_params->enabled =
-      true;
+      profile_->GetPrefs()->GetBoolean(
+          first_party_sets::kFirstPartySetsEnabled);
 
   mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
       fps_access_delegate_remote;

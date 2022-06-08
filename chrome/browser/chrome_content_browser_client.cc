@@ -6533,23 +6533,6 @@ bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
               ->GetBoolean(prefs::kOriginAgentClusterDefaultEnabled);
 }
 
-bool ChromeContentBrowserClient::IsFirstPartySetsEnabled() {
-  if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
-    return false;
-  }
-  if (!g_browser_process) {
-    // If browser process doesn't exist (e.g. in minimal mode on android),
-    // default to the feature value which is true since we didn't return above.
-    return true;
-  }
-  PrefService* local_state = g_browser_process->local_state();
-  if (!local_state ||
-      !local_state->FindPreference(first_party_sets::kFirstPartySetsEnabled)) {
-    return true;
-  }
-  return local_state->GetBoolean(first_party_sets::kFirstPartySetsEnabled);
-}
-
 bool ChromeContentBrowserClient::WillProvidePublicFirstPartySets() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableComponentUpdate) &&
