@@ -507,6 +507,71 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, SameDocumentNavigation) {
   EXPECT_FALSE(bookmark_observer.is_starred());
 }
 
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
+                       DifferentDocumentNavigationWithoutFinishing) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+  GURL bookmark_url = embedded_test_server()->GetURL("/title1.html");
+  bookmarks::AddIfNotBookmarked(bookmark_model, bookmark_url, u"Bookmark");
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  BookmarkTabHelper* tab_helper =
+      BookmarkTabHelper::FromWebContents(web_contents);
+  TestBookmarkTabHelperObserver bookmark_observer(tab_helper);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bookmark_url));
+  EXPECT_TRUE(bookmark_observer.is_starred());
+
+  // Navigate to the second page and check that the bookmark is not starred even
+  // when the navigation is not finished.
+  GURL different_document_url = embedded_test_server()->GetURL("/title2.html");
+  content::TestNavigationManager manager(web_contents, different_document_url);
+  web_contents->GetController().LoadURL(
+      different_document_url, content::Referrer(), ui::PAGE_TRANSITION_TYPED,
+      std::string());
+  EXPECT_TRUE(manager.WaitForRequestStart());
+  EXPECT_FALSE(manager.was_committed());
+  EXPECT_EQ(web_contents->GetVisibleURL(), different_document_url);
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), bookmark_url);
+  EXPECT_FALSE(bookmark_observer.is_starred());
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, NonCommitURLNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+  GURL bookmark_url = embedded_test_server()->GetURL("/title1.html");
+  bookmarks::AddIfNotBookmarked(bookmark_model, bookmark_url, u"Bookmark");
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  BookmarkTabHelper* tab_helper =
+      BookmarkTabHelper::FromWebContents(web_contents);
+  TestBookmarkTabHelperObserver bookmark_observer(tab_helper);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bookmark_url));
+  EXPECT_TRUE(bookmark_observer.is_starred());
+
+  const GURL non_commit_url = embedded_test_server()->GetURL("/page204.html");
+  content::TestNavigationManager manager(web_contents, non_commit_url);
+  web_contents->GetController().LoadURL(non_commit_url, content::Referrer(),
+                                        ui::PAGE_TRANSITION_TYPED,
+                                        std::string());
+  EXPECT_TRUE(manager.WaitForRequestStart());
+  EXPECT_FALSE(manager.was_committed());
+  EXPECT_EQ(web_contents->GetVisibleURL(), non_commit_url);
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), bookmark_url);
+  EXPECT_FALSE(bookmark_observer.is_starred());
+
+  // Since the navigation did not commit, the last committed URL becomes the
+  // visible URL again, so the starred state should be restored.
+  manager.WaitForNavigationFinished();
+  EXPECT_FALSE(manager.was_committed());
+  EXPECT_TRUE(bookmark_observer.is_starred());
+}
+
 class BookmarkPrerenderBrowsertest : public BookmarkBrowsertest {
  public:
   BookmarkPrerenderBrowsertest()
