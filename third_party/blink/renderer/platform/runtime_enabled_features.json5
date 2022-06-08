@@ -1488,6 +1488,13 @@
       origin_trial_feature_name: "MediaSourceInWorkers",
     },
     {
+      // Availability of this feature depends on MediaSourceInWorkers also
+      // being enabled. MediaSourceInWorkers is an OT feature, so this cannot
+      // use the "depends_on" key.
+      name: "MediaSourceInWorkersUsingHandle",
+      status: "experimental",
+    },
+    {
       name: "MediaSourceNewAbortAndDuration",
       status: "experimental",
     },

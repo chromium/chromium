@@ -849,6 +849,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onsourceclose
 [Worker]     setter onsourceended
 [Worker]     setter onsourceopen
+[Worker] interface MediaSourceHandle
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
 [Worker] interface MessageChannel
 [Worker]     attribute @@toStringTag
 [Worker]     getter port1

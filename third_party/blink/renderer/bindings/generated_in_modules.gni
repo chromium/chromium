@@ -1977,6 +1977,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_session.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_source.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_source.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_source_handle.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_source_handle.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_stream.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_stream.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_stream_audio_destination_node.cc",

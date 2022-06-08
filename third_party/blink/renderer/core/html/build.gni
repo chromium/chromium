@@ -458,6 +458,7 @@ blink_core_sources_html = [
   "media/media_remoting_interstitial.h",
   "media/media_source_attachment.cc",
   "media/media_source_attachment.h",
+  "media/media_source_handle.h",
   "media/media_source_registry.h",
   "media/media_source_tracer.cc",
   "media/media_source_tracer.h",
