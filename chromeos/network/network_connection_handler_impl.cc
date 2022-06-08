@@ -673,7 +673,9 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
   const base::Value* policy = nullptr;
   if (guid && profile) {
     policy = managed_configuration_handler_->FindPolicyByGuidAndProfile(
-        *guid, *profile, &onc_source);
+        *guid, *profile,
+        ManagedNetworkConfigurationHandler::PolicyType::kWithRuntimeValues,
+        &onc_source, /*out_userhash=*/nullptr);
   }
   // Check if network is blocked by policy.
   if (*type == shill::kTypeWifi &&

@@ -105,7 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ResolvedCert {
   const std::string& pkcs11_id() const;
   // ONC Variable expansions extracted from the resolved certificate.
   // Only callable if `status()` is `Status::kCertMatched`.
-  const base::flat_map<std::string, std::string> variable_expansions() const;
+  const base::flat_map<std::string, std::string>& variable_expansions() const;
 
  private:
   ResolvedCert(Status status,

@@ -844,7 +844,6 @@ TEST_F(ClientCertResolverTest, PopulateIdentityFromCert) {
 
   GetServiceProperty(shill::kEapIdentityProperty, &identity);
   EXPECT_EQ("upn-santest@ad.corp.example.com-suffix", identity);
-  EXPECT_EQ(2, network_properties_changed_count_);
 
   // Verify that after changing the ONC policy to request the subject CommonName
   // field, the correct value is substituted into the shill service entry.
@@ -855,7 +854,6 @@ TEST_F(ClientCertResolverTest, PopulateIdentityFromCert) {
 
   GetServiceProperty(shill::kEapIdentityProperty, &identity);
   EXPECT_EQ("subject-cn-Client Cert F-suffix", identity);
-  EXPECT_EQ(3, network_properties_changed_count_);
 }
 
 // Test for crbug.com/781276. A notification which results in no networks to be
@@ -892,59 +890,6 @@ TEST_F(ClientCertResolverTest, TestResolveTaskQueued) {
   std::string pkcs11_id;
   GetServiceProperty(shill::kEapCertIdProperty, &pkcs11_id);
   EXPECT_EQ(test_cert_id_, pkcs11_id);
-}
-
-// Cert and Identity are reconfigured after policy has been applied.
-// Regression test for b/209084821 .
-TEST_F(ClientCertResolverTest, ReresolveAfterPolicyApplication) {
-  SetupTestCerts("client_3", true /* import issuer */);
-  SetupWifi();
-  task_environment_.RunUntilIdle();
-
-  SetupNetworkHandlers();
-  ASSERT_NO_FATAL_FAILURE(SetupPolicyMatchingIssuerPEM(
-      ::onc::ONC_SOURCE_USER_POLICY, "${CERT_SAN_UPN}"));
-  task_environment_.RunUntilIdle();
-
-  network_properties_changed_count_ = 0;
-  StartNetworkCertLoader();
-  task_environment_.RunUntilIdle();
-
-  // Verify that cert id and identity have been resolved
-  {
-    EXPECT_EQ(1, network_properties_changed_count_);
-
-    std::string pkcs11_id;
-    GetServiceProperty(shill::kEapCertIdProperty, &pkcs11_id);
-    EXPECT_THAT(pkcs11_id, Not(IsEmpty()));
-
-    std::string identity;
-    GetServiceProperty(shill::kEapIdentityProperty, &identity);
-    EXPECT_EQ(identity, "santest@ad.corp.example.com");
-  }
-
-  // Mangle cert id and identity
-  ASSERT_TRUE(service_test_->SetServiceProperty(
-      kWifiStub, shill::kEapCertIdProperty, base::Value("modified_cert_id")));
-  ASSERT_TRUE(service_test_->SetServiceProperty(
-      kWifiStub, shill::kEapIdentityProperty, base::Value(std::string())));
-
-  // Pretend that network policy was (re)applied. This should trigger
-  // re-configuration of the cert and EAP.Identity.
-  static_cast<NetworkPolicyObserver*>(client_cert_resolver_.get())
-      ->PolicyAppliedToNetwork(kWifiStub);
-  task_environment_.RunUntilIdle();
-  {
-    EXPECT_EQ(2, network_properties_changed_count_);
-
-    std::string pkcs11_id;
-    GetServiceProperty(shill::kEapCertIdProperty, &pkcs11_id);
-    EXPECT_THAT(pkcs11_id, Not(IsEmpty()));
-
-    std::string identity;
-    GetServiceProperty(shill::kEapIdentityProperty, &identity);
-    EXPECT_EQ(identity, "santest@ad.corp.example.com");
-  }
 }
 
 // Tests that a ClientCertRef reference is resolved by |ClientCertResolver|.

@@ -31,6 +31,7 @@
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/cellular_policy_handler.h"
+#include "chromeos/network/client_cert_util.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
@@ -612,6 +613,19 @@ void ManagedNetworkConfigurationHandlerImpl::SetProfileWideVariableExpansions(
                     std::move(expansions)));
 }
 
+bool ManagedNetworkConfigurationHandlerImpl::SetResolvedClientCertificate(
+    const std::string& userhash,
+    const std::string& guid,
+    client_cert::ResolvedCert resolved_cert) {
+  bool change_had_effect =
+      GetOrCreatePoliciesForUser(userhash)->SetResolvedClientCertificate(
+          guid, std::move(resolved_cert));
+  if (!change_had_effect)
+    return false;
+  ApplyOrQueuePolicies(userhash, {guid});
+  return true;
+}
+
 void ManagedNetworkConfigurationHandlerImpl::set_ui_proxy_config_service(
     UIProxyConfigService* ui_proxy_config_service) {
   ui_proxy_config_service_ = ui_proxy_config_service;
@@ -827,7 +841,9 @@ const base::Value*
 ManagedNetworkConfigurationHandlerImpl::FindPolicyByGuidAndProfile(
     const std::string& guid,
     const std::string& profile_path,
-    ::onc::ONCSource* onc_source) const {
+    PolicyType policy_type,
+    ::onc::ONCSource* out_onc_source,
+    std::string* out_userhash) const {
   if (profile_path.empty())
     return nullptr;
 
@@ -843,10 +859,16 @@ ManagedNetworkConfigurationHandlerImpl::FindPolicyByGuidAndProfile(
   if (!policies)
     return nullptr;
 
-  const base::Value* policy = policies->GetPolicyByGuid(guid);
-  if (policy && onc_source) {
-    *onc_source = (profile->userhash.empty() ? ::onc::ONC_SOURCE_DEVICE_POLICY
-                                             : ::onc::ONC_SOURCE_USER_POLICY);
+  const base::Value* policy = (policy_type == PolicyType::kOriginal)
+                                  ? policies->GetOriginalPolicyByGuid(guid)
+                                  : policies->GetPolicyByGuid(guid);
+  if (policy && out_onc_source) {
+    *out_onc_source =
+        (profile->userhash.empty() ? ::onc::ONC_SOURCE_DEVICE_POLICY
+                                   : ::onc::ONC_SOURCE_USER_POLICY);
+  }
+  if (policy && out_userhash) {
+    *out_userhash = profile->userhash;
   }
   return policy;
 }

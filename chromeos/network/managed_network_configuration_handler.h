@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "chromeos/network/client_cert_util.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "components/onc/onc_constants.h"
@@ -54,6 +55,15 @@ class NetworkStateHandler;
 // user consumption.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
  public:
+  // Specifies which policy type a caller is interested in.
+  enum class PolicyType {
+    // Original ONC policy as provided by cloud policy.
+    kOriginal,
+    // ONC policy with runtime values set, i.e. variables can be expanded and a
+    // resolved client certificate set.
+    kWithRuntimeValues,
+  };
+
   ManagedNetworkConfigurationHandler& operator=(
       const ManagedNetworkConfigurationHandler&) = delete;
 
@@ -150,6 +160,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
       const std::string& userhash,
       base::flat_map<std::string, std::string> expansions) = 0;
 
+  // Sets the resolved certificate for the network |guid|.
+  // Returns true if this resulted in an effective change.
+  virtual bool SetResolvedClientCertificate(
+      const std::string& userhash,
+      const std::string& guid,
+      client_cert::ResolvedCert resolved_cert) = 0;
+
   // Returns the user policy for user |userhash| or device policy, which has
   // |guid|. If |userhash| is empty, only looks for a device policy. If such
   // doesn't exist, returns NULL. Sets |onc_source| accordingly.
@@ -169,12 +186,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
       const std::string& userhash) const = 0;
 
   // Returns the policy with |guid| for profile |profile_path|. If such
-  // doesn't exist, returns nullptr. Sets |onc_source| accordingly if it is not
-  // nullptr.
+  // doesn't exist, returns nullptr. Sets |onc_source| and |userhash|
+  // accordingly if it is not nullptr.
   virtual const base::Value* FindPolicyByGuidAndProfile(
       const std::string& guid,
       const std::string& profile_path,
-      ::onc::ONCSource* onc_source) const = 0;
+      PolicyType policy_type,
+      ::onc::ONCSource* out_onc_source,
+      std::string* out_userhash) const = 0;
 
   // Returns true if the network with |guid| is configured by device or user
   // policy for profile |profile_path|.

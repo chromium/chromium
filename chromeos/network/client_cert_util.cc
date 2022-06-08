@@ -331,16 +331,24 @@ const std::string& ResolvedCert::pkcs11_id() const {
   return pkcs11_id_;
 }
 
-const base::flat_map<std::string, std::string>
+const base::flat_map<std::string, std::string>&
 ResolvedCert::variable_expansions() const {
   DCHECK_EQ(status(), Status::kCertMatched);
   return variable_expansions_;
 }
 
 bool operator==(const ResolvedCert& lhs, const ResolvedCert& rhs) {
-  return lhs.status() == rhs.status() && lhs.slot_id() == rhs.slot_id() &&
-         lhs.pkcs11_id() == rhs.pkcs11_id() &&
-         lhs.variable_expansions() == rhs.variable_expansions();
+  if (lhs.status() != rhs.status())
+    return false;
+
+  if (lhs.status() == ResolvedCert::Status::kCertMatched) {
+    // Compare attributes of the matched certificate.
+    return lhs.slot_id() == rhs.slot_id() &&
+           lhs.pkcs11_id() == rhs.pkcs11_id() &&
+           lhs.variable_expansions() == rhs.variable_expansions();
+  }
+
+  return true;
 }
 
 // Uses a template type to easily implement a const and a non-const version.

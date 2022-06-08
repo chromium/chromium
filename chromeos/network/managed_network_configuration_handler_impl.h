@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chromeos/network/client_cert_util.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_profile_observer.h"
@@ -94,6 +95,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       const std::string& userhash,
       base::flat_map<std::string, std::string> expansions) override;
 
+  bool SetResolvedClientCertificate(
+      const std::string& userhash,
+      const std::string& guid,
+      client_cert::ResolvedCert resolved_cert) override;
+
   const base::Value* FindPolicyByGUID(
       const std::string userhash,
       const std::string& guid,
@@ -107,7 +113,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   const base::Value* FindPolicyByGuidAndProfile(
       const std::string& guid,
       const std::string& profile_path,
-      ::onc::ONCSource* onc_source) const override;
+      PolicyType policy_type,
+      ::onc::ONCSource* onc_source,
+      std::string* userhash) const override;
 
   bool IsNetworkConfiguredByPolicy(
       const std::string& guid,

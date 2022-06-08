@@ -11,7 +11,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/component_export.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -35,7 +35,6 @@ class ManagedNetworkConfigurationHandler;
 
 namespace internal {
 struct NetworkAndMatchingCert;
-struct MatchingCertAndResolveStatus;
 }  // namespace internal
 
 // Observes the known networks. If a network is configured with a client
@@ -116,11 +115,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
   // NetworkPolicyObserver overrides
   void PolicyAppliedToNetwork(const std::string& service_path) override;
 
-  // Forget the resolved certificate of |network| - ensures that the next
-  // ResolveNetwork run will reconfigure the certificate (and EAP Identity
-  // field) even if the certificate has not changed.
-  void ForgetResolvedCert(const NetworkState* network);
-
   // Check which networks of |networks| are configured with a client certificate
   // pattern. Search for certificates, on the worker thread, and configure the
   // networks for which a matching cert is found (see ConfigureCertificates).
@@ -145,11 +139,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
 
   base::ObserverList<Observer, true>::Unchecked observers_;
 
-  // Stores the current client certificate resolution status for each network.
-  // The key is the network's service path. If a network is not present, it is
-  // not known yet (or disappeared from the list of known networks again).
-  base::flat_map<std::string, internal::MatchingCertAndResolveStatus>
-      networks_status_;
+  // Tracks which network configurations ClientCertResolver is aware of, to be
+  // able to detect newly created networks for which certificate resolution may
+  // be necessary. The elements in the set are shill service paths.
+  base::flat_set<std::string> known_networks_service_paths_;
 
   // The list of network paths that still have to be resolved.
   std::set<std::string> queued_networks_to_resolve_;

@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/values.h"
+#include "chromeos/network/client_cert_util.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -69,6 +70,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
   MOCK_METHOD2(SetProfileWideVariableExpansions,
                void(const std::string& userhash,
                     base::flat_map<std::string, std::string> expansions));
+  MOCK_METHOD3(SetResolvedClientCertificate,
+               bool(const std::string& userhash,
+                    const std::string& guid,
+                    client_cert::ResolvedCert resolved_cert));
   MOCK_CONST_METHOD3(FindPolicyByGUID,
                      const base::Value*(const std::string userhash,
                                         const std::string& guid,
@@ -76,10 +81,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
   MOCK_CONST_METHOD1(HasAnyPolicyNetwork, bool(const std::string& userhash));
   MOCK_CONST_METHOD1(GetGlobalConfigFromPolicy,
                      const base::Value*(const std::string& userhash));
-  MOCK_CONST_METHOD3(FindPolicyByGuidAndProfile,
+  MOCK_CONST_METHOD5(FindPolicyByGuidAndProfile,
                      const base::Value*(const std::string& guid,
                                         const std::string& profile_path,
-                                        ::onc::ONCSource* onc_source));
+                                        PolicyType policy_type,
+                                        ::onc::ONCSource* out_onc_source,
+                                        std::string* out_userhash));
   MOCK_CONST_METHOD2(IsNetworkConfiguredByPolicy,
                      bool(const std::string& guid,
                           const std::string& profile_path));
