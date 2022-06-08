@@ -460,6 +460,9 @@
       <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_TITLE" desc="The title label of the 'About this site' subpage in Page Info bubble.">
         From the web
       </message>
+      <message name="IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE" desc="The title of the 'About this page' row in the Page Info bubble.">
+        About this page
+      </message>
       <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_SUBPAGE_FROM_LABEL" desc="The label containing the source of the description in the 'About this site' subpage in Page Info bubble.">
         From <ph name="SOURCE_NAME">%1$s<ex>Wikipedia</ex></ph>
       </message>

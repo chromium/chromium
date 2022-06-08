@@ -14,6 +14,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
@@ -91,7 +92,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         if (mEphemeralTabCoordinatorSupplier != null
                 && mEphemeralTabCoordinatorSupplier.get() != null) {
             String title =
-                    mRowView.getContext().getString(R.string.page_info_about_this_site_title);
+                    mRowView.getContext().getString(R.string.page_info_about_this_page_title);
             mEphemeralTabCoordinatorSupplier.get().requestOpenSheet(
                     new GURL(url), title, /*isIncognito=*/false);
             mMainController.dismiss();
@@ -119,18 +120,25 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
             return;
         }
 
+        boolean more_info_enabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO);
+
         assert mSiteInfo.hasDescription();
         String subtitle = mSiteInfo.getDescription().getDescription();
-
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
-        rowParams.title = mRowView.getContext().getResources().getString(
-                R.string.page_info_about_this_site_title);
+        rowParams.title = mRowView.getContext().getResources().getString(more_info_enabled
+                        ? R.string.page_info_about_this_page_title
+                        : R.string.page_info_about_this_site_title);
         rowParams.subtitle = subtitle;
         rowParams.singleLineSubTitle = true;
         rowParams.visible = true;
-        rowParams.iconResId = R.drawable.ic_info_outline_grey_24dp;
+        rowParams.iconResId =
+                more_info_enabled ? R.drawable.ic_globe_24dp : R.drawable.ic_info_outline_grey_24dp;
         rowParams.decreaseIconSize = true;
-        rowParams.clickCallback = this::launchSubpage;
+        rowParams.clickCallback = more_info_enabled ? ()
+                -> openUrl(mSiteInfo.getMoreAbout().getUrl(),
+                        PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED)
+                : this::launchSubpage;
         mRowView.setParams(rowParams);
     }
 

@@ -692,7 +692,7 @@
   <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER" desc="The header label of the 'About this site' subpage in Page Info bubble.">
     From the web
   </message>
-    <message name="IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE" desc="The title of the 'About this page' row in the Page Info bubble.">
+  <message name="IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE" desc="The title of the 'About this page' row in the Page Info bubble.">
     About this page
   </message>
   <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_TOOLTIP" desc="The tooltip of the button that opens 'About this site' subpage in Page Info bubble.">
