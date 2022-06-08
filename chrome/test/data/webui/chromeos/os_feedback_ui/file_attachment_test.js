@@ -11,6 +11,8 @@ import {mojoString16ToString} from 'chrome://resources/ash/common/mojo_utils.js'
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {eventToPromise, flushTasks, isVisible} from '../../test_util.js';
 
+const MAX_ATTACH_FILE_SIZE = 10 * 1024 * 1024;
+
 export function fileAttachmentTestSuite() {
   /** @type {?FileAttachmentElement} */
   let page = null;
@@ -62,6 +64,8 @@ export function fileAttachmentTestSuite() {
     assertTrue(isVisible(getElement('#addFileContainer')));
     // The replaceFileContainer should be invisible when no file is selected.
     assertFalse(isVisible(getElement('#replaceFileContainer')));
+
+    assertTrue(!!getElement('#fileTooBigErrorMessage'));
   });
 
   // Test that when the add file label is clicked, the file dialog is opened.
@@ -157,7 +161,10 @@ export function fileAttachmentTestSuite() {
     const selectFileCheckbox = getElement('#selectFileCheckbox');
     // Set selected file manually.
     /** @type {!File} */
-    const fakeFile = /** @type {!File} */ ({name: 'fake.zip'});
+    const fakeFile = /** @type {!File} */ ({
+      name: 'fake.zip',
+      size: MAX_ATTACH_FILE_SIZE,
+    });
     page.setSelectedFileForTesting(fakeFile);
     selectFileCheckbox.checked = false;
 
@@ -173,12 +180,12 @@ export function fileAttachmentTestSuite() {
     await initializePage();
 
     const selectFileCheckbox = getElement('#selectFileCheckbox');
-
     const fakeData = [12, 11, 99];
 
     /** @type {!File} */
     const fakeFile = /** @type {!File} */ ({
       name: 'fake.zip',
+      size: MAX_ATTACH_FILE_SIZE,
       arrayBuffer: async () => {
         return new Uint8Array(fakeData).buffer;
       },
@@ -197,5 +204,33 @@ export function fileAttachmentTestSuite() {
         fakeData, /** @type {!Array<Number>} */ (attachedFile.fileData.bytes));
     // Verify the fileName field.
     assertEquals('fake.zip', attachedFile.fileName.path.path);
+  });
+
+  // Test that chosen file can' exceed 10MB.
+  test('fileTooBig', async () => {
+    await initializePage();
+
+    const selectFileCheckbox = getElement('#selectFileCheckbox');
+    const fakeData = [12, 11, 99];
+
+    /** @type {!File} */
+    const fakeFile = /** @type {!File} */ ({
+      name: 'fake.zip',
+      size: MAX_ATTACH_FILE_SIZE + 1,
+      arrayBuffer: async () => {
+        return new Uint8Array(fakeData).buffer;
+      },
+    });
+    // Set selected file manually. It should be ignored.
+    page.setSelectedFileForTesting(fakeFile);
+    selectFileCheckbox.checked = true;
+
+    // Error message should be visible.
+    assertTrue(getElement('#fileTooBigErrorMessage').open);
+    // There should not be a selected file.
+    assertEquals('', getElementContent('#selectedFileName'));
+    const attachedFile = await page.getAttachedFile();
+    // AttachedFile should be null.
+    assertTrue(!attachedFile);
   });
 }

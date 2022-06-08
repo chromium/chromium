@@ -14,6 +14,11 @@
     cursor: pointer;
   }
 
+  .error-outline {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+    margin-inline-end: 12px;
+  }
+
   #addFileContainer,
   #replaceFileContainer {
     width: 248px;
@@ -47,3 +52,8 @@
     </label>
   </div>
 </div>
+<cr-toast id="fileTooBigErrorMessage" duration="5000">
+  <iron-icon id="toastInfoIcon" class="error-outline" icon="cr:error-outline">
+  </iron-icon>
+  <span>Can't upload file larger than 10 MB</span>
+</cr-toast>

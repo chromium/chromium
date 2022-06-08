@@ -4,6 +4,8 @@
 
 import './help_resources_icons.js';
 import './os_feedback_shared_css.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
@@ -123,7 +125,12 @@ export class FileAttachmentElement extends PolymerElement {
    * @private
    */
   handleSelectedFileHelper_(file) {
-    // TODO(http://b/233398494): Handle it when file size exceeds the limit.
+    // Maximum file size is 10MB.
+    const MAX_ATTACH_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+    if (file.size > MAX_ATTACH_FILE_SIZE_BYTES) {
+      this.getElement_('#fileTooBigErrorMessage').show();
+      return;
+    }
     this.selectedFile_ = file;
     this.getElement_('#selectedFileName').textContent = file.name;
     this.getElement_('#selectFileCheckbox').checked = true;

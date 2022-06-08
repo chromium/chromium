@@ -140,6 +140,8 @@ js_library("file_attachment") {
     ":feedback_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_toast/cr_toast_externs.js" ]
 }
 
 js_library("help_resources_icons") {
