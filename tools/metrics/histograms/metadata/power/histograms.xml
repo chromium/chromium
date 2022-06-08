@@ -1687,7 +1687,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerButtonPressed" units="units"
-    expires_after="2022-06-01">
+    expires_after="2022-12-01">
   <owner>emaamari@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
