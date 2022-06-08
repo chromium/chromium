@@ -9,5 +9,8 @@ blink_modules_sources("srcobject") {
     "html_media_element_src_object.cc",
     "html_media_element_src_object.h",
   ]
-  deps = [ "//third_party/blink/renderer/modules/mediastream" ]
+  deps = [
+    "//third_party/blink/renderer/modules/mediasource",
+    "//third_party/blink/renderer/modules/mediastream",
+  ]
 }

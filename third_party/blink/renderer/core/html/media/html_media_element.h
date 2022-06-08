@@ -33,6 +33,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/webaudiosourceprovider_impl.h"
@@ -85,6 +86,7 @@ class HTMLSourceElement;
 class HTMLTrackElement;
 class MediaError;
 class MediaSourceAttachment;
+class MediaSourceHandle;
 class MediaSourceTracer;
 class MediaStreamDescriptor;
 class ScriptPromiseResolver;
@@ -177,7 +179,7 @@ class CORE_EXPORT HTMLMediaElement
 
   // network state
   void SetSrc(const AtomicString&);
-  const KURL& currentSrc() const { return current_src_; }
+  const KURL& currentSrc() const { return current_src_.GetSourceIfVisible(); }
 
   // Return the URL to be used for downloading the media.
   const KURL& downloadURL() const {
@@ -189,8 +191,10 @@ class CORE_EXPORT HTMLMediaElement
     return current_src_after_redirects_;
   }
 
-  void SetSrcObject(MediaStreamDescriptor*);
-  MediaStreamDescriptor* GetSrcObject() const { return src_object_.Get(); }
+  using SrcObjectVariant =
+      absl::variant<MediaStreamDescriptor*, MediaSourceHandle*>;
+  void SetSrcObjectVariant(SrcObjectVariant src_object_variant);
+  SrcObjectVariant GetSrcObjectVariant() const;
 
   enum NetworkState {
     kNetworkEmpty,
@@ -452,6 +456,30 @@ class CORE_EXPORT HTMLMediaElement
   friend class PictureInPictureControllerTest;
   friend class VideoWakeLockTest;
 
+  class SourceMetadata {
+    DISALLOW_NEW();
+
+   public:
+    enum class SourceVisibility { kVisibleToApp, kInvisibleToApp };
+    SourceMetadata() = default;
+    void SetSource(const KURL& src, SourceVisibility visibility) {
+      src_ = src;
+      invisible_to_app_ = visibility == SourceVisibility::kInvisibleToApp;
+    }
+    const KURL& GetSourceIfVisible() const {
+      return invisible_to_app_ ? NullURL() : src_;
+    }
+    const KURL& GetSource() const { return src_; }
+
+   private:
+    KURL src_;
+
+    // If true, then |current_src| is used only for internal loading and safety
+    // checks, and for logging that is not visible to apps, either. For example,
+    // when loading from a MediaSourceHandle as srcObject, this would be true.
+    bool invisible_to_app_ = false;
+  };
+
   bool HasPendingActivityInternal() const;
 
   void ResetMediaPlayerAndMediaSource();
@@ -700,9 +728,12 @@ class CORE_EXPORT HTMLMediaElement
   NetworkState network_state_;
   ReadyState ready_state_;
   ReadyState ready_state_maximum_;
-  KURL current_src_;
+
+  SourceMetadata current_src_;
   KURL current_src_after_redirects_;
-  Member<MediaStreamDescriptor> src_object_;
+
+  Member<MediaStreamDescriptor> src_object_stream_descriptor_;
+  Member<MediaSourceHandle> src_object_media_source_handle_;
 
   // To prevent potential regression when extended by the MSE API, do not set
   // |error_| outside of constructor and SetError().

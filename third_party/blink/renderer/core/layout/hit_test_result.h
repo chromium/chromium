@@ -51,6 +51,7 @@ class HTMLAreaElement;
 class HTMLMediaElement;
 class Image;
 class KURL;
+class MediaSourceHandle;
 class MediaStreamDescriptor;
 class NGPhysicalBoxFragment;
 class Node;
@@ -161,6 +162,7 @@ class CORE_EXPORT HitTestResult {
   KURL AbsoluteImageURL() const;
   KURL AbsoluteMediaURL() const;
   MediaStreamDescriptor* GetMediaStreamDescriptor() const;
+  MediaSourceHandle* GetMediaSourceHandle() const;
   KURL AbsoluteLinkURL() const;
   String TextContent() const;
   bool IsLiveLink() const;

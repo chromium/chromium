@@ -227,7 +227,7 @@ class PictureInPictureControllerTest : public testing::Test {
       MediaStreamComponentVector dummy_tracks;
       auto* descriptor = MakeGarbageCollected<MediaStreamDescriptor>(
           dummy_tracks, dummy_tracks);
-      Video()->SetSrcObject(descriptor);
+      Video()->SetSrcObjectVariant(descriptor);
     } else {
       Video()->SetSrc("http://example.com/foo.mp4");
     }

@@ -2659,6 +2659,8 @@ generated_union_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_idbcursor_idbindex_idbobjectstore.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_idbindex_idbobjectstore.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_idbindex_idbobjectstore.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_mediasourcehandle_mediastream.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_mediasourcehandle_mediastream.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_mediastreamtrack_string.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_mediastreamtrack_string.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_path2d_string.cc",

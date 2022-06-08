@@ -87,6 +87,7 @@
 #include "third_party/blink/renderer/core/html/media/media_error.h"
 #include "third_party/blink/renderer/core/html/media/media_fragment_uri_parser.h"
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
+#include "third_party/blink/renderer/core/html/media/media_source_handle.h"
 #include "third_party/blink/renderer/core/html/media/media_source_tracer.h"
 #include "third_party/blink/renderer/core/html/time_ranges.h"
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
@@ -813,7 +814,8 @@ Node::InsertionNotificationRequest HTMLMediaElement::InsertedInto(
   HTMLElement::InsertedInto(insertion_point);
   if (insertion_point.isConnected()) {
     UseCounter::Count(GetDocument(), WebFeature::kHTMLMediaElementInDocument);
-    if ((!FastGetAttribute(html_names::kSrcAttr).IsEmpty() || src_object_) &&
+    if ((!FastGetAttribute(html_names::kSrcAttr).IsEmpty() ||
+         src_object_stream_descriptor_ || src_object_media_source_handle_) &&
         network_state_ == kNetworkEmpty) {
       ignore_preload_none_ = false;
       InvokeLoadAlgorithm();
@@ -898,10 +900,38 @@ void HTMLMediaElement::SetSrc(const AtomicString& url) {
   setAttribute(html_names::kSrcAttr, url);
 }
 
-void HTMLMediaElement::SetSrcObject(MediaStreamDescriptor* src_object) {
-  DVLOG(1) << "setSrcObject(" << *this << ")";
-  src_object_ = src_object;
+void HTMLMediaElement::SetSrcObjectVariant(
+    SrcObjectVariant src_object_variant) {
+  DVLOG(1) << __func__ << "(" << *this << ")";
+  src_object_stream_descriptor_ = nullptr;
+  src_object_media_source_handle_ = nullptr;
+  if (auto** desc = absl::get_if<MediaStreamDescriptor*>(&src_object_variant)) {
+    src_object_stream_descriptor_ = *desc;
+  } else if (auto** handle =
+                 absl::get_if<MediaSourceHandle*>(&src_object_variant)) {
+    src_object_media_source_handle_ = *handle;
+  }
+
+  DVLOG(2) << __func__
+           << ": stream_descriptor=" << src_object_stream_descriptor_
+           << ", media_source_handle=" << src_object_media_source_handle_;
+
   InvokeLoadAlgorithm();
+}
+
+HTMLMediaElement::SrcObjectVariant HTMLMediaElement::GetSrcObjectVariant()
+    const {
+  DVLOG(1) << __func__ << "(" << *this << ")"
+           << ": stream_descriptor=" << src_object_stream_descriptor_
+           << ", media_source_handle=" << src_object_media_source_handle_;
+
+  // At most one is set.
+  DCHECK(!(src_object_stream_descriptor_ && src_object_media_source_handle_));
+
+  if (src_object_media_source_handle_)
+    return SrcObjectVariant(src_object_media_source_handle_.Get());
+
+  return SrcObjectVariant(src_object_stream_descriptor_.Get());
 }
 
 HTMLMediaElement::NetworkState HTMLMediaElement::getNetworkState() const {
@@ -1141,7 +1171,7 @@ void HTMLMediaElement::SelectMediaResource() {
 
   // 6 - If the media element has an assigned media provider object, then let
   //     mode be object.
-  if (src_object_) {
+  if (src_object_stream_descriptor_ || src_object_media_source_handle_) {
     mode = kObject;
   } else if (FastHasAttribute(html_names::kSrcAttr)) {
     // Otherwise, if the media element has no assigned media provider object
@@ -1209,12 +1239,40 @@ void HTMLMediaElement::SelectMediaResource() {
 }
 
 void HTMLMediaElement::LoadSourceFromObject() {
-  DCHECK(src_object_);
+  DCHECK(src_object_stream_descriptor_ || src_object_media_source_handle_);
   load_state_ = kLoadingFromSrcObject;
+
+  if (src_object_media_source_handle_) {
+    DCHECK(!src_object_stream_descriptor_);
+
+    // Retrieve the internal blob URL from the handle that was created in the
+    // context where the referenced MediaSource is owned, for the purposes of
+    // using existing security and logging logic for loading media from a
+    // MediaSource with a blob URL.
+    const String media_source_handle_url_ =
+        src_object_media_source_handle_->GetInternalBlobURL();
+    DCHECK(!media_source_handle_url_.IsEmpty());
+
+    KURL media_url = GetDocument().CompleteURL(media_source_handle_url_);
+    if (!IsSafeToLoadURL(media_url, kComplain)) {
+      MediaLoadingFailed(
+          WebMediaPlayer::kNetworkStateFormatError,
+          BuildElementErrorMessage(
+              "Media load from MediaSourceHandle rejected by safety check"));
+      return;
+    }
+
+    // No type is available when loading from a MediaSourceHandle, via
+    // srcObject, even with an internal MediaSource blob URL.
+    LoadResource(WebMediaPlayerSource(WebURL(media_url)), String());
+    return;
+  }
 
   // No type is available when the resource comes from the 'srcObject'
   // attribute.
-  LoadResource(WebMediaPlayerSource(WebMediaStream(src_object_)), String());
+  LoadResource(
+      WebMediaPlayerSource(WebMediaStream(src_object_stream_descriptor_)),
+      String());
 }
 
 void HTMLMediaElement::LoadSourceFromAttribute() {
@@ -1280,24 +1338,39 @@ void HTMLMediaElement::LoadResource(const WebMediaPlayerSource& source,
   // The resource fetch algorithm
   SetNetworkState(kNetworkLoading);
 
-  // Set current_src_ *before* changing to the cache url, the fact that we are
+  // Set |current_src_| *before* changing to the cache url, the fact that we are
   // loading from the app cache is an internal detail not exposed through the
-  // media element API.
-  current_src_ = url;
+  // media element API. If loading from an internal MediaSourceHandle object
+  // URL, then do not expose that URL to app, but instead hold it for use later
+  // in StartPlayerLoad and elsewhere (for origin, security etc checks normally
+  // done on |current_src_|.)
+  if (src_object_media_source_handle_) {
+    DCHECK(!url.IsEmpty());
+    current_src_.SetSource(url,
+                           SourceMetadata::SourceVisibility::kInvisibleToApp);
+  } else {
+    current_src_.SetSource(url,
+                           SourceMetadata::SourceVisibility::kVisibleToApp);
+  }
 
   // Default this to empty, so that we use |current_src_| unless the player
   // provides one later.
   current_src_after_redirects_ = KURL();
 
   if (audio_source_node_)
-    audio_source_node_->OnCurrentSrcChanged(current_src_);
+    audio_source_node_->OnCurrentSrcChanged(current_src_.GetSourceIfVisible());
 
   // Update remote playback client with the new src and consider it incompatible
   // until proved otherwise.
-  RemotePlaybackCompatibilityChanged(current_src_, false);
+  RemotePlaybackCompatibilityChanged(current_src_.GetSourceIfVisible(), false);
 
-  DVLOG(3) << "loadResource(" << *this << ") - current_src_ -> "
-           << UrlForLoggingMedia(current_src_);
+  DVLOG(3) << "loadResource(" << *this << ") - current src if visible="
+           << UrlForLoggingMedia(current_src_.GetSourceIfVisible())
+           << ", current src =" << UrlForLoggingMedia(current_src_.GetSource())
+           << ", src_object_media_source_handle_="
+           << src_object_media_source_handle_
+           << ", src_object_stream_descriptor_="
+           << src_object_stream_descriptor_;
 
   StartProgressEventTimer();
 
@@ -1309,8 +1382,13 @@ void HTMLMediaElement::LoadResource(const WebMediaPlayerSource& source,
 
   bool attempt_load = true;
 
-  media_source_attachment_ =
-      MediaSourceAttachment::LookupMediaSource(url.GetString());
+  if (src_object_media_source_handle_) {
+    media_source_attachment_ = src_object_media_source_handle_->GetAttachment();
+    DCHECK(media_source_attachment_);
+  } else {
+    media_source_attachment_ =
+        MediaSourceAttachment::LookupMediaSource(url.GetString());
+  }
   if (media_source_attachment_) {
     bool start_result = false;
     media_source_tracer_ =
@@ -1322,9 +1400,12 @@ void HTMLMediaElement::LoadResource(const WebMediaPlayerSource& source,
       // attachment. This can help reduce memory bloat later if the app does not
       // revoke the object URL explicitly and the object URL was the only
       // remaining strong reference to an attached HTMLMediaElement+MediaSource
-      // cycle of objects that could otherwise be garbage-collectable.
+      // cycle of objects that could otherwise be garbage-collectable. Don't
+      // auto-revoke the internal, unregistered, object URL used to attach via
+      // srcObject with a MediaSourceHandle, though.
       if (base::FeatureList::IsEnabled(
-              media::kRevokeMediaSourceObjectURLOnAttach)) {
+              media::kRevokeMediaSourceObjectURLOnAttach) &&
+          !src_object_media_source_handle_) {
         URLFileAPI::revokeObjectURL(GetExecutionContext(), url.GetString());
       }
     } else {
@@ -1370,8 +1451,15 @@ void HTMLMediaElement::StartPlayerLoad() {
   DCHECK(!web_media_player_);
 
   WebMediaPlayerSource source;
-  if (src_object_) {
-    source = WebMediaPlayerSource(WebMediaStream(src_object_));
+  if (src_object_stream_descriptor_) {
+    source =
+        WebMediaPlayerSource(WebMediaStream(src_object_stream_descriptor_));
+  } else if (src_object_media_source_handle_) {
+    DCHECK(current_src_.GetSourceIfVisible().IsEmpty());
+    const KURL& internal_url = current_src_.GetSource();
+    DCHECK(!internal_url.IsEmpty());
+
+    source = WebMediaPlayerSource(WebURL(internal_url));
   } else {
     // Filter out user:pass as those two URL components aren't
     // considered for media resource fetches (including for the CORS
@@ -1386,7 +1474,7 @@ void HTMLMediaElement::StartPlayerLoad() {
     // 'authentication flag' to control how user:pass embedded in a
     // media resource URL should be treated, then update the handling
     // here to match.
-    KURL request_url = current_src_;
+    KURL request_url = current_src_.GetSourceIfVisible();
     if (!request_url.User().IsEmpty())
       request_url.SetUser(String());
     if (!request_url.Pass().IsEmpty())
@@ -1545,9 +1633,9 @@ void HTMLMediaElement::DeferredLoadTimerFired(TimerBase*) {
 
 WebMediaPlayer::LoadType HTMLMediaElement::GetLoadType() const {
   if (media_source_attachment_)
-    return WebMediaPlayer::kLoadTypeMediaSource;
+    return WebMediaPlayer::kLoadTypeMediaSource;  // Either via src or srcObject
 
-  if (src_object_)
+  if (src_object_stream_descriptor_)
     return WebMediaPlayer::kLoadTypeMediaStream;
 
   return WebMediaPlayer::kLoadTypeURL;
@@ -1845,7 +1933,9 @@ void HTMLMediaElement::MediaLoadingFailed(WebMediaPlayer::NetworkState error,
         MakeGarbageCollected<MediaError>(MediaError::kMediaErrDecode, message));
   } else if ((error == WebMediaPlayer::kNetworkStateFormatError ||
               error == WebMediaPlayer::kNetworkStateNetworkError) &&
-             load_state_ == kLoadingFromSrcAttr) {
+             (load_state_ == kLoadingFromSrcAttr ||
+              (load_state_ == kLoadingFromSrcObject &&
+               src_object_media_source_handle_))) {
     if (message.IsEmpty()) {
       // Generate a more meaningful error message to differentiate the two types
       // of MEDIA_SRC_ERR_NOT_SUPPORTED.
@@ -1959,6 +2049,7 @@ void HTMLMediaElement::SetReadyState(ReadyState state) {
     // skips notification of insecure content. Ensure we always notify the
     // MixedContentChecker of what happened, even if the load was skipped.
     if (LocalFrame* frame = GetDocument().GetFrame()) {
+      const KURL& current_src_for_check = current_src_.GetSource();
       // We don't care about the return value here. The MixedContentChecker will
       // internally notify for insecure content if it needs to regardless of
       // what the return value ends up being for this call.
@@ -1966,13 +2057,13 @@ void HTMLMediaElement::SetReadyState(ReadyState state) {
           frame,
           HasVideo() ? mojom::blink::RequestContextType::VIDEO
                      : mojom::blink::RequestContextType::AUDIO,
-          current_src_,
+          current_src_for_check,
           // Strictly speaking, this check is an approximation; a request could
           // have have redirected back to its original URL, for example.
           // However, the redirect status is only used to prevent leaking
           // information cross-origin via CSP reports, so comparing URLs is
           // sufficient for that purpose.
-          current_src_after_redirects_ == current_src_
+          current_src_after_redirects_ == current_src_for_check
               ? ResourceRequest::RedirectStatus::kNoRedirect
               : ResourceRequest::RedirectStatus::kFollowedRedirect,
           current_src_after_redirects_, /* devtools_id= */ absl::nullopt,
@@ -2022,7 +2113,7 @@ void HTMLMediaElement::SetReadyState(ReadyState state) {
   if (ready_state_ >= kHaveMetadata && old_state < kHaveMetadata) {
     CreatePlaceholderTracksIfNecessary();
 
-    MediaFragmentURIParser fragment_parser(current_src_);
+    MediaFragmentURIParser fragment_parser(current_src_.GetSource());
     fragment_end_time_ = fragment_parser.EndTime();
 
     // Set the current playback position and the official playback position to
@@ -4304,7 +4395,8 @@ void HTMLMediaElement::Trace(Visitor* visitor) const {
   visitor->Trace(play_promise_resolve_list_);
   visitor->Trace(play_promise_reject_list_);
   visitor->Trace(audio_source_provider_);
-  visitor->Trace(src_object_);
+  visitor->Trace(src_object_stream_descriptor_);
+  visitor->Trace(src_object_media_source_handle_);
   visitor->Trace(autoplay_policy_);
   visitor->Trace(media_controls_);
   visitor->Trace(controls_list_);

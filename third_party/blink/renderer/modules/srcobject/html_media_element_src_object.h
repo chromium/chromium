@@ -5,20 +5,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SRCOBJECT_HTML_MEDIA_ELEMENT_SRC_OBJECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SRCOBJECT_HTML_MEDIA_ELEMENT_SRC_OBJECT_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class MediaStream;
 class HTMLMediaElement;
 
 class MODULES_EXPORT HTMLMediaElementSrcObject {
   STATIC_ONLY(HTMLMediaElementSrcObject);
 
  public:
-  static MediaStream* srcObject(HTMLMediaElement&);
-  static void setSrcObject(HTMLMediaElement&, MediaStream*);
+  static V8MediaProvider* srcObject(HTMLMediaElement&);
+  static void setSrcObject(HTMLMediaElement&, V8MediaProvider*);
 };
 
 }  // namespace blink

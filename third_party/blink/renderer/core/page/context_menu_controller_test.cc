@@ -413,7 +413,7 @@ TEST_P(ContextMenuControllerTest, MediaStreamVideoLoaded) {
   MediaStreamComponentVector dummy_components;
   auto* media_stream_descriptor = MakeGarbageCollected<MediaStreamDescriptor>(
       dummy_components, dummy_components);
-  video->SetSrcObject(media_stream_descriptor);
+  video->SetSrcObjectVariant(media_stream_descriptor);
   GetDocument()->body()->AppendChild(video);
   test::RunPendingTasks();
   SetReadyState(video.Get(), HTMLMediaElement::kHaveMetadata);

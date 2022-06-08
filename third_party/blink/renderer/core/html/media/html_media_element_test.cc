@@ -296,7 +296,8 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   HTMLMediaElement* Media() const { return media_.Get(); }
   void SetCurrentSrc(const AtomicString& src) {
     KURL url(src);
-    Media()->current_src_ = url;
+    Media()->current_src_.SetSource(
+        url, HTMLMediaElement::SourceMetadata::SourceVisibility::kVisibleToApp);
   }
 
   MockWebMediaPlayer* MockMediaPlayer() { return media_player_; }

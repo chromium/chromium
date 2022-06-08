@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 
 #include "cc/base/region.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_map_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/core/html/media/media_source_handle.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -440,8 +442,26 @@ KURL HitTestResult::AbsoluteMediaURL() const {
 }
 
 MediaStreamDescriptor* HitTestResult::GetMediaStreamDescriptor() const {
-  if (HTMLMediaElement* media_elt = MediaElement())
-    return media_elt->GetSrcObject();
+  if (HTMLMediaElement* media_elt = MediaElement()) {
+    auto variant = media_elt->GetSrcObjectVariant();
+    if (absl::holds_alternative<MediaStreamDescriptor*>(variant)) {
+      // It might be nullptr-valued variant, too, here, but we return nullptr
+      // for that, regardless.
+      return absl::get<MediaStreamDescriptor*>(variant);
+    }
+  }
+  return nullptr;
+}
+
+MediaSourceHandle* HitTestResult::GetMediaSourceHandle() const {
+  if (HTMLMediaElement* media_elt = MediaElement()) {
+    auto variant = media_elt->GetSrcObjectVariant();
+    if (absl::holds_alternative<MediaSourceHandle*>(variant)) {
+      // It might be a nullptr-valued MediaStreamDescriptor* variant, here, but
+      // we return nullptr for that, regardless.
+      return absl::get<MediaSourceHandle*>(variant);
+    }
+  }
   return nullptr;
 }
 
