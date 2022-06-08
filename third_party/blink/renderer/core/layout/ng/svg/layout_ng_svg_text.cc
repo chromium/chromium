@@ -32,6 +32,8 @@ LayoutNGSVGText::LayoutNGSVGText(Element* element)
 void LayoutNGSVGText::StyleDidChange(StyleDifference diff,
                                      const ComputedStyle* old_style) {
   NOT_DESTROYED();
+  if (needs_text_metrics_update_ && diff.HasDifference())
+    diff.SetNeedsFullLayout();
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::StyleDidChange(diff, old_style);
   SVGResources::UpdatePaints(*GetElement(), old_style, StyleRef());
 }
@@ -335,6 +337,11 @@ void LayoutNGSVGText::SetNeedsTextMetricsUpdate() {
   needs_text_metrics_update_ = true;
   // We need to re-shape text.
   SetNeedsCollectInlines(true);
+}
+
+bool LayoutNGSVGText::NeedsTextMetricsUpdate() const {
+  NOT_DESTROYED();
+  return needs_text_metrics_update_;
 }
 
 }  // namespace blink

@@ -25,6 +25,7 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   // descendant <tspan> is changed.
   void SetNeedsPositioningValuesUpdate();
   void SetNeedsTextMetricsUpdate();
+  bool NeedsTextMetricsUpdate() const;
 
   bool IsObjectBoundingBoxValid() const;
 

@@ -286,11 +286,8 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
     // See SVGLayoutSupport::CalculateScreenFontSizeScalingFactor().
     if (old_squared_scale != new_affine_transform.XScaleSquared() +
                                  new_affine_transform.YScaleSquared()) {
-      for (LayoutBox* box : *View()->SvgTextDescendantsMap().at(this)) {
-        box->SetNeedsLayout(layout_invalidation_reason::kStyleChange,
-                            kMarkContainerChain);
+      for (LayoutBox* box : *View()->SvgTextDescendantsMap().at(this))
         To<LayoutNGSVGText>(box)->SetNeedsTextMetricsUpdate();
-      }
     }
   }
 }
