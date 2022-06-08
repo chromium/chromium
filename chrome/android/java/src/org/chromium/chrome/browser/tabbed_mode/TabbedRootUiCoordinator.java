@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpController;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpControllerFactory;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
@@ -256,6 +257,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull ActivityTabProvider tabProvider,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
+            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             @NonNull Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
@@ -289,16 +291,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             boolean initializeUiWithIncognitoColors, @NonNull BackPressManager backPressManager) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
-                profileSupplier, bookmarkBridgeSupplier, contextualSearchManagerSupplier,
-                tabModelSelectorSupplier, startSurfaceSupplier, intentMetadataOneshotSupplier,
-                layoutStateProviderOneshotSupplier, startSurfaceParentTabSupplier,
-                browserControlsManager, windowAndroid, jankTracker, activityLifecycleDispatcher,
-                layoutManagerSupplier, menuOrKeyboardActionController, activityThemeColorSupplier,
-                modalDialogManagerSupplier, appMenuBlocker, supportsAppMenuSupplier,
-                supportsFindInPage, tabCreatorManagerSupplier, fullscreenManager,
-                compositorViewHolderSupplier, tabContentManagerSupplier, snackbarManagerSupplier,
-                activityType, isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
-                statusBarColorProvider, intentRequestTracker, tabReparentingControllerSupplier,
+                profileSupplier, bookmarkBridgeSupplier, tabBookmarkerSupplier,
+                contextualSearchManagerSupplier, tabModelSelectorSupplier, startSurfaceSupplier,
+                intentMetadataOneshotSupplier, layoutStateProviderOneshotSupplier,
+                startSurfaceParentTabSupplier, browserControlsManager, windowAndroid, jankTracker,
+                activityLifecycleDispatcher, layoutManagerSupplier, menuOrKeyboardActionController,
+                activityThemeColorSupplier, modalDialogManagerSupplier, appMenuBlocker,
+                supportsAppMenuSupplier, supportsFindInPage, tabCreatorManagerSupplier,
+                fullscreenManager, compositorViewHolderSupplier, tabContentManagerSupplier,
+                snackbarManagerSupplier, activityType, isInOverviewModeSupplier,
+                isWarmOnResumeSupplier, appMenuDelegate, statusBarColorProvider,
+                intentRequestTracker, tabReparentingControllerSupplier,
                 ephemeralTabCoordinatorSupplier, initializeUiWithIncognitoColors, backPressManager);
         mControlContainerHeightResource = controlContainerHeightResource;
         mInsetObserverViewSupplier = insetObserverViewSupplier;

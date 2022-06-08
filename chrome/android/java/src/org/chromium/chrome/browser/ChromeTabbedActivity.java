@@ -811,7 +811,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 RecordUserAction.record("MobileNewTabOpened");
                 ReturnToChromeUtil.onNewTabOpened();
             };
-            OnClickListener bookmarkClickHandler = v -> addOrEditBookmark(getActivityTab());
+            OnClickListener bookmarkClickHandler =
+                    v -> mTabBookmarkerSupplier.get().addOrEditBookmark(getActivityTab());
 
             Supplier<Boolean> showStartSurfaceSupplier = () -> {
                 // If incognito is selected, tapping the home button stays on the current incognito
@@ -1651,9 +1652,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     protected RootUiCoordinator createRootUiCoordinator() {
         return new TabbedRootUiCoordinator(this, this::onOmniboxFocusChanged,
                 getShareDelegateSupplier(), getActivityTabProvider(), mTabModelProfileSupplier,
-                mBookmarkBridgeSupplier, getContextualSearchManagerSupplier(),
-                getTabModelSelectorSupplier(), mStartSurfaceSupplier,
-                mIntentMetadataOneshotSupplier, mLayoutStateProviderSupplier,
+                mBookmarkBridgeSupplier, mTabBookmarkerSupplier,
+                getContextualSearchManagerSupplier(), getTabModelSelectorSupplier(),
+                mStartSurfaceSupplier, mIntentMetadataOneshotSupplier, mLayoutStateProviderSupplier,
                 mStartSurfaceParentTabSupplier, getBrowserControlsManager(), getWindowAndroid(),
                 mJankTracker, getLifecycleDispatcher(), getLayoutManagerSupplier(),
                 /* menuOrKeyboardActionController= */ this, this::getActivityThemeColor,

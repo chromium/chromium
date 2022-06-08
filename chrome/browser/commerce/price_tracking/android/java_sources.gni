@@ -5,6 +5,7 @@
 price_tracking_java_sources = [
   "//chrome/browser/commerce/price_tracking/android/java/src/org/chromium/chrome/browser/price_tracking/PriceDropNotificationManager.java",
   "//chrome/browser/commerce/price_tracking/android/java/src/org/chromium/chrome/browser/price_tracking/PriceDropNotifier.java",
+  "//chrome/browser/commerce/price_tracking/android/java/src/org/chromium/chrome/browser/price_tracking/PriceTrackingButtonController.java",
   "//chrome/browser/commerce/price_tracking/android/java/src/org/chromium/chrome/browser/price_tracking/PriceTrackingNotificationBridge.java",
   "//chrome/browser/commerce/price_tracking/android/java/src/org/chromium/chrome/browser/price_tracking/PriceTrackingNotificationConfig.java",
 ]

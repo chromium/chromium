@@ -19,6 +19,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.reengagement.ReengagementActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
@@ -69,6 +70,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param profileSupplier Supplier of the currently applicable profile.
      * @param bookmarkBridgeSupplier Supplier of the bookmark bridge for the current profile.
+     * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
      * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param browserControlsManager Manages the browser controls.
@@ -102,6 +104,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull ActivityTabProvider tabProvider,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
+            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             @NonNull Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
@@ -130,8 +133,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher) {
         // clang-format off
-        super(activity, null, shareDelegateSupplier, tabProvider, profileSupplier,
-                bookmarkBridgeSupplier, contextualSearchManagerSupplier, tabModelSelectorSupplier,
+        super(activity, null, shareDelegateSupplier, tabProvider,
+                profileSupplier, bookmarkBridgeSupplier, tabBookmarkerSupplier,
+                contextualSearchManagerSupplier, tabModelSelectorSupplier,
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>(), () -> null,
                 browserControlsManager, windowAndroid, new DummyJankTracker(),

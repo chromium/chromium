@@ -121,6 +121,12 @@ public class AdaptiveToolbarFeatures {
         return minVersion <= VERSION;
     }
 
+    /** @return Whether the contextual page actions should show the action chip version. */
+    public static boolean shouldShowActionChip() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip", true);
+    }
+
     /**
      * When the adaptive toolbar is configured in a single button variant mode, returns the {@link
      * AdaptiveToolbarButtonVariant} being used.

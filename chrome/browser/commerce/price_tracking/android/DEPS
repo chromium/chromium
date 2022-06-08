@@ -3,6 +3,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ShortcutHelper.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/TabBookmarker.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/document/ChromeLauncherActivity.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/init/ChromeBrowserInitializer.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationUmaTracker.java",

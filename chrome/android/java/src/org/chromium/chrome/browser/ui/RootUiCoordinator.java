@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingControlle
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
@@ -90,6 +91,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -243,6 +245,7 @@ public class RootUiCoordinator
             mMerchantTrustSignalsCoordinatorSupplier = new ObservableSupplierImpl<>();
     protected final ObservableSupplier<Profile> mProfileSupplier;
     private final ObservableSupplier<BookmarkBridge> mBookmarkBridgeSupplier;
+    private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
     private BottomSheetObserver mContextualSearchSuppressor;
     private final Supplier<ContextualSearchManager> mContextualSearchManagerSupplier;
@@ -305,6 +308,7 @@ public class RootUiCoordinator
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param profileSupplier Supplier of the currently applicable profile.
      * @param bookmarkBridgeSupplier Supplier of the bookmark bridge for the current profile.
+     * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
      * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
@@ -344,6 +348,7 @@ public class RootUiCoordinator
             @NonNull ActivityTabProvider tabProvider,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
+            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             @NonNull Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
@@ -434,6 +439,7 @@ public class RootUiCoordinator
         }
         mProfileSupplier = profileSupplier;
         mBookmarkBridgeSupplier = bookmarkBridgeSupplier;
+        mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mAppMenuSupplier = new OneshotSupplierImpl<>();
         mContextualSearchManagerSupplier = contextualSearchManagerSupplier;
         mActionModeControllerCallback = new ToolbarActionModeCallback();
@@ -1042,6 +1048,9 @@ public class RootUiCoordinator
 
             mIdentityDiscController = new IdentityDiscController(
                     mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
+            PriceTrackingButtonController priceTrackingButtonController =
+                    new PriceTrackingButtonController(
+                            mActivity, mActivityTabProvider, mTabBookmarkerSupplier);
             ShareButtonController shareButtonController = new ShareButtonController(mActivity,
                     AppCompatResources.getDrawable(
                             mActivity, R.drawable.ic_toolbar_share_offset_24dp),
@@ -1087,6 +1096,8 @@ public class RootUiCoordinator
                     AdaptiveToolbarButtonVariant.SHARE, shareButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.VOICE, voiceToolbarButtonController);
+            adaptiveToolbarButtonController.addButtonVariant(
+                    AdaptiveToolbarButtonVariant.PRICE_TRACKING, priceTrackingButtonController);
             mButtonDataProviders =
                     Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
 
