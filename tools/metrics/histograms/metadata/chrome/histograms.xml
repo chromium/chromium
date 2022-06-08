@@ -34,22 +34,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.NotifyResult" enum="NotifyResult"
-    expires_after="2022-07-03">
+    expires_after="2023-05-31">
   <owner>gab@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
   <summary>
     The result of every rendez-vous reported once per browser process launch.
   </summary>
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.RemoteHungProcessTerminateReason"
-    enum="RemoteHungProcessTerminateReason" expires_after="2022-11-13">
+    enum="RemoteHungProcessTerminateReason" expires_after="2023-05-31">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>The reason of remote hang processes termination.</summary>
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.RemoteProcessInteractionResult"
-    enum="RemoteProcessInteractionResult" expires_after="2022-11-13">
+    enum="RemoteProcessInteractionResult" expires_after="2023-05-31">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -59,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminateProcessErrorCode.Posix"
-    enum="PopularOSErrno" expires_after="2022-07-03">
+    enum="PopularOSErrno" expires_after="2023-05-31">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -69,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminateProcessErrorCode.Windows"
-    enum="WinGetLastError" expires_after="2022-11-13">
+    enum="WinGetLastError" expires_after="2023-05-31">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -79,7 +80,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminateProcessTime" units="ms"
-    expires_after="2022-11-13">
+    expires_after="2023-05-31">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -89,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminationWaitErrorCode.Windows"
-    enum="WinGetLastError" expires_after="2022-11-13">
+    enum="WinGetLastError" expires_after="2023-05-31">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -98,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TimeToCreate" units="ms"
-    expires_after="2022-11-13">
+    expires_after="2023-05-31">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -108,7 +109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TimeToFailure" units="ms"
-    expires_after="2022-11-13">
+    expires_after="2023-05-31">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -119,7 +120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TimeToNotify" units="ms"
-    expires_after="2022-11-13">
+    expires_after="2023-05-31">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
