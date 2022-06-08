@@ -307,8 +307,9 @@ void TabletModeWindowManager::OnSplitViewStateChanged(
 
   if (state != SplitViewController::State::kNoSnap)
     return;
-  switch (
-      SplitViewController::Get(Shell::GetPrimaryRootWindow())->end_reason()) {
+
+  aura::Window* primary_root = Shell::GetPrimaryRootWindow();
+  switch (SplitViewController::Get(primary_root)->end_reason()) {
     case SplitViewController::EndReason::kNormal:
     case SplitViewController::EndReason::kUnsnappableWindowActivated:
       break;
@@ -332,8 +333,17 @@ void TabletModeWindowManager::OnSplitViewStateChanged(
   const MruWindowTracker::WindowList windows =
       Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
           kActiveDesk);
-  for (auto* window : windows)
+  for (auto* window : windows) {
+    // Please notice, if there're multi displays in tablet mode, we should just
+    // maximize snapped `window` which belongs to the primary root window.
+    // Maximizing snapped `window` on the second display can trigger
+    // `EndSplitView` which can trigger activating the overview focus widget,
+    // but the pending activable window could be the window on the primary
+    // display.
+    if (window->GetRootWindow() != primary_root)
+      continue;
     MaximizeIfSnapped(window);
+  }
 }
 
 void TabletModeWindowManager::OnWindowDestroying(aura::Window* window) {

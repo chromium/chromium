@@ -336,7 +336,7 @@ void SplitViewDivider::UpdateDividerBounds() {
 gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(bool is_dragging) {
   const gfx::Rect work_area_bounds_in_screen =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          Shell::GetPrimaryRootWindow()->GetChildById(
+          controller_->root_window()->GetChildById(
               desks_util::GetActiveDeskContainerId()));
   const int divider_position = controller_->divider_position();
   const bool landscape = IsCurrentScreenOrientationLandscape();
