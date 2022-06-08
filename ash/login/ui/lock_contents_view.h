@@ -24,6 +24,8 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "ash/public/cpp/system_tray_observer.h"
+#include "ash/system/enterprise/enterprise_domain_observer.h"
+#include "ash/system/model/enterprise_domain_model.h"
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -71,7 +73,8 @@ class ASH_EXPORT LockContentsView
       public SystemTrayObserver,
       public display::DisplayObserver,
       public KeyboardControllerObserver,
-      public chromeos::PowerManagerClient::Observer {
+      public chromeos::PowerManagerClient::Observer,
+      public EnterpriseDomainObserver {
  public:
   METADATA_HEADER(LockContentsView);
   class AuthErrorBubble;
@@ -154,7 +157,7 @@ class ASH_EXPORT LockContentsView
   void ShowAdbEnabled();
   void ToggleSystemInfo();
   void ShowParentAccessDialog();
-  void SetKioskAppsButtonPresence(bool is_kiosk_apps_button_present);
+  void SetHasKioskApp(bool has_kiosk_apps);
 
   // views::View:
   void Layout() override;
@@ -238,6 +241,10 @@ class ASH_EXPORT LockContentsView
 
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
+
+  // ash::EnterpriseDomainObserver
+  void OnDeviceEnterpriseInfoChanged() override;
+  void OnEnterpriseAccountDomainChanged() override;
 
   void ShowAuthErrorMessageForDebug(int unlock_attempt);
 
@@ -464,6 +471,10 @@ class ASH_EXPORT LockContentsView
   // Shows GAIA sign-in page.
   void OnBackToSigninButtonTapped();
 
+  // Update visibility of Kiosk default message. Called only if
+  // kiosk_license_mode_ is true.
+  void UpdateKioskDefaultMessageVisibility();
+
   const LockScreen::ScreenType screen_type_;
 
   std::vector<UserState> users_;
@@ -504,6 +515,9 @@ class ASH_EXPORT LockContentsView
 
   display::ScopedDisplayObserver display_observer_{this};
 
+  base::ScopedObservation<EnterpriseDomainModel, EnterpriseDomainObserver>
+      enterprise_domain_model_observation_{this};
+
   // All error bubbles and the tooltip view are child views of LockContentsView,
   // and will be torn down when LockContentsView is torn down.
   // Bubble for displaying authentication error.
@@ -542,9 +556,10 @@ class ASH_EXPORT LockContentsView
   // screen note state.
   bool disable_lock_screen_note_ = false;
 
-  // TODO(1307303): Change it to the real function that checks if device is with
-  // Kiosk License
+  // Whether the device is enrolled with Kiosk SKU.
   bool kiosk_license_mode_ = false;
+  // Whether any kiosk app is added.
+  bool has_kiosk_apps_ = false;
 
   // Whether the system information should be displayed or not be displayed
   // forcedly according to policy settings.

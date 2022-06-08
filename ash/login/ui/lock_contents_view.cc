@@ -63,6 +63,7 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_type.h"
+#include "lock_contents_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -610,6 +611,8 @@ LockContentsView::LockContentsView(
   data_dispatcher_->AddObserver(this);
   Shell::Get()->system_tray_notifier()->AddSystemTrayObserver(this);
   keyboard::KeyboardUIController::Get()->AddObserver(this);
+  enterprise_domain_model_observation_.Observe(
+      Shell::Get()->system_tray_model()->enterprise_domain());
 
   // We reuse the focusable state on this view as a signal that focus should
   // switch to the system tray. LockContentsView should otherwise not be
@@ -848,24 +851,10 @@ void LockContentsView::ShowParentAccessDialog() {
   Shell::Get()->login_screen_controller()->ShowParentAccessButton(false);
 }
 
-void LockContentsView::SetKioskAppsButtonPresence(
-    bool is_kiosk_apps_button_present) {
-  if (!kiosk_license_mode_)
-    return;
+void LockContentsView::SetHasKioskApp(bool has_kiosk_apps) {
+  has_kiosk_apps_ = has_kiosk_apps;
 
-  // check if the kiosk app button is visible
-  if (is_kiosk_apps_button_present) {
-    if (kiosk_default_message_)
-      kiosk_default_message_->GetWidget()->Hide();
-  } else {
-    if (!kiosk_default_message_) {
-      // KioskAppDefaultMessage is owned by itself and would be destroyed when
-      // its widget got destroyed, which happened when the widget's window got
-      // destroyed.
-      kiosk_default_message_ = new KioskAppDefaultMessage();
-    }
-    kiosk_default_message_->GetWidget()->Show();
-  }
+  UpdateKioskDefaultMessageVisibility();
 }
 
 void LockContentsView::Layout() {
@@ -1568,6 +1557,23 @@ void LockContentsView::SuspendImminent(
   if (big_user && big_user->auth_user())
     big_user->auth_user()->password_view()->Reset();
 }
+
+void LockContentsView::OnDeviceEnterpriseInfoChanged() {
+  // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
+  // it's false by default.
+  if (!features::IsKioskEnrollmentInOobeEnabled())
+    return;
+
+  kiosk_license_mode_ =
+      Shell::Get()
+          ->system_tray_model()
+          ->enterprise_domain()
+          ->management_device_mode() == ManagementDeviceMode::kKioskSku;
+
+  UpdateKioskDefaultMessageVisibility();
+}
+
+void LockContentsView::OnEnterpriseAccountDomainChanged() {}
 
 void LockContentsView::ShowAuthErrorMessageForDebug(int unlock_attempt) {
   unlock_attempt_ = unlock_attempt;
@@ -2596,9 +2602,30 @@ void LockContentsView::OnBackToSigninButtonTapped() {
       /*prefilled_account=*/EmptyAccountId());
 }
 
+void LockContentsView::UpdateKioskDefaultMessageVisibility() {
+  if (!kiosk_license_mode_)
+    return;
+
+  if (!kiosk_default_message_) {
+    // KioskAppDefaultMessage is owned by itself and would be destroyed when
+    // its widget got destroyed, which happened when the widget's window got
+    // destroyed.
+    kiosk_default_message_ = new KioskAppDefaultMessage();
+  }
+  if (has_kiosk_apps_)
+    kiosk_default_message_->GetWidget()->Hide();
+  else
+    kiosk_default_message_->GetWidget()->Show();
+}
+
 void LockContentsView::SetKioskLicenseModeForTesting(
     bool is_kiosk_license_mode) {
   kiosk_license_mode_ = is_kiosk_license_mode;
+
+  // Normally when management device mode is updated, via
+  // OnDeviceEnterpriseInfoChanged, it updates the visibility of Kiosk default
+  // meesage too.
+  UpdateKioskDefaultMessageVisibility();
 }
 
 BEGIN_METADATA(LockContentsView, NonAccessibleView)

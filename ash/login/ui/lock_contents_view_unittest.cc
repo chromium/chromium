@@ -3286,7 +3286,8 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNumberOfKioskApps(1);
 
-  EXPECT_FALSE(test_api.kiosk_default_message());
+  EXPECT_TRUE(test_api.kiosk_default_message());
+  EXPECT_FALSE(test_api.kiosk_default_message()->GetWidget()->IsVisible());
 }
 
 // Checks default message hidden if device is not with kiosk license and has
