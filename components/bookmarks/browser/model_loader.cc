@@ -19,6 +19,7 @@
 #include "components/bookmarks/browser/titled_url_index.h"
 #include "components/bookmarks/browser/url_index.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/bookmarks/common/url_load_stats.h"
 
 namespace bookmarks {
 
@@ -81,53 +82,8 @@ void LoadBookmarks(const base::FilePath& path,
 
   details->CreateUrlIndex();
 
-  UrlIndex::Stats stats = details->url_index()->ComputeStats();
-
-  DCHECK_LE(stats.duplicate_url_bookmark_count, stats.total_url_bookmark_count);
-  DCHECK_LE(stats.duplicate_url_and_title_bookmark_count,
-            stats.duplicate_url_bookmark_count);
-  DCHECK_LE(stats.duplicate_url_and_title_and_parent_bookmark_count,
-            stats.duplicate_url_and_title_bookmark_count);
-
-  // TODO(crbug.com/1321690): Consolidate metrics calls into a file.
-  base::UmaHistogramCounts100000(
-      "Bookmarks.Count.OnProfileLoad",
-      base::saturated_cast<int>(stats.total_url_bookmark_count));
-
-  if (stats.duplicate_url_bookmark_count != 0) {
-    base::UmaHistogramCounts100000(
-        "Bookmarks.Count.OnProfileLoad.DuplicateUrl2",
-        base::saturated_cast<int>(stats.duplicate_url_bookmark_count));
-  }
-
-  if (stats.duplicate_url_and_title_bookmark_count != 0) {
-    base::UmaHistogramCounts100000(
-        "Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitle",
-        base::saturated_cast<int>(
-            stats.duplicate_url_and_title_bookmark_count));
-  }
-
-  if (stats.duplicate_url_and_title_and_parent_bookmark_count != 0) {
-    base::UmaHistogramCounts100000(
-        "Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitleAndParent",
-        base::saturated_cast<int>(
-            stats.duplicate_url_and_title_and_parent_bookmark_count));
-  }
-
-  // Log derived metrics for convenience.
-  base::UmaHistogramCounts100000(
-      "Bookmarks.Count.OnProfileLoad.UniqueUrl",
-      base::saturated_cast<int>(stats.total_url_bookmark_count -
-                                stats.duplicate_url_bookmark_count));
-  base::UmaHistogramCounts100000(
-      "Bookmarks.Count.OnProfileLoad.UniqueUrlAndTitle",
-      base::saturated_cast<int>(stats.total_url_bookmark_count -
-                                stats.duplicate_url_and_title_bookmark_count));
-  base::UmaHistogramCounts100000(
-      "Bookmarks.Count.OnProfileLoad.UniqueUrlAndTitleAndParent",
-      base::saturated_cast<int>(
-          stats.total_url_bookmark_count -
-          stats.duplicate_url_and_title_and_parent_bookmark_count));
+  UrlLoadStats stats = details->url_index()->ComputeStats();
+  metrics::RecordUrlLoadStatsOnProfileLoad(stats);
 
   int64_t file_size_bytes;
   if (bookmark_file_exists && base::GetFileSize(path, &file_size_bytes)) {

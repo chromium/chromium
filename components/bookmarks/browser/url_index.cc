@@ -9,6 +9,7 @@
 #include "base/containers/adapters.h"
 #include "base/guid.h"
 #include "components/bookmarks/browser/url_and_title.h"
+#include "components/bookmarks/common/url_load_stats.h"
 
 namespace bookmarks {
 
@@ -23,7 +24,7 @@ namespace {
 // calling site.
 void AddStatsForBookmarksWithSameUrl(
     std::vector<const BookmarkNode*>* bookmarks_with_same_url,
-    UrlIndex::Stats* stats) {
+    UrlLoadStats* stats) {
   if (bookmarks_with_same_url->size() <= 1)
     return;
 
@@ -126,9 +127,9 @@ bool UrlIndex::HasBookmarks() const {
   return !nodes_ordered_by_url_set_.empty();
 }
 
-UrlIndex::Stats UrlIndex::ComputeStats() const {
+UrlLoadStats UrlIndex::ComputeStats() const {
   base::AutoLock url_lock(url_lock_);
-  UrlIndex::Stats stats;
+  UrlLoadStats stats;
   stats.total_url_bookmark_count = nodes_ordered_by_url_set_.size();
 
   if (stats.total_url_bookmark_count <= 1)

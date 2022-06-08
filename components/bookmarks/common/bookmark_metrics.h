@@ -7,7 +7,11 @@
 
 #include "base/time/time.h"
 
-namespace bookmarks::metrics {
+namespace bookmarks {
+
+struct UrlLoadStats;
+
+namespace metrics {
 
 // Records the time since the last save with a 1 hour max. The first save will
 // record the time since startup.
@@ -20,6 +24,11 @@ void RecordTimeToLoadAtStartup(base::TimeDelta delta);
 // Records size of the bookmark file at startup.
 void RecordFileSizeAtStartup(int64_t total_bytes);
 
-}  // namespace bookmarks::metrics
+// Records the metrics derived from `stats`. Recording happens on profile load.
+void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats);
+
+}  // namespace metrics
+
+}  // namespace bookmarks
 
 #endif  // COMPONENTS_BOOKMARKS_COMMON_BOOKMARK_METRICS_H_

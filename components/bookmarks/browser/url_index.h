@@ -19,6 +19,7 @@ namespace bookmarks {
 
 class BookmarkNode;
 
+struct UrlLoadStats;
 struct UrlAndTitle;
 
 // UrlIndex maintains the bookmark nodes of type url. The nodes are ordered by
@@ -67,24 +68,8 @@ class UrlIndex : public HistoryBookmarkModel {
   // Returns true if there is at least one bookmark.
   bool HasBookmarks() const;
 
-  // Returns some stats about number of URL bookmarks stored, for UMA purposes.
-  struct Stats {
-    // Number of bookmark in the index excluding folders.
-    size_t total_url_bookmark_count = 0;
-    // Number of bookmarks (excluding folders) with a URL that is used by at
-    // least one other bookmark, excluding one bookmark per unique URL (i.e. all
-    // except one are considered duplicates).
-    size_t duplicate_url_bookmark_count = 0;
-    // Number of bookmarks (excluding folders) with the pair <URL, title> that
-    // is used by at least one other bookmark, excluding one bookmark per unique
-    // URL (i.e. all except one are considered duplicates).
-    size_t duplicate_url_and_title_bookmark_count = 0;
-    // Number of bookmarks (excluding folders) with the triple <URL, title,
-    // parent> that is used by at least one other bookmark, excluding one
-    // bookmark per unique URL (i.e. all except one are considered duplicates).
-    size_t duplicate_url_and_title_and_parent_bookmark_count = 0;
-  };
-  Stats ComputeStats() const;
+  // Compute stats from the load.
+  UrlLoadStats ComputeStats() const;
 
   // HistoryBookmarkModel:
   bool IsBookmarked(const GURL& url) override;

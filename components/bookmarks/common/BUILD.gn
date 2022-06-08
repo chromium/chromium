@@ -10,6 +10,7 @@ static_library("common") {
     "bookmark_metrics.h",
     "bookmark_pref_names.cc",
     "bookmark_pref_names.h",
+    "url_load_stats.h",
   ]
 
   deps = [ "//base" ]
