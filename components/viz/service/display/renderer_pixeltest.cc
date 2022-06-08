@@ -45,7 +45,6 @@
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
 #include "components/viz/test/test_types.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/video_frame.h"
@@ -60,8 +59,6 @@
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/test/icc_profiles.h"
-
-using gpu::gles2::GLES2Interface;
 
 namespace viz {
 namespace {

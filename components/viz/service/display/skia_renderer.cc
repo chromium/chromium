@@ -45,7 +45,6 @@
 #include "components/viz/service/display/renderer_utils.h"
 #include "components/viz/service/display/resource_fence.h"
 #include "components/viz/service/display/skia_output_surface.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"

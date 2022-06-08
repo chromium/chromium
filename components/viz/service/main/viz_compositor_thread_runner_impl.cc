@@ -28,7 +28,6 @@
 #include "components/viz/service/performance_hint/hint_session.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
-#include "gpu/ipc/command_buffer_task_executor.h"
 #include "gpu/ipc/scheduler_sequence.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"

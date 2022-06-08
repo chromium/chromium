@@ -38,7 +38,6 @@
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 #include "gpu/ipc/common/memory_stats.h"
-#include "gpu/ipc/in_process_command_buffer.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"

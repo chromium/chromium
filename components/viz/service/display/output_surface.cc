@@ -15,8 +15,6 @@
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "gpu/GLES2/gl2extchromium.h"
-#include "gpu/command_buffer/client/context_support.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/swap_result.h"
 

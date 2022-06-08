@@ -48,8 +48,6 @@
 #include "components/viz/service/display/surface_aggregator.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
-#include "gpu/command_buffer/client/context_support.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/ipc/scheduler_sequence.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

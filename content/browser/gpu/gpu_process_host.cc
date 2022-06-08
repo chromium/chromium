@@ -66,7 +66,6 @@
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/common/result_codes.h"
 #include "gpu/ipc/host/shader_disk_cache.h"
-#include "gpu/ipc/in_process_command_buffer.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"

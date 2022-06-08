@@ -146,7 +146,6 @@ source_set("browser") {
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/client:raster_interface",
-    "//gpu/ipc:gl_in_process_context",
     "//gpu/ipc/host",
     "//gpu/vulkan:buildflags",
     "//media",
