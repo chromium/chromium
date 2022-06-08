@@ -114,8 +114,12 @@ CompositorGpuThread::GetSharedContextState() {
   const bool use_passthrough_decoder =
       gpu::gles2::PassthroughCommandDecoderSupported() &&
       gpu_preferences.use_passthrough_cmd_decoder;
+  gpu::ContextCreationAttribs attribs_helper;
+  attribs_helper.context_type = features::UseGles2ForOopR()
+                                    ? gpu::CONTEXT_TYPE_OPENGLES2
+                                    : gpu::CONTEXT_TYPE_OPENGLES3;
   gl::GLContextAttribs attribs = gpu::gles2::GenerateGLContextAttribs(
-      gpu::ContextCreationAttribs(), use_passthrough_decoder);
+      attribs_helper, use_passthrough_decoder);
   attribs.angle_context_virtualization_group_number =
       gl::AngleContextVirtualizationGroup::kDrDc;
 

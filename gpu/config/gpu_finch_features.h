@@ -14,10 +14,11 @@
 
 namespace features {
 
+GPU_EXPORT extern const base::Feature kUseGles2ForOopR;
+
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 #if BUILDFLAG(IS_ANDROID)
-GPU_EXPORT extern const base::Feature kUseGles2ForOopR;
 GPU_EXPORT extern const base::Feature kAndroidSurfaceControl;
 GPU_EXPORT extern const base::Feature kWebViewSurfaceControl;
 GPU_EXPORT extern const base::Feature kAImageReader;
@@ -79,6 +80,7 @@ GPU_EXPORT extern const base::Feature kEnableDrDcVulkan;
 
 GPU_EXPORT extern const base::Feature kWebGPUService;
 
+GPU_EXPORT bool UseGles2ForOopR();
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();
 GPU_EXPORT bool IsGpuMainThreadForcedToNormalPriorityDrDc();

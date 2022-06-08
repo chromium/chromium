@@ -303,10 +303,7 @@ bool SharedContextState::InitializeGrContext(
 
   if (gr_context_type_ == GrContextType::kGL) {
     DCHECK(context_->IsCurrent(nullptr));
-    bool use_version_es2 = false;
-#if BUILDFLAG(IS_ANDROID)
-    use_version_es2 = base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
-#endif
+    constexpr bool use_version_es2 = false;
     sk_sp<GrGLInterface> interface(gl::init::CreateGrGLInterface(
         *context_->GetVersionInfo(), use_version_es2, progress_reporter));
     if (!interface) {

@@ -10,6 +10,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/gl_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_image_reader_compat.h"
@@ -52,11 +53,17 @@ bool IsDeviceBlocked(const char* field, const std::string& block_list) {
 
 }  // namespace
 
+// Used to limit GL version to 2.0 for skia raster and compositing.
+const base::Feature kUseGles2ForOopR {
+  "UseGles2ForOopR",
 #if BUILDFLAG(IS_ANDROID)
-// Used to limit GL version to 2.0 for skia raster on Android.
-const base::Feature kUseGles2ForOopR{"UseGles2ForOopR",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
+#if BUILDFLAG(IS_ANDROID)
 // Use android SurfaceControl API for managing display compositor's buffer queue
 // and using overlays on Android. Also used by webview to disable surface
 // SurfaceControl.
@@ -276,6 +283,16 @@ const base::Feature kReduceOpsTaskSplitting{
 // discardable memory.
 const base::Feature kNoDiscardableMemoryForGpuDecodePath{
     "NoDiscardableMemoryForGpuDecodePath", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool UseGles2ForOopR() {
+#if BUILDFLAG(IS_ANDROID)
+  // GLS3 + passthrough decoder break many tests on Android.
+  // TODO(crbug.com/1044287): use GLES3 with passthrough decoder.
+  if (gl::UsePassthroughCommandDecoder(base::CommandLine::ForCurrentProcess()))
+    return true;
+#endif
+  return base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
+}
 
 bool IsUsingVulkan() {
 #if BUILDFLAG(IS_ANDROID)

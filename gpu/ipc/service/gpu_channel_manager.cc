@@ -804,8 +804,12 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
     context = nullptr;
   }
   if (!context) {
+    ContextCreationAttribs attribs_helper;
+    attribs_helper.context_type = features::UseGles2ForOopR()
+                                      ? gpu::CONTEXT_TYPE_OPENGLES2
+                                      : gpu::CONTEXT_TYPE_OPENGLES3;
     gl::GLContextAttribs attribs = gles2::GenerateGLContextAttribs(
-        ContextCreationAttribs(), use_passthrough_decoder);
+        attribs_helper, use_passthrough_decoder);
 
     // Disable robust resource initialization for raster decoder and compositor.
     // TODO(crbug.com/1192632): disable robust_resource_initialization for
