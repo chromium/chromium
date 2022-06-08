@@ -2597,6 +2597,8 @@ static_library("browser") {
       "android/cookies/cookies_fetcher_util.cc",
       "android/customtabs/client_data_header_web_contents_observer.cc",
       "android/customtabs/client_data_header_web_contents_observer.h",
+      "android/customtabs/custom_tab_session_state_tracker.cc",
+      "android/customtabs/custom_tab_session_state_tracker.h",
       "android/customtabs/custom_tabs_connection.cc",
       "android/customtabs/detached_resource_request.cc",
       "android/customtabs/detached_resource_request.h",

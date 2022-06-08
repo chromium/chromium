@@ -90,8 +90,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     protected BaseCustomTabActivityComponent createComponent(
             ChromeActivityCommonsModule commonsModule) {
         BaseCustomTabActivityComponent component = super.createComponent(commonsModule);
-        mOpenTimeRecorder = new CustomTabsOpenTimeRecorder(
-                getLifecycleDispatcher(), mNavigationController, this::isFinishing);
+        mOpenTimeRecorder = new CustomTabsOpenTimeRecorder(getLifecycleDispatcher(),
+                mNavigationController, this::isFinishing, mIntentDataProvider);
         return component;
     }
 
