@@ -1089,7 +1089,14 @@ if (enable_java_templates) {
                                "allow_missing_resources",
                                "visibility",
                              ])
-      deps = _deps
+      _lib_deps = filter_exclude(filter_include(_deps, java_library_patterns),
+                                 java_resource_patterns)
+
+      # Depend on non-library deps and on __assetres subtargets of library deps.
+      deps = filter_exclude(_deps, _lib_deps)
+      foreach(_lib_dep, _lib_deps) {
+        deps += [ "${_lib_dep}__assetres" ]
+      }
 
       res_sources_path = _res_sources_path
       sources = _resource_files
