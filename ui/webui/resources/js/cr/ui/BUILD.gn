@@ -16,7 +16,7 @@ preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 generate_grd("build_grdp") {
   grd_prefix = "webui_js_cr_ui"
   out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":preprocess" ]
+  public_deps = [ ":preprocess" ]
   manifest_files = [
     "$target_gen_dir/$preprocess_gen_manifest",
     "$target_gen_dir/$preprocess_src_manifest",

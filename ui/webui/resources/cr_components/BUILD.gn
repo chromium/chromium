@@ -22,7 +22,7 @@ preprocess_src_manifest = "preprocessed_src_manifest.json"
 generate_grd("build_grdp") {
   grd_prefix = "cr_components"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
-  deps = [ ":preprocess" ]
+  public_deps = [ ":preprocess" ]
   if (is_chromeos_ash) {
     input_files_base_dir = rebase_path(".", "//")
     input_files = [

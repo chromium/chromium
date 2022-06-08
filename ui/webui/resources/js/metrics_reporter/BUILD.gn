@@ -47,7 +47,7 @@ copy("copy_src_and_mojom") {
 generate_grd("build_grdp") {
   grd_prefix = "webui_js_metrics_reporter"
   out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":build_ts" ]
+  public_deps = [ ":build_ts" ]
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   resource_path_prefix = "js/metrics_reporter"
 }

@@ -78,7 +78,7 @@ generate_grd("build_grdp") {
     "colorize.svg",
     "brush.svg",
   ]
-  deps = [ ":build_ts" ]
+  public_deps = [ ":build_ts" ]
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   resource_path_prefix = "cr_components/customize_themes"
 }

@@ -48,7 +48,7 @@ ts_library("build_ts") {
 generate_grd("build_grdp") {
   grd_prefix = "cr_components_color_change_listener"
   out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":build_ts" ]
+  public_deps = [ ":build_ts" ]
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   resource_path_prefix = "cr_components/color_change_listener"
 }

@@ -18,7 +18,7 @@ include_polymer = !is_android && !is_ios
 generate_grd("build_grdp") {
   grd_prefix = "webui_js"
   out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":preprocess" ]
+  public_deps = [ ":preprocess" ]
   manifest_files = [
     "$target_gen_dir/$preprocess_gen_manifest",
     "$target_gen_dir/$preprocess_src_manifest",

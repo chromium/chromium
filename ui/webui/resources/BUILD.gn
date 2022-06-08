@@ -14,7 +14,7 @@ generate_grd("build_grd") {
   grd_prefix = "webui_generated"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
-  deps = [
+  public_deps = [
     ":build_ts_grdp",
     "cr_components/color_change_listener:build_grdp",
     "css:build_grdp",
@@ -50,7 +50,7 @@ generate_grd("build_grd") {
   }
 
   if (include_polymer) {
-    deps += [
+    public_deps += [
       "cr_components:build_grdp",
       "cr_components/app_management:build_grdp",
       "cr_components/customize_themes:build_grdp",
@@ -70,27 +70,27 @@ generate_grd("build_grd") {
     ]
 
     if (use_nss_certs) {
-      deps += [ "cr_components/certificate_manager:build_grdp" ]
+      public_deps += [ "cr_components/certificate_manager:build_grdp" ]
       grdp_files +=
           [ "$target_gen_dir/cr_components/certificate_manager/resources.grdp" ]
     }
 
     # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
     if (is_chromeos_ash) {
-      deps += [ "//third_party/polymer/v1_0:build_grdp" ]
+      public_deps += [ "//third_party/polymer/v1_0:build_grdp" ]
       grdp_files += [
         "$root_gen_dir/third_party/polymer/v1_0/polymer_1_0_resources.grdp",
       ]
     }
 
     if (!is_android) {
-      deps += [ "cr_components/history_clusters:build_grdp" ]
+      public_deps += [ "cr_components/history_clusters:build_grdp" ]
       grdp_files += [ "$root_gen_dir/ui/webui/resources/cr_components/history_clusters/resources.grdp" ]
     }
   }
 
   if (is_chromeos_ash) {
-    deps += [
+    public_deps += [
       ":build_cros_styles_grdp",
       "//ash/webui/common/resources:build_grdp",
       "//chromeos/ash/components/cros_elements:build_grdp",
@@ -107,7 +107,7 @@ generate_grd("build_grd") {
   }
 
   if (!is_android && !is_ios) {
-    deps += [ "//third_party/lottie:build_grdp" ]
+    public_deps += [ "//third_party/lottie:build_grdp" ]
     grdp_files += [ "$root_gen_dir/third_party/lottie/resources.grdp" ]
   }
 }
@@ -116,7 +116,7 @@ if (is_chromeos_ash) {
   generate_grd("build_cros_styles_grdp") {
     grd_prefix = "webui"
     out_grd = "$target_gen_dir/cros_styles_resources.grdp"
-    deps = [ "//ui/chromeos/styles:cros_styles_css" ]
+    public_deps = [ "//ui/chromeos/styles:cros_styles_css" ]
     input_files_base_dir = rebase_path("$root_gen_dir/", root_build_dir)
     input_files = [ "ui/chromeos/styles/cros_styles.css" ]
     resource_path_rewrites =
@@ -157,7 +157,7 @@ preprocessed_folder = "$target_gen_dir/preprocessed"
 generate_grd("build_ts_grdp") {
   grd_prefix = "webui"
   out_grd = "$target_gen_dir/resources_ts.grdp"
-  deps = [ ":library" ]
+  public_deps = [ ":library" ]
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 }
 

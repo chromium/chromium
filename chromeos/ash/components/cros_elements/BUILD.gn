@@ -13,7 +13,7 @@ generate_grd("build_grdp") {
 
   input_files = [ "button/button.js" ]
 
-  deps = [ "button" ]
+  public_deps = [ "button" ]
 
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
   resource_path_prefix = "cros_elements"
