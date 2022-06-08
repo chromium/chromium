@@ -823,10 +823,16 @@ if (is_win || is_mac || is_linux) {
     ]
 
     if (is_mac) {
-      data_deps = [ "//chrome/updater/mac:updater_bundle_test" ]
+      data_deps = [
+        "//chrome/updater/mac:updater_bundle_test",
+        "//third_party/updater:old_updater",
+      ]
     }
     if (is_win) {
-      data_deps = [ ":test_service_files" ]
+      data_deps = [
+        ":test_service_files",
+        "//third_party/updater:old_updater",
+      ]
     }
   }
 
@@ -849,10 +855,16 @@ if (is_win || is_mac || is_linux) {
 
     data_deps = [ ":updater_integration_tests_helper" ]
     if (is_mac) {
-      data_deps += [ "//chrome/updater/mac:updater_bundle_test" ]
+      data_deps += [
+        "//chrome/updater/mac:updater_bundle_test",
+        "//third_party/updater:old_updater",
+      ]
     }
     if (is_win) {
-      data_deps += [ ":test_service_files" ]
+      data_deps += [
+        ":test_service_files",
+        "//third_party/updater:old_updater",
+      ]
     }
   }
 
