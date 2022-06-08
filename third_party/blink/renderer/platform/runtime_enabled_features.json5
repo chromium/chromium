@@ -448,7 +448,6 @@
       name: "ConditionalFocus",
       origin_trial_feature_name: "ConditionalFocus",
       status: {"Android": "", "default": "experimental"},
-      implied_by: ["RegionCapture"],
     },
     {
       name: "ConsolidatedMovementXY",
@@ -1951,7 +1950,7 @@
     {
       name: "RegionCapture",
       origin_trial_feature_name: "RegionCapture",
-      status: "experimental",
+      status: {"Android": "", "default": "stable"},
     },
     {
       name: "RemotePlayback",

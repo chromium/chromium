@@ -754,16 +754,28 @@ class GetDisplayMediaVideoTrackBrowserTest
     WebRtcTestBase::SetUpCommandLine(command_line);
 
     std::vector<std::string> enabled_blink_features;
+    std::vector<std::string> disabled_blink_features;
+
     if (conditional_focus_enabled_) {
       enabled_blink_features.push_back("ConditionalFocus");
     }
+
     if (region_capture_enabled_) {
       enabled_blink_features.push_back("RegionCapture");
+    } else {
+      disabled_blink_features.push_back("RegionCapture");
     }
+
     if (!enabled_blink_features.empty()) {
       command_line->AppendSwitchASCII(
           switches::kEnableBlinkFeatures,
           base::JoinString(enabled_blink_features, ","));
+    }
+
+    if (!disabled_blink_features.empty()) {
+      command_line->AppendSwitchASCII(
+          switches::kDisableBlinkFeatures,
+          base::JoinString(disabled_blink_features, ","));
     }
 
     command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
@@ -810,9 +822,8 @@ class GetDisplayMediaVideoTrackBrowserTest
                    : conditional_focus_enabled_ ? "FocusableMediaStreamTrack"
                                                 : "MediaStreamTrack";
       case DisplaySurfaceType::kWindow:
-        return conditional_focus_enabled_ || region_capture_enabled_
-                   ? "FocusableMediaStreamTrack"
-                   : "MediaStreamTrack";
+        return conditional_focus_enabled_ ? "FocusableMediaStreamTrack"
+                                          : "MediaStreamTrack";
       case DisplaySurfaceType::kScreen:
         return "MediaStreamTrack";
     }
