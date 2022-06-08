@@ -93,20 +93,6 @@ struct TrashLocation {
 
 }  // namespace
 
-// Constant representing the Trash folder name.
-extern const char kTrashFolderName[];
-
-// Constant representing the "info" folder name inside .Trash.
-extern const char kInfoFolderName[];
-
-// Constant representing the "files" folder name inside .Trash.
-extern const char kFilesFolderName[];
-
-// Helper to create a destination path for a file in one of the .Trash folders.
-const base::FilePath GenerateTrashPath(const base::FilePath& trash_path,
-                                       const std::string& subdir,
-                                       const std::string& file_name);
-
 // This class represents a trash task. A trash task attempts to trash zero or
 // more files by first moving them to a .Trash/files or .Trash-{UID}/files
 // folder that resides in a parent folder for:

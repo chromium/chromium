@@ -9,37 +9,22 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time_override.h"
-#include "base/time/time_to_iso8601.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/browser/ash/file_manager/trash_common_util.h"
+#include "chrome/browser/ash/file_manager/trash_unittest_base.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/browser_task_environment.h"
-#include "storage/browser/file_system/external_mount_points.h"
-#include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace file_manager {
 namespace io_task {
@@ -75,181 +60,12 @@ MATCHER_P(EntryStatusErrors, matcher, "") {
   return testing::ExplainMatchResult(matcher, errors, result_listener);
 }
 
-constexpr size_t kTestFileSize = 32;
-class TrashIOTaskTest : public testing::Test {
- protected:
-  void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+class TrashIOTaskTest : public TrashBaseTest {
+ public:
+  TrashIOTaskTest() = default;
 
-    // Pass in a mock factory method that sets up a fake
-    // DriveIntegrationService. This ensures the enabled paths contain the drive
-    // path.
-    create_drive_integration_service_ =
-        base::BindRepeating(&TrashIOTaskTest::CreateDriveIntegrationService,
-                            base::Unretained(this));
-    service_factory_for_test_ = std::make_unique<
-        drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
-        &create_drive_integration_service_);
-    // Create the profile and add it to the user manager for DriveFS.
-    profile_ =
-        std::make_unique<TestingProfile>(base::FilePath(temp_dir_.GetPath()));
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    AccountId account_id =
-        AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345");
-    user_manager->AddUser(account_id);
-    user_manager->LoginUser(account_id);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
-
-    file_system_context_ = storage::CreateFileSystemContextForTesting(
-        nullptr, temp_dir_.GetPath());
-    my_files_dir_ = temp_dir_.GetPath().Append("MyFiles");
-    storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-        file_manager::util::GetDownloadsMountPointName(profile_.get()),
-        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-        my_files_dir_);
-
-    // Create Downloads inside the `temp_dir_` which will implicitly create the
-    // `my_files_dir_.
-    downloads_dir_ = my_files_dir_.Append("Downloads");
-    ASSERT_TRUE(base::CreateDirectory(downloads_dir_));
-
-    chromeos::DBusThreadManager::Initialize();
-    ash::CiceroneClient::InitializeFake();
-    ash::ConciergeClient::InitializeFake();
-    ash::SeneschalClient::InitializeFake();
-
-    // Ensure Crostini is setup correctly.
-    crostini_manager_ =
-        crostini::CrostiniManager::GetForProfile(profile_.get());
-    crostini_manager_->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
-    crostini_manager_->AddRunningContainerForTesting(
-        crostini::kCrostiniDefaultVmName,
-        crostini::ContainerInfo(crostini::kCrostiniDefaultContainerName,
-                                "testuser", "/remote/mount", "PLACEHOLDER_IP"));
-
-    crostini_dir_ = temp_dir_.GetPath().Append("crostini");
-    ASSERT_TRUE(base::CreateDirectory(crostini_dir_));
-
-    VolumeManagerFactory::GetInstance()->SetTestingFactory(
-        profile_.get(),
-        base::BindLambdaForTesting([this](content::BrowserContext* context) {
-          return std::unique_ptr<KeyedService>(std::make_unique<VolumeManager>(
-              Profile::FromBrowserContext(context), nullptr, nullptr,
-              &disk_mount_manager_, nullptr,
-              VolumeManager::GetMtpStorageInfoCallback()));
-        }));
-    crostini_remote_mount_ = base::FilePath("/remote/mount");
-    auto* volume_manager = VolumeManager::Get(profile_.get());
-    volume_manager->AddVolumeForTesting(
-        Volume::CreateForSshfsCrostini(crostini_dir_, crostini_remote_mount_));
-  }
-
-  void TearDown() override {
-    // Ensure any previously registered mount points for Downloads are revoked.
-    storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
-    scoped_user_manager_.reset();
-    profile_.reset();
-    ash::SeneschalClient::Shutdown();
-    ash::ConciergeClient::Shutdown();
-    ash::CiceroneClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
-  }
-
-  drive::DriveIntegrationService* CreateDriveIntegrationService(
-      Profile* profile) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::FilePath mount_point = temp_dir_.GetPath().Append("drivefs");
-    fake_drivefs_helper_ =
-        std::make_unique<drive::FakeDriveFsHelper>(profile, mount_point);
-    integration_service_ = new drive::DriveIntegrationService(
-        profile, "", mount_point,
-        fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
-    return integration_service_;
-  }
-
-  storage::FileSystemURL CreateFileSystemURL(
-      const base::FilePath& absolute_path) {
-    std::string relative_path = absolute_path.value();
-    EXPECT_TRUE(file_manager::util::ReplacePrefix(
-        &relative_path, temp_dir_.GetPath().AsEndingWithSeparator().value(),
-        ""));
-
-    return file_system_context_->CreateCrackedFileSystemURL(
-        kTestStorageKey, storage::kFileSystemTypeTest,
-        base::FilePath::FromUTF8Unsafe(relative_path));
-  }
-
-  const base::FilePath GenerateInfoPath(const std::string& file_name) {
-    return GenerateTrashPath(downloads_dir_.Append(kTrashFolderName),
-                             kInfoFolderName, file_name);
-  }
-
-  const base::FilePath GenerateFilesPath(const std::string& file_name) {
-    return GenerateTrashPath(downloads_dir_.Append(kTrashFolderName),
-                             kFilesFolderName, file_name);
-  }
-
-  const std::string CreateTrashInfoContentsFromPath(
-      const base::FilePath& file_path,
-      const base::FilePath& base_path,
-      const base::FilePath& prefix_path) {
-    std::string relative_restore_path = file_path.value();
-    EXPECT_TRUE(file_manager::util::ReplacePrefix(
-        &relative_restore_path, base_path.AsEndingWithSeparator().value(), ""));
-
-    base::FilePath prefix = (prefix_path.IsAbsolute())
-                                ? prefix_path
-                                : base::FilePath("/").Append(prefix_path);
-
-    return base::StrCat(
-        {"[Trash Info]\nPath=", prefix.AsEndingWithSeparator().value(),
-         relative_restore_path,
-         "\nDeletionDate=", base::TimeToISO8601(base::Time())});
-  }
-
-  const std::string CreateTrashInfoContentsFromPath(
-      const base::FilePath& file_path) {
-    return CreateTrashInfoContentsFromPath(file_path, my_files_dir_,
-                                           base::FilePath("/"));
-  }
-
-  bool EnsureTrashDirectorySetup(const base::FilePath& parent_path) {
-    base::FilePath trash_path = parent_path.Append(kTrashFolderName);
-    if (!base::CreateDirectory(trash_path.Append(kInfoFolderName))) {
-      return false;
-    }
-    if (!base::CreateDirectory(trash_path.Append(kFilesFolderName))) {
-      return false;
-    }
-    return true;
-  }
-
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("chrome-extension://abc");
-
-  // DriveFS setup methods to ensure the tests have access to a mock
-  // DriveIntegrationService tied to the TestingProfile.
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
-  drive::DriveIntegrationService* integration_service_ = nullptr;
-  drive::DriveIntegrationServiceFactory::FactoryCallback
-      create_drive_integration_service_;
-  std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
-      service_factory_for_test_;
-
-  crostini::CrostiniManager* crostini_manager_;
-  file_manager::FakeDiskMountManager disk_mount_manager_;
-
-  base::ScopedTempDir temp_dir_;
-  base::FilePath downloads_dir_;
-  base::FilePath my_files_dir_;
-  base::FilePath drive_dir_;
-  base::FilePath crostini_dir_;
-  base::FilePath crostini_remote_mount_;
-  scoped_refptr<storage::FileSystemContext> file_system_context_;
+  TrashIOTaskTest(const TrashIOTaskTest&) = delete;
+  TrashIOTaskTest& operator=(const TrashIOTaskTest&) = delete;
 };
 
 void AssertTrashSetup(const base::FilePath& parent_path) {

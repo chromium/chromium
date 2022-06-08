@@ -11,6 +11,8 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/restore_io_task.h"
+#include "chrome/browser/ash/file_manager/trash_unittest_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -28,39 +30,12 @@ using ::base::test::RunClosure;
 using ::testing::_;
 using ::testing::Field;
 
-constexpr size_t kTestFileSize = 32;
+class RestoreIOTaskTest : public TrashBaseTest {
+ public:
+  RestoreIOTaskTest() = default;
 
-class RestoreIOTaskTest : public testing::Test {
- protected:
-  void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
-    profile_ =
-        std::make_unique<TestingProfile>(base::FilePath(temp_dir_.GetPath()));
-
-    file_system_context_ = storage::CreateFileSystemContextForTesting(
-        nullptr, temp_dir_.GetPath());
-  }
-
-  storage::FileSystemURL CreateFileSystemURL(
-      const base::FilePath& absolute_path) {
-    std::string relative_path = absolute_path.value();
-    EXPECT_TRUE(file_manager::util::ReplacePrefix(
-        &relative_path, temp_dir_.GetPath().AsEndingWithSeparator().value(),
-        ""));
-
-    return file_system_context_->CreateCrackedFileSystemURL(
-        kTestStorageKey, storage::kFileSystemTypeTest,
-        base::FilePath::FromUTF8Unsafe(relative_path));
-  }
-
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("chrome-extension://abc");
-
-  base::ScopedTempDir temp_dir_;
-  scoped_refptr<storage::FileSystemContext> file_system_context_;
+  RestoreIOTaskTest(const RestoreIOTaskTest&) = delete;
+  RestoreIOTaskTest& operator=(const RestoreIOTaskTest&) = delete;
 };
 
 TEST_F(RestoreIOTaskTest, URLsWithInvalidSuffixShouldError) {

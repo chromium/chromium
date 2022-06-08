@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -24,11 +25,6 @@
 
 namespace file_manager {
 namespace io_task {
-
-constexpr char kTrashFolderName[] = ".Trash";
-constexpr char kInfoFolderName[] = "info";
-constexpr char kFilesFolderName[] = "files";
-
 namespace {
 
 // Generates and updates the `entry` with the standard contents of the
@@ -111,17 +107,6 @@ TrashLocation::TrashLocation(TrashLocation&& other) = default;
 TrashLocation& TrashLocation::operator=(TrashLocation&& other) = default;
 
 }  // namespace
-
-const base::FilePath GenerateTrashPath(const base::FilePath& trash_path,
-                                       const std::string& subdir,
-                                       const std::string& file_name) {
-  base::FilePath path = trash_path.Append(subdir).Append(file_name);
-  // The metadata file in .Trash/info always has the .trashinfo extension.
-  if (subdir == kInfoFolderName) {
-    path = path.AddExtension(".trashinfo");
-  }
-  return path;
-}
 
 TrashIOTask::TrashIOTask(
     std::vector<storage::FileSystemURL> file_urls,
