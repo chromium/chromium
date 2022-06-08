@@ -44,6 +44,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/earcons/null_selection.wav",
     "dictation/focus_handler.js",
     "dictation/input_controller.js",
+    "dictation/macros/delete_prev_sent_macro.js",
     "dictation/macros/hidden_macro_manager.js",
     "dictation/macros/input_text_view_macro.js",
     "dictation/macros/list_commands_macro.js",
@@ -232,6 +233,7 @@ js_library("dictation_ui_controller") {
 
 js_library("dictation_macros") {
   sources = [
+    "dictation/macros/delete_prev_sent_macro.js",
     "dictation/macros/hidden_macro_manager.js",
     "dictation/macros/input_text_view_macro.js",
     "dictation/macros/list_commands_macro.js",

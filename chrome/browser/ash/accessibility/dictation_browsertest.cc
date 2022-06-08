@@ -1231,6 +1231,59 @@ IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, DeletePrevWordMiddleOfWord) {
   WaitForTextAreaValue("This is a t.");
 }
 
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, DeletePrevSentSimple) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("Hello, world.", "Hello, world.");
+  RunHiddenMacro(/*DELETE_PREV_SENT*/ 18);
+  WaitForTextAreaValue("");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, DeletePrevSentWhiteSpace) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("  \nHello, world.\n  ",
+                                         "  \nHello, world.\n  ");
+  RunHiddenMacro(/*DELETE_PREV_SENT*/ 18);
+  WaitForTextAreaValue("");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, DeletePrevSentPunctuation) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue(
+      "Hello, world! Good afternoon; good evening? Goodnight, world.",
+      "Hello, world! Good afternoon; good evening? Goodnight, world.");
+  RunHiddenMacro(/*DELETE_PREV_SENT*/ 18);
+  WaitForTextAreaValue("Hello, world! Good afternoon; good evening? ");
+  RunHiddenMacro(/*DELETE_PREV_SENT*/ 18);
+  WaitForTextAreaValue("Hello, world! Good afternoon; ");
+  RunHiddenMacro(/*DELETE_PREV_SENT*/ 18);
+  WaitForTextAreaValue("Hello, world! ");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, DeletePrevSentTwoSentences) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("Hello, world. Goodnight, world.",
+                                         "Hello, world. Goodnight, world.");
+  RunHiddenMacro(/*DELETE_PREV_SENT*/ 18);
+  WaitForTextAreaValue("Hello, world. ");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest,
+                       DeletePrevSentMiddleOfSentence) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("Hello, world. Goodnight, world.",
+                                         "Hello, world. Goodnight, world.");
+  // Move the text caret into the middle of the second sentence.
+  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
+  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
+  RunHiddenMacro(/*DELETE_PREV_SENT*/ 18);
+  WaitForTextAreaValue("Hello, world. d.");
+}
+
 // Tests behavior of Dictation and installation of Pumpkin.
 class DictationPumpkinInstallTest : public DictationTest {
  protected:

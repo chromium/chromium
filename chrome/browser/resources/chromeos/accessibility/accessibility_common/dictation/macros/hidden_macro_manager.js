@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DeletePrevSentMacro} from '/accessibility_common/dictation/macros/delete_prev_sent_macro.js';
 import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
 import {DeletePrevWordMacro} from '/accessibility_common/dictation/macros/repeatable_key_press_macro.js';
 import {StopListeningMacro} from '/accessibility_common/dictation/macros/stop_listening_macro.js';
@@ -29,6 +30,9 @@ export class HiddenMacroManager {
       case MacroName.DELETE_PREV_WORD:
         new DeletePrevWordMacro().runMacro();
         break;
+      case MacroName.DELETE_PREV_SENT:
+        new DeletePrevSentMacro(this.inputController_).runMacro();
+        break;
       default:
         throw new Error(`Unrecognized macro: ${name}`);
     }
@@ -51,4 +55,5 @@ export class HiddenMacroManager {
 HiddenMacroManager.HIDDEN_MACROS_ = [
   MacroName.STOP_LISTENING,
   MacroName.DELETE_PREV_WORD,
+  MacroName.DELETE_PREV_SENT,
 ];

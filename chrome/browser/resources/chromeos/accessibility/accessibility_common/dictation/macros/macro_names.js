@@ -73,5 +73,8 @@ export const MacroName = {
   // Delete one word.
   DELETE_PREV_WORD: 17,
 
+  // Delete one sentence.
+  DELETE_PREV_SENT: 18,
+
   // Any new actions should match with Voice Access's semantic tags.
 };

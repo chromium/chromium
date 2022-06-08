@@ -21141,6 +21141,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="15" label="NEW_LINE"/>
   <int value="16" label="STOP_LISTENING"/>
   <int value="17" label="DELETE_PREV_WORD"/>
+  <int value="18" label="DELETE_PREV_SENT"/>
 </enum>
 
 <enum name="CrosDictationToggleDictationMethod">
