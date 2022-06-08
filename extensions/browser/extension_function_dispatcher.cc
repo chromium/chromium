@@ -53,7 +53,7 @@ namespace {
 
 // Notifies the ApiActivityMonitor that an extension API function has been
 // called. May be called from any thread.
-void NotifyApiFunctionCalled(const std::string& extension_id,
+void NotifyApiFunctionCalled(const ExtensionId& extension_id,
                              const std::string& api_name,
                              const base::Value::List& args,
                              content::BrowserContext* browser_context) {
@@ -235,10 +235,9 @@ ExtensionFunctionDispatcher::~ExtensionFunctionDispatcher() {
 
 void ExtensionFunctionDispatcher::Dispatch(
     mojom::RequestParamsPtr params,
-    content::RenderFrameHost* render_frame_host,
-    int render_process_id,
+    content::RenderFrameHost& frame,
     mojom::LocalFrameHost::RequestCallback callback) {
-  if (!render_frame_host || IsRequestFromServiceWorker(*params)) {
+  if (IsRequestFromServiceWorker(*params)) {
     constexpr char kBadMessage[] = "LocalFrameHost::Request got a bad message.";
     std::move(callback).Run(ExtensionFunction::FAILED, base::Value::List(),
                             kBadMessage);
@@ -252,14 +251,14 @@ void ExtensionFunctionDispatcher::Dispatch(
   // Extension API from a non Service Worker context, e.g. extension page,
   // background page, content script.
   std::unique_ptr<ResponseCallbackWrapper>& callback_wrapper =
-      response_callback_wrappers_[render_frame_host];
+      response_callback_wrappers_[&frame];
   if (!callback_wrapper) {
-    callback_wrapper = std::make_unique<ResponseCallbackWrapper>(
-        AsWeakPtr(), render_frame_host);
+    callback_wrapper =
+        std::make_unique<ResponseCallbackWrapper>(AsWeakPtr(), &frame);
   }
 
   DispatchWithCallbackInternal(
-      *params, render_frame_host, render_process_id,
+      *params, &frame, frame.GetProcess()->GetID(),
       callback_wrapper->CreateCallback(std::move(callback)));
 }
 
