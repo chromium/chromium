@@ -102,10 +102,13 @@ apps::AppServiceProxyBase* GetAppServiceProxy(Profile* profile) {
 
 }  // namespace
 
+using SystemWebAppManagerBrowserTestBasicInstall =
+    web_app::SystemWebAppManagerBrowserTest;
+
 namespace web_app {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Test that System Apps install correctly with a manifest.
-IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, Install) {
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTestBasicInstall, Install) {
   WaitForTestSystemAppInstall();
 
   // Don't wait for page load because we want to verify AppController identifies
@@ -1254,7 +1257,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest, Upgrade) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SystemWebAppManagerChromeUntrustedTest
-    : public SystemWebAppManagerBrowserTest {
+    : public SystemWebAppManagerBrowserTestBasicInstall {
  public:
   SystemWebAppManagerChromeUntrustedTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
@@ -1884,6 +1887,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppAbortsLaunchTest, LaunchAborted) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+INSTANTIATE_SYSTEM_WEB_APP_TEST_SUITE_REGULAR_PREF_MIGRATION_P(
+    SystemWebAppManagerBrowserTestBasicInstall);
+
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerBrowserTest);
 
@@ -1912,7 +1919,7 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerAdditionalSearchTermsTest);
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+INSTANTIATE_SYSTEM_WEB_APP_TEST_SUITE_REGULAR_PREF_MIGRATION_P(
     SystemWebAppManagerChromeUntrustedTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

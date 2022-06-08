@@ -11,6 +11,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -238,8 +240,8 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
     install_options.wait_for_windows_closed = true;
     install_options.reinstall_placeholder = true;
 
-    absl::optional<AppId> app_id = externally_installed_app_prefs_.LookupAppId(
-        install_options.install_url);
+    absl::optional<AppId> app_id =
+        app_registrar_->LookupExternalAppId(install_options.install_url);
     if (app_id) {
       // If the override name has changed, reinstall:
       if (install_options.override_name &&
@@ -492,13 +494,15 @@ void WebAppPolicyManager::MaybeOverrideManifest(
                                  : absl::nullopt;
     const AppId& app_id = GenerateAppId(manifest_id, manifest->start_url);
     // List of policy-installed apps and their install URLs:
-    std::map<AppId, GURL> policy_installed_apps =
+    base::flat_map<AppId, base::flat_set<GURL>> policy_installed_apps =
         app_registrar_->GetExternallyInstalledApps(
             ExternalInstallSource::kExternalPolicy);
     if (base::Contains(policy_installed_apps, app_id)) {
-      const auto& policy_install_url = policy_installed_apps[app_id];
-      if (base::Contains(custom_manifest_values_by_url_, policy_install_url))
-        OverrideManifest(policy_install_url, manifest);
+      DCHECK(policy_installed_apps[app_id].size() > 0);
+      for (const GURL& policy_install_url : policy_installed_apps[app_id]) {
+        if (base::Contains(custom_manifest_values_by_url_, policy_install_url))
+          OverrideManifest(policy_install_url, manifest);
+      }
       return;
     }
   }

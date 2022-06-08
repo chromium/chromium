@@ -102,8 +102,11 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
         registrar_->GetAppById(apps_it.first)
             ->GetSources()
             .test(ConvertExternalInstallSourceToSource(install_source));
-    if (has_same_external_source)
-      installed_urls.push_back(apps_it.second);
+    if (has_same_external_source) {
+      for (const GURL& url : apps_it.second) {
+        installed_urls.push_back(url);
+      }
+    }
   }
 
   std::sort(installed_urls.begin(), installed_urls.end());

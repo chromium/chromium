@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -196,34 +197,82 @@ void WebAppRegistrar::NotifyWebAppSettingsPolicyChanged() {
     observer.OnWebAppSettingsPolicyChanged();
 }
 
-std::map<AppId, GURL> WebAppRegistrar::GetExternallyInstalledApps(
+base::flat_map<AppId, base::flat_set<GURL>>
+WebAppRegistrar::GetExternallyInstalledApps(
     ExternalInstallSource install_source) const {
-  std::map<AppId, GURL> installed_apps =
-      ExternallyInstalledWebAppPrefs::BuildAppIdsMap(profile()->GetPrefs(),
-                                                     install_source);
-  base::EraseIf(installed_apps, [this](const std::pair<AppId, GURL>& app) {
-    return !IsInstalled(app.first);
-  });
+  base::flat_map<AppId, base::flat_set<GURL>> installed_apps;
+  if (!base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    installed_apps = ExternallyInstalledWebAppPrefs::BuildAppIdsMap(
+        profile()->GetPrefs(), install_source);
+    base::EraseIf(installed_apps,
+                  [this](const std::pair<AppId, base::flat_set<GURL>>& app) {
+                    return !IsInstalled(app.first);
+                  });
+
+    return installed_apps;
+  }
+
+  WebAppManagement::Type management_source =
+      ConvertExternalInstallSourceToSource(install_source);
+  for (const WebApp& web_app : GetApps()) {
+    if (base::Contains(web_app.management_to_external_config_map(),
+                       management_source)) {
+      installed_apps[web_app.app_id()] =
+          web_app.management_to_external_config_map()[management_source]
+              .install_urls;
+    }
+  }
 
   return installed_apps;
 }
 
 absl::optional<AppId> WebAppRegistrar::LookupExternalAppId(
     const GURL& install_url) const {
-  return ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-      .LookupAppId(install_url);
+  if (!base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    return ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+        .LookupAppId(install_url);
+  }
+
+  absl::optional<AppId> app_id = LookUpAppIdByInstallUrl(install_url);
+  if (app_id.has_value())
+    return app_id;
+
+  return absl::nullopt;
 }
 
 bool WebAppRegistrar::HasExternalApp(const AppId& app_id) const {
-  return ExternallyInstalledWebAppPrefs::HasAppId(profile()->GetPrefs(),
-                                                  app_id);
+  if (!base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    return ExternallyInstalledWebAppPrefs::HasAppId(profile()->GetPrefs(),
+                                                    app_id);
+  }
+  if (!IsInstalled(app_id))
+    return false;
+
+  const WebApp* web_app = GetAppById(app_id);
+  // If the external config map is filled, then the app was
+  // externally installed.
+  return web_app && web_app->management_to_external_config_map().size() > 0;
 }
 
 bool WebAppRegistrar::HasExternalAppWithInstallSource(
     const AppId& app_id,
     ExternalInstallSource install_source) const {
-  return ExternallyInstalledWebAppPrefs::HasAppIdWithInstallSource(
-      profile()->GetPrefs(), app_id, install_source);
+  if (!base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    return ExternallyInstalledWebAppPrefs::HasAppIdWithInstallSource(
+        profile()->GetPrefs(), app_id, install_source);
+  }
+
+  if (!IsInstalled(app_id))
+    return false;
+
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app &&
+         base::Contains(web_app->management_to_external_config_map(),
+                        ConvertExternalInstallSourceToSource(install_source));
 }
 
 GURL WebAppRegistrar::GetAppLaunchUrl(const AppId& app_id) const {
