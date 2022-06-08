@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/strings/escape.h"
 #include "components/history/core/browser/top_sites.h"
-#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -26,10 +25,6 @@ namespace {
 // The relevance score for suggest tiles.
 // Suggest tiles should be positioned below the Query Tiles object.
 constexpr const int kMostVisitedTilesRelevance = 1500;
-
-// Use the same max number of tiles as MostVisitedListCoordinator to offer the
-// same content.
-constexpr const int kMaxTileCount = 12;
 
 // Constructs an AutocompleteMatch from supplied details.
 AutocompleteMatch BuildMatch(AutocompleteProvider* provider,
@@ -68,16 +63,7 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
   if (container.empty())
     return false;
 
-  // We force to build TILE_NAVSUGGEST when the TileContainer type is
-  // ntp_tiles::NTPTilesVector. This is because:
-  // 1) NTPTiles are always presented as a TILE_NAVSUGGEST entry;
-  // 2) NTPTiles are only served in the START_SURFACE_HOMEPAGE and
-  //    START_SURFACE_NEW_TAB context, making these controlled by the same finch
-  //    feature flag as start surface itself.
-  bool using_ntp_tiles =
-      std::is_same<TileContainer, ntp_tiles::NTPTilesVector>::value;
-  if (using_ntp_tiles ||
-      base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
+  if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
     AutocompleteMatch match = BuildMatch(
         provider, client, std::u16string(), GURL::EmptyGURL(),
         kMostVisitedTilesRelevance, AutocompleteMatchType::TILE_NAVSUGGEST);
@@ -115,18 +101,6 @@ void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
   if (!AllowMostVisitedSitesSuggestions(input))
     return;
 
-  if (input.current_page_classification() ==
-          metrics::OmniboxEventProto::START_SURFACE_HOMEPAGE ||
-      input.current_page_classification() ==
-          metrics::OmniboxEventProto::START_SURFACE_NEW_TAB) {
-    StartFetchNTPTiles();
-    return;
-  }
-
-  StartFetchTopSites();
-}
-
-void MostVisitedSitesProvider::StartFetchTopSites() {
   scoped_refptr<history::TopSites> top_sites = client_->GetTopSites();
   if (!top_sites)
     return;
@@ -136,19 +110,8 @@ void MostVisitedSitesProvider::StartFetchTopSites() {
                           request_weak_ptr_factory_.GetWeakPtr()));
 }
 
-void MostVisitedSitesProvider::StartFetchNTPTiles() {
-  if (!most_visited_sites_)
-    most_visited_sites_ = client_->GetNtpMostVisitedSites();
-
-  // |most_visited_sites| will notify the provider when the fetch is complete.
-  most_visited_sites_->AddMostVisitedURLsObserver(this, kMaxTileCount);
-}
-
 void MostVisitedSitesProvider::Stop(bool clear_cached_results,
                                     bool due_to_user_inactivity) {
-  if (most_visited_sites_)
-    most_visited_sites_->RemoveMostVisitedURLsObserver(this);
-
   request_weak_ptr_factory_.InvalidateWeakPtrs();
   if (clear_cached_results)
     matches_.clear();
@@ -213,31 +176,10 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
   return true;
 }
 
-void MostVisitedSitesProvider::OnURLsAvailable(
-    const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
-        sections) {
-  // If the |matches_| has been build, don't build it again.
-  if (!matches_.empty())
-    return;
-
-  if (BuildTileSuggest(this, client_,
-                       sections.at(ntp_tiles::SectionType::PERSONALIZED),
-                       matches_)) {
-    NotifyListeners(true);
-  }
-}
-
-void MostVisitedSitesProvider::OnIconMadeAvailable(const GURL& site_url) {}
-
 void MostVisitedSitesProvider::BlockURL(const GURL& site_url) {
   scoped_refptr<history::TopSites> top_sites = client_->GetTopSites();
   if (top_sites) {
     top_sites->AddBlockedUrl(site_url);
-  }
-
-  if (most_visited_sites_) {
-    most_visited_sites_->DeleteCustomLink(site_url);
-    most_visited_sites_->AddOrRemoveBlockedUrl(site_url, /* add_url=*/true);
   }
 }
 

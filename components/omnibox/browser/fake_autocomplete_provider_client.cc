@@ -85,8 +85,3 @@ const TabMatcher& FakeAutocompleteProviderClient::GetTabMatcher() const {
 scoped_refptr<history::TopSites> FakeAutocompleteProviderClient::GetTopSites() {
   return top_sites_;
 }
-
-ntp_tiles::MostVisitedSites*
-FakeAutocompleteProviderClient::GetNtpMostVisitedSites() {
-  return ntp_most_visited_sites_;
-}

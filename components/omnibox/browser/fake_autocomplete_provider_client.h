@@ -61,7 +61,6 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   query_tiles::TileService* GetQueryTileService() const override;
   const TabMatcher& GetTabMatcher() const override;
   scoped_refptr<history::TopSites> GetTopSites() override;
-  ntp_tiles::MostVisitedSites* GetNtpMostVisitedSites() override;
 
   // Test-only setters
   void set_bookmark_model(std::unique_ptr<bookmarks::BookmarkModel> model) {
@@ -80,10 +79,6 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     top_sites_ = std::move(top_sites);
   }
 
-  void set_ntp_most_visited_sites(ntp_tiles::MostVisitedSites* ntp_mv_sites) {
-    ntp_most_visited_sites_ = ntp_mv_sites;
-  }
-
   void set_shortcuts_backend(scoped_refptr<ShortcutsBackend> backend) {
     shortcuts_backend_ = std::move(backend);
   }
@@ -100,7 +95,6 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   std::unique_ptr<query_tiles::TileService> tile_service_;
   FakeTabMatcher fake_tab_matcher_;
   scoped_refptr<history::TopSites> top_sites_{};
-  raw_ptr<ntp_tiles::MostVisitedSites> ntp_most_visited_sites_{};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_PROVIDER_CLIENT_H_

@@ -13,8 +13,6 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/top_sites.h"
-#include "components/ntp_tiles/icon_cacher.h"
-#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
@@ -22,7 +20,6 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -138,11 +135,8 @@ class MostVisitedSitesProviderTest : public testing::Test,
 
   std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
   scoped_refptr<FakeTopSites> top_sites_;
-  scoped_refptr<FakeTopSites> top_sites_for_start_surface_;
   scoped_refptr<MostVisitedSitesProvider> provider_;
   base::test::ScopedFeatureList features_;
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
-  std::unique_ptr<ntp_tiles::MostVisitedSites> ntp_top_sites_;
   std::unique_ptr<AutocompleteController> controller_;
 };
 
@@ -218,17 +212,10 @@ void MostVisitedSitesProviderTest::CheckMatchesEquivalentTo(
 void MostVisitedSitesProviderTest::SetUp() {
   task_environment_ =
       std::make_unique<base::test::SingleThreadTaskEnvironment>();
-  ntp_tiles::MostVisitedSites::RegisterProfilePrefs(pref_service_.registry());
   top_sites_ = new FakeTopSites();
-  top_sites_for_start_surface_ = new FakeTopSites();
 
-  // Note: std::make_unique<> fails here because it is unable to deduce argument
-  // types.
-  ntp_top_sites_.reset(new ntp_tiles::MostVisitedSites(
-      &pref_service_, top_sites_for_start_surface_, {}, {}, {}, {}, true));
   auto client = std::make_unique<FakeAutocompleteProviderClient>();
   client->set_top_sites(top_sites_);
-  client->set_ntp_most_visited_sites(ntp_top_sites_.get());
 
   // For tests requiring direct interaction with the Provider.
   provider_ = new MostVisitedSitesProvider(client.get(), this);
@@ -247,8 +234,6 @@ void MostVisitedSitesProviderTest::SetUp() {
   }};
 
   top_sites_->urls().assign(test_data.begin(), test_data.end());
-  top_sites_for_start_surface_->urls().assign(test_data.rbegin(),
-                                              test_data.rend());
 }
 
 void MostVisitedSitesProviderTest::OnProviderUpdate(bool updated_matches) {}
@@ -312,47 +297,6 @@ TEST_F(MostVisitedSitesProviderWithMatchesTest,
   EXPECT_EQ(0u, NumMostVisitedMatches());
 }
 
-TEST_F(MostVisitedSitesProviderWithMatchesTest,
-       TestStartSurfaceSourcingTilesFromItsSource) {
-  controller_->Start(BuildAutocompleteInput(
-      {}, NTP_URL, metrics::OmniboxEventProto::START_SURFACE_HOMEPAGE,
-      OmniboxFocusType::ON_FOCUS));
-  EXPECT_EQ(0u, NumMostVisitedMatches());
-  // Start surface should not be waiting for old top_sites.
-  EXPECT_FALSE(top_sites_->EmitURLs());
-  EXPECT_EQ(0u, NumMostVisitedMatches());
-  // Start surface should use its dedicated source instead.
-  EXPECT_TRUE(top_sites_for_start_surface_->EmitURLs());
-  CheckMatchesEquivalentTo(top_sites_for_start_surface_->urls(),
-                           /* expect_tiles=*/true);
-}
-
-TEST_F(MostVisitedSitesProviderTest,
-       TestDeleteMostVisitedElementForStartSurface) {
-  // Make a copy (intentional - we'll modify this later)
-  auto urls = top_sites_for_start_surface_->urls();
-  controller_->Start(BuildAutocompleteInput(
-      {}, NTP_URL, metrics::OmniboxEventProto::START_SURFACE_HOMEPAGE,
-      OmniboxFocusType::ON_FOCUS));
-
-  EXPECT_TRUE(top_sites_for_start_surface_->EmitURLs());
-  CheckMatchesEquivalentTo(urls, /* expect_tiles=*/true);
-
-  // Delete tile #3
-  auto* match = GetMatch(AutocompleteMatchType::TILE_NAVSUGGEST, 0);
-  ASSERT_NE(nullptr, match) << "No TILE_NAVSUGGEST Match found";
-  controller_->DeleteMatchElement(*match, 2);
-
-  // Observe that the URL is now blocked and removed from suggestion.
-  auto deleted_url = urls[2].url;
-  urls.erase(urls.begin() + 2);
-  CheckMatchesEquivalentTo(urls, /* expect_tiles=*/true);
-  // Note: when Start Surface is being used, we want to make sure we delete
-  // tiles from all sources.
-  EXPECT_TRUE(top_sites_->IsBlocked(deleted_url));
-  EXPECT_TRUE(top_sites_for_start_surface_->IsBlocked(deleted_url));
-}
-
 class ParameterizedMostVisitedSitesProviderTest
     : public MostVisitedSitesProviderTest,
       public ::testing::WithParamInterface<bool> {
@@ -408,9 +352,6 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
 TEST_P(ParameterizedMostVisitedSitesProviderTest, TestCreateMostVisitedMatch) {
   controller_->Start(BuildAutocompleteInputForWebOnFocus());
   EXPECT_EQ(0u, NumMostVisitedMatches());
-  // Confirm that the StartSurface source is rejected.
-  EXPECT_FALSE(top_sites_for_start_surface_->EmitURLs());
-  EXPECT_EQ(0u, NumMostVisitedMatches());
   // Accept only direct TopSites data.
   EXPECT_TRUE(top_sites_->EmitURLs());
   CheckMatchesEquivalentTo(top_sites_->urls(), GetParam());
@@ -422,9 +363,6 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
   top_sites_->urls().clear();
   controller_->Start(BuildAutocompleteInputForWebOnFocus());
   EXPECT_EQ(0u, NumMostVisitedMatches());
-  // Confirm that the StartSurface source is rejected.
-  EXPECT_FALSE(top_sites_for_start_surface_->EmitURLs());
-  EXPECT_EQ(0u, NumMostVisitedMatches());
   // Accept only direct TopSites data, confirm no matches are built.
   EXPECT_TRUE(top_sites_->EmitURLs());
   EXPECT_EQ(0u, NumMostVisitedMatches());
@@ -435,9 +373,6 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
   // Make a copy (intentional - we'll modify this later)
   auto urls = top_sites_->urls();
   controller_->Start(BuildAutocompleteInputForWebOnFocus());
-  // Confirm that the StartSurface source is rejected.
-  EXPECT_FALSE(top_sites_for_start_surface_->EmitURLs());
-  EXPECT_EQ(0u, NumMostVisitedMatches());
   // Accept only direct TopSites data.
   EXPECT_TRUE(top_sites_->EmitURLs());
   CheckMatchesEquivalentTo(urls, GetParam());
