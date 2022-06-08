@@ -73,7 +73,6 @@
 #include "content/browser/scoped_active_url.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
-#include "content/browser/shared_storage/shared_storage_originated_document_data.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -2019,9 +2018,14 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
   is_deferred_on_fenced_frame_url_mapping_ = false;
 
   if (mapped_url) {
-    shared_storage_budget_metadata_ =
-        GetFencedFrameURLMap().GetSharedStorageBudgetMetadata(
-            common_params_->url);
+    // The URN mapping can happen on regular iframes if the feature
+    // `AllowURNsInIframes` is enabled. We will ignore the leakage via iframe,
+    // and will only track the shared storage budget for fenced frame.
+    if (frame_tree_node_->IsFencedFrameRoot()) {
+      shared_storage_budget_metadata_ =
+          GetFencedFrameURLMap().GetSharedStorageBudgetMetadata(
+              common_params_->url);
+    }
 
     common_params_->url = mapped_url.value();
     commit_params_->original_url = mapped_url.value();
@@ -5940,9 +5944,46 @@ void NavigationRequest::DidCommitNavigation(
   previous_main_frame_url_ = previous_main_frame_url;
   navigation_type_ = navigation_type;
 
-  if (shared_storage_budget_metadata_ && !DidEncounterError()) {
-    SharedStorageOriginatedDocumentData::CreateForCurrentDocument(
-        render_frame_host_, shared_storage_budget_metadata_);
+  // Same-document navigations won't affect budget metadata.
+  if (!DidEncounterError() && !IsSameDocument()) {
+    FencedFrameURLMapping::SharedStorageBudgetMetadata*
+        original_budget_metadata =
+            frame_tree_node()->shared_storage_budget_metadata();
+    if (original_budget_metadata) {
+      // Clear the previous shared_storage_budget_metadata on the
+      // `FrameTreeNode` if this navigation is not initiated from itself. In
+      // this case (including the case when `initiator_render_frame_host` is
+      // gone), this navigation had to be initiated from outside the fenced
+      // frame because a frame inside a fenced frame is not allowed to navigate
+      // ancestors, so the previous knowledge from inside the fenced frame can
+      // never be transferred.
+      RenderFrameHostImpl* initiator_render_frame_host = nullptr;
+      if (GetInitiatorFrameToken()) {
+        initiator_render_frame_host = RenderFrameHostImpl::FromFrameToken(
+            GetInitiatorProcessID(), GetInitiatorFrameToken().value());
+      }
+
+      if (!initiator_render_frame_host ||
+          initiator_render_frame_host->frame_tree_node() !=
+              render_frame_host_->frame_tree_node()) {
+        // The policy of disallowing a frame inside a fenced frame to navigate
+        // ancestors should've already been enforced in BeginNavigation().
+        CHECK(!initiator_render_frame_host ||
+              !initiator_render_frame_host->IsNestedWithinFencedFrame());
+
+        render_frame_host_->frame_tree_node()
+            ->set_shared_storage_budget_metadata(nullptr);
+      }
+    }
+
+    // If this is a load to a new URN, update the shared_storage_budget_metadata
+    // on the `FrameTreeNode`. Note that explicit clearing of budget metadata
+    // above is still needed for cases where a fenced frame is navigated from a
+    // URN to a non-URN URL.
+    if (shared_storage_budget_metadata_) {
+      frame_tree_node()->set_shared_storage_budget_metadata(
+          shared_storage_budget_metadata_);
+    }
   }
 
   // It should be kept in sync with the check in

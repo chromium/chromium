@@ -760,6 +760,19 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram
+    name="Navigation.MainFrame.RendererInitiated.InitiatorFramePresentAtStart"
+    enum="BooleanPresent" expires_after="2023-05-26">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>cammie@chromium.org</owner>
+  <summary>
+    Whether the initiator frame is present when a renderer-initiated primary
+    main frame navigation has started. Recorded for each renderer-initiated
+    primary main frame navigation when the navigation has started (i.e. during
+    WebContentsObserver::DidStartNavigation()).
+  </summary>
+</histogram>
+
 <histogram name="Navigation.MainFrame.SiteEngagementLevel"
     enum="SiteEngagementLevel" expires_after="2022-10-30">
   <owner>meacer@chromium.org</owner>

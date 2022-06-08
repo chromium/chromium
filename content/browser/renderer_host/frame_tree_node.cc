@@ -961,6 +961,26 @@ void FrameTreeNode::SetSrcdocValue(const std::string& srcdoc_value) {
   srcdoc_value_ = srcdoc_value;
 }
 
+FencedFrameURLMapping::SharedStorageBudgetMetadata*
+FrameTreeNode::FindSharedStorageBudgetMetadata() {
+  FrameTreeNode* node = this;
+
+  while (true) {
+    if (node->shared_storage_budget_metadata()) {
+      DCHECK(node->IsFencedFrameRoot());
+      return node->shared_storage_budget_metadata();
+    }
+
+    if (node->GetParentOrOuterDocument()) {
+      node = node->GetParentOrOuterDocument()->frame_tree_node();
+    } else {
+      break;
+    }
+  }
+
+  return nullptr;
+}
+
 const scoped_refptr<BrowsingContextState>&
 FrameTreeNode::GetBrowsingContextStateForSubframe() const {
   DCHECK(!IsMainFrame());

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_HOST_H_
 
 #include "base/memory/raw_ptr.h"
+#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/common/content_export.h"
 #include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -13,10 +14,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "url/origin.h"
-
-namespace storage {
-class SharedStorageManager;
-}
 
 namespace content {
 
@@ -43,6 +40,8 @@ class PageImpl;
 class CONTENT_EXPORT SharedStorageWorkletHost
     : public shared_storage_worklet::mojom::SharedStorageWorkletServiceClient {
  public:
+  using BudgetResult = storage::SharedStorageManager::BudgetResult;
+
   enum class AddModuleState {
     kNotInitiated,
     kInitiated,
@@ -104,6 +103,10 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   void SharedStorageLength(SharedStorageLengthCallback callback) override;
   void ConsoleLog(const std::string& message) override;
 
+  const url::Origin& shared_storage_origin_for_testing() const {
+    return shared_storage_origin_;
+  }
+
  protected:
   // virtual for testing
   virtual void OnAddModuleOnWorkletFinished(
@@ -118,15 +121,22 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   virtual void OnRunURLSelectionOperationOnWorkletFinished(
       const GURL& urn_uuid,
-      bool success,
-      const std::string& error_message,
-      uint32_t index);
+      bool script_execution_succeeded,
+      const std::string& script_execution_error_message,
+      uint32_t index,
+      BudgetResult budget_result);
 
   base::OneShotTimer& GetKeepAliveTimerForTesting() {
     return keep_alive_timer_;
   }
 
  private:
+  void OnRunURLSelectionOperationOnWorkletScriptExecutionFinished(
+      const GURL& urn_uuid,
+      bool success,
+      const std::string& error_message,
+      uint32_t index);
+
   // Returns whether the the worklet has entered keep-alive phase. During
   // keep-alive: the attempt to log console messages will be ignored; and the
   // completion of the last pending operation will terminate the worklet.

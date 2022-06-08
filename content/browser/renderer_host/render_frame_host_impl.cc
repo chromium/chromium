@@ -6836,7 +6836,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // Verify and unpack the Mojo payload.
   GURL validated_url;
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
-  if (!VerifyOpenURLParams(GetSiteInstance(), params, &validated_url,
+  if (!VerifyOpenURLParams(this, GetSiteInstance(), params, &validated_url,
                            &blob_url_loader_factory)) {
     return;
   }
@@ -7430,6 +7430,14 @@ void RenderFrameHostImpl::BeginNavigation(
       common_params.Clone();
   if (!VerifyBeginNavigationCommonParams(GetSiteInstance(), &*validated_params))
     return;
+
+  // BeginNavigation() should only be triggered when the navigation is
+  // initiated by a frame in the same process.
+  int initiator_process_id = GetProcess()->GetID();
+  if (!VerifyNavigationInitiator(this, begin_params->initiator_frame_token,
+                                 initiator_process_id)) {
+    return;
+  }
 
   // If the request is bearing Trust Tokens parameters:
   // - it must not be a main-frame navigation, and

@@ -522,6 +522,27 @@ class CONTENT_EXPORT FrameTreeNode {
   void SetSrcdocValue(const std::string& srcdoc_value);
   const std::string& srcdoc_value() const { return srcdoc_value_; }
 
+  void set_shared_storage_budget_metadata(
+      FencedFrameURLMapping::SharedStorageBudgetMetadata*
+          shared_storage_budget_metadata) {
+    DCHECK_EQ(fenced_frame_status_,
+              RenderFrameHostImpl::FencedFrameStatus::kFencedFrameRoot);
+    shared_storage_budget_metadata_ = shared_storage_budget_metadata;
+  }
+
+  FencedFrameURLMapping::SharedStorageBudgetMetadata*
+  shared_storage_budget_metadata() const {
+    return shared_storage_budget_metadata_;
+  }
+
+  // Traverse up from this node. The `shared_storage_budget_metadata()` of the
+  // first seen node with a non-null budget metadata will be returned (i.e. this
+  // node inherits that budget metadata), and this node is expected to be an
+  // outermost fenced frame root. Return nullptr if not found (i.e. this node is
+  // not subjected to shared storage budgeting).
+  FencedFrameURLMapping::SharedStorageBudgetMetadata*
+  FindSharedStorageBudgetMetadata();
+
   // Accessor to BrowsingContextState for subframes only. Only main frame
   // navigations can change BrowsingInstances and BrowsingContextStates,
   // therefore for subframes associated BrowsingContextState never changes. This
@@ -732,6 +753,21 @@ class CONTENT_EXPORT FrameTreeNode {
 
   const RenderFrameHostImpl::FencedFrameStatus fenced_frame_status_ =
       RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
+
+  // If this is a fenced frame resulting from a shared storage url selection
+  // operation, this contains the metadata for shared storage budget charging.
+  // This metadata will persist across self navigations, or be replaced by a new
+  // metadata if this gets navigated to another shared storage generated URN.
+  //
+  // This can only be possibly set for the outermost fenced frame root, because
+  // selectURL() is disallowed inside fenced frame, and the URN generated
+  // outside the a fenced frame cannot be recognized from inside, so a nested
+  // fenced frame can never navigate to a shared storage generated URN.
+  //
+  // This metadata is stored to the outermost page's FencedFrameURLMapping, thus
+  // `shared_storage_budget_metadata_` must outlive `this`.
+  raw_ptr<FencedFrameURLMapping::SharedStorageBudgetMetadata>
+      shared_storage_budget_metadata_ = nullptr;
 
   // Manages creation and swapping of RenderFrameHosts for this frame.
   //

@@ -5,7 +5,6 @@
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
 #include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 
-#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -30,19 +29,31 @@ using OperationResult = storage::SharedStorageManager::OperationResult;
 using GetResult = storage::SharedStorageManager::GetResult;
 
 SharedStorageURNMappingResult CalculateSharedStorageURNMappingResult(
-    bool url_selection_succeeded,
+    bool script_execution_succeeded,
     const url::Origin& shared_storage_origin,
     const std::vector<GURL>& urls,
-    uint32_t index) {
+    uint32_t index,
+    double budget_remaining,
+    bool& failed_due_to_no_budget) {
+  DCHECK(!failed_due_to_no_budget);
   DCHECK_GT(urls.size(), 0u);
   DCHECK_LT(index, urls.size());
-  DCHECK(url_selection_succeeded || index == 0);
+  DCHECK(script_execution_succeeded || index == 0);
 
-  GURL mapped_url = urls[index];
   double budget_to_charge =
       (urls.size() > 1u)
-          ? (url_selection_succeeded ? std::log2(urls.size()) : 1.0)
+          ? (script_execution_succeeded ? std::log2(urls.size()) : 1.0)
           : 0.0;
+
+  // If we are running out of budget, consider this mapping to be failed. Use
+  // the default URL, and there's no need to further charge the budget.
+  if (budget_to_charge > 0.0 && budget_to_charge > budget_remaining) {
+    failed_due_to_no_budget = true;
+    index = 0;
+    budget_to_charge = 0.0;
+  }
+
+  GURL mapped_url = urls[index];
 
   return SharedStorageURNMappingResult{
       .mapped_url = mapped_url,
@@ -83,10 +94,12 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
     const GURL& urn_uuid = it->first;
     const std::vector<GURL>& urls = it->second;
 
+    bool failed_due_to_no_budget = false;
     page_->fenced_frame_urls_map().OnSharedStorageURNMappingResultDetermined(
-        urn_uuid, CalculateSharedStorageURNMappingResult(
-                      /*url_selection_succeeded=*/false, shared_storage_origin_,
-                      urls, /*index=*/0));
+        urn_uuid,
+        CalculateSharedStorageURNMappingResult(
+            /*script_execution_succeeded=*/false, shared_storage_origin_, urls,
+            /*index=*/0, /*budget_remaining=*/0.0, failed_due_to_no_budget));
 
     it = unresolved_urns_.erase(it);
   }
@@ -188,9 +201,10 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
 
   GetAndConnectToSharedStorageWorkletService()->RunURLSelectionOperation(
       name, urls, serialized_data,
-      base::BindOnce(&SharedStorageWorkletHost::
-                         OnRunURLSelectionOperationOnWorkletFinished,
-                     weak_ptr_factory_.GetWeakPtr(), urn_uuid));
+      base::BindOnce(
+          &SharedStorageWorkletHost::
+              OnRunURLSelectionOperationOnWorkletScriptExecutionFinished,
+          weak_ptr_factory_.GetWeakPtr(), urn_uuid));
 }
 
 bool SharedStorageWorkletHost::HasPendingOperations() {
@@ -486,34 +500,74 @@ void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
   DecrementPendingOperationsCount();
 }
 
-void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
-    const GURL& urn_uuid,
-    bool success,
-    const std::string& error_message,
-    uint32_t index) {
-  std::vector<GURL> urls = unresolved_urns_.at(urn_uuid);
-  unresolved_urns_.erase(urn_uuid);
+void SharedStorageWorkletHost::
+    OnRunURLSelectionOperationOnWorkletScriptExecutionFinished(
+        const GURL& urn_uuid,
+        bool success,
+        const std::string& error_message,
+        uint32_t index) {
+  auto it = unresolved_urns_.find(urn_uuid);
+  DCHECK(it != unresolved_urns_.end());
 
-  if ((success && index >= urls.size()) || (!success && index != 0)) {
+  if ((success && index >= it->second.size()) || (!success && index != 0)) {
     // This could indicate a compromised worklet environment, so let's terminate
     // it.
     mojo::ReportBadMessage(
         "Unexpected index number returned from selectURL().");
+
+    unresolved_urns_.erase(it);
+    DecrementPendingOperationsCount();
     return;
   }
 
-  if (!success && document_service_) {
-    DCHECK(!IsInKeepAlivePhase());
-    devtools_instrumentation::LogWorkletMessage(
-        static_cast<RenderFrameHostImpl&>(
-            document_service_->render_frame_host()),
-        blink::mojom::ConsoleMessageLevel::kError, error_message);
-  }
+  shared_storage_manager_->GetRemainingBudget(
+      shared_storage_origin_,
+      base::BindOnce(&SharedStorageWorkletHost::
+                         OnRunURLSelectionOperationOnWorkletFinished,
+                     weak_ptr_factory_.GetWeakPtr(), urn_uuid, success,
+                     error_message, index));
+}
+
+void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
+    const GURL& urn_uuid,
+    bool script_execution_succeeded,
+    const std::string& script_execution_error_message,
+    uint32_t index,
+    BudgetResult budget_result) {
+  auto it = unresolved_urns_.find(urn_uuid);
+  DCHECK(it != unresolved_urns_.end());
+
+  std::vector<GURL> urls = std::move(it->second);
+  unresolved_urns_.erase(it);
 
   if (page_) {
+    bool failed_due_to_no_budget = false;
+    SharedStorageURNMappingResult mapping_result =
+        CalculateSharedStorageURNMappingResult(
+            script_execution_succeeded, shared_storage_origin_, urls, index,
+            budget_result.bits, failed_due_to_no_budget);
+
+    if (document_service_) {
+      DCHECK(!IsInKeepAlivePhase());
+
+      // Let the insufficient-budget failure supersede the script failure.
+      if (failed_due_to_no_budget) {
+        devtools_instrumentation::LogWorkletMessage(
+            static_cast<RenderFrameHostImpl&>(
+                document_service_->render_frame_host()),
+            blink::mojom::ConsoleMessageLevel::kError,
+            "Insufficient budget for selectURL().");
+      } else if (!script_execution_succeeded) {
+        devtools_instrumentation::LogWorkletMessage(
+            static_cast<RenderFrameHostImpl&>(
+                document_service_->render_frame_host()),
+            blink::mojom::ConsoleMessageLevel::kError,
+            script_execution_error_message);
+      }
+    }
+
     page_->fenced_frame_urls_map().OnSharedStorageURNMappingResultDetermined(
-        urn_uuid, CalculateSharedStorageURNMappingResult(
-                      success, shared_storage_origin_, urls, index));
+        urn_uuid, std::move(mapping_result));
   }
 
   DecrementPendingOperationsCount();

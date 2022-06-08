@@ -97,6 +97,7 @@
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/screen_enumeration/screen_change_monitor.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
+#include "content/browser/shared_storage/shared_storage_budget_charger.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/starscan_load_observer.h"
 #include "content/browser/wake_lock/wake_lock_context_host.h"
@@ -975,6 +976,10 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   // of the initializer list.
   if (base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {
     AttributionHost::CreateForWebContents(this);
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    SharedStorageBudgetCharger::CreateForWebContents(this);
   }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)

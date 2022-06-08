@@ -15,6 +15,7 @@
 namespace content {
 
 class SiteInstance;
+class RenderFrameHostImpl;
 
 // Verifies that |params| are valid and can be accessed by the renderer process
 // associated with |site_instance|.
@@ -29,7 +30,8 @@ bool VerifyDownloadUrlParams(SiteInstance* site_instance,
                              const blink::mojom::DownloadURLParams& params);
 
 // Verifies that |params| are valid and can be accessed by the renderer process
-// associated with |site_instance|.
+// associated with |site_instance|. |current_rfh| represents the current frame
+// on which OpenURL is being called
 //
 // Returns true if the |params| are valid.  As a side-effect of the verification
 // |out_validated_url| and |out_blob_url_loader_factory| will be populated.
@@ -38,7 +40,8 @@ bool VerifyDownloadUrlParams(SiteInstance* site_instance,
 // returns false if the |params| are invalid.
 //
 // This function has to be called on the UI thread.
-bool VerifyOpenURLParams(SiteInstance* site_instance,
+bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
+                         SiteInstance* site_instance,
                          const blink::mojom::OpenURLParamsPtr& params,
                          GURL* out_validated_url,
                          scoped_refptr<network::SharedURLLoaderFactory>*
@@ -58,6 +61,22 @@ bool VerifyOpenURLParams(SiteInstance* site_instance,
 bool VerifyBeginNavigationCommonParams(
     SiteInstance* site_instance,
     blink::mojom::CommonNavigationParams* common_params);
+
+// Verify that the initiator frame identified by `initiator_frame_token` and
+// `initiator_process_id` can navigate `current_rfh`.
+//
+// This is best effort: the frame with the corresponding frame token may have
+// been deleted before the navigation begins.
+//
+// Returns true if the navigation is valid, or if the an initiator frame is not
+// found. Terminates the renderer the process associated with
+// |initiator_process_id| and returns false if the navigation is not allowed.
+//
+// This function has to be called on the UI thread.
+bool VerifyNavigationInitiator(
+    RenderFrameHostImpl* current_rfh,
+    const absl::optional<blink::LocalFrameToken>& initiator_frame_token,
+    int initiator_process_id);
 
 }  // namespace content
 
