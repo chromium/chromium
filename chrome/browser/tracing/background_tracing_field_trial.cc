@@ -28,9 +28,9 @@ void SetupBackgroundTracingFieldTrial() {
           kBackgroundTracingFieldTrial))
     return;
 
-  auto* manager = BackgroundTracingManager::GetInstance();
-  manager->SetActiveScenario(
-      manager->GetBackgroundTracingConfig(kBackgroundTracingFieldTrial),
+  auto& manager = BackgroundTracingManager::GetInstance();
+  manager.SetActiveScenario(
+      manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial),
       BackgroundTracingManager::ANONYMIZE_DATA);
 }
 

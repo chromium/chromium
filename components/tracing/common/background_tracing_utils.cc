@@ -106,7 +106,7 @@ void SetupBackgroundTracingWithOutputFile(
   // instead of being uploaded to a metrics server, so there are no PII
   // concerns.
   content::BackgroundTracingManager::GetInstance()
-      ->SetActiveScenarioWithReceiveCallback(
+      .SetActiveScenarioWithReceiveCallback(
           std::move(config), std::move(receive_callback),
           content::BackgroundTracingManager::NO_DATA_FILTERING);
 }
@@ -124,10 +124,9 @@ void SetupBackgroundTracingFromConfigFile(const base::FilePath& config_file,
 
 bool SetupBackgroundTracingFromCommandLine(
     const std::string& field_trial_name) {
-  auto* manager = content::BackgroundTracingManager::GetInstance();
-  DCHECK(manager);
-
+  auto& manager = content::BackgroundTracingManager::GetInstance();
   auto* command_line = base::CommandLine::ForCurrentProcess();
+
   switch (GetBackgroundTracingSetupMode()) {
     case BackgroundTracingSetupMode::kDisabledInvalidCommandLine:
       return false;
@@ -139,7 +138,7 @@ bool SetupBackgroundTracingFromCommandLine(
       return true;
     case BackgroundTracingSetupMode::kFromFieldTrialLocalOutput:
       SetupBackgroundTracingWithOutputFile(
-          manager->GetBackgroundTracingConfig(field_trial_name),
+          manager.GetBackgroundTracingConfig(field_trial_name),
           command_line->GetSwitchValuePath(
               switches::kBackgroundTracingOutputFile));
       return true;

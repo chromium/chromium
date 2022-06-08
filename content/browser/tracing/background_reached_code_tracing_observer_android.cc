@@ -51,12 +51,12 @@ void BackgroundReachedCodeTracingObserver::OnScenarioActivated(
     const BackgroundTracingConfigImpl* config) {
   if (!enabled_in_current_session_)
     return;
-  BackgroundTracingManagerImpl* manager =
+  BackgroundTracingManagerImpl& manager =
       BackgroundTracingManagerImpl::GetInstance();
   BackgroundTracingManager::TriggerHandle handle =
-      manager->RegisterTriggerType(kReachedCodeTracingConfig);
+      manager.RegisterTriggerType(kReachedCodeTracingConfig);
 
-  BackgroundTracingManagerImpl::GetInstance()->TriggerNamedEvent(
+  BackgroundTracingManagerImpl::GetInstance().TriggerNamedEvent(
       handle, BackgroundTracingManager::StartedFinalizingCallback());
 }
 

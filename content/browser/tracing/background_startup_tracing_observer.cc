@@ -71,7 +71,7 @@ void BackgroundStartupTracingObserver::OnScenarioActivated(
       FROM_HERE,
       base::BindOnce(
           &BackgroundTracingManagerImpl::OnRuleTriggered,
-          base::Unretained(BackgroundTracingManagerImpl::GetInstance()),
+          base::Unretained(&BackgroundTracingManagerImpl::GetInstance()),
           base::Unretained(startup_rule),
           BackgroundTracingManager::StartedFinalizingCallback()));
 }

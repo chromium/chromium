@@ -25,20 +25,15 @@ void BackgroundTracingMetricsProvider::Init() {
 }
 
 bool BackgroundTracingMetricsProvider::HasIndependentMetrics() {
-  return content::BackgroundTracingManager::GetInstance()->HasTraceToUpload();
+  return content::BackgroundTracingManager::GetInstance().HasTraceToUpload();
 }
 
 void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
     base::OnceCallback<void(bool)> done_callback,
     metrics::ChromeUserMetricsExtension* uma_proto,
     base::HistogramSnapshotManager* snapshot_manager) {
-  auto* tracing_manager = content::BackgroundTracingManager::GetInstance();
-  // TODO(crbug.com/1290887): remove this when
-  // content::BackgroundTracingManager::GetInstance() is updated to return a
-  // reference.
-  DCHECK(tracing_manager);
-
-  auto serialized_trace = tracing_manager->GetLatestTraceToUpload();
+  auto serialized_trace =
+      content::BackgroundTracingManager::GetInstance().GetLatestTraceToUpload();
   if (serialized_trace.empty()) {
     std::move(done_callback).Run(false);
     return;

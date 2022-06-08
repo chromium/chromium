@@ -48,7 +48,7 @@ class ChromeBackgroundTracingMetricsProviderTest : public testing::Test {
     ASSERT_TRUE(config);
 
     ASSERT_TRUE(
-        content::BackgroundTracingManager::GetInstance()->SetActiveScenario(
+        content::BackgroundTracingManager::GetInstance().SetActiveScenario(
             std::move(config),
             content::BackgroundTracingManager::ANONYMIZE_DATA));
   }
@@ -67,7 +67,7 @@ TEST_F(ChromeBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
   ChromeBackgroundTracingMetricsProvider provider;
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
-  content::BackgroundTracingManager::GetInstance()->SetTraceToUploadForTesting(
+  content::BackgroundTracingManager::GetInstance().SetTraceToUploadForTesting(
       std::make_unique<std::string>(kDummyTrace));
 
   EXPECT_TRUE(provider.HasIndependentMetrics());
@@ -90,11 +90,11 @@ TEST_F(ChromeBackgroundTracingMetricsProviderTest, HandleMissingTrace) {
   ChromeBackgroundTracingMetricsProvider provider;
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
-  content::BackgroundTracingManager::GetInstance()->SetTraceToUploadForTesting(
+  content::BackgroundTracingManager::GetInstance().SetTraceToUploadForTesting(
       std::make_unique<std::string>(kDummyTrace));
   EXPECT_TRUE(provider.HasIndependentMetrics());
 
-  content::BackgroundTracingManager::GetInstance()->SetTraceToUploadForTesting(
+  content::BackgroundTracingManager::GetInstance().SetTraceToUploadForTesting(
       nullptr);
   metrics::ChromeUserMetricsExtension uma_proto;
   uma_proto.set_client_id(100);

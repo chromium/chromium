@@ -934,7 +934,7 @@ int BrowserMainLoop::PostCreateThreads() {
 
   tracing_controller_ = std::make_unique<content::TracingControllerImpl>();
   content::BackgroundTracingManagerImpl::GetInstance()
-      ->AddMetadataGeneratorFunction();
+      .AddMetadataGeneratorFunction();
 
   if (parts_)
     parts_->PostCreateThreads();

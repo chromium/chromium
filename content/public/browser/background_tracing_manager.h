@@ -21,7 +21,7 @@ class BackgroundTracingConfig;
 // called on the UI thread.
 class BackgroundTracingManager {
  public:
-  CONTENT_EXPORT static BackgroundTracingManager* GetInstance();
+  CONTENT_EXPORT static BackgroundTracingManager& GetInstance();
 
   CONTENT_EXPORT static const char kContentTriggerConfig[];
 

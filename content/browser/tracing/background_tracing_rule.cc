@@ -290,7 +290,7 @@ class HistogramRule : public BackgroundTracingRule,
 
   ~HistogramRule() override {
     if (installed_) {
-      BackgroundTracingManagerImpl::GetInstance()->RemoveAgentObserver(this);
+      BackgroundTracingManagerImpl::GetInstance().RemoveAgentObserver(this);
     }
   }
 
@@ -302,7 +302,7 @@ class HistogramRule : public BackgroundTracingRule,
         base::BindRepeating(&HistogramRule::OnHistogramChangedCallback,
                             base::Unretained(this), histogram_lower_value_,
                             histogram_upper_value_, units_, repeat_));
-    BackgroundTracingManagerImpl::GetInstance()->AddAgentObserver(this);
+    BackgroundTracingManagerImpl::GetInstance().AddAgentObserver(this);
     installed_ = true;
   }
 
@@ -339,8 +339,8 @@ class HistogramRule : public BackgroundTracingRule,
         FROM_HERE,
         base::BindOnce(
             &BackgroundTracingManagerImpl::OnRuleTriggered,
-            base::Unretained(BackgroundTracingManagerImpl::GetInstance()), this,
-            BackgroundTracingManager::StartedFinalizingCallback()));
+            base::Unretained(&BackgroundTracingManagerImpl::GetInstance()),
+            this, BackgroundTracingManager::StartedFinalizingCallback()));
   }
 
   void AbortTracing() {
@@ -348,7 +348,7 @@ class HistogramRule : public BackgroundTracingRule,
         FROM_HERE,
         base::BindOnce(
             &BackgroundTracingManagerImpl::AbortScenario,
-            base::Unretained(BackgroundTracingManagerImpl::GetInstance())));
+            base::Unretained(&BackgroundTracingManagerImpl::GetInstance())));
   }
 
   // BackgroundTracingManagerImpl::AgentObserver implementation
@@ -525,7 +525,7 @@ class TraceAtRandomIntervalsRule : public BackgroundTracingRule {
   }
 
   void Install() override {
-    handle_ = BackgroundTracingManagerImpl::GetInstance()->RegisterTriggerType(
+    handle_ = BackgroundTracingManagerImpl::GetInstance().RegisterTriggerType(
         named_event_.c_str());
 
     StartTimer();
@@ -539,7 +539,7 @@ class TraceAtRandomIntervalsRule : public BackgroundTracingRule {
   }
 
   void OnTriggerTimer() {
-    BackgroundTracingManagerImpl::GetInstance()->TriggerNamedEvent(
+    BackgroundTracingManagerImpl::GetInstance().TriggerNamedEvent(
         handle_,
         base::BindOnce(&TraceAtRandomIntervalsRule::OnStartedFinalizing,
                        base::Unretained(this)));

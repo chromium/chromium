@@ -32,7 +32,7 @@ void FireBackgroundTracingTriggerOnUI(
   // Renderer-initiated background tracing triggers are always "preemptive"
   // traces so we expect a scenario to be active.
   if (!manager)
-    manager = content::BackgroundTracingManager::GetInstance();
+    manager = &content::BackgroundTracingManager::GetInstance();
   if (!manager->HasActiveScenario())
     return;
 

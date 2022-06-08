@@ -70,7 +70,7 @@ TEST(BackgroundTracingUtilsTest, GetBackgroundTracingSetupMode) {
 
 TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromConfigFileFailed) {
   ASSERT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
@@ -82,13 +82,13 @@ TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromConfigFileFailed) {
   tracing::SetupBackgroundTracingFromConfigFile(base::FilePath(),
                                                 base::FilePath());
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
 TEST(BackgroundTracingUtilTest,
      SetupBackgroundTracingFromConfigFileEmptyOutputFailed) {
   ASSERT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -109,13 +109,13 @@ TEST(BackgroundTracingUtilTest,
   tracing::SetupBackgroundTracingFromConfigFile(config_file_path,
                                                 base::FilePath());
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
 TEST(BackgroundTracingUtilTest,
      SetupBackgroundTracingFromConfigFileMissingOutputFailed) {
   ASSERT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -135,13 +135,13 @@ TEST(BackgroundTracingUtilTest,
   tracing::SetupBackgroundTracingFromConfigFile(config_file_path,
                                                 base::FilePath());
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
 TEST(BackgroundTracingUtilTest,
      SetupBackgroundTracingFromConfigFileInvalidConfig) {
   ASSERT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -166,12 +166,12 @@ TEST(BackgroundTracingUtilTest,
   tracing::SetupBackgroundTracingFromConfigFile(config_file_path,
                                                 output_file_path);
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
 TEST(BackgroundTracingUtilTest, SetupBackgroundTracingWithOutputFileFailed) {
   ASSERT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
@@ -181,12 +181,12 @@ TEST(BackgroundTracingUtilTest, SetupBackgroundTracingWithOutputFileFailed) {
             BackgroundTracingSetupMode::kDisabledInvalidCommandLine);
   tracing::SetupBackgroundTracingWithOutputFile(nullptr, base::FilePath());
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
 TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineInvalid) {
   ASSERT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->AppendSwitchASCII(switches::kBackgroundTracingOutputFile, "");
@@ -195,12 +195,12 @@ TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineInvalid) {
             BackgroundTracingSetupMode::kDisabledInvalidCommandLine);
   EXPECT_FALSE(tracing::SetupBackgroundTracingFromCommandLine(""));
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
 TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineConfig) {
   ASSERT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->AppendSwitchASCII(switches::kEnableBackgroundTracing,
@@ -212,19 +212,19 @@ TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineConfig) {
             BackgroundTracingSetupMode::kFromConfigFile);
   EXPECT_TRUE(tracing::SetupBackgroundTracingFromCommandLine(""));
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
 TEST(BackgroundTracingUtilTest,
      SetupBackgroundTracingFromCommandLineFieldTrial) {
   ASSERT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
             BackgroundTracingSetupMode::kFromFieldTrial);
   EXPECT_FALSE(tracing::SetupBackgroundTracingFromCommandLine(""));
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
 }  // namespace

@@ -56,7 +56,7 @@ class BackgroundTracingTest : public testing::Test {
   }
 
   void TearDown() override {
-    content::BackgroundTracingManager::GetInstance()->AbortScenarioForTesting();
+    content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
     content::SetBrowserClientForTesting(nullptr);
     content::SetContentClient(nullptr);
     base::FieldTrialParamAssociator::GetInstance()->ClearParamsForTesting(
@@ -77,14 +77,14 @@ TEST_F(BackgroundTracingTest, ReactiveConfigSystemSetup) {
   base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
 
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
   android_webview::MaybeSetupSystemTracing();
 
   // Config (reactive) and method call (system) mismatch, nothing should be set
   // up.
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
 TEST_F(BackgroundTracingTest, ReactiveConfigWebViewOnlySetup) {
@@ -93,13 +93,13 @@ TEST_F(BackgroundTracingTest, ReactiveConfigWebViewOnlySetup) {
   base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
 
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
   android_webview::MaybeSetupWebViewOnlyTracing();
 
   // Config (reactive) and method call (webview-only) match.
   EXPECT_TRUE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
 TEST_F(BackgroundTracingTest, PreemptiveConfigSystemSetup) {
@@ -108,12 +108,12 @@ TEST_F(BackgroundTracingTest, PreemptiveConfigSystemSetup) {
   base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
 
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
   android_webview::MaybeSetupSystemTracing();
 
   // Config (preemptive) and method call (system) mismatch, nothing should be
   // set up.
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
