@@ -150,6 +150,8 @@ static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
 
   if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(object))
     return foreign_object->IsObjectBoundingBoxValid();
+  if (auto* ng_foreign_object = DynamicTo<LayoutNGSVGForeignObject>(object))
+    return ng_foreign_object->IsObjectBoundingBoxValid();
 
   if (object.IsSVGImage())
     return To<LayoutSVGImage>(object).IsObjectBoundingBoxValid();
