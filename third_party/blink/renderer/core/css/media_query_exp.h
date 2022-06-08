@@ -175,16 +175,6 @@ enum class MediaQueryOperator {
   kGe,
 };
 
-class CORE_EXPORT MediaQueryExpValueWrapper
-    : public GarbageCollected<MediaQueryExpValueWrapper> {
- public:
-  explicit MediaQueryExpValueWrapper(MediaQueryExpValue value) : value(value) {}
-
-  void Trace(Visitor* visitor) const { visitor->Trace(value); }
-
-  const MediaQueryExpValue value;
-};
-
 // This represents the following part of a <media-feature> (example):
 //
 //  (width >= 10px)

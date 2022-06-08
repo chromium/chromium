@@ -298,21 +298,12 @@ int MediaValues::CalculateAvailableHoverTypes(LocalFrame* frame) {
 ColorSpaceGamut MediaValues::CalculateColorGamut(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetPage());
-  if (const auto* overrides = frame->GetPage()->GetMediaFeatureOverrides()) {
-    MediaQueryExpValue value = overrides->GetOverride("color-gamut");
-    if (value.IsValid()) {
-      if (value.Id() == CSSValueID::kSRGB)
-        return ColorSpaceGamut::SRGB;
-      if (value.Id() == CSSValueID::kP3)
-        return ColorSpaceGamut::P3;
-      // Rec. 2020 is also known as ITU-R-Empfehlung BT.2020.
-      if (value.Id() == CSSValueID::kRec2020)
-        return ColorSpaceGamut::BT2020;
-      NOTREACHED();
-    }
-  }
-  return color_space_utilities::GetColorSpaceGamut(
-      frame->GetPage()->GetChromeClient().GetScreenInfo(*frame));
+  const MediaFeatureOverrides* overrides =
+      frame->GetPage()->GetMediaFeatureOverrides();
+  absl::optional<ColorSpaceGamut> override_value =
+      overrides ? overrides->GetColorGamut() : absl::nullopt;
+  return override_value.value_or(color_space_utilities::GetColorSpaceGamut(
+      frame->GetPage()->GetChromeClient().GetScreenInfo(*frame)));
 }
 
 mojom::blink::PreferredColorScheme MediaValues::CalculatePreferredColorScheme(
@@ -321,12 +312,12 @@ mojom::blink::PreferredColorScheme MediaValues::CalculatePreferredColorScheme(
   DCHECK(frame->GetSettings());
   DCHECK(frame->GetDocument());
   DCHECK(frame->GetPage());
-  if (const auto* overrides = frame->GetPage()->GetMediaFeatureOverrides()) {
-    MediaQueryExpValue value = overrides->GetOverride("prefers-color-scheme");
-    if (value.IsValid())
-      return CSSValueIDToPreferredColorScheme(value.Id());
-  }
-  return frame->GetDocument()->GetStyleEngine().GetPreferredColorScheme();
+  const MediaFeatureOverrides* overrides =
+      frame->GetPage()->GetMediaFeatureOverrides();
+  absl::optional<mojom::blink::PreferredColorScheme> override_value =
+      overrides ? overrides->GetPreferredColorScheme() : absl::nullopt;
+  return override_value.value_or(
+      frame->GetDocument()->GetStyleEngine().GetPreferredColorScheme());
 }
 
 mojom::blink::PreferredContrast MediaValues::CalculatePreferredContrast(
@@ -334,45 +325,43 @@ mojom::blink::PreferredContrast MediaValues::CalculatePreferredContrast(
   DCHECK(frame);
   DCHECK(frame->GetSettings());
   DCHECK(frame->GetPage());
-  if (const auto* overrides = frame->GetPage()->GetMediaFeatureOverrides()) {
-    MediaQueryExpValue value = overrides->GetOverride("prefers-contrast");
-    if (value.IsValid())
-      return CSSValueIDToPreferredContrast(value.Id());
-  }
-  return frame->GetSettings()->GetPreferredContrast();
+  const MediaFeatureOverrides* overrides =
+      frame->GetPage()->GetMediaFeatureOverrides();
+  absl::optional<mojom::blink::PreferredContrast> override_value =
+      overrides ? overrides->GetPreferredContrast() : absl::nullopt;
+  return override_value.value_or(frame->GetSettings()->GetPreferredContrast());
 }
 
 bool MediaValues::CalculatePrefersReducedMotion(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetSettings());
-  if (const auto* overrides = frame->GetPage()->GetMediaFeatureOverrides()) {
-    MediaQueryExpValue value = overrides->GetOverride("prefers-reduced-motion");
-    if (value.IsValid())
-      return value.Id() == CSSValueID::kReduce;
-  }
-  return frame->GetSettings()->GetPrefersReducedMotion();
+  const MediaFeatureOverrides* overrides =
+      frame->GetPage()->GetMediaFeatureOverrides();
+  absl::optional<bool> override_value =
+      overrides ? overrides->GetPrefersReducedMotion() : absl::nullopt;
+  return override_value.value_or(
+      frame->GetSettings()->GetPrefersReducedMotion());
 }
 
 bool MediaValues::CalculatePrefersReducedData(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetSettings());
-  if (const auto* overrides = frame->GetPage()->GetMediaFeatureOverrides()) {
-    MediaQueryExpValue value = overrides->GetOverride("prefers-reduced-data");
-    if (value.IsValid())
-      return value.Id() == CSSValueID::kReduce;
-  }
-  return GetNetworkStateNotifier().SaveDataEnabled();
+  const MediaFeatureOverrides* overrides =
+      frame->GetPage()->GetMediaFeatureOverrides();
+  absl::optional<bool> override_value =
+      overrides ? overrides->GetPrefersReducedData() : absl::nullopt;
+  return override_value.value_or(GetNetworkStateNotifier().SaveDataEnabled());
 }
 
 ForcedColors MediaValues::CalculateForcedColors(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetSettings());
-  if (const auto* overrides = frame->GetPage()->GetMediaFeatureOverrides()) {
-    MediaQueryExpValue value = overrides->GetOverride("forced-colors");
-    if (value.IsValid())
-      return CSSValueIDToForcedColors(value.Id());
-  }
-  return WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors();
+  const MediaFeatureOverrides* overrides =
+      frame->GetPage()->GetMediaFeatureOverrides();
+  absl::optional<ForcedColors> override_value =
+      overrides ? overrides->GetForcedColors() : absl::nullopt;
+  return override_value.value_or(
+      WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors());
 }
 
 NavigationControls MediaValues::CalculateNavigationControls(LocalFrame* frame) {

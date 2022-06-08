@@ -361,7 +361,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   void SetMediaFeatureOverride(const AtomicString& media_feature,
                                const String& value);
   const MediaFeatureOverrides* GetMediaFeatureOverrides() const {
-    return media_feature_overrides_.Get();
+    return media_feature_overrides_.get();
   }
   void ClearMediaFeatureOverrides();
 
@@ -516,7 +516,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   std::unique_ptr<PageScheduler> page_scheduler_;
 
   // Overrides for various media features, set from DevTools.
-  Member<MediaFeatureOverrides> media_feature_overrides_;
+  std::unique_ptr<MediaFeatureOverrides> media_feature_overrides_;
 
   // Emulated vision deficiency, set from DevTools.
   VisionDeficiency vision_deficiency_ = VisionDeficiency::kNoVisionDeficiency;

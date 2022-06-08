@@ -4,16 +4,69 @@
 
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
 
+#include "third_party/blink/renderer/core/css/media_features.h"
+#include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 
 namespace blink {
 
-void MediaFeatureOverrides::Trace(Visitor* visitor) const {
-  visitor->Trace(overrides_);
+namespace {
+
+absl::optional<ColorSpaceGamut> ConvertColorGamut(
+    const MediaQueryExpValue& value) {
+  if (!value.IsValid())
+    return absl::nullopt;
+  if (value.Id() == CSSValueID::kSRGB)
+    return ColorSpaceGamut::SRGB;
+  if (value.Id() == CSSValueID::kP3)
+    return ColorSpaceGamut::P3;
+  // Rec. 2020 is also known as ITU-R-Empfehlung BT.2020.
+  if (value.Id() == CSSValueID::kRec2020)
+    return ColorSpaceGamut::BT2020;
+  return absl::nullopt;
 }
+
+absl::optional<mojom::blink::PreferredColorScheme> ConvertPreferredColorScheme(
+    const MediaQueryExpValue& value) {
+  if (!value.IsValid())
+    return absl::nullopt;
+  return CSSValueIDToPreferredColorScheme(value.Id());
+}
+
+absl::optional<mojom::blink::PreferredContrast> ConvertPreferredContrast(
+    const MediaQueryExpValue& value) {
+  if (!value.IsValid())
+    return absl::nullopt;
+  return CSSValueIDToPreferredContrast(value.Id());
+}
+
+absl::optional<bool> ConvertPrefersReducedMotion(
+    const MediaQueryExpValue& value) {
+  if (!value.IsValid())
+    return absl::nullopt;
+  return value.Id() == CSSValueID::kReduce;
+}
+
+absl::optional<bool> ConvertPrefersReducedData(
+    const MediaQueryExpValue& value) {
+  if (!value.IsValid())
+    return absl::nullopt;
+  return value.Id() == CSSValueID::kReduce;
+}
+
+absl::optional<ForcedColors> ConvertForcedColors(
+    const MediaQueryExpValue& value) {
+  if (!value.IsValid())
+    return absl::nullopt;
+  return CSSValueIDToForcedColors(value.Id());
+}
+
+}  // namespace
 
 void MediaFeatureOverrides::SetOverride(const AtomicString& feature,
                                         const String& value_string) {
@@ -38,11 +91,19 @@ void MediaFeatureOverrides::SetOverride(const AtomicString& feature,
   auto value =
       MediaQueryExp::Create(feature, range, *fake_context, nullptr).ExpValue();
 
-  if (value.IsValid()) {
-    overrides_.Set(feature,
-                   MakeGarbageCollected<MediaQueryExpValueWrapper>(value));
-  } else {
-    overrides_.erase(feature);
+  if (feature == media_feature_names::kColorGamutMediaFeature) {
+    color_gamut_ = ConvertColorGamut(value);
+  } else if (feature == media_feature_names::kPrefersColorSchemeMediaFeature) {
+    preferred_color_scheme_ = ConvertPreferredColorScheme(value);
+  } else if (feature == media_feature_names::kPrefersContrastMediaFeature) {
+    preferred_contrast_ = ConvertPreferredContrast(value);
+  } else if (feature ==
+             media_feature_names::kPrefersReducedMotionMediaFeature) {
+    prefers_reduced_motion_ = ConvertPrefersReducedMotion(value);
+  } else if (feature == media_feature_names::kPrefersReducedDataMediaFeature) {
+    prefers_reduced_data_ = ConvertPrefersReducedData(value);
+  } else if (feature == media_feature_names::kForcedColorsMediaFeature) {
+    forced_colors_ = ConvertForcedColors(value);
   }
 }
 

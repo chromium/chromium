@@ -30,6 +30,7 @@ enum class NavigationControls;
 
 mojom::blink::PreferredColorScheme CSSValueIDToPreferredColorScheme(
     CSSValueID id);
+mojom::blink::PreferredContrast CSSValueIDToPreferredContrast(CSSValueID);
 ForcedColors CSSValueIDToForcedColors(CSSValueID id);
 
 class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,

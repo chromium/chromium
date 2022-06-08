@@ -3077,16 +3077,14 @@ void StyleEngine::UpdateColorScheme() {
 
   if (const auto* overrides =
           GetDocument().GetPage()->GetMediaFeatureOverrides()) {
-    MediaQueryExpValue forced_colors_value =
-        overrides->GetOverride("forced-colors");
-    if (forced_colors_value.IsValid())
-      forced_colors_ = CSSValueIDToForcedColors(forced_colors_value.Id());
-
-    MediaQueryExpValue preferred_color_scheme_value =
-        overrides->GetOverride("prefers-color-scheme");
-    if (preferred_color_scheme_value.IsValid()) {
-      preferred_color_scheme_ =
-          CSSValueIDToPreferredColorScheme(preferred_color_scheme_value.Id());
+    if (absl::optional<ForcedColors> forced_color_override =
+            overrides->GetForcedColors()) {
+      forced_colors_ = forced_color_override.value();
+    }
+    if (absl::optional<mojom::blink::PreferredColorScheme>
+            preferred_color_scheme_override =
+                overrides->GetPreferredColorScheme()) {
+      preferred_color_scheme_ = preferred_color_scheme_override.value();
     }
   }
 
