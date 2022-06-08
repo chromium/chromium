@@ -407,6 +407,8 @@ static_library("browser") {
     "dips/dips_state.h",
     "dips/dips_storage.cc",
     "dips/dips_storage.h",
+    "dips/dips_utils.cc",
+    "dips/dips_utils.h",
     "display_capture/display_capture_permission_context.cc",
     "display_capture/display_capture_permission_context.h",
     "dom_distiller/dom_distiller_service_factory.cc",

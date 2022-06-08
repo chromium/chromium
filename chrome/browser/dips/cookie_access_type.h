@@ -11,4 +11,10 @@ enum class CookieAccessType { kNone, kRead, kWrite, kReadWrite };
 
 base::StringPiece CookieAccessTypeToString(CookieAccessType type);
 
+constexpr CookieAccessType operator|(CookieAccessType lhs,
+                                     CookieAccessType rhs) {
+  return static_cast<CookieAccessType>(static_cast<int>(lhs) |
+                                       static_cast<int>(rhs));
+}
+
 #endif  // CHROME_BROWSER_DIPS_COOKIE_ACCESS_TYPE_H_

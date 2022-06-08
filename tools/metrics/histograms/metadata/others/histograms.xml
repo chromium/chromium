@@ -73,6 +73,11 @@ chromium-metrics-reviews@google.com.
                enabled"/>
 </variants>
 
+<variants name="DIPSRedirectType">
+  <variant name="Client" summary="client-side"/>
+  <variant name="Server" summary="server-side"/>
+</variants>
+
 <variants name="GridTabSwitcherMessageTypes">
   <variant name="PriceAlertsMessageCard"
       summary="the promo message for price notifications"/>
