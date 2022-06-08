@@ -669,8 +669,7 @@
     },
     {
       name: "CSSObjectViewBox",
-      status: "experimental",
-      implied_by: ["DocumentTransition"],
+      status: "stable",
     },
     {
       name: "CSSOffsetPathRay",

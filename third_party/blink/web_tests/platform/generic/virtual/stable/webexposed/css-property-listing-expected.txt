@@ -251,6 +251,7 @@ All changes to this list should go through Blink's feature review process: http:
     mix-blend-mode
     object-fit
     object-position
+    object-view-box
     offset-distance
     offset-path
     offset-rotate

@@ -270,6 +270,7 @@ mixBlendMode
 negative
 objectFit
 objectPosition
+objectViewBox
 offset
 offsetDistance
 offsetPath
