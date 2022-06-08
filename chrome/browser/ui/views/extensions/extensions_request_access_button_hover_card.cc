@@ -59,8 +59,17 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       dialog_builder.Build(), anchor_view, views::BubbleBorder::TOP_RIGHT);
+  // Hover card should not become active window when hovering over request
+  // button in an inactive window. Setting this to false creates the need to
+  // explicitly hide the hovercard.
+  bubble->SetCanActivate(false);
   request_access_bubble = bubble.get();
-  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
+
+  auto* widget = views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+  // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
+  // by other secondary UI Widgets
+  widget->StackAtTop();
+  widget->Show();
 }
 
 // static
