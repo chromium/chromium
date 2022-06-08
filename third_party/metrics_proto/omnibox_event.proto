@@ -180,6 +180,16 @@ message OmniboxEventProto {
     // Android's auxiliary search backend.
     ANDROID_AUXILIARY_SEARCH = 21;
 
+    // The user interacted with the search resumption module on the Android New
+    // Tab Page. This search resumption module offered suggestions based on a
+    // search results page that the user was on.
+    NTP_SEARCH_RESUMPTION_SEARCH_RESULT_PAGE = 22;
+
+    // The user interacted with the search resumption module on the Android New
+    // Tab Page. This search resumption module offered suggestions based on a
+    // non-search-results page that the user was on.
+    NTP_SEARCH_RESUMPTION_OTHER = 23;
+
     // When adding new classifications, please consider adding them in
     // chromium's chrome/browser/resources/omnibox/omnibox.html
     // so that these new options are displayed on about:omnibox.
