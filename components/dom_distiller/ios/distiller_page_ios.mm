@@ -16,6 +16,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "ios/web/public/browser_state.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
@@ -210,9 +212,16 @@ void DistillerPageIOS::OnLoadURLDone(
     HandleJavaScriptResult(nil);
     return;
   }
+
+  web::WebFrame* main_frame = web::GetMainFrame(web_state_.get());
+  if (!main_frame) {
+    HandleJavaScriptResult(nil);
+    return;
+  }
+
   // Inject the script.
   base::WeakPtr<DistillerPageIOS> weak_this = weak_ptr_factory_.GetWeakPtr();
-  web_state_->ExecuteJavaScript(
+  main_frame->ExecuteJavaScript(
       base::UTF8ToUTF16(script_),
       base::BindOnce(&DistillerPageIOS::HandleJavaScriptResult, weak_this));
 }
