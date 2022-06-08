@@ -4,10 +4,10 @@
 
 #include "ash/wm/multitask_menu_nudge_controller.h"
 
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/window_util.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/features.h"
@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
@@ -23,6 +24,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_caption_button.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -46,6 +48,12 @@ constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
 
 constexpr base::TimeDelta kFadeDuration = base::Milliseconds(50);
 
+// The max pulse size will be three times the size of the maximize/restore
+// button.
+constexpr float kPulseSizeMultiplier = 3.0f;
+constexpr base::TimeDelta kPulseDuration = base::Seconds(2);
+constexpr int kPulses = 3;
+
 // Clock that can be overridden for testing.
 base::Clock* g_clock_override = nullptr;
 
@@ -55,12 +63,12 @@ base::Time GetTime() {
 
 namespace {
 
-std::unique_ptr<views::Widget> CreateWidget(aura::Window* root_window) {
+std::unique_ptr<views::Widget> CreateWidget(aura::Window* parent) {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.name = "MultitaskNudgeWidget";
   params.accept_events = false;
-  params.parent = root_window->GetChildById(kShellWindowId_OverlayContainer);
+  params.parent = parent;
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
 
@@ -145,9 +153,15 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
   anchor_view_ = frame_header->caption_button_container()->size_button();
   DCHECK(anchor_view_);
 
-  nudge_widget_ = CreateWidget(window_->GetRootWindow());
+  nudge_widget_ = CreateWidget(window_->parent());
   nudge_widget_->Show();
-  UpdateWidgetBounds();
+
+  // Create the layer which pulses on the maximize/restore button.
+  pulse_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+  pulse_layer_->SetColor(SK_ColorBLUE);
+  window_->parent()->layer()->Add(pulse_layer_.get());
+
+  UpdateWidgetAndPulse();
 
   // Fade the educational nudge in.
   ui::Layer* layer = nudge_widget_->GetLayer();
@@ -159,6 +173,8 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
       .SetDuration(kFadeDuration)
       .SetOpacity(layer, 1.0f, gfx::Tween::LINEAR);
 
+  PerformPulseAnimation(/*pulse_count=*/0);
+
   // Update the preferences.
   pref_service->SetInteger(kShownCountPrefName, shown_count + 1);
   pref_service->SetTime(kLastShownPrefName, time);
@@ -168,9 +184,20 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
       &MultitaskMenuNudgeController::OnDismissTimerEnded);
 }
 
-void MultitaskMenuNudgeController::OnWindowDestroying(aura::Window* window) {
+void MultitaskMenuNudgeController::OnWindowParentChanged(aura::Window* window,
+                                                         aura::Window* parent) {
+  if (!parent)
+    return;
+
   DCHECK_EQ(window_, window);
-  DismissNudgeInternal();
+  UpdateWidgetAndPulse();
+}
+
+void MultitaskMenuNudgeController::OnWindowVisibilityChanged(
+    aura::Window* window,
+    bool visible) {
+  if (window_ == window)
+    UpdateWidgetAndPulse();
 }
 
 void MultitaskMenuNudgeController::OnWindowBoundsChanged(
@@ -179,7 +206,30 @@ void MultitaskMenuNudgeController::OnWindowBoundsChanged(
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
   DCHECK_EQ(window_, window);
-  UpdateWidgetBounds();
+  UpdateWidgetAndPulse();
+}
+
+void MultitaskMenuNudgeController::OnWindowTargetTransformChanging(
+    aura::Window* window,
+    const gfx::Transform& new_transform) {
+  DCHECK_EQ(window_, window);
+  DismissNudgeInternal();
+}
+
+void MultitaskMenuNudgeController::OnWindowStackingChanged(
+    aura::Window* window) {
+  DCHECK_EQ(window_, window);
+  DCHECK(nudge_widget_);
+
+  // Ensure the `nudge_widget_` is always above `window_`. We dont worry about
+  // the pulse layer since it is not a window, and won't get stacked on top of
+  // during window activation for example.
+  window_->parent()->StackChildAbove(nudge_widget_->GetNativeWindow(), window);
+}
+
+void MultitaskMenuNudgeController::OnWindowDestroying(aura::Window* window) {
+  DCHECK_EQ(window_, window);
+  DismissNudgeInternal();
 }
 
 // static
@@ -210,25 +260,89 @@ void MultitaskMenuNudgeController::DismissNudgeInternal() {
   window_observation_.Reset();
   window_ = nullptr;
   anchor_view_ = nullptr;
+  pulse_layer_.reset();
   if (nudge_widget_) {
     nudge_widget_->GetLayer()->GetAnimator()->AbortAllAnimations();
     nudge_widget_->CloseNow();
   }
 }
 
-void MultitaskMenuNudgeController::UpdateWidgetBounds() {
+void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
   DCHECK(nudge_widget_);
+  DCHECK(pulse_layer_);
   DCHECK(window_);
   DCHECK(anchor_view_);
 
-  // The nudge is placed right below the anchor, and shifted to fit in the
-  // display if it is offscreen.
+  // Dismiss the nudge if either of these are not visible, otherwise it will be
+  // floating.
+  if (!window_->IsVisible() || !anchor_view_->IsDrawn()) {
+    DismissNudgeInternal();
+    return;
+  }
+
   const gfx::Rect anchor_bounds_in_screen = anchor_view_->GetBoundsInScreen();
+
+  // Reparent the nudge and pulse if necessary.
+  aura::Window* new_root =
+      window_util::GetRootWindowMatching(anchor_bounds_in_screen);
+  aura::Window* nudge_window = nudge_widget_->GetNativeWindow();
+
+  if (new_root != nudge_window->GetRootWindow()) {
+    const int parent_id = nudge_window->parent()->GetId();
+    aura::Window* new_parent = new_root->GetChildById(parent_id);
+    new_parent->AddChild(nudge_window);
+    new_parent->layer()->Add(pulse_layer_.get());
+  }
+
+  // The nudge is placed right below the anchor.
+  // TODO(crbug.com/1329233): Determine what to do if the nudge is offscreen.
   const gfx::Size size = nudge_widget_->GetContentsView()->GetPreferredSize();
   const gfx::Rect bounds_in_screen(
       anchor_bounds_in_screen.CenterPoint().x() - size.width() / 2,
       anchor_bounds_in_screen.bottom(), size.width(), size.height());
-  nudge_widget_->SetBoundsConstrained(bounds_in_screen);
+  nudge_widget_->SetBounds(bounds_in_screen);
+
+  // The circular pulse should be a square that matches the smaller dimension of
+  // `anchor_view_`. We use rounded corners to make it look like a circle.
+  gfx::Rect pulse_layer_bounds = anchor_bounds_in_screen;
+  wm::ConvertRectFromScreen(nudge_window->parent(), &pulse_layer_bounds);
+  const int length =
+      std::min(pulse_layer_bounds.width(), pulse_layer_bounds.height());
+  pulse_layer_bounds.ClampToCenteredSize(gfx::Size(length, length));
+  pulse_layer_->SetBounds(pulse_layer_bounds);
+  pulse_layer_->SetRoundedCornerRadius(gfx::RoundedCornersF(length / 2.f));
+}
+
+void MultitaskMenuNudgeController::PerformPulseAnimation(int pulse_count) {
+  if (pulse_count >= kPulses)
+    return;
+
+  DCHECK(pulse_layer_);
+
+  // The pulse animation scales up and fades out on top of the maximize/restore
+  // button until the nudge disappears.
+  const gfx::Point pivot(
+      gfx::Rect(pulse_layer_->GetTargetBounds().size()).CenterPoint());
+  const gfx::Transform transform =
+      gfx::GetScaleTransform(pivot, kPulseSizeMultiplier);
+
+  pulse_layer_->SetOpacity(1.0f);
+  pulse_layer_->SetTransform(gfx::Transform());
+
+  // Note that `views::AnimationBuilder::Repeatedly` does not work when one of
+  // the animation sequences has zero duration.
+  views::AnimationBuilder builder;
+  builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(
+          base::BindOnce(&MultitaskMenuNudgeController::PerformPulseAnimation,
+                         base::Unretained(this), pulse_count + 1))
+      .Once()
+      .SetDuration(kPulseDuration)
+      .SetOpacity(pulse_layer_.get(), 0.0f, gfx::Tween::ACCEL_0_80_DECEL_80)
+      .SetTransform(pulse_layer_.get(), transform,
+                    gfx::Tween::ACCEL_0_40_DECEL_100);
 }
 
 }  // namespace ash

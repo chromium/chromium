@@ -5,6 +5,7 @@
 #include "ash/wm/multitask_menu_nudge_controller.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/display/display_move_window_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -96,6 +97,37 @@ TEST_F(MultitaskMenuNudgeControllerTest, WindowDestroyedWhileNudgeShown) {
 
   window.reset();
   EXPECT_FALSE(GetWidget());
+}
+
+TEST_F(MultitaskMenuNudgeControllerTest, NudgeMultiDisplay) {
+  UpdateDisplay("800x700,801+0-800x700");
+  ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
+
+  auto window = CreateAppWindow(gfx::Rect(300, 300));
+
+  // Maximize and restore so the nudge shows and we can still drag the window.
+  WindowState::Get(window.get())->Maximize();
+  WindowState::Get(window.get())->Restore();
+  ASSERT_TRUE(GetWidget());
+
+  // Drag from the caption the window to the other display. The nudge should be
+  // on the other display, even though the window is not (the window stays
+  // offscreen and a mirrored version called the drag window is the one on the
+  // secondary display).
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(gfx::Point(150, 10));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(900, 0));
+  EXPECT_EQ(Shell::GetAllRootWindows()[1],
+            GetWidget()->GetNativeWindow()->GetRootWindow());
+
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(Shell::GetAllRootWindows()[1],
+            GetWidget()->GetNativeWindow()->GetRootWindow());
+
+  display_move_window_util::HandleMoveActiveWindowBetweenDisplays();
+  EXPECT_EQ(Shell::GetAllRootWindows()[0],
+            GetWidget()->GetNativeWindow()->GetRootWindow());
 }
 
 // Tests that based on preferences (shown count, and last shown time), the nudge
