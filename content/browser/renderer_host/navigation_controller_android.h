@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
 
@@ -146,8 +147,12 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       jint index);
 
  private:
+  void SetUseDesktopUserAgentInternal(bool enabled,
+                                      bool reload_on_state_change);
+
   raw_ptr<NavigationControllerImpl> navigation_controller_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;
+  base::WeakPtrFactory<NavigationControllerAndroid> weak_factory_{this};
 };
 
 }  // namespace content
