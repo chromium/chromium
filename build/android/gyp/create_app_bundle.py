@@ -65,6 +65,8 @@ _UNCOMPRESSED_FILE_EXTS = [
 _COMPONENT_TYPES = ('activity', 'provider', 'receiver', 'service')
 _DEDUPE_ENTRY_TYPES = _COMPONENT_TYPES + ('activity-alias', 'meta-data')
 
+_ROTATION_METADATA_KEY = 'com.google.play.apps.signing/RotationConfig.textproto'
+
 
 def _ParseArgs(args):
   parser = argparse.ArgumentParser()
@@ -108,6 +110,8 @@ def _ParseArgs(args):
       'listed there _and_ in --base-module-rtxt-path will '
       'be kept in the base bundle module, even if language'
       ' splitting is enabled.')
+  parser.add_argument('--rotation-config',
+                      help='Path to a RotationConfig.textproto')
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
@@ -538,6 +542,11 @@ def main(args):
         '--output=' + tmp_bundle,
         '--config=' + tmp_bundle_config,
     ]
+
+    if options.rotation_config:
+      cmd_args += [
+          f'--metadata-file={_ROTATION_METADATA_KEY}:{options.rotation_config}'
+      ]
 
     build_utils.CheckOutput(
         cmd_args,

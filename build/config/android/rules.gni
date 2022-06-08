@@ -4559,6 +4559,7 @@ if (enable_java_templates) {
   #    keystore_name: optional keystore name, used only when generating APKs.
   #    keystore_password: optional keystore password, used only when
   #      generating APKs.
+  #    rotation_config: optional .textproto to enable key rotation.
   #
   #    command_line_flags_file: Optional. If provided, named of the on-device
   #      file that will be used to store command-line arguments. The default
@@ -5043,6 +5044,13 @@ if (enable_java_templates) {
       # Android P+ support loading from stored dex.
       if (_min_sdk_version < 27) {
         args += [ "--compress-dex" ]
+      }
+
+      if (defined(invoker.rotation_config)) {
+        args += [
+          "--rotation-config",
+          rebase_path(invoker.rotation_config, root_build_dir),
+        ]
       }
 
       if (treat_warnings_as_errors) {
