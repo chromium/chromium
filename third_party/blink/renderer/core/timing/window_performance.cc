@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
@@ -406,7 +407,10 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
       event_type, MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(processing_start),
       MonotonicTimeToDOMHighResTimeStamp(processing_end), event.cancelable(),
-      event.target() ? event.target()->ToNode() : nullptr);
+      event.target() ? event.target()->ToNode() : nullptr,
+      PerformanceEntry::GetNavigationId(
+          GetExecutionContext()));  // TODO(haoliuk): Add WPT for Event Timing.
+                                    // See crbug.com/1320878.
   absl::optional<int> key_code;
   if (event.IsKeyboardEvent())
     key_code = DynamicTo<KeyboardEvent>(event)->keyCode();
@@ -614,7 +618,8 @@ void WindowPerformance::AddElementTiming(const AtomicString& name,
   PerformanceElementTiming* entry = PerformanceElementTiming::Create(
       name, url, rect, MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(load_time), identifier,
-      intrinsic_size.width(), intrinsic_size.height(), id, element);
+      intrinsic_size.width(), intrinsic_size.height(), id, element,
+      PerformanceEntry::GetNavigationId(GetExecutionContext()));
   TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
                entry->ToTracedValue(), "frame",
                ToTraceValue(DomWindow()->GetFrame()));
@@ -652,7 +657,11 @@ void WindowPerformance::AddVisibilityStateEntry(bool is_visible,
   DCHECK(RuntimeEnabledFeatures::VisibilityStateEntryEnabled());
   VisibilityStateEntry* entry = MakeGarbageCollected<VisibilityStateEntry>(
       PageHiddenStateString(!is_visible),
-      MonotonicTimeToDOMHighResTimeStamp(timestamp));
+      MonotonicTimeToDOMHighResTimeStamp(timestamp),
+      PerformanceEntry::GetNavigationId(
+          GetExecutionContext()));  // Todo(haoliuk): Add WPT for
+                                    // VisibilityStateEntry. See
+                                    // crbug.com/1320878.
   if (HasObserverFor(PerformanceEntry::kVisibilityState))
     NotifyObserversOfEntry(*entry);
 
@@ -692,7 +701,8 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
       render_timestamp.is_zero() ? load_timestamp : render_timestamp;
   auto* entry = MakeGarbageCollected<LargestContentfulPaint>(
       start_timestamp.InMillisecondsF(), render_timestamp, paint_size,
-      load_timestamp, first_animated_frame_timestamp, id, url, element);
+      load_timestamp, first_animated_frame_timestamp, id, url, element,
+      PerformanceEntry::GetNavigationId(GetExecutionContext()));
   if (HasObserverFor(PerformanceEntry::kLargestContentfulPaint))
     NotifyObserversOfEntry(*entry);
   AddLargestContentfulPaint(entry);

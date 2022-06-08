@@ -31,10 +31,12 @@ AtomicString FromPaintTypeToString(PerformancePaintTiming::PaintType type) {
 }  // namespace
 
 PerformancePaintTiming::PerformancePaintTiming(PaintType type,
-                                               double start_time)
+                                               double start_time,
+                                               uint32_t navigation_id)
     : PerformanceEntry(FromPaintTypeToString(type),
                        start_time,
-                       start_time) {}
+                       start_time,
+                       navigation_id) {}
 
 PerformancePaintTiming::~PerformancePaintTiming() = default;
 

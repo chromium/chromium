@@ -30,13 +30,15 @@ class CORE_EXPORT LayoutShift final : public PerformanceEntry {
                              double value,
                              bool input_detected,
                              double input_timestamp,
-                             AttributionList sources);
+                             AttributionList sources,
+                             uint32_t navigation_id);
 
   explicit LayoutShift(double start_time,
                        double value,
                        bool input_detected,
                        double input_timestamp,
-                       AttributionList sources);
+                       AttributionList sources,
+                       uint32_t navigation_id);
 
   ~LayoutShift() override;
 

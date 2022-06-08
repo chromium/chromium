@@ -21,13 +21,14 @@ PerformanceEventTiming* PerformanceEventTiming::Create(
     DOMHighResTimeStamp processing_start,
     DOMHighResTimeStamp processing_end,
     bool cancelable,
-    Node* target) {
+    Node* target,
+    uint32_t navigation_id) {
   // TODO(npm): enable this DCHECK once https://crbug.com/852846 is fixed.
   // DCHECK_LE(start_time, processing_start);
   DCHECK_LE(processing_start, processing_end);
   return MakeGarbageCollected<PerformanceEventTiming>(
       event_type, performance_entry_names::kEvent, start_time, processing_start,
-      processing_end, cancelable, target);
+      processing_end, cancelable, target, navigation_id);
 }
 
 // static
@@ -37,7 +38,7 @@ PerformanceEventTiming* PerformanceEventTiming::CreateFirstInputTiming(
       MakeGarbageCollected<PerformanceEventTiming>(
           entry->name(), performance_entry_names::kFirstInput,
           entry->startTime(), entry->processingStart(), entry->processingEnd(),
-          entry->cancelable(), entry->target());
+          entry->cancelable(), entry->target(), entry->navigationId());
   first_input->SetDuration(entry->duration());
   return first_input;
 }
@@ -49,8 +50,9 @@ PerformanceEventTiming::PerformanceEventTiming(
     DOMHighResTimeStamp processing_start,
     DOMHighResTimeStamp processing_end,
     bool cancelable,
-    Node* target)
-    : PerformanceEntry(event_type, start_time, 0.0),
+    Node* target,
+    uint32_t navigation_id)
+    : PerformanceEntry(event_type, start_time, 0.0, navigation_id),
       entry_type_(entry_type),
       processing_start_(processing_start),
       processing_end_(processing_end),

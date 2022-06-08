@@ -23,7 +23,8 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
                                         DOMHighResTimeStamp processing_start,
                                         DOMHighResTimeStamp processing_end,
                                         bool cancelable,
-                                        Node* target);
+                                        Node* target,
+                                        uint32_t navigation_id);
 
   static PerformanceEventTiming* CreateFirstInputTiming(
       PerformanceEventTiming* entry);
@@ -34,7 +35,8 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
                          DOMHighResTimeStamp processing_start,
                          DOMHighResTimeStamp processing_end,
                          bool cancelable,
-                         Node* target);
+                         Node* target,
+                         uint32_t navigation_id);
   ~PerformanceEventTiming() override;
 
   AtomicString entryType() const override { return entry_type_; }

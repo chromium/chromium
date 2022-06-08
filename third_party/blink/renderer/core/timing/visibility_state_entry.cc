@@ -9,8 +9,10 @@
 
 namespace blink {
 
-VisibilityStateEntry::VisibilityStateEntry(AtomicString name, double start_time)
-    : PerformanceEntry(name, start_time, start_time) {}
+VisibilityStateEntry::VisibilityStateEntry(AtomicString name,
+                                           double start_time,
+                                           uint32_t navigation_id)
+    : PerformanceEntry(name, start_time, start_time, navigation_id) {}
 
 VisibilityStateEntry::~VisibilityStateEntry() = default;
 

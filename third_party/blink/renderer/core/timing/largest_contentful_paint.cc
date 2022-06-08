@@ -19,8 +19,9 @@ LargestContentfulPaint::LargestContentfulPaint(
     base::TimeDelta first_animated_frame_time,
     const AtomicString& id,
     const String& url,
-    Element* element)
-    : PerformanceEntry(g_empty_atom, start_time, start_time),
+    Element* element,
+    uint32_t navigation_id)
+    : PerformanceEntry(g_empty_atom, start_time, start_time, navigation_id),
       size_(size),
       render_time_(render_time),
       load_time_(load_time),

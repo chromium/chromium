@@ -26,7 +26,8 @@ class CORE_EXPORT LargestContentfulPaint final : public PerformanceEntry {
                          base::TimeDelta first_animated_frame_time,
                          const AtomicString& id,
                          const String& url,
-                         Element*);
+                         Element* element,
+                         uint32_t navigation_id);
   ~LargestContentfulPaint() override;
 
   AtomicString entryType() const override;

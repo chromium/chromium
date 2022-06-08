@@ -5,24 +5,18 @@
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
 class PerformanceEntryTest : public testing::Test {};
-TEST(PerformanceEntryTest, GetNavigationCounter) {
+TEST(PerformanceEntryTest, GetNavigationId) {
   V8TestingScope scope;
-  ScriptState* script_state = scope.GetScriptState();
 
-  EXPECT_EQ(1u, PerformanceEntry::GetNavigationId(script_state));
-
-  scope.GetFrame().IncrementNavigationId();
-  EXPECT_EQ(2u, PerformanceEntry::GetNavigationId(script_state));
+  EXPECT_EQ(1u, PerformanceEntry::GetNavigationId(scope.GetScriptState()));
 
   scope.GetFrame().IncrementNavigationId();
-  EXPECT_EQ(3u, PerformanceEntry::GetNavigationId(script_state));
+  EXPECT_EQ(2u, PerformanceEntry::GetNavigationId(scope.GetExecutionContext()));
 }
 }  // namespace blink

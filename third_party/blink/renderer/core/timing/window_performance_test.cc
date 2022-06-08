@@ -132,7 +132,8 @@ class WindowPerformanceTest : public testing::Test {
 
   PerformanceEventTiming* CreatePerformanceEventTiming(
       const AtomicString& name) {
-    return PerformanceEventTiming::Create(name, 0.0, 0.0, 0.0, false, nullptr);
+    return PerformanceEventTiming::Create(name, 0.0, 0.0, 0.0, false, nullptr,
+                                          1);
   }
 
   LocalFrame* GetFrame() const { return &page_holder_->GetFrame(); }

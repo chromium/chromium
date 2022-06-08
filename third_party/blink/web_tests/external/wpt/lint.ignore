@@ -199,6 +199,7 @@ SET TIMEOUT: navigation-api/navigation-history-entry/entries-after-bfcache-in-if
 SET TIMEOUT: navigation-timing/*
 SET TIMEOUT: old-tests/submission/Microsoft/history/history_000.htm
 SET TIMEOUT: paint-timing/resources/subframe-painting.html
+SET TIMEOUT: performance-timeline/resources/navigation-id-detached-frame-page.html
 SET TIMEOUT: portals/resources/portals-adopt-predecessor-portal.html
 SET TIMEOUT: preload/single-download-preload.html
 SET TIMEOUT: preload/resources/slow-exec.js

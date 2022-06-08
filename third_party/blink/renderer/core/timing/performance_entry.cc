@@ -34,8 +34,10 @@
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -126,11 +128,31 @@ PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
   return kInvalid;
 }
 
+// static
 uint32_t PerformanceEntry::GetNavigationId(ScriptState* script_state) {
   const auto* local_dom_window = LocalDOMWindow::From(script_state);
-  if (!local_dom_window || !local_dom_window->GetFrame()) {
-    return 1;
-  }
+  // local_dom_window is null in some browser tests and unit tests.
+  // The navigation_id starts from 1. Without a window, there would be no
+  // subsequent navigations.
+  if (!local_dom_window)
+    return kNavigationIdDefaultValue;
+
+  // Calling GetFrame() on a window of a detached frame returns null.
+  if (!local_dom_window->GetFrame())
+    return kNavigationIdDefaultValue;
+
+  return local_dom_window->GetFrame()->GetNavigationId();
+}
+
+// static
+uint32_t PerformanceEntry::GetNavigationId(ExecutionContext* context) {
+  const auto* local_dom_window = DynamicTo<LocalDOMWindow>(context);
+  if (!local_dom_window)
+    return kNavigationIdDefaultValue;
+
+  if (!local_dom_window->GetFrame())
+    return kNavigationIdDefaultValue;
+
   return local_dom_window->GetFrame()->GetNavigationId();
 }
 

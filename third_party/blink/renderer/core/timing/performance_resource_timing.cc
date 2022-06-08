@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
 #include "third_party/blink/renderer/core/timing/performance_measure.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -66,7 +67,8 @@ PerformanceResourceTiming::PerformanceResourceTiming(
                            time_origin,
                            info.response_end,
                            info.allow_negative_values,
-                           cross_origin_isolated_capability)),
+                           cross_origin_isolated_capability),
+                       PerformanceEntry::GetNavigationId(context)),
       initiator_type_(initiator_type.IsEmpty()
                           ? fetch_initiator_type_names::kOther
                           : initiator_type),
@@ -101,6 +103,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
 // TODO(https://crbug.com/900700): Set a Mojo pending receiver for
 // WorkerTimingContainer in |worker_timing_receiver_| when a service worker
 // controls a page.
+// The navigation_id for navigation timing is always 1.
 PerformanceResourceTiming::PerformanceResourceTiming(
     const AtomicString& name,
     base::TimeTicks time_origin,
@@ -108,7 +111,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
     bool is_secure_transport,
     HeapVector<Member<PerformanceServerTiming>> server_timing,
     ExecutionContext* context)
-    : PerformanceEntry(name, 0.0, 0.0),
+    : PerformanceEntry(name, 0.0, 0.0, kNavigationIdDefaultValue),
       time_origin_(time_origin),
       cross_origin_isolated_capability_(cross_origin_isolated_capability),
       context_type_(mojom::blink::RequestContextType::HYPERLINK),

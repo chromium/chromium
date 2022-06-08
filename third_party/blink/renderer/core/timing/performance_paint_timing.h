@@ -16,7 +16,7 @@ class CORE_EXPORT PerformancePaintTiming final : public PerformanceEntry {
  public:
   enum class PaintType { kFirstPaint, kFirstContentfulPaint };
 
-  PerformancePaintTiming(PaintType, double start_time);
+  PerformancePaintTiming(PaintType, double start_time, uint32_t navigation_id);
   ~PerformancePaintTiming() override;
 
   AtomicString entryType() const override;

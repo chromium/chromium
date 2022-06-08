@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_long_task_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
@@ -732,7 +733,8 @@ void Performance::AddFirstContentfulPaintTiming(base::TimeTicks start_time) {
 void Performance::AddPaintTiming(PerformancePaintTiming::PaintType type,
                                  base::TimeTicks start_time) {
   PerformanceEntry* entry = MakeGarbageCollected<PerformancePaintTiming>(
-      type, MonotonicTimeToDOMHighResTimeStamp(start_time));
+      type, MonotonicTimeToDOMHighResTimeStamp(start_time),
+      PerformanceEntry::GetNavigationId(GetExecutionContext()));
   // Always buffer First Paint & First Contentful Paint.
   if (type == PerformancePaintTiming::PaintType::kFirstPaint)
     first_paint_timing_ = entry;
@@ -755,14 +757,16 @@ void Performance::AddLongTaskTiming(base::TimeTicks start_time,
                                     const AtomicString& container_name) {
   double dom_high_res_start_time =
       MonotonicTimeToDOMHighResTimeStamp(start_time);
+
+  ExecutionContext* execution_context = GetExecutionContext();
   auto* entry = MakeGarbageCollected<PerformanceLongTaskTiming>(
       dom_high_res_start_time,
       // Convert the delta between start and end times to an int to reduce the
       // granularity of the duration to 1 ms.
       static_cast<int>(MonotonicTimeToDOMHighResTimeStamp(end_time) -
                        dom_high_res_start_time),
-      name, container_type, container_src, container_id, container_name);
-  ExecutionContext* execution_context = GetExecutionContext();
+      name, container_type, container_src, container_id, container_name,
+      PerformanceEntry::GetNavigationId(execution_context));
   if (longtask_buffer_.size() < kDefaultLongTaskBufferSize) {
     longtask_buffer_.push_back(entry);
   } else {
