@@ -1263,6 +1263,27 @@ function testAvcLevelsInternal(has_proprietary_codecs, avc) {
   if (!testMimeCodec('video/mp4; codecs="avc1.42E052"', P_MAYBE))
     return false;
 
+  // Levels 6 (0x3C), 6.1 (0x3D), 6.2 (0x3E).
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E03B"', P_MAYBE))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E03C"', P_PROBABLY))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E03D"', P_PROBABLY))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E03E"', P_PROBABLY))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E03F"', P_MAYBE))
+    return false;
+  // Verify that decimal representations of levels are not supported.
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E006"', P_MAYBE))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E060"', P_MAYBE))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E061"', P_MAYBE))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E062"', P_MAYBE))
+    return false;
+
   return true;
 }
 
