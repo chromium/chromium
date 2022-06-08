@@ -209,6 +209,11 @@ extern const char kEnableDiscoverFeedDiscoFeedEndpointDescription[];
 extern const char kEnableDiscoverFeedPreviewName[];
 extern const char kEnableDiscoverFeedPreviewDescription[];
 
+// Title and description for the flag to show ghost cards when refreshing the
+// discover feed.
+extern const char kEnableDiscoverFeedGhostCardsName[];
+extern const char kEnableDiscoverFeedGhostCardsDescription[];
+
 // Title and description for the flag to shorten the cache.
 extern const char kEnableDiscoverFeedShorterCacheName[];
 extern const char kEnableDiscoverFeedShorterCacheDescription[];

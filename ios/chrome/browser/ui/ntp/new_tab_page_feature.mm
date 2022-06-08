@@ -16,6 +16,9 @@ const base::Feature kEnableDiscoverFeedPreview{
 const base::Feature kEnableDiscoverFeedAppFlows{
     "EnableDiscoverFeedAppFlows", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDiscoverFeedGhostCardsEnabled{
+    "DiscoverFeedGhostCardsEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kEnableDiscoverFeedShorterCache{
     "EnableDiscoverFeedShorterCache", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -44,15 +47,16 @@ const char kDiscoverFeedTopSyncPromoStyleCompact[] = "compact";
 const base::Feature kEnableFeedAblation{"FeedAblationEnabled",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kDiscoverFeedGhostCardsEnabled{
-    "DiscoverFeedGhostCardsEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
-
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
 }
 
 bool IsDiscoverFeedAppFlowsEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedAppFlows);
+}
+
+bool IsDiscoverFeedGhostCardsEnabled() {
+  return base::FeatureList::IsEnabled(kDiscoverFeedGhostCardsEnabled);
 }
 
 bool IsDiscoverFeedShorterCacheEnabled() {
@@ -69,8 +73,4 @@ bool IsDiscoverFeedTopSyncPromoEnabled() {
 
 bool IsFeedAblationEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedAblation);
-}
-
-bool IsDiscoverFeedGhostCardsEnabled() {
-  return base::FeatureList::IsEnabled(kDiscoverFeedGhostCardsEnabled);
 }

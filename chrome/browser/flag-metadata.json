@@ -1982,6 +1982,11 @@
     "expiry_milestone": 106
   },
   {
+    "name": "enable-discover-feed-ghost-cards",
+    "owners": [ "edchin", "adamta", "sczs", "tinazwang" ],
+    "expiry_milestone": 106
+  },
+  {
     "name": "enable-discover-feed-preview",
     "owners": [ "tinazwang", "sczs" ],
     "expiry_milestone": 101

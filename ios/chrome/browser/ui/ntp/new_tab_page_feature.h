@@ -11,6 +11,9 @@
 // the feed context menu.
 extern const base::Feature kEnableDiscoverFeedPreview;
 
+// Feature flag to show ghost cards when refreshing the discover feed.
+extern const base::Feature kDiscoverFeedGhostCardsEnabled;
+
 // Feature flag to enable shorter cache so that more ghost cards appear.
 extern const base::Feature kEnableDiscoverFeedShorterCache;
 
