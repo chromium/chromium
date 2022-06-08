@@ -196,6 +196,18 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     }
   }
 
+  // <if expr="not chromeos_ash">
+  private getClearOnExitSubLabel_(): string {
+    // <if expr="chromeos_lacros">
+    if (loadTimeData.getBoolean('isSecondaryUser')) {
+      return '';
+    }
+    // </if>
+
+    return this.i18n('cookiePageClearOnExitDesc');
+  }
+  // </if>
+
   private getSiteDataLabel_(): string {
     return this.enableConsolidatedSiteStorageControls_ ?
         this.i18n('cookiePageAllSitesLink') :

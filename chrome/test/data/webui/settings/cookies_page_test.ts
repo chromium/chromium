@@ -25,6 +25,9 @@ suite('CrSettingsCookiesPageTest', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       consolidatedSiteStorageControlsEnabled: false,
+      // <if expr="chromeos_lacros">
+      isSecondaryUser: false,
+      // </if>
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -102,6 +105,20 @@ suite('CrSettingsCookiesPageTest', function() {
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.COOKIES_SESSION, result);
+  });
+
+  // Checks that the sub label for "Clear on Exit" is shown for Lacros primary
+  // profiles, and desktop platforms. It is not shown on Ash.
+  // Note: Secondary Lacros profiles are tested in the suite
+  // `CrSettingsCookiesPageTest_lacrosSecondaryProfile`.
+  test('CookieSessionSublabel', function() {
+    const clearOnExitRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>('#clearOnExit')!;
+    let expectedSubLabel = '';
+    // <if expr="not chromeos_ash">
+    expectedSubLabel = page.i18n('cookiePageClearOnExitDesc');
+    // </if>
+    assertEquals(clearOnExitRow.subLabel, expectedSubLabel);
   });
 
   test('CookieSettingExceptions_Search', async function() {
@@ -353,3 +370,36 @@ suite('CrSettingsCookiesPageTest_consolidatedControlsEnabled', function() {
         Router.getInstance().getCurrentRoute(), routes.SITE_SETTINGS_ALL);
   });
 });
+
+// <if expr="chromeos_lacros">
+suite('CrSettingsCookiesPageTest_lacrosSecondaryProfile', function() {
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({isSecondaryUser: true});
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = '';
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    flush();
+  });
+
+  teardown(function() {
+    page.remove();
+  });
+
+  // Checks that the sub label for "Clear on Exit" is not shown for secondary
+  // Lacros profiles.
+  test('CookieSessionSublabel', function() {
+    const clearOnExitRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>('#clearOnExit')!;
+    assertEquals(clearOnExitRow.subLabel, '');
+  });
+});
+// </if>
