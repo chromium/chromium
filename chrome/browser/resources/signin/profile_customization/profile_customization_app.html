@@ -105,6 +105,11 @@
     width: 111px;
   }
 
+  #title.in-dialog-design {
+    font-size: 20px;
+    line-height: 24px;
+  }
+
   .action-container.in-dialog-design {
     padding: 0 24px 24px;
   }
@@ -131,8 +136,18 @@
   </div>
 
   <div id="body">
-    <div id="title">[[welcomeTitle_]]</div>
-    <div id="content">$i18n{profileCustomizationText}</div>
+    <div id="title"
+        class$="[[getDialogDesignClass_(profileCustomizationInDialogDesign_)]]">
+      <template is="dom-if" if="[[!profileCustomizationInDialogDesign_]]">
+        [[welcomeTitle_]]
+      </template>
+      <template is="dom-if" if="[[profileCustomizationInDialogDesign_]]">
+        $i18n{profileCustomizationTitle}
+      </template>
+    </div>
+    <template is="dom-if" if="[[!profileCustomizationInDialogDesign_]]">
+      <div id="content">$i18n{profileCustomizationText}</div>
+    </template>
   </div>
 
   <cr-input id="nameInput" pattern=".*\\S.*" value="{{profileName_}}"
@@ -145,8 +160,8 @@
     </cr-customize-themes>
   </div>
 
-  <div
-    class$="[[getActionContainerClass_(profileCustomizationInDialogDesign_)]]">
+  <div class$="action-container 
+      [[getDialogDesignClass_(profileCustomizationInDialogDesign_)]]">
     <cr-button id="doneButton" class="action-button"
         disabled="[[isDoneButtonDisabled_(profileName_)]]"
         on-click="onDoneCustomizationClicked_" autofocus>

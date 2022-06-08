@@ -111,8 +111,8 @@ export class ProfileCustomizationAppElement extends
     this.welcomeTitle_ = profileInfo.welcomeTitle;
   }
 
-  private getActionContainerClass_(inDialogDesign: boolean): string {
-    return 'action-container' + (inDialogDesign ? ' in-dialog-design' : '');
+  private getDialogDesignClass_(inDialogDesign: boolean): string {
+    return inDialogDesign ? 'in-dialog-design' : '';
   }
 }
 

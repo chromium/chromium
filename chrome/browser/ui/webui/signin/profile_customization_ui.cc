@@ -54,6 +54,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
        IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL},
       {"profileCustomizationInputLabel", IDS_PROFILE_CUSTOMIZATION_INPUT_LABEL},
       {"profileCustomizationText", IDS_PROFILE_CUSTOMIZATION_TEXT},
+      {"profileCustomizationTitle", IDS_PROFILE_CUSTOMIZATION_TITLE_V2},
 
       // Color picker strings:
       {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
