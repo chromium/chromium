@@ -12,6 +12,7 @@ namespace web_app {
 extern const char kCalculatorAppId[];
 extern const char kCameraAppId[];
 extern const char kCanvasAppId[];
+extern const char kCloudGamingPartnerPlatform[];
 extern const char kCroshAppId[];
 extern const char kCursiveAppId[];
 extern const char kDiagnosticsAppId[];
