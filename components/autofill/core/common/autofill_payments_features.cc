@@ -192,11 +192,6 @@ const base::Feature kAutofillShowUnmaskedCachedCardInManualFillingView{
     "AutofillShowUnmaskedCachedCardInManualFillingView",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, suggestions with offers will be shown at the top.
-const base::Feature kAutofillSortSuggestionsBasedOnOfferPresence{
-    "AutofillSortSuggestionsBasedOnOfferPresence",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, merchant bound virtual cards will be suggested even if we don't
 // detect all of the card number, exp date and CVC fields in the payment form.
 const base::Feature kAutofillSuggestVirtualCardsOnIncompleteForm{

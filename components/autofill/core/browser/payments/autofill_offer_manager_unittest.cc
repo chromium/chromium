@@ -195,31 +195,6 @@ TEST_F(AutofillOfferManagerTest,
 }
 
 TEST_F(AutofillOfferManagerTest,
-       UpdateSuggestionsWithOffer_SuggestionsNotSortedByOfferPresence_ExpOff) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillSortSuggestionsBasedOnOfferPresence);
-  CreditCard cardWithoutOffer = CreateCreditCard(kTestGuid);
-  CreditCard cardWithOffer =
-      CreateCreditCard(kTestGuid2, "4111111111111111", 100);
-  personal_data_manager_.AddAutofillOfferData(
-      CreateCreditCardOfferForCard(cardWithOffer, "5%"));
-
-  std::vector<Suggestion> suggestions = {Suggestion(), Suggestion()};
-  suggestions[0].payload = kTestGuid;
-  suggestions[1].payload = kTestGuid2;
-  autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
-                                                       suggestions);
-
-  // offer_label was set on suggestions[1] and wasn't sorted because experiment
-  // is turned off.
-  EXPECT_TRUE(suggestions[0].offer_label.empty());
-  EXPECT_TRUE(!suggestions[1].offer_label.empty());
-  EXPECT_EQ(absl::get<std::string>(suggestions[0].payload), kTestGuid);
-  EXPECT_EQ(absl::get<std::string>(suggestions[1].payload), kTestGuid2);
-}
-
-TEST_F(AutofillOfferManagerTest,
        UpdateSuggestionsWithOffer_SuggestionsNotSortedIfAllCardsHaveOffers) {
   CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
   CreditCard card2 = CreateCreditCard(kTestGuid2, "4111111111111111", 101);

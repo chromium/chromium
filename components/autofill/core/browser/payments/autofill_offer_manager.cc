@@ -61,16 +61,13 @@ void AutofillOfferManager::UpdateSuggestionsWithOffers(
   }
   // Sort the suggestions such that suggestions with offers are shown at the
   // top.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSortSuggestionsBasedOnOfferPresence)) {
-    std::sort(suggestions.begin(), suggestions.end(),
-              [](const Suggestion& a, const Suggestion& b) {
-                if (!a.offer_label.empty() && b.offer_label.empty()) {
-                  return true;
-                }
-                return false;
-              });
-  }
+  std::sort(suggestions.begin(), suggestions.end(),
+            [](const Suggestion& a, const Suggestion& b) {
+              if (!a.offer_label.empty() && b.offer_label.empty()) {
+                return true;
+              }
+              return false;
+            });
 }
 
 bool AutofillOfferManager::IsUrlEligible(const GURL& last_committed_url) {
