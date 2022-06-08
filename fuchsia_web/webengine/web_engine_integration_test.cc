@@ -71,18 +71,20 @@ class WebEngineIntegrationUserAgentTest : public WebEngineIntegrationTest {
   // Returns the expected user agent string for the current Chrome version.
   static std::string GetExpectedUserAgentString() {
     // The default (base) user agent string without any client modifications.
-    // Due to reduced user agent, only the major version is populated, the
-    // version number is <majorVersion>.0.0.0.
+    // TODO(crbug.com/1225812): Replace "X11; " appropriately and the version
+    // with <majorVersion>.0.0.0.
     constexpr char kDefaultUserAgentStringWithVersionPlaceholder[] =
         "Mozilla/5.0 (Fuchsia) AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/%d.0.0.0 Safari/537.36";
+        "Chrome/%s Safari/537.36";
 
     std::string expected_ua =
         base::StringPrintf(kDefaultUserAgentStringWithVersionPlaceholder,
-                           version_info::GetMajorVersionNumberAsInt());
+                           version_info::GetVersionNumber().c_str());
 
     // Ensure the field was actually populated.
-    EXPECT_NE(expected_ua.find(version_info::GetMajorVersionNumber()),
+    EXPECT_GT(expected_ua.length(),
+              std::size(kDefaultUserAgentStringWithVersionPlaceholder));
+    EXPECT_NE(expected_ua.find(version_info::GetVersionNumber()),
               std::string::npos);
 
     return expected_ua;
