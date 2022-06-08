@@ -215,6 +215,11 @@ class XcodeProject(object):
     # because objects will be added to/removed from the project upon
     # iterating this list and python dictionaries cannot be mutated
     # during iteration.
+
+    # TODO(crbug.com/1334028) Disable code signing for Xcode 14.
+    lines = check_output(['xcodebuild', '-version']).splitlines()
+    xcode_version_int = int(float(lines[0].split()[-1]))
+
     for key, obj in list(self.IterObjectsByIsa('XCConfigurationList')):
       # Use the first build configuration as template for creating all the
       # new build configurations.
@@ -222,6 +227,11 @@ class XcodeProject(object):
       build_config_template['buildSettings']['CONFIGURATION_BUILD_DIR'] = \
           '$(PROJECT_DIR)/../$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)'
 
+      # TODO(crbug.com/1334028) Disable code signing for Xcode 14.
+      if xcode_version_int >= 14:
+        build_config_template['buildSettings']['CODE_SIGN_IDENTITY'] = ''
+        build_config_template['buildSettings']['CODE_SIGNING_REQUIRED'] = 'NO'
+        build_config_template['buildSettings']['CODE_SIGNING_ALLOWED'] = 'NO'
 
       # Remove the existing build configurations from the project before
       # creating the new ones.
