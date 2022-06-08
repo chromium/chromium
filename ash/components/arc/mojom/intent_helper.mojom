@@ -167,8 +167,9 @@ enum ChromePage {
   OSLANGUAGESLANGUAGES = 72,
   // 73-76 are removed intentionally. Do not reuse them.
   SMARTPRIVACY = 77,
+  PRIVACYHUB = 78,
 
-  // Next value to be used is 78.
+  // Next value to be used is 79.
 };
 
 // Describes an unique chrome app.

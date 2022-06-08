@@ -320,6 +320,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_SUBTEXT},
       {"smartPrivacySnoopingNotifications",
        IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_NOTIFICATIONS},
+      {"privacyHubTitle", IDS_OS_SETTINGS_PRIVACY_HUB_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -453,6 +454,12 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Subpage::kSmartPrivacy,
       {{mojom::Setting::kSnoopingProtection, mojom::Setting::kQuickDim}},
       generator);
+
+  // Privacy hub.
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_PRIVACY_HUB_TITLE, mojom::Subpage::kPrivacyHub,
+      mojom::SearchResultIcon::kShield, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kPrivacyHubSubpagePath);
 }
 
 bool PrivacySection::AreFingerprintSettingsAllowed() {

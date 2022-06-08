@@ -341,6 +341,9 @@ void TestAllOSSettingPages(const GURL& base_url) {
   TestOpenOSSettingsChromePage(
       ChromePage::MANAGEACCESSIBILITYTTS,
       base_url.Resolve(chromeos::settings::mojom::kTextToSpeechSubpagePath));
+  TestOpenOSSettingsChromePage(
+      ChromePage::PRIVACYHUB,
+      base_url.Resolve(chromeos::settings::mojom::kPrivacyHubSubpagePath));
 }
 
 void TestAllBrowserSettingPages(const GURL& base_url) {

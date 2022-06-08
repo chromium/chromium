@@ -4244,6 +4244,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_NOTIFICATIONS" desc="Text for the name of the toggle in the smart privacy section requesting notification hiding when a snooper is detected.">
     Hide notification content when someone else is detected
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_TITLE" desc="Text on the privacy page that opens up the privacy hub section.">
+    Privacy Hub
+  </message>
   <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable device hardware data collection and usage in ChromeOS Flex.">
     <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> hardware support and stability
   </message>

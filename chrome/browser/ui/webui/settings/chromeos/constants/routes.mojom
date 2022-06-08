@@ -121,6 +121,7 @@ enum Subpage {
   kSecurityAndSignInV2 = 1101,
   kFingerprintV2 = 1102,
   kSmartPrivacy = 1103,
+  kPrivacyHub = 1104,
 
   // Languages and Input section.
   // 1200 was used for kLanguagesAndInputDetails. Do not reuse.
@@ -243,6 +244,7 @@ const string kManageOtherPeopleSubpagePathV2 = "osPrivacy/accounts";
 const string kSecurityAndSignInSubpagePathV2 = "osPrivacy/lockScreen";
 const string kFingerprintSubpagePathV2 = "osPrivacy/lockScreen/fingerprint";
 const string kSmartPrivacySubpagePath = "osPrivacy/smartPrivacy";
+const string kPrivacyHubSubpagePath = "osPrivacy/privacyHub";
 
 // Languages and Input section.
 const string kLanguagesAndInputSectionPath = "osLanguages";

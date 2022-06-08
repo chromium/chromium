@@ -71960,6 +71960,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1101" label="Security And Sign In V2"/>
   <int value="1102" label="Fingerprint V2"/>
   <int value="1103" label="Smart Privacy Protections"/>
+  <int value="1104" label="Privacy Hub"/>
   <int value="1200" label="Languages And Input Details"/>
   <int value="1201" label="Manage Input Methods"/>
   <int value="1202" label="Smart Inputs"/>
