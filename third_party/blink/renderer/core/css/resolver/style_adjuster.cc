@@ -854,6 +854,17 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     style.ClearAppliedTextDecorations();
   else
     style.RestoreParentTextDecorations(layout_parent_style);
+
+  // The computed value of currentColor for highlight pseudos is the
+  // color that would have been used if no highlights were applied,
+  // i.e. the originating element's color.
+  if (((RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
+        state.IsForHighlight()) ||
+       state.IsForCustomHighlight()) &&
+      style.ColorIsCurrentColor() && state.OriginatingElementStyle()) {
+    style.SetColor(state.OriginatingElementStyle()->GetColor());
+  }
+
   if (style.Display() != EDisplay::kContents) {
     style.ApplyTextDecorations(
         parent_style.VisitedDependentColor(GetCSSPropertyTextDecorationColor()),
