@@ -36,7 +36,7 @@
       weakDispatcher = dispatcher;
   __weak id<OmniboxCommands> weakOmniboxHandler = omniboxHandler;
 
-  // Block to have the tab model open the tab at |index|, if there is one.
+  // Block to have the tab model open the tab at `index`, if there is one.
   void (^focusTab)(NSUInteger) = ^(NSUInteger index) {
     [weakConsumer focusTabAtIndex:index];
   };

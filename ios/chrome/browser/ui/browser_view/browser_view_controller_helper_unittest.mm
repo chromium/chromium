@@ -83,7 +83,7 @@ TEST_F(BrowserViewControllerHelperTest, TestIsLoading) {
 }
 
 TEST_F(BrowserViewControllerHelperTest, TestisWebStateBookmarked) {
-  // Set the curent tab to |kWebUrl| and create a bookmark for |kWebUrl|, then
+  // Set the curent tab to `kWebUrl` and create a bookmark for `kWebUrl`, then
   // verify that the location bar model indicates that the URL is bookmarked.
   web_state_->SetCurrentURL(GURL(kWebUrl));
   bookmarks::BookmarkModel* bookmark_model =

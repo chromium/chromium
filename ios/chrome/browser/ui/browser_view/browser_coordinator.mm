@@ -1318,7 +1318,7 @@
   }
 }
 
-// Install delegates for |webState|.
+// Install delegates for `webState`.
 - (void)installDelegatesForWebState:(web::WebState*)webState {
   if (AutofillTabHelper::FromWebState(webState)) {
     AutofillTabHelper::FromWebState(webState)->SetBaseViewController(
@@ -1345,7 +1345,7 @@
   }
 }
 
-// Uninstalls delegates for |webState|.
+// Uninstalls delegates for `webState`.
 - (void)uninstallDelegatesForWebState:(web::WebState*)webState {
   if (AutofillTabHelper::FromWebState(webState)) {
     AutofillTabHelper::FromWebState(webState)->SetBaseViewController(nil);

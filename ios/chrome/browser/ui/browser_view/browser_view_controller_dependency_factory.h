@@ -16,7 +16,7 @@ class Browser;
 // Creates helper objects needed by BrowserViewController.
 @interface BrowserViewControllerDependencyFactory : NSObject
 
-// Creates a new factory backed by |browser|. This must be the same browser
+// Creates a new factory backed by `browser`. This must be the same browser
 // provided to BrowserViewController (and like BVC, this is a weak reference).
 - (instancetype)initWithBrowser:(Browser*)browser;
 
