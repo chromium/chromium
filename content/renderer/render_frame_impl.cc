@@ -6017,6 +6017,7 @@ RenderFrameImpl::CreateURLLoaderFactory() {
     }
     // At this point we can't create anything.
     NOTREACHED();
+    CHECK(false);
     return nullptr;
   }
   return std::make_unique<FrameURLLoaderFactory>(weak_factory_.GetWeakPtr());
