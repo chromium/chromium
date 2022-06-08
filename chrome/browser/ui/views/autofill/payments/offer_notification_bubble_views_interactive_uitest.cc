@@ -59,6 +59,9 @@ class OfferNotificationBubbleViewsInteractiveUiTest
       case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
         ShowBubbleForFreeListingCouponOfferAndVerify();
         break;
+      case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
+        ShowBubbleForGPayPromoCodeOfferAndVerify();
+        break;
       case AutofillOfferData::OfferType::UNKNOWN:
         NOTREACHED();
         break;
@@ -82,6 +85,19 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     NavigateTo(chrome::kChromeUINewTabPageURL);
     // Set the initial origin that the bubble will be displayed on.
     SetUpFreeListingCouponOfferDataWithDomains(
+        {GURL("https://www.merchantsite1.com/"),
+         GURL("https://www.merchantsite2.com/")});
+    ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+    NavigateTo("https://www.merchantsite1.com/first");
+    WaitForObservedEvent();
+    EXPECT_TRUE(IsIconVisible());
+    EXPECT_TRUE(GetOfferNotificationBubbleViews());
+  }
+
+  void ShowBubbleForGPayPromoCodeOfferAndVerify() {
+    NavigateTo(chrome::kChromeUINewTabPageURL);
+    // Set the initial origin that the bubble will be displayed on.
+    SetUpGPayPromoCodeOfferDataWithDomains(
         {GURL("https://www.merchantsite1.com/"),
          GURL("https://www.merchantsite2.com/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
@@ -115,6 +131,8 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     switch (test_offer_type_) {
       case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
         return "CardLinkedOffer";
+      case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
+        return "GPayPromoCodeOffer";
       case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
         return "FreeListingCouponOffer";
       case AutofillOfferData::OfferType::UNKNOWN:

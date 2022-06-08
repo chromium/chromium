@@ -58,7 +58,10 @@ class OfferNotificationBubbleViewsTestBase
   std::unique_ptr<AutofillOfferData> CreateCardLinkedOfferDataWithDomains(
       const std::vector<GURL>& domains);
 
-  std::unique_ptr<AutofillOfferData> CreatePromoCodeOfferDataWithDomains(
+  std::unique_ptr<AutofillOfferData> CreateGPayPromoCodeOfferDataWithDomains(
+      const std::vector<GURL>& domains);
+
+  std::unique_ptr<AutofillOfferData> CreateFreeListingCouponDataWithDomains(
       const std::vector<GURL>& domains);
 
   void DeleteFreeListingCouponForUrl(const GURL& url);
@@ -71,6 +74,8 @@ class OfferNotificationBubbleViewsTestBase
 
   void SetUpFreeListingCouponOfferDataWithDomains(
       const std::vector<GURL>& domains);
+
+  void SetUpGPayPromoCodeOfferDataWithDomains(const std::vector<GURL>& domains);
 
   void SetUpFreeListingCouponOfferDataForCouponService(
       std::unique_ptr<AutofillOfferData> offer);

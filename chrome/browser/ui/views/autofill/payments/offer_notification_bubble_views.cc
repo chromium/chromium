@@ -58,6 +58,7 @@ void OfferNotificationBubbleViews::Init() {
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
       InitWithCardLinkedOfferContent();
       break;
+    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       InitWithPromoCodeOfferContent();
       break;
@@ -72,8 +73,8 @@ void OfferNotificationBubbleViews::AddedToWidget() {
       std::make_unique<TitleWithIconAndSeparatorView>(
           GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_G));
 
-  // Set the header image for promo code offers.
-  if (controller_->GetOffer()->IsPromoCodeOffer()) {
+  // Set the header image for free listing coupon offers.
+  if (controller_->GetOffer()->IsFreeListingCouponOffer()) {
     ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
     auto* autofill_offers_banner =
         bundle.GetImageSkiaNamed(IDR_AUTOFILL_OFFERS);

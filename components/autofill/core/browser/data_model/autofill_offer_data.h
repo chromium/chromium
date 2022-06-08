@@ -33,14 +33,13 @@ struct DisplayStrings {
 class AutofillOfferData {
  public:
   // The specific type of offer.
-  // TODO(crbug.com/1203811): Add GPAY_PROMO_CODE_OFFER once GPay-activated
-  //     promo codes become available, and create a way to differentiate them
-  //     from free-listing coupon codes.
   enum class OfferType {
     // Default value, should not be used.
     UNKNOWN,
     // GPay-activated card linked offer.
     GPAY_CARD_LINKED_OFFER,
+    // GPay-activated promo code offer.
+    GPAY_PROMO_CODE_OFFER,
     // Promo code offer from the FreeListingCouponService.
     FREE_LISTING_COUPON_OFFER,
   };
@@ -56,6 +55,14 @@ class AutofillOfferData {
       const std::string& offer_reward_amount);
   // Returns an AutofillOfferData for a free-listing coupon offer.
   static AutofillOfferData FreeListingCouponOffer(
+      int64_t offer_id,
+      const base::Time& expiry,
+      const std::vector<GURL>& merchant_origins,
+      const GURL& offer_details_url,
+      const DisplayStrings& display_strings,
+      const std::string& promo_code);
+  // Returns an AutofillOfferData for a GPay promo code offer.
+  static AutofillOfferData GPayPromoCodeOffer(
       int64_t offer_id,
       const base::Time& expiry,
       const std::vector<GURL>& merchant_origins,
@@ -78,8 +85,16 @@ class AutofillOfferData {
   // Returns true if the current offer is a card-linked offer.
   bool IsCardLinkedOffer() const;
 
-  // Returns true if the current offer is a promo code offer.
+  // Returns true if the current offer is a GPay promo code offer or an offer
+  // from the FreeListingCouponService.
   bool IsPromoCodeOffer() const;
+
+  // Returns true if the current offer is a GPay promo code offer.
+  bool IsGPayPromoCodeOffer() const;
+
+  // Returns true if the current offer is an offer from the
+  // FreeListingCouponService.
+  bool IsFreeListingCouponOffer() const;
 
   // Returns true if the current offer is 1) not expired and 2) contains the
   // given |origin| in the list of |merchant_origins|.

@@ -104,7 +104,7 @@ class OfferNotificationBubbleControllerImplTest
         offer_reward_amount);
   }
 
-  AutofillOfferData CreateTestPromoCodeOffer(
+  AutofillOfferData CreateTestFreeListingCouponOffer(
       const std::vector<GURL>& merchant_origins,
       const std::string& promo_code) {
     int64_t offer_id = 2468;
@@ -186,7 +186,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
 TEST_F(OfferNotificationBubbleControllerImplTest,
        FreeListing_NotShownWithinTimeGap) {
   base::HistogramTester histogram_tester;
-  AutofillOfferData offer = CreateTestPromoCodeOffer(
+  AutofillOfferData offer = CreateTestFreeListingCouponOffer(
       /*merchant_origins=*/{GURL("https://www.example.com/first/")
                                 .DeprecatedGetOriginAsURL()},
       /*promo_code=*/"FREEFALL1234");
@@ -208,7 +208,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
 TEST_F(OfferNotificationBubbleControllerImplTest,
        FreeListing_ShownBeyondTimeGap) {
   base::HistogramTester histogram_tester;
-  AutofillOfferData offer = CreateTestPromoCodeOffer(
+  AutofillOfferData offer = CreateTestFreeListingCouponOffer(
       /*merchant_origins=*/{GURL("https://www.example.com/first/")
                                 .DeprecatedGetOriginAsURL()},
       /*promo_code=*/"FREEFALL1234");
@@ -231,7 +231,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
 
 TEST_F(OfferNotificationBubbleControllerImplTest,
        FreeListing_OnCouponInvalidated) {
-  AutofillOfferData offer = CreateTestPromoCodeOffer(
+  AutofillOfferData offer = CreateTestFreeListingCouponOffer(
       /*merchant_origins=*/{GURL("https://www.example.com/first/")
                                 .DeprecatedGetOriginAsURL()},
       /*promo_code=*/"FREEFALL1234");
@@ -243,7 +243,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
   ShowBubble(&offer);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 
-  AutofillOfferData offer2 = CreateTestPromoCodeOffer(
+  AutofillOfferData offer2 = CreateTestFreeListingCouponOffer(
       /*merchant_origins=*/{GURL("https://www.example.com/first/")
                                 .DeprecatedGetOriginAsURL()},
       /*promo_code=*/"FREEFALL5678");

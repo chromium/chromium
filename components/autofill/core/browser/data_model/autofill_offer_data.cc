@@ -38,6 +38,19 @@ AutofillOfferData AutofillOfferData::FreeListingCouponOffer(
                            display_strings, promo_code);
 }
 
+// static
+AutofillOfferData AutofillOfferData::GPayPromoCodeOffer(
+    int64_t offer_id,
+    const base::Time& expiry,
+    const std::vector<GURL>& merchant_origins,
+    const GURL& offer_details_url,
+    const DisplayStrings& display_strings,
+    const std::string& promo_code) {
+  return AutofillOfferData(OfferType::GPAY_PROMO_CODE_OFFER, offer_id, expiry,
+                           merchant_origins, offer_details_url, display_strings,
+                           promo_code);
+}
+
 AutofillOfferData::AutofillOfferData() = default;
 
 AutofillOfferData::~AutofillOfferData() = default;
@@ -128,6 +141,15 @@ bool AutofillOfferData::IsCardLinkedOffer() const {
 }
 
 bool AutofillOfferData::IsPromoCodeOffer() const {
+  return GetOfferType() == OfferType::GPAY_PROMO_CODE_OFFER ||
+         GetOfferType() == OfferType::FREE_LISTING_COUPON_OFFER;
+}
+
+bool AutofillOfferData::IsGPayPromoCodeOffer() const {
+  return GetOfferType() == OfferType::GPAY_PROMO_CODE_OFFER;
+}
+
+bool AutofillOfferData::IsFreeListingCouponOffer() const {
   return GetOfferType() == OfferType::FREE_LISTING_COUPON_OFFER;
 }
 

@@ -3646,7 +3646,7 @@ TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
   autofill_offer_data.push_back(AutofillOfferData::GPayCardLinkedOffer(
       offer_id_2, expiry_2, merchant_origins_2, offer_details_url_2,
       display_strings_2, eligible_instrument_id_2, offer_reward_amount_2));
-  autofill_offer_data.push_back(AutofillOfferData::FreeListingCouponOffer(
+  autofill_offer_data.push_back(AutofillOfferData::GPayPromoCodeOffer(
       offer_id_3, expiry_3, merchant_origins_3, offer_details_url_3,
       display_strings_3, promo_code_3));
 

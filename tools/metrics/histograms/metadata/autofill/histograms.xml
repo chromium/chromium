@@ -76,6 +76,8 @@ chromium-metrics-reviews@google.com.
   <variant name="FreeListingCouponOffer"
       summary="The bubble/infobar for a merchant promo code offer sourced
                from the FreeListingCouponService."/>
+  <variant name="GPayPromoCodeOffer"
+      summary="The bubble/infobar for a promo code offer from GPay."/>
 </variants>
 
 <variants name="Autofill.OtpAuth.Type">

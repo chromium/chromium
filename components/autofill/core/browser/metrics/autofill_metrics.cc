@@ -1232,6 +1232,9 @@ void AutofillMetrics::LogOfferNotificationBubbleOfferMetric(
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
       histogram_name += "CardLinkedOffer";
       break;
+    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
+      histogram_name += "GPayPromoCodeOffer";
+      break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += "FreeListingCouponOffer";
       break;
@@ -1254,6 +1257,9 @@ void AutofillMetrics::LogOfferNotificationBubbleResultMetric(
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
       histogram_name += "CardLinkedOffer.";
       break;
+    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
+      histogram_name += "GPayPromoCodeOffer.";
+      break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += "FreeListingCouponOffer.";
       break;
@@ -1274,6 +1280,9 @@ void AutofillMetrics::LogOfferNotificationBubblePromoCodeButtonClicked(
   // Switch to different sub-histogram depending on offer type being displayed.
   // Card-linked offers do not have a promo code button.
   switch (offer_type) {
+    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
+      histogram_name += "GPayPromoCodeOffer";
+      break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += "FreeListingCouponOffer";
       break;
@@ -1292,6 +1301,9 @@ void AutofillMetrics::LogOfferNotificationBubbleSuppressed(
   // Switch to different sub-histogram depending on offer type being suppressed.
   // Card-linked offers will not be suppressed.
   switch (offer_type) {
+    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
+      histogram_name += "GPayPromoCodeOffer";
+      break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += "FreeListingCouponOffer";
       break;

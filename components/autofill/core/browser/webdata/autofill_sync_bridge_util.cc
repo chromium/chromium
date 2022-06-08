@@ -435,7 +435,7 @@ AutofillOfferData AutofillOfferDataFromOfferSpecifics(
         eligible_instrument_id, offer_reward_amount);
     return offer_data;
   } else {
-    AutofillOfferData offer_data = AutofillOfferData::FreeListingCouponOffer(
+    AutofillOfferData offer_data = AutofillOfferData::GPayPromoCodeOffer(
         offer_id, expiry, merchant_origins, offer_details_url, display_strings,
         offer_specifics.promo_code_offer_data().promo_code());
     return offer_data;

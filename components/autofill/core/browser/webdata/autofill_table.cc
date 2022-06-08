@@ -2215,7 +2215,7 @@ bool AutofillTable::GetAutofillOffers(
       autofill_offer_data->emplace_back(std::move(data));
     } else {
       auto data = std::make_unique<AutofillOfferData>(
-          AutofillOfferData::FreeListingCouponOffer(
+          AutofillOfferData::GPayPromoCodeOffer(
               offer_id, expiry, merchant_origins, offer_details_url,
               display_strings, promo_code));
       autofill_offer_data->emplace_back(std::move(data));

@@ -693,10 +693,11 @@ AutofillOfferData GetPromoCodeOfferData(GURL origin,
   display_strings.usage_instructions_text =
       "Click the promo code field at checkout to autofill it.";
   std::string promo_code = "5PCTOFFSHOES";
+  GURL offer_details_url = GURL("https://pay.google.com");
 
-  return AutofillOfferData::FreeListingCouponOffer(
-      offer_id, expiry, merchant_origins, /*offer_details_url=*/GURL(),
-      display_strings, promo_code);
+  return AutofillOfferData::GPayPromoCodeOffer(
+      offer_id, expiry, merchant_origins, offer_details_url, display_strings,
+      promo_code);
 }
 
 void SetProfileInfo(AutofillProfile* profile,

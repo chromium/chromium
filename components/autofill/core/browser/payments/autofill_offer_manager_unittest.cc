@@ -108,7 +108,7 @@ class AutofillOfferManagerTest : public testing::Test {
         "Click the promo code field at checkout to autofill it.";
     std::string offer_reward_amount = "5%";
 
-    AutofillOfferData offer_data = AutofillOfferData::FreeListingCouponOffer(
+    AutofillOfferData offer_data = AutofillOfferData::GPayPromoCodeOffer(
         offer_id, expiry, merchant_origins, offer_details_url, display_strings,
         offer_reward_amount);
     return offer_data;
