@@ -3130,8 +3130,15 @@ void PaintPropertyTreeBuilder::InitFragmentPaintPropertiesForLegacy(
     PaintPropertyTreeBuilderFragmentContext& context) {
   DCHECK(!IsInNGFragmentTraversal());
   InitFragmentPaintProperties(fragment, needs_paint_properties, context);
-  fragment.SetLegacyPaginationOffset(pagination_offset);
-  fragment.SetLogicalTopInFlowThread(context.logical_top_in_flow_thread);
+  if (context.current.fragmentainer_idx == WTF::kNotFound) {
+    fragment.SetLegacyPaginationOffset(pagination_offset);
+    fragment.SetLogicalTopInFlowThread(context.logical_top_in_flow_thread);
+  } else {
+    // We're inside (monolithic) legacy content, but further out there's an NG
+    // fragmentation context. Use the fragmentainer index, just like we do for
+    // NG objects.
+    fragment.SetFragmentID(context.current.fragmentainer_idx);
+  }
 }
 
 void PaintPropertyTreeBuilder::InitFragmentPaintPropertiesForNG(
@@ -3140,6 +3147,8 @@ void PaintPropertyTreeBuilder::InitFragmentPaintPropertiesForNG(
     context_.fragments.push_back(PaintPropertyTreeBuilderFragmentContext());
   else
     context_.fragments.resize(1);
+  context_.fragments[0].current.fragmentainer_idx =
+      pre_paint_info_->fragmentainer_idx;
   InitFragmentPaintProperties(*pre_paint_info_->fragment_data,
                               needs_paint_properties, context_.fragments[0]);
 }
