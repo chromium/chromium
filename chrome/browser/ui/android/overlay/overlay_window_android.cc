@@ -167,6 +167,8 @@ gfx::Rect OverlayWindowAndroid::GetBounds() {
 void OverlayWindowAndroid::UpdateNaturalSize(const gfx::Size& natural_size) {
   if (java_ref_.is_uninitialized()) {
     video_size_ = natural_size;
+    // This isn't guaranteed to be right, but it's better than (0,0).
+    bounds_.set_size(natural_size);
     return;
   }
 

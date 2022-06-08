@@ -150,6 +150,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
                     int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 if (sNativeOverlayWindowAndroid == 0) return;
+                // We sometimes get an initial update of zero before getting something reasonable.
+                if (top == bottom || left == right) return;
 
                 PictureInPictureActivityJni.get().onViewSizeChanged(
                         sNativeOverlayWindowAndroid, right - left, bottom - top);
