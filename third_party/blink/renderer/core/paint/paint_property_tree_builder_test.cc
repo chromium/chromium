@@ -7062,4 +7062,79 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGTransformAnimationAndOrigin) {
   EXPECT_EQ(gfx::Point3F(100, 100, 0), transform_node->Origin());
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, WillChangeBackdropFilter) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="will-change: backdrop-filter"></div>
+  )HTML");
+
+  auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Effect());
+  EXPECT_FALSE(properties->Effect()->BackdropFilter());
+  EXPECT_TRUE(
+      properties->Effect()->RequiresCompositingForWillChangeBackdropFilter());
+
+  // will-change:backdrop-filter should not cause transform or filter node.
+  EXPECT_FALSE(properties->Transform());
+  EXPECT_FALSE(properties->Filter());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest,
+       WillChangeBackdropFilterWithTransformAndFilter) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="will-change: backdrop-filter;
+        transform: translateX(10px); filter: blur(5px)"></div>
+  )HTML");
+
+  auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Effect());
+  EXPECT_FALSE(properties->Effect()->BackdropFilter());
+  EXPECT_TRUE(
+      properties->Effect()->RequiresCompositingForWillChangeBackdropFilter());
+
+  // will-change:backdrop-filter should not add compositing reason for the
+  // transform or the filter node.
+  ASSERT_TRUE(properties->Transform());
+  EXPECT_FALSE(properties->Transform()->HasDirectCompositingReasons());
+  ASSERT_TRUE(properties->Filter());
+  EXPECT_FALSE(properties->Filter()->HasDirectCompositingReasons());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, WillChangeFilter) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="will-change: filter"></div>
+  )HTML");
+
+  auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Filter());
+  EXPECT_TRUE(properties->Filter()->Filter().IsEmpty());
+  EXPECT_TRUE(properties->Filter()->RequiresCompositingForWillChangeFilter());
+
+  // will-change:filter should not cause transform or effect node.
+  EXPECT_FALSE(properties->Transform());
+  EXPECT_FALSE(properties->Effect());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, WillChangeFilterWithTransformAndOpacity) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="will-change: filter;
+        transform: translateX(10px); opacity: 0.5"></div>
+  )HTML");
+
+  auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Filter());
+  EXPECT_TRUE(properties->Filter()->Filter().IsEmpty());
+  EXPECT_TRUE(properties->Filter()->RequiresCompositingForWillChangeFilter());
+
+  // will-change:filter should not add compositing reason for the transform or
+  // the filter node.
+  ASSERT_TRUE(properties->Transform());
+  EXPECT_FALSE(properties->Transform()->HasDirectCompositingReasons());
+  ASSERT_TRUE(properties->Effect());
+  EXPECT_FALSE(properties->Effect()->HasDirectCompositingReasons());
+}
+
 }  // namespace blink

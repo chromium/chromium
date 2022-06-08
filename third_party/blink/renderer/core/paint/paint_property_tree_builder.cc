@@ -853,8 +853,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
 
       // TODO(pdr): There is additional logic in
       // FragmentPaintPropertyTreeBuilder::UpdateTransform that likely needs to
-      // be included here, such as setting animation_is_axis_aligned and setting
-      // additional compositing reasons (kAdditionalCompositingTrigger).
+      // be included here, such as setting animation_is_axis_aligned.
       state.direct_compositing_reasons =
           direct_compositing_reasons & CompositingReasonsForTransformProperty();
       state.flags.flattens_inherited_transform =
@@ -1116,12 +1115,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
       }
 
       if (handling_transform_property) {
-        // If a transform node exists, add an additional direct compositing
-        // reason for 3d transforms and will-change to ensure it is composited.
-        state.direct_compositing_reasons |=
-            (full_context_.direct_compositing_reasons &
-             CompositingReason::kAdditionalCompositingTrigger);
-
         if (object_.HasHiddenBackface()) {
           state.backface_visibility =
               TransformPaintPropertyNode::BackfaceVisibility::kHidden;
@@ -1470,10 +1463,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
           CompositingReason::kDirectReasonsForEffectProperty;
 
       // If an effect node exists, add an additional direct compositing reason
-      // for 3d transforms and will-change to ensure it is composited.
+      // for 3d transforms and will-change:transform to ensure it is composited.
       state.direct_compositing_reasons |=
           (full_context_.direct_compositing_reasons &
-           CompositingReason::kAdditionalCompositingTrigger);
+           CompositingReason::kAdditionalEffectCompositingTrigger);
 
       // We may begin to composite our subtree prior to an animation starts, but
       // a compositor element ID is only needed when an animation is current.
@@ -1726,10 +1719,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
           CompositingReason::kDirectReasonsForFilterProperty;
 
       // If a filter node exists, add an additional direct compositing reason
-      // for 3d transforms and will-change to ensure it is composited.
+      // for 3d transforms and will-change:transform to ensure it is composited.
       state.direct_compositing_reasons |=
           (full_context_.direct_compositing_reasons &
-           CompositingReason::kAdditionalCompositingTrigger);
+           CompositingReason::kAdditionalEffectCompositingTrigger);
 
       state.compositor_element_id =
           GetCompositorElementId(CompositorElementIdNamespace::kEffectFilter);

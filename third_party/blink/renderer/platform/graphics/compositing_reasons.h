@@ -149,17 +149,16 @@ class PLATFORM_EXPORT CompositingReason {
                                       kActiveBackdropFilterAnimation |
                                       kWillChangeBackdropFilter,
 
-    // These reasons cause any transform, effect, or filter node that
-    // exists to be composited.  They don't cause creation of a node.
-    // This is because 3D transforms and incorrect use of will-change
-    // are likely indicators that compositing is expected because
-    // certain changes will be made.
+    // These reasons also cause any effect or filter node that exists
+    // to be composited. They don't cause creation of a node.
+    // This is because 3D transforms and incorrect use of will-change:transform
+    // are likely indicators that compositing of effects is expected
+    // because certain changes to opacity, filter etc. will be made.
     // Note that kWillChangeScale, kWillChangeRotate, and
     // kWillChangeTranslate are not included since there is no
     // web-compatibility reason to include them.
-    kAdditionalCompositingTrigger =
-        k3DTransform | kTrivial3DTransform | kWillChangeTransform |
-        kWillChangeOpacity | kWillChangeBackdropFilter | kWillChangeFilter,
+    kAdditionalEffectCompositingTrigger =
+        k3DTransform | kTrivial3DTransform | kWillChangeTransform,
 
     // Cull rect expansion is required if the compositing reasons hint
     // requirement of high-performance movement, to avoid frequent change of
