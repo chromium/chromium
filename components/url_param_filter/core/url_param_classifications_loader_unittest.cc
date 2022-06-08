@@ -185,6 +185,35 @@ TEST_F(UrlParamClassificationsLoaderTest,
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
+       ReadClassifications_NormalizeToLowercase) {
+  FilterClassifications classifications =
+      MakeClassificationsProtoFromMap({{"source1.xyz", {"UPPERCASE"}}},
+                                      {{"destination2.xyz", {"mixedCase123"}}});
+
+  SetComponentFileContents(classifications.SerializeAsString());
+  loader()->ReadClassifications(test_file_contents());
+
+  EXPECT_THAT(
+      loader()->GetSourceClassifications(),
+      UnorderedElementsAre(
+          Pair("source1.xyz",
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "uppercase",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
+  EXPECT_THAT(
+      loader()->GetDestinationClassifications(),
+      UnorderedElementsAre(
+          Pair("destination2.xyz",
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "mixedcase123",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
+}
+
+TEST_F(UrlParamClassificationsLoaderTest,
        GetClassifications_ComponentOnlyWithExperiment) {
   const std::string experiment_identifier = "mattwashere";
   base::test::ScopedFeatureList scoped_feature_list;
@@ -329,6 +358,28 @@ TEST_F(UrlParamClassificationsLoaderTest,
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
+       GetSourceClassifications_FeatureOnly_NormalizeToLowercase) {
+  // Provide classifications using the feature flag.
+  std::map<std::string, std::vector<std::string>> dest_params;
+  SetFeatureParams(
+      {{"classifications",
+        CreateBase64EncodedFilterParamClassificationForTesting(
+            {{kSourceSite, {"UPPERCASE", "mixedCase123"}}}, dest_params)}});
+
+  EXPECT_THAT(
+      loader()->GetSourceClassifications(),
+      UnorderedElementsAre(Pair(
+          Eq(kSourceSite),
+          UnorderedElementsAre(Pair(
+              FilterClassification::USE_CASE_UNKNOWN,
+              UnorderedElementsAre(
+                  Pair("uppercase",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL),
+                  Pair("mixedcase123",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
+}
+
+TEST_F(UrlParamClassificationsLoaderTest,
        GetSourceClassifications_ComponentThenFeature) {
   // Create proto with both Source + Destination Classifications
   FilterClassifications classifications = MakeClassificationsProtoFromMap(
@@ -353,9 +404,9 @@ TEST_F(UrlParamClassificationsLoaderTest,
           UnorderedElementsAre(Pair(
               FilterClassification::USE_CASE_UNKNOWN,
               UnorderedElementsAre(
-                  Pair("plzblockA",
+                  Pair("plzblocka",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblockB",
+                  Pair("plzblockb",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 }
 
@@ -384,9 +435,9 @@ TEST_F(UrlParamClassificationsLoaderTest,
           UnorderedElementsAre(Pair(
               FilterClassification::USE_CASE_UNKNOWN,
               UnorderedElementsAre(
-                  Pair("plzblockA",
+                  Pair("plzblocka",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblockB",
+                  Pair("plzblockb",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 }
 
@@ -626,9 +677,9 @@ TEST_F(UrlParamClassificationsLoaderTest,
           UnorderedElementsAre(Pair(
               FilterClassification::USE_CASE_UNKNOWN,
               UnorderedElementsAre(
-                  Pair("plzblockA",
+                  Pair("plzblocka",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblockB",
+                  Pair("plzblockb",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 }
 
@@ -657,9 +708,9 @@ TEST_F(UrlParamClassificationsLoaderTest,
           UnorderedElementsAre(Pair(
               FilterClassification::USE_CASE_UNKNOWN,
               UnorderedElementsAre(
-                  Pair("plzblockA",
+                  Pair("plzblocka",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblockB",
+                  Pair("plzblockb",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 }
 

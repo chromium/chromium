@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "components/url_param_filter/core/features.h"
 #include "components/url_param_filter/core/url_param_filter_classification.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,7 +41,7 @@ void AppendParams(ClassificationMap& map,
     // Any non-matching experimental params have been discarded previously.
     // We retain whether the classification was experimental, however, to write
     // a separate metric when those classifications are used.
-    map[classification.site()][use_case][param.name()] =
+    map[classification.site()][use_case][base::ToLowerASCII(param.name())] =
         !classification.experiment_tags().empty() &&
                 !HasExperimentTag(classification, DEFAULT_TAG)
             ? ClassificationExperimentStatus::EXPERIMENTAL
