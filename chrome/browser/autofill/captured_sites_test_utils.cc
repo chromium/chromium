@@ -1304,7 +1304,7 @@ bool TestRecipeReplayer::ExecuteHoverAction(base::Value::Dict action) {
 }
 
 bool TestRecipeReplayer::ExecuteForceLoadPage(base::Value::Dict action) {
-  bool should_force = action.FindInt("force").value_or(false);
+  bool should_force = action.FindBool("force").value_or(false);
   if (!should_force) {
     return true;
   }
