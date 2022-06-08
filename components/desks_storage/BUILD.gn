@@ -41,6 +41,20 @@ static_library("desks_storage") {
   public_deps = []
 }
 
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "core/desk_test_util.cc",
+    "core/desk_test_util.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//components/app_constants",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -48,6 +62,7 @@ source_set("unit_tests") {
     "core/desk_sync_bridge_unittest.cc",
     "core/desk_template_conversion_unittests.cc",
     "core/desk_template_util_unittests.cc",
+    "core/desk_test_util_unittests.cc",
     "core/local_desks_data_manager_unittests.cc",
     "core/saved_desk_builder.cc",
     "core/saved_desk_builder.h",
@@ -56,6 +71,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":desks_storage",
+    ":test_support",
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",

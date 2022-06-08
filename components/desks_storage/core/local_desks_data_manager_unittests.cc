@@ -22,6 +22,7 @@
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/desks_storage/core/desk_template_util.h"
+#include "components/desks_storage/core/desk_test_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -234,7 +235,7 @@ class LocalDeskDataManagerTest : public testing::Test {
     data_manager_ = std::make_unique<LocalDeskDataManager>(temp_dir_.GetPath(),
                                                            account_id_);
     data_manager_->SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(false);
-    desk_template_util::PopulateAppRegistryCache(account_id_, cache_.get());
+    desk_test_util::PopulateAppRegistryCache(account_id_, cache_.get());
     task_environment_.RunUntilIdle();
     testing::Test::SetUp();
   }

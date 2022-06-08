@@ -8,29 +8,15 @@
 #include <string>
 
 #include "ash/public/cpp/desk_template.h"
-#include "components/account_id/account_id.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
 
 namespace desks_storage {
 
 namespace desk_template_util {
 
-constexpr char kTestSwaAppId[] = "test_swa_app_id";
-constexpr char kTestLacrosChromeAppId[] = "test_lacros_chrome_app_id";
-constexpr char kTestUnsupportedAppId[] = "test_unsupported_app_id";
-
 ash::DeskTemplate* FindOtherEntryWithName(
     const std::u16string& name,
     const base::GUID& uuid,
     const std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>& entries);
-
-// Populates the given cache with test app information.
-void PopulateAppRegistryCache(AccountId account_id,
-                              apps::AppRegistryCache* cache);
-
-void AddAppIdToAppRegistryCache(AccountId account_id,
-                                apps::AppRegistryCache* cache,
-                                const char* app_id);
 
 }  // namespace desk_template_util
 

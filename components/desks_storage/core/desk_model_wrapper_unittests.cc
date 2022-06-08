@@ -24,6 +24,7 @@
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/desks_storage/core/desk_template_util.h"
+#include "components/desks_storage/core/desk_test_util.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
@@ -185,7 +186,7 @@ class DeskModelWrapperTest : public testing::Test {
     data_manager_ = std::make_unique<LocalDeskDataManager>(temp_dir_.GetPath(),
                                                            account_id_);
     data_manager_->SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(false);
-    desk_template_util::PopulateAppRegistryCache(account_id_, cache_.get());
+    desk_test_util::PopulateAppRegistryCache(account_id_, cache_.get());
     model_wrapper_ = std::make_unique<DeskModelWrapper>(data_manager_.get());
     task_environment_.RunUntilIdle();
     testing::Test::SetUp();

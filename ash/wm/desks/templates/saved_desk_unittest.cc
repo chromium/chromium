@@ -66,7 +66,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
-#include "components/desks_storage/core/desk_template_util.h"
+#include "components/desks_storage/core/desk_test_util.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -141,7 +141,7 @@ class SavedDeskTest : public OverviewTestBase {
       // We need to add each `app_id` to app registry cache since our desk
       // template serialization requires an updated app cache to get the app
       // info.
-      desks_storage::desk_template_util::AddAppIdToAppRegistryCache(
+      desks_storage::desk_test_util::AddAppIdToAppRegistryCache(
           account_id_, cache_.get(), app_id.c_str());
 
       for (int32_t window_id = 0; window_id < num_windows[i]; ++window_id) {

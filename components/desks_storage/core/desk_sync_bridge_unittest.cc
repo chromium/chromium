@@ -24,7 +24,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
-#include "components/desks_storage/core/desk_template_util.h"
+#include "components/desks_storage/core/desk_test_util.h"
 #include "components/desks_storage/core/saved_desk_builder.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/features.h"
@@ -80,9 +80,6 @@ using testing::Return;
 using testing::SizeIs;
 using testing::StrEq;
 
-constexpr char kTestPwaAppId[] = "test_pwa_app_id";
-constexpr char kTestChromeAppId[] = "test_chrome_app_id";
-constexpr char kTestArcAppId[] = "test_arc_app_id";
 constexpr char kTestArcAppTitle[] = "test_arc_app_title";
 constexpr char kUuidFormat[] = "9e186d5a-502e-49ce-9ee1-00000000000%d";
 constexpr char kAdminTemplateUuidFormat[] =
@@ -205,7 +202,7 @@ void FillExampleBrowserAppWindow(WorkspaceDeskSpecifics_App* app,
 
 void FillExampleProgressiveWebAppWindow(WorkspaceDeskSpecifics_App* app) {
   ChromeApp* app_window = app->mutable_app()->mutable_chrome_app();
-  app_window->set_app_id(kTestPwaAppId);
+  app_window->set_app_id(desk_test_util::kTestPwaAppId);
 
   WindowBound* window_bound = app->mutable_window_bound();
   window_bound->set_left(210);
@@ -220,7 +217,8 @@ void FillExampleProgressiveWebAppWindow(WorkspaceDeskSpecifics_App* app) {
       sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_WINDOW);
   app->set_disposition(
       sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_WINDOW);
-  app->set_app_name(base::StringPrintf(kTestAppNameFormat, kTestPwaAppId));
+  app->set_app_name(
+      base::StringPrintf(kTestAppNameFormat, desk_test_util::kTestPwaAppId));
   app->set_display_id(99887766l);
   app->set_z_index(233);
   app->set_window_id(2555);
@@ -228,7 +226,7 @@ void FillExampleProgressiveWebAppWindow(WorkspaceDeskSpecifics_App* app) {
 
 void FillExampleSystemWebAppWindow(WorkspaceDeskSpecifics_App* app) {
   ChromeApp* app_window = app->mutable_app()->mutable_chrome_app();
-  app_window->set_app_id(desk_template_util::kTestSwaAppId);
+  app_window->set_app_id(desk_test_util::kTestSwaAppId);
 
   WindowBound* window_bound = app->mutable_window_bound();
   window_bound->set_left(220);
@@ -243,8 +241,8 @@ void FillExampleSystemWebAppWindow(WorkspaceDeskSpecifics_App* app) {
       sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_WINDOW);
   app->set_disposition(
       sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_WINDOW);
-  app->set_app_name(base::StringPrintf(kTestAppNameFormat,
-                                       desk_template_util::kTestSwaAppId));
+  app->set_app_name(
+      base::StringPrintf(kTestAppNameFormat, desk_test_util::kTestSwaAppId));
   app->set_display_id(99887766l);
   app->set_z_index(234);
   app->set_window_id(2556);
@@ -252,7 +250,7 @@ void FillExampleSystemWebAppWindow(WorkspaceDeskSpecifics_App* app) {
 
 void FillExampleChromeAppWindow(WorkspaceDeskSpecifics_App* app) {
   ChromeApp* app_window = app->mutable_app()->mutable_chrome_app();
-  app_window->set_app_id(kTestChromeAppId);
+  app_window->set_app_id(desk_test_util::kTestChromeAppId);
 
   WindowBound* window_bound = app->mutable_window_bound();
   window_bound->set_left(210);
@@ -266,7 +264,8 @@ void FillExampleChromeAppWindow(WorkspaceDeskSpecifics_App* app) {
           WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_PANEL_DEPRECATED);
   app->set_disposition(
       sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_WINDOW);
-  app->set_app_name(base::StringPrintf(kTestAppNameFormat, kTestChromeAppId));
+  app->set_app_name(
+      base::StringPrintf(kTestAppNameFormat, desk_test_util::kTestChromeAppId));
   app->set_display_id(99887766l);
   app->set_z_index(233);
   app->set_window_id(2555);
@@ -274,7 +273,7 @@ void FillExampleChromeAppWindow(WorkspaceDeskSpecifics_App* app) {
 
 void FillExampleArcAppWindow(WorkspaceDeskSpecifics_App* app) {
   ArcApp* app_window = app->mutable_app()->mutable_arc_app();
-  app_window->set_app_id(kTestArcAppId);
+  app_window->set_app_id(desk_test_util::kTestArcAppId);
 
   ArcSize* minimum_size = app_window->mutable_minimum_size();
   minimum_size->set_width(1);
@@ -297,7 +296,8 @@ void FillExampleArcAppWindow(WorkspaceDeskSpecifics_App* app) {
   window_bound->set_height(2440);
   app->set_window_state(
       WindowState::WorkspaceDeskSpecifics_WindowState_MAXIMIZED);
-  app->set_app_name(base::StringPrintf(kTestAppNameFormat, kTestArcAppId));
+  app->set_app_name(
+      base::StringPrintf(kTestAppNameFormat, desk_test_util::kTestArcAppId));
   app->set_display_id(99887766l);
   app->set_z_index(233);
   app->set_window_id(2555);
@@ -663,7 +663,7 @@ class DeskSyncBridgeTest : public testing::Test {
 
   // testing::test.
   void SetUp() override {
-    desk_template_util::PopulateAppRegistryCache(account_id_, cache_.get());
+    desk_test_util::PopulateAppRegistryCache(account_id_, cache_.get());
   }
 
   MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
@@ -982,14 +982,15 @@ TEST_F(DeskSyncBridgeTest, EnsureChromeAppCanBeSavedProperly) {
       SavedDeskBuilder()
           .SetUuid(base::StringPrintf(kUuidFormat, kDefaultTemplateIndex))
           .SetName(base::StringPrintf(kNameFormat, kDefaultTemplateIndex))
-          .AddChromeAppWindow(kChromeAppWindowId, kTestChromeAppId)
+          .AddChromeAppWindow(kChromeAppWindowId,
+                              desk_test_util::kTestChromeAppId)
           .Build();
   WorkspaceDeskSpecifics converted_desk_proto =
       bridge()->ToSyncProto(desk_template.get());
   WorkspaceDeskSpecifics expected_desk_proto =
       CreateChromeAppTemplateExpectedValue(
           kDefaultTemplateIndex, desk_template->created_time(),
-          kChromeAppWindowId, kTestChromeAppId);
+          kChromeAppWindowId, desk_test_util::kTestChromeAppId);
 
   EXPECT_THAT(converted_desk_proto, EqualsSpecifics(expected_desk_proto));
 }
@@ -1002,14 +1003,14 @@ TEST_F(DeskSyncBridgeTest, EnsureLacrosChromeAppCanBeSavedProperly) {
           .SetUuid(base::StringPrintf(kUuidFormat, kDefaultTemplateIndex))
           .SetName(base::StringPrintf(kNameFormat, kDefaultTemplateIndex))
           .AddChromeAppWindow(kChromeAppWindowId,
-                              desk_template_util::kTestLacrosChromeAppId)
+                              desk_test_util::kTestLacrosChromeAppId)
           .Build();
   WorkspaceDeskSpecifics converted_desk_proto =
       bridge()->ToSyncProto(desk_template.get());
   WorkspaceDeskSpecifics expected_desk_proto =
       CreateChromeAppTemplateExpectedValue(
           kDefaultTemplateIndex, desk_template->created_time(),
-          kChromeAppWindowId, desk_template_util::kTestLacrosChromeAppId);
+          kChromeAppWindowId, desk_test_util::kTestLacrosChromeAppId);
 
   EXPECT_THAT(converted_desk_proto, EqualsSpecifics(expected_desk_proto));
 }
@@ -1021,16 +1022,17 @@ TEST_F(DeskSyncBridgeTest, EnsureUnsupportedAppCanBeIgnored) {
       SavedDeskBuilder()
           .SetUuid(base::StringPrintf(kUuidFormat, kDefaultTemplateIndex))
           .SetName(base::StringPrintf(kNameFormat, kDefaultTemplateIndex))
-          .AddChromeAppWindow(kChromeAppWindowId, kTestChromeAppId)
+          .AddChromeAppWindow(kChromeAppWindowId,
+                              desk_test_util::kTestChromeAppId)
           .AddGenericAppWindow(kUnsupportedAppWindowId,
-                               desk_template_util::kTestUnsupportedAppId)
+                               desk_test_util::kTestUnsupportedAppId)
           .Build();
   WorkspaceDeskSpecifics converted_desk_proto =
       bridge()->ToSyncProto(desk_template.get());
   WorkspaceDeskSpecifics expected_desk_proto =
       CreateChromeAppTemplateExpectedValue(
           kDefaultTemplateIndex, desk_template->created_time(),
-          kChromeAppWindowId, kTestChromeAppId);
+          kChromeAppWindowId, desk_test_util::kTestChromeAppId);
 
   EXPECT_THAT(converted_desk_proto, EqualsSpecifics(expected_desk_proto));
 }

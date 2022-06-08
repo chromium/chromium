@@ -4,32 +4,9 @@
 
 #include "components/desks_storage/core/desk_template_util.h"
 
-#include "components/app_constants/constants.h"
-#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
-#include "components/services/app_service/public/cpp/app_types.h"
-
-namespace {
-
-constexpr char kTestPwaAppId[] = "test_pwa_app_id";
-constexpr char kTestChromeAppId[] = "test_chrome_app_id";
-constexpr char kTestArcAppId[] = "test_arc_app_id";
-constexpr char kTestChromeAppId1[] = "test_chrome_app_1";
-constexpr char kTestPwaAppId1[] = "test_pwa_app_1";
-
-}  // namespace
-
 namespace desks_storage {
 
 namespace desk_template_util {
-
-apps::AppPtr MakeApp(const char* app_id,
-                     const char* name,
-                     apps::AppType app_type) {
-  apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
-  app->readiness = apps::Readiness::kReady;
-  app->name = name;
-  return app;
-}
 
 ash::DeskTemplate* FindOtherEntryWithName(
     const std::u16string& name,
@@ -49,75 +26,6 @@ ash::DeskTemplate* FindOtherEntryWithName(
     return nullptr;
   }
   return iter->second.get();
-}
-
-void PopulateAppRegistryCache(AccountId account_id,
-                              apps::AppRegistryCache* cache) {
-  std::vector<apps::AppPtr> deltas;
-
-  deltas.push_back(
-      MakeApp(kTestPwaAppId, "Test PWA App", apps::AppType::kChromeApp));
-  // chromeAppId returns kExtension in the real Apps cache.
-  deltas.push_back(MakeApp(app_constants::kChromeAppId, "Ash Chrome Browser",
-                           apps::AppType::kChromeApp));
-  deltas.push_back(MakeApp(app_constants::kLacrosAppId, "Lacros Chrome Browser",
-                           apps::AppType::kStandaloneBrowser));
-  deltas.push_back(
-      MakeApp(kTestChromeAppId, "Test Chrome App", apps::AppType::kChromeApp));
-  deltas.push_back(MakeApp(kTestArcAppId, "Arc app", apps::AppType::kArc));
-  deltas.push_back(
-      MakeApp(kTestPwaAppId1, "Test PWA App 2", apps::AppType::kChromeApp));
-  deltas.push_back(MakeApp(kTestChromeAppId1, "Test Chrome App 2",
-                           apps::AppType::kChromeApp));
-  deltas.push_back(
-      MakeApp(kTestSwaAppId, "Test System Web App 1", apps::AppType::kWeb));
-  deltas.push_back(MakeApp(kTestUnsupportedAppId, "Test Supported App 1",
-                           apps::AppType::kPluginVm));
-  deltas.push_back(MakeApp(kTestLacrosChromeAppId, "Test Chrome App",
-                           apps::AppType::kStandaloneBrowserChromeApp));
-
-  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
-    cache->OnApps(std::move(deltas), apps::AppType::kUnknown,
-                  /*should_notify_initialized=*/false);
-  } else {
-    std::vector<apps::mojom::AppPtr> mojom_deltas;
-    for (const auto& delta : deltas) {
-      mojom_deltas.push_back(apps::ConvertAppToMojomApp(delta));
-    }
-    cache->OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
-                  /*should_notify_initialized=*/false);
-  }
-
-  cache->SetAccountId(account_id);
-
-  apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id, cache);
-}
-
-void AddAppIdToAppRegistryCache(AccountId account_id,
-                                apps::AppRegistryCache* cache,
-                                const char* app_id) {
-  std::vector<apps::AppPtr> deltas;
-
-  // We need to add the app as any type that's not a `apps::AppType::kChromeApp`
-  // since there's a default hard coded string for that type, which will merge
-  // all app_id to it.
-  deltas.push_back(MakeApp(app_id, "Arc app", apps::AppType::kArc));
-
-  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
-    cache->OnApps(std::move(deltas), apps::AppType::kUnknown,
-                  /*should_notify_initialized=*/false);
-  } else {
-    std::vector<apps::mojom::AppPtr> mojom_deltas;
-    for (const auto& delta : deltas) {
-      mojom_deltas.push_back(apps::ConvertAppToMojomApp(delta));
-    }
-    cache->OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
-                  /*should_notify_initialized=*/false);
-  }
-
-  cache->SetAccountId(account_id);
-
-  apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id, cache);
 }
 
 }  // namespace desk_template_util
