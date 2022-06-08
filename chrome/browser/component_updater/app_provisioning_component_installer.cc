@@ -144,15 +144,15 @@ void AppProvisioningComponentInstallerPolicy::UpdateAppMetadataOnUI(
 }
 
 void RegisterAppProvisioningComponent(component_updater::ComponentUpdateService* cus) {
-  if (!base::FeatureList::IsEnabled(features::kAppProvisioningStatic) ||
-      !chromeos::features::IsCloudGamingDeviceEnabled()) {
-    return;
+  // If either of these flags are enabled, register the component. Otherwise,
+  // don't.
+  if (base::FeatureList::IsEnabled(features::kAppProvisioningStatic) ||
+      chromeos::features::IsCloudGamingDeviceEnabled()) {
+    VLOG(1) << "Registering App Provisioning component.";
+    auto installer = base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<AppProvisioningComponentInstallerPolicy>());
+    installer->Register(cus, base::OnceClosure());
   }
-
-  VLOG(1) << "Registering App Provisioning component.";
-  auto installer = base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<AppProvisioningComponentInstallerPolicy>());
-  installer->Register(cus, base::OnceClosure());
 }
 
 }  // namespace component_updater
