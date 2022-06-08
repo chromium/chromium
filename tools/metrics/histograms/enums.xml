@@ -26822,9 +26822,17 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="Download.Shelf.DragEvent">
+  <obsolete>
+    Deprecated 2022-06-06
+  </obsolete>
   <int value="0" label="Started"/>
   <int value="1" label="Canceled"/>
   <int value="2" label="Dropped"/>
+</enum>
+
+<enum name="Download.Shelf.DragInfo">
+  <int value="0" label="DRAG_STARTED"/>
+  <int value="1" label="DOWNLOAD_COMPLETE"/>
 </enum>
 
 <enum name="DownloadableStrings.InstallStatus">

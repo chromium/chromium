@@ -1103,10 +1103,23 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.Shelf.DragEvent" enum="Download.Shelf.DragEvent"
     expires_after="M77">
+  <obsolete>
+    Removed 2022-06-06, though it had long expired (in M77).
+  </obsolete>
   <owner>sdy@chromium.org</owner>
   <summary>
     Events related to dragging a completed download from the shelf, which
     represents dragging a reference to the downloaded file.
+  </summary>
+</histogram>
+
+<histogram name="Download.Shelf.DragInfo" enum="Download.Shelf.DragInfo"
+    expires_after="2022-12-06">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    This tracks drag events on a complete download on the shelf, and also
+    general download completion on the shelf as a point of reference.
   </summary>
 </histogram>
 

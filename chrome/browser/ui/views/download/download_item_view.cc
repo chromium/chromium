@@ -445,7 +445,7 @@ bool DownloadItemView::OnMouseDragged(const ui::MouseEvent& event) {
     // TODO(shaktisahu): Make DragDownloadItem work with a model.
     DragDownloadItem(model_->download(), file_icon,
                      widget ? widget->GetNativeView() : nullptr);
-    RecordDownloadShelfDragEvent(DownloadShelfDragEvent::STARTED);
+    RecordDownloadShelfDragInfo(DownloadShelfDragInfo::DRAG_STARTED);
   }
   return true;
 }
@@ -502,6 +502,14 @@ void DownloadItemView::OnDownloadUpdated() {
   if (new_tooltip_text != tooltip_text_) {
     tooltip_text_ = new_tooltip_text;
     TooltipTextChanged();
+  }
+
+  // OnDownloadUpdated can be called multiple times while the state is complete.
+  // One example of this is if the file gets removed.
+  if (!has_download_completion_been_logged_ &&
+      model_->GetState() == download::DownloadItem::COMPLETE) {
+    RecordDownloadShelfDragInfo(DownloadShelfDragInfo::DOWNLOAD_COMPLETE);
+    has_download_completion_been_logged_ = true;
   }
 }
 

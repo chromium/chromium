@@ -150,23 +150,24 @@ void RecordDownloadPathValidation(download::PathValidationResult result,
 // Record download cancel reason.
 void RecordDownloadCancelReason(DownloadCancelReason reason);
 
-// Records drags of completed downloads from the shelf. Used in UMA, do not
-// remove, change or reuse existing entries. Update histograms.xml and
-// enums.xml when adding entries.
-enum class DownloadShelfDragEvent {
-  // A download was dragged. All platforms.
-  STARTED,
-  // The download was dropped somewhere that isn't a drag target. Currently
-  // only recorded on Mac.
-  CANCELED,
-  // The download was dropped somewhere useful (a folder, an application,
-  // etc.). Currently only recorded on Mac.
-  DROPPED,
+// Records information related to dragging completed downloads from the shelf.
+// Used in UMA. Do not remove, change or reuse existing entries. Update
+// histograms.xml and enums.xml when adding entries.
+enum class DownloadShelfDragInfo {
+  // A download starting to be dragged. It is possible the drag-and-drop will
+  // not complete depending on the user's actions.
+  DRAG_STARTED,
+  // As a point of reference for dragged downloads, this represents when a
+  // download completes on the shelf. This omits downloads that are immediately
+  // removed from the shelf when they complete.
+  DOWNLOAD_COMPLETE,
 
   COUNT
 };
 
-void RecordDownloadShelfDragEvent(DownloadShelfDragEvent drag_event);
+// Records either when a drag event is initiated by the user or, as a point of
+// reference, when a download completes on the shelf.
+void RecordDownloadShelfDragInfo(DownloadShelfDragInfo drag_info);
 
 void RecordDownloadStartPerProfileType(Profile* profile);
 

@@ -328,6 +328,10 @@ class DownloadItemView : public views::View,
   // button was pressed.
   bool dropdown_button_pressed_recorded_ = false;
 
+  // Whether the download's completion has already been logged. This is used to
+  // avoid inaccurate repeated logging.
+  bool has_download_completion_been_logged_ = false;
+
   // Method factory used to delay reenabling of the item when opening the
   // downloaded file.
   base::WeakPtrFactory<DownloadItemView> weak_ptr_factory_{this};
