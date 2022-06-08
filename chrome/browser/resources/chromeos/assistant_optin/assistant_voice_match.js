@@ -70,6 +70,14 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * @private {boolean}
+       */
+      isTabletMode_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -163,6 +171,7 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
   reloadContent(data) {
     this.equalWeightButtons_ = data['equalWeightButtons'];
     this.childName_ = data['childName'];
+    this.isTabletMode_ = data['isTabletMode'];
   }
 
   /**
@@ -290,6 +299,11 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
   getReadyImgUrl_(isDarkMode) {
     return './assistant_optin/assistant_ready_' + (isDarkMode ? 'dm' : 'lm') +
         '.json';
+  }
+
+  getVoiceMatchAnimationUrl_(isDarkMode, isTabletMode) {
+    return './assistant_optin/voice_' + (isTabletMode ? 'tablet' : 'laptop') +
+        '_' + (isDarkMode ? 'dm' : 'lm') + '.json';
   }
 }
 

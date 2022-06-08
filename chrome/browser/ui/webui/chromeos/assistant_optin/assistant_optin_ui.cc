@@ -90,8 +90,6 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
       base::make_span(kAssistantOptinResources, kAssistantOptinResourcesSize));
   source->AddResourcePath("assistant_optin.js", IDR_ASSISTANT_OPTIN_JS);
   source->SetDefaultResource(IDR_ASSISTANT_OPTIN_HTML);
-  source->AddResourcePath("voice_match_animation.json",
-                          IDR_ASSISTANT_VOICE_MATCH_ANIMATION);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
   source->DisableTrustedTypesCSP();

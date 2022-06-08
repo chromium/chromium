@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -515,6 +516,11 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
       "shouldSkipVoiceMatch",
       base::Value(!ash::AssistantState::Get()->HasAudioInputDevice()));
   dictionary.SetKey("childName", base::Value(GetGivenNameIfIsChild()));
+  dictionary.SetKey(
+      "isTabletMode",
+      base::Value(ash::TabletMode::Get()->InTabletMode() ||
+                  (is_oobe_in_progress &&
+                   ash::switches::ShouldOobeUseTabletModeFirstRun())));
   ReloadContent(std::move(dictionary));
 
   // Skip activity control and users will be in opted out mode.

@@ -1434,9 +1434,19 @@ cr.define('cr.ui.login.debug', function() {
           },
         },
         {
-          id: 'voice_match_begin',
+          id: 'voice_match_begin laptop',
           trigger: (screen) => {
             (screen.$).card.showStep('voice-match');
+            ((screen.$).card.$).voiceMatch.setUIStep('intro');
+            ((screen.$).card.$).voiceMatch.isTabletMode_ = false;
+          },
+        },
+        {
+          id: 'voice_match_begin tablet',
+          trigger: (screen) => {
+            (screen.$).card.showStep('voice-match');
+            ((screen.$).card.$).voiceMatch.setUIStep('intro');
+            ((screen.$).card.$).voiceMatch.isTabletMode_ = true;
           },
         },
         {

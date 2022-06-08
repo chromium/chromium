@@ -245,8 +245,6 @@ void AddArcScreensResources(content::WebUIDataSource* source) {
 void AddAssistantScreensResources(content::WebUIDataSource* source) {
   source->AddResourcePaths(
       base::make_span(kAssistantOptinResources, kAssistantOptinResourcesSize));
-  source->AddResourcePath("voice_match_animation.json",
-                          IDR_ASSISTANT_VOICE_MATCH_ANIMATION);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }

@@ -61,6 +61,10 @@ generate_grd("build_grd") {
     "assistant_ready_lm.json",
     "assistant_related_info_dm.json",
     "assistant_related_info_lm.json",
+    "voice_laptop_dm.json",
+    "voice_laptop_lm.json",
+    "voice_tablet_dm.json",
+    "voice_tablet_lm.json",
   ]
   resource_path_prefix = "assistant_optin"
 }
