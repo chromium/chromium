@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
@@ -70,6 +71,54 @@ static constexpr char kPostTestStart[] = R"(
     startTest();
   }
 )";
+
+// Temporary observer to understand flaky test.
+// TODO(crbug.com/1328079): Remove once the root cause for the flaky test is
+// found.
+class DebugServiceWorkerContextObserver
+    : public content::ServiceWorkerContextObserver {
+ public:
+  explicit DebugServiceWorkerContextObserver(Profile* profile) {
+    auto* worker_context =
+        profile->GetDefaultStoragePartition()->GetServiceWorkerContext();
+    context_observation_.Observe(worker_context);
+  }
+  ~DebugServiceWorkerContextObserver() override = default;
+
+  void OnRegistrationCompleted(const GURL& scope) override {
+    LOG(ERROR) << "Service Worker registered: " << scope;
+  }
+
+  void OnVersionActivated(int64_t version_id, const GURL& scope) override {
+    LOG(ERROR) << "Version activated:\n"
+               << "  scope: " << scope << "\n"
+               << "  version_id: " << version_id;
+  }
+
+  void OnVersionStartedRunning(
+      int64_t version_id,
+      const content::ServiceWorkerRunningInfo& running_info) override {
+    LOG(ERROR) << "Version started running:\n"
+               << "  script_url: " << running_info.script_url << "\n"
+               << "  scope: " << running_info.scope << "\n"
+               << "  version_id: " << version_id;
+  }
+
+  void OnVersionStoppedRunning(int64_t version_id) override {
+    LOG(ERROR) << "Version stopped running:\n"
+               << "  version_id: " << version_id;
+  }
+
+  void OnDestruct(content::ServiceWorkerContext* context) override {
+    LOG(ERROR) << "Context destroyed";
+    context_observation_.Reset();
+  }
+
+ private:
+  base::ScopedObservation<content::ServiceWorkerContext,
+                          content::ServiceWorkerContextObserver>
+      context_observation_{this};
+};
 
 // Used to wait for a message to get added to the Service Worker console.
 // Returns the first message added to the console.
@@ -207,8 +256,16 @@ class CrosWindowExtensionBrowserTest : public InProcessBrowserTest {
         {});
   }
 
+  ~CrosWindowExtensionBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    debug_observer_ = std::make_unique<DebugServiceWorkerContextObserver>(
+        browser()->profile());
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<DebugServiceWorkerContextObserver> debug_observer_;
 };
 
 }  // namespace
