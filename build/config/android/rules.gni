@@ -2227,6 +2227,7 @@ if (enable_java_templates) {
     _base_path = "$target_out_dir/$target_name/$target_name"
     _build_config = "$target_gen_dir/$target_name.build_config.json"
     _build_config_target = "$target_name$build_config_target_suffix"
+    _java_target_name = "${_template_name}__java"
 
     _min_sdk_version = default_min_sdk_version
     _target_sdk_version = android_sdk_version
@@ -2480,7 +2481,13 @@ if (enable_java_templates) {
       build_config = _build_config
       min_sdk_version = _min_sdk_version
       target_sdk_version = _target_sdk_version
-      deps = _android_root_manifest_deps + [ ":$_build_config_target" ]
+      deps = _android_root_manifest_deps + [
+               ":$_build_config_target",
+
+               # Depend on android_resources() targets that use generated files
+               # in mergeable_android_manifests (such as android_aar_prebuilt).
+               ":${_java_target_name}__assetres",
+             ]
     }
 
     _final_deps = []
@@ -2819,15 +2826,13 @@ if (enable_java_templates) {
                  ])
     }
 
-    _java_target = "${_template_name}__java"
-
     if (_is_bundle_module) {
       _add_view_trace_events =
           defined(invoker.add_view_trace_events) &&
           invoker.add_view_trace_events && enable_trace_event_bytecode_rewriting
     }
 
-    java_library_impl(_java_target) {
+    java_library_impl(_java_target_name) {
       forward_variables_from(invoker,
                              [
                                "alternative_android_sdk_dep",
@@ -2951,7 +2956,7 @@ if (enable_java_templates) {
         use_interface_jars = true
         deps = [
           ":$_build_config_target",
-          ":$_java_target",
+          ":$_java_target_name",
         ]
       }
     }
@@ -2959,7 +2964,7 @@ if (enable_java_templates) {
     if (_uses_static_library_synchronized_proguard) {
       _final_dex_target_dep = "${invoker.static_library_provider}__dexsplitter"
     } else if (_is_bundle_module && _proguard_enabled) {
-      _final_deps += [ ":$_java_target" ]
+      _final_deps += [ ":$_java_target_name" ]
     } else if (_incremental_apk) {
       if (defined(invoker.enable_proguard_checks)) {
         not_needed(invoker, [ "enable_proguard_checks" ])
@@ -2979,7 +2984,7 @@ if (enable_java_templates) {
         build_config = _build_config
         deps = [
           ":$_build_config_target",
-          ":$_java_target",
+          ":$_java_target_name",
         ]
         if (_proguard_enabled) {
           deps += _deps + [ ":$_compile_resources_target" ]
@@ -3159,7 +3164,7 @@ if (enable_java_templates) {
             deps = _deps + [
                      ":$_build_config_target",
                      ":$_compile_resources_target",
-                     ":$_java_target",
+                     ":$_java_target_name",
                    ]
           }
           _final_deps += [ ":$_size_info_target" ]
@@ -3317,7 +3322,7 @@ if (enable_java_templates) {
         }
       }
       _final_deps += [
-        ":$_java_target",
+        ":$_java_target_name",
         ":$_write_installer_json_rule_name",
       ]
     }
@@ -3406,7 +3411,7 @@ if (enable_java_templates) {
                                ])
         build_config = _build_config
         build_config_dep = ":$_build_config_target"
-        deps = [ ":$_java_target" ]
+        deps = [ ":$_java_target_name" ]
         if (defined(invoker.lint_suppressions_dep)) {
           deps += [ invoker.lint_suppressions_dep ]
         }
