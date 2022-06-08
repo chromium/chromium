@@ -42,6 +42,9 @@ public class WebApkIconNameUpdateDialogTest {
     private final CallbackHelper mOnActionCallback = new CallbackHelper();
     private final MockModalDialogManager mDialogManager = new MockModalDialogManager();
 
+    // The length of the explanation header when icon updates are requested.
+    private static final int MESSAGE_HEADER_LENGTH = 88;
+
     private Integer mLastDismissalCause;
 
     private static class DialogParams {
@@ -59,6 +62,7 @@ public class WebApkIconNameUpdateDialogTest {
             dialogParams.expectNameHiddenAnyway = false;
             dialogParams.nameBefore = "";
             dialogParams.nameAfter = "";
+            dialogParams.hasExplanationString = true;
             return dialogParams;
         }
 
@@ -74,6 +78,7 @@ public class WebApkIconNameUpdateDialogTest {
         public boolean expectNameHiddenAnyway;
         public String nameBefore;
         public String nameAfter;
+        public boolean hasExplanationString;
     }
 
     private static class MockModalDialogManager extends ModalDialogManager {
@@ -118,6 +123,11 @@ public class WebApkIconNameUpdateDialogTest {
         return mDialogManager.getCurrentDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
     }
 
+    private CharSequence getDialogHeaderView() {
+        return mDialogManager.getCurrentDialogModel().get(
+                ModalDialogProperties.MESSAGE_PARAGRAPH_1);
+    }
+
     private String getDialogTitle() {
         return mDialogManager.getCurrentDialogModel().get(ModalDialogProperties.TITLE).toString();
     }
@@ -133,6 +143,10 @@ public class WebApkIconNameUpdateDialogTest {
         if (textView.getVisibility() != View.VISIBLE) return null;
 
         return textView.getText().toString();
+    }
+
+    private String getUpdateDialogHeaderLabel() {
+        return getDialogHeaderView().toString();
     }
 
     private void onUpdateDialogResult(Integer dialogDismissalCause) {
@@ -197,6 +211,9 @@ public class WebApkIconNameUpdateDialogTest {
         Assert.assertEquals(clickAccept ? (Integer) DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                                         : (Integer) DialogDismissalCause.NEGATIVE_BUTTON_CLICKED,
                 mLastDismissalCause);
+
+        Assert.assertEquals((dialogParams.hasExplanationString ? MESSAGE_HEADER_LENGTH : 0),
+                getUpdateDialogHeaderLabel().length());
     }
 
     public void verifyReportAbuseValues(
@@ -243,8 +260,10 @@ public class WebApkIconNameUpdateDialogTest {
         dialogParams.shortNameChanged = true;
         dialogParams.shortNameBefore = "short1";
         dialogParams.shortNameAfter = "short2";
-        // When only the short name changes, the icon is shown (as unchanged) to provide context.
+        // When only the short name changes, the icon is shown (as unchanged) to provide context and
+        // the explanation string is dropped.
         dialogParams.expectIconShownAnyway = true;
+        dialogParams.hasExplanationString = false;
         verifyValues(/* clickAccept= */ true, dialogParams);
 
         // Test only long name changing.
@@ -254,6 +273,7 @@ public class WebApkIconNameUpdateDialogTest {
         dialogParams.nameAfter = "name2";
         // Icons always show, even if unchanged.
         dialogParams.expectIconShownAnyway = true;
+        dialogParams.hasExplanationString = false;
         verifyValues(/* clickAccept= */ true, dialogParams);
 
         // Test only short name and icon changing.
