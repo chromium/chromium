@@ -115,7 +115,7 @@ const base::FeatureParam<AmbientAnimationTheme> kAmbientModeAnimationThemeParam{
 // Controls whether to launch the animated screensaver (as opposed to the
 // existing photo slideshow) when entering ambient mode.
 const base::Feature kAmbientModeAnimationFeature{
-    "ChromeOSAmbientModeAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ChromeOSAmbientModeAnimation", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to allow Dev channel to use Prod server feature.
 const base::Feature kAmbientModeDevUseProdFeature{
