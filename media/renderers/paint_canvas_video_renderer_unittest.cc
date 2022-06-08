@@ -605,13 +605,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_270) {
   EXPECT_EQ(SK_ColorBLACK, bitmap.getColor(kWidth / 2, kHeight - 1));
 }
 
-// TODO(crbug.com/1334227): Re-enable this test
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
-#define MAYBE_HighBitDepth DISABLED_HighBitDepth
-#else
-#define MAYBE_HighBitDepth HighBitDepth
-#endif
-TEST_F(PaintCanvasVideoRendererTest, MAYBE_HighBitDepth) {
+TEST_F(PaintCanvasVideoRendererTest, HighBitDepth) {
   struct params {
     int bit_depth;
     VideoPixelFormat format;
