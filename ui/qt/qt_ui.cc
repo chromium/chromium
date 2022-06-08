@@ -333,23 +333,48 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
   // These color constants are required by native_chrome_color_mixer_linux.cc
   struct {
     ui::ColorId id;
-    SkColor color;
+    ColorType role;
+    ColorState state = ColorState::kNormal;
   } const kMaps[] = {
-      {ui::kColorNativeButtonBorder, gfx::kPlaceholderColor},
-      {ui::kColorNativeHeaderButtonBorderActive, gfx::kPlaceholderColor},
-      {ui::kColorNativeHeaderButtonBorderInactive, gfx::kPlaceholderColor},
-      {ui::kColorNativeHeaderSeparatorBorderActive, gfx::kPlaceholderColor},
-      {ui::kColorNativeHeaderSeparatorBorderInactive, gfx::kPlaceholderColor},
-      {ui::kColorNativeLabelForeground, shim_->GetColor(ColorRole::kWindowFg)},
-      {ui::kColorNativeTabForegroundInactiveFrameActive,
-       gfx::kPlaceholderColor},
-      {ui::kColorNativeTabForegroundInactiveFrameInactive,
-       gfx::kPlaceholderColor},
-      {ui::kColorNativeTextfieldBorderUnfocused, gfx::kPlaceholderColor},
-      {ui::kColorNativeToolbarBackground, gfx::kPlaceholderColor},
+      // Core colors
+      {ui::kColorAccent, ColorType::kHighlightBg},
+      {ui::kColorDisabledForeground, ColorType::kWindowFg,
+       ColorState::kDisabled},
+      {ui::kColorEndpointBackground, ColorType::kEntryBg},
+      {ui::kColorEndpointForeground, ColorType::kEntryFg},
+      {ui::kColorItemHighlight, ColorType::kHighlightBg},
+      {ui::kColorItemSelectionBackground, ColorType::kHighlightBg},
+      {ui::kColorMenuSelectionBackground, ColorType::kHighlightBg},
+      {ui::kColorMidground, ColorType::kMidground},
+      {ui::kColorPrimaryBackground, ColorType::kWindowBg},
+      {ui::kColorPrimaryForeground, ColorType::kWindowFg},
+      {ui::kColorSecondaryForeground, ColorType::kWindowFg,
+       ColorState::kDisabled},
+      {ui::kColorSubtleAccent, ColorType::kHighlightBg, ColorState::kInactive},
+      {ui::kColorSubtleEmphasisBackground, ColorType::kWindowBg},
+      {ui::kColorTextSelectionBackground, ColorType::kHighlightBg},
+      {ui::kColorTextSelectionForeground, ColorType::kHighlightFg},
+
+      // Platform-specific UI elements
+      {ui::kColorNativeButtonBorder,
+       // For flat-styled buttons, QT uses the text color as the button border.
+       ColorType::kWindowFg},
+      {ui::kColorNativeHeaderButtonBorderActive, ColorType::kWindowFg},
+      {ui::kColorNativeHeaderButtonBorderInactive, ColorType::kWindowFg,
+       ColorState::kInactive},
+      {ui::kColorNativeHeaderSeparatorBorderActive, ColorType::kWindowFg},
+      {ui::kColorNativeHeaderSeparatorBorderInactive, ColorType::kWindowFg,
+       ColorState::kInactive},
+      {ui::kColorNativeLabelForeground, ColorType::kWindowFg},
+      {ui::kColorNativeTabForegroundInactiveFrameActive, ColorType::kButtonFg},
+      {ui::kColorNativeTabForegroundInactiveFrameInactive, ColorType::kButtonFg,
+       ColorState::kInactive},
+      {ui::kColorNativeTextfieldBorderUnfocused, ColorType::kWindowFg,
+       ColorState::kInactive},
+      {ui::kColorNativeToolbarBackground, ColorType::kButtonBg},
   };
   for (const auto& map : kMaps)
-    mixer[map.id] = {map.color};
+    mixer[map.id] = {shim_->GetColor(map.role, map.state)};
 }
 
 std::unique_ptr<views::LinuxUI> CreateQtUi() {

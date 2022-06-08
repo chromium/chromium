@@ -146,6 +146,48 @@ SkColor BrushColor(const QBrush& brush) {
   }
 }
 
+QPalette::ColorRole ColorTypeToColorRole(ColorType type) {
+  switch (type) {
+    case ColorType::kWindowBg:
+      return QPalette::Window;
+    case ColorType::kWindowFg:
+      return QPalette::WindowText;
+    case ColorType::kHighlightBg:
+      return QPalette::Highlight;
+    case ColorType::kHighlightFg:
+      return QPalette::HighlightedText;
+    case ColorType::kEntryBg:
+      return QPalette::Base;
+    case ColorType::kEntryFg:
+      return QPalette::Text;
+    case ColorType::kButtonBg:
+      return QPalette::Button;
+    case ColorType::kButtonFg:
+      return QPalette::ButtonText;
+    case ColorType::kLight:
+      return QPalette::Light;
+    case ColorType::kMidlight:
+      return QPalette::Midlight;
+    case ColorType::kMidground:
+      return QPalette::Mid;
+    case ColorType::kDark:
+      return QPalette::Dark;
+    case ColorType::kShadow:
+      return QPalette::Shadow;
+  }
+}
+
+QPalette::ColorGroup ColorStateToColorGroup(ColorState state) {
+  switch (state) {
+    case ColorState::kNormal:
+      return QPalette::Normal;
+    case ColorState::kDisabled:
+      return QPalette::Disabled;
+    case ColorState::kInactive:
+      return QPalette::Inactive;
+  }
+}
+
 }  // namespace
 
 QtShim::QtShim(QtInterface::Delegate* delegate, int* argc, char** argv)
@@ -202,14 +244,9 @@ Image QtShim::GetIconForContentType(const String& content_type,
   return {};
 }
 
-SkColor QtShim::GetColor(ColorRole role) const {
-  auto palette = app_.palette();
-  switch (role) {
-    case ColorRole::kWindowBg:
-      return BrushColor(palette.brush(QPalette::ColorRole::Window));
-    case ColorRole::kWindowFg:
-      return BrushColor(palette.brush(QPalette::ColorRole::WindowText));
-  }
+SkColor QtShim::GetColor(ColorType role, ColorState state) const {
+  return BrushColor(app_.palette().brush(ColorStateToColorGroup(state),
+                                         ColorTypeToColorRole(role)));
 }
 
 void QtShim::FontChanged(const QFont& font) {
