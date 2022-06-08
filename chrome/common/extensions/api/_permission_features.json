@@ -349,10 +349,8 @@
     ]
   },
   "favicon": {
-    "channel": "canary",
-    "extension_types": [
-      "extension"
-    ]
+    "channel": "stable",
+    "extension_types": ["extension"]
   },
   "fileBrowserHandler": {
     "channel": "stable",

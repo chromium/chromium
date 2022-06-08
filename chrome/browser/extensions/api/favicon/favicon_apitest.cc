@@ -15,10 +15,7 @@ namespace extensions {
 
 class FaviconApiTest : public ExtensionApiTest {
  public:
-  FaviconApiTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kNewExtensionFaviconHandling);
-  }
+  FaviconApiTest() = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -26,10 +23,6 @@ class FaviconApiTest : public ExtensionApiTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  ScopedCurrentChannel current_channel_{version_info::Channel::CANARY};
 };
 
 // TODO(crbug.com/1319934): Test is flaky on Mac.

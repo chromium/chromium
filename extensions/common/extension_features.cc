@@ -84,7 +84,7 @@ extern const base::Feature kCheckingNoExtensionIdInExtensionIpcs{
 
 // Controls whether extensions can use the new favicon fetching in Manifest V3.
 const base::Feature kNewExtensionFaviconHandling{
-    "ExtensionsNewFaviconHandling", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ExtensionsNewFaviconHandling", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Determine if dynamic extension URLs are handled and redirected.
 const base::Feature kExtensionDynamicURLRedirection{
