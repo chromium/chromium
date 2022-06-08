@@ -175,11 +175,27 @@ TEST_F(EcheRecentAppClickHandlerTest, LaunchEcheAppFunction) {
       app_visible_name, package_name, gfx::Image(),
       /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
 
+  std::vector<phonehub::Notification::AppMetadata> app_metadata =
+      FetchRecentAppMetadataList();
+
+  EXPECT_EQ(app_metadata.size(), 0u);
+
+  RecentAppClicked(fake_app_metadata);
+  // Call one more time to make sure deduplication works.
   RecentAppClicked(fake_app_metadata);
 
   EXPECT_EQ(fake_app_metadata.package_name, get_package_name());
   EXPECT_EQ(fake_app_metadata.visible_app_name, get_visible_name());
   EXPECT_EQ(fake_app_metadata.user_id, get_user_id());
+
+  // Streaming will bring the app to the list of recent apps.
+  StreamStatusChanged(eche_app::mojom::StreamStatus::kStreamStatusStarted);
+  app_metadata = FetchRecentAppMetadataList();
+
+  EXPECT_EQ(fake_app_metadata.visible_app_name,
+            app_metadata[0].visible_app_name);
+  EXPECT_EQ(fake_app_metadata.package_name, app_metadata[0].package_name);
+  EXPECT_EQ(fake_app_metadata.user_id, app_metadata[0].user_id);
 }
 
 TEST_F(EcheRecentAppClickHandlerTest, HandleNotificationClick) {

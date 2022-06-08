@@ -63,7 +63,7 @@ class EcheRecentAppClickHandler
   FeatureStatusProvider* feature_status_provider_;
   LaunchAppHelper* launch_app_helper_;
   EcheStreamStatusChangeHandler* stream_status_change_handler_;
-  std::vector<phonehub::Notification::AppMetadata> app_metadata_list_;
+  std::vector<phonehub::Notification::AppMetadata> to_stream_apps_;
   bool is_click_handler_set_ = false;
   bool is_stream_started_ = false;
 };

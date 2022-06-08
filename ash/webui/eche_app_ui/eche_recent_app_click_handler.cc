@@ -65,8 +65,8 @@ void EcheRecentAppClickHandler::HandleNotificationClick(
   } else {
     // Only cache the last `app_metadata` when we receive multiple notification
     // click events.
-    app_metadata_list_.clear();
-    app_metadata_list_.emplace_back(app_metadata);
+    to_stream_apps_.clear();
+    to_stream_apps_.emplace_back(app_metadata);
   }
 }
 
@@ -77,6 +77,7 @@ void EcheRecentAppClickHandler::OnRecentAppClicked(
           feature_status_provider_->GetStatus());
   switch (prohibited_reason) {
     case LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited:
+      to_stream_apps_.emplace_back(app_metadata);
       launch_app_helper_->LaunchEcheApp(
           /*notification_id=*/absl::nullopt, app_metadata.package_name,
           app_metadata.visible_app_name, app_metadata.user_id,
@@ -122,13 +123,13 @@ void EcheRecentAppClickHandler::OnStreamStatusChanged(
     if (recent_apps_handler_ &&
         prohibited_reason ==
             LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited)
-      for (const auto& app_metadata : app_metadata_list_) {
+      for (const auto& app_metadata : to_stream_apps_) {
         recent_apps_handler_->NotifyRecentAppAddedOrUpdated(app_metadata,
                                                             base::Time::Now());
       }
   } else if (status == eche_app::mojom::StreamStatus::kStreamStatusStopped) {
     is_stream_started_ = false;
-    app_metadata_list_.clear();
+    to_stream_apps_.clear();
   }
 }
 
