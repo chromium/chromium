@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
@@ -11,18 +14,20 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
+import android.content.Context;
+import android.os.Bundle;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
 import com.google.common.base.Optional;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,12 +52,15 @@ import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.PasswordCheckOperation;
+import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.sync.ModelType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -143,15 +151,15 @@ public class PasswordManagerHelperTest {
     @Test
     public void testSyncCheckFeatureNotEnabled() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        Assert.assertFalse(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
-        Assert.assertFalse(PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(
+        assertFalse(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
+        assertFalse(PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(
                 mSyncServiceMock));
     }
 
     @Test
     public void testSyncCheckNoSyncConsent() {
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(false);
-        Assert.assertFalse(
+        assertFalse(
                 PasswordManagerHelper.isSyncingPasswordsWithNoCustomPassphrase(mSyncServiceMock));
     }
 
@@ -159,8 +167,8 @@ public class PasswordManagerHelperTest {
     public void testSyncPasswordsDisabled() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.getChosenDataTypes()).thenReturn(Collections.EMPTY_SET);
-        Assert.assertFalse(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
-        Assert.assertFalse(PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(
+        assertFalse(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
+        assertFalse(PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(
                 mSyncServiceMock));
     }
 
@@ -169,7 +177,7 @@ public class PasswordManagerHelperTest {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.getChosenDataTypes())
                 .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
-        Assert.assertTrue(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
+        assertTrue(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
     }
 
     @Test
@@ -179,8 +187,8 @@ public class PasswordManagerHelperTest {
                 .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.isUsingExplicitPassphrase()).thenReturn(true);
-        Assert.assertTrue(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
-        Assert.assertFalse(PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(
+        assertTrue(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
+        assertFalse(PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(
                 mSyncServiceMock));
     }
 
@@ -191,7 +199,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.isUsingExplicitPassphrase()).thenReturn(false);
-        Assert.assertTrue(
+        assertTrue(
                 PasswordManagerHelper.isSyncingPasswordsWithNoCustomPassphrase(mSyncServiceMock));
     }
 
@@ -202,8 +210,68 @@ public class PasswordManagerHelperTest {
                 .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.isUsingExplicitPassphrase()).thenReturn(true);
-        Assert.assertFalse(
+        assertFalse(
                 PasswordManagerHelper.isSyncingPasswordsWithNoCustomPassphrase(mSyncServiceMock));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testCanUseUpmCheckup() {
+        SyncService.overrideForTests(mSyncServiceMock);
+        when(mSyncServiceMock.getChosenDataTypes())
+                .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
+        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
+        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
+
+        assertTrue(PasswordManagerHelper.canUseUpmCheckup());
+        SyncService.resetForTests();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testCanNotUseUpmCheckupWithoutPasswordType() {
+        SyncService.overrideForTests(mSyncServiceMock);
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
+        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
+        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
+
+        assertFalse(PasswordManagerHelper.canUseUpmCheckup());
+        SyncService.resetForTests();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testCanNotUseUpmCheckupWithoutSyncService() {
+        SyncService.overrideForTests(mSyncServiceMock);
+        when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
+        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
+
+        assertFalse(PasswordManagerHelper.canUseUpmCheckup());
+        SyncService.resetForTests();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testCanNotUseUpmCheckupWithoutSyncConsent() {
+        SyncService.overrideForTests(mSyncServiceMock);
+        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
+        when(mSyncServiceMock.hasSyncConsent()).thenReturn(false);
+
+        assertFalse(PasswordManagerHelper.canUseUpmCheckup());
+        SyncService.resetForTests();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testCanNotUseUpmCheckupWithAuthError() {
+        SyncService.overrideForTests(mSyncServiceMock);
+        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
+        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
+        when(mSyncServiceMock.getAuthError()).thenReturn(State.INVALID_GAIA_CREDENTIALS);
+
+        assertFalse(PasswordManagerHelper.canUseUpmCheckup());
+        SyncService.resetForTests();
     }
 
     @Test
@@ -222,6 +290,22 @@ public class PasswordManagerHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testShowPasswordSettingsNoSyncLaunchesOldUI() {
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
+        Context mockContext = mock(Context.class);
+
+        PasswordManagerHelper.showPasswordSettings(mockContext,
+                ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
+                mCredentialManagerLauncherMock, mSyncServiceMock, mModalDialogManagerSupplier);
+
+        verify(mockContext).startActivity(any());
+        verify(mSettingsLauncherMock)
+                .createSettingsActivityIntent(
+                        eq(mockContext), eq(PasswordSettings.class.getName()), any(Bundle.class));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSuccessMetricsForAccountIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
@@ -229,16 +313,16 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mModalDialogManagerSupplier);
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM, 0));
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 1));
-        Assert.assertEquals(0,
+        assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         ACCOUNT_GET_INTENT_ERROR_HISTOGRAM));
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 1));
     }
@@ -253,16 +337,16 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mModalDialogManagerSupplier);
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.API_ERROR));
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0));
-        Assert.assertEquals(0,
+        assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM));
-        Assert.assertEquals(0,
+        assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
     }
@@ -278,18 +362,35 @@ public class PasswordManagerHelperTest {
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mModalDialogManagerSupplier);
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM, 0));
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 1));
-        Assert.assertEquals(0,
+        assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         ACCOUNT_GET_INTENT_ERROR_HISTOGRAM));
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testNoSyncShowPasswordCheckupImmediatelyReturns() {
+        SyncService.overrideForTests(mSyncServiceMock);
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
+        when(mSyncServiceMock.hasSyncConsent()).thenReturn(false);
+        setUpSuccessfulIntentFetchingForAccount();
+
+        PasswordManagerHelper.showPasswordCheckup(ContextUtils.getApplicationContext(),
+                PasswordCheckReferrer.SAFETY_CHECK, mPasswordCheckupClientHelperMock,
+                mSyncServiceMock, mModalDialogManagerSupplier);
+
+        verify(mCredentialManagerLauncherMock, times(0))
+                .getCredentialManagerIntentForAccount(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
+                        eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
     @Test
@@ -342,7 +443,7 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock, mModalDialogManagerSupplier);
         checkPasswordCheckupSuccessHistogramsForOperation(
                 PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT);
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 1));
     }
@@ -361,7 +462,7 @@ public class PasswordManagerHelperTest {
         checkPasswordCheckupFailureHistogramsForOperation(
                 PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
                 CredentialManagerError.UNCATEGORIZED, OptionalInt.empty());
-        Assert.assertEquals(0,
+        assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
     }
@@ -381,7 +482,7 @@ public class PasswordManagerHelperTest {
                 CredentialManagerError.API_ERROR,
                 OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
 
-        Assert.assertEquals(0,
+        assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
     }
@@ -485,7 +586,7 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock, mModalDialogManagerSupplier);
         checkPasswordCheckupSuccessHistogramsForOperation(
                 PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT);
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0));
     }
@@ -706,7 +807,7 @@ public class PasswordManagerHelperTest {
 
         verify(mLoadingModalDialogCoordinator).dismiss();
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.NOT_SHOWN_LOADED));
@@ -725,7 +826,7 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mLoadingModalDialogCoordinator);
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.SHOWN_LOADED));
@@ -747,12 +848,12 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mLoadingModalDialogCoordinator);
 
-        Assert.assertEquals(0,
+        assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM));
 
         mLoadingDialogCoordinatorObserver.onDismissable();
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.SHOWN_LOADED));
@@ -773,7 +874,7 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mLoadingModalDialogCoordinator);
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.SHOWN_CANCELLED));
@@ -791,7 +892,7 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mLoadingModalDialogCoordinator);
 
-        Assert.assertEquals(0,
+        assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM));
 
@@ -799,7 +900,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.CANCELLED);
         mLoadingDialogCoordinatorObserver.onDismissedWithState(
                 LoadingModalDialogCoordinator.State.CANCELLED);
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.SHOWN_CANCELLED));
@@ -816,7 +917,7 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mLoadingModalDialogCoordinator);
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.SHOWN_TIMED_OUT));
@@ -834,7 +935,7 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mLoadingModalDialogCoordinator);
 
-        Assert.assertEquals(0,
+        assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM));
 
@@ -842,7 +943,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.TIMED_OUT);
         mLoadingDialogCoordinatorObserver.onDismissedWithState(
                 LoadingModalDialogCoordinator.State.TIMED_OUT);
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.SHOWN_TIMED_OUT));
@@ -862,7 +963,7 @@ public class PasswordManagerHelperTest {
 
         verify(mLoadingModalDialogCoordinator).dismiss();
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.NOT_SHOWN_LOADED));
@@ -883,7 +984,7 @@ public class PasswordManagerHelperTest {
 
         verify(mLoadingModalDialogCoordinator).dismiss();
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.NOT_SHOWN_LOADED));
@@ -903,7 +1004,7 @@ public class PasswordManagerHelperTest {
 
         verify(mLoadingModalDialogCoordinator).dismiss();
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.NOT_SHOWN_LOADED));
@@ -925,7 +1026,7 @@ public class PasswordManagerHelperTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mLoadingModalDialogCoordinator).dismiss();
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.SHOWN_LOADED));
@@ -945,12 +1046,12 @@ public class PasswordManagerHelperTest {
                 mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
                 mLoadingModalDialogCoordinator);
 
-        Assert.assertEquals(0,
+        assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM));
 
         mLoadingDialogCoordinatorObserver.onDismissable();
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.SHOWN_LOADED));
@@ -971,7 +1072,7 @@ public class PasswordManagerHelperTest {
                 mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
                 mLoadingModalDialogCoordinator);
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.SHOWN_CANCELLED));
@@ -990,7 +1091,7 @@ public class PasswordManagerHelperTest {
                 mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
                 mLoadingModalDialogCoordinator);
 
-        Assert.assertEquals(0,
+        assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM));
 
@@ -998,7 +1099,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.CANCELLED);
         mLoadingDialogCoordinatorObserver.onDismissedWithState(
                 LoadingModalDialogCoordinator.State.CANCELLED);
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.SHOWN_CANCELLED));
@@ -1016,7 +1117,7 @@ public class PasswordManagerHelperTest {
                 mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
                 mLoadingModalDialogCoordinator);
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.SHOWN_TIMED_OUT));
@@ -1035,7 +1136,7 @@ public class PasswordManagerHelperTest {
                 mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
                 mLoadingModalDialogCoordinator);
 
-        Assert.assertEquals(0,
+        assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM));
 
@@ -1043,7 +1144,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.TIMED_OUT);
         mLoadingDialogCoordinatorObserver.onDismissedWithState(
                 LoadingModalDialogCoordinator.State.TIMED_OUT);
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.SHOWN_TIMED_OUT));
@@ -1065,7 +1166,7 @@ public class PasswordManagerHelperTest {
 
         verify(mLoadingModalDialogCoordinator).dismiss();
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.NOT_SHOWN_LOADED));
@@ -1086,7 +1187,7 @@ public class PasswordManagerHelperTest {
 
         verify(mLoadingModalDialogCoordinator).dismiss();
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
                         PasswordManagerHelper.LoadingDialogOutcome.NOT_SHOWN_LOADED));
@@ -1216,18 +1317,18 @@ public class PasswordManagerHelperTest {
             @PasswordCheckOperation int operation) {
         final String nameWithSuffix = PASSWORD_CHECKUP_HISTOGRAM_BASE + "."
                 + getPasswordCheckupHistogramSuffixForOperation(operation);
-        Assert.assertEquals(1,
+        assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffix + ".Success", 1));
-        Assert.assertEquals(1,
+        assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffix + ".Latency", 0));
-        Assert.assertEquals(0,
+        assertEquals(0,
                 ShadowRecordHistogram.getHistogramTotalCountForTesting(
                         nameWithSuffix + ".ErrorLatency"));
-        Assert.assertEquals(0,
+        assertEquals(0,
                 ShadowRecordHistogram.getHistogramTotalCountForTesting(nameWithSuffix + ".Error"));
-        Assert.assertEquals(0,
+        assertEquals(0,
                 ShadowRecordHistogram.getHistogramTotalCountForTesting(
                         nameWithSuffix + ".ApiError"));
     }
@@ -1236,24 +1337,24 @@ public class PasswordManagerHelperTest {
             @PasswordCheckOperation int operation, int errorCode, OptionalInt apiErrorCode) {
         final String nameWithSuffix = PASSWORD_CHECKUP_HISTOGRAM_BASE + "."
                 + getPasswordCheckupHistogramSuffixForOperation(operation);
-        Assert.assertEquals(1,
+        assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffix + ".Success", 0));
-        Assert.assertEquals(0,
+        assertEquals(0,
                 ShadowRecordHistogram.getHistogramTotalCountForTesting(
                         nameWithSuffix + ".Latency"));
-        Assert.assertEquals(1,
+        assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffix + ".ErrorLatency", 0));
-        Assert.assertEquals(1,
+        assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffix + ".Error", errorCode));
         apiErrorCode.ifPresentOrElse(apiError
-                -> Assert.assertEquals(1,
+                -> assertEquals(1,
                         ShadowRecordHistogram.getHistogramValueCountForTesting(
                                 nameWithSuffix + ".APIError", apiError)),
                 ()
-                        -> Assert.assertEquals(0,
+                        -> assertEquals(0,
                                 ShadowRecordHistogram.getHistogramTotalCountForTesting(
                                         nameWithSuffix + ".APIError")));
     }
