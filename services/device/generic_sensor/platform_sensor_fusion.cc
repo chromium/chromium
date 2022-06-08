@@ -201,8 +201,7 @@ void PlatformSensorFusion::OnSensorReadingChanged(mojom::SensorType type) {
   if (!fusion_algorithm_->GetFusedData(type, &reading))
     return;
 
-  reading_ = reading;
-  UpdateSharedBufferAndNotifyClients(reading_);
+  UpdateSharedBufferAndNotifyClients(reading);
 }
 
 void PlatformSensorFusion::OnSensorError() {
