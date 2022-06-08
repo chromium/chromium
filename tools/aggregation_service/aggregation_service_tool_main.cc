@@ -44,6 +44,7 @@ constexpr char kSwitchAdditionalSharedInfoFields[] =
     "additional-shared-info-fields";
 constexpr char kSwitchEnableDebugMode[] = "enable-debug-mode";
 constexpr char kSwitchApiVersion[] = "api-version";
+constexpr char kSwitchApi[] = "api";
 
 constexpr char kHelpMsg[] = R"(
   aggregation_service_tool [--operation=<operation>] --bucket=<bucket>
@@ -53,14 +54,14 @@ constexpr char kHelpMsg[] = R"(
   [--output-url=<output_url>] [--disable-payload-encryption]
   [--additional-fields=<additional_fields>]
   [--additional-shared-info-fields=<additional_shared_info_fields]
-  [--debug-mode] [--api-version=<api_version>]
+  [--debug-mode] [--api-version=<api_version>] [--api=<api_identifier>]
 
   Examples:
   aggregation_service_tool --operation="histogram" --bucket=1234 --value=5
   --alternative-aggregation-mode="experimental-poplar" --reporting-origin="https://example.com"
   --helper-key-urls="https://a.com/keys.json https://b.com/path/to/keys.json"
   --output-file="output.json" --enable-debug-mode --api-version="1.0"
-  --additional-fields=
+  --api="attribution-reporting" --additional-fields=
   "source_site=https://publisher.example,attribution_destination=https://advertiser.example"
   or
   aggregation_service_tool --bucket=1234 --value=5
@@ -109,6 +110,8 @@ constexpr char kHelpMsg[] = R"(
   --enable-debug-mode = Optional switch. If provided, debug mode is enabled.
                         Otherwise, it is disabled.
   --api-version = Optional switch to specify the API version. Default is "".
+  --api = Optional switch to specify the enum string identifying which API
+          created the report. Default is "attribution-reporting".
 )";
 
 void PrintHelp() {
@@ -150,7 +153,8 @@ int main(int argc, char* argv[]) {
       kSwitchAdditionalFields,
       kSwitchAdditionalSharedInfoFields,
       kSwitchEnableDebugMode,
-      kSwitchApiVersion};
+      kSwitchApiVersion,
+      kSwitchApi};
   for (const auto& provided_switch : command_line.GetSwitches()) {
     if (!base::Contains(kAllowedSwitches, provided_switch.first)) {
       LOG(ERROR) << "aggregation_service_tool did not expect "
@@ -288,12 +292,18 @@ int main(int argc, char* argv[]) {
           ? command_line.GetSwitchValueASCII(kSwitchApiVersion)
           : "";
 
+  std::string api_identifier =
+      command_line.HasSwitch(kSwitchApi)
+          ? command_line.GetSwitchValueASCII(kSwitchApi)
+          : "attribution-reporting";
+
   base::Value::Dict report_dict = tool.AssembleReport(
       std::move(operation), command_line.GetSwitchValueASCII(kSwitchBucket),
       command_line.GetSwitchValueASCII(kSwitchValue),
       std::move(aggregation_mode), std::move(reporting_origin),
       std::move(processing_urls), is_debug_mode_enabled,
-      std::move(additional_shared_info_fields), std::move(api_version));
+      std::move(additional_shared_info_fields), std::move(api_version),
+      std::move(api_identifier));
   if (report_dict.empty()) {
     LOG(ERROR)
         << "aggregation_service_tool failed to create the aggregatable report.";

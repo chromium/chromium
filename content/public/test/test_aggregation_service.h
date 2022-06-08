@@ -59,7 +59,8 @@ class TestAggregationService {
                     std::vector<GURL> processing_urls,
                     bool is_debug_mode_enabled,
                     base::Value::Dict additional_fields,
-                    std::string api_version);
+                    std::string api_version,
+                    std::string api_identifier);
     AssembleRequest(AssembleRequest&& other);
     AssembleRequest& operator=(AssembleRequest&& other);
     ~AssembleRequest();
@@ -86,6 +87,9 @@ class TestAggregationService {
 
     // Specifies the API version.
     std::string api_version;
+
+    // Enum string identifying which API created the report request.
+    std::string api_identifier;
   };
 
   virtual ~TestAggregationService() = default;

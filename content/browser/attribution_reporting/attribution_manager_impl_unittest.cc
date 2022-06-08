@@ -107,7 +107,8 @@ AggregatableReport CreateExampleAggregatableReport() {
       url::Origin::Create(GURL("https://example.reporting")),
       AggregatableReportSharedInfo::DebugMode::kDisabled,
       std::move(additional_fields),
-      /*api_version=*/"");
+      /*api_version=*/"",
+      /*api_identifier=*/"attribution-reporting");
 
   return AggregatableReport(std::move(payloads), shared_info.SerializeAsJson());
 }

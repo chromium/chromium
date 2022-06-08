@@ -173,6 +173,11 @@ testing::AssertionResult SharedInfoEqual(
            << "Expected report_id " << expected.report_id
            << ", actual: " << actual.report_id;
   }
+  if (expected.reporting_origin != actual.reporting_origin) {
+    return testing::AssertionFailure()
+           << "Expected reporting_origin " << expected.reporting_origin
+           << ", actual: " << actual.reporting_origin;
+  }
   if (expected.debug_mode != actual.debug_mode) {
     return testing::AssertionFailure()
            << "Expected debug_mode " << expected.debug_mode
@@ -182,6 +187,16 @@ testing::AssertionResult SharedInfoEqual(
     return testing::AssertionFailure()
            << "Expected additional_fields " << expected.additional_fields
            << ", actual: " << actual.additional_fields;
+  }
+  if (expected.api_version != actual.api_version) {
+    return testing::AssertionFailure()
+           << "Expected api_version " << expected.api_version
+           << ", actual: " << actual.api_version;
+  }
+  if (expected.api_identifier != actual.api_identifier) {
+    return testing::AssertionFailure()
+           << "Expected api_identifier " << expected.api_identifier
+           << ", actual: " << actual.api_identifier;
   }
 
   return testing::AssertionSuccess();
@@ -202,7 +217,8 @@ AggregatableReportRequest CreateExampleRequest(
                  url::Origin::Create(GURL("https://reporting.example")),
                  AggregatableReportSharedInfo::DebugMode::kDisabled,
                  /*additional_fields=*/base::Value::Dict(),
-                 /*api_version=*/""))
+                 /*api_version=*/"",
+                 /*api_identifier=*/"example-api"))
       .value();
 }
 

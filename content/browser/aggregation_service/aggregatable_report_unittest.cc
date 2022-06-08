@@ -415,10 +415,12 @@ TEST(AggregatableReportTest,
       base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
       AggregatableReportSharedInfo::DebugMode::kDisabled, base::Value::Dict(),
-      /*api_version=*/"1.0");
+      /*api_version=*/"1.0",
+      /*api_identifier=*/"example-api");
 
   const char kExpectedString[] =
       R"({)"
+      R"("api":"example-api",)"
       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
       R"("reporting_origin":"https://reporting.example",)"
       R"("scheduled_report_time":"1234567890",)"
@@ -436,10 +438,12 @@ TEST(AggregatableReportTest,
       base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
       AggregatableReportSharedInfo::DebugMode::kEnabled, base::Value::Dict(),
-      /*api_version=*/"1.0");
+      /*api_version=*/"1.0",
+      /*api_identifier=*/"example-api");
 
   const char kExpectedString[] =
       R"({)"
+      R"("api":"example-api",)"
       R"("debug_mode":"enabled",)"
       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
       R"("reporting_origin":"https://reporting.example",)"
@@ -462,10 +466,12 @@ TEST(AggregatableReportTest, SharedInfoAdditionalFields) {
       url::Origin::Create(GURL("https://reporting.example")),
       AggregatableReportSharedInfo::DebugMode::kEnabled,
       std::move(additional_fields),
-      /*api_version=*/"1.0");
+      /*api_version=*/"1.0",
+      /*api_identifier=*/"example-api");
 
   const char kExpectedString[] =
       R"({)"
+      R"("api":"example-api",)"
       R"("bar":"2",)"
       R"("baz":"3",)"
       R"("debug_mode":"enabled",)"

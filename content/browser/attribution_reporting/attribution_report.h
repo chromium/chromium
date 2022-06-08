@@ -92,6 +92,9 @@ class CONTENT_EXPORT AttributionReport {
 
     static constexpr char kVersion[] = "0.1";
 
+    // Enum string identifying this API for use in reports.
+    static constexpr char kApiIdentifier[] = "attribution-reporting";
+
     // The historgram contributions.
     std::vector<AggregatableHistogramContribution> contributions;
 

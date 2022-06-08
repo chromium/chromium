@@ -90,7 +90,8 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
                                url::Origin reporting_origin,
                                DebugMode debug_mode,
                                base::Value::Dict additional_fields,
-                               std::string api_version);
+                               std::string api_version,
+                               std::string api_identifier);
 
   AggregatableReportSharedInfo(const AggregatableReportSharedInfo& other) =
       delete;
@@ -112,6 +113,9 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
   DebugMode debug_mode;
   base::Value::Dict additional_fields;
   std::string api_version;
+
+  // Enum string that indicates which API created the report.
+  std::string api_identifier;
 };
 
 // An AggregatableReport contains all the information needed for sending the
