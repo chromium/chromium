@@ -39,9 +39,15 @@ def main():
                       dest='no_checks',
                       action='store_true',
                       help="Invalid environment doesn't throw")
+  mode_group = parser.add_mutually_exclusive_group()
+  mode_group.add_argument(
+      '--tracing_mode',
+      dest='tracing_mode',
+      action='store_true',
+      help="Grab a trace instead of a profile or benchmark.")
 
   # Profile related arguments
-  parser.add_argument(
+  mode_group.add_argument(
       '--profile_mode',
       dest='profile_mode',
       action='store',
@@ -98,13 +104,18 @@ def main():
     def BrowserFactory(browser_name, variation):
       return browsers.MakeBrowserDriver(browser_name,
                                         variation,
-                                        chrome_user_dir=args.chrome_user_dir)
+                                        chrome_user_dir=args.chrome_user_dir,
+                                        output_dir=output_dir,
+                                        tracing_mode=args.tracing_mode)
 
     for scenario in IterScenarios(args.scenarios,
                                   BrowserFactory,
                                   meet_meeting_id=args.meet_meeting_id):
 
-      if args.profile_mode:
+      if args.tracing_mode:
+        logging.info(f'Tracing scenario {scenario.name} ...')
+        driver.Trace(scenario)
+      elif args.profile_mode:
         logging.info(f'Profiling scenario {scenario.name} ...')
         driver.Profile(scenario, profile_mode=args.profile_mode)
       else:

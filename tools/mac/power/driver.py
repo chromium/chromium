@@ -291,6 +291,15 @@ class DriverContext:
     logging.debug(f"Waiting for dtrace to exit")
     dtrace_process.wait(30)
 
+  def Trace(self, scenario_driver: scenarios.ScenarioOSADriver):
+    self.WriteScenarioSummary(scenario_driver)
+
+    try:
+      scenario_driver.Launch()
+      scenario_driver.Wait()
+    finally:
+      scenario_driver.TearDown()
+
   def WriteScenarioSummary(
       self, scenario_driver: scenarios.ScenarioWithBrowserOSADriver):
     """Outputs a json file describing `scenario_driver` arguments into the
