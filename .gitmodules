@@ -1,0 +1,3 @@
+[submodule ".devcontainer"]
+	path = .devcontainer
+	url = ../../ohhmm/docker-chromium-builder
