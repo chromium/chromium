@@ -2544,22 +2544,5 @@ TEST_F(ArcVmClientAdapterTest, ArcVmTTSCachingEnabled) {
       base::Contains(request.params(), "androidboot.arc.tts.caching=1"));
 }
 
-TEST_F(ArcVmClientAdapterTest, ConvertUpgradeParams_SkipTtsCacheSetup) {
-  StartMiniArc();
-  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
-  upgrade_params.skip_tts_cache = true;
-  UpgradeArcWithParams(true, std::move(upgrade_params));
-  EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
-                             "ro.boot.skip_tts_cache=1"));
-}
-
-TEST_F(ArcVmClientAdapterTest, ConvertUpgradeParams_EnableTtsCacheSetup) {
-  StartMiniArc();
-  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
-  UpgradeArcWithParams(true, std::move(upgrade_params));
-  EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
-                             "ro.boot.skip_tts_cache=0"));
-}
-
 }  // namespace
 }  // namespace arc

@@ -160,8 +160,6 @@ std::vector<std::string> GenerateUpgradeProps(
           static_cast<int>(upgrade_params.management_transition)),
       base::StringPrintf("%s.serialno=%s", prefix.c_str(),
                          serial_number.c_str()),
-      base::StringPrintf("%s.skip_tts_cache=%d", prefix.c_str(),
-                         upgrade_params.skip_tts_cache),
   };
   // Conditionally sets more properties based on |upgrade_params|.
   if (!upgrade_params.locale.empty()) {

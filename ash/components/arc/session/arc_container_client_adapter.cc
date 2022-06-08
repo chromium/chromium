@@ -167,7 +167,6 @@ class ArcContainerClientAdapter
     request.set_packages_cache_mode(
         ToLoginManagerPackageCacheMode(params.packages_cache_mode));
     request.set_skip_gms_core_cache(params.skip_gms_core_cache);
-    request.set_skip_tts_cache(params.skip_tts_cache);
     request.set_is_demo_session(params.is_demo_session);
     request.set_demo_session_apps_path(params.demo_session_apps_path.value());
     request.set_locale(params.locale);

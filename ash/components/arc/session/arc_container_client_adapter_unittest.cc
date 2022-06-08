@@ -196,26 +196,6 @@ TEST_F(ArcContainerClientAdapterTest, ArcVmTTSCachingEnabled) {
   EXPECT_TRUE(request.enable_tts_caching());
 }
 
-TEST_F(ArcContainerClientAdapterTest, ConvertUpgradeParams_SkipTtsCacheSetup) {
-  UpgradeParams upgrade_params;
-  upgrade_params.skip_tts_cache = true;
-  client_adapter()->UpgradeArc(std::move(upgrade_params),
-                               base::BindOnce(&OnMiniInstanceStarted));
-  const auto& upgrade_request =
-      chromeos::FakeSessionManagerClient::Get()->last_upgrade_arc_request();
-  EXPECT_TRUE(upgrade_request.skip_tts_cache());
-}
-
-TEST_F(ArcContainerClientAdapterTest,
-       ConvertUpgradeParams_EnableTtsCacheSetup) {
-  UpgradeParams upgrade_params;
-  client_adapter()->UpgradeArc(std::move(upgrade_params),
-                               base::BindOnce(&OnMiniInstanceStarted));
-  const auto& upgrade_request =
-      chromeos::FakeSessionManagerClient::Get()->last_upgrade_arc_request();
-  EXPECT_FALSE(upgrade_request.skip_tts_cache());
-}
-
 struct DalvikMemoryProfileTestParam {
   // Requested profile.
   StartParams::DalvikMemoryProfile profile;
