@@ -437,10 +437,14 @@ def main():
 
   # Check that all non-glob wanted files exist on disk.
   want = [w.replace('$V', RELEASE_VERSION) for w in want]
+  found_all_wanted_files = True
   for w in want:
     if '*' in w: continue
     if os.path.exists(os.path.join(LLVM_RELEASE_DIR, w)): continue
     print('wanted file "%s" but it did not exist' % w, file=sys.stderr)
+    found_all_wanted_files = False
+
+  if not found_all_wanted_files:
     return 1
 
   # Check that all reclient inputs are in the package.
