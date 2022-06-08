@@ -543,7 +543,6 @@ bool HasHeadersIncompatibleWithSingleKeyedCache(
     const net::HttpRequestHeaders& headers) {
   // These are lowercase to permit case-insensitive matching.
   auto incompatible_headers = base::MakeFixedFlatSet<base::StringPiece>({
-      "accept",
       "accept-charset",
       "accept-encoding",
       "authorization",
