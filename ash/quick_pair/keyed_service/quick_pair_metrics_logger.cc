@@ -130,13 +130,11 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
             *device, FastPairEngagementFlowEvent::
                          kDiscoveryUiDismissedByUserAfterLearnMorePressed);
         discovery_learn_more_devices_.erase(device);
-        feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
         break;
       }
 
       AttemptRecordingFastPairEngagementFlow(
           *device, FastPairEngagementFlowEvent::kDiscoveryUiDismissedByUser);
-      feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
       break;
     case DiscoveryAction::kDismissed:
       if (base::Contains(discovery_learn_more_devices_, device)) {
@@ -144,13 +142,11 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
             *device, FastPairEngagementFlowEvent::
                          kDiscoveryUiDismissedAfterLearnMorePressed);
         discovery_learn_more_devices_.erase(device);
-        feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
         break;
       }
 
       AttemptRecordingFastPairEngagementFlow(
           *device, FastPairEngagementFlowEvent::kDiscoveryUiDismissed);
-      feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
       break;
   }
 }
@@ -252,13 +248,15 @@ void QuickPairMetricsLogger::OnAccountKeyWrite(
   if (device->protocol == Protocol::kFastPairRetroactive)
     RecordRetroactivePairingResult(/*success=*/!error.has_value());
 
-  if (error) {
+  if (error.has_value()) {
     RecordAccountKeyResult(*device, /*success=*/false);
     RecordAccountKeyFailureReason(*device, error.value());
+    feature_usage_metrics_logger_->RecordUsage(/*success=*/false);
     return;
   }
 
   RecordAccountKeyResult(*device, /*success=*/true);
+  feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
 }
 
 void QuickPairMetricsLogger::OnCompanionAppAction(scoped_refptr<Device> device,
