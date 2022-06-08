@@ -13,10 +13,15 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
+
 import android.content.Context;
 
+import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.filters.MediumTest;
+import androidx.test.espresso.matcher.ViewMatchers.Visibility;
+import androidx.test.filters.LargeTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,7 +31,8 @@ import org.mockito.Mockito;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.chrome.browser.download.DuplicateDownloadDialog;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -36,7 +42,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -62,7 +67,6 @@ public class DownloadDialogIncognitoTest {
 
     @Before
     public void setUpTest() throws Exception {
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         mActivityTestRule.startMainActivityOnBlankPage();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -76,14 +80,14 @@ public class DownloadDialogIncognitoTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     public void testDuplicateDownloadForIncognitoMode() throws Exception {
         // Showing a duplicate download dialog with an Incognito profile.
         OTRProfileID primaryProfileID = OTRProfileID.getPrimaryOTRProfileID();
         showDuplicateDialog(primaryProfileID);
 
         // Verify the Incognito warning message is shown.
-        onView(withId(R.id.message_paragraph_2)).check(matches(withEffectiveVisibility(VISIBLE)));
+        waitForWarningVisibilityToBe(VISIBLE);
 
         // Dismiss the dialog and verify the callback is called with false.
         onView(withId(R.id.negative_button)).perform(ViewActions.click());
@@ -91,27 +95,25 @@ public class DownloadDialogIncognitoTest {
     }
 
     @Test
-    @MediumTest
-    @DisabledTest(message = "https://crbug.com/1317700")
+    @LargeTest
     public void testDuplicateDownloadForRegularProfile() throws Exception {
         // Showing a duplicate download dialog with a regular profile.
         OTRProfileID regularProfileID = null;
         showDuplicateDialog(regularProfileID);
 
         // Verify the Incognito warning message is NOT shown.
-        onView(withId(R.id.message_paragraph_2)).check(matches(withEffectiveVisibility(GONE)));
+        waitForWarningVisibilityToBe(GONE);
     }
 
     @Test
-    @MediumTest
-    @DisabledTest(message = "https://crbug.com/1317700")
+    @LargeTest
     public void testDuplicateDownloadForIncognitoCCT() throws Exception {
         // Showing a duplicate download dialog with a non-primary off-the-record profile.
         OTRProfileID nonPrimaryOTRId = OTRProfileID.createUnique("CCT:Incognito");
         showDuplicateDialog(nonPrimaryOTRId);
 
         // Verify the Incognito warning message is shown.
-        onView(withId(R.id.message_paragraph_2)).check(matches(withEffectiveVisibility(VISIBLE)));
+        waitForWarningVisibilityToBe(VISIBLE);
 
         // Accept the dialog and verify the callback is called with true.
         onView(withId(R.id.positive_button)).perform(ViewActions.click());
@@ -119,13 +121,13 @@ public class DownloadDialogIncognitoTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     public void testDangerousDownloadForOffTheRecordProfile() throws Exception {
         // Showing a dangerous download dialog with an off-the-record profile.
         showDangerousDialog(/*isOffTheRecord=*/true);
 
         // Verify the Incognito warning message is shown.
-        onView(withId(R.id.message_paragraph_2)).check(matches(withEffectiveVisibility(VISIBLE)));
+        waitForWarningVisibilityToBe(VISIBLE);
 
         // Accept the dialog and verify the callback is called with true.
         onView(withId(R.id.positive_button)).perform(ViewActions.click());
@@ -133,13 +135,13 @@ public class DownloadDialogIncognitoTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     public void testDangerousDownloadForRegularProfile() throws Exception {
         // Showing a dangerous download dialog with a regular profile.
         showDangerousDialog(/*isOffTheRecord=*/false);
 
         // Verify the Incognito warning message is NOT shown.
-        onView(withId(R.id.message_paragraph_2)).check(matches(withEffectiveVisibility(GONE)));
+        waitForWarningVisibilityToBe(GONE);
 
         // Dismiss the dialog and verify the callback is called with false.
         onView(withId(R.id.negative_button)).perform(ViewActions.click());
@@ -147,13 +149,13 @@ public class DownloadDialogIncognitoTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     public void testMixedContentDownloadForOffTheRecordProfile() throws Exception {
         // Showing a mixed content download dialog with an off-the-record profile.
         showMixedContentDialog(/*isOffTheRecord=*/true);
 
         // Verify the Incognito warning message is shown.
-        onView(withId(R.id.message_paragraph_2)).check(matches(withEffectiveVisibility(VISIBLE)));
+        waitForWarningVisibilityToBe(VISIBLE);
 
         // Accept the dialog and verify the callback is called with true.
         onView(withId(R.id.positive_button)).perform(ViewActions.click());
@@ -161,13 +163,13 @@ public class DownloadDialogIncognitoTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     public void testMixedContentDownloadDownloadForRegularProfile() throws Exception {
         // Showing a mixed content download dialog with a regular profile.
         showMixedContentDialog(/*isOffTheRecord=*/false);
 
         // Verify the Incognito warning message is NOT shown.
-        onView(withId(R.id.message_paragraph_2)).check(matches(withEffectiveVisibility(GONE)));
+        waitForWarningVisibilityToBe(GONE);
 
         // Dismiss the dialog and verify the callback is called with false.
         onView(withId(R.id.negative_button)).perform(ViewActions.click());
@@ -196,5 +198,18 @@ public class DownloadDialogIncognitoTest {
             new MixedContentDownloadDialog().show(mContext, mModalDialogManager, FILE_NAME,
                     TOTAL_BYTES, isOffTheRecord, mResultCallback);
         });
+    }
+
+    private void waitForWarningVisibilityToBe(Visibility visibility) {
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            try {
+                onView(withId(R.id.message_paragraph_2))
+                        .check(matches(withEffectiveVisibility(visibility)));
+            } catch (NoMatchingViewException | AssertionError e) {
+                throw new CriteriaNotSatisfiedException(
+                        "Timeout while waiting for warning to have visibility: "
+                        + (visibility == VISIBLE ? "VISIBLE" : "GONE"));
+            }
+        }, DEFAULT_MAX_TIME_TO_POLL * 10, DEFAULT_POLLING_INTERVAL);
     }
 }
