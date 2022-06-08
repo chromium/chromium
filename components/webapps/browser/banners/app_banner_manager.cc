@@ -653,15 +653,15 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
     }
   }
 
+  if (state_ != State::COMPLETE && state_ != State::INACTIVE)
+    Terminate();
+  ResetCurrentPageData();
+
   if (base::FeatureList::IsEnabled(
           blink::features::kBackForwardCacheAppBanner) &&
       handle->IsServedFromBackForwardCache()) {
     UpdateState(State::INACTIVE);
     RequestAppBanner(validated_url_);
-  } else {
-    if (state_ != State::COMPLETE && state_ != State::INACTIVE)
-      Terminate();
-    ResetCurrentPageData();
   }
 }
 
