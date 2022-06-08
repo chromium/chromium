@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/services/app_service/public/cpp/features.h"
@@ -95,8 +96,11 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
   EXPECT_TRUE(infobar);
   GetDelegate(infobar)->Accept();
 
-  if (!base::FeatureList::IsEnabled(apps::kAppServicePreferredAppsWithoutMojom))
+  if (web_app::IsWebAppsCrosapiEnabled() ||
+      !base::FeatureList::IsEnabled(
+          apps::kAppServicePreferredAppsWithoutMojom)) {
     WaitForPreferredAppUpdate();
+  }
 
   ASSERT_TRUE(
       app_service_proxy()->PreferredAppsList().IsPreferredAppForSupportedLinks(
@@ -118,8 +122,11 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
   }
 
   app_service_proxy()->SetSupportedLinksPreference(test_web_app_id());
-  if (!base::FeatureList::IsEnabled(apps::kAppServicePreferredAppsWithoutMojom))
+  if (web_app::IsWebAppsCrosapiEnabled() ||
+      !base::FeatureList::IsEnabled(
+          apps::kAppServicePreferredAppsWithoutMojom)) {
     WaitForPreferredAppUpdate();
+  }
 
   Browser* browser = OpenTestWebApp();
   auto* contents = browser->tab_strip_model()->GetActiveWebContents();
