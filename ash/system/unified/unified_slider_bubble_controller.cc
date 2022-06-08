@@ -166,7 +166,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 
     // Unlike VOLUME and BRIGHTNESS, which are shown in the main bubble view,
     // MIC slider is shown in the audio details view.
-    if (slider_type == SLIDER_TYPE_MIC)
+    if (slider_type == SLIDER_TYPE_MIC && tray_->bubble())
       tray_->ShowAudioDetailedViewBubble();
     return;
   }
