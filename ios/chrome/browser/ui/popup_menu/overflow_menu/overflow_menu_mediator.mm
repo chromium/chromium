@@ -348,8 +348,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (void)setLocalStatePrefs:(PrefService*)localStatePrefs {
   _localStatePrefs = localStatePrefs;
 
-  _destinationUsageHistory =
-      [[DestinationUsageHistory alloc] initWithPrefService:localStatePrefs];
+  if (!self.isIncognito) {
+    _destinationUsageHistory =
+        [[DestinationUsageHistory alloc] initWithPrefService:localStatePrefs];
+  }
 }
 
 - (void)setEngagementTracker:(feature_engagement::Tracker*)engagementTracker {
