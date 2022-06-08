@@ -18,6 +18,11 @@
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/event_constants.h"
 
+@interface NSApplication (Private)
+// (Apparently) forces the application to activate itself.
+- (void)_handleActivatedEvent:(id)arg1;
+@end
+
 namespace {
 
 // A helper singleton for sending key events as Quartz events to the window
@@ -166,7 +171,11 @@ bool ShowAndFocusNativeWindow(gfx::NativeWindow native_window) {
   // Make sure an unbundled program can get the input focus.
   ProcessSerialNumber psn = { 0, kCurrentProcess };
   TransformProcessType(&psn,kProcessTransformToForegroundApplication);
-  [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+  // We used to call [NSApp activateIgnoringOtherApps:YES] but this
+  // would not reliably activate the app, causing the window to never
+  // become key. This bit of private API appears to be the secret
+  // incantation that gets us what we want. See crbug.com/1215570 .
+  [[NSApplication sharedApplication] _handleActivatedEvent:nil];
 
   base::scoped_nsobject<WindowedNSNotificationObserver> async_waiter;
   if (![window isKeyWindow]) {
