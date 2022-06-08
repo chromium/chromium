@@ -116,7 +116,12 @@ def main(argv):
       # for overlapping directories hit the makedirs line at the same time.
       if e.errno != errno.EEXIST:
         raise
-    if os.path.exists(out_path) and os.path.samefile(out_path, in_path):
+
+    # Delete the target file before witing it, as it may be hardlinked to other
+    # files, which can break the build. This is the case in particular if the
+    # file was "copied" to different locations with GN (as GN's copy is actually
+    # a hard link under the hood). See https://crbug.com/1332497
+    if os.path.exists(out_path):
       os.remove(out_path)
 
     # Detect and delete any stale TypeScript files present in the output folder,
