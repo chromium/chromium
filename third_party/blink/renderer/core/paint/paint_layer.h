@@ -310,10 +310,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PaintLayer* ContainingLayer(const PaintLayer* ancestor = nullptr,
                               bool* skipped_ancestor = nullptr) const;
 
-  // Not for LayoutNGBlockFragmentation.
-  const PaintLayer* EnclosingCompositedScrollingLayerUnderPagination(
-      IncludeSelfOrNot) const;
-
   bool HasAncestorWithFilterThatMovesPixels() const;
 
   void ConvertToLayerCoords(const PaintLayer* ancestor_layer,
@@ -626,14 +622,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     DCHECK(!needs_descendant_dependent_flags_update_);
     return has3d_transformed_descendant_;
   }
-
-  // Returns true if this PaintLayer should be fragmented, relative
-  // to the given |compositing_layer| backing. In SPv1 mode, fragmentation
-  // may not cross compositing boundaries, so this wil return false
-  // if EnclosingPaginationLayer() is above |compositing_layer|.
-  // If |compositing_layer| is not provided, it will be computed if necessary.
-  bool ShouldFragmentCompositedBounds(
-      const PaintLayer* compositing_layer = nullptr) const;
 
   // See
   // https://chromium.googlesource.com/chromium/src.git/+/master/third_party/blink/renderer/core/paint/README.md

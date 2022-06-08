@@ -216,13 +216,13 @@ bool CullRectUpdater::UpdateForSelf(PaintLayer& layer,
   // the same pagination container, then try to match fragments from
   // |parent_painting_layer| to |layer|, so that any fragment clip for
   // |parent_painting_layer|'s fragment matches |layer|'s. Note we check both
-  // ShouldFragmentCompositedBounds() and next fragment here because the former
+  // EnclosingPaginationLayer() and next fragment here because the former
   // may return false even if |layer| is fragmented, e.g. for fixed-position
   // objects in paged media, and the next fragment can be null even if the first
   // fragment is actually in a fragmented context when the current layer appears
   // in only one of the multiple fragments of the pagination container.
   bool is_fragmented =
-      layer.ShouldFragmentCompositedBounds() || first_fragment.NextFragment();
+      layer.EnclosingPaginationLayer() || first_fragment.NextFragment();
   bool should_match_fragments =
       is_fragmented && parent_painting_layer.EnclosingPaginationLayer() ==
                            layer.EnclosingPaginationLayer();

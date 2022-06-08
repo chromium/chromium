@@ -361,7 +361,6 @@ class PaintPropertyTreeBuilder {
   ALWAYS_INLINE void InitSingleFragmentFromParent(bool needs_paint_properties);
   ALWAYS_INLINE bool ObjectTypeMightNeedMultipleFragmentData() const;
   ALWAYS_INLINE bool ObjectTypeMightNeedPaintProperties() const;
-  ALWAYS_INLINE void UpdateCompositedLayerPaginationOffset();
   ALWAYS_INLINE PaintPropertyTreeBuilderFragmentContext
   ContextForFragment(const absl::optional<PhysicalRect>& fragment_clip,
                      LayoutUnit logical_top_in_flow_thread) const;

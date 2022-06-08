@@ -790,20 +790,6 @@ PaintLayer* PaintLayer::AncestorStackingContext() const {
   return nullptr;
 }
 
-const PaintLayer* PaintLayer::EnclosingCompositedScrollingLayerUnderPagination(
-    IncludeSelfOrNot include_self_or_not) const {
-  const auto* start_layer =
-      include_self_or_not == kIncludeSelf ? this : CompositingContainer();
-  for (const auto* curr = start_layer; curr && curr->EnclosingPaginationLayer();
-       curr = curr->CompositingContainer()) {
-    if (const auto* scrollable_area = curr->GetScrollableArea()) {
-      if (scrollable_area->NeedsCompositedScrolling())
-        return curr;
-    }
-  }
-  return nullptr;
-}
-
 void PaintLayer::SetNeedsCompositingInputsUpdate() {
   // TODO(chrishtr): These are a bit of a heavy hammer, because not all
   // things which require compositing inputs update require a descendant-
@@ -1197,16 +1183,6 @@ void PaintLayer::AppendSingleFragmentForHitTesting(
   fragments.push_back(fragment);
 }
 
-bool PaintLayer::ShouldFragmentCompositedBounds(
-    const PaintLayer* compositing_layer) const {
-  if (!EnclosingPaginationLayer())
-    return false;
-  // We should not fragment composited scrolling layers and descendants, which
-  // is not only to render the scroller correctly, but also to prevent multiple
-  // cc::Layers with the same scrolling element id.
-  return !EnclosingCompositedScrollingLayerUnderPagination(kIncludeSelf);
-}
-
 const LayoutBox* PaintLayer::GetLayoutBoxWithBlockFragments() const {
   const LayoutBox* layout_box = GetLayoutBox();
   if (!layout_box)
@@ -1238,14 +1214,14 @@ void PaintLayer::CollectFragments(
   // If both |this| and |root_layer| are fragmented and are inside the same
   // pagination container, then try to match fragments from |root_layer| to
   // |this|, so that any fragment clip for |root_layer|'s fragment matches
-  // |this|'s. Note we check both ShouldFragmentCompositedBounds() and next
+  // |this|'s. Note we check both EnclosingPaginationLayer() and next
   // fragment here because the former may return false even if |this| is
   // fragmented, e.g. for fixed-position objects in paged media, and the next
   // fragment can be null even if the first fragment is actually in a fragmented
   // context when the current layer appears in only one of the multiple
   // fragments of the pagination container.
   bool is_fragmented =
-      ShouldFragmentCompositedBounds() || first_fragment_data.NextFragment();
+      EnclosingPaginationLayer() || first_fragment_data.NextFragment();
   bool should_match_fragments =
       is_fragmented &&
       root_layer->EnclosingPaginationLayer() == EnclosingPaginationLayer();
