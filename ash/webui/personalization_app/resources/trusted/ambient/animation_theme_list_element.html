@@ -1,8 +1,4 @@
 <style include="common-style">
-  #animationThemeList {
-    display: flex;
-    flex-direction: row;
-  }
   iron-list {
     height: 100%;
     /* 516px is the total width + padding for all 3 options */
@@ -10,11 +6,12 @@
   }
 </style>
 
-<h3 class="ambient-subpage-element-title" aria-hidden="true">
+<h3 id="animationThemeDescription" class="ambient-subpage-element-title"
+    aria-hidden="true">
   $i18n{ambientModeAnimationTitle}
 </h3>
-<iron-list id="grid" items="[[animationThemes]]" as="theme" grid
-    role="listbox">
+<iron-list items="[[animationThemes]]" as="theme" grid
+    role="listbox" aria-describedby="animationThemeDescription">
   <template>
     <animation-theme-item tabindex$="[[tabIndex]]"
         animation-theme="[[theme]]" role="option"

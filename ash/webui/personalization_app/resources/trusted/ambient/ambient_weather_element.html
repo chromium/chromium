@@ -11,13 +11,15 @@
   }
 </style>
 <div id="weatherDiv">
-  <h3 class="ambient-subpage-element-title" aria-hidden="true">
+  <h3 id="weatherTitle" class="ambient-subpage-element-title"
+      aria-hidden="true">
     $i18n{ambientModeWeatherTitle}
   </h3>
   <div class="weather-unit-list">
     <cr-radio-group
         id="ambientTemperatureUnit"
         selected="{{selectedTemperatureUnit}}"
+        aria-description="$i18n{ambientModeAriaDescriptionWeather}"
         aria-labelledby="weatherTitle">
       <cr-radio-button
           name="[[temperatureUnit_.kFahrenheit]]"
