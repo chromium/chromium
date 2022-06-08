@@ -79,9 +79,8 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
   }
 
   // The param for the tile column control is a log2 value so 0 is ok.
-  error =
-      aom_codec_control(codec.get(), AV1E_SET_TILE_COLUMNS,
-                        std::min(static_cast<int>(config_.g_threads >> 1), 6));
+  error = aom_codec_control(codec.get(), AV1E_SET_TILE_COLUMNS,
+                            static_cast<int>(std::log2(config_.g_threads)));
   DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_TILE_COLUMNS";
 
   // TODO(joedow): Experiment with AV1E_SET_TILE_ROWS. Note that the total
@@ -228,7 +227,8 @@ void WebrtcVideoEncoderAV1::ConfigureCodecParams() {
   config_.g_error_resilient = 0;
   config_.g_timebase.num = 1;
   config_.g_timebase.den = base::Time::kMicrosecondsPerSecond;
-  config_.g_threads = (base::SysInfo::NumberOfProcessors() + 1) / 2;
+  config_.g_threads =
+      std::min(((base::SysInfo::NumberOfProcessors() + 1) / 2), 8);
 
   config_.kf_mode = AOM_KF_DISABLED;
 
