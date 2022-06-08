@@ -28,7 +28,7 @@ namespace {
 
 void DeleteOverridesFile() {
   const absl::optional<base::FilePath> target =
-      GetBaseDataDirectory(GetUpdaterScope());
+      GetBaseDirectory(GetUpdaterScope());
   if (!target) {
     LOG(ERROR) << "Could not get base directory to clean out overrides file.";
     return;

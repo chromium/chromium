@@ -43,32 +43,34 @@ struct TagArgs;
 
 enum class UpdaterScope;
 
-// Returns the base data directory common to all versions of the updater. For
+// Returns the base directory common to all versions of the updater. For
 // instance, this function may return %localappdata%\Chromium\ChromiumUpdater
-// for a user install. Creates the directory if it does not exist.
-absl::optional<base::FilePath> GetBaseDataDirectory(UpdaterScope scope);
+// for a user install.
+absl::optional<base::FilePath> GetBaseDirectory(UpdaterScope scope);
 
-// Returns the versioned data directory under which the running version of the
-// updater stores its data. For instance, this function may return
-// %localappdata%\Chromium\ChromiumUpdater\1.2.3.4 for a user install. Creates
-// the directory if it does not exit.
-absl::optional<base::FilePath> GetVersionedDataDirectory(UpdaterScope scope);
+// Returns a versioned directory under which the running version of the updater
+// stores its files and data. For instance, this function may return
+// %localappdata%\Chromium\ChromiumUpdater\1.2.3.4 for a user install.
+absl::optional<base::FilePath> GetVersionedDirectory(UpdaterScope scope);
 
-// Returns the versioned install directory under which the program stores its
-// executables. For example, on macOS this function may return
-// ~/Library/Google/GoogleUpdater/88.0.4293.0 (/Library for system). Does not
-// create the directory if it does not exist.
-absl::optional<base::FilePath> GetVersionedInstallDirectory(
+// For user installations:
+// ~/Library/Google/GoogleUpdater/88.0.4293.0
+// For system installations:
+// /Library/Google/GoogleUpdater/88.0.4293.0
+absl::optional<base::FilePath> GetVersionedUpdaterFolderPathForVersion(
     UpdaterScope scope,
     const base::Version& version);
 
-// Simpler form of GetVersionedInstallDirectory for the currently running
-// version of the updater.
-absl::optional<base::FilePath> GetVersionedInstallDirectory(UpdaterScope scope);
+// The same as GetVersionedUpdaterFolderPathForVersion, where the version is
+// kUpdaterVersion.
+absl::optional<base::FilePath> GetVersionedUpdaterFolderPath(
+    UpdaterScope scope);
 
-// Returns the base install directory common to all versions of the updater.
-// Does not create the directory if it does not exist.
-absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope);
+// For user installations:
+// ~/Library/Google/GoogleUpdater
+// For system installations:
+// /Library/Google/GoogleUpdater
+absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope);
 
 #if BUILDFLAG(IS_MAC)
 // For example: ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app

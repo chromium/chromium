@@ -101,9 +101,9 @@ bool CopyBundle(const base::FilePath& dest_path, UpdaterScope scope) {
     if (!base::SetPosixFilePermissions(
             GetLibraryFolderPath(scope)->Append(COMPANY_SHORTNAME_STRING),
             kPermissionsMask) ||
-        !base::SetPosixFilePermissions(*GetBaseInstallDirectory(scope),
+        !base::SetPosixFilePermissions(*GetUpdaterFolderPath(scope),
                                        kPermissionsMask) ||
-        !base::SetPosixFilePermissions(*GetVersionedInstallDirectory(scope),
+        !base::SetPosixFilePermissions(*GetVersionedUpdaterFolderPath(scope),
                                        kPermissionsMask)) {
       LOG(ERROR) << "Failed to set permissions to drwxr-xr-x at "
                  << dest_path.value().c_str();
@@ -317,15 +317,15 @@ bool DeleteFolder(const absl::optional<base::FilePath>& installed_path) {
 }
 
 bool DeleteInstallFolder(UpdaterScope scope) {
-  return DeleteFolder(GetBaseInstallDirectory(scope));
+  return DeleteFolder(GetUpdaterFolderPath(scope));
 }
 
 bool DeleteCandidateInstallFolder(UpdaterScope scope) {
-  return DeleteFolder(GetVersionedInstallDirectory(scope));
+  return DeleteFolder(GetVersionedUpdaterFolderPath(scope));
 }
 
 bool DeleteDataFolder(UpdaterScope scope) {
-  return DeleteFolder(GetBaseDataDirectory(scope));
+  return DeleteFolder(GetBaseDirectory(scope));
 }
 
 void CleanAfterInstallFailure(UpdaterScope scope) {
@@ -359,10 +359,10 @@ bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path,
 
 int DoSetup(UpdaterScope scope) {
   const absl::optional<base::FilePath> dest_path =
-      GetVersionedInstallDirectory(scope);
+      GetVersionedUpdaterFolderPath(scope);
 
   if (!dest_path)
-    return kErrorFailedToGetVersionedInstallDirectory;
+    return kErrorFailedToGetVersionedUpdaterFolderPath;
   if (!CopyBundle(*dest_path, scope))
     return kErrorFailedToCopyBundle;
 
@@ -408,9 +408,9 @@ int Setup(UpdaterScope scope) {
 
 int PromoteCandidate(UpdaterScope scope) {
   const absl::optional<base::FilePath> dest_path =
-      GetVersionedInstallDirectory(scope);
+      GetVersionedUpdaterFolderPath(scope);
   if (!dest_path)
-    return kErrorFailedToGetVersionedInstallDirectory;
+    return kErrorFailedToGetVersionedUpdaterFolderPath;
   const base::FilePath updater_executable_path =
       dest_path->Append(GetExecutableRelativePath());
 
@@ -428,36 +428,34 @@ int PromoteCandidate(UpdaterScope scope) {
 
 #pragma mark Uninstall
 int UninstallCandidate(UpdaterScope scope) {
-  int error = kErrorOk;
-
-  if (!DeleteCandidateInstallFolder(scope) ||
-      !DeleteFolder(GetVersionedDataDirectory(scope))) {
-    error = kErrorFailedToDeleteFolder;
-  }
+  if (!DeleteCandidateInstallFolder(scope))
+    return kErrorFailedToDeleteFolder;
 
   if (!RemoveUpdateWakeJobFromLaunchd(scope))
-    error = kErrorFailedToRemoveWakeJobFromLaunchd;
+    return kErrorFailedToRemoveWakeJobFromLaunchd;
 
   // Removing the Update Internal job has to be the last step because launchd is
   // likely to terminate the current process. Clients should expect the
   // connection to invalidate (possibly with an interruption beforehand) as a
   // result of service uninstallation.
   if (!RemoveUpdateServiceInternalJobFromLaunchd(scope))
-    error = kErrorFailedToRemoveUpdateServiceInternalJobFromLaunchd;
+    return kErrorFailedToRemoveUpdateServiceInternalJobFromLaunchd;
 
-  return error;
+  return kErrorOk;
 }
 
 int Uninstall(UpdaterScope scope) {
   VLOG(1) << base::CommandLine::ForCurrentProcess()->GetCommandLineString()
           << " : " << __func__;
-  int exit = UninstallCandidate(scope);
+  const int exit = UninstallCandidate(scope);
+  if (exit != kErrorOk)
+    return exit;
 
   if (!RemoveUpdateServiceJobFromLaunchd(scope))
-    exit = kErrorFailedToRemoveActiveUpdateServiceJobFromLaunchd;
+    return kErrorFailedToRemoveActiveUpdateServiceJobFromLaunchd;
 
   if (!DeleteInstallFolder(scope))
-    exit = kErrorFailedToDeleteFolder;
+    return kErrorFailedToDeleteFolder;
 
   base::ThreadPool::PostTask(FROM_HERE,
                              {base::MayBlock(), base::WithBaseSyncPrimitives()},
@@ -468,7 +466,7 @@ int Uninstall(UpdaterScope scope) {
   // it is not always possible to delete the data folder.
   DeleteDataFolder(scope);
 
-  return exit;
+  return kErrorOk;
 }
 
 }  // namespace updater

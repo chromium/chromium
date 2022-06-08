@@ -293,7 +293,7 @@ bool ComServerApp::SwapInNewVersion() {
   std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
 
   const absl::optional<base::FilePath> versioned_directory =
-      GetVersionedDataDirectory(updater_scope());
+      GetVersionedDirectory(updater_scope());
   if (!versioned_directory)
     return false;
 

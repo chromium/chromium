@@ -56,7 +56,7 @@ bool CrashClient::InitializeDatabaseOnly(UpdaterScope updater_scope) {
   base::PathService::Get(base::FILE_EXE, &handler_path);
 
   const absl::optional<base::FilePath> database_path =
-      GetVersionedDataDirectory(updater_scope);
+      GetVersionedDirectory(updater_scope);
   if (!database_path) {
     LOG(ERROR) << "Failed to get the database path.";
     return false;

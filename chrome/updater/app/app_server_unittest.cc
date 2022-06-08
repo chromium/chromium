@@ -65,8 +65,8 @@ class AppServerTest : public AppServer {
 void ClearPrefs() {
   const UpdaterScope updater_scope = GetUpdaterScope();
   for (const absl::optional<base::FilePath>& path :
-       {GetBaseDataDirectory(updater_scope),
-        GetVersionedDataDirectory(updater_scope)}) {
+       {GetBaseDirectory(updater_scope),
+        GetVersionedDirectory(updater_scope)}) {
     ASSERT_TRUE(path);
     ASSERT_TRUE(
         base::DeleteFile(path->Append(FILE_PATH_LITERAL("prefs.json"))));

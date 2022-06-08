@@ -105,7 +105,7 @@ class TaskSchedulerTests : public ::testing::Test {
 
   void DeleteLogFile() {
     const absl::optional<base::FilePath> log_dir =
-        GetBaseDataDirectory(GetTestScope());
+        GetBaseDirectory(GetTestScope());
     if (log_dir) {
       base::DeleteFile(log_dir->Append(FILE_PATH_LITERAL("updater.log")));
     }

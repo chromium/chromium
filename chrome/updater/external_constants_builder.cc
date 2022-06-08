@@ -119,7 +119,7 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearGroupPolicies() {
 
 bool ExternalConstantsBuilder::Overwrite() {
   const absl::optional<base::FilePath> base_path =
-      GetBaseDataDirectory(GetUpdaterScope());
+      GetBaseDirectory(GetUpdaterScope());
   if (!base_path) {
     LOG(ERROR) << "Can't find base directory; can't save constant overrides.";
     return false;

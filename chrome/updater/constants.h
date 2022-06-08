@@ -265,7 +265,7 @@ constexpr int kErrorFailedToDeleteFolder = 16;
 constexpr int kErrorFailedToDeleteDataFolder = 17;
 
 // Failed to get versioned updater folder path.
-constexpr int kErrorFailedToGetVersionedInstallDirectory = 18;
+constexpr int kErrorFailedToGetVersionedUpdaterFolderPath = 18;
 
 // Failed to get the installed app bundle path.
 constexpr int kErrorFailedToGetAppBundlePath = 19;

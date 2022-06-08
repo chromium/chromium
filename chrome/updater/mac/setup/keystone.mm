@@ -70,9 +70,9 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
     if (!base::SetPosixFilePermissions(
             GetLibraryFolderPath(scope)->Append(COMPANY_SHORTNAME_STRING),
             kPermissionsMask) ||
-        !base::SetPosixFilePermissions(*GetBaseInstallDirectory(scope),
+        !base::SetPosixFilePermissions(*GetUpdaterFolderPath(scope),
                                        kPermissionsMask) ||
-        !base::SetPosixFilePermissions(*GetVersionedInstallDirectory(scope),
+        !base::SetPosixFilePermissions(*GetVersionedUpdaterFolderPath(scope),
                                        kPermissionsMask) ||
         !base::SetPosixFilePermissions(dest_path, kPermissionsMask)) {
       LOG(ERROR) << "Failed to set permissions to drwxr-xr-x at "
