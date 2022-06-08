@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="StandbyBucket">
+  <variant name="Active"/>
+  <variant name="Frequent"/>
+  <variant name="Rare"/>
+  <variant name="Restricted"/>
+  <variant name="Unknown"/>
+  <variant name="Unsupported"/>
+  <variant name="WorkingSet"/>
+</variants>
+
 <histogram name="Stability.Android.MinidumpUploadingTime" units="ms"
     expires_after="2022-11-30">
   <owner>shaktisahu@chromium.org</owner>
@@ -30,6 +40,20 @@ chromium-metrics-reviews@google.com.
     Records the time (uptimeMillis) taken by a minidump uploading task to
     complete. Recorded when the task finished callback is invoked.
   </summary>
+</histogram>
+
+<histogram name="Stability.Android.MinidumpUploadingTime.{StandbyBucket}"
+    units="ms" expires_after="2022-11-30">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>src/components/minidump_uploader/OWNERS</owner>
+  <summary>
+    Records the time (uptimeMillis) taken by a minidump uploading task to
+    complete grouped by {StandbyBucket} state. Recorded when the task finished
+    callback is invoked. The {StandbyBucket} corresponds to the standby bucket
+    (UsageStatsManager.getAppStandbyBucket) chrome was placed into when metrics
+    was uploaded.
+  </summary>
+  <token key="StandbyBucket" variants="StandbyBucket"/>
 </histogram>
 
 <histogram name="Stability.Android.OomKillReverseRank" units="rank"

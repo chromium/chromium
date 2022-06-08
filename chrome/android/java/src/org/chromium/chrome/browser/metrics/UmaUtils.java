@@ -9,6 +9,7 @@ import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.SystemClock;
+import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 
@@ -70,14 +71,15 @@ public class UmaUtils {
      */
     @IntDef({StandbyBucketStatus.ACTIVE, StandbyBucketStatus.WORKING_SET,
             StandbyBucketStatus.FREQUENT, StandbyBucketStatus.RARE, StandbyBucketStatus.RESTRICTED,
-            StandbyBucketStatus.COUNT})
+            StandbyBucketStatus.UNSUPPORTED, StandbyBucketStatus.COUNT})
     private @interface StandbyBucketStatus {
         int ACTIVE = 0;
         int WORKING_SET = 1;
         int FREQUENT = 2;
         int RARE = 3;
         int RESTRICTED = 4;
-        int COUNT = 5;
+        int UNSUPPORTED = 5;
+        int COUNT = 6;
     }
 
     /**
@@ -156,10 +158,57 @@ public class UmaUtils {
         RecordHistogram.recordBooleanHistogram(
                 "Android.BackgroundRestrictions.IsBackgroundRestricted", isBackgroundRestricted);
 
+        int standbyBucketUma = getStandbyBucket(context);
+        RecordHistogram.recordEnumeratedHistogram("Android.BackgroundRestrictions.StandbyBucket",
+                standbyBucketUma, StandbyBucketStatus.COUNT);
+
+        String histogramNameSplitByUserRestriction = isBackgroundRestricted
+                ? "Android.BackgroundRestrictions.StandbyBucket.WithUserRestriction"
+                : "Android.BackgroundRestrictions.StandbyBucket.WithoutUserRestriction";
+        RecordHistogram.recordEnumeratedHistogram(
+                histogramNameSplitByUserRestriction, standbyBucketUma, StandbyBucketStatus.COUNT);
+    }
+
+    /** Record minidump uploading time split by background restriction status. */
+    public static void recordMinidumpUploadingTime(long taskDurationMs) {
+        RecordHistogram.recordCustomTimesHistogram("Stability.Android.MinidumpUploadingTime",
+                taskDurationMs, 1, DateUtils.DAY_IN_MILLIS, 50);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
+        RecordHistogram.recordCustomTimesHistogram(
+                "Stability.Android.MinidumpUploadingTime." + getHistogramPatternForStandbyStatus(),
+                taskDurationMs, 1, DateUtils.DAY_IN_MILLIS, 50);
+    }
+
+    private static String getHistogramPatternForStandbyStatus() {
+        int standbyBucket = getStandbyBucket(ContextUtils.getApplicationContext());
+        switch (standbyBucket) {
+            case StandbyBucketStatus.ACTIVE:
+                return "Active";
+            case StandbyBucketStatus.WORKING_SET:
+                return "WorkingSet";
+            case StandbyBucketStatus.FREQUENT:
+                return "Frequent";
+            case StandbyBucketStatus.RARE:
+                return "Rare";
+            case StandbyBucketStatus.RESTRICTED:
+                return "Restricted";
+            case StandbyBucketStatus.UNSUPPORTED:
+                return "Unsupported";
+            default:
+                assert false : "Unexpected standby bucket " + standbyBucket;
+                return "Unknown";
+        }
+    }
+
+    @StandbyBucketStatus
+    private static int getStandbyBucket(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return StandbyBucketStatus.UNSUPPORTED;
+
         UsageStatsManager usageStatsManager =
                 (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
         int standbyBucket = usageStatsManager.getAppStandbyBucket();
-        int standbyBucketUma = -1;
+        int standbyBucketUma = StandbyBucketStatus.UNSUPPORTED;
         switch (standbyBucket) {
             case UsageStatsManager.STANDBY_BUCKET_ACTIVE:
                 standbyBucketUma = StandbyBucketStatus.ACTIVE;
@@ -179,9 +228,7 @@ public class UmaUtils {
             default:
                 assert false : "Unexpected standby bucket " + standbyBucket;
         }
-
-        RecordHistogram.recordEnumeratedHistogram("Android.BackgroundRestrictions.StandbyBucket",
-                standbyBucketUma, StandbyBucketStatus.COUNT);
+        return standbyBucketUma;
     }
 
     /**
