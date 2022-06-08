@@ -275,15 +275,22 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
       break;
     }
     case TextUnit_Line:
+      // Walk backwards to the previous line start (but don't walk backwards
+      // if we're already at the start of a line). The previous line start can
+      // occur in a different node than where `start` is currently pointing, so
+      // use kStopAtLastAnchorBoundary, which will stop at the tree boundary if
+      // no previous line start is found.
       SetStart(start()->CreateBoundaryStartPosition(
-          {AXBoundaryBehavior::kStopAtAnchorBoundary,
+          {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
            AXBoundaryDetection::kCheckInitialPosition},
           ax::mojom::MoveDirection::kBackward,
           base::BindRepeating(&AtStartOfLinePredicate),
           base::BindRepeating(&AtEndOfLinePredicate)));
+      // From the start we just walked backwards to, walk forwards to the line
+      // end position.
       SetEnd(start()->CreateBoundaryEndPosition(
-          {AXBoundaryBehavior::kStopAtAnchorBoundary,
-           AXBoundaryDetection::kCheckInitialPosition},
+          {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+           AXBoundaryDetection::kDontCheckInitialPosition},
           ax::mojom::MoveDirection::kForward,
           base::BindRepeating(&AtStartOfLinePredicate),
           base::BindRepeating(&AtEndOfLinePredicate)));
@@ -291,7 +298,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
     case TextUnit_Paragraph:
       SetStart(
           start()->CreatePreviousParagraphStartPositionSkippingEmptyParagraphs(
-              {AXBoundaryBehavior::kStopAtAnchorBoundary,
+              {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
                AXBoundaryDetection::kCheckInitialPosition}));
       SetEnd(start()->CreateNextParagraphStartPositionSkippingEmptyParagraphs(
           {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
@@ -303,7 +310,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
       const AXNode* common_anchor = start()->LowestCommonAnchor(*end());
       if (common_anchor->tree()->HasPaginationSupport()) {
         SetStart(start()->CreatePreviousPageStartPosition(
-            {AXBoundaryBehavior::kStopAtAnchorBoundary,
+            {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
              AXBoundaryDetection::kCheckInitialPosition}));
         SetEnd(start()->CreateNextPageEndPosition(
             {AXBoundaryBehavior::kStopAtAnchorBoundary,
