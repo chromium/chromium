@@ -273,12 +273,8 @@ bool UnmaskCardRequest::IsResponseComplete() {
       // When pan is returned, it has to contain pan + expiry + cvv.
       // When pan is not returned, it has to contain context token to indicate
       // success.
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableVirtualCardsRiskBasedAuthentication)) {
-        return IsAllCardInformationValidIncludingDcvv() ||
-               CanPerformVirtualCardAuth();
-      }
-      return IsAllCardInformationValidIncludingDcvv();
+      return IsAllCardInformationValidIncludingDcvv() ||
+             CanPerformVirtualCardAuth();
   }
 }
 

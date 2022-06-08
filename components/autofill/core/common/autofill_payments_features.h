@@ -35,7 +35,6 @@ extern const base::Feature kAutofillEnableVirtualCardFidoEnrollment;
 extern const base::Feature
     kAutofillEnableVirtualCardManagementInDesktopSettingsPage;
 extern const base::Feature kAutofillEnableVirtualCardMetadata;
-extern const base::Feature kAutofillEnableVirtualCardsRiskBasedAuthentication;
 extern const base::Feature kAutofillEnforceDelaysInStrikeDatabase;
 extern const base::Feature kAutofillFillMerchantPromoCodeFields;
 extern const base::FeatureParam<int>

@@ -416,12 +416,6 @@ const char kAutofillEnableVirtualCardMetadataDescription[] =
     "When enabled, Chrome will show metadata together with other card "
     "information when the virtual card is presented to users.";
 
-const char kAutofillEnableVirtualCardsRiskBasedAuthenticationName[] =
-    "Enable risk based authentication for Autofill Virtual Card Numbers";
-const char kAutofillEnableVirtualCardsRiskBasedAuthenticationDescription[] =
-    "When enabled, risk based authentication is used before autofilling "
-    "Virtual Card information into forms.";
-
 const char kAutofillEnforceDelaysInStrikeDatabaseName[] =
     "Enforce delay between offering Autofill opportunities in the strike "
     "database";

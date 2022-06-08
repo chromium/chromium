@@ -7825,15 +7825,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillParseMerchantPromoCodeFields)},
 
-    {"autofill-enable-virtual-cards-risk-based-authentication",
-     flag_descriptions::kAutofillEnableVirtualCardsRiskBasedAuthenticationName,
-     flag_descriptions::
-         kAutofillEnableVirtualCardsRiskBasedAuthenticationDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::
-             kAutofillEnableVirtualCardsRiskBasedAuthentication)},
-
     {"autofill-highlight-only-changed-value-in-preview-mode",
      flag_descriptions::kAutofillHighlightOnlyChangedValuesInPreviewModeName,
      flag_descriptions::

@@ -483,11 +483,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "autofill-enable-virtual-cards-risk-based-authentication",
-    "owners": [ "siyua", "jsaul@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "autofill-enforce-delays-in-strike-database",
     "owners": [ "siyua"],
     "expiry_milestone": 105

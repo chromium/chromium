@@ -435,10 +435,8 @@ class CreditCardAccessManagerTest : public testing::Test {
       bool fido_authenticator_is_user_opted_in,
       bool is_user_verifiable) {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillEnableVirtualCardsRiskBasedAuthentication,
-         features::kAutofillCreditCardAuthentication},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillCreditCardAuthentication);
     CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
     CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
     virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
@@ -1030,52 +1028,6 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOTimeoutCVCFallback) {
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
-}
-
-// Ensures that CVC prompt is not invoked after payments returns an error from
-// GetRealPan via FIDO for a virtual card.
-TEST_F(CreditCardAccessManagerTest, FetchVirtualCardFIDOFailureNoCVCFallback) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillCreditCardAuthentication},
-      {features::kAutofillEnableVirtualCardsRiskBasedAuthentication});
-  base::HistogramTester histogram_tester;
-  CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
-  GetFIDOAuthenticator()->SetUserVerifiable(true);
-  SetCreditCardFIDOAuthEnabled(true);
-  payments_client_->AddFidoEligibleCard(card->server_id(), kCredentialId,
-                                        kGooglePaymentsRpid);
-
-  credit_card_access_manager_->PrepareToFetchCreditCard();
-  WaitForCallbacks();
-
-  card->set_record_type(CreditCard::VIRTUAL_CARD);
-  credit_card_access_manager_->FetchCreditCard(card, accessor_->GetWeakPtr());
-  WaitForCallbacks();
-
-  // FIDO Failure.
-  EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::AUTHENTICATION_FLOW,
-            GetFIDOAuthenticator()->current_flow());
-  TestCreditCardFIDOAuthenticator::GetAssertion(GetFIDOAuthenticator(),
-                                                /*did_succeed=*/true);
-  EXPECT_TRUE(GetRealPanForFIDOAuth(
-      AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
-      kTestNumber, std::string(), /*is_virtual_card=*/true));
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kPermanentError);
-  EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::NONE_FLOW,
-            GetFIDOAuthenticator()->current_flow());
-  EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.BetterAuth.WebauthnResult.ImmediateAuthentication",
-      AutofillMetrics::WebauthnResultMetric::kSuccess, 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.BetterAuth.CardUnmaskDuration.Fido", 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.BetterAuth.CardUnmaskDuration.Fido.VirtualCard."
-      "VcnRetrievalFailure",
-      1);
 }
 
 // Ensures the existence of user-perceived latency during the preflight call is
@@ -2148,9 +2100,6 @@ TEST_F(CreditCardAccessManagerTest, IsVirtualCardPresentInUnmaskedCache) {
 
 TEST_F(CreditCardAccessManagerTest, RiskBasedVirtualCardUnmasking_Success) {
   base::HistogramTester histogram_tester;
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableVirtualCardsRiskBasedAuthentication);
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
@@ -2223,10 +2172,8 @@ TEST_F(CreditCardAccessManagerTest,
        RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoOnly) {
   base::HistogramTester histogram_tester;
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableVirtualCardsRiskBasedAuthentication,
-       features::kAutofillCreditCardAuthentication},
-      {});
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillCreditCardAuthentication);
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
@@ -2285,10 +2232,8 @@ TEST_F(
     RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoAndOtp_PrefersFido) {
   base::HistogramTester histogram_tester;
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableVirtualCardsRiskBasedAuthentication,
-       features::kAutofillCreditCardAuthentication},
-      {});
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillCreditCardAuthentication);
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
@@ -2409,10 +2354,8 @@ TEST_F(
     RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoOnly_FidoNotOptedIn) {
   base::HistogramTester histogram_tester;
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableVirtualCardsRiskBasedAuthentication,
-       features::kAutofillCreditCardAuthentication},
-      {});
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillCreditCardAuthentication);
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
@@ -2460,10 +2403,8 @@ TEST_F(CreditCardAccessManagerTest,
        RiskBasedVirtualCardUnmasking_Failure_NoOptionReturned) {
   base::HistogramTester histogram_tester;
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableVirtualCardsRiskBasedAuthentication,
-       features::kAutofillCreditCardAuthentication},
-      {});
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillCreditCardAuthentication);
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
@@ -2511,10 +2452,8 @@ TEST_F(CreditCardAccessManagerTest,
        RiskBasedVirtualCardUnmasking_Failure_VirtualCardRetrievalError) {
   base::HistogramTester histogram_tester;
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableVirtualCardsRiskBasedAuthentication,
-       features::kAutofillCreditCardAuthentication},
-      {});
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillCreditCardAuthentication);
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
@@ -2560,10 +2499,8 @@ TEST_F(CreditCardAccessManagerTest,
        RiskBasedVirtualCardUnmasking_FlowCancelled) {
   base::HistogramTester histogram_tester;
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableVirtualCardsRiskBasedAuthentication,
-       features::kAutofillCreditCardAuthentication},
-      {});
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillCreditCardAuthentication);
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
   CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
   virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);

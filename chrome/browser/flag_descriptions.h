@@ -235,10 +235,6 @@ extern const char
 extern const char kAutofillEnableVirtualCardMetadataName[];
 extern const char kAutofillEnableVirtualCardMetadataDescription[];
 
-extern const char kAutofillEnableVirtualCardsRiskBasedAuthenticationName[];
-extern const char
-    kAutofillEnableVirtualCardsRiskBasedAuthenticationDescription[];
-
 extern const char kAutofillEnforceDelaysInStrikeDatabaseName[];
 extern const char kAutofillEnforceDelaysInStrikeDatabaseDescription[];
 

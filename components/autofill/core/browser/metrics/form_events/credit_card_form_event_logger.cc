@@ -227,11 +227,8 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     // Log BetterAuth.FlowEvents.
     RecordCardUnmaskFlowEvent(current_authentication_flow_,
                               UnmaskAuthFlowEvent::kFormSubmitted);
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableVirtualCardsRiskBasedAuthentication)) {
-      AutofillMetrics::LogServerCardUnmaskFormSubmission(
-          AutofillClient::PaymentsRpcCardType::kVirtualCard);
-    }
+    AutofillMetrics::LogServerCardUnmaskFormSubmission(
+        AutofillClient::PaymentsRpcCardType::kVirtualCard);
   } else if (logged_suggestion_filled_was_server_data_) {
     Log(FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, form);
   } else {

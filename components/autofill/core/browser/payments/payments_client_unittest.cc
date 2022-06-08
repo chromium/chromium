@@ -162,11 +162,8 @@ class PaymentsClientTest : public testing::Test {
     test_personal_data_.SetAccountInfoForPayments(
         identity_test_env_.MakePrimaryAccountAvailable(
             "example@gmail.com", signin::ConsentLevel::kSync));
-    scoped_feature_list_.InitWithFeatures(
-        /* enabled_features */
-        {features::kAutofillEnableVirtualCardsRiskBasedAuthentication,
-         features::kAutofillEnableSendingBcnInGetUploadDetails},
-        /* disabled_features */ {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableSendingBcnInGetUploadDetails);
   }
 
   void TearDown() override { client_.reset(); }
