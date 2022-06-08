@@ -71,11 +71,24 @@ class MetadataWriter {
     const size_t events_size{0};
   };
 
+  // Defines a feature based on a custom input.
+  struct CustomInput {
+    const uint64_t tensor_length{0};
+    const proto::CustomInput::FillPolicy fill_policy{
+        proto::CustomInput_FillPolicy_UNKNOWN_FILL_POLICY};
+    const float default_value{0};
+    const char* name{nullptr};
+    // TODO(shaktisahu): Support additional_args.
+  };
+
   // Appends the list of UMA features in order.
   void AddUmaFeatures(const UMAFeature features[], size_t features_size);
 
   // Appends the list of SQL features in order.
   void AddSqlFeatures(const SqlFeature features[], size_t features_size);
+
+  // Appends the list of SQL features in order.
+  void AddCustomInput(const CustomInput& feature);
 
   // Appends a list of discrete mapping in order.
   void AddDiscreteMappingEntries(const std::string& key,

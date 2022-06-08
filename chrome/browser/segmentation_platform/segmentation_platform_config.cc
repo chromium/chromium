@@ -13,6 +13,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/segmentation_platform/default_model/feed_user_segment.h"
 #include "chrome/browser/segmentation_platform/default_model/low_user_engagement_model.h"
+#include "chrome/browser/segmentation_platform/default_model/price_tracking_action_model.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
@@ -153,12 +154,22 @@ std::unique_ptr<Config> GetConfigForQueryTiles() {
   return config;
 }
 
-std::unique_ptr<Config> GetConfigForPriceTracking() {
+bool IsEnabledContextualPageActions() {
+  if (!base::FeatureList::IsEnabled(features::kContextualPageActions))
+    return false;
+
+  return base::FeatureList::IsEnabled(
+      features::kContextualPageActionPriceTracking);
+}
+
+std::unique_ptr<Config> GetConfigForContextualPageActions() {
   auto config = std::make_unique<Config>();
-  config->segmentation_key = kContextualPageActionsPriceTrackingKey;
-  config->segment_ids = {
-      SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
-  };
+  config->segmentation_key = kContextualPageActionsKey;
+  if (base::FeatureList::IsEnabled(
+          features::kContextualPageActionPriceTracking)) {
+    config->segment_ids.push_back(
+        SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING);
+  }
   config->on_demand_execution = true;
   config->trigger = TriggerType::kPageLoad;
   return config;
@@ -237,6 +248,10 @@ std::unique_ptr<ModelProvider> GetFeedUserSegmentDefautlModel() {
   return std::make_unique<FeedUserSegment>();
 }
 
+std::unique_ptr<ModelProvider> GetContextualPageActionPriceTrackingModel() {
+  return std::make_unique<PriceTrackingActionModel>();
+}
+
 }  // namespace
 
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
@@ -250,10 +265,8 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
           chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2)) {
     configs.emplace_back(GetConfigForAdaptiveToolbar());
   }
-  if (base::FeatureList::IsEnabled(
-          segmentation_platform::features::
-              kContextualPageActionsWithPriceTracking)) {
-    configs.emplace_back(GetConfigForPriceTracking());
+  if (IsEnabledContextualPageActions()) {
+    configs.emplace_back(GetConfigForContextualPageActions());
   }
   if (IsStartSurfaceBehaviouralTargetingEnabled()) {
     configs.emplace_back(GetConfigForChromeStartAndroid());
@@ -304,6 +317,10 @@ std::unique_ptr<ModelProvider> DefaultModelsRegister::GetModelProvider(
   }
   if (target == proto::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
     return GetFeedUserSegmentDefautlModel();
+  }
+  if (target ==
+      proto::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING) {
+    return GetContextualPageActionPriceTrackingModel();
   }
   return nullptr;
 }

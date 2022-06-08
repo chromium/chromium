@@ -4035,8 +4035,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualPageActionsWithPriceTrackingName,
      flag_descriptions::kContextualPageActionsWithPriceTrackingDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(segmentation_platform::features::
-                            kContextualPageActionsWithPriceTracking)},
+     FEATURE_VALUE_TYPE(
+         segmentation_platform::features::kContextualPageActionPriceTracking)},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},

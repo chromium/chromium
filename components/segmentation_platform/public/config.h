@@ -37,10 +37,8 @@ const char kChromeLowUserEngagementSegmentationKey[] =
 // The key is used to decide whether the user likes to use Feed.
 const char kFeedUserSegmentationKey[] = "feed_user_segment";
 
-// The key is used to decide whether price tracking should be shown as a
-// contextual page action.
-const char kContextualPageActionsPriceTrackingKey[] =
-    "contextual_page_actions_price_tracking";
+// The key is used to show a contextual page action.
+const char kContextualPageActionsKey[] = "contextual_page_actions";
 
 // The key provide a list of segment IDs, separated by commas, whose ML model
 // execution results are allowed to be uploaded through UKM.

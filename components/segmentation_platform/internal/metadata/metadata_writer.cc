@@ -51,6 +51,15 @@ void MetadataWriter::AddSqlFeatures(const SqlFeature features[],
   }
 }
 
+void MetadataWriter::AddCustomInput(const CustomInput& feature) {
+  proto::CustomInput* custom_input_feature =
+      metadata_->add_input_features()->mutable_custom_input();
+  custom_input_feature->set_tensor_length(feature.tensor_length);
+  custom_input_feature->set_fill_policy(feature.fill_policy);
+  custom_input_feature->add_default_value(feature.default_value);
+  custom_input_feature->set_name(feature.name);
+}
+
 void MetadataWriter::AddDiscreteMappingEntries(
     const std::string& key,
     const std::pair<float, int>* mappings,

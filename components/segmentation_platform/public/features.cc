@@ -34,8 +34,10 @@ const base::Feature kSegmentationPlatformFeedSegmentFeature{
 };
 #endif
 
-const base::Feature kContextualPageActionsWithPriceTracking{
-    "ContextualPageActionsWithPriceTracking",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kContextualPageActions{"ContextualPageActions",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kContextualPageActionPriceTracking{
+    "ContextualPageActionPriceTracking", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace segmentation_platform::features
