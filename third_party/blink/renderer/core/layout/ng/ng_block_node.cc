@@ -1671,7 +1671,13 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
 
 bool NGBlockNode::IsPaginatedRoot() const {
   const auto* view = DynamicTo<LayoutNGView>(box_.Get());
-  return view && view->IsFragmentationContextRoot();
+  if (!view || !view->IsFragmentationContextRoot())
+    return false;
+  if (const LayoutObject* child = view->FirstChild()) {
+    if (child->ForceLegacyLayout())
+      return false;
+  }
+  return true;
 }
 
 bool NGBlockNode::IsInlineFormattingContextRoot(
