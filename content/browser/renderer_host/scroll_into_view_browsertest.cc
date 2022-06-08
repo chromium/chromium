@@ -201,24 +201,10 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
   }
 
   FrameTreeNode* InnerMostFrameTreeNode() {
-    FrameTreeNode* node = web_contents()->GetPrimaryFrameTree().root();
-    while (node->child_count() ||
-           node->current_frame_host()->inner_tree_main_frame_tree_node_id() !=
-               FrameTreeNode::kFrameTreeNodeInvalidId) {
-      if (node->child_count()) {
-        CHECK_EQ(
-            node->current_frame_host()->inner_tree_main_frame_tree_node_id(),
-            FrameTreeNode::kFrameTreeNodeInvalidId);
-        // These tests never have multiple child frames.
-        CHECK_EQ(node->child_count(), 1ul);
-        node = node->child_at(0);
-      } else {
-        CHECK_EQ(node->child_count(), 0ul);
-        node = FrameTreeNode::GloballyFindByID(
-            node->current_frame_host()->inner_tree_main_frame_tree_node_id());
-      }
-    }
-    return node;
+    FrameTreeNode* inner_most_node = nullptr;
+    ForEachFrameFromRootToInnerMost(
+        [&inner_most_node](FrameTreeNode* node) { inner_most_node = node; });
+    return inner_most_node;
   }
 
   FrameTreeNode* RootFrameTreeNode() {
@@ -450,6 +436,66 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
 #endif
   }
 
+  // Calls `func` with each FrameTreeNode in the page, starting from the root
+  // and descending into the inner most frame, traversing frame tree boundaries
+  // such as fenced frames/portals.
+  template <typename Function>
+  void ForEachFrameFromRootToInnerMost(const Function& func) {
+    FrameTreeNode* node = web_contents()->GetPrimaryFrameTree().root();
+    while (node) {
+      bool is_proxy_for_inner_frame_tree =
+          node->current_frame_host()->inner_tree_main_frame_tree_node_id() !=
+          FrameTreeNode::kFrameTreeNodeInvalidId;
+
+      // The functor isn't called for the placeholder FrameTreeNode, it'll be
+      // called on the inner tree's root.
+      if (!is_proxy_for_inner_frame_tree)
+        func(node);
+
+      if (node->child_count()) {
+        CHECK_EQ(
+            node->current_frame_host()->inner_tree_main_frame_tree_node_id(),
+            FrameTreeNode::kFrameTreeNodeInvalidId);
+        // These tests never have multiple child frames.
+        CHECK_EQ(node->child_count(), 1ul);
+        node = node->child_at(0);
+      } else if (is_proxy_for_inner_frame_tree) {
+        CHECK_EQ(node->child_count(), 0ul);
+        node = FrameTreeNode::GloballyFindByID(
+            node->current_frame_host()->inner_tree_main_frame_tree_node_id());
+      } else {
+        node = nullptr;
+      }
+    }
+  }
+
+  // Cross origin frames may throttle their lifecycle when not visible.
+  // This method ensure each frame is brought into view and a frame produced to
+  // ensure up-to-date layout.
+  void EnsureAllFramesCompletedLifecycle() {
+    // Wait until each frame presents a CompositorFrame and then scroll its
+    // child frame (if it has one) into view, so that it is unthrottled and
+    // able to generate and present CompositorFrames.
+    ForEachFrameFromRootToInnerMost([](FrameTreeNode* node) {
+      base::RunLoop loop;
+      node->current_frame_host()->InsertVisualStateCallback(
+          base::BindLambdaForTesting(
+              [&loop](bool visual_state_updated) { loop.Quit(); }));
+      loop.Run();
+
+      EXPECT_TRUE(ExecJs(node, R"JS(
+              if (document.getElementById('childframe'))
+                document.getElementById('childframe').scrollIntoView()
+          )JS"));
+    });
+
+    // Now that each frame has been in view and produced a frame, reset each
+    // scroll offset.
+    ForEachFrameFromRootToInnerMost([](FrameTreeNode* node) {
+      EXPECT_TRUE(ExecJs(node, "window.scrollTo(0, 0)"));
+    });
+  }
+
   // For frame_tree syntax see tree_parser_util.js.
   // These tests place two additional restrictions to make some simplifying
   // assumptions:
@@ -465,6 +511,8 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
 
     if (!NavigateToURL(shell(), kMainUrl))
       return false;
+
+    EnsureAllFramesCompletedLifecycle();
 
     VisualViewport viewport = GetVisualViewport();
     double page_scale_factor_before = viewport.scale;
@@ -614,21 +662,11 @@ IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInSingleNestedFrame) {
 }
 
 IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInLocalRoot) {
-// TODO(crbug.com/1323876) Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-  if (!IsForceLocalFrames())
-    return;
-#endif
   ASSERT_TRUE(SetupTest("siteA(siteB(siteA))"));
   RunTest();
 }
 
 IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInDoublyNestedFrame) {
-// TODO(crbug.com/1323876) Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-  if (!IsForceLocalFrames())
-    return;
-#endif
   ASSERT_TRUE(SetupTest("siteA(siteB(siteC))"));
   RunTest();
 }
@@ -636,11 +674,6 @@ IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInDoublyNestedFrame) {
 IN_PROC_BROWSER_TEST_P(
     ScrollIntoViewBrowserTest,
     CrossesEditableInDoublyNestedFrameLocalAndRemoteBoundaries) {
-// TODO(crbug.com/1323876) Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-  if (!IsForceLocalFrames())
-    return;
-#endif
   ASSERT_TRUE(SetupTest("siteA(siteA(siteB(siteB)))"));
   RunTest();
 }
