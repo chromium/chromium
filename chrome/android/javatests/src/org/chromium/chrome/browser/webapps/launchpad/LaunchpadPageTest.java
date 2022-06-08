@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -164,6 +165,7 @@ public class LaunchpadPageTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1306215")
     public void testManagementMenuAppShortcutsProperties() {
         openLaunchpadPage();
         View dialogView = LaunchpadTestUtils.openAppManagementMenu(mLaunchpadCoordinator,
@@ -194,6 +196,7 @@ public class LaunchpadPageTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1306215")
     public void testLaunchAppShortcuts() {
         openLaunchpadPage();
         ModalDialogManager modalDialogManager =
@@ -219,6 +222,7 @@ public class LaunchpadPageTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1306215")
     public void testManagementMenuOtherMenuItemProperties() {
         openLaunchpadPage();
         View dialogView = LaunchpadTestUtils.openAppManagementMenu(mLaunchpadCoordinator,
@@ -246,6 +250,7 @@ public class LaunchpadPageTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1306215")
     public void testLaunchAppSetting_whenSiteSettingsMenuItemClicked() {
         openLaunchpadPage();
         ModalDialogManager modalDialogManager =
