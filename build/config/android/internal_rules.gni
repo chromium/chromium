@@ -2679,6 +2679,8 @@ if (enable_java_templates) {
   #     native libraries inside the APK uncompressed and page-aligned.
   template("package_apk") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "public_deps" ])
+    _is_robolectric_apk =
+        defined(invoker.is_robolectric_apk) && invoker.is_robolectric_apk
     _deps = invoker.deps
     _native_lib_placeholders = []
     if (defined(invoker.native_lib_placeholders)) {
@@ -2691,25 +2693,8 @@ if (enable_java_templates) {
     }
 
     _script = "//build/android/gyp/apkbuilder.py"
-    _apksigner = "$android_sdk_build_tools/lib/apksigner.jar"
-    _zipalign = "$android_sdk_build_tools/zipalign"
 
-    _keystore_path = android_keystore_path
-    _keystore_name = android_keystore_name
-    _keystore_password = android_keystore_password
-
-    if (defined(invoker.keystore_path)) {
-      _keystore_path = invoker.keystore_path
-      _keystore_name = invoker.keystore_name
-      _keystore_password = invoker.keystore_password
-    }
-
-    _inputs = [
-      _keystore_path,
-      invoker.packaged_resources_path,
-      _apksigner,
-      _zipalign,
-    ]
+    _inputs = [ invoker.packaged_resources_path ]
 
     _outputs = [ invoker.output_apk_path ]
     _data = [ invoker.output_apk_path ]
@@ -2721,29 +2706,54 @@ if (enable_java_templates) {
     _args = [
       "--resource-apk=$_rebased_compiled_resources_path",
       "--output-apk=$_rebased_packaged_apk_path",
-      "--apksigner-jar",
-      rebase_path(_apksigner, root_build_dir),
-      "--zipalign-path",
-      rebase_path(_zipalign, root_build_dir),
-      "--key-path",
-      rebase_path(_keystore_path, root_build_dir),
-      "--key-name",
-      _keystore_name,
-      "--key-passwd",
-      _keystore_password,
       "--min-sdk-version=${invoker.min_sdk_version}",
     ]
+
+    # system_image_stub_apk does not use a build_config.json.
     if (defined(invoker.build_config)) {
       _inputs += [ invoker.build_config ]
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       _args += [
         "--assets=@FileArg($_rebased_build_config:assets)",
         "--uncompressed-assets=@FileArg($_rebased_build_config:uncompressed_assets)",
-        "--java-resources=@FileArg($_rebased_build_config:java_resources_jars)",
       ]
+      if (!_is_robolectric_apk) {
+        _args += [ "--java-resources=@FileArg($_rebased_build_config:java_resources_jars)" ]
+      }
     }
-    if (is_official_build) {
-      _args += [ "--best-compression" ]
+    if (!_is_robolectric_apk) {
+      _apksigner = "$android_sdk_build_tools/lib/apksigner.jar"
+      _zipalign = "$android_sdk_build_tools/zipalign"
+      _keystore_path = android_keystore_path
+      _keystore_name = android_keystore_name
+      _keystore_password = android_keystore_password
+
+      if (defined(invoker.keystore_path)) {
+        _keystore_path = invoker.keystore_path
+        _keystore_name = invoker.keystore_name
+        _keystore_password = invoker.keystore_password
+      }
+
+      _inputs += [
+        _apksigner,
+        _zipalign,
+        _keystore_path,
+      ]
+      _args += [
+        "--apksigner-jar",
+        rebase_path(_apksigner, root_build_dir),
+        "--zipalign-path",
+        rebase_path(_zipalign, root_build_dir),
+        "--key-path",
+        rebase_path(_keystore_path, root_build_dir),
+        "--key-name",
+        _keystore_name,
+        "--key-passwd",
+        _keystore_password,
+      ]
+      if (is_official_build) {
+        _args += [ "--best-compression" ]
+      }
     }
     if (defined(invoker.uncompress_dex) && invoker.uncompress_dex) {
       _args += [ "--uncompress-dex" ]

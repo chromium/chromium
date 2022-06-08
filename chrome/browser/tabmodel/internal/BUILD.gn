@@ -5,11 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  visibility = [
-    "//chrome/android:chrome_all_java",
-    "//chrome/android:chrome_junit_tests__java_binary",
-    "//chrome/android:chrome_test_java",
-  ]
+  visibility = [ "//chrome/android:*" ]
   sources = [
     "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerFactory.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerImpl.java",

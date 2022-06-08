@@ -2071,11 +2071,6 @@ def main(argv):
         'secondary_abi_loadable_modules':
         secondary_abi_loadable_modules,
     }
-    config['assets'], config['uncompressed_assets'], locale_paks = (
-        _MergeAssets(deps.All('android_assets')))
-
-    deps_info['locales_java_list'] = _CreateJavaLocaleListFromAssets(
-        config['uncompressed_assets'], locale_paks)
 
     config['extra_android_manifests'] = []
     for c in extra_manifest_deps:
@@ -2093,6 +2088,12 @@ def main(argv):
                              if jar not in tested_apk_resource_jars]
     java_resources_jars.sort()
     config['java_resources_jars'] = java_resources_jars
+
+  if is_apk_or_module_target or options.type == 'junit_binary':
+    config['assets'], config['uncompressed_assets'], locale_paks = (
+        _MergeAssets(deps.All('android_assets')))
+    deps_info['locales_java_list'] = _CreateJavaLocaleListFromAssets(
+        config['uncompressed_assets'], locale_paks)
 
   if options.java_resources_jar_path:
     deps_info['java_resources_jar'] = options.java_resources_jar_path

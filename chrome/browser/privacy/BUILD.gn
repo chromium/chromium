@@ -8,15 +8,10 @@ if (is_android) {
   android_library("java") {
     visibility = [
       ":*",
-      "//chrome/android:chrome_all_java",
-      "//chrome/android:chrome_java",
-      "//chrome/android:chrome_junit_tests__java_binary",
-      "//chrome/android:chrome_test_java",
+      "//chrome/android:*",
       "//chrome/browser/feed/android:*",
-      "//chrome/browser/ui/android/omnibox:java",
-      "//chrome/browser/ui/android/omnibox:junit",
-      "//chrome/browser/ui/android/signin:java",
-      "//chrome/browser/ui/android/signin:junit",
+      "//chrome/browser/ui/android/omnibox:*",
+      "//chrome/browser/ui/android/signin:*",
     ]
     sources = [
       "java/src/org/chromium/chrome/browser/privacy/secure_dns/SecureDnsBridge.java",

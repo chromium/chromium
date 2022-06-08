@@ -54,12 +54,21 @@ if (enable_java_templates) {
     jar_excluded_patterns += [ "*/NativeLibraries.class" ]
   }
 
+  android_assets("junit_test_assets") {
+    # We just need any file here, so use the test itself.
+    sources = [ "junit/src/org/chromium/build/AndroidAssetsTest.java" ]
+  }
+
   junit_binary("build_junit_tests") {
     # No JNI is required, and including JNI Generator reference causes trouble
     # for projects such as Angle, which don't pull in //base.
     generate_final_jni = false
-    sources = [ "junit/src/org/chromium/build/IncrementalJavacTest.java" ]
+    sources = [
+      "junit/src/org/chromium/build/AndroidAssetsTest.java",
+      "junit/src/org/chromium/build/IncrementalJavacTest.java",
+    ]
     deps = [
+      ":junit_test_assets",
       "//build/android/test/incremental_javac_gn:no_signature_change_prebuilt_java",
       "//third_party/junit",
     ]

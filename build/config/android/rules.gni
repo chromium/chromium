@@ -1361,8 +1361,8 @@ if (enable_java_templates) {
     }
 
     _resource_arsc_output = "${target_out_dir}/${target_name}.ap_"
-    _compile_resources_target = "${target_name}__compile_resources"
-    compile_resources(_compile_resources_target) {
+    _compile_resources_target_name = "${target_name}__compile_resources"
+    compile_resources(_compile_resources_target_name) {
       forward_variables_from(invoker, [ "android_manifest" ])
       deps = _deps
       android_sdk_dep = _android_sdk_dep
@@ -1377,6 +1377,21 @@ if (enable_java_templates) {
       arsc_output = _resource_arsc_output
       min_sdk_version = default_min_sdk_version
       target_sdk_version = android_sdk_version
+    }
+
+    _apkbuilder_output = "${target_out_dir}/${target_name}.robo.ap_"
+    _apkbuilder_target_name = "${target_name}__apkbuilder"
+    package_apk("$_apkbuilder_target_name") {
+      build_config = _build_config
+      min_sdk_version = default_min_sdk_version
+      deps = _deps + [
+               ":$_compile_resources_target_name",
+               ":$_build_config_target_name",
+             ]
+
+      is_robolectric_apk = true
+      packaged_resources_path = _resource_arsc_output
+      output_apk_path = _apkbuilder_output
     }
 
     # Some may want to disable this to remove dependency on //base
@@ -1418,7 +1433,7 @@ if (enable_java_templates) {
         srcjar_deps = []
       }
       srcjar_deps += [
-        ":$_compile_resources_target",
+        ":$_compile_resources_target_name",
         "//build/android:build_config_gen",
       ]
       if (_generate_final_jni) {
@@ -1431,7 +1446,8 @@ if (enable_java_templates) {
       test_suite = invoker.target_name
       test_type = "junit"
       ignore_all_data_deps = true
-      resource_apk = _resource_arsc_output
+      resource_apk = _apkbuilder_output
+      deps = [ ":$_apkbuilder_target_name" ]
     }
 
     group(target_name) {
