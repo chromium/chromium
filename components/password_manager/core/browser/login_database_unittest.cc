@@ -2378,38 +2378,6 @@ TEST_F(LoginDatabaseTest, AddLoginWithNotePersistsThem) {
             note);
 }
 
-TEST_F(LoginDatabaseTest, AddLoginWithEmptyNoteDeletesTheNote) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPasswordNotes);
-
-  PasswordForm form = GenerateExamplePasswordForm();
-  form.notes = {PasswordNote(std::u16string(), base::Time::Now())};
-
-  std::ignore = db().AddLogin(form);
-
-  EXPECT_TRUE(
-      db().password_notes_table().GetPasswordNotes(FormPrimaryKey(1)).empty());
-}
-
-TEST_F(LoginDatabaseTest, UpdateLoginWithEmptyNoteDeletesExistingNote) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPasswordNotes);
-
-  PasswordForm form = GenerateExamplePasswordForm();
-  PasswordNote note = PasswordNote(u"example note", base::Time::Now());
-  form.notes = {note};
-
-  std::ignore = db().AddLogin(form);
-  EXPECT_EQ(db().password_notes_table().GetPasswordNotes(FormPrimaryKey(1))[0],
-            note);
-
-  form.notes = {PasswordNote(u"", base::Time::Now())};
-  std::ignore = db().UpdateLogin(form);
-
-  EXPECT_TRUE(
-      db().password_notes_table().GetPasswordNotes(FormPrimaryKey(1)).empty());
-}
-
 TEST_F(LoginDatabaseTest, RemoveLoginRemovesNoteAttachedToTheLogin) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kPasswordNotes);

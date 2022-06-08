@@ -247,6 +247,10 @@ bool operator==(const PasswordNote& lhs, const PasswordNote& rhs) {
          lhs.hide_by_default == rhs.hide_by_default;
 }
 
+bool operator!=(const PasswordNote& lhs, const PasswordNote& rhs) {
+  return !(lhs == rhs);
+}
+
 PasswordForm::PasswordForm() = default;
 
 PasswordForm::PasswordForm(const PasswordForm& other) = default;

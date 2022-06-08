@@ -70,8 +70,11 @@ struct CredentialUIEntry {
   // to its metadata (e.g. time it was discovered, whether alerts are muted).
   base::flat_map<InsecureType, InsecurityMetadata> password_issues;
 
-  // Attached notes to the credential.
-  std::vector<PasswordNote> notes;
+  // Attached note to the credential. This is a single entry since settings UI
+  // currently supports manipulation of one note only with an empty
+  // `unique_display_name`. The storage layer however supports multiple-notes
+  // for forward compatibility.
+  PasswordNote note;
 
   // Tracks if the user opted to never remember passwords for this website.
   bool blocked_by_user;

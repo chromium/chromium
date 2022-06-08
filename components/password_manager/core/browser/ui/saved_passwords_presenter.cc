@@ -53,7 +53,9 @@ password_manager::PasswordForm GenerateFormFromCredential(
   form.signon_realm = credential.signon_realm;
   form.username_value = credential.username;
   form.password_value = credential.password;
-  form.notes = credential.notes;
+  if (!credential.note.value.empty()) {
+    form.notes = {credential.note};
+  }
   DCHECK(!credential.stored_in.empty());
   form.in_store = *credential.stored_in.begin();
   return form;
@@ -200,15 +202,17 @@ bool SavedPasswordsPresenter::EditSavedCredentials(
   if (forms_to_change.empty())
     return false;
 
-  std::u16string new_note =
-      credential.notes.empty() ? u"" : credential.notes[0].value;
+  const auto& old_note_itr =
+      base::ranges::find_if(forms_to_change[0].notes, &std::u16string::empty,
+                            &PasswordNote::unique_display_name);
 
   // TODO(crbug.com/1184691): Merge into a single method.
   if (credential.username != forms_to_change[0].username_value ||
       credential.password != forms_to_change[0].password_value ||
-      credential.notes != forms_to_change[0].notes) {
+      (old_note_itr != forms_to_change[0].notes.end() &&
+       credential.note != *old_note_itr)) {
     return EditSavedPasswords(forms_to_change, credential.username,
-                              credential.password, new_note);
+                              credential.password, credential.note.value);
   } else if (credential.password_issues != forms_to_change[0].password_issues) {
     for (auto& old_form : forms_to_change) {
       old_form.password_issues = credential.password_issues;
@@ -228,9 +232,14 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
     return false;
   IsUsernameChanged username_changed(new_username != forms[0].username_value);
   IsPasswordChanged password_changed(new_password != forms[0].password_value);
+
+  const auto& old_note_itr =
+      base::ranges::find_if(forms[0].notes, &std::u16string::empty,
+                            &PasswordNote::unique_display_name);
+  bool old_note_exists = old_note_itr != forms[0].notes.end();
   IsPasswordNoteChanged note_changed = IsPasswordNoteChanged(
-      (forms[0].notes.empty() && !new_note.empty()) ||
-      (!forms[0].notes.empty() && forms[0].notes[0].value != new_note));
+      (old_note_exists && old_note_itr->value != new_note) ||
+      (!old_note_exists && !new_note.empty()));
 
   if (new_password.empty())
     return false;
@@ -254,15 +263,18 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
       }
 
       if (note_changed) {
-        // if the old note is empty, the note is just created.
-        if (old_form.notes.empty()) {
+        // if the old note doesn't exist, the note is just created.
+        const auto& note_itr =
+            base::ranges::find_if(new_form.notes, &std::u16string::empty,
+                                  &PasswordNote::unique_display_name);
+        if (note_itr == new_form.notes.end()) {
           new_form.notes.emplace_back(new_note,
                                       /*date_created=*/base::Time::Now());
         } else {
-          if (old_form.notes[0].value.empty()) {
-            new_form.notes[0].date_created = base::Time::Now();
+          if (note_itr->value.empty()) {
+            note_itr->date_created = base::Time::Now();
           }
-          new_form.notes[0].value = new_note;
+          note_itr->value = new_note;
         }
       }
 

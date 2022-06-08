@@ -17,9 +17,16 @@ CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
       password(form.password_value),
       federation_origin(form.federation_origin),
       password_issues(form.password_issues),
-      notes(form.notes),
       blocked_by_user(form.blocked_by_user),
       key_(CredentialKey(CreateSortKey(form, IgnoreStore(true)))) {
+  // Only one-note with an empty `unique_display_name` is supported in the
+  // settings UI.
+  for (const PasswordNote& n : form.notes) {
+    if (n.unique_display_name.empty()) {
+      note = n;
+      break;
+    }
+  }
   if (form.IsUsingAccountStore())
     stored_in.insert(PasswordForm::Store::kAccountStore);
   if (form.IsUsingProfileStore())

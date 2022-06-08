@@ -386,6 +386,9 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
 TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteFirstTime) {
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form.notes.emplace_back(u"display name", u"note with non-empty display name",
+                          /*date_created=*/base::Time::Now(),
+                          /*hide_by_default=*/true);
 
   store().AddLogin(form);
   RunUntilIdle();
@@ -397,9 +400,11 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteFirstTime) {
       forms, form.username_value, form.password_value, kNewNoteValue));
   RunUntilIdle();
 
+  // The note with the non-empty display name should be untouched. Another note
+  // with an empty display name should be added.
   PasswordForm expected_updated_form = form;
-  expected_updated_form.notes = {
-      PasswordNote(kNewNoteValue, base::Time::Now())};
+  expected_updated_form.notes.emplace_back(kNewNoteValue,
+                                           /*date_created=*/base::Time::Now());
   EXPECT_THAT(
       store().stored_passwords(),
       ElementsAre(Pair(form.signon_realm, ElementsAre(expected_updated_form))));
@@ -473,6 +478,31 @@ TEST_F(SavedPasswordsPresenterTest, EditNoteAsEmpty) {
   EXPECT_THAT(
       store().stored_passwords(),
       ElementsAre(Pair(form.signon_realm, ElementsAre(expected_updated_form))));
+}
+
+TEST_F(SavedPasswordsPresenterTest,
+       GetSavedCredentialsReturnNotesWithEmptyDisplayName) {
+  // Create form with two notes, first is with a non-empty display name, and the
+  // second with an empty one.
+  PasswordNote kNoteWithEmptyDisplayName =
+      PasswordNote(u"note with empty display name",
+                   /*date_created=*/base::Time::Now());
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form.notes.emplace_back(u"display name", u"note with non-empty display name",
+                          /*date_created=*/base::Time::Now(),
+                          /*hide_by_default=*/true);
+  form.notes.push_back(kNoteWithEmptyDisplayName);
+
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  // The expect credential UI entry should contain only the note with that empty
+  // display name.
+  std::vector<CredentialUIEntry> saved_credentials =
+      presenter().GetSavedCredentials();
+  ASSERT_EQ(1U, saved_credentials.size());
+  EXPECT_EQ(kNoteWithEmptyDisplayName, saved_credentials[0].note);
 }
 
 TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {

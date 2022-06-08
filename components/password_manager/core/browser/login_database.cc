@@ -2038,10 +2038,8 @@ void LoginDatabase::UpdatePasswordNotes(
     const std::vector<PasswordNote>& notes) {
   if (!base::FeatureList::IsEnabled(features::kPasswordNotes))
     return;
-  if (notes.empty() || notes[0].value.empty()) {
-    password_notes_table_.RemovePasswordNotes(primary_key);
-    return;
-  }
+
+  password_notes_table_.RemovePasswordNotes(primary_key);
   for (const PasswordNote& note : notes)
     password_notes_table_.InsertOrReplace(primary_key, note);
 }

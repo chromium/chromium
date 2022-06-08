@@ -89,6 +89,7 @@ struct PasswordNote {
 };
 
 bool operator==(const PasswordNote& lhs, const PasswordNote& rhs);
+bool operator!=(const PasswordNote& lhs, const PasswordNote& rhs);
 
 // The PasswordForm struct encapsulates information about a login form,
 // which can be an HTML form or a dialog with username/password text fields.

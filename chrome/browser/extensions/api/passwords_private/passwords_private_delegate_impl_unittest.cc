@@ -467,8 +467,11 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
 
 TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
   password_manager::PasswordForm sample_form = CreateSampleForm();
-  password_manager::PasswordNote note(u"example note", base::Time::Now());
-  sample_form.notes = {note};
+  sample_form.notes.emplace_back(
+      u"display name", u"note with non-empty display name",
+      /*date_created=*/base::Time::Now(), /*hide_by_default=*/true);
+  sample_form.notes.emplace_back(u"note with empty display name",
+                                 /*date_created=*/base::Time::Now());
   SetUpPasswordStore({sample_form});
 
   PasswordsPrivateDelegateImpl delegate(&profile_);
@@ -477,13 +480,13 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
   base::RunLoop().RunUntilIdle();
 
   // Double check that the contents of the passwords list matches our
-  // expectation.
+  // expectation. The note with an empty `unique_display_name` is returned.
   base::MockCallback<PasswordsPrivateDelegate::UiEntriesCallback> callback;
   EXPECT_CALL(callback, Run(SizeIs(1)))
       .WillOnce([&](const PasswordsPrivateDelegate::UiEntries& passwords) {
         EXPECT_EQ(sample_form.username_value,
                   base::UTF8ToUTF16(passwords[0].username));
-        EXPECT_EQ(sample_form.notes[0].value,
+        EXPECT_EQ(sample_form.notes[1].value,
                   base::UTF8ToUTF16(passwords[0].password_note));
       });
   delegate.GetSavedPasswordsList(callback.Get());
