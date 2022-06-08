@@ -61,7 +61,7 @@ main UKM dashboard) is done via the same
 [`tools/metrics/ukm/ukm.xml`](https://cs.chromium.org/chromium/src/tools/metrics/ukm/ukm.xml)
 file in the Chromium codebase. To have a metric aggregated, `<history>`,
 `<aggregation>` and `<statistics>` tags need to be added along with the type of
-statistic to be generated..
+statistic to be generated.
 
 ```xml
 <event name="Goat.Teleported">
@@ -175,7 +175,7 @@ ukm::builders::MyEvent(source_id)
 
 ### Get A ukm::SourceId
 
-UKM identifies navigations by their source ID and you'll need to associate an ID with your event in order to tie it to a main frame URL.  Preferably, get an existing ID for the navigation from another object.
+UKM identifies navigations by their source ID and you'll need to associate an ID with your event in order to tie it to a main frame URL. Preferably, get an existing ID for the navigation from another object.
 
 Prefer using `ukm::SourceId` if only the underlying int64 value is required to identify a source and is used in Mojo interface, and no type conversion needs to be performed. If additional source type information is needed, `ukm::SourceIdObj` can be used.
 
@@ -269,16 +269,16 @@ The full metrics will not be keyed off the subframe URL. Rather, the subframe UR
   <summary>
     Recorded when a page uses on of a list of known web frameworks. This records various performance measurements.
   </summary>
- <metric name="WebFramework" enum="WebFrameworkName">
+  <metric name="WebFramework" enum="WebFrameworkName">
     <summary>
       Web Framework used.
-   </summary>
- </metric>
- <metric name="FrameworkLoadInMs">
+    </summary>
+  </metric>
+  <metric name="FrameworkLoadInMs">
     <summary>
       Time to load the framework in milliseconds.
-   </summary>
- </metric>
+    </summary>
+  </metric>
 </event>
 ```
 
@@ -286,10 +286,10 @@ And in the UKM enum.xml:
 
 ```xml
 <enum name="WebFrameworkName">
- <int value="0" label="Unknown"/>
- <int value="1" label="WebFramework1"/>
- <int value="1" label="WebFramework2"/>
-…
+  <int value="0" label="Unknown"/>
+  <int value="1" label="WebFramework1"/>
+  <int value="1" label="WebFramework2"/>
+  ...
 </enum>
 ```
 
