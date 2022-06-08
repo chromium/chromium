@@ -26,7 +26,7 @@ class ASH_EXPORT FakeNetworkListWifiHeaderView
 
   bool is_toggle_enabled() { return is_toggle_enabled_; }
 
-  bool is_toggle_is_on() { return is_toggle_on_; }
+  bool is_toggle_on() { return is_toggle_on_; }
 
   size_t set_toggle_state_count() { return set_toggle_state_count_; }
 

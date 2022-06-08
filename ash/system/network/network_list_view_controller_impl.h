@@ -12,6 +12,7 @@
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/network/network_list_network_item_view.h"
 #include "ash/system/network/network_list_view_controller.h"
+#include "ash/system/network/network_list_wifi_header_view.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/tray/tray_info_label.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -51,13 +52,16 @@ class ASH_EXPORT NetworkListViewControllerImpl
   friend class NetworkListViewControllerTest;
   friend class FakeNetworkDetailedNetworkView;
 
-  // Used for testing. Starts at 1 because 0 is default view id.
+  // Used for testing. Starts at 11 to avoid collision with header view
+  // child elements.
   enum class NetworkListViewControllerViewChildId {
-    kConnectionWarning = 1,
-    kConnectionWarningLabel = 2,
-    kMobileSeperator = 3,
-    kMobileStatusMessage = 4,
-    kMobileSectionHeader = 5,
+    kConnectionWarning = 11,
+    kConnectionWarningLabel = 12,
+    kMobileSeperator = 13,
+    kMobileStatusMessage = 14,
+    kMobileSectionHeader = 15,
+    kWifiSeperator = 16,
+    kWifiSectionHeader = 17,
   };
 
   // Map of network guids and their corresponding list item views.
@@ -94,8 +98,11 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // Returns true if mobile data section should be added to view.
   bool ShouldMobileDataSectionBeShown();
 
-  // Creates and adds a Mobile separator to the view.
-  void CreateMobileSeparator();
+  // Creates if missing and adds a Mobile or Wifi separator to the view.
+  // Also reorders seperator view in network list. A reference to the
+  // separator is captured in |*separator_view|.
+  int CreateSeparatorIfMissingAndReorder(int index,
+                                         views::Separator** separator_view);
 
   // Updates mobile data section, updates add eSIM button states and
   // calls UpdateMobileToggleAndSetStatusMessage().
@@ -137,9 +144,13 @@ class ASH_EXPORT NetworkListViewControllerImpl
   views::Separator* mobile_separator_view_ = nullptr;
   TriView* connection_warning_ = nullptr;
 
+  NetworkListWifiHeaderView* wifi_header_view_ = nullptr;
+  views::Separator* wifi_separator_view_ = nullptr;
+
   bool has_mobile_networks_;
   bool is_vpn_connected_;
   bool is_mobile_network_enabled_;
+  bool is_wifi_enabled_;
 
   NetworkDetailedNetworkView* network_detailed_network_view_;
   NetworkIdToViewMap network_id_to_view_map_;

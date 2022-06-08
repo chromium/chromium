@@ -183,10 +183,8 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     // Add separator if mobile section is not the first view child, else
     // delete unused separator.
     if (index > 0) {
-      if (!mobile_separator_view_)
-        CreateMobileSeparator();
-      network_detailed_network_view()->network_list()->ReorderChildView(
-          mobile_separator_view_, index++);
+      index =
+          CreateSeparatorIfMissingAndReorder(index, &mobile_separator_view_);
     } else {
       RemoveAndResetViewIfExists(&mobile_separator_view_);
     }
@@ -218,6 +216,27 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     RemoveAndResetViewIfExists(&mobile_separator_view_);
   }
 
+  if (index > 0) {
+    index = CreateSeparatorIfMissingAndReorder(index, &wifi_separator_view_);
+  } else {
+    RemoveAndResetViewIfExists(&wifi_separator_view_);
+  }
+
+  if (!wifi_header_view_) {
+    wifi_header_view_ = network_detailed_network_view()->AddWifiSectionHeader();
+    wifi_header_view_->SetID(static_cast<int>(
+        NetworkListViewControllerViewChildId::kWifiSectionHeader));
+  }
+
+  wifi_header_view_->SetJoinWifiButtonState(/*enabled=*/is_wifi_enabled_,
+                                            /*visible=*/true);
+  wifi_header_view_->SetToggleVisibility(/*visible=*/true);
+  wifi_header_view_->SetToggleState(/*enabled=*/true,
+                                    /*is_on=*/is_wifi_enabled_);
+
+  network_detailed_network_view()->network_list()->ReorderChildView(
+      wifi_header_view_, index++);
+
   // Remaining views in |previous_network_views| are no longer needed
   // and should be deleted.
   for (const auto& id_and_view : previous_network_views) {
@@ -248,6 +267,9 @@ void NetworkListViewControllerImpl::UpdateNetworkTypeExistence(
           DeviceStateType::kEnabled ||
       model()->GetDeviceState(NetworkType::kTether) ==
           DeviceStateType::kEnabled;
+
+  is_wifi_enabled_ =
+      model()->GetDeviceState(NetworkType::kWiFi) == DeviceStateType::kEnabled;
 }
 
 int NetworkListViewControllerImpl::ShowConnectionWarningIfVpnOrProxy(
@@ -295,16 +317,36 @@ bool NetworkListViewControllerImpl::ShouldMobileDataSectionBeShown() {
   return true;
 }
 
-void NetworkListViewControllerImpl::CreateMobileSeparator() {
-  DCHECK(!mobile_separator_view_);
+int NetworkListViewControllerImpl::CreateSeparatorIfMissingAndReorder(
+    int index,
+    views::Separator** separator_view) {
+  // Separator view should never be the first view in the list.
+  DCHECK(index);
+  DCHECK(separator_view);
 
-  std::unique_ptr<views::Separator> mobile_separator_view =
+  if (*separator_view) {
+    network_detailed_network_view()->network_list()->ReorderChildView(
+        *separator_view, index++);
+    return index;
+  }
+
+  std::unique_ptr<views::Separator> separator =
       base::WrapUnique(TrayPopupUtils::CreateListSubHeaderSeparator());
-  mobile_separator_view->SetID(
-      static_cast<int>(NetworkListViewControllerViewChildId::kMobileSeperator));
-  mobile_separator_view_ =
-      network_detailed_network_view()->network_list()->AddChildView(
-          std::move(mobile_separator_view));
+
+  if (separator_view == &wifi_separator_view_) {
+    separator->SetID(
+        static_cast<int>(NetworkListViewControllerViewChildId::kWifiSeperator));
+  } else if (separator_view == &mobile_separator_view_) {
+    separator->SetID(static_cast<int>(
+        NetworkListViewControllerViewChildId::kMobileSeperator));
+  } else {
+    NOTREACHED();
+  }
+
+  *separator_view =
+      network_detailed_network_view()->network_list()->AddChildViewAt(
+          std::move(separator), index++);
+  return index;
 }
 
 void NetworkListViewControllerImpl::UpdateMobileSectionHeader() {
