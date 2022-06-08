@@ -67,7 +67,7 @@ COVERAGE_BUILD_FALLBACK_EXPECTED_MAC_SI_COUNT = 4
 
 
 def run_process(command):
-  p = subprocess.Popen(command, stdout=subprocess.PIPE)
+  p = subprocess.Popen(command, stdout=subprocess.PIPE, universal_newlines=True)
   stdout = p.communicate()[0]
   if p.returncode != 0:
     raise Exception(
@@ -208,7 +208,7 @@ def main_run(args):
   if sys.platform.startswith('darwin'):
     rc = main_mac(src_dir,
       allow_coverage_initializer = '--allow-coverage-initializer' in args.args)
-  elif sys.platform == 'linux2':
+  elif sys.platform.startswith('linux'):
     is_chromeos = 'buildername' in args.properties and \
         'chromeos' in args.properties['buildername']
     rc = main_linux(src_dir, is_chromeos)
@@ -225,7 +225,7 @@ def main_run(args):
 def main_compile_targets(args):
   if sys.platform.startswith('darwin'):
     compile_targets = ['chrome']
-  elif sys.platform == 'linux2':
+  elif sys.platform.startswith('linux'):
     compile_targets = ['chrome', 'nacl_helper', 'nacl_helper_bootstrap']
   else:
     compile_targets = []
