@@ -237,6 +237,9 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
   network_detailed_network_view()->network_list()->ReorderChildView(
       wifi_header_view_, index++);
 
+  index = CreateItemViewsIfMissingAndReorder(NetworkType::kWiFi, index,
+                                             networks, &previous_network_views);
+
   // Remaining views in |previous_network_views| are no longer needed
   // and should be deleted.
   for (const auto& id_and_view : previous_network_views) {

@@ -74,6 +74,7 @@ const char kVpnName[] = "vpn";
 const char kVpnDevicePath[] = "device/vpn";
 
 const char kWifiName[] = "wifi";
+const char kWifiName2[] = "wifi_2";
 const char kWifiDevicePath[] = "device/wifi";
 
 const char kTestEuiccBasePath[] = "/org/chromium/Hermes/Euicc/";
@@ -241,44 +242,48 @@ class NetworkListViewControllerTest : public AshTestBase {
         mojo::Clone(networks));
   }
 
-  // Checks that network list items are in the right order. This function
-  // assumes that Mobile and Wifi devices are present and enabled.
-  void CheckNetworkListOrdering(size_t ethernet_network_count,
-                                size_t mobile_network_count) {
-    // TODO(tjohnsonkanu): add  WiFi networks.
-    EXPECT_NE(nullptr, GetMobileSubHeader());
+  // Checks that network list items are in the right order. Wifi section
+  // is always shown.
+  void CheckNetworkListOrdering(int ethernet_network_count,
+                                int mobile_network_count,
+                                int wifi_network_count) {
     EXPECT_NE(nullptr, GetWifiSubHeader());
 
     size_t index = 0;
 
     // Expect that the view at |index| is a network item, and that it is an
     // ethernet network.
-    for (int i = 0; i < static_cast<int>(ethernet_network_count); i++) {
+    for (int i = 0; i < ethernet_network_count; i++) {
       CheckNetworkListItem(NetworkType::kEthernet, index++,
                            /*guid=*/absl::nullopt);
     }
 
-    // Mobile data section.
-    if (index > 0) {
-      // Expect that the mobile network separator exists.
-      EXPECT_NE(nullptr, GetMobileSeparator());
-      EXPECT_EQ(network_list()->children().at(index++), GetMobileSeparator());
-      EXPECT_EQ(network_list()->children().at(index++), GetMobileSubHeader());
-    } else {
-      EXPECT_EQ(nullptr, GetMobileSeparator());
-      EXPECT_EQ(network_list()->children().at(index++), GetMobileSubHeader());
-    }
+    // Mobile data section. If |mobile_network_count| is equal to -1
+    // Mobile device is not available.
+    if (mobile_network_count != -1) {
+      EXPECT_NE(nullptr, GetMobileSubHeader());
+      if (index > 0) {
+        // Expect that the mobile network separator exists.
+        EXPECT_NE(nullptr, GetMobileSeparator());
+        EXPECT_EQ(network_list()->children().at(index++), GetMobileSeparator());
+        EXPECT_EQ(network_list()->children().at(index++), GetMobileSubHeader());
+      } else {
+        EXPECT_EQ(nullptr, GetMobileSeparator());
+        EXPECT_EQ(network_list()->children().at(index++), GetMobileSubHeader());
+      }
 
-    for (int i = 0; i < static_cast<int>(mobile_network_count); i++) {
-      CheckNetworkListItem(NetworkType::kMobile, index, /*guid=*/absl::nullopt);
-      EXPECT_STREQ(network_list()->children().at(index++)->GetClassName(),
-                   kNetworkListNetworkItemView);
-    }
+      for (int i = 0; i < mobile_network_count; i++) {
+        CheckNetworkListItem(NetworkType::kMobile, index,
+                             /*guid=*/absl::nullopt);
+        EXPECT_STREQ(network_list()->children().at(index++)->GetClassName(),
+                     kNetworkListNetworkItemView);
+      }
 
-    if (!mobile_network_count) {
-      // No mobile networks message is shown.
-      EXPECT_NE(nullptr, GetMobileStatusMessage());
-      index++;
+      if (!mobile_network_count) {
+        // No mobile networks message is shown.
+        EXPECT_NE(nullptr, GetMobileStatusMessage());
+        index++;
+      }
     }
 
     // Wifi section.
@@ -290,6 +295,12 @@ class NetworkListViewControllerTest : public AshTestBase {
     } else {
       EXPECT_EQ(nullptr, GetWifiSeparator());
       EXPECT_EQ(network_list()->children().at(index++), GetWifiSubHeader());
+    }
+
+    for (int i = 0; i < wifi_network_count; i++) {
+      CheckNetworkListItem(NetworkType::kWiFi, index, /*guid=*/absl::nullopt);
+      EXPECT_STREQ(network_list()->children().at(index++)->GetClassName(),
+                   kNetworkListNetworkItemView);
     }
   }
 
@@ -582,8 +593,9 @@ TEST_F(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
   SetupCellular();
   AddWifiDevice();
 
-  CheckNetworkListOrdering(/*ethernet_network_count=*/0u,
-                           /*mobile_network_count=*/0u);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*mobile_network_count=*/0,
+                           /*wifi_network_count=*/0);
 
   std::vector<NetworkStatePropertiesPtr> networks;
 
@@ -593,8 +605,9 @@ TEST_F(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
   networks.push_back(std::move(cellular_network));
   UpdateNetworkList(networks);
 
-  CheckNetworkListOrdering(/*ethernet_network_count=*/0u,
-                           /*mobile_network_count=*/1u);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*mobile_network_count=*/1,
+                           /*wifi_network_count=*/0);
   CheckNetworkListItem(NetworkType::kCellular, /*index=*/1u,
                        /*guid=*/kCellularName);
 
@@ -603,8 +616,9 @@ TEST_F(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
   networks.push_back(std::move(cellular_network));
   UpdateNetworkList(networks);
 
-  CheckNetworkListOrdering(/*ethernet_network_count=*/0u,
-                           /*mobile_network_count=*/2u);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*mobile_network_count=*/2,
+                           /*wifi_network_count=*/0);
   CheckNetworkListItem(NetworkType::kCellular, /*index=*/2u,
                        /*guid=*/kCellularName2);
 
@@ -612,8 +626,9 @@ TEST_F(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
   networks.front()->connection_state = ConnectionStateType::kNotConnected;
   UpdateNetworkList(networks);
 
-  CheckNetworkListOrdering(/*ethernet_network_count=*/0u,
-                           /*mobile_network_count=*/2u);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*mobile_network_count=*/2,
+                           /*wifi_network_count=*/0);
   CheckNetworkListItem(NetworkType::kCellular, /*index=*/1u,
                        /*guid=*/kCellularName);
   CheckNetworkListItem(NetworkType::kCellular, /*index=*/2u,
@@ -627,15 +642,14 @@ TEST_F(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
   networks.push_back(std::move(tether_network));
   UpdateNetworkList(networks);
 
-  CheckNetworkListOrdering(/*ethernet_network_count=*/0u,
-                           /*mobile_network_count=*/1u);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*mobile_network_count=*/1,
+                           /*wifi_network_count=*/0);
   CheckNetworkListItem(NetworkType::kTether, /*index=*/1u,
                        /*guid=*/kTetherName);
 }
 
 TEST_F(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
-  AddEuicc();
-  SetupCellular();
   std::vector<NetworkStatePropertiesPtr> networks;
 
   NetworkStatePropertiesPtr ethernet_network =
@@ -644,19 +658,23 @@ TEST_F(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
   networks.push_back(std::move(ethernet_network));
   UpdateNetworkList(networks);
 
-  CheckNetworkListOrdering(/*ethernet_network_count=*/1u,
-                           /*mobile_network_count=*/0u);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/1,
+                           /*mobile_network_count=*/-1,
+                           /*wifi_network_count=*/0);
   CheckNetworkListItem(NetworkType::kEthernet, /*index=*/0u,
                        /*guid=*/kEthernet);
 
   // Add mobile network.
+  AddEuicc();
+  SetupCellular();
   NetworkStatePropertiesPtr cellular_network =
       CreateStandaloneNetworkProperties(kCellularName, NetworkType::kCellular,
                                         ConnectionStateType::kConnected);
   networks.push_back(std::move(cellular_network));
   UpdateNetworkList(networks);
-  CheckNetworkListOrdering(/*ethernet_network_count=*/1u,
-                           /*mobile_network_count=*/1u);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/1,
+                           /*mobile_network_count=*/1,
+                           /*wifi_network_count=*/0);
 
   // Mobile list item will be at index 3 after ethernet, separator and header.
   CheckNetworkListItem(NetworkType::kCellular, /*index=*/3u,
@@ -667,8 +685,9 @@ TEST_F(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
   networks.push_back(std::move(ethernet_network));
   UpdateNetworkList(networks);
 
-  CheckNetworkListOrdering(/*ethernet_network_count=*/2u,
-                           /*mobile_network_count=*/1u);
+  CheckNetworkListOrdering(/*ethernet_network_count=*/2,
+                           /*mobile_network_count=*/1,
+                           /*wifi_network_count=*/0);
   CheckNetworkListItem(NetworkType::kEthernet, /*index=*/0u,
                        /*guid=*/kEthernet);
   CheckNetworkListItem(NetworkType::kEthernet, /*index=*/1u,
@@ -677,6 +696,52 @@ TEST_F(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
   // Mobile list item will be at index 4 after ethernet, separator and header.
   CheckNetworkListItem(NetworkType::kCellular, /*index=*/4u,
                        /*guid=*/kCellularName);
+}
+
+TEST_F(NetworkListViewControllerTest, HasCorrectWifiNetworkList) {
+  std::vector<NetworkStatePropertiesPtr> networks;
+
+  // Add Wifi network.
+  NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
+      kWifiName, NetworkType::kWiFi, ConnectionStateType::kNotConnected);
+  networks.push_back(std::move(wifi_network));
+  UpdateNetworkList(networks);
+
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*mobile_network_count=*/-1,
+                           /*wifi_network_count=*/1);
+
+  // Wifi list item will be at index 1 after Wifi header.
+  CheckNetworkListItem(NetworkType::kWiFi, /*index=*/1u, /*guid=*/kWifiName);
+
+  // Add mobile network.
+  AddEuicc();
+  SetupCellular();
+  NetworkStatePropertiesPtr cellular_network =
+      CreateStandaloneNetworkProperties(kCellularName, NetworkType::kCellular,
+                                        ConnectionStateType::kConnected);
+  networks.push_back(std::move(cellular_network));
+  UpdateNetworkList(networks);
+
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*mobile_network_count=*/1,
+                           /*wifi_network_count=*/1);
+
+  // Wifi list item be at index 4 after Mobile header, Mobile network
+  // item, Wifi separator and header.
+  CheckNetworkListItem(NetworkType::kWiFi, /*index=*/4u, /*guid=*/kWifiName);
+
+  // Add a second Wifi network.
+  wifi_network = CreateStandaloneNetworkProperties(
+      kWifiName2, NetworkType::kWiFi, ConnectionStateType::kNotConnected);
+  networks.push_back(std::move(wifi_network));
+  UpdateNetworkList(networks);
+
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*mobile_network_count=*/1,
+                           /*wifi_network_count=*/2);
+  CheckNetworkListItem(NetworkType::kWiFi, /*index=*/4u, /*guid=*/kWifiName);
+  CheckNetworkListItem(NetworkType::kWiFi, /*index=*/5u, /*guid=*/kWifiName2);
 }
 
 TEST_F(NetworkListViewControllerTest,

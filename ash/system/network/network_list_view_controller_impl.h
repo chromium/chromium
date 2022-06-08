@@ -99,7 +99,7 @@ class ASH_EXPORT NetworkListViewControllerImpl
   bool ShouldMobileDataSectionBeShown();
 
   // Creates if missing and adds a Mobile or Wifi separator to the view.
-  // Also reorders seperator view in network list. A reference to the
+  // Also reorders separator view in network list. A reference to the
   // separator is captured in |*separator_view|.
   int CreateSeparatorIfMissingAndReorder(int index,
                                          views::Separator** separator_view);
