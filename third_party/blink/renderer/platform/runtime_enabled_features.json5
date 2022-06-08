@@ -1098,7 +1098,7 @@
     },
     {
       name: "FixedElementsDontOverscroll",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "Fledge",
