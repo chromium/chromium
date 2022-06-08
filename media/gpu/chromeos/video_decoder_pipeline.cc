@@ -678,9 +678,9 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
 #error "Unsupported platform"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // viable_candidate should always be set unless using L1 protected content,
-  // which isn't an option on linux or lacros.
+  // which isn't an option on linux.
   CHECK(viable_candidate);
 #endif
 
