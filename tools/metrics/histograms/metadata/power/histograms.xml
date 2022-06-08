@@ -206,6 +206,19 @@ chromium-metrics-reviews@google.com.
   <token key="ProcessName" variants="ProcessName"/>
 </histogram>
 
+<histogram name="PerformanceMonitor.HasPreciseCPUUsage" enum="Boolean"
+    expires_after="2022-09-30">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records whether or not the CPU supports constant rate TSC, which allows a
+    more precise calculation of the CPU usage of a process. Recorded during
+    startup when the ProcessMonitor is instantiated.
+
+    Only Recorded on Windows.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceMonitor.IdleWakeups2.Total{UsageScenario}"
     units="WakeupsPerSecond" expires_after="2022-11-30">
   <owner>olivierli@chromium.org</owner>

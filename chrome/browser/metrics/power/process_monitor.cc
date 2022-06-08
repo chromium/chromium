@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
@@ -151,6 +152,13 @@ ProcessInfo::ProcessInfo(MonitoredProcessType type,
   // Do an initial call to SampleMetrics() so that the next one returns
   // meaningful data.
   SampleMetrics(*this->process_metrics);
+
+#if BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_ARM64)
+  // Record the value of HasConstantRateTSC to get a feel of the proportion of
+  // users that don't record the average CPU usage histogram.
+  base::UmaHistogramBoolean("PerformanceMonitor.HasPreciseCPUUsage",
+                            base::time_internal::HasConstantRateTSC());
+#endif
 }
 ProcessInfo::~ProcessInfo() = default;
 
