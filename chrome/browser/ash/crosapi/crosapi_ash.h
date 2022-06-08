@@ -80,6 +80,7 @@ class ScreenManagerAsh;
 class SearchProviderAsh;
 class SelectFileAsh;
 class SharesheetAsh;
+class SpeechRecognitionAsh;
 class StructuredMetricsServiceAsh;
 class SystemDisplayAsh;
 class TaskManagerAsh;
@@ -229,6 +230,8 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindSharesheet(
       mojo::PendingReceiver<mojom::Sharesheet> receiver) override;
+  void BindSpeechRecognition(
+      mojo::PendingReceiver<mojom::SpeechRecognition> receiver) override;
   void BindStableVideoDecoderFactory(
       mojo::GenericPendingReceiver receiver) override;
   void BindHidManager(
@@ -430,6 +433,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<SearchProviderAsh> search_provider_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
   std::unique_ptr<SharesheetAsh> sharesheet_ash_;
+  std::unique_ptr<SpeechRecognitionAsh> speech_recognition_ash_;
 #if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
   std::unique_ptr<media::StableVideoDecoderFactoryService>
       stable_video_decoder_factory_ash_;

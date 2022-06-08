@@ -60,6 +60,7 @@ import "chromeos/crosapi/mojom/resource_manager.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
 import "chromeos/crosapi/mojom/sharesheet.mojom";
+import "chromeos/crosapi/mojom/speech_recognition.mojom";
 import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
 import "chromeos/crosapi/mojom/sync.mojom";
 import "chromeos/crosapi/mojom/system_display.mojom";
@@ -111,8 +112,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 81
-// Next method id: 84
+// Next version: 82
+// Next method id: 85
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -406,6 +407,12 @@ interface Crosapi {
   [MinVersion=66]
   BindSharesheet@70(
       pending_receiver<Sharesheet> receiver);
+
+  // Binds the SpeechRecognition interface to access on-device speech
+  // recognition.
+  // Added in M104.
+  [MinVersion=81]
+  BindSpeechRecognition@84(pending_receiver<SpeechRecognition> receiver);
 
   // Binds the StableVideoDecoderFactory, which allows lacros-chrome to request
   // hardware accelerated video decoding. We need to use a
