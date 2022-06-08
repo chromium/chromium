@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
-#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/hover_button.h"
@@ -19,9 +18,11 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -95,6 +96,11 @@ class LetterAvatarImageSkiaSource : public gfx::CanvasImageSource {
   LetterAvatarImageSkiaSource(const std::u16string& letter, int size)
       : gfx::CanvasImageSource(gfx::Size(size, size)), letter_(letter) {}
 
+  LetterAvatarImageSkiaSource(const LetterAvatarImageSkiaSource&) = delete;
+  LetterAvatarImageSkiaSource& operator=(const LetterAvatarImageSkiaSource&) =
+      delete;
+  ~LetterAvatarImageSkiaSource() override = default;
+
   void Draw(gfx::Canvas* canvas) override {
     monogram::DrawMonogramInCanvas(canvas, size().width(), size().width(),
                                    letter_, SK_ColorWHITE, SK_ColorGRAY);
@@ -102,6 +108,48 @@ class LetterAvatarImageSkiaSource : public gfx::CanvasImageSource {
 
  private:
   const std::u16string letter_;
+};
+
+// A CanvasImageSource that draws a circle cropped avatar.
+class AvatarImageSkiaSource : public gfx::CanvasImageSource {
+ public:
+  AvatarImageSkiaSource(gfx::ImageSkia avatar, int canvas_edge_size)
+      : gfx::CanvasImageSource(gfx::Size(canvas_edge_size, canvas_edge_size)) {
+    // Resize `avatar` so that it completely fills the canvas.
+    float height_ratio = ((float)avatar.height() / (float)avatar.width());
+    int scaled_width = canvas_edge_size;
+    int scaled_height = canvas_edge_size;
+    if (height_ratio >= 1.0f)
+      scaled_height = floor(canvas_edge_size * height_ratio);
+    else
+      scaled_width = floor(canvas_edge_size / height_ratio);
+    avatar_ = gfx::ImageSkiaOperations::CreateResizedImage(
+        avatar, skia::ImageOperations::RESIZE_BEST,
+        gfx::Size(scaled_width, scaled_height));
+  }
+
+  AvatarImageSkiaSource(const AvatarImageSkiaSource&) = delete;
+  AvatarImageSkiaSource& operator=(const AvatarImageSkiaSource&) = delete;
+  ~AvatarImageSkiaSource() override = default;
+
+  // CanvasImageSource override:
+  void Draw(gfx::Canvas* canvas) override {
+    int canvas_edge_size = size().width();
+
+    // Center the avatar in the canvas.
+    int x = (canvas_edge_size - avatar_.width()) / 2;
+    int y = (canvas_edge_size - avatar_.height()) / 2;
+
+    SkPath circular_mask;
+    circular_mask.addCircle(SkIntToScalar(canvas_edge_size / 2),
+                            SkIntToScalar(canvas_edge_size / 2),
+                            SkIntToScalar(canvas_edge_size / 2));
+    canvas->ClipPath(circular_mask, true);
+    canvas->DrawImageInt(avatar_, x, y);
+  }
+
+ private:
+  gfx::ImageSkia avatar_;
 };
 
 void SendAccessibilityEvent(views::Widget* widget,
@@ -428,17 +476,16 @@ void AccountSelectionBubbleView::OnAccountImageFetched(
     const std::u16string& account_name,
     const gfx::Image& image,
     const image_fetcher::RequestMetadata& metadata) {
-  ui::ImageModel avatar;
+  gfx::ImageSkia avatar;
   if (image.IsEmpty()) {
     std::u16string letter = account_name;
     if (letter.length() > 0)
       letter = base::i18n::ToUpper(account_name.substr(0, 1));
-    avatar = ui::ImageModel::FromImageSkia(
-        gfx::CanvasImageSource::MakeImageSkia<LetterAvatarImageSkiaSource>(
-            letter, kDesiredAvatarSize));
+    avatar = gfx::CanvasImageSource::MakeImageSkia<LetterAvatarImageSkiaSource>(
+        letter, kDesiredAvatarSize);
   } else {
-    avatar = ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
-        image, kDesiredAvatarSize, kDesiredAvatarSize, profiles::SHAPE_CIRCLE));
+    avatar = gfx::CanvasImageSource::MakeImageSkia<AvatarImageSkiaSource>(
+        image.AsImageSkia(), kDesiredAvatarSize);
   }
   image_view->SetImage(avatar);
 }
