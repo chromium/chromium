@@ -13,18 +13,7 @@ import inspect
 import os
 import sys
 
-SRC_DIR = os.path.join(os.path.dirname(inspect.stack()[0][1]), os.pardir,
-                       os.pardir)
 USE_PYTHON3 = True
-WEBVIEW_DATA_DIR = os.path.join(SRC_DIR, 'android_webview', 'tools',
-                                'system_webview_shell', 'test', 'data',
-                                'webexposed')
-
-if WEBVIEW_DATA_DIR not in sys.path:
-    sys.path.append(WEBVIEW_DATA_DIR)
-
-from exposed_webview_interfaces_presubmit import (
-    PresubmitCheckNotWebViewExposedInterfaces)
 
 
 def _CheckTestharnessResults(input_api, output_api):
@@ -301,8 +290,6 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckRunAfterLayoutAndPaintJS(input_api, output_api))
     results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
-    results.extend(
-        PresubmitCheckNotWebViewExposedInterfaces(input_api, output_api))
     return results
 
 
@@ -313,6 +300,4 @@ def CheckChangeOnCommit(input_api, output_api):
     results.extend(_CheckTestExpectations(input_api, output_api))
     results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
-    results.extend(
-        PresubmitCheckNotWebViewExposedInterfaces(input_api, output_api))
     return results
