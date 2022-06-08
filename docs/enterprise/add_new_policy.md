@@ -37,15 +37,17 @@ Usually you need a policy when
         sure you get the version and feature flags (such as dynamic_refresh and
         supported_on) right.
     -   Here are the most used attributes. Please note that, all attributes
-        below other than `supported_on`, `future_on` and
-        `default_for_enterprise_users` do not change the code behavior.
+        below other than `supported_on`, `future_on` do not change the code
+        behavior.
         -   `supported_on` and `future_on`: They control the platforms that the
             policy supports. `supported_on` is used for released platforms with
             milestone range while `future_on` is used for unreleased platforms.
             See **Launch a policy** below for more information.
         -   `default_for_enterprise_users`: Its value is applied as a mandatory
-            policy for managed users on Chrome OS unless a different setting is
-            explicitly set.
+            (unless `default_policy_level` is set) policy for managed users on
+            Chrome OS unless a different setting is explicitly set.
+            - `default_policy_level`: If set to "recommended" the
+            `default_for_enterprise_users` is applied as a recommended policy.
         -   `dynamic_refresh`: It tells the admin whether the policy value can
             be changed and take effect without re-launching Chrome.
         -   `per_profile`: It tells the admin whether different policy values

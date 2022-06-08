@@ -110,6 +110,13 @@ class PolicyDetails:
     self.has_enterprise_default = 'default_for_enterprise_users' in policy
     if self.has_enterprise_default:
       self.enterprise_default = policy['default_for_enterprise_users']
+    if self.has_enterprise_default:
+      self.default_policy_level = policy.get('default_policy_level', '')
+      if self.default_policy_level == 'recommended' and not self.can_be_recommended:
+        raise RuntimeError('Policy ' + self.name +
+                           ' has default_policy_level set to ' +
+                           self.default_policy_level + ', '
+                           'but can_be_recommended feature is not set to True')
     self.cloud_only = features.get('cloud_only', False)
 
     self.platforms = set()
@@ -1207,16 +1214,20 @@ namespace policy {
       else:
         declare_default = ''
 
+      policy_level = "POLICY_LEVEL_MANDATORY"
+      if policy.default_policy_level == 'recommended':
+        policy_level = "POLICY_LEVEL_RECOMMENDED"
+
       setting_enterprise_default = '''  if (!policy_map->Get(key::k%s)) {
     %s
     policy_map->Set(key::k%s,
-                    POLICY_LEVEL_MANDATORY,
+                    %s,
                     POLICY_SCOPE_USER,
                     POLICY_SOURCE_ENTERPRISE_DEFAULT,
                     %s,
                     nullptr);
   }
-''' % (policy.name, declare_default, policy.name, fetch_default)
+''' % (policy.name, declare_default, policy.name, policy_level, fetch_default)
 
       if policy.per_profile:
         profile_policy_enterprise_defaults += setting_enterprise_default

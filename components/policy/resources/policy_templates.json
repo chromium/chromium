@@ -144,6 +144,9 @@
 #   'default_for_managed_devices_doc_only', which documents an explicitly
 #   implemented default policy value for managed devices.
 #
+#   'default_policy_level' is used to override mandatory policy level for the
+#   'default_for_enterprise_users' with the recommended level.
+#
 #   'items' is used to outline the behavior of each state the policy can take.
 #   This field is only used for policies of type 'main', 'int-enum', or
 #   'string-enum'. For 'main' policies, it describes how the policy behaves when
@@ -287,9 +290,9 @@
 #   For managed users on ChromeOS (i.e. users receiving user policy from the
 #   cloud), if the optional key 'default_for_enterprise_users' is set, its value
 #   is applied as mandatory policy unless a different setting is received from
-#   the cloud. This default value handling is automatically enforced by the
-#   policy stack when filling the PolicyMap (specifically, by the generated
-#   function SetEnterpriseUsersDefaults).
+#   the cloud or `default_policy_level` is set. This default value handling is
+#   automatically enforced by the policy stack when filling the PolicyMap
+#   (specifically, by the generated function SetEnterpriseUsersDefaults).
 #
 # Enterprise defaults for device policy:
 #   The optional key 'default_for_managed_devices_doc_only' can be used to
@@ -30983,6 +30986,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       },
       'default': 'light',
       'default_for_enterprise_users': 'light',
+      'default_policy_level': 'recommended',
       'example_value': 'light',
       'id': 986,
       'caption': '''ChromeOS color mode''',

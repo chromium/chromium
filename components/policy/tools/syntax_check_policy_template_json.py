@@ -826,6 +826,7 @@ class PolicyTemplateChecker(object):
           'default',
           'default_for_enterprise_users',
           'default_for_managed_devices_doc_only',
+          'default_policy_level',
           'arc_support',
           'supported_chrome_os_management',
       ):
@@ -1017,6 +1018,26 @@ class PolicyTemplateChecker(object):
                     'device_policy_decoder.cc for chrome, but could '
                     'also have to done in other components if they read the '
                     'proto directly. Details: crbug.com/809653')
+
+      default_policy_level = self._CheckContains(
+          policy,
+          'default_policy_level',
+          str,
+          optional=True,
+          regexp_check=re.compile('^(recommended|mandatory)$'))
+
+      if default_policy_level:
+        if 'default_for_enterprise_users' not in policy:
+          self._Error('default_for_enteprise_users should be set when '
+                      'default_policy_level is set ')
+        if (default_policy_level == 'recommended'
+            and not features.get('can_be_recommended', False)):
+          self._Error('can_be_recommended should be set to True when '
+                      'default_policy_level is set to "recommended"')
+        if (default_policy_level == 'mandatory'
+            and not features.get('can_be_mandatory', True)):
+          self._Error('can_be_mandatory should be set to True when '
+                      'default_policy_level is set to "recommended"')
 
       if (not policy.get('device_only', False) and
           'default_for_managed_devices_doc_only' in policy):
