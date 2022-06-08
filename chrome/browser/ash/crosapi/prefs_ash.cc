@@ -311,7 +311,8 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
         return absl::nullopt;
       }
       std::string pref_name = GetExtensionPrefNameForPref(path);
-      return State{profile_prefs_registrar_->prefs(), nullptr, true, pref_name};
+      return State{profile_prefs_registrar_->prefs(),
+                   profile_prefs_registrar_.get(), true, pref_name};
     }
   }
 }
