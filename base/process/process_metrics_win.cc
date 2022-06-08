@@ -167,6 +167,9 @@ TimeDelta ProcessMetrics::GetPreciseCumulativeCPUUsage() {
   // constant rate TSC.
   return GetCumulativeCPUUsage();
 #else   // !defined(ARCH_CPU_ARM64)
+  if (!time_internal::HasConstantRateTSC())
+    return GetCumulativeCPUUsage();
+
   ULONG64 process_cycle_time = 0;
   if (!QueryProcessCycleTime(process_.get(), &process_cycle_time)) {
     NOTREACHED();

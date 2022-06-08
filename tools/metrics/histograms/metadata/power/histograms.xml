@@ -134,19 +134,19 @@ chromium-metrics-reviews@google.com.
                but there was in the last 2 minutes"/>
 </variants>
 
-<histogram name="PerformanceMonitor.AverageCPU4.Total{UsageScenario}"
+<histogram name="PerformanceMonitor.AverageCPU5.Total{UsageScenario}"
     units="1/100 %" expires_after="2022-11-30">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    See definition of PerformanceClass.AverageCPU4.ProcessName. This is recorded
+    See definition of PerformanceClass.AverageCPU5.ProcessName. This is recorded
     for {UsageScenario} (see go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.AverageCPU4.{ProcessName}" units="1/100 %"
+<histogram name="PerformanceMonitor.AverageCPU5.{ProcessName}" units="1/100 %"
     expires_after="2022-11-30">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
@@ -166,6 +166,9 @@ chromium-metrics-reviews@google.com.
     we know that short-lived processes are very common (see
     Renderer.ProcessLifetime). A future version of this metric will address this
     limitation.
+
+    ANOTHER NOTE: On Windows, this is not recorded on CPUs that do not support
+    constant rate TSC.
   </summary>
   <token key="ProcessName" variants="ProcessName"/>
 </histogram>

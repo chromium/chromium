@@ -84,7 +84,7 @@ TEST(PowerMetricsTest, ReportAggregatedProcessMetricsHistograms) {
   ReportAggregatedProcessMetricsHistograms(process_metrics, suffixes);
 
   ExpectHistogramSamples(&histogram_tester, suffixes, {
-    {"PerformanceMonitor.AverageCPU4.Total", 20},
+    {"PerformanceMonitor.AverageCPU5.Total", 20},
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
