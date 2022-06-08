@@ -2927,6 +2927,7 @@
     },
     'remove_from': [
       # TODO(crbug.com/1141234): Restore when there's more DUTs
+      'chromeos-eve-chrome',
       'chromeos-kevin-chrome',
       'chromeos-kevin-rel',
 
