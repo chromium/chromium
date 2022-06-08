@@ -173,6 +173,10 @@ DisplayLockDocumentState::GetScopedForceActivatableLocks() {
   return ScopedForceActivatableDisplayLocks(this);
 }
 
+bool DisplayLockDocumentState::HasActivatableLocks() const {
+  return LockedDisplayLockCount() != DisplayLockBlockingAllActivationCount();
+}
+
 bool DisplayLockDocumentState::ActivatableDisplayLocksForced() const {
   return activatable_display_locks_forced_;
 }
@@ -396,7 +400,7 @@ void DisplayLockDocumentState::NotifyPrintingOrPreviewChanged() {
 void DisplayLockDocumentState::UnlockShapingDeferredElements() {
   if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
     return;
-  if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+  if (!HasActivatableLocks())
     return;
 
   size_t count = 0;
@@ -418,18 +422,18 @@ void DisplayLockDocumentState::UnlockShapingDeferredElements(
     CSSPropertyID property_id) {
   if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
     return;
-  if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+  if (!HasActivatableLocks())
     return;
   // Need to update layout tree because we access the tree and style.
   target.GetDocument().UpdateStyleAndLayoutTreeForNode(&target);
-  if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+  if (!HasActivatableLocks())
     return;
   LayoutObject* target_object = target.GetLayoutObject();
   if (!target_object)
     return;
 
   UnlockShapingDeferredInclusiveDescendants(*target_object);
-  if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+  if (!HasActivatableLocks())
     return;
 
   const ComputedStyle& style = target_object->StyleRef();
@@ -516,7 +520,7 @@ void DisplayLockDocumentState::UnlockToDetermineWidth(
     const LayoutObject& object) {
   if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
     return;
-  if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+  if (!HasActivatableLocks())
     return;
 
   if (object.IsInline()) {
@@ -550,7 +554,7 @@ void DisplayLockDocumentState::UnlockToDetermineHeight(
     const LayoutObject& object) {
   if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
     return;
-  if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+  if (!HasActivatableLocks())
     return;
 
   if (object.IsInline()) {
@@ -569,7 +573,7 @@ void DisplayLockDocumentState::UnlockToDetermineHeight(
     if ((style.PaddingTop().IsPercent() || style.PaddingBottom().IsPercent()) &&
         object.ContainingBlock()) {
       UnlockToDetermineWidth(*object.ContainingBlock());
-      if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+      if (!HasActivatableLocks())
         return;
     }
   }
@@ -584,7 +588,7 @@ void DisplayLockDocumentState::UnlockToDetermineHeight(
 void DisplayLockDocumentState::UnlockShapingDeferredInclusiveDescendants(
     const LayoutObject& ancestor) {
   DCHECK(RuntimeEnabledFeatures::DeferredShapingEnabled());
-  DCHECK_NE(LockedDisplayLockCount(), DisplayLockBlockingAllActivationCount());
+  DCHECK(HasActivatableLocks());
 
   size_t count = 0;
   for (auto& context : display_lock_contexts_) {

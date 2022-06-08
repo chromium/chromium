@@ -52,6 +52,11 @@ class CORE_EXPORT DisplayLockDocumentState final
   void RegisterDisplayLockActivationObservation(Element*);
   void UnregisterDisplayLockActivationObservation(Element*);
 
+  // Returns true if we have activatable locks.
+  // This compares LockedDisplayLockCount() and
+  // DisplayLockBlockingAllActivationCount().
+  bool HasActivatableLocks() const;
+
   // Returns true if all activatable locks have been forced.
   bool ActivatableDisplayLocksForced() const;
 

@@ -5452,8 +5452,7 @@ bool Element::IsAutofocusable() const {
 bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
   auto& state = GetDocument().GetDisplayLockDocumentState();
   state.UnlockShapingDeferredElements(*this);
-  if (state.LockedDisplayLockCount() ==
-      state.DisplayLockBlockingAllActivationCount())
+  if (!state.HasActivatableLocks())
     return false;
 
   HeapVector<Member<Element>> activatable_targets;

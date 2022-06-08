@@ -2682,8 +2682,7 @@ void Document::EnsurePaintLocationDataValidForNode(const Node* node,
 
   if (RuntimeEnabledFeatures::DeferredShapingEnabled()) {
     auto& state = GetDisplayLockDocumentState();
-    if (state.LockedDisplayLockCount() !=
-        state.DisplayLockBlockingAllActivationCount()) {
+    if (state.HasActivatableLocks()) {
       UpdateStyleAndLayoutTree();
       if (node->GetLayoutObject()) {
         if (property_id == CSSPropertyID::kWidth)
