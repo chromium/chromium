@@ -4,6 +4,7 @@
 set noparent
 
 # Reviewers (in CET):
+alexilin@chromium.org
 blundell@chromium.org
 droger@chromium.org
 treib@chromium.org
