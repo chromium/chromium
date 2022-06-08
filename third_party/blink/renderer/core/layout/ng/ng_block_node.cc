@@ -837,7 +837,7 @@ void NGBlockNode::StoreResultInLayoutBox(
     // token corresponds with the fragment index in the layout object (off by 1,
     // though). When writing back a layout result, we remove any fragments in
     // the layout box at higher indices than that of the one we're writing back.
-    box_->AddLayoutResult(std::move(result), FragmentIndex(break_token));
+    box_->SetLayoutResult(std::move(result), FragmentIndex(break_token));
   }
 }
 

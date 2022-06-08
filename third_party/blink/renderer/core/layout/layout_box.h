@@ -1186,16 +1186,43 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void SetCachedLayoutResult(const NGLayoutResult*);
 
   // Store one layout result (with its physical fragment) at the specified
-  // index, and delete all entries following it.
-  void AddLayoutResult(const NGLayoutResult*, wtf_size_t index);
-  void AddLayoutResult(const NGLayoutResult*);
+  // index.
+  //
+  // If there's already a result at the specified index, use
+  // ReplaceLayoutResult() to do the job. Otherwise, use AppendLayoutResult().
+  //
+  // If it's going to be the last result, we'll also perform any necessary
+  // finalization (see FinalizeLayoutResults()), and also delete all the old
+  // entries following it (if there used to be more results in a previous
+  // layout).
+  //
+  // In a few specific cases we'll even delete the entries following this
+  // result, even if it's *not* going to be the last one. This is necessary when
+  // we might read out the layout results again before we've got to the end (OOF
+  // block fragmentation, etc.). In all other cases, we'll leave the old results
+  // until we're done, as deleting entries will trigger unnecessary paint
+  // invalidation. With any luck, we'll end up with the same number of results
+  // as the last time, so that paint invalidation might not be necessary.
+  void SetLayoutResult(const NGLayoutResult*, wtf_size_t index);
+
+  // Append one layout result at the end.
+  void AppendLayoutResult(const NGLayoutResult*);
+
+  // Replace a specific layout result. Also perform finalization if it's the
+  // last result (see FinalizeLayoutResults()), but this function does not
+  // delete any (old) results following this one. Callers should generally use
+  // SetLayoutResult() instead of this one, unless they have good reasons not
+  // to.
   void ReplaceLayoutResult(const NGLayoutResult*, wtf_size_t index);
-  void ReplaceLayoutResult(const NGLayoutResult*,
-                           const NGPhysicalBoxFragment& old_fragment);
 
   void ShrinkLayoutResults(wtf_size_t results_to_keep);
   void RestoreLegacyLayoutResults(const NGLayoutResult* measure_result,
                                   const NGLayoutResult* layout_result);
+
+  // Perform any finalization needed after all the layout results have been
+  // added.
+  void FinalizeLayoutResults();
+
   void ClearLayoutResults();
   // Clear LayoutObject fields of physical fragments.
   void DisassociatePhysicalFragments();

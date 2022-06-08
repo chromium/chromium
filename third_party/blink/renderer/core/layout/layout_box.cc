@@ -3273,17 +3273,18 @@ void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result) {
         .SetFragmentChildrenInvalid();
   }
 
-  AddLayoutResult(std::move(result), 0);
+  SetLayoutResult(std::move(result), 0);
 }
 
-void LayoutBox::AddLayoutResult(const NGLayoutResult* result,
+void LayoutBox::SetLayoutResult(const NGLayoutResult* result,
                                 wtf_size_t index) {
   NOT_DESTROYED();
   DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
+  const auto& box_fragment =
+      To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+
   if (index != WTF::kNotFound && layout_results_.size() > index) {
     if (layout_results_.size() > index + 1) {
-      const auto& box_fragment =
-          To<NGPhysicalBoxFragment>(result->PhysicalFragment());
       // If we have reached the end, remove surplus results from previous
       // layout.
       //
@@ -3316,20 +3317,18 @@ void LayoutBox::AddLayoutResult(const NGLayoutResult* result,
   }
 
   DCHECK(index == layout_results_.size() || index == kNotFound);
-  AddLayoutResult(std::move(result));
+  AppendLayoutResult(result);
+
+  if (!box_fragment.BreakToken())
+    FinalizeLayoutResults();
 }
 
-void LayoutBox::AddLayoutResult(const NGLayoutResult* result) {
+void LayoutBox::AppendLayoutResult(const NGLayoutResult* result) {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
   layout_results_.push_back(std::move(result));
   CheckDidAddFragment(*this, fragment);
-
-  // If this is the last fragment for the node, and its node establishes an
-  // inline formatting context, we have some finalization to do.
-  if (!fragment.BreakToken() && HasFragmentItems())
-    NGFragmentItems::FinalizeAfterLayout(layout_results_);
 
   if (layout_results_.size() > 1)
     FragmentCountOrSizeDidChange();
@@ -3361,25 +3360,12 @@ void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
   layout_results_[index] = std::move(result);
   CheckDidAddFragment(*this, fragment, index);
 
-  // If this is the last fragment for the node, and its node establishes an
-  // inline formatting context, we have some finalization to do.
-  if (got_new_fragment && !fragment.BreakToken() && HasFragmentItems())
-    NGFragmentItems::FinalizeAfterLayout(layout_results_);
-}
+  if (got_new_fragment && !fragment.BreakToken()) {
+    // If this is the last result, the results vector better agree on that.
+    DCHECK_EQ(index, layout_results_.size() - 1);
 
-void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
-                                    const NGPhysicalBoxFragment& old_fragment) {
-  DCHECK_EQ(this, old_fragment.OwnerLayoutBox());
-  DCHECK_EQ(result->PhysicalFragment().GetSelfOrContainerLayoutObject(),
-            old_fragment.GetSelfOrContainerLayoutObject());
-  // TODO(kojii): |IndexOf| is O(n). Consider if we can avoid this.
-  const wtf_size_t index = PhysicalFragments().IndexOf(old_fragment);
-  if (index != kNotFound) {
-    ReplaceLayoutResult(std::move(result), index);
-    return;
+    FinalizeLayoutResults();
   }
-  NOTREACHED();
-  AddLayoutResult(std::move(result));
 }
 
 void LayoutBox::RestoreLegacyLayoutResults(
@@ -3389,9 +3375,18 @@ void LayoutBox::RestoreLegacyLayoutResults(
   DCHECK(!IsLayoutNGObject());
   measure_result_ = measure_result;
   if (layout_result)
-    AddLayoutResult(layout_result, 0);
+    SetLayoutResult(layout_result, 0);
   else
     DCHECK(layout_results_.IsEmpty());
+}
+
+void LayoutBox::FinalizeLayoutResults() {
+  DCHECK(!layout_results_.IsEmpty());
+  DCHECK(!layout_results_.back()->PhysicalFragment().BreakToken());
+  // If we've added all the results we were going to, and the node establishes
+  // an inline formatting context, we have some finalization to do.
+  if (HasFragmentItems())
+    NGFragmentItems::FinalizeAfterLayout(layout_results_);
 }
 
 void LayoutBox::ClearLayoutResults() {
