@@ -42,11 +42,12 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.HashMap;
 
 /**
- * This test rule mocks AccountManagerFacade and manages sign-in/sign-out.
+ * This test rule mocks AccountManagerFacade.
  *
- * When the user does not invoke any sign-in functions with this rule, the rule will not
- * invoke any native code, therefore it is safe to use it in Robolectric tests just as
- * a simple AccountManagerFacade mock.
+ * TODO(crbug.com/1334286): Migrate usages that need native to {@link SigninTestRule} and remove
+ * the methods that call native from this rule.
+ *
+ * The rule will not invoke any native code, therefore it is safe to use it in Robolectric tests.
  */
 public class AccountManagerTestRule implements TestRule {
     public static final String TEST_ACCOUNT_EMAIL = "test@gmail.com";
@@ -173,6 +174,8 @@ public class AccountManagerTestRule implements TestRule {
 
     /**
      * Waits for the AccountTrackerService to seed system accounts.
+     *
+     * TODO(crbug.com/1334286): Move callers to calling this through {@link SigninTestRule}.
      */
     public void waitForSeeding() {
         SigninTestUtil.seedAccounts();
@@ -182,6 +185,8 @@ public class AccountManagerTestRule implements TestRule {
      * Adds an account and seed it in native code.
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
+     *
+     * TODO(crbug.com/1334286): Move callers to calling this through {@link SigninTestRule}.
      */
     public CoreAccountInfo addAccountAndWaitForSeeding(String accountName) {
         final CoreAccountInfo coreAccountInfo = addAccount(accountName);
@@ -193,6 +198,8 @@ public class AccountManagerTestRule implements TestRule {
      * Removes an account and seed it in native code.
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
+     *
+     * TODO(crbug.com/1334286): Move callers to calling this through {@link SigninTestRule}.
      */
     public void removeAccountAndWaitForSeeding(String accountEmail) {
         removeAccount(accountEmail);
@@ -203,6 +210,8 @@ public class AccountManagerTestRule implements TestRule {
      * Adds and signs in an account with the default name without sync consent.
      *
      * This method does not enable sync.
+     *
+     * TODO(crbug.com/1334286): Move callers to calling this through {@link SigninTestRule}.
      */
     public CoreAccountInfo addTestAccountThenSignin() {
         assert !mIsSignedIn : "An account is already signed in!";
@@ -216,6 +225,8 @@ public class AccountManagerTestRule implements TestRule {
      * Adds and signs in an account with the default name and enables sync.
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
+     *
+     * TODO(crbug.com/1334286): Move callers to calling this through {@link SigninTestRule}.
      */
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
         return addTestAccountThenSigninAndEnableSync(
@@ -229,6 +240,8 @@ public class AccountManagerTestRule implements TestRule {
      *
      * @param syncService SyncService object to set up sync, if null, sync won't
      *         start.
+     *
+     * TODO(crbug.com/1334286): Move callers to calling this through {@link SigninTestRule}.
      */
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
             @Nullable SyncService syncService) {
@@ -244,8 +257,7 @@ public class AccountManagerTestRule implements TestRule {
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      *
-     * @param syncService SyncService object to set up sync, if null, sync won't
-     *         start.
+     * TODO(crbug.com/1334286): Move callers to calling this through {@link SigninTestRule}.
      */
     public CoreAccountInfo addChildTestAccountThenWaitForSignin() {
         assert !mIsSignedIn : "An account is already signed in!";
@@ -272,6 +284,8 @@ public class AccountManagerTestRule implements TestRule {
      *
      * @param syncService SyncService object to set up sync, if null, sync won't
      *         start.
+     *
+     * TODO(crbug.com/1334286): Move callers to calling this through {@link SigninTestRule}.
      */
     public CoreAccountInfo addChildTestAccountThenEnableSync(@Nullable SyncService syncService) {
         CoreAccountInfo coreAccountInfo = addChildTestAccountThenWaitForSignin();
@@ -308,6 +322,8 @@ public class AccountManagerTestRule implements TestRule {
      * @param syncService SyncService object to set up sync, if null, sync won't
      *         start.
      * @param isChild Whether this is a supervised child account.
+     *
+     * TODO(crbug.com/1334286): Move callers to calling this through {@link SigninTestRule}.
      */
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
             @Nullable SyncService syncService, boolean isChild) {
@@ -318,6 +334,8 @@ public class AccountManagerTestRule implements TestRule {
     /**
      * @return The primary account of the requested {@link ConsentLevel}.
      * This method invokes native code. It shouldn't be called in a Robolectric test.
+     *
+     * TODO(crbug.com/1334286): Move callers to calling this through {@link SigninTestRule}.
      */
     public CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
         return SigninTestUtil.getPrimaryAccount(consentLevel);
@@ -335,6 +353,8 @@ public class AccountManagerTestRule implements TestRule {
      * Sign out from the current account.
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
+     *
+     * TODO(crbug.com/1334286): Move callers to calling this through {@link SigninTestRule}.
      */
     public void signOut() {
         SigninTestUtil.signOut();
@@ -346,6 +366,8 @@ public class AccountManagerTestRule implements TestRule {
      * not feature testing).
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
+     *
+     * TODO(crbug.com/1334286): Move callers to calling this through {@link SigninTestRule}.
      */
     public void forceSignOut() {
         SigninTestUtil.forceSignOut();
