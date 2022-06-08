@@ -222,8 +222,6 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
 
     // Wallet offer data is enabled by default. Register unless explicitly
     // disabled.
-    // TODO(crbug.com/1112095): Currently the offer data depends on Wallet data
-    // sync, but revisit after other offer types are implemented.
     if (!disabled_types.Has(syncer::AUTOFILL_WALLET_DATA) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_OFFER)) {
       controllers.push_back(CreateWalletModelTypeController(
