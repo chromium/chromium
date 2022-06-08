@@ -4,6 +4,7 @@
 
 #include "chromeos/network/managed_network_configuration_handler_impl.h"
 
+#include <iterator>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -152,6 +153,18 @@ bool EnablesUnmanagedWifiAutoconnect(const base::Value& onc_dict) {
 }
 
 }  // namespace
+
+ManagedNetworkConfigurationHandlerImpl::PolicyApplicationInfo::
+    PolicyApplicationInfo() = default;
+ManagedNetworkConfigurationHandlerImpl::PolicyApplicationInfo::
+    ~PolicyApplicationInfo() = default;
+
+ManagedNetworkConfigurationHandlerImpl::PolicyApplicationInfo::
+    PolicyApplicationInfo(PolicyApplicationInfo&& other) = default;
+
+ManagedNetworkConfigurationHandlerImpl::PolicyApplicationInfo&
+ManagedNetworkConfigurationHandlerImpl::PolicyApplicationInfo::operator=(
+    PolicyApplicationInfo&& other) = default;
 
 void ManagedNetworkConfigurationHandlerImpl::AddObserver(
     NetworkPolicyObserver* observer) {
@@ -508,9 +521,8 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
     }
   }
 
-  base::flat_set<std::string> modified_policies =
-      policies->ApplyOncNetworkConfigurationList(network_configs_onc);
-  ApplyOrQueuePolicies(userhash, &modified_policies);
+  ApplyOrQueuePolicies(userhash, policies->ApplyOncNetworkConfigurationList(
+                                     network_configs_onc));
 
   for (auto& observer : observers_)
     observer.PoliciesChanged(userhash);
@@ -518,55 +530,86 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
 
 bool ManagedNetworkConfigurationHandlerImpl::IsAnyPolicyApplicationRunning()
     const {
-  return !policy_applicators_.empty() || !queued_modified_policies_.empty();
+  for (const auto& [_, policy_application_info] :
+       policy_application_info_map_) {
+    if (policy_application_info.IsRunningOrRequired()) {
+      return true;
+    }
+  }
+  return false;
 }
 
-bool ManagedNetworkConfigurationHandlerImpl::ApplyOrQueuePolicies(
+void ManagedNetworkConfigurationHandlerImpl::ApplyOrQueuePolicies(
     const std::string& userhash,
-    base::flat_set<std::string>* modified_policies) {
-  DCHECK(modified_policies);
-
+    base::flat_set<std::string> modified_policies) {
   const NetworkProfile* profile =
       network_profile_handler_->GetProfileForUserhash(userhash);
   if (!profile) {
     VLOG(1) << "The relevant Shill profile isn't initialized yet, postponing "
             << "policy application.";
     // OnProfileAdded will apply all policies for this userhash.
-    return false;
+    return;
   }
 
-  if (base::Contains(policy_applicators_, userhash)) {
-    // A previous policy application is still running. Queue the modified
-    // policies.
-    // Note, even if |modified_policies| is empty, this means that a policy
-    // application will be queued.
-    queued_modified_policies_[userhash].insert(modified_policies->begin(),
-                                               modified_policies->end());
-    VLOG(1) << "Previous PolicyApplicator still running. Postponing policy "
-               "application.";
-    return false;
+  // Note that this will default-construct a PolicyApplicationInfo if none
+  // exists for the shill profile identifier by |userhash| yet.
+  PolicyApplicationInfo& policy_application_info =
+      policy_application_info_map_[userhash];
+  policy_application_info.modified_policy_guids.insert(
+      std::make_move_iterator(modified_policies.begin()),
+      std::make_move_iterator(modified_policies.end()));
+  SchedulePolicyApplication(userhash);
+}
+
+void ManagedNetworkConfigurationHandlerImpl::SchedulePolicyApplication(
+    const std::string& userhash) {
+  PolicyApplicationInfo& policy_application_info =
+      policy_application_info_map_[userhash];
+  policy_application_info.application_required = true;
+  if (policy_application_info.task_scheduled) {
+    return;
   }
+  policy_application_info.task_scheduled = true;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &ManagedNetworkConfigurationHandlerImpl::StartPolicyApplication,
+          weak_ptr_factory_.GetWeakPtr(), userhash));
+}
+
+void ManagedNetworkConfigurationHandlerImpl::StartPolicyApplication(
+    const std::string& userhash) {
+  PolicyApplicationInfo& policy_application_info =
+      policy_application_info_map_[userhash];
+  DCHECK(policy_application_info.task_scheduled);
+  DCHECK(policy_application_info.application_required);
+  policy_application_info.task_scheduled = false;
+  policy_application_info.application_required = false;
 
   const ProfilePolicies* policies = policies_by_user_[userhash].get();
   DCHECK(policies);
 
-  auto policy_applicator = std::make_unique<PolicyApplicator>(
-      *profile, policies->GetGuidToPolicyMap(),
-      policies->GetGlobalNetworkConfig()->Clone(), this,
-      managed_cellular_pref_handler_, modified_policies);
-  auto* policy_applicator_unowned = policy_applicator.get();
-  policy_applicators_[userhash] = std::move(policy_applicator);
-  policy_applicator_unowned->Run();
-  return true;
+  const NetworkProfile* profile =
+      network_profile_handler_->GetProfileForUserhash(userhash);
+  DCHECK(profile);
+
+  base::flat_set<std::string> modified_guids;
+  policy_application_info.modified_policy_guids.swap(modified_guids);
+
+  policy_application_info.running_policy_applicator =
+      std::make_unique<PolicyApplicator>(
+          *profile, policies->GetGuidToPolicyMap(),
+          policies->GetGlobalNetworkConfig()->Clone(), this,
+          managed_cellular_pref_handler_, std::move(modified_guids));
+  policy_application_info.running_policy_applicator->Run();
 }
 
 void ManagedNetworkConfigurationHandlerImpl::SetProfileWideVariableExpansions(
     const std::string& userhash,
     base::flat_map<std::string, std::string> expansions) {
-  base::flat_set<std::string> modified_policy_guids =
-      GetOrCreatePoliciesForUser(userhash)->SetProfileWideExpansions(
-          std::move(expansions));
-  ApplyOrQueuePolicies(userhash, &modified_policy_guids);
+  ApplyOrQueuePolicies(
+      userhash, GetOrCreatePoliciesForUser(userhash)->SetProfileWideExpansions(
+                    std::move(expansions)));
 }
 
 void ManagedNetworkConfigurationHandlerImpl::set_ui_proxy_config_service(
@@ -586,10 +629,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnProfileAdded(
     return;
   }
 
-  base::flat_set<std::string> policy_guids = policies->GetAllPolicyGuids();
-  const bool started_policy_application =
-      ApplyOrQueuePolicies(profile.userhash, &policy_guids);
-  DCHECK(started_policy_application);
+  ApplyOrQueuePolicies(profile.userhash, policies->GetAllPolicyGuids());
 }
 
 void ManagedNetworkConfigurationHandlerImpl::OnProfileRemoved(
@@ -690,46 +730,48 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
     const base::flat_set<std::string>& new_cellular_policy_guids) {
   const std::string& userhash = profile.userhash;
   VLOG(1) << "Policy application for user '" << userhash << "' finished.";
+
+  PolicyApplicationInfo& policy_application_info =
+      policy_application_info_map_[userhash];
+
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
-      FROM_HERE, policy_applicators_[userhash].release());
-  policy_applicators_.erase(userhash);
+      FROM_HERE, std::move(policy_application_info.running_policy_applicator));
 
   TriggerCellularPolicyApplication(profile, new_cellular_policy_guids);
 
-  if (base::Contains(queued_modified_policies_, userhash)) {
-    base::flat_set<std::string> modified_policies;
-    queued_modified_policies_[userhash].swap(modified_policies);
-    // Remove |userhash| from the queue.
-    queued_modified_policies_.erase(userhash);
-    ApplyOrQueuePolicies(userhash, &modified_policies);
-  } else {
-    if (userhash.empty())
-      device_policy_applied_ = true;
-    else
-      user_policy_applied_ = true;
-
-    if (features::IsESimPolicyEnabled()) {
-      ESimPolicyLoginMetricsLogger::RecordBlockNonManagedCellularBehavior(
-          AllowOnlyPolicyCellularNetworks());
-      // Call UpdateBlockCellularNetworks when either device policy applied or
-      // user policy applied so that so that unmanaged cellular networks are
-      // blocked correctly if the policy appears in either.
-      network_state_handler_->UpdateBlockedCellularNetworks(
-          AllowOnlyPolicyCellularNetworks());
-    }
-
-    if (features::IsSimLockPolicyEnabled())
-      network_device_handler_->SetAllowCellularSimLock(AllowCellularSimLock());
-
-    if (device_policy_applied_ && user_policy_applied_) {
-      network_state_handler_->UpdateBlockedWifiNetworks(
-          AllowOnlyPolicyWiFiToConnect(),
-          AllowOnlyPolicyWiFiToConnectIfAvailable(), GetBlockedHexSSIDs());
-    }
-
-    for (auto& observer : observers_)
-      observer.PoliciesApplied(userhash);
+  if (policy_application_info.application_required) {
+    // This means that a network policy change happened while policy was being
+    // applied. Schedule another network policy application run.
+    SchedulePolicyApplication(userhash);
+    return;
   }
+
+  if (userhash.empty())
+    device_policy_applied_ = true;
+  else
+    user_policy_applied_ = true;
+
+  if (features::IsESimPolicyEnabled()) {
+    ESimPolicyLoginMetricsLogger::RecordBlockNonManagedCellularBehavior(
+        AllowOnlyPolicyCellularNetworks());
+    // Call UpdateBlockCellularNetworks when either device policy applied or
+    // user policy applied so that so that unmanaged cellular networks are
+    // blocked correctly if the policy appears in either.
+    network_state_handler_->UpdateBlockedCellularNetworks(
+        AllowOnlyPolicyCellularNetworks());
+  }
+
+  if (features::IsSimLockPolicyEnabled())
+    network_device_handler_->SetAllowCellularSimLock(AllowCellularSimLock());
+
+  if (device_policy_applied_ && user_policy_applied_) {
+    network_state_handler_->UpdateBlockedWifiNetworks(
+        AllowOnlyPolicyWiFiToConnect(),
+        AllowOnlyPolicyWiFiToConnectIfAvailable(), GetBlockedHexSSIDs());
+  }
+
+  for (auto& observer : observers_)
+    observer.PoliciesApplied(userhash);
 }
 
 const base::Value* ManagedNetworkConfigurationHandlerImpl::FindPolicyByGUID(

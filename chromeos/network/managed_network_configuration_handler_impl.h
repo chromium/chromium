@@ -165,12 +165,48 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   friend class NetworkHandler;
   friend class ProhibitedTechnologiesHandlerTest;
 
+  // This structure holds information about the status of ONC network policy
+  // application for a shill profile.
+  // ManagedNetworkConfigurationHandler maintains a map shill profile ->
+  // PolicyApplicationInfo.
+  struct PolicyApplicationInfo {
+    PolicyApplicationInfo();
+    ~PolicyApplicationInfo();
+
+    // Moveable type
+    PolicyApplicationInfo(const PolicyApplicationInfo& other) = delete;
+    PolicyApplicationInfo& operator=(const PolicyApplicationInfo& other) =
+        delete;
+    PolicyApplicationInfo(PolicyApplicationInfo&& other);
+    PolicyApplicationInfo& operator=(PolicyApplicationInfo&& other);
+
+    bool IsRunningOrRequired() const {
+      return application_required || running_policy_applicator;
+    }
+
+    // Holds the set of ONC NetworkConfiguration GUIDs which have been modified
+    // since network policy has been last applied.
+    base::flat_set<std::string> modified_policy_guids;
+    // If true, network policy application needs to happen for this shill
+    // profile, i.e. there were network policy changes that have not been
+    // applied yet. Note that this can be true even if |modified_policy_guids|
+    // is empty, e.g. if an ONC GlobalNetworkConfiguration parameter (which
+    // affects all networks in this shill profile) has changed, but the settings
+    // of the individual NetworkConfigurations remained the same.
+    bool application_required = false;
+    // If true, a task has already been scheduled to actually apply network
+    // policy for this shill profile.
+    bool task_scheduled = false;
+    // If present, network policy is currently being applied (which is an
+    // asynchronous process). The PolicyApplicator instance is responsible for
+    // applying it.
+    std::unique_ptr<PolicyApplicator> running_policy_applicator;
+  };
+
   using UserToPoliciesMap =
       base::flat_map<std::string, std::unique_ptr<ProfilePolicies>>;
-  using UserToPolicyApplicatorMap =
-      base::flat_map<std::string, std::unique_ptr<PolicyApplicator>>;
-  using UserToModifiedPoliciesMap =
-      base::flat_map<std::string, base::flat_set<std::string>>;
+  using UserToPolicyApplicationInfo =
+      base::flat_map<std::string, PolicyApplicationInfo>;
 
   // The type of properties to send after a Get{Managed}Properties call.
   enum class PropertiesType {
@@ -251,12 +287,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   void SetManagedActiveProxyValues(const std::string& guid,
                                    base::Value* dictionary);
 
-  // Applies policies for |userhash|. |modified_policies| must be not null and
-  // contain the GUIDs of the network configurations that changed since the last
-  // policy application. Returns true if policy application was started and
-  // false if it was queued or delayed.
-  bool ApplyOrQueuePolicies(const std::string& userhash,
-                            base::flat_set<std::string>* modified_policies);
+  // Applies policies for |userhash|. |modified_policies| contains the GUIDs of
+  // the network configurations that changed since the last policy application.
+  void ApplyOrQueuePolicies(const std::string& userhash,
+                            base::flat_set<std::string> modified_policies);
+
+  void SchedulePolicyApplication(const std::string& userhash);
+  void StartPolicyApplication(const std::string& userhash);
 
   void set_ui_proxy_config_service(
       UIProxyConfigService* ui_proxy_config_service);
@@ -274,15 +311,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   ProhibitedTechnologiesHandler* prohibited_technologies_handler_ = nullptr;
   UIProxyConfigService* ui_proxy_config_service_ = nullptr;
 
-  // Owns the currently running PolicyApplicators.
-  UserToPolicyApplicatorMap policy_applicators_;
-
-  // Per userhash (or empty string for device policy), contains the GUIDs of the
-  // policies that were modified.
-  // If this map contains a userhash as key, it means that a policy application
-  // for this userhash is pending even if no policies were modified and the
-  // associated set of GUIDs is empty.
-  UserToModifiedPoliciesMap queued_modified_policies_;
+  UserToPolicyApplicationInfo policy_application_info_map_;
 
   base::ObserverList<NetworkPolicyObserver, true>::Unchecked observers_;
 

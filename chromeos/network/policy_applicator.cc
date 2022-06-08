@@ -110,14 +110,13 @@ PolicyApplicator::PolicyApplicator(
     base::Value global_network_config,
     ConfigurationHandler* handler,
     ManagedCellularPrefHandler* managed_cellular_pref_handler,
-    base::flat_set<std::string>* modified_policy_guids)
+    base::flat_set<std::string> modified_policy_guids)
     : handler_(handler),
       managed_cellular_pref_handler_(managed_cellular_pref_handler),
       profile_(profile),
       all_policies_(std::move(all_policies)),
-      global_network_config_(std::move(global_network_config)) {
-  remaining_policy_guids_.swap(*modified_policy_guids);
-}
+      global_network_config_(std::move(global_network_config)),
+      remaining_policy_guids_(std::move(modified_policy_guids)) {}
 
 PolicyApplicator::~PolicyApplicator() {
   VLOG(1) << "Destroying PolicyApplicator for " << profile_.userhash;

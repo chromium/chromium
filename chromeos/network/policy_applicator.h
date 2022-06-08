@@ -67,7 +67,7 @@ class PolicyApplicator {
                    base::Value global_network_config,
                    ConfigurationHandler* handler,
                    ManagedCellularPrefHandler* managed_cellular_pref_handler,
-                   base::flat_set<std::string>* modified_policy_guids);
+                   base::flat_set<std::string> modified_policy_guids);
 
   PolicyApplicator(const PolicyApplicator&) = delete;
   PolicyApplicator& operator=(const PolicyApplicator&) = delete;
@@ -147,18 +147,18 @@ class PolicyApplicator {
   // |handler_|.
   void NotifyConfigurationHandlerAndFinish();
 
+  ConfigurationHandler* const handler_;
+  ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
+  NetworkProfile profile_;
+  base::flat_map<std::string, base::Value> all_policies_;
+  base::Value global_network_config_;
+
   base::flat_set<std::string> remaining_policy_guids_;
   base::flat_set<std::string> pending_get_entry_calls_;
 
   // Contains GUIDs of new cellular policies so they can be reported back to
   // the caller.
   base::flat_set<std::string> new_cellular_policy_guids_;
-
-  ConfigurationHandler* handler_;
-  ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
-  NetworkProfile profile_;
-  base::flat_map<std::string, base::Value> all_policies_;
-  base::Value global_network_config_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
