@@ -208,9 +208,6 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         }
         if (mActivity == null) return;
 
-        // Current tab information is necessary to create the first party options.
-        if (!mExcludeFirstParty && (mTabProvider == null || mTabProvider.get() == null)) return;
-
         if (mWindowAndroid == null) {
             mWindowAndroid = params.getWindow();
             if (mWindowAndroid != null) {
@@ -296,11 +293,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                         LinkToTextMetricsHelper.LinkToTextDiagnoseStatus
                                 .SHOW_SHARINGHUB_FOR_HIGHLIGHT);
             }
-            String tabUrl =
-                    mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec() : "";
             mLinkToTextCoordinator = new LinkToTextCoordinator(mTabProvider.get(), this,
-                    chromeShareExtras, shareStartTime,
-                    getUrlToShare(params, chromeShareExtras, tabUrl), params.getText());
+                    chromeShareExtras, shareStartTime, getUrlToShare(params, chromeShareExtras),
+                    params.getText());
         }
         mShareSheetLinkToggleCoordinator = new ShareSheetLinkToggleCoordinator(
                 params, chromeShareExtras, mLinkToTextCoordinator);
@@ -327,10 +322,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mChromeProvidedSharingOptionsProvider = new ChromeProvidedSharingOptionsProvider(activity,
                 mWindowAndroid, mTabProvider, mBottomSheetController, mBottomSheet, shareParams,
                 mPrintTabCallback, mIsIncognito, mShareStartTime, this, mImageEditorModuleProvider,
-                mFeatureEngagementTracker,
-                getUrlToShare(shareParams, chromeShareExtras,
-                        mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec()
-                                                           : ""),
+                mFeatureEngagementTracker, getUrlToShare(shareParams, chromeShareExtras),
                 mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails, mProfile);
         mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
 
@@ -573,14 +565,15 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
      * useful for {@link LinkToTextCoordinator} that needs URL but it cannot be provided through
      * {@link ShareParams}.
      */
-    private String getUrlToShare(
-            ShareParams shareParams, ChromeShareExtras chromeShareExtras, String tabUrl) {
+    private String getUrlToShare(ShareParams shareParams, ChromeShareExtras chromeShareExtras) {
         if (!TextUtils.isEmpty(shareParams.getUrl())) {
             return shareParams.getUrl();
         } else if (!chromeShareExtras.getImageSrcUrl().isEmpty()) {
             return chromeShareExtras.getImageSrcUrl().getSpec();
+        } else if (mTabProvider.hasValue() && mTabProvider.get().isInitialized()) {
+            return mTabProvider.get().getUrl().getSpec();
         }
-        return tabUrl;
+        return "";
     }
 
     // ActivityStateObserver
