@@ -1649,6 +1649,8 @@ experimental domain CSS
       string fontWeight
       # The font-stretch.
       string fontStretch
+      # The font-display.
+      string fontDisplay
       # The unicode-range.
       string unicodeRange
       # The src.

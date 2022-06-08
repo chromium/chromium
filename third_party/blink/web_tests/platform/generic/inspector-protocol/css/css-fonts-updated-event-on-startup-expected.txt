@@ -1,5 +1,6 @@
 Verifies that CSS.fontsUpdated events are sent after CSS domain is enabled
 {
+    fontDisplay : auto
     fontFamily : Amstelvar
     fontStretch : normal
     fontStyle : normal

@@ -737,6 +737,7 @@ void InspectorCSSAgent::FontsUpdated(
           .setFontVariant(font->variant())
           .setFontWeight(font->weight())
           .setFontStretch(font->stretch())
+          .setFontDisplay(font->display())
           .setUnicodeRange(font->unicodeRange())
           .setSrc(src)
           .setPlatformFontFamily(
