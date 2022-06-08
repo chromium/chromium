@@ -436,7 +436,10 @@ buildflag_header("partition_alloc_buildflags") {
 buildflag_header("chromecast_buildflags") {
   header = "chromecast_buildflags.h"
 
-  flags = [ "PA_IS_CASTOS=$is_castos" ]
+  flags = [
+    "PA_IS_CAST_ANDROID=$is_cast_android",
+    "PA_IS_CASTOS=$is_castos",
+  ]
 }
 
 buildflag_header("chromeos_buildflags") {

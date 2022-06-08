@@ -4519,8 +4519,7 @@ TEST_P(PartitionAllocTest, PartitionTagBasic) {
 
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    BUILDFLAG(PA_IS_CASTOS)
+#if BUILDFLAG(PA_IS_CAST_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 extern "C" {
 void* __real_malloc(size_t);
 }  // extern "C"
