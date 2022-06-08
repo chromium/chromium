@@ -387,12 +387,14 @@ js_library("reimaging_provisioning_page") {
 
 js_library("calibration_component_chip") {
   deps = [
+    ":shimless_rma_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
 js_library("repair_component_chip") {
   deps = [
+    ":shimless_rma_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

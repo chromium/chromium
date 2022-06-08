@@ -73,6 +73,10 @@ export class ReimagingCalibrationFailedPage extends
     };
   }
 
+  static get observers() {
+    return ['updateIsFirstClickableComponent_(componentCheckboxes_.*)'];
+  }
+
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
@@ -189,6 +193,16 @@ export class ReimagingCalibrationFailedPage extends
   tryingToSkipWithFailedComponents_() {
     return this.componentCheckboxes_.some(
         component => component.failed && !component.checked);
+  }
+
+  /** @private */
+  updateIsFirstClickableComponent_() {
+    const firstClickableComponent =
+        this.componentCheckboxes_.find(component => !component.disabled);
+    this.componentCheckboxes_.forEach(component => {
+      component.isFirstClickableComponent =
+          (component === firstClickableComponent) ? true : false;
+    });
   }
 }
 

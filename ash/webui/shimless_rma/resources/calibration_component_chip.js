@@ -5,7 +5,6 @@
 import './shimless_rma_fonts_css.js';
 import './shimless_rma_shared_css.js';
 import './icons.js';
-
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -13,12 +12,15 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {modifyTabbableElement} from './shimless_rma_util.js';
+
 /**
  * @fileoverview
  * 'calibration-component-chip' represents a single component chip that reports
  * status of last calibration attempt and can be marked to skip.
  */
 
+/** @polymer */
 export class CalibrationComponentChipElement extends PolymerElement {
   static get is() {
     return 'calibration-component-chip';
@@ -49,6 +51,13 @@ export class CalibrationComponentChipElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      /** @type {boolean} */
+      isFirstClickableComponent: {
+        type: Boolean,
+        value: false,
+        observer: 'onIsFirstClickableComponentChanged_',
+      },
     };
   }
 
@@ -69,6 +78,16 @@ export class CalibrationComponentChipElement extends PolymerElement {
    */
   shouldShowCheckIcon_() {
     return this.checked || this.disabled;
+  }
+
+  /** @private */
+  onIsFirstClickableComponentChanged_() {
+    // Tab should go to the first non-disabled component in the list,
+    // not individual component.
+    modifyTabbableElement(
+        /** @type {!HTMLElement} */ (
+            this.shadowRoot.querySelector('#componentButton')),
+        this.isFirstClickableComponent);
   }
 }
 
