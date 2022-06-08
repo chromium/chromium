@@ -144,7 +144,6 @@ class PLATFORM_EXPORT SegmentedSubstring {
   union {
     const LChar* string8_ptr;
     const UChar* string16_ptr;
-    const void* void_ptr;
   } data_;
   const LChar* data_start_;
   // |data_last_char_| points to the last character (or nullptr). This is to
