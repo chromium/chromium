@@ -319,8 +319,9 @@ bool HTMLFormControlElement::IsSuccessfulSubmitButton() const {
 //  toggle.
 HTMLFormControlElement::TogglePopupElement
 HTMLFormControlElement::togglePopupElement() const {
-  const TogglePopupElement no_element{nullptr, PopupTriggerAction::kNone,
-                                      g_null_name};
+  const TogglePopupElement no_element{.element = nullptr,
+                                      .action = PopupTriggerAction::kNone,
+                                      .attribute_name = g_null_name};
   if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
       !IsInTreeScope() ||
       SupportsPopupTriggering() == PopupTriggerSupport::kNone) {
@@ -352,7 +353,9 @@ HTMLFormControlElement::togglePopupElement() const {
   Element* popup_element = GetTreeScope().getElementById(idref);
   if (!popup_element || !popup_element->HasValidPopupAttribute())
     return no_element;
-  return TogglePopupElement{popup_element, action, attribute_name};
+  return TogglePopupElement{.element = popup_element,
+                            .action = action,
+                            .attribute_name = attribute_name};
 }
 
 void HTMLFormControlElement::DefaultEventHandler(Event& event) {
