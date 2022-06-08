@@ -22,6 +22,9 @@ namespace reporting {
 //                                       .SetSuccess(false)
 //                                       .SetForceConfirm(true)
 //                                       .Build();
+//
+// For the document of what response payload should look like, search for
+// "{{{Note}}} ERP Response Payload Overview" in the codebase.
 class ResponseBuilder {
  public:
   ResponseBuilder() = default;

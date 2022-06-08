@@ -166,6 +166,9 @@ class CompressionInformationMatcher : public RecordMatcher {
 // malformed for a particular test case). To use this class, call
 // CreateDataUpload() or CreateEmpty() to create an instance. Adapt matchers by
 // calling AppendMatcher() or RemoveMatcher().
+//
+// For the document of what response payload should look like, search for
+// "{{{Note}}} ERP Request Payload Overview" in the codebase.
 template <class T = base::Value::Dict>
 class RequestValidityMatcherBuilder {
  public:

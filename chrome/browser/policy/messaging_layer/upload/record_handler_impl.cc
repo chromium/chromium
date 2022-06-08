@@ -230,13 +230,15 @@ void RecordHandlerImpl::ReportUploader::HandleFailedUpload() {
 }
 
 void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
+  // {{{Note}}} ERP Response Payload Overview
+  //
   //  {
   //    "lastSucceedUploadedRecord": ... // SequenceInformation proto
   //    "firstFailedUploadedRecord": {
   //      "failedUploadedRecord": ... // SequenceInformation proto
   //      "failureStatus": ... // Status proto
-  //    }
-  //    "forceConfirm": true  // if present, flag that lastSucceedUploadedRecord
+  //    },
+  //    "forceConfirm": true, // if present, flag that lastSucceedUploadedRecord
   //                          // is to be accepted unconditionally by client
   //    "encryptionSettings": ... // EncryptionSettings proto
   //  }

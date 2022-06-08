@@ -19,7 +19,7 @@
 
 namespace policy {
 
-// {{{Note}}} ERP Payload Overview
+// {{{Note}}} ERP Request Payload Overview
 //
 // EncryptedReportingJobConfiguration configures a payload for the Encrypted
 // server endpoint. A JSON version of the payload looks like this:
