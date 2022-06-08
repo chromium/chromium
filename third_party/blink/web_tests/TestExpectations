@@ -5160,6 +5160,7 @@ crbug.com/1054577 [ Mac ] external/wpt/storage-access-api/requestStorageAccess.s
 # Failing tests because of enabling scroll unification flag
 crbug.com/476553 virtual/scroll-unification/external/wpt/dom/events/scrolling/overscroll-event-fired-to-scrolled-element.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Crash Failure Pass Timeout ]
+crbug.com/476553 virtual/scroll-unification/fast/events/hit-test-cache-iframes.html [ Failure Pass ]
 crbug.com/476553 virtual/scroll-unification/fast/events/hit-test-counts.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/mouse-cursor-change.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Crash Failure Pass Timeout ]
@@ -5822,9 +5823,6 @@ crbug.com/1202722 [ Linux ] virtual/scroll-unification/fast/events/mouseenter-mo
 
 # Sheriff 2021-04-29
 crbug.com/1203963 [ Mac10.14 ] external/wpt/webusb/idlharness.https.any.html [ Failure Pass Timeout ]
-
-# Sheriff 2021-04-30
-crbug.com/1204498 [ Linux ] virtual/scroll-unification/fast/events/hit-test-cache-iframes.html [ Failure Pass ]
 
 # Appears to be timing out even when marked as Slow.
 crbug.com/1205184 [ Mac11 ] external/wpt/IndexedDB/interleaved-cursors-large.html [ Pass Timeout ]
