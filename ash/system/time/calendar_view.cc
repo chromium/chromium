@@ -62,7 +62,7 @@ constexpr int kChevronPadding = calendar_utils::kColumnSetPadding - 1;
 constexpr int kMonthLabelPaddingOffset = -1;
 
 // The cool-down time for calling `UpdateOnScreenMonthMap()` after scrolling.
-constexpr base::TimeDelta kScrollingSettledTimeout = base::Milliseconds(100);
+constexpr base::TimeDelta kScrollingSettledTimeout = base::Milliseconds(500);
 
 // Duration of the delay for modifying opacity.
 constexpr base::TimeDelta kDelayVisibilityAnimationDuration =
