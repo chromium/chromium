@@ -5,12 +5,18 @@
 #ifndef MEDIA_GPU_V4L2_TEST_VIDEO_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_VIDEO_DECODER_H_
 
-#include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
-
 #include "media/filters/ivf_parser.h"
+#include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 
 namespace media {
 namespace v4l2_test {
+
+// For stateless API, fourcc |VP9F| is needed instead of |VP90| for VP9 codec.
+// Fourcc |AV1F| is needed instead of |AV10| for AV1 codec.
+// https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-compressed.html
+// Converts fourcc |VP90| or |AV01| from file header to fourcc |VP9F| or |AV1F|,
+// which is a format supported on driver.
+uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc);
 
 // VideoDecoder decodes encoded IVF streams using v4l2 ioctl calls.
 class VideoDecoder {

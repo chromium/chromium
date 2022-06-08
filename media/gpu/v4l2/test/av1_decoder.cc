@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "media/filters/ivf_parser.h"
+#include "media/gpu/v4l2/test/av1_pix_fmt.h"
 
 namespace media {
 

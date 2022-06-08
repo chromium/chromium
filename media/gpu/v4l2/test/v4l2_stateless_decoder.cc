@@ -18,6 +18,7 @@
 #include "media/base/video_types.h"
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/v4l2/test/av1_decoder.h"
+#include "media/gpu/v4l2/test/av1_pix_fmt.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
 #include "media/gpu/v4l2/test/vp9_decoder.h"
 
@@ -64,23 +65,6 @@ constexpr char kHelpMsg[] =
 
 }  // namespace
 
-// For stateless API, fourcc |VP9F| is needed instead of |VP90| for VP9 codec.
-// Fourcc |AV1F| is needed instead of |AV10| for AV1 codec.
-// https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-compressed.html
-// Converts fourcc |VP90| or |AV01| from file header to fourcc |VP9F| or |AV1F|,
-// which is a format supported on driver.
-uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc) {
-  if (header_fourcc == V4L2_PIX_FMT_VP9) {
-    LOG(INFO) << "OUTPUT format mapped from VP90 to VP9F.";
-    return V4L2_PIX_FMT_VP9_FRAME;
-  } else if (header_fourcc == V4L2_PIX_FMT_AV1) {
-    LOG(INFO) << "OUTPUT format mapped from AV01 to AV1F.";
-    return V4L2_PIX_FMT_AV1_FRAME;
-  }
-
-  return header_fourcc;
-}
-
 // Computes the md5 of given I420 data |yuv_plane| and prints the md5 to stdout.
 // This functionality is needed for tast tests.
 void ComputeAndPrintMd5hash(const std::vector<char>& yuv_plane) {
@@ -108,7 +92,8 @@ std::unique_ptr<VideoDecoder> CreateVideoDecoder(
   VLOG(1) << "Creating decoder with codec "
           << media::FourccToString(file_header.fourcc);
 
-  const auto driver_codec_fourcc = FileFourccToDriverFourcc(file_header.fourcc);
+  const auto driver_codec_fourcc =
+      media::v4l2_test::FileFourccToDriverFourcc(file_header.fourcc);
 
   if (driver_codec_fourcc == V4L2_PIX_FMT_AV1_FRAME) {
     return Av1Decoder::Create(std::move(ivf_parser), file_header);

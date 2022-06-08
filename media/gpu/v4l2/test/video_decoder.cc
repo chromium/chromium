@@ -4,8 +4,11 @@
 
 #include "media/gpu/v4l2/test/video_decoder.h"
 
+#include <linux/videodev2.h>
+
 #include "base/bits.h"
 #include "base/logging.h"
+#include "media/gpu/v4l2/test/av1_pix_fmt.h"
 
 namespace media {
 namespace v4l2_test {
@@ -92,6 +95,18 @@ void DetilePlane(std::vector<char>& dest,
 }
 
 }  // namespace
+
+uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc) {
+  if (header_fourcc == V4L2_PIX_FMT_VP9) {
+    LOG(INFO) << "OUTPUT format mapped from VP90 to VP9F.";
+    return V4L2_PIX_FMT_VP9_FRAME;
+  } else if (header_fourcc == V4L2_PIX_FMT_AV1) {
+    LOG(INFO) << "OUTPUT format mapped from AV01 to AV1F.";
+    return V4L2_PIX_FMT_AV1_FRAME;
+  }
+
+  return header_fourcc;
+}
 
 VideoDecoder::VideoDecoder(std::unique_ptr<IvfParser> ivf_parser,
                            std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,

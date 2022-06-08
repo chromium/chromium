@@ -160,6 +160,7 @@ executable("v4l2_stateless_decoder") {
   sources = [
     "test/av1_decoder.cc",
     "test/av1_decoder.h",
+    "test/av1_pix_fmt.h",
     "test/v4l2_ioctl_shim.cc",
     "test/v4l2_ioctl_shim.h",
     "test/v4l2_stateless_decoder.cc",

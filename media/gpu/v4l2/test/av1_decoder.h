@@ -5,12 +5,12 @@
 #ifndef MEDIA_GPU_V4L2_TEST_AV1_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_AV1_DECODER_H_
 
-#include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
 
 #include <set>
 
 #include "media/filters/ivf_parser.h"
+#include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 // For libgav1::ObuSequenceHeader. absl::optional demands ObuSequenceHeader to
 // fulfill std::is_trivially_constructible if it is forward-declared. But
 // ObuSequenceHeader doesn't.
@@ -21,18 +21,6 @@
 // in base/logging.h for Chromium. Note that this already exists in
 // base/logging.h for ChromeOS.
 #define ANALYZER_ALLOW_UNUSED(var) static_cast<void>(var);
-
-// TODO(stevecho): This is temporary until the change to define
-// V4L2_PIX_FMT_AV1_FRAME lands in videodev2.h.
-// https://patchwork.linuxtv.org/project/linux-media/patch/20210810220552.298140-2-daniel.almeida@collabora.com/
-#ifndef V4L2_PIX_FMT_AV1
-#define V4L2_PIX_FMT_AV1 v4l2_fourcc('A', 'V', '0', '1') /* AV1 */
-#endif
-#ifndef V4L2_PIX_FMT_AV1_FRAME
-#define V4L2_PIX_FMT_AV1_FRAME                        \
-  v4l2_fourcc('A', 'V', '1', 'F') /* AV1 parsed frame \
-                                   */
-#endif
 
 namespace media {
 namespace v4l2_test {
