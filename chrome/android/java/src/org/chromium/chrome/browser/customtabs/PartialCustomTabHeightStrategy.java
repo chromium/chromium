@@ -717,6 +717,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         return getFullyExpandedYCoordinate() + mFullyExpandedAdjustmentHeight;
     }
 
+    @Override
+    public boolean changeBackgroundColorForResizing() {
+        // Need to return true to keep the transparent background we set in the init step.
+        return true;
+    }
+
     @VisibleForTesting
     void setMockViewForTesting(LinearLayout navbar, ImageView spinnerView,
             CircularProgressDrawable spinner, View toolbar, View toolbarCoordinator,
