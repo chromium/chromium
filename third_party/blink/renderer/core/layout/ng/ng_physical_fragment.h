@@ -622,12 +622,7 @@ class CORE_EXPORT NGPhysicalFragment
   }
 
   base::span<NGPhysicalOutOfFlowPositionedNode> OutOfFlowPositionedDescendants()
-      const {
-    if (!HasOutOfFlowPositionedDescendants())
-      return base::span<NGPhysicalOutOfFlowPositionedNode>();
-    return {oof_data_->oof_positioned_descendants.data(),
-            oof_data_->oof_positioned_descendants.size()};
-  }
+      const;
 
   NGFragmentedOutOfFlowData* FragmentedOutOfFlowData() const;
 

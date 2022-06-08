@@ -395,6 +395,15 @@ ShapeResultView::RunInfoPart* ShapeResultView::PopulateRunInfoParts(
   return nullptr;
 }
 
+base::span<ShapeResultView::RunInfoPart> ShapeResultView::Parts() {
+  return {reinterpret_cast<ShapeResultView::RunInfoPart*>(parts_), num_parts_};
+}
+
+base::span<const ShapeResultView::RunInfoPart> ShapeResultView::Parts() const {
+  return {reinterpret_cast<const ShapeResultView::RunInfoPart*>(parts_),
+          num_parts_};
+}
+
 // static
 constexpr size_t ShapeResultView::ByteSize(wtf_size_t num_parts) {
   static_assert(sizeof(ShapeResultView) % alignof(RunInfoPart) == 0,

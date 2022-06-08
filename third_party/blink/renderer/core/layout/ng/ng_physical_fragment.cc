@@ -472,6 +472,14 @@ bool NGPhysicalFragment::IsTextControlPlaceholder() const {
          blink::IsTextControlPlaceholder(layout_object_->GetNode());
 }
 
+base::span<NGPhysicalOutOfFlowPositionedNode>
+NGPhysicalFragment::OutOfFlowPositionedDescendants() const {
+  if (!HasOutOfFlowPositionedDescendants())
+    return base::span<NGPhysicalOutOfFlowPositionedNode>();
+  return {oof_data_->oof_positioned_descendants.data(),
+          oof_data_->oof_positioned_descendants.size()};
+}
+
 NGFragmentedOutOfFlowData* NGPhysicalFragment::FragmentedOutOfFlowData() const {
   if (!has_fragmented_out_of_flow_data_)
     return nullptr;
