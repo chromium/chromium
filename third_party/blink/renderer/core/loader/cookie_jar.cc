@@ -122,11 +122,10 @@ String CookieJar::Cookies() {
                              RuntimeEnabledFeatures::PartitionedCookiesEnabled(
                                  document_->GetExecutionContext()),
                              &value);
-  last_operation_was_set_ = false;
   LogCookieHistogram("Blink.CookiesTime.", requested, timer.Elapsed());
-
   UpdateCacheAfterGetRequest(cookie_url, value);
 
+  last_operation_was_set_ = false;
   return value;
 }
 
@@ -199,7 +198,7 @@ void CookieJar::UpdateCacheAfterGetRequest(const KURL& cookie_url,
     }
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Blink.Experimental.Cookies.CacheLookupResult",
+  UMA_HISTOGRAM_ENUMERATION("Blink.Experimental.Cookies.CacheLookupResult2",
                             result);
 
   last_cookies_hash_ = new_hash;
