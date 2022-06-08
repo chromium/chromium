@@ -268,6 +268,26 @@ base::FilePath PrefService::GetFilePath(const std::string& path) const {
   return *result;
 }
 
+const base::Value::Dict* PrefService::GetValueDict(
+    const std::string& path) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const base::Value* value = GetDictionary(path);
+  if (!value)
+    return nullptr;
+  return &value->GetDict();
+}
+
+const base::Value::List* PrefService::GetValueList(
+    const std::string& path) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const base::Value* value = GetList(path);
+  if (!value)
+    return nullptr;
+  return &value->GetList();
+}
+
 bool PrefService::HasPrefPath(const std::string& path) const {
   const Preference* pref = FindPreference(path);
   return pref && !pref->IsDefaultValue();

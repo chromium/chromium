@@ -11,11 +11,11 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/prefs_export.h"
 
 namespace base {
-class Value;
 class FilePath;
 }
 
@@ -56,11 +56,19 @@ class COMPONENTS_PREFS_EXPORT PrefRegistrySimple : public PrefRegistry {
                         base::Value default_value,
                         uint32_t flags = NO_REGISTRATION_FLAGS);
 
+  void RegisterListPref(const std::string& path,
+                        base::Value::List default_value,
+                        uint32_t flags = NO_REGISTRATION_FLAGS);
+
   void RegisterDictionaryPref(const std::string& path,
                               uint32_t flags = NO_REGISTRATION_FLAGS);
 
   void RegisterDictionaryPref(const std::string& path,
                               base::Value default_value,
+                              uint32_t flags = NO_REGISTRATION_FLAGS);
+
+  void RegisterDictionaryPref(const std::string& path,
+                              base::Value::Dict default_value,
                               uint32_t flags = NO_REGISTRATION_FLAGS);
 
   void RegisterInt64Pref(const std::string& path,

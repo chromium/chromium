@@ -207,13 +207,13 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   EXPECT_FALSE(string.IsDefaultValue());
 
   // Test string list
-  base::Value expected_list(base::Value::Type::LIST);
+  base::Value::List expected_list;
   std::vector<std::string> expected_vector;
   StringListPrefMember string_list;
   string_list.Init(kStringListPref, &prefs);
 
   // Check the defaults
-  EXPECT_EQ(expected_list, *prefs.GetList(kStringListPref));
+  EXPECT_EQ(expected_list, *prefs.GetValueList(kStringListPref));
   EXPECT_EQ(expected_vector, string_list.GetValue());
   EXPECT_EQ(expected_vector, *string_list);
   EXPECT_TRUE(string_list.IsDefaultValue());
@@ -223,7 +223,7 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   expected_vector.push_back("foo");
   string_list.SetValue(expected_vector);
 
-  EXPECT_EQ(expected_list, *prefs.GetList(kStringListPref));
+  EXPECT_EQ(expected_list, *prefs.GetValueList(kStringListPref));
   EXPECT_EQ(expected_vector, string_list.GetValue());
   EXPECT_EQ(expected_vector, *string_list);
   EXPECT_FALSE(string_list.IsDefaultValue());
@@ -231,20 +231,19 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   // Try adding through the pref.
   expected_list.Append("bar");
   expected_vector.push_back("bar");
-  prefs.Set(kStringListPref, expected_list);
+  prefs.SetList(kStringListPref, expected_list.Clone());
 
-  EXPECT_EQ(expected_list, *prefs.GetList(kStringListPref));
+  EXPECT_EQ(expected_list, *prefs.GetValueList(kStringListPref));
   EXPECT_EQ(expected_vector, string_list.GetValue());
   EXPECT_EQ(expected_vector, *string_list);
   EXPECT_FALSE(string_list.IsDefaultValue());
 
   // Try removing through the pref.
-  EXPECT_TRUE(
-      expected_list.EraseListIter(expected_list.GetListDeprecated().begin()));
+  expected_list.erase(expected_list.begin());
   expected_vector.erase(expected_vector.begin());
-  prefs.Set(kStringListPref, expected_list);
+  prefs.SetList(kStringListPref, expected_list.Clone());
 
-  EXPECT_EQ(expected_list, *prefs.GetList(kStringListPref));
+  EXPECT_EQ(expected_list, *prefs.GetValueList(kStringListPref));
   EXPECT_EQ(expected_vector, string_list.GetValue());
   EXPECT_EQ(expected_vector, *string_list);
   EXPECT_FALSE(string_list.IsDefaultValue());
