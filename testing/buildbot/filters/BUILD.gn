@@ -94,6 +94,12 @@ source_set("chrome_public_test_apk_filters") {
   ]
 }
 
+source_set("chrome_public_unit_test_apk_filters") {
+  testonly = true
+
+  data = [ "//testing/buildbot/filters/android.emulator_12.chrome_public_unit_test_apk.filter" ]
+}
+
 source_set("chromeos_filters") {
   data = [
     "//testing/buildbot/filters/chromeos.base_unittests.filter",

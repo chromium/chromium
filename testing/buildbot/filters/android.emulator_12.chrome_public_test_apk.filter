@@ -74,6 +74,3 @@
 
 # crbug.com/1297678
 -org.chromium.ui.base.ClipboardAndroidTest.*
-
-# crbug.com/1297682
--org.chromium.chrome.browser.download.DownloadForegroundServiceManagerTest.*

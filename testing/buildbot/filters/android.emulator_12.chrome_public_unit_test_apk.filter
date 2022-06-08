@@ -1,0 +1,2 @@
+# crbug.com/1297682
+-org.chromium.chrome.browser.download.DownloadForegroundServiceManagerTest.*

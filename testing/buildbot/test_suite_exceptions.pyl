@@ -1069,6 +1069,15 @@
       }
     }
   },
+  'chrome_public_unit_test_apk': {
+    'modifications': {
+      'android-12-x64-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_unit_test_apk.filter',
+        ],
+      },
+    },
+  },
   'chrome_sizes': {
     'modifications': {
       'lacros-amd64-generic-chrome': {
