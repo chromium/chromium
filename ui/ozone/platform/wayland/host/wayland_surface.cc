@@ -732,6 +732,13 @@ void WaylandSurface::Enter(void* data,
   auto* const surface = static_cast<WaylandSurface*>(data);
   DCHECK(surface);
 
+  // The compositor can send a null output.
+  // crbug.com/1332540
+  if (!output) {
+    LOG(ERROR) << "NULL output received, cannot enter it!";
+    return;
+  }
+
   auto* wayland_output =
       static_cast<WaylandOutput*>(wl_output_get_user_data(output));
 
@@ -751,6 +758,13 @@ void WaylandSurface::Leave(void* data,
                            struct wl_output* output) {
   auto* const surface = static_cast<WaylandSurface*>(data);
   DCHECK(surface);
+
+  // The compositor can send a null output.
+  // crbug.com/1332540
+  if (!output) {
+    LOG(ERROR) << "NULL output received, cannot leave it!";
+    return;
+  }
 
   auto* wayland_output =
       static_cast<WaylandOutput*>(wl_output_get_user_data(output));
