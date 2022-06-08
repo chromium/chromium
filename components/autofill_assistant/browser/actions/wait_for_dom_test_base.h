@@ -74,6 +74,7 @@ class WaitForDomTestBase : public testing::Test {
   std::unique_ptr<base::OneShotTimer> wait_for_dom_timer_;
   int fake_wait_time_ = 0;
   int fake_check_time_ = 0;
+  ClientStatus wait_for_dom_status_ = OkClientStatus();
 };
 
 }  // namespace autofill_assistant

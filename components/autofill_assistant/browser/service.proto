@@ -3457,6 +3457,17 @@ message ExternalActionProto {
   // state.
   optional bool allow_interrupt = 3;
 
+  // A condition on the DOM. Whenever its status changes a notification is sent
+  // to the external caller.
+  message ExternalCondition {
+    // The identifier to be used in the external notification.
+    optional int32 id = 1;
+
+    // The condition to be checked internally.
+    optional ElementConditionProto element_condition = 2;
+  }
+  repeated ExternalCondition conditions = 4;
+
   message Result {
     optional external.ResultInfo result_info = 1;
   }

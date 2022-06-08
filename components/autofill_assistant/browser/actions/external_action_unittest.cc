@@ -6,9 +6,13 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_simple_task_runner.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
+#include "components/autofill_assistant/browser/actions/wait_for_dom_test_base.h"
 #include "components/autofill_assistant/browser/external_action_extension_test.pb.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -19,8 +23,12 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::Property;
 using ::testing::Return;
+using ::testing::WithArgs;
 
-class ExternalActionTest : public ::testing::Test {
+class ExternalActionTest : public WaitForDomTestBase {
+ public:
+  ExternalActionTest() = default;
+
  protected:
   void Run() {
     ON_CALL(mock_action_delegate_, SupportsExternalActions)
@@ -28,13 +36,14 @@ class ExternalActionTest : public ::testing::Test {
 
     ActionProto action_proto;
     *action_proto.mutable_external_action() = proto_;
-    ExternalAction action(&mock_action_delegate_, action_proto);
-    action.ProcessAction(callback_.Get());
+    action_ =
+        std::make_unique<ExternalAction>(&mock_action_delegate_, action_proto);
+    action_->ProcessAction(callback_.Get());
   }
 
-  MockActionDelegate mock_action_delegate_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   ExternalActionProto proto_;
+  std::unique_ptr<ExternalAction> action_;
 };
 
 external::Result MakeResult(bool success) {
@@ -125,11 +134,12 @@ TEST_F(ExternalActionTest, ExternalActionWithInterrupts) {
         std::move(start_dom_checks_callback).Run();
         std::move(end_action_callback).Run(MakeResult(/* success= */ true));
       });
-  EXPECT_CALL(mock_action_delegate_, WaitForDom);
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   Run();
+  // The action should end at the next WaitForDom notification.
+  task_env_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_F(ExternalActionTest, ExternalActionWithoutInterrupts) {
@@ -169,6 +179,55 @@ TEST_F(ExternalActionTest, DoesNotStartWaitForDomIfDomChecksAreNotRequested) {
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   Run();
+}
+
+TEST_F(ExternalActionTest, ExternalActionWithDomChecks) {
+  proto_.mutable_info();
+  ExternalActionProto::ExternalCondition condition;
+  condition.set_id(55);
+  *condition.mutable_element_condition()->mutable_match() =
+      ToSelectorProto("element");
+
+  EXPECT_CALL(mock_action_delegate_, RequestExternalAction)
+      .WillOnce([](const ExternalActionProto& external_action,
+                   base::OnceCallback<void()> start_dom_checks_callback,
+                   base::OnceCallback<void(const external::Result& result)>
+                       end_action_callback) {
+        std::move(start_dom_checks_callback).Run();
+        std::move(end_action_callback).Run(MakeResult(/* success= */ true));
+      });
+
+  // TODO(b/201964908): Add expectation for notification once it's added.
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  Run();
+  // The action should end at the next WaitForDom notification.
+  task_env_.FastForwardBy(base::Seconds(1));
+}
+
+TEST_F(ExternalActionTest, WaitForDomFailure) {
+  proto_.mutable_info();
+  proto_.set_allow_interrupt(true);
+
+  EXPECT_CALL(mock_action_delegate_, RequestExternalAction)
+      .WillOnce([](const ExternalActionProto& external_action,
+                   base::OnceCallback<void()> start_dom_checks_callback,
+                   base::OnceCallback<void(const external::Result& result)>
+                       end_action_callback) {
+        std::move(start_dom_checks_callback).Run();
+        std::move(end_action_callback).Run(MakeResult(/* success= */ true));
+      });
+
+  // Even if the external action ended in a success, if the WaitForDom ends in
+  // an error we expect the error to be reported.
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, INTERRUPT_FAILED))));
+  Run();
+  wait_for_dom_status_ = ClientStatus(INTERRUPT_FAILED);
+  // The action should end at the next WaitForDom notification.
+  task_env_.FastForwardBy(base::Seconds(1));
 }
 
 }  // namespace

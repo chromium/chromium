@@ -35,3 +35,18 @@ message Result {
 message ResultInfo {
   extensions 100 to max;
 }
+
+// An update on the status of the DOM conditions for the current action.
+message ElementConditionsUpdate {
+  // The list of conditions whose status changed since the last update. The
+  // first update for each action will contain all the conditions which are
+  // specified in the equivalent action in the backend.
+  message ConditionResult {
+    // The identifier of this condition, matches the one specified in the
+    // equivalent action in the backend.
+    optional int32 id = 1;
+    // Whether the condition was satisfied.
+    optional bool satisfied = 2;
+  }
+  repeated ConditionResult results = 1;
+}

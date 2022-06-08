@@ -73,6 +73,14 @@ void WaitForDomTestBase::OnWaitForDomDone(
   if (!fake_wait_for_dom_done_)
     return;
 
+  // If we manually set |wait_for_dom_status_| to an error status we simulate
+  // the WaitForDom ending in an error.
+  if (!wait_for_dom_status_.ok()) {
+    std::move(fake_wait_for_dom_done_)
+        .Run(wait_for_dom_status_, base::Milliseconds(0));
+    return;
+  }
+
   if (check_elements_result_.ok()) {
     std::move(fake_wait_for_dom_done_)
         .Run(check_elements_result_, base::Milliseconds(fake_wait_time_));
