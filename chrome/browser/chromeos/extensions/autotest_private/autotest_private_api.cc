@@ -49,6 +49,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/i18n/base_i18n_switches.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
@@ -3566,7 +3567,21 @@ AutotestPrivateGetAllInstalledAppsFunction::Run() {
 
     api::autotest_private::App app;
     app.app_id = update.AppId();
-    app.name = update.Name();
+
+    // Assume that when `switches::kForceDirectionRTL` is enabled, the system
+    // language still follows the left-to-right fashion. Because the app names
+    // carried by `update` are adapted to RTL by inserting extra characters that
+    // indicate the text direction, we should recover the original app names
+    // before returning them as the result.
+    if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kForceUIDirection) == switches::kForceDirectionRTL) {
+      std::u16string name = base::UTF8ToUTF16(update.Name());
+      base::i18n::UnadjustStringForLocaleDirection(&name);
+      app.name = base::UTF16ToUTF8(name);
+    } else {
+      app.name = update.Name();
+    }
+
     app.short_name = update.ShortName();
     app.publisher_id = update.PublisherId();
     app.additional_search_terms = update.AdditionalSearchTerms();
