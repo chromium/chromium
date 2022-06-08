@@ -2110,7 +2110,7 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   EXPECT_THAT(result, IsEmpty());
 
   RunUntilIdle();
-#elif (BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_CASTOS))
+#elif BUILDFLAG(IS_CASTOS)
   EXPECT_EQ(DatabaseCleanupResult::kEncryptionUnavailable,
             db.DeleteUndecryptableLogins());
 #else

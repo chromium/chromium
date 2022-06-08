@@ -3883,7 +3883,7 @@ static_library("ui") {
     # to fail on this variant. Since this target is only referenced (but not
     # compiled) on this variant, it's okay to add this "incorrect" dependency
     # to Cast Linux builds so that `gn check` passes.
-    if (toolkit_views || (is_castos && (is_linux || is_chromeos))) {
+    if (toolkit_views || is_castos) {
       public_deps += [
         "//ui/views",
         "//ui/views/controls/webview",

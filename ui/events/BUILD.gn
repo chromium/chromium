@@ -712,7 +712,7 @@ if (!is_ios) {
       deps += [ "//ui/events:keyboard_hook" ]
     }
 
-    if (enable_cast_receiver && !is_android) {
+    if (is_castos) {
       sources += [ "chromecast/scroller_unittest.cc" ]
     }
 

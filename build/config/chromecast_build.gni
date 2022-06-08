@@ -49,8 +49,8 @@ declare_args() {
   # Set this to true to build for Nest hardware running Linux (aka "CastOS").
   # Set this to false to use the defaults for the target OS/platform.
   #
-  # TODO(crbug.com/1314528): Change default to false and require is_linux.
-  is_castos = is_chromecast
+  # TODO(crbug.com/1314528): Change default to false
+  is_castos = is_chromecast && is_linux
 
   # Set this to true to build for Android-based Cast devices.
   # Set this to false to use the defaults for the target OS/platform.
@@ -132,6 +132,7 @@ assert(enable_cast_receiver == is_chromecast,
 
 assert(enable_cast_receiver || !is_castos,
        "is_castos = true requires enable_cast_receiver = true.")
+assert(is_linux || !is_castos, "is_castos = true requires is_linux = true.")
 
 assert(enable_cast_receiver || !is_cast_android,
        "is_cast_android = true requires enable_cast_receiver = true.")
