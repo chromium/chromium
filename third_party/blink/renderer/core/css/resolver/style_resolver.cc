@@ -1847,6 +1847,8 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
 
       // If the child style is a cache hit, we'll never reach StyleBuilder::
       // ApplyProperty, hence we'll never set the flag on the parent.
+      // (We do the same thing for independently inherited properties in
+      // Element::RecalcOwnStyle().)
       if (state.Style()->HasExplicitInheritance())
         state.ParentStyle()->SetChildHasExplicitInheritance();
       is_non_inherited_cache_hit = true;

@@ -3891,6 +3891,14 @@ StyleRecalcChange Element::RecalcOwnStyle(
     // recalc if the only changed properties are independent. In this case, we
     // can simply clone the old ComputedStyle and set these directly.
     new_style = PropagateInheritedProperties();
+    if (new_style) {
+      // If the child style is copied from the old one, we'll never
+      // reach StyleBuilder::ApplyProperty(), hence we'll
+      // never set the flag on the parent. this is completely analogous
+      // to the code in StyleResolver::ApplyMatchedCache().
+      if (new_style->HasExplicitInheritance())
+        parent_style->SetChildHasExplicitInheritance();
+    }
   }
   if (!new_style && (parent_style || (GetDocument().documentElement() == this &&
                                       LayoutViewCanHaveChildren(*this)))) {
