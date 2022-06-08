@@ -16,14 +16,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::trace_event::MemoryAllocatorDump;
+using testing::ByRef;
 using testing::Contains;
 using testing::Eq;
-using testing::Contains;
-using testing::ByRef;
 
 namespace mojo {
 namespace core {
 namespace {
+
+using ::testing::IsNull;
+using ::testing::Ne;
+using ::testing::NotNull;
+using ::testing::SizeIs;
 
 class FakeMessagePipeDispatcher : public Dispatcher {
  public:
@@ -53,6 +57,228 @@ void CheckNameAndValue(base::trace_event::ProcessMemoryDump* pmd,
 }
 
 }  // namespace
+
+TEST(HandleTableTest, GetInvalidDispatcher) {
+  HandleTable handle_table;
+  const base::AutoLock auto_lock(handle_table.GetLock());
+  EXPECT_THAT(handle_table.GetDispatcher(MojoHandle(2)), IsNull());
+}
+
+TEST(HandleTableTest, GetDispatcher) {
+  const scoped_refptr<Dispatcher> dispatcher(new FakeMessagePipeDispatcher);
+
+  HandleTable handle_table;
+  const base::AutoLock auto_lock(handle_table.GetLock());
+
+  const MojoHandle handle = handle_table.AddDispatcher(dispatcher);
+  ASSERT_THAT(handle, Ne(MOJO_HANDLE_INVALID));
+  EXPECT_THAT(handle_table.GetDispatcher(handle), Eq(dispatcher));
+}
+
+TEST(HandleTableTest, AddAndGetDispatchers) {
+  const scoped_refptr<Dispatcher> one(new FakeMessagePipeDispatcher);
+  const scoped_refptr<Dispatcher> two(new FakeMessagePipeDispatcher);
+  const scoped_refptr<Dispatcher> three(new FakeMessagePipeDispatcher);
+
+  HandleTable handle_table;
+  const base::AutoLock auto_lock(handle_table.GetLock());
+
+  const MojoHandle one_handle = handle_table.AddDispatcher(one);
+  ASSERT_THAT(one_handle, Ne(MOJO_HANDLE_INVALID));
+  EXPECT_THAT(handle_table.GetDispatcher(one_handle), Eq(one));
+
+  const MojoHandle two_handle = handle_table.AddDispatcher(two);
+  ASSERT_THAT(two_handle, Ne(MOJO_HANDLE_INVALID));
+  EXPECT_THAT(handle_table.GetDispatcher(two_handle), Eq(two));
+
+  const MojoHandle three_handle = handle_table.AddDispatcher(three);
+  ASSERT_THAT(three_handle, Ne(MOJO_HANDLE_INVALID));
+  EXPECT_THAT(handle_table.GetDispatcher(three_handle), Eq(three));
+
+  EXPECT_THAT(handle_table.GetDispatcher(one_handle), Eq(one));
+  EXPECT_THAT(handle_table.GetDispatcher(two_handle), Eq(two));
+  EXPECT_THAT(handle_table.GetDispatcher(three_handle), Eq(three));
+}
+
+TEST(HandleTableTest, GetAndRemoveInvalidDispatcher) {
+  HandleTable handle_table;
+  const base::AutoLock auto_lock(handle_table.GetLock());
+
+  scoped_refptr<Dispatcher> dispatcher;
+  EXPECT_THAT(handle_table.GetAndRemoveDispatcher(MojoHandle(2), &dispatcher),
+              Eq(MOJO_RESULT_INVALID_ARGUMENT));
+  EXPECT_THAT(dispatcher, IsNull());
+}
+
+TEST(HandleTableTest, GetAndRemoveDispatchers) {
+  const scoped_refptr<Dispatcher> one(new FakeMessagePipeDispatcher);
+  const scoped_refptr<Dispatcher> two(new FakeMessagePipeDispatcher);
+  const scoped_refptr<Dispatcher> three(new FakeMessagePipeDispatcher);
+
+  HandleTable handle_table;
+  const base::AutoLock auto_lock(handle_table.GetLock());
+
+  const MojoHandle one_handle = handle_table.AddDispatcher(one);
+  const MojoHandle two_handle = handle_table.AddDispatcher(two);
+  const MojoHandle three_handle = handle_table.AddDispatcher(three);
+  EXPECT_THAT(handle_table.GetDispatcher(one_handle), Eq(one));
+  EXPECT_THAT(handle_table.GetDispatcher(two_handle), Eq(two));
+  EXPECT_THAT(handle_table.GetDispatcher(three_handle), Eq(three));
+
+  scoped_refptr<Dispatcher> dispatcher;
+  EXPECT_THAT(handle_table.GetAndRemoveDispatcher(three_handle, &dispatcher),
+              Eq(MOJO_RESULT_OK));
+  EXPECT_THAT(dispatcher, NotNull());
+  EXPECT_THAT(handle_table.GetDispatcher(three_handle), IsNull());
+
+  dispatcher.reset();
+  EXPECT_THAT(handle_table.GetAndRemoveDispatcher(two_handle, &dispatcher),
+              Eq(MOJO_RESULT_OK));
+  EXPECT_THAT(dispatcher, NotNull());
+  EXPECT_THAT(handle_table.GetDispatcher(two_handle), IsNull());
+
+  dispatcher.reset();
+  EXPECT_THAT(handle_table.GetAndRemoveDispatcher(one_handle, &dispatcher),
+              Eq(MOJO_RESULT_OK));
+  EXPECT_THAT(dispatcher, NotNull());
+  EXPECT_THAT(handle_table.GetDispatcher(one_handle), IsNull());
+}
+
+TEST(HandleTableTest, GetAndRemoveDispatcherInTransit) {
+  const scoped_refptr<Dispatcher> one(new FakeMessagePipeDispatcher);
+  const scoped_refptr<Dispatcher> two(new FakeMessagePipeDispatcher);
+  const scoped_refptr<Dispatcher> three(new FakeMessagePipeDispatcher);
+
+  HandleTable handle_table;
+  const base::AutoLock auto_lock(handle_table.GetLock());
+
+  const MojoHandle one_handle = handle_table.AddDispatcher(one);
+  const MojoHandle two_handle = handle_table.AddDispatcher(two);
+  const MojoHandle three_handle = handle_table.AddDispatcher(three);
+  const MojoHandle handles[] = {one_handle, two_handle, three_handle};
+
+  std::vector<Dispatcher::DispatcherInTransit> dispatchers_in_transit;
+  // Leave out the last handle.
+  EXPECT_THAT(
+      handle_table.BeginTransit(handles,
+                                /*num_handles=*/2, &dispatchers_in_transit),
+      Eq(MOJO_RESULT_OK));
+  EXPECT_THAT(dispatchers_in_transit, SizeIs(2));
+
+  scoped_refptr<Dispatcher> dispatcher;
+  EXPECT_THAT(handle_table.GetAndRemoveDispatcher(three_handle, &dispatcher),
+              Eq(MOJO_RESULT_OK));
+  EXPECT_THAT(dispatcher, NotNull());
+  EXPECT_THAT(handle_table.GetDispatcher(three_handle), IsNull());
+
+  dispatcher.reset();
+  EXPECT_THAT(handle_table.GetAndRemoveDispatcher(two_handle, &dispatcher),
+              Eq(MOJO_RESULT_BUSY));
+  EXPECT_THAT(dispatcher, IsNull());
+  EXPECT_THAT(handle_table.GetDispatcher(two_handle), NotNull());
+
+  dispatcher.reset();
+  EXPECT_THAT(handle_table.GetAndRemoveDispatcher(one_handle, &dispatcher),
+              Eq(MOJO_RESULT_BUSY));
+  EXPECT_THAT(dispatcher, IsNull());
+  EXPECT_THAT(handle_table.GetDispatcher(one_handle), NotNull());
+}
+
+TEST(HandleTableTest, InvalidExtraBeginTransit) {
+  const scoped_refptr<Dispatcher> one(new FakeMessagePipeDispatcher);
+  const scoped_refptr<Dispatcher> two(new FakeMessagePipeDispatcher);
+  const scoped_refptr<Dispatcher> three(new FakeMessagePipeDispatcher);
+
+  HandleTable handle_table;
+  const base::AutoLock auto_lock(handle_table.GetLock());
+
+  const MojoHandle one_handle = handle_table.AddDispatcher(one);
+  const MojoHandle two_handle = handle_table.AddDispatcher(two);
+  const MojoHandle three_handle = handle_table.AddDispatcher(three);
+  const MojoHandle handles[] = {one_handle, two_handle, three_handle};
+
+  std::vector<Dispatcher::DispatcherInTransit> dispatchers_in_transit;
+  // Leave out the first handle.
+  EXPECT_THAT(
+      handle_table.BeginTransit(handles + 1,
+                                /*num_handles=*/2, &dispatchers_in_transit),
+      Eq(MOJO_RESULT_OK));
+  EXPECT_THAT(dispatchers_in_transit, SizeIs(2));
+
+  dispatchers_in_transit.clear();
+  EXPECT_THAT(
+      handle_table.BeginTransit(handles,
+                                /*num_handles=*/3, &dispatchers_in_transit),
+      Eq(MOJO_RESULT_BUSY));
+  EXPECT_THAT(dispatchers_in_transit, SizeIs(1));
+}
+
+TEST(HandleTableTest, CompleteTransitAndClose) {
+  const scoped_refptr<Dispatcher> one(new FakeMessagePipeDispatcher);
+  const scoped_refptr<Dispatcher> two(new FakeMessagePipeDispatcher);
+  const scoped_refptr<Dispatcher> three(new FakeMessagePipeDispatcher);
+
+  HandleTable handle_table;
+  const base::AutoLock auto_lock(handle_table.GetLock());
+
+  const MojoHandle one_handle = handle_table.AddDispatcher(one);
+  const MojoHandle two_handle = handle_table.AddDispatcher(two);
+  const MojoHandle three_handle = handle_table.AddDispatcher(three);
+  const MojoHandle handles[] = {one_handle, two_handle, three_handle};
+
+  std::vector<Dispatcher::DispatcherInTransit> dispatchers_in_transit;
+  EXPECT_THAT(
+      handle_table.BeginTransit(handles,
+                                /*num_handles=*/3, &dispatchers_in_transit),
+      Eq(MOJO_RESULT_OK));
+  EXPECT_THAT(dispatchers_in_transit, SizeIs(3));
+
+  handle_table.CompleteTransitAndClose(dispatchers_in_transit);
+  EXPECT_THAT(handle_table.GetDispatcher(three_handle), IsNull());
+  EXPECT_THAT(handle_table.GetDispatcher(two_handle), IsNull());
+  EXPECT_THAT(handle_table.GetDispatcher(one_handle), IsNull());
+}
+
+TEST(HandleTableTest, CancelTransit) {
+  const scoped_refptr<Dispatcher> one(new FakeMessagePipeDispatcher);
+  const scoped_refptr<Dispatcher> two(new FakeMessagePipeDispatcher);
+  const scoped_refptr<Dispatcher> three(new FakeMessagePipeDispatcher);
+
+  HandleTable handle_table;
+  const base::AutoLock auto_lock(handle_table.GetLock());
+
+  const MojoHandle one_handle = handle_table.AddDispatcher(one);
+  const MojoHandle two_handle = handle_table.AddDispatcher(two);
+  const MojoHandle three_handle = handle_table.AddDispatcher(three);
+  const MojoHandle handles[] = {one_handle, two_handle, three_handle};
+
+  std::vector<Dispatcher::DispatcherInTransit> dispatchers_in_transit;
+  EXPECT_THAT(
+      handle_table.BeginTransit(handles,
+                                /*num_handles=*/3, &dispatchers_in_transit),
+      Eq(MOJO_RESULT_OK));
+  EXPECT_THAT(dispatchers_in_transit, SizeIs(3));
+
+  handle_table.CancelTransit(dispatchers_in_transit);
+
+  scoped_refptr<Dispatcher> dispatcher;
+  EXPECT_THAT(handle_table.GetAndRemoveDispatcher(three_handle, &dispatcher),
+              Eq(MOJO_RESULT_OK));
+  EXPECT_THAT(dispatcher, NotNull());
+  EXPECT_THAT(handle_table.GetDispatcher(three_handle), IsNull());
+
+  dispatcher.reset();
+  EXPECT_THAT(handle_table.GetAndRemoveDispatcher(two_handle, &dispatcher),
+              Eq(MOJO_RESULT_OK));
+  EXPECT_THAT(dispatcher, NotNull());
+  EXPECT_THAT(handle_table.GetDispatcher(two_handle), IsNull());
+
+  dispatcher.reset();
+  EXPECT_THAT(handle_table.GetAndRemoveDispatcher(one_handle, &dispatcher),
+              Eq(MOJO_RESULT_OK));
+  EXPECT_THAT(dispatcher, NotNull());
+  EXPECT_THAT(handle_table.GetDispatcher(one_handle), IsNull());
+}
 
 TEST(HandleTableTest, OnMemoryDump) {
   HandleTable ht;
