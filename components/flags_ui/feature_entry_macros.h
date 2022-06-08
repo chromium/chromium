@@ -4,7 +4,7 @@
 
 #ifndef COMPONENTS_FLAGS_UI_FEATURE_ENTRY_MACROS_H_
 #define COMPONENTS_FLAGS_UI_FEATURE_ENTRY_MACROS_H_
-
+#include "build/chromeos_buildflags.h"
 
 // Macros to simplify specifying the type of FeatureEntry. Please refer to
 // the comments on FeatureEntry::Type in feature_entry.h, which explain the
@@ -43,5 +43,17 @@
   flags_ui::FeatureEntry::FEATURE_WITH_PARAMS_VALUE, {                    \
     .feature = { &feature_entry, feature_variations, feature_trial }      \
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define PLATFORM_FEATURE_NAME_TYPE(name)                 \
+  flags_ui::FeatureEntry::PLATFORM_FEATURE_NAME_VALUE, { \
+    .platform_feature_name = { name, {}, nullptr }       \
+  }
+#define PLATFORM_FEATURE_WITH_PARAMS_VALUE_TYPE(name, feature_variations, \
+                                                feature_trial)            \
+  flags_ui::FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE, {      \
+    .platform_feature_name = { name, feature_variations, feature_trial }  \
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // COMPONENTS_FLAGS_UI_FEATURE_ENTRY_MACROS_H_
