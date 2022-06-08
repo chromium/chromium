@@ -194,6 +194,9 @@ absl::optional<TaskId> TaskAttributionTrackerImpl::V8Adapter::GetValue(
   }
   v8::Isolate* isolate = script_state->GetIsolate();
   DCHECK(isolate);
+  if (isolate->IsExecutionTerminating()) {
+    return absl::nullopt;
+  }
   // If not empty, the value must be a ScriptWrappableTaskId.
   NonThrowableExceptionState exception_state;
   ScriptWrappableTaskId* script_wrappable_task_id =
@@ -214,6 +217,9 @@ void TaskAttributionTrackerImpl::V8Adapter::SetValue(
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
   DCHECK(isolate);
+  if (isolate->IsExecutionTerminating()) {
+    return;
+  }
   v8::Local<v8::Context> context = script_state->GetContext();
   DCHECK(!context.IsEmpty());
 
