@@ -92,7 +92,9 @@ class WaylandScreenTest : public WaylandTest {
 
     WaylandTest::SetUp();
 
-    mock_zaura_shell_ = std::make_unique<wl::MockZAuraShell>();
+    // Initializing the MockZAuraShell gives ownership to the wl_display.
+    // TODO(fangzhoug): Investigate resulting memory leak.
+    mock_zaura_shell_ = new wl::MockZAuraShell();
     mock_zaura_shell_->Initialize(server_.display());
 
     output_->SetRect({kOutputWidth, kOutputHeight});
@@ -129,8 +131,7 @@ class WaylandScreenTest : public WaylandTest {
     EXPECT_EQ(display_for_widget.id(), expected_display_id);
   }
 
-  std::unique_ptr<wl::MockZAuraShell> mock_zaura_shell_;
-
+  wl::MockZAuraShell* mock_zaura_shell_ = nullptr;
   wl::TestOutput* output_ = nullptr;
   WaylandOutputManager* output_manager_ = nullptr;
 
