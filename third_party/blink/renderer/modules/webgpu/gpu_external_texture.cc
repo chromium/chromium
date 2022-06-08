@@ -203,6 +203,17 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
   }
 
   gfx::ColorSpace srcColorSpace = media_video_frame->ColorSpace();
+  // It should be very rare that a frame didn't get a valid colorspace through
+  // the guessing process:
+  // https://source.chromium.org/chromium/chromium/src/+/main:media/base/video_color_space.cc;l=69;drc=6c9cfff09be8397270b376a4e4407328694e97fa
+  // The historical rule for this was to use BT.601 for SD content and BT.709
+  // for HD content:
+  // https://source.chromium.org/chromium/chromium/src/+/main:media/ffmpeg/ffmpeg_common.cc;l=683;drc=1946212ac0100668f14eb9e2843bdd846e510a1e)
+  // We prefer always using BT.709 since SD content in practice is down-scaled
+  // HD content, not NTSC broadcast content.
+  if (!srcColorSpace.IsValid()) {
+    srcColorSpace = gfx::ColorSpace::CreateREC709();
+  }
   gfx::ColorSpace dstColorSpace =
       PredefinedColorSpaceToGfxColorSpace(dst_predefined_color_space);
 
