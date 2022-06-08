@@ -68,6 +68,7 @@ class ChildAccountService : public KeyedService,
       const base::RepeatingCallback<void()>& callback);
 
  private:
+  friend class ChildAccountServiceTest;
   friend class ChildAccountServiceFactory;
   // Use |ChildAccountServiceFactory::GetForProfile(...)| to get an instance of
   // this service.
