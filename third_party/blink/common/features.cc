@@ -1252,6 +1252,41 @@ GetSetTimeoutWithout1MsClampPolicyOverride() {
   return policy;
 }
 
+enum class UnthrottledNestedTimeoutPolicyOverride {
+  kNoOverride,
+  kForceDisable,
+  kForceEnable
+};
+
+bool g_unthrottled_nested_timeout_policy_override_cached = false;
+
+// Returns the UnthrottledNestedTimeout policy settings. This is calculated
+// once on first access and cached.
+UnthrottledNestedTimeoutPolicyOverride
+GetUnthrottledNestedTimeoutPolicyOverride() {
+  static UnthrottledNestedTimeoutPolicyOverride policy =
+      UnthrottledNestedTimeoutPolicyOverride::kNoOverride;
+  if (g_unthrottled_nested_timeout_policy_override_cached)
+    return policy;
+
+  // Otherwise, check the command-line for the renderer. Only values of "0"
+  // and "1" are valid, anything else is ignored (and allows the base::Feature
+  // to control the feature). This slow path will only be hit once per renderer
+  // process.
+  std::string value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kUnthrottledNestedTimeoutPolicy);
+  if (value == switches::kUnthrottledNestedTimeoutPolicy_ForceEnable) {
+    policy = UnthrottledNestedTimeoutPolicyOverride::kForceEnable;
+  } else if (value == switches::kUnthrottledNestedTimeoutPolicy_ForceDisable) {
+    policy = UnthrottledNestedTimeoutPolicyOverride::kForceDisable;
+  } else {
+    policy = UnthrottledNestedTimeoutPolicyOverride::kNoOverride;
+  }
+  g_unthrottled_nested_timeout_policy_override_cached = true;
+  return policy;
+}
+
 }  // namespace
 
 void ClearSetTimeoutWithout1MsClampPolicyOverrideCacheForTesting() {
@@ -1269,18 +1304,32 @@ bool IsSetTimeoutWithoutClampEnabled() {
   return base::FeatureList::IsEnabled(features::kSetTimeoutWithoutClamp);
 }
 
+void ClearUnthrottledNestedTimeoutOverrideCacheForTesting() {
+  // Tests may want to force recalculation of the cached policy value when
+  // exercising different configs.
+  g_unthrottled_nested_timeout_policy_override_cached = false;
+}
+
 // If enabled, the setTimeout(..., 0) will clamp to 4ms after a custom `nesting`
 // level.
 // Tracking bug: https://crbug.com/1108877.
 const base::Feature kMaxUnthrottledTimeoutNestingLevel{
     "MaxUnthrottledTimeoutNestingLevel", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<int> kMaxUnthrottledTimeoutNestingLevelParam{
-    &kMaxUnthrottledTimeoutNestingLevel, "nesting", 10};
+    &kMaxUnthrottledTimeoutNestingLevel, "nesting", 100};
 bool IsMaxUnthrottledTimeoutNestingLevelEnabled() {
+  auto policy = GetUnthrottledNestedTimeoutPolicyOverride();
+  if (policy != UnthrottledNestedTimeoutPolicyOverride::kNoOverride)
+    return policy == UnthrottledNestedTimeoutPolicyOverride::kForceEnable;
+  // Otherwise respect the base::Feature.
   return base::FeatureList::IsEnabled(
       blink::features::kMaxUnthrottledTimeoutNestingLevel);
 }
+
 int GetMaxUnthrottledTimeoutNestingLevel() {
+  auto policy = GetUnthrottledNestedTimeoutPolicyOverride();
+  if (policy != UnthrottledNestedTimeoutPolicyOverride::kNoOverride)
+    return kMaxUnthrottledTimeoutNestingLevelParam.default_value;
   return kMaxUnthrottledTimeoutNestingLevelParam.Get();
 }
 

@@ -18367,6 +18367,28 @@
       }
     ]
   },
+  "UnthrottledNestedTimeoutEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "UnthrottledNestedTimeoutEnabled": true
+        },
+        "prefs": {
+          "policy.unthrottled_nested_timeout": {
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
+  },
   "WarnBeforeQuittingEnabled": {
     "os": [
       "mac"

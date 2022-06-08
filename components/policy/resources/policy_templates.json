@@ -31124,7 +31124,47 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       If the policy is Enabled or not set, visited origins will be reported to the OS, and origins that have been blocked in Screen Time settings will display a blocking screen.
       If the policy is Disabled, visited origins will not be reported to the OS, and origins that have been blocked in Screen Time settings will be accessible.''',
     },
+    {
+      'name': 'UnthrottledNestedTimeoutEnabled',
+      'owners': ['file://third_party/blink/renderer/core/frame/OWNERS', 'etiennep@chromium.org', 'shaseley@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:104-106', 'chrome.*:104-106', 'android:104-106'],
+      'features': {
+        'per_profile': True,
+        'dynamic_refresh': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': '''Javascript setTimeout() will not be clamped until a higher nesting threshold.''',
+        },
+        {
+          'value': False,
+          'caption': '''Javascript setTimeout() will be clamped after a normal nesting threshold.''',
+        },
+        {
+          'value': None,
+          'caption': '''Default behavior for setTimeout() function nested clamp.''',
+        },
+      ],
+      'default': None,
+      'example_value': True,
+      'id': 988,
+      'caption': '''Control the nesting threshold before which Javascript setTimeout() function start being clamped.''',
+      'tags': [],
+      'desc': '''setTimeout(…, 0) is commonly used to break down long Javascript tasks.
+          When the policy is set to Enabled, setTimeouts and setIntervals with an interval smaller than 4ms are not clamped as aggressively.
+          This improves short horizon performance, but websites abusing the API will still eventually have their setTimeouts clamped.
 
+          This may change task ordering on a web page, leading to unexpected behavior on sites that are dependent on a certain ordering in some way.
+          It also may affect sites with a lot of setTimeout() with a timeout of 0ms usage, e.g. increasing CPU load.
+
+          For users where this policy is unset, Chrome will roll out the change gradually on the stable channel.
+
+          This is a temporary policy that is planned be removed in Chrome 105. This deadline may be extended if there is a need for it among enterprises.
+          ''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -32131,6 +32171,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 987,
+  'highest_id_currently_used': 988,
   'highest_atomic_group_id_currently_used': 43
 }

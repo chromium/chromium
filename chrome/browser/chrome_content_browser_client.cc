@@ -1357,6 +1357,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       prefs::kSuppressDifferentOriginSubframeJSDialogs, true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kSetTimeoutWithout1MsClampEnabled, false);
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kUnthrottledNestedTimeoutEnabled, false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kWebXRImmersiveArEnabled, true);
 #endif
@@ -2387,6 +2389,18 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                 ? blink::switches::kSetTimeoutWithout1MsClampPolicy_ForceEnable
                 : blink::switches::
                       kSetTimeoutWithout1MsClampPolicy_ForceDisable);
+      }
+      // Override MaxUnthrottledTimeoutNestingLevel feature if its Enterprise
+      // Policy is specified.
+      if (prefs->HasPrefPath(
+              policy::policy_prefs::kUnthrottledNestedTimeoutEnabled)) {
+        command_line->AppendSwitchASCII(
+            blink::switches::kUnthrottledNestedTimeoutPolicy,
+            prefs->GetBoolean(
+                policy::policy_prefs::kUnthrottledNestedTimeoutEnabled)
+                ? blink::switches::kUnthrottledNestedTimeoutPolicy_ForceEnable
+                : blink::switches::
+                      kUnthrottledNestedTimeoutPolicy_ForceDisable);
       }
 
       // The IntensiveWakeUpThrottling feature is typically managed via a

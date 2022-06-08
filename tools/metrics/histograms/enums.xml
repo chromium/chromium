@@ -31568,6 +31568,7 @@ Called by update_document_policy_enum.py.-->
   <int value="985" label="ClipboardBlockedForUrls"/>
   <int value="986" label="OsColorMode"/>
   <int value="987" label="RendererAppContainerEnabled"/>
+  <int value="988" label="UnthrottledNestedTimeout"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
