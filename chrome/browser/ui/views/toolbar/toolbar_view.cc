@@ -525,11 +525,12 @@ void ToolbarView::ShowBookmarkBubble(
       GetPageActionIconView(PageActionIconType::kBookmarkStar);
 
   std::unique_ptr<BubbleSyncPromoDelegate> delegate;
+  Profile* profile = browser_->profile();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  delegate = std::make_unique<BookmarkBubbleSignInDelegate>(browser_);
+  delegate = std::make_unique<BookmarkBubbleSignInDelegate>(profile);
 #endif
   BookmarkBubbleView::ShowBubble(anchor_view, bookmark_star_icon, observer,
-                                 std::move(delegate), browser_->profile(), url,
+                                 std::move(delegate), profile, url,
                                  already_bookmarked);
 }
 

@@ -289,8 +289,9 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
       chrome::ShowSettingsSubPage(browser(), chrome::kSignOutSubPage);
       break;
     case AvatarSyncErrorType::kUnrecoverableError: {
+      Profile* profile = browser()->profile();
       signin::IdentityManager* identity_manager =
-          IdentityManagerFactory::GetForProfile(browser()->profile());
+          IdentityManagerFactory::GetForProfile(profile);
       // This error means that the Sync engine failed to initialize. Shutdown
       // Sync engine by revoking sync consent.
       identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
@@ -299,7 +300,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
       Hide();
       // Re-enable sync with the same primary account.
       signin_ui_util::EnableSyncFromSingleAccountPromo(
-          browser(),
+          profile,
           identity_manager->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin),
           signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
@@ -308,7 +309,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
     case AvatarSyncErrorType::kAuthError:
       Hide();
       signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-          browser(),
+          browser()->profile(),
           signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
       break;
     case AvatarSyncErrorType::kUpgradeClientError:
@@ -340,7 +341,7 @@ void ProfileMenuView::OnSigninAccountButtonClicked(CoreAccountInfo account) {
     return;
   Hide();
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser(), account,
+      browser()->profile(), account,
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
 }
 
@@ -373,7 +374,7 @@ void ProfileMenuView::OnSigninButtonClicked() {
   Hide();
 
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser(), AccountInfo(),
+      browser()->profile(), AccountInfo(),
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
 }
 

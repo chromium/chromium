@@ -32,14 +32,12 @@ class SigninUiDelegateImplLacros : public SigninUiDelegate {
   // Displays the Chrome account picker first, if the system has available
   // accounts. If the user chooses to add a new account or no existing accounts
   // are available, this function will display OS's add account flow.
-  void ShowSigninUI(Browser* browser,
-                    Profile* profile,
+  void ShowSigninUI(Profile* profile,
                     bool enable_sync,
                     signin_metrics::AccessPoint access_point,
                     signin_metrics::PromoAction promo_action) override;
   // Displays OS's reauth dialog.
-  void ShowReauthUI(Browser* browser,
-                    Profile* profile,
+  void ShowReauthUI(Profile* profile,
                     const std::string& email,
                     bool enable_sync,
                     signin_metrics::AccessPoint access_point,
@@ -48,7 +46,6 @@ class SigninUiDelegateImplLacros : public SigninUiDelegate {
  private:
   void OnAccountAdded(bool enable_sync,
                       bool is_reauth,
-                      base::WeakPtr<Browser> browser_weak,
                       const base::FilePath& profile_path,
                       signin_metrics::AccessPoint access_point,
                       signin_metrics::PromoAction promo_action,
@@ -57,7 +54,6 @@ class SigninUiDelegateImplLacros : public SigninUiDelegate {
   void OnReauthComplete(
       bool enable_sync,
       signin::ConsistencyCookieManager::ScopedAccountUpdate&& update,
-      base::WeakPtr<Browser> browser_weak,
       const base::FilePath& profile_path,
       signin_metrics::AccessPoint access_point,
       signin_metrics::PromoAction promo_action,

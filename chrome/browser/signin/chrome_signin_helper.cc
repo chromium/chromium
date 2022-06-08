@@ -307,7 +307,7 @@ void ProcessMirrorHeader(
 
     // Display a re-authentication dialog.
     signin_ui_util::ShowReauthForAccount(
-        browser, manage_accounts_params.email,
+        profile, manage_accounts_params.email,
         signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
     return;
   }
@@ -325,7 +325,7 @@ void ProcessMirrorHeader(
       // account is in error, as the reconcilor cannot generate the cookie until
       // the primary account is fixed. Display a reauth dialog instead.
       signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-          browser, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+          profile, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
       return;
     }
 

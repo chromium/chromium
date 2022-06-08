@@ -63,7 +63,8 @@ void BookmarkBubbleSignInDelegateTest::ReplaceBlank(Browser* browser) {
 }
 
 void BookmarkBubbleSignInDelegateTest::SignInBrowser(Browser* browser) {
-  auto delegate = std::make_unique<BookmarkBubbleSignInDelegate>(browser);
+  auto delegate =
+      std::make_unique<BookmarkBubbleSignInDelegate>(browser->profile());
   delegate->OnEnableSync(AccountInfo());
 }
 
@@ -133,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest, BrowserRemoved) {
   int starting_tab_count = extra_browser->tab_strip_model()->count();
 
   std::unique_ptr<BubbleSyncPromoDelegate> delegate =
-      std::make_unique<BookmarkBubbleSignInDelegate>(browser());
+      std::make_unique<BookmarkBubbleSignInDelegate>(profile());
 
   BrowserList::SetLastActive(extra_browser);
 

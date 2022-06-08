@@ -645,8 +645,7 @@ class ProfileMenuViewSigninErrorButtonTest : public ProfileMenuViewTestBase,
    public:
     MOCK_METHOD(void,
                 ShowTurnSyncOnUI,
-                (Browser * browser,
-                 Profile* profile,
+                (Profile * profile,
                  signin_metrics::AccessPoint access_point,
                  signin_metrics::PromoAction promo_action,
                  signin_metrics::Reason signin_reason,
@@ -714,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSigninErrorButtonTest, OpenReauthDialog) {
   EXPECT_CALL(
       mock_delegate_,
       ShowTurnSyncOnUI(
-          browser(), browser()->profile(),
+          browser()->profile(),
           signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
           signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
           signin_metrics::Reason::kReauthentication, account_info().account_id,

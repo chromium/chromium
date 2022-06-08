@@ -63,11 +63,10 @@ void HistoryLoginHandler::ProfileInfoChanged() {
 
 void HistoryLoginHandler::HandleStartSignInFlow(
     const base::ListValue* /*args*/) {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  Profile* profile = Profile::FromWebUI(web_ui());
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser,
-      IdentityManagerFactory::GetForProfile(browser->profile())
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
+      profile,
+      IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin),
       signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
 }

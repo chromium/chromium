@@ -245,7 +245,7 @@ void ExtensionInstalledBubbleView::Init() {
 
 void ExtensionInstalledBubbleView::OnEnableSync(const AccountInfo& account) {
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser_, account,
+      browser_->profile(), account,
       signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE);
   GetWidget()->Close();
 }

@@ -649,9 +649,8 @@ void ManagePasswordsUIController::StartAutomatedPasswordChange(
 }
 
 void ManagePasswordsUIController::EnableSync(const AccountInfo& account) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser, account,
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()), account,
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
 }
 
