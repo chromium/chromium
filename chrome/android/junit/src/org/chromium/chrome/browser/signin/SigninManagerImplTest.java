@@ -130,12 +130,7 @@ public class SigninManagerImplTest {
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt())).thenReturn(true);
         when(mSyncService.getChosenDataTypes()).thenReturn(Set.of(ModelType.BOOKMARKS));
 
-        // Until the first run check is done, we do not allow sign in.
-        assertFalse(mSigninManager.isSigninAllowed());
-        assertFalse(mSigninManager.isSyncOptInAllowed());
-
-        // First run check is complete and there is no signed in account.  Sign in is allowed.
-        mSigninManager.onFirstRunCheckDone();
+        // There is no signed in account.  Sign in is allowed.
         assertTrue(mSigninManager.isSigninAllowed());
         assertTrue(mSigninManager.isSyncOptInAllowed());
 
@@ -169,10 +164,6 @@ public class SigninManagerImplTest {
     public void signinNoTurnSyncOn() {
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt())).thenReturn(true);
 
-        assertFalse(mSigninManager.isSigninAllowed());
-        assertFalse(mSigninManager.isSyncOptInAllowed());
-
-        mSigninManager.onFirstRunCheckDone();
         assertTrue(mSigninManager.isSigninAllowed());
         assertTrue(mSigninManager.isSyncOptInAllowed());
 
@@ -493,8 +484,6 @@ public class SigninManagerImplTest {
         doAnswer(setPrimaryAccountAnswer)
                 .when(mIdentityMutator)
                 .setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SYNC);
-
-        mSigninManager.onFirstRunCheckDone(); // Allow sign-in.
 
         mSigninManager.signinAndEnableSync(SigninAccessPoint.UNKNOWN,
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()), null);

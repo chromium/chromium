@@ -144,7 +144,6 @@ public class SigninChecker implements AccountTrackerService.Observer {
     private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {
         if (isChild) {
             assert childAccount != null;
-            mSigninManager.onFirstRunCheckDone();
             mSigninManager.runAfterOperationInProgress(() -> {
                 final boolean forceSync = !ChromeFeatureList.isEnabled(
                         ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS);

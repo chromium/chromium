@@ -190,7 +190,6 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
         final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
-        signinManager.onFirstRunCheckDone();
         signinManager.signin(
                 AccountUtils.createAccountFromName(mSelectedAccountName), new SignInCallback() {
                     @Override

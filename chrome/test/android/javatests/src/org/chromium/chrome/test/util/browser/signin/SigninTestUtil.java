@@ -49,7 +49,6 @@ public final class SigninTestUtil {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                     Profile.getLastUsedRegularProfile());
-            signinManager.onFirstRunCheckDone(); // Allow sign-in
             signinManager.signin(AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
                     new SigninManager.SignInCallback() {
                         @Override
@@ -88,7 +87,6 @@ public final class SigninTestUtil {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                     Profile.getLastUsedRegularProfile());
-            signinManager.onFirstRunCheckDone(); // Allow sign-in
             signinManager.signinAndEnableSync(SigninAccessPoint.UNKNOWN,
                     AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
                     new SigninManager.SignInCallback() {

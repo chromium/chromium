@@ -49,10 +49,6 @@ public final class FirstRunSignInProcessor {
      * @param activity The context for the FRE parameters processor.
      */
     public static void start(final Activity activity) {
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
-        signinManager.onFirstRunCheckDone();
-
         // Skip signin if the first run flow is not complete. Examples of cases where the user
         // would not have gone through the FRE:
         // - FRE is disabled, or
@@ -73,6 +69,8 @@ public final class FirstRunSignInProcessor {
             setFirstRunFlowSignInComplete(true);
         }
 
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
+                Profile.getLastUsedRegularProfile());
         if (!FirstRunUtils.canAllowSync() || !signinManager.isSyncOptInAllowed()
                 || TextUtils.isEmpty(accountName)) {
             setFirstRunFlowSignInComplete(true);

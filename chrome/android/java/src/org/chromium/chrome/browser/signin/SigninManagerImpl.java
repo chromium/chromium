@@ -81,14 +81,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     private boolean mSigninAllowedByPolicy;
 
     /**
-     * Tracks whether the First Run check has been completed.
-     *
-     * A new sign-in can not be started while this is pending, to prevent the
-     * pending check from eventually starting a 2nd sign-in.
-     */
-    private boolean mFirstRunCheckIsPending = true;
-
-    /**
      * Will be set during the sign in process, and nulled out when there is not a pending sign in.
      * Needs to be null checked after ever async entry point because it can be nulled out at any
      * time by system accounts changing.
@@ -170,25 +162,11 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     }
 
     /**
-     * Notifies the SigninManager that the First Run check has completed.
-     *
-     * The user will be allowed to sign-in once this is signaled.
-     */
-    @Override
-    public void onFirstRunCheckDone() {
-        mFirstRunCheckIsPending = false;
-
-        if (isSyncOptInAllowed()) {
-            notifySignInAllowedChanged();
-        }
-    }
-
-    /**
      * Returns true if sign in can be started now.
      */
     @Override
     public boolean isSigninAllowed() {
-        return !mFirstRunCheckIsPending && mSignInState == null && mSigninAllowedByPolicy
+        return mSignInState == null && mSigninAllowedByPolicy
                 && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null
                 && isSigninSupported();
     }
@@ -198,7 +176,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
      */
     @Override
     public boolean isSyncOptInAllowed() {
-        return !mFirstRunCheckIsPending && mSignInState == null && mSigninAllowedByPolicy
+        return mSignInState == null && mSigninAllowedByPolicy
                 && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null
                 && isSigninSupported();
     }
@@ -293,11 +271,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     private void signinInternal(SignInState signInState) {
         assert isSyncOptInAllowed()
             : String.format("Sign-in isn't allowed!\n"
-                            + "  mFirstRunCheckIsPending: %s\n"
                             + "  mSignInState: %s\n"
                             + "  mSigninAllowedByPolicy: %s\n"
                             + "  Primary sync account: %s",
-                    mFirstRunCheckIsPending, mSignInState, mSigninAllowedByPolicy,
+                    mSignInState, mSigninAllowedByPolicy,
                     mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
         assert signInState != null : "SigninState shouldn't be null!";
         assert signInState.mCoreAccountInfo == null : "mCoreAccountInfo shouldn't be set!";
