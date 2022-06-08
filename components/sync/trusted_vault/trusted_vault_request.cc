@@ -11,6 +11,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
+#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -26,8 +27,6 @@ namespace {
 
 const char kAuthorizationHeader[] = "Authorization";
 const char kProtobufContentType[] = "application/x-protobuf";
-const char kQueryParameterAlternateOutputKey[] = "alt";
-const char kQueryParameterAlternateOutputProto[] = "proto";
 
 net::NetworkTrafficAnnotationTag CreateTrafficAnnotationTag() {
   return net::DefineNetworkTrafficAnnotation("trusted_vault_request",
