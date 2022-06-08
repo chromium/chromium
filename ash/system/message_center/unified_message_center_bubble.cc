@@ -106,12 +106,12 @@ void UnifiedMessageCenterBubble::ShowBubble() {
       tray_->bubble()->GetBubbleWidget()->GetNativeWindow(),
       bubble_widget_->GetNativeWindow());
 
-  ui::Layer* widget_layer = bubble_widget_->GetLayer();
   if (!features::IsNotificationsRefreshEnabled()) {
+    ui::Layer* content_layer = bubble_view_->layer();
     float radius = kBubbleCornerRadius;
-    widget_layer->SetRoundedCornerRadius({radius, radius, radius, radius});
-    widget_layer->SetIsFastRoundedCorner(true);
-    widget_layer->Add(border_->layer());
+    content_layer->SetRoundedCornerRadius({radius, radius, radius, radius});
+    content_layer->SetIsFastRoundedCorner(true);
+    content_layer->Add(border_->layer());
   }
 
   // Create a shadow for bubble widget.
@@ -190,11 +190,20 @@ void UnifiedMessageCenterBubble::UpdatePosition() {
   bubble_view_->ChangeAnchorRect(anchor_rect);
 
   if (!features::IsNotificationsRefreshEnabled()) {
-    bubble_widget_->GetLayer()->StackAtTop(border_->layer());
+    bubble_view_->layer()->StackAtTop(border_->layer());
     border_->layer()->SetBounds(message_center_view_->GetContentsBounds());
   }
 
-  shadow_->SetContentBounds(bubble_view_->GetContentsBounds());
+  // When the last notification is removed, the content bounds of message center
+  // may become too small such which makes the shadow's bounds smaller than its
+  // blur region. To avoid this, we do not update shadow's content bounds and
+  // hide the shadow when the message center has no notifications.
+  if (message_center_view_->message_list_view()->GetTotalNotificationCount()) {
+    shadow_->layer()->SetVisible(true);
+    shadow_->SetContentBounds(bubble_view_->GetContentsBounds());
+  } else {
+    shadow_->layer()->SetVisible(false);
+  }
 }
 
 void UnifiedMessageCenterBubble::FocusEntered(bool reverse) {
@@ -253,7 +262,6 @@ void UnifiedMessageCenterBubble::OnViewVisibilityChanged(
     return;
 
   bubble_view_->UpdateBubble();
-  shadow_->layer()->SetVisible(message_center_view_->GetVisible());
 }
 
 void UnifiedMessageCenterBubble::OnWidgetDestroying(views::Widget* widget) {
