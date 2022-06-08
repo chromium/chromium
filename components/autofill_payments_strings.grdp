@@ -671,11 +671,20 @@
     </message>
   </if>
   <if expr="is_android">
-    <message name="IDS_AUTOFILL_OFFERS_REMINDER_DESCRIPTION_TEXT" desc="Secondary explanatory text for the Clank infobar shown on the merchant website when an offer is available to use." formatter_data="android_java">
+    <message name="IDS_AUTOFILL_OFFERS_REMINDER_DESCRIPTION_TEXT" desc="Secondary explanatory text for the infobar shown on the merchant website when an offer is available to use." formatter_data="android_java">
       Pay with <ph name="CARD_DETAIL">%1$s<ex>Visa - 1234</ex></ph> at checkout.
     </message>
     <message name="IDS_AUTOFILL_OFFERS_REMINDER_DEEP_LINK_TEXT" desc="Text to be linked to take the user to the offer in the Google Pay app." formatter_data="android_java">
       See details
+    </message>
+    <message name="IDS_AUTOFILL_OFFERS_MESSAGE_TITLE" desc="Title of the message shown on the merchant website when a GPay-activated card linked offer is available to use.">
+      Google Pay offer available
+    </message>
+    <message name="IDS_AUTOFILL_OFFERS_MESSAGE_DESCRIPTION_TEXT" desc="Secondary explanatory text for the message shown on the merchant website when an offer is available to use.">
+      Check out with <ph name="CARD_DETAIL">$1<ex>Visa - 1234</ex></ph> to use offer
+    </message>
+    <message name="IDS_AUTOFILL_OFFERS_MESSAGE_PRIMARY_BUTTON_TEXT" desc="Text for the primary button of the message shown on the merchant website when a GPay-activated card linked offer is available to use.">
+      Details
     </message>
   </if>
   <if expr="toolkit_views">

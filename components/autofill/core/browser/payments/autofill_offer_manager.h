@@ -78,7 +78,7 @@ class AutofillOfferManager : public KeyedService,
       CreateCardLinkedOffersMap_ReturnsOnlyCardLinkedOffers);
   FRIEND_TEST_ALL_PREFIXES(AutofillOfferManagerTest, IsUrlEligible);
   friend class OfferNotificationBubbleViewsInteractiveUiTest;
-  friend class OfferNotificationInfoBarControllerImplBrowserTest;
+  friend class OfferNotificationControllerAndroidBrowserTest;
 
   // Queries |personal_data_| to reset the elements of
   // |eligible_merchant_domains_|
