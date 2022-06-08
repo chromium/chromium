@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -302,18 +303,19 @@ absl::optional<PublicKeyset> ReadAndParsePublicKeys(const base::FilePath& file,
 }
 
 std::vector<uint8_t> DecryptPayloadWithHpke(
-    const std::vector<uint8_t>& payload,
+    base::span<const uint8_t> payload,
     const EVP_HPKE_KEY& key,
     const std::string& expected_serialized_shared_info) {
-  base::span<const uint8_t> enc =
-      base::make_span(payload).subspan(0, X25519_PUBLIC_VALUE_LEN);
+  base::span<const uint8_t> enc = payload.subspan(0, X25519_PUBLIC_VALUE_LEN);
 
-  std::vector<uint8_t> authenticated_info(
-      AggregatableReport::kDomainSeparationPrefix.begin(),
-      AggregatableReport::kDomainSeparationPrefix.end());
-  authenticated_info.insert(authenticated_info.end(),
-                            expected_serialized_shared_info.begin(),
-                            expected_serialized_shared_info.end());
+  std::string authenticated_info_str =
+      base::StrCat({AggregatableReport::kDomainSeparationPrefix,
+                    expected_serialized_shared_info});
+  base::span<const uint8_t> authenticated_info =
+      base::as_bytes(base::make_span(authenticated_info_str));
+
+  // No null terminators should have been copied when concatenating the strings.
+  DCHECK(!base::Contains(authenticated_info_str, '\0'));
 
   bssl::ScopedEVP_HPKE_CTX recipient_context;
   if (!EVP_HPKE_CTX_setup_recipient(
@@ -327,7 +329,7 @@ std::vector<uint8_t> DecryptPayloadWithHpke(
   }
 
   base::span<const uint8_t> ciphertext =
-      base::make_span(payload).subspan(X25519_PUBLIC_VALUE_LEN);
+      payload.subspan(X25519_PUBLIC_VALUE_LEN);
   std::vector<uint8_t> plaintext(ciphertext.size());
   size_t plaintext_len;
 

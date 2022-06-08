@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_key_storage.h"
@@ -76,7 +77,7 @@ absl::optional<PublicKeyset> ReadAndParsePublicKeys(
 
 // Returns empty vector in the case of an error.
 std::vector<uint8_t> DecryptPayloadWithHpke(
-    const std::vector<uint8_t>& payload,
+    base::span<const uint8_t> payload,
     const EVP_HPKE_KEY& key,
     const std::string& expected_serialized_shared_info);
 

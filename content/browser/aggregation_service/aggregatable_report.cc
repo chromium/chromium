@@ -22,6 +22,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -208,9 +209,9 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
 // Encrypts the `plaintext` with HPKE using the processing url's
 // `public_key`. Returns empty vector if the encryption fails.
 std::vector<uint8_t> EncryptWithHpke(
-    const std::vector<uint8_t>& plaintext,
-    const std::vector<uint8_t>& public_key,
-    const std::vector<uint8_t>& authenticated_info) {
+    base::span<const uint8_t> plaintext,
+    base::span<const uint8_t> public_key,
+    base::span<const uint8_t> authenticated_info) {
   bssl::ScopedEVP_HPKE_CTX sender_context;
 
   // This vector will hold the encapsulated shared secret "enc" followed by the
@@ -505,18 +506,13 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
     return absl::nullopt;
   }
 
-  std::vector<uint8_t> authenticated_info(kDomainSeparationPrefix.begin(),
-                                          kDomainSeparationPrefix.end());
-
-  // No null terminator should have been copied.
-  DCHECK(!authenticated_info.empty());
-  DCHECK_NE(authenticated_info.back(), 0);
-
   std::string encoded_shared_info =
       report_request.shared_info().SerializeAsJson();
-  authenticated_info.insert(authenticated_info.end(),
-                            encoded_shared_info.begin(),
-                            encoded_shared_info.end());
+
+  std::string authenticated_info_str =
+      base::StrCat({kDomainSeparationPrefix, encoded_shared_info});
+  base::span<const uint8_t> authenticated_info =
+      base::as_bytes(base::make_span(authenticated_info_str));
 
   std::vector<AggregatableReport::AggregationServicePayload> encrypted_payloads;
   DCHECK_EQ(unencrypted_payloads.size(), num_processing_urls);
