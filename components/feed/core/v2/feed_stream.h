@@ -144,6 +144,7 @@ class FeedStream : public FeedApi,
   void ProcessViewAction(base::StringPiece data,
                          const LoggingParameters& logging_parameters) override;
   bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;
+  void InvalidateContentCacheFor(StreamKind stream_kind) override;
   DebugStreamData GetDebugStreamData() override;
   void ForceRefreshForDebugging(const StreamType& stream_type) override;
   std::string DumpStateForDebugging() override;

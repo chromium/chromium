@@ -149,6 +149,11 @@ class FeedApi {
   // navigated to by the user.
   virtual bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) = 0;
 
+  // Requests that the cache of the feed identified by |stream_kind| be
+  // invalidated so that its contents are re-fetched the next time that feed is
+  // shown/loaded.
+  virtual void InvalidateContentCacheFor(StreamKind stream_kind) = 0;
+
   // User interaction reporting. Unless otherwise documented, these have no
   // side-effects other than reporting metrics.
 

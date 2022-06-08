@@ -319,5 +319,14 @@ void FeedStream::ResetInfoCardStates(JNIEnv* env,
   feed_stream_api_->ResetInfoCardStates(GetStreamType(), info_card_type);
 }
 
+void FeedStream::InvalidateContentCacheFor(JNIEnv* env,
+                                           const JavaParamRef<jobject>& obj,
+                                           jint stream_kind) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->InvalidateContentCacheFor(
+      (static_cast<StreamKind>(stream_kind)));
+}
+
 }  // namespace android
 }  // namespace feed

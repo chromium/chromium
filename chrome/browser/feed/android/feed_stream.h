@@ -139,6 +139,11 @@ class FeedStream : public ::feed::FeedStreamSurface {
                            const base::android::JavaParamRef<jobject>& obj,
                            int info_card_type);
 
+  void InvalidateContentCacheFor(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jint stream_kind);
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
   raw_ptr<FeedApi> feed_stream_api_;

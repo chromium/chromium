@@ -960,6 +960,11 @@ void FeedApiTest::WaitForIdleTaskQueue() {
       }));
 }
 
+void FeedApiTest::WaitForModelToAutoUnload() {
+  task_environment_.FastForwardBy(GetFeedConfig().model_unload_timeout +
+                                  base::Seconds(1));
+}
+
 void FeedApiTest::UnloadModel(const StreamType& stream_type) {
   WaitForIdleTaskQueue();
   stream_->UnloadModel(stream_type);

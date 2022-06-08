@@ -1257,7 +1257,7 @@ TEST_F(FeedApiTest, FollowForcesRefresh) {
             callback.RunAndGetResult().request_status);
 
   // Wait for model to unload and reattach surface. New content is loaded.
-  task_environment_.FastForwardBy(base::Seconds(5));
+  WaitForModelToAutoUnload();
   surface.Attach(stream_.get());
   WaitForIdleTaskQueue();
   ASSERT_EQ("loading -> 3 slices", surface.DescribeUpdates());
@@ -2435,7 +2435,7 @@ TEST_F(FeedApiTest, UnloadOnlyOneOfMultipleModels) {
 
   for_you_surface.Detach();
 
-  task_environment_.FastForwardBy(base::Seconds(2));
+  WaitForModelToAutoUnload();
   WaitForIdleTaskQueue();
 
   EXPECT_TRUE(stream_->GetModel(kWebFeedStream));
@@ -3144,6 +3144,122 @@ TEST_F(FeedApiTest, InfoCardTrackingActions) {
                                       .feed_query()
                                       .chrome_fulfillment_info()
                                       .info_card_tracking_state(1)));
+}
+
+TEST_F(FeedApiTest, InvalidateFeedCache_CauseRefreshOnNextLoad) {
+  // Load the ForYou feed with initial content from the network.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
+
+  // Invalidate cached content and reattach the surface, waiting for the model
+  // to unload. It should refresh from the network with refreshed content.
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  stream_->InvalidateContentCacheFor(StreamKind::kForYou);
+  surface.Detach();
+  WaitForModelToAutoUnload();
+  surface.Attach(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
+  ASSERT_EQ("loading -> 3 slices", surface.DescribeUpdates());
+}
+
+TEST_F(FeedApiTest, InvalidateFeedCache_DoesNotForceRefreshFeedWhileInUse) {
+  // Load the ForYou feed with initial content from the network.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
+
+  // Invalidate the ForYou feed and verify nothing changes right away.
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  stream_->InvalidateContentCacheFor(StreamKind::kForYou);
+  WaitForIdleTaskQueue();
+  ASSERT_EQ("", surface.DescribeUpdates());
+  EXPECT_FALSE(response_translator_.InjectedResponseConsumed());
+}
+
+TEST_F(FeedApiTest, InvalidateFeedCache_UnknownDoesNotForceRefreshAnyFeeds) {
+  // Enable WebFeed and WebFeedOnboarding flags to force WebFeed to fetch
+  // without subscriptions.
+  base::test::ScopedFeatureList features;
+  std::vector<base::Feature> enabled_features = {kWebFeed, kWebFeedOnboarding},
+                             disabled_features = {};
+  features.InitWithFeatures(enabled_features, disabled_features);
+  {
+    // Load both feeds and allow them to fetch network contents.
+    response_translator_.InjectResponse(MakeTypicalInitialModelState());
+    response_translator_.InjectResponse(MakeTypicalInitialModelState());
+    TestForYouSurface for_you_surface(stream_.get());
+    TestWebFeedSurface web_feed_surface(stream_.get());
+    WaitForIdleTaskQueue();
+    ASSERT_EQ("loading -> [user@foo] 2 slices",
+              for_you_surface.DescribeUpdates());
+    ASSERT_EQ("loading -> [user@foo] 2 slices",
+              web_feed_surface.DescribeUpdates());
+    EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
+  }
+
+  // Both surfaces have been destroyed, so wait for the model to unload.
+  WaitForModelToAutoUnload();
+
+  // Invalidate with an unknown feed and recreate both surfaces. None should
+  // refresh from network.
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  stream_->InvalidateContentCacheFor(StreamKind::kUnknown);
+  {
+    TestForYouSurface for_you_surface(stream_.get());
+    TestWebFeedSurface web_feed_surface(stream_.get());
+    WaitForIdleTaskQueue();
+    ASSERT_EQ("loading -> [user@foo] 2 slices",
+              for_you_surface.DescribeUpdates());
+    ASSERT_EQ("loading -> [user@foo] 2 slices",
+              web_feed_surface.DescribeUpdates());
+  }
+  EXPECT_FALSE(response_translator_.InjectedResponseConsumed());
+}
+
+TEST_F(FeedApiTest, InvalidateFeedCache_DoesNotRefreshOtherFeed) {
+  // Enable WebFeed and WebFeedOnboarding flags to force WebFeed to fetch
+  // without subscriptions.
+  base::test::ScopedFeatureList features;
+  std::vector<base::Feature> enabled_features = {kWebFeed, kWebFeedOnboarding},
+                             disabled_features = {};
+  features.InitWithFeatures(enabled_features, disabled_features);
+  {
+    // Load both feeds and allow them to fetch network contents.
+    response_translator_.InjectResponse(MakeTypicalInitialModelState());
+    response_translator_.InjectResponse(MakeTypicalInitialModelState());
+    TestForYouSurface for_you_surface(stream_.get());
+    TestWebFeedSurface web_feed_surface(stream_.get());
+    WaitForIdleTaskQueue();
+    ASSERT_EQ("loading -> [user@foo] 2 slices",
+              for_you_surface.DescribeUpdates());
+    ASSERT_EQ("loading -> [user@foo] 2 slices",
+              web_feed_surface.DescribeUpdates());
+    EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
+  }
+
+  // Both surfaces have been destroyed, so wait for the model to unload.
+  WaitForModelToAutoUnload();
+
+  // Invalidate only the WebFeed feed and recreate both surfaces. Only the
+  // WebFeed should refresh from network.
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  stream_->InvalidateContentCacheFor(StreamKind::kFollowing);
+  {
+    TestForYouSurface for_you_surface(stream_.get());
+    TestWebFeedSurface web_feed_surface(stream_.get());
+    WaitForIdleTaskQueue();
+    ASSERT_EQ("loading -> [user@foo] 2 slices",
+              for_you_surface.DescribeUpdates());
+    ASSERT_EQ("loading -> [user@foo] 3 slices",
+              web_feed_surface.DescribeUpdates());
+  }
+  EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
 }
 
 // Keep instantiations at the bottom.

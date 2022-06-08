@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
+import org.chromium.chrome.browser.xsurface.FeedActionsHandler.FeedIdentifier;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
@@ -424,6 +425,26 @@ public class FeedStream implements Stream {
         public void resetInfoCardStates(int type) {
             assert ThreadUtils.runningOnUiThread();
             FeedStreamJni.get().resetInfoCardStates(mNativeFeedStream, FeedStream.this, type);
+        }
+
+        private @StreamType int feedIdentifierToType(@FeedIdentifier int fid) {
+            switch (fid) {
+                case FeedIdentifier.MAIN_FEED:
+                    return StreamType.FOR_YOU;
+                case FeedIdentifier.FOLLOWING_FEED:
+                    return StreamType.WEB_FEED;
+            }
+            return StreamType.UNSPECIFIED;
+        }
+
+        @Override
+        public void invalidateContentCacheFor(@FeedIdentifier int feedToInvalidate) {
+            @StreamType
+            int feedKindToInvalidate = feedIdentifierToType(feedToInvalidate);
+            if (feedKindToInvalidate != StreamType.UNSPECIFIED) {
+                FeedStreamJni.get().invalidateContentCacheFor(
+                        mNativeFeedStream, FeedStream.this, feedKindToInvalidate);
+            }
         }
 
         // Since the XSurface client strings are slightly different than the Feed strings, convert
@@ -1269,5 +1290,7 @@ public class FeedStream implements Stream {
         void reportInfoCardClicked(long nativeFeedStream, FeedStream caller, int type);
         void reportInfoCardDismissedExplicitly(long nativeFeedStream, FeedStream caller, int type);
         void resetInfoCardStates(long nativeFeedStream, FeedStream caller, int type);
+        void invalidateContentCacheFor(
+                long nativeFeedStream, FeedStream caller, @StreamType int feedToInvalidate);
     }
 }

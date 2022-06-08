@@ -669,6 +669,15 @@ bool FeedStream::WasUrlRecentlyNavigatedFromFeed(const GURL& url) {
                    url) != recent_feed_navigations_.end();
 }
 
+void FeedStream::InvalidateContentCacheFor(StreamKind stream_kind) {
+  if (StreamKind::kForYou == stream_kind) {
+    SetStreamStale(kForYouStream, true);
+  }
+  if (StreamKind::kFollowing == stream_kind) {
+    SetStreamStale(kWebFeedStream, true);
+  }
+}
+
 DebugStreamData FeedStream::GetDebugStreamData() {
   return ::feed::prefs::GetDebugStreamData(*profile_prefs_);
 }

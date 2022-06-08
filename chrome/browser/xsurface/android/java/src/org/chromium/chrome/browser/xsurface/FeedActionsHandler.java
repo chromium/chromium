@@ -142,21 +142,25 @@ public interface FeedActionsHandler {
      */
     default void reportNoticeDismissed(String key) {}
 
-    /** Types of feeds that can be invalidated. */
-    @IntDef({FeedIdentifier.ALL_FEEDS, FeedIdentifier.MAIN_FEED, FeedIdentifier.FOLLOWING_FEED})
+    /**
+     * Types of feeds that can be invalidated. These values must match the privately defined values
+     * of InvalidateCacheData.FeedType.
+     */
+    @IntDef({FeedIdentifier.UNSPECIFIED, FeedIdentifier.MAIN_FEED, FeedIdentifier.FOLLOWING_FEED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface FeedIdentifier {
-        int ALL_FEEDS = 0;
+        int UNSPECIFIED = 0;
         int MAIN_FEED = 1;
         int FOLLOWING_FEED = 2;
     }
 
     /**
-     * Requests that the cache of one or all feeds should be invalidated so that that their contents
-     * are re-fetched the next time the feed is shown.
-     * @param toInvalidate Identifies which feed or feeds should have their caches invalidated.
+     * Requests that the cache a feed be invalidated so that its contents are re-fetched the next
+     * time the feed is shown/loaded.
+     * @param feedToInvalidate Identifies which feed should have its cache invalidated. The request
+     *         will be dropped if set to FeedIdentifier.UNSPECIFIED.
      */
-    default void invalidateContentCacheFor(@FeedIdentifier int toInvalidate) {}
+    default void invalidateContentCacheFor(@FeedIdentifier int feedToInvalidate) {}
 
     /**
      * Reports that the info card is being tracked for its full visibility.
