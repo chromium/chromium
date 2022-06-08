@@ -33,6 +33,7 @@ class DelayTimerBase;
 class DelayedTaskManager;
 }
 class DeadlineTimer;
+class MetronomeTimer;
 class TimeDelta;
 class TimeTicks;
 
@@ -48,6 +49,7 @@ class PostDelayedTaskPassKey {
   friend class base::internal::DelayTimerBase;
   friend class base::internal::DelayedTaskManager;
   friend class base::DeadlineTimer;
+  friend class base::MetronomeTimer;
   friend class blink::MetronomeSource;
   friend class blink::TimerBase;
   friend class blink::WebRtcMetronomeTaskQueue;
