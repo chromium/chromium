@@ -61,18 +61,55 @@ chrome.test.runTests([
 
     chrome.test.assertEq(3, cameras.length);
 
+    // When dark/light mode feature is enabled, a border will be applied to the
+    // window. See crrev.com/c/3656414 for more details.
     const expectations = [
-      {top: 2.25, left: -106.5, right: 718.5, bottom: -412.5},
-      {top: 2.25, left: -3.75, right: 408.75, bottom: -205.125},
-      {top: -35.25, left: 33.75, right: 446.25, bottom: -242.625},
+      {
+        top: 2.25,
+        dark_light_top: 2.25,
+        left: -106.5,
+        dark_light_left: -105,
+        right: 718.5,
+        dark_light_right: 717,
+        bottom: -412.5,
+        dark_light_bottom: -411
+      },
+      {
+        top: 2.25,
+        dark_light_top: 2.25,
+        left: -3.75,
+        dark_light_left: -3.75,
+        right: 408.75,
+        dark_light_right: 407.25,
+        bottom: -205.125,
+        dark_light_bottom: -204.375
+      },
+      {
+        top: -35.25,
+        dark_light_top: -35.25,
+        left: 33.75,
+        dark_light_left: 33.75,
+        right: 446.25,
+        dark_light_right: 444.75,
+        bottom: -242.625,
+        dark_light_bottom: -241.875
+      },
     ];
 
     for (const expectation of expectations) {
       const actual = cameras.shift()!;
-      chrome.test.assertEq(expectation.top, actual.top);
-      chrome.test.assertEq(expectation.left, actual.left);
-      chrome.test.assertEq(expectation.bottom, actual.bottom);
-      chrome.test.assertEq(expectation.right, actual.right);
+      chrome.test.assertTrue(
+          actual.top === expectation.top ||
+          actual.top === expectation.dark_light_top);
+      chrome.test.assertTrue(
+          actual.left === expectation.left ||
+          actual.left === expectation.dark_light_left);
+      chrome.test.assertTrue(
+          actual.bottom === expectation.bottom ||
+          actual.bottom === expectation.dark_light_bottom);
+      chrome.test.assertTrue(
+          actual.right === expectation.right ||
+          actual.right === expectation.dark_light_right);
     }
     chrome.test.succeed();
   },

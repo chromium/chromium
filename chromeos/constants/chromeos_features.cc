@@ -26,7 +26,7 @@ const base::Feature kCloudGamingDevice{"CloudGamingDevice",
 
 // Enables dark/light mode feature.
 const base::Feature kDarkLightMode{"DarkLightMode",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Disables "Office Editing for Docs, Sheets & Slides" component app so handlers
 // won't be registered, making it possible to install another version for

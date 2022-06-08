@@ -598,8 +598,8 @@ const base::Feature kEnableOobeNetworkScreenSkip{
     "EnableOobeNetworkScreenSkip", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables skipping of network screen.
-const base::Feature kEnableOobeThemeSelection{"EnableOobeThemeSelection",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kEnableOobeThemeSelection{
+    "EnableOobeThemeSelection", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables showing notification after the password change for SAML users.
 const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess{
@@ -2039,14 +2039,8 @@ bool IsNotificationsInContextMenuEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsInContextMenu);
 }
 
-// True if `kNotificationsRefresh` or `kDarkLightMode` is enabled. Showing the
-// new notifications UI if the D/L mode feature is enabled, since the new
-// notifications UI supports D/L mode. These two features will be launched at
-// the same time, or the new notifications UI will be launched earlier than D/L
-// mode, so it is safe to do this.
 bool IsNotificationsRefreshEnabled() {
-  return base::FeatureList::IsEnabled(kNotificationsRefresh) ||
-         IsDarkLightModeEnabled();
+  return base::FeatureList::IsEnabled(kNotificationsRefresh);
 }
 
 bool IsOobeChromeVoxHintEnabled() {
