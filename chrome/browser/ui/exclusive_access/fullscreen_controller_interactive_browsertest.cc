@@ -681,8 +681,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
 // Tests FullscreenController support for fullscreen capability delegation.
 // https://wicg.github.io/capability-delegation/spec.html
-// See related wpt/fullscreen/api/delegate-request.https.sub.tentative.html
-// TODO(crbug.com/1326575): Test opener->popup etc. messaging; add WPT coverage.
+// TODO(crbug.com/1326575): Remove these tests after the feature launches, in
+// favor of the WPT coverage at wpt/html/capability-delegation/*.
 class FullscreenCapabilityDelegationFullscreenControllerInteractiveTest
     : public FullscreenControllerInteractiveTest,
       public testing::WithParamInterface<bool> {

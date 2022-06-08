@@ -762,10 +762,12 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   if (options->includeUserActivation())
     user_activation = UserActivation::CreateSnapshot(source);
 
-  // TODO(mustaq): This is an ad-hoc mechanism to support delegating a single
-  // capability.  We need to add a structure to support passing multiple
-  // capabilities.  An explainer for the general delegation API is here:
-  // https://github.com/mustaqahmed/capability-delegation
+  // Capability Delegation permits a script to delegate its ability to call a
+  // restricted API to another browsing context it trusts. User activation is
+  // currently consumed when a supported capability is specified, to prevent
+  // potentially abusive repeated delegation attempts.
+  // https://wicg.github.io/capability-delegation/spec.html
+  // TODO(mustaq): Explore use cases for delegating multiple capabilities.
   mojom::blink::DelegatedCapability delegated_capability =
       mojom::blink::DelegatedCapability::kNone;
   if (LocalFrame::HasTransientUserActivation(source_frame) &&
@@ -774,9 +776,11 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
     options->delegate().Split(' ', capability_list);
     if (capability_list.Contains("payment")) {
       delegated_capability = mojom::blink::DelegatedCapability::kPaymentRequest;
+      LocalFrame::ConsumeTransientUserActivation(source_frame);
     } else if (capability_list.Contains("fullscreen")) {
       delegated_capability =
           mojom::blink::DelegatedCapability::kFullscreenRequest;
+      LocalFrame::ConsumeTransientUserActivation(source_frame);
     }
   }
 
