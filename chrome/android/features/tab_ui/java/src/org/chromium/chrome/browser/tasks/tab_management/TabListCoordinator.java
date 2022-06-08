@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -84,6 +85,7 @@ public class TabListCoordinator
 
     private boolean mIsInitialized;
     private ViewTreeObserver.OnGlobalLayoutListener mGlobalLayoutListener;
+    private OnLayoutChangeListener mListLayoutListener;
 
     /**
      * Construct a coordinator for UI that shows a list of tabs.
@@ -259,7 +261,11 @@ public class TabListCoordinator
         }
 
         if (mMode == TabListMode.GRID && selectionDelegateProvider == null) {
-            mGlobalLayoutListener = this::updateThumbnailAndSpanCount;
+            mGlobalLayoutListener = this::updateThumbnailLocation;
+            if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mContext)) {
+                mListLayoutListener = (view, left, top, right, bottom, oldLeft, oldTop, oldRight,
+                        oldBottom) -> updateGridCardLayout(right - left);
+            }
         }
     }
 
@@ -311,23 +317,19 @@ public class TabListCoordinator
         return true;
     }
 
-    private void updateThumbnailAndSpanCount() {
-        updateThumbnailLocation();
-        if (mMode == TabListMode.GRID
-                && TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mContext)) {
-            // Determine and set span count
-            final GridLayoutManager layoutManager =
-                    (GridLayoutManager) mRecyclerView.getLayoutManager();
-            mMediator.updateSpanCount(layoutManager,
-                    mContext.getResources().getConfiguration().orientation,
-                    mContext.getResources().getConfiguration().screenWidthDp);
-            // Determine grid card width and account for margins on left and right.
-            final int cardWidthPx = (layoutManager.getWidth() / layoutManager.getSpanCount());
-            final int cardHeightPx = TabUtils.deriveGridCardHeight(cardWidthPx, mContext);
-            for (int i = 0; i < mModel.size(); i++) {
-                mModel.get(i).model.set(TabProperties.GRID_CARD_WIDTH, cardWidthPx);
-                mModel.get(i).model.set(TabProperties.GRID_CARD_HEIGHT, cardHeightPx);
-            }
+    private void updateGridCardLayout(int viewWidth) {
+        // Determine and set span count
+        final GridLayoutManager layoutManager =
+                (GridLayoutManager) mRecyclerView.getLayoutManager();
+        mMediator.updateSpanCount(layoutManager,
+                mContext.getResources().getConfiguration().orientation,
+                mContext.getResources().getConfiguration().screenWidthDp);
+        // Determine grid card width and account for margins on left and right.
+        final int cardWidthPx = (viewWidth / layoutManager.getSpanCount());
+        final int cardHeightPx = TabUtils.deriveGridCardHeight(cardWidthPx, mContext);
+        for (int i = 0; i < mModel.size(); i++) {
+            mModel.get(i).model.set(TabProperties.GRID_CARD_WIDTH, cardWidthPx);
+            mModel.get(i).model.set(TabProperties.GRID_CARD_HEIGHT, cardHeightPx);
         }
     }
 
@@ -394,6 +396,9 @@ public class TabListCoordinator
         if (mGlobalLayoutListener != null) {
             mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
         }
+        if (mListLayoutListener != null) {
+            mRecyclerView.addOnLayoutChangeListener(mListLayoutListener);
+        }
         mRecyclerView.prepareTabSwitcherView();
         mMediator.prepareTabSwitcherView();
     }
@@ -401,6 +406,9 @@ public class TabListCoordinator
     void postHiding() {
         if (mGlobalLayoutListener != null) {
             mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(mGlobalLayoutListener);
+        }
+        if (mListLayoutListener != null) {
+            mRecyclerView.removeOnLayoutChangeListener(mListLayoutListener);
         }
         mRecyclerView.postHiding();
         mMediator.postHiding();
@@ -414,6 +422,9 @@ public class TabListCoordinator
         mMediator.destroy();
         if (mGlobalLayoutListener != null) {
             mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(mGlobalLayoutListener);
+        }
+        if (mListLayoutListener != null) {
+            mRecyclerView.removeOnLayoutChangeListener(mListLayoutListener);
         }
         mRecyclerView.setRecyclerListener(null);
     }
