@@ -13057,7 +13057,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PageLoad" singular="True">
-  <owner>bmcquade@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
   <summary>
     Core metrics associated with web page loads.
   </summary>
@@ -14701,7 +14702,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PageLoad.FromGoogleSearch" singular="True">
-  <owner>bmcquade@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>mushan@chromium.org</owner>
   <summary>
     Recorded for page loads that were navigated to via Google Search.
@@ -18487,7 +18488,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SubresourceFilter" singular="True">
-  <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Recorded for page loads where subresource filtering policy was evaluated.
