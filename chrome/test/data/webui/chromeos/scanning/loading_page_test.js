@@ -7,7 +7,10 @@ import 'chrome://scanning/loading_page.js';
 import {AppState} from 'chrome://scanning/scanning_app_types.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {MockController} from '../../mock_controller.js';
 import {flushTasks, isVisible} from '../../test_util.js';
+
+import {FakeMediaQueryList} from './scanning_app_test_utils.js';
 
 export function loadingPageTest() {
   const scanningSrcBase = 'chrome://scanning/';
@@ -15,24 +18,43 @@ export function loadingPageTest() {
   /** @type {?LoadingPageElement} */
   let loadingPage = null;
 
+  /** @type {{createFunctionMock: Function, reset: Function}} */
+  let mockController;
+
+  /** @type {?FakeMediaQueryList} */
+  let fakePrefersColorSchemeDarkMediaQuery = null;
+
   /**
-   * @suppress {visibility}
    * @param {boolean} enabled
+   * @return {!Promise}
    */
-  function setIsDarkModeEnabled_(enabled) {
+  function setFakePrefersColorSchemeDark(enabled) {
     assertTrue(!!loadingPage);
-    loadingPage.isDarkModeEnabled_ = enabled;
+    fakePrefersColorSchemeDarkMediaQuery.matches = enabled;
+
+    return flushTasks();
   }
+
 
   setup(() => {
     loadingPage = /** @type {!LoadingPageElement} */ (
         document.createElement('loading-page'));
     assertTrue(!!loadingPage);
     loadingPage.appState = AppState.GETTING_SCANNERS;
+
+    // Setup mock for matchMedia.
+    mockController = new MockController();
+    const mockMatchMedia =
+        mockController.createFunctionMock(window, 'matchMedia');
+    fakePrefersColorSchemeDarkMediaQuery =
+        new FakeMediaQueryList('(prefers-color-scheme: dark)');
+    mockMatchMedia.returnValue = fakePrefersColorSchemeDarkMediaQuery;
+
     document.body.appendChild(loadingPage);
   });
 
   teardown(() => {
+    mockController.reset();
     loadingPage.remove();
     loadingPage = null;
   });
@@ -88,14 +110,12 @@ export function loadingPageTest() {
         loadingPage.$$('#noScannersDiv img')));
 
     // Setup UI to display no scanners div.
-    setIsDarkModeEnabled_(false);
     loadingPage.appState = AppState.NO_SCANNERS;
-    await flushTasks();
+    await setFakePrefersColorSchemeDark(false);
     assertEquals(getNoScannersSvg().src, lightModeSvg);
 
     // Mock media query state for dark mode.
-    setIsDarkModeEnabled_(true);
-    await flushTasks();
+    await setFakePrefersColorSchemeDark(true);
     assertEquals(getNoScannersSvg().src, darkModeSvg);
   });
 
@@ -107,14 +127,12 @@ export function loadingPageTest() {
         (/** @type {!HTMLImageElement} */ (loadingPage.$$('#loadingDiv img')));
 
     // Setup UI to display no scanners div.
-    setIsDarkModeEnabled_(false);
     loadingPage.appState = AppState.NO_SCANNERS;
-    await flushTasks();
+    await setFakePrefersColorSchemeDark(false);
     assertEquals(getLoadingSvg().src, lightModeSvg);
 
     // Mock media query state for dark mode.
-    setIsDarkModeEnabled_(true);
-    await flushTasks();
+    await setFakePrefersColorSchemeDark(true);
     assertEquals(getLoadingSvg().src, darkModeSvg);
   });
 }
