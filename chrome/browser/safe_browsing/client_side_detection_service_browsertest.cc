@@ -154,8 +154,14 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
   }
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/): Re-enable this test
+#define MAYBE_TfLiteClassification DISABLED_TfLiteClassification
+#else
+#define MAYBE_TfLiteClassification TfLiteClassification
+#endif
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
-                       TfLiteClassification) {
+                       MAYBE_TfLiteClassification) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
