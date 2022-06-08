@@ -558,16 +558,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Crostini.UninstallSource" enum="CrostiniUISurface"
-    expires_after="2023-01-06">
-  <owner>davidmunro@google.com</owner>
-  <owner>clumptini@google.com</owner>
-  <summary>
-    Recorded each time the user initiates the Crostini uninstall UI, recording
-    the UI surface that initiated the uninstall.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Crostini.UnsupportedNotification.Reason"
     enum="CrostiniUnsupportedNotificationReason" expires_after="2023-04-17">
   <owner>davidmunro@google.com</owner>

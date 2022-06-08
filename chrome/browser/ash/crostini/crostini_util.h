@@ -144,8 +144,7 @@ enum class CrostiniUISurface { kSettings = 0, kAppList = 1, kCount };
 // functions below.
 
 // Shows the Crostini Uninstaller dialog.
-void ShowCrostiniUninstallerView(Profile* profile,
-                                 CrostiniUISurface ui_surface);
+void ShowCrostiniUninstallerView(Profile* profile);
 bool IsCrostiniRecoveryViewShowing();
 
 // Shows the Crostini App installer dialog.

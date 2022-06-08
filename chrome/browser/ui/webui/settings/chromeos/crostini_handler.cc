@@ -236,8 +236,7 @@ void CrostiniHandler::HandleRequestCrostiniInstallerView(
 void CrostiniHandler::HandleRequestRemoveCrostini(
     const base::Value::List& args) {
   AllowJavascript();
-  ShowCrostiniUninstallerView(Profile::FromWebUI(web_ui()),
-                              crostini::CrostiniUISurface::kSettings);
+  crostini::ShowCrostiniUninstallerView(Profile::FromWebUI(web_ui()));
 }
 
 namespace {

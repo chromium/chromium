@@ -28,15 +28,10 @@ namespace {
 CrostiniUninstallerView* g_crostini_uninstaller_view = nullptr;
 
 constexpr char kCrostiniUninstallResultHistogram[] = "Crostini.UninstallResult";
-constexpr char kCrostiniUninstallSourceHistogram[] = "Crostini.UninstallSource";
 
 }  // namespace
 
-void crostini::ShowCrostiniUninstallerView(
-    Profile* profile,
-    crostini::CrostiniUISurface ui_surface) {
-  base::UmaHistogramEnumeration(kCrostiniUninstallSourceHistogram, ui_surface,
-                                crostini::CrostiniUISurface::kCount);
+void crostini::ShowCrostiniUninstallerView(Profile* profile) {
   return CrostiniUninstallerView::Show(profile);
 }
 
