@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Műfaj</translation>
 <translation id="1254593899333212300">Közvetlen internetkapcsolat</translation>
 <translation id="1272293450992660632">A PIN-kódok nem egyeznek.</translation>
+<translation id="127650757582748357">Tömörített BZIP2-archívum</translation>
 <translation id="1280820357415527819">Mobilhálózatok keresése…</translation>
 <translation id="1291603679744561561">SIM-kártya zárolva</translation>
 <translation id="1293556467332435079">Fájlok</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Sajt</translation>
 <translation id="2781645665747935084">belga</translation>
 <translation id="2782104745158847185">Hiba történt a Linux-alkalmazás telepítése során</translation>
+<translation id="2788520643285360081">7-ZIP-archívum</translation>
 <translation id="2803375539583399270">PIN-kód megadása</translation>
 <translation id="2820957248982571256">Keresés…</translation>
+<translation id="2822595620066756134">Tömörített GZIP-archívum</translation>
 <translation id="2830077785865012357">kínai zujin</translation>
 <translation id="2843806747483486897">Alapértelmezés módosítása...</translation>
 <translation id="2850124913210091882">Biztonsági mentés</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">litván</translation>
 <translation id="3587482841069643663">Mind</translation>
 <translation id="3592251141500063301">Nem sikerült a(z) <ph name="FILE_NAME" /> fájlt offline állapotban elérhetővé tenni</translation>
+<translation id="3593874215226880809">Tömörített LZIP-archívum</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">kanadai francia</translation>
 <translation id="3606220979431771195">Török F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> megszakítása.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />/<ph name="NETWORK_INDEX" /> hálózat, <ph name="NETWORK_NAME" />, Inaktiválva, <ph name="CONNECTION_STATUS" />, Jelerősség <ph name="SIGNAL_STRENGTH" />%, Részletek</translation>
 <translation id="3691184985318546178">szingaléz</translation>
+<translation id="3703620396751288986">ZIP-archívum</translation>
 <translation id="3726463242007121105">Ezt az eszközt nem lehet megnyitni, mert a fájlrendszere nem támogatott.</translation>
 <translation id="3727148787322499904">A beállítás módosítása az összes megosztott hálózatot érinti</translation>
 <translation id="3737576078404241332">Eltávolítás az oldalsávról</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">cseh, Qwerty-billentyűzettel</translation>
 <translation id="4656777537938206294">Hozzáférés a fájlokhoz offline</translation>
 <translation id="4658782175094886150">Ember a hóban</translation>
+<translation id="4661996069183330363">TAR-archívum</translation>
 <translation id="4669606053856530811">A(z) „<ph name="SOURCE_NAME" />” tagjai elveszítik hozzáférésüket, kivéve, ha meg vannak osztva velük ezek az elemek.</translation>
 <translation id="467809019005607715">Google Diák</translation>
 <translation id="4690246192099372265">svéd</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">Diplomás</translation>
 <translation id="8912078710089354287">Kutya csóválja a farkát</translation>
 <translation id="8919081441417203123">dán</translation>
+<translation id="8965273390142984105">Tömörített LZOP-archívum</translation>
 <translation id="8965697826696209160">Nincs elég tárhely.</translation>
 <translation id="8997962250644902079">kínai (hagyományos) pinjin</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, a rendszergazdája kezeli, részletek</translation>

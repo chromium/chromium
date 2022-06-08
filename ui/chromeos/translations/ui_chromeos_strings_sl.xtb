@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Zvrst</translation>
 <translation id="1254593899333212300">Neposredna internetna povezava</translation>
 <translation id="1272293450992660632">Vrednosti PIN se ne ujemajo.</translation>
+<translation id="127650757582748357">Stisnjeni arhiv BZIP2</translation>
 <translation id="1280820357415527819">Iskanje mobilnih omrežij</translation>
 <translation id="1291603679744561561">Kartica SIM je zaklenjena.</translation>
 <translation id="1293556467332435079">Datoteke</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Sir</translation>
 <translation id="2781645665747935084">belgijska</translation>
 <translation id="2782104745158847185">Napaka pri nameščanju aplikacije za Linux</translation>
+<translation id="2788520643285360081">Arhiv 7-ZIP</translation>
 <translation id="2803375539583399270">Vnesite kodo PIN</translation>
 <translation id="2820957248982571256">Iskanje ...</translation>
+<translation id="2822595620066756134">Stisnjeni arhiv GZIP</translation>
 <translation id="2830077785865012357">kitajščina (žujin)</translation>
 <translation id="2843806747483486897">Spremeni privzeto dejanje ...</translation>
 <translation id="2850124913210091882">Varnostno kopiranje</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">litovščina</translation>
 <translation id="3587482841069643663">Vse</translation>
 <translation id="3592251141500063301">Datoteke <ph name="FILE_NAME" /> ni bilo mogoče omogočiti za dostop brez povezave.</translation>
+<translation id="3593874215226880809">Stisnjeni arhiv LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" />, <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">kanadska francoščina</translation>
 <translation id="3606220979431771195">Turška tipkovnica F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">Prekliči: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" />. omrežje od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivirano, <ph name="CONNECTION_STATUS" />, moč signala <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3691184985318546178">singalščina</translation>
+<translation id="3703620396751288986">Arhiv ZIP</translation>
 <translation id="3726463242007121105">Naprave ni mogoče odpreti, ker njen datotečni sistem ni podprt.</translation>
 <translation id="3727148787322499904">Sprememba te nastavitve vpliva na vsa omrežja v skupni rabi</translation>
 <translation id="3737576078404241332">Odstrani iz stranske vrstice</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">češčina s tipkovnico Qwerty</translation>
 <translation id="4656777537938206294">Omogočite datoteke za dostop brez povezave</translation>
 <translation id="4658782175094886150">Oseba na snegu</translation>
+<translation id="4661996069183330363">Arhiv TAR</translation>
 <translation id="4669606053856530811">Člani skupine »<ph name="SOURCE_NAME" />« bodo izgubili dostop, razen če te elemente delite z njimi.</translation>
 <translation id="467809019005607715">Google Predstavitve</translation>
 <translation id="4690246192099372265">švedščina</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">Prehod na običajen račun Google</translation>
 <translation id="8912078710089354287">Kuža, ki maha z repom</translation>
 <translation id="8919081441417203123">danščina</translation>
+<translation id="8965273390142984105">Stisnjeni arhiv LZOP</translation>
 <translation id="8965697826696209160">Na voljo ni dovolj prostora.</translation>
 <translation id="8997962250644902079">kitajščina (tradicionalna), pinjin</translation>
 <translation id="9003940392834790328">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, podrobnosti</translation>

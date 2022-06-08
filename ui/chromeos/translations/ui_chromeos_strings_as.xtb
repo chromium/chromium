@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">শৈলী</translation>
 <translation id="1254593899333212300">পোনপটীয়া ইণ্টাৰনেট সংযোগ</translation>
 <translation id="1272293450992660632">পিনৰ মানসমূহ মিলা নাই।</translation>
+<translation id="127650757582748357">BZIP2 কম্প্ৰেছ কৰা আৰ্কাইভ</translation>
 <translation id="1280820357415527819">ম’বাইল নেটৱৰ্ক বিচাৰি থকা হৈছে</translation>
 <translation id="1291603679744561561">ছিম লক কৰা হ'ল</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">চ্চীজ</translation>
 <translation id="2781645665747935084">বেলজিয়ান</translation>
 <translation id="2782104745158847185">Linux এপ্লিকেশ্বন ইনষ্টল কৰোঁতে কিবা আসোঁৱাহ হ’ল</translation>
+<translation id="2788520643285360081">7-Zip আৰ্কাইভ</translation>
 <translation id="2803375539583399270">পিন দিয়ক</translation>
 <translation id="2820957248982571256">স্কেন কৰি থকা হৈছে...</translation>
+<translation id="2822595620066756134">Gzip কম্প্ৰেছ কৰা আৰ্কাইভ</translation>
 <translation id="2830077785865012357">চীনা জুয়িন</translation>
 <translation id="2843806747483486897">ডিফ’ল্ট কার্য সলনি কৰক...</translation>
 <translation id="2850124913210091882">বেকআপ লওক</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">লিথুৱানিয়ান</translation>
 <translation id="3587482841069643663">সকলো</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> অফলাইনত উপলব্ধ কৰিব পৰা নগ’ল</translation>
+<translation id="3593874215226880809">LZIP কম্প্ৰেছ কৰা আৰ্কাইভ</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">কানাডিয়ান ফ্রেন্স</translation>
 <translation id="3606220979431771195">টুৰ্কিছ-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> বাতিল কৰক।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> টাৰ ভিতৰত <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, সক্ৰিয় নকৰা, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সবিশেষ</translation>
 <translation id="3691184985318546178">সিংহলী</translation>
+<translation id="3703620396751288986">ZIP আৰ্কাইভ</translation>
 <translation id="3726463242007121105">এই ডিভাইচটোৰ ফাইলছিষ্টেম সমৰ্থিত নহয় বাবে এইটো খুলিব নোৱাৰি।</translation>
 <translation id="3727148787322499904">এই ছেটিংটো সলনি কৰিলে শ্বেয়াৰ কৰা সকলো নেটৱৰ্কত প্ৰভাৱ পৰিব</translation>
 <translation id="3737576078404241332">ছাইডবাৰৰ পৰা আঁতৰাওক</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Qwerty কীব’ৰ্ডৰ সৈতে চেক</translation>
 <translation id="4656777537938206294">ফাইলসমূহ অনলাইনত উপলব্ধ কৰক</translation>
 <translation id="4658782175094886150">বৰফৰ মাজত থকা ব্যক্তিৰ ছবি</translation>
+<translation id="4661996069183330363">TAR আৰ্কাইভ</translation>
 <translation id="4669606053856530811">’<ph name="SOURCE_NAME" />’ৰ সদস্যসকলে তেতিয়ালৈকে এক্সেছ নাপাব যেতিয়ালৈকে তেওঁলোকৰ সৈতে এই বস্তুবোৰ শ্বেয়াৰ কৰা নহয়।</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ছুইডিশ্ব</translation>
@@ -929,6 +935,7 @@
 <translation id="8903931173357132290">গ্ৰেজুৱেট</translation>
 <translation id="8912078710089354287">নেজ জোকাৰি থকা কুকুৰৰ ছবি</translation>
 <translation id="8919081441417203123">ডেনিশ্ব</translation>
+<translation id="8965273390142984105">LZOP কম্প্ৰেছ কৰা আৰ্কাইভ</translation>
 <translation id="8965697826696209160">পৰ্যাপ্ত খালী ঠাই নাই।</translation>
 <translation id="8997962250644902079">চীনা (পৰম্পৰাগত) পিনয়িন</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে, সবিশেষ</translation>

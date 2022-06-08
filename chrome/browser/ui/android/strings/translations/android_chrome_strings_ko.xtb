@@ -110,6 +110,7 @@
 <translation id="1513352483775369820">북마크 및 방문 기록</translation>
 <translation id="1513814250881909472">동기화하여 다른 기기에서 탭을 가져오세요.</translation>
 <translation id="1513858653616922153">비밀번호 삭제</translation>
+<translation id="1514552811327923157">개인 정보 보호 샌드박스 메시지가 전체 높이로 열림</translation>
 <translation id="1518421282666914498">감정 GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">오늘 사용</translation>
 <translation id="1538801903729528855">웹에서의 음성 사용 환경 개선하기</translation>
@@ -321,6 +322,7 @@
 <translation id="2711073837061989559">무료 체험</translation>
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
 <translation id="2718846868787000099">콘텐츠를 기본 언어로 표시하기 위해 방문하는 사이트에서 기본 설정을 확인할 수 있습니다.</translation>
+<translation id="2722945394406572875">개인 정보 보호 샌드박스 메시지 닫힘</translation>
 <translation id="2723001399770238859">오디오</translation>
 <translation id="2732063072010454421">더 나은 음성 검색 환경을 경험해 보세요</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -791,6 +793,7 @@
 <translation id="5342314432463739672">권한 요청</translation>
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
 <translation id="5368227114232678694">이 기기에서 비공개로 인터넷을 사용하려면 시크릿 모드를 사용하세요.</translation>
+<translation id="5371717687506906963">개인 정보 보호 샌드박스 메시지</translation>
 <translation id="5375577065097716013">Google 렌즈로 이미지 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">반응 변경됨</translation>
 <translation id="5401851137404501592">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다.</translation>
@@ -894,6 +897,7 @@
 <translation id="5906513782029855931">사이트의 URL을 알려 주시면 Google 어시스턴트가 작업을 도와드릴 수 있습니다. Chrome 설정에서 어시스턴트를 사용 중지하실 수 있습니다.</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5919204609460789179"><ph name="PRODUCT_NAME" />을(를) 업데이트하여 동기화를 시작합니다.</translation>
+<translation id="593625682991400408">무료 체험 기간 동안 Chrome에서는 스팸, 사기 및 사이트 간 공유를 제한하는 방법을 탐색합니다. 또한 Chrome은 사이트에서 광고를 표시하는 데 사용할 수 있는 <ph name="BEGIN_LINK" />관심분야를 예측<ph name="END_LINK" />합니다. 설정에서 관심분야를 관리할 수 있습니다.</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> 추가</translation>
 <translation id="5942872142862698679">검색할 때 Google 사용</translation>
 <translation id="5945035219773565305">현재 추천: <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1516,7 @@
 <translation id="9106148373857059373">북마크 저장 흐름 닫힘</translation>
 <translation id="9108312223223904744">휴대전화를 보안 키로 사용 지원</translation>
 <translation id="9108808586816295166">보안 DNS가 항상 제공되지는 않을 수도 있습니다.</translation>
+<translation id="9128984223251192329">개인 정보 보호 샌드박스 메시지가 절반 높이로 열림</translation>
 <translation id="9133397713400217035">오프라인 탐색</translation>
 <translation id="9137013805542155359">원본 보기</translation>
 <translation id="9148126808321036104">다시 로그인</translation>

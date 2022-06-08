@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">ප්‍රහේදය</translation>
 <translation id="1254593899333212300">සෘජු අන්තර්ජාල සබැඳුම</translation>
 <translation id="1272293450992660632">රහස් අංක අගයවල් නොගැළපෙති.</translation>
+<translation id="127650757582748357">BZIP2 සම්පීඩිත සංරක්ෂිතය</translation>
 <translation id="1280820357415527819">ජංගම ජාල සඳහා සොයමින්</translation>
 <translation id="1291603679744561561">SIM අගුලු දමන ලදි</translation>
 <translation id="1293556467332435079">ගොනු</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">චීස්</translation>
 <translation id="2781645665747935084">බෙල්ජියම</translation>
 <translation id="2782104745158847185">Linux යෙදුම් ස්ථාපනය කිරීමේ දෝෂයකි</translation>
+<translation id="2788520643285360081">7-Zip සංරක්ෂිතය</translation>
 <translation id="2803375539583399270">PIN අංකය ඇතුළත් කරන්න</translation>
 <translation id="2820957248982571256">ස්කෑන් කරමින්...</translation>
+<translation id="2822595620066756134">Gzip සම්පීඩිත සංරක්ෂිතය</translation>
 <translation id="2830077785865012357">චීන ෂුයින්</translation>
 <translation id="2843806747483486897">පෙරනිමිය වෙනස් කරන්න...</translation>
 <translation id="2850124913210091882">උපස්ථය</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">ලිතුවේනියානු</translation>
 <translation id="3587482841069643663">සියළු</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> නොබැඳිව ලබා ගත හැකි බවට පත් කළ නොහැකි විය</translation>
+<translation id="3593874215226880809">LZIP සම්පීඩිත සංරක්ෂිතය</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">කැනේඩියානු ප්‍රංශ</translation>
 <translation id="3606220979431771195">තුර්කි-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> අවලංගු කරන්න.</translation>
 <translation id="3690128548376345212">ජාල <ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, සක්‍රිය නොකළ, <ph name="CONNECTION_STATUS" /> සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
 <translation id="3691184985318546178">සිංහල</translation>
+<translation id="3703620396751288986">ZIP සංරක්ෂිතය</translation>
 <translation id="3726463242007121105">ගොනුවේ ගොනුරටාව ආධාරක නොවන බැවින් උපාංගය විවෘත කළ නොහැක.</translation>
 <translation id="3727148787322499904">මෙම සැකසීම වෙනස් කිරීම සියලු බෙදා ගත් ජාලවලට බලපානු ඇත</translation>
 <translation id="3737576078404241332">පැති තීරුව වෙතින් ඉවත් කරන්න</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Qwerty යතුරු පුවරුව සමග චෙක්</translation>
 <translation id="4656777537938206294">ගොනු නොබැඳිව ලබා ගත හැකි බවට පත් කරන්න</translation>
 <translation id="4658782175094886150">හිමේ සිටින පුද්ගලයා</translation>
+<translation id="4661996069183330363">TAR සංරක්ෂිතය</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' හි සාමාජිකයන්ට මෙම අයිතම ඔවුන් සමග බෙදා ගන්නේ නම් මිස ප්‍රවේශය අහිමි වනු ඇත.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ස්වීඩන</translation>
@@ -929,6 +935,7 @@
 <translation id="8903931173357132290">ළමා විය ඉක්මවූ</translation>
 <translation id="8912078710089354287">වලිගය වනන සුනඛයා</translation>
 <translation id="8919081441417203123">ඩෙන්මාර්ක</translation>
+<translation id="8965273390142984105">LZOP සම්පීඩිත සංරක්ෂිතය</translation>
 <translation id="8965697826696209160">ප්‍රමාණවත් මතකයක් නැත.</translation>
 <translation id="8997962250644902079">චීන (සාම්ප්‍රදායික) පින්යින්</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි, විස්තර</translation>

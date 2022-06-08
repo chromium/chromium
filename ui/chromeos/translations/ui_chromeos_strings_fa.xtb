@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">ژانر</translation>
 <translation id="1254593899333212300">اتصال اینترنتی مستقیم</translation>
 <translation id="1272293450992660632">مقادیر پین مطابقت ندارند.</translation>
+<translation id="127650757582748357">‏فایل بایگانی فشرده BZIP2</translation>
 <translation id="1280820357415527819">درحال جستجوی شبکه‌های دستگاه همراه</translation>
 <translation id="1291603679744561561">سیم‌کارت قفل است</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2781645665747935084">بلژیکی</translation>
 <translation id="2782104745158847185">‏خطا هنگام نصب برنامه Linux</translation>
+<translation id="2788520643285360081">‏فایل بایگانی ‎7-Zip</translation>
 <translation id="2803375539583399270">پین را وارد کنید</translation>
 <translation id="2820957248982571256">درحال اسکن کردن…</translation>
+<translation id="2822595620066756134">‏فایل بایگانی فشرده GZIP</translation>
 <translation id="2830077785865012357">چینی (ژوئین)</translation>
 <translation id="2843806747483486897">تغییر پیش‌فرض...</translation>
 <translation id="2850124913210091882">پشتیبان‌گیری</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">لیتوانیایی</translation>
 <translation id="3587482841069643663">همه</translation>
 <translation id="3592251141500063301">نمی‌توان <ph name="FILE_NAME" /> را به‌صورت آفلاین دردسترس قرار داد</translation>
+<translation id="3593874215226880809">‏فایل بایگانی فشرده LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">فرانسوی کانادا</translation>
 <translation id="3606220979431771195">‏ترکی F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">لغو <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />،‏ <ph name="NETWORK_NAME" />،‏ غیرفعال، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
 <translation id="3691184985318546178">سینهالی</translation>
+<translation id="3703620396751288986">‏فایل بایگانی ZIP</translation>
 <translation id="3726463242007121105">این دستگاه باز نمی‌شود زیرا سیستم فایل آن پشتیبانی نمی‌شود.</translation>
 <translation id="3727148787322499904">تغییر این تنظیم همه شبکه‌های به اشتراک‌گذاشته‌شده را تحت تأثیر قرار می‌دهد</translation>
 <translation id="3737576078404241332">حذف از نوار کناری</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">‏چکی با صفحه‌کلید Qwerty</translation>
 <translation id="4656777537938206294">تنظیم فایل برای دسترسی آفلاین</translation>
 <translation id="4658782175094886150">شخصی در برف</translation>
+<translation id="4661996069183330363">‏فایل بایگانی TAR</translation>
 <translation id="4669606053856530811">اگر این موارد با اعضای «<ph name="SOURCE_NAME" />» هم‌رسانی نشوند، دسترسی را از دست خواهند داد.</translation>
 <translation id="467809019005607715">‏اسلایدنگار Google</translation>
 <translation id="4690246192099372265">سوئدی</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">فارغ‌التحصیل</translation>
 <translation id="8912078710089354287">سگ درحال تکان دادن دم</translation>
 <translation id="8919081441417203123">دانمارکی</translation>
+<translation id="8965273390142984105">‏فایل بایگانی فشرده LZOP</translation>
 <translation id="8965697826696209160">فضای کافی وجود ندارد.</translation>
 <translation id="8997962250644902079">چینی پین‌یین (سنتی)</translation>
 <translation id="9003940392834790328">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، تحت‌مدیریت سرپرست، جزئیات</translation>

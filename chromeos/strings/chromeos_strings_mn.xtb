@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг.</translation>
 <translation id="1175951029573070619">Дундаж (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Хасах</translation>
+<translation id="1190378975642195988">Суурийн хурдатгал хэмжигч</translation>
 <translation id="1195447618553298278">Үл танигдах алдаа гаргасан байна</translation>
 <translation id="1196959502276349371">Хувилбар <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Тоглуулах/Түр зогсоох</translation>
@@ -268,6 +269,7 @@
 <translation id="3484914941826596830">Жижиг программыг шинэчилж байх үед энэ гадны төхөөрөмжийг бүү салгаарай. Мөн компьютероо бүү унтраагаарай. Та энэ цонхыг багасгах боломжтой. Энэ шинэчлэлтэд хэдэн минут зарцуулж магадгүй бөгөөд энэ хугацаанд таны гадны төхөөрөмж ажиллахгүй байж магадгүй.</translation>
 <translation id="3486220673238053218">тодорхойлолт</translation>
 <translation id="3488065109653206955">Хагас идэвхжсэн</translation>
+<translation id="3492982278147736083">Тагийн гироскоп</translation>
 <translation id="3517001332549868749">ChromeOS-н шинэчлэлт</translation>
 <translation id="3527036260304016759">Амжилтгүй болсон - Үл мэдэгдэх алдаа</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> орчим минут үлдсэн байна</translation>
@@ -301,6 +303,7 @@
 <translation id="3820172043799983114">ПИН буруу байна.</translation>
 <translation id="3838338534323494292">Шинэ нууц үг</translation>
 <translation id="385051799172605136">Буцах</translation>
+<translation id="3856304145690230735">Суурийн гироскоп</translation>
 <translation id="385832974417157471">Унтраахаасаа өмнө төхөөрөмжөө powerwash хийнэ үү. Хэрэв таны төхөөрөмж тагтай бол тагийг нь хаахаас өмнө powerwash хийж дуустал хүлээнэ үү. Powerwash хийж дуусахад хэдэн минут зарцуулж магадгүй.</translation>
 <translation id="3858860766373142691">Нэр</translation>
 <translation id="3865414814144988605">Нягтрал</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Эхлүүлэх</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Сүлжээний өгөгдмөл бус гэйтвэйд пин илгээж чадсангүй</translation>
+<translation id="4500213108254186382">Тагийн хурдатгал хэмжигч</translation>
 <translation id="4503223151711056411">Зүүн сум</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Субъектийн хоёрдогч нэрийн тохирол</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM-н түгжээг тайлсан</translation>
 <translation id="4562494484721939086">Үйлчилгээ байхгүй</translation>
 <translation id="4568938274596692027">Суулгаж дууслаа. Дахин эхлүүлэхээр бэлтгэж байна...</translation>
+<translation id="4576943788798178439">Мэдрэгч үзгийн тусламж</translation>
 <translation id="458794348635939462">Бүх хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="4593212453765072419">Проксиг баталгаажуулах шаардлагатай</translation>
 <translation id="4609350030397390689">Гарны гэрэлтүүлгийг багасгах</translation>
@@ -537,6 +542,7 @@
 <translation id="5866840822086176774">Маш хүчтэй</translation>
 <translation id="588258955323874662">Дэлгэц дүүрэн</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
+<translation id="5898758006340607522">Асаах/Унтраах товч</translation>
 <translation id="5901630391730855834">Шар</translation>
 <translation id="5903200662178656908">Төхөөрөмж нь гар болон хулганын хослол юм.</translation>
 <translation id="5916084858004523819">Хориглосон</translation>
@@ -859,6 +865,7 @@
 <translation id="8919792139048574232">Юуг зассаныг хараарай</translation>
 <translation id="8919837981463578619">Амжилтгүй болсон - Тавиур алга байна</translation>
 <translation id="8923267550422472772">Шинэчлэх сарын өдөр</translation>
+<translation id="8925613211674558308">Vpd-г завсрын санах ойд хадгалсан</translation>
 <translation id="8928727111548978589">Амжилтгүй болсон - Цаас дууссан</translation>
 <translation id="8930521118335213258">Төстэй апп</translation>
 <translation id="8930622219860340959">Утасгүй</translation>

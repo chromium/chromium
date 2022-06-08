@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">장르</translation>
 <translation id="1254593899333212300">인터넷에 바로 연결</translation>
 <translation id="1272293450992660632">PIN 값이 일치하지 않습니다.</translation>
+<translation id="127650757582748357">BZIP2 압축 파일</translation>
 <translation id="1280820357415527819">모바일 네트워크 검색 중</translation>
 <translation id="1291603679744561561">SIM 잠김</translation>
 <translation id="1293556467332435079">파일</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">치즈</translation>
 <translation id="2781645665747935084">벨기에어</translation>
 <translation id="2782104745158847185">Linux 애플리케이션 설치 중 오류 발생</translation>
+<translation id="2788520643285360081">7-ZIP 파일</translation>
 <translation id="2803375539583399270">PIN 입력</translation>
 <translation id="2820957248982571256">검색 중...</translation>
+<translation id="2822595620066756134">GZIP 압축 파일</translation>
 <translation id="2830077785865012357">중국어(주음부호)</translation>
 <translation id="2843806747483486897">기본값 변경...</translation>
 <translation id="2850124913210091882">백업</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">리투아니아어</translation>
 <translation id="3587482841069643663">전체</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> 파일을 오프라인에서 사용하도록 설정할 수 없습니다.</translation>
+<translation id="3593874215226880809">LZIP 압축 파일</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" />, <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">프랑스어(캐나다)</translation>
 <translation id="3606220979431771195">터키어-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> 작업을 취소합니다.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째 네트워크, <ph name="NETWORK_NAME" />, 비활성화됨, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="3691184985318546178">싱할라어</translation>
+<translation id="3703620396751288986">ZIP 파일</translation>
 <translation id="3726463242007121105">파일 시스템이 지원되지 않아 이 기기를 열 수 없습니다.</translation>
 <translation id="3727148787322499904">이 설정을 변경하면 모든 공유 네트워크에 영향을 줍니다.</translation>
 <translation id="3737576078404241332">사이드바에서 삭제</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">체코어(쿼티 키보드)</translation>
 <translation id="4656777537938206294">파일을 오프라인에서 사용할 수 있도록 설정</translation>
 <translation id="4658782175094886150">눈 맞는 사람</translation>
+<translation id="4661996069183330363">TAR 압축 파일</translation>
 <translation id="4669606053856530811">이 항목을 '<ph name="SOURCE_NAME" />'의 멤버와 공유하지 않으면 이 팀의 멤버가 항목에 더 이상 액세스할 수 없게 됩니다.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">스웨덴어</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">졸업생</translation>
 <translation id="8912078710089354287">꼬리를 흔드는 개</translation>
 <translation id="8919081441417203123">덴마크어</translation>
+<translation id="8965273390142984105">LZOP 압축 파일</translation>
 <translation id="8965697826696209160">저장 공간이 부족합니다.</translation>
 <translation id="8997962250644902079">중국어(번체, 병음)</translation>
 <translation id="9003940392834790328">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 관리함, 세부정보</translation>

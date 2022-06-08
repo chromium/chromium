@@ -95,6 +95,7 @@
 <translation id="1717874160321062422">관리자: <ph name="FIRST_MANAGER" /> 및 <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">네임서버</translation>
 <translation id="1731082422893354635">블루투스 터치패드</translation>
+<translation id="1745577949879301685">이미지를 로드할 수 없습니다. 네트워크 연결을 확인하거나 이미지를 다시 로드해 보세요.</translation>
 <translation id="1751249301761991853">개인</translation>
 <translation id="1753496554272155572">배경화면 미리보기 종료</translation>
 <translation id="175763766237925754">양호(<ph name="SIGNAL_STRENGTH" />)</translation>

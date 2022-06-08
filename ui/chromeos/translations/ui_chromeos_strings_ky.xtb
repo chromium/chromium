@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Интернетке түз туташуу</translation>
 <translation id="1272293450992660632">PIN коддор дал келген жок.</translation>
+<translation id="127650757582748357">BZIP2 менен кысылган архив</translation>
 <translation id="1280820357415527819">Мобилдик тармактар изделүүдө</translation>
 <translation id="1291603679744561561">SIM карта кулпуланды</translation>
 <translation id="1293556467332435079">Файлдар</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2781645665747935084">Белгийче</translation>
 <translation id="2782104745158847185">Linux колдонмосун орнотууда ката кетти</translation>
+<translation id="2788520643285360081">7-Zip архиви</translation>
 <translation id="2803375539583399270">PIN кодду киргизиңиз</translation>
 <translation id="2820957248982571256">Скандалууда…</translation>
+<translation id="2822595620066756134">GZIP менен кысылган архив</translation>
 <translation id="2830077785865012357">Кытайча (чжуинь)</translation>
 <translation id="2843806747483486897">Демейкини өзгөртүү…</translation>
 <translation id="2850124913210091882">Камдык көчүрмө сактоо</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Литвача</translation>
 <translation id="3587482841069643663">Баары</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> оффлайн режиминде жеткиликсиз</translation>
+<translation id="3593874215226880809">LZIP менен кысылган архив</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Французча (Канада)</translation>
 <translation id="3606220979431771195">Түркчө-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> аракети жокко чыгарылат.</translation>
 <translation id="3690128548376345212">Тармак (<ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />), <ph name="NETWORK_NAME" />, жандырылган эмес, <ph name="CONNECTION_STATUS" />, сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, чоо-жайы</translation>
 <translation id="3691184985318546178">Сингалча</translation>
+<translation id="3703620396751288986">ZIP архиви</translation>
 <translation id="3726463242007121105">Бул түзмөктүн файл тутуму колдоого алынбагандыктан, ал ачылбайт.</translation>
 <translation id="3727148787322499904">Бул жөндөө өзгөтүлсө, бөлүшүлгөн тармактардын баарына таасирин тийгизет</translation>
 <translation id="3737576078404241332">Капталдагы тактадан өчүрүү</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Чехче жана Qwerty баскычтобу</translation>
 <translation id="4656777537938206294">Файлдарды оффлайнда колдонуңуз</translation>
 <translation id="4658782175094886150">Кардагы адам</translation>
+<translation id="4661996069183330363">TAR архиви</translation>
 <translation id="4669606053856530811">Файлдар бөлүшүлмөйүнчө "<ph name="SOURCE_NAME" />" жалпы дискинин колдонуучулары аларды колдоно албай калышат.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Шведче</translation>
@@ -929,6 +935,7 @@
 <translation id="8903931173357132290">Бүтүрүүчү</translation>
 <translation id="8912078710089354287">Куйругун шыйпаңдаткан ит</translation>
 <translation id="8919081441417203123">Датча</translation>
+<translation id="8965273390142984105">LZOP менен кысылган архив</translation>
 <translation id="8965697826696209160">Бош орун жетишсиз.</translation>
 <translation id="8997962250644902079">Кытайча пиньинь (салттуу)</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз башкарат, Чоо-жайы</translation>

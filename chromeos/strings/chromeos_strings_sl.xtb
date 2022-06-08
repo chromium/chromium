@@ -95,6 +95,7 @@
 <translation id="1717874160321062422">Napravo upravljata <ph name="FIRST_MANAGER" /> in <ph name="SECOND_MANAGER" />.</translation>
 <translation id="1726100011689679555">Imenski strežniki</translation>
 <translation id="1731082422893354635">Sledilna ploščica Bluetooth</translation>
+<translation id="1745577949879301685">Slik ni bilo mogoče naložiti. Preverite omrežno povezavo ali znova poskusite naložiti slike.</translation>
 <translation id="1751249301761991853">Osebno</translation>
 <translation id="1753496554272155572">Zapiranje predogleda zaslonskega ozadja</translation>
 <translation id="175763766237925754">Dobra (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -821,7 +822,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8660881923941176839">funti</translation>
 <translation id="8662671328352114214">Pridružitev omrežju <ph name="TYPE" /></translation>
 <translation id="8671972493856476349">Posodobi na različico <ph name="VERSION_NUMBER" /> in zaženi znova</translation>
-<translation id="8675354002693747642">Ključ v predhodni skupni rabi</translation>
+<translation id="8675354002693747642">Vnaprej deljeni ključ</translation>
 <translation id="8677859815076891398">Ni albumov. Ustvarite album v <ph name="LINK_BEGIN" />Googlu Foto<ph name="LINK_END" />.</translation>
 <translation id="8680431479333800907">Naprava se prenaša k istemu uporabniku.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Upravljajte to funkcijo s tipkama puščica levo ali desno.</translation>

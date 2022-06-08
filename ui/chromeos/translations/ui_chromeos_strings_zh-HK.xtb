@@ -35,7 +35,7 @@
 <translation id="1249250836236328755">類型</translation>
 <translation id="1254593899333212300">直接連線到互聯網</translation>
 <translation id="1272293450992660632">PIN 值不相符。</translation>
-<translation id="127650757582748357">BZIP2 壓縮檔</translation>
+<translation id="127650757582748357">BZIP2 壓縮封存檔案</translation>
 <translation id="1280820357415527819">正在搜尋流動網絡</translation>
 <translation id="1291603679744561561">SIM 卡已鎖定</translation>
 <translation id="1293556467332435079">檔案</translation>
@@ -208,10 +208,10 @@
 <translation id="2771816809568414714">芝士</translation>
 <translation id="2781645665747935084">比利時文</translation>
 <translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
-<translation id="2788520643285360081">7-Zip 封存檔</translation>
+<translation id="2788520643285360081">7-Zip 封存檔案</translation>
 <translation id="2803375539583399270">請輸入 PIN</translation>
 <translation id="2820957248982571256">正在掃瞄…</translation>
-<translation id="2822595620066756134">GZIP 壓縮檔</translation>
+<translation id="2822595620066756134">GZIP 壓縮封存檔案</translation>
 <translation id="2830077785865012357">中文 (注音)</translation>
 <translation id="2843806747483486897">變更預設值…</translation>
 <translation id="2850124913210091882">備份</translation>
@@ -303,7 +303,7 @@
 <translation id="357479282490346887">立陶宛文</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3592251141500063301">無法將 <ph name="FILE_NAME" /> 設定為可離線使用</translation>
-<translation id="3593874215226880809">LZIP 壓縮檔</translation>
+<translation id="3593874215226880809">LZIP 壓縮封存檔案</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">加拿大法語</translation>
 <translation id="3606220979431771195">土耳其文 F 型</translation>
@@ -316,7 +316,7 @@
 <translation id="3689865792480713551">取消 <ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個網絡，<ph name="NETWORK_NAME" />，未啟用，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="3691184985318546178">錫蘭文</translation>
-<translation id="3703620396751288986">ZIP 封存檔</translation>
+<translation id="3703620396751288986">ZIP 封存檔案</translation>
 <translation id="3726463242007121105">這部裝置所用的檔案系統不受支援，因此系統無法開啟這部裝置。</translation>
 <translation id="3727148787322499904">變更此設定將會影響所有共用網絡</translation>
 <translation id="3737576078404241332">從側欄中移除</translation>
@@ -388,7 +388,7 @@
 <translation id="4380245540200674032">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，由管理員管理，詳情</translation>
 <translation id="4387004326333427325">遠端已拒絕驗證憑證</translation>
 <translation id="4394214039309501350">外部連結</translation>
-<translation id="4401287888955153199">擷取全部</translation>
+<translation id="4401287888955153199">解壓縮全部</translation>
 <translation id="4410695710508688828">擷取操作失敗：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">為檔案建立捷徑</translation>
 <translation id="4425149324548788773">我的雲端硬碟</translation>
@@ -418,7 +418,7 @@
 <translation id="4646813851450205600">捷克文，QWERTY 鍵盤</translation>
 <translation id="4656777537938206294">將檔案設定為可離線使用</translation>
 <translation id="4658782175094886150">雪中的人</translation>
-<translation id="4661996069183330363">TAR 封存檔</translation>
+<translation id="4661996069183330363">TAR 封存檔案</translation>
 <translation id="4669606053856530811">除非有人與「<ph name="SOURCE_NAME" />」的成員共用這些項目，否則他們將失去存取權。</translation>
 <translation id="467809019005607715">Google 簡報</translation>
 <translation id="4690246192099372265">瑞典文</translation>
@@ -936,7 +936,7 @@
 <translation id="8903931173357132290">畢業生</translation>
 <translation id="8912078710089354287">搖尾巴的狗</translation>
 <translation id="8919081441417203123">丹麥文</translation>
-<translation id="8965273390142984105">LZOP 壓縮檔</translation>
+<translation id="8965273390142984105">LZOP 壓縮封存檔案</translation>
 <translation id="8965697826696209160">空間不足。</translation>
 <translation id="8997962250644902079">繁體中文 (拼音)</translation>
 <translation id="9003940392834790328">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，由管理員管理，詳情</translation>

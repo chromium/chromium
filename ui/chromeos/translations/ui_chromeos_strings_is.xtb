@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Stefna</translation>
 <translation id="1254593899333212300">Beintenging við internetið</translation>
 <translation id="1272293450992660632">PIN-númer stemma ekki.</translation>
+<translation id="127650757582748357">BZIP2-þjöppuð geymsla</translation>
 <translation id="1280820357415527819">Leitar að farsímakerfum</translation>
 <translation id="1291603679744561561">SIM-kort er læst</translation>
 <translation id="1293556467332435079">Skrár</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Ostur</translation>
 <translation id="2781645665747935084">Belgískt</translation>
 <translation id="2782104745158847185">Villa við uppsetningu Linux-forrits</translation>
+<translation id="2788520643285360081">7-ZIP-geymsla</translation>
 <translation id="2803375539583399270">Sláðu inn PIN-númer</translation>
 <translation id="2820957248982571256">Leitar...</translation>
+<translation id="2822595620066756134">GZIP-þjöppuð geymsla</translation>
 <translation id="2830077785865012357">Kínverska Zhuyin</translation>
 <translation id="2843806747483486897">Breyta sjálfgefinni aðgerð...</translation>
 <translation id="2850124913210091882">Taka afrit</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Litháískt</translation>
 <translation id="3587482841069643663">Allar</translation>
 <translation id="3592251141500063301">Ekki var hægt að gera <ph name="FILE_NAME" /> tiltækt án nettengingar</translation>
+<translation id="3593874215226880809">LZIP-þjöppuð geymsla</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Kanadískt franskt</translation>
 <translation id="3606220979431771195">Tyrkneskt F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">Hætta við að <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, óvirkt, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />%, upplýsingar</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3703620396751288986">ZIP-geymsla</translation>
 <translation id="3726463242007121105">Ekki er hægt að opna þetta tæki vegna þess að ekki er stuðningur við skráakerfi þess.</translation>
 <translation id="3727148787322499904">Ef þessari stillingu er breytt hefur það áhrif á öll samnýtt netkerfi</translation>
 <translation id="3737576078404241332">Fjarlægja af hliðarstiku</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Tékkneska með Qwerty-lyklaborði</translation>
 <translation id="4656777537938206294">Gera skrár aðgengilegar án nettengingar</translation>
 <translation id="4658782175094886150">Einstaklingur í snjó</translation>
+<translation id="4661996069183330363">TAR-geymsla</translation>
 <translation id="4669606053856530811">Meðlimir „<ph name="SOURCE_NAME" />“ munu missa aðgang nema þessum atriðum sé deilt með þeim.</translation>
 <translation id="467809019005607715">Google skyggnur</translation>
 <translation id="4690246192099372265">Sænskt</translation>
@@ -929,6 +935,7 @@
 <translation id="8903931173357132290">Útskrifaður nemandi</translation>
 <translation id="8912078710089354287">Hundur sem dillar skottinu</translation>
 <translation id="8919081441417203123">Danskt</translation>
+<translation id="8965273390142984105">LZOP-þjöppuð geymsla</translation>
 <translation id="8965697826696209160">Ekki er nægilegt pláss.</translation>
 <translation id="8997962250644902079">Kínverska (hefðbundin) Pinyin</translation>
 <translation id="9003940392834790328">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, stjórnað af kerfisstjóra, upplýsingar</translation>

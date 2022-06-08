@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Gatunek</translation>
 <translation id="1254593899333212300">Bezpośrednie połączenie internetowe</translation>
 <translation id="1272293450992660632">Kody PIN nie są zgodne.</translation>
+<translation id="127650757582748357">Skompresowane archiwum BZIP2</translation>
 <translation id="1280820357415527819">Szukam sieci komórkowych</translation>
 <translation id="1291603679744561561">Karta SIM zablokowana</translation>
 <translation id="1293556467332435079">Pliki</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Ser</translation>
 <translation id="2781645665747935084">belgijska klawiatura</translation>
 <translation id="2782104745158847185">Błąd podczas instalowania aplikacji na Linuksa</translation>
+<translation id="2788520643285360081">Archiwum 7-Zip</translation>
 <translation id="2803375539583399270">Wpisz kod PIN</translation>
 <translation id="2820957248982571256">Skanuję…</translation>
+<translation id="2822595620066756134">Skompresowane archiwum GZIP</translation>
 <translation id="2830077785865012357">Chiński zhuyin</translation>
 <translation id="2843806747483486897">Zmień ustawienie domyślne...</translation>
 <translation id="2850124913210091882">Utwórz kopię zapasową</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Litewski</translation>
 <translation id="3587482841069643663">Wszystkie</translation>
 <translation id="3592251141500063301">Pliku <ph name="FILE_NAME" /> nie udało się udostępnić offline</translation>
+<translation id="3593874215226880809">Skompresowane archiwum LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">kanadyjski francuski</translation>
 <translation id="3606220979431771195">Turecki (wersja F)</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">Anuluj <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nieaktywowana, <ph name="CONNECTION_STATUS" />, siła sygnału <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="3691184985318546178">Syngaleski</translation>
+<translation id="3703620396751288986">Plik ZIP</translation>
 <translation id="3726463242007121105">Nie można otworzyć urządzenia, ponieważ jego system plików nie jest obsługiwany.</translation>
 <translation id="3727148787322499904">Zmiana tego ustawienia wpłynie na wszystkie sieci współdzielone</translation>
 <translation id="3737576078404241332">Usuń z paska bocznego</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Czeski z klawiaturą QWERTY</translation>
 <translation id="4656777537938206294">Udostępnij pliki offline</translation>
 <translation id="4658782175094886150">Osoba w śniegu</translation>
+<translation id="4661996069183330363">Archiwum TAR</translation>
 <translation id="4669606053856530811">Osoby z uprawnieniami do: „<ph name="SOURCE_NAME" />” utracą dostęp do tych elementów, chyba że zostaną one im udostępnione.</translation>
 <translation id="467809019005607715">Prezentacje Google</translation>
 <translation id="4690246192099372265">Szwedzki</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">Absolwent</translation>
 <translation id="8912078710089354287">Pies merdający ogonem</translation>
 <translation id="8919081441417203123">Duński</translation>
+<translation id="8965273390142984105">Skompresowane archiwum LZOP</translation>
 <translation id="8965697826696209160">Nie ma wystarczającej ilości miejsca.</translation>
 <translation id="8997962250644902079">Chiński (tradycyjny) pinyin</translation>
 <translation id="9003940392834790328">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, szczegóły</translation>

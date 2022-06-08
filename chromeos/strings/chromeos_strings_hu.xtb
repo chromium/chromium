@@ -95,6 +95,7 @@
 <translation id="1717874160321062422">A következők kezelik: <ph name="FIRST_MANAGER" /> és <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Névszerverek</translation>
 <translation id="1731082422893354635">Bluetooth-érintőpad</translation>
+<translation id="1745577949879301685">Nem sikerült a képek betöltése. Ellenőrizze a hálózati kapcsolatot, vagy próbálja meg újra betölteni a képeket.</translation>
 <translation id="1751249301761991853">Személyes</translation>
 <translation id="1753496554272155572">Kilépés a háttérkép előnézetéből</translation>
 <translation id="175763766237925754">Jó (<ph name="SIGNAL_STRENGTH" />)</translation>

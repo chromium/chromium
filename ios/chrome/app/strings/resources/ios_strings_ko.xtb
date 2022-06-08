@@ -65,6 +65,7 @@
 <translation id="1434356225517321998">관리 대상 브라우저입니다 <ph name="BEGIN_LINK" />세부정보<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">비밀번호 숨기기</translation>
 <translation id="145015347812617860">항목 <ph name="COUNT" />개</translation>
+<translation id="1450170672351507823">표준 보호 모드가 사용 설정되어 있습니다. 보안을 더욱 강화하려면 향상된 보호 모드를 사용하세요.</translation>
 <translation id="149095475893949513">웹사이트에서 구성 프로필을 다운로드하려고 합니다.</translation>
 <translation id="1491277525950327607">설정을 전환하려면 두 번 탭하세요.</translation>
 <translation id="1492417797159476138">이미 사이트에 사용 중인 사용자 이름입니다.</translation>
@@ -738,6 +739,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7099761977003084116">최근 탭</translation>
 <translation id="7102005569666697658">다운로드 중… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">숨기기</translation>
+<translation id="7108762695052995889">사이트 방문</translation>
 <translation id="7133798577887235672">이름</translation>
 <translation id="7136892417564438900">카메라를 사용할 수 없음</translation>
 <translation id="7153999225810839758">읽는 데 <ph name="TIME" />분 소요 예상</translation>

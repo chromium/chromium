@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">ປະເພດ</translation>
 <translation id="1254593899333212300">ການເຊື່ອມຕໍ່ອິນເຕີເນັດໂດຍກົງ</translation>
 <translation id="1272293450992660632">ຄ່າ PIN ບໍ່ກົງກັນ.</translation>
+<translation id="127650757582748357">ແຟ້ມຈັດເກັບ BZIP2 ທີ່ບີບອັດໄວ້</translation>
 <translation id="1280820357415527819">ກຳລັງຊອກຫາເຄືອຂ່າຍມືຖື</translation>
 <translation id="1291603679744561561">ຊິມຖືກລັອກ</translation>
 <translation id="1293556467332435079">ໄຟລ໌</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">ເນີຍແຂງ</translation>
 <translation id="2781645665747935084">ພາສາແບນຊິກ</translation>
 <translation id="2782104745158847185">ເກີດຜິດພາດໃນການຕິດຕັ້ງແອັບພລິເຄຊັນ Linux</translation>
+<translation id="2788520643285360081">ແຟ້ມຈັດເກັບ 7-Zip</translation>
 <translation id="2803375539583399270">ປ້ອນ PIN</translation>
 <translation id="2820957248982571256">ກຳລັງສະແກນ…</translation>
+<translation id="2822595620066756134">ແຟ້ມຈັດເກັບ GZIP ທີ່ບີບອັດໄວ້</translation>
 <translation id="2830077785865012357">ພາສາຈີນຊູອິນ</translation>
 <translation id="2843806747483486897">ປ່ຽນມາດຕະຖານ...</translation>
 <translation id="2850124913210091882">ສຳ​ຮອງ</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">ພາສາລິດທົວນີ</translation>
 <translation id="3587482841069643663">ທັງໝົດ</translation>
 <translation id="3592251141500063301">ບໍ່ສາມາດເຮັດໃຫ້ <ph name="FILE_NAME" /> ມີໃຫ້ນຳໃຊ້ແບບອອບລາຍໄດ້</translation>
+<translation id="3593874215226880809">ແຟ້ມຈັດເກັບ LZIP ທີ່ບີບອັດໄວ້</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">ພາສາຝຣັ່ງການາດາ</translation>
 <translation id="3606220979431771195">ພາ​ສາ​ຕວກ​ກີ-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">ຍົກເລີກ <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ບໍ່ໄດ້ເປີດໃຊ້, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>
 <translation id="3691184985318546178">ພາສາຊິນຮາລາ</translation>
+<translation id="3703620396751288986">ແຟ້ມຈັດເກັບ ZIP</translation>
 <translation id="3726463242007121105">ບໍ່ສາມາດເປີດອຸປະກອນນີ້ໄດ້ ເພາະວ່າລະບົບໄຟລ໌ຂອງມັນບໍ່ຮອງຮັບ.</translation>
 <translation id="3727148787322499904">ການປ່ຽນການຕັ້ງຄ່ານີ້ຈະມີຜົນຕໍ່ກັບທຸກເຄືອຂ່າຍທີ່ໃຊ້ຮ່ວມກັນ</translation>
 <translation id="3737576078404241332">ລຶບອອກຈາກແຖບດ້ານຂ້າງ</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">ພາສາເຊັກທີ່ໃຊ້ແປ້ນພິມ Qwerty</translation>
 <translation id="4656777537938206294">ເຮັດໃຫ້ໄຟລ໌ສາມາດໃຊ້ໄດ້ອອບລາຍ</translation>
 <translation id="4658782175094886150">ຄົນໃນຫິມະ</translation>
+<translation id="4661996069183330363">ແຟ້ມຈັດເກັບ TAR</translation>
 <translation id="4669606053856530811">ສະມາຊິກ '<ph name="SOURCE_NAME" />' ຈະສູນເສຍການເຂົ້າເຖິງ ເວັ້ນເສຍແຕ່ວ່າມີການແບ່ງປັນລາຍການເຫຼົ່ານີ້ກັບເຂົາເຈົ້າ.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ພາສາຊູແອດ</translation>
@@ -929,6 +935,7 @@
 <translation id="8903931173357132290">ຈົບ​ການ​ສຶກ​ສາ</translation>
 <translation id="8912078710089354287">ໝາກະດິກຫາງ</translation>
 <translation id="8919081441417203123">ພາສາເດັນມາກ</translation>
+<translation id="8965273390142984105">ແຟ້ມຈັດເກັບ LZOP ທີ່ບີບອັດໄວ້</translation>
 <translation id="8965697826696209160">ບໍ່ມີເນື້ອທີ່ພຽງພໍ.</translation>
 <translation id="8997962250644902079">ພາສາຈີນ (ຕົວຫຍໍ້) ພິນອິນ</translation>
 <translation id="9003940392834790328">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>

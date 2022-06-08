@@ -95,6 +95,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> आणि <ph name="SECOND_MANAGER" /> द्वारे व्यवस्थापित</translation>
 <translation id="1726100011689679555">नाव सर्व्हर</translation>
 <translation id="1731082422893354635">ब्लूटूथ टचपॅड</translation>
+<translation id="1745577949879301685">इमेज लोड करता आल्या नाहीत. तुमचे नेटवर्क कनेक्शन तपासा किंवा इमेज पुन्हा लोड करून पहा.</translation>
 <translation id="1751249301761991853">वैयक्तिक</translation>
 <translation id="1753496554272155572">वॉलपेपर पूर्वावलोकनामधून बाहेर पडा</translation>
 <translation id="175763766237925754">चांगला (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -429,6 +430,7 @@
 <translation id="4915052247106771211">यामुळे डिव्हाइस फॅक्टरी सेटिंग्जवर रीसेट केले जाईल (Powerwash).</translation>
 <translation id="4917385247580444890">मजबूत</translation>
 <translation id="4917889632206600977">थांबले - कागद संपला आहे</translation>
+<translation id="491791267030419270">फीडबॅक लिहिण्यासाठी टिपा</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंदांत <ph name="RATE" /> शुल्क आकारले.</translation>
 <translation id="4930320165497208503">कनेक्शन सेट किंवा अपडेट करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> वर जा.</translation>
 <translation id="4932733599132424254">तारीख</translation>

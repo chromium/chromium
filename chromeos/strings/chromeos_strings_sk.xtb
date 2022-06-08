@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Priemerné (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
+<translation id="1190378975642195988">Akcelerometer v základni</translation>
 <translation id="1195447618553298278">Neznáma chyba.</translation>
 <translation id="1196959502276349371">Verzia <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Prehratie alebo pozastavenie</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Počas aktualizovania firmvéru neodpájajte toto zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Táto aktualizácia môže trvať niekoľko minút a vaše externé zariadenie nemusí počas nej fungovať.</translation>
 <translation id="3486220673238053218">definícia</translation>
 <translation id="3488065109653206955">Čiastočne aktivované</translation>
+<translation id="3492982278147736083">Gyroskop v kryte</translation>
 <translation id="3517001332549868749">Aktualiz. ChromeOS</translation>
 <translation id="3527036260304016759">Nepodarilo sa – neznáma chyba</translation>
 <translation id="3532980081107202182">Zostávajúci čas je približne <ph name="MIN_REMAINING" /> min.</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
 <translation id="385051799172605136">Späť</translation>
+<translation id="3856304145690230735">Gyroskop v základni</translation>
 <translation id="385832974417157471">Pred vypnutím vykonajte obnovu zariadenia prostredníctvom funkcie Powerwash. Ak má zariadenie kryt, zatvorte ho až po dokončení obnovy prostredníctvom funkcie Powerwash. Jej dokončenie môže trvať až minútu.</translation>
 <translation id="3858860766373142691">Názov</translation>
 <translation id="3865414814144988605">Rozlíšenie</translation>
@@ -370,6 +373,7 @@
 <translation id="4472575034687746823">Začíname</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepredvolenú bránu siete sa nepodarilo otestovať</translation>
+<translation id="4500213108254186382">Akcelerometer v kryte</translation>
 <translation id="4503223151711056411">Šípka doľava</translation>
 <translation id="4511264077854731334">Portál</translation>
 <translation id="4521826082652183069">Zhoda alternatívneho názvu subjektu</translation>
@@ -381,6 +385,7 @@
 <translation id="4561801978359312462">SIM karta je odomknutá</translation>
 <translation id="4562494484721939086">Žiadny signál</translation>
 <translation id="4568938274596692027">Inštalácia je hotová. Pripravuje sa reštart...</translation>
+<translation id="4576943788798178439">Podpora dotykového pera</translation>
 <translation id="458794348635939462">Nepodarilo sa vybrať všetkých hostiteľov</translation>
 <translation id="4593212453765072419">Vyžaduje sa overenie servera proxy</translation>
 <translation id="4609350030397390689">Zníženie jasu klávesnice</translation>
@@ -429,6 +434,7 @@
 <translation id="4915052247106771211">Týmto sa obnovia výrobné nastavenia zariadenia (Powerwash).</translation>
 <translation id="4917385247580444890">Silné</translation>
 <translation id="4917889632206600977">Zastavené – minul sa papier</translation>
+<translation id="491791267030419270">Tipy, ako napísať spätnú väzbu</translation>
 <translation id="4921665434385737356">Nabité na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Ak chcete nastaviť alebo aktualizovať pripojenie, prejdite do <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Dátum</translation>
@@ -535,6 +541,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5866840822086176774">Veľmi silné</translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
+<translation id="5898758006340607522">Vypínač</translation>
 <translation id="5901630391730855834">Žltá</translation>
 <translation id="5903200662178656908">Zariadenie je kombináciou klávesnice a myši.</translation>
 <translation id="5916084858004523819">Zakázané</translation>
@@ -857,6 +864,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8919792139048574232">Pozrite si opravy</translation>
 <translation id="8919837981463578619">Nepodarilo sa – chýba zásobník</translation>
 <translation id="8923267550422472772">Deň mesiaca pre reset</translation>
+<translation id="8925613211674558308">Vpd vo vyrovnávacej pamäti</translation>
 <translation id="8928727111548978589">Nepodarilo sa – minul sa papier</translation>
 <translation id="8930521118335213258">Podobná aplikácia</translation>
 <translation id="8930622219860340959">Bezdrôtové pripojenie</translation>

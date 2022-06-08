@@ -95,6 +95,7 @@
 <translation id="1717874160321062422">Seadet haldab <ph name="FIRST_MANAGER" /> ja <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nimeserverid</translation>
 <translation id="1731082422893354635">Bluetooth-puuteplaat</translation>
+<translation id="1745577949879301685">Pilte ei õnnestunud laadida. Kontrollige võrguühendust või proovige pilte uuesti laadida.</translation>
 <translation id="1751249301761991853">Isiklik</translation>
 <translation id="1753496554272155572">Taustapildi eelvaatest väljumine</translation>
 <translation id="175763766237925754">Hea (<ph name="SIGNAL_STRENGTH" />)</translation>

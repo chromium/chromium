@@ -65,6 +65,7 @@
 <translation id="1434356225517321998">Браузеріңіз басқарылады. <ph name="BEGIN_LINK" />Мәліметтер<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Құпия сөзді жасыру</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> элемент</translation>
+<translation id="1450170672351507823">Стандартты қорғаныс қосулы. Қауіпсіздікті жақсарту үшін күшейтілген қорғанысты пайдаланыңыз.</translation>
 <translation id="149095475893949513">Бұл веб-сайт конфигурация профилін жүктеп алмақшы.</translation>
 <translation id="1491277525950327607">Параметрді ауыстыру үшін екі рет түртіңіз</translation>
 <translation id="1492417797159476138">Бұл сайт үшін осы пайдаланушы аты сақтап қойылған.</translation>
@@ -350,7 +351,7 @@
 <translation id="3967822245660637423">Жүктеп алынды</translation>
 <translation id="3968505803272650567">Қызығушылықтарды басқару</translation>
 <translation id="3989635538409502728">Шығу</translation>
-<translation id="3995521777587992544">Беттің жүктелу барысын көрсететін жолақ, <ph name="EMAIL" /> жүктелді.</translation>
+<translation id="3995521777587992544">Бетті жүктеудің орындалу жолағы, <ph name="EMAIL" /> жүктелді.</translation>
 <translation id="4002066346123236978">Тақырып</translation>
 <translation id="4004204301268239848">Құпия сөздер Google аккаунтыңызда сақталады және оларды кез келген құрылғыда пайдалана аласыз.</translation>
 <translation id="4006921758705478413">Құрылғыларға жіберу</translation>

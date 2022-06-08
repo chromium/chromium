@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkte internetforbindelse</translation>
 <translation id="1272293450992660632">Pinkodeværdierne stemmer ikke overens.</translation>
+<translation id="127650757582748357">BZIP2-komprimeret arkiv</translation>
 <translation id="1280820357415527819">Søger efter mobilnetværk</translation>
 <translation id="1291603679744561561">SIM-kort låst</translation>
 <translation id="1293556467332435079">Filer</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Ost</translation>
 <translation id="2781645665747935084">Belgisk</translation>
 <translation id="2782104745158847185">Der opstod en fejl ved installation af Linux-appen</translation>
+<translation id="2788520643285360081">7-Zip-arkiv</translation>
 <translation id="2803375539583399270">Angiv pinkode</translation>
 <translation id="2820957248982571256">Scanner…</translation>
+<translation id="2822595620066756134">GZIP-komprimeret arkiv</translation>
 <translation id="2830077785865012357">Kinesisk zhuyin</translation>
 <translation id="2843806747483486897">Skift standardindstillinger...</translation>
 <translation id="2850124913210091882">Sikkerhedskopiér</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Litauisk</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> kunne ikke gøres tilgængelig offline</translation>
+<translation id="3593874215226880809">LZIP-komprimeret arkiv</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Fransk (Canada)</translation>
 <translation id="3606220979431771195">Tyrkisk F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">Annuller <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktiveret, <ph name="CONNECTION_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, oplysninger</translation>
 <translation id="3691184985318546178">Singalesisk</translation>
+<translation id="3703620396751288986">ZIP-fil</translation>
 <translation id="3726463242007121105">Denne enhed kan ikke åbnes, fordi dens filsystem ikke understøttes.</translation>
 <translation id="3727148787322499904">Hvis denne indstilling ændres, påvirker det alle delte netværk</translation>
 <translation id="3737576078404241332">Fjern fra sidebjælke</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Tjekkisk med Qwerty-tastatur</translation>
 <translation id="4656777537938206294">Gør filer tilgængelige offline</translation>
 <translation id="4658782175094886150">Person i sne</translation>
+<translation id="4661996069183330363">TAR-arkiv</translation>
 <translation id="4669606053856530811">Medlemmer af "<ph name="SOURCE_NAME" />" mister adgang, medmindre disse elementer deles med dem.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Svensk</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">Dimittend</translation>
 <translation id="8912078710089354287">Hund, der logrer med halen</translation>
 <translation id="8919081441417203123">Dansk</translation>
+<translation id="8965273390142984105">LZOP-komprimeret arkiv</translation>
 <translation id="8965697826696209160">Der er ikke nok plads.</translation>
 <translation id="8997962250644902079">Kinesisk (traditionelt) pinyin</translation>
 <translation id="9003940392834790328">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, oplysninger</translation>

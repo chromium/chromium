@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Koneksi internet langsung</translation>
 <translation id="1272293450992660632">Nilai PIN tidak cocok.</translation>
+<translation id="127650757582748357">Arsip terkompresi BZIP2</translation>
 <translation id="1280820357415527819">Menelusuri jaringan seluler</translation>
 <translation id="1291603679744561561">SIM Dikunci</translation>
 <translation id="1293556467332435079">File</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Keju</translation>
 <translation id="2781645665747935084">Belgia</translation>
 <translation id="2782104745158847185">Error saat menginstal aplikasi Linux</translation>
+<translation id="2788520643285360081">Arsip 7-Zip</translation>
 <translation id="2803375539583399270">Masukkan PIN</translation>
 <translation id="2820957248982571256">Memindai...</translation>
+<translation id="2822595620066756134">Arsip terkompresi GZIP</translation>
 <translation id="2830077785865012357">Zhuyin China</translation>
 <translation id="2843806747483486897">Ubah default...</translation>
 <translation id="2850124913210091882">Cadangkan</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Lituania</translation>
 <translation id="3587482841069643663">Semua</translation>
 <translation id="3592251141500063301">Tidak dapat membuat <ph name="FILE_NAME" /> tersedia offline</translation>
+<translation id="3593874215226880809">Arsip terkompresi LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Prancis Kanada</translation>
 <translation id="3606220979431771195">Turki-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">Batalkan <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Tidak Diaktifkan, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3703620396751288986">File ZIP</translation>
 <translation id="3726463242007121105">Perangkat ini tidak dapat dibuka karena sistem berkasnya tidak didukung.</translation>
 <translation id="3727148787322499904">Perubahan pada setelan ini akan berpengaruh pada semua jaringan bersama</translation>
 <translation id="3737576078404241332">Hapus dari sidebar</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Ceko dengan keyboard Qwerty</translation>
 <translation id="4656777537938206294">Buat file tersedia offline</translation>
 <translation id="4658782175094886150">Orang di salju</translation>
+<translation id="4661996069183330363">Arsip TAR</translation>
 <translation id="4669606053856530811">Anggota '<ph name="SOURCE_NAME" />' akan kehilangan akses kecuali jika item berikut dibagikan dengan mereka.</translation>
 <translation id="467809019005607715">Google Slide</translation>
 <translation id="4690246192099372265">Swensk</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">Wisudawan</translation>
 <translation id="8912078710089354287">Anjing mengibaskan ekor</translation>
 <translation id="8919081441417203123">Denmark</translation>
+<translation id="8965273390142984105">Arsip terkompresi LZOP</translation>
 <translation id="8965697826696209160">Ruang tidak cukup.</translation>
 <translation id="8997962250644902079">Pinyin (Aksara Tradisional) China</translation>
 <translation id="9003940392834790328">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Dikelola oleh Administrator Anda, Detail</translation>

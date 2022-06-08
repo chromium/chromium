@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Janr</translation>
 <translation id="1254593899333212300">Birbaşa İnternet bağlantısı</translation>
 <translation id="1272293450992660632">PIN-lər eyni deyil.</translation>
+<translation id="127650757582748357">BZIP2 sıxılmış arxivi</translation>
 <translation id="1280820357415527819">Mobil şəbəkə axtarılır</translation>
 <translation id="1291603679744561561">SİM kilidlənib</translation>
 <translation id="1293556467332435079">Fayllar</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Pendir</translation>
 <translation id="2781645665747935084">Belçikalı</translation>
 <translation id="2782104745158847185">Linux tətbiqini quraşdırarkən xəta baş verdi</translation>
+<translation id="2788520643285360081">7-Zip arxivi</translation>
 <translation id="2803375539583399270">PİN daxil edin</translation>
 <translation id="2820957248982571256">Skan edilir...</translation>
+<translation id="2822595620066756134">GZIP sıxılmış arxivi</translation>
 <translation id="2830077785865012357">Çin dili (Juyin)</translation>
 <translation id="2843806747483486897">Defoltu dəyişin...</translation>
 <translation id="2850124913210091882">Yedəkləyin</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Litva</translation>
 <translation id="3587482841069643663">Hamısı</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> faylını oflayn əlçatan etmək mümkün olmadı</translation>
+<translation id="3593874215226880809">LZIP sıxılmış arxivi</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Kanada Fransızcası</translation>
 <translation id="3606220979431771195">Türk-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">Ləğv edin: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Deaktivdir, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3703620396751288986">ZIP arxivi</translation>
 <translation id="3726463242007121105">Bu fayl açıla bilməz, çünki onun fayl sistemi dəstəklənmir.</translation>
 <translation id="3727148787322499904">Bu ayarın dəyişdirilməsi bütün paylaşılan şəbəkələrə təsir edəcək</translation>
 <translation id="3737576078404241332">Yan paneldən silin</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Qwerty klaviaturası ilə Çex dili</translation>
 <translation id="4656777537938206294">Faylları oflayn əlçatan edin</translation>
 <translation id="4658782175094886150">Qarda adam</translation>
+<translation id="4661996069183330363">TAR arxivi</translation>
 <translation id="4669606053856530811">"<ph name="SOURCE_NAME" />" bu element onlarla paylaşılmadığı halda, daxil ola bilməyəcəklər.</translation>
 <translation id="467809019005607715">Google Slayd</translation>
 <translation id="4690246192099372265">İsveç</translation>
@@ -927,6 +933,7 @@
 <translation id="8903931173357132290">Məzun</translation>
 <translation id="8912078710089354287">Quyruğunu tərpədən it</translation>
 <translation id="8919081441417203123">Danimarka</translation>
+<translation id="8965273390142984105">LZOP sıxılmış arxivi</translation>
 <translation id="8965697826696209160">Yer çatmır.</translation>
 <translation id="8997962250644902079">Çin dili (Ənənəvi) Pinyin</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administratorunuz tərəfindən idarə olunur, Detallar</translation>

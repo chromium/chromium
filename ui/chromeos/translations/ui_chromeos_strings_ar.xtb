@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">النوع</translation>
 <translation id="1254593899333212300">اتصال مباشر بالإنترنت</translation>
 <translation id="1272293450992660632">لا تتطابق قيم أرقام التعريف الشخصية.</translation>
+<translation id="127650757582748357">‏أرشيف مضغوط ببرنامج BZIP2</translation>
 <translation id="1280820357415527819">جارٍ البحث عن شبكات الجوّال</translation>
 <translation id="1291603679744561561">‏تم قفل شريحة SIM.</translation>
 <translation id="1293556467332435079">ملفات</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">جبن</translation>
 <translation id="2781645665747935084">البلجيكية</translation>
 <translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
+<translation id="2788520643285360081">‏أرشيف مضغوط ببرنامج ‎7-Zip</translation>
 <translation id="2803375539583399270">أدخل رقم التعريف الشخصي</translation>
 <translation id="2820957248982571256">جارٍ الفحص...</translation>
+<translation id="2822595620066756134">‏أرشيف مضغوط ببرنامج GZIP</translation>
 <translation id="2830077785865012357">‏الصينية باستخدام لوحة مفاتيح Zhuyin</translation>
 <translation id="2843806747483486897">تغيير الإجراء التلقائي...</translation>
 <translation id="2850124913210091882">النسخ الاحتياطي</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">الليتوانية</translation>
 <translation id="3587482841069643663">الكل</translation>
 <translation id="3592251141500063301">تعذَّرت إتاحة الملف "<ph name="FILE_NAME" />" بلا اتصال بالإنترنت.</translation>
+<translation id="3593874215226880809">‏أرشيف مضغوط ببرنامج LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">الفرنسية الكندية</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">إلغاء <ph name="ACTIVITY_DESCRIPTION" /></translation>
 <translation id="3690128548376345212">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، غير مفعّلة، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="3691184985318546178">السنهالية</translation>
+<translation id="3703620396751288986">‏أرشيف ZIP</translation>
 <translation id="3726463242007121105">لا يمكن فتح الجهاز لأن نظام الملفات غير متوافق.</translation>
 <translation id="3727148787322499904">سيؤثر تغيير هذا الإعداد في جميع الشبكات المشتركة</translation>
 <translation id="3737576078404241332">الإزالة من الشريط الجانبي</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">‏التشيكية باستخدام لوحة مفاتيح Qwerty</translation>
 <translation id="4656777537938206294">إتاحة الوصول إلى الملفات بلا اتصال بالإنترنت</translation>
 <translation id="4658782175094886150">شخص مغطّى بالثلج</translation>
+<translation id="4661996069183330363">‏أرشيف TAR</translation>
 <translation id="4669606053856530811">سيفقد أعضاء '<ph name="SOURCE_NAME" />' إمكانية الوصول ما لم تتم مشاركة هذه العناصر معهم.</translation>
 <translation id="467809019005607715">‏العروض التقديمية من Google</translation>
 <translation id="4690246192099372265">السويدية</translation>
@@ -931,6 +937,7 @@
 <translation id="8903931173357132290">خرّيج</translation>
 <translation id="8912078710089354287">كلب يهُز ذيله</translation>
 <translation id="8919081441417203123">الدانماركية</translation>
+<translation id="8965273390142984105">‏أرشيف مضغوط ببرنامج LZOP</translation>
 <translation id="8965697826696209160">ليست هناك مساحة كافية.</translation>
 <translation id="8997962250644902079">‏الصينية (التقليدية) باستخدام لوحة مفاتيح Pinyin</translation>
 <translation id="9003940392834790328">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، التفاصيل</translation>

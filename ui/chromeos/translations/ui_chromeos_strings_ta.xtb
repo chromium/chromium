@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">ஆடியோ வகை</translation>
 <translation id="1254593899333212300">நேரடி இணைய இணைப்பு</translation>
 <translation id="1272293450992660632">'பின்' பொருந்தவில்லை.</translation>
+<translation id="127650757582748357">BZIP2 சுருக்கப்பட்ட காப்பகம்</translation>
 <translation id="1280820357415527819">மொபைல் நெட்வொர்க்குகளைத் தேடுகிறது</translation>
 <translation id="1291603679744561561">சிம் பூட்டப்பட்டுள்ளது</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">பாலாடைக் கட்டி</translation>
 <translation id="2781645665747935084">பெல்ஜியன்</translation>
 <translation id="2782104745158847185">ஒரு Linux ஆப்ஸை நிறுவும்போது பிழை நேர்ந்தது</translation>
+<translation id="2788520643285360081">7-ஜிப் காப்பகம்</translation>
 <translation id="2803375539583399270">பின்னை உள்ளிடவும்</translation>
 <translation id="2820957248982571256">ஸ்கேன் செய்கிறது...</translation>
+<translation id="2822595620066756134">GZIP சுருக்கப்பட்ட காப்பகம்</translation>
 <translation id="2830077785865012357">சீனம் (சூயின்)</translation>
 <translation id="2843806747483486897">இயல்புநிலைக்கு மாற்று...</translation>
 <translation id="2850124913210091882">காப்புப் பிரதியெடு</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">லிதுவேனியன்</translation>
 <translation id="3587482841069643663">அனைத்தும்</translation>
 <translation id="3592251141500063301">ஆஃப்லைனில் அணுகும் வகையில் <ph name="FILE_NAME" /> ஃபைலை அமைக்க முடியவில்லை</translation>
+<translation id="3593874215226880809">LZIP சுருக்கப்பட்ட காப்பகம்</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">கனடியன் ஃபிரெஞ்சு</translation>
 <translation id="3606220979431771195">டர்கிஷ்-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ரத்துசெய்யப்படும்.</translation>
 <translation id="3690128548376345212">நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, இயக்கப்படவில்லை, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>
 <translation id="3691184985318546178">சிங்களம்</translation>
+<translation id="3703620396751288986">ஜிப் காப்பகம்</translation>
 <translation id="3726463242007121105">இந்த சாதனத்தின் கோப்புமுறைமை ஆதரிக்கப்படாததால், இந்த சாதனத்தை திறக்க முடியவில்லை.</translation>
 <translation id="3727148787322499904">இந்த அமைப்பை மாற்றினால், பகிர்ந்த எல்லா நெட்வொர்க்குகளும் பாதிக்கப்படும்</translation>
 <translation id="3737576078404241332">பக்கப்பட்டியில் இருந்து அகற்று</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">செக் - Qwerty கீபோர்டு</translation>
 <translation id="4656777537938206294">ஃபைல்களை ஆஃப்லைனில் பயன்படுத்தலாம்</translation>
 <translation id="4658782175094886150">பனியில் இருக்கும் நபர்</translation>
+<translation id="4661996069183330363">TAR காப்பகம்</translation>
 <translation id="4669606053856530811">இந்த ஃபைல்களை '<ph name="SOURCE_NAME" />' இன் உறுப்பினர்களுடன் பகிரவில்லை எனில், அவர்கள் அவற்றுக்கான அணுகலை இழப்பார்கள்.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ஸ்வீடிஷ்</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">பட்டப் படிப்பு</translation>
 <translation id="8912078710089354287">வாலாட்டும் நாய்</translation>
 <translation id="8919081441417203123">டேனிஷ்</translation>
+<translation id="8965273390142984105">LZOP சுருக்கப்பட்ட காப்பகம்</translation>
 <translation id="8965697826696209160">போதிய இடம் இல்லை.</translation>
 <translation id="8997962250644902079">சீனம் (பாரம்பரியம்) பின்யின்</translation>
 <translation id="9003940392834790328">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி நிர்வகிக்கிறார், விவரங்கள்</translation>

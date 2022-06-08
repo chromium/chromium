@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Average (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Remove</translation>
+<translation id="1190378975642195988">Base accelerometer</translation>
 <translation id="1195447618553298278">Unknown error.</translation>
 <translation id="1196959502276349371">Version <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Play/Pause</translation>
@@ -268,6 +269,7 @@
 <translation id="3484914941826596830">While the firmware is updating, do not unplug this external device or shut down your computer. You can minimise this window. This update may take a few minutes and your external device may not work during this time.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3488065109653206955">Partially activated</translation>
+<translation id="3492982278147736083">Lid gyroscope</translation>
 <translation id="3517001332549868749">ChromeOS update</translation>
 <translation id="3527036260304016759">Failed – Unknown error</translation>
 <translation id="3532980081107202182">About <ph name="MIN_REMAINING" /> minutes remaining</translation>
@@ -301,6 +303,7 @@
 <translation id="3820172043799983114">Invalid PIN.</translation>
 <translation id="3838338534323494292">New password</translation>
 <translation id="385051799172605136">Back</translation>
+<translation id="3856304145690230735">Base gyroscope</translation>
 <translation id="385832974417157471">Before shutting down, Powerwash your device. If your device has a lid, wait until Powerwash completes before closing the lid. Powerwash may take up to a minute to complete.</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3865414814144988605">Resolution</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Get started</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Failed to ping the non-default network gateway</translation>
+<translation id="4500213108254186382">Lid accelerometer</translation>
 <translation id="4503223151711056411">Left arrow</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Subject alternative name match</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM unlocked</translation>
 <translation id="4562494484721939086">No service</translation>
 <translation id="4568938274596692027">Installation is complete. Preparing to restart…</translation>
+<translation id="4576943788798178439">Stylus support</translation>
 <translation id="458794348635939462">Failed to resolve all hosts</translation>
 <translation id="4593212453765072419">Proxy authentication required</translation>
 <translation id="4609350030397390689">Keyboard brightness down</translation>
@@ -537,6 +542,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5866840822086176774">Very strong</translation>
 <translation id="588258955323874662">Full screen</translation>
 <translation id="5895138241574237353">Restart</translation>
+<translation id="5898758006340607522">Power button</translation>
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5903200662178656908">Device is a keyboard and mouse combo.</translation>
 <translation id="5916084858004523819">Prohibited</translation>
@@ -859,6 +865,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8919792139048574232">See what's been fixed</translation>
 <translation id="8919837981463578619">Failed – Tray missing</translation>
 <translation id="8923267550422472772">Day of month for reset</translation>
+<translation id="8925613211674558308">Vpd cached</translation>
 <translation id="8928727111548978589">Failed – Out of paper</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>

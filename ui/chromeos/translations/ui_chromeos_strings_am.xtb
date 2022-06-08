@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">ዘውግ</translation>
 <translation id="1254593899333212300">ቀጥተኛ የበይነመረብ ግንኙነት</translation>
 <translation id="1272293450992660632">ፒን እሴቶች አይዛመዱም።</translation>
+<translation id="127650757582748357">የBZIP2 የታመቀ ማህደር</translation>
 <translation id="1280820357415527819">የተንቀሳቃሽ ስልክ አውታረ መረቦችን በመፈለግ ላይ</translation>
 <translation id="1291603679744561561">ሲም ተቆልፏል</translation>
 <translation id="1293556467332435079">ፋይሎች</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">ቺዝ</translation>
 <translation id="2781645665747935084">የቤልጂየም</translation>
 <translation id="2782104745158847185">የLinux መተግበሪያን መጫን ላይ ስህተት</translation>
+<translation id="2788520643285360081">የ7-Zip ማህደር</translation>
 <translation id="2803375539583399270">ፒን ያስገቡ</translation>
 <translation id="2820957248982571256">በመቃኘት ላይ...</translation>
+<translation id="2822595620066756134">የGZIP የታመቀ ማህደር</translation>
 <translation id="2830077785865012357">ቻይንኛ ዡዪን</translation>
 <translation id="2843806747483486897">ነባሪ ቀይር...</translation>
 <translation id="2850124913210091882">በምትኬ አስቀምጥ</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">ሊቱአኒያን</translation>
 <translation id="3587482841069643663">ሁሉም</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" />ን ከመስመር ውጭ እንዲገኝ ማድረግ አልተቻለም</translation>
+<translation id="3593874215226880809">የLZIP የታመቀ ማህደር</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">የካናዳ ፈረንሳይኛ</translation>
 <translation id="3606220979431771195">የቱርክኛ-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ን ሰርዝ።</translation>
 <translation id="3690128548376345212">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ ያልነቃ፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ዝርዝሮች</translation>
 <translation id="3691184985318546178">ሲንሃላኛ</translation>
+<translation id="3703620396751288986">የZIP ማህደር</translation>
 <translation id="3726463242007121105">የዚህ መሣሪያ ስርዓተ ፋይል ስለማይደገፍ ስላልሆነ ሊከፈት አይችልም።</translation>
 <translation id="3727148787322499904">ይህን ቅንብር መቀየር በሁሉም የተጋሩ አውታረ መረቦች ላይ ተጽዕኖ አለው</translation>
 <translation id="3737576078404241332">ከጎን አሞሌ አስወግድ</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">ቼክኛ በQwerty ቁልፍ ሰሌዳ</translation>
 <translation id="4656777537938206294">ፋይሎችን ከመስመር ውጭ እንዲገኙ ያድርጉ</translation>
 <translation id="4658782175094886150">በበረዶ ውስጥ ያለ ሰው</translation>
+<translation id="4661996069183330363">የTAR ማህደር</translation>
 <translation id="4669606053856530811">እነዚህ ንጥሎች ለእነሱ ካልተጋሩ በስተቀር የ«<ph name="SOURCE_NAME" />» አባላት መዳረሻ ያጣሉ።</translation>
 <translation id="467809019005607715">Google ስላይዶች</translation>
 <translation id="4690246192099372265">ስዊድንኛ</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">ትምህርት ይጨርሱ</translation>
 <translation id="8912078710089354287">ጅራቱን የሚቆላ ውሻ</translation>
 <translation id="8919081441417203123">ዴኒሽ</translation>
+<translation id="8965273390142984105">የLZOP የታመቀ ማህደር</translation>
 <translation id="8965697826696209160">በቂ ቦታ የለም።</translation>
 <translation id="8997962250644902079">የቻይንኛ (ተለምዷዊ) ፒንዪን</translation>
 <translation id="9003940392834790328">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በአስተዳዳሪ የሚተዳደር፣ ዝርዝሮች</translation>

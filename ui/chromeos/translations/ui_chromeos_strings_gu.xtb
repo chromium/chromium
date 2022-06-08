@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">શૈલી</translation>
 <translation id="1254593899333212300">ડાયરેક્ટ ઇન્ટરનેટ કનેક્શન</translation>
 <translation id="1272293450992660632">પિન મૂલ્યો મેળ ખાતા નથી.</translation>
+<translation id="127650757582748357">BZIP2 દ્વારા નાનું કરવામાં આવેલું આર્કાઇવ</translation>
 <translation id="1280820357415527819">મોબાઇલ નેટવર્ક માટે શોધી રહ્યાં છીએ</translation>
 <translation id="1291603679744561561">સિમ કાર્ડ લૉક કરેલું છે</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">ચીઝ</translation>
 <translation id="2781645665747935084">બેલ્જિયન</translation>
 <translation id="2782104745158847185">Linux ઍપ્લિકેશન ઇન્સ્ટૉલ કરવામાં ભૂલ</translation>
+<translation id="2788520643285360081">7-Zip આર્કાઇવ</translation>
 <translation id="2803375539583399270">PIN દાખલ કરો</translation>
 <translation id="2820957248982571256">સ્કૅન કરી રહ્યાં છીએ…</translation>
+<translation id="2822595620066756134">GZIP દ્વારા નાનું કરવામાં આવેલું આર્કાઇવ</translation>
 <translation id="2830077785865012357">ચાઇનીઝ ઝુયિન</translation>
 <translation id="2843806747483486897">ડિફૉલ્ટ બદલો...</translation>
 <translation id="2850124913210091882">બૅકઅપ લો</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">લિથુનિયન</translation>
 <translation id="3587482841069643663">બધા</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" />ને ઑફલાઇન ઉપલબ્ધ કરાવી શકાતી નથી</translation>
+<translation id="3593874215226880809">LZIP દ્વારા નાનું કરવામાં આવેલું આર્કાઇવ</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">કેનેડિયન ફ્રેંચ</translation>
 <translation id="3606220979431771195">ટર્કિશ-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ને રદ કરો.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="NETWORK_NAME" />, સક્રિય કર્યા વિનાનું, <ph name="CONNECTION_STATUS" />, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
 <translation id="3691184985318546178">સિંહાલા</translation>
+<translation id="3703620396751288986">ઝિપ આર્કાઇવ</translation>
 <translation id="3726463242007121105">આ ઉપકરણ ખોલી શકાતું નથી કારણ કે તેની ફાઇલસિસ્ટમને સપોર્ટ નથી.</translation>
 <translation id="3727148787322499904">આ સેટિંગને બદલવું તમામ શેર કરેલ નેટવર્કને પ્રભાવિત કરશે</translation>
 <translation id="3737576078404241332">સાઇડબારમાંથી કાઢી નાખો</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">ચેક, Qwerty કીબોર્ડ સાથે</translation>
 <translation id="4656777537938206294">ફાઇલોને ઑફલાઇન ઉપલબ્ધ કરાવો</translation>
 <translation id="4658782175094886150">હિમવર્ષામાં ઉભેલી વ્યક્તિ</translation>
+<translation id="4661996069183330363">TAR આર્કાઇવ</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />'ના સભ્યો ઍક્સેસ ગુમાવશે સિવાય કે આ આઇટમને તેમની સાથે શેર કરવામાં ન આવી હોય.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">સ્વીડિશ</translation>
@@ -928,6 +934,7 @@
 <translation id="8903931173357132290">સ્નાતક</translation>
 <translation id="8912078710089354287">પૂંછડી હલાવી રહેલો કૂતરો</translation>
 <translation id="8919081441417203123">ડેનિશ</translation>
+<translation id="8965273390142984105">LZOP દ્વારા નાનું કરવામાં આવેલું આર્કાઇવ</translation>
 <translation id="8965697826696209160">પર્યાપ્ત સ્થાન નથી.</translation>
 <translation id="8997962250644902079">ચાઇનીઝ (પરંપરાગત) પિનયિન</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે, વિગતો</translation>
