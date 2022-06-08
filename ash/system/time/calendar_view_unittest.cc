@@ -758,6 +758,35 @@ TEST_F(CalendarViewTest, FocusAfterClosingEventListView) {
       "CalendarDateCellView");
 }
 
+TEST_F(CalendarViewTest, FocusReturnsToTodaysDate) {
+  base::Time date;
+  // Create a monthview based on Jun,7th 2021.
+  ASSERT_TRUE(base::Time::FromString("7 Jun 2021 10:00 GMT", &date));
+
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+
+  auto* focus_manager = calendar_view()->GetFocusManager();
+  // Todays DateCellView should be focused on open.
+  ASSERT_EQ(u"7",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+  const auto* todays_date_cell_view = focus_manager->GetFocusedView();
+  ClickDateCell(static_cast<const views::LabelButton*>(todays_date_cell_view));
+
+  ASSERT_TRUE(event_list_view());
+
+  PressEnter();
+
+  // After EventListView is closed, todays DateCellView should be focused.
+  EXPECT_EQ(todays_date_cell_view, focus_manager->GetFocusedView());
+}
+
 TEST_F(CalendarViewTest, MonthViewFocusing) {
   base::Time date;
   // Create a monthview based on Jun,7th 2021.

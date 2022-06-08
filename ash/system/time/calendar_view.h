@@ -282,9 +282,21 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // resetting to today animation.
   void OnResetToTodayAnimationComplete();
 
-  // Focuses todays DateCellView, or the first available one in
-  // `current_month_`.
-  void FocusTodayOrFirstDateCell();
+  // Tries to focus the preferred CalendarDateCellView. If `prefer_today` is
+  // true, preferred CalendarDateCellView is todays CalendarDateCellView,
+  // otherwise preferred view is the selected CalendarDateCellView. If the
+  // preferred view is not visible, focus the first visible view.
+  void FocusPreferredDateCellViewOrFirstVisible(bool prefer_today);
+
+  // Returns `target_date_cell_view` if it is in the visible window of
+  // `scroll_view_` and in `current_month_`. Otherwise returns the first visible
+  // focusable date cell on the first fully visible row.
+  CalendarDateCellView* GetTargetDateCellViewOrFirstFocusable(
+      CalendarDateCellView* target_date_cell_view);
+
+  // Calculates the first fully visible row (which lives in `content_view_`)
+  // shown in `scroll_view_`'s visible window.
+  int CalculateFirstFullyVisibleRow();
 
   // Setters for animation flags.
   void set_should_header_animate(bool should_animate) {

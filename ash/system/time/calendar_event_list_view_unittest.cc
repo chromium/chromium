@@ -89,7 +89,8 @@ class CalendarViewEventListViewTest : public AshTestBase {
 
   void SetSelectedDate(base::Time date) {
     controller_->selected_date_ = date;
-    controller_->ShowEventListView(date, /*row_index=*/0);
+    controller_->ShowEventListView(/*calendar_date_cell_view=*/nullptr, date,
+                                   /*row_index=*/0);
   }
 
   CalendarEventListView* event_list_view() { return event_list_view_.get(); }

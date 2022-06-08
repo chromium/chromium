@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -103,8 +104,9 @@ CalendarDateCellView::CalendarDateCellView(
       event_number_ = calendar_view_controller_->GetEventNumber(date_);
     }
     SetTooltipAndAccessibleName();
-    is_selected_ = calendar_utils::IsTheSameDay(
-        date_, calendar_view_controller_->selected_date());
+    is_selected_ = calendar_view_controller->selected_date_cell_view() == this;
+    calendar_utils::IsTheSameDay(date_,
+                                 calendar_view_controller_->selected_date());
   }
   scoped_calendar_view_controller_observer_.Observe(calendar_view_controller_);
 }
@@ -162,8 +164,8 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
 }
 
 void CalendarDateCellView::OnSelectedDateUpdated() {
-  bool is_selected = calendar_utils::IsTheSameDay(
-      date_, calendar_view_controller_->selected_date());
+  const bool is_selected =
+      calendar_view_controller_->selected_date_cell_view() == this;
   // If the selected day changes, repaint the background.
   if (is_selected_ != is_selected) {
     is_selected_ = is_selected;
@@ -328,7 +330,8 @@ void CalendarDateCellView::OnDateCellActivated(const ui::Event& event) {
   // from any CalendarDateCellView which was focused prior.
   RequestFocus();
   calendar_metrics::RecordCalendarDateCellActivated(event);
-  calendar_view_controller_->ShowEventListView(date_, row_index_);
+  calendar_view_controller_->ShowEventListView(/*selected_date_cell_view=*/this,
+                                               date_, row_index_);
 }
 
 CalendarMonthView::CalendarMonthView(
@@ -338,7 +341,7 @@ CalendarMonthView::CalendarMonthView(
       calendar_model_(Shell::Get()->system_tray_model()->calendar_model()) {
   views::TableLayout* layout =
       SetLayoutManager(std::make_unique<views::TableLayout>());
-  // The layer is required in animation.
+  // This layer is required for animations.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   calendar_utils::SetUpWeekColumns(layout);
@@ -398,7 +401,9 @@ CalendarMonthView::CalendarMonthView(
           cell->GetPreferredSize().height());
       calendar_view_controller_->set_today_row(row_number);
       focused_cells_.back() = cell;
+      DCHECK(calendar_view_controller_->todays_date_cell_view() == nullptr);
       has_today_ = true;
+      calendar_view_controller_->set_todays_date_cell_view(cell);
     }
     MoveToNextDay(column, current_date, current_date_local,
                   current_date_exploded);
@@ -448,10 +453,16 @@ CalendarMonthView::CalendarMonthView(
 
 CalendarMonthView::~CalendarMonthView() {
   calendar_model_->CancelFetch(fetch_month_);
-}
 
-void CalendarMonthView::FetchEvents(const base::Time& month) {
-  calendar_model_->FetchEvents(month);
+  auto* todays_date_cell_view =
+      calendar_view_controller_->todays_date_cell_view();
+  if (todays_date_cell_view && todays_date_cell_view->parent() == this)
+    calendar_view_controller_->set_todays_date_cell_view(nullptr);
+
+  auto* selected_date_cell_view =
+      calendar_view_controller_->selected_date_cell_view();
+  if (selected_date_cell_view && selected_date_cell_view->parent() == this)
+    calendar_view_controller_->set_selected_date_cell_view(nullptr);
 }
 
 void CalendarMonthView::OnEventsFetched(
@@ -476,6 +487,10 @@ CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
       calendar_utils::GetTimeDifference(current_date),
       /*is_grayed_out_date=*/!is_in_current_month, /*row_index=*/row_index,
       /*is_fetched=*/is_fetched));
+}
+
+void CalendarMonthView::FetchEvents(const base::Time& month) {
+  calendar_model_->FetchEvents(month);
 }
 
 void CalendarMonthView::EnableFocus() {
