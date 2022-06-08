@@ -502,7 +502,7 @@ const base::Feature kCCTResizableForFirstParties{
     "CCTResizableForFirstParties", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCCTResizableForThirdParties{
-    "CCTResizableForThirdParties", base::FEATURE_ENABLED_BY_DEFAULT};
+    "CCTResizableForThirdParties", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCCTResourcePrefetch{"CCTResourcePrefetch",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
