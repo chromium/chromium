@@ -38,6 +38,13 @@ ASSERT_SIZE(NGLayoutResult, SameSizeAsNGLayoutResult);
 }  // namespace
 
 // static
+const NGLayoutResult* NGLayoutResult::Clone(const NGLayoutResult& other) {
+  return MakeGarbageCollected<NGLayoutResult>(
+      other, NGPhysicalBoxFragment::Clone(
+                 To<NGPhysicalBoxFragment>(other.PhysicalFragment())));
+}
+
+// static
 const NGLayoutResult* NGLayoutResult::CloneWithPostLayoutFragments(
     const NGLayoutResult& other,
     const absl::optional<PhysicalRect> updated_layout_overflow) {

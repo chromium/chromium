@@ -219,6 +219,21 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
 }
 
 // static
+const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Clone(
+    const NGPhysicalBoxFragment& other) {
+  // The size of the new fragment shouldn't differ from the old one.
+  wtf_size_t num_fragment_items = other.Items() ? other.Items()->Size() : 0;
+  size_t byte_size = AdditionalByteSize(
+      num_fragment_items, other.const_num_children_, other.has_layout_overflow_,
+      other.has_borders_, other.has_padding_, other.has_inflow_bounds_,
+      other.const_has_rare_data_);
+
+  return MakeGarbageCollected<NGPhysicalBoxFragment>(
+      AdditionalBytes(byte_size), PassKey(), other, other.HasLayoutOverflow(),
+      other.LayoutOverflow());
+}
+
+// static
 const NGPhysicalBoxFragment*
 NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
     const NGPhysicalBoxFragment& other,

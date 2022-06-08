@@ -38,6 +38,8 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
                                  adjust_inline_size_if_needed) {
     if (parent_space.ShouldPropagateChildBreakValues())
       SetShouldPropagateChildBreakValues();
+    if (parent_space.IsRepeatable())
+      SetIsRepeatable();
   }
 
   // The setters on this builder are in the writing mode of parent_writing_mode.
@@ -124,6 +126,16 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
       space_.EnsureRareData()->fragmentainer_block_size = size;
   }
 
+  // Shrink the fragmentainer block-size, to reserve space at the end. This is
+  // needed for repeated table footers.
+  void ReserveSpaceAtFragmentainerEnd(LayoutUnit space) {
+#if DCHECK_IS_ON()
+    DCHECK(is_fragmentainer_block_size_set_);
+#endif
+    DCHECK_GE(space_.rare_data_->fragmentainer_block_size, space);
+    space_.rare_data_->fragmentainer_block_size -= space;
+  }
+
   void SetFragmentainerOffsetAtBfc(LayoutUnit offset) {
 #if DCHECK_IS_ON()
     DCHECK(!is_fragmentainer_offset_at_bfc_set_);
@@ -136,6 +148,8 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   void SetIsAtFragmentainerStart() {
     space_.EnsureRareData()->is_at_fragmentainer_start = true;
   }
+
+  void SetIsRepeatable() { space_.EnsureRareData()->is_repeatable = true; }
 
   void SetIsFixedInlineSize(bool b) {
     if (LIKELY(is_in_parallel_flow_))

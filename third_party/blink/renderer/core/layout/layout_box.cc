@@ -6910,6 +6910,11 @@ void LayoutBox::SetLayoutOverflowFromLayoutResults() {
       layout_overflow->UniteEvenIfEmpty(fragment_layout_overflow);
 
     if (const auto* break_token = fragment.BreakToken()) {
+      // The legacy engine doesn't understand our concept of repeated
+      // fragments. Stop now. The overflow rectangle will represent the
+      // fragment(s) generated under the first repeated root.
+      if (break_token->IsRepeated())
+        break;
       consumed_block_size = break_token->ConsumedBlockSize();
     }
   }
@@ -7176,6 +7181,12 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
 
     self_rect.Unite(fragment_self_rect);
     contents_rect.Unite(fragment_contents_rect);
+
+    // The legacy engine doesn't understand our concept of repeated
+    // fragments. Stop now. The overflow rectangle will represent the
+    // fragment(s) generated under the first repeated root.
+    if (fragment.BreakToken() && fragment.BreakToken()->IsRepeated())
+      break;
   }
 
   if (!has_overflow) {

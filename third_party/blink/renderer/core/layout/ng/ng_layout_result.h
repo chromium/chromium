@@ -51,12 +51,20 @@ class CORE_EXPORT NGLayoutResult final
     kNeedsRelayoutWithNoForcedTruncateAtLineClamp = 4,
     kDisableFragmentation = 5,
     kNeedsRelayoutWithNoChildScrollbarChanges = 6,
-    kNeedsRelayoutWithRowCrossSizeChanges = 7,
+    kAlgorithmSpecific1 = 7,  // Save bits by using the same value for mutually
+                              // exclusive results.
+    kNeedsRelayoutWithRowCrossSizeChanges = kAlgorithmSpecific1,
+    kNeedsRelayoutAsLastTableBox = kAlgorithmSpecific1,
     // When adding new values, make sure the bit size of |Bitfields::status| is
     // large enough to store.
   };
 
-  // Creates a copy of |other| but uses the "post-layout" fragments to ensure
+  // Make a shallow clone of the result. The fragment is cloned. Fragment
+  // *items* are also cloned, but child fragments are not. Apart from that it's
+  // truly shallow. Pinky promise.
+  static const NGLayoutResult* Clone(const NGLayoutResult&);
+
+  // Same as Clone(), but uses the "post-layout" fragments to ensure
   // fragment-tree consistency.
   static const NGLayoutResult* CloneWithPostLayoutFragments(
       const NGLayoutResult& other,

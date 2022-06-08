@@ -1308,6 +1308,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return NGPhysicalFragmentList(layout_results_);
   }
   const NGLayoutResult* GetLayoutResult(wtf_size_t i) const;
+  const NGLayoutResultList& GetLayoutResults() const {
+    NOT_DESTROYED();
+    return layout_results_;
+  }
   const NGPhysicalBoxFragment* GetPhysicalFragment(wtf_size_t i) const;
   const FragmentData* FragmentDataFromPhysicalFragment(
       const NGPhysicalBoxFragment&) const;

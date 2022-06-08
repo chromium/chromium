@@ -210,7 +210,7 @@ NGBreakAppeal CalculateBreakAppealInside(
     consider_break_inside_avoidance = true;
   } else {
     appeal = layout_result.BreakAppeal();
-    consider_break_inside_avoidance = break_token;
+    consider_break_inside_avoidance = break_token && !break_token->IsRepeated();
   }
 
   // We don't let break-inside:avoid affect the child's stored break appeal, but
@@ -847,7 +847,8 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
 
   NGBreakAppeal appeal_inside =
       CalculateBreakAppealInside(space, layout_result);
-  if (break_token || appeal_inside < kBreakAppealPerfect) {
+  if ((break_token && !break_token->IsRepeated()) ||
+      appeal_inside < kBreakAppealPerfect) {
     // The block child broke inside, either in this fragmentation context, or in
     // an inner one. We now need to decide whether to keep that break, or if it
     // would be better to break before it. Allow breaking inside if it has the
@@ -921,7 +922,9 @@ void UpdateEarlyBreakAtBlockChild(
     NGBoxFragmentBuilder* builder,
     NGFlexColumnBreakInfo* flex_column_break_info) {
   // If the child already broke, it's a little too late to look for breakpoints.
-  DCHECK(!layout_result.PhysicalFragment().BreakToken());
+  DCHECK(!layout_result.PhysicalFragment().BreakToken() ||
+         To<NGBlockBreakToken>(layout_result.PhysicalFragment().BreakToken())
+             ->IsRepeated());
 
   // See if there's a good breakpoint inside the child.
   NGBreakAppeal appeal_inside = kBreakAppealLastResort;

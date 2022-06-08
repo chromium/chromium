@@ -396,7 +396,8 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
   if (!child_box_fragment)
     return;
 
-  if (const NGBlockBreakToken* token = child_box_fragment->BreakToken()) {
+  const NGBlockBreakToken* token = child_box_fragment->BreakToken();
+  if (token && !token->IsRepeated()) {
     // Figure out if this child break is in the same flow as this parent. If
     // it's an out-of-flow positioned box, it's not. If it's in a parallel flow,
     // it's also not.
@@ -671,7 +672,7 @@ void NGBoxFragmentBuilder::CheckNoBlockFragmentation() const {
   DCHECK(!HasInflowChildBreakInside());
   DCHECK(!DidBreakSelf());
   DCHECK(!has_forced_break_);
-  DCHECK(!HasBreakTokenData());
+  DCHECK(ConstraintSpace().IsRepeatable() || !HasBreakTokenData());
   DCHECK_EQ(minimal_space_shortage_, kIndefiniteSize);
   if (!ConstraintSpace().ShouldPropagateChildBreakValues()) {
     DCHECK(!initial_break_before_);

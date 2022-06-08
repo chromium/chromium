@@ -31,8 +31,12 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   static const NGPhysicalBoxFragment* Create(
       NGBoxFragmentBuilder* builder,
       WritingMode block_or_line_writing_mode);
-  // Creates a copy of |other| but uses the "post-layout" fragments to ensure
-  // fragment-tree consistency.
+
+  // Creates a shallow copy of |other|.
+  static const NGPhysicalBoxFragment* Clone(const NGPhysicalBoxFragment& other);
+
+  // Creates a shallow copy of |other| but uses the "post-layout" fragments to
+  // ensure fragment-tree consistency.
   static const NGPhysicalBoxFragment* CloneWithPostLayoutFragments(
       const NGPhysicalBoxFragment& other,
       const absl::optional<PhysicalRect> updated_layout_overflow =
@@ -424,9 +428,14 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   class MutableForCloning {
     STACK_ALLOCATED();
+    friend class NGFragmentRepeater;
     friend class NGPhysicalBoxFragment;
 
    public:
+    void ClearIsFirstForNode() { fragment_.is_first_for_node_ = false; }
+    void SetBreakToken(const NGBlockBreakToken* token) {
+      fragment_.break_token_ = token;
+    }
     base::span<NGLink> Children() const {
       DCHECK(fragment_.children_valid_);
       return base::make_span(fragment_.children_,
