@@ -47,8 +47,6 @@ class HomeButtonController : public AppListControllerObserver,
   // Whether the Assistant UI currently showing.
   bool IsAssistantVisible();
 
-  bool is_showing_app_list() const { return is_showing_app_list_; }
-
  private:
   // AppListControllerObserver:
   void OnAppListVisibilityWillChange(bool shown, int64_t display_id) override;
@@ -75,10 +73,6 @@ class HomeButtonController : public AppListControllerObserver,
 
   // Initialize the Assistant overlay.
   void InitializeAssistantOverlay();
-
-  // True if the app list is currently showing for the button's display.
-  // This is useful because other app_list_visible functions aren't per-display.
-  bool is_showing_app_list_ = false;
 
   // The button that owns this controller.
   HomeButton* const button_;

@@ -863,11 +863,6 @@ void ShelfWidget::PostCreateShelf() {
   ShowIfHidden();
 }
 
-bool ShelfWidget::IsShowingAppList() const {
-  return navigation_widget()->GetHomeButton() &&
-         navigation_widget()->GetHomeButton()->IsShowingAppList();
-}
-
 bool ShelfWidget::IsShowingMenu() const {
   return hotseat_widget()->GetShelfView()->IsShowingMenu();
 }

@@ -195,7 +195,8 @@ void HomeButton::OnAssistantAvailabilityChanged() {
 }
 
 bool HomeButton::IsShowingAppList() const {
-  return controller_.is_showing_app_list();
+  return Shell::Get()->app_list_controller()->GetTargetVisibility(
+      GetDisplayId());
 }
 
 void HomeButton::HandleLocaleChange() {

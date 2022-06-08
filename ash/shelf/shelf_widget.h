@@ -83,7 +83,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   }
   void PostCreateShelf();
 
-  bool IsShowingAppList() const;
   bool IsShowingMenu() const;
 
   // Sets the focus cycler. Also adds the shelf to the cycle.
