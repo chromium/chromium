@@ -53,8 +53,11 @@ gfx::Rect ConvertScreenRect(views::View* view, const gfx::Rect& screen_rect) {
 }
 
 // Tells whether `desk` contains an app window itself or if at least one visible
-// on all desks window exists.
+// on all desk window exists. Returns false if `desk` is nullptr.
 bool ContainsAppWindows(Desk* desk) {
+  if (!desk)
+    return false;
+
   return desk->ContainsAppWindows() ||
          !DesksController::Get()->visible_on_all_desks_windows().empty();
 }
