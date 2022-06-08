@@ -333,22 +333,12 @@ void ThreadProfiler::StartOnChildThread(CallStackProfileParams::Thread thread) {
 }
 
 // static
-void ThreadProfiler::SetBrowserProcessReceiverCallback(
-    const base::RepeatingCallback<void(base::TimeTicks,
-                                       metrics::SampledProfile)>& callback) {
-  CallStackProfileBuilder::SetBrowserProcessReceiverCallback(callback);
-}
-
-// static
-void ThreadProfiler::SetCollectorForChildProcess(
-    mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector) {
-  if (!ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
-    return;
-
-  DCHECK_NE(CallStackProfileParams::Process::kBrowser,
-            GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()));
-  CallStackProfileBuilder::SetParentProfileCollectorForChildProcess(
-      std::move(collector));
+bool ThreadProfiler::ShouldCollectProfilesForChildProcess() {
+  CallStackProfileParams::Process process =
+      GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess());
+  DCHECK_NE(CallStackProfileParams::Process::kBrowser, process);
+  return ThreadProfilerConfiguration::Get()
+      ->IsProfilerEnabledForCurrentProcess();
 }
 
 // ThreadProfiler implementation synopsis:

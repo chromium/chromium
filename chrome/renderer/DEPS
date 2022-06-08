@@ -26,7 +26,7 @@ include_rules = [
   "+components/grit",
   "+components/guest_view/renderer",
   "+components/history_clusters/core/config.h",
-  "+components/metrics/child_call_stack_profile_collector.h",
+  "+components/metrics/call_stack_profile_builder.h",
   "+components/nacl/common",
   "+components/nacl/renderer",
   "+components/network_hints/renderer",

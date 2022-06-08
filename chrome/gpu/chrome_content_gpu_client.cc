@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/gpu/browser_exposed_gpu_interfaces.h"
+#include "components/metrics/call_stack_profile_builder.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
 #include "media/media_buildflags.h"
@@ -56,14 +57,16 @@ void ChromeContentGpuClient::GpuServiceInitialized() {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSingleProcess) &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kInProcessGPU)) {
+          switches::kInProcessGPU) &&
+      ThreadProfiler::ShouldCollectProfilesForChildProcess()) {
     ThreadProfiler::SetMainThreadTaskRunner(
         base::ThreadTaskRunnerHandle::Get());
 
     mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;
     content::ChildThread::Get()->BindHostReceiver(
         collector.InitWithNewPipeAndPassReceiver());
-    ThreadProfiler::SetCollectorForChildProcess(std::move(collector));
+    metrics::CallStackProfileBuilder::SetParentProfileCollectorForChildProcess(
+        std::move(collector));
   }
 }
 

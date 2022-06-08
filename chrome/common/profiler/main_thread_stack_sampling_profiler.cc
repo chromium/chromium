@@ -9,6 +9,7 @@
 #include "base/threading/platform_thread.h"
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler.h"
+#include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "content/public/common/content_switches.h"
 
@@ -21,8 +22,9 @@ std::unique_ptr<ThreadProfiler> CreateThreadProfiler() {
 
   // TODO(wittman): Do this for other process types too.
   if (process == metrics::CallStackProfileParams::Process::kBrowser) {
-    ThreadProfiler::SetBrowserProcessReceiverCallback(base::BindRepeating(
-        &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
+    metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
+        base::BindRepeating(
+            &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
     return ThreadProfiler::CreateAndStartOnMainThread();
   }
 

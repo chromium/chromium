@@ -18,6 +18,7 @@
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/utility/browser_exposed_utility_interfaces.h"
 #include "chrome/utility/services.h"
+#include "components/metrics/call_stack_profile_builder.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -70,12 +71,12 @@ void ChromeContentUtilityClient::UtilityThreadStarted() {
           switches::kUtilityProcess &&  // An in-process utility thread may run
                                         // in other processes, only set up
                                         // collector in a utility process.
-      ThreadProfilerConfiguration::Get()
-          ->IsProfilerEnabledForCurrentProcess()) {
+      ThreadProfiler::ShouldCollectProfilesForChildProcess()) {
     mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;
     content::ChildThread::Get()->BindHostReceiver(
         collector.InitWithNewPipeAndPassReceiver());
-    ThreadProfiler::SetCollectorForChildProcess(std::move(collector));
+    metrics::CallStackProfileBuilder::SetParentProfileCollectorForChildProcess(
+        std::move(collector));
   }
 }
 
