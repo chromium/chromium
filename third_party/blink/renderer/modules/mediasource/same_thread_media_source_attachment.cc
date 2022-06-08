@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_attachment.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/modules/mediasource/attachment_creation_pass_key_provider.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_tracer.h"
 
@@ -33,7 +35,7 @@ namespace blink {
 
 SameThreadMediaSourceAttachment::SameThreadMediaSourceAttachment(
     MediaSource* media_source,
-    base::PassKey<URLMediaSource> /* passkey */)
+    AttachmentCreationPassKeyProvider::PassKey /* passkey */)
     : registered_media_source_(media_source),
       recent_element_time_(0.0),
       element_has_error_(false),

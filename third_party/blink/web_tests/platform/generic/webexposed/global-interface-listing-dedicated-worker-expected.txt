@@ -843,6 +843,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method clearLiveSeekableRange
 [Worker]     method constructor
 [Worker]     method endOfStream
+[Worker]     method getHandle
 [Worker]     method removeSourceBuffer
 [Worker]     method setLiveSeekableRange
 [Worker]     setter duration

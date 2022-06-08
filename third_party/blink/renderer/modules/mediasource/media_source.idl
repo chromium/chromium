@@ -70,6 +70,16 @@ enum EndOfStreamError {
     [RaisesException] void setLiveSeekableRange(double start, double end);
     [RaisesException] void clearLiveSeekableRange();
 
+    // Initially for just MSE-in-Workers (https://crbug.com/878133). See also
+    // discussion on https://github.com/w3c/media-source/issues/175,
+    // https://github.com/w3c/media-source/pull/305 and
+    // https://github.com/w3c/media-source/pull/306.
+    [
+        RaisesException,
+        RuntimeEnabled=MediaSourceInWorkersUsingHandle,
+        MeasureAs=MediaSourceGetHandle
+    ] MediaSourceHandle getHandle();
+
     // TODO(crbug.com/1144908): Consider adding an overload which is given a
     // SourceBufferConfig.
     [CallWith=ExecutionContext] static boolean isTypeSupported(DOMString type);

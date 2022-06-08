@@ -40286,6 +40286,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4258" label="AnyPopupAttribute"/>
   <int value="4259" label="DeferredShapingWorked"/>
   <int value="4260" label="DeferredShapingReshapedByForceLayout"/>
+  <int value="4261" label="MediaSourceGetHandle"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

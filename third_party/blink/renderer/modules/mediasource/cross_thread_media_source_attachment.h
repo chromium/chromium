@@ -14,9 +14,9 @@
 #include "third_party/blink/renderer/core/html/track/audio_track_list.h"
 #include "third_party/blink/renderer/core/html/track/video_track.h"
 #include "third_party/blink/renderer/core/html/track/video_track_list.h"
+#include "third_party/blink/renderer/modules/mediasource/attachment_creation_pass_key_provider.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
-#include "third_party/blink/renderer/modules/mediasource/url_media_source.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
@@ -32,12 +32,15 @@ class CrossThreadMediaSourceAttachment final
   // AddMainThread{Audio,Video}TrackToMediaElements' internal helpers.
   enum class TrackAddRemovalType { kAudio, kVideo };
 
-  // The only intended caller of this constructor is
-  // URLMediaSource::createObjectUrl (as shown by using the PassKey), executing
-  // in the worker thread context.  The raw pointer is then adopted into a
-  // scoped_refptr in MediaSourceRegistryImpl::RegisterURL.
+  // The only intended callers of this constructor are restricted to those able
+  // to obtain an AttachmentCreationPasskeyProvider's pass key. This method is
+  // expected to only be called in a worker thread context. The raw pointer is
+  // then adopted into a scoped_refptr by the caller (e.g.,
+  // URLMediaSource::createObjectUrl will lead to
+  // MediaSourceRegistryImpl::RegisterURL doing this scoped_refptr adoption;
+  // separately, MediaSource::getHandle() does this adoption immediately.)
   CrossThreadMediaSourceAttachment(MediaSource* media_source,
-                                   base::PassKey<URLMediaSource>);
+                                   AttachmentCreationPassKeyProvider::PassKey);
 
   CrossThreadMediaSourceAttachment(const CrossThreadMediaSourceAttachment&) =
       delete;

@@ -5500,6 +5500,7 @@ interface MediaSource : EventTarget
     method clearLiveSeekableRange
     method constructor
     method endOfStream
+    method getHandle
     method removeSourceBuffer
     method setLiveSeekableRange
     setter duration

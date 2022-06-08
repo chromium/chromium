@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/core/url/dom_url.h"
+#include "third_party/blink/renderer/modules/mediasource/attachment_creation_pass_key_provider.h"
 #include "third_party/blink/renderer/modules/mediasource/cross_thread_media_source_attachment.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_registry_impl.h"
@@ -58,10 +59,14 @@ String URLMediaSource::createObjectURL(ScriptState* script_state,
 
   MediaSourceAttachment* attachment;
   if (execution_context->IsDedicatedWorkerGlobalScope()) {
+    // TODO(crbug.com/878133): Disallow this code path (CTMSA in object URL),
+    // instead use CTMSA via MediaSourceHandleImpl.
     DCHECK(!IsMainThread());
 
-    // PassKey usage here ensures that only we can call the constructor.
-    attachment = new CrossThreadMediaSourceAttachment(source, PassKey());
+    // PassKey provider usage here ensures that we are allowed to call the
+    // attachment constructor.
+    attachment = new CrossThreadMediaSourceAttachment(
+        source, AttachmentCreationPassKeyProvider::GetPassKey());
     UseCounter::Count(execution_context,
                       WebFeature::kCreateObjectURLMediaSourceFromWorker);
   } else {
@@ -69,8 +74,10 @@ String URLMediaSource::createObjectURL(ScriptState* script_state,
     // worker thread are not supported (like Shared Worker and Service Worker).
     DCHECK(IsMainThread() && execution_context->IsWindow());
 
-    // PassKey usage here ensures that only we can call the constructor.
-    attachment = new SameThreadMediaSourceAttachment(source, PassKey());
+    // PassKey provider usage here ensures that we are allowed to call the
+    // attachment constructor.
+    attachment = new SameThreadMediaSourceAttachment(
+        source, AttachmentCreationPassKeyProvider::GetPassKey());
   }
 
   UseCounter::Count(execution_context, WebFeature::kCreateObjectURLMediaSource);

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/html/time_ranges.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
+#include "third_party/blink/renderer/modules/mediasource/media_source_handle_impl.h"
 #include "third_party/blink/renderer/modules/mediasource/source_buffer.h"
 #include "third_party/blink/renderer/modules/mediasource/source_buffer_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -94,6 +95,9 @@ class MediaSource final : public EventTargetWithInlineData,
   void setLiveSeekableRange(double start, double end, ExceptionState&)
       LOCKS_EXCLUDED(attachment_link_lock_);
   void clearLiveSeekableRange(ExceptionState&)
+      LOCKS_EXCLUDED(attachment_link_lock_);
+
+  MediaSourceHandleImpl* getHandle(ExceptionState&)
       LOCKS_EXCLUDED(attachment_link_lock_);
 
   static bool isTypeSupported(ExecutionContext* context, const String& type);
@@ -277,11 +281,16 @@ class MediaSource final : public EventTargetWithInlineData,
       GUARDED_BY(attachment_link_lock_);
   bool context_already_destroyed_ GUARDED_BY(attachment_link_lock_);
 
+  // This is to ensure that at most one successful call to a MediaSource
+  // instance's getHandle() is allowed.
+  bool handle_already_retrieved_ GUARDED_BY(attachment_link_lock_) = false;
+
   // |attachment_link_lock_| protects read/write of |media_source_attachment_|,
-  // |attachment_tracer_|, and |context_already_destroyed_|.  It is only truly
-  // necessary for CrossThreadAttachment usage of worker MSE, to prevent
-  // read/write collision on main thread versus worker thread. Note that
-  // |attachment_link_lock_| must be released before attempting
+  // |attachment_tracer_|, |context_already_destroyed_|, and
+  // |handle_already_retrieved_|.
+  // It is only truly necessary for CrossThreadAttachment usage of worker MSE,
+  // to prevent read/write collision on main thread versus worker thread. Note
+  // that |attachment_link_lock_| must be released before attempting
   // CrossThreadMediaSourceAttachment RunExclusively() to avoid deadlock. Many
   // scenarios initiated by worker thread need to get the attachment to be able
   // to invoke operations on it. The attachment then takes internal

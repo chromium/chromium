@@ -6,8 +6,10 @@
 
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/modules/mediasource/attachment_creation_pass_key_provider.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -33,7 +35,7 @@ std::ostream& operator<<(
 
 CrossThreadMediaSourceAttachment::CrossThreadMediaSourceAttachment(
     MediaSource* media_source,
-    base::PassKey<URLMediaSource> /* passkey */)
+    AttachmentCreationPassKeyProvider::PassKey /* passkey */)
     : registered_media_source_(media_source),
       // To use scheduling priority that is the same as postMessage, we use
       // kPostedMessage here instead of, say, kMediaElementEvent.
