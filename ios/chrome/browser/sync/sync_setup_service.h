@@ -34,6 +34,7 @@ class SyncSetupService : public KeyedService {
   };
 
   // The set of user-selectable datatypes handled by Chrome for iOS.
+  // TODO(crbug.com/1067280): Use syncer::UserSelectableType instead.
   using SyncableDatatype = enum {
     kSyncBookmarks,
     kSyncOmniboxHistory,
@@ -54,14 +55,18 @@ class SyncSetupService : public KeyedService {
 
   // Returns the |syncer::ModelType| associated to the given
   // |SyncableDatatypes|.
-  syncer::ModelType GetModelType(SyncableDatatype datatype);
+  static syncer::ModelType GetModelType(SyncableDatatype datatype);
 
   // Returns whether the user wants Sync to run.
+  // TODO(crbug.com/1291946): Callers should typically use CanSyncFeatureStart()
+  // or IsSyncFeatureEnabled() instead.
   virtual bool IsSyncRequested() const;
   // Returns whether Sync-the-transport can start the Sync feature.
   virtual bool CanSyncFeatureStart() const;
   // Enables or disables sync. Changes won't take effect in the sync backend
   // before the next call to |CommitChanges|.
+  // TODO(crbug.com/1291946): This is only used in sync_test_util.mm; inline it
+  // there.
   virtual void SetSyncEnabled(bool sync_enabled);
 
   // Returns all currently enabled datatypes.
@@ -114,18 +119,12 @@ class SyncSetupService : public KeyedService {
   bool IsFirstSetupComplete() const;
 
   // Commits all the pending configuration changes to Sync.
-  // This method should only be used with UnifiedConsent flag.
   void CommitSyncChanges();
 
-  // Returns true if there are uncommitted sync changes;
+  // Returns true if there are uncommitted sync changes.
   bool HasUncommittedChanges();
 
  private:
-  // Enables or disables sync. Changes won't take effect in the sync backend
-  // before the next call to |CommitChanges|. No changes are made to the
-  // currently selected datatypes.
-  void SetSyncEnabledWithoutChangingDatatypes(bool sync_enabled);
-
   syncer::SyncService* const sync_service_;
 
   // Prevents Sync from running until configuration is complete.

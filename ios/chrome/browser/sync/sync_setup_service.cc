@@ -30,6 +30,7 @@ SyncSetupService::SyncSetupService(syncer::SyncService* sync_service)
 
 SyncSetupService::~SyncSetupService() {}
 
+// static
 syncer::ModelType SyncSetupService::GetModelType(SyncableDatatype datatype) {
   DCHECK(datatype < std::size(kDataTypes));
   return kDataTypes[datatype];
@@ -66,11 +67,7 @@ void SyncSetupService::SetDataTypeEnabled(syncer::ModelType datatype,
       selected_types.Put(type);
     }
   }
-  if (enabled && !CanSyncFeatureStart())
-    SetSyncEnabledWithoutChangingDatatypes(true);
   user_settings->SetSelectedTypes(IsSyncingAllDataTypes(), selected_types);
-  if (GetPreferredDataTypes().Empty())
-    SetSyncEnabled(false);
 }
 
 bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
@@ -104,8 +101,6 @@ bool SyncSetupService::IsSyncingAllDataTypes() const {
 void SyncSetupService::SetSyncingAllDataTypes(bool sync_all) {
   if (!sync_blocker_)
     sync_blocker_ = sync_service_->GetSetupInProgressHandle();
-  if (sync_all && !CanSyncFeatureStart())
-    SetSyncEnabled(true);
   sync_service_->GetUserSettings()->SetSelectedTypes(
       sync_all, sync_service_->GetUserSettings()->GetSelectedTypes());
 }
@@ -119,7 +114,14 @@ bool SyncSetupService::CanSyncFeatureStart() const {
 }
 
 void SyncSetupService::SetSyncEnabled(bool sync_enabled) {
-  SetSyncEnabledWithoutChangingDatatypes(sync_enabled);
+  if (!sync_blocker_)
+    sync_blocker_ = sync_service_->GetSetupInProgressHandle();
+  if (!sync_enabled) {
+    UMA_HISTOGRAM_ENUMERATION("Sync.StopSource", syncer::CHROME_SYNC_SETTINGS,
+                              syncer::STOP_SOURCE_LIMIT);
+  }
+  sync_service_->GetUserSettings()->SetSyncRequested(sync_enabled);
+
   if (sync_enabled && GetPreferredDataTypes().Empty())
     SetSyncingAllDataTypes(true);
 }
@@ -216,15 +218,4 @@ void SyncSetupService::CommitSyncChanges() {
 
 bool SyncSetupService::HasUncommittedChanges() {
   return sync_service_->IsSetupInProgress();
-}
-
-void SyncSetupService::SetSyncEnabledWithoutChangingDatatypes(
-    bool sync_enabled) {
-  if (!sync_blocker_)
-    sync_blocker_ = sync_service_->GetSetupInProgressHandle();
-  if (!sync_enabled) {
-    UMA_HISTOGRAM_ENUMERATION("Sync.StopSource", syncer::CHROME_SYNC_SETTINGS,
-                              syncer::STOP_SOURCE_LIMIT);
-  }
-  sync_service_->GetUserSettings()->SetSyncRequested(sync_enabled);
 }
