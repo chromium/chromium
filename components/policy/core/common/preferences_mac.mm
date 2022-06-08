@@ -83,7 +83,8 @@ class MachinePolicyScope : public MacPreferences::PolicyScope {
     }
     if (!machine_scope_)
       return YES;
-    return [machine_scope_ copyValueForKey:base::mac::CFToNSCast(key)] != nil;
+    return base::scoped_nsobject<id>([machine_scope_
+               copyValueForKey:base::mac::CFToNSCast(key)]) != nil;
   }
 
  private:
