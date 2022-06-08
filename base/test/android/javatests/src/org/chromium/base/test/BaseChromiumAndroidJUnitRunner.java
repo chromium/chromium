@@ -569,6 +569,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             super.waitForActivitiesToComplete();
             return;
         }
+        Handler mainHandler = new Handler(Looper.getMainLooper());
         CallbackHelper allDestroyedCalledback = new CallbackHelper();
         ApplicationStatus.ActivityStateListener activityStateListener =
                 new ApplicationStatus.ActivityStateListener() {
@@ -577,7 +578,9 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                         switch (newState) {
                             case ActivityState.DESTROYED:
                                 if (ApplicationStatus.isEveryActivityDestroyed()) {
-                                    allDestroyedCalledback.notifyCalled();
+                                    // Allow onDestroy to finish running before we notify.
+                                    mainHandler.post(
+                                            () -> { allDestroyedCalledback.notifyCalled(); });
                                     ApplicationStatus.unregisterActivityStateListener(this);
                                 }
                                 break;
@@ -592,7 +595,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                     }
                 };
 
-        new Handler(Looper.getMainLooper()).post(() -> {
+        mainHandler.post(() -> {
             if (ApplicationStatus.isEveryActivityDestroyed()) {
                 allDestroyedCalledback.notifyCalled();
             } else {
