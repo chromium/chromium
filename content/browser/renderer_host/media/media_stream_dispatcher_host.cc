@@ -579,7 +579,8 @@ void MediaStreamDispatcherHost::OnCropValidationComplete(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!crop_id_passed_validation) {
-    std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+    std::move(callback).Run(
+        media::mojom::CropRequestResult::kInvalidCropTarget);
     return;
   }
 

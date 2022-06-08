@@ -384,7 +384,7 @@ enum CropRequestResult {
   kSuccess,
   kErrorGeneric,
   kUnsupportedCaptureDevice,
-  kErrorUnknownDeviceId,
   kNotImplemented,
   kNonIncreasingCropVersion,
+  kInvalidCropTarget,
 };

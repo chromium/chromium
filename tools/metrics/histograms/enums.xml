@@ -21041,9 +21041,11 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1" label="UnsupportedPlatform"/>
   <int value="2" label="InvalidCropTargetFormat"/>
   <int value="3" label="RejectedWithErrorGeneric"/>
-  <int value="4" label="RejectedWithUnsupportedCaptureDevice"/>
+  <int value="4" label="RejectedWithUnsupportedCaptureDevice_DEPRECATED"/>
   <int value="5" label="RejectedWithErrorUnknownDeviceId"/>
   <int value="6" label="RejectedWithNotImplemented"/>
+  <int value="7" label="NonIncreasingCropVersion"/>
+  <int value="8" label="InvalidCropTarget"/>
 </enum>
 
 <enum name="CrOSActionRecorderEvent">

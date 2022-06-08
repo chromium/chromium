@@ -30,10 +30,11 @@ enum class CropToResult {
   kInvalidCropTargetFormat = 2,
   kRejectedWithErrorGeneric = 3,
   kRejectedWithUnsupportedCaptureDevice = 4,
-  kRejectedWithErrorUnknownDeviceId = 5,
+  kRejectedWithErrorUnknownDeviceId_DEPRECATED = 5,
   kRejectedWithNotImplemented = 6,
   kNonIncreasingCropVersion = 7,
-  kMaxValue = kNonIncreasingCropVersion
+  kInvalidCropTarget = 8,
+  kMaxValue = kInvalidCropTarget
 };
 
 void RecordUma(CropToResult result) {
@@ -84,18 +85,18 @@ void ResolveCropPromiseHelper(ScriptPromiseResolver* resolver,
                          "Unknown error.");
       return;
     case media::mojom::CropRequestResult::kUnsupportedCaptureDevice:
+      // Note that this is an unsupported device; not an unsupported Element.
+      // This should essentially not happen. If it happens, it indicates
+      // something in the capture pipeline has been changed.
       RecordUma(CropToResult::kRejectedWithUnsupportedCaptureDevice);
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,
                          "Unsupported device.");
       return;
-    case media::mojom::CropRequestResult::kErrorUnknownDeviceId:
-      RecordUma(CropToResult::kRejectedWithErrorUnknownDeviceId);
-      RaiseCropException(resolver, DOMExceptionCode::kAbortError,
-                         "Unknown device.");
-      return;
     case media::mojom::CropRequestResult::kNotImplemented:
+      // Unimplemented codepath reached, OTHER than lacking support for
+      // a specific Element subtype.
       RecordUma(CropToResult::kRejectedWithNotImplemented);
-      RaiseCropException(resolver, DOMExceptionCode::kAbortError,
+      RaiseCropException(resolver, DOMExceptionCode::kOperationError,
                          "Not implemented.");
       return;
     case media::mojom::CropRequestResult::kNonIncreasingCropVersion:
@@ -107,6 +108,11 @@ void ResolveCropPromiseHelper(ScriptPromiseResolver* resolver,
       RecordUma(CropToResult::kNonIncreasingCropVersion);
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,
                          "Non-increasing crop version.");
+      return;
+    case media::mojom::CropRequestResult::kInvalidCropTarget:
+      RecordUma(CropToResult::kNonIncreasingCropVersion);
+      RaiseCropException(resolver, DOMExceptionCode::kNotAllowedError,
+                         "Invalid CropTarget.");
       return;
   }
 
