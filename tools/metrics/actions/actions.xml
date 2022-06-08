@@ -27971,6 +27971,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromAvatarBubbleSignin"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
@@ -27981,6 +27982,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromBookmarkBubble"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
@@ -27991,6 +27993,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromBookmarkManager"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
@@ -28001,6 +28004,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromExtensionInstallBubble"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
@@ -28023,6 +28027,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromNTPContentSuggestions"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>bsazonov@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with a default account,
@@ -28033,6 +28038,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromNTPFeedTopPromo"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>mrefaat@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
@@ -28045,6 +28051,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromPasswordBubble"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
@@ -28055,6 +28062,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromRecentTabs"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with a default account,
@@ -28076,6 +28084,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromSettings"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with a default account,
@@ -28085,6 +28094,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromTabSwitcher"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with a default account,
@@ -28094,6 +28104,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromAvatarBubbleSignin"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
@@ -28104,6 +28115,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromBookmarkBubble"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
@@ -28114,6 +28126,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromBookmarkManager"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with no default
@@ -28124,6 +28137,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromExtensionInstallBubble"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
@@ -28146,6 +28160,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromNTPContentSuggestions"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>bsazonov@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with no default
@@ -28156,6 +28171,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromNTPFeedTopPromo"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>mrefaat@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
@@ -28168,6 +28184,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromPasswordBubble"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
@@ -28178,6 +28195,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromRecentTabs"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with no default
@@ -28200,6 +28218,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromSettings"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with no default
@@ -28209,6 +28228,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromTabSwitcher"
     not_user_triggered="true">
+  <obsolete>Removed in M104.</obsolete>
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with no default

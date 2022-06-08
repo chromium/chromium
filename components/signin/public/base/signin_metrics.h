@@ -554,15 +554,8 @@ void RecordSigninAccountType(signin::ConsentLevel consent_level,
 void RecordSigninUserActionForAccessPoint(AccessPoint access_point,
                                           PromoAction promo_action);
 
-// Records |Signin_ImpressionWithAccount_From*| user action.
+// Records |Signin_Impression_From*| user action.
 void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point);
-
-#if !BUILDFLAG(IS_IOS)
-// Records |Signin_Impression{With|No}Account_From*| user action.
-void RecordSigninImpressionWithAccountUserActionForAccessPoint(
-    AccessPoint access_point,
-    bool with_account);
-#endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS)
 // Records |Signin.AccountConsistencyPromoAction| histogram.

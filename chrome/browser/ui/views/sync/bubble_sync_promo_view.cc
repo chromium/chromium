@@ -75,8 +75,6 @@ BubbleSyncPromoView::BubbleSyncPromoView(
             /*use_account_name_as_title=*/true));
   }
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(access_point);
-  signin_metrics::RecordSigninImpressionWithAccountUserActionForAccessPoint(
-      access_point, !account.IsEmpty() /* with_account */);
 }
 
 BubbleSyncPromoView::~BubbleSyncPromoView() = default;

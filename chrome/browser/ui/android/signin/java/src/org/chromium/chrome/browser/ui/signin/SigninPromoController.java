@@ -109,8 +109,6 @@ public class SigninPromoController {
     private @Nullable ImpressionTracker mImpressionTracker;
     private final @AccessPoint int mAccessPoint;
     private final String mImpressionUserActionName;
-    private final String mImpressionWithAccountUserActionName;
-    private final String mImpressionWithNoAccountUserActionName;
     private final String mSigninWithDefaultUserActionName;
     private final String mSigninNotDefaultUserActionName;
     private final String mSigninNewAccountUserActionName;
@@ -275,10 +273,6 @@ public class SigninPromoController {
         switch (mAccessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 mImpressionUserActionName = "Signin_Impression_FromBookmarkManager";
-                mImpressionWithAccountUserActionName =
-                        "Signin_ImpressionWithAccount_FromBookmarkManager";
-                mImpressionWithNoAccountUserActionName =
-                        "Signin_ImpressionWithNoAccount_FromBookmarkManager";
                 mSigninWithDefaultUserActionName = "Signin_SigninWithDefault_FromBookmarkManager";
                 mSigninNotDefaultUserActionName = "Signin_SigninNotDefault_FromBookmarkManager";
                 // On Android, the promo does not have a button to add and account when there is
@@ -301,10 +295,6 @@ public class SigninPromoController {
                 break;
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
                 mImpressionUserActionName = "Signin_Impression_FromNTPContentSuggestions";
-                mImpressionWithAccountUserActionName =
-                        "Signin_ImpressionWithAccount_FromNTPContentSuggestions";
-                mImpressionWithNoAccountUserActionName =
-                        "Signin_ImpressionWithNoAccount_FromNTPContentSuggestions";
                 mSigninWithDefaultUserActionName =
                         "Signin_SigninWithDefault_FromNTPContentSuggestions";
                 mSigninNotDefaultUserActionName =
@@ -334,10 +324,6 @@ public class SigninPromoController {
                 break;
             case SigninAccessPoint.RECENT_TABS:
                 mImpressionUserActionName = "Signin_Impression_FromRecentTabs";
-                mImpressionWithAccountUserActionName =
-                        "Signin_ImpressionWithAccount_FromRecentTabs";
-                mImpressionWithNoAccountUserActionName =
-                        "Signin_ImpressionWithNoAccount_FromRecentTabs";
                 mSigninWithDefaultUserActionName = "Signin_SigninWithDefault_FromRecentTabs";
                 mSigninNotDefaultUserActionName = "Signin_SigninNotDefault_FromRecentTabs";
                 // On Android, the promo does not have a button to add and account when there is
@@ -362,15 +348,12 @@ public class SigninPromoController {
                 break;
             case SigninAccessPoint.SETTINGS:
                 mImpressionUserActionName = "Signin_Impression_FromSettings";
-                mImpressionWithAccountUserActionName = "Signin_ImpressionWithAccount_FromSettings";
                 mSigninWithDefaultUserActionName = "Signin_SigninWithDefault_FromSettings";
                 mSigninNotDefaultUserActionName = "Signin_SigninNotDefault_FromSettings";
                 // On Android, the promo does not have a button to add and account when there is
                 // already an account on the device. Always use the NoExistingAccount variant.
                 mSigninNewAccountUserActionName =
                         "Signin_SigninNewAccountNoExistingAccount_FromSettings";
-                mImpressionWithNoAccountUserActionName =
-                        "Signin_ImpressionWithNoAccount_FromSettings";
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED;
                 if (ChromeFeatureList.isEnabled(
@@ -615,11 +598,6 @@ public class SigninPromoController {
 
     private void recordSigninPromoImpression() {
         RecordUserAction.record(mImpressionUserActionName);
-        if (mProfileData == null) {
-            RecordUserAction.record(mImpressionWithNoAccountUserActionName);
-        } else {
-            RecordUserAction.record(mImpressionWithAccountUserActionName);
-        }
     }
 
     @VisibleForTesting

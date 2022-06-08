@@ -238,27 +238,5 @@ TEST_F(SigninMetricsTest, RecordSigninImpressionUserAction) {
   }
 }
 
-#if !BUILDFLAG(IS_IOS)
-TEST_F(SigninMetricsTest, RecordSigninImpressionWithAccountUserAction) {
-  for (const AccessPoint& ap : kAccessPointsThatSupportPersonalizedPromos) {
-    base::UserActionTester user_action_tester;
-    RecordSigninImpressionWithAccountUserActionForAccessPoint(ap, true);
-    EXPECT_EQ(1, user_action_tester.GetActionCount(
-                     "Signin_ImpressionWithAccount_From" +
-                     GetAccessPointDescription(ap)));
-  }
-}
-
-TEST_F(SigninMetricsTest, RecordSigninImpressionWithNoAccountUserAction) {
-  for (const AccessPoint& ap : kAccessPointsThatSupportPersonalizedPromos) {
-    base::UserActionTester user_action_tester;
-    RecordSigninImpressionWithAccountUserActionForAccessPoint(ap, false);
-    EXPECT_EQ(1, user_action_tester.GetActionCount(
-                     "Signin_ImpressionWithNoAccount_From" +
-                     GetAccessPointDescription(ap)));
-  }
-}
-#endif  // !BUILDFLAG(IS_IOS)
-
 }  // namespace
 }  // namespace signin_metrics
