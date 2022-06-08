@@ -119,17 +119,15 @@ absl::optional<std::string> ConvertActionToBytes(const base::Value* action,
 }  // namespace
 
 JsFlowExecutorImpl::JsFlowExecutorImpl(
-    Delegate* delegate,
     content::WebContents* web_contents_for_js_execution,
-    const std::string& js_flow_library)
+    Delegate* delegate)
     : delegate_(delegate),
       devtools_client_(std::make_unique<DevtoolsClient>(
           content::DevToolsAgentHost::GetOrCreateFor(
               web_contents_for_js_execution),
           base::FeatureList::IsEnabled(
               autofill_assistant::features::
-                  kAutofillAssistantFullJsFlowStackTraces))),
-      js_flow_library_(js_flow_library) {}
+                  kAutofillAssistantFullJsFlowStackTraces))) {}
 
 JsFlowExecutorImpl::~JsFlowExecutorImpl() = default;
 
@@ -170,11 +168,11 @@ void JsFlowExecutorImpl::OnGetFrameTree(
           .SetFrameId(result->GetFrameTree()->GetFrame()->GetId())
           .Build(),
       kMainFrame,
-      base::BindOnce(&JsFlowExecutorImpl::OnIsolatedWorldCreated,
+      base::BindOnce(&JsFlowExecutorImpl::IsolatedWorldCreated,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void JsFlowExecutorImpl::OnIsolatedWorldCreated(
+void JsFlowExecutorImpl::IsolatedWorldCreated(
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<page::CreateIsolatedWorldResult> result) {
   if (!result) {
@@ -186,7 +184,6 @@ void JsFlowExecutorImpl::OnIsolatedWorldCreated(
   }
 
   isolated_world_context_id_ = result->GetExecutionContextId();
-
   InternalStart();
 }
 
@@ -200,9 +197,9 @@ void JsFlowExecutorImpl::InternalStart() {
 
   // Wrap the main js_flow in an async function containing a method to
   // request native actions. This is essentially providing |js_flow| with a
-  // JS API to call native functionality. Also adds the js_flow_library.
-  js_flow_ = std::make_unique<std::string>(base::StrCat(
-      {kLeadingWrapper, js_flow_library_, *js_flow_, kTrailingWrapper}));
+  // JS API to call native functionality.
+  js_flow_ = std::make_unique<std::string>(
+      base::StrCat({kLeadingWrapper, *js_flow_, kTrailingWrapper}));
 
   // Run the wrapped js_flow in the sandbox and serve potential native action
   // requests as they arrive.

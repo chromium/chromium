@@ -77,7 +77,7 @@ class JsFlowExecutorImplTest : public BaseBrowserTest {
     BaseBrowserTest::SetUpOnMainThread();
 
     flow_executor_ = std::make_unique<JsFlowExecutorImpl>(
-        &mock_delegate_, shell()->web_contents(), "");
+        shell()->web_contents(), &mock_delegate_);
   }
 
   // Overload, ignore result value, just return the client status.
@@ -416,5 +416,6 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest,
             ACTION_APPLIED);
   EXPECT_EQ(*result, base::Value(5));
 }
+
 }  // namespace
 }  // namespace autofill_assistant

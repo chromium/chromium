@@ -22,9 +22,8 @@ namespace autofill_assistant {
 class JsFlowExecutorImpl : public JsFlowExecutor {
  public:
   // |delegate| must outlive the JsFlowExecutorImpl.
-  JsFlowExecutorImpl(Delegate* delegate,
-                     content::WebContents* web_contents_for_js_execution,
-                     const std::string& js_flow_library);
+  JsFlowExecutorImpl(content::WebContents* web_contents_for_js_execution,
+                     Delegate* delegate);
   ~JsFlowExecutorImpl() override;
   JsFlowExecutorImpl(const JsFlowExecutorImpl&) = delete;
   JsFlowExecutorImpl& operator=(const JsFlowExecutorImpl&) = delete;
@@ -78,13 +77,11 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
 
  private:
   void InternalStart();
-
   void OnGetFrameTree(const DevtoolsClient::ReplyStatus& reply_status,
                       std::unique_ptr<page::GetFrameTreeResult> result);
-  void OnIsolatedWorldCreated(
+  void IsolatedWorldCreated(
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<page::CreateIsolatedWorldResult> result);
-
   void RefreshNativeActionPromise();
   void OnNativeActionRequested(const DevtoolsClient::ReplyStatus& reply_status,
                                std::unique_ptr<runtime::EvaluateResult> result);
@@ -125,8 +122,6 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
 
   const raw_ptr<Delegate> delegate_;
   std::unique_ptr<DevtoolsClient> devtools_client_;
-  const std::string& js_flow_library_;
-
   int isolated_world_context_id_ = -1;
 
   // Only set during a flow.

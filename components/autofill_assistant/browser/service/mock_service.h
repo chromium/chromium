@@ -63,10 +63,6 @@ class MockService : public Service {
               UpdateAnnotateDomModelContext,
               (int64_t model_version),
               (override));
-  MOCK_METHOD(void,
-              UpdateJsFlowLibraryLoaded,
-              (bool js_flow_library_loaded),
-              (override));
 };
 
 }  // namespace autofill_assistant

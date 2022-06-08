@@ -136,7 +136,6 @@ class MockActionDelegate : public ActionDelegate {
                      password_manager::PasswordChangeSuccessTracker*());
   MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
   MOCK_METHOD0(GetWebContentsForJsExecution, content::WebContents*());
-  MOCK_METHOD(const std::string&, GetJsFlowLibrary, (), (const override));
   MOCK_CONST_METHOD0(GetWebController, WebController*());
   MOCK_CONST_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());
   MOCK_CONST_METHOD0(GetUkmRecorder, ukm::UkmRecorder*());

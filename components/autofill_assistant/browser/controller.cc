@@ -164,15 +164,6 @@ content::WebContents* Controller::GetWebContentsForJsExecution() {
   return web_contents_for_js_execution_.get();
 }
 
-void Controller::SetJsFlowLibrary(const std::string& js_flow_library) {
-  js_flow_library_ = js_flow_library;
-  GetService()->UpdateJsFlowLibraryLoaded(!js_flow_library_.empty());
-}
-
-const std::string& Controller::GetJsFlowLibrary() const {
-  return js_flow_library_;
-}
-
 std::string Controller::GetEmailAddressForAccessTokenAccount() {
   return client_->GetEmailAddressForAccessTokenAccount();
 }

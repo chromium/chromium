@@ -321,9 +321,6 @@ class ActionDelegate {
   // is created on the first call.
   virtual content::WebContents* GetWebContentsForJsExecution() = 0;
 
-  // Get the library to be executed before every JS flow action.
-  virtual const std::string& GetJsFlowLibrary() const = 0;
-
   // Get the ElementStore.
   virtual ElementStore* GetElementStore() const = 0;
 
