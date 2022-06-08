@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
 
+#import <LocalAuthentication/LAContext.h>
 #include <memory>
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/handoff/pref_names_ios.h"
 #include "components/prefs/pref_service.h"
@@ -20,11 +22,13 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -46,10 +50,72 @@ std::unique_ptr<KeyedService> BuildMockSyncService(web::BrowserState* context) {
   return std::make_unique<syncer::MockSyncService>();
 }
 
-class PrivacyTableViewControllerTest : public ChromeTableViewControllerTest {
+// Checks if the device has Passcode, Face ID, or Touch ID set up.
+BOOL DeviceSupportsAuthentication() {
+  LAContext* context = [[LAContext alloc] init];
+  return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication
+                              error:nil];
+}
+
+// Bitset
+typedef NS_ENUM(NSUInteger, PrivacyTableViewControllerTestConfig) {
+  // Tests should run with Enhanced Protection flag enabled.
+  PrivacyTableViewControllerTestConfigEnhancedProtectionEnabled = 1 << 0,
+  // Tests should run with Third-party intents in Incognito flag enabled.
+  PrivacyTableViewControllerTestConfig3PIntentsInIncognitoEnabled = 1 << 1,
+};
+
+// `ScopedFeatureList` wrapper so `PrivacyTableViewControllerTest` can ensure
+// proper initialization of the feature list before all of its own attributes.
+class WithScopedFeatureList {
  protected:
+  WithScopedFeatureList(
+      std::pair<std::vector<base::Feature>, std::vector<base::Feature>> const&
+          enabled_disabled_features) {
+    feature_list_.InitWithFeatures(enabled_disabled_features.first,
+                                   enabled_disabled_features.second);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class PrivacyTableViewControllerTest
+    : public ChromeTableViewControllerTest,
+      public testing::WithParamInterface<PrivacyTableViewControllerTestConfig>,
+      public WithScopedFeatureList {
+ protected:
+  PrivacyTableViewControllerTest()
+      : WithScopedFeatureList(EnabledDisabledFeatures()) {}
+
+  std::pair<std::vector<base::Feature>, std::vector<base::Feature>>
+  EnabledDisabledFeatures() const {
+    std::pair<std::vector<base::Feature>, std::vector<base::Feature>>
+        enabledDisabledFeatures;
+
+    // Explicitly enable/disable Enhanced Protection flag.
+    if (GetParam() &
+        PrivacyTableViewControllerTestConfigEnhancedProtectionEnabled) {
+      enabledDisabledFeatures.first.push_back(
+          safe_browsing::kEnhancedProtection);
+    } else {
+      enabledDisabledFeatures.second.push_back(
+          safe_browsing::kEnhancedProtection);
+    }
+
+    // Explicitly enable/disable Third-party intents in Incognito flag.
+    if (GetParam() &
+        PrivacyTableViewControllerTestConfigEnhancedProtectionEnabled) {
+      enabledDisabledFeatures.first.push_back(kIOS3PIntentsInIncognito);
+    } else {
+      enabledDisabledFeatures.second.push_back(kIOS3PIntentsInIncognito);
+    }
+
+    return enabledDisabledFeatures;
+  }
+
   void SetUp() override {
     ChromeTableViewControllerTest::SetUp();
+
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.SetPrefService(CreatePrefService());
     test_cbs_builder.AddTestingFactory(
@@ -120,68 +186,84 @@ class PrivacyTableViewControllerTest : public ChromeTableViewControllerTest {
 
 // Tests PrivacyTableViewController is set up with all appropriate items
 // and sections.
-TEST_F(PrivacyTableViewControllerTest, TestModel) {
+TEST_P(PrivacyTableViewControllerTest, TestModel) {
+  PrefService* prefService = chrome_browser_state_->GetPrefs();
   CreateController();
   CheckController();
+
+  int expectedNumberOfSections = 3;
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-    EXPECT_EQ(4, NumberOfSections());
+    expectedNumberOfSections++;
+  }
+  if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
+    expectedNumberOfSections++;
+  }
+  EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
 
-    // Sections[0].
-    EXPECT_EQ(1, NumberOfItemsInSection(0));
-    CheckTextCellTextAndDetailText(
-        l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), nil, 0, 0);
+  int currentSection = 0;
+  // PrivacyContent section.
+  EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+  CheckTextCellTextAndDetailText(
+      l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), nil,
+      currentSection, 0);
 
-    // Sections[1].
-    EXPECT_EQ(1, NumberOfItemsInSection(1));
+  // SafeBrowsing section.
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    currentSection++;
+    EXPECT_EQ(currentSection, NumberOfItemsInSection(1));
     CheckTextCellTextAndDetailText(
         l10n_util::GetNSString(IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE),
         SafeBrowsingDetailText(), 1, 0);
+  }
 
-    // Sections[2].
-    EXPECT_EQ(1, NumberOfItemsInSection(2));
-    NSString* handoffSubtitle =
-        chrome_browser_state_->GetPrefs()->GetBoolean(
-            prefs::kIosHandoffToOtherDevices)
-            ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-            : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-    CheckTextCellTextAndDetailText(
-        l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES),
-        handoffSubtitle, 2, 0);
+  // WebServices section.
+  currentSection++;
+  EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+  NSString* handoffSubtitle = chrome_browser_state_->GetPrefs()->GetBoolean(
+                                  prefs::kIosHandoffToOtherDevices)
+                                  ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                                  : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  CheckTextCellTextAndDetailText(
+      l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES),
+      handoffSubtitle, currentSection, 0);
 
-    // Sections[3].
-    EXPECT_EQ(1, NumberOfItemsInSection(3));
-    CheckSwitchCellStateAndText(
-        NO, l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME), 3,
-        0);
+  // IncognitoAuth section.
+  currentSection++;
+  EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+  if ((IsIncognitoModeDisabled(prefService) ||
+       !DeviceSupportsAuthentication())) {
+    // Disabled version of Incognito auth item is expected in this case.
+    CheckInfoButtonCellStatusWithIdAndTextWithId(
+        IDS_IOS_SETTING_OFF, IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME,
+        currentSection, 0);
+  } else {
+    CheckSwitchCellStateAndTextWithId(NO, IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME,
+                                      currentSection, 0);
+  }
 
+  // IncognitoInterstitial section.
+  if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
+    currentSection++;
+    EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+    if ((IsIncognitoModeDisabled(prefService) ||
+         IsIncognitoModeForced(prefService))) {
+      // Disabled version of Incognito interstitial item is expected in this
+      // case.
+      CheckInfoButtonCellStatusWithIdAndTextWithId(
+          IDS_IOS_SETTING_OFF, IDS_IOS_OPTIONS_ENABLE_INCOGNITO_INTERSTITIAL,
+          currentSection, 0);
+    } else {
+      CheckSwitchCellStateAndTextWithId(
+          NO, IDS_IOS_OPTIONS_ENABLE_INCOGNITO_INTERSTITIAL, currentSection, 0);
+    }
+  }
+
+  // Testing section index and text of the privacy footer.
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
     CheckSectionFooter(
         l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
-        /* section= */ 3);
+        /* section= */ expectedNumberOfSections - 1);
   } else {
-    EXPECT_EQ(3, NumberOfSections());
-
-    // Sections[0].
-    EXPECT_EQ(1, NumberOfItemsInSection(0));
-    CheckTextCellTextAndDetailText(
-        l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), nil, 0, 0);
-
-    // Sections[1].
-    EXPECT_EQ(1, NumberOfItemsInSection(1));
-    NSString* handoffSubtitle =
-        chrome_browser_state_->GetPrefs()->GetBoolean(
-            prefs::kIosHandoffToOtherDevices)
-            ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-            : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-    CheckTextCellTextAndDetailText(
-        l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES),
-        handoffSubtitle, 1, 0);
-
-    // Sections[2].
-    EXPECT_EQ(1, NumberOfItemsInSection(2));
-    CheckSwitchCellStateAndText(
-        NO, l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME), 2,
-        0);
-
     CheckSectionFooter(
         l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
         /* section= */ 0);
@@ -190,22 +272,28 @@ TEST_F(PrivacyTableViewControllerTest, TestModel) {
 
 // Tests PrivacyTableViewController sets the correct privacy footer for a
 // non-syncing user.
-TEST_F(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
+TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
   ON_CALL(*mock_sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(false));
 
   CreateController();
   CheckController();
 
+  int expectedNumberOfSections = 3;
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-    EXPECT_EQ(4, NumberOfSections());
+    expectedNumberOfSections++;
+  }
+  if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
+    expectedNumberOfSections++;
+  }
+  EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
 
+  // Testing section index and text of the privacy footer.
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
     CheckSectionFooter(
         l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
-        /* section= */ 3);
+        /* section= */ expectedNumberOfSections - 1);
   } else {
-    EXPECT_EQ(3, NumberOfSections());
-
     CheckSectionFooter(
         l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
         /* section= */ 0);
@@ -214,26 +302,43 @@ TEST_F(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
 
 // Tests PrivacyTableViewController sets the correct privacy footer for a
 // syncing user.
-TEST_F(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
+TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
   ON_CALL(*mock_sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service(), HasSyncConsent()).WillByDefault(Return(true));
 
   CreateController();
   CheckController();
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
-    EXPECT_EQ(4, NumberOfSections());
 
+  int expectedNumberOfSections = 3;
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    expectedNumberOfSections++;
+  }
+  if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
+    expectedNumberOfSections++;
+  }
+  EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
+
+  // Testing section index and text of the privacy footer.
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
     CheckSectionFooter(
         l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER),
-        /* section= */ 3);
+        /* section= */ expectedNumberOfSections - 1);
   } else {
-    EXPECT_EQ(3, NumberOfSections());
-
     CheckSectionFooter(
         l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER),
         /* section= */ 0);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    PrivacyTableViewControllerTestAllConfigs,
+    PrivacyTableViewControllerTest,
+    testing::Values(
+        0,
+        PrivacyTableViewControllerTestConfigEnhancedProtectionEnabled,
+        PrivacyTableViewControllerTestConfig3PIntentsInIncognitoEnabled,
+        PrivacyTableViewControllerTestConfigEnhancedProtectionEnabled |
+            PrivacyTableViewControllerTestConfig3PIntentsInIncognitoEnabled));
 
 }  // namespace

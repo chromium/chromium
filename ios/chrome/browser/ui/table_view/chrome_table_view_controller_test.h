@@ -118,6 +118,22 @@ class ChromeTableViewControllerTest : public BlockCleanupTest {
                                          int section,
                                          int item);
 
+  // Verifies that the info button cell at `item` in `section` has a text
+  // property which matches `expected_title` and a status text which matches
+  // `expected_status text`.
+  void CheckInfoButtonCellStatusAndText(NSString* expected_status_text,
+                                        NSString* expected_title,
+                                        int section,
+                                        int item);
+
+  // Verifies that the info button cell at `item` in `section` has a text
+  // property which matches the l10n string for `expected_title_id` and a status
+  // text which matches `expected_status text`.
+  void CheckInfoButtonCellStatusWithIdAndTextWithId(int expected_status_text_id,
+                                                    int expected_title_id,
+                                                    int section,
+                                                    int item);
+
   // Verifies that the cell at `item` in `section` has the given
   // `accessory_type`.
   void CheckAccessoryType(UITableViewCellAccessoryType accessory_type,
