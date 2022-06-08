@@ -1789,7 +1789,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/assistant/ambient',
-        'version': 'version:feel_the_breeze_swinging_fix',
+        'version': 'version:feel_the_breeze_tree_shadow_improvement',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
