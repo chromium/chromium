@@ -207,13 +207,13 @@ class BASE_EXPORT GSL_OWNER Value {
 
   using DeprecatedListStorage = std::vector<Value>;
   using DeprecatedDictStorage = flat_map<std::string, Value>;
-  // TODO(https://crbug.com/1291666): Make these private.
+  // TODO(https://crbug.com/1291666): Make this private.
   using ListStorage = DeprecatedListStorage;
-  using DictStorage = DeprecatedDictStorage;
 
   // Like `DictStorage`, but with std::unique_ptr in the mapped type. This is
-  // due to legacy reasons, and should be removed once no caller relies on
-  // stability of pointers anymore.
+  // due to legacy reasons, and should be replaced with a private version of
+  // DeprecatedDictStorage once no caller relies on stability of pointers
+  // anymore.
   using LegacyDictStorage = flat_map<std::string, std::unique_ptr<Value>>;
 
   using DeprecatedListView = CheckedContiguousRange<ListStorage>;
@@ -303,8 +303,8 @@ class BASE_EXPORT GSL_OWNER Value {
   explicit Value(List&& value) noexcept;
 
   // DEPRECATED: prefer `Value(Dict&&)`.
-  explicit Value(const DictStorage& value);
-  explicit Value(DictStorage&& value);
+  explicit Value(const DeprecatedDictStorage& value);
+  explicit Value(DeprecatedDictStorage&& value);
 
   // DEPRECATED: prefer `Value(List&&)`.
   explicit Value(span<const Value> value);

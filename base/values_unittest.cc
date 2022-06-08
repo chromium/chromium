@@ -193,8 +193,29 @@ TEST(ValuesTest, ConstructDict) {
   EXPECT_EQ(Value::Type::DICTIONARY, value.type());
 }
 
-TEST(ValuesTest, ConstructDictFromStorage) {
-  Value::DictStorage storage;
+TEST(ValuesTest, ConstructDictFromValueDict) {
+  Value::Dict dict;
+  dict.Set("foo", "bar");
+  {
+    Value value(dict.Clone());
+    EXPECT_EQ(Value::Type::DICT, value.type());
+    EXPECT_TRUE(value.GetIfDict());
+    EXPECT_TRUE(value.GetDict().FindString("foo"));
+    EXPECT_EQ("bar", *value.GetDict().FindString("foo"));
+  }
+
+  dict.Set("foo", "baz");
+  {
+    Value value(std::move(dict));
+    EXPECT_EQ(Value::Type::DICT, value.type());
+    EXPECT_TRUE(value.GetIfDict());
+    EXPECT_TRUE(value.GetDict().FindString("foo"));
+    EXPECT_EQ("baz", *value.GetDict().FindString("foo"));
+  }
+}
+
+TEST(ValuesTest, ConstructDictFromDeprecatedDictStorage) {
+  Value::DeprecatedDictStorage storage;
   storage.emplace("foo", "bar");
   {
     Value value(storage);
@@ -328,9 +349,9 @@ TEST(ValuesTest, CopyBinary) {
 }
 
 TEST(ValuesTest, CopyDictionary) {
-  Value::DictStorage storage;
-  storage.emplace("Int", 123);
-  Value value(std::move(storage));
+  Value::Dict dict;
+  dict.Set("Int", 123);
+  Value value(std::move(dict));
 
   Value copied_value(value.Clone());
   EXPECT_EQ(value, copied_value);
@@ -430,7 +451,27 @@ TEST(ValuesTest, MoveBinary) {
 }
 
 TEST(ValuesTest, MoveConstructDictionary) {
-  Value::DictStorage storage;
+  Value::Dict dict;
+  dict.Set("Int", 123);
+
+  Value value(std::move(dict));
+  Value moved_value(std::move(value));
+  EXPECT_EQ(Value::Type::DICTIONARY, moved_value.type());
+  EXPECT_EQ(123, moved_value.FindKey("Int")->GetInt());
+}
+
+TEST(ValuesTest, MoveAssignDictionary) {
+  Value::Dict dict;
+  dict.Set("Int", 123);
+
+  Value blank;
+  blank = Value(std::move(dict));
+  EXPECT_EQ(Value::Type::DICTIONARY, blank.type());
+  EXPECT_EQ(123, blank.FindKey("Int")->GetInt());
+}
+
+TEST(ValuesTest, MoveConstructDeprecatedDictStorage) {
+  Value::DeprecatedDictStorage storage;
   storage.emplace("Int", 123);
 
   Value value(std::move(storage));
@@ -439,8 +480,8 @@ TEST(ValuesTest, MoveConstructDictionary) {
   EXPECT_EQ(123, moved_value.FindKey("Int")->GetInt());
 }
 
-TEST(ValuesTest, MoveAssignDictionary) {
-  Value::DictStorage storage;
+TEST(ValuesTest, MoveAssignDeprecatedDictStorage) {
+  Value::DeprecatedDictStorage storage;
   storage.emplace("Int", 123);
 
   Value blank;
@@ -449,9 +490,9 @@ TEST(ValuesTest, MoveAssignDictionary) {
   EXPECT_EQ(123, blank.FindKey("Int")->GetInt());
 }
 
-TEST(ValuesTest, TakeDict) {
+TEST(ValuesTest, TakeDictDeprecated) {
   // Prepare a dict with a value of each type.
-  Value::DictStorage storage;
+  Value::DeprecatedDictStorage storage;
   storage.emplace("null", Value::Type::NONE);
   storage.emplace("bool", Value::Type::BOOLEAN);
   storage.emplace("int", Value::Type::INTEGER);
@@ -730,397 +771,397 @@ TEST(ValuesTest, ClearList) {
 }
 
 TEST(ValuesTest, FindKey) {
-  Value::DictStorage storage;
-  storage.emplace("foo", "bar");
-  Value dict(std::move(storage));
-  EXPECT_NE(nullptr, dict.FindKey("foo"));
-  EXPECT_EQ(nullptr, dict.FindKey("baz"));
+  Value::Dict dict;
+  dict.Set("foo", "bar");
+  Value value(std::move(dict));
+  EXPECT_NE(nullptr, value.FindKey("foo"));
+  EXPECT_EQ(nullptr, value.FindKey("baz"));
 
   // Single not found key.
-  bool found = dict.FindKey("notfound");
+  bool found = value.FindKey("notfound");
   EXPECT_FALSE(found);
 }
 
 TEST(ValuesTest, FindKeyChangeValue) {
-  Value::DictStorage storage;
-  storage.emplace("foo", "bar");
-  Value dict(std::move(storage));
-  Value* found = dict.FindKey("foo");
+  Value::Dict dict;
+  dict.Set("foo", "bar");
+  Value value(std::move(dict));
+  Value* found = value.FindKey("foo");
   EXPECT_NE(nullptr, found);
   EXPECT_EQ("bar", found->GetString());
 
   *found = Value(123);
-  EXPECT_EQ(123, dict.FindKey("foo")->GetInt());
+  EXPECT_EQ(123, value.FindKey("foo")->GetInt());
 }
 
 TEST(ValuesTest, FindKeyConst) {
-  Value::DictStorage storage;
-  storage.emplace("foo", "bar");
-  const Value dict(std::move(storage));
-  EXPECT_NE(nullptr, dict.FindKey("foo"));
-  EXPECT_EQ(nullptr, dict.FindKey("baz"));
+  Value::Dict dict;
+  dict.Set("foo", "bar");
+  const Value value(std::move(dict));
+  EXPECT_NE(nullptr, value.FindKey("foo"));
+  EXPECT_EQ(nullptr, value.FindKey("baz"));
 }
 
 TEST(ValuesTest, FindKeyOfType) {
-  Value::DictStorage storage;
-  storage.emplace("null", Value::Type::NONE);
-  storage.emplace("bool", Value::Type::BOOLEAN);
-  storage.emplace("int", Value::Type::INTEGER);
-  storage.emplace("double", Value::Type::DOUBLE);
-  storage.emplace("string", Value::Type::STRING);
-  storage.emplace("blob", Value::Type::BINARY);
-  storage.emplace("list", Value::Type::LIST);
-  storage.emplace("dict", Value::Type::DICTIONARY);
+  Value::Dict dict;
+  dict.Set("null", Value());
+  dict.Set("bool", false);
+  dict.Set("int", 0);
+  dict.Set("double", 0.0);
+  dict.Set("string", std::string());
+  dict.Set("blob", Value(Value::BlobStorage()));
+  dict.Set("list", Value::List());
+  dict.Set("dict", Value::Dict());
 
-  Value dict(std::move(storage));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("null", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::DICTIONARY));
+  Value value(std::move(dict));
+  EXPECT_NE(nullptr, value.FindKeyOfType("null", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::NONE));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("bool", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::NONE));
+  EXPECT_NE(nullptr, value.FindKeyOfType("bool", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::BOOLEAN));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("int", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::BOOLEAN));
+  EXPECT_NE(nullptr, value.FindKeyOfType("int", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::INTEGER));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("double", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::INTEGER));
+  EXPECT_NE(nullptr, value.FindKeyOfType("double", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::DOUBLE));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("string", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::DOUBLE));
+  EXPECT_NE(nullptr, value.FindKeyOfType("string", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::STRING));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("blob", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::STRING));
+  EXPECT_NE(nullptr, value.FindKeyOfType("blob", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::BINARY));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("list", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::BINARY));
+  EXPECT_NE(nullptr, value.FindKeyOfType("list", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::LIST));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("dict", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::LIST));
+  EXPECT_NE(nullptr, value.FindKeyOfType("dict", Value::Type::DICTIONARY));
 }
 
 TEST(ValuesTest, FindKeyOfTypeConst) {
-  Value::DictStorage storage;
-  storage.emplace("null", Value::Type::NONE);
-  storage.emplace("bool", Value::Type::BOOLEAN);
-  storage.emplace("int", Value::Type::INTEGER);
-  storage.emplace("double", Value::Type::DOUBLE);
-  storage.emplace("string", Value::Type::STRING);
-  storage.emplace("blob", Value::Type::BINARY);
-  storage.emplace("list", Value::Type::LIST);
-  storage.emplace("dict", Value::Type::DICTIONARY);
+  Value::Dict dict;
+  dict.Set("null", Value());
+  dict.Set("bool", false);
+  dict.Set("int", 0);
+  dict.Set("double", 0.0);
+  dict.Set("string", std::string());
+  dict.Set("blob", Value(Value::BlobStorage()));
+  dict.Set("list", Value::List());
+  dict.Set("dict", Value::Dict());
 
-  const Value dict(std::move(storage));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("null", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("null", Value::Type::DICTIONARY));
+  const Value value(std::move(dict));
+  EXPECT_NE(nullptr, value.FindKeyOfType("null", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("null", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::NONE));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("bool", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("bool", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::NONE));
+  EXPECT_NE(nullptr, value.FindKeyOfType("bool", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("bool", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::BOOLEAN));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("int", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("int", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::BOOLEAN));
+  EXPECT_NE(nullptr, value.FindKeyOfType("int", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("int", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::INTEGER));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("double", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("double", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::INTEGER));
+  EXPECT_NE(nullptr, value.FindKeyOfType("double", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("double", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::DOUBLE));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("string", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("string", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::DOUBLE));
+  EXPECT_NE(nullptr, value.FindKeyOfType("string", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("string", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::STRING));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("blob", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("blob", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::STRING));
+  EXPECT_NE(nullptr, value.FindKeyOfType("blob", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("blob", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::BINARY));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("list", Value::Type::LIST));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("list", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::BINARY));
+  EXPECT_NE(nullptr, value.FindKeyOfType("list", Value::Type::LIST));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("list", Value::Type::DICTIONARY));
 
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::NONE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::BOOLEAN));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::INTEGER));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::DOUBLE));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::STRING));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::BINARY));
-  EXPECT_EQ(nullptr, dict.FindKeyOfType("dict", Value::Type::LIST));
-  EXPECT_NE(nullptr, dict.FindKeyOfType("dict", Value::Type::DICTIONARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::NONE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::BOOLEAN));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::INTEGER));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::DOUBLE));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::STRING));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::BINARY));
+  EXPECT_EQ(nullptr, value.FindKeyOfType("dict", Value::Type::LIST));
+  EXPECT_NE(nullptr, value.FindKeyOfType("dict", Value::Type::DICTIONARY));
 }
 
 TEST(ValuesTest, FindBoolKey) {
-  Value::DictStorage storage;
-  storage.emplace("null", Value::Type::NONE);
-  storage.emplace("bool", Value::Type::BOOLEAN);
-  storage.emplace("int", Value::Type::INTEGER);
-  storage.emplace("double", Value::Type::DOUBLE);
-  storage.emplace("string", Value::Type::STRING);
-  storage.emplace("blob", Value::Type::BINARY);
-  storage.emplace("list", Value::Type::LIST);
-  storage.emplace("dict", Value::Type::DICTIONARY);
+  Value::Dict dict;
+  dict.Set("null", Value());
+  dict.Set("bool", false);
+  dict.Set("int", 0);
+  dict.Set("double", 0.0);
+  dict.Set("string", std::string());
+  dict.Set("blob", Value(Value::BlobStorage()));
+  dict.Set("list", Value::List());
+  dict.Set("dict", Value::Dict());
 
-  const Value dict(std::move(storage));
-  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("null"));
-  EXPECT_NE(absl::nullopt, dict.FindBoolKey("bool"));
-  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("int"));
-  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("double"));
-  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("string"));
-  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("blob"));
-  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("list"));
-  EXPECT_EQ(absl::nullopt, dict.FindBoolKey("dict"));
+  const Value value(std::move(dict));
+  EXPECT_EQ(absl::nullopt, value.FindBoolKey("null"));
+  EXPECT_NE(absl::nullopt, value.FindBoolKey("bool"));
+  EXPECT_EQ(absl::nullopt, value.FindBoolKey("int"));
+  EXPECT_EQ(absl::nullopt, value.FindBoolKey("double"));
+  EXPECT_EQ(absl::nullopt, value.FindBoolKey("string"));
+  EXPECT_EQ(absl::nullopt, value.FindBoolKey("blob"));
+  EXPECT_EQ(absl::nullopt, value.FindBoolKey("list"));
+  EXPECT_EQ(absl::nullopt, value.FindBoolKey("dict"));
 }
 
 TEST(ValuesTest, FindIntKey) {
-  Value::DictStorage storage;
-  storage.emplace("null", Value::Type::NONE);
-  storage.emplace("bool", Value::Type::BOOLEAN);
-  storage.emplace("int", Value::Type::INTEGER);
-  storage.emplace("double", Value::Type::DOUBLE);
-  storage.emplace("string", Value::Type::STRING);
-  storage.emplace("blob", Value::Type::BINARY);
-  storage.emplace("list", Value::Type::LIST);
-  storage.emplace("dict", Value::Type::DICTIONARY);
+  Value::Dict dict;
+  dict.Set("null", Value());
+  dict.Set("bool", false);
+  dict.Set("int", 0);
+  dict.Set("double", 0.0);
+  dict.Set("string", std::string());
+  dict.Set("blob", Value(Value::BlobStorage()));
+  dict.Set("list", Value::List());
+  dict.Set("dict", Value::Dict());
 
-  const Value dict(std::move(storage));
-  EXPECT_EQ(absl::nullopt, dict.FindIntKey("null"));
-  EXPECT_EQ(absl::nullopt, dict.FindIntKey("bool"));
-  EXPECT_NE(absl::nullopt, dict.FindIntKey("int"));
-  EXPECT_EQ(absl::nullopt, dict.FindIntKey("double"));
-  EXPECT_EQ(absl::nullopt, dict.FindIntKey("string"));
-  EXPECT_EQ(absl::nullopt, dict.FindIntKey("blob"));
-  EXPECT_EQ(absl::nullopt, dict.FindIntKey("list"));
-  EXPECT_EQ(absl::nullopt, dict.FindIntKey("dict"));
+  const Value value(std::move(dict));
+  EXPECT_EQ(absl::nullopt, value.FindIntKey("null"));
+  EXPECT_EQ(absl::nullopt, value.FindIntKey("bool"));
+  EXPECT_NE(absl::nullopt, value.FindIntKey("int"));
+  EXPECT_EQ(absl::nullopt, value.FindIntKey("double"));
+  EXPECT_EQ(absl::nullopt, value.FindIntKey("string"));
+  EXPECT_EQ(absl::nullopt, value.FindIntKey("blob"));
+  EXPECT_EQ(absl::nullopt, value.FindIntKey("list"));
+  EXPECT_EQ(absl::nullopt, value.FindIntKey("dict"));
 }
 
 TEST(ValuesTest, FindDoubleKey) {
-  Value::DictStorage storage;
-  storage.emplace("null", Value::Type::NONE);
-  storage.emplace("bool", Value::Type::BOOLEAN);
-  storage.emplace("int", Value::Type::INTEGER);
-  storage.emplace("double", Value::Type::DOUBLE);
-  storage.emplace("string", Value::Type::STRING);
-  storage.emplace("blob", Value::Type::BINARY);
-  storage.emplace("list", Value::Type::LIST);
-  storage.emplace("dict", Value::Type::DICTIONARY);
+  Value::Dict dict;
+  dict.Set("null", Value());
+  dict.Set("bool", false);
+  dict.Set("int", 0);
+  dict.Set("double", 0.0);
+  dict.Set("string", std::string());
+  dict.Set("blob", Value(Value::BlobStorage()));
+  dict.Set("list", Value::List());
+  dict.Set("dict", Value::Dict());
 
-  const Value dict(std::move(storage));
-  EXPECT_EQ(absl::nullopt, dict.FindDoubleKey("null"));
-  EXPECT_EQ(absl::nullopt, dict.FindDoubleKey("bool"));
-  EXPECT_NE(absl::nullopt, dict.FindDoubleKey("int"));
-  EXPECT_NE(absl::nullopt, dict.FindDoubleKey("double"));
-  EXPECT_EQ(absl::nullopt, dict.FindDoubleKey("string"));
-  EXPECT_EQ(absl::nullopt, dict.FindDoubleKey("blob"));
-  EXPECT_EQ(absl::nullopt, dict.FindDoubleKey("list"));
-  EXPECT_EQ(absl::nullopt, dict.FindDoubleKey("dict"));
+  const Value value(std::move(dict));
+  EXPECT_EQ(absl::nullopt, value.FindDoubleKey("null"));
+  EXPECT_EQ(absl::nullopt, value.FindDoubleKey("bool"));
+  EXPECT_NE(absl::nullopt, value.FindDoubleKey("int"));
+  EXPECT_NE(absl::nullopt, value.FindDoubleKey("double"));
+  EXPECT_EQ(absl::nullopt, value.FindDoubleKey("string"));
+  EXPECT_EQ(absl::nullopt, value.FindDoubleKey("blob"));
+  EXPECT_EQ(absl::nullopt, value.FindDoubleKey("list"));
+  EXPECT_EQ(absl::nullopt, value.FindDoubleKey("dict"));
 }
 
 TEST(ValuesTest, FindStringKey) {
-  Value::DictStorage storage;
-  storage.emplace("null", Value::Type::NONE);
-  storage.emplace("bool", Value::Type::BOOLEAN);
-  storage.emplace("int", Value::Type::INTEGER);
-  storage.emplace("double", Value::Type::DOUBLE);
-  storage.emplace("string", Value::Type::STRING);
-  storage.emplace("blob", Value::Type::BINARY);
-  storage.emplace("list", Value::Type::LIST);
-  storage.emplace("dict", Value::Type::DICTIONARY);
+  Value::Dict dict;
+  dict.Set("null", Value());
+  dict.Set("bool", false);
+  dict.Set("int", 0);
+  dict.Set("double", 0.0);
+  dict.Set("string", std::string());
+  dict.Set("blob", Value(Value::BlobStorage()));
+  dict.Set("list", Value::List());
+  dict.Set("dict", Value::Dict());
 
-  const Value dict(std::move(storage));
-  EXPECT_EQ(nullptr, dict.FindStringKey("null"));
-  EXPECT_EQ(nullptr, dict.FindStringKey("bool"));
-  EXPECT_EQ(nullptr, dict.FindStringKey("int"));
-  EXPECT_EQ(nullptr, dict.FindStringKey("double"));
-  EXPECT_NE(nullptr, dict.FindStringKey("string"));
-  EXPECT_EQ(nullptr, dict.FindStringKey("blob"));
-  EXPECT_EQ(nullptr, dict.FindStringKey("list"));
-  EXPECT_EQ(nullptr, dict.FindStringKey("dict"));
+  const Value value(std::move(dict));
+  EXPECT_EQ(nullptr, value.FindStringKey("null"));
+  EXPECT_EQ(nullptr, value.FindStringKey("bool"));
+  EXPECT_EQ(nullptr, value.FindStringKey("int"));
+  EXPECT_EQ(nullptr, value.FindStringKey("double"));
+  EXPECT_NE(nullptr, value.FindStringKey("string"));
+  EXPECT_EQ(nullptr, value.FindStringKey("blob"));
+  EXPECT_EQ(nullptr, value.FindStringKey("list"));
+  EXPECT_EQ(nullptr, value.FindStringKey("dict"));
 }
 
 TEST(ValuesTest, MutableFindStringKey) {
-  Value::DictStorage storage;
-  storage.emplace("string", "foo");
-  Value dict(std::move(storage));
+  Value::Dict dict;
+  dict.Set("string", "foo");
+  Value value(std::move(dict));
 
-  *(dict.FindStringKey("string")) = "bar";
+  *(value.FindStringKey("string")) = "bar";
 
-  Value::DictStorage expected_storage;
-  expected_storage.emplace("string", "bar");
-  Value expected_dict(std::move(expected_storage));
+  Value::Dict expected_dict;
+  expected_dict.Set("string", "bar");
+  Value expected_value(std::move(expected_dict));
 
-  EXPECT_EQ(expected_dict, dict);
+  EXPECT_EQ(expected_value, value);
 }
 
 TEST(ValuesTest, FindDictKey) {
-  Value::DictStorage storage;
-  storage.emplace("null", Value::Type::NONE);
-  storage.emplace("bool", Value::Type::BOOLEAN);
-  storage.emplace("int", Value::Type::INTEGER);
-  storage.emplace("double", Value::Type::DOUBLE);
-  storage.emplace("string", Value::Type::STRING);
-  storage.emplace("blob", Value::Type::BINARY);
-  storage.emplace("list", Value::Type::LIST);
-  storage.emplace("dict", Value::Type::DICTIONARY);
+  Value::Dict dict;
+  dict.Set("null", Value());
+  dict.Set("bool", false);
+  dict.Set("int", 0);
+  dict.Set("double", 0.0);
+  dict.Set("string", std::string());
+  dict.Set("blob", Value(Value::BlobStorage()));
+  dict.Set("list", Value::List());
+  dict.Set("dict", Value::Dict());
 
-  const Value dict(std::move(storage));
-  EXPECT_EQ(nullptr, dict.FindDictKey("null"));
-  EXPECT_EQ(nullptr, dict.FindDictKey("bool"));
-  EXPECT_EQ(nullptr, dict.FindDictKey("int"));
-  EXPECT_EQ(nullptr, dict.FindDictKey("double"));
-  EXPECT_EQ(nullptr, dict.FindDictKey("string"));
-  EXPECT_EQ(nullptr, dict.FindDictKey("blob"));
-  EXPECT_EQ(nullptr, dict.FindDictKey("list"));
-  EXPECT_NE(nullptr, dict.FindDictKey("dict"));
+  const Value value(std::move(dict));
+  EXPECT_EQ(nullptr, value.FindDictKey("null"));
+  EXPECT_EQ(nullptr, value.FindDictKey("bool"));
+  EXPECT_EQ(nullptr, value.FindDictKey("int"));
+  EXPECT_EQ(nullptr, value.FindDictKey("double"));
+  EXPECT_EQ(nullptr, value.FindDictKey("string"));
+  EXPECT_EQ(nullptr, value.FindDictKey("blob"));
+  EXPECT_EQ(nullptr, value.FindDictKey("list"));
+  EXPECT_NE(nullptr, value.FindDictKey("dict"));
 }
 
 TEST(ValuesTest, FindListKey) {
-  Value::DictStorage storage;
-  storage.emplace("null", Value::Type::NONE);
-  storage.emplace("bool", Value::Type::BOOLEAN);
-  storage.emplace("int", Value::Type::INTEGER);
-  storage.emplace("double", Value::Type::DOUBLE);
-  storage.emplace("string", Value::Type::STRING);
-  storage.emplace("blob", Value::Type::BINARY);
-  storage.emplace("list", Value::Type::LIST);
-  storage.emplace("dict", Value::Type::DICTIONARY);
+  Value::Dict dict;
+  dict.Set("null", Value());
+  dict.Set("bool", false);
+  dict.Set("int", 0);
+  dict.Set("double", 0.0);
+  dict.Set("string", std::string());
+  dict.Set("blob", Value(Value::BlobStorage()));
+  dict.Set("list", Value::List());
+  dict.Set("dict", Value::Dict());
 
-  const Value dict(std::move(storage));
-  EXPECT_EQ(nullptr, dict.FindListKey("null"));
-  EXPECT_EQ(nullptr, dict.FindListKey("bool"));
-  EXPECT_EQ(nullptr, dict.FindListKey("int"));
-  EXPECT_EQ(nullptr, dict.FindListKey("double"));
-  EXPECT_EQ(nullptr, dict.FindListKey("string"));
-  EXPECT_EQ(nullptr, dict.FindListKey("blob"));
-  EXPECT_NE(nullptr, dict.FindListKey("list"));
-  EXPECT_EQ(nullptr, dict.FindListKey("dict"));
+  const Value value(std::move(dict));
+  EXPECT_EQ(nullptr, value.FindListKey("null"));
+  EXPECT_EQ(nullptr, value.FindListKey("bool"));
+  EXPECT_EQ(nullptr, value.FindListKey("int"));
+  EXPECT_EQ(nullptr, value.FindListKey("double"));
+  EXPECT_EQ(nullptr, value.FindListKey("string"));
+  EXPECT_EQ(nullptr, value.FindListKey("blob"));
+  EXPECT_NE(nullptr, value.FindListKey("list"));
+  EXPECT_EQ(nullptr, value.FindListKey("dict"));
 }
 
 TEST(ValuesTest, FindBlobKey) {
-  Value::DictStorage storage;
-  storage.emplace("null", Value::Type::NONE);
-  storage.emplace("bool", Value::Type::BOOLEAN);
-  storage.emplace("int", Value::Type::INTEGER);
-  storage.emplace("double", Value::Type::DOUBLE);
-  storage.emplace("string", Value::Type::STRING);
-  storage.emplace("blob", Value::Type::BINARY);
-  storage.emplace("list", Value::Type::LIST);
-  storage.emplace("dict", Value::Type::DICTIONARY);
+  Value::Dict dict;
+  dict.Set("null", Value());
+  dict.Set("bool", false);
+  dict.Set("int", 0);
+  dict.Set("double", 0.0);
+  dict.Set("string", std::string());
+  dict.Set("blob", Value(Value::BlobStorage()));
+  dict.Set("list", Value::List());
+  dict.Set("dict", Value::Dict());
 
-  const Value dict(std::move(storage));
-  EXPECT_EQ(nullptr, dict.FindBlobKey("null"));
-  EXPECT_EQ(nullptr, dict.FindBlobKey("bool"));
-  EXPECT_EQ(nullptr, dict.FindBlobKey("int"));
-  EXPECT_EQ(nullptr, dict.FindBlobKey("double"));
-  EXPECT_EQ(nullptr, dict.FindBlobKey("string"));
-  EXPECT_NE(nullptr, dict.FindBlobKey("blob"));
-  EXPECT_EQ(nullptr, dict.FindBlobKey("list"));
-  EXPECT_EQ(nullptr, dict.FindBlobKey("dict"));
+  const Value value(std::move(dict));
+  EXPECT_EQ(nullptr, value.FindBlobKey("null"));
+  EXPECT_EQ(nullptr, value.FindBlobKey("bool"));
+  EXPECT_EQ(nullptr, value.FindBlobKey("int"));
+  EXPECT_EQ(nullptr, value.FindBlobKey("double"));
+  EXPECT_EQ(nullptr, value.FindBlobKey("string"));
+  EXPECT_NE(nullptr, value.FindBlobKey("blob"));
+  EXPECT_EQ(nullptr, value.FindBlobKey("list"));
+  EXPECT_EQ(nullptr, value.FindBlobKey("dict"));
 }
 
 TEST(ValuesTest, SetKey) {
-  Value::DictStorage storage;
-  storage.emplace("null", Value::Type::NONE);
-  storage.emplace("bool", Value::Type::BOOLEAN);
-  storage.emplace("int", Value::Type::INTEGER);
-  storage.emplace("double", Value::Type::DOUBLE);
-  storage.emplace("string", Value::Type::STRING);
-  storage.emplace("blob", Value::Type::BINARY);
-  storage.emplace("list", Value::Type::LIST);
-  storage.emplace("dict", Value::Type::DICTIONARY);
+  Value::Dict dict;
+  dict.Set("null", Value());
+  dict.Set("bool", false);
+  dict.Set("int", 0);
+  dict.Set("double", 0.0);
+  dict.Set("string", std::string());
+  dict.Set("blob", Value(Value::BlobStorage()));
+  dict.Set("list", Value::List());
+  dict.Set("dict", Value::Dict());
 
-  Value dict(Value::Type::DICTIONARY);
-  dict.SetKey(StringPiece("null"), Value(Value::Type::NONE));
-  dict.SetKey(StringPiece("bool"), Value(Value::Type::BOOLEAN));
-  dict.SetKey(std::string("int"), Value(Value::Type::INTEGER));
-  dict.SetKey(std::string("double"), Value(Value::Type::DOUBLE));
-  dict.SetKey(std::string("string"), Value(Value::Type::STRING));
-  dict.SetKey("blob", Value(Value::Type::BINARY));
-  dict.SetKey("list", Value(Value::Type::LIST));
-  dict.SetKey("dict", Value(Value::Type::DICTIONARY));
+  Value value(Value::Type::DICTIONARY);
+  value.SetKey(StringPiece("null"), Value(Value::Type::NONE));
+  value.SetKey(StringPiece("bool"), Value(Value::Type::BOOLEAN));
+  value.SetKey(std::string("int"), Value(Value::Type::INTEGER));
+  value.SetKey(std::string("double"), Value(Value::Type::DOUBLE));
+  value.SetKey(std::string("string"), Value(Value::Type::STRING));
+  value.SetKey("blob", Value(Value::Type::BINARY));
+  value.SetKey("list", Value(Value::Type::LIST));
+  value.SetKey("dict", Value(Value::Type::DICTIONARY));
 
-  EXPECT_EQ(Value(std::move(storage)), dict);
+  EXPECT_EQ(Value(std::move(dict)), value);
 }
 
 TEST(ValuesTest, SetBoolKey) {
@@ -2462,9 +2503,10 @@ TEST(ValuesTest, TracingSupport) {
     EXPECT_EQ(perfetto::TracedValueToString(Value(list)), "[2,3]");
   }
   {
-    Value::DictStorage dict;
-    dict["key"] = Value("value");
-    EXPECT_EQ(perfetto::TracedValueToString(Value(dict)), "{key:value}");
+    Value::Dict dict;
+    dict.Set("key", "value");
+    EXPECT_EQ(perfetto::TracedValueToString(Value(std::move(dict))),
+              "{key:value}");
   }
 }
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)

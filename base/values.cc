@@ -231,7 +231,8 @@ Value::Value(Dict&& value) noexcept : data_(std::move(value)) {}
 
 Value::Value(List&& value) noexcept : data_(std::move(value)) {}
 
-Value::Value(const DictStorage& value) : data_(absl::in_place_type_t<Dict>()) {
+Value::Value(const DeprecatedDictStorage& value)
+    : data_(absl::in_place_type_t<Dict>()) {
   dict().reserve(value.size());
   for (const auto& it : value) {
     dict().try_emplace(dict().end(), it.first,
@@ -239,7 +240,8 @@ Value::Value(const DictStorage& value) : data_(absl::in_place_type_t<Dict>()) {
   }
 }
 
-Value::Value(DictStorage&& value) : data_(absl::in_place_type_t<Dict>()) {
+Value::Value(DeprecatedDictStorage&& value)
+    : data_(absl::in_place_type_t<Dict>()) {
   dict().reserve(value.size());
   for (auto& it : value) {
     dict().try_emplace(dict().end(), std::move(it.first),
@@ -1380,8 +1382,8 @@ Value::const_dict_iterator_proxy Value::DictItems() const {
   return const_dict_iterator_proxy(&dict());
 }
 
-Value::DictStorage Value::TakeDictDeprecated() && {
-  DictStorage storage;
+Value::DeprecatedDictStorage Value::TakeDictDeprecated() && {
+  DeprecatedDictStorage storage;
   storage.reserve(dict().size());
   for (auto& pair : dict()) {
     storage.try_emplace(storage.end(), std::move(pair.first),
