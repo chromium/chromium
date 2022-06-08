@@ -24630,6 +24630,7 @@ Called by update_debug_scenarios.py.-->
   <int value="58" label="evaluateExpressionsWithSourceMaps"/>
   <int value="59" label="cssLayers"/>
   <int value="60" label="eyedropperColorPicker"/>
+  <int value="62" label="cssAuthoringHints"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
