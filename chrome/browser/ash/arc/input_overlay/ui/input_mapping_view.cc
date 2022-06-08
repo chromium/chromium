@@ -31,10 +31,12 @@ InputMappingView::InputMappingView(
 InputMappingView::~InputMappingView() = default;
 
 void InputMappingView::SetDisplayMode(const DisplayMode mode) {
-  if (current_display_mode_ == mode)
+  DCHECK(mode != DisplayMode::kEducation);
+  if (current_display_mode_ == mode || mode == DisplayMode::kMenu ||
+      mode == DisplayMode::kPreMenu) {
     return;
+  }
   switch (mode) {
-    case DisplayMode::kMenu:
     case DisplayMode::kView:
       SetBackground(nullptr);
       break;

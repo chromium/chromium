@@ -59,6 +59,7 @@ MessageView::MessageView(DisplayOverlayController* controller,
       color_utils::GetResultingPaintColor(kForegroundColor, kBackgroundColor),
       kCornerRadius));
   SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kSideInset)));
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   SetText(base::UTF8ToUTF16(message));
   SetEnabledTextColors(kTextColor);

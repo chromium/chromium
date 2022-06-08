@@ -135,6 +135,8 @@ void EditFinishView::OnResetButtonPressed() {
   if (!display_overlay_controller_)
     return;
   display_overlay_controller_->OnCustomizeRestore();
+  // Take the focus from |ActionLabel|.
+  reset_button_->RequestFocus();
 }
 
 void EditFinishView::OnSaveButtonPressed() {

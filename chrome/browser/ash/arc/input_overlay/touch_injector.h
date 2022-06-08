@@ -143,6 +143,9 @@ class TouchInjector : public ui::EventRewriter {
 
   class KeyCommand;
 
+  // Clean up active touch events before entering into other mode from |kView|
+  // mode.
+  void CleanupTouchEvents();
   // If the window is destroying or focusing out, releasing the active touch
   // event.
   void DispatchTouchCancelEvent();
@@ -158,9 +161,11 @@ class TouchInjector : public ui::EventRewriter {
   void ParseMouseLock(const base::Value& value);
 
   void FlipMouseLockFlag();
-  // Check if the event located on menu icon.
-  bool MenuAnchorPressed(const ui::Event& event,
-                         const gfx::RectF& content_bounds);
+  // Check if the event located on menu entry. |press_required| tells whether or
+  // not a mouse press or touch press is required.
+  bool LocatedEventOnMenuEntry(const ui::Event& event,
+                               const gfx::RectF& content_bounds,
+                               bool press_required);
 
   // Takes valid touch events and overrides their ids with an id managed by the
   // TouchIdManager.

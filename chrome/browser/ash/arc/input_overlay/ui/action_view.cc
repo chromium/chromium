@@ -48,8 +48,14 @@ ActionView::ActionView(Action* action,
 ActionView::~ActionView() = default;
 
 void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
-  DCHECK(mode != DisplayMode::kEducation);
-  if ((!editable_ && mode == DisplayMode::kEdit) || mode == DisplayMode::kMenu)
+  DCHECK(mode != DisplayMode::kEducation && mode != DisplayMode::kMenu &&
+         mode != DisplayMode::kPreMenu);
+  if (mode == DisplayMode::kEducation || mode == DisplayMode::kMenu ||
+      mode == DisplayMode::kPreMenu) {
+    return;
+  }
+
+  if (!editable_ && mode == DisplayMode::kEdit)
     return;
   if (mode == DisplayMode::kView) {
     RemoveEditButton();
@@ -107,6 +113,10 @@ void ActionView::ShowInfoMsg(const base::StringPiece& message,
                              ActionLabel* editing_label) {
   display_overlay_controller_->AddEditMessage(this, message,
                                               MessageType::kInfo);
+}
+
+void ActionView::RemoveMessage() {
+  display_overlay_controller_->RemoveEditMessage();
 }
 
 void ActionView::ChangeBinding(Action* action,

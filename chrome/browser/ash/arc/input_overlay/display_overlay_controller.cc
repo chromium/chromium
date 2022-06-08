@@ -164,7 +164,6 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
   menu_entry->SetSize(gfx::Size(kMenuEntrySize, kMenuEntrySize));
   menu_entry->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   menu_entry->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  menu_entry->SetInstallFocusRingOnFocus(false);
   // TODO(djacobo): Set proper positioning based on specs and responding to
   // resize.
   menu_entry->SetPosition(CalculateMenuEntryPosition());
@@ -195,6 +194,20 @@ void DisplayOverlayController::OnMenuEntryPressed() {
       InputMenuView::BuildMenuView(this, menu_entry_));
   // Hide the menu entry when the menu is displayed.
   menu_entry_->SetVisible(false);
+}
+
+void DisplayOverlayController::FocusOnMenuEntry() {
+  if (!menu_entry_)
+    return;
+  menu_entry_->RequestFocus();
+}
+
+void DisplayOverlayController::ClearFocusOnMenuEntry() {
+  if (!menu_entry_)
+    return;
+  auto* focus_manager = menu_entry_->GetFocusManager();
+  if (focus_manager)
+    focus_manager->ClearFocus();
 }
 
 void DisplayOverlayController::RemoveInputMenuView() {
@@ -236,6 +249,13 @@ void DisplayOverlayController::AddEditFinishView(
 
   edit_finish_view_ = parent_view->AddChildView(
       EditFinishView::BuildView(this, parent_view->size()));
+
+  // Since |input_menu_view_| is removed when adding |edit_finish_view_| and
+  // |FocusManager| lost the focused view. Set |edit_finish_view_| explicitly
+  // as the focused view so Tab traversal key can work as expected.
+  auto* focus_manager = edit_finish_view_->GetFocusManager();
+  if (focus_manager)
+    focus_manager->SetFocusedView(edit_finish_view_);
 }
 
 void DisplayOverlayController::RemoveEditFinishView() {
@@ -325,6 +345,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveNudgeView();
       AddInputMappingView(overlay_widget);
       AddMenuEntryView(overlay_widget);
+      ClearFocusOnMenuEntry();
       if (touch_injector_->first_launch())
         AddNudgeView(overlay_widget);
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
@@ -338,6 +359,12 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       AddEditFinishView(overlay_widget);
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);
+      break;
+    case DisplayMode::kPreMenu:
+      RemoveNudgeView();
+      overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
+          aura::EventTargetingPolicy::kTargetAndDescendants);
+      FocusOnMenuEntry();
       break;
     case DisplayMode::kMenu:
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
@@ -360,10 +387,10 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
 
 absl::optional<gfx::Rect>
 DisplayOverlayController::GetOverlayMenuEntryBounds() {
-  if (!menu_entry_)
+  if (!menu_entry_ || !menu_entry_->GetVisible())
     return absl::nullopt;
 
-  return absl::optional<gfx::Rect>(menu_entry_->bounds());
+  return absl::optional<gfx::Rect>(menu_entry_->GetBoundsInScreen());
 }
 
 void DisplayOverlayController::AddActionEditMenu(ActionView* anchor,

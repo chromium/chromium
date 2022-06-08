@@ -190,8 +190,8 @@ void ActionLabel::SetImageActionLabel(MouseAction mouse_action) {
 }
 
 void ActionLabel::SetDisplayMode(DisplayMode mode) {
-  DCHECK(mode != DisplayMode::kMenu);
-  if (mode == DisplayMode::kMenu)
+  DCHECK(mode != DisplayMode::kMenu && mode != DisplayMode::kPreMenu);
+  if (mode == DisplayMode::kMenu || mode == DisplayMode::kPreMenu)
     return;
 
   switch (mode) {
@@ -213,7 +213,7 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
       SetToEditError();
       break;
     case DisplayMode::kRestore:
-      if (!ClearFocus())
+      if (HasFocus())
         SetToEditDefault();
       break;
     default:
@@ -253,13 +253,13 @@ void ActionLabel::OnMouseExited(const ui::MouseEvent& event) {
 void ActionLabel::OnFocus() {
   SetToEditFocus();
   LabelButton::OnFocus();
-  auto* parent_view = static_cast<ActionView*>(parent());
-  parent_view->ShowInfoMsg(kEditInfoMessage, this);
+  static_cast<ActionView*>(parent())->ShowInfoMsg(kEditInfoMessage, this);
 }
 
 void ActionLabel::OnBlur() {
   SetToEditDefault();
   LabelButton::OnBlur();
+  static_cast<ActionView*>(parent())->RemoveMessage();
 }
 
 bool ActionLabel::ClearFocus() {
