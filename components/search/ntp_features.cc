@@ -124,6 +124,12 @@ const base::Feature kNtpPhotosModuleSoftOptOut(
     "NtpPhotosModuleSoftOptOut",
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the single svg image show in Photos opt-in screen will be
+// replaced by constituent images to support i18n.
+const base::Feature kNtpPhotosModuleSplitSvgOptInArtWork(
+    "NtpPhotosModuleSplitSvgOptInArtWork",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, SafeBrowsing module will be shown to a target user.
 const base::Feature kNtpSafeBrowsingModule{"NtpSafeBrowsingModule",
                                            base::FEATURE_DISABLED_BY_DEFAULT};

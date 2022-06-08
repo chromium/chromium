@@ -48,6 +48,7 @@ extern const base::Feature kNtpPhotosModuleSoftOptOut;
 
 extern const base::Feature kNtpPhotosModuleCustomizedOptInTitle;
 extern const base::Feature kNtpPhotosModuleCustomizedOptInArtWork;
+extern const base::Feature kNtpPhotosModuleSplitSvgOptInArtWork;
 extern const base::Feature kNtpSafeBrowsingModule;
 extern const base::Feature kNtpModulesDragAndDrop;
 extern const base::Feature kNtpModulesFirstRunExperience;

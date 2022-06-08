@@ -351,6 +351,8 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesPhotosMemoriesSoftOptOut", IDS_NTP_MODULES_PHOTOS_SOFT_OPT_OUT},
       {"modulesPhotosMemoriesWelcomeExample",
        IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_EXAMPLE},
+      {"modulesPhotosMemoriesBaloonIllustrationTitle",
+       IDS_NTP_MODULES_PHOTOS_BALOON_ILLUSTRATION_TITLE},
       {"modulesPhotosNew", IDS_NTP_MODULES_PHOTOS_NEW},
       {"modulesTasksInfoTitle", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_TITLE},
       {"modulesTasksInfoClose", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_CLOSE},
@@ -432,6 +434,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
                     base::GetFieldTrialParamValueByFeature(
                         ntp_features::kNtpPhotosModuleCustomizedOptInArtWork,
                         ntp_features::kNtpPhotosModuleOptInArtWorkParam));
+  source->AddBoolean("photosModuleSplitSvgCustomArtWork",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kNtpPhotosModuleSplitSvgOptInArtWork));
   source->AddBoolean(
       "ruleBasedDiscountEnabled",
       base::GetFieldTrialParamValueByFeature(
