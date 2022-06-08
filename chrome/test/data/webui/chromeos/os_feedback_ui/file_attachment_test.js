@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FileAttachmentElement} from 'chrome://os-feedback/file_attachment.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {FileAttachmentElement} from 'chrome://os-feedback/file_attachment.js';
+import {mojoString16ToString} from 'chrome://resources/ash/common/mojo_utils.js';
+
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {eventToPromise, flushTasks, isVisible} from '../../test_util.js';
 
 export function fileAttachmentTestSuite() {
@@ -121,10 +125,77 @@ export function fileAttachmentTestSuite() {
     const fakeFile = /** @type {!File} */ ({name: 'fake.zip'});
     page.setSelectedFileForTesting(fakeFile);
 
-    assertEquals('fake.zip', page.selectedFile.name);
+    // The selected file name is set properly.
+    assertEquals('fake.zip', getElementContent('#selectedFileName'));
+    // The select file checkbox is checked automatically when a file is
+    // selected.
+    assertTrue(getElement('#selectFileCheckbox').checked);
     // The addFileContainer should be invisible.
     assertFalse(isVisible(getElement('#addFileContainer')));
     // The replaceFileContainer should be visible.
     assertTrue(isVisible(getElement('#replaceFileContainer')));
+  });
+
+  // Test that when there is not a file selected, getAttachedFile returns null.
+  test('hasNotSelectedAFile', async () => {
+    await initializePage();
+
+    // The selected file name is empty.
+    assertEquals('', getElementContent('#selectedFileName'));
+    // The select file checkbox is unchecked.
+    assertFalse(getElement('#selectFileCheckbox').checked);
+
+    const attachedFile = await page.getAttachedFile();
+    assertEquals(null, attachedFile);
+  });
+
+  // Test that when a file was selected but the checkbox is unchecked,
+  // getAttachedFile returns null.
+  test('selectedAFileButUnchecked', async () => {
+    await initializePage();
+
+    const selectFileCheckbox = getElement('#selectFileCheckbox');
+    // Set selected file manually.
+    /** @type {!File} */
+    const fakeFile = /** @type {!File} */ ({name: 'fake.zip'});
+    page.setSelectedFileForTesting(fakeFile);
+    selectFileCheckbox.checked = false;
+
+    assertFalse(selectFileCheckbox.checked);
+    assertEquals('fake.zip', getElementContent('#selectedFileName'));
+    const attachedFile = await page.getAttachedFile();
+    assertEquals(null, attachedFile);
+  });
+
+  // Test that when a file was selected but the checkbox is checked,
+  // getAttachedFile returns correct data.
+  test('selectedAFileAndchecked', async () => {
+    await initializePage();
+
+    const selectFileCheckbox = getElement('#selectFileCheckbox');
+
+    const fakeData = [12, 11, 99];
+
+    /** @type {!File} */
+    const fakeFile = /** @type {!File} */ ({
+      name: 'fake.zip',
+      arrayBuffer: async () => {
+        return new Uint8Array(fakeData).buffer;
+      },
+    });
+    // Set selected file manually.
+    page.setSelectedFileForTesting(fakeFile);
+    selectFileCheckbox.checked = true;
+
+    assertEquals('fake.zip', getElementContent('#selectedFileName'));
+    const attachedFile = await page.getAttachedFile();
+    // Verify the fileData field.
+    assertTrue(!!attachedFile);
+    assertTrue(!!attachedFile.fileData);
+    assertTrue(!!attachedFile.fileData.bytes);
+    assertArrayEquals(
+        fakeData, /** @type {!Array<Number>} */ (attachedFile.fileData.bytes));
+    // Verify the fileName field.
+    assertEquals('fake.zip', attachedFile.fileName.path.path);
   });
 }

@@ -14,6 +14,7 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 preprocessed_mojo_manifest = "preprocessed_mojo_manifest.json"
+preprocess_external_mojo_manifest = "preprocess_external_mojo_manifest.json"
 
 polymer_element_files = [
   "confirmation_page.js",
@@ -25,6 +26,17 @@ polymer_element_files = [
   "search_page.js",
   "share_data_page.js",
 ]
+
+preprocess_if_expr("preprocess_external_mojo") {
+  deps = [ "//mojo/public/mojom/base:base_js__generator" ]
+  in_folder = "$root_gen_dir"
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/$preprocess_external_mojo_manifest"
+  in_files = [
+    "mojo/public/mojom/base/file_path.mojom-lite.js",
+    "mojo/public/mojom/base/safe_base_name.mojom-lite.js",
+  ]
+}
 
 generate_grd("build_grd") {
   input_files = [
@@ -40,12 +52,18 @@ generate_grd("build_grd") {
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [
+    ":preprocess_external_mojo",
     ":preprocess_generated",
     ":preprocess_mojo",
   ]
   manifest_files = [
     "$target_gen_dir/$preprocessed_gen_manifest",
     "$target_gen_dir/$preprocessed_mojo_manifest",
+    "$target_gen_dir/$preprocess_external_mojo_manifest",
+  ]
+  resource_path_rewrites = [
+    "mojo/public/mojom/base/file_path.mojom-lite.js|file_path.mojom-lite.js",
+    "mojo/public/mojom/base/safe_base_name.mojom-lite.js|safe_base_name.mojom-lite.js",
   ]
   grd_prefix = "ash_os_feedback"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
@@ -119,6 +137,7 @@ js_library("feedback_flow") {
 
 js_library("file_attachment") {
   deps = [
+    ":feedback_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

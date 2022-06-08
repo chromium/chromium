@@ -19,6 +19,8 @@
 
 module ash.os_feedback_ui.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/safe_base_name.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
@@ -87,6 +89,15 @@ enum SendReportStatus {
   kDelayed
 };
 
+// Used to hold the content and name of the attached file chosen by users.
+// Both fields are required.
+struct AttachedFile {
+  // The content of a file.
+  mojo_base.mojom.BigBuffer file_data;
+  // The name of the file.
+  mojo_base.mojom.SafeBaseName file_name;
+};
+
 // Used to hold all data and flags for the feedback report to be sent.
 struct Report {
   // The context info when the feedback tool is opened. Some fields may have
@@ -95,6 +106,8 @@ struct Report {
   FeedbackContext feedback_context;
   // The feedback text describing the user issue.
   mojo_base.mojom.String16 description;
+  // The optional attached file info.
+  AttachedFile? attached_file;
   // Whether or not to send system logs and metrics/histograms with this report.
   bool include_system_logs_and_histograms;
   // Whether or not to include the screenshot with this report. The screenshot

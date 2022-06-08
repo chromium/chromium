@@ -6,7 +6,10 @@ import './help_resources_icons.js';
 import './os_feedback_shared_css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {AttachedFile} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -26,14 +29,7 @@ export class FileAttachmentElement extends PolymerElement {
     return {
       hasSelectedAFile_: {
         type: Boolean,
-        computed: 'computeHasSelectedAFile_(selectedFile)',
-      },
-
-      selectedFile: {
-        type: File,
-        notify: true,
-        readOnly: true,
-        reflectToAttribute: true,
+        computed: 'computeHasSelectedAFile_(selectedFile_)',
       },
     };
   }
@@ -44,8 +40,9 @@ export class FileAttachmentElement extends PolymerElement {
     /**
      * The file selected if any to be attached to the report.
      * @type {?File}
+     * @private
      */
-    this.selectedFile = null;
+    this.selectedFile_ = null;
 
     /**
      * True when there is a file selected.
@@ -59,7 +56,7 @@ export class FileAttachmentElement extends PolymerElement {
    * @private
    */
   computeHasSelectedAFile_() {
-    return !!this.selectedFile;
+    return !!this.selectedFile_;
   }
 
   /**
@@ -69,6 +66,34 @@ export class FileAttachmentElement extends PolymerElement {
    */
   getElement_(selector) {
     return this.shadowRoot.querySelector(selector);
+  }
+
+  /**
+   * Gather the file name and data chosen.
+   * @return {!Promise<?AttachedFile>}
+   */
+  async getAttachedFile() {
+    if (!this.getElement_('#selectFileCheckbox').checked) {
+      return null;
+    }
+    if (!this.selectedFile_) {
+      return null;
+    }
+
+    const fileDataBuffer = await this.selectedFile_.arrayBuffer();
+    const fileDataView = new Uint8Array(fileDataBuffer);
+    // fileData is of type BigBuffer which can take byte array format or
+    // shared memory form. For now, byte array is being used for its simplicity.
+    // For better performance, we may switch to shared memory.
+    const fileData = {bytes: Array.from(fileDataView)};
+
+    /** @type {!AttachedFile} */
+    const attachedFile = {
+      fileName: {path: {path: this.selectedFile_.name}},
+      fileData: fileData
+    };
+
+    return attachedFile;
   }
 
   /**
@@ -89,18 +114,26 @@ export class FileAttachmentElement extends PolymerElement {
     // The feedback app takes maximum one attachment. And the file dialog is set
     // to accept one file only.
     if (fileInput.files.length > 0) {
-      const selectedFileName = this.getElement_('#selectedFileName');
-      selectedFileName.textContent = fileInput.files[0].name;
-      this.getElement_('#selectFileCheckbox').checked = true;
-      this.selectedFile = fileInput.files[0];
+      this.handleSelectedFileHelper_(fileInput.files[0]);
     }
+  }
+
+  /**
+   * @param {!File} file
+   * @private
+   */
+  handleSelectedFileHelper_(file) {
+    // TODO(http://b/233398494): Handle it when file size exceeds the limit.
+    this.selectedFile_ = file;
+    this.getElement_('#selectedFileName').textContent = file.name;
+    this.getElement_('#selectFileCheckbox').checked = true;
   }
 
   /**
    * @param {!File} file
    */
   setSelectedFileForTesting(file) {
-    this.selectedFile = file;
+    this.handleSelectedFileHelper_(file);
   }
 }
 

@@ -34,6 +34,8 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "extensions/browser/api/feedback_private/feedback_service.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/mojom/base/safe_base_name.mojom.h"
 #include "net/base/network_change_notifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
@@ -43,6 +45,11 @@
 namespace ash {
 
 namespace {
+
+using ::ash::os_feedback_ui::mojom::AttachedFilePtr;
+using ::ash::os_feedback_ui::mojom::SendReportStatus;
+using extensions::FeedbackParams;
+using extensions::FeedbackPrivateAPI;
 
 feedback::FeedbackUploader* GetFeedbackUploaderForContext(
     content::BrowserContext* context) {
@@ -57,11 +64,26 @@ scoped_refptr<base::RefCountedMemory> GetScreenshotData() {
   return nullptr;
 }
 
-}  // namespace
+constexpr std::size_t MAX_ATTACHED_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
-using ::ash::os_feedback_ui::mojom::SendReportStatus;
-using extensions::FeedbackParams;
-using extensions::FeedbackPrivateAPI;
+bool ShouldAddAttachment(const AttachedFilePtr& attached_file) {
+  if (!(attached_file && attached_file->file_data.data())) {
+    // Does not have data.
+    return false;
+  }
+  if (attached_file->file_name.path().empty()) {
+    // The file name is empty.
+    return false;
+  }
+  if (attached_file->file_data.size() > MAX_ATTACHED_FILE_SIZE_BYTES) {
+    LOG(WARNING) << "Can't upload file larger than 10 MB. File size: "
+                 << attached_file->file_data.size();
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
 
 ChromeOsFeedbackDelegate::ChromeOsFeedbackDelegate(Profile* profile)
     : ChromeOsFeedbackDelegate(profile,
@@ -148,6 +170,19 @@ void ChromeOsFeedbackDelegate::SendReport(
   if (report->include_screenshot && png_data && png_data.get()) {
     feedback_data->set_image(
         std::string(png_data->front_as<char>(), png_data->size()));
+  }
+
+  const AttachedFilePtr& attached_file = report->attached_file;
+  if (ShouldAddAttachment(attached_file)) {
+    feedback_data->set_attached_filename(
+        attached_file->file_name.path().AsUTF8Unsafe());
+    const std::string file_data(
+        reinterpret_cast<const char*>(attached_file->file_data.data()),
+        attached_file->file_data.size());
+    // Compress attached file and add to |feedback_data|. The operation is done
+    // by posting a task to thread pool. The |feedback_data| will manage waiting
+    // for all tasks to complete.
+    feedback_data->AttachAndCompressFileData(std::move(file_data));
   }
 
   feedback_service_->SendFeedback(

@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FeedbackFlowState} from './feedback_flow.js';
-import {FeedbackContext, Report} from './feedback_types.js';
+import {AttachedFile, FeedbackContext, Report} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -85,14 +85,13 @@ export class ShareDataPageElement extends PolymerElement {
 
     e.stopPropagation();
 
-    this.dispatchEvent(new CustomEvent('continue-click', {
-      composed: true,
-      bubbles: true,
-      detail: {
-        currentState: FeedbackFlowState.SHARE_DATA,
-        report: this.createReport_()
-      }
-    }));
+    this.createReport_().then(report => {
+      this.dispatchEvent(new CustomEvent('continue-click', {
+        composed: true,
+        bubbles: true,
+        detail: {currentState: FeedbackFlowState.SHARE_DATA, report: report}
+      }));
+    });
   }
 
   /**
@@ -105,21 +104,22 @@ export class ShareDataPageElement extends PolymerElement {
   }
 
   /**
-   * @return {!{
-   *  feedbackContext: FeedbackContext,
-   *  includeSystemLogsAndHistograms: boolean,
-   *  includeScreenshot: boolean,
-   * }}
+   * @return {!Promise<!Report>}
    * @private
    */
-  createReport_() {
-    const report = {
+  async createReport_() {
+    /* @type {!Report} */
+    const report = /** @type {!Report} */ ({
       feedbackContext: {},
+      description: null,
       includeSystemLogsAndHistograms:
           this.getElement_('#sysInfoCheckbox').checked,
       includeScreenshot: this.getElement_('#screenshotCheckbox').checked &&
           !!this.getElement_('#screenshotImage').src
-    };
+    });
+
+    report.attachedFile =
+        await this.getElement_('file-attachment').getAttachedFile();
 
     const email = this.getElement_('#userEmailDropDown').value;
     if (email) {
@@ -131,6 +131,7 @@ export class ShareDataPageElement extends PolymerElement {
         url: this.getElement_('#pageUrlText').value
       };
     }
+
     return report;
   }
 
