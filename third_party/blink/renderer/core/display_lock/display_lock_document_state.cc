@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -408,6 +409,7 @@ void DisplayLockDocumentState::UnlockShapingDeferredElements() {
   if (count > 0) {
     UseCounter::Count(document_,
                       WebFeature::kDeferredShapingReshapedByForceLayout);
+    DEFERRED_SHAPING_VLOG(1) << "Unlocked all " << count << " elements.";
   }
 }
 
@@ -583,10 +585,19 @@ void DisplayLockDocumentState::UnlockShapingDeferredInclusiveDescendants(
     const LayoutObject& ancestor) {
   DCHECK(RuntimeEnabledFeatures::DeferredShapingEnabled());
   DCHECK_NE(LockedDisplayLockCount(), DisplayLockBlockingAllActivationCount());
+
+  size_t count = 0;
   for (auto& context : display_lock_contexts_) {
     if (context->IsShapingDeferred() &&
-        context->IsInclusiveDescendantOf(ancestor))
+        context->IsInclusiveDescendantOf(ancestor)) {
       context->SetRequestedState(EContentVisibility::kVisible);
+      ++count;
+    }
+  }
+  if (count > 0) {
+    DEFERRED_SHAPING_VLOG(1)
+        << "Partially unlocked " << count << " elements ==> remaining="
+        << (LockedDisplayLockCount() - DisplayLockBlockingAllActivationCount());
   }
 }
 

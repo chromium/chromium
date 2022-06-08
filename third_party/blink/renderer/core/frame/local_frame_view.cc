@@ -1936,6 +1936,8 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
       auto& context = element->EnsureDisplayLockContext();
       context.SetRequestedState(EContentVisibility::kAuto);
     }
+    DEFERRED_SHAPING_VLOG(1)
+        << "Deferred " << deferred_to_be_locked_.size() << " elements";
     deferred_to_be_locked_.resize(0);
     UseCounter::Count(document, WebFeature::kDeferredShapingWorked);
   }

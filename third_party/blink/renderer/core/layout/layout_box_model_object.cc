@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
@@ -120,6 +121,12 @@ void CollapseLoneAnonymousBlockChild(LayoutBox* parent, LayoutObject* child) {
   if (!parent_block_flow)
     return;
   parent_block_flow->CollapseAnonymousBlockChild(child_block_flow);
+}
+
+void DisableDeferredShaping(Document& doc, LocalFrameView& frame_view) {
+  frame_view.DisallowDeferredShaping();
+  UseCounter::Count(doc, WebFeature::kDeferredShapingDisabledByPositioned);
+  DEFERRED_SHAPING_VLOG(1) << "Disabled DeferredShaping by positioned objects.";
 }
 
 }  // namespace
@@ -463,9 +470,7 @@ void LayoutBoxModelObject::DisallowDeferredShapingIfNegativePositioned() const {
     // negative_vertical_position is true, the box might be painted above
     // containing_block. We need the precise position of the containing_block.
     if (!clipping_containing_block && negative_vertical_position) {
-      GetFrameView()->DisallowDeferredShaping();
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kDeferredShapingDisabledByPositioned);
+      DisableDeferredShaping(GetDocument(), *GetFrameView());
       return;
     }
 
@@ -475,9 +480,7 @@ void LayoutBoxModelObject::DisallowDeferredShapingIfNegativePositioned() const {
     if (StyleRef().Left().IsAuto() && StyleRef().Right().IsAuto() &&
         (!top.IsAuto() || !bottom.IsAuto())) {
       if (HasIfcAncestorWithinContainingBlock(*this, *containing_block)) {
-        GetFrameView()->DisallowDeferredShaping();
-        UseCounter::Count(GetDocument(),
-                          WebFeature::kDeferredShapingDisabledByPositioned);
+        DisableDeferredShaping(GetDocument(), *GetFrameView());
         return;
       }
     }
@@ -488,11 +491,8 @@ void LayoutBoxModelObject::DisallowDeferredShapingIfNegativePositioned() const {
   // If this box is not clipped by containing_block and
   // negative_vertical_position is true, the box might be painted above
   // containing_block. We need the precise position of the containing_block.
-  if (!clipping_containing_block && negative_vertical_position) {
-    GetFrameView()->DisallowDeferredShaping();
-    UseCounter::Count(GetDocument(),
-                      WebFeature::kDeferredShapingDisabledByPositioned);
-  }
+  if (!clipping_containing_block && negative_vertical_position)
+    DisableDeferredShaping(GetDocument(), *GetFrameView());
 }
 
 void LayoutBoxModelObject::InvalidateStickyConstraints() {

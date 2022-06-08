@@ -111,6 +111,13 @@ class DeferredShapingDisallowScope {
   const bool previous_value_;
 };
 
+// We can see logs with |--v=N| or |--vmodule=deferred_shaping=N| where N is a
+// verbose level, as well as the |--enable-logging=stderr| CLI argument.
+#define DEFERRED_SHAPING_VLOG(verbose_level) \
+  LAZY_STREAM(                               \
+      VLOG_STREAM(verbose_level),            \
+      ((verbose_level) <= ::logging::GetVlogLevel("deferred_shaping")))
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEFERRED_SHAPING_H_
