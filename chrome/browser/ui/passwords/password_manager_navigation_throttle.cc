@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
@@ -48,12 +47,7 @@ bool IsTriggeredOnGoogleOwnedUI(NavigationHandle* handle) {
           url::Origin::Create(GURL(password_manager::kTestingReferrerURL)))
     return false;
 
-#if BUILDFLAG(IS_ANDROID)
-  return password_manager::features::UsesUnifiedPasswordManagerUi();
-#else
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kUnifiedPasswordManagerDesktop);
-#endif
+  return true;
 }
 
 }  // namespace
