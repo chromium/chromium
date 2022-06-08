@@ -112,11 +112,11 @@ class SegmentResultProviderTest : public testing::Test {
       SegmentResultProvider::ResultState expected_state,
       absl::optional<int> expected_rank) {
     base::RunLoop wait_for_result;
-    SegmentResultProvider::GetResultOptions options;
-    options.segment_id = segment_id;
-    options.segmentation_key = "test_key";
-    options.ignore_db_scores = ignore_db_scores;
-    options.callback = base::BindOnce(
+    auto options = std::make_unique<SegmentResultProvider::GetResultOptions>();
+    options->segment_id = segment_id;
+    options->segmentation_key = "test_key";
+    options->ignore_db_scores = ignore_db_scores;
+    options->callback = base::BindOnce(
         [](SegmentResultProvider::ResultState expected_state,
            absl::optional<int> expected_rank, base::OnceClosure quit,
            std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
@@ -140,6 +140,7 @@ class SegmentResultProviderTest : public testing::Test {
       result->set_result(*score);
     }
     base::RunLoop wait_for_save;
+    segment_database_->SetBucketDuration(segment, 1, proto::TimeUnit::DAY);
     segment_database_->SaveSegmentResult(
         segment, std::move(result),
         base::BindOnce(
@@ -189,30 +190,16 @@ TEST_F(SegmentResultProviderTest, GetScoreWithoutInfo) {
 TEST_F(SegmentResultProviderTest, GetScoreFromDbWithoutResult) {
   SetSegmentResult(kTestSegment, absl::nullopt);
 
-  EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
-      .WillOnce(Return(true));
   ExpectSegmentResultOnGet(
       kTestSegment, /*ignore_db_scores=*/false,
       SegmentResultProvider::ResultState::kDatabaseScoreNotReady,
       absl::nullopt);
 }
 
-TEST_F(SegmentResultProviderTest, GetScoreNotEnoughSignals) {
-  SetSegmentResult(kTestSegment, absl::nullopt);
-
-  EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
-      .WillOnce(Return(false));
-  ExpectSegmentResultOnGet(
-      kTestSegment, /*ignore_db_scores=*/false,
-      SegmentResultProvider::ResultState::kSignalsNotCollected, absl::nullopt);
-}
-
 TEST_F(SegmentResultProviderTest, GetScoreFromDb) {
   InitializeMetadata(kTestSegment);
   SetSegmentResult(kTestSegment, kDatabaseScore);
 
-  EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
-      .WillOnce(Return(true));
   ExpectSegmentResultOnGet(
       kTestSegment, /*ignore_db_scores=*/false,
       SegmentResultProvider::ResultState::kSuccessFromDatabase, kDatabaseRank);
@@ -232,7 +219,6 @@ TEST_F(SegmentResultProviderTest, GetFromModelExecutionFailed) {
   SetSegmentResult(kTestSegment, kDatabaseScore);
 
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
-      .Times(2)
       .WillRepeatedly(Return(true));
 
   // No model available to execute.
@@ -276,7 +262,7 @@ TEST_F(SegmentResultProviderTest, GetFromModel) {
       SegmentResultProvider::ResultState::kTfliteModelScoreUsed, kTestRank);
 }
 
-TEST_F(SegmentResultProviderTest, DefaultNeedsSignal) {
+TEST_F(SegmentResultProviderTest, DefaultNeedsSignalIgnoringDbScore) {
   SetSegmentResult(kTestSegment, absl::nullopt);
   std::map<SegmentId, std::unique_ptr<ModelProvider>> p;
   p.emplace(kTestSegment, std::make_unique<TestModelProvider>(kTestSegment));
@@ -289,7 +275,7 @@ TEST_F(SegmentResultProviderTest, DefaultNeedsSignal) {
       .WillOnce(Return(false));
   ExpectSegmentResultOnGet(
       kTestSegment,
-      /*ignore_db_scores=*/false,
+      /*ignore_db_scores=*/true,
       SegmentResultProvider::ResultState::kDefaultModelSignalNotCollected,
       absl::nullopt);
 }
@@ -301,7 +287,6 @@ TEST_F(SegmentResultProviderTest, DefaultModelFailedExecution) {
   default_manager_->SetDefaultProvidersForTesting(std::move(p));
 
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
-      .WillOnce(Return(true))
       .WillOnce(Return(true));
 
   // Set error while computing features.
@@ -322,13 +307,29 @@ TEST_F(SegmentResultProviderTest, GetFromDefault) {
   default_manager_->SetDefaultProvidersForTesting(std::move(p));
 
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
-      .WillOnce(Return(true))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
       .WillOnce(RunOnceCallback<5>(/*error=*/false, std::vector<float>{{1, 2}},
                                    std::vector<float>()));
   ExpectSegmentResultOnGet(
       kTestSegment, /*ignore_db_scores=*/false,
+      SegmentResultProvider::ResultState::kDefaultModelScoreUsed, kTestRank);
+}
+
+TEST_F(SegmentResultProviderTest, GetFromDefaultIgnoringDb) {
+  SetSegmentResult(kTestSegment, absl::nullopt);
+  std::map<SegmentId, std::unique_ptr<ModelProvider>> p;
+  p.emplace(kTestSegment, std::make_unique<TestModelProvider>(kTestSegment));
+  default_manager_->SetDefaultProvidersForTesting(std::move(p));
+
+  EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
+      .WillOnce(Return(true))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<5>(/*error=*/false, std::vector<float>{{1, 2}},
+                                   std::vector<float>()));
+  ExpectSegmentResultOnGet(
+      kTestSegment, /*ignore_db_scores=*/true,
       SegmentResultProvider::ResultState::kDefaultModelScoreUsed, kTestRank);
 }
 
@@ -346,7 +347,6 @@ TEST_F(SegmentResultProviderTest, MultipleRequests) {
   // For the first request, the database does not have valid result, and default
   // provider fails execution.
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
-      .WillOnce(Return(true))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
       .WillOnce(RunOnceCallback<5>(/*error=*/false, std::vector<float>{{1, 2}},
@@ -356,8 +356,6 @@ TEST_F(SegmentResultProviderTest, MultipleRequests) {
       SegmentResultProvider::ResultState::kDefaultModelScoreUsed, kTestRank);
 
   // For the second request the database has valid result.
-  EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
-      .WillOnce(Return(true));
   EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
       .Times(0);
   ExpectSegmentResultOnGet(

@@ -57,7 +57,8 @@ Config CreateTestConfig() {
 
 class MockResultProvider : public SegmentResultProvider {
  public:
-  MOCK_METHOD1(GetSegmentResult, void(GetResultOptions&& options));
+  MOCK_METHOD1(GetSegmentResult,
+               void(std::unique_ptr<GetResultOptions> options));
 };
 
 }  // namespace
@@ -191,15 +192,15 @@ TEST_F(SegmentSelectorTest, RunSelectionOnDemand) {
   auto result_provider = std::make_unique<MockResultProvider>();
   EXPECT_CALL(*result_provider, GetSegmentResult(_))
       .Times(2)
-      .WillRepeatedly(
-          Invoke([](SegmentResultProvider::GetResultOptions&& options) {
-            EXPECT_TRUE(options.ignore_db_scores);
-            int rank = options.segment_id == kSegmentId ? 3 : 4;
+      .WillRepeatedly(Invoke(
+          [](std::unique_ptr<SegmentResultProvider::GetResultOptions> options) {
+            EXPECT_TRUE(options->ignore_db_scores);
+            int rank = options->segment_id == kSegmentId ? 3 : 4;
             auto result =
                 std::make_unique<SegmentResultProvider::SegmentResult>(
                     SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
                     rank);
-            std::move(options.callback).Run(std::move(result));
+            std::move(options->callback).Run(std::move(result));
           }));
   segment_selector_->set_segment_result_provider_for_testing(
       std::move(result_provider));

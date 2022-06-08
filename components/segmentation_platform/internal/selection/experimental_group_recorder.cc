@@ -24,13 +24,13 @@ ExperimentalGroupRecorder::ExperimentalGroupRecorder(
     : field_trial_register_(field_trial_register),
       segmentation_key_(segmentation_key),
       segment_id_(selected_segment) {
-  SegmentResultProvider::GetResultOptions options;
-  options.segmentation_key =
+  auto options = std::make_unique<SegmentResultProvider::GetResultOptions>();
+  options->segmentation_key =
       base::StrCat({segmentation_key, kSubsegmentDiscreteMappingSuffix});
-  options.segment_id = selected_segment;
-  options.callback = base::BindOnce(&ExperimentalGroupRecorder::OnGetSegment,
-                                    weak_ptr_factory_.GetWeakPtr());
-  options.ignore_db_scores = false;
+  options->segment_id = selected_segment;
+  options->callback = base::BindOnce(&ExperimentalGroupRecorder::OnGetSegment,
+                                     weak_ptr_factory_.GetWeakPtr());
+  options->ignore_db_scores = false;
   result_provider->GetSegmentResult(std::move(options));
 }
 

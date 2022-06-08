@@ -72,7 +72,6 @@ class SegmentResultProvider {
   struct GetResultOptions {
     GetResultOptions();
     ~GetResultOptions();
-    GetResultOptions& operator=(GetResultOptions&&);
 
     // The segment ID to fetch result for.
     SegmentId segment_id = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
@@ -98,7 +97,7 @@ class SegmentResultProvider {
   };
 
   // Returns latest available score for the segment.
-  virtual void GetSegmentResult(GetResultOptions&& options) = 0;
+  virtual void GetSegmentResult(std::unique_ptr<GetResultOptions> options) = 0;
 };
 
 }  // namespace segmentation_platform

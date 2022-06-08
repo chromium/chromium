@@ -228,11 +228,12 @@ void SegmentSelectorImpl::GetRankForNextSegment(
     SegmentSelectionCallback callback) {
   for (SegmentId needed_segment : config_->segment_ids) {
     if (ranks->count(needed_segment) == 0) {
-      SegmentResultProvider::GetResultOptions options;
-      options.segment_id = needed_segment;
-      options.segmentation_key = config_->segmentation_key;
-      options.ignore_db_scores = config_->on_demand_execution;
-      options.callback =
+      auto options =
+          std::make_unique<SegmentResultProvider::GetResultOptions>();
+      options->segment_id = needed_segment;
+      options->segmentation_key = config_->segmentation_key;
+      options->ignore_db_scores = config_->on_demand_execution;
+      options->callback =
           base::BindOnce(&SegmentSelectorImpl::OnGetResultForSegmentSelection,
                          weak_ptr_factory_.GetWeakPtr(), std::move(ranks),
                          input_context, std::move(callback), needed_segment);
