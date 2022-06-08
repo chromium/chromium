@@ -74,13 +74,14 @@ std::string FormatRequestParamsWithoutScope(const std::string& client_id,
       query += "&";
     query += "account_id=" + account_id;
   }
-  // For returning users who are signing in instead of signing up, we do not
-  // show the privacy policy and terms of service on the consent sheet. This
-  // field indicates in the request that whether the user has granted consent
-  // after seeing the sheet with privacy policy and terms of service.
-  std::string consent_acquired = is_sign_in ? "false" : "true";
+  // For new users signing up, we show some disclosure text to remind them about
+  // data sharing between IDP and RP. For returning users signing in, such
+  // disclosure text is not necessary. This field indicates in the request
+  // whether the user has been shown such disclosure text.
+  std::string disclosure_text_shown = is_sign_in ? "false" : "true";
   if (!query.empty())
-    query += "&consent_acquired=" + consent_acquired;
+    query += "&disclosure_text_shown=" + disclosure_text_shown;
+
   return query;
 }
 

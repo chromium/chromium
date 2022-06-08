@@ -82,13 +82,14 @@ constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
 constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
 constexpr char kClientId[] = "client_id_123";
 constexpr char kNonce[] = "nonce123";
+constexpr char kAccountId[] = "1234";
 
 // Values will be added here as token introspection is implemented.
 constexpr char kToken[] = "[not a real token]";
 constexpr char kEmptyToken[] = "";
 
 static const std::initializer_list<IdentityRequestAccount> kAccounts{{
-    "1234",             // id
+    kAccountId,         // id
     "ken@idp.example",  // email
     "Ken R. Example",   // name
     "Ken",              // given_name
@@ -160,6 +161,7 @@ struct MockConfiguration {
   RevokeResponse revoke_response;
   bool customized_dialog;
   bool wait_for_callback;
+  std::string post_request_body;
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
@@ -185,7 +187,8 @@ static const MockConfiguration kConfigurationValid{
     false /* delay_token_response */,
     RevokeResponse::kSuccess,
     false /* customized_dialog */,
-    true /* wait_for_callback */};
+    true /* wait_for_callback */,
+    "" /* post_request_body */};
 
 static const RequestExpectations kExpectationSuccess{
     RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
@@ -436,6 +439,9 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                         const std::string& account,
                         const std::string& request,
                         TokenRequestCallback callback) override {
+    if (!config_.post_request_body.empty()) {
+      EXPECT_EQ(config_.post_request_body, request);
+    }
     fetched_endpoints_ |= FetchedEndpoint::TOKEN;
     std::string delivered_token =
         config_.token_response == FetchStatus::kSuccess ? config_.token
@@ -1208,12 +1214,12 @@ TEST_F(BasicFederatedAuthRequestImplTest,
        LoginStateShouldBeSignInForReturningUser) {
   // Pretend the sharing permission has been granted for this account.
   //
-  // TODO(majidvp): Ideally we would use the kRpTestOrigin for second argument
-  // but web contents has not navigated to that URL so origin() is null in
-  // tests. We should fix this.
+  // TODO(crbug.com/1334361): Ideally we would use the kRpTestOrigin for the
+  // relying_party argument of HasSharingPermission but web contents has not
+  // navigated to that URL so origin() is null in tests.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
-                                   "1234"))
+                                   kAccountId))
       .WillOnce(Return(true));
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
@@ -1224,12 +1230,12 @@ TEST_F(BasicFederatedAuthRequestImplTest,
        LoginStateSuccessfulSignUpGrantsSharingPermission) {
   EXPECT_CALL(*mock_sharing_permission_delegate_, HasSharingPermission(_, _, _))
       .WillOnce(Return(false));
-  // TODO(majidvp): Ideally we would use the kRpTestOrigin for second argument
-  // but web contents has not navigated to that URL so origin() is null in
-  // tests. We should fix this.
+  // TODO(crbug.com/1334361): Ideally we would use the kRpTestOrigin for the
+  // relying_party argument of HasSharingPermission but web contents has not
+  // navigated to that URL so origin() is null in tests.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               GrantSharingPermission(
-                  _, url::Origin::Create(GURL(kIdpTestOrigin)), "1234"))
+                  _, url::Origin::Create(GURL(kIdpTestOrigin)), kAccountId))
       .Times(1);
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
@@ -1262,12 +1268,12 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
 
   // Pretend the sharing permission has been granted for this account.
   //
-  // TODO(majidvp): Ideally we would use the kRpTestOrigin for second argument
-  // but web contents has not navigated to that URL so origin() is null in
-  // tests. We should fix this.
+  // TODO(crbug.com/1334361): Ideally we would use the kRpTestOrigin for the
+  // relying_party argument of HasSharingPermission but web contents has not
+  // navigated to that URL so origin() is null in tests.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
-                                   "1234"))
+                                   kAccountId))
       .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_dialog_controller(),
@@ -1339,12 +1345,12 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
 
   // Pretend the sharing permission has been granted for this account.
   //
-  // TODO(majidvp): Ideally we would use the kRpTestOrigin for second argument
-  // but web contents has not navigated to that URL so origin() is null in
-  // tests. We should fix this.
+  // TODO(crbug.com/1334361): Ideally we would use the kRpTestOrigin for the
+  // relying_party argument of HasSharingPermission but web contents has not
+  // navigated to that URL so origin() is null in tests.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
-                                   "1234"))
+                                   kAccountId))
       .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_dialog_controller(),
@@ -1470,7 +1476,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   // Pretends that the sharing permission has been granted for this account.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
-                                   "1234"))
+                                   kAccountId))
       .WillOnce(Return(true));
 
   base::RunLoop ukm_loop;
@@ -1571,7 +1577,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
   // Pretends that the sharing permission has been granted for this account.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
-                                   "1234"))
+                                   kAccountId))
       .WillOnce(Return(true));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
@@ -1810,6 +1816,38 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
   ExpectNoTimingUKM("Timing.TurnaroundTime");
 
   ExpectRequestIdTokenStatusUKM(IdTokenStatus::kDisabledInSettings);
+}
+
+// Test that disclosure text is shown for first time user.
+TEST_F(BasicFederatedAuthRequestImplTest, DisclosureTextShownForFirstTimeUser) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.post_request_body =
+      "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
+      "&account_id=" + std::string(kAccountId) + "&disclosure_text_shown=true";
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+}
+
+// Test that disclosure text is not shown for returning user.
+TEST_F(BasicFederatedAuthRequestImplTest,
+       DisclosureTextNotShownForReturningUser) {
+  // Pretend the sharing permission has been granted for this account.
+  //
+  // TODO(crbug.com/1334361): Ideally we would use the kRpTestOrigin for the
+  // relying_party argument of HasSharingPermission but web contents has not
+  // navigated to that URL so origin() is null in tests.
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
+                                   kAccountId))
+      .WillOnce(Return(true));
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.post_request_body =
+      "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
+      "&account_id=" + std::string(kAccountId) + "&disclosure_text_shown=false";
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
 }
 
 }  // namespace content
