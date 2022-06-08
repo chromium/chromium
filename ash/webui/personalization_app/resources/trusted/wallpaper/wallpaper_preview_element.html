@@ -24,8 +24,13 @@
 
   #wallpaperLabel > p {
     color: var(--cros-text-color-primary);
+    display: inline-block;
     font: var(--personalization-app-label-font);
     margin: 14px 0;
+  }
+
+  iron-icon[icon='personalization:managed'] {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
   }
 
   #wallpaperButton {
@@ -58,22 +63,47 @@
 </style>
 <div class="preview-container" id="container">
   <div id="wallpaperLabel">
-    <p on-click="onClickWallpaper_" class="clickable">$i18n{wallpaperLabel}</p>
+    <template is="dom-if" if="[[showPlaceholders_(imageLoading_, image_)]]">
+      <p>$i18n{wallpaperLabel}</p>
+    </template>
+    <template is="dom-if" if="[[!showPlaceholders_(imageLoading_, image_)]]">
+      <template is="dom-if" if="[[!isPolicyControlled_(image_)]]">
+        <p on-click="onClickWallpaper_" class="clickable">
+          $i18n{wallpaperLabel}
+        </p>
     <cr-icon-button id="wallpaperButton" iron-icon="cr:chevron-right"
         role="button" on-click="onClickWallpaper_"
         class="tast-open-subpage"
         aria-label="$i18n{ariaLabelChangeWallpaper}">
     </cr-icon-button>
+      </template>
+      <template is="dom-if" if="[[isPolicyControlled_(image_)]]">
+        <p>$i18n{wallpaperLabel}</p>
+        <iron-icon icon="personalization:managed" title="$i18n{managedSetting}">
+        </iron-icon>
+      </template>
+    </template>
   </div>
-  <template is="dom-if" if="[[showPlaceholders_(isLoading_, showImage_)]]">
+  <template is="dom-if" if="[[showPlaceholders_(imageLoading_, image_)]]">
     <div id="imagePlaceholder" class="photo-images-container placeholder"></div>
   </template>
-  <template is="dom-if" if="[[showImage_]]">
+  <template is="dom-if" if="[[!showPlaceholders_(imageLoading_, image_)]]">
+    <template is="dom-if" if="[[!isPolicyControlled_(image_)]]">
       <div id="imageContainer" class="photo-images-container clickable"
           on-click="onClickWallpaper_" on-keypress="onClickWallpaper_">
-        <img src$="[[getImageSrc_(image_)]]" alt$="[[getImageAltDescription_(image_)]]">
+        <img src$="[[getImageSrc_(image_)]]"
+            alt$="[[getImageAltDescription_(image_)]]">
         <div id="shelf"></div>
       </div>
+    </template>
+    <template is="dom-if" if="[[isPolicyControlled_(image_)]]">
+      <div id="imageContainer" class="photo-images-container">
+        <img src$="[[getImageSrc_(image_)]]"
+            aria-description="$i18n{managedSetting}"
+            alt$="[[getImageAltDescription_(image_)]]">
+        <div id="shelf"></div>
+      </div>
+    </template>
   </template>
   <slot></slot>
 </div>

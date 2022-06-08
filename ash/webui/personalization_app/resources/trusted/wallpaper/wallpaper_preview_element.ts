@@ -14,6 +14,8 @@ import '../../common/common_style.css.js';
 import './trusted_style.css.js';
 import '../cros_button_style.css.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
 import {getLocalStorageAttribution, isNonEmptyArray} from '../../common/utils.js';
 import {CurrentWallpaper, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
@@ -36,20 +38,16 @@ export class WallpaperPreview extends WithPersonalizationStore {
     return {
       image_: {
         type: Object,
+        value: null,
       },
       imageLoading_: {
         type: Boolean,
       },
-      showImage_: {
-        type: Boolean,
-        computed: 'computeShowImage_(image_, imageLoading_)',
-      }
     };
   }
 
   private image_: CurrentWallpaper|null;
   private imageLoading_: boolean;
-  private showImage_: boolean;
   private wallpaperProvider_: WallpaperProviderInterface;
 
   constructor() {
@@ -71,7 +69,8 @@ export class WallpaperPreview extends WithPersonalizationStore {
   /**
    * Navigate to wallpaper collections page.
    */
-  onClickWallpaper_() {
+  private onClickWallpaper_() {
+    assert(!!this.image_ && this.image_.type !== WallpaperType.kPolicy);
     PersonalizationRouter.instance().goToRoute(Paths.COLLECTIONS);
   }
 
@@ -109,18 +108,17 @@ export class WallpaperPreview extends WithPersonalizationStore {
         this.i18n('unknownImageAttribution')}`;
   }
 
-  private computeShowImage_(image: CurrentWallpaper|null, loading: boolean):
-      boolean {
-    // Specifically check === false to avoid undefined case while component is
-    // initializing.
-    return loading === false && !!image;
+  /**
+   * Returns visible state of loading placeholder.
+   */
+  private showPlaceholders_(
+      imageLoading: boolean, image: CurrentWallpaper|null): boolean {
+    return imageLoading || !image;
   }
 
-  /**
-   * Returns hidden state of loading placeholder.
-   */
-  private showPlaceholders_(loading: boolean, showImage: boolean): boolean {
-    return loading || !showImage;
+  private isPolicyControlled_(image: CurrentWallpaper|null): boolean {
+    return !!image && image.type === WallpaperType.kPolicy;
   }
 }
+
 customElements.define(WallpaperPreview.is, WallpaperPreview);
