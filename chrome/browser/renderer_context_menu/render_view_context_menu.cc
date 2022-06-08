@@ -41,6 +41,7 @@
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -707,7 +708,12 @@ RenderViewContextMenu::RenderViewContextMenu(
       protocol_handler_registry_(
           ProtocolHandlerRegistryFactory::GetForBrowserContext(GetProfile())),
       accessibility_labels_submenu_model_(this),
-      embedder_web_contents_(GetWebContentsToUse(source_web_contents_)) {
+      embedder_web_contents_(GetWebContentsToUse(source_web_contents_)),
+      autofill_context_menu_manager_(
+          autofill::PersonalDataManagerFactory::GetForProfile(
+              GetProfile()->GetOriginalProfile()),
+          this,
+          &menu_model_) {
   if (!g_custom_id_ranges_initialized) {
     g_custom_id_ranges_initialized = true;
     SetContentCustomCommandIdRange(IDC_CONTENT_CONTEXT_CUSTOM_FIRST,
@@ -925,7 +931,7 @@ void RenderViewContextMenu::InitMenu() {
 
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_AUTOFILL)) {
-    autofill_context_menu_manager_.AppendTopLevelItems();
+    autofill_context_menu_manager_.AppendItems();
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
