@@ -1746,7 +1746,7 @@ bool IsSomeControlElementVisible(
       [&](const WebVector<WebFormControlElement>& fields) {
         return base::ranges::any_of(
             fields, [&](const WebFormControlElement& field) {
-              return IsWebElementVisible(field) &&
+              return IsWebElementFocusable(field) &&
                      base::Contains(control_elements,
                                     GetFieldRendererId(field));
             });
@@ -1810,7 +1810,7 @@ bool IsAutofillableElement(const WebFormControlElement& element) {
          IsSelectElement(element) || IsTextAreaElement(element);
 }
 
-bool IsWebElementVisible(const blink::WebElement& element) {
+bool IsWebElementFocusable(const blink::WebElement& element) {
   return element.IsFocusable();
 }
 
@@ -1948,7 +1948,7 @@ void WebFormControlElementToFormField(
       IsSelectElement(element)) {
     // The browser doesn't need to differentiate between preview and autofill.
     field->is_autofilled = element.IsAutofilled();
-    field->is_focusable = IsWebElementVisible(element);
+    field->is_focusable = IsWebElementFocusable(element);
     field->should_autocomplete = element.AutoComplete();
 
     field->text_direction = GetTextDirectionForElement(element);

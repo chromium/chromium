@@ -1214,7 +1214,7 @@ void AutofillAgent::OnProvisionallySaveForm(
               WebFormControlElement field =
                   form_util::FindFormControlElementByUniqueRendererId(
                       doc, field_id, /*form_to_be_searched =*/FormRendererId());
-              return !field.IsNull() && form_util::IsWebElementVisible(field);
+              return !field.IsNull() && form_util::IsWebElementFocusable(field);
             });
       }
       formless_elements_user_edited_.insert(

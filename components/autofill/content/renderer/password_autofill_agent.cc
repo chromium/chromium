@@ -82,7 +82,7 @@ using form_util::FindFormControlElementByUniqueRendererId;
 using form_util::FindFormControlElementsByUniqueRendererId;
 using form_util::GetFieldRendererId;
 using form_util::GetFormRendererId;
-using form_util::IsWebElementVisible;
+using form_util::IsWebElementFocusable;
 
 using mojom::FocusedFieldType;
 using mojom::SubmissionIndicatorEvent;
@@ -294,8 +294,9 @@ void AnnotateFieldsWithSignatures(
                       base::NumberToString(field_signature.value()));
     SetAttributeAsync(control_element, kDebugAttributeForFormSignature,
                       form_signature);
-    SetAttributeAsync(control_element, kDebugAttributeForVisibility,
-                      IsWebElementVisible(control_element) ? "true" : "false");
+    SetAttributeAsync(
+        control_element, kDebugAttributeForVisibility,
+        IsWebElementFocusable(control_element) ? "true" : "false");
   }
 }
 
@@ -342,7 +343,7 @@ WebInputElement FindUsernameElementPrecedingPasswordElement(
     const WebInputElement input = iter->DynamicTo<WebInputElement>();
     if (!input.IsNull() && input.IsTextField() &&
         !input.IsPasswordFieldForAutofill() && IsElementEditable(input) &&
-        IsWebElementVisible(input)) {
+        IsWebElementFocusable(input)) {
       return input;
     }
   }
@@ -1173,7 +1174,7 @@ void PasswordAutofillAgent::FireSubmissionIfFormDisappear(
                       .IsNull()) {
         fields = {field};
       }
-      if (base::ranges::any_of(fields, IsWebElementVisible))
+      if (base::ranges::any_of(fields, IsWebElementFocusable))
         return;
     }
   }
@@ -1255,7 +1256,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
   for (const WebFormElement& form : forms) {
     if (only_visible) {
       bool is_form_visible = base::ranges::any_of(form.GetFormControlElements(),
-                                                  &IsWebElementVisible);
+                                                  &IsWebElementFocusable);
       LogHTMLForm(logger.get(), Logger::STRING_FORM_FOUND_ON_PAGE, form);
       LogBoolean(logger.get(), Logger::STRING_FORM_IS_VISIBLE, is_form_visible);
 
@@ -1299,7 +1300,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
         form_util::GetUnownedAutofillableFormFieldElements(frame->GetDocument(),
                                                            nullptr);
     add_unowned_inputs =
-        base::ranges::any_of(control_elements, &IsWebElementVisible);
+        base::ranges::any_of(control_elements, &IsWebElementFocusable);
     LogBoolean(logger.get(), Logger::STRING_UNOWNED_INPUTS_VISIBLE,
                add_unowned_inputs);
   }

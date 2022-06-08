@@ -1141,7 +1141,7 @@ TEST_F(PasswordAutofillAgentTest, IsWebElementVisibleTest) {
   blink::WebVector<blink::WebFormControlElement> web_control_elements =
       forms[0].GetFormControlElements();
   ASSERT_EQ(1u, web_control_elements.size());
-  EXPECT_TRUE(form_util::IsWebElementVisible(web_control_elements[0]));
+  EXPECT_TRUE(form_util::IsWebElementFocusable(web_control_elements[0]));
 
   LoadHTML(kNonVisibleFormHTML);
   frame = GetMainFrame();
@@ -1149,7 +1149,7 @@ TEST_F(PasswordAutofillAgentTest, IsWebElementVisibleTest) {
   ASSERT_EQ(1u, forms.size());
   web_control_elements = forms[0].GetFormControlElements();
   ASSERT_EQ(1u, web_control_elements.size());
-  EXPECT_FALSE(form_util::IsWebElementVisible(web_control_elements[0]));
+  EXPECT_FALSE(form_util::IsWebElementFocusable(web_control_elements[0]));
 
   LoadHTML(kNonDisplayedFormHTML);
   frame = GetMainFrame();
@@ -1157,7 +1157,7 @@ TEST_F(PasswordAutofillAgentTest, IsWebElementVisibleTest) {
   ASSERT_EQ(1u, forms.size());
   web_control_elements = forms[0].GetFormControlElements();
   ASSERT_EQ(1u, web_control_elements.size());
-  EXPECT_FALSE(form_util::IsWebElementVisible(web_control_elements[0]));
+  EXPECT_FALSE(form_util::IsWebElementFocusable(web_control_elements[0]));
 }
 
 TEST_F(PasswordAutofillAgentTest,

@@ -168,10 +168,10 @@ bool IsAutofillableInputElement(const blink::WebInputElement& element);
 // {Text, Radiobutton, Checkbox, Select, TextArea}.
 bool IsAutofillableElement(const blink::WebFormControlElement& element);
 
-// True if this node can take focus. If layout is blocked, then the function
-// checks if the element takes up space in the layout, ie. this element or a
-// descendant has a non-empty bounding bounding client rect.
-bool IsWebElementVisible(const blink::WebElement& element);
+// True if this node can take focus. If the layout is blocked, then the function
+// checks if the element takes up space in the layout, i.e., this element or a
+// descendant has a non-empty bounding client rect.
+bool IsWebElementFocusable(const blink::WebElement& element);
 
 // Returns the form's |name| attribute if non-empty; otherwise the form's |id|
 // attribute.
