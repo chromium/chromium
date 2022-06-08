@@ -44,6 +44,9 @@ export function testHiddenFiles() {
         rootType: volumeManagerRootType,
       });
     },
+    getMediaStoreFilesOnlyFilterEnabled: () => {
+      return false;
+    },
   });
 
   const entry = (fullPath) =>

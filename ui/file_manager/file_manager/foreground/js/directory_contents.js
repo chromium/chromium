@@ -439,8 +439,6 @@ export class FileFilter extends EventTarget {
      * @private
      */
     this.filters_ = {};
-    this.setHiddenFilesVisible(false);
-    this.setAllAndroidFoldersVisible(false);
 
     /**
      * @type {!VolumeManager}
@@ -449,6 +447,22 @@ export class FileFilter extends EventTarget {
      */
     this.volumeManager_ = volumeManager;
 
+    /**
+     * Setup initial filters.
+     */
+    this.setupInitialFilters_();
+  }
+
+  /**
+   * @private
+   */
+  setupInitialFilters_() {
+    if (this.volumeManager_.getMediaStoreFilesOnlyFilterEnabled()) {
+      this.setMediaStoreRecentsFilter();
+    }
+
+    this.setHiddenFilesVisible(false);
+    this.setAllAndroidFoldersVisible(false);
     this.hideAndroidDownload();
   }
 
@@ -468,6 +482,16 @@ export class FileFilter extends EventTarget {
   removeFilter(name) {
     delete this.filters_[name];
     dispatchSimpleEvent(this, 'changed');
+  }
+
+  /**
+   * When Android MediaStore volume manager filter is enabled, filter RECENTS
+   * volume entries by allowed volume type: crbug.com/1333385/#c17
+   */
+  setMediaStoreRecentsFilter() {
+    this.addFilter('media-store-recents', entry => {
+      return entry && this.volumeManager_.getLocationInfo(entry) !== null;
+    });
   }
 
   /**
