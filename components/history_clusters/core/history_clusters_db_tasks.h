@@ -68,10 +68,6 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
                            base::Time begin_time,
                            base::Time end_time);
 
-  // Helper for `RunOnDBThread()` that removes synced visits from
-  // `annotated_visits_`.
-  void RemoveVisitsFromSync();
-
   // Helper for `RunOnDBThread()` that updates `continuation_params_` after each
   // history request preparing it for the next call. See
   // `GetHistoryQueryOptions()`'s comment regarding `now`.

@@ -86,14 +86,11 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
       break;
     // Tack on all the newly fetched visits onto our accumulator vector.
     bool limited_by_max_count = AddUnclusteredVisits(backend, options);
-
     IncrementContinuationParams(options, limited_by_max_count, now);
   }
 
   AddIncompleteVisits(backend, continuation_params_.continuation_time,
                       original_end_time);
-
-  RemoveVisitsFromSync();
 
   base::UmaHistogramTimes(
       "History.Clusters.Backend.QueryAnnotatedVisits.ThreadTime",
@@ -155,9 +152,16 @@ bool GetAnnotatedVisitsToCluster::AddUnclusteredVisits(
     history::HistoryBackend* backend,
     history::QueryOptions options) {
   bool limited_by_max_count = false;
-  base::ranges::move(
-      backend->GetAnnotatedVisits(options, &limited_by_max_count),
-      std::back_inserter(annotated_visits_));
+
+  for (const auto& visit :
+       backend->GetAnnotatedVisits(options, &limited_by_max_count)) {
+    // Filter out visits from sync.
+    // TODO(manukh): Consider allowing the clustering backend to handle sync
+    //  visits.
+    if (visit.source != history::SOURCE_SYNCED)
+      annotated_visits_.push_back(std::move(visit));
+  }
+
   return limited_by_max_count;
 }
 
@@ -233,19 +237,6 @@ void GetAnnotatedVisitsToCluster::AddIncompleteVisits(
          first_redirect.opener_visit,
          visit_source});
   }
-}
-
-void GetAnnotatedVisitsToCluster::RemoveVisitsFromSync() {
-  // Filter out visits from sync.
-  // TODO(manukh): Consider allowing the clustering backend to handle sync
-  //  visits.
-  annotated_visits_.erase(
-      base::ranges::remove_if(annotated_visits_,
-                              [](const auto& annotated_visit) {
-                                return annotated_visit.source ==
-                                       history::SOURCE_SYNCED;
-                              }),
-      annotated_visits_.end());
 }
 
 void GetAnnotatedVisitsToCluster::IncrementContinuationParams(
