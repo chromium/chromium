@@ -296,6 +296,11 @@ class TestBluetoothDelegate : public BluetoothDelegate {
                                    CredentialsCallback callback) override {
     std::move(callback).Run(DeviceCredentialsPromptResult::kCancelled, u"");
   }
+  void ShowDevicePairConfirmPrompt(content::RenderFrameHost* frame,
+                                   const std::u16string& device_identifier,
+                                   PairConfirmCallback callback) override {
+    std::move(callback).Run(DevicePairConfirmPromptResult::kCancelled);
+  }
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       RenderFrameHost* frame,
       const std::string& device_address) override {

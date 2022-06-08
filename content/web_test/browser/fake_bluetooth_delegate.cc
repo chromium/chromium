@@ -55,6 +55,13 @@ void FakeBluetoothDelegate::ShowDeviceCredentialsPrompt(
   std::move(callback).Run(DeviceCredentialsPromptResult::kCancelled, u"");
 }
 
+void FakeBluetoothDelegate::ShowDevicePairConfirmPrompt(
+    RenderFrameHost* frame,
+    const std::u16string& device_identifier,
+    PairConfirmCallback callback) {
+  std::move(callback).Run(DevicePairConfirmPromptResult::kCancelled);
+}
+
 WebBluetoothDeviceId FakeBluetoothDelegate::GetWebBluetoothDeviceId(
     RenderFrameHost* frame,
     const std::string& device_address) {

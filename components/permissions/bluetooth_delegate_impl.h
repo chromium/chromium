@@ -74,6 +74,16 @@ class BluetoothDelegateImpl : public content::BluetoothDelegate {
         content::RenderFrameHost* frame,
         const std::u16string& device_identifier,
         content::BluetoothDelegate::CredentialsCallback callback) = 0;
+
+    // Prompt the user to consent pairing device.
+    //
+    // The |device_identifier| is a localized string (device name, address,
+    // etc.) displayed to the user for identification purposes. When the
+    // prompt is complete |callback| is called with the result.
+    virtual void ShowBluetoothDevicePairConfirmDialog(
+        content::RenderFrameHost* frame,
+        const std::u16string& device_identifier,
+        content::BluetoothDelegate::PairConfirmCallback callback) = 0;
   };
 
   explicit BluetoothDelegateImpl(std::unique_ptr<Client> client);
@@ -93,6 +103,9 @@ class BluetoothDelegateImpl : public content::BluetoothDelegate {
   void ShowDeviceCredentialsPrompt(content::RenderFrameHost* frame,
                                    const std::u16string& device_identifier,
                                    CredentialsCallback callback) override;
+  void ShowDevicePairConfirmPrompt(content::RenderFrameHost* frame,
+                                   const std::u16string& device_identifier,
+                                   PairConfirmCallback callback) override;
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       content::RenderFrameHost* frame,
       const std::string& device_address) override;

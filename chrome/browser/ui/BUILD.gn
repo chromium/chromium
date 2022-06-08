@@ -5133,6 +5133,8 @@ static_library("ui") {
       sources += [
         "views/bluetooth_device_credentials_view.cc",
         "views/bluetooth_device_credentials_view.h",
+        "views/bluetooth_device_pair_confirm_view.cc",
+        "views/bluetooth_device_pair_confirm_view.h",
       ]
     }
 

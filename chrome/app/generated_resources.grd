@@ -3001,6 +3001,12 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_BLUETOOTH_DEVICE_CREDENTIALS_LABEL" desc="Label of the text prompt for Bluetooth device credentials.">
           Enter Bluetooth Passkey for device <ph name="DEVICE">$1</ph>
         </message>
+        <message name="IDS_BLUETOOTH_DEVICE_PAIR_CONFIRM_TITLE" desc="Title of the Bluetooth device pair confirmation prompt dialog.">
+          Pair Confirmation
+        </message>
+        <message name="IDS_BLUETOOTH_DEVICE_PAIR_CONFIRM_LABEL" desc="Label of the text prompt for Bluetooth device pair confirmation.">
+          Bluetooth device <ph name="DEVICE">$1</ph> would like permission to pair.
+        </message>
       </if>
 
       <!-- Content blocking strings -->
