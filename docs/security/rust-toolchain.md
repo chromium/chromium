@@ -45,7 +45,19 @@ only for Linux platforms (but [see below](#Building-on-non-Linux-platforms)
 for how to enable on other platforms).
 
 Also add `"use_rust": True` to your `.gclient` file to enable fetching required
-tools and libraries.
+tools and libraries:
+
+```
+solutions = [
+  {
+    ...
+    "custom_vars": {
+      ...
+      "use_rust": True,
+    },
+  },
+]
+```
 
 See also [Using VSCode](#using-vscode).
 
