@@ -31,6 +31,19 @@
 
 namespace ash {
 
+namespace {
+
+constexpr auto kDarkLightModeEnabledPadding =
+    gfx::Insets::TLBR(0,
+                      kBubbleHorizontalSidePaddingDip,
+                      16,
+                      kBubbleHorizontalSidePaddingDip);
+
+constexpr auto kDarkLightModeDisabledPadding =
+    gfx::Insets::VH(0, kBubbleHorizontalSidePaddingDip);
+
+}  // namespace
+
 PhoneConnectedView::PhoneConnectedView(
     phonehub::PhoneHubManager* phone_hub_manager) {
   SetID(PhoneHubViewID::kPhoneConnectedView);
@@ -42,7 +55,9 @@ PhoneConnectedView::PhoneConnectedView(
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(0, kBubbleHorizontalSidePaddingDip)));
+      features::IsDarkLightModeEnabled() ? kDarkLightModeEnabledPadding
+                                         : kDarkLightModeDisabledPadding));
+
   layout->SetDefaultFlex(1);
 
   AddChildView(std::make_unique<MultideviceFeatureOptInView>(
