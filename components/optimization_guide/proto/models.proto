@@ -277,6 +277,9 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT = 16;
   // Target for segmentation: Determine users who prefer to use Feed.
   OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER = 17;
+  // Target for segmentation: Determine whether price tracking should be shown
+  // as a contextual page action.
+  OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING = 18;
 }
 
 // The model engine versions that can be used to do model inference.

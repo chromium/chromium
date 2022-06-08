@@ -69,6 +69,8 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationChromeLowUserEngagement";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
       return "SegmentationFeedUser";
+    case proto::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING:
+      return "ContextualPageActionPriceTracking";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

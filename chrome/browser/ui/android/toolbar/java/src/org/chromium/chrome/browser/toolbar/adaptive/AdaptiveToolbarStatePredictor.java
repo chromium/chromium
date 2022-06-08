@@ -230,7 +230,7 @@ public class AdaptiveToolbarStatePredictor {
                 return AdaptiveToolbarButtonVariant.SHARE;
             case OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
                 return AdaptiveToolbarButtonVariant.VOICE;
-            case CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING:
+            case OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING:
                 return AdaptiveToolbarButtonVariant.PRICE_TRACKING;
             default:
                 return AdaptiveToolbarButtonVariant.UNKNOWN;

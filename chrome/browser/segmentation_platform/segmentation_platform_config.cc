@@ -157,7 +157,7 @@ std::unique_ptr<Config> GetConfigForPriceTracking() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kContextualPageActionsPriceTrackingKey;
   config->segment_ids = {
-      SegmentId::CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING,
+      SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
   };
   config->on_demand_execution = true;
   config->trigger = TriggerType::kPageLoad;
