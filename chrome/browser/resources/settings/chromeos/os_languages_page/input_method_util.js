@@ -169,9 +169,6 @@ const Settings = {
       {name: OptionType.ENABLE_DOUBLE_SPACE_PERIOD},
       {name: OptionType.EDIT_USER_DICT}
     ],
-    basic: [],
-    advanced: [],
-    suggestions: [],
   },
   [SettingsType.ZHUYIN_SETTINGS]: {
     physicalKeyboard: [
@@ -179,20 +176,12 @@ const Settings = {
       {name: OptionType.ZHUYIN_SELECT_KEYS},
       {name: OptionType.ZHUYIN_PAGE_SIZE},
     ],
-    virtualKeyboard: [],
-    basic: [],
-    advanced: [],
-    suggestions: [],
   },
   [SettingsType.KOREAN_SETTINGS]: {
     basic: [
       {name: OptionType.KOREAN_KEYBOARD_LAYOUT},
       {name: OptionType.KOREAN_ENABLE_SYLLABLE_INPUT},
     ],
-    virtualKeyboard: [],
-    advanced: [],
-    physicalKeyboard: [],
-    suggestions: [],
   },
   [SettingsType.PINYIN_FUZZY_SETTINGS]: {
     advanced: [{
@@ -212,10 +201,6 @@ const Settings = {
         OptionType.PINYIN_Z_ZH,
       ]
     }],
-    virtualKeyboard: [],
-    basic: [],
-    physicalKeyboard: [],
-    suggestions: [],
   },
   [SettingsType.PINYIN_SETTINGS]: {
     physicalKeyboard: [
@@ -227,34 +212,19 @@ const Settings = {
       {name: OptionType.PINYIN_CHINESE_PUNCTUATION},
     ],
     advanced: [{name: OptionType.EDIT_USER_DICT}],
-    basic: [],
-    virtualKeyboard: [],
-    suggestions: [],
   },
   [SettingsType.BASIC_SETTINGS]: {
-    physicalKeyboard: [],
     virtualKeyboard: [
       {name: OptionType.ENABLE_SOUND_ON_KEYPRESS},
     ],
-    basic: [],
-    advanced: [],
-    suggestions: [],
   },
   [SettingsType.ENGLISH_SOUTH_AFRICA_SETTINGS]: {
-    physicalKeyboard: [],
     virtualKeyboard: [
       {name: OptionType.ENABLE_SOUND_ON_KEYPRESS},
       {name: OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION},
     ],
-    basic: [],
-    advanced: [],
-    suggestions: [],
   },
   [SettingsType.SUGGESTION_SETTINGS]: {
-    physicalKeyboard: [],
-    virtualKeyboard: [],
-    basic: [],
-    advanced: [],
     suggestions:
         [{name: OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING}],
   },
@@ -299,16 +269,17 @@ export function generateOptions(engineId, predictiveWritingEnabled) {
     virtualKeyboard: [],
     suggestions: []
   };
+
   const inputMethodSettings = getInputMethodSettings(predictiveWritingEnabled);
   const engineSettings = inputMethodSettings[engineId];
   if (engineSettings) {
     engineSettings.forEach((settingType) => {
       const settings = Settings[settingType];
-      options.basic.push(...settings.basic);
-      options.advanced.push(...settings.advanced);
-      options.physicalKeyboard.push(...settings.physicalKeyboard);
-      options.virtualKeyboard.push(...settings.virtualKeyboard);
-      options.suggestions.push(...settings.suggestions);
+      options.basic.push(...(settings.basic || []));
+      options.advanced.push(...(settings.advanced || []));
+      options.physicalKeyboard.push(...(settings.physicalKeyboard || []));
+      options.virtualKeyboard.push(...(settings.virtualKeyboard || []));
+      options.suggestions.push(...(settings.suggestions || []));
     });
   }
 
