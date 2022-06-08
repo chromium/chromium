@@ -259,6 +259,48 @@ tast_disabled_tests_from_chrome_all = [
   "health.DiagnosticsRun.dns_resolution",
   "health.DiagnosticsRun.dns_resolver_present",
 
+  # This is effectively the mirror of the crrev.com/c/3691078 in CrOS.
+  # Although the change is made, because CrOS SDK is not yet ready
+  # we're still blocked by the test failures. This is the short term
+  # mitigation. We can remove this when CrOS SDK 14903 gets ready
+  # and started to be used.
+  "crostini.LaunchTerminal.buster_stable",
+  "crostini.Notify.buster_stable",
+  "crostini.PackageInfo.buster_stable",
+  "crostini.NoSharedFolder.buster_stable",
+  "crostini.LaunchBrowser.buster_stable",
+  "crostini.SecureCopyPaste.copy_wayland_buster_stable",
+  "crostini.SecureCopyPaste.copy_x11_buster_stable",
+  "crostini.PackageInstallUninstall.buster_stable",
+  "crostini.Xattrs.buster_stable",
+  "crostini.SSHFSMount.buster_stable",
+  "crostini.SecureCopyPaste.paste_wayland_buster_stable",
+  "crostini.UninstallInvalidApp.buster_stable",
+  "crostini.SecureCopyPaste.paste_x11_buster_stable",
+  "crostini.SharedFontFiles.buster_stable",
+  "crostini.CrashReporter.buster_stable",
+  "crostini.HomeDirectoryCreateFile.buster_stable",
+  "crostini.Basic.buster_stable",
+  "crostini.GPUEnabled.gpu_buster_stable",
+  "crostini.GPUEnabled.gpu_bullseye_stable",
+  "crostini.CrashReporter.bullseye_stable",
+  "crostini.Basic.bullseye_stable",
+  "crostini.HomeDirectoryCreateFile.bullseye_stable",
+  "crostini.LaunchBrowser.bullseye_stable",
+  "crostini.SecureCopyPaste.copy_wayland_bullseye_stable",
+  "crostini.SharedFontFiles.bullseye_stable",
+  "crostini.SecureCopyPaste.paste_x11_bullseye_stable",
+  "crostini.PackageInfo.bullseye_stable",
+  "crostini.Notify.bullseye_stable",
+  "crostini.UninstallInvalidApp.bullseye_stable",
+  "crostini.LaunchTerminal.bullseye_stable",
+  "crostini.NoSharedFolder.bullseye_stable",
+  "crostini.Xattrs.bullseye_stable",
+  "crostini.PackageInstallUninstall.bullseye_stable",
+  "crostini.SecureCopyPaste.paste_wayland_bullseye_stable",
+  "crostini.SSHFSMount.bullseye_stable",
+  "crostini.SecureCopyPaste.copy_x11_bullseye_stable",
+
   # http://b234699971
   "crostini.AppGeditUnshareFolder",
 ]
