@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/oobe_quick_start/verification_shapes.h"
+#include "chromeos/ash/components/oobe_quick_start/verification_shapes.h"
 
 #include "base/hash/sha1.h"
 #include "testing/gtest/include/gtest/gtest.h"

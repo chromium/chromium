@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_BOOTSTRAP_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_BOOTSTRAP_CONTROLLER_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_BOOTSTRAP_CONTROLLER_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_BOOTSTRAP_CONTROLLER_IMPL_H_
 
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_bootstrap_controller.h"
+#include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_bootstrap_controller.h"
 
 namespace device {
 class BluetoothAdapter;
@@ -58,4 +58,4 @@ class TargetDeviceBootstrapControllerImpl
 
 }  // namespace ash::quick_start
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_BOOTSTRAP_CONTROLLER_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_BOOTSTRAP_CONTROLLER_IMPL_H_

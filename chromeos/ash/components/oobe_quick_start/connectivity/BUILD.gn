@@ -1,0 +1,40 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+source_set("connectivity") {
+  deps = [
+    "//base",
+    "//device/bluetooth",
+  ]
+  sources = [
+    "target_device_bootstrap_controller.cc",
+    "target_device_bootstrap_controller.h",
+    "target_device_bootstrap_controller_impl.cc",
+    "target_device_bootstrap_controller_impl.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public_deps = [ ":connectivity" ]
+  deps = [ "//base" ]
+  sources = [
+    # Add fakes/mocks here.
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":connectivity",
+    "//base",
+    "//base/test:test_support",
+    "//device/bluetooth:mocks",
+  ]
+  sources = [ "target_device_bootstrap_controller_impl_unittest.cc" ]
+}

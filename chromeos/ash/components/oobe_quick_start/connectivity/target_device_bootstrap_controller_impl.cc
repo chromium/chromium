@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_bootstrap_controller_impl.h"
+#include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_bootstrap_controller_impl.h"
 
 #include "base/callback.h"
 #include "base/threading/sequenced_task_runner_handle.h"

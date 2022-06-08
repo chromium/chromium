@@ -3130,6 +3130,7 @@ static_library("ui") {
       "//chromeos/ash/components/dbus/upstart",
       "//chromeos/ash/components/human_presence",
       "//chromeos/ash/components/network/portal_detector",
+      "//chromeos/ash/components/oobe_quick_start",
       "//chromeos/ash/resources",
       "//chromeos/ash/services/assistant:lib",
       "//chromeos/components/local_search_service/public/cpp",
