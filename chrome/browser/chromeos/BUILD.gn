@@ -3514,6 +3514,7 @@ source_set("unit_tests") {
     "../ash/file_manager/guest_os_file_tasks_unittest.cc",
     "../ash/file_manager/io_task_controller_unittest.cc",
     "../ash/file_manager/path_util_unittest.cc",
+    "../ash/file_manager/restore_io_task_unittest.cc",
     "../ash/file_manager/speedometer_unittest.cc",
     "../ash/file_manager/trash_io_task_unittest.cc",
     "../ash/file_manager/url_util_unittest.cc",
