@@ -89,6 +89,10 @@ class GuestTos extends GuestTosScreenElementBase {
         false /* clear_anchors */);
     this.loadEulaWebview_(
         this.$.guestTosCrosEulaWebview, crosEulaUrl, true /* clear_anchors */);
+
+    // Call updateLocalizedContent() to ensure that the listeners of the click
+    // events on the ToS links are added.
+    this.updateLocalizedContent();
   }
 
   /** Initial UI State for screen */

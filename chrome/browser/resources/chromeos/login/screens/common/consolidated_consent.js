@@ -222,6 +222,10 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
       this.$.loadedContent.classList.remove('landscape-header-aligned');
       this.$.loadedContent.classList.add('landscape-vertical-centered');
     }
+
+    // Call updateLocalizedContent() to ensure that the listeners of the click
+    // events on the ToS links are added.
+    this.updateLocalizedContent();
   }
 
   applyOobeConfiguration_() {
