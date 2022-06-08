@@ -114,7 +114,7 @@ class TestImporterTest(LoggingTestCase):
             try_job_results={
                 Build('builder-a', 123): TryJobStatus('COMPLETED', 'FAILURE'),
             })
-        importer.fetch_new_expectations_and_baselines = lambda _: None
+        importer.fetch_new_expectations_and_baselines = lambda: None
         importer.fetch_wpt_override_expectations = lambda: None
         success = importer.update_expectations_for_cl()
         self.assertTrue(success)
@@ -176,7 +176,7 @@ class TestImporterTest(LoggingTestCase):
                 Build('cq-builder-b', 200): TryJobStatus(
                     'COMPLETED', 'SUCCESS'),
             })
-        importer.fetch_new_expectations_and_baselines = lambda _: None
+        importer.fetch_new_expectations_and_baselines = lambda: None
         success = importer.run_commit_queue_for_cl()
         self.assertFalse(success)
         self.assertLog([

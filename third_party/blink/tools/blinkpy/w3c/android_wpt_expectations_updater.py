@@ -52,22 +52,16 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
                 host.filesystem.read_text_file(ANDROID_DISABLED_TESTS)})
         self._baseline_expectations = TestExpectations(self.port)
         assert(len(self.options.android_product) == 1)
-        self.product = self.options.android_product[0]
-        if self.product == ANDROID_WEBLAYER:
+        product = self.options.android_product[0]
+        if product == ANDROID_WEBLAYER:
             self.testid_prefix = "ninja://weblayer/shell/android:weblayer_shell_wpt/"
-        elif self.product == ANDROID_WEBVIEW:
+            self.test_suite = "weblayer_shell_wpt"
+        elif product == ANDROID_WEBVIEW:
             self.testid_prefix = "ninja://android_webview/test:system_webview_wpt/"
-        elif self.product == CHROME_ANDROID:
+            self.test_suite = "system_webview_wpt"
+        elif product == CHROME_ANDROID:
             self.testid_prefix = "ninja://chrome/android:chrome_public_wpt/"
-
-    def _test_suite(self, builder_name, flag_specific=None):
-        if self.product == ANDROID_WEBLAYER:
-            return 'weblayer_shell_wpt'
-        elif self.product == ANDROID_WEBVIEW:
-            return 'system_webview_wpt'
-        elif self.product == CHROME_ANDROID:
-            return 'chrome_public_wpt'
-        raise ValueError('unrecognized android product: %r' % self.product)
+            self.test_suite = "chrome_public_wpt"
 
     def expectations_files(self):
         # We need to put all the Android expectation files in
@@ -187,7 +181,7 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
                 results_from_expectation = set([ResultType.Failure])
         return results_from_expectation
 
-    def write_to_test_expectations(self, test_to_results, flag_specific=None):
+    def write_to_test_expectations(self, test_to_results):
         """Each expectations file is browser specific, and currently only
         runs on pie. Therefore we do not need any configuration specifiers
         to anotate expectations for certain builds.

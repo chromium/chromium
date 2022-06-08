@@ -4,9 +4,6 @@
 
 import copy
 import json
-import sys
-
-import six
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.net.git_cl import TryJobStatus
@@ -44,17 +41,11 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 'port_name': 'test-mac-mac10.10',
                 'specifiers': ['Mac10.10', 'Release'],
                 'is_try_builder': True,
-                'steps': {
-                    'blink_web_tests (with patch)': {},
-                },
             },
             'MOCK Try Mac10.11': {
                 'port_name': 'test-mac-mac10.11',
                 'specifiers': ['Mac10.11', 'Release'],
                 'is_try_builder': True,
-                'steps': {
-                    'blink_web_tests (with patch)': {},
-                },
             },
             'MOCK Try Trusty': {
                 'port_name': 'test-linux-trusty',
@@ -62,43 +53,27 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 'main': 'tryserver.blink',
                 'has_webdriver_tests': True,
                 'is_try_builder': True,
-                'steps': {
-                    'blink_web_tests (with patch)': {},
-                },
             },
             'MOCK Try Precise': {
                 'port_name': 'test-linux-precise',
                 'specifiers': ['Precise', 'Release'],
                 'is_try_builder': True,
-                'steps': {
-                    'blink_web_tests (with patch)': {},
-                },
             },
             'MOCK Try Win10': {
                 'port_name': 'test-win-win10',
                 'specifiers': ['Win10', 'Release'],
                 'is_try_builder': True,
-                'steps': {
-                    'blink_web_tests (with patch)': {},
-                },
             },
             'MOCK Try Win7': {
                 'port_name': 'test-win-win7',
                 'specifiers': ['Win7', 'Release'],
                 'is_try_builder': True,
-                'steps': {
-                    'blink_web_tests (with patch)': {},
-                },
             },
             'MOCK highdpi': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
+                'flag_specific': 'highdpi',
                 'is_try_builder': True,
-                'steps': {
-                    'blink_web_tests (with patch)': {
-                        'flag_specific': 'highdpi',
-                    },
-                },
             },
         })
 
@@ -186,87 +161,14 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             [json.loads(result)] * 3)
 
         self.assertEqual(0, updater.run())
+
         self.assertEqual(
             host.filesystem.read_text_file(expectations_path),
             '# ====== New tests from wpt-importer added here ======\n'
             'crbug.com/626703 [ Mac10.10 ] external/wpt/test/path.html [ Timeout ]\n'
         )
 
-    def test_update_expectations_for_flag_specific(self):
-        host = self.mock_host()
-        updater = WPTExpectationsUpdater(host)
-        updater.git_cl = MockGitCL(updater.host, {
-            Build('MOCK highdpi', 123):
-            TryJobStatus('COMPLETED', 'FAILURE'),
-        })
-        flag_exp_path = updater.port.path_to_flag_specific_expectations_file(
-            'highdpi')
-        host.filesystem.write_text_file(
-            updater.port.path_to_generic_test_expectations_file(),
-            '# results: [ Timeout Crash Pass Failure Skip ]\n'
-            '# The importer should not create a redundant line in \n'
-            '# "FlagExpectations/highdpi" for this test.\n'
-            'crbug.com/123 external/wpt/test/crash1.html [ Crash ]\n')
-        host.filesystem.write_text_file(
-            flag_exp_path, '# results: [ Timeout Crash Pass Failure Skip ]\n')
-        host.results_fetcher.set_results_to_resultdb(
-            Build('MOCK highdpi', 123), [{
-                'testId':
-                'ninja://:blink_web_tests/external/wpt/test/crash1.html',
-                'variant': {
-                    'def': {
-                        'test_suite': 'blink_web_tests'
-                    },
-                },
-                'status': 'CRASH',
-            }, {
-                'testId':
-                'ninja://:blink_web_tests/external/wpt/test/crash2.html',
-                'variant': {
-                    'def': {
-                        'test_suite': 'blink_web_tests'
-                    },
-                },
-                'status': 'CRASH',
-            }, {
-                'testId':
-                'ninja://:blink_web_tests/external/wpt/test/fail.html',
-                'variant': {
-                    'def': {
-                        'test_suite': 'blink_web_tests'
-                    },
-                },
-                'status': 'FAIL',
-            }] * 3)
-
-        rebaselined_tests, exp_lines = updater.update_expectations('highdpi')
-        self.assertEqual(['external/wpt/test/fail.html'], rebaselined_tests)
-        self.assertEqual(
-            {
-                'external/wpt/test/crash2.html': [
-                    'crbug.com/626703 external/wpt/test/crash2.html [ Crash ]',
-                ],
-            }, dict(exp_lines))
-        self.assertEqual(
-            host.filesystem.read_text_file(flag_exp_path).splitlines(),
-            list(
-                map(six.ensure_text, [
-                    '# results: [ Timeout Crash Pass Failure Skip ]',
-                    '',
-                    '# ====== New tests from wpt-importer added here ======',
-                    'crbug.com/626703 external/wpt/test/crash2.html [ Crash ]',
-                ])))
-        self.assertIn([
-            sys.executable,
-            '/mock-checkout/third_party/blink/tools/blink_tool.py',
-            'rebaseline-cl',
-            '--no-trigger-jobs',
-            '--fill-missing',
-            '--flag-specific=highdpi',
-            'external/wpt/test/fail.html',
-        ], host.executive.calls)
-
-    def test_cmd_arg_include_unexpected_pass_raises_exception(self):
+    def test_cmd_arg_include_unexpected_pass_raieses_exception(self):
         host = self.mock_host()
         expectations_path = \
             host.port_factory.get().path_to_generic_test_expectations_file()
@@ -594,8 +496,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         # another one has non-match results, and the last one has no
         # corresponding line in generic test expectations.
         host = self.mock_host()
-        updater = WPTExpectationsUpdater(host)
-        port = updater.port
+        port = host.port_factory.get()
 
         # Fill in an initial value for TestExpectations
         expectations_path = port.path_to_generic_test_expectations_file()
@@ -604,6 +505,8 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             "external/wpt/reftest.html [ Failure ]\n"
             "external/wpt/test/path.html [ Failure ]\n")
         host.filesystem.write_text_file(expectations_path, content)
+
+        updater = WPTExpectationsUpdater(host)
 
         results = {
             'external/wpt/reftest.html': {
@@ -622,8 +525,10 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     expected='PASS', actual='CRASH', bug='crbug.com/test'),
             }
         }
-        line_dict, configs_to_remove = updater.create_line_dict(
-            results, 'highdpi')
+        generic_expectations = TestExpectations(port)
+        line_dict, configs_to_remove = updater.create_line_dict_for_flag_specific(
+            results,
+            generic_expectations)
         self.assertEqual(
             line_dict, {
                 'external/wpt/test/path.html': [

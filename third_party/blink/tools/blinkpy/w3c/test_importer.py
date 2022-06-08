@@ -255,7 +255,7 @@ class TestImporter(object):
         try_results = cl_status.try_job_results
 
         if try_results and self.git_cl.some_failed(try_results):
-            self.fetch_new_expectations_and_baselines(try_results)
+            self.fetch_new_expectations_and_baselines()
             self.fetch_wpt_override_expectations()
             if self.chromium_git.has_working_directory_changes():
                 # Skip slow and timeout tests so that presubmit check passes
@@ -667,7 +667,7 @@ class TestImporter(object):
             return ''
         return data['emails'][0]
 
-    def fetch_new_expectations_and_baselines(self, try_results):
+    def fetch_new_expectations_and_baselines(self):
         """Modifies expectation lines and baselines based on try job results.
 
         Assuming that there are some try job results available, this
@@ -676,27 +676,15 @@ class TestImporter(object):
 
         This is the same as invoking the `wpt-update-expectations` script.
         """
-        flag_specific_options = set()
-        for build, status in try_results.items():
-            if status.result != 'FAILURE':
-                continue
-            for step_name in self.host.builders.step_names_for_builder(
-                    build.builder_name):
-                option = self.host.builders.flag_specific_option(
-                    build.builder_name, step_name)
-                if option:
-                    flag_specific_options.add(option)
+        _log.info('Adding test expectations lines to TestExpectations.')
+        self.rebaselined_tests, self.new_test_expectations = (
+            self._expectations_updater.update_expectations())
 
-        # Update generic expectations first.
-        for option in [None] + list(flag_specific_options):
-            expectations_file = ('FlagExpectations/%s' %
-                                 option if option else 'TestExpectations')
-            _log.info('Adding test expectation lines for %s.',
-                      expectations_file)
-            rebaselined_tests, new_expectations = (
-                self._expectations_updater.update_expectations(option))
-            self.rebaselined_tests.update(rebaselined_tests)
-            self.new_test_expectations.update(new_expectations)
+        _log.info('Adding test expectations lines for disable-layout-ng')
+        self._expectations_updater.update_expectations_for_flag_specific('disable-layout-ng')
+
+        _log.info('Adding test expectations lines for disable-site-isolation-trials')
+        self._expectations_updater.update_expectations_for_flag_specific('disable-site-isolation-trials')
 
     def fetch_wpt_override_expectations(self):
         """Modifies WPT Override expectations based on try job results.
