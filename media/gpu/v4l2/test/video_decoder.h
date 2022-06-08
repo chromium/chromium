@@ -46,6 +46,14 @@ class VideoDecoder {
   bool LastDecodedFrameVisible() const { return last_decoded_frame_visible_; }
 
  protected:
+  // Helper method for converting MM21 frames to I420.
+  static void ConvertMM21ToYUV(std::vector<char>& dest_y,
+                               std::vector<char>& dest_u,
+                               std::vector<char>& dest_v,
+                               char* src_y,
+                               char* src_uv,
+                               gfx::Size size);
+
   // Parser for the IVF stream to decode.
   const std::unique_ptr<IvfParser> ivf_parser_;
 
