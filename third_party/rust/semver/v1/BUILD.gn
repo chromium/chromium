@@ -23,7 +23,11 @@ cargo_crate("lib") {
   cargo_pkg_name = "semver"
   cargo_pkg_description =
       "Parser and evaluator for Cargo's flavor of Semantic Versioning"
-  features = [ "std" ]
+  deps = [ "//third_party/rust/serde/v1:lib" ]
+  features = [
+    "serde",
+    "std",
+  ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
 }

@@ -5,8 +5,8 @@
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
-  crate_name = "serde_json"
-  epoch = "1"
+  crate_name = "cargo_platform"
+  epoch = "0.1"
   crate_type = "rlib"
 
   # Only for usage from third-party crates. Add the crate to
@@ -18,19 +18,9 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "1.0.78"
-  cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
-  cargo_pkg_name = "serde_json"
-  cargo_pkg_description = "A JSON serialization file format"
-  deps = [
-    "//third_party/rust/itoa/v1:lib",
-    "//third_party/rust/ryu/v1:lib",
-    "//third_party/rust/serde/v1:lib",
-  ]
-  features = [
-    "std",
-    "unbounded_depth",
-  ]
-  build_root = "crate/build.rs"
-  build_sources = [ "crate/build.rs" ]
+  cargo_pkg_version = "0.1.2"
+  cargo_pkg_authors = "The Cargo Project Developers"
+  cargo_pkg_name = "cargo-platform"
+  cargo_pkg_description = "Cargo's representation of a target platform."
+  deps = [ "//third_party/rust/serde/v1:lib" ]
 }

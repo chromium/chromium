@@ -5,7 +5,7 @@
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
-  crate_name = "serde_json"
+  crate_name = "camino"
   epoch = "1"
   crate_type = "rlib"
 
@@ -18,18 +18,14 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "1.0.78"
-  cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
-  cargo_pkg_name = "serde_json"
-  cargo_pkg_description = "A JSON serialization file format"
-  deps = [
-    "//third_party/rust/itoa/v1:lib",
-    "//third_party/rust/ryu/v1:lib",
-    "//third_party/rust/serde/v1:lib",
-  ]
+  cargo_pkg_version = "1.0.9"
+  cargo_pkg_authors = "Without Boats <saoirse@without.boats>, Ashley Williams <ashley666ashley@gmail.com>, Steve Klabnik <steve@steveklabnik.com>, Rain <rain@sunshowers.io>"
+  cargo_pkg_name = "camino"
+  cargo_pkg_description = "UTF-8 paths"
+  deps = [ "//third_party/rust/serde/v1:lib" ]
   features = [
-    "std",
-    "unbounded_depth",
+    "serde",
+    "serde1",
   ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]

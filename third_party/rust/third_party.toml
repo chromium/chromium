@@ -77,4 +77,5 @@ small_ctor = "0.1"
 syn = {version = "1", features = ["full"]}
 
 # Used in Rust tool for BUILD.gn generation.
+cargo_metadata = "0.14"
 toml = "0.5"
