@@ -291,7 +291,7 @@ void RunWakeActive(UpdaterScope scope, int expected_exit_code) {
 
   // Invoke the wake client of that version.
   base::CommandLine command_line(
-      GetVersionedUpdaterFolderPathForVersion(scope, active_version)
+      GetVersionedInstallDirectory(scope, active_version)
           ->Append(GetExecutableRelativePath()));
   command_line.AppendSwitch(kWakeSwitch);
   int exit_code = -1;

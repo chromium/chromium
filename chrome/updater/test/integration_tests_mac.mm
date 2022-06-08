@@ -266,7 +266,7 @@ void ExpectCandidateUninstalled(UpdaterScope scope) {
   Launchd::Type launchd_type = LaunchdType(scope);
 
   absl::optional<base::FilePath> versioned_folder_path =
-      GetVersionedUpdaterFolderPath(scope);
+      GetVersionedInstallDirectory(scope);
   EXPECT_TRUE(versioned_folder_path);
   if (versioned_folder_path)
     EXPECT_FALSE(base::PathExists(*versioned_folder_path));
