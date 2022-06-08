@@ -66,6 +66,7 @@ MessageView::MessageView(DisplayOverlayController* controller,
   label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,
                                      gfx::Font::Weight::NORMAL));
   label()->SetLineHeight(kLineHeight);
+  label()->SetMultiLine(true);
 
   SetImageLabelSpacing(kImageLabelSpace);
   image()->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
