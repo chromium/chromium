@@ -14,6 +14,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/prefs.mojom-test-utils.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/lacros/lacros_test_helper.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
@@ -146,4 +147,17 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
     listener.Reply("");
   }
   CheckPreferencesCleared();
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, OnChange) {
+  if (!IsServiceAvailable()) {
+    return;
+  }
+  if (!chromeos::IsAshVersionAtLeastForTesting(base::Version({104, 0, 5109}))) {
+    LOG(WARNING) << "Ash is too old, skipping the test.";
+    return;
+  }
+  EXPECT_TRUE(RunExtensionTest("preference/onchange_lacros", {},
+                               {.allow_in_incognito = false}))
+      << message_;
 }
