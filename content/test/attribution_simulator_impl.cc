@@ -165,7 +165,7 @@ struct AttributionReportJsonConverter {
       base::Value::List list;
       for (const auto& contribution : aggregatable_data->contributions) {
         base::Value::Dict dict;
-        dict.Set("key", HexEncodeAggregatableKey(contribution.key()));
+        dict.Set("key", HexEncodeAggregationKey(contribution.key()));
         dict.Set("value", base::checked_cast<int>(contribution.value()));
 
         list.Append(std::move(dict));

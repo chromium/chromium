@@ -31,8 +31,8 @@ namespace blink::attribution_response_parsing {
 
 namespace {
 
-bool ParseAttributionAggregatableKey(const JSONValue* value,
-                                     absl::uint128* out) {
+bool ParseAttributionAggregationKey(const JSONValue* value,
+                                    absl::uint128* out) {
   if (!value)
     return false;
 
@@ -153,7 +153,7 @@ bool ParseAggregationKeys(
   const int kExclusiveMaxHistogramValue = 101;
 
   static_assert(
-      kMaxAttributionAggregatableKeysPerSourceOrTrigger <
+      kMaxAttributionAggregationKeysPerSourceOrTrigger <
           kExclusiveMaxHistogramValue,
       "Bump the version for histogram Conversions.AggregatableKeysPerSource");
 
@@ -162,7 +162,7 @@ bool ParseAggregationKeys(
     return false;
 
   const wtf_size_t num_keys = object->size();
-  if (num_keys > kMaxAttributionAggregatableKeysPerSourceOrTrigger)
+  if (num_keys > kMaxAttributionAggregationKeysPerSourceOrTrigger)
     return false;
 
   base::UmaHistogramCounts100("Conversions.AggregatableKeysPerSource",
@@ -177,12 +177,12 @@ bool ParseAggregationKeys(
     DCHECK(value);
 
     if (key_id.CharactersSizeInBytes() >
-        kMaxBytesPerAttributionAggregatableKeyId) {
+        kMaxBytesPerAttributionAggregationKeyId) {
       return false;
     }
 
     absl::uint128 key;
-    if (!ParseAttributionAggregatableKey(value, &key))
+    if (!ParseAttributionAggregationKey(value, &key))
       return false;
 
     aggregation_keys.insert(std::move(key_id), key);
@@ -385,15 +385,15 @@ bool ParseAttributionAggregatableTriggerData(
 
     auto data = mojom::blink::AttributionAggregatableTriggerData::New();
 
-    if (!ParseAttributionAggregatableKey(object->Get("key_piece"),
-                                         &data->key_piece)) {
+    if (!ParseAttributionAggregationKey(object->Get("key_piece"),
+                                        &data->key_piece)) {
       return false;
     }
 
     JSONArray* source_keys_val = object->GetArray("source_keys");
     if (!source_keys_val ||
         source_keys_val->size() >
-            kMaxAttributionAggregatableKeysPerSourceOrTrigger) {
+            kMaxAttributionAggregationKeysPerSourceOrTrigger) {
       return false;
     }
 
@@ -407,7 +407,7 @@ bool ParseAttributionAggregatableTriggerData(
       String source_key;
       if (!source_key_val->AsString(&source_key) ||
           source_key.CharactersSizeInBytes() >
-              kMaxBytesPerAttributionAggregatableKeyId) {
+              kMaxBytesPerAttributionAggregationKeyId) {
         return false;
       }
       data->source_keys.push_back(std::move(source_key));
@@ -438,7 +438,7 @@ bool ParseAttributionAggregatableValues(
 
   const auto* object = JSONObject::Cast(json);
   if (!object ||
-      object->size() > kMaxAttributionAggregatableKeysPerSourceOrTrigger) {
+      object->size() > kMaxAttributionAggregationKeysPerSourceOrTrigger) {
     return false;
   }
 
@@ -452,7 +452,7 @@ bool ParseAttributionAggregatableValues(
     DCHECK(value);
 
     if (key_id.CharactersSizeInBytes() >
-        kMaxBytesPerAttributionAggregatableKeyId) {
+        kMaxBytesPerAttributionAggregationKeyId) {
       return false;
     }
 

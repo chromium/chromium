@@ -17,7 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
+#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -66,10 +66,10 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       WebUIDebugKey(source.debug_key()), dedup_keys,
       source.filter_data().filter_values(),
       base::MakeFlatMap<std::string, std::string>(
-          source.aggregatable_source().keys(), {},
+          source.aggregation_keys().keys(), {},
           [](const auto& key) {
             return std::make_pair(key.first,
-                                  HexEncodeAggregatableKey(key.second));
+                                  HexEncodeAggregationKey(key.second));
           }),
       attributability);
 }
@@ -133,7 +133,7 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
           [](const auto& contribution) {
             return attribution_internals::mojom::
                 AggregatableHistogramContribution::New(
-                    HexEncodeAggregatableKey(contribution.key()),
+                    HexEncodeAggregationKey(contribution.key()),
                     contribution.value());
           });
       return attribution_internals::mojom::WebUIReportData::
@@ -439,7 +439,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
     web_ui_trigger->aggregatable_triggers.emplace_back(
         absl::in_place,
         /*key_piece=*/
-        HexEncodeAggregatableKey(aggregatable_trigger_data.key_piece()),
+        HexEncodeAggregationKey(aggregatable_trigger_data.key_piece()),
         /*source_keys=*/
         std::vector<std::string>(
             aggregatable_trigger_data.source_keys().begin(),

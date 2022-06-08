@@ -14,9 +14,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
+#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -319,10 +319,9 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     return;
   }
 
-  absl::optional<AttributionAggregatableSource> aggregatable_source =
-      AttributionAggregatableSource::FromKeys(
-          std::move(data->aggregation_keys));
-  if (!aggregatable_source.has_value()) {
+  absl::optional<AttributionAggregationKeys> aggregation_keys =
+      AttributionAggregationKeys::FromKeys(std::move(data->aggregation_keys));
+  if (!aggregation_keys.has_value()) {
     RecordSourceDataHandleStatus(DataHandleStatus::kInvalidData);
     mojo::ReportBadMessage("AttributionDataHost: Invalid aggregatable source.");
     return;
@@ -341,7 +340,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
       context.source_type, data->priority, std::move(*filter_data),
       data->debug_key ? absl::make_optional(data->debug_key->value)
                       : absl::nullopt,
-      std::move(*aggregatable_source)));
+      std::move(*aggregation_keys)));
 
   attribution_manager_->HandleSource(std::move(storable_source));
 }

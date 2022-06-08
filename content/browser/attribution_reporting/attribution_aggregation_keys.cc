@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
+#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 
 #include <string>
 #include <utility>
@@ -16,22 +16,22 @@
 namespace content {
 
 // static
-absl::optional<AttributionAggregatableSource>
-AttributionAggregatableSource::FromKeys(Keys keys) {
+absl::optional<AttributionAggregationKeys> AttributionAggregationKeys::FromKeys(
+    Keys keys) {
   bool is_valid =
-      keys.size() <= blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger &&
+      keys.size() <= blink::kMaxAttributionAggregationKeysPerSourceOrTrigger &&
       base::ranges::all_of(keys, [](const auto& key) {
         return key.first.size() <=
-               blink::kMaxBytesPerAttributionAggregatableKeyId;
+               blink::kMaxBytesPerAttributionAggregationKeyId;
       });
-  return is_valid ? absl::make_optional(
-                        AttributionAggregatableSource(std::move(keys)))
-                  : absl::nullopt;
+  return is_valid
+             ? absl::make_optional(AttributionAggregationKeys(std::move(keys)))
+             : absl::nullopt;
 }
 
 // static
-absl::optional<AttributionAggregatableSource>
-AttributionAggregatableSource::Deserialize(const std::string& str) {
+absl::optional<AttributionAggregationKeys>
+AttributionAggregationKeys::Deserialize(const std::string& str) {
   proto::AttributionAggregatableSource msg;
   if (!msg.ParseFromString(str))
     return absl::nullopt;
@@ -49,30 +49,30 @@ AttributionAggregatableSource::Deserialize(const std::string& str) {
   return FromKeys(std::move(keys));
 }
 
-AttributionAggregatableSource::AttributionAggregatableSource(Keys keys)
+AttributionAggregationKeys::AttributionAggregationKeys(Keys keys)
     : keys_(std::move(keys)) {}
 
-AttributionAggregatableSource::AttributionAggregatableSource() = default;
+AttributionAggregationKeys::AttributionAggregationKeys() = default;
 
-AttributionAggregatableSource::~AttributionAggregatableSource() = default;
+AttributionAggregationKeys::~AttributionAggregationKeys() = default;
 
-AttributionAggregatableSource::AttributionAggregatableSource(
-    const AttributionAggregatableSource&) = default;
+AttributionAggregationKeys::AttributionAggregationKeys(
+    const AttributionAggregationKeys&) = default;
 
-AttributionAggregatableSource::AttributionAggregatableSource(
-    AttributionAggregatableSource&&) = default;
+AttributionAggregationKeys::AttributionAggregationKeys(
+    AttributionAggregationKeys&&) = default;
 
-AttributionAggregatableSource& AttributionAggregatableSource::operator=(
-    const AttributionAggregatableSource&) = default;
+AttributionAggregationKeys& AttributionAggregationKeys::operator=(
+    const AttributionAggregationKeys&) = default;
 
-AttributionAggregatableSource& AttributionAggregatableSource::operator=(
-    AttributionAggregatableSource&&) = default;
+AttributionAggregationKeys& AttributionAggregationKeys::operator=(
+    AttributionAggregationKeys&&) = default;
 
-std::string AttributionAggregatableSource::Serialize() const {
+std::string AttributionAggregationKeys::Serialize() const {
   proto::AttributionAggregatableSource msg;
 
   for (const auto& [id, key] : keys_) {
-    proto::AttributionAggregatableKey key_msg;
+    proto::AttributionAggregationKey key_msg;
     key_msg.set_high_bits(absl::Uint128High64(key));
     key_msg.set_low_bits(absl::Uint128Low64(key));
     (*msg.mutable_keys())[id] = std::move(key_msg);

@@ -19,7 +19,7 @@ namespace content {
 
 class AggregatableHistogramContribution;
 class AggregatableReportRequest;
-class AttributionAggregatableSource;
+class AttributionAggregationKeys;
 class AttributionAggregatableTriggerData;
 class AttributionAggregatableValues;
 class AttributionFilterData;
@@ -29,14 +29,14 @@ class AttributionReport;
 CONTENT_EXPORT std::vector<AggregatableHistogramContribution>
 CreateAggregatableHistogram(
     const AttributionFilterData& source_filter_data,
-    const AttributionAggregatableSource& source,
+    const AttributionAggregationKeys& keys,
     const std::vector<AttributionAggregatableTriggerData>&
         aggregatable_trigger_data,
     const AttributionAggregatableValues& aggregatable_values);
 
 // Returns a hex string representation of the 128-bit aggregatable key in big
 // endian order.
-CONTENT_EXPORT std::string HexEncodeAggregatableKey(absl::uint128 value);
+CONTENT_EXPORT std::string HexEncodeAggregationKey(absl::uint128 value);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

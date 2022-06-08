@@ -15,14 +15,13 @@ namespace content {
 // static
 absl::optional<AttributionAggregatableValues>
 AttributionAggregatableValues::FromValues(Values values) {
-  if (values.size() >
-      blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger) {
+  if (values.size() > blink::kMaxAttributionAggregationKeysPerSourceOrTrigger) {
     return absl::nullopt;
   }
 
   bool is_valid = base::ranges::all_of(values, [](const auto& value) {
     return value.first.size() <=
-               blink::kMaxBytesPerAttributionAggregatableKeyId &&
+               blink::kMaxBytesPerAttributionAggregationKeyId &&
            value.second > 0 &&
            value.second <= blink::kMaxAttributionAggregatableValue;
   });

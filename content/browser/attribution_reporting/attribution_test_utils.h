@@ -23,9 +23,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
+#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
@@ -464,8 +464,8 @@ class SourceBuilder {
 
   SourceBuilder& SetDedupKeys(std::vector<uint64_t> dedup_keys);
 
-  SourceBuilder& SetAggregatableSource(
-      AttributionAggregatableSource aggregatable_source);
+  SourceBuilder& SetAggregationKeys(
+      AttributionAggregationKeys aggregation_keys);
 
   StorableSource Build() const;
 
@@ -491,7 +491,7 @@ class SourceBuilder {
   // Ensure that we don't use uninitialized memory.
   StoredSource::Id source_id_{0};
   std::vector<uint64_t> dedup_keys_;
-  AttributionAggregatableSource aggregatable_source_;
+  AttributionAggregationKeys aggregation_keys_;
 };
 
 // Returns a AttributionTrigger with default data which matches the default
@@ -713,12 +713,11 @@ std::ostream& operator<<(
 std::ostream& operator<<(std::ostream& out,
                          const AttributionAggregatableValues& values);
 
-bool operator==(const AttributionAggregatableSource& a,
-                const AttributionAggregatableSource& b);
+bool operator==(const AttributionAggregationKeys& a,
+                const AttributionAggregationKeys& b);
 
-std::ostream& operator<<(
-    std::ostream& out,
-    const AttributionAggregatableSource& aggregatable_source);
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionAggregationKeys& aggregation_keys);
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(
     AttributionManager* manager);
@@ -776,8 +775,8 @@ MATCHER_P(DedupKeysAre, matcher, "") {
   return ExplainMatchResult(matcher, arg.dedup_keys(), result_listener);
 }
 
-MATCHER_P(AggregatableSourceAre, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().aggregatable_source(),
+MATCHER_P(AggregationKeysAre, matcher, "") {
+  return ExplainMatchResult(matcher, arg.common_info().aggregation_keys(),
                             result_listener);
 }
 
@@ -969,7 +968,7 @@ class TestAggregatableSourceProvider {
   SourceBuilder GetBuilder(base::Time source_time = base::Time::Now()) const;
 
  private:
-  AttributionAggregatableSource source_;
+  AttributionAggregationKeys source_;
 };
 
 TriggerBuilder DefaultAggregatableTriggerBuilder(

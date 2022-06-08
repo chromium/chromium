@@ -550,9 +550,9 @@ SourceBuilder& SourceBuilder::SetDedupKeys(std::vector<uint64_t> dedup_keys) {
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetAggregatableSource(
-    AttributionAggregatableSource aggregatable_source) {
-  aggregatable_source_ = std::move(aggregatable_source);
+SourceBuilder& SourceBuilder::SetAggregationKeys(
+    AttributionAggregationKeys aggregation_keys) {
+  aggregation_keys_ = std::move(aggregation_keys);
   return *this;
 }
 
@@ -561,7 +561,7 @@ CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
       source_event_id_, impression_origin_, conversion_origin_,
       reporting_origin_, impression_time_,
       /*expiry_time=*/impression_time_ + expiry_, source_type_, priority_,
-      filter_data_, debug_key_, aggregatable_source_);
+      filter_data_, debug_key_, aggregation_keys_);
 }
 
 StorableSource SourceBuilder::Build() const {
@@ -782,7 +782,7 @@ bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
                            source.reporting_origin(), source.impression_time(),
                            source.expiry_time(), source.source_type(),
                            source.priority(), source.filter_data(),
-                           source.debug_key(), source.aggregatable_source());
+                           source.debug_key(), source.aggregation_keys());
   };
   return tie(a) == tie(b);
 }
@@ -1106,7 +1106,7 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
              << ",filter_data=" << source.filter_data() << ",debug_key="
              << (source.debug_key() ? base::NumberToString(*source.debug_key())
                                     : "null")
-             << ",aggregatable_source=" << source.aggregatable_source() << "}";
+             << ",aggregation_keys=" << source.aggregation_keys() << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -1292,22 +1292,21 @@ AttributionFilterSizeTestCase::Map AttributionFilterSizeTestCase::AsMap()
   return map;
 }
 
-bool operator==(const AttributionAggregatableSource& a,
-                const AttributionAggregatableSource& b) {
+bool operator==(const AttributionAggregationKeys& a,
+                const AttributionAggregationKeys& b) {
   return a.keys() == b.keys();
 }
 
-std::ostream& operator<<(
-    std::ostream& out,
-    const AttributionAggregatableSource& aggregatable_source) {
-  out << "{keys=[";
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionAggregationKeys& aggregation_keys) {
+  out << "{";
 
   const char* separator = "";
-  for (const auto& [key_id, key] : aggregatable_source.keys()) {
+  for (const auto& [key_id, key] : aggregation_keys.keys()) {
     out << separator << key_id << ":" << key;
     separator = ", ";
   }
-  return out << "]}";
+  return out << "}";
 }
 
 EventTriggerDataMatcherConfig::EventTriggerDataMatcherConfig(
@@ -1390,13 +1389,13 @@ std::unique_ptr<MockDataHost> GetRegisteredDataHost(
 }
 
 TestAggregatableSourceProvider::TestAggregatableSourceProvider(size_t size) {
-  AttributionAggregatableSource::Keys::container_type keys;
+  AttributionAggregationKeys::Keys::container_type keys;
   keys.reserve(size);
   for (size_t i = 0; i < size; ++i) {
     keys.emplace_back(base::NumberToString(i), i);
   }
 
-  auto source = AttributionAggregatableSource::FromKeys(std::move(keys));
+  auto source = AttributionAggregationKeys::FromKeys(std::move(keys));
   DCHECK(source.has_value());
   source_ = std::move(*source);
 }
@@ -1405,7 +1404,7 @@ TestAggregatableSourceProvider::~TestAggregatableSourceProvider() = default;
 
 SourceBuilder TestAggregatableSourceProvider::GetBuilder(
     base::Time source_time) const {
-  return SourceBuilder(source_time).SetAggregatableSource(source_);
+  return SourceBuilder(source_time).SetAggregationKeys(source_);
 }
 
 TriggerBuilder DefaultAggregatableTriggerBuilder(

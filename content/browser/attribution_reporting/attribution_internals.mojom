@@ -100,7 +100,7 @@ struct WebUISource {
   array<uint64> dedup_keys;
   map<string, array<string>> filter_data;
   // The value is a hex-encoded unsigned 128-bit integer.
-  map<string, string> aggregatable_source;
+  map<string, string> aggregation_keys;
 
   // Union of `StorableSource::Result` and `StoredSource::AttributionLogic`,
   // and `AttributionStorage::DeactivatedSource::Reason`.

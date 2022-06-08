@@ -20,9 +20,9 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
+#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_parser_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -249,7 +249,7 @@ class AttributionSimulatorInputParser {
     int64_t priority = 0;
     base::TimeDelta expiry;
     AttributionFilterData filter_data;
-    AttributionAggregatableSource aggregatable_source;
+    AttributionAggregationKeys aggregation_keys;
 
     if (!ParseAttributionEvent(
             source_dict, "Attribution-Reporting-Register-Source",
@@ -262,7 +262,7 @@ class AttributionSimulatorInputParser {
               filter_data = ParseFilterData(
                   dict, "filter_data",
                   &AttributionFilterData::FromSourceFilterValues);
-              aggregatable_source = ParseAggregatableSource(dict);
+              aggregation_keys = ParseAggregationKeys(dict);
             }))) {
       return;
     }
@@ -277,7 +277,7 @@ class AttributionSimulatorInputParser {
             source_time,
             CommonSourceInfo::GetExpiryTime(expiry, source_time, *source_type),
             *source_type, priority, std::move(filter_data), debug_key,
-            std::move(aggregatable_source))),
+            std::move(aggregation_keys))),
         std::move(source));
   }
 
@@ -570,7 +570,7 @@ class AttributionSimulatorInputParser {
     return expiry;
   }
 
-  absl::uint128 ParseAggregatableKey(const base::Value& key_value) {
+  absl::uint128 ParseAggregationKey(const base::Value& key_value) {
     const std::string* s = key_value.GetIfString();
 
     absl::uint128 value = 0;
@@ -580,35 +580,34 @@ class AttributionSimulatorInputParser {
     return value;
   }
 
-  AttributionAggregatableSource ParseAggregatableSource(
+  AttributionAggregationKeys ParseAggregationKeys(
       const base::Value::Dict& cfg) {
     static constexpr char kKey[] = "aggregation_keys";
 
     const base::Value* value = cfg.Find(kKey);
     if (!value)
-      return AttributionAggregatableSource();
+      return AttributionAggregationKeys();
 
     auto context = PushContext(kKey);
 
     if (!EnsureDictionary(*value))
-      return AttributionAggregatableSource();
+      return AttributionAggregationKeys();
 
-    AttributionAggregatableSource::Keys::container_type keys;
+    AttributionAggregationKeys::Keys::container_type keys;
 
     for (auto [id, key_value] : value->GetDict()) {
       auto key_context = PushContext(id);
-      absl::uint128 key = ParseAggregatableKey(key_value);
+      absl::uint128 key = ParseAggregationKey(key_value);
       if (!has_error())
         keys.emplace_back(std::move(id), key);
     }
 
-    absl::optional<AttributionAggregatableSource> aggregatable_source =
-        AttributionAggregatableSource::FromKeys(std::move(keys));
-    if (!aggregatable_source)
+    absl::optional<AttributionAggregationKeys> aggregation_keys =
+        AttributionAggregationKeys::FromKeys(std::move(keys));
+    if (!aggregation_keys)
       *Error() << "invalid";
 
-    return std::move(aggregatable_source)
-        .value_or(AttributionAggregatableSource());
+    return std::move(aggregation_keys).value_or(AttributionAggregationKeys());
   }
 
   base::flat_set<std::string> ParseAggregatableTriggerDataSourceKeys(
@@ -667,7 +666,7 @@ class AttributionSimulatorInputParser {
                 auto key_context = PushContext(kKeyKeyPiece);
                 const base::Value* key_piece = trigger_dict.Find(kKeyKeyPiece);
                 if (key_piece) {
-                  key = ParseAggregatableKey(*key_piece);
+                  key = ParseAggregationKey(*key_piece);
                 } else {
                   *Error() << "must be present";
                 }

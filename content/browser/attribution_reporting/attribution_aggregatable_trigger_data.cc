@@ -20,12 +20,12 @@ AttributionAggregatableTriggerData::Create(
     AttributionFilterData filters,
     AttributionFilterData not_filters) {
   if (source_keys.size() >
-      blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger) {
+      blink::kMaxAttributionAggregationKeysPerSourceOrTrigger) {
     return absl::nullopt;
   }
 
   bool is_valid = base::ranges::all_of(source_keys, [](const auto& key) {
-    return key.size() <= blink::kMaxBytesPerAttributionAggregatableKeyId;
+    return key.size() <= blink::kMaxBytesPerAttributionAggregationKeyId;
   });
   if (!is_valid)
     return absl::nullopt;

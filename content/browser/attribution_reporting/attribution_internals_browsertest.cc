@@ -14,9 +14,9 @@
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
+#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
@@ -263,8 +263,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .SetDedupKeys({13, 17})
                .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
                    {{"a", {"b", "c"}}}))
-               .SetAggregatableSource(
-                   *AttributionAggregatableSource::FromKeys({{"a", 1}}))
+               .SetAggregationKeys(
+                   *AttributionAggregationKeys::FromKeys({{"a", 1}}))
                .BuildStored(),
            SourceBuilder(now + base::Hours(2))
                .SetActiveState(StoredSource::ActiveState::

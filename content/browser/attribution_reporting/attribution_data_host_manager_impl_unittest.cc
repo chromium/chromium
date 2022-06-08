@@ -20,7 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
+#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -124,7 +124,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
                 SourceEventIdIs(10), ConversionOriginIs(destination_origin),
                 ImpressionOriginIs(page_origin), SourcePriorityIs(20),
                 SourceDebugKeyIs(789),
-                AggregatableSourceAre(*AttributionAggregatableSource::FromKeys(
+                AggregationKeysAre(*AttributionAggregationKeys::FromKeys(
                     {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})))));
   {
     RemoteDataHost data_host_remote{.task_environment = task_environment_};
@@ -407,13 +407,12 @@ TEST_F(AttributionDataHostManagerImplTest,
   const AggregatableSourceizeTestCase kTestCases[] = {
       {"empty", true, 0, 0},
       {"max_keys", true,
-       blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger, 1},
+       blink::kMaxAttributionAggregationKeysPerSourceOrTrigger, 1},
       {"too_many_keys", false,
-       blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger + 1, 1},
-      {"max_key_size", true, 1,
-       blink::kMaxBytesPerAttributionAggregatableKeyId},
+       blink::kMaxAttributionAggregationKeysPerSourceOrTrigger + 1, 1},
+      {"max_key_size", true, 1, blink::kMaxBytesPerAttributionAggregationKeyId},
       {"excessive_key_size", false, 1,
-       blink::kMaxBytesPerAttributionAggregatableKeyId + 1},
+       blink::kMaxBytesPerAttributionAggregationKeyId + 1},
   };
 
   for (auto& test_case : kTestCases) {
@@ -834,8 +833,8 @@ TEST_F(AttributionDataHostManagerImplTest,
     size_t size;
     bool expected;
   } kTestCases[] = {
-      {blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger, true},
-      {blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger + 1, false},
+      {blink::kMaxAttributionAggregationKeysPerSourceOrTrigger, true},
+      {blink::kMaxAttributionAggregationKeysPerSourceOrTrigger + 1, false},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -1043,7 +1042,7 @@ TEST_F(AttributionDataHostManagerImplTest,
             SourceEventIdIs(10), ConversionOriginIs(destination_origin),
             ImpressionOriginIs(page_origin), SourcePriorityIs(20),
             SourceDebugKeyIs(789),
-            AggregatableSourceAre(*AttributionAggregatableSource::FromKeys(
+            AggregationKeysAre(*AttributionAggregationKeys::FromKeys(
                 {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})))));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(mock_manager_, HandleSource).Times(0);

@@ -15,9 +15,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
+#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -38,7 +38,7 @@ using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
 TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   base::HistogramTester histograms;
 
-  auto source = AttributionAggregatableSource::FromKeys(
+  auto source = AttributionAggregationKeys::FromKeys(
       {{"key1", 345}, {"key2", 5}, {"key3", 123}});
   ASSERT_TRUE(source.has_value());
 
@@ -102,7 +102,7 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
       "Conversions.AggregatableReport.NumContributionsPerReport", 2, 1);
 }
 
-TEST(AggregatableAttributionUtilsTest, HexEncodeAggregatableKey) {
+TEST(AggregatableAttributionUtilsTest, HexEncodeAggregationKey) {
   const struct {
     absl::uint128 input;
     std::string output;
@@ -119,7 +119,7 @@ TEST(AggregatableAttributionUtilsTest, HexEncodeAggregatableKey) {
   };
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(HexEncodeAggregatableKey(test_case.input), test_case.output)
+    EXPECT_EQ(HexEncodeAggregationKey(test_case.input), test_case.output)
         << test_case.input;
   }
 }
@@ -128,7 +128,7 @@ TEST(AggregatableAttributionUtilsTest,
      NoTriggerData_FilteredPercentageNotRecorded) {
   base::HistogramTester histograms;
 
-  auto source = AttributionAggregatableSource::FromKeys({{"key1", 345}});
+  auto source = AttributionAggregationKeys::FromKeys({{"key1", 345}});
   ASSERT_TRUE(source.has_value());
 
   std::vector<AggregatableHistogramContribution> contributions =

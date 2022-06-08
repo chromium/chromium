@@ -25,9 +25,9 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
+#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -1944,14 +1944,13 @@ TEST_F(AttributionStorageTest, TriggerDebugKey_RoundTrips) {
                                 TriggerDebugKeyIs(33))));
 }
 
-TEST_F(AttributionStorageTest, AttributionAggregatableSource_RoundTrips) {
-  auto aggregatable_source =
-      AttributionAggregatableSource::FromKeys({{"key", 345}});
-  ASSERT_TRUE(aggregatable_source.has_value());
+TEST_F(AttributionStorageTest, AttributionAggregationKeys_RoundTrips) {
+  auto aggregation_keys = AttributionAggregationKeys::FromKeys({{"key", 345}});
+  ASSERT_TRUE(aggregation_keys.has_value());
   storage()->StoreSource(
-      SourceBuilder().SetAggregatableSource(*aggregatable_source).Build());
+      SourceBuilder().SetAggregationKeys(*aggregation_keys).Build());
   EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(AggregatableSourceAre(*aggregatable_source)));
+              ElementsAre(AggregationKeysAre(*aggregation_keys)));
 }
 
 TEST_F(AttributionStorageTest, MaybeCreateAndStoreReport_ReturnsNewReport) {
@@ -2384,8 +2383,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           .SetReportingOrigin(origin)
           .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
               {{"abc", {"123"}}}))
-          .SetAggregatableSource(
-              *AttributionAggregatableSource::FromKeys({{"0", 1}}))
+          .SetAggregationKeys(*AttributionAggregationKeys::FromKeys({{"0", 1}}))
           .Build());
 
   AttributionTrigger trigger1(origin, origin,
@@ -2532,8 +2530,7 @@ TEST_F(AttributionStorageTest, AggregatableReportFiltering) {
       SourceBuilder()
           .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
               {{"abc", {"123"}}}))
-          .SetAggregatableSource(
-              *AttributionAggregatableSource::FromKeys({{"0", 1}}))
+          .SetAggregationKeys(*AttributionAggregationKeys::FromKeys({{"0", 1}}))
           .Build());
 
   EXPECT_EQ(MaybeCreateAndStoreAggregatableReport(

@@ -27,7 +27,7 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
+#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
@@ -316,13 +316,13 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   absl::optional<uint64_t> debug_key = ColumnUint64OrNull(statement, col++);
   int num_conversions = statement.ColumnInt(col++);
   int64_t aggregatable_budget_consumed = statement.ColumnInt64(col++);
-  absl::optional<AttributionAggregatableSource> aggregatable_source =
-      AttributionAggregatableSource::Deserialize(statement.ColumnString(col++));
+  absl::optional<AttributionAggregationKeys> aggregation_keys =
+      AttributionAggregationKeys::Deserialize(statement.ColumnString(col++));
 
   if (impression_origin.opaque() || conversion_origin.opaque() ||
       reporting_origin.opaque() || !source_type.has_value() ||
       !attribution_logic.has_value() || num_conversions < 0 ||
-      aggregatable_budget_consumed < 0 || !aggregatable_source.has_value()) {
+      aggregatable_budget_consumed < 0 || !aggregation_keys.has_value()) {
     return absl::nullopt;
   }
 
@@ -341,12 +341,11 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
 
   return StoredSourceData{
       .source = StoredSource(
-          CommonSourceInfo(source_event_id, std::move(impression_origin),
-                           std::move(conversion_origin),
-                           std::move(reporting_origin), impression_time,
-                           expiry_time, *source_type, priority,
-                           std::move(*filter_data), debug_key,
-                           std::move(*aggregatable_source)),
+          CommonSourceInfo(
+              source_event_id, std::move(impression_origin),
+              std::move(conversion_origin), std::move(reporting_origin),
+              impression_time, expiry_time, *source_type, priority,
+              std::move(*filter_data), debug_key, std::move(*aggregation_keys)),
           *attribution_logic, *active_state, source_id),
       .num_conversions = num_conversions,
       .aggregatable_budget_consumed = aggregatable_budget_consumed};
@@ -583,7 +582,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       GetSourceActiveState(event_level_active, aggregatable_active);
   DCHECK(active_state.has_value());
 
-  statement.BindBlob(15, common_info.aggregatable_source().Serialize());
+  statement.BindBlob(15, common_info.aggregation_keys().Serialize());
   statement.BindBlob(16, common_info.filter_data().Serialize());
 
   if (!statement.Run())
@@ -803,7 +802,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   }
 
   if (source_to_attribute->source.common_info()
-          .aggregatable_source()
+          .aggregation_keys()
           .keys()
           .empty()) {
     aggregatable_status = AggregatableResult::kNotRegistered;
@@ -2588,7 +2587,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogram(
           attribution_info.source.common_info().filter_data(),
-          attribution_info.source.common_info().aggregatable_source(),
+          attribution_info.source.common_info().aggregation_keys(),
           trigger.aggregatable_trigger_data(), trigger.aggregatable_values());
   if (contributions.empty())
     return AggregatableResult::kNoHistograms;

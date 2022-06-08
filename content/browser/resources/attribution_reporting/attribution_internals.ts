@@ -194,7 +194,7 @@ class Source {
   expiryTime: Date;
   sourceType: string;
   filterData: string;
-  aggregatableSource: string;
+  aggregationKeys: string;
   debugKey: string;
   dedupKeys: string;
   priority: bigint;
@@ -210,8 +210,8 @@ class Source {
     this.sourceType = sourceTypeToText(mojo.sourceType);
     this.priority = mojo.priority;
     this.filterData = JSON.stringify(mojo.filterData, null, ' ');
-    this.aggregatableSource =
-        JSON.stringify(mojo.aggregatableSource, bigintReplacer, ' ');
+    this.aggregationKeys =
+        JSON.stringify(mojo.aggregationKeys, bigintReplacer, ' ');
     this.debugKey = mojo.debugKey ? mojo.debugKey.value.toString() : '';
     this.dedupKeys = mojo.dedupKeys.join(', ');
     this.status = attributabilityToText(mojo.attributability);
@@ -241,7 +241,7 @@ class SourceTableModel extends TableModel<Source> {
       new ValueColumn<Source, bigint>('Priority', (e) => e.priority),
       new CodeColumn<Source>('Filter Data', (e) => e.filterData),
       new CodeColumn<Source>(
-          'Aggregatable Source', (e) => e.aggregatableSource),
+          'Aggregation Keys', (e) => e.aggregationKeys),
       new ValueColumn<Source, string>('Debug Key', (e) => e.debugKey),
       new ValueColumn<Source, string>('Dedup Keys', (e) => e.dedupKeys),
     ];

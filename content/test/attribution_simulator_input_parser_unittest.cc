@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
+#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -232,8 +233,8 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetExpiry(base::Days(10))  // rounded to whole number of days
                   .SetPriority(0)             // default
                   .SetDebugKey(absl::nullopt)  // default
-                  .SetAggregatableSource(
-                      *AttributionAggregatableSource::FromKeys({{"a", 1}}))
+                  .SetAggregationKeys(
+                      *AttributionAggregationKeys::FromKeys({{"a", 1}}))
                   .Build(),
               _))));
   EXPECT_THAT(error_stream.str(), IsEmpty());
