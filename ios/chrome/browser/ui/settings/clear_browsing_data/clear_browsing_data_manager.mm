@@ -223,19 +223,6 @@ static NSDictionary* imageNamesByItemTypes = @{
 
     _prefChangeRegistrar.Init(_browserState->GetPrefs());
     _prefObserverBridge.reset(new PrefObserverBridge(self));
-    _prefObserverBridge->ObserveChangesForPreference(
-        browsing_data::prefs::kDeleteTimePeriod, &_prefChangeRegistrar);
-
-    _prefObserverBridge->ObserveChangesForPreference(
-        browsing_data::prefs::kDeleteBrowsingHistory, &_prefChangeRegistrar);
-    _prefObserverBridge->ObserveChangesForPreference(
-        browsing_data::prefs::kDeleteCookies, &_prefChangeRegistrar);
-    _prefObserverBridge->ObserveChangesForPreference(
-        browsing_data::prefs::kDeleteCache, &_prefChangeRegistrar);
-    _prefObserverBridge->ObserveChangesForPreference(
-        browsing_data::prefs::kDeletePasswords, &_prefChangeRegistrar);
-    _prefObserverBridge->ObserveChangesForPreference(
-        browsing_data::prefs::kDeleteFormData, &_prefChangeRegistrar);
   }
   return self;
 }
@@ -250,6 +237,26 @@ static NSDictionary* imageNamesByItemTypes = @{
       toSectionWithIdentifier:SectionIdentifierTimeRange];
   [self addClearBrowsingDataItemsToModel:model];
   [self addSyncProfileItemsToModel:model];
+}
+
+- (void)prepare {
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteTimePeriod, &_prefChangeRegistrar);
+
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteBrowsingHistory, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteCookies, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteCache, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeletePasswords, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteFormData, &_prefChangeRegistrar);
+}
+
+- (void)disconnect {
+  _prefChangeRegistrar.RemoveAll();
 }
 
 // Add items for types of browsing data to clear.

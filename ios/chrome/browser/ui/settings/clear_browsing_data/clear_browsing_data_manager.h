@@ -79,6 +79,12 @@ enum ClearBrowsingDataItemType {
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Call this method before actually using the data manager.
+- (void)prepare;
+
+// Call this method when data manager is not used anymore.
+- (void)disconnect;
+
 // Fills `model` with appropriate sections and items.
 - (void)loadModel:(ListModel*)model;
 

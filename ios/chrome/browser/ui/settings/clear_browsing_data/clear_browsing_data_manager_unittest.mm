@@ -106,6 +106,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
                        browsingDataRemover:remover_.get()
         browsingDataCounterWrapperProducer:
             [[FakeBrowsingDataCounterWrapperProducer alloc] init]];
+    [manager_ prepare];
 
     test_sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForBrowserState(browser_state_.get()));
@@ -113,6 +114,8 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
     time_range_pref_.Init(browsing_data::prefs::kDeleteTimePeriod,
                           browser_state_->GetPrefs());
   }
+
+  ~ClearBrowsingDataManagerTest() override { [manager_ disconnect]; }
 
   ChromeIdentity* fake_identity() {
     return account_manager_service_->GetDefaultIdentity();
