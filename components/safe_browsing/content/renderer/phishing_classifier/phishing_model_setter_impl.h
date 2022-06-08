@@ -8,6 +8,7 @@
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace safe_browsing {
 
@@ -34,9 +35,14 @@ class PhishingModelSetterImpl : public mojom::PhishingModelSetter,
   void SetPhishingFlatBufferModel(
       base::ReadOnlySharedMemoryRegion flatbuffer_region,
       base::File tflite_visual_model) override;
+  void SetTestObserver(
+      mojo::PendingRemote<mojom::PhishingModelSetterTestObserver> observer,
+      SetTestObserverCallback callback) override;
 
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::PhishingModelSetter> receiver);
+
+  mojo::Remote<mojom::PhishingModelSetterTestObserver> observer_for_testing_;
 
   mojo::AssociatedReceiver<mojom::PhishingModelSetter> receiver_{this};
 };

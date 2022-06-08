@@ -68,6 +68,8 @@ class ClientSidePhishingModel {
   void ClearMappedRegionForTesting();
   // Get flatbuffer memory address.
   void* GetFlatBufferMemoryAddressForTesting();
+  // Notifies all the callbacks of a change in model.
+  void NotifyCallbacksOfUpdateForTesting();
 
   // Called to check the command line and maybe override the current model.
   void MaybeOverrideModel();

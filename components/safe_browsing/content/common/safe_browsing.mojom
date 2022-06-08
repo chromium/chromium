@@ -152,4 +152,16 @@ interface PhishingModelSetter {
   // to classify the appearance of pages.
   SetPhishingFlatBufferModel(mojo_base.mojom.ReadOnlySharedMemoryRegion region,
                              mojo_base.mojom.ReadOnlyFile? tflite_model);
+
+  // This is used in tests to ensure that the model has been set before sending
+  // IPCs to start classification.
+  SetTestObserver(pending_remote<PhishingModelSetterTestObserver>? observer) =>
+    ();
+};
+
+// This is used in tests to ensure that the model has been set before sending
+// IPCs to start classification.
+interface PhishingModelSetterTestObserver {
+  // Called whenever the phishing model has changed.
+  PhishingModelUpdated();
 };
