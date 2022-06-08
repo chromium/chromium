@@ -69,14 +69,6 @@ struct HarfBuzzFontData final
     }
   }
 
-  float SizePerUnit(const SkTypeface& typeface) const {
-    if (size_per_unit_ != kInvalidFallbackMetricsValue)
-      return size_per_unit_;
-    int units_per_em = typeface.getUnitsPerEm();
-    size_per_unit_ = font_.getSize() / units_per_em;
-    return size_per_unit_;
-  }
-
   scoped_refptr<OpenTypeVerticalData> VerticalData() {
     if (!vertical_data_) {
       DCHECK_NE(ascent_fallback_, kInvalidFallbackMetricsValue);
@@ -96,7 +88,7 @@ struct HarfBuzzFontData final
 
   // Capture these scaled fallback metrics from FontPlatformData so that a
   // OpenTypeVerticalData object can be constructed from them when needed.
-  mutable float size_per_unit_;
+  float size_per_unit_;
   float ascent_fallback_;
   float height_fallback_;
 
