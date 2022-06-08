@@ -340,7 +340,7 @@
 <translation id="1338631221631423366">Páruje sa…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> chcete otvoriť túto aplikáciu.</translation>
 <translation id="1338950911836659113">Prebieha odstraňovanie...</translation>
-<translation id="1339009753652684748">Aktivujte svojho Asistenta vyslovením výrazu „Hey Google“. Ak chcete šetriť batériu, vyberte Zapnutý (odporúčané). Váš Asistent bude reagovať iba vtedy, keď bude zariadenie pripojené do zásuvky alebo sa bude nabíjať.</translation>
+<translation id="1339009753652684748">Aktivujte svojho Asistenta vyslovením výrazu „Ok, Google“. Ak chcete šetriť batériu, vyberte Zapnutý (odporúčané). Váš Asistent bude reagovať iba vtedy, keď bude zariadenie pripojené do zásuvky alebo sa bude nabíjať.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Zálohovať médiá zo zariadenia pomocou aplikácie Súbory</translation>
 <translation id="1341988552785875222">Aktuálnu tapetu nastavila aplikácia <ph name="APP_NAME" />. Je možné, že pred výberom inej tapety bude nutné aplikáciu <ph name="APP_NAME" /> odinštalovať.</translation>
@@ -3868,7 +3868,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4742970037960872810">Odstrániť zvýraznenie</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Ako aktualizovať aplikácie<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Zapnúť zvuk webu}few{Zapnúť zvuk webov}many{Zapnúť zvuk webov}other{Zapnúť zvuk webov}}</translation>
-<translation id="474609389162964566">Aktivujte svojho Asistenta príkazom „Hey Google“</translation>
+<translation id="474609389162964566">Aktivujte svojho Asistenta príkazom „Ok, Google“</translation>
 <translation id="4746351372139058112">Správy</translation>
 <translation id="4748783296226936791">Weby sa zvyčajne pripájajú k zariadeniam HID, aby mohli poskytovať funkcie používajúce nezvyčajné klávesnice, herné ovládače a iné zariadenia</translation>
 <translation id="4750185073185658673">Skontrolujte vo svojom telefóne niekoľko ďalších povolení. Nezabudnite mať zapnuté rozhranie Bluetooth aj sieť Wi‑Fi.</translation>
@@ -5691,7 +5691,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6583328141350416497">Pokračovať v sťahovaní</translation>
 <translation id="6584878029876017575">Podpisovanie s neobmedzenou platnosťou spoločnosti Microsoft</translation>
 <translation id="6586099239452884121">Hosťovské prehliadanie</translation>
-<translation id="6586213706115310390">Aktivujte svojho Asistenta vyslovením výrazu „Hey Google“.</translation>
+<translation id="6586213706115310390">Aktivujte svojho Asistenta vyslovením výrazu „Ok, Google“.</translation>
 <translation id="6586451623538375658">Zameniť primárne tlačidlo myši</translation>
 <translation id="6587958707401001932">Vybrať predvolené nastavenie</translation>
 <translation id="6588043302623806746">Používať zabezpečené DNS</translation>

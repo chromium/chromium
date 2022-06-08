@@ -278,7 +278,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7975919845073681630">Como esta es una instalación secundaria de Chromium, no puede establecerse como tu navegador predeterminado.</translation>
 <translation id="7982481011030453202">Si no ves una opción de configuración en esta página, consulta la <ph name="LINK_BEGIN" />
       configuración de Chromium OS<ph name="LINK_END" /></translation>
-<translation id="7997934263947464652">Extensiones, apps y temas de fuentes desconocidas que pueden dañar tu dispositivo. Chrome recomienda instalarlas únicamente desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
+<translation id="7997934263947464652">Las extensiones, apps y temas de fuentes desconocidas pueden dañar tu dispositivo. Chromium recomienda instalarlas únicamente desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Una vez que Chromium tenga acceso, los sitios web podrán solicitarte acceso.</translation>
 <translation id="8045118833343856403">No se accedió a ningún perfil de Chromium con las siguientes cuentas. Si quieres usar una cuenta en otro perfil, primero quita ese perfil.</translation>
 <translation id="8105840573057009683">Chromium necesita permiso de acceso a la ubicación para este sitio.</translation>
