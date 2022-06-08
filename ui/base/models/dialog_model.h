@@ -240,9 +240,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     // Adds a menu item. See DialogModel::AddMenuItem().
     Builder& AddMenuItem(ImageModel icon,
                          std::u16string label,
-                         base::RepeatingCallback<void(int)> callback) {
+                         base::RepeatingCallback<void(int)> callback,
+                         const DialogModelMenuItem::Params& params =
+                             DialogModelMenuItem::Params()) {
       model_->AddMenuItem(std::move(icon), std::move(label),
-                          std::move(callback));
+                          std::move(callback), params);
       return *this;
     }
 
@@ -310,7 +312,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   // Adds a menu item at the end of the dialog model.
   void AddMenuItem(ImageModel icon,
                    std::u16string label,
-                   base::RepeatingCallback<void(int)> callback);
+                   base::RepeatingCallback<void(int)> callback,
+                   const DialogModelMenuItem::Params& params =
+                       DialogModelMenuItem::Params());
 
   // Adds a separator at the end of the dialog model.
   void AddSeparator();

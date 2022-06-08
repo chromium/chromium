@@ -50,8 +50,10 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
         IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
         url)));
     for (auto* action : actions) {
-      dialog_builder.AddCustomField(CreateExtensionItem(
-          action->GetActionName(), GetIcon(action, web_contents)));
+      dialog_builder.AddMenuItem(
+          GetIcon(action, web_contents), action->GetActionName(),
+          base::DoNothing(),
+          ui::DialogModelMenuItem::Params().set_is_enabled(false));
     }
   }
 

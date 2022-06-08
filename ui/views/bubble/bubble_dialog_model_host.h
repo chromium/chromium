@@ -128,6 +128,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   void AddOrUpdateBodyText(ui::DialogModelBodyText* model_field);
   void AddOrUpdateCheckbox(ui::DialogModelCheckbox* model_field);
   void AddOrUpdateCombobox(ui::DialogModelCombobox* model_field);
+  void AddOrUpdateMenuItem(ui::DialogModelMenuItem* model_field);
   void AddOrUpdateSeparator(ui::DialogModelField* model_field);
   void AddOrUpdateTextfield(ui::DialogModelTextfield* model_field);
 

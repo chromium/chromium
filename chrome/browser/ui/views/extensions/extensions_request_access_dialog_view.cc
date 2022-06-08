@@ -55,8 +55,10 @@ void ShowExtensionsRequestAccessDialogView(
     dialog_builder.SetIcon(GetIcon(actions[0], web_contents));
   } else {
     for (auto* action : actions) {
-      dialog_builder.AddCustomField(CreateExtensionItem(
-          action->GetActionName(), GetIcon(action, web_contents)));
+      dialog_builder.AddMenuItem(
+          GetIcon(action, web_contents), action->GetActionName(),
+          base::DoNothing(),
+          ui::DialogModelMenuItem::Params().set_is_enabled(false));
     }
   }
 

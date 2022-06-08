@@ -17,10 +17,6 @@ class Browser;
 class ToolbarActionViewController;
 class ExtensionsToolbarContainer;
 
-std::unique_ptr<views::BubbleDialogModelHost::CustomView> CreateExtensionItem(
-    const std::u16string& name,
-    const ui::ImageModel& icon);
-
 // Returns the extensions toolbar container in `browser` or `parent`, if
 // existent.
 ExtensionsToolbarContainer* GetExtensionsToolbarContainer(Browser* browser);

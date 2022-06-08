@@ -54,8 +54,6 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
     case ui::DialogModelField::kCombobox:
       return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kMenuItem:
-      // TODO(crbug.com/1324298): Implement.
-      NOTREACHED();
       return BubbleDialogModelHost::FieldType::kMenuItem;
     case ui::DialogModelField::kSeparator:
       return BubbleDialogModelHost::FieldType::kMenuItem;
@@ -490,8 +488,7 @@ void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
       AddOrUpdateCombobox(field->AsCombobox(GetPassKey()));
       break;
     case ui::DialogModelField::kMenuItem:
-      // TODO(crbug.com/1324298): Implement.
-      NOTREACHED();
+      AddOrUpdateMenuItem(field->AsMenuItem(GetPassKey()));
       break;
     case ui::DialogModelField::kSeparator:
       AddOrUpdateSeparator(field);
@@ -647,6 +644,35 @@ void BubbleDialogModelHost::AddOrUpdateCombobox(
   const gfx::FontList& font_list = combobox->GetFontList();
   AddViewForLabelAndField(model_field, model_field->label(GetPassKey()),
                           std::move(combobox), font_list);
+}
+
+void BubbleDialogModelHost::AddOrUpdateMenuItem(
+    ui::DialogModelMenuItem* model_field) {
+  // TODO(pbos): Handle updating existing field.
+
+  // TODO(crbug.com/1324298): Implement this for enabled items. Sorry!
+  DCHECK(!model_field->is_enabled(GetPassKey()));
+
+  auto item = std::make_unique<LabelButton>(
+      base::BindRepeating(
+          [](base::PassKey<ui::DialogModelHost> pass_key,
+             ui::DialogModelMenuItem* model_field, const ui::Event& event) {
+            model_field->OnActivated(pass_key, event.flags());
+          },
+          GetPassKey(), model_field),
+      model_field->label(GetPassKey()));
+  item->SetImageModel(Button::STATE_NORMAL, model_field->icon(GetPassKey()));
+  // TODO(pbos): Move DISTANCE_CONTROL_LIST_VERTICAL to
+  // views::LayoutProvider and replace "12" here. See below for another "12" use
+  // that also needs to be replaced.
+  item->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(12 / 2, LayoutProvider::Get()->GetDistanceMetric(
+                                  DISTANCE_BUTTON_HORIZONTAL_PADDING))));
+
+  item->SetEnabled(model_field->is_enabled(GetPassKey()));
+
+  DialogModelHostField info{model_field, item.get(), nullptr};
+  AddDialogModelHostField(std::move(item), info);
 }
 
 void BubbleDialogModelHost::AddOrUpdateSeparator(

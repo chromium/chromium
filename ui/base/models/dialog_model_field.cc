@@ -243,15 +243,20 @@ void DialogModelCombobox::OnPerformAction(base::PassKey<DialogModelHost>) {
     callback_.Run();
 }
 
+DialogModelMenuItem::Params::Params() = default;
+DialogModelMenuItem::Params::~Params() = default;
+
 DialogModelMenuItem::DialogModelMenuItem(
     base::PassKey<DialogModel> pass_key,
     DialogModel* model,
     ImageModel icon,
     std::u16string label,
-    base::RepeatingCallback<void(int)> callback)
+    base::RepeatingCallback<void(int)> callback,
+    const DialogModelMenuItem::Params& params)
     : DialogModelField(pass_key, model, kMenuItem, ElementIdentifier(), {}),
       icon_(std::move(icon)),
       label_(std::move(label)),
+      is_enabled_(params.is_enabled_),
       callback_(std::move(callback)) {}
 
 DialogModelMenuItem::~DialogModelMenuItem() = default;

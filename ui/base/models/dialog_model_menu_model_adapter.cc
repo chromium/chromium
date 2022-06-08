@@ -95,7 +95,12 @@ ButtonMenuItemModel* DialogModelMenuModelAdapter::GetButtonMenuItemAt(
 
 bool DialogModelMenuModelAdapter::IsEnabledAt(int index) const {
   DCHECK_LT(index, GetItemCount());
-  return GetField(index)->type(GetPassKey()) != DialogModelField::kSeparator;
+
+  const DialogModelField* const field = GetField(index);
+  if (field->type(GetPassKey()) == DialogModelField::kSeparator)
+    return false;
+
+  return field->AsMenuItem(GetPassKey())->is_enabled(GetPassKey());
 }
 
 MenuModel* DialogModelMenuModelAdapter::GetSubmenuModelAt(int index) const {

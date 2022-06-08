@@ -28,26 +28,6 @@ ExtensionsToolbarContainer* GetExtensionsToolbarContainer(
 
 }  // namespace
 
-std::unique_ptr<views::BubbleDialogModelHost::CustomView> CreateExtensionItem(
-    const std::u16string& name,
-    const ui::ImageModel& icon) {
-  const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  const gfx::Insets content_insets = provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kText, views::DialogContentType::kText);
-
-  return std::make_unique<views::BubbleDialogModelHost::CustomView>(
-      views::Builder<views::FlexLayoutView>()
-          .SetOrientation(views::LayoutOrientation::kHorizontal)
-          .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-          .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-              0, content_insets.left(), 0, content_insets.right())))
-          .AddChildren(views::Builder<views::ImageView>().SetImage(icon),
-                       views::Builder<views::Label>().SetText(name))
-          .Build(),
-      views::BubbleDialogModelHost::FieldType::kMenuItem);
-}
-
 ExtensionsToolbarContainer* GetExtensionsToolbarContainer(Browser* browser) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
