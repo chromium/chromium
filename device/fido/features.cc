@@ -37,6 +37,6 @@ extern const base::Feature kU2fPermissionPrompt{
 
 extern const base::Feature kWebAuthnGoogleCorpRemoteDesktopClientPrivilege{
     "WebAuthenticationGoogleCorpRemoteDesktopClientPrivilege",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace device
