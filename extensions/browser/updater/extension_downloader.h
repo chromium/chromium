@@ -304,7 +304,9 @@ class ExtensionDownloader {
   // whether the lookup in cache is performed after the manifest is fetched or
   // due to failure while fetching or parsing manifest.
   absl::optional<base::FilePath> GetCachedExtension(
-      const ExtensionFetch& fetch_data,
+      const ExtensionId& id,
+      const std::string& package_hash,
+      const base::Version& expected_version,
       bool manifest_fetch_failed);
 
   // Begins (or queues up) download of an updated extension. |info| represents

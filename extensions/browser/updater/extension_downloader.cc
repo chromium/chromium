@@ -649,15 +649,17 @@ bool ExtensionDownloader::TryFetchingExtensionsFromCache(
     // have expected version and expected hash. Thus, passing empty hash and
     // version would not be a problem as we only check for the expected hash and
     // version if we have them.
-    auto extension_fetch_data(std::make_unique<ExtensionFetch>(
-        task.id, fetch_data->base_url(), /*hash not fetched*/ "",
-        /*version not fetched*/ "", fetch_data->request_ids(),
-        fetch_data->fetch_priority()));
-    absl::optional<base::FilePath> cached_crx_path = GetCachedExtension(
-        *extension_fetch_data, /*manifest_fetch_failed*/ true);
+    absl::optional<base::FilePath> cached_crx_path =
+        GetCachedExtension(task.id, /*hash not fetched*/ "",
+                           /*version not fetched*/ base::Version(),
+                           /*manifest_fetch_failed*/ true);
     if (cached_crx_path) {
       delegate_->OnExtensionDownloadStageChanged(
           task.id, ExtensionDownloaderDelegate::Stage::FINISHED);
+      auto extension_fetch_data(std::make_unique<ExtensionFetch>(
+          task.id, fetch_data->base_url(), /*hash not fetched*/ "",
+          /*version not fetched*/ "", fetch_data->request_ids(),
+          fetch_data->fetch_priority()));
       NotifyDelegateDownloadFinished(std::move(extension_fetch_data), true,
                                      cached_crx_path.value(), false);
       extensions_fetched_from_cache.insert(task.id);
@@ -1018,44 +1020,42 @@ void ExtensionDownloader::DetermineUpdates(
 }
 
 absl::optional<base::FilePath> ExtensionDownloader::GetCachedExtension(
-    const ExtensionFetch& fetch_data,
+    const ExtensionId& id,
+    const std::string& package_hash,
+    const base::Version& expected_version,
     bool manifest_fetch_failed) {
   if (!extension_cache_) {
     delegate_->OnExtensionDownloadCacheStatusRetrieved(
-        fetch_data.id,
-        ExtensionDownloaderDelegate::CacheStatus::CACHE_DISABLED);
+        id, ExtensionDownloaderDelegate::CacheStatus::CACHE_DISABLED);
     return absl::nullopt;
   }
 
   std::string version;
-  if (!extension_cache_->GetExtension(fetch_data.id, fetch_data.package_hash,
-                                      nullptr, &version)) {
+  if (!extension_cache_->GetExtension(id, package_hash, nullptr, &version)) {
     delegate_->OnExtensionDownloadCacheStatusRetrieved(
-        fetch_data.id, ExtensionDownloaderDelegate::CacheStatus::CACHE_MISS);
+        id, ExtensionDownloaderDelegate::CacheStatus::CACHE_MISS);
     return absl::nullopt;
   }
   // If manifest fetch is failed, we need not verify the version of the cache as
   // we will try to install the version present in the cache.
-  if (!manifest_fetch_failed && fetch_data.version != base::Version(version)) {
+  if (!manifest_fetch_failed && expected_version != base::Version(version)) {
     delegate_->OnExtensionDownloadCacheStatusRetrieved(
-        fetch_data.id,
-        ExtensionDownloaderDelegate::CacheStatus::CACHE_OUTDATED);
+        id, ExtensionDownloaderDelegate::CacheStatus::CACHE_OUTDATED);
     return absl::nullopt;
   }
 
   delegate_->OnExtensionDownloadCacheStatusRetrieved(
-      fetch_data.id, manifest_fetch_failed
-                         ? ExtensionDownloaderDelegate::CacheStatus::
-                               CACHE_HIT_ON_MANIFEST_FETCH_FAILURE
-                         : ExtensionDownloaderDelegate::CacheStatus::CACHE_HIT);
+      id, manifest_fetch_failed
+              ? ExtensionDownloaderDelegate::CacheStatus::
+                    CACHE_HIT_ON_MANIFEST_FETCH_FAILURE
+              : ExtensionDownloaderDelegate::CacheStatus::CACHE_HIT);
 
   base::FilePath crx_path;
   // Now get .crx file path.
   // TODO(https://crbug.com/1018271#c2) This has a  side-effect in extension
   // cache implementation: extension in the cache will be marked as recently
   // used.
-  extension_cache_->GetExtension(fetch_data.id, fetch_data.package_hash,
-                                 &crx_path, &version);
+  extension_cache_->GetExtension(id, package_hash, &crx_path, &version);
   return std::move(crx_path);
 }
 
@@ -1105,7 +1105,8 @@ void ExtensionDownloader::FetchUpdatedExtension(
     return;
   }
   absl::optional<base::FilePath> cached_crx_path =
-      GetCachedExtension(*fetch_data, /*manifest_fetch_failed*/ false);
+      GetCachedExtension(fetch_data->id, fetch_data->package_hash,
+                         fetch_data->version, /*manifest_fetch_failed*/ false);
   if (cached_crx_path) {
     delegate_->OnExtensionDownloadStageChanged(
         fetch_data->id, ExtensionDownloaderDelegate::Stage::FINISHED);
