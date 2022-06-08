@@ -52,12 +52,10 @@ gfx::Rect ConvertScreenRect(views::View* view, const gfx::Rect& screen_rect) {
   return gfx::Rect(origin, screen_rect.size());
 }
 
-// Tells whether `desk` contains an app window itself or if the desk is active
-// and at least one visible on all desk window exists.
+// Tells whether `desk` contains an app window itself or if at least one visible
+// on all desks window exists.
 bool ContainsAppWindows(Desk* desk) {
-  if (desk->ContainsAppWindows())
-    return true;
-  return desk->is_active() &&
+  return desk->ContainsAppWindows() ||
          !DesksController::Get()->visible_on_all_desks_windows().empty();
 }
 
@@ -202,10 +200,11 @@ void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
   // the desk.
   const bool old_force_show_desk_buttons = force_show_desk_buttons_;
   force_show_desk_buttons_ =
-      (is_long_gesture && IsPointOnMiniView(screen_rect.CenterPoint())) ||
-      (!is_long_gesture && view_to_update->GetVisible() &&
-       view_to_update->HitTestRect(
-           ConvertScreenRect(view_to_update, screen_rect)));
+      !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      ((is_long_gesture && IsPointOnMiniView(screen_rect.CenterPoint())) ||
+       (!is_long_gesture && view_to_update->GetVisible() &&
+        view_to_update->HitTestRect(
+            ConvertScreenRect(view_to_update, screen_rect))));
 
   if (old_force_show_desk_buttons != force_show_desk_buttons_)
     UpdateDeskButtonVisibility();
