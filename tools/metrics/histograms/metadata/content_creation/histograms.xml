@@ -529,7 +529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextFragmentAnchor.LinkOpenSource"
-    enum="TextFragmentLinkOpenSource" expires_after="2022-10-09">
+    enum="TextFragmentLinkOpenSource" expires_after="2023-06-30">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -549,7 +549,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.AmbiguousMatch"
-    enum="Boolean" expires_after="2022-06-30">
+    enum="Boolean" expires_after="2023-06-30">
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.MatchRate" units="%"
-    expires_after="2022-06-30">
+    expires_after="2023-06-30">
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -781,7 +781,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.TimeToScrollIntoView"
-    units="ms" expires_after="2022-06-30">
+    units="ms" expires_after="2023-06-30">
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
