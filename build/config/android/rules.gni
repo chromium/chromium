@@ -1372,12 +1372,18 @@ if (enable_java_templates) {
       target_sdk_version = android_sdk_version
     }
 
-    _jni_srcjar_target = "${target_name}__final_jni"
-    _outer_target_name = target_name
-    generate_jni_registration(_jni_srcjar_target) {
-      enable_native_mocks = true
-      require_native_mocks = true
-      targets = [ ":$_outer_target_name" ]
+    # Some may want to disable this to remove dependency on //base
+    # (JNI generator is in //base).
+    _generate_final_jni =
+        !defined(invoker.generate_final_jni) || invoker.generate_final_jni
+    if (_generate_final_jni) {
+      _jni_srcjar_target_name = "${target_name}__final_jni"
+      _outer_target_name = target_name
+      generate_jni_registration(_jni_srcjar_target_name) {
+        enable_native_mocks = true
+        require_native_mocks = true
+        targets = [ ":$_outer_target_name" ]
+      }
     }
 
     java_library_impl(_java_binary_target_name) {
@@ -1406,11 +1412,11 @@ if (enable_java_templates) {
       }
       srcjar_deps += [
         ":$_compile_resources_target",
-        ":$_jni_srcjar_target",
-
-        # This dep is required for any targets that depend on //base:base_java.
         "//build/android:build_config_gen",
       ]
+      if (_generate_final_jni) {
+        srcjar_deps += [ ":$_jni_srcjar_target_name" ]
+      }
     }
 
     test_runner_script(_test_runner_target_name) {

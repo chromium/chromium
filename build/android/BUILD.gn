@@ -55,6 +55,9 @@ if (enable_java_templates) {
   }
 
   junit_binary("build_junit_tests") {
+    # No JNI is required, and including JNI Generator reference causes trouble
+    # for projects such as Angle, which don't pull in //base.
+    generate_final_jni = false
     sources = [ "junit/src/org/chromium/build/IncrementalJavacTest.java" ]
     deps = [
       "//build/android/test/incremental_javac_gn:no_signature_change_prebuilt_java",
