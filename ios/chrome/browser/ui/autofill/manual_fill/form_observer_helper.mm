@@ -26,7 +26,7 @@
   // Bridge to observe the web state list from Objective-C.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
 
-  // Bridge to observe form activity in |_webState|.
+  // Bridge to observe form activity in `_webState`.
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
 }

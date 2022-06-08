@@ -61,8 +61,8 @@
                      emailAddress:(NSString*)emailAddress
     NS_DESIGNATED_INITIALIZER;
 
-// Unavailable. Please use |initWithFirstName:middleNameOrInitial:lastName:
-// line1:line2:zip:city:state:country:|.
+// Unavailable. Please use `initWithFirstName:middleNameOrInitial:lastName:
+// line1:line2:zip:city:state:country:`.
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

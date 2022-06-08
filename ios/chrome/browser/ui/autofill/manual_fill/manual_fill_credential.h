@@ -36,7 +36,7 @@ class GURL;
                             host:(NSString*)host
                              URL:(const GURL&)URL NS_DESIGNATED_INITIALIZER;
 
-// Unavailable. Please use |initWithUsername:password:siteName:host:|.
+// Unavailable. Please use `initWithUsername:password:siteName:host:`.
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

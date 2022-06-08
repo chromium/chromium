@@ -132,7 +132,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 
 #pragma mark - Private
 
-// Helper to create a system button with the passed data and |self| as the
+// Helper to create a system button with the passed data and `self` as the
 // target. Such button has been configured to have some preset properties
 - (UIButton*)manualFillButtonWithAction:(SEL)selector
                              ImageNamed:(NSString*)imageName
@@ -257,7 +257,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 - (void)setKeyboardButtonHidden:(BOOL)hidden animated:(BOOL)animated {
   [UIView animateWithDuration:animated ? MFAnimationDuration : 0
                    animations:^{
-                     // Workaround setting more than once the |hidden| property
+                     // Workaround setting more than once the `hidden` property
                      // in stacked views.
                      if (self.keyboardButton.hidden != hidden) {
                        self.keyboardButton.hidden = hidden;

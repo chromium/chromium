@@ -99,7 +99,7 @@ BOOL AreCredentialsAtIndexesConnected(
   // Bridge to observe the web state from Objective-C.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 
-  // Bridge to observe form activity in |_webState|.
+  // Bridge to observe form activity in `_webState`.
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
 
@@ -198,7 +198,7 @@ BOOL AreCredentialsAtIndexesConnected(
   }
 }
 
-// Posts the credentials to the consumer. If filtered is |YES| it only post the
+// Posts the credentials to the consumer. If filtered is `YES` it only post the
 // ones associated with the active web state.
 - (void)postCredentialsToConsumer {
   if (!self.consumer) {

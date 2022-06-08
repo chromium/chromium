@@ -13,15 +13,15 @@ namespace autofill {
 class AutofillProfile;
 }
 
-// Extends |ManualFillAddress| with a convenience initializer from c++
-// |autofill::AutofillProfile|.
+// Extends `ManualFillAddress` with a convenience initializer from c++
+// `autofill::AutofillProfile`.
 @interface ManualFillAddress (AutofillProfile)
 
 // Convenience initializer from an autofill::AutofillProfile.
 - (instancetype)initWithProfile:(const autofill::AutofillProfile&)profile;
 
-// Converts a list of |autofill::AutofillProfile| into a list of
-// |ManualFillAddress|.
+// Converts a list of `autofill::AutofillProfile` into a list of
+// `ManualFillAddress`.
 + (NSArray<ManualFillAddress*>*)manualFillAddressesFromProfiles:
     (std::vector<autofill::AutofillProfile*>)profiles;
 

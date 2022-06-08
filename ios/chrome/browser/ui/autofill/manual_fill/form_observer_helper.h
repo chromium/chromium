@@ -20,7 +20,7 @@ class WebStateList;
 // Returns a fresh object observing the active web state for the passed list.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList;
 
-// Not available. Use |initWithWebStateList:|.
+// Not available. Use `initWithWebStateList:`.
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

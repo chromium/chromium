@@ -21,7 +21,7 @@ static const CGFloat TopSystemSpacingMultiplier = 2;
 // The multiplier for the base system spacing at the bottom margin.
 static const CGFloat BottomSystemSpacingMultiplier = 2.26;
 
-// Options for |AppendHorizontalConstraintsForViews|.
+// Options for `AppendHorizontalConstraintsForViews`.
 typedef NS_OPTIONS(NSUInteger, AppendConstraints) {
   AppendConstraintsNone = 0,
   // Add an equal constraint to the baselines.
@@ -32,11 +32,11 @@ typedef NS_OPTIONS(NSUInteger, AppendConstraints) {
 
 }  // namespace
 
-// Creates a blank button in chip style, for the given |action| and |target|.
+// Creates a blank button in chip style, for the given `action` and `target`.
 UIButton* CreateChipWithSelectorAndTarget(SEL action, id target);
 
-// Adds vertical constraints to given list, laying |views| vertically (based on
-// firstBaselineAnchor for the buttons or labels) inside |container|, starting
+// Adds vertical constraints to given list, laying `views` vertically (based on
+// firstBaselineAnchor for the buttons or labels) inside `container`, starting
 // at its topAnchor. Constrainst are not activated.  Default multipliers are
 // applied.
 void AppendVerticalConstraintsSpacingForViews(
@@ -44,7 +44,7 @@ void AppendVerticalConstraintsSpacingForViews(
     NSArray<UIView*>* views,
     UIView* container);
 
-// Adds vertical constraints like |AppendVerticalConstraintsSpacingForViews|
+// Adds vertical constraints like `AppendVerticalConstraintsSpacingForViews`
 // above but using given mutipliers at top, bottom and in-between rows.
 void AppendVerticalConstraintsSpacingForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
@@ -53,24 +53,24 @@ void AppendVerticalConstraintsSpacingForViews(
     CGFloat topSystemSpacingMultiplier,
     CGFloat BottomSystemSpacingMultiplier);
 
-// Adds constraints to the given list, for the given |views|, so as to lay them
-// out horizontally, parallel to the |guide| view. Constraints are not
+// Adds constraints to the given list, for the given `views`, so as to lay them
+// out horizontally, parallel to the `guide` view. Constraints are not
 // activated.
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
     UIView* guide);
 
-// Adds constraints like |AppendHorizontalConstraintsForViews| above but also
-// applies the given constant |margin| at both ends of the whole row.
+// Adds constraints like `AppendHorizontalConstraintsForViews` above but also
+// applies the given constant `margin` at both ends of the whole row.
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
     UIView* guide,
     CGFloat margin);
 
-// Adds constraints like |AppendHorizontalConstraintsForViews| above
-// but with given |options|.
+// Adds constraints like `AppendHorizontalConstraintsForViews` above
+// but with given `options`.
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
@@ -78,7 +78,7 @@ void AppendHorizontalConstraintsForViews(
     CGFloat margin,
     AppendConstraints options);
 
-// Adds all baseline anchor constraints for the given |views| to match the first
+// Adds all baseline anchor constraints for the given `views` to match the first
 // one. Constrainst are not activated.
 void AppendEqualBaselinesConstraints(
     NSMutableArray<NSLayoutConstraint*>* constraints,
@@ -88,7 +88,7 @@ void AppendEqualBaselinesConstraints(
 UILabel* CreateLabel();
 
 // Creates a gray horizontal line separator, with the same margin as the other
-// components here. The gray line is added to the given |container| and proper
+// components here. The gray line is added to the given `container` and proper
 // constraints are enabled to keep the line at the bottom of the container and
 // within the horizontal safe area.
 UIView* CreateGraySeparatorForContainer(UIView* container);

@@ -62,7 +62,7 @@ extern NSString* const SuggestPasswordAccessibilityIdentifier;
 @property(nonatomic, assign, getter=isActionSectionEnabled)
     BOOL actionSectionEnabled;
 
-// The designated initializer. |passwordStore| must not be nil.
+// The designated initializer. `passwordStore` must not be nil.
 - (instancetype)initWithPasswordStore:
                     (scoped_refptr<password_manager::PasswordStoreInterface>)
                         passwordStore
@@ -73,7 +73,7 @@ extern NSString* const SuggestPasswordAccessibilityIdentifier;
                invokedOnPasswordField:(BOOL)invokedOnPasswordField
     NS_DESIGNATED_INITIALIZER;
 
-// Unavailable. Use |initWithPasswordStore:faviconLoader:|.
+// Unavailable. Use `initWithPasswordStore:faviconLoader:`.
 - (instancetype)init NS_UNAVAILABLE;
 
 // Fetches passwords using the URL provided at initialisation as the filter.

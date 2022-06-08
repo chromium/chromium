@@ -48,8 +48,8 @@ extern NSString* const kMaskedPasswordTitle;
 // Identifier to match a URLItem with its URLCell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;
 
-// Updates the cell with the |credential|. If the user iteracts with it, the
-// |delegate| will be notified.
+// Updates the cell with the `credential`. If the user iteracts with it, the
+// `delegate` will be notified.
 - (void)setUpWithCredential:(ManualFillCredential*)credential
     isConnectedToPreviousCell:(BOOL)isConnectedToPreviousCell
         isConnectedToNextCell:(BOOL)isConnectedToNextCell

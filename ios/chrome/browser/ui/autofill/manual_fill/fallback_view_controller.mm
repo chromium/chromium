@@ -24,13 +24,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 namespace {
 
-// This is the width used for |self.preferredContentSize|.
+// This is the width used for `self.preferredContentSize`.
 constexpr CGFloat PopoverPreferredWidth = 320;
 
-// This is the maximum height used for |self.preferredContentSize|.
+// This is the maximum height used for `self.preferredContentSize`.
 constexpr CGFloat PopoverMaxHeight = 360;
 
-// This is the height used for |self.preferredContentSize| when showing the
+// This is the height used for `self.preferredContentSize` when showing the
 // loading indicator on iPad.
 constexpr CGFloat PopoverLoadingHeight = 185.5;
 
@@ -71,7 +71,7 @@ constexpr CGFloat kSectionFooterHeight = 8;
 }
 
 - (void)viewDidLoad {
-  // Super's |viewDidLoad| uses |styler.tableViewBackgroundColor| so it needs to
+  // Super's `viewDidLoad` uses `styler.tableViewBackgroundColor` so it needs to
   // be set before.
   self.styler.tableViewBackgroundColor = [UIColor colorNamed:kBackgroundColor];
 
@@ -192,7 +192,7 @@ constexpr CGFloat kSectionFooterHeight = 8;
   }
 }
 
-// Presents |items| in the respective section. Handles creating or deleting the
+// Presents `items` in the respective section. Handles creating or deleting the
 // section accordingly.
 - (void)presentFallbackItems:(NSArray<TableViewItem*>*)items
                    inSection:(SectionIdentifier)sectionIdentifier {

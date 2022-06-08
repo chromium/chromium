@@ -22,7 +22,7 @@ class WebStateList;
 // let user 'unlock' server side credit card by input correct CVC.
 @interface ManualFillFullCardRequester : NSObject
 
-// Inits the requests with required parameters and the |delegate| to receive the
+// Inits the requests with required parameters and the `delegate` to receive the
 // success/failure state of the request.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                         webStateList:(WebStateList*)webStateList

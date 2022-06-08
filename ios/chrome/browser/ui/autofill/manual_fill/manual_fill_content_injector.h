@@ -11,7 +11,7 @@
 // state.
 @protocol ManualFillContentInjector <NSObject>
 
-// Must be called before |userDidPickContent| to validate if a value type can be
+// Must be called before `userDidPickContent` to validate if a value type can be
 // injected, if either flag is true. If not, an alert is given to the user and
 // NO is returned.
 // @param passwordField YES if the user selected content that requires a
