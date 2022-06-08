@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 
@@ -183,6 +184,10 @@ void GetDefault(std::vector<std::string>* app_ids) {
     extension_misc::kGooglePlusAppId,
   });
   // clang-format on
+
+  if (chromeos::features::IsCloudGamingDeviceEnabled()) {
+    app_ids->push_back(web_app::kCloudGamingPartnerPlatform);
+  }
 }
 
 }  // namespace
