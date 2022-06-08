@@ -262,6 +262,9 @@ void AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isPersonalizationHubEnabled",
                      features::IsPersonalizationHubEnabled());
 
+  source->AddBoolean("isAmbientModeAnimationEnabled",
+                     features::IsAmbientModeAnimationEnabled());
+
   source->AddBoolean("isDarkLightModeEnabled",
                      features::IsDarkLightModeEnabled());
 

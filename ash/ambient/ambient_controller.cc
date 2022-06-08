@@ -888,11 +888,7 @@ AmbientAnimationTheme AmbientController::GetCurrentTheme() const {
     current_theme = animation_experiment_enabled.value()
                         ? features::kAmbientModeAnimationThemeParam.Get()
                         : kDefaultAmbientAnimationTheme;
-  } else if (features::IsPersonalizationHubEnabled()) {
-    // UX testers/dogfooders only have to enable the personalization hub to get
-    // the animation. They do not turn on the dedicated animation experiment
-    // flag as that is only intended for developers who want to bypass the hub.
-    // If the hub is disabled, fallback to the default theme.
+  } else if (features::IsAmbientModeAnimationEnabled()) {
     DCHECK(current_theme_from_pref_);
     current_theme = *current_theme_from_pref_;
   }

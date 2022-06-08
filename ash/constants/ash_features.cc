@@ -1647,7 +1647,8 @@ bool IsAllowAmbientEQEnabled() {
 }
 
 bool IsAmbientModeAnimationEnabled() {
-  return base::FeatureList::IsEnabled(kAmbientModeAnimationFeature);
+  return base::FeatureList::IsEnabled(kAmbientModeAnimationFeature) &&
+         IsPersonalizationHubEnabled();
 }
 
 bool IsAmbientModeDevUseProdEnabled() {

@@ -177,8 +177,11 @@
           </div>
         </template>
         <template is="dom-if" if="[[!loadingSettings_]]">
-          <animation-theme-list selected-animation-theme="[[animationTheme_]]">
-          </animation-theme-list>
+          <template is="dom-if" if="[[isAmbientModeAnimationEnabled_]]">
+            <animation-theme-list
+                selected-animation-theme="[[animationTheme_]]">
+            </animation-theme-list>
+          </template>
           <topic-source-list selected-topic-source="[[topicSource_]]"
               has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]">
           </topic-source-list>

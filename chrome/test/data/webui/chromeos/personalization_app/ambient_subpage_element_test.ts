@@ -32,7 +32,10 @@ suite('AmbientSubpageTest', function() {
   const routerMock = TestBrowserProxy.fromClass(PersonalizationRouter);
 
   setup(() => {
-    loadTimeData.overrideValues({isAmbientModeAllowed: true});
+    loadTimeData.overrideValues({
+      isAmbientModeAllowed: true,
+      isAmbientModeAnimationEnabled: true,
+    });
     const mocks = baseSetup();
     ambientProvider = mocks.ambientProvider;
     personalizationStore = mocks.personalizationStore;
