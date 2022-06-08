@@ -608,11 +608,10 @@ interface BroadcastChannel : EventTarget
     method postMessage
     setter onmessage
     setter onmessageerror
-interface BrowserCaptureMediaStreamTrack : MediaStreamTrack
+interface BrowserCaptureMediaStreamTrack : FocusableMediaStreamTrack
     attribute @@toStringTag
     method constructor
     method cropTo
-    method focus
 interface ByteLengthQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
