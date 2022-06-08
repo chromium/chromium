@@ -4449,9 +4449,9 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelection(LONG selection_index,
 IFACEMETHODIMP
 AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
                                   LONG* nSelections) {
-  COM_OBJECT_VALIDATE_2_ARGS(selections, nSelections);
-
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
+
+  COM_OBJECT_VALIDATE_2_ARGS(selections, nSelections);
 
   AXTree::Selection unignored_selection =
       GetDelegate()->GetUnignoredSelection();
@@ -4535,7 +4535,61 @@ AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
 
 IFACEMETHODIMP AXPlatformNodeWin::setSelections(LONG nSelections,
                                                 IA2TextSelection* selections) {
-  return E_NOTIMPL;
+  AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
+
+  COM_OBJECT_VALIDATE_1_ARG(selections);
+  if (nSelections != 1)
+    return E_INVALIDARG;
+
+  if (!selections->startObj || !selections->endObj)
+    return E_INVALIDARG;
+
+  Microsoft::WRL::ComPtr<IAccessible> start_obj;
+  if (FAILED(selections->startObj->QueryInterface(IID_PPV_ARGS(&start_obj))))
+    return E_INVALIDARG;
+
+  Microsoft::WRL::ComPtr<IAccessible> end_obj;
+  if (FAILED(selections->endObj->QueryInterface(IID_PPV_ARGS(&end_obj))))
+    return E_INVALIDARG;
+
+  const auto* start_node = static_cast<AXPlatformNodeWin*>(
+      FromNativeViewAccessible(start_obj.Get()));
+  const auto* end_node =
+      static_cast<AXPlatformNodeWin*>(FromNativeViewAccessible(end_obj.Get()));
+  if (!start_node || !end_node)
+    return E_INVALIDARG;
+
+  AXPosition start_position =
+      start_node->HypertextOffsetToEndpoint(selections->startOffset);
+  AXPosition end_position =
+      end_node->HypertextOffsetToEndpoint(selections->endOffset);
+  if (!start_position->IsNullPosition() || end_position->IsNullPosition())
+    return E_INVALIDARG;
+
+  AXActionData action_data;
+  action_data.action = ax::mojom::Action::kSetSelection;
+  action_data.target_tree_id = start_position->tree_id();
+  int start_offset = start_position->IsTextPosition()
+                         ? start_position->text_offset()
+                         : start_position->child_index();
+  int end_offset = end_position->IsTextPosition() ? end_position->text_offset()
+                                                  : end_position->child_index();
+  if (selections->startIsActive) {
+    action_data.focus_node_id = start_position->anchor_id();
+    action_data.focus_offset = start_offset;
+    action_data.anchor_node_id = end_position->anchor_id();
+    action_data.anchor_offset = end_offset;
+  } else {
+    action_data.anchor_node_id = start_position->anchor_id();
+    action_data.anchor_offset = start_offset;
+    action_data.focus_node_id = end_position->anchor_id();
+    action_data.focus_offset = end_offset;
+  }
+
+  if (GetDelegate()->AccessibilityPerformAction(action_data))
+    return S_OK;
+
+  return S_FALSE;
 }
 
 //

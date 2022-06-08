@@ -559,6 +559,9 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   int GetHypertextOffsetFromEndpoint(AXPlatformNodeBase* endpoint_object,
                                      int endpoint_offset);
 
+  AXPlatformNodeBase::AXPosition HypertextOffsetToEndpoint(
+      int hypertext_offset) const;
+
   bool IsSameHypertextCharacter(const AXLegacyHypertext& old_hypertext,
                                 size_t old_char_index,
                                 size_t new_char_index);
