@@ -23,10 +23,14 @@
     height: 1000px;
     width: 1000px;
   }
+
+  #standard {
+    direction: rtl;
+  }
 </style>
 
 <!-- Composited non-custom scroller -->
-<div id="standard" class="appearance standardLocation" style="direction: ltr;">
+<div id="standard" class="appearance standardLocation" style="direction: rtl;">
   <div class="space"></div>
 </div>
 
@@ -52,8 +56,8 @@
 
   promise_test(async () => {
     await testScrollThumbNonScrolls(params);
-  }, "Test thumb drags beyond scrollbar track.");
+  }, "Test thumb drags beyond scrollbar track (RTL).");
   promise_test(async () => {
     await testThumbScrolls(params);
-  }, "Test mouse drags in intervals on non-custom composited div scrollbar thumb.");
+  }, "Test mouse drags in intervals on non-custom composited div scrollbar thumb (RTL).");
 </script>
