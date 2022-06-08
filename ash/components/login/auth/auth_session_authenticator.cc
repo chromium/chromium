@@ -612,8 +612,12 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
       break;
     case user_data_auth::CRYPTOHOME_ERROR_TPM_COMM_ERROR:
     case user_data_auth::CRYPTOHOME_ERROR_TPM_NEEDS_REBOOT:
-    case user_data_auth::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK:
       error.failure_reason = AuthFailure::TPM_ERROR;
+      break;
+    case user_data_auth::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK:
+      // PIN is locked out, for now mark it as auth failure, and pin lockout
+      // would be detected by PinStorageCryptohome.
+      error.failure_reason = default_error;
       break;
     case user_data_auth::CRYPTOHOME_ERROR_MOUNT_MOUNT_POINT_BUSY:
       // Assumption about system state is not correct
