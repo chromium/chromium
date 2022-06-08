@@ -60,6 +60,7 @@ class SettingsController : public AssistantClientObserver,
   void UpdateLocaleOverride(const absl::optional<std::string>& locale);
   void UpdateDeviceSettings(const absl::optional<std::string>& locale,
                             absl::optional<bool> hotword_enabled);
+  void UpdateDarkModeEnabledV2(absl::optional<bool> dark_mode_enabled);
 
   // Instantiated when Libassistant is started and destroyed when Libassistant
   // is stopped.
