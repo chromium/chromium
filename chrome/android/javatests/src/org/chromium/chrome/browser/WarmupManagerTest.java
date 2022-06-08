@@ -29,8 +29,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
@@ -69,7 +69,7 @@ public class WarmupManagerTest {
     }
 
     @Rule
-    public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     private WarmupManager mWarmupManager;
     private Context mContext;
