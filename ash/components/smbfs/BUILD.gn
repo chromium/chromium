@@ -18,7 +18,6 @@ component("smbfs") {
     "//ash/components/disks",
     "//base",
     "//chromeos/components/mojo_bootstrap",
-    "//chromeos/dbus/cros_disks",
     "//mojo/public/cpp/bindings",
     "//net",
   ]

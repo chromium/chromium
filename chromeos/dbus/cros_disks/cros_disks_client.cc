@@ -9,7 +9,6 @@
 
 #include <map>
 #include <memory>
-#include <type_traits>
 #include <unordered_map>
 #include <utility>
 
@@ -39,6 +38,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
+
 namespace {
 
 constexpr char kReadOnlyOption[] = "ro";
@@ -582,38 +582,6 @@ class CrosDisksClientImpl : public CrosDisksClient {
 };
 
 }  // namespace
-
-std::ostream& operator<<(std::ostream& out, const MountError error) {
-  switch (error) {
-#define PRINT_ERROR(s) \
-  case s:              \
-    return out << #s;
-    PRINT_ERROR(MOUNT_ERROR_NONE)
-    PRINT_ERROR(MOUNT_ERROR_UNKNOWN)
-    PRINT_ERROR(MOUNT_ERROR_INTERNAL)
-    PRINT_ERROR(MOUNT_ERROR_INVALID_ARGUMENT)
-    PRINT_ERROR(MOUNT_ERROR_INVALID_PATH)
-    PRINT_ERROR(MOUNT_ERROR_PATH_ALREADY_MOUNTED)
-    PRINT_ERROR(MOUNT_ERROR_PATH_NOT_MOUNTED)
-    PRINT_ERROR(MOUNT_ERROR_DIRECTORY_CREATION_FAILED)
-    PRINT_ERROR(MOUNT_ERROR_INVALID_MOUNT_OPTIONS)
-    PRINT_ERROR(MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS)
-    PRINT_ERROR(MOUNT_ERROR_INSUFFICIENT_PERMISSIONS)
-    PRINT_ERROR(MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND)
-    PRINT_ERROR(MOUNT_ERROR_MOUNT_PROGRAM_FAILED)
-    PRINT_ERROR(MOUNT_ERROR_INVALID_DEVICE_PATH)
-    PRINT_ERROR(MOUNT_ERROR_UNKNOWN_FILESYSTEM)
-    PRINT_ERROR(MOUNT_ERROR_UNSUPPORTED_FILESYSTEM)
-    PRINT_ERROR(MOUNT_ERROR_INVALID_ARCHIVE)
-    PRINT_ERROR(MOUNT_ERROR_NEED_PASSWORD)
-    PRINT_ERROR(MOUNT_ERROR_IN_PROGRESS)
-    PRINT_ERROR(MOUNT_ERROR_CANCELLED)
-    PRINT_ERROR(MOUNT_ERROR_COUNT)
-#undef PRINT_ERROR
-  }
-
-  return out << "MOUNT_ERROR_" << std::underlying_type_t<MountError>(error);
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // DiskInfo

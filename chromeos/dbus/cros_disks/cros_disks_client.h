@@ -5,8 +5,7 @@
 #ifndef CHROMEOS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_
 #define CHROMEOS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_
 
-#include <cstdint>
-#include <ostream>
+#include <stdint.h>
 
 #include <memory>
 #include <string>
@@ -51,7 +50,7 @@ enum DeviceType {
 };
 
 // Mount error code used by cros-disks.
-// These values are NOT the same as cros_disks::MountErrorType.
+// These values are not the same as cros_disks::MountErrorType.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum MountError {
@@ -77,10 +76,6 @@ enum MountError {
   MOUNT_ERROR_CANCELLED = 19,
   MOUNT_ERROR_COUNT,
 };
-
-// Output operator for logging.
-COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS)
-std::ostream& operator<<(std::ostream& out, MountError error);
 
 // Rename error reported by cros-disks.
 enum RenameError {
