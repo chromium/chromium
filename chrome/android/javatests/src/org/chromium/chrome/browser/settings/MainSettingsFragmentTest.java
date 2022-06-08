@@ -340,12 +340,54 @@ public class MainSettingsFragmentTest {
                 TextUtils.isEmpty(searchEngineSettings.getSummary()));
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures({
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON,
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
+    })
+    public void
+    testAccountSignInWithNewPromo() throws InterruptedException {
+        launchSettingsActivity();
+
+        SyncPromoPreference syncPromoPreference =
+                (SyncPromoPreference) mMainSettings.findPreference(MainSettings.PREF_SYNC_PROMO);
+        Assert.assertEquals(
+                "SyncPromoPreference should be at the personalized signin promo state. ",
+                syncPromoPreference.getState(), State.PERSONALIZED_SIGNIN_PROMO);
+        Assert.assertTrue("Account section header should be shown together with the promo.",
+                mMainSettings.findPreference(MainSettings.PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION)
+                        .isVisible());
+        Assert.assertFalse("Sync preference should be hidden when promo is shown.",
+                mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
+
+        CoreAccountInfo account = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        SyncTestUtil.waitForSyncFeatureActive();
+        Assert.assertEquals("SignInPreference should be at the signed in state.",
+                account.getEmail(),
+                mMainSettings.findPreference(MainSettings.PREF_SIGN_IN).getSummary().toString());
+        assertSettingsExists(MainSettings.PREF_SIGN_IN, AccountManagementFragment.class);
+
+        Assert.assertTrue("Account section header should be shown when user signed in.",
+                mMainSettings.findPreference(MainSettings.PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION)
+                        .isVisible());
+        Assert.assertTrue("Sync preference should be shown when the user is signed in.",
+                mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
+    }
+
     /**
      * Test when the sign-in preference is the promo. The section header should be hidden.
      */
     @Test
     @SmallTest
-    public void testAccountSignIn() throws InterruptedException {
+    @DisableFeatures({
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON,
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
+    })
+    public void
+    testAccountSignIn() throws InterruptedException {
         launchSettingsActivity();
 
         SyncPromoPreference syncPromoPreference =
