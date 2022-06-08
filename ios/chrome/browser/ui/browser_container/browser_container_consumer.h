@@ -11,7 +11,7 @@
 
 // Whether the content view should be blocked.  When set to YES, the content
 // area is blocked.  Overlay UI shown in OverlayModality::kWebContentArea remain
-// visible when |contentBlocked| is YES.
+// visible when `contentBlocked` is YES.
 - (void)setContentBlocked:(BOOL)contentBlocked;
 
 @end
