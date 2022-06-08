@@ -25,4 +25,6 @@ const char kCryptohomePublicMountLabel[] = "publicmount";
 
 const char kCryptohomeWildcardLabel[] = "";
 
+const char kCryptohomeRecoveryKeyLabel[] = "recovery";
+
 }  // namespace ash

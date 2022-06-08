@@ -430,6 +430,12 @@ const base::Feature kCryptAuthV2Enrollment{"CryptAuthV2Enrollment",
 const base::Feature kCryptohomeRecoveryFlow{"CryptohomeRecoveryFlow",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the UI to enable or disable cryptohome recovery in the settings
+// page. Also guards the wiring of cryptohome recovery settings to the
+// cryptohome backend.
+const base::Feature kCryptohomeRecoverySetup{"CryptohomeRecoverySetup",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDemoModeSWA{"DemoModeSWA",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1749,6 +1755,10 @@ bool IsConsumerAutoUpdateToggleAllowed() {
 
 bool IsCryptohomeRecoveryFlowEnabled() {
   return base::FeatureList::IsEnabled(kCryptohomeRecoveryFlow);
+}
+
+bool IsCryptohomeRecoverySetupEnabled() {
+  return base::FeatureList::IsEnabled(kCryptohomeRecoverySetup);
 }
 
 bool IsDarkLightModeEnabled() {

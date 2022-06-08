@@ -10,6 +10,7 @@
 #include "ash/components/login/auth/cryptohome_key_constants.h"
 #include "ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "ash/components/login/auth/user_context.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
@@ -141,6 +142,65 @@ void AuthFactorEditor::ReplaceContextKey(std::unique_ptr<UserContext> context,
                               std::move(callback)));
 }
 
+void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
+                                         AuthOperationCallback callback) {
+  CHECK(features::IsCryptohomeRecoverySetupEnabled());
+  DCHECK(!context->GetAuthSessionId().empty());
+
+  // TODO(crbug.com/1310312): Check whether a recovery key already exists and
+  // return immediately.
+
+  LOGIN_LOG(EVENT) << "Adding recovery key";
+
+  user_data_auth::AddAuthFactorRequest req;
+  req.set_auth_session_id(context->GetAuthSessionId());
+
+  user_data_auth::AuthFactor* factor = req.mutable_auth_factor();
+  factor->set_type(user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
+  factor->set_label(kCryptohomeRecoveryKeyLabel);
+
+  // The cryptohome recovery meta data struct does not have members at the
+  // moment.
+  factor->mutable_cryptohome_recovery_metadata();
+
+  // TODO(crbug.com/1310312): We only need to set the mediator public key here;
+  // all other members are for other operations. The public key will likely be
+  // hardcoded, although perhaps configurable via a command line switch for
+  // testing.
+  user_data_auth::CryptohomeRecoveryAuthInput* input =
+      req.mutable_auth_input()->mutable_cryptohome_recovery_input();
+  input->set_mediator_pub_key("STUB MEDIATOR PUB KEY");
+
+  auto add_auth_factor_callback = base::BindOnce(
+      &AuthFactorEditor::OnRecoveryFactorAdded, weak_factory_.GetWeakPtr(),
+      std::move(context), std::move(callback));
+
+  UserDataAuthClient::Get()->AddAuthFactor(std::move(req),
+                                           std::move(add_auth_factor_callback));
+}
+
+void AuthFactorEditor::RemoveRecoveryFactor(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  CHECK(features::IsCryptohomeRecoverySetupEnabled());
+  DCHECK(!context->GetAuthSessionId().empty());
+
+  // TODO(crbug.com/1310312): Check whether a recovery key already exists and
+  // return immediately if there are no recovery keys.
+
+  LOGIN_LOG(EVENT) << "Removing recovery key";
+
+  user_data_auth::RemoveAuthFactorRequest req;
+  req.set_auth_session_id(context->GetAuthSessionId());
+  req.set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
+
+  auto remove_auth_factor_callback = base::BindOnce(
+      &AuthFactorEditor::OnRecoveryFactorRemoved, weak_factory_.GetWeakPtr(),
+      std::move(context), std::move(callback));
+  UserDataAuthClient::Get()->RemoveAuthFactor(
+      req, std::move(remove_auth_factor_callback));
+}
+
 /// ---- private callbacks ----
 
 void AuthFactorEditor::OnAddCredentials(
@@ -172,6 +232,38 @@ void AuthFactorEditor::OnUpdateCredential(
   }
   CHECK(reply.has_value());
   LOGIN_LOG(EVENT) << "Successfully updated credential";
+  std::move(callback).Run(std::move(context), absl::nullopt);
+}
+
+void AuthFactorEditor::OnRecoveryFactorAdded(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback,
+    absl::optional<::user_data_auth::AddAuthFactorReply> reply) {
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    LOG(WARNING) << "AddAuthFactor for recovery failed with error " << error;
+    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    return;
+  }
+
+  CHECK(reply.has_value());
+  LOGIN_LOG(EVENT) << "Successfully added recovery key";
+  std::move(callback).Run(std::move(context), absl::nullopt);
+}
+
+void AuthFactorEditor::OnRecoveryFactorRemoved(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback,
+    absl::optional<::user_data_auth::RemoveAuthFactorReply> reply) {
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    LOG(WARNING) << "RemoveAuthFactor for recovery failed with error " << error;
+    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    return;
+  }
+
+  CHECK(reply.has_value());
+  LOGIN_LOG(EVENT) << "Successfully removed recovery key";
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 

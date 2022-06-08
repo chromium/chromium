@@ -59,6 +59,17 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthFactorEditor {
   void ReplaceContextKey(std::unique_ptr<UserContext> context,
                          AuthOperationCallback callback);
 
+  // Adds a recovery key for the user by `context`. No key is added if there is
+  // already a recovery key.
+  // Session must be authenticated.
+  void AddRecoveryFactor(std::unique_ptr<UserContext> context,
+                         AuthOperationCallback callback);
+
+  // Remove all recovery keys for the user by `context`.
+  // Session must be authenticated.
+  void RemoveRecoveryFactor(std::unique_ptr<UserContext> context,
+                            AuthOperationCallback callback);
+
  private:
   void HashContextKeyAndAdd(std::unique_ptr<UserContext> context,
                             AuthOperationCallback callback,
@@ -72,6 +83,16 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthFactorEditor {
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       absl::optional<user_data_auth::UpdateCredentialReply> reply);
+
+  void OnRecoveryFactorAdded(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::AddAuthFactorReply> reply);
+
+  void OnRecoveryFactorRemoved(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::RemoveAuthFactorReply> reply);
 
   base::WeakPtrFactory<AuthFactorEditor> weak_factory_{this};
 };
