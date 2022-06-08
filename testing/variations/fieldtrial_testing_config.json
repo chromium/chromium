@@ -2792,6 +2792,24 @@
             ]
         }
     ],
+    "ContextualTriggers": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Handles_20220118",
+                    "enable_features": [
+                        "ContextualTriggersSelectionHandles"
+                    ],
+                    "disable_features": [
+                        "ContextualTriggersSelectionSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSEnforceSystemAecNsAgc": [
         {
             "platforms": [

@@ -597,7 +597,7 @@ public class ContextualSearchInstrumentationBase {
         }
     }
 
-    private void clearSelection() {
+    protected void clearSelection() {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             SelectionPopupController.fromWebContents(sActivityTestRule.getWebContents())
                     .clearSelection();

@@ -27,6 +27,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.content_public.browser.SelectionClient;
@@ -205,6 +206,12 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Feature({"ContextualSearch"})
     public void testTapGestureFarAwayTogglesSelecting() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
+
+        // Showing the handles on a Tap gesture can interfere with the next tap gesture because
+        // the handles make the CS System think it's a long-press, which behaves differently.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES)) {
+            return;
+        }
 
         clickWordNode("states");
         Assert.assertEquals("States", getSelectedText());
