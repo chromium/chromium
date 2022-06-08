@@ -45,7 +45,8 @@ class GPUTexture : public DawnObject<WGPUTexture> {
   GPUTexture& operator=(const GPUTexture&) = delete;
 
   // gpu_texture.idl
-  GPUTextureView* createView(const GPUTextureViewDescriptor* webgpu_desc);
+  GPUTextureView* createView(const GPUTextureViewDescriptor* webgpu_desc,
+                             ExceptionState& exception_state);
   void destroy();
 
   WGPUTextureDimension Dimension() { return dimension_; }

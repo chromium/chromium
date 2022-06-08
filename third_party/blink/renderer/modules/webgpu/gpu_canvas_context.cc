@@ -174,6 +174,18 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     return;
   }
 
+  if (!descriptor->device()->ValidateTextureFormatUsage(descriptor->format(),
+                                                        exception_state)) {
+    return;
+  }
+
+  for (auto view_format : descriptor->viewFormats()) {
+    if (!descriptor->device()->ValidateTextureFormatUsage(view_format,
+                                                          exception_state)) {
+      return;
+    }
+  }
+
   // This needs to happen early so that if any validation fails the swapchain
   // stays unconfigured.
   if (swapchain_) {

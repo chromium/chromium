@@ -138,6 +138,95 @@ void GPUDevice::AddConsoleWarning(const char* message) {
   }
 }
 
+// Validates that any features required for the given texture format are enabled
+// for this device. If not, throw a TypeError to ensure consistency with
+// browsers that haven't yet implemented the feature.
+bool GPUDevice::ValidateTextureFormatUsage(V8GPUTextureFormat format,
+                                           ExceptionState& exception_state) {
+  const char* requiredFeature = nullptr;
+
+  switch (format.AsEnum()) {
+    case V8GPUTextureFormat::Enum::kBc1RgbaUnorm:
+    case V8GPUTextureFormat::Enum::kBc1RgbaUnormSrgb:
+    case V8GPUTextureFormat::Enum::kBc2RgbaUnorm:
+    case V8GPUTextureFormat::Enum::kBc2RgbaUnormSrgb:
+    case V8GPUTextureFormat::Enum::kBc3RgbaUnorm:
+    case V8GPUTextureFormat::Enum::kBc3RgbaUnormSrgb:
+    case V8GPUTextureFormat::Enum::kBc4RUnorm:
+    case V8GPUTextureFormat::Enum::kBc4RSnorm:
+    case V8GPUTextureFormat::Enum::kBc5RgUnorm:
+    case V8GPUTextureFormat::Enum::kBc5RgSnorm:
+    case V8GPUTextureFormat::Enum::kBc6HRgbUfloat:
+    case V8GPUTextureFormat::Enum::kBc6HRgbFloat:
+    case V8GPUTextureFormat::Enum::kBc7RgbaUnorm:
+    case V8GPUTextureFormat::Enum::kBc7RgbaUnormSrgb:
+      requiredFeature = "texture-compression-bc";
+      break;
+
+    case V8GPUTextureFormat::Enum::kEtc2Rgb8Unorm:
+    case V8GPUTextureFormat::Enum::kEtc2Rgb8UnormSrgb:
+    case V8GPUTextureFormat::Enum::kEtc2Rgb8A1Unorm:
+    case V8GPUTextureFormat::Enum::kEtc2Rgb8A1UnormSrgb:
+    case V8GPUTextureFormat::Enum::kEtc2Rgba8Unorm:
+    case V8GPUTextureFormat::Enum::kEtc2Rgba8UnormSrgb:
+    case V8GPUTextureFormat::Enum::kEacR11Unorm:
+    case V8GPUTextureFormat::Enum::kEacR11Snorm:
+    case V8GPUTextureFormat::Enum::kEacRg11Unorm:
+    case V8GPUTextureFormat::Enum::kEacRg11Snorm:
+      requiredFeature = "texture-compression-etc2";
+      break;
+
+    case V8GPUTextureFormat::Enum::kAstc4X4Unorm:
+    case V8GPUTextureFormat::Enum::kAstc4X4UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc5X4Unorm:
+    case V8GPUTextureFormat::Enum::kAstc5X4UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc5X5Unorm:
+    case V8GPUTextureFormat::Enum::kAstc5X5UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc6X5Unorm:
+    case V8GPUTextureFormat::Enum::kAstc6X5UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc6X6Unorm:
+    case V8GPUTextureFormat::Enum::kAstc6X6UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc8X5Unorm:
+    case V8GPUTextureFormat::Enum::kAstc8X5UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc8X6Unorm:
+    case V8GPUTextureFormat::Enum::kAstc8X6UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc8X8Unorm:
+    case V8GPUTextureFormat::Enum::kAstc8X8UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc10X5Unorm:
+    case V8GPUTextureFormat::Enum::kAstc10X5UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc10X6Unorm:
+    case V8GPUTextureFormat::Enum::kAstc10X6UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc10X8Unorm:
+    case V8GPUTextureFormat::Enum::kAstc10X8UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc10X10Unorm:
+    case V8GPUTextureFormat::Enum::kAstc10X10UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc12X10Unorm:
+    case V8GPUTextureFormat::Enum::kAstc12X10UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc12X12Unorm:
+    case V8GPUTextureFormat::Enum::kAstc12X12UnormSrgb:
+      requiredFeature = "texture-compression-astc";
+      break;
+
+    default:
+      return true;
+  }
+
+  DCHECK(requiredFeature != nullptr);
+
+  if (features_->has(requiredFeature)) {
+    return true;
+  }
+
+  std::string deviceLabel =
+      label().IsEmpty() ? "" : " \"" + label().Utf8() + "\"";
+
+  exception_state.ThrowTypeError(
+      String::Format("Use of the '%s' texture format requires the '%s' feature "
+                     "to be enabled on [Device%s].",
+                     format.AsCStr(), requiredFeature, deviceLabel.c_str()));
+  return false;
+}
+
 void GPUDevice::OnUncapturedError(WGPUErrorType errorType,
                                   const char* message) {
   // Suppress errors once the device is lost.
@@ -411,8 +500,9 @@ GPUCommandEncoder* GPUDevice::createCommandEncoder(
 }
 
 GPURenderBundleEncoder* GPUDevice::createRenderBundleEncoder(
-    const GPURenderBundleEncoderDescriptor* descriptor) {
-  return GPURenderBundleEncoder::Create(this, descriptor);
+    const GPURenderBundleEncoderDescriptor* descriptor,
+    ExceptionState& exception_state) {
+  return GPURenderBundleEncoder::Create(this, descriptor, exception_state);
 }
 
 GPUQuerySet* GPUDevice::createQuerySet(

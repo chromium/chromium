@@ -8,7 +8,7 @@
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
 ] interface GPUTexture {
-    GPUTextureView createView(optional GPUTextureViewDescriptor descriptor = {});
+    [RaisesException] GPUTextureView createView(optional GPUTextureViewDescriptor descriptor = {});
     void destroy();
 };
 GPUTexture includes GPUObjectBase;

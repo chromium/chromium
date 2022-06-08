@@ -102,6 +102,17 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
   DCHECK(device);
   DCHECK(webgpu_desc);
 
+  if (!device->ValidateTextureFormatUsage(webgpu_desc->format(),
+                                          exception_state)) {
+    return nullptr;
+  }
+
+  for (auto view_format : webgpu_desc->viewFormats()) {
+    if (!device->ValidateTextureFormatUsage(view_format, exception_state)) {
+      return nullptr;
+    }
+  }
+
   std::string label;
   std::unique_ptr<WGPUTextureFormat[]> view_formats;
   WGPUTextureDescriptor dawn_desc =
@@ -259,8 +270,14 @@ GPUTexture::GPUTexture(GPUDevice* device,
 }
 
 GPUTextureView* GPUTexture::createView(
-    const GPUTextureViewDescriptor* webgpu_desc) {
+    const GPUTextureViewDescriptor* webgpu_desc,
+    ExceptionState& exception_state) {
   DCHECK(webgpu_desc);
+
+  if (webgpu_desc->hasFormat() && !device()->ValidateTextureFormatUsage(
+                                      webgpu_desc->format(), exception_state)) {
+    return nullptr;
+  }
 
   std::string label;
   WGPUTextureViewDescriptor dawn_desc = AsDawnType(webgpu_desc, &label);

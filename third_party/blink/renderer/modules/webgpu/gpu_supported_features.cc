@@ -19,12 +19,15 @@ void GPUSupportedFeatures::AddFeatureName(const String& feature_name) {
   features_.insert(feature_name);
 }
 
+bool GPUSupportedFeatures::has(const String& feature) const {
+  return features_.Contains(feature);
+}
+
 bool GPUSupportedFeatures::hasForBinding(
     ScriptState* script_state,
     const String& feature,
     ExceptionState& exception_state) const {
-  DCHECK(feature);
-  return features_.find(feature) != features_.end();
+  return has(feature);
 }
 
 GPUSupportedFeatures::IterationSource::IterationSource(

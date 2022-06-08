@@ -205,7 +205,8 @@ void AsDawnVertexBufferLayouts(GPUDevice* device,
 
 void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
                                          const GPUFragmentState* descriptor,
-                                         OwnedFragmentState* dawn_fragment) {
+                                         OwnedFragmentState* dawn_fragment,
+                                         ExceptionState& exception_state) {
   DCHECK(descriptor);
   DCHECK(dawn_fragment);
 
@@ -240,6 +241,10 @@ void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
       continue;
     }
     const GPUColorTargetState* color_target = maybe_color_target.Get();
+    if (!device->ValidateTextureFormatUsage(color_target->format(),
+                                            exception_state)) {
+      return;
+    }
     if (color_target->hasBlend()) {
       dawn_fragment->blend_states[i] = AsDawnType(color_target->blend());
       dawn_fragment->targets[i].blend = &dawn_fragment->blend_states[i];
@@ -312,7 +317,8 @@ void ConvertToDawnType(v8::Isolate* isolate,
   // Fragment
   if (webgpu_desc->hasFragment()) {
     GPUFragmentStateAsWGPUFragmentState(device, webgpu_desc->fragment(),
-                                        &dawn_desc_info->fragment);
+                                        &dawn_desc_info->fragment,
+                                        exception_state);
     dawn_desc_info->dawn_desc.fragment = &dawn_desc_info->fragment.dawn_desc;
   }
 }
@@ -327,7 +333,7 @@ GPURenderPipeline* GPURenderPipeline::Create(
 
   v8::Isolate* isolate = script_state->GetIsolate();
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
-                                 "GPUVertexStateDescriptor");
+                                 "GPURenderPipeline");
 
   GPURenderPipeline* pipeline;
   OwnedRenderPipelineDescriptor dawn_desc_info;

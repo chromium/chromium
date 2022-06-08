@@ -18,9 +18,11 @@
 namespace blink {
 
 WGPUBindGroupLayoutEntry AsDawnType(
+    GPUDevice* device,
     const GPUBindGroupLayoutEntry* webgpu_binding,
     Vector<std::unique_ptr<WGPUExternalTextureBindingLayout>>*
-        externalTextureBindingLayouts) {
+        externalTextureBindingLayouts,
+    ExceptionState& exception_state) {
   WGPUBindGroupLayoutEntry dawn_binding = {};
 
   dawn_binding.binding = webgpu_binding->binding();
@@ -49,6 +51,11 @@ WGPUBindGroupLayoutEntry AsDawnType(
   }
 
   if (webgpu_binding->hasStorageTexture()) {
+    if (!device->ValidateTextureFormatUsage(
+            webgpu_binding->storageTexture()->format(), exception_state)) {
+      return {};
+    }
+
     dawn_binding.storageTexture.access =
         AsDawnEnum(webgpu_binding->storageTexture()->access());
     dawn_binding.storageTexture.format =
@@ -74,15 +81,18 @@ WGPUBindGroupLayoutEntry AsDawnType(
 
 // TODO(crbug.com/1069302): Remove when unused.
 std::unique_ptr<WGPUBindGroupLayoutEntry[]> AsDawnType(
+    GPUDevice* device,
     const HeapVector<Member<GPUBindGroupLayoutEntry>>& webgpu_objects,
     Vector<std::unique_ptr<WGPUExternalTextureBindingLayout>>*
-        externalTextureBindingLayouts) {
+        externalTextureBindingLayouts,
+    ExceptionState& exception_state) {
   wtf_size_t count = webgpu_objects.size();
   std::unique_ptr<WGPUBindGroupLayoutEntry[]> dawn_objects(
       new WGPUBindGroupLayoutEntry[count]);
   for (wtf_size_t i = 0; i < count; ++i) {
     dawn_objects[i] =
-        AsDawnType(webgpu_objects[i].Get(), externalTextureBindingLayouts);
+        AsDawnType(device, webgpu_objects[i].Get(),
+                   externalTextureBindingLayouts, exception_state);
   }
   return dawn_objects;
 }
@@ -101,8 +111,12 @@ GPUBindGroupLayout* GPUBindGroupLayout::Create(
       externalTextureBindingLayouts;
   entry_count = static_cast<uint32_t>(webgpu_desc->entries().size());
   if (entry_count > 0) {
-    entries =
-        AsDawnType(webgpu_desc->entries(), &externalTextureBindingLayouts);
+    entries = AsDawnType(device, webgpu_desc->entries(),
+                         &externalTextureBindingLayouts, exception_state);
+  }
+
+  if (exception_state.HadException()) {
+    return nullptr;
   }
 
   std::string label;
