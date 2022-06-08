@@ -333,14 +333,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
             SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(
                     mSignInState.mCoreAccountInfo.getEmail());
 
-            boolean atLeastOneDataTypeSynced = !SyncService.get().getChosenDataTypes().isEmpty();
-            if (atLeastOneDataTypeSynced) {
-                // Turn on sync only when user has at least one data type to sync, this is
-                // consistent with {@link ManageSyncSettings#updataSyncStateFromSelectedModelTypes},
-                // in which we turn off sync we stop sync service when the user toggles off all the
-                // sync types.
-                SyncService.get().setSyncRequested(true);
-            }
+            SyncService.get().setSyncRequested(true);
 
             RecordUserAction.record("Signin_Signin_Succeed");
             RecordHistogram.recordEnumeratedHistogram("Signin.SigninCompletedAccessPoint",

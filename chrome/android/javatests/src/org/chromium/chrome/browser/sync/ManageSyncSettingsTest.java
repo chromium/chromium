@@ -162,7 +162,11 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testUnsettingAllDataTypesStopsSync() {
+    public void testUnsettingAllDataTypesDoesNotStopSync() {
+        // See crbug.com/1291946: The original MICE implementation stopped sync
+        // (by setting SyncRequested to false) when the user disabled all data
+        // types, for migration / backwards compatibility reasons. As of M104,
+        // that's no longer the case.
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
 
         ManageSyncSettings fragment = startManageSyncPreferences();
@@ -172,37 +176,8 @@ public class ManageSyncSettingsTest {
         for (CheckBoxPreference dataType : getDataTypes(fragment).values()) {
             mSyncTestRule.togglePreference(dataType);
         }
-        // All data types have been unchecked. Sync should stop.
-        Assert.assertFalse(SyncTestUtil.isSyncRequested());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Sync"})
-    public void testSettingAnyDataTypeStartsSync() {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mSyncTestRule.setChosenDataTypes(false, new HashSet<>());
-        mSyncTestRule.stopSync();
-        ManageSyncSettings fragment = startManageSyncPreferences();
-
-        CheckBoxPreference syncAutofill =
-                (CheckBoxPreference) fragment.findPreference(ManageSyncSettings.PREF_SYNC_AUTOFILL);
-        mSyncTestRule.togglePreference(syncAutofill);
-        // Sync should start after any data type is checked.
-        Assert.assertTrue(SyncTestUtil.isSyncRequested());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Sync"})
-    public void testTogglingSyncEverythingStartsSync() {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mSyncTestRule.setChosenDataTypes(false, new HashSet<>());
-        mSyncTestRule.stopSync();
-        ManageSyncSettings fragment = startManageSyncPreferences();
-
-        mSyncTestRule.togglePreference(getSyncEverything(fragment));
-        // Sync should start after setting sync everything toggle.
+        // All data types have been unchecked, but Sync itself should still be
+        // enabled.
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
     }
 

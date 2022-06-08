@@ -222,19 +222,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
             }
 
             findPreference(PREF_ADVANCED_CATEGORY).setVisible(true);
-
-            /**
-             * Prior to the launch of MOBILE_IDENTITY_CONSISTENCY, sync request was done through a
-             * toggle that has now been removed. Currently sync is requested if the user checks
-             * any data type to sync. If no data type is checked then sync is not requested.
-             *
-             * This code is should be kept in place until M104 so that the users that had toggled
-             * sync request off prior to MOBILE_IDENTITY_CONSISTENCY get a chance to migrate to the
-             * new flow.
-             */
-            if (!SyncService.get().isSyncRequested()) {
-                SyncService.get().setChosenDataTypes(false, new HashSet<>());
-            }
         }
 
         mGoogleActivityControls = findPreference(PREF_GOOGLE_ACTIVITY_CONTROLS);
@@ -395,24 +382,12 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
      * and {@link PersonalDataManager}.
      */
     private void updateSyncStateFromSelectedModelTypes() {
-        Set<Integer> selectedModelTypes = getSelectedModelTypes();
-        mSyncService.setChosenDataTypes(mSyncEverything.isChecked(), selectedModelTypes);
+        mSyncService.setChosenDataTypes(mSyncEverything.isChecked(), getSelectedModelTypes());
         // Note: mSyncPaymentsIntegration should be checked if mSyncEverything is checked, but if
         // mSyncEverything was just enabled, then that state may not have propagated to
         // mSyncPaymentsIntegration yet. See crbug.com/972863.
         PersonalDataManager.setPaymentsIntegrationEnabled(mSyncEverything.isChecked()
                 || (mSyncPaymentsIntegration.isChecked() && mSyncAutofill.isChecked()));
-
-        // For child profiles sync should always be on.
-        if (!Profile.getLastUsedRegularProfile().isChild()) {
-            boolean atLeastOneDataTypeEnabled =
-                    mSyncEverything.isChecked() || selectedModelTypes.size() > 0;
-            if (mSyncService.isSyncRequested() && !atLeastOneDataTypeEnabled) {
-                mSyncService.setSyncRequested(false);
-            } else if (!mSyncService.isSyncRequested() && atLeastOneDataTypeEnabled) {
-                mSyncService.setSyncRequested(true);
-            }
-        }
 
         // Some calls to setChosenDataTypes don't trigger syncStateChanged, so schedule update here.
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::updateSyncPreferences);
