@@ -30,12 +30,12 @@ class WebNavigationBrowserAgent;
 // Mediator used to generate activities.
 @interface ActivityServiceMediator : NSObject
 
-// Initializes a mediator instance with a |handler| used to execute action, a
-// |bookmarksHandler| to execute Bookmarks actions, a
-// |qrGenerationHandler| to execute QR generation actions, a |prefService| to
-// read settings and policies, and a |bookmarkModel| to retrieve bookmark
+// Initializes a mediator instance with a `handler` used to execute action, a
+// `bookmarksHandler` to execute Bookmarks actions, a
+// `qrGenerationHandler` to execute QR generation actions, a `prefService` to
+// read settings and policies, and a `bookmarkModel` to retrieve bookmark
 // states.
-// |baseViewController| can be passed to activities which need to present VCs.
+// `baseViewController` can be passed to activities which need to present VCs.
 - (instancetype)initWithHandler:(id<BrowserCommands, FindInPageCommands>)handler
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
@@ -50,33 +50,33 @@ class WebNavigationBrowserAgent;
 @property(nonatomic, weak) DefaultBrowserPromoNonModalScheduler* promoScheduler;
 
 // Generates an array of activity items to be shared via an activity view for
-// the given objects in |dataItems|.
+// the given objects in `dataItems`.
 - (NSArray<id<ChromeActivityItemSource>>*)activityItemsForDataItems:
     (NSArray<ShareToData*>*)dataItems;
 
 // Generates an array of activities to be added to the activity view for the
-// given objects in |dataItems|. The items returned will be those supported
-// by all objects in |dataItems|.
+// given objects in `dataItems`. The items returned will be those supported
+// by all objects in `dataItems`.
 - (NSArray*)applicationActivitiesForDataItems:(NSArray<ShareToData*>*)dataItems;
 
 // Generates an array of activity items to be shared via an activity view for
-// the given |data|.
+// the given `data`.
 - (NSArray<ChromeActivityImageSource*>*)activityItemsForImageData:
     (ShareImageData*)data;
 
 // Generates an array of activities to be added to the activity view for the
-// given |data|.
+// given `data`.
 - (NSArray*)applicationActivitiesForImageData:(ShareImageData*)data;
 
-// Returns the union of excluded activity types given |items| to share.
+// Returns the union of excluded activity types given `items` to share.
 - (NSSet*)excludedActivityTypesForItems:
     (NSArray<id<ChromeActivityItemSource>>*)items;
 
-// Handles metric reporting when a sharing |scenario| is initiated.
+// Handles metric reporting when a sharing `scenario` is initiated.
 - (void)shareStartedWithScenario:(ActivityScenario)scenario;
 
-// Handles completion of a share |scenario| with a given action's
-// |activityType|. The value of |completed| represents whether the activity
+// Handles completion of a share `scenario` with a given action's
+// `activityType`. The value of `completed` represents whether the activity
 // was completed successfully or not.
 - (void)shareFinishedWithScenario:(ActivityScenario)scenario
                      activityType:(NSString*)activityType

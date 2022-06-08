@@ -47,13 +47,13 @@ class BookmarkActivityTest : public BookmarkIOSUnitTest {
         bookmarks::prefs::kEditBookmarksEnabled, true);
   }
 
-  // Sets the edit bookmarks pref to |canEdit|.
+  // Sets the edit bookmarks pref to `canEdit`.
   void SetCanEditBookmarkPref(bool canEdit) {
     testing_pref_service_.SetBoolean(bookmarks::prefs::kEditBookmarksEnabled,
                                      canEdit);
   }
 
-  // Creates a BookmarkActivity instance with the given |URL|.
+  // Creates a BookmarkActivity instance with the given `URL`.
   BookmarkActivity* CreateActivity(const GURL& URL) {
     return [[BookmarkActivity alloc] initWithURL:URL
                                            title:kTestTitle

@@ -11,11 +11,11 @@
 // Records a histogram metric for the current scenario.
 void RecordScenarioInitiated(ActivityScenario scenario);
 
-// Records the given activity |type| for a |scenario|.
+// Records the given activity `type` for a `scenario`.
 void RecordActivityForScenario(activity_type_util::ActivityType type,
                                ActivityScenario scenario);
 
-// Records the given activity |type| for a |scenario|.
+// Records the given activity `type` for a `scenario`.
 void RecordCancelledScenario(ActivityScenario scenario);
 
 #endif  // IOS_CHROME_BROWSER_UI_ACTIVITY_SERVICES_ACTIVITY_SERVICE_HISTOGRAMS_H_

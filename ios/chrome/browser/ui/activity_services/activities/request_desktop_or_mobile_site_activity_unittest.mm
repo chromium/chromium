@@ -62,7 +62,7 @@ class RequestDesktopOrMobileSiteActivityTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   WebNavigationBrowserAgent* agent_;
-  // Navigation manager for the web state at index 0 in |browser_|'s web state
+  // Navigation manager for the web state at index 0 in `browser_`'s web state
   // list.
   web::FakeNavigationManager* navigation_manager_;
 };

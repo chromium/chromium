@@ -26,7 +26,7 @@ class SendTabToSelfActivityTest : public PlatformTest {
     mocked_handler_ = OCMStrictProtocolMock(@protocol(BrowserCommands));
   }
 
-  // Creates a ShareToData instance with |can_send_tab_to_self| set.
+  // Creates a ShareToData instance with `can_send_tab_to_self` set.
   ShareToData* CreateData(bool can_send_tab_to_self) {
     return [[ShareToData alloc] initWithShareURL:GURL("https://www.google.com/")
                                       visibleURL:GURL("https://google.com/")

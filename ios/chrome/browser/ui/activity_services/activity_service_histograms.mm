@@ -37,7 +37,7 @@ const char kShareTabGridItemActionsHistogram[] =
 const char kShareTabGridSelectionModeActionsHistogram[] =
     "Mobile.Share.TabGridSelectionMode.Actions";
 
-// Enum representing an aggregation of the |ActivityType| enum values in a way
+// Enum representing an aggregation of the `ActivityType` enum values in a way
 // that is relevant for metric collection. Current values should not
 // be renumbered. Please keep in sync with "IOSShareAction" in
 // src/tools/metrics/histograms/enums.xml.

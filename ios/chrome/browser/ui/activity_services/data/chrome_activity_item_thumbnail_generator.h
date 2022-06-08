@@ -16,7 +16,7 @@ class WebState;
 // thumbnail given WebState.
 @interface ChromeActivityItemThumbnailGenerator : NSObject
 
-// Default initializer. |webState| must not be nullptr.
+// Default initializer. `webState` must not be nullptr.
 - (instancetype)initWithWebState:(web::WebState*)webState
     NS_DESIGNATED_INITIALIZER;
 

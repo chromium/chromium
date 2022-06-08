@@ -13,8 +13,8 @@
 // Activity that sends the tab to another of the user's devices.
 @interface SendTabToSelfActivity : UIActivity
 
-// Initializes the send tab to self activity with the given |data| and the
-// |handler| that is used to add the tab to the other device.
+// Initializes the send tab to self activity with the given `data` and the
+// `handler` that is used to add the tab to the other device.
 - (instancetype)initWithData:(ShareToData*)data
                      handler:(id<BrowserCommands>)handler
     NS_DESIGNATED_INITIALIZER;

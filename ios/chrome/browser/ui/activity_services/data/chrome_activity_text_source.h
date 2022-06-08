@@ -12,7 +12,7 @@
 // This UIActivityItemSource-conforming object conforms to UTType public.text.
 @interface ChromeActivityTextSource : NSObject <ChromeActivityItemSource>
 
-// Default initializer. |text| must not be nil.
+// Default initializer. `text` must not be nil.
 - (instancetype)initWithText:(NSString*)text;
 
 @end

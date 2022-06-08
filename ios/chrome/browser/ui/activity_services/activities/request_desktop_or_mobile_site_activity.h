@@ -16,7 +16,7 @@ class WebNavigationBrowserAgent;
 @interface RequestDesktopOrMobileSiteActivity : UIActivity
 
 // Initializes an activity to change between Mobile versus Desktop user agent,
-// with the current |userAgent| and |handler| to execute the action.
+// with the current `userAgent` and `handler` to execute the action.
 - (instancetype)initWithUserAgent:(web::UserAgentType)userAgent
                           handler:(id<BrowserCommands>)handler
                   navigationAgent:(WebNavigationBrowserAgent*)agent

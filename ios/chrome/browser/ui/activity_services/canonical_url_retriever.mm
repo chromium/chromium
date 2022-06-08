@@ -25,13 +25,13 @@ const char16_t kCanonicalURLScript[] =
     u"  return linkNode ? linkNode.getAttribute(\"href\") : \"\";"
     u"})()";
 
-// Logs |result| in the Mobile.CanonicalURLResult histogram.
+// Logs `result` in the Mobile.CanonicalURLResult histogram.
 void LogCanonicalUrlResultHistogram(ui_metrics::CanonicalURLResult result) {
   UMA_HISTOGRAM_ENUMERATION(ui_metrics::kCanonicalURLResultHistogram, result,
                             ui_metrics::CANONICAL_URL_RESULT_COUNT);
 }
 
-// Converts a |value| to a GURL. Returns an empty GURL if |value| is not a valid
+// Converts a `value` to a GURL. Returns an empty GURL if `value` is not a valid
 // HTTPS URL, indicating that retrieval failed. This function also handles
 // logging retrieval failures if applicable.
 GURL UrlFromValue(const base::Value* value) {
@@ -43,7 +43,7 @@ GURL UrlFromValue(const base::Value* value) {
 
     // This variable is required for metrics collection in order to distinguish
     // between the no canonical URL found and the invalid canonical URL found
-    // cases. The |canonical_url| GURL cannot be relied upon to distinguish
+    // cases. The `canonical_url` GURL cannot be relied upon to distinguish
     // between these cases because GURLs created with invalid URLs can be
     // constructed as empty GURLs.
     canonical_url_found = true;

@@ -44,7 +44,7 @@ class CanonicalURLRetrieverTest : public PlatformTest {
   void SetUp() override { PlatformTest::SetUp(); }
 
  protected:
-  // Retrieves the canonical URL and returns it through the |url| out parameter.
+  // Retrieves the canonical URL and returns it through the `url` out parameter.
   // Returns whether the operation was successful.
   bool RetrieveCanonicalUrl(GURL* url) {
     __block GURL result;

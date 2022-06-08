@@ -28,7 +28,7 @@ class PrintActivityTest : public PlatformTest {
     mocked_handler_ = OCMStrictProtocolMock(@protocol(BrowserCommands));
   }
 
-  // Creates a ShareToData instance with |is_page_printable| set.
+  // Creates a ShareToData instance with `is_page_printable` set.
   ShareToData* CreateData(bool is_page_printable) {
     return [[ShareToData alloc] initWithShareURL:GURL("https://www.google.com/")
                                       visibleURL:GURL("https://google.com/")

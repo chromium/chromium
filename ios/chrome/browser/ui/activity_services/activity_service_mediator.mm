@@ -87,8 +87,8 @@
     (NSArray<ShareToData*>*)dataItems {
   NSMutableArray* items = [[NSMutableArray alloc] init];
 
-  // The |additionalText| is not added when sharing multiple URLs since items
-  // are not associated with each other and the |additionalText| is not likely
+  // The `additionalText` is not added when sharing multiple URLs since items
+  // are not associated with each other and the `additionalText` is not likely
   // be meaningful without the context of the page it came from.
   if (dataItems.count == 1 && dataItems.firstObject.additionalText) {
     [items addObject:[[ChromeActivityTextSource alloc]
