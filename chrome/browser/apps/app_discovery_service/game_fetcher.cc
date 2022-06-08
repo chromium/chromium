@@ -212,8 +212,8 @@ bool GameFetcher::AvailableInCurrentLocale(
   // `test_country_` overrides the current locale if it is present.
   int current_country_id =
       test_country_.has_value()
-          ? country_codes::GetCurrentCountryID()
-          : country_codes::CountryStringToCountryID(test_country_.value());
+          ? country_codes::CountryStringToCountryID(test_country_.value())
+          : country_codes::GetCurrentCountryID();
 
   if (current_country_id == -1) {
     // Try using the timezone to get the country as a fallback.
