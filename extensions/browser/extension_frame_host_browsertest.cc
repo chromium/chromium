@@ -162,7 +162,8 @@ class ExtensionFrameHostBrowserTest : public ShellApiTest {
     ExtensionWebContentsObserver* observer =
         extensions_browser_client_->GetExtensionWebContentsObserver(
             host->host_contents());
-    static_cast<TestExtensionFrameHost*>(observer->extension_frame_host_.get())
+    static_cast<TestExtensionFrameHost*>(
+        observer->extension_frame_host_for_testing())
         ->SetInvalidRequest(method_name);
   }
 

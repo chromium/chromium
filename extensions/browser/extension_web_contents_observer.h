@@ -101,6 +101,10 @@ class ExtensionWebContentsObserver
   // ExtensionWebContentsObserver has already been initialized.
   void ListenToWindowIdChangesFrom(sessions::SessionTabHelper* helper);
 
+  ExtensionFrameHost* extension_frame_host_for_testing() {
+    return extension_frame_host_.get();
+  }
+
  protected:
   explicit ExtensionWebContentsObserver(content::WebContents* web_contents);
   ~ExtensionWebContentsObserver() override;
@@ -143,8 +147,6 @@ class ExtensionWebContentsObserver
 
  private:
   using PassKey = base::PassKey<ExtensionWebContentsObserver>;
-
-  friend class ExtensionFrameHostBrowserTest;
 
   void OnWindowIdChanged(const SessionID& id);
 
