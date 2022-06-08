@@ -87,7 +87,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="13" label="kMissingDescriptionLang">Lang is missing.</int>
   <int value="14" label="kMissingDescriptionSource">Source is missing.</int>
   <int value="15" label="kMissingBannerInfo">Banner info is missing.</int>
-  <int value="16" label="kInvalidMoreAbout">MoreAbout is invalid.</int>
+  <int value="16" label="kInvalidMoreAbout">MoreAbout URL is invalid.</int>
+  <int value="17" label="kMissingMoreAbout">MoreAbout URL is missing.</int>
 </enum>
 
 <enum name="AcceleratedFixedRootBackground">

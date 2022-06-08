@@ -112,6 +112,9 @@ class PageInfoViewFactory {
   // Returns the icon for 'About this site' button.
   static const ui::ImageModel GetAboutThisSiteIcon();
 
+  // Returns the icon for 'About this page' button.
+  static const ui::ImageModel GetAboutThisPageIcon();
+
   // Returns the icon for the history button.
   static const ui::ImageModel GetHistoryIcon();
 
