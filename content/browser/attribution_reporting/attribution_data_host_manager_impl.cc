@@ -131,6 +131,12 @@ absl::optional<std::vector<AttributionAggregatableTriggerData>> FromMojo(
   return aggregatable_trigger_data;
 }
 
+enum class RegistrationType {
+  kNone,
+  kSource,
+  kTrigger,
+};
+
 }  // namespace
 
 struct AttributionDataHostManagerImpl::FrozenContext {
@@ -147,12 +153,10 @@ struct AttributionDataHostManagerImpl::FrozenContext {
   // host.
   //
   // For receivers with `source_type` `AttributionSourceType::kEvent`,
-  // initialized to `absl::nullopt`. If the first call is to
-  // `AttributionDataHostManagerImpl::SourceDataAvailable()`, set to the
-  // source's destination. If the first call is to
-  // `AttributionDataHostManagerImpl::TriggerDataAvailable()`, set to an opaque
-  // origin.
-  absl::optional<url::Origin> destination;
+  // this is opaque by default.
+  url::Origin destination;
+
+  RegistrationType registration_type = RegistrationType::kNone;
 
   int num_data_registered = 0;
 
@@ -279,30 +283,23 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   FrozenContext& context = receivers_.current_context();
   DCHECK(network::IsOriginPotentiallyTrustworthy(context.context_origin));
 
-  switch (context.source_type) {
-    case AttributionSourceType::kNavigation:
-      DCHECK(context.destination.has_value());
-
-      if (net::SchemefulSite(data->destination) !=
-          net::SchemefulSite(*context.destination)) {
-        RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
-        return;
-      }
-      break;
-    case AttributionSourceType::kEvent:
-      if (!context.destination.has_value()) {
-        context.destination = data->destination;
-      } else if (data->destination != *context.destination) {
-        RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
-        if (context.destination->opaque()) {
-          mojo::ReportBadMessage(
-              "AttributionDataHost: Cannot register sources after registering "
-              "a trigger.");
-        }
-        return;
-      }
-      break;
+  if (context.source_type == AttributionSourceType::kNavigation) {
+    if (net::SchemefulSite(data->destination) !=
+        net::SchemefulSite(context.destination)) {
+      RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
+      return;
+    }
   }
+
+  if (context.registration_type == RegistrationType::kTrigger) {
+    RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
+    mojo::ReportBadMessage(
+        "AttributionDataHost: Cannot register sources after registering "
+        "a trigger.");
+    return;
+  }
+
+  context.registration_type = RegistrationType::kSource;
 
   base::Time source_time = base::Time::Now();
 
@@ -364,15 +361,17 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     return;
   }
 
-  if (!context.destination.has_value()) {
-    context.destination = url::Origin();
-    OnSourceEligibleDataHostFinished(context.register_time);
-  } else if (!context.destination->opaque()) {
+  if (context.registration_type == RegistrationType::kSource) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kContextError);
     mojo::ReportBadMessage(
-        "AttributionDataHost: Cannot register triggers after registering a "
-        "source.");
+        "AttributionDataHost: Cannot register triggers after registering "
+        "a source.");
     return;
+  }
+
+  if (context.registration_type == RegistrationType::kNone) {
+    OnSourceEligibleDataHostFinished(context.register_time);
+    context.registration_type = RegistrationType::kTrigger;
   }
 
   absl::optional<AttributionFilterData> filters =
@@ -517,9 +516,9 @@ void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
   DCHECK_GE(context.num_data_registered, 0);
 
   if (context.num_data_registered > 0) {
-    DCHECK(context.destination.has_value());
+    DCHECK_NE(context.registration_type, RegistrationType::kNone);
 
-    if (context.destination->opaque()) {
+    if (context.registration_type == RegistrationType::kTrigger) {
       base::UmaHistogramExactLinear("Conversions.RegisteredTriggersPerDataHost",
                                     context.num_data_registered, 101);
     } else {
@@ -529,7 +528,7 @@ void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
   }
 
   // If the receiver was handling triggers, there's nothing to do here.
-  if (context.destination.has_value() && context.destination->opaque())
+  if (context.registration_type == RegistrationType::kTrigger)
     return;
 
   OnSourceEligibleDataHostFinished(context.register_time);

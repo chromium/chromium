@@ -328,7 +328,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
-       SourceDataHost_ReceiverDestinationCheckPerformed) {
+       SourceDataHost_ReceiverDestinationsMayDiffer) {
   base::HistogramTester histograms;
 
   Checkpoint checkpoint;
@@ -339,9 +339,9 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(mock_manager_, HandleSource);
     EXPECT_CALL(checkpoint, Call(2));
-    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+    EXPECT_CALL(mock_manager_, HandleSource);
     EXPECT_CALL(checkpoint, Call(3));
-    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+    EXPECT_CALL(mock_manager_, HandleSource);
   }
 
   auto page_origin = url::Origin::Create(GURL("https://page.example"));
@@ -378,12 +378,10 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.data_host.FlushForTesting();
   }
 
-  histograms.ExpectUniqueSample("Conversions.RegisteredSourcesPerDataHost", 2,
+  histograms.ExpectUniqueSample("Conversions.RegisteredSourcesPerDataHost", 4,
                                 1);
   // kSuccess = 0.
-  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 0, 2);
-  // kContextError = 2.
-  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 2, 2);
+  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 0, 4);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
