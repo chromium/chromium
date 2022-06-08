@@ -2244,7 +2244,8 @@ class ScrubbyScrollBar extends View {
    */
   onWindowTouchEnd(event) {
     this._thumbStyleTopAnimator = new TransitionAnimator();
-    this._thumbStyleTopAnimator.step = this.onThumbStyleTopAnimationStep;
+    this._thumbStyleTopAnimator.step =
+        this.onThumbStyleTopAnimationStep.bind(this);
     this._thumbStyleTopAnimator.setFrom(this.thumb.offsetTop);
     this._thumbStyleTopAnimator.setTo((this._height - this._thumbHeight) / 2);
     this._thumbStyleTopAnimator.timingFunction =
