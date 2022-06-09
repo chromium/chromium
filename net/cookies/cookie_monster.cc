@@ -2405,9 +2405,18 @@ void CookieMonster::OnConvertPartitionedCookiesToUnpartitioned(
   // We only want cookies whose domain is a match for the entire URL host.
   // This should exclude cookies set on subdomains.
   std::vector<CanonicalCookie*> cookie_ptrs;
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+  bool delegate_treats_url_as_trustworthy =
+      cookie_access_delegate() &&
+      cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(url);
+  CookieAccessParams accesss_params{
+      net::CookieAccessSemantics::UNKNOWN, delegate_treats_url_as_trustworthy,
+      CookieSamePartyStatus::kNoSamePartyEnforcement};
   for (auto* cookie : cookie_ptrs_for_site) {
-    if (cookie->Domain() == url.host())
+    if (cookie->IncludeForRequestURL(url, options, accesss_params)
+            .status.IsInclude()) {
       cookie_ptrs.push_back(cookie);
+    }
   }
 
   std::map<std::tuple<std::string, std::string, std::string>,
@@ -2483,13 +2492,14 @@ void CookieMonster::OnConvertPartitionedCookiesToUnpartitioned(
       CanonicalCookie* cc = cur_cookie_it->second.get();
       ++cookie_it;
 
-      if (cc->Domain() != url.host())
+      if (!cc->IncludeForRequestURL(url, options, accesss_params)
+               .status.IsInclude() ||
+          cc->PartitionKey()->nonce()) {
         continue;
-
-      if (!cc->PartitionKey()->nonce()) {
-        InternalDeletePartitionedCookie(cur_partition_it, cur_cookie_it, true,
-                                        DELETE_COOKIE_EXPLICIT);
       }
+
+      InternalDeletePartitionedCookie(cur_partition_it, cur_cookie_it, true,
+                                      DELETE_COOKIE_EXPLICIT);
     }
   }
 }

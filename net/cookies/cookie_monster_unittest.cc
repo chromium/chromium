@@ -5543,7 +5543,33 @@ TEST_F(CookieMonsterTest, ConvertPartitionedCookiesToUnpartitioned) {
   EXPECT_EQ(cookies.size(), 6u);
   EXPECT_EQ(cookies[5].Name(), "__Host-G");
   EXPECT_EQ(cookies[5].Value(), "0");
-  EXPECT_FALSE(cookies[4].IsPartitioned());
+  EXPECT_FALSE(cookies[5].IsPartitioned());
+
+  // Test that a Domain cookie is converted if one of its subdomains converts
+  // their cookies.
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), https_www_foo_.url(),
+      "H=0; Secure; Path=/; SameSite=None; Partitioned; Domain=foo.com",
+      options, absl::nullopt, absl::nullopt,
+      CookiePartitionKey::FromURLForTesting(GURL("https://example.com"))));
+  // Include a hostname bound cookie as well to test interaction.
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), https_www_foo_.url(),
+      "H=1; Secure; Path=/; SameSite=None; Partitioned", options, absl::nullopt,
+      absl::nullopt,
+      CookiePartitionKey::FromURLForTesting(GURL("https://example.com"))));
+
+  cm->ConvertPartitionedCookiesToUnpartitioned(https_www_foo_.url());
+
+  cookies = GetAllCookiesForURL(cm.get(), https_www_foo_.url(),
+                                CookiePartitionKeyCollection::ContainsAll());
+  EXPECT_EQ(cookies.size(), 8u);
+  EXPECT_EQ(cookies[6].Name(), "H");
+  EXPECT_EQ(cookies[6].Value(), "0");
+  EXPECT_FALSE(cookies[6].IsPartitioned());
+  EXPECT_EQ(cookies[7].Name(), "H");
+  EXPECT_EQ(cookies[7].Value(), "1");
+  EXPECT_FALSE(cookies[7].IsPartitioned());
 }
 
 // Tests which use this class verify the expiry date clamping behavior when

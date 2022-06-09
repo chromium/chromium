@@ -514,7 +514,6 @@ class NET_EXPORT CanonicalCookie {
                                        bool partition_has_nonce);
   static bool IsCookiePartitionedValid(const GURL& url,
                                        bool secure,
-                                       const std::string& domain,
                                        const std::string& path,
                                        bool is_partitioned,
                                        bool is_same_party,

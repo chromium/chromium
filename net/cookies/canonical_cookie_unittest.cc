@@ -663,14 +663,16 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED}));
 
-  // Invalid Partitioned attribute: Domain cookie.
+  // Partitioned attribute: Domain cookie.
   status = CookieInclusionStatus();
   cookie = CanonicalCookie::Create(
-      url, "A=2; Partitioned; Path=/; Domain=example.com", creation_time,
-      server_time, partition_key, &status);
-  EXPECT_FALSE(cookie.get());
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED}));
+      url, "A=2; Partitioned; Path=/; Secure; Domain=example.com",
+      creation_time, server_time, partition_key, &status);
+  EXPECT_TRUE(cookie.get());
+  LOG(ERROR) << status;
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(cookie->IsPartitioned());
+  EXPECT_EQ(partition_key, cookie->PartitionKey());
 
   // Invalid Partitioned attribute: SameParty cookie.
   status = CookieInclusionStatus();
@@ -3005,16 +3007,16 @@ TEST(CanonicalCookieTest, IsCanonical) {
                        GURL("https://toplevelsite.com")))
                    ->IsCanonical());
 
-  // Partitioned attribute invalid, Domain attribute also included.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", ".x.y", "/", base::Time(), base::Time(),
-                   base::Time(), base::Time(), /*secure=*/true,
-                   /*httponly=*/false, CookieSameSite::UNSPECIFIED,
-                   COOKIE_PRIORITY_LOW,
-                   /*same_party=*/false,
-                   CookiePartitionKey::FromURLForTesting(
-                       GURL("https://toplevelsite.com")))
-                   ->IsCanonical());
+  // Partitioned attribute is valid when Domain attribute also included.
+  EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "A", "B", ".x.y", "/", base::Time(), base::Time(),
+                  base::Time(), base::Time(), /*secure=*/true,
+                  /*httponly=*/false, CookieSameSite::UNSPECIFIED,
+                  COOKIE_PRIORITY_LOW,
+                  /*same_party=*/false,
+                  CookiePartitionKey::FromURLForTesting(
+                      GURL("https://toplevelsite.com")))
+                  ->IsCanonical());
 
   // Partitioned attribute invalid, SameParty attribute also included.
   EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -3755,9 +3757,9 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED}));
-  // Invalid: Domain attribute present.
+  // Domain attribute present is still valid.
   status = CookieInclusionStatus();
-  EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
+  EXPECT_TRUE(CanonicalCookie::CreateSanitizedCookie(
       GURL("https://www.foo.com"), "A", "B", ".foo.com", "/", two_hours_ago,
       one_hour_from_now, one_hour_ago, /*secure=*/true, /*http_only=*/false,
       CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
@@ -3765,8 +3767,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       absl::optional<CookiePartitionKey>(CookiePartitionKey::FromURLForTesting(
           GURL("https://toplevelsite.com"))),
       &status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED}));
+  EXPECT_TRUE(status.IsInclude());
   // Invalid: SameParty attribute present.
   status = CookieInclusionStatus();
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
