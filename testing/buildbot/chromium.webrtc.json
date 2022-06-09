@@ -360,7 +360,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11|Mac-10.16|Mac-12"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -385,7 +385,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11|Mac-10.16|Mac-12"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -409,7 +409,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11|Mac-10.16|Mac-12"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -434,7 +434,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11|Mac-10.16|Mac-12",
+              "os": "Mac-11|Mac-10.16",
               "pool": "WebRTC-chromium"
             }
           ],
@@ -457,7 +457,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11|Mac-10.16|Mac-12"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -482,7 +482,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11|Mac-10.16|Mac-12"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -508,7 +508,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11|Mac-10.16|Mac-12"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -530,7 +530,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11|Mac-10.16|Mac-12"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -552,7 +552,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11|Mac-10.16|Mac-12"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -591,9 +591,11 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "os": "Windows-10"
-          },
+          "dimension_sets": [
+            {
+              "os": "Windows-10"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -613,9 +615,11 @@
         "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "os": "Windows-10"
-          },
+          "dimension_sets": [
+            {
+              "os": "Windows-10"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -634,9 +638,11 @@
         "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "os": "Windows-10"
-          },
+          "dimension_sets": [
+            {
+              "os": "Windows-10"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests_apprtc",
@@ -658,12 +664,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "os": "Windows-10",
               "pool": "WebRTC-chromium"
             }
           ],
-          "dimensions": {
-            "os": "Windows-10"
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "capture_unittests",
@@ -680,9 +684,11 @@
         "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "os": "Windows-10"
-          },
+          "dimension_sets": [
+            {
+              "os": "Windows-10"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
@@ -702,9 +708,11 @@
         "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "os": "Windows-10"
-          },
+          "dimension_sets": [
+            {
+              "os": "Windows-10"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
@@ -725,9 +733,11 @@
         "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "os": "Windows-10"
-          },
+          "dimension_sets": [
+            {
+              "os": "Windows-10"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
@@ -744,9 +754,11 @@
         "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "os": "Windows-10"
-          },
+          "dimension_sets": [
+            {
+              "os": "Windows-10"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
@@ -763,9 +775,11 @@
         "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "os": "Windows-10"
-          },
+          "dimension_sets": [
+            {
+              "os": "Windows-10"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",

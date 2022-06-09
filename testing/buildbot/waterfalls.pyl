@@ -5740,7 +5740,7 @@
       'WebRTC Chromium Mac Tester': {
         'mixins': [
           'chromium-webrtc-rel-mac',
-          'mac_11_or_12_x64',
+          'mac_11_x64',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
@@ -5753,9 +5753,11 @@
       },
       'WebRTC Chromium Win10 Tester': {
         'swarming': {
-          'dimensions': {
-            'os': 'Windows-10',
-          },
+          'dimension_sets': [
+            {
+              'os': 'Windows-10',
+            },
+          ]
         },
         'mixins': [
           'chromium-webrtc-rel-win10',
