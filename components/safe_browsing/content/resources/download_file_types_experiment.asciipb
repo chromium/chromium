@@ -12,7 +12,7 @@
 ## version id is larger than the version id in download_file_types.asciipb. If
 ## there isn't an ongoing experiment, this version id is equal to the version id
 ## in download_file_types.asciipb.
-version_id: 50
+version_id: 51
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -2865,6 +2865,39 @@ file_types {
     platform: PLATFORM_WINDOWS
     danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: ALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  # Windows troubleshooting component
+  extension: "diagcab"
+  uma_value: 399
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  # Windows troubleshooting
+  extension: "diagcfg"
+  uma_value: 400
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  # Windows troubleshooting component
+  extension: "diagpkg"
+  uma_value: 401
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
 
