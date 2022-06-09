@@ -200,7 +200,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest, SetCaretPosition) {
   SendDefaultViewportMessage();
 
   EXPECT_CALL(*engine, SetCaretPosition(gfx::Point(2, 3)));
-  fake_plugin_.SetCaretPosition({304.0f, 59.0f});
+  fake_plugin_.SetCaretPosition({4.0f, 3.0f});
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, SetCaretPositionNegativeOrigin) {
@@ -211,7 +211,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest, SetCaretPositionNegativeOrigin) {
   SendDefaultViewportMessage();
 
   EXPECT_CALL(*engine, SetCaretPosition(gfx::Point(2, 3)));
-  fake_plugin_.SetCaretPosition({-296.0f, -53.0f});
+  fake_plugin_.SetCaretPosition({4.0f, 3.0f});
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, SetCaretPositionFractional) {
@@ -222,7 +222,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest, SetCaretPositionFractional) {
   SendDefaultViewportMessage();
 
   EXPECT_CALL(*engine, SetCaretPosition(gfx::Point(1, 2)));
-  fake_plugin_.SetCaretPosition({303.9f, 58.9f});
+  fake_plugin_.SetCaretPosition({3.9f, 2.9f});
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, SetCaretPositionScaled) {
@@ -233,7 +233,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest, SetCaretPositionScaled) {
   SendDefaultViewportMessage();
 
   EXPECT_CALL(*engine, SetCaretPosition(gfx::Point(4, 6)));
-  fake_plugin_.SetCaretPosition({304.0f, 59.0f});
+  fake_plugin_.SetCaretPosition({4.0f, 3.0f});
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, SelectionChanged) {
@@ -247,13 +247,13 @@ TEST_F(PdfViewPluginBaseWithEngineTest, SelectionChanged) {
 
   AccessibilityViewportInfo viewport_info;
   EXPECT_CALL(fake_plugin_,
-              NotifySelectionChanged(gfx::PointF(292.0f, 36.0f), 40,
-                                     gfx::PointF(352.0f, 116.0f), 80));
+              NotifySelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
+                                     gfx::PointF(52.0f, 60.0f), 80));
   EXPECT_CALL(fake_plugin_, SetAccessibilityViewportInfo)
       .WillOnce(SaveArg<0>(&viewport_info));
   fake_plugin_.SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80});
 
-  EXPECT_EQ(gfx::Point(-300, -56), viewport_info.scroll);
+  EXPECT_EQ(gfx::Point(), viewport_info.scroll);
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, SelectionChangedNegativeOrigin) {
@@ -267,13 +267,13 @@ TEST_F(PdfViewPluginBaseWithEngineTest, SelectionChangedNegativeOrigin) {
 
   AccessibilityViewportInfo viewport_info;
   EXPECT_CALL(fake_plugin_,
-              NotifySelectionChanged(gfx::PointF(-308.0f, -76.0f), 40,
-                                     gfx::PointF(-248.0f, 4.0f), 80));
+              NotifySelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
+                                     gfx::PointF(52.0f, 60.0f), 80));
   EXPECT_CALL(fake_plugin_, SetAccessibilityViewportInfo)
       .WillOnce(SaveArg<0>(&viewport_info));
   fake_plugin_.SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80});
 
-  EXPECT_EQ(gfx::Point(300, 56), viewport_info.scroll);
+  EXPECT_EQ(gfx::Point(), viewport_info.scroll);
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, SelectionChangedScaled) {
@@ -287,13 +287,13 @@ TEST_F(PdfViewPluginBaseWithEngineTest, SelectionChangedScaled) {
 
   AccessibilityViewportInfo viewport_info;
   EXPECT_CALL(fake_plugin_,
-              NotifySelectionChanged(gfx::PointF(292.0f, 36.0f), 40,
-                                     gfx::PointF(352.0f, 116.0f), 80));
+              NotifySelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
+                                     gfx::PointF(52.0f, 60.0f), 80));
   EXPECT_CALL(fake_plugin_, SetAccessibilityViewportInfo)
       .WillOnce(SaveArg<0>(&viewport_info));
   fake_plugin_.SelectionChanged({-20, -40, 60, 80}, {100, 120, 140, 160});
 
-  EXPECT_EQ(gfx::Point(-300, -56), viewport_info.scroll);
+  EXPECT_EQ(gfx::Point(), viewport_info.scroll);
 }
 
 }  // namespace chrome_pdf

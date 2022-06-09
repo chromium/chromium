@@ -325,9 +325,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // `plugin_rect_`, as this exposes the unintuitive "paint offset."
   const gfx::Rect& plugin_rect() const { return plugin_rect_; }
 
-  // Gets the frame-relative offset of the plugin in device pixels.
-  virtual gfx::Vector2d plugin_offset_in_frame() const;
-
   // Sets the new zoom scale.
   void SetZoom(double scale);
 

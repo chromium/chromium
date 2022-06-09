@@ -89,7 +89,6 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -1061,10 +1060,6 @@ void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
 // TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
 bool PdfViewWebPlugin::full_frame() const {
   return full_frame_;
-}
-
-gfx::Vector2d PdfViewWebPlugin::plugin_offset_in_frame() const {
-  return gfx::Vector2d();
 }
 
 void PdfViewWebPlugin::OnViewportChanged(
