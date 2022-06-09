@@ -230,9 +230,6 @@
                   'third_party/blink/public/platform/modules/app_banner/|'\
                   'third_party/blink/renderer/modules/app_banner/',
     },
-    'base': {
-      'filepath': '^base/',
-    },
     'base_allocator': {
       'filepath': '^base/allocator',
     },
@@ -2226,7 +2223,6 @@
                         'rayankans+watch@chromium.org'],
     'banners': ['dominickn+watch-banners@chromium.org',
                 'pkotwicz+watch@chromium.org'],
-    'base': ['vmpstr+watch@chromium.org'],
     'base_allocator': ['wfh+watch@chromium.org',
                        'lizeb+watch@chromium.org'],
     'base_memory': ['gavinp+memory@chromium.org'],
@@ -2463,8 +2459,7 @@
                      'rnk@chromium.org',
                      'thakis@chromium.org',
                      'thestig@chromium.org',
-                     'ukai+watch@chromium.org',
-                     'vmpstr+watch@chromium.org'],
+                     'ukai+watch@chromium.org'],
     'clipboard': ['dcheng@chromium.org'],
     'components_deps': ['droger+watchlist@chromium.org'],
     'compositor_animator': ['mdjones+watch@chromium.org'],
@@ -2837,7 +2832,6 @@
     'structured_headers': ['iclelland+watch@chromium.org'],
     'styleguide': ['danakj+watch@chromium.org',
                    'jbroman+cpp@chromium.org',
-                   'vmpstr+watch@chromium.org',
                    'wfh+watch@chromium.org'],
     'styleguide_python': ['agrieve+watch@chromium.org',
                           'wnwen+watch@chromium.org'],
