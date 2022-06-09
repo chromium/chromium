@@ -1080,8 +1080,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
   EXPECT_DOUBLE_EQ(metadata->budget_to_charge, 0.0);
 
-  EXPECT_EQ("Promise did not resolve to an uint32 number.",
-            base::UTF16ToUTF8(console_observer.messages().back().message));
+  EXPECT_EQ(
+      "Promise resolved to a number outside the length of the input urls.",
+      base::UTF16ToUTF8(console_observer.messages().back().message));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
