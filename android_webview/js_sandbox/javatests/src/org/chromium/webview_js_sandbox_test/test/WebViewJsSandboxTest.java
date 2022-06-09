@@ -216,4 +216,14 @@ public class WebViewJsSandboxTest {
         }
         jsSandbox.close();
     }
+
+    @Test
+    @MediumTest
+    public void testFeatureDetection() throws Throwable {
+        ListenableFuture<AwJsSandbox> awJsSandboxFuture =
+                AwJsSandbox.newConnectedInstance(ContextUtils.getApplicationContext());
+        try (AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assert.assertTrue(jsSandbox.isIsolateTerminationSupported());
+        }
+    }
 }
