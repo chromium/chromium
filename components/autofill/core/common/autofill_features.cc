@@ -488,6 +488,15 @@ const base::Feature kAutofillSaveAndFillVPA{"AutofillSaveAndFillVPA",
 const base::Feature kAutofillSectionUponRedundantNameInfo{
     "AutofillSectionUponRedundantNameInfo", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls non-default Autofill API predictions. See crbug.com/1331322.
+const base::Feature kAutofillServerBehaviors{"AutofillServerBehaviors",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+// Chrome doesn't need to know the meaning of the value. Chrome only needs to
+// forward it to the Autofill API, to let the server know which group the client
+// belongs to.
+const base::FeatureParam<int> kAutofillServerBehaviorsParam{
+    &kAutofillServerBehaviors, "server_prediction_source", 0};
+
 // Enables or Disables (mostly for hermetic testing) autofill server
 // communication. The URL of the autofill server can further be controlled via
 // the autofill-server-url param. The given URL should specify the complete

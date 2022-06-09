@@ -196,6 +196,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_CONSIDER_PLACEHOLDER_FOR_PARSING,
                     "When enabled, Autofill local heuristics consider the placeholder attribute "
                             + "for determining field types."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_SERVER_BEHAVIORS,
+                    "When enabled, Autofill will request experimental "
+                            + "predictions from the Autofill API."),
             Flag.baseFeature(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                     "When enabled, merchant bound virtual cards will be offered in the keyboard "
                             + "accessory."),

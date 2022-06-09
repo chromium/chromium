@@ -176,6 +176,10 @@ COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillSaveAndFillVPA;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillSectionUponRedundantNameInfo;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillServerBehaviors;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int> kAutofillServerBehaviorsParam;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillServerCommunication;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillSharedAutofill;

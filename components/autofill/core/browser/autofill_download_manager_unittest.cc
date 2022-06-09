@@ -57,11 +57,12 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "url/third_party/mozilla/url_parse.h"
 
-using base::UTF8ToUTF16;
-using net::test_server::BasicHttpResponse;
-using net::test_server::EmbeddedTestServer;
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
+using ::base::UTF8ToUTF16;
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::EmbeddedTestServer;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
+using ::testing::ElementsAre;
 namespace autofill {
 
 using mojom::SubmissionSource;
@@ -1725,6 +1726,51 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
                                 AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount("Autofill.Query.Method", METHOD_GET, 1);
     histogram.ExpectBucketCount("Autofill.Query.WasInCache", CACHE_HIT, 1);
+  }
+}
+
+TEST_P(AutofillQueryTest, SendsExperimentFromFeatureParam) {
+  FormFieldData field;
+  field.label = u"First Name:";
+  field.name = u"firstname";
+  field.form_control_type = "text";
+
+  FormData form;
+  form.fields.push_back(field);
+
+  std::vector<std::unique_ptr<FormStructure>> form_structures;
+  form_structures.push_back(std::make_unique<FormStructure>(form));
+
+  {
+    SCOPED_TRACE("Query without experiment");
+    call_count_ = 0;
+    payloads_.clear();
+    ASSERT_TRUE(SendQueryRequest(form_structures));
+    EXPECT_EQ(1u, call_count_);
+
+    ASSERT_EQ(1u, payloads_.size());
+    AutofillPageQueryRequest query_contents;
+    ASSERT_TRUE(query_contents.ParseFromString(payloads_[0]));
+    EXPECT_THAT(query_contents.experiments(), ElementsAre());
+  }
+
+  {
+    SCOPED_TRACE("Query with experiment");
+
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeatureWithParameters(
+        features::kAutofillServerBehaviors,
+        {{"server_prediction_source", "19890601"}});
+
+    call_count_ = 0;
+    payloads_.clear();
+    ASSERT_TRUE(SendQueryRequest(form_structures));
+    EXPECT_EQ(1u, call_count_);
+
+    ASSERT_EQ(1u, payloads_.size());
+    AutofillPageQueryRequest query_contents;
+    ASSERT_TRUE(query_contents.ParseFromString(payloads_[0]));
+    EXPECT_THAT(query_contents.experiments(), ElementsAre(19890601));
   }
 }
 
