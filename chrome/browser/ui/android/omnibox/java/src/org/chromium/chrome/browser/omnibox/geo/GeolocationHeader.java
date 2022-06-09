@@ -36,6 +36,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.search_engines.TemplateUrlService;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -231,12 +232,18 @@ public class GeolocationHeader {
     private static boolean sAppPermissionGrantedForTesting;
     private static boolean sUseAppPermissionGrantedForTesting;
 
+    private static final String DUMMY_URL_QUERY = "some_query";
+
     /**
      * Requests a location refresh so that a valid location will be available for constructing
-     * an X-Geo header in the near future (i.e. within 5 minutes).
+     * an X-Geo header in the near future (i.e. within 5 minutes). Checks whether the header can
+     * actually be sent before requesting the location refresh.
      */
-    public static void primeLocationForGeoHeader() {
+    public static void primeLocationForGeoHeaderIfEnabled(
+            Profile profile, TemplateUrlService templateService) {
         if (!hasGeolocationPermission()) return;
+
+        if (!isGeoHeaderEnabledForDSE(profile, templateService)) return;
 
         if (sFirstLocationTime == Long.MAX_VALUE) {
             sFirstLocationTime = SystemClock.elapsedRealtime();
@@ -244,6 +251,13 @@ public class GeolocationHeader {
         GeolocationTracker.refreshLastKnownLocation(
                 ContextUtils.getApplicationContext(), REFRESH_LOCATION_AGE);
         VisibleNetworksTracker.refreshVisibleNetworks(ContextUtils.getApplicationContext());
+    }
+
+    private static boolean isGeoHeaderEnabledForDSE(
+            Profile profile, TemplateUrlService templateService) {
+        return geoHeaderStateForUrl(profile, templateService.getUrlForSearchQuery(DUMMY_URL_QUERY),
+                       /* recordUma */ false)
+                == HeaderState.HEADER_ENABLED;
     }
 
     @HeaderState

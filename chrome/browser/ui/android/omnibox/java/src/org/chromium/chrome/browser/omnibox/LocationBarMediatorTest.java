@@ -125,7 +125,8 @@ public class LocationBarMediatorTest {
     @Implements(GeolocationHeader.class)
     static class ShadowGeolocationHeader {
         @Implementation
-        public static void primeLocationForGeoHeader() {
+        public static void primeLocationForGeoHeaderIfEnabled(
+                Profile profile, TemplateUrlService templateService) {
             sGeoHeaderPrimeCount++;
         }
     }
@@ -817,6 +818,7 @@ public class LocationBarMediatorTest {
         UrlBarData urlBarData = mock(UrlBarData.class);
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
         doReturn(true).when(mLocationBarDataProvider).hasTab();
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
         mMediator.onUrlFocusChange(true);
@@ -831,6 +833,7 @@ public class LocationBarMediatorTest {
         UrlBarData urlBarData = mock(UrlBarData.class);
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
         doReturn(true).when(mLocationBarDataProvider).hasTab();
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
         doAnswer(invocation -> {
@@ -852,6 +855,7 @@ public class LocationBarMediatorTest {
         doReturn(newTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         mTabletMediator.addUrlFocusChangeListener(mUrlCoordinator);
         doReturn(true).when(mLocationBarDataProvider).hasTab();
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
         UrlBarData urlBarData = UrlBarData.create(null, "text", 0, 0, "text");
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
         mTabletMediator.onUrlFocusChange(true);

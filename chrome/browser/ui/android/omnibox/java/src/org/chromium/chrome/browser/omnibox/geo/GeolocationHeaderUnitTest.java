@@ -42,6 +42,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
@@ -124,6 +125,9 @@ public class GeolocationHeaderUnitTest {
     @Mock
     WebContents mWebContentsMock;
 
+    @Mock
+    TemplateUrlService mTemplateUrlServiceMock;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -146,6 +150,8 @@ public class GeolocationHeaderUnitTest {
         when(mUrlUtilitiesJniMock.isGoogleSearchUrl(anyString())).thenReturn(true);
         when(mProfileJniMock.fromWebContents(any(WebContents.class))).thenReturn(mProfileMock);
         when(mProfileMock.isOffTheRecord()).thenReturn(false);
+        when(mTemplateUrlServiceMock.getUrlForSearchQuery(anyString()))
+                .thenReturn("https://example.com/");
         sRefreshVisibleNetworksRequests = 0;
         sRefreshLastKnownLocation = 0;
     }
@@ -287,7 +293,7 @@ public class GeolocationHeaderUnitTest {
     @Test
     @Config(shadows = {ShadowVisibleNetworksTracker.class, ShadowGeolocationTracker.class})
     public void testPrimeLocationForGeoHeader() {
-        GeolocationHeader.primeLocationForGeoHeader();
+        GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
         assertEquals(1, sRefreshLastKnownLocation);
         assertEquals(1, sRefreshVisibleNetworksRequests);
     }
@@ -296,7 +302,19 @@ public class GeolocationHeaderUnitTest {
     @Config(shadows = {ShadowVisibleNetworksTracker.class, ShadowGeolocationTracker.class})
     public void testPrimeLocationForGeoHeaderPermissionOff() {
         GeolocationHeader.setAppPermissionGrantedForTesting(false);
-        GeolocationHeader.primeLocationForGeoHeader();
+        GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
+        assertEquals(0, sRefreshLastKnownLocation);
+        assertEquals(0, sRefreshVisibleNetworksRequests);
+    }
+
+    @Test
+    @Config(shadows = {ShadowVisibleNetworksTracker.class, ShadowGeolocationTracker.class})
+    public void testPrimeLocationForGeoHeaderDSEAutograntOff() {
+        when(mWebsitePreferenceBridgeJniMock.getPermissionSettingForOrigin(
+                     any(BrowserContextHandle.class), eq(ContentSettingsType.GEOLOCATION),
+                     anyString(), anyString()))
+                .thenReturn(ContentSettingValues.ASK);
+        GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
         assertEquals(0, sRefreshLastKnownLocation);
         assertEquals(0, sRefreshVisibleNetworksRequests);
     }

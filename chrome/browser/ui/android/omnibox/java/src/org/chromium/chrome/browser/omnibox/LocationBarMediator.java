@@ -290,11 +290,13 @@ class LocationBarMediator
                 && !mLocationBarDataProvider.isIncognito()) {
             if (mNativeInitialized
                     && mTemplateUrlServiceSupplier.get().isDefaultSearchEngineGoogle()) {
-                GeolocationHeader.primeLocationForGeoHeader();
+                GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
+                        mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
             } else {
                 mDeferredNativeRunnables.add(() -> {
                     if (mTemplateUrlServiceSupplier.get().isDefaultSearchEngineGoogle()) {
-                        GeolocationHeader.primeLocationForGeoHeader();
+                        GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
+                                mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
                     }
                 });
             }
