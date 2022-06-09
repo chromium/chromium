@@ -469,6 +469,8 @@ void SetLacrosEnabledForTest(bool force_enabled) {
 }
 
 bool IsAshWebBrowserEnabled() {
+  // Note that if you are updating this function, please also update the
+  // *ForMigration variant to keep the logics consistent.
   // If Lacros is not a primary browser, Ash browser is always enabled.
   if (!IsLacrosPrimaryBrowser())
     return true;
@@ -495,7 +497,53 @@ bool IsAshWebBrowserEnabled() {
   return !base::FeatureList::IsEnabled(chromeos::features::kLacrosOnly);
 }
 
+bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
+                                        PolicyInitState policy_init_state) {
+  // If Lacros is not a primary browser, Ash browser is always enabled.
+  if (!IsLacrosPrimaryBrowserForMigration(user, policy_init_state))
+    return true;
+
+  LacrosAvailability lacros_availability;
+  if (policy_init_state == PolicyInitState::kBeforeInit) {
+    // Before Policy is initialized, the value won't be available.
+    // So, we'll use the value preserved in the feature flags.
+    // See also LacrosAvailabilityPolicyObserver how it will be propergated.
+    lacros_availability = DetermineLacrosAvailabilityFromPolicyValue(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kLacrosAvailabilityPolicySwitch));
+  } else {
+    DCHECK_EQ(policy_init_state, PolicyInitState::kAfterInit);
+    lacros_availability = GetCachedLacrosAvailability();
+  }
+
+  switch (lacros_availability) {
+    case LacrosAvailability::kUserChoice:
+      break;
+    case LacrosAvailability::kLacrosDisallowed:
+      return true;
+    case LacrosAvailability::kSideBySide:
+    case LacrosAvailability::kLacrosPrimary:
+      // Note that for this *ForMigration variant, since there might not be a
+      // logged in user yet, the user's email address has to be passed
+      // explicitly. Normally, policy should override Finch. Due to
+      // complications in the Google rollout, in the short term Finch will
+      // override policy if Finch is enabling this feature.
+      if (gaia::IsGoogleInternalAccountEmail(
+              user->GetAccountId().GetUserEmail()) &&
+          base::FeatureList::IsEnabled(chromeos::features::kLacrosOnly)) {
+        return false;
+      }
+      return true;
+    case LacrosAvailability::kLacrosOnly:
+      return false;
+  }
+
+  return !base::FeatureList::IsEnabled(chromeos::features::kLacrosOnly);
+}
+
 bool IsLacrosPrimaryBrowser() {
+  // Note that if you are updating this function, please also update the
+  // *ForMigration variant to keep the logics consistent.
   if (g_lacros_primary_browser_for_test.has_value())
     return g_lacros_primary_browser_for_test.value();
 
@@ -527,15 +575,85 @@ bool IsLacrosPrimaryBrowser() {
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosPrimary);
 }
 
+bool IsLacrosPrimaryBrowserForMigration(const user_manager::User* user,
+                                        PolicyInitState policy_init_state) {
+  if (g_lacros_primary_browser_for_test.has_value())
+    return g_lacros_primary_browser_for_test.value();
+
+  if (!IsLacrosEnabledForMigration(user, policy_init_state))
+    return false;
+
+  // Lacros-chrome will always be the primary browser if Lacros is enabled in
+  // web Kiosk session.
+  if (user->GetType() == user_manager::USER_TYPE_KIOSK_APP ||
+      user->GetType() == user_manager::USER_TYPE_WEB_KIOSK_APP) {
+    return true;
+  }
+
+  LacrosAvailability lacros_availability;
+  if (policy_init_state == PolicyInitState::kBeforeInit) {
+    // Before Policy is initialized, the value won't be available.
+    // So, we'll use the value preserved in the feature flags.
+    // See also LacrosAvailabilityPolicyObserver how it will be propergated.
+    lacros_availability = DetermineLacrosAvailabilityFromPolicyValue(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kLacrosAvailabilityPolicySwitch));
+  } else {
+    DCHECK_EQ(policy_init_state, PolicyInitState::kAfterInit);
+    lacros_availability = GetCachedLacrosAvailability();
+  }
+
+  if (!IsLacrosPrimaryBrowserAllowedForMigration(user, lacros_availability))
+    return false;
+
+  switch (lacros_availability) {
+    case LacrosAvailability::kUserChoice:
+      break;
+    case LacrosAvailability::kLacrosDisallowed:
+      NOTREACHED();
+      return false;
+    case LacrosAvailability::kSideBySide:
+      return false;
+    case LacrosAvailability::kLacrosPrimary:
+    case LacrosAvailability::kLacrosOnly:
+      return true;
+  }
+
+  return base::FeatureList::IsEnabled(chromeos::features::kLacrosPrimary);
+}
+
 void SetLacrosPrimaryBrowserForTest(absl::optional<bool> value) {
   g_lacros_primary_browser_for_test = value;
 }
 
 bool IsLacrosPrimaryBrowserAllowed() {
+  // Note that if you are updating this function, please also update the
+  // *ForMigration variant to keep the logics consistent.
   if (!IsLacrosAllowedToBeEnabled())
     return false;
 
   switch (GetCachedLacrosAvailability()) {
+    case LacrosAvailability::kLacrosDisallowed:
+      return false;
+    case LacrosAvailability::kLacrosPrimary:
+    case LacrosAvailability::kLacrosOnly:
+      // Forcibly allow to use Lacros as a Primary respecting the policy.
+      return true;
+    default:
+      // Fallback others.
+      break;
+  }
+
+  return true;
+}
+
+bool IsLacrosPrimaryBrowserAllowedForMigration(
+    const user_manager::User* user,
+    LacrosAvailability lacros_availability) {
+  if (!IsLacrosAllowedToBeEnabledWithUser(user, lacros_availability))
+    return false;
+
+  switch (lacros_availability) {
     case LacrosAvailability::kLacrosDisallowed:
       return false;
     case LacrosAvailability::kLacrosPrimary:
@@ -772,6 +890,17 @@ LacrosAvailability GetCachedLacrosAvailabilityForTesting() {
 
 void ClearLacrosAvailabilityCacheForTest() {
   g_lacros_availability_cache.reset();
+}
+
+MigrationMode GetMigrationMode(const user_manager::User* user,
+                               PolicyInitState policy_init_state) {
+  if (base::FeatureList::IsEnabled(
+          ash::features::kLacrosMoveProfileMigration) ||
+      !IsAshWebBrowserEnabledForMigration(user, policy_init_state)) {
+    return MigrationMode::kMove;
+  }
+
+  return MigrationMode::kCopy;
 }
 
 bool IsProfileMigrationCompletedForUser(PrefService* local_state,

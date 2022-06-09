@@ -190,8 +190,22 @@ void SetLacrosEnabledForTest(bool force_enabled);
 // enabled and is the only browser.
 bool IsAshWebBrowserEnabled();
 
+// Similar to `IsAshWebBrowserEnabled()` but it is calleable even before primary
+// profile and policy are initialized.
+// TODO(crbug.com/1265800): Refactor to reduce code duplication with
+// `IsAshWebBrowserEnabled()`.
+bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
+                                        PolicyInitState policy_init_state);
+
 // Returns true if the lacros should be used as a primary browser.
 bool IsLacrosPrimaryBrowser();
+
+// Similar to `IsLacrosPrimaryBrowser()` but is calleable even before primary
+// profile and policy are initialized.
+// TODO(crbug.com/1265800): Refactor to reduce code duplication with
+// `IsLacrosPrimaryBrowser()`.
+bool IsLacrosPrimaryBrowserForMigration(const user_manager::User* user,
+                                        PolicyInitState policy_init_state);
 
 // Forces IsLacrosPrimaryBrowser() to return true or false for testing.
 // Passing absl::nullopt will reset the state.
@@ -202,6 +216,14 @@ void SetLacrosPrimaryBrowserForTest(absl::optional<bool> value);
 // Note that IsLacrosPrimaryBrowser may return false, even if this returns
 // true, specifically, the feature is disabled by user/policy.
 bool IsLacrosPrimaryBrowserAllowed();
+
+// Similar to `IsLacrosPrimaryBrowserAllowed()` but is calleable even before
+// primary profile and policy are initialized.
+// TODO(crbug.com/1265800): Refactor to reduce code duplication with
+// `IsLacrosPrimaryBrowserAllowed()`.
+bool IsLacrosPrimaryBrowserAllowedForMigration(
+    const user_manager::User* user,
+    LacrosAvailability lacros_availability);
 
 // Returns true if |chromeos::features::kLacrosPrimary| flag is allowed.
 bool IsLacrosPrimaryFlagAllowed();
@@ -288,6 +310,11 @@ bool IsProfileMigrationEnabled(const AccountId& account_id);
 
 // Returns true if the profile migration can run, but not yet completed.
 bool IsProfileMigrationAvailable();
+
+// Returns `MigrationMode::kMove` if LacrosOnly or `kLacrosMoveProfileMigration`
+// is enabled and `MigrationMode::kCopy` otherwise.
+MigrationMode GetMigrationMode(const user_manager::User* user,
+                               PolicyInitState policy_init_state);
 
 // Checks if profile migration has been completed. This is reset if profile
 // migration is initiated for example due to lacros data directory being wiped.
