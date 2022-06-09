@@ -3127,7 +3127,7 @@ Try tapping the mic to ask me anything.
         Install is complete. Preparing to restart...
       </message>
       <message name="IDS_SHIMLESS_RMA_FIRMWARE_UPDATE_COMPLETE" desc="The message when firmware installation is complete and the device has rebooted.">
-        Installation complete.
+        Install is complete. You can now remove your USB drive or SD card.
       </message>
       <!-- Onboarding update page -->
       <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PROGRESS" translateable="false" desc="The update progress label.">
