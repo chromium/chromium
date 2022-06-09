@@ -54,8 +54,9 @@ class RealTimeBCEReportingPipelineTest(ChromeEnterpriseTestCase):
         self.win_config['client'],
         os.path.join(commonDir, 'common', 'realtime_reporting_ui_test.py'),
         timeout=600)
-    clientId = re.search(r'DeviceId:.*$',clientId.strip()).group(0) \
-      .replace('DeviceId:','')
+    clientId = re.search(r'DeviceId:.*$',
+                         clientId.strip()).group(0).replace('DeviceId:',
+                                                            '').rstrip("\\rn'")
     # read service account private key from gs-bucket & write into local
     self.getServiceAccountKey()
     eventFound = RealTimeReportingServer().lookupevents(
