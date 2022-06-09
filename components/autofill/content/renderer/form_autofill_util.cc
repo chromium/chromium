@@ -2342,13 +2342,9 @@ ButtonTitleList GetButtonTitles(const WebFormElement& web_form,
   if (web_form.IsNull()) {
     const WebElement& body = document.Body();
     if (!body.IsNull()) {
-      SCOPED_UMA_HISTOGRAM_TIMER(
-          "PasswordManager.ButtonTitlePerformance.NoFormTag");
       button_titles = InferButtonTitlesForForm(body);
     }
   } else {
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "PasswordManager.ButtonTitlePerformance.HasFormTag");
     button_titles = InferButtonTitlesForForm(web_form);
   }
   form_position->second = std::move(button_titles);

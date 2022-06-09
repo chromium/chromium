@@ -1081,6 +1081,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.ButtonTitlePerformance.HasFormTag"
     units="units" expires_after="2019-07-01">
+  <obsolete>
+    Removed in M104.
+  </obsolete>
   <owner>kolos@chromium.org</owner>
   <summary>
     The time (ms) it takes to infer button titles within a form tag.
@@ -1089,6 +1092,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.ButtonTitlePerformance.NoFormTag"
     units="units" expires_after="2019-07-01">
+  <obsolete>
+    Removed in M104.
+  </obsolete>
   <owner>kolos@chromium.org</owner>
   <summary>
     The time (ms) it takes to infer button titles outside of form tags.
