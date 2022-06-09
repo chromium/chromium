@@ -341,7 +341,10 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.OFFSET_PARENT_NEW_SPEC_BEHAVIOR,
                     "Enables new HTMLElement.offsetParent behavior to match other browsers."),
             Flag.baseFeature(AwFeatures.WEBVIEW_RECORD_APP_DATA_DIRECTORY_SIZE,
-                    "Record the size of the embedding app's data directory")
+                    "Record the size of the embedding app's data directory"),
+            Flag.baseFeature(BlinkFeatures.EARLY_EXIT_ON_NOOP_CLASS_OR_STYLE_CHANGE,
+                    "Early exit when the style or class attribute of a DOM element is set to the"
+                            + " same value as before."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
