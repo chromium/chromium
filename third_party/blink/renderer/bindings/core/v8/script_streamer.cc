@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "mojo/public/cpp/system/wait.h"
@@ -1117,7 +1118,10 @@ v8::ScriptCompiler::StreamedSource* BackgroundInlineScriptStreamer::Source(
       base::Milliseconds(20)};
   // Make sure the script has finished compiling in the background. See comment
   // above in Run().
-  if (!event_.TimedWait(kWaitTimeoutParam.Get()))
+  bool signaled = event_.TimedWait(kWaitTimeoutParam.Get());
+  base::UmaHistogramBoolean("WebCore.Scripts.InlineStreamerTimedOut",
+                            !signaled);
+  if (!signaled)
     return nullptr;
   return source_.get();
 }

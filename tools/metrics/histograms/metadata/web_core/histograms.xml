@@ -791,6 +791,17 @@ chromium-metrics-reviews@google.com.
   <summary>Whether a deferred script was streamed or not.</summary>
 </histogram>
 
+<histogram name="WebCore.Scripts.InlineStreamerTimedOut" enum="BooleanTimedOut"
+    expires_after="2023-06-08">
+  <owner>cduvall@chromium.org</owner>
+  <owner>leszeks@chromium.org</owner>
+  <summary>
+    Whether waiting for the background compile for an inline script timed out on
+    the main thread. This is recorded each time an inline script streamer is
+    available when executing an inline script.
+  </summary>
+</histogram>
+
 <histogram name="WebCore.Scripts.InlineStreamerWaitTime" units="microseconds"
     expires_after="2023-05-31">
   <owner>cduvall@chromium.org</owner>
