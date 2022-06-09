@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL error event is normal (return true does not cancel; one arg) on Document, with a synthetic ErrorEvent assert_equals: expected (undefined) undefined but got (object) null
+FAIL Initial values of ErrorEvent members assert_equals: expected (undefined) undefined but got (object) null
+Harness: the test ran to completion.
+
