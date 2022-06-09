@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/dbus/encrypted_reporting_service_provider.h"
 
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -157,8 +158,22 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     return;
   }
 
+  // Missive should always send the remaining storage capacity and new events
+  // rate. If not, probably an outdated version of missive is running. In this
+  // case, we ignore the effect of remaining storage capacity/new events rate
+  // and give it the max/min possible value.
+  const auto remaining_storage_capacity =
+      request.has_remaining_storage_capacity()
+          ? request.remaining_storage_capacity()
+          : std::numeric_limits<uint64_t>::max();
+  const auto new_events_rate =
+      request.has_new_events_rate() ? request.new_events_rate() : 1U;
   auto records{reporting::EventUploadSizeController::BuildEncryptedRecords(
-      request.encrypted_record(), network_condition_service_)};
+      request.encrypted_record(),
+      reporting::EventUploadSizeController(network_condition_service_,
+                                           new_events_rate,
+                                           remaining_storage_capacity,
+                                           /*enabled=*/false))};
 
   DCHECK(upload_provider_);
   MissiveClient* const missive_client = MissiveClient::Get();

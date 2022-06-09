@@ -23,15 +23,22 @@ class EventUploadSizeControllerTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
+// Although |EventUploadSizeController::AccountForRecord| and
+// |EventUploadSizeController::IsMaximumUploadSizeReached| are private, the
+// class is designed in a way that these two methods can be made public in the
+// future without disruption. Hence, this test is kept here.
 TEST_F(EventUploadSizeControllerTest, AccountForRecordAddUp) {
   TestingNetworkConditionService network_condition_service(&task_environment_);
   network_condition_service.SetUploadRate(10000);
   EventUploadSizeController event_upload_size_controller(
-      network_condition_service, /*enabled=*/true);
+      network_condition_service,
+      /*new_events_rate=*/1U,
+      /*remaining_storage_capacity=*/std::numeric_limits<uint64_t>::max(),
+      /*enabled=*/true);
   // This number may change from time to time if we adapt the formula in the
   // future.
   const uint64_t max_upload_size =
-      EventUploadSizeController::ComputeMaxUploadSize(
+      event_upload_size_controller.ComputeMaxUploadSize(
           network_condition_service);
   LOG(INFO) << "The computed max upload size is " << max_upload_size;
 
@@ -66,5 +73,7 @@ TEST_F(EventUploadSizeControllerTest, AccountForRecordAddUp) {
       << "The maximum upload size is not reached when " << max_num_of_records
       << " records of size " << record_size << " have been accounted for.";
 }
+
+// TODO(b/214039157): Add test for |BuildEncryptedRecords|.
 
 }  // namespace reporting

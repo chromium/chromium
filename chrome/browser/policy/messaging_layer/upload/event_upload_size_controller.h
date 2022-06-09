@@ -18,20 +18,22 @@ namespace reporting {
 // after a specified set of records has been uploaded.
 class EventUploadSizeController {
  public:
+  // If |enabled| is false, |IsMaximumUploadSizeReached| would always return
+  // false. For now, |enabled| should always be false in production code.
+  // TODO(b/214039157): A policy needs to be added to control whether to enable
+  // this feature.
+  EventUploadSizeController(
+      const NetworkConditionService& network_condition_service,
+      uint64_t new_events_rate,
+      uint64_t remaining_storage_capacity,
+      bool enabled = false);
+
   // Build the vector of encrypted records based on the records in the upload
-  // request. Event upload size is factored in.
-  [[nodiscard]] static std::vector<reporting::EncryptedRecord>
-  BuildEncryptedRecords(
+  // request. Event upload size is adjusted.
+  [[nodiscard]] static std::vector<EncryptedRecord> BuildEncryptedRecords(
       const google::protobuf::RepeatedPtrField<EncryptedRecord>&
           encrypted_records,
-      const NetworkConditionService& network_condition_service);
-
-  // Has the set maximum upload size been reached? Always returns false if
-  // adjustment based on network condition is not enabled.
-  bool IsMaximumUploadSizeReached() const;
-
-  // Bumps up by the size of the record to be uploaded.
-  void AccountForRecord(const EncryptedRecord& record);
+      EventUploadSizeController&& controller);
 
  private:
   friend class EventUploadSizeControllerTest;
@@ -44,37 +46,33 @@ class EventUploadSizeController {
   // Size of overheads in each upload in bytes. Heuristically set by a human.
   static constexpr uint64_t kOverhead = 32;
 
-  // |enabled| should always be false in production code.
-  // TODO(b/214039157): A policy needs to be
-  // added to control whether to enable this feature.
-  explicit EventUploadSizeController(
-      const NetworkConditionService& network_condition_service,
-      bool enabled = false);
-
   // Estimates upload rate (bytes/sec).
   static uint64_t GetUploadRate(
       const NetworkConditionService& network_condition_service);
-  // Estimates the rate at which new events are coming in (bytes/sec). For
-  // now, use a low new event rate, which means no local storage limit is
-  // taken into consideration: Missive code hasn't been ready for this and
-  // storage capacity is not a concern right now. This will likely change in
-  // the future.
-  static uint64_t GetNewEventRate();
-  // Estimates the remaining storage capacity (bytes) here. For now, use a
-  // high remaining storage capacity, which means no local storage limit is
-  // taken into consideration: Missive code hasn't been ready for this and
-  // storage capacity is not a concern right now. This will likely change in
-  // the future.
-  static uint64_t GetRemainingStorageCapacity();
-  // Computes the maximum upload size.
-  static uint64_t ComputeMaxUploadSize(
-      const NetworkConditionService& network_condition_service);
 
+  // Estimates the rate at which new events are coming in (bytes/sec). This
+  // estimate is informed by missive via dbus.
+  uint64_t GetNewEventsRate() const;
+  // Estimates the remaining storage capacity (bytes) here. This estimate is
+  // informed by missive via dbus.
+  uint64_t GetRemainingStorageCapacity() const;
+  // Computes the maximum upload size.
+  [[nodiscard]] uint64_t ComputeMaxUploadSize(
+      const NetworkConditionService& network_condition_service) const;
+  // Has the set maximum upload size been reached? Always returns false if
+  // adjustment based on network condition is not enabled.
+  bool IsMaximumUploadSizeReached() const;
+  // Bumps up by the size of the record to be uploaded.
+  void AccountForRecord(const EncryptedRecord& record);
   // Bumps up recorded already uploaded size.
   void RecordUploadedSize(uint64_t uploaded_size);
 
   // Is adjustment based on network condition enabled?
   const bool enabled_;
+  // The rate (bytes per seconds) at which new events are accepted by missive.
+  const uint64_t new_events_rate_;
+  // How much local storage is left as informed by missive.
+  const uint64_t remaining_storage_capacity_;
   // maximum upload size.
   const uint64_t max_upload_size_;
   // Already uploaded size.
