@@ -706,7 +706,6 @@ TEST_F(
     });
 GEN('#endif');
 
-GEN('#if !BUILDFLAG(IS_CHROMEOS)');
 var PrintPreviewDestinationDialogTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
@@ -723,8 +722,11 @@ TEST_F('PrintPreviewDestinationDialogTest', 'PrinterList', function() {
   this.runMochaTest(destination_dialog_test.TestNames.PrinterList);
 });
 
-GEN('#else');
+TEST_F('PrintPreviewDestinationDialogTest', 'PrinterListPreloaded', function() {
+  this.runMochaTest(destination_dialog_test.TestNames.PrinterListPreloaded);
+});
 
+GEN('#if BUILDFLAG(IS_CHROMEOS)');
 var PrintPreviewDestinationDialogCrosTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
@@ -736,10 +738,6 @@ var PrintPreviewDestinationDialogCrosTest = class extends PrintPreviewTest {
     return destination_dialog_cros_test.suiteName;
   }
 };
-
-TEST_F('PrintPreviewDestinationDialogCrosTest', 'PrinterList', function() {
-  this.runMochaTest(destination_dialog_cros_test.TestNames.PrinterList);
-});
 
 TEST_F(
     'PrintPreviewDestinationDialogCrosTest', 'ShowProvisionalDialog',

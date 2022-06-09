@@ -26,9 +26,9 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
   private localDestinationInfos_: LocalDestinationInfo[] = [];
 
   /**
-   * Extension destination list to be used for the response to |getPrinters|.
+   * Extension destination lists to be used for the response to |getPrinters|.
    */
-  private extensionDestinationInfos_: ExtensionDestinationInfo[] = [];
+  private extensionDestinationInfos_: ExtensionDestinationInfo[][] = [];
 
   /**
    *     A map from destination IDs to the responses to be sent when
@@ -40,6 +40,10 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
   private multipleCapabilitiesPromise_: PromiseResolver<void>|null = null;
 
   private multipleCapabilitiesCount_: number = 0;
+
+  private multipleGetPrintersPromise_: PromiseResolver<void>|null = null;
+
+  private multipleGetPrintersCount_: number = 0;
 
   /** The ID of a printer with a simulated bad driver. */
   private badPrinterId_: string = '';
@@ -78,6 +82,14 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
 
   getPrinters(type: PrinterType) {
     this.methodCalled('getPrinters', type);
+    if (this.multipleGetPrintersPromise_) {
+      this.multipleGetPrintersCount_--;
+      if (this.multipleGetPrintersCount_ === 0) {
+        this.multipleGetPrintersPromise_.resolve();
+        this.multipleGetPrintersPromise_ = null;
+      }
+    }
+
     if (type === PrinterType.LOCAL_PRINTER &&
         this.localDestinationInfos_.length > 0) {
       webUIListenerCallback(
@@ -85,8 +97,9 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
     } else if (
         type === PrinterType.EXTENSION_PRINTER &&
         this.extensionDestinationInfos_.length > 0) {
-      webUIListenerCallback(
-          'printers-added', type, this.extensionDestinationInfos_);
+      this.extensionDestinationInfos_.forEach(infoList => {
+        webUIListenerCallback('printers-added', type, infoList);
+      });
     }
     return Promise.resolve();
   }
@@ -202,7 +215,8 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
    * @param extensionDestinations The extension destinations to return as a
    *     response to |getPrinters|.
    */
-  setExtensionDestinations(extensionDestinations: ExtensionDestinationInfo[]) {
+  setExtensionDestinations(extensionDestinations:
+                               ExtensionDestinationInfo[][]) {
     this.extensionDestinationInfos_ = extensionDestinations;
   }
 
@@ -240,5 +254,16 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
     this.multipleCapabilitiesCount_ = count;
     this.multipleCapabilitiesPromise_ = new PromiseResolver();
     return this.multipleCapabilitiesPromise_.promise;
+  }
+
+  /**
+   * @param count The number of getPrinters requests to wait for.
+   * @return Promise that resolves after |count| requests.
+   */
+  waitForGetPrinters(count: number): Promise<void> {
+    assert(this.multipleGetPrintersPromise_ === null);
+    this.multipleGetPrintersCount_ = count;
+    this.multipleGetPrintersPromise_ = new PromiseResolver();
+    return this.multipleGetPrintersPromise_.promise;
   }
 }

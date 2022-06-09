@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationOrigin, DestinationStore, GooglePromotedDestinationId, LocalDestinationInfo, MeasurementSystemUnitType, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
+import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationOrigin, DestinationStore, ExtensionDestinationInfo, GooglePromotedDestinationId, LocalDestinationInfo, MeasurementSystemUnitType, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -221,6 +221,50 @@ export function getDefaultMediaSize(device: CapabilitiesResponse):
 export function getDefaultOrientation(device: CapabilitiesResponse): string {
   const options = device.capabilities!.printer.page_orientation!.option;
   return assert(options!.find(opt => !!opt.is_default)!.type!);
+}
+
+type ExtensionPrinters = {
+  destinations: Destination[],
+  infoLists: ExtensionDestinationInfo[][],
+};
+
+export function getExtensionDestinations(): ExtensionPrinters {
+  const destinations: Destination[] = [];
+  const infoLists: ExtensionDestinationInfo[][] = [];
+  infoLists.push([]);
+  infoLists.push([]);
+  [{
+    id: 'IDA',
+    name: 'PrinterA',
+    extensionId: 'ext1',
+    extensionName: 'ExtensionOne'
+  },
+   {
+     id: 'IDB',
+     name: 'PrinterB',
+     extensionId: 'ext1',
+     extensionName: 'ExtensionOne'
+   },
+   {
+     id: 'IDC',
+     name: 'PrinterC',
+     extensionId: 'ext2',
+     extensionName: 'ExtensionTwo'
+   },
+  ].forEach(info => {
+    const destination =
+        new Destination(info.id, DestinationOrigin.EXTENSION, info.name, {
+          extensionId: info.extensionId,
+          extensionName: info.extensionName,
+        });
+    if (info.extensionId === 'ext1') {
+      infoLists[0]!.push(info);
+    } else {
+      infoLists[1]!.push(info);
+    }
+    destinations.push(destination);
+  });
+  return {destinations, infoLists};
 }
 
 /**

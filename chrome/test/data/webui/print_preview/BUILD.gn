@@ -12,6 +12,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 preprocessed_tests = [
   "button_strip_test.ts",
   "color_settings_test.ts",
+  "destination_dialog_test.ts",
   "destination_settings_test.ts",
   "destination_store_test.ts",
   "duplex_settings_test.ts",
@@ -80,7 +81,6 @@ if (is_chromeos) {
 } else {
   non_preprocessed_tests += [
     "destination_dialog_interactive_test.ts",
-    "destination_dialog_test.ts",
     "destination_search_test.ts",
     "destination_select_test.ts",
   ]
