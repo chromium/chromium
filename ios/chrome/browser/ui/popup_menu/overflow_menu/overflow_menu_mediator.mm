@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
 
 #import "base/ios/ios_util.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -574,16 +573,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       self.followAction = action;
     }
 
-    std::string label_variant = base::GetFieldTrialParamValueByFeature(
-        kBookmarkString, kPopupMenuBookmarkStringParamName);
-    NSInteger addBookmarkStringID = IDS_IOS_TOOLS_MENU_BOOKMARK;
-    if (label_variant == kPopupMenuBookmarkStringParamAddABookmark) {
-      addBookmarkStringID = IDS_IOS_TOOLS_MENU_ADD_A_BOOKMARK;
-    } else if (label_variant == kPopupMenuBookmarkStringParamAddToBookmarks) {
-      addBookmarkStringID = IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS;
-    } else if (label_variant == kPopupMenuBookmarkStringParamBookmarkThisPage) {
-      addBookmarkStringID = IDS_IOS_TOOLS_MENU_BOOKMARK_THIS_PAGE;
-    }
+    NSInteger addBookmarkStringID = GetBookmarkStringID();
 
     self.addBookmarkAction =
         CreateOverflowMenuAction(addBookmarkStringID, kAddBookmarkActionSymbol,
@@ -705,16 +695,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       self.followAction = action;
     }
 
-    std::string label_variant = base::GetFieldTrialParamValueByFeature(
-        kBookmarkString, kPopupMenuBookmarkStringParamName);
-    NSInteger addBookmarkStringID = IDS_IOS_TOOLS_MENU_BOOKMARK;
-    if (label_variant == kPopupMenuBookmarkStringParamAddABookmark) {
-      addBookmarkStringID = IDS_IOS_TOOLS_MENU_ADD_A_BOOKMARK;
-    } else if (label_variant == kPopupMenuBookmarkStringParamAddToBookmarks) {
-      addBookmarkStringID = IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS;
-    } else if (label_variant == kPopupMenuBookmarkStringParamBookmarkThisPage) {
-      addBookmarkStringID = IDS_IOS_TOOLS_MENU_BOOKMARK_THIS_PAGE;
-    }
+    NSInteger addBookmarkStringID = GetBookmarkStringID();
 
     self.addBookmarkAction = CreateOverflowMenuAction(
         addBookmarkStringID, @"overflow_menu_action_bookmark",

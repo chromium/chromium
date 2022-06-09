@@ -17,4 +17,7 @@ extern const char kPopupMenuBookmarkStringParamBookmarkThisPage[];
 // menu.
 extern const base::Feature kBookmarkString;
 
+// Returns the bookmark string ID based on the `kBookmarkString` feature.
+int GetBookmarkStringID();
+
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_PUBLIC_FEATURES_H_

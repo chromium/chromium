@@ -66,5 +66,8 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+  ]
 }
