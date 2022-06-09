@@ -94,17 +94,7 @@ let kRTCReceivedRtpStreamStats = new RTCStats(kRTCRtpStreamStats, {
   packetsReceived: 'number',
   packetsLost: 'number',
   jitter: 'number',
-  packetsDiscarded: 'number',
-  packetsRepaired: 'number',
-  burstPacketsLost: 'number',
-  burstPacketsDiscarded: 'number',
-  burstLossCount: 'number',
-  burstDiscardCount: 'number',
-  burstLossRate: 'number',
-  burstDiscardRate: 'number',
-  gapLossRate: 'number',
-  gapDiscardRate: 'number',
-});
+  });
 
 /*
  * RTCInboundRTPStreamStats
@@ -117,28 +107,22 @@ let kRTCInboundRtpStreamStats = new RTCStats(kRTCReceivedRtpStreamStats, {
   remoteId: 'string',
   framesDecoded: 'number',
   keyFramesDecoded: 'number',
-  frameBitDepth: 'number',
   qpSum: 'number',
   totalDecodeTime: 'number',
   totalProcessingDelay: 'number',
   totalInterFrameDelay: 'number',
   totalSquaredInterFrameDelay: 'number',
   lastPacketReceivedTimestamp: 'number',
-  averageRtcpInterval: 'number',
   fecPacketsReceived: 'number',
   fecPacketsDiscarded: 'number',
   bytesReceived: 'number',
   headerBytesReceived: 'number',
-  packetsFailedDecryption: 'number',
-  packetsDuplicated: 'number',
-  perDscpPacketsReceived: 'object',
+  packetsDiscarded: 'number',
   nackCount: 'number',
   firCount: 'number',
   pliCount: 'number',
-  sliCount: 'number',
   frameWidth: 'number',
   frameHeight: 'number',
-  frameBitDepth: 'number',
   framesPerSecond: 'number',
   jitterBufferDelay: 'number',
   jitterBufferTargetDelay: 'number',
@@ -187,8 +171,6 @@ addRTCStatsToAllowlist(
  */
 let kRTCSentRtpStreamStats = new RTCStats(kRTCRtpStreamStats, {
   packetsSent: 'number',
-  packetsDiscardedOnSend: 'number',
-  fecPacketsSent: 'number',
   bytesSent: 'number',
   bytesDiscardedOnSend: 'number',
 });
@@ -203,27 +185,22 @@ let kRTCOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
   mediaSourceId: 'string',
   senderId: 'string',
   remoteId: 'string',
-  lastPacketSentTimestamp: 'number',
   retransmittedPacketsSent: 'number',
   retransmittedBytesSent: 'number',
   headerBytesSent: 'number',
   targetBitrate: 'number',
   totalEncodedBytesTarget: 'number',
-  frameBitDepth: 'number',
   framesEncoded: 'number',
   keyFramesEncoded: 'number',
   qpSum: 'number',
   totalEncodeTime: 'number',
   totalPacketSendDelay: 'number',
-  averageRtcpInterval: 'number',
   qualityLimitationReason: 'string',
   qualityLimitationDurations: 'object',
   qualityLimitationResolutionChanges: 'number',
-  perDscpPacketsSent: 'object',
   nackCount: 'number',
   firCount: 'number',
   pliCount: 'number',
-  sliCount: 'number',
   encoderImplementation: 'string',
   rid: 'string',
   frameWidth: 'number',
@@ -285,7 +262,6 @@ addRTCStatsToAllowlist(
 const kRTCVideoSourceStats = new RTCStats(kRTCMediaSourceStats, {
   width: 'number',
   height: 'number',
-  bitDepth: 'number',
   frames: 'number',
   framesPerSecond: 'number',
 });
@@ -330,8 +306,6 @@ addRTCStatsToAllowlist(Presence.MANDATORY, 'codec', kRTCCodecStats);
 let kRTCPeerConnectionStats = new RTCStats(null, {
   dataChannelsOpened: 'number',
   dataChannelsClosed: 'number',
-  dataChannelsRequested: 'number',
-  dataChannelsAccepted: 'number',
 });
 addRTCStatsToAllowlist(
     Presence.MANDATORY, 'peer-connection', kRTCPeerConnectionStats);
@@ -369,7 +343,6 @@ let kRTCMediaHandlerStats = new RTCStats(null, {
 let kRTCVideoHandlerStats = new RTCStats(kRTCMediaHandlerStats, {
   frameWidth: 'number',
   frameHeight: 'number',
-  framesPerSecond: 'number',
 });
 
 /*
@@ -408,8 +381,6 @@ let kRTCVideoReceiverStats = new RTCStats(kRTCVideoHandlerStats, {
   framesReceived: 'number',
   framesDecoded: 'number',
   framesDropped: 'number',
-  partialFramesLost: 'number',
-  fullFramesLost: 'number',
 });
 // TODO(hbos): When receiver is implemented, make presence MANDATORY.
 addRTCStatsToAllowlist(
@@ -434,7 +405,6 @@ addRTCStatsToAllowlist(
 let kRTCAudioHandlerStats = new RTCStats(kRTCMediaHandlerStats, {
   audioLevel: 'number',
   totalAudioEnergy: 'number',
-  voiceActivityFlag: 'boolean',
   totalSamplesDuration: 'number',
 });
 
@@ -447,7 +417,6 @@ let kRTCAudioSenderStats = new RTCStats(kRTCAudioHandlerStats, {
   mediaSourceId: 'string',
   echoReturnLoss: 'number',
   echoReturnLossEnhancement: 'number',
-  totalSamplesSent: 'number',
 });
 // TODO(hbos): When sender is implemented, make presence MANDATORY.
 addRTCStatsToAllowlist(Presence.OPTIONAL, 'sender', kRTCAudioSenderStats);
@@ -574,7 +543,6 @@ let kRTCIceCandidatePairStats = new RTCStats(null, {
   priority: 'number',
   nominated: 'boolean',
   writable: 'boolean',
-  readable: 'boolean',
   packetsSent: 'number',
   packetsReceived: 'number',
   bytesSent: 'number',
@@ -587,12 +555,7 @@ let kRTCIceCandidatePairStats = new RTCStats(null, {
   requestsSent: 'number',
   responsesReceived: 'number',
   responsesSent: 'number',
-  retransmissionsReceived: 'number',
-  retransmissionsSent: 'number',
-  consentRequestsReceived: 'number',
   consentRequestsSent: 'number',
-  consentResponsesReceived: 'number',
-  consentResponsesSent: 'number',
   packetsDiscardedOnSend: 'number',
   bytesDiscardedOnSend: 'number',
 });
