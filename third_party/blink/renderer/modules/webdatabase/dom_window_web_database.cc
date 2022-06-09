@@ -31,6 +31,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_database_callback.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
@@ -80,13 +81,15 @@ Database* DOMWindowWebDatabase::openDatabase(
     }
 
     if (!window.GetExecutionContext()->IsSecureContext()) {
-      UseCounter::Count(window, WebFeature::kOpenWebDatabaseInsecureContext);
-
       if (!base::FeatureList::IsEnabled(
               blink::features::kWebSQLNonSecureContextAccess)) {
+        UseCounter::Count(window, WebFeature::kOpenWebDatabaseInsecureContext);
         exception_state.ThrowSecurityError(
             "Access to the WebDatabase API is denied in non-secure contexts.");
         return nullptr;
+      } else {
+        Deprecation::CountDeprecation(
+            &window, WebFeature::kOpenWebDatabaseInsecureContext);
       }
     }
 

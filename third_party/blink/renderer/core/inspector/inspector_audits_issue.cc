@@ -521,6 +521,10 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type =
           protocol::Audits::DeprecationIssueTypeEnum::ObsoleteWebRtcCipherSuite;
       break;
+    case DeprecationIssueType::kOpenWebDatabaseInsecureContext:
+      type = protocol::Audits::DeprecationIssueTypeEnum::
+          OpenWebDatabaseInsecureContext;
+      break;
     case DeprecationIssueType::kPictureSourceSrc:
       type = protocol::Audits::DeprecationIssueTypeEnum::PictureSourceSrc;
       break;

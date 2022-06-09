@@ -768,6 +768,7 @@ experimental domain Audits
       NotificationInsecureOrigin
       NotificationPermissionRequestedIframe
       ObsoleteWebRtcCipherSuite
+      OpenWebDatabaseInsecureContext
       PictureSourceSrc
       PrefixedCancelAnimationFrame
       PrefixedRequestAnimationFrame
