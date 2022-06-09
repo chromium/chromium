@@ -55,3 +55,82 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "https_only_mode_app_interface.h",
+    "https_only_mode_app_interface_stub.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "https_only_mode_app_interface.h",
+    "https_only_mode_app_interface.mm",
+  ]
+
+  deps = [
+    ":https_upgrades",
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/lookalikes/core",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/content_settings",
+    "//ios/chrome/test/app:test_support",
+    "//ios/components/security_interstitials/https_only_mode",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+    "//ios/web/public",
+    "//net",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [ "https_only_mode_egtest.mm" ]
+
+  deps = [
+    ":eg_test_support+eg2",
+    "//components/content_settings/core/common",
+    "//components/security_interstitials/core",
+    "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser/metrics:eg_test_support+eg2",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/components/security_interstitials/https_only_mode:feature",
+    "//ios/net:test_support",
+    "//ios/testing:embedded_test_server_support",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/common:features",
+    "//ios/web/public/test:element_selector",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+    "//ui/base",
+    "//url",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}
