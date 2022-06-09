@@ -252,9 +252,11 @@ class AutofillCapturedSitesInteractiveTest
     // feature forces input elements on a form to display their autofill type
     // prediction. Test will check this attribute on all the relevant input
     // elements in a form to determine if the form is ready for interaction.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillAcrossIframes,
-                              features::kAutofillShowTypePredictions},
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kAutofillAcrossIframes, {}},
+                              {features::kAutofillShowTypePredictions, {}},
+                              {features::kAutofillParsingPatternProvider,
+                               {{"prediction_source", "nextgen"}}}},
         /*disabled_features=*/{});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
