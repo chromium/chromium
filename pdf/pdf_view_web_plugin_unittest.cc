@@ -149,6 +149,10 @@ MATCHER_P(IsExpectedImeKeyEvent, expected_text, "") {
          event.unmodified_text == expected_text;
 }
 
+base::Value::Dict ParseMessage(base::StringPiece json) {
+  return std::move(base::test::ParseJson(json).GetDict());
+}
+
 // Generates the expected `SkBitmap` with `paint_color` filled in the expected
 // clipped area and `kDefaultColor` as the background color.
 SkBitmap GenerateExpectedBitmapForPaint(const gfx::Rect& expected_clipped_rect,
@@ -460,7 +464,7 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
   }
 
   void SendViewportMessage(double zoom) {
-    base::Value message = base::test::ParseJson(R"({
+    base::Value::Dict message = ParseMessage(R"({
       "type": "viewport",
       "userInitiated": false,
       "zoom": 1,
@@ -473,8 +477,8 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
       "yOffset": 0,
       "pinchPhase": 0,
     })");
-    message.GetDict().Set("zoom", zoom);
-    plugin_->OnMessage(message.GetDict());
+    message.Set("zoom", zoom);
+    plugin_->OnMessage(message);
   }
 
   void UpdatePluginGeometry(float device_scale, const gfx::Rect& window_rect) {
@@ -1024,10 +1028,9 @@ TEST_F(PdfViewWebPluginTest, UpdateGeometryScroll) {
 TEST_F(PdfViewWebPluginTest, UpdateGeometryScrollStopped) {
   SetDocumentDimensions({100, 200});
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "stopScrolling",
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 
   EXPECT_CALL(*client_ptr_, GetScrollPosition)
       .WillRepeatedly(Return(gfx::PointF(4.0f, 6.0f)));
@@ -1212,7 +1215,7 @@ TEST_F(PdfViewWebPluginTest, HandleViewportMessageBeforeDocumentLoadComplete) {
   EXPECT_CALL(*engine_ptr_, ApplyDocumentLayout(DocumentLayout::Options()));
   EXPECT_CALL(*client_ptr_, PostMessage).Times(0);
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -1224,8 +1227,7 @@ TEST_F(PdfViewWebPluginTest, HandleViewportMessageBeforeDocumentLoadComplete) {
     "xOffset": 0,
     "yOffset": 0,
     "pinchPhase": 0,
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 }
 
 TEST_F(PdfViewWebPluginTest, HandleViewportMessageAfterDocumentLoadComplete) {
@@ -1237,7 +1239,7 @@ TEST_F(PdfViewWebPluginTest, HandleViewportMessageAfterDocumentLoadComplete) {
     "progress": 100.0,
   })")));
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -1249,12 +1251,11 @@ TEST_F(PdfViewWebPluginTest, HandleViewportMessageAfterDocumentLoadComplete) {
     "xOffset": 0,
     "yOffset": 0,
     "pinchPhase": 0,
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 }
 
 TEST_F(PdfViewWebPluginTest, HandleViewportMessageSubsequently) {
-  base::Value message1 = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -1266,15 +1267,14 @@ TEST_F(PdfViewWebPluginTest, HandleViewportMessageSubsequently) {
     "xOffset": 0,
     "yOffset": 0,
     "pinchPhase": 0,
-  })");
-  plugin_->OnMessage(message1.GetDict());
+  })"));
 
   DocumentLayout::Options two_up_options;
   two_up_options.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
   EXPECT_CALL(*engine_ptr_, ApplyDocumentLayout(two_up_options));
   EXPECT_CALL(*client_ptr_, PostMessage).Times(0);
 
-  base::Value message2 = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -1286,8 +1286,7 @@ TEST_F(PdfViewWebPluginTest, HandleViewportMessageSubsequently) {
     "xOffset": 0,
     "yOffset": 0,
     "pinchPhase": 0,
-  })");
-  plugin_->OnMessage(message2.GetDict());
+  })"));
 }
 
 TEST_F(PdfViewWebPluginTest, HandleViewportMessageScroll) {
@@ -1296,7 +1295,7 @@ TEST_F(PdfViewWebPluginTest, HandleViewportMessageScroll) {
   EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(2));
   EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(3));
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -1308,8 +1307,7 @@ TEST_F(PdfViewWebPluginTest, HandleViewportMessageScroll) {
     "xOffset": 2,
     "yOffset": 3,
     "pinchPhase": 0,
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 }
 
 TEST_F(PdfViewWebPluginTest, HandleViewportMessageScrollRightToLeft) {
@@ -1318,7 +1316,7 @@ TEST_F(PdfViewWebPluginTest, HandleViewportMessageScrollRightToLeft) {
   EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(2));
   EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(3));
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -1330,8 +1328,7 @@ TEST_F(PdfViewWebPluginTest, HandleViewportMessageScrollRightToLeft) {
     "xOffset": 2,
     "yOffset": 3,
     "pinchPhase": 0,
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 }
 
 TEST_F(PdfViewWebPluginTest, HandleSetBackgroundColorMessage) {
@@ -1835,12 +1832,11 @@ TEST_F(PdfViewWebPluginSaveTest, AnnotationInNonEditMode) {
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
     "saveRequestType": 0,
     "token": "annotation-in-non-edit-mode",
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 
   pdf_receiver_.FlushForTesting();
 }
@@ -1862,12 +1858,11 @@ TEST_F(PdfViewWebPluginSaveTest, AnnotationInEditMode) {
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
     "saveRequestType": 0,
     "token": "annotation-in-edit-mode",
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 
   pdf_receiver_.FlushForTesting();
 }
@@ -1890,12 +1885,11 @@ TEST_F(PdfViewWebPluginSaveTest, OriginalInNonEditMode) {
     "token": "original-in-non-edit-mode",
   })")));
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
     "saveRequestType": 1,
     "token": "original-in-non-edit-mode",
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 
   pdf_receiver_.FlushForTesting();
 }
@@ -1920,12 +1914,11 @@ TEST_F(PdfViewWebPluginSaveTest, OriginalInEditMode) {
     "token": "original-in-edit-mode",
   })")));
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
     "saveRequestType": 1,
     "token": "original-in-edit-mode",
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 
   pdf_receiver_.FlushForTesting();
 }
@@ -1944,12 +1937,11 @@ TEST_F(PdfViewWebPluginSaveTest, EditedInNonEditMode) {
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
     "saveRequestType": 2,
     "token": "edited-in-non-edit-mode",
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 }
 #endif  // BUILDFLAG(ENABLE_INK)
 
@@ -1968,12 +1960,11 @@ TEST_F(PdfViewWebPluginSaveTest, EditedInEditMode) {
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
     "saveRequestType": 2,
     "token": "edited-in-edit-mode",
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 }
 
 class PdfViewWebPluginSubmitFormTest
@@ -2196,13 +2187,12 @@ TEST_F(PdfViewWebPluginPrintPreviewTest, HandleResetPrintPreviewModeMessage) {
         return engine;
       });
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "resetPrintPreviewMode",
     "url": "chrome-untrusted://print/0/0/print.pdf",
     "grayscale": false,
     "pageCount": 1,
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 }
 
 TEST_F(PdfViewWebPluginPrintPreviewTest,
@@ -2215,23 +2205,21 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
         return engine;
       });
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "resetPrintPreviewMode",
     "url": "chrome-untrusted://print/0/0/print.pdf",
     "grayscale": true,
     "pageCount": 1,
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 }
 
 TEST_F(PdfViewWebPluginPrintPreviewTest, DocumentLoadComplete) {
-  base::Value reset_message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "resetPrintPreviewMode",
     "url": "chrome-untrusted://print/0/0/print.pdf",
     "grayscale": false,
     "pageCount": 1,
-  })");
-  plugin_->OnMessage(reset_message.GetDict());
+  })"));
 
   EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF.LoadSuccess"));
   EXPECT_CALL(*client_ptr_, PostMessage);
@@ -2258,13 +2246,12 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
        DocumentLoadProgressResetByResetPrintPreviewModeMessage) {
   plugin_->DocumentLoadProgress(2, 100);
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "resetPrintPreviewMode",
     "url": "chrome-untrusted://print/123/0/print.pdf",
     "grayscale": false,
     "pageCount": 2,
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
     "type": "loadProgress",
@@ -2275,22 +2262,20 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
 
 TEST_F(PdfViewWebPluginPrintPreviewTest,
        DocumentLoadProgressNotResetByLoadPreviewPageMessage) {
-  base::Value reset_message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "resetPrintPreviewMode",
     "url": "chrome-untrusted://print/123/0/print.pdf",
     "grayscale": false,
     "pageCount": 2,
-  })");
-  plugin_->OnMessage(reset_message.GetDict());
+  })"));
 
   plugin_->DocumentLoadProgress(2, 100);
 
-  base::Value load_page_message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "loadPreviewPage",
     "url": "chrome-untrusted://print/123/1/print.pdf",
     "index": 1,
-  })");
-  plugin_->OnMessage(load_page_message.GetDict());
+  })"));
 
   EXPECT_CALL(*client_ptr_, PostMessage).Times(0);
   plugin_->DocumentLoadProgress(3, 100);
@@ -2303,7 +2288,7 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
   EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(14));
   EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(3));
 
-  base::Value message = base::test::ParseJson(R"({
+  plugin_->OnMessage(ParseMessage(R"({
     "type": "viewport",
     "userInitiated": false,
     "zoom": 1,
@@ -2315,8 +2300,7 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
     "xOffset": -2,
     "yOffset": 3,
     "pinchPhase": 0,
-  })");
-  plugin_->OnMessage(message.GetDict());
+  })"));
 }
 
 }  // namespace chrome_pdf
