@@ -111,6 +111,7 @@ class QtInterface {
     virtual ~Delegate() = default;
 
     virtual void FontChanged() = 0;
+    virtual void ThemeChanged() = 0;
   };
 
   QtInterface() = default;

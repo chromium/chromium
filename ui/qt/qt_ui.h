@@ -78,6 +78,7 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
 
   // QtInterface::Delegate:
   void FontChanged() override;
+  void ThemeChanged() override;
 
  private:
   void AddNativeColorMixer(ui::ColorProvider* provider,

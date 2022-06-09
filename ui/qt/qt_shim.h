@@ -32,6 +32,7 @@ class QtShim : public QObject, public QtInterface {
 
  private slots:
   void FontChanged(const QFont& font);
+  void PaletteChanged(const QPalette& palette);
 
  private:
   QtInterface::Delegate* const delegate_;

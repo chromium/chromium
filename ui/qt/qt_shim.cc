@@ -194,6 +194,8 @@ QtShim::QtShim(QtInterface::Delegate* delegate, int* argc, char** argv)
     : delegate_(delegate), app_(*argc, argv) {
   connect(&app_, SIGNAL(fontChanged(const QFont&)), this,
           SLOT(FontChanged(const QFont&)));
+  connect(&app_, SIGNAL(paletteChanged(const QPalette&)), this,
+          SLOT(PaletteChanged(const QPalette&)));
 }
 
 QtShim::~QtShim() = default;
@@ -251,6 +253,10 @@ SkColor QtShim::GetColor(ColorType role, ColorState state) const {
 
 void QtShim::FontChanged(const QFont& font) {
   delegate_->FontChanged();
+}
+
+void QtShim::PaletteChanged(const QPalette& palette) {
+  delegate_->ThemeChanged();
 }
 
 }  // namespace qt

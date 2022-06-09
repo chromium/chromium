@@ -326,6 +326,10 @@ void QtUi::FontChanged() {
   };
 }
 
+void QtUi::ThemeChanged() {
+  native_theme_->NotifyOnNativeThemeUpdated();
+}
+
 void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
                                const ui::ColorProviderManager::Key& key) {
   if (key.system_theme == ui::ColorProviderManager::SystemTheme::kDefault)
