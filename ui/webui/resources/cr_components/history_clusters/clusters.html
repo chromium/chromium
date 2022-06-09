@@ -51,7 +51,7 @@
     result_, result_.clusters.*, result_.canLoadMore)]]">
   <cr-button id="loadMoreButton" on-click="onLoadMoreButtonClick_"
              hidden$="[[showSpinner_]]">
-    $i18n{loadMoreButtonLabel}
+    [[i18n('loadMoreButtonLabel')]]
   </cr-button>
   <iron-icon src="chrome://resources/images/throbber_small.svg"
              hidden$="[[!showSpinner_]]"></iron-icon>
@@ -62,14 +62,14 @@
 <cr-lazy-render id="confirmationDialog">
   <template>
     <cr-dialog consume-keydown-event on-cancel="onConfirmationDialogCancel_">
-      <div slot="title">$i18n{removeSelected}</div>
-      <div slot="body">$i18n{deleteWarning}</div>
+      <div slot="title">[[i18n('removeSelected')]]</div>
+      <div slot="body">[[i18n('deleteWarning')]]</div>
       <div slot="button-container">
         <cr-button class="cancel-button" on-click="onCancelButtonClick_">
-          $i18n{cancel}
+          [[i18n('cancel')]]
         </cr-button>
         <cr-button class="action-button" on-click="onRemoveButtonClick_">
-          $i18n{deleteConfirm}
+          [[i18n('deleteConfirm')]]
         </cr-button>
       </div>
     </cr-dialog>
@@ -78,7 +78,7 @@
 <cr-lazy-render id="confirmationToast">
   <template>
     <cr-toast duration="5000">
-      <div>$i18n{removeFromHistoryToast}</div>
+      <div>[[i18n('removeFromHistoryToast')]]</div>
     </cr-toast>
   </template>
 </cr-lazy-render>

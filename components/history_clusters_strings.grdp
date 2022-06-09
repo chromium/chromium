@@ -3,6 +3,9 @@
 <!-- Strings for the chrome://history/journeys page -->
 
 <grit-part>
+  <message name="IDS_HISTORY_CLUSTERS_ACTION_MENU_DESCRIPTION" desc="Text used to identify the history clusters drop-down menu for screen readers">
+    Actions
+  </message>
   <message name="IDS_HISTORY_CLUSTERS_DISABLE_MENU_ITEM_LABEL" desc="A label for the menu item to turn off the Journeys feature, which collects different search and browsing activities related to a single topic into a single place, and organizes them by topic. See glossary entry for meaning of 'Journeys'.">
     Turn off Journeys
   </message>

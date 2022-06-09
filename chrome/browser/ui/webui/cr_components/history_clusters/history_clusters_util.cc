@@ -6,6 +6,7 @@
 
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
@@ -16,21 +17,24 @@
 // Static
 void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
                                          Profile* profile) {
+  PrefService* prefs = profile->GetPrefs();
+  source->AddBoolean("allowDeletingHistory",
+                     prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory));
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(profile);
   source->AddBoolean("isHistoryClustersEnabled",
                      history_clusters_service &&
                          history_clusters_service->IsJourneysEnabled());
+  source->AddBoolean(kIsHistoryClustersVisibleKey,
+                     prefs->GetBoolean(history_clusters::prefs::kVisible));
   source->AddBoolean(
-      kIsHistoryClustersVisibleKey,
-      profile->GetPrefs()->GetBoolean(history_clusters::prefs::kVisible));
-  source->AddBoolean(kIsHistoryClustersVisibleManagedByPolicyKey,
-                     profile->GetPrefs()->IsManagedPreference(
-                         history_clusters::prefs::kVisible));
+      kIsHistoryClustersVisibleManagedByPolicyKey,
+      prefs->IsManagedPreference(history_clusters::prefs::kVisible));
   source->AddBoolean("isHistoryClustersDebug",
                      history_clusters::GetConfig().user_visible_debug);
 
   static constexpr webui::LocalizedString kHistoryClustersStrings[] = {
+      {"actionMenuDescription", IDS_HISTORY_CLUSTERS_ACTION_MENU_DESCRIPTION},
       {"disableHistoryClusters", IDS_HISTORY_CLUSTERS_DISABLE_MENU_ITEM_LABEL},
       {"enableHistoryClusters", IDS_HISTORY_CLUSTERS_ENABLE_MENU_ITEM_LABEL},
       {"historyClustersTabLabel", IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL},

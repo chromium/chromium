@@ -10,6 +10,7 @@ import './url_visit.js';
 import '../../cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert_ts.js';
@@ -31,13 +32,15 @@ declare global {
   }
 }
 
+const HistoryClusterElementBase = I18nMixin(PolymerElement);
+
 interface HistoryClusterElement {
   $: {
     label: HTMLElement,
   };
 }
 
-class HistoryClusterElement extends PolymerElement {
+class HistoryClusterElement extends HistoryClusterElementBase {
   static get is() {
     return 'history-cluster';
   }

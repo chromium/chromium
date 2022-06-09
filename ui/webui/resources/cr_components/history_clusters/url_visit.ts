@@ -8,6 +8,7 @@ import '../../cr_elements/cr_action_menu/cr_action_menu.js';
 import '../../cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_menu.js';
@@ -39,6 +40,8 @@ declare global {
   }
 }
 
+const MenuContainerElementBase = I18nMixin(PolymerElement);
+
 interface VisitRowElement {
   $: {
     actionMenu: CrLazyRenderElement<CrActionMenuElement>,
@@ -48,7 +51,7 @@ interface VisitRowElement {
   };
 }
 
-class VisitRowElement extends PolymerElement {
+class VisitRowElement extends MenuContainerElementBase {
   static get is() {
     return 'url-visit';
   }
