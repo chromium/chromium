@@ -546,11 +546,6 @@ class BlinkPerfEvents(_BlinkPerfBenchmark):
   def Name(cls):
     return 'blink_perf.events'
 
-  # TODO(yoichio): Migrate EventsDispatching tests to V1 and remove this flags
-  # crbug.com/937716.
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(['--enable-blink-features=ShadowDOMV0'])
-
 
 @benchmark.Info(emails=['cblume@chromium.org'],
                 component='Internals>Images>Codecs',
@@ -627,10 +622,8 @@ class BlinkPerfPerformanceAPIs(_BlinkPerfBenchmark):
     return 'UNSCHEDULED_blink_perf.performance_apis'
 
 
-@benchmark.Info(component='Blink>Bindings',
-                emails=['jbroman@chromium.org',
-                         'yukishiino@chromium.org',
-                         'haraken@chromium.org'],
+@benchmark.Info(emails=['masonf@chromium.org'],
+                component='Blink>HTML>Parser',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfParser(_BlinkPerfBenchmark):
   SUBDIR = 'parser'
@@ -681,10 +674,6 @@ class BlinkPerfShadowDOM(_BlinkPerfBenchmark):
   def Name(cls):
     return 'blink_perf.shadow_dom'
 
-  # TODO(yoichio): Migrate shadow-style-share tests to V1 and remove this flags
-  # crbug.com/937716.
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(['--enable-blink-features=ShadowDOMV0'])
 
 @benchmark.Info(emails=['vmpstr@chromium.org'],
                 component='Blink>Paint',

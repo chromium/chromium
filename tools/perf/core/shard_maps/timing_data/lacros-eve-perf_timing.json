@@ -1660,26 +1660,6 @@
         "name": "desktop_ui/tab_search:top50:loading:2020"
     },
     {
-        "duration": "69.0",
-        "name": "desktop_ui/webui_tab_strip:clean_slate"
-    },
-    {
-        "duration": "71.0",
-        "name": "desktop_ui/webui_tab_strip:measure_memory"
-    },
-    {
-        "duration": "73.0",
-        "name": "desktop_ui/webui_tab_strip:measure_memory:2window"
-    },
-    {
-        "duration": "106.0",
-        "name": "desktop_ui/webui_tab_strip:top10:2020"
-    },
-    {
-        "duration": "96.0",
-        "name": "desktop_ui/webui_tab_strip:top10:loading:2020"
-    },
-    {
         "duration": "27.0",
         "name": "dummy_benchmark.noisy_benchmark_1/dummy_page.html"
     },

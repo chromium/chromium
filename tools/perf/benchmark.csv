@@ -22,7 +22,7 @@ blink_perf.image_decoder,cblume@chromium.org,Internals>Images>Codecs,https://bit
 blink_perf.layout,"ikilpatrick@chromium.org, kojii@chromium.org",Blink>Layout,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.owp_storage,dmurph@chromium.org,Blink>Storage,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.paint,"pdr@chromium.org, wangxianzhu@chromium.org",Blink>Paint,https://bit.ly/blink-perf-benchmarks,all
-blink_perf.parser,"jbroman@chromium.org, yukishiino@chromium.org, haraken@chromium.org",Blink>Bindings,https://bit.ly/blink-perf-benchmarks,all
+blink_perf.parser,masonf@chromium.org,Blink>HTML>Parser,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.sanitizer-api,lyf@chromium.org,Blink>Security>SanitizerAPI,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.shadow_dom,masonf@chromium.org,Blink>DOM>ShadowDOM,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.svg,"fs@opera.com, pdr@chromium.org",Blink>SVG,https://bit.ly/blink-perf-benchmarks,all
