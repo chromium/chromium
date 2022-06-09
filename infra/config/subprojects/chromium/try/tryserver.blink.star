@@ -86,13 +86,6 @@ try_.builder(
     builderless = True,
 )
 
-try_.builder(
-    name = "win7-blink-rel",
-    goma_backend = goma.backend.RBE_PROD,
-    os = os.WINDOWS_ANY,
-    builderless = True,
-)
-
 blink_mac_builder(
     name = "mac10.13-blink-rel",
 )

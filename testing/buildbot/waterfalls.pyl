@@ -3810,19 +3810,6 @@
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
-      'win7-blink-rel-dummy': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Windows-7-SP1',
-            },
-          ],
-          'hard_timeout': 900,
-        },
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
     },
   },
   {
