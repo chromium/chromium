@@ -15,11 +15,9 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/test/chromedriver/chrome/device_metrics.h"
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/log.h"
 #include "chrome/test/chromedriver/chrome/status.h"
-#include "chrome/test/chromedriver/chrome/web_view_impl.h"
 #include "chrome/test/chromedriver/net/net_util.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
@@ -67,16 +65,10 @@ const WebViewInfo* WebViewsInfo::GetForId(const std::string& id) const {
 DevToolsHttpClient::DevToolsHttpClient(
     const DevToolsEndpoint& endpoint,
     network::mojom::URLLoaderFactory* factory,
-    const SyncWebSocketFactory& socket_factory,
-    std::unique_ptr<DeviceMetrics> device_metrics,
-    std::unique_ptr<std::set<WebViewInfo::Type>> window_types,
-    std::string page_load_strategy)
+    std::unique_ptr<std::set<WebViewInfo::Type>> window_types)
     : url_loader_factory_(factory),
-      socket_factory_(socket_factory),
       endpoint_(endpoint),
-      device_metrics_(std::move(device_metrics)),
-      window_types_(std::move(window_types)),
-      page_load_strategy_(page_load_strategy) {
+      window_types_(std::move(window_types)) {
   window_types_->insert(WebViewInfo::kPage);
   window_types_->insert(WebViewInfo::kApp);
 }
@@ -111,50 +103,8 @@ Status DevToolsHttpClient::GetWebViewsInfo(WebViewsInfo* views_info) {
   return internal::ParseWebViewsInfo(data, views_info);
 }
 
-std::unique_ptr<DevToolsClient> DevToolsHttpClient::CreateClient(
-    const std::string& id) {
-  auto result = std::make_unique<DevToolsClientImpl>(
-      id, "", endpoint_.GetDebuggerUrl(id), socket_factory_);
-  result->SetFrontendCloserFunc(base::BindRepeating(
-      &DevToolsHttpClient::CloseFrontends, base::Unretained(this), id));
-  return result;
-}
-
-Status DevToolsHttpClient::CloseWebView(const std::string& id) {
-  std::string data;
-  if (!FetchUrlAndLog(endpoint_.GetCloseUrl(id), &data)) {
-    return Status(kOk);  // Closing the last web view leads chrome to quit.
-  }
-
-  // Wait for the target window to be completely closed.
-  base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(20);
-  while (base::TimeTicks::Now() < deadline) {
-    WebViewsInfo views_info;
-    Status status = GetWebViewsInfo(&views_info);
-    if (status.code() == kChromeNotReachable)
-      return Status(kOk);
-    if (status.IsError())
-      return status;
-    if (!views_info.GetForId(id))
-      return Status(kOk);
-    base::PlatformThread::Sleep(base::Milliseconds(50));
-  }
-  return Status(kUnknownError, "failed to close window in 20 seconds");
-}
-
-Status DevToolsHttpClient::ActivateWebView(const std::string& id) {
-  std::string data;
-  if (!FetchUrlAndLog(endpoint_.GetActivateUrl(id), &data))
-    return Status(kUnknownError, "cannot activate web view");
-  return Status(kOk);
-}
-
 const BrowserInfo* DevToolsHttpClient::browser_info() {
   return &browser_info_;
-}
-
-const DeviceMetrics* DevToolsHttpClient::device_metrics() {
-  return device_metrics_.get();
 }
 
 bool DevToolsHttpClient::IsBrowserWindow(const WebViewInfo& view) const {
@@ -162,76 +112,8 @@ bool DevToolsHttpClient::IsBrowserWindow(const WebViewInfo& view) const {
          (view.type == WebViewInfo::kOther && view.url == "chrome://print/");
 }
 
-Status DevToolsHttpClient::CloseFrontends(const std::string& for_client_id) {
-  WebViewsInfo views_info;
-  Status status = GetWebViewsInfo(&views_info);
-  if (status.IsError())
-    return status;
-
-  // Close frontends. Usually frontends are docked in the same page, although
-  // some may be in tabs (undocked, chrome://inspect, the DevTools
-  // discovery page, etc.). Tabs can be closed via the DevTools HTTP close
-  // URL, but docked frontends can only be closed, by design, by connecting
-  // to them and clicking the close button. Close the tab frontends first
-  // in case one of them is debugging a docked frontend, which would prevent
-  // the code from being able to connect to the docked one.
-  std::list<std::string> tab_frontend_ids;
-  std::list<std::string> docked_frontend_ids;
-  for (size_t i = 0; i < views_info.GetSize(); ++i) {
-    const WebViewInfo& view_info = views_info.Get(i);
-    if (view_info.IsFrontend()) {
-      if (view_info.type == WebViewInfo::kPage)
-        tab_frontend_ids.push_back(view_info.id);
-      else if (view_info.type == WebViewInfo::kOther)
-        docked_frontend_ids.push_back(view_info.id);
-      else
-        return Status(kUnknownError, "unknown type of DevTools frontend");
-    }
-  }
-
-  for (std::list<std::string>::const_iterator it = tab_frontend_ids.begin();
-       it != tab_frontend_ids.end(); ++it) {
-    status = CloseWebView(*it);
-    if (status.IsError())
-      return status;
-  }
-
-  for (std::list<std::string>::const_iterator it = docked_frontend_ids.begin();
-       it != docked_frontend_ids.end(); ++it) {
-    std::unique_ptr<DevToolsClient> client(new DevToolsClientImpl(
-        *it, "", endpoint_.GetDebuggerUrl(*it), socket_factory_));
-    std::unique_ptr<WebViewImpl> web_view(
-        new WebViewImpl(*it, false, nullptr, &browser_info_, std::move(client),
-                        nullptr, page_load_strategy_));
-
-    status = web_view->ConnectIfNecessary();
-    // Ignore disconnected error, because the debugger might have closed when
-    // its container page was closed above.
-    if (status.IsError() && status.code() != kDisconnected)
-      return status;
-
-    status = CloseWebView(*it);
-    // Ignore disconnected error, because it may be closed already.
-    if (status.IsError() && status.code() != kDisconnected)
-      return status;
-  }
-
-  // Wait until DevTools UI disconnects from the given web view.
-  base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(20);
-  while (base::TimeTicks::Now() < deadline) {
-    status = GetWebViewsInfo(&views_info);
-    if (status.IsError())
-      return status;
-
-    const WebViewInfo* view_info = views_info.GetForId(for_client_id);
-    if (!view_info)
-      return Status(kNoSuchWindow, "window was already closed");
-    if (view_info->debugger_url.size())
-      return Status(kOk);
-
-    base::PlatformThread::Sleep(base::Milliseconds(50));
-  }
-  return Status(kUnknownError, "failed to close UI debuggers");
+const DevToolsEndpoint& DevToolsHttpClient::endpoint() const {
+  return endpoint_;
 }
 
 bool DevToolsHttpClient::FetchUrlAndLog(const std::string& url,

@@ -5,13 +5,19 @@
 #include "chrome/test/chromedriver/chrome/chrome_impl.h"
 
 #include <stddef.h>
+#include <algorithm>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/test/chromedriver/chrome/chrome.h"
+#include "chrome/test/chromedriver/chrome/device_metrics.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
+#include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/page_load_strategy.h"
@@ -105,8 +111,7 @@ void ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
         }
       }
       if (!found) {
-        std::unique_ptr<DevToolsClient> client(
-            devtools_http_client_->CreateClient(view.id));
+        std::unique_ptr<DevToolsClient> client = CreateClient(view.id);
         for (const auto& listener : devtools_event_listeners_)
           client->AddListener(listener.get());
         // OnConnected will fire when DevToolsClient connects later.
@@ -119,7 +124,7 @@ void ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
           web_views_.push_back(std::make_unique<WebViewImpl>(
               view.id, w3c_compliant, nullptr,
               devtools_http_client_->browser_info(), std::move(client),
-              devtools_http_client_->device_metrics(), page_load_strategy_));
+              device_metrics_.get(), page_load_strategy_));
         }
       }
     }
@@ -164,6 +169,89 @@ Status ChromeImpl::NewWindow(const std::string& target_id,
   *window_handle = *target_id_str;
 
   return Status(kOk);
+}
+
+std::unique_ptr<DevToolsClient> ChromeImpl::CreateClient(
+    const std::string& id) {
+  auto result = std::make_unique<DevToolsClientImpl>(
+      id, "", devtools_http_client_->endpoint().GetDebuggerUrl(id),
+      socket_factory_);
+  result->SetFrontendCloserFunc(base::BindRepeating(
+      &ChromeImpl::CloseFrontends, base::Unretained(this), id));
+  return result;
+}
+
+Status ChromeImpl::CloseFrontends(const std::string& for_client_id) {
+  WebViewsInfo views_info;
+  Status status = devtools_http_client_->GetWebViewsInfo(&views_info);
+  if (status.IsError())
+    return status;
+
+  // Close frontends. Usually frontends are docked in the same page, although
+  // some may be in tabs (undocked, chrome://inspect, the DevTools
+  // discovery page, etc.). Tabs can be closed via the DevTools HTTP close
+  // URL, but docked frontends can only be closed, by design, by connecting
+  // to them and clicking the close button. Close the tab frontends first
+  // in case one of them is debugging a docked frontend, which would prevent
+  // the code from being able to connect to the docked one.
+  std::list<std::string> tab_frontend_ids;
+  std::list<std::string> docked_frontend_ids;
+  for (size_t i = 0; i < views_info.GetSize(); ++i) {
+    const WebViewInfo& view_info = views_info.Get(i);
+    if (view_info.IsFrontend()) {
+      if (view_info.type == WebViewInfo::kPage)
+        tab_frontend_ids.push_back(view_info.id);
+      else if (view_info.type == WebViewInfo::kOther)
+        docked_frontend_ids.push_back(view_info.id);
+      else
+        return Status(kUnknownError, "unknown type of DevTools frontend");
+    }
+  }
+
+  for (std::list<std::string>::const_iterator it = tab_frontend_ids.begin();
+       it != tab_frontend_ids.end(); ++it) {
+    status = CloseWebView(*it);
+    if (status.IsError())
+      return status;
+  }
+
+  for (std::list<std::string>::const_iterator it = docked_frontend_ids.begin();
+       it != docked_frontend_ids.end(); ++it) {
+    std::unique_ptr<DevToolsClient> client(new DevToolsClientImpl(
+        *it, "", devtools_http_client_->endpoint().GetDebuggerUrl(*it),
+        socket_factory_));
+    std::unique_ptr<WebViewImpl> web_view(new WebViewImpl(
+        *it, false, nullptr, devtools_http_client_->browser_info(),
+        std::move(client), nullptr, page_load_strategy_));
+
+    status = web_view->ConnectIfNecessary();
+    // Ignore disconnected error, because the debugger might have closed when
+    // its container page was closed above.
+    if (status.IsError() && status.code() != kDisconnected)
+      return status;
+
+    status = CloseWebView(*it);
+    // Ignore disconnected error, because it may be closed already.
+    if (status.IsError() && status.code() != kDisconnected)
+      return status;
+  }
+
+  // Wait until DevTools UI disconnects from the given web view.
+  base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(20);
+  while (base::TimeTicks::Now() < deadline) {
+    status = devtools_http_client_->GetWebViewsInfo(&views_info);
+    if (status.IsError())
+      return status;
+
+    const WebViewInfo* view_info = views_info.GetForId(for_client_id);
+    if (!view_info)
+      return Status(kNoSuchWindow, "window was already closed");
+    if (view_info->debugger_url.size())
+      return Status(kOk);
+
+    base::PlatformThread::Sleep(base::Milliseconds(50));
+  }
+  return Status(kUnknownError, "failed to close UI debuggers");
 }
 
 Status ChromeImpl::GetWindow(const std::string& target_id, Window* window) {
@@ -469,16 +557,49 @@ Status ChromeImpl::ParseWindowBounds(const base::Value& params,
   return Status(kOk);
 }
 
-Status ChromeImpl::CloseWebView(const std::string& id) {
-  Status status = devtools_http_client_->CloseWebView(id);
+Status ChromeImpl::CloseTarget(const std::string& id) {
+  base::Value params{base::Value::Type::DICT};
+  params.GetDict().Set("targetId", id);
+  Status status = devtools_websocket_client_->SendCommand(
+      "Target.closeTarget", base::Value::AsDictionaryValue(params));
+
   if (status.IsError())
     return status;
-  for (auto iter = web_views_.begin(); iter != web_views_.end(); ++iter) {
-    if ((*iter)->GetId() == id) {
-      web_views_.erase(iter);
-      break;
-    }
+
+  // Wait for the target window to be completely closed.
+  base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(20);
+  while (base::TimeTicks::Now() < deadline) {
+    WebViewsInfo views_info;
+    Status status = devtools_http_client_->GetWebViewsInfo(&views_info);
+    if (status.code() == kChromeNotReachable)
+      return Status(kOk);
+    if (status.IsError())
+      return status;
+    if (!views_info.GetForId(id))
+      return Status(kOk);
+    base::PlatformThread::Sleep(base::Milliseconds(50));
   }
+  return Status(kUnknownError, "failed to close window in 20 seconds");
+}
+
+Status ChromeImpl::CloseWebView(const std::string& id) {
+  Status status = devtools_websocket_client_->ConnectIfNecessary();
+  if (status.IsError()) {
+    return status;
+  }
+
+  status = CloseTarget(id);
+  if (status.IsError()) {
+    return status;
+  }
+
+  auto it =
+      std::find_if(web_views_.begin(), web_views_.end(),
+                   [&id](const auto& view) { return view->GetId() == id; });
+  if (it != web_views_.end()) {
+    web_views_.erase(it);
+  }
+
   return Status(kOk);
 }
 
@@ -487,7 +608,17 @@ Status ChromeImpl::ActivateWebView(const std::string& id) {
   GetWebViewById(id, &webview);
   if (webview && webview->IsServiceWorker())
     return Status(kOk);
-  return devtools_http_client_->ActivateWebView(id);
+
+  Status status = devtools_websocket_client_->ConnectIfNecessary();
+  if (status.IsError()) {
+    return status;
+  }
+
+  base::Value params{base::Value::Type::DICT};
+  params.GetDict().Set("targetId", id);
+  status = devtools_websocket_client_->SendCommand(
+      "Target.activateTarget", base::Value::AsDictionaryValue(params));
+  return status;
 }
 
 Status ChromeImpl::SetAcceptInsecureCerts() {
@@ -557,8 +688,11 @@ ChromeImpl::ChromeImpl(std::unique_ptr<DevToolsHttpClient> http_client,
                        std::unique_ptr<DevToolsClient> websocket_client,
                        std::vector<std::unique_ptr<DevToolsEventListener>>
                            devtools_event_listeners,
+                       std::unique_ptr<DeviceMetrics> device_metrics,
+                       SyncWebSocketFactory socket_factory,
                        std::string page_load_strategy)
-    : quit_(false),
+    : device_metrics_(std::move(device_metrics)),
+      socket_factory_(std::move(socket_factory)),
       devtools_http_client_(std::move(http_client)),
       devtools_websocket_client_(std::move(websocket_client)),
       devtools_event_listeners_(std::move(devtools_event_listeners)),

@@ -17,6 +17,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/test/chromedriver/chrome/device_metrics.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
@@ -75,6 +76,8 @@ ChromeDesktopImpl::ChromeDesktopImpl(
     std::unique_ptr<DevToolsClient> websocket_client,
     std::vector<std::unique_ptr<DevToolsEventListener>>
         devtools_event_listeners,
+    std::unique_ptr<DeviceMetrics> device_metrics,
+    SyncWebSocketFactory socket_factory,
     std::string page_load_strategy,
     base::Process process,
     const base::CommandLine& command,
@@ -84,6 +87,8 @@ ChromeDesktopImpl::ChromeDesktopImpl(
     : ChromeImpl(std::move(http_client),
                  std::move(websocket_client),
                  std::move(devtools_event_listeners),
+                 std::move(device_metrics),
+                 std::move(socket_factory),
                  page_load_strategy),
       process_(std::move(process)),
       command_(command),
@@ -141,7 +146,7 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
   if (id.empty())
     return Status(kUnknownError, "page could not be found: " + url);
 
-  const DeviceMetrics* device_metrics = devtools_http_client_->device_metrics();
+  const DeviceMetrics* device_metrics = device_metrics_.get();
   if (type == WebViewInfo::Type::kApp ||
       type == WebViewInfo::Type::kBackgroundPage) {
     // Apps and extensions don't work on Android, so it doesn't make sense to
@@ -152,8 +157,7 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
   }
   std::unique_ptr<WebView> web_view_tmp(new WebViewImpl(
       id, w3c_compliant, nullptr, devtools_http_client_->browser_info(),
-      devtools_http_client_->CreateClient(id), device_metrics,
-      page_load_strategy()));
+      CreateClient(id), device_metrics, page_load_strategy()));
   Status status = web_view_tmp->ConnectIfNecessary();
   if (status.IsError())
     return status;
@@ -175,7 +179,7 @@ std::string ChromeDesktopImpl::GetOperatingSystemName() {
 }
 
 bool ChromeDesktopImpl::IsMobileEmulationEnabled() const {
-  return devtools_http_client_->device_metrics() != NULL;
+  return static_cast<bool>(device_metrics_);
 }
 
 bool ChromeDesktopImpl::HasTouchScreen() const {

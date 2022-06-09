@@ -25,8 +25,6 @@ class DevToolsEndpoint {
   std::string GetDebuggerUrl(const std::string& id) const;
   std::string GetVersionUrl() const;
   std::string GetListUrl() const;
-  std::string GetCloseUrl(const std::string& id) const;
-  std::string GetActivateUrl(const std::string& id) const;
 
  private:
   GURL server_url_;
