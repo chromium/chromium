@@ -5571,10 +5571,18 @@ CSSValue* ParseSpacing(CSSParserTokenRange& range,
 
 CSSValue* ConsumeSingleContainerName(CSSParserTokenRange& range,
                                      const CSSParserContext& context) {
+  if (range.Peek().GetType() != kIdentToken)
+    return nullptr;
   // TODO(crbug.com/1066390): ConsumeCustomIdent should not allow "default".
   if (range.Peek().Id() == CSSValueID::kDefault)
     return nullptr;
   if (range.Peek().Id() == CSSValueID::kNone)
+    return nullptr;
+  if (EqualIgnoringASCIICase(range.Peek().Value(), "not"))
+    return nullptr;
+  if (EqualIgnoringASCIICase(range.Peek().Value(), "and"))
+    return nullptr;
+  if (EqualIgnoringASCIICase(range.Peek().Value(), "or"))
     return nullptr;
   return ConsumeCustomIdent(range, context);
 }

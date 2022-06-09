@@ -205,7 +205,7 @@ TEST_F(ContainerQueryTest, FeatureFlags) {
   EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
             FeatureFlagsFrom("((width: 100px))"));
   EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
-            FeatureFlagsFrom("not (width: 100px)"));
+            FeatureFlagsFrom("(not (width: 100px))"));
 }
 
 TEST_F(ContainerQueryTest, ImplicitContainerSelector) {

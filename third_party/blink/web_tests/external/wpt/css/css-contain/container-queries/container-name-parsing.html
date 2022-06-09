@@ -20,7 +20,6 @@ test_valid_value('container-name', 'BAR');
 test_valid_value('container-name', 'foo bar');
 test_valid_value('container-name', 'foo foo');
 test_valid_value('container-name', '\\!escaped');
-test_valid_value('container-name', 'not');
 
 test_invalid_value('container-name', 'none none');
 test_invalid_value('container-name', 'foo, bar');
@@ -34,4 +33,11 @@ test_invalid_value('container-name', '"unset"');
 test_invalid_value('container-name', '"revert"');
 test_invalid_value('container-name', '"none"');
 test_invalid_value('container-name', '"foo"');
+
+test_invalid_value('container-name', 'not');
+test_invalid_value('container-name', 'and');
+test_invalid_value('container-name', 'or');
+test_invalid_value('container-name', 'Not');
+test_invalid_value('container-name', 'aNd');
+test_invalid_value('container-name', 'oR');
 </script>
