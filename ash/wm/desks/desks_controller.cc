@@ -224,11 +224,14 @@ bool IsApplistActiveInTabletMode(const aura::Window* active_window) {
 
 void ShowDeskRemovalUndoToast(const std::string& toast_id,
                               base::RepeatingClosure dismiss_callback,
-                              base::RepeatingClosure expired_callback) {
+                              base::RepeatingClosure expired_callback,
+                              bool use_persistent_toast) {
+  // If ChromeVox is enabled, then we want the toast to be infinite duration.
   ToastData undo_toast_data(
       toast_id, ash::ToastCatalogName::kUndoCloseAll,
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_TOAST_TEXT),
-      ToastData::kDefaultToastDuration,
+      use_persistent_toast ? ToastData::kInfiniteDuration
+                           : ToastData::kDefaultToastDuration,
       /*visible_on_lock_screen=*/false,
       /*has_dismiss_button=*/true,
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_UNDO_TEXT));
@@ -239,8 +242,8 @@ void ShowDeskRemovalUndoToast(const std::string& toast_id,
 
 }  // namespace
 
-// Class that can hold the data for a removed desk while it waits for a user to
-// confirm its deletion.
+// Class that can hold the data for a removed desk while it waits for a user
+// to confirm its deletion.
 class DesksController::RemovedDeskData {
  public:
   RemovedDeskData(std::unique_ptr<Desk> desk, int index)
@@ -248,7 +251,11 @@ class DesksController::RemovedDeskData {
                                      ++g_close_desk_toast_counter)),
         was_active_(desk->is_active()),
         desk_(std::move(desk)),
-        index_(index) {
+        index_(index),
+        is_toast_persistent_(Shell::Get()
+                                 ->accessibility_controller()
+                                 ->spoken_feedback()
+                                 .enabled()) {
     desk_->set_is_desk_being_removed(true);
   }
 
@@ -266,6 +273,7 @@ class DesksController::RemovedDeskData {
   bool was_active() const { return was_active_; }
   Desk* desk() { return desk_.get(); }
   int index() const { return index_; }
+  bool is_toast_persistent() const { return is_toast_persistent_; }
   std::unique_ptr<Desk> AcquireDesk() { return std::move(desk_); }
 
  private:
@@ -273,6 +281,11 @@ class DesksController::RemovedDeskData {
   const bool was_active_;
   std::unique_ptr<Desk> desk_;
   const int index_;
+
+  // If this was created in overview with ChromeVox enabled and then ChromeVox
+  // is exited before this is destroyed, then we still need to know to destroy
+  // it when overview closes.
+  const bool is_toast_persistent_;
 };
 
 // Helper class which wraps around a OneShotTimer and used for recording how
@@ -1270,6 +1283,35 @@ void DesksController::MaybeCancelDeskRemoval() {
   ToastManager::Get()->Cancel(toast_id);
 }
 
+void DesksController::MaybeDismissPersistentDeskRemovalToast() {
+  if (temporary_removed_desk_ &&
+      temporary_removed_desk_->is_toast_persistent()) {
+    ToastManager::Get()->Cancel(temporary_removed_desk_->toast_id());
+  }
+}
+
+bool DesksController::MaybeToggleA11yHighlightOnUndoDeskRemovalToast() {
+  if (!temporary_removed_desk_ ||
+      !ToastManager::Get()->IsRunning(temporary_removed_desk_->toast_id())) {
+    return false;
+  }
+
+  return ToastManager::Get()
+      ->MaybeToggleA11yHighlightOnActiveToastDismissButton(
+          temporary_removed_desk_->toast_id());
+}
+
+bool DesksController::MaybeActivateDeskRemovalUndoButtonOnHighlightedToast() {
+  if (!temporary_removed_desk_ ||
+      !ToastManager::Get()->IsRunning(temporary_removed_desk_->toast_id())) {
+    return false;
+  }
+
+  return ToastManager::Get()
+      ->MaybeActivateHighlightedDismissButtonOnActiveToast(
+          temporary_removed_desk_->toast_id());
+}
+
 void DesksController::OnWindowActivating(ActivationReason reason,
                                          aura::Window* gaining_active,
                                          aura::Window* losing_active) {
@@ -1602,7 +1644,8 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
         /*expired_callback=*/
         base::BindRepeating(&DesksController::MaybeCommitPendingDeskRemoval,
                             base::Unretained(this),
-                            temporary_removed_desk_->toast_id()));
+                            temporary_removed_desk_->toast_id()),
+        temporary_removed_desk_->is_toast_persistent());
   }
 }
 

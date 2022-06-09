@@ -142,6 +142,11 @@ bool OverviewController::EndOverview(OverviewEndAction action,
 
   ToggleOverview(type);
   RecordOverviewEndAction(action);
+
+  // If there is an undo toast active and the toast was created when ChromeVox
+  // was enabled, then we need to close the toast when overview closes.
+  DesksController::Get()->MaybeDismissPersistentDeskRemovalToast();
+
   return true;
 }
 

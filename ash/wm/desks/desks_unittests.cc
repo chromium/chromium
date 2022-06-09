@@ -7913,6 +7913,43 @@ TEST_F(DesksCloseAllTest,
   EXPECT_TRUE(window.window()->transform().IsIdentity());
 }
 
+// Tests that we can undo close-all solely via keyboard navigation (tabbing to
+// the undo toast and pressing enter).
+TEST_F(DesksCloseAllTest, CanUndoDeskClosureThroughKeyboardNavigation) {
+  NewDesk();
+  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Tab to the first mini view and perform close-all on it.
+  SendKey(ui::VKEY_TAB);
+  ASSERT_EQ(GetPrimaryRootDesksBarView()->mini_views()[0],
+            Shell::Get()
+                ->overview_controller()
+                ->overview_session()
+                ->highlight_controller()
+                ->highlighted_view());
+  SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  ASSERT_EQ(1u, DesksController::Get()->desks().size());
+
+  // Tab to the undo toast.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+
+  // If the highlight controller returns a nullptr after tabbing, then the undo
+  // toast's button should be highlighted.
+  ASSERT_EQ(nullptr, Shell::Get()
+                         ->overview_controller()
+                         ->overview_session()
+                         ->highlight_controller()
+                         ->highlighted_view());
+
+  // Pressing enter should restore the desk.
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_EQ(2u, DesksController::Get()->desks().size());
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.

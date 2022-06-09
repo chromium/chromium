@@ -336,6 +336,20 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // there is a desk removal in progress.
   void MaybeCancelDeskRemoval();
 
+  // Cancels the desk removal toast if there is currently a
+  // `temporary_removed_desk_` and
+  // `temporary_removed_desk_->is_toast_persistent()` is true.
+  void MaybeDismissPersistentDeskRemovalToast();
+
+  // Adds focus highlight to an active toast to undo desk removal if one is
+  // active and the toast is not already highlighted. Otherwise, it removes the
+  // highlight from an active toast and returns false.
+  bool MaybeToggleA11yHighlightOnUndoDeskRemovalToast();
+
+  // Activates the undo button on a highlighted toast to undo desk removal if
+  // one is active. Returns true if the activation was successful.
+  bool MaybeActivateDeskRemovalUndoButtonOnHighlightedToast();
+
   // ::wm::ActivationChangeObserver:
   void OnWindowActivating(ActivationReason reason,
                           aura::Window* gaining_active,

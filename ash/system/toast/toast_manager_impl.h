@@ -33,6 +33,11 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   // ToastManager overrides:
   void Show(const ToastData& data) override;
   void Cancel(const std::string& id) override;
+  bool MaybeToggleA11yHighlightOnActiveToastDismissButton(
+      const std::string& id) override;
+  bool MaybeActivateHighlightedDismissButtonOnActiveToast(
+      const std::string& id) override;
+  bool IsRunning(const std::string& id) const override;
 
   // ToastOverlay::Delegate overrides:
   void OnClosed() override;
@@ -45,9 +50,6 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   friend class BluetoothNotificationControllerTest;
   friend class AutoConnectNotifierTest;
   friend class DesksTestApi;
-
-  // Tells if the toast with the provided ID is running.
-  bool IsRunning(const std::string& id) const;
 
   void ShowLatest();
   void OnDurationPassed(int toast_number);

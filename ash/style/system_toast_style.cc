@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -14,6 +16,7 @@
 #include "ash/system/toast/toast_overlay.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/strings/strcat.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -22,6 +25,7 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
@@ -108,7 +112,9 @@ bool FormatDisplayLabelText(views::Label* label,
 SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
                                    const std::u16string& text,
                                    const std::u16string& dismiss_text,
-                                   const bool is_managed) {
+                                   const bool is_managed)
+    : scoped_a11y_overrider_(
+          std::make_unique<ScopedA11yOverrideWindowSetter>()) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
@@ -170,6 +176,30 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
 }
 
 SystemToastStyle::~SystemToastStyle() = default;
+
+bool SystemToastStyle::ToggleA11yFocus() {
+  if (!button_ ||
+      !Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+    return false;
+  }
+
+  auto* focus_ring = views::FocusRing::Get(button_);
+  focus_ring->SetHasFocusPredicate([&](views::View* view) -> bool {
+    return is_dismiss_button_highlighted_;
+  });
+
+  is_dismiss_button_highlighted_ = !is_dismiss_button_highlighted_;
+  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+      is_dismiss_button_highlighted_ ? button_->GetWidget()->GetNativeWindow()
+                                     : nullptr);
+
+  if (is_dismiss_button_highlighted_)
+    button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+
+  focus_ring->SetVisible(is_dismiss_button_highlighted_);
+  focus_ring->SchedulePaint();
+  return is_dismiss_button_highlighted_;
+}
 
 void SystemToastStyle::SetText(const std::u16string& text) {
   label_->SetText(text);

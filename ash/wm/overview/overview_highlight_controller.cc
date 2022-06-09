@@ -51,9 +51,11 @@ void OverviewHighlightController::MoveHighlight(bool reverse) {
     return;
 
   int index = 0;
+  bool item_was_deleted = false;
   if (!highlighted_view_) {
     // Pick up where we left off if |deleted_index_| has a value.
     if (deleted_index_) {
+      item_was_deleted = true;
       index = *deleted_index_ >= count ? 0 : *deleted_index_;
       deleted_index_.reset();
     } else if (reverse) {
@@ -66,6 +68,19 @@ void OverviewHighlightController::MoveHighlight(bool reverse) {
     const int current_index = std::distance(traversable_views.begin(), it);
     DCHECK_GE(current_index, 0);
     index = (((reverse ? -1 : 1) + current_index) + count) % count;
+  }
+
+  // If we are moving over either end of the list of traversible views and there
+  // is an active toast with an undo button for desk removal  that can be
+  // highlighted, then we unfocus any traversible views while the dismiss button
+  // is focused.
+  if (((index == 0 && !reverse) || (index == count - 1 && reverse)) &&
+      !item_was_deleted &&
+      DesksController::Get()
+          ->MaybeToggleA11yHighlightOnUndoDeskRemovalToast()) {
+    SetFocusHighlightVisibility(false);
+    highlighted_view_ = nullptr;
+    return;
   }
 
   UpdateHighlight(traversable_views[index]);
@@ -124,6 +139,11 @@ bool OverviewHighlightController::IsFocusHighlightVisible() const {
 }
 
 bool OverviewHighlightController::MaybeActivateHighlightedView() {
+  if (DesksController::Get()
+          ->MaybeActivateDeskRemovalUndoButtonOnHighlightedToast()) {
+    return true;
+  }
+
   if (!highlighted_view_)
     return false;
 

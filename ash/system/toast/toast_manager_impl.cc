@@ -65,6 +65,22 @@ void ToastManagerImpl::Cancel(const std::string& id) {
     queue_.erase(cancelled_toast);
 }
 
+bool ToastManagerImpl::MaybeToggleA11yHighlightOnActiveToastDismissButton(
+    const std::string& id) {
+  DCHECK(IsRunning(id));
+  return overlay_ && overlay_->MaybeToggleA11yHighlightOnDismissButton();
+}
+
+bool ToastManagerImpl::MaybeActivateHighlightedDismissButtonOnActiveToast(
+    const std::string& id) {
+  DCHECK(IsRunning(id));
+  return overlay_ && overlay_->MaybeActivateHighlightedDismissButton();
+}
+
+bool ToastManagerImpl::IsRunning(const std::string& id) const {
+  return overlay_ && current_toast_data_ && current_toast_data_->id == id;
+}
+
 void ToastManagerImpl::OnClosed() {
   overlay_.reset();
   current_toast_data_.reset();
@@ -74,10 +90,6 @@ void ToastManagerImpl::OnClosed() {
   // manually after the state is changed. See OnLockStateChanged.
   if (!queue_.empty())
     ShowLatest();
-}
-
-bool ToastManagerImpl::IsRunning(const std::string& id) const {
-  return overlay_ && current_toast_data_ && current_toast_data_->id == id;
 }
 
 void ToastManagerImpl::ShowLatest() {
