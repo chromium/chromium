@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_dialog_models.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -81,7 +82,7 @@ class CardUnmaskPromptViews : public CardUnmaskPromptView,
   void DateChanged();
 
   raw_ptr<CardUnmaskPromptController> controller_;
-  raw_ptr<content::WebContents> web_contents_;
+  base::WeakPtr<content::WebContents> web_contents_;
 
   // Expository language at the top of the dialog.
   raw_ptr<views::Label> instructions_ = nullptr;

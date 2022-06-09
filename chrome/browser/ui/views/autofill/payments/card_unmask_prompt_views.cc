@@ -51,7 +51,7 @@ namespace autofill {
 CardUnmaskPromptViews::CardUnmaskPromptViews(
     CardUnmaskPromptController* controller,
     content::WebContents* web_contents)
-    : controller_(controller), web_contents_(web_contents) {
+    : controller_(controller), web_contents_(web_contents->GetWeakPtr()) {
   UpdateButtons();
 
   SetModalType(ui::MODAL_TYPE_CHILD);
@@ -65,7 +65,14 @@ CardUnmaskPromptViews::~CardUnmaskPromptViews() {
 }
 
 void CardUnmaskPromptViews::Show() {
-  constrained_window::ShowWebModalDialogViews(this, web_contents_);
+  // Don't show the bubble if the web contents are or will soon be destroyed. 
+  // (e.g. when closing the platform authentication tab that usually triggers 
+  // the unmask flow as a fallback).
+  if (!web_contents_ || web_contents_->IsBeingDestroyed()) {
+    delete this;
+    return;
+  }
+  constrained_window::ShowWebModalDialogViews(this, web_contents_.get());
 }
 
 void CardUnmaskPromptViews::ControllerGone() {
@@ -157,10 +164,10 @@ void CardUnmaskPromptViews::SetRetriableErrorMessage(
   // Update the dialog's size.
   if (GetWidget() && web_contents_) {
     constrained_window::UpdateWebContentsModalDialogPosition(
-        GetWidget(),
-        web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_)
-            ->delegate()
-            ->GetWebContentsModalDialogHost());
+        GetWidget(), web_modal::WebContentsModalDialogManager::FromWebContents(
+                         web_contents_.get())
+                         ->delegate()
+                         ->GetWebContentsModalDialogHost());
   }
 
   Layout();
