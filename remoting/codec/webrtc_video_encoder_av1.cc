@@ -163,8 +163,8 @@ void WebrtcVideoEncoderAV1::PrepareImage(const webrtc::DesktopFrame* frame) {
 
   webrtc::DesktopRegion updated_region;
   if (image_) {
-    DCHECK_EQ(frame->size().width(), static_cast<int>(image_->w));
-    DCHECK_EQ(frame->size().height(), static_cast<int>(image_->h));
+    DCHECK_EQ(frame->size().width(), static_cast<int>(image_->d_w));
+    DCHECK_EQ(frame->size().height(), static_cast<int>(image_->d_h));
     for (webrtc::DesktopRegion::Iterator r(frame->updated_region());
          !r.IsAtEnd(); r.Advance()) {
       const webrtc::DesktopRect& rect = r.rect();
@@ -174,12 +174,13 @@ void WebrtcVideoEncoderAV1::PrepareImage(const webrtc::DesktopFrame* frame) {
 
     // Clip back to the screen dimensions.
     updated_region.IntersectWith(
-        webrtc::DesktopRect::MakeWH(image_->w, image_->h));
+        webrtc::DesktopRect::MakeWH(image_->d_w, image_->d_h));
   } else {
     image_.reset(aom_img_alloc(nullptr, AOM_IMG_FMT_I420, frame->size().width(),
                                frame->size().height(),
                                GetSimdMemoryAlignment()));
-    updated_region.AddRect(webrtc::DesktopRect::MakeWH(image_->w, image_->h));
+    updated_region.AddRect(
+        webrtc::DesktopRect::MakeWH(image_->d_w, image_->d_h));
   }
 
   // Convert the updated region to YUV ready for encoding.
@@ -195,7 +196,7 @@ void WebrtcVideoEncoderAV1::PrepareImage(const webrtc::DesktopFrame* frame) {
   CHECK_EQ(image_->fmt, AOM_IMG_FMT_I420);
   for (webrtc::DesktopRegion::Iterator r(updated_region); !r.IsAtEnd();
        r.Advance()) {
-    webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), image_->w);
+    webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), image_->d_w);
     int rgb_offset = rgb_stride * rect.top() +
                      rect.left() * webrtc::DesktopFrame::kBytesPerPixel;
     int y_offset = y_stride * rect.top() + rect.left();
@@ -287,7 +288,7 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
   }
 
   webrtc::DesktopSize previous_frame_size =
-      image_ ? webrtc::DesktopSize(image_->w, image_->h)
+      image_ ? webrtc::DesktopSize(image_->d_w, image_->d_h)
              : webrtc::DesktopSize();
 
   webrtc::DesktopSize frame_size = frame ? frame->size() : previous_frame_size;
