@@ -531,6 +531,24 @@ enum class PasswordEditUpdatedValues {
   kMaxValue = kBoth,
 };
 
+// Used to record usage of the note field in password editing / adding flows in
+// the settings UI. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class PasswordNoteAction {
+  // A new credential is added from settings, with the note field not empty.
+  kNoteAddedInAddDialog = 0,
+  // Note changed from empty to non-empty from the password edit dialog in
+  // settings.
+  kNoteAddedInEditDialog = 1,
+  // Note changed from non-empty to another non-empty from the password edit
+  // dialog in settings.
+  kNoteEditedInEditDialog = 2,
+  // Note changed from non-empty to empty from the password edit dialog in
+  // settings.
+  kNoteRemovedInEditDialog = 3,
+  kMaxValue = kNoteRemovedInEditDialog,
+};
+
 std::string GetPasswordAccountStorageUserStateHistogramSuffix(
     PasswordAccountStorageUserState user_state);
 
@@ -733,6 +751,10 @@ void LogPasswordEditResult(IsUsernameChanged password_changed,
 void LogUserInteractionsWhenAddingCredentialFromSettings(
     AddCredentialFromSettingsUserInteractions
         add_credential_from_settings_user_interaction);
+
+// Log how the user interaction with the note field in password add / edit
+// dialogs.
+void LogPasswordNoteActionInSettings(PasswordNoteAction action);
 
 }  // namespace metrics_util
 

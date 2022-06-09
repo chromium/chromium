@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -24,6 +25,7 @@ namespace {
 using password_manager::metrics_util::IsPasswordChanged;
 using password_manager::metrics_util::IsPasswordNoteChanged;
 using password_manager::metrics_util::IsUsernameChanged;
+using password_manager::metrics_util::PasswordNoteAction;
 using PasswordNote = password_manager::PasswordNote;
 using Store = password_manager::PasswordForm::Store;
 using SavedPasswordsView =
@@ -53,12 +55,24 @@ password_manager::PasswordForm GenerateFormFromCredential(
   form.signon_realm = credential.signon_realm;
   form.username_value = credential.username;
   form.password_value = credential.password;
-  if (!credential.note.value.empty()) {
+  if (!credential.note.value.empty())
     form.notes = {credential.note};
-  }
+
   DCHECK(!credential.stored_in.empty());
   form.in_store = *credential.stored_in.begin();
   return form;
+}
+
+PasswordNoteAction CalculatePasswordNoteAction(bool old_note_empty,
+                                               bool new_note_empty) {
+  if (old_note_empty && !new_note_empty)
+    return PasswordNoteAction::kNoteAddedInEditDialog;
+  if (!old_note_empty && new_note_empty)
+    return PasswordNoteAction::kNoteRemovedInEditDialog;
+  if (!old_note_empty && !new_note_empty)
+    return PasswordNoteAction::kNoteEditedInEditDialog;
+  NOTREACHED();
+  return PasswordNoteAction::kNoteEditedInEditDialog;
 }
 
 }  // namespace
@@ -151,6 +165,10 @@ bool SavedPasswordsPresenter::AddCredential(
   metrics_util::LogUserInteractionsWhenAddingCredentialFromSettings(
       metrics_util::AddCredentialFromSettingsUserInteractions::
           kCredentialAdded);
+  if (!form.notes.empty() && form.notes[0].value.length() > 0) {
+    metrics_util::LogPasswordNoteActionInSettings(
+        PasswordNoteAction::kNoteAddedInAddDialog);
+  }
   return true;
 }
 
@@ -263,6 +281,7 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
       }
 
       if (note_changed) {
+        bool old_note_empty = false;
         // if the old note doesn't exist, the note is just created.
         const auto& note_itr =
             base::ranges::find_if(new_form.notes, &std::u16string::empty,
@@ -270,12 +289,17 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
         if (note_itr == new_form.notes.end()) {
           new_form.notes.emplace_back(new_note,
                                       /*date_created=*/base::Time::Now());
+          old_note_empty = true;
         } else {
           if (note_itr->value.empty()) {
             note_itr->date_created = base::Time::Now();
+            old_note_empty = true;
           }
           note_itr->value = new_note;
         }
+
+        metrics_util::LogPasswordNoteActionInSettings(
+            CalculatePasswordNoteAction(old_note_empty, new_note.empty()));
       }
 
       if (username_changed) {

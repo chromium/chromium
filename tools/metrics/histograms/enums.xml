@@ -74463,6 +74463,21 @@ Called by update_net_trust_anchors.py.-->
   <int value="12" label="Clicked the link passwords.google.com"/>
 </enum>
 
+<enum name="PasswordNoteAction">
+  <int value="0"
+      label="A new credential is added from settings, with the note field not
+             empty"/>
+  <int value="1"
+      label="Note changed from empty to non-empty from the password edit
+             dialog in settings"/>
+  <int value="2"
+      label="Note changed from non-empty to another non-empty value from the
+             password edit dialog in settings"/>
+  <int value="3"
+      label="Note changed from non-empty to empty from the password edit
+             dialog in settings"/>
+</enum>
+
 <enum name="PasswordProtectionInterstitialStringType">
   <int value="0" label="Generic string without org name"/>
   <int value="1" label="Generic string with org name"/>
