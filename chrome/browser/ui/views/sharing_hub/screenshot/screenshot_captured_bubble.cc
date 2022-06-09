@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/user_metrics.h"
@@ -52,6 +53,12 @@ constexpr int kImageHeightPx = 252;
 }  // namespace
 
 namespace sharing_hub {
+
+bool IsEditorInstalled() {
+  return base::FeatureList::IsEnabled(share::kSharingDesktopScreenshotsEdit) &&
+         image_editor::ImageEditorComponentInfo::GetInstance()
+             ->IsImageEditorAvailable();
+}
 
 ScreenshotCapturedBubble::ScreenshotCapturedBubble(
     views::View* anchor_view,
@@ -159,9 +166,7 @@ void ScreenshotCapturedBubble::Init() {
           .Build();
 
   auto download_row = views::Builder<views::TableLayoutView>();
-  if (base::FeatureList::IsEnabled(share::kSharingDesktopScreenshotsEdit) &&
-      image_editor::ImageEditorComponentInfo::GetInstance()
-          ->IsImageEditorAvailable()) {
+  if (IsEditorInstalled()) {
     const int kPaddingEditDownloadButtonPx =
         kImageWidthPx - edit_button->CalculatePreferredSize().width() -
         download_button->CalculatePreferredSize().width();
@@ -180,7 +185,7 @@ void ScreenshotCapturedBubble::Init() {
                  1.0, views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddRows(1, views::TableLayout::kFixedSize, 0);
 
-  if (base::FeatureList::IsEnabled(share::kSharingDesktopScreenshotsEdit)) {
+  if (IsEditorInstalled()) {
     download_row.AddChild(
         views::Builder<views::MdTextButton>(std::move(edit_button))
             .CopyAddressTo(&edit_button_));
@@ -264,6 +269,8 @@ static base::FilePath WriteTemporaryFile(
 }
 
 void ScreenshotCapturedBubble::EditButtonPressed() {
+  base::RecordAction(
+      base::UserMetricsAction("SharingDesktopScreenshot.ScreenshotEdited"));
   const gfx::ImageSkia& image_ref = image_view_->GetImage();
   const gfx::ImageSkiaRep& image_rep = image_ref.GetRepresentation(1.0f);
   const SkBitmap& captured_skbitmap = image_rep.GetBitmap();
