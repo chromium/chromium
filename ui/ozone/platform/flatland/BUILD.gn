@@ -87,12 +87,13 @@ source_set("flatland") {
 source_set("flatland_unittests") {
   testonly = true
   sources = [
+    "flatland_connection_unittest.cc",
+    "flatland_surface_unittest.cc",
+    "flatland_window_unittest.cc",
     "tests/fake_flatland.cc",
     "tests/fake_flatland.h",
     "tests/fake_view_ref_focused.cc",
     "tests/fake_view_ref_focused.h",
-    "tests/flatland_connection_unittest.cc",
-    "tests/flatland_window_unittest.cc",
   ]
   deps = [
     ":flatland",

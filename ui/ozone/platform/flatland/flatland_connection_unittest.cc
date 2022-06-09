@@ -29,7 +29,7 @@ class FlatlandConnectionTest : public ::testing::Test {
  protected:
   FlatlandConnectionTest()
       : fake_flatland_publisher_(test_context_.additional_services(),
-                                 fake_flatland_.GetRequestHandler()) {}
+                                 fake_flatland_.GetFlatlandRequestHandler()) {}
   ~FlatlandConnectionTest() override = default;
 
  protected:

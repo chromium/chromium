@@ -32,7 +32,7 @@ class FlatlandWindowTest : public ::testing::Test {
  protected:
   FlatlandWindowTest()
       : fake_flatland_publisher_(test_context_.additional_services(),
-                                 fake_flatland_.GetRequestHandler()),
+                                 fake_flatland_.GetFlatlandRequestHandler()),
         fake_view_ref_focused_binding_(&fake_view_ref_focused_),
         fake_touch_source_binding_(&fake_touch_source_) {
     fake_flatland_.SetViewRefFocusedRequestHandler(
