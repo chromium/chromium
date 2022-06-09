@@ -44,6 +44,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/payments/core/features.h"
+#include "components/policy/core/common/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/policy/policy_constants.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -974,6 +975,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBookmarkString,
                                     kPopupMenuBookmarkStringVarations,
                                     "BookmarkString")},
+    {"dm-token-deletion", flag_descriptions::kDmTokenDeletionName,
+     flag_descriptions::kDmTokenDeletionDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(policy::features::kDmTokenDeletion)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

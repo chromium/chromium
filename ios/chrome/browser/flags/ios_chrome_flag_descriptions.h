@@ -180,6 +180,10 @@ extern const char kDiscoverFeedInNtpDescription[];
 extern const char kEnableDiscoverFeedTopSyncPromoName[];
 extern const char kEnableDiscoverFeedTopSyncPromoDescription[];
 
+// Title and description for the flag to enable DMToken deletion.
+extern const char kDmTokenDeletionName[];
+extern const char kDmTokenDeletionDescription[];
+
 // Title and description for the flag to enable Calendar support.
 extern const char kDownloadCalendarName[];
 extern const char kDownloadCalendarDescription[];

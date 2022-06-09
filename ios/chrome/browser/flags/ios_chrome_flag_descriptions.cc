@@ -209,6 +209,11 @@ const char kEnableDiscoverFeedTopSyncPromoDescription[] =
     "When enabled, a sync promotion will be presented to eligible users on top "
     "of the feed cards.";
 
+const char kDmTokenDeletionName[] = "DMToken deletion";
+const char kDmTokenDeletionDescription[] =
+    "Delete the corresponding DMToken when a managed browser is deleted in "
+    "Chrome Browser Cloud Management.";
+
 const char kDownloadCalendarName[] = "Download Calendar";
 const char kDownloadCalendarDescription[] =
     "Allows user to download & save Calendar";
