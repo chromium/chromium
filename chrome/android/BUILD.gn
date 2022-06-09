@@ -2828,7 +2828,13 @@ template("monochrome_public_apk_or_module_tmpl") {
 
     deps = []
     if (_is_bundle) {
-      deps += [ "//chrome/android:chrome_base_module_resources" ]
+      deps += [
+        "//chrome/android:chrome_base_module_resources",
+
+        # deps in delegate_public_impl_java are put into the Chrome module, but the language deps
+        # are needed by the base module.
+        "//components/language/android:ulp_delegate_public_java",
+      ]
     } else {
       deps += [ ":delegate_public_impl_java" ]
     }
