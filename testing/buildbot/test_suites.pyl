@@ -5177,7 +5177,7 @@
       },
     },
 
-    'webrtc_chromium_baremetal_browser_gtests': {
+    'webrtc_chromium_baremetal_gtests': {
       'browser_tests': {
         'args': [
           '--gtest_filter=WebRtcStatsPerfBrowserTest.*:'
@@ -5198,9 +5198,6 @@
           'r_webrtc_git': '${webrtc_got_rev}'
         },
       },
-    },
-
-    'webrtc_chromium_baremetal_capture_gtests_linux': {
       # Run capture unittests as well since our bots have real webcams.
       'capture_unittests': {
         'args': ['--enable-logging', '--v=1', '--test-launcher-jobs=1',
@@ -5208,42 +5205,7 @@
         'swarming': {
           'dimension_sets': [
             {
-              'builder': 'WebRTC Chromium Linux Tester',
-              'pool': 'luci.chromium.webrtc',
-            }
-          ],
-        },
-      },
-    },
-
-    'webrtc_chromium_baremetal_capture_gtests_mac': {
-      # Run capture unittests as well since our bots have real webcams.
-      'capture_unittests': {
-        'remove_mixins': ['mac_x64'],
-        'mixins': ['mac_11_or_12_x64'],
-        'args': ['--enable-logging', '--v=1', '--test-launcher-jobs=1',
-                 '--test-launcher-print-test-stdio=always'],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'builder': 'WebRTC Chromium Mac Tester',
-              'pool': 'luci.chromium.webrtc',
-            }
-          ],
-        },
-      },
-    },
-
-    'webrtc_chromium_baremetal_capture_gtests_win': {
-      # Run capture unittests as well since our bots have real webcams.
-      'capture_unittests': {
-        'args': ['--enable-logging', '--v=1', '--test-launcher-jobs=1',
-                 '--test-launcher-print-test-stdio=always'],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'builder': 'WebRTC Chromium Win10 Tester',
-              'pool': 'luci.chromium.webrtc',
+              'pool': 'WebRTC-chromium',
             }
           ],
         },
@@ -6668,25 +6630,8 @@
       'webrtc_chromium_simple_gtests',
     ],
 
-    'webrtc_chromium_tests_with_baremetal_tests_linux': [
-      'webrtc_chromium_baremetal_capture_gtests_linux',
-      'webrtc_chromium_baremetal_browser_gtests',
-      'webrtc_chromium_gtests',
-      'webrtc_chromium_simple_baremetal_gtests',
-      'webrtc_chromium_simple_gtests',
-    ],
-
-    'webrtc_chromium_tests_with_baremetal_tests_mac': [
-      'webrtc_chromium_baremetal_capture_gtests_mac',
-      'webrtc_chromium_baremetal_browser_gtests',
-      'webrtc_chromium_gtests',
-      'webrtc_chromium_simple_baremetal_gtests',
-      'webrtc_chromium_simple_gtests',
-    ],
-
-    'webrtc_chromium_tests_with_baremetal_tests_win': [
-      'webrtc_chromium_baremetal_capture_gtests_win',
-      'webrtc_chromium_baremetal_browser_gtests',
+    'webrtc_chromium_tests_with_baremetal_tests': [
+      'webrtc_chromium_baremetal_gtests',
       'webrtc_chromium_gtests',
       'webrtc_chromium_simple_baremetal_gtests',
       'webrtc_chromium_simple_gtests',

@@ -28,7 +28,7 @@ luci.bucket(
 
 defaults.bucket.set("webrtc")
 defaults.builder_group.set("chromium.webrtc")
-defaults.builderless.set(False)
+defaults.builderless.set(None)
 defaults.build_numbers.set(True)
 defaults.cpu.set(cpu.X86_64)
 defaults.executable.set("recipe:chromium")
@@ -61,8 +61,6 @@ builder(
 builder(
     name = "WebRTC Chromium Linux Tester",
     triggered_by = ["WebRTC Chromium Linux Builder"],
-    pool = "luci.chromium.webrtc.fyi",
-    auto_builder_dimension = False,
 )
 
 builder(
@@ -74,8 +72,6 @@ builder(
 builder(
     name = "WebRTC Chromium Mac Tester",
     triggered_by = ["WebRTC Chromium Mac Builder"],
-    pool = "luci.chromium.webrtc.fyi",
-    auto_builder_dimension = False,
 )
 
 builder(
@@ -88,6 +84,4 @@ builder(
 builder(
     name = "WebRTC Chromium Win10 Tester",
     triggered_by = ["WebRTC Chromium Win Builder"],
-    pool = "luci.chromium.webrtc.fyi",
-    auto_builder_dimension = False,
 )
