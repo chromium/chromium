@@ -1079,7 +1079,7 @@ const base::Feature kNotificationsInContextMenu{
 
 // Enables new notifications UI and grouped notifications.
 const base::Feature kNotificationsRefresh{"NotificationsRefresh",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable on-device grammar check service.
 const base::Feature kOnDeviceGrammarCheck{"OnDeviceGrammarCheck",
@@ -1763,8 +1763,7 @@ bool IsCryptohomeRecoverySetupEnabled() {
 }
 
 bool IsDarkLightModeEnabled() {
-  return base::FeatureList::IsEnabled(kNotificationsRefresh) ||
-         chromeos::features::IsDarkLightModeEnabled();
+  return chromeos::features::IsDarkLightModeEnabled();
 }
 
 bool IsDemoModeSWAEnabled() {
