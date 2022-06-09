@@ -59,8 +59,7 @@ class PhishingClassifierTest
         page_link_domain_phishing_(features::kPageLinkDomain +
                                    std::string("phishing.com")),
         page_term_login_(features::kPageTerm + std::string("login")),
-        page_text_(u"login"),
-        phishy_score_(PhishingClassifier::kInvalidScore) {}
+        page_text_(u"login") {}
 
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
@@ -183,6 +182,7 @@ class PhishingClassifierTest
     csd_model_builder.add_max_shingles_per_page(100);
     csd_model_builder.add_shingle_size(3);
     csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
+    csd_model_builder.add_dom_model_version(123);
 
     builder.Finish(csd_model_builder.Finish());
     std::string model_str(reinterpret_cast<char*>(builder.GetBufferPointer()),
@@ -240,6 +240,7 @@ class PhishingClassifierTest
     model.set_max_words_per_term(1);
     model.set_max_shingles_per_page(100);
     model.set_shingle_size(3);
+    model.set_dom_model_version(123);
 
     base::File tflite_model;
     if (use_tflite) {
@@ -306,14 +307,11 @@ class PhishingClassifierTest
 
   // Completion callback for classification.
   void ClassificationFinished(const ClientPhishingRequest& verdict) {
-    phishy_score_ = verdict.client_score();
+    verdict_ = verdict;
     for (int i = 0; i < verdict.feature_map_size(); ++i) {
       feature_map_.AddRealFeature(verdict.feature_map(i).name(),
                                   verdict.feature_map(i).value());
     }
-    is_phishing_ = verdict.is_phishing();
-    is_dom_match_ = verdict.is_dom_match();
-
     run_loop_.Quit();
   }
 
@@ -339,10 +337,8 @@ class PhishingClassifierTest
   std::u16string page_text_;
 
   // Outputs of phishing classifier.
+  ClientPhishingRequest verdict_;
   FeatureMap feature_map_;
-  float phishy_score_;
-  bool is_phishing_;
-  bool is_dom_match_;
 
   // A DiscardableMemoryAllocator is needed for certain Skia operations.
   base::TestDiscardableMemoryAllocator test_allocator_;
@@ -360,8 +356,8 @@ TEST_P(PhishingClassifierTest, TestClassificationOfPhishingDotComHttp) {
               AllOf(Contains(Pair(url_tld_token_net_, 1.0)),
                     Contains(Pair(page_link_domain_phishing_, 1.0)),
                     Contains(Pair(page_term_login_, 1.0))));
-  EXPECT_FLOAT_EQ(0.5, phishy_score_);
-  EXPECT_TRUE(is_phishing_);
+  EXPECT_FLOAT_EQ(0.5, verdict_.client_score());
+  EXPECT_TRUE(verdict_.is_phishing());
 }
 
 TEST_P(PhishingClassifierTest, TestClassificationOfPhishingDotComHttps) {
@@ -377,8 +373,8 @@ TEST_P(PhishingClassifierTest, TestClassificationOfPhishingDotComHttps) {
               AllOf(Contains(Pair(url_tld_token_net_, 1.0)),
                     Contains(Pair(page_link_domain_phishing_, 1.0)),
                     Contains(Pair(page_term_login_, 1.0))));
-  EXPECT_FLOAT_EQ(0.5, phishy_score_);
-  EXPECT_TRUE(is_phishing_);
+  EXPECT_FLOAT_EQ(0.5, verdict_.client_score());
+  EXPECT_TRUE(verdict_.is_phishing());
 }
 
 TEST_P(PhishingClassifierTest, TestClassificationOfSafeDotComHttp) {
@@ -392,9 +388,9 @@ TEST_P(PhishingClassifierTest, TestClassificationOfSafeDotComHttp) {
                     Contains(Pair(page_term_login_, 1.0))));
   EXPECT_THAT(feature_map_.features(),
               Not(Contains(Pair(page_link_domain_phishing_, 1.0))));
-  EXPECT_GE(phishy_score_, 0.0);
-  EXPECT_LT(phishy_score_, 0.5);
-  EXPECT_FALSE(is_phishing_);
+  EXPECT_GE(verdict_.client_score(), 0.0);
+  EXPECT_LT(verdict_.client_score(), 0.5);
+  EXPECT_FALSE(verdict_.is_phishing());
 }
 
 TEST_P(PhishingClassifierTest, TestClassificationOfSafeDotComHttps) {
@@ -409,9 +405,9 @@ TEST_P(PhishingClassifierTest, TestClassificationOfSafeDotComHttps) {
                     Contains(Pair(page_term_login_, 1.0))));
   EXPECT_THAT(feature_map_.features(),
               Not(Contains(Pair(page_link_domain_phishing_, 1.0))));
-  EXPECT_GE(phishy_score_, 0.0);
-  EXPECT_LT(phishy_score_, 0.5);
-  EXPECT_FALSE(is_phishing_);
+  EXPECT_GE(verdict_.client_score(), 0.0);
+  EXPECT_LT(verdict_.client_score(), 0.5);
+  EXPECT_FALSE(verdict_.is_phishing());
 }
 
 TEST_P(PhishingClassifierTest, TestClassificationWhenNoTld) {
@@ -420,8 +416,8 @@ TEST_P(PhishingClassifierTest, TestClassificationWhenNoTld) {
   RunPhishingClassifier(&page_text_);
 
   EXPECT_EQ(0U, feature_map_.features().size());
-  EXPECT_EQ(PhishingClassifier::kInvalidScore, phishy_score_);
-  EXPECT_FALSE(is_phishing_);
+  EXPECT_EQ(PhishingClassifier::kInvalidScore, verdict_.client_score());
+  EXPECT_FALSE(verdict_.is_phishing());
 }
 
 TEST_P(PhishingClassifierTest, TestClassificationWhenSchemeNotSupported) {
@@ -431,8 +427,8 @@ TEST_P(PhishingClassifierTest, TestClassificationWhenSchemeNotSupported) {
   RunPhishingClassifier(&page_text_);
 
   EXPECT_EQ(0U, feature_map_.features().size());
-  EXPECT_EQ(PhishingClassifier::kInvalidScore, phishy_score_);
-  EXPECT_FALSE(is_phishing_);
+  EXPECT_EQ(PhishingClassifier::kInvalidScore, verdict_.client_score());
+  EXPECT_FALSE(verdict_.is_phishing());
 }
 
 TEST_P(PhishingClassifierTest, DisableDetection) {
@@ -448,9 +444,9 @@ TEST_P(PhishingClassifierTest, TestPhishingPagesAreDomMatches) {
       "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
   RunPhishingClassifier(&page_text_);
 
-  EXPECT_NE(PhishingClassifier::kInvalidScore, phishy_score_);
-  EXPECT_TRUE(is_phishing_);
-  EXPECT_TRUE(is_dom_match_);
+  EXPECT_NE(PhishingClassifier::kInvalidScore, verdict_.client_score());
+  EXPECT_TRUE(verdict_.is_phishing());
+  EXPECT_TRUE(verdict_.is_dom_match());
 }
 
 TEST_P(PhishingClassifierTest, TestSafePagesAreNotDomMatches) {
@@ -458,9 +454,18 @@ TEST_P(PhishingClassifierTest, TestSafePagesAreNotDomMatches) {
            "<html><body><a href=\"http://safe.com/\">login</a></body></html>");
   RunPhishingClassifier(&page_text_);
 
-  EXPECT_NE(PhishingClassifier::kInvalidScore, phishy_score_);
-  EXPECT_FALSE(is_phishing_);
-  EXPECT_FALSE(is_dom_match_);
+  EXPECT_NE(PhishingClassifier::kInvalidScore, verdict_.client_score());
+  EXPECT_FALSE(verdict_.is_phishing());
+  EXPECT_FALSE(verdict_.is_dom_match());
+}
+
+TEST_P(PhishingClassifierTest, TestDomModelVersionPopulated) {
+  LoadHtml(
+      GURL("http://host.net"),
+      "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
+  RunPhishingClassifier(&page_text_);
+
+  EXPECT_EQ(verdict_.dom_model_version(), 123);
 }
 
 INSTANTIATE_TEST_SUITE_P(CSDModelTypes,

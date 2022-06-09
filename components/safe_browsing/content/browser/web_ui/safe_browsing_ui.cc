@@ -1029,6 +1029,8 @@ std::string SerializeClientPhishingRequest(
     dict.SetBoolean("is_phishing", cpr.is_phishing());
   if (cpr.has_model_version())
     dict.SetInteger("model_version", cpr.model_version());
+  if (cpr.has_dom_model_version())
+    dict.SetInteger("dom_model_version", cpr.dom_model_version());
 
   base::Value::ListStorage features;
   for (const auto& feature : cpr.feature_map()) {

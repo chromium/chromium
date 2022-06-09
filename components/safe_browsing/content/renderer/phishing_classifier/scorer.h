@@ -81,6 +81,8 @@ class Scorer {
   // Returns the version number of the loaded client model.
   virtual int model_version() const = 0;
 
+  virtual int dom_model_version() const = 0;
+
   bool HasVisualTfLiteModel() const;
 
   // -- Accessors used by the page feature extractor ---------------------------

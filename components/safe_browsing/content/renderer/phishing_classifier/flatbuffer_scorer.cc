@@ -205,6 +205,10 @@ int FlatBufferModelScorer::model_version() const {
   return flatbuffer_model_->version();
 }
 
+int FlatBufferModelScorer::dom_model_version() const {
+  return flatbuffer_model_->dom_model_version();
+}
+
 bool FlatBufferModelScorer::has_page_term(const std::string& str) const {
   const flatbuffers::Vector<flatbuffers::Offset<flat::Hash>>* hashes =
       flatbuffer_model_->hashes();

@@ -160,6 +160,9 @@ message ClientPhishingRequest {
   // sent to the scorer and which resulted in client_score being computed.
   repeated Feature feature_map = 5;
 
+  // The version of the DOM model used for classification
+  optional int32 dom_model_version = 27;
+
   // The version number of the model that was used to compute the client-score.
   // Copied from ClientSideModel.version().
   optional int32 model_version = 6;
@@ -227,7 +230,7 @@ message ClientPhishingRequest {
   // users.
   optional VisualFeatures visual_features = 26;
 
-  // next available tag number: 27.
+  // next available tag number: 28.
 }
 
 message ClientPhishingResponse {

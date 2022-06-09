@@ -272,6 +272,7 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
   std::unique_ptr<ClientPhishingRequest> verdict =
       std::make_unique<ClientPhishingRequest>();
   verdict->set_model_version(scorer->model_version());
+  verdict->set_dom_model_version(scorer->dom_model_version());
   verdict->set_url(main_frame->GetDocument().Url().GetString().Utf8());
   for (const auto& it : features_->features()) {
     bool result = hashed_features.AddRealFeature(
