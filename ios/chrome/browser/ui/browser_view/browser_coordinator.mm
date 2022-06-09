@@ -43,7 +43,8 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller_dependency_factory.h"
+#import "ios/chrome/browser/ui/browser_view/browser_view_controller_helper.h"
+#import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
@@ -314,6 +315,18 @@
   if (self = [super initWithBaseViewController:viewController
                                        browser:browser]) {
     _dispatcher = browser->GetCommandDispatcher();
+
+    ChromeBrowserState* browserState = browser->GetBrowserState();
+
+    _prerenderService =
+        PrerenderServiceFactory::GetForBrowserState(browserState);
+    if (!browserState->IsOffTheRecord()) {
+      DCHECK(_prerenderService);
+      _prerenderService->SetDelegate(self);
+    }
+
+    _bubblePresenter =
+        [[BubblePresenter alloc] initWithBrowserState:browserState];
   }
   return self;
 }
@@ -473,29 +486,22 @@
 - (void)createViewController {
   DCHECK(self.browserContainerCoordinator.viewController);
 
-  BrowserViewControllerDependencyFactory* factory =
-      [[BrowserViewControllerDependencyFactory alloc]
-          initWithBrowser:self.browser];
+  BrowserViewControllerHelper* browserViewControllerHelper =
+      [[BrowserViewControllerHelper alloc] init];
+  KeyCommandsProvider* keyCommandsProvider = [[KeyCommandsProvider alloc] init];
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  _prerenderService = PrerenderServiceFactory::GetForBrowserState(browserState);
-  if (!browserState->IsOffTheRecord()) {
-    DCHECK(_prerenderService);
-    _prerenderService->SetDelegate(self);
-  }
-
-  _bubblePresenter =
-      [[BubblePresenter alloc] initWithBrowserState:browserState];
+  BrowserViewControllerDependencies dependencies =
+      [self createBrowserViewControllerDependencies];
 
   _viewController = [[BrowserViewController alloc]
                      initWithBrowser:self.browser
-                   dependencyFactory:factory
       browserContainerViewController:self.browserContainerCoordinator
                                          .viewController
+         browserViewControllerHelper:browserViewControllerHelper
                           dispatcher:self.dispatcher
-                    prerenderService:_prerenderService
-                     bubblePresenter:_bubblePresenter
-          downloadManagerCoordinator:self.downloadManagerCoordinator];
+                 keyCommandsProvider:keyCommandsProvider
+                        dependencies:dependencies];
+
   WebNavigationBrowserAgent::FromBrowser(self.browser)
       ->SetDelegate(_viewController);
 
@@ -795,6 +801,14 @@
   }
 }
 
+- (BrowserViewControllerDependencies)createBrowserViewControllerDependencies {
+  BrowserViewControllerDependencies dependencies;
+  dependencies.prerenderService = _prerenderService;
+  dependencies.bubblePresenter = _bubblePresenter;
+  dependencies.downloadManagerCoordinator = self.downloadManagerCoordinator;
+
+  return dependencies;
+}
 #pragma mark - ActivityServiceCommands
 
 - (void)sharePage {

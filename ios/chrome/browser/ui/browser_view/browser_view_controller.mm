@@ -57,7 +57,6 @@
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller_dependency_factory.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_helper.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
@@ -272,10 +271,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                      URLLoadingObserver,
                                      ViewRevealingAnimatee,
                                      WebStateListObserving> {
-  // The dependency factory passed on initialization.  Used to vend objects used
-  // by the BVC.
-  BrowserViewControllerDependencyFactory* _dependencyFactory;
-
   // Identifier for each animation of an NTP opening.
   NSInteger _NTPAnimationIdentifier;
 
@@ -283,6 +278,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Must outlive `_toolbarCoordinator`.
   std::unique_ptr<LocationBarModelDelegateIOS> _locationBarModelDelegate;
   std::unique_ptr<LocationBarModel> _locationBarModel;
+
+  // Helper for the bvc.
+  // TODO(crbug.com/1329102): Remove this property.
+  BrowserViewControllerHelper* _browserViewControllerHelper;
 
   // Controller for edge swipe gestures for page and tab navigation.
   SideSwipeController* _sideSwipeController;
@@ -393,8 +392,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     BrowserContainerViewController* browserContainerViewController;
 // Invisible button used to dismiss the keyboard.
 @property(nonatomic, strong) UIButton* typingShield;
-// The object that manages keyboard commands on behalf of the BVC.
-@property(nonatomic, strong, readonly) KeyCommandsProvider* keyCommandsProvider;
 // Whether the controller's view is currently available.
 // YES from viewWillAppear to viewWillDisappear.
 @property(nonatomic, assign, getter=isVisible) BOOL visible;
@@ -431,10 +428,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 @property(nonatomic, weak) UIView<TabStripContaining>* tabStripView;
 // A snapshot of the tab strip used on the thumb strip reveal/hide animation.
 @property(nonatomic, strong) UIView* tabStripSnapshot;
-
-// Helper for the bvc.
-// TODO(crbug.com/1329102): Remove this property.
-@property(nonatomic, strong) BrowserViewControllerHelper* helper;
 
 // The user agent type used to load the currently visible page. User agent
 // type is NONE if there is no visible page.
@@ -530,29 +523,28 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - Object lifecycle
 
 - (instancetype)initWithBrowser:(Browser*)browser
-                 dependencyFactory:
-                     (BrowserViewControllerDependencyFactory*)factory
     browserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController
+       browserViewControllerHelper:
+           (BrowserViewControllerHelper*)browserViewControllerHelper
                         dispatcher:(CommandDispatcher*)dispatcher
-                  prerenderService:(PrerenderService*)prerenderService
-                   bubblePresenter:(BubblePresenter*)bubblePresenter
-        downloadManagerCoordinator:
-            (DownloadManagerCoordinator*)downloadManagerCoordinator {
+               keyCommandsProvider:(KeyCommandsProvider*)keyCommandsProvider
+                      dependencies:
+                          (BrowserViewControllerDependencies)dependencies {
   self = [super initWithNibName:nil bundle:base::mac::FrameworkBundle()];
   if (self) {
-    DCHECK(factory);
-    // TODO(crbug.com/1272524): DCHECK that `browser` is non-null.
+    // TODO(crbug.com/1272524): DCHECK that |browser| is non-null.
 
-    _commandDispatcher = dispatcher;
     _browserContainerViewController = browserContainerViewController;
-    _dependencyFactory = factory;
+    _browserViewControllerHelper = browserViewControllerHelper;
+    _commandDispatcher = dispatcher;
+    _keyCommandsProvider = keyCommandsProvider;
     // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
-    _prerenderService = prerenderService;
-    _bubblePresenter = bubblePresenter;
+    _prerenderService = dependencies.prerenderService;
+    _bubblePresenter = dependencies.bubblePresenter;
     // TODO(crbug.com/1331229): Remove all use of the download manager
     // coordinator from BVC
-    _downloadManagerCoordinator = downloadManagerCoordinator;
+    _downloadManagerCoordinator = dependencies.downloadManagerCoordinator;
     // TODO(crbug.com/1329089): Inject this handler.
     self.textZoomHandler =
         HandlerForProtocol(self.commandDispatcher, TextZoomCommands);
@@ -680,13 +672,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 #pragma mark - Private Properties
-
-- (KeyCommandsProvider*)keyCommandsProvider {
-  if (!_keyCommandsProvider) {
-    _keyCommandsProvider = [_dependencyFactory newKeyCommandsProvider];
-  }
-  return _keyCommandsProvider;
-}
 
 - (BOOL)canShowTabStrip {
   return IsRegularXRegularSizeClass(self);
@@ -1230,7 +1215,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // TODO(crbug.com/1329100): Inject the key commands provider.
   WebNavigationBrowserAgent* navigationAgent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);
-  return [self.keyCommandsProvider
+  return [_keyCommandsProvider
       keyCommandsForConsumer:self
           baseViewController:self
                   dispatcher:self.dispatcher
@@ -1429,7 +1414,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _toolbarUIState = nil;
     _locationBarModelDelegate = nil;
     _locationBarModel = nil;
-    self.helper = nil;
+    _browserViewControllerHelper = nil;
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
       [self.tabStripCoordinator stop];
       self.tabStripCoordinator = nil;
@@ -1819,9 +1804,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       new LocationBarModelDelegateIOS(self.browser->GetWebStateList()));
   _locationBarModel = std::make_unique<LocationBarModelImpl>(
       _locationBarModelDelegate.get(), kMaxURLDisplayChars);
-
-  // TODO(crbug.com/1329102): Remove `self.helper`.
-  self.helper = [_dependencyFactory newBrowserViewControllerHelper];
 
   // TODO(crbug.com/1329094): Move this coordinator to BrowserCoordinator
   self.popupMenuCoordinator =
@@ -2378,7 +2360,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)updateToolbar {
   // If the BVC has been partially torn down for low memory, wait for the
   // view rebuild to handle toolbar updates.
-  if (!(self.helper && self.browserState))
+  if (!(_browserViewControllerHelper && self.browserState))
     return;
 
   web::WebState* webState = self.currentWebState;
@@ -2390,7 +2372,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       (_prerenderService && _prerenderService->IsLoadingPrerender());
   // TODO(crbug.com/1329102): Change -isToolbarLoading method to a free
   // function.
-  if (isPrerendered && ![self.helper isToolbarLoading:self.currentWebState])
+  if (isPrerendered &&
+      ![_browserViewControllerHelper isToolbarLoading:self.currentWebState])
     [self.primaryToolbarCoordinator showPrerenderingAnimation];
 
   [self.dispatcher showFindUIIfActive];
@@ -3813,11 +3796,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   [self.primaryToolbarCoordinator transitionToLocationBarFocusedState:YES];
 
-  self.keyCommandsProvider.canDismissModals = YES;
+  _keyCommandsProvider.canDismissModals = YES;
 }
 
 - (void)locationBarDidResignFirstResponder {
-  self.keyCommandsProvider.canDismissModals = NO;
+  _keyCommandsProvider.canDismissModals = NO;
   [self.sideSwipeController setEnabled:YES];
 
   if (self.isNTPActiveForCurrentWebState || IsSingleNtpEnabled()) {
@@ -3857,8 +3840,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   GURL URL = self.currentWebState->GetLastCommittedURL();
   // TODO(crbug.com/1329102): Change -isWebStateBookmarkedByUser method to a
   // free function.
-  BOOL alreadyBookmarked =
-      [self.helper isWebStateBookmarkedByUser:self.currentWebState];
+  BOOL alreadyBookmarked = [_browserViewControllerHelper
+      isWebStateBookmarkedByUser:self.currentWebState];
 
   if (alreadyBookmarked) {
     [_bookmarkInteractionController presentBookmarkEditorForURL:URL];
