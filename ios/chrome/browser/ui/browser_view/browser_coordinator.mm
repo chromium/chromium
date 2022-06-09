@@ -606,12 +606,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     [self.followIPHCoordinator start];
   }
 
-  self.formInputAccessoryCoordinator = [[FormInputAccessoryCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  self.formInputAccessoryCoordinator.navigator = self;
-  [self.formInputAccessoryCoordinator start];
-
   self.SafariDownloadCoordinator = [[SafariDownloadCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
@@ -671,24 +665,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
       initWithBaseViewController:self.viewController
                          browser:self.browser];
 
-  self.infobarBannerOverlayContainerCoordinator =
-      [[OverlayContainerCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser
-                            modality:OverlayModality::kInfobarBanner];
-  [self.infobarBannerOverlayContainerCoordinator start];
-  self.viewController.infobarBannerOverlayContainerViewController =
-      self.infobarBannerOverlayContainerCoordinator.viewController;
-
-  self.infobarModalOverlayContainerCoordinator =
-      [[OverlayContainerCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser
-                            modality:OverlayModality::kInfobarModal];
-  [self.infobarModalOverlayContainerCoordinator start];
-  self.viewController.infobarModalOverlayContainerViewController =
-      self.infobarModalOverlayContainerCoordinator.viewController;
-
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
     self.safeBrowsingCoordinator = [[SafeBrowsingCoordinator alloc]
         initWithBaseViewController:self.viewController
@@ -700,6 +676,36 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
       initWithBaseViewController:self.viewController
                          browser:self.browser];
   [self.textFragmentsCoordinator start];
+
+  // TODO(crbug.com/1334188): Refactor this coordinator so it doesn't directly
+  // access the BVC's view.
+  self.formInputAccessoryCoordinator = [[FormInputAccessoryCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  self.formInputAccessoryCoordinator.navigator = self;
+  [self.formInputAccessoryCoordinator start];
+
+  // TODO(crbug.com/1334188): Refactor this coordinator so it doesn't dirctly
+  // access the BVC's view.
+  self.infobarModalOverlayContainerCoordinator =
+      [[OverlayContainerCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                            modality:OverlayModality::kInfobarModal];
+  [self.infobarModalOverlayContainerCoordinator start];
+  self.viewController.infobarModalOverlayContainerViewController =
+      self.infobarModalOverlayContainerCoordinator.viewController;
+
+  // TODO(crbug.com/1334188): Refactor this coordinator so it doesn't directly
+  // access the BVC's view.
+  self.infobarBannerOverlayContainerCoordinator =
+      [[OverlayContainerCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                            modality:OverlayModality::kInfobarBanner];
+  [self.infobarBannerOverlayContainerCoordinator start];
+  self.viewController.infobarBannerOverlayContainerViewController =
+      self.infobarBannerOverlayContainerCoordinator.viewController;
 }
 
 // Stops child coordinators.
