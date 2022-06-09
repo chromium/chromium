@@ -88,10 +88,6 @@ export class UserPreview extends WithPersonalizationStore {
     initializeUserData(getUserProvider(), this.getStore());
   }
 
-  private onClickUserEmail_() {
-    window.open('chrome://os-settings/accountManager');
-  }
-
   private onClickUserSubpageLink_() {
     PersonalizationRouter.instance().goToRoute(Paths.USER);
   }

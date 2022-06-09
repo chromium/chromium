@@ -205,7 +205,7 @@
                 is-google-photos>
           </template>
         </div>
-        <h2 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage"
+        <h3 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage"
             aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]">
           <span id="currentlySet" class="currently-set-text" aria-hidden="true">
             $i18n{currentlySet}
@@ -219,7 +219,7 @@
           <span id="albumDescription" aria-hidden="true">
             [[getAlbumDescription_(topicSource_, previewAlbums_)]]
           </span>
-        </h2>
+        </h3>
         <div id="collageContainer" class$="[[getCollageContainerClass_(collageImages_)]]" aria-hidden="true">
           <template is="dom-repeat" items="[[collageImages_]]">
             <img class="collage-item" is="cr-auto-img"

@@ -35,7 +35,7 @@
     margin-inline-end: -18px;
   }
 
-  #ambientLabel > p {
+  #ambientLabel > h2 {
     color: var(--cros-text-color-primary);
     font: var(--personalization-app-label-font);
     margin: 14px 0;
@@ -53,7 +53,9 @@
     <template is="dom-if" if="[[isAmbientModeAllowed_()]]">
       <ambient-preview clickable="[[clickable_]]" main-page>
         <div id="ambientLabel">
-          <p on-click="onClickAmbientSubpageLink_" class="clickable">$i18n{screensaverLabel}</p>
+          <h2 on-click="onClickAmbientSubpageLink_" class="clickable">
+            $i18n{screensaverLabel}
+          </h2>
           <cr-icon-button id="ambientSubpageLink"
                 iron-icon="cr:chevron-right"
                 on-click="onClickAmbientSubpageLink_"

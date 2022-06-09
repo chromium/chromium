@@ -44,7 +44,7 @@ suite('PersonalizationThemeTest', function() {
 
     assertEquals(
         personalizationThemeElement.i18n('themeLabel'),
-        personalizationThemeElement.shadowRoot!.querySelector('p')!.innerText);
+        personalizationThemeElement.shadowRoot!.querySelector('h2')!.innerText);
   });
 
   test('sets color mode in store on first load', async () => {

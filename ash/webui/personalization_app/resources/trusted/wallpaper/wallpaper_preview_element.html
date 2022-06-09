@@ -22,7 +22,7 @@
     grid-template-rows: auto minmax(158px, 220px) 20px 1fr 24px;
   }
 
-  #wallpaperLabel > p {
+  #wallpaperLabel > h2 {
     color: var(--cros-text-color-primary);
     display: inline-block;
     font: var(--personalization-app-label-font);
@@ -64,13 +64,13 @@
 <div class="preview-container" id="container">
   <div id="wallpaperLabel">
     <template is="dom-if" if="[[showPlaceholders_(imageLoading_, image_)]]">
-      <p>$i18n{wallpaperLabel}</p>
+      <h2>$i18n{wallpaperLabel}</h2>
     </template>
     <template is="dom-if" if="[[!showPlaceholders_(imageLoading_, image_)]]">
       <template is="dom-if" if="[[!isPolicyControlled_(image_)]]">
-        <p on-click="onClickWallpaper_" class="clickable">
+        <h2 on-click="onClickWallpaper_" class="clickable">
           $i18n{wallpaperLabel}
-        </p>
+        </h2>
     <cr-icon-button id="wallpaperButton" iron-icon="cr:chevron-right"
         role="button" on-click="onClickWallpaper_"
         class="tast-open-subpage"

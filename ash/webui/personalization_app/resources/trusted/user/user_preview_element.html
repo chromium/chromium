@@ -43,7 +43,7 @@
     margin: 0;
   }
 
-  #infoContainer > p {
+  #infoContainer > h2 {
     color: var(--cros-text-color-primary);
     font: 400 22px/28px var(--cros-font-family-google-sans);
   }
@@ -54,6 +54,7 @@
     display: flex;
     flex-flow: row nowrap;
     padding-top: 4px;
+    text-decoration: none;
     width: fit-content;
   }
 
@@ -61,7 +62,7 @@
     outline: 2px solid var(--cros-focus-ring-color);
   }
 
-  #emailContainer > p {
+  #emailContainer > span {
     color: var(--cros-link-color);
     font: var(--cros-body-2-font);
     margin: 0;
@@ -168,13 +169,12 @@
   </div>
   <div id="infoContainer">
     <template is="dom-if" if="[[info_]]">
-      <p id="name">[[info_.name]]</p>
-      <div id="emailContainer" tabindex="0" on-click="onClickUserEmail_"
-          on-keypress="onClickUserEmail_" role="link"
+      <h2 id="name">[[info_.name]]</h2>
+      <a id="emailContainer" href="chrome://os-settings/accountManager" target="_blank"
           aria-description="$i18n{ariaLabelGoToAccountSettings}">
-        <p id="email">[[info_.email]]</p>
+        <span id="email">[[info_.email]]</span>
         <iron-icon icon="cr:open-in-new"></iron-icon>
-      </div>
+      </a>
     </template>
   </div>
 </div>
