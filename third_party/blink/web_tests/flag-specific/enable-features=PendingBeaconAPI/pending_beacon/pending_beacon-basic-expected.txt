@@ -1,0 +1,6 @@
+CONSOLE WARNING: The provided value 'FOO' is not a valid enum value of type BeaconMethod.
+This is a testharness.js-based test.
+PASS Basic configuration of a pending beacon.
+PASS Verify that beacons default to POST if no options are provided.
+Harness: the test ran to completion.
+
