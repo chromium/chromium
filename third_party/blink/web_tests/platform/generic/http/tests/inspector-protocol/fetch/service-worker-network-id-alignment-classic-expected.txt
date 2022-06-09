@@ -10,8 +10,12 @@ Results from Running the Page:
 	-> fetch within worker: Not Found
 
 Network Events and Alignment:
+[/main\.html/] Status Code 200
 [/main\.html/] OK: All expected network events found and align with one another!
+[/sw-classic\.js/] Status Code 200
 [/sw-classic\.js/] OK: All expected network events found and align with one another!
+[/imported-classic\.js/] Status Code 200
 [/imported-classic\.js/] OK: All expected network events found and align with one another!
+[/404-me/] Status Code 404
 [/404-me/] OK: All expected network events found and align with one another!
 

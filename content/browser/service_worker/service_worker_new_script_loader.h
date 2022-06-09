@@ -168,7 +168,8 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
   // This is the last method that is called on this class. Notifies the final
   // result to |client_| and clears all mojo connections etc.
   void CommitCompleted(const network::URLLoaderCompletionStatus& status,
-                       const std::string& status_message);
+                       const std::string& status_message,
+                       network::mojom::URLResponseHeadPtr response_head);
 
   // Called when |client_producer_| is writable. It writes |data_to_send_|
   // to |client_producer_|. If all data is written, the observer has completed

@@ -176,7 +176,8 @@ ServiceWorkerNewScriptLoader::~ServiceWorkerNewScriptLoader() {
   if (network_loader_state_ == LoaderState::kCompleted && !writers_completed) {
     DCHECK(client_);
     CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_FAILED),
-                    ServiceWorkerConsts::kServiceWorkerInvalidVersionError);
+                    ServiceWorkerConsts::kServiceWorkerInvalidVersionError,
+                    nullptr);
   }
 }
 
@@ -217,7 +218,8 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
   DCHECK_EQ(LoaderState::kLoadingHeader, network_loader_state_);
   if (!version_->context() || version_->is_redundant()) {
     CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_FAILED),
-                    ServiceWorkerConsts::kServiceWorkerInvalidVersionError);
+                    ServiceWorkerConsts::kServiceWorkerInvalidVersionError,
+                    std::move(response_head));
     return;
   }
 
@@ -229,7 +231,7 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
           *response_head, &service_worker_state, &completion_status,
           &error_message)) {
     DCHECK_NE(net::OK, completion_status.error_code);
-    CommitCompleted(completion_status, error_message);
+    CommitCompleted(completion_status, error_message, std::move(response_head));
     return;
   }
 
@@ -245,7 +247,7 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
             has_header ? &service_worker_allowed : nullptr, &error_message)) {
       CommitCompleted(
           network::URLLoaderCompletionStatus(net::ERR_INSECURE_RESPONSE),
-          error_message);
+          error_message, std::move(response_head));
       return;
     }
 
@@ -283,7 +285,8 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
   if (mojo::CreateDataPipe(nullptr, client_producer_, client_consumer) !=
       MOJO_RESULT_OK) {
     CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_FAILED),
-                    ServiceWorkerConsts::kServiceWorkerFetchScriptError);
+                    ServiceWorkerConsts::kServiceWorkerFetchScriptError,
+                    std::move(response_head));
     return;
   }
 
@@ -306,7 +309,8 @@ void ServiceWorkerNewScriptLoader::OnReceiveRedirect(
   //
   // TODO(https://crbug.com/889798): Follow redirects for imported scripts.
   CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT),
-                  ServiceWorkerConsts::kServiceWorkerRedirectError);
+                  ServiceWorkerConsts::kServiceWorkerRedirectError,
+                  std::move(response_head));
 }
 
 void ServiceWorkerNewScriptLoader::OnUploadProgress(
@@ -332,8 +336,8 @@ void ServiceWorkerNewScriptLoader::OnComplete(
   LoaderState previous_state = network_loader_state_;
   network_loader_state_ = LoaderState::kCompleted;
   if (status.error_code != net::OK) {
-    CommitCompleted(status,
-                    ServiceWorkerConsts::kServiceWorkerFetchScriptError);
+    CommitCompleted(status, ServiceWorkerConsts::kServiceWorkerFetchScriptError,
+                    nullptr);
     return;
   }
 
@@ -355,7 +359,7 @@ void ServiceWorkerNewScriptLoader::OnComplete(
     case WriterState::kCompleted:
       DCHECK_EQ(WriterState::kCompleted, header_writer_state_);
       CommitCompleted(network::URLLoaderCompletionStatus(net::OK),
-                      std::string() /* status_message */);
+                      std::string() /* status_message */, nullptr);
       return;
   }
   NOTREACHED();
@@ -387,7 +391,7 @@ void ServiceWorkerNewScriptLoader::OnWriteHeadersComplete(net::Error error) {
     ServiceWorkerMetrics::CountWriteResponseResult(
         ServiceWorkerMetrics::WRITE_HEADERS_ERROR);
     CommitCompleted(network::URLLoaderCompletionStatus(error),
-                    ServiceWorkerConsts::kDatabaseErrorMessage);
+                    ServiceWorkerConsts::kDatabaseErrorMessage, nullptr);
     return;
   }
   header_writer_state_ = WriterState::kCompleted;
@@ -397,7 +401,7 @@ void ServiceWorkerNewScriptLoader::OnWriteHeadersComplete(net::Error error) {
   if (network_loader_state_ == LoaderState::kCompleted &&
       body_writer_state_ == WriterState::kCompleted) {
     CommitCompleted(network::URLLoaderCompletionStatus(net::OK),
-                    std::string() /* status_message */);
+                    std::string() /* status_message */, nullptr);
     return;
   }
 
@@ -469,7 +473,8 @@ void ServiceWorkerNewScriptLoader::WriteData(
       ServiceWorkerMetrics::CountWriteResponseResult(
           ServiceWorkerMetrics::WRITE_DATA_ERROR);
       CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_FAILED),
-                      ServiceWorkerConsts::kServiceWorkerFetchScriptError);
+                      ServiceWorkerConsts::kServiceWorkerFetchScriptError,
+                      nullptr);
       return;
     case MOJO_RESULT_SHOULD_WAIT:
       // No data was written to |client_producer_| because the pipe was full.
@@ -510,7 +515,7 @@ void ServiceWorkerNewScriptLoader::OnWriteDataComplete(
     ServiceWorkerMetrics::CountWriteResponseResult(
         ServiceWorkerMetrics::WRITE_DATA_ERROR);
     CommitCompleted(network::URLLoaderCompletionStatus(error),
-                    ServiceWorkerConsts::kDatabaseErrorMessage);
+                    ServiceWorkerConsts::kDatabaseErrorMessage, nullptr);
     return;
   }
   ServiceWorkerMetrics::CountWriteResponseResult(
@@ -524,7 +529,7 @@ void ServiceWorkerNewScriptLoader::OnWriteDataComplete(
     body_writer_state_ = WriterState::kCompleted;
     if (network_loader_state_ == LoaderState::kCompleted) {
       CommitCompleted(network::URLLoaderCompletionStatus(net::OK),
-                      std::string() /* status_message */);
+                      std::string() /* status_message */, nullptr);
     }
     return;
   }
@@ -538,7 +543,8 @@ void ServiceWorkerNewScriptLoader::OnWriteDataComplete(
 
 void ServiceWorkerNewScriptLoader::CommitCompleted(
     const network::URLLoaderCompletionStatus& status,
-    const std::string& status_message) {
+    const std::string& status_message,
+    const network::mojom::URLResponseHeadPtr response_head) {
   net::Error error_code = static_cast<net::Error>(status.error_code);
   int bytes_written = -1;
   if (error_code == net::OK) {
@@ -550,9 +556,11 @@ void ServiceWorkerNewScriptLoader::CommitCompleted(
   } else {
     // When we fail a main script fetch, we do not have a renderer in which to
     // log the failure. We call into devtools with the frame id instead.
-    if (requesting_frame_id_) {
+    if (requesting_frame_id_ && version_->context()) {
       devtools_instrumentation::OnServiceWorkerMainScriptFetchingFailed(
-          requesting_frame_id_, status_message);
+          requesting_frame_id_, version_->context()->wrapper(),
+          version_->version_id(), status_message, status, response_head.get(),
+          request_url_);
     } else {
       // AddMessageConsole must be called before notifying that an error
       // occurred because the worker stops soon after receiving the error

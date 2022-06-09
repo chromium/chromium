@@ -12,7 +12,7 @@ class NetworkLifecycleObserver {
   }
 
   async waitForCompletion(urlPattern) {
-    const [willBeSentRequestId, pausedNetworkId, responseReceivedRequestId] =
+    const [willBeSentRequestId, pausedNetworkId, responseReceievedEvent] =
         await Promise.all([
           this._dp.Network
               .onceRequestWillBeSent(
@@ -25,7 +25,6 @@ class NetworkLifecycleObserver {
                   this._dp.Network.onLoadingFailed(
                       evt => evt.params.requestId === requestId),
                 ]);
-
                 return requestId;
               }),
           this._dp.Fetch
@@ -35,19 +34,28 @@ class NetworkLifecycleObserver {
           this._dp.Network
               .onceResponseReceived(
                   evt => urlPattern.test(evt.params.response?.url))
-              .then(evt => evt.params.requestId),
+              .then(evt => evt),
         ]);
 
-    if (willBeSentRequestId && willBeSentRequestId === pausedNetworkId &&
-        pausedNetworkId === responseReceivedRequestId)
-      return `[${
-          urlPattern}] OK: All expected network events found and align with one another!`;
+    let logs = [];
 
-    return `[${
-        urlPattern}] FAIL: requestId was empty or did not align with other network events. Network.requestWillBeSent.params.requestId (${
-        willBeSentRequestId}), Fetch.requestPaused.params.networkId (${
-        pausedNetworkId}), Network.responseReceived.params.requestId (${
-        responseReceivedRequestId})`;
+    const {requestId: responseReceivedRequestId, response: {status}} =
+        responseReceievedEvent.params;
+    logs.push(`[${urlPattern}] Status Code ${status}`);
+
+    if (willBeSentRequestId && willBeSentRequestId === pausedNetworkId &&
+        pausedNetworkId === responseReceivedRequestId) {
+      logs.push(`[${
+          urlPattern}] OK: All expected network events found and align with one another!`)
+    } else {
+      logs.push(`[${
+          urlPattern}] FAIL: requestId was empty or did not align with other network events. Network.requestWillBeSent.params.requestId (${
+          willBeSentRequestId}), Fetch.requestPaused.params.networkId (${
+          pausedNetworkId}), Network.responseReceived.params.requestId (${
+          responseReceivedRequestId})`);
+    }
+
+    return logs.join('\n');
   }
 }
 
