@@ -269,13 +269,12 @@ TEST_F(PasswordStoreProxyBackendTest,
 }
 
 TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToFillMatchingLoginsAsync) {
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
   std::vector<std::unique_ptr<PasswordForm>> expected_logins =
       CreateTestLogins();
-  EXPECT_CALL(mock_reply,
-              Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
   EXPECT_CALL(built_in_backend(), FillMatchingLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
+      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)

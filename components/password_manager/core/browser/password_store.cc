@@ -220,8 +220,9 @@ void PasswordStore::Unblocklist(const PasswordFormDigest& form_digest,
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
   backend_->FillMatchingLoginsAsync(
-      base::BindOnce(&PasswordStore::UnblocklistInternal, this,
-                     std::move(completion)),
+      base::BindOnce(&GetLoginsOrEmptyListOnFailure)
+          .Then(base::BindOnce(&PasswordStore::UnblocklistInternal, this,
+                               std::move(completion))),
       FormSupportsPSL(form_digest), {form_digest});
 }
 
@@ -239,8 +240,10 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
 
   if (affiliated_match_helper_) {
     auto branding_injection_for_affiliations_callback =
-        base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
-                       this, request_handler->AffiliatedLoginsClosure());
+        base::BindOnce(&GetLoginsOrEmptyListOnFailure)
+            .Then(base::BindOnce(
+                &PasswordStore::InjectAffiliationAndBrandingInformation, this,
+                request_handler->AffiliatedLoginsClosure()));
     // `Shutdown` resets the affiliated_match_helper_ before shutting down the
     // backend_. Therefore, base::Unretained is safe here.
     affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
@@ -254,8 +257,10 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
   }
 
   auto branding_injection_callback =
-      base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
-                     this, request_handler->LoginsForFormClosure());
+      base::BindOnce(&GetLoginsOrEmptyListOnFailure)
+          .Then(base::BindOnce(
+              &PasswordStore::InjectAffiliationAndBrandingInformation, this,
+              request_handler->LoginsForFormClosure()));
 
   backend_->FillMatchingLoginsAsync(std::move(branding_injection_callback),
                                     FormSupportsPSL(form), {form});

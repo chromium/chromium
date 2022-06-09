@@ -193,7 +193,7 @@ void PasswordStoreBackendMigrationDecorator::GetAllLoginsForAccountAsync(
 }
 
 void PasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(
-    LoginsReply callback,
+    LoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   active_backend_->FillMatchingLoginsAsync(std::move(callback), include_psl,

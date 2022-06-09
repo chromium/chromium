@@ -237,7 +237,7 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsNoPSL) {
   base::HistogramTester histogram_tester;
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
 
   const JobId kFirstJobId{1337};
   EXPECT_CALL(*bridge(), GetLoginsForSignonRealm).WillOnce(Return(kFirstJobId));
@@ -277,8 +277,7 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsNoPSL) {
   expected_logins.push_back(std::make_unique<PasswordForm>(matching_federated));
   expected_logins.push_back(
       std::make_unique<PasswordForm>(matching_signon_realm));
-  EXPECT_CALL(mock_reply,
-              Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
 
   task_environment_.FastForwardBy(kLatencyDelta);
   consumer().OnCompleteWithLogins(kSecondJobId, {matching_signon_realm});
@@ -294,7 +293,7 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsPSL) {
   base::HistogramTester histogram_tester;
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
 
   const JobId kFirstJobId{1337};
   EXPECT_CALL(*bridge(), GetLoginsForSignonRealm).WillOnce(Return(kFirstJobId));
@@ -334,8 +333,7 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsPSL) {
   expected_logins.push_back(std::make_unique<PasswordForm>(psl_matching));
   expected_logins.push_back(
       std::make_unique<PasswordForm>(psl_matching_federated));
-  EXPECT_CALL(mock_reply,
-              Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
 
   task_environment_.FastForwardBy(kLatencyDelta);
   consumer().OnCompleteWithLogins(kSecondJobId, {psl_matching, not_matching});
@@ -418,7 +416,6 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
   // Check that calling RemoveLoginsByURLAndTime triggers logins retrieval
   // first.
-  base::MockCallback<LoginsReply> mock_logins_reply;
   const JobId kGetLoginsJobId{13387};
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kGetLoginsJobId));
   backend().RemoveLoginsByURLAndTimeAsync(url_filter, delete_begin, delete_end,
@@ -473,7 +470,6 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
   // Check that calling RemoveLoginsCreatedBetween triggers logins retrieval
   // first.
-  base::MockCallback<LoginsReply> mock_logins_reply;
   const JobId kGetLoginsJobId{13387};
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kGetLoginsJobId));
   backend().RemoveLoginsCreatedBetweenAsync(delete_begin, delete_end,
@@ -756,7 +752,6 @@ TEST_F(PasswordStoreAndroidBackendTest, RemoveAllLocalLogins) {
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
 
-  base::MockCallback<LoginsReply> mock_logins_reply;
   const JobId kGetLoginsJobId{13387};
   EXPECT_CALL(*bridge(), GetAllLogins(ExpectLocalAccount()))
       .WillOnce(Return(kGetLoginsJobId));
@@ -796,7 +791,6 @@ TEST_F(PasswordStoreAndroidBackendTest, RemoveAllLocalLoginsSuccessMetrics) {
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
 
-  base::MockCallback<LoginsReply> mock_logins_reply;
   const JobId kGetLoginsJobId{13387};
   EXPECT_CALL(*bridge(), GetAllLogins(ExpectLocalAccount()))
       .WillOnce(Return(kGetLoginsJobId));

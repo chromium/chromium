@@ -70,7 +70,7 @@ void FakePasswordStoreBackend::GetAllLoginsForAccountAsync(
 }
 
 void FakePasswordStoreBackend::FillMatchingLoginsAsync(
-    LoginsReply callback,
+    LoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(

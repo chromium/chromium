@@ -10,6 +10,7 @@
 #include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/login_database_async_helper.h"
+#include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store_util.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
@@ -128,13 +129,13 @@ void PasswordStoreBuiltInBackend::GetAllLoginsForAccountAsync(
 }
 
 void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(
-    LoginsReply callback,
+    LoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
   if (forms.empty()) {
-    std::move(callback).Run({});
+    std::move(callback).Run(LoginsResult());
     return;
   }
 

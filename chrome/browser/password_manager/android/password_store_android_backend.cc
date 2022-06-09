@@ -340,11 +340,11 @@ void PasswordStoreAndroidBackend::GetAllLoginsForAccountAsync(
 }
 
 void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
-    LoginsReply callback,
+    LoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   if (forms.empty()) {
-    std::move(callback).Run({});
+    std::move(callback).Run(LoginsResult());
     return;
   }
 
@@ -693,12 +693,12 @@ void PasswordStoreAndroidBackend::FilterAndDisableAutoSignIn(
 LoginsOrErrorReply
 PasswordStoreAndroidBackend::ReportMetricsAndInvokeCallbackForLoginsRetrieval(
     const MetricInfix& metric_infix,
-    LoginsReply callback) {
+    LoginsOrErrorReply callback) {
   // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to handle
   // this callback more gracefully when it's implemented.
   return base::BindOnce(
       [](PasswordStoreBackendMetricsRecorder metrics_recorder,
-         LoginsReply callback, LoginsResultOrError results) {
+         LoginsOrErrorReply callback, LoginsResultOrError results) {
         metrics_recorder.RecordMetrics(
             absl::holds_alternative<PasswordStoreBackendError>(results)
                 ? SuccessStatus::kError
