@@ -1398,8 +1398,6 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_usb_transfer_status.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_user_idle_state.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_user_idle_state.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_user_verification_requirement.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_user_verification_requirement.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_color_primaries.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_color_primaries.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.cc",

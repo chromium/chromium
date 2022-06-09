@@ -48,7 +48,6 @@ using blink::mojom::blink::CableRegistration;
 using blink::mojom::blink::CableRegistrationPtr;
 using blink::mojom::blink::CredentialInfo;
 using blink::mojom::blink::CredentialInfoPtr;
-using blink::mojom::blink::CredentialManagerError;
 using blink::mojom::blink::CredentialType;
 using blink::mojom::blink::LargeBlobSupport;
 using blink::mojom::blink::LogoutRpsRequest;
@@ -220,8 +219,8 @@ TypeConverter<absl::optional<blink::mojom::blink::ResidentKeyRequirement>,
 }
 
 // static
-UserVerificationRequirement
-TypeConverter<UserVerificationRequirement, String>::Convert(
+absl::optional<UserVerificationRequirement>
+TypeConverter<absl::optional<UserVerificationRequirement>, String>::Convert(
     const String& requirement) {
   if (requirement == "required")
     return UserVerificationRequirement::REQUIRED;
@@ -229,8 +228,7 @@ TypeConverter<UserVerificationRequirement, String>::Convert(
     return UserVerificationRequirement::PREFERRED;
   if (requirement == "discouraged")
     return UserVerificationRequirement::DISCOURAGED;
-  NOTREACHED();
-  return UserVerificationRequirement::PREFERRED;
+  return absl::nullopt;
 }
 
 // static
@@ -302,10 +300,15 @@ TypeConverter<AuthenticatorSelectionCriteriaPtr,
                                       ? ResidentKeyRequirement::REQUIRED
                                       : ResidentKeyRequirement::DISCOURAGED;
   }
+
   mojo_criteria->user_verification = UserVerificationRequirement::PREFERRED;
   if (criteria.hasUserVerification()) {
-    mojo_criteria->user_verification = ConvertTo<UserVerificationRequirement>(
-        blink::IDLEnumAsString(criteria.userVerification()));
+    absl::optional<UserVerificationRequirement> user_verification =
+        ConvertTo<absl::optional<UserVerificationRequirement>>(
+            criteria.userVerification());
+    if (user_verification) {
+      mojo_criteria->user_verification = *user_verification;
+    }
   }
   return mojo_criteria;
 }
@@ -628,8 +631,12 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
 
   mojo_options->user_verification = UserVerificationRequirement::PREFERRED;
   if (options.hasUserVerification()) {
-    mojo_options->user_verification = ConvertTo<UserVerificationRequirement>(
-        blink::IDLEnumAsString(options.userVerification()));
+    absl::optional<UserVerificationRequirement> user_verification =
+        ConvertTo<absl::optional<UserVerificationRequirement>>(
+            options.userVerification());
+    if (user_verification) {
+      mojo_options->user_verification = *user_verification;
+    }
   }
 
   if (options.hasExtensions()) {

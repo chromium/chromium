@@ -83,9 +83,11 @@ struct TypeConverter<
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::UserVerificationRequirement, String> {
-  static blink::mojom::blink::UserVerificationRequirement Convert(
-      const String&);
+struct TypeConverter<
+    absl::optional<blink::mojom::blink::UserVerificationRequirement>,
+    String> {
+  static absl::optional<blink::mojom::blink::UserVerificationRequirement>
+  Convert(const String&);
 };
 
 template <>
