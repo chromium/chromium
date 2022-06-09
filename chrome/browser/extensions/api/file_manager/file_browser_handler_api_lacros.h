@@ -24,10 +24,6 @@ class FileBrowserHandlerInternalSelectFileFunctionLacros
   // The class is ref counted, so destructor should not be public.
   ~FileBrowserHandlerInternalSelectFileFunctionLacros() override;
 
-  // ExtensionFunction implementation.
-  // Runs the extension function implementation.
-  ResponseAction Run() override;
-
  private:
   DECLARE_EXTENSION_FUNCTION("fileBrowserHandlerInternal.selectFile",
                              FILEBROWSERHANDLERINTERNAL_SELECTFILE)

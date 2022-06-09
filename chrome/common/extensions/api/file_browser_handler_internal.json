@@ -28,6 +28,25 @@
             "type": "boolean"
           }
         }
+      },
+      {
+        "id": "FileEntryInfoForGetFile",
+        "type": "object",
+        "description": "Information needed to build a file entry using DirectoryEntry.getFile() that will be returned through the API.",
+        "properties": {
+          "fileSystemId": {
+            "type": "string"
+          },
+          "baseName": {
+            "type": "string"
+          },
+          "entryId": {
+            "type": "string"
+          },
+          "isDirectory": {
+            "type": "boolean"
+          }
+        }
       }
     ],
 
@@ -72,6 +91,11 @@
                   "$ref": "FileEntryInfo",
                   "optional": true,
                   "description": "Selected file entry."
+                },
+                "entryForGetFile": {
+                  "$ref": "FileEntryInfoForGetFile",
+                  "optional": true,
+                  "description": "Selected file entry for DirectoryEngry.getFile() consumption."
                 }
               }
             }
