@@ -184,7 +184,7 @@ ScriptPromise FontFaceSet::load(ScriptState* script_state,
        f = f->Next()) {
     if (f->FamilyIsGeneric())
       continue;
-    CSSSegmentedFontFace* segmented_font_face =
+    auto segmented_font_face =
         font_face_cache->Get(font.GetFontDescription(), f->FamilyName());
     if (segmented_font_face)
       segmented_font_face->Match(text, faces);
@@ -220,7 +220,7 @@ bool FontFaceSet::check(const String& font_string,
        f = f->Next()) {
     if (f->FamilyIsGeneric())
       continue;
-    CSSSegmentedFontFace* face =
+    auto face =
         font_face_cache->Get(font.GetFontDescription(), f->FamilyName());
     if (face) {
       if (!face->CheckFont(text))

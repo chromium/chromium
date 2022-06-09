@@ -12,7 +12,8 @@
 namespace blink {
 
 OffscreenFontSelector::OffscreenFontSelector(WorkerGlobalScope* worker)
-    : worker_(worker) {
+    : CSSFontSelectorBase(worker->GetTaskRunner(TaskType::kInternalDefault)),
+      worker_(worker) {
   DCHECK(worker);
   font_face_cache_ = MakeGarbageCollected<FontFaceCache>();
   FontCache::Get().AddClient(this);
@@ -43,8 +44,7 @@ scoped_refptr<FontData> OffscreenFontSelector::GetFontData(
     const FontDescription& font_description,
     const FontFamily& font_family) {
   const auto& family_name = font_family.FamilyName();
-  if (CSSSegmentedFontFace* face =
-          font_face_cache_->Get(font_description, family_name)) {
+  if (auto face = font_face_cache_->Get(font_description, family_name)) {
     ReportWebFontFamily(family_name);
     return face->GetFontData(font_description);
   }

@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 // See comment below in CSSSegmentedFontFace::GetFontData - the cache from
 // CSSSegmentedFontFace (which represents a group of @font-face declarations
@@ -51,21 +52,23 @@ static constexpr size_t kFontDataTableMaxSize = 250;
 namespace blink {
 
 // static
-CSSSegmentedFontFace* CSSSegmentedFontFace::Create(
+scoped_refptr<CSSSegmentedFontFace> CSSSegmentedFontFace::Create(
     FontSelectionCapabilities capabilities) {
-  return MakeGarbageCollected<CSSSegmentedFontFace>(capabilities);
+  return base::AdoptRef(new CSSSegmentedFontFace(capabilities));
 }
 
 CSSSegmentedFontFace::CSSSegmentedFontFace(
     FontSelectionCapabilities font_selection_capabilities)
     : font_selection_capabilities_(font_selection_capabilities),
       font_data_table_(kFontDataTableMaxSize),
-      font_faces_(MakeGarbageCollected<FontFaceList>()),
-      approximate_character_count_(0) {}
+      approximate_character_count_(0) {
+  DCHECK(ThreadState::Current()->GetIsolate());
+}
 
 CSSSegmentedFontFace::~CSSSegmentedFontFace() = default;
 
 void CSSSegmentedFontFace::PruneTable() {
+  lock_.AssertAcquired();
   // Make sure the glyph page tree prunes out all uses of this custom font.
   if (!font_data_table_.size())
     return;
@@ -74,8 +77,9 @@ void CSSSegmentedFontFace::PruneTable() {
 }
 
 bool CSSSegmentedFontFace::IsValid() const {
+  lock_.AssertAcquired();
   // Valid if at least one font face is valid.
-  return font_faces_->ForEachUntilTrue(
+  return font_faces_.ForEachUntilTrue(
       WTF::BindRepeating([](Member<FontFace> font_face) -> bool {
         if (font_face->CssFontFace()->IsValid())
           return true;
@@ -84,18 +88,21 @@ bool CSSSegmentedFontFace::IsValid() const {
 }
 
 void CSSSegmentedFontFace::FontFaceInvalidated() {
+  AutoLockForParallelTextShaping guard(lock_);
   PruneTable();
 }
 
 void CSSSegmentedFontFace::AddFontFace(FontFace* font_face,
                                        bool css_connected) {
+  AutoLockForParallelTextShaping guard(lock_);
   PruneTable();
   font_face->CssFontFace()->AddSegmentedFontFace(this);
-  font_faces_->Insert(font_face, css_connected);
+  font_faces_.Insert(font_face, css_connected);
 }
 
 void CSSSegmentedFontFace::RemoveFontFace(FontFace* font_face) {
-  if (!font_faces_->Erase(font_face))
+  AutoLockForParallelTextShaping guard(lock_);
+  if (!font_faces_.Erase(font_face))
     return;
 
   PruneTable();
@@ -104,6 +111,7 @@ void CSSSegmentedFontFace::RemoveFontFace(FontFace* font_face) {
 
 scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
     const FontDescription& font_description) {
+  AutoLockForParallelTextShaping guard(lock_);
   if (!IsValid())
     return nullptr;
 
@@ -144,7 +152,7 @@ scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
       font_selection_request.slope >= ItalicSlopeValue() &&
       font_description.SyntheticItalicAllowed());
 
-  font_faces_->ForEachReverse(WTF::BindRepeating(
+  font_faces_.ForEachReverse(WTF::BindRepeating(
       [](const FontDescription& requested_font_description,
          scoped_refptr<SegmentedFontData> created_font_data,
          Member<FontFace> font_face) {
@@ -181,10 +189,12 @@ scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
 
 void CSSSegmentedFontFace::WillUseFontData(
     const FontDescription& font_description,
-    const String& text) {
+    const StringView& text) {
+  // This function is called from main thread or worker thread.
+  AutoLockForParallelTextShaping guard(lock_);
   approximate_character_count_ += text.length();
-  font_faces_->ForEachReverseUntilTrue(WTF::BindRepeating(
-      [](const FontDescription& font_description, const String& text,
+  font_faces_.ForEachReverseUntilTrue(WTF::BindRepeating(
+      [](const FontDescription& font_description, const StringView& text,
          Member<FontFace> font_face) -> bool {
         if (font_face->LoadStatus() != FontFace::kUnloaded)
           return true;
@@ -198,10 +208,11 @@ void CSSSegmentedFontFace::WillUseFontData(
 void CSSSegmentedFontFace::WillUseRange(
     const blink::FontDescription& font_description,
     const blink::FontDataForRangeSet& range_set) {
+  AutoLockForParallelTextShaping guard(lock_);
   // Iterating backwards since later defined unicode-range faces override
   // previously defined ones, according to the CSS3 fonts module.
   // https://drafts.csswg.org/css-fonts/#composite-fonts
-  font_faces_->ForEachReverseUntilTrue(WTF::BindRepeating(
+  font_faces_.ForEachReverseUntilTrue(WTF::BindRepeating(
       [](const blink::FontDescription& font_description,
          const blink::FontDataForRangeSet& range_set,
          Member<FontFace> font_face) -> bool {
@@ -214,7 +225,8 @@ void CSSSegmentedFontFace::WillUseRange(
 }
 
 bool CSSSegmentedFontFace::CheckFont(const String& text) const {
-  return font_faces_->ForEachUntilFalse(WTF::BindRepeating(
+  AutoLockForParallelTextShaping guard(lock_);
+  return font_faces_.ForEachUntilFalse(WTF::BindRepeating(
       [](const String& text, Member<FontFace> font_face) -> bool {
         if (font_face->LoadStatus() != FontFace::kLoaded &&
             font_face->CssFontFace()->Ranges()->IntersectsWith(text))
@@ -226,9 +238,10 @@ bool CSSSegmentedFontFace::CheckFont(const String& text) const {
 
 void CSSSegmentedFontFace::Match(const String& text,
                                  HeapVector<Member<FontFace>>* faces) const {
+  AutoLockForParallelTextShaping guard(lock_);
   // WTF::BindRepeating requires WrapPersistent around |faces|, which is fine,
   // because the wrap's lifetime is contained to this function.
-  font_faces_->ForEach(WTF::BindRepeating(
+  font_faces_.ForEach(WTF::BindRepeating(
       [](const String& text, HeapVector<Member<FontFace>>* faces,
          Member<FontFace> font_face) {
         if (font_face->CssFontFace()->Ranges()->IntersectsWith(text))
@@ -238,6 +251,7 @@ void CSSSegmentedFontFace::Match(const String& text,
 }
 
 void CSSSegmentedFontFace::Trace(Visitor* visitor) const {
+  AutoLockForParallelTextShaping guard(lock_);
   visitor->Trace(font_faces_);
 }
 

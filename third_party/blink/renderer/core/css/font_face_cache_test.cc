@@ -146,7 +146,7 @@ TEST_F(FontFaceCacheTest, SimpleWidthMatch) {
 
   const FontDescription& description_condensed = FontDescriptionForRequest(
       CondensedWidthValue(), NormalSlopeValue(), NormalWeightValue());
-  CSSSegmentedFontFace* result =
+  scoped_refptr<CSSSegmentedFontFace> result =
       cache_->Get(description_condensed, kFontNameForTesting);
   ASSERT_TRUE(result);
 
@@ -177,7 +177,7 @@ TEST_F(FontFaceCacheTest, SimpleWeightMatch) {
 
   const FontDescription& description_bold = FontDescriptionForRequest(
       NormalWidthValue(), NormalSlopeValue(), BoldWeightValue());
-  CSSSegmentedFontFace* result =
+  scoped_refptr<CSSSegmentedFontFace> result =
       cache_->Get(description_bold, kFontNameForTesting);
   ASSERT_TRUE(result);
   FontSelectionCapabilities result_capabilities =
@@ -272,7 +272,7 @@ TEST_F(FontFaceCacheTest, DISABLED_MatchCombinations) {
           }
         }
         for (FontDescription& test_description : test_descriptions) {
-          CSSSegmentedFontFace* result =
+          scoped_refptr<CSSSegmentedFontFace> result =
               cache_->Get(test_description, kFontNameForTesting);
           ASSERT_TRUE(result);
           FontSelectionCapabilities result_capabilities =
@@ -320,7 +320,7 @@ TEST_F(FontFaceCacheTest, WidthRangeMatching) {
 
   const FontDescription& description_bold = FontDescriptionForRequest(
       NormalWidthValue(), NormalSlopeValue(), BoldWeightValue());
-  CSSSegmentedFontFace* result =
+  scoped_refptr<CSSSegmentedFontFace> result =
       cache_->Get(description_bold, kFontNameForTesting);
   ASSERT_TRUE(result);
   FontSelectionCapabilities result_capabilities =
@@ -372,7 +372,7 @@ TEST_F(FontFaceCacheTest, WidthRangeMatchingBetween400500) {
 
   const FontDescription& description_expanded = FontDescriptionForRequest(
       NormalWidthValue(), NormalSlopeValue(), test_weight);
-  CSSSegmentedFontFace* result =
+  scoped_refptr<CSSSegmentedFontFace> result =
       cache_->Get(description_expanded, kFontNameForTesting);
   ASSERT_TRUE(result);
   ASSERT_EQ(result->GetFontSelectionCapabilities().weight.minimum,
@@ -429,7 +429,7 @@ TEST_F(FontFaceCacheTest, StretchRangeMatching) {
 
   const FontDescription& description_expanded = FontDescriptionForRequest(
       FontSelectionValue(105), NormalSlopeValue(), NormalWeightValue());
-  CSSSegmentedFontFace* result =
+  scoped_refptr<CSSSegmentedFontFace> result =
       cache_->Get(description_expanded, kFontNameForTesting);
   ASSERT_TRUE(result);
   FontSelectionCapabilities result_capabilities =
@@ -482,7 +482,7 @@ TEST_F(FontFaceCacheTest, ObliqueRangeMatching) {
 
   const FontDescription& description_italic = FontDescriptionForRequest(
       NormalWidthValue(), ItalicSlopeValue(), NormalWeightValue());
-  CSSSegmentedFontFace* result =
+  scoped_refptr<CSSSegmentedFontFace> result =
       cache_->Get(description_italic, kFontNameForTesting);
   ASSERT_TRUE(result);
   FontSelectionCapabilities result_capabilities =

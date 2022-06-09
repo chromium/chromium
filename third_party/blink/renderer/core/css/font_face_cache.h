@@ -32,11 +32,13 @@
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
+#include "third_party/blink/renderer/platform/fonts/lock_for_parallel_text_shaping.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 
@@ -58,7 +60,8 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
 
   // FIXME: It's sort of weird that add/remove uses StyleRuleFontFace* as key,
   // but this function uses FontDescription/family pair.
-  CSSSegmentedFontFace* Get(const FontDescription&, const AtomicString& family);
+  scoped_refptr<CSSSegmentedFontFace> Get(const FontDescription&,
+                                          const AtomicString& family);
 
   const HeapLinkedHashSet<Member<FontFace>>& CssConnectedFontFaces() const {
     return css_connected_font_faces_;
@@ -80,9 +83,11 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
   // A second lookup table caches the previously received FontSelectionRequest
   // queries, which is: HeapHashMap <String, HeapHashMap<FontSelectionRequest,
   // CSSSegmentedFontFace>>
-  class CapabilitiesSet final : public GarbageCollected<CapabilitiesSet> {
+  class CapabilitiesSet final
+      : public RefCountedWillBeThreadSafeForParallelTextShaping<
+            CapabilitiesSet> {
     using Map =
-        HeapHashMap<FontSelectionCapabilities, Member<CSSSegmentedFontFace>>;
+        HashMap<FontSelectionCapabilities, scoped_refptr<CSSSegmentedFontFace>>;
 
    public:
     Map::const_iterator begin() const { return map_.begin(); }
@@ -92,7 +97,7 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
     void AddFontFace(FontFace* font_face, bool css_connected);
     bool IsEmpty() const { return map_.IsEmpty(); }
 
-    // Returns true if associated |CSSSegmentedFontFace| is empty.
+    // Returns true if associated `CSSSegmentedFontFace` is empty.
     bool RemoveFontFace(FontFace* font_face);
 
     void Trace(Visitor*) const;
@@ -101,18 +106,19 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
     Map map_;
   };
 
-  // The map from |FontSelectionRequestKey| to |CSSSegmentedFontFace|.
+  // The map from `FontSelectionRequestKey` to `CSSSegmentedFontFace`.
   class FontSelectionQueryResult final
-      : public GarbageCollected<FontSelectionQueryResult> {
-    using Map =
-        HeapHashMap<FontSelectionRequestKey,
-                    Member<CSSSegmentedFontFace>,
-                    FontSelectionRequestKeyHash,
-                    WTF::SimpleClassHashTraits<FontSelectionRequestKey>>;
+      : public RefCountedWillBeThreadSafeForParallelTextShaping<
+            FontSelectionQueryResult> {
+    using Map = HashMap<FontSelectionRequestKey,
+                        scoped_refptr<CSSSegmentedFontFace>,
+                        FontSelectionRequestKeyHash,
+                        WTF::SimpleClassHashTraits<FontSelectionRequestKey>>;
 
    public:
-    CSSSegmentedFontFace* GetOrCreate(const FontSelectionRequest& request,
-                                      const CapabilitiesSet& family_faces);
+    scoped_refptr<CSSSegmentedFontFace> GetOrCreate(
+        const FontSelectionRequest& request,
+        const CapabilitiesSet& family_faces);
 
     void Trace(Visitor*) const;
 
@@ -120,36 +126,38 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
     Map map_;
   };
 
-  // The map from font family name to |FontSelectionQueryResult|.
+  // The map from font family name to `FontSelectionQueryResult`.
   class FontSelectionQueryCache final {
-    DISALLOW_NEW();
-
-    using Map =
-        HeapHashMap<String, Member<FontSelectionQueryResult>, CaseFoldingHash>;
+    using Map = HashMap<String,
+                        scoped_refptr<FontSelectionQueryResult>,
+                        CaseFoldingHash>;
 
    public:
-    void Clear();
-    CSSSegmentedFontFace* GetOrCreate(const FontSelectionRequest& request,
-                                      const AtomicString& family,
-                                      CapabilitiesSet* family_faces);
-    void Remove(const AtomicString& family);
+    void Clear() LOCKS_EXCLUDED(lock_);
+    scoped_refptr<CSSSegmentedFontFace> GetOrCreate(
+        const FontSelectionRequest& request,
+        const AtomicString& family,
+        scoped_refptr<CapabilitiesSet> family_faces) LOCKS_EXCLUDED(lock_);
+    void Remove(const AtomicString& family) LOCKS_EXCLUDED(lock_);
 
-    void Trace(Visitor*) const;
+    void Trace(Visitor*) const LOCKS_EXCLUDED(lock_);
 
    private:
-    Map map_;
+    mutable LockForParallelTextShaping lock_;
+    Map map_ GUARDED_BY(lock_);
   };
 
-  // The map from font family name to |CapabilitiesSet|.
+  // The map from font family name to `CapabilitiesSet`.
   class SegmentedFacesByFamily final {
-    DISALLOW_NEW();
+    using Map =
+        HashMap<String, scoped_refptr<CapabilitiesSet>, CaseFoldingHash>;
 
    public:
     void AddFontFace(FontFace* font_face, bool css_connected);
     void Clear() { map_.clear(); }
-    CapabilitiesSet* Find(const AtomicString& family) const;
+    scoped_refptr<CapabilitiesSet> Find(const AtomicString& family) const;
     bool IsEmpty() const { return map_.IsEmpty(); }
-    // Returns true if |font_face| is removed from |map_|.
+    // Returns true if `font_face` is removed from `map_`.
     bool RemoveFontFace(FontFace* font_face);
 
     size_t GetNumSegmentedFacesForTesting() const;
@@ -157,8 +165,6 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
     void Trace(Visitor*) const;
 
    private:
-    using Map = HeapHashMap<String, Member<CapabilitiesSet>, CaseFoldingHash>;
-
     Map map_;
   };
 
