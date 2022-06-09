@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/ui/popup_menu/public/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
@@ -372,6 +373,24 @@ const FeatureEntry::FeatureVariation kBubbleRichIPHVariations[] = {
     {"Dismissal, rich content, and snooze", kBubbleRichIPHRichWithSnooze,
      std::size(kBubbleRichIPHRichWithSnooze), nullptr},
 };
+
+const FeatureEntry::FeatureParam kPopupMenuBookmarkStringAddABookmark[] = {
+    {kPopupMenuBookmarkStringParamName,
+     kPopupMenuBookmarkStringParamAddABookmark}};
+const FeatureEntry::FeatureParam kPopupMenuBookmarkStringAddToBookmarks[] = {
+    {kPopupMenuBookmarkStringParamName,
+     kPopupMenuBookmarkStringParamAddToBookmarks}};
+const FeatureEntry::FeatureParam kPopupMenuBookmarkStringBookmarkThisPage[] = {
+    {kPopupMenuBookmarkStringParamName,
+     kPopupMenuBookmarkStringParamBookmarkThisPage}};
+
+const FeatureEntry::FeatureVariation kPopupMenuBookmarkStringVarations[] = {
+    {"(Add A Bookmark)", kPopupMenuBookmarkStringAddABookmark,
+     std::size(kPopupMenuBookmarkStringAddABookmark), nullptr},
+    {"(Add To Bookmarks)", kPopupMenuBookmarkStringAddToBookmarks,
+     std::size(kPopupMenuBookmarkStringAddToBookmarks), nullptr},
+    {"(Bookmark This Page)", kPopupMenuBookmarkStringBookmarkThisPage,
+     std::size(kPopupMenuBookmarkStringBookmarkThisPage), nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -946,6 +965,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDiscoverFeedGhostCardsName,
      flag_descriptions::kEnableDiscoverFeedGhostCardsDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDiscoverFeedGhostCardsEnabled)},
+    {"bookmark-string-menu", flag_descriptions::kBookmarkStringName,
+     flag_descriptions::kBookmarkStringDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kBookmarkString,
+                                    kPopupMenuBookmarkStringVarations,
+                                    "BookmarkString")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

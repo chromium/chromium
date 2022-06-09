@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
 
 #import "base/ios/ios_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -54,6 +55,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/popup_menu/public/features.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
@@ -572,11 +574,22 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       self.followAction = action;
     }
 
-    self.addBookmarkAction = CreateOverflowMenuAction(
-        IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, kAddBookmarkActionSymbol, YES,
-        kToolsMenuAddToBookmarks, ^{
-          [weakSelf addOrEditBookmark];
-        });
+    std::string label_variant = base::GetFieldTrialParamValueByFeature(
+        kBookmarkString, kPopupMenuBookmarkStringParamName);
+    NSInteger addBookmarkStringID = IDS_IOS_TOOLS_MENU_BOOKMARK;
+    if (label_variant == kPopupMenuBookmarkStringParamAddABookmark) {
+      addBookmarkStringID = IDS_IOS_TOOLS_MENU_ADD_A_BOOKMARK;
+    } else if (label_variant == kPopupMenuBookmarkStringParamAddToBookmarks) {
+      addBookmarkStringID = IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS;
+    } else if (label_variant == kPopupMenuBookmarkStringParamBookmarkThisPage) {
+      addBookmarkStringID = IDS_IOS_TOOLS_MENU_BOOKMARK_THIS_PAGE;
+    }
+
+    self.addBookmarkAction =
+        CreateOverflowMenuAction(addBookmarkStringID, kAddBookmarkActionSymbol,
+                                 YES, kToolsMenuAddToBookmarks, ^{
+                                   [weakSelf addOrEditBookmark];
+                                 });
 
     self.editBookmarkAction = CreateOverflowMenuAction(
         IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK, kEditActionSymbol, YES,
@@ -692,8 +705,19 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       self.followAction = action;
     }
 
+    std::string label_variant = base::GetFieldTrialParamValueByFeature(
+        kBookmarkString, kPopupMenuBookmarkStringParamName);
+    NSInteger addBookmarkStringID = IDS_IOS_TOOLS_MENU_BOOKMARK;
+    if (label_variant == kPopupMenuBookmarkStringParamAddABookmark) {
+      addBookmarkStringID = IDS_IOS_TOOLS_MENU_ADD_A_BOOKMARK;
+    } else if (label_variant == kPopupMenuBookmarkStringParamAddToBookmarks) {
+      addBookmarkStringID = IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS;
+    } else if (label_variant == kPopupMenuBookmarkStringParamBookmarkThisPage) {
+      addBookmarkStringID = IDS_IOS_TOOLS_MENU_BOOKMARK_THIS_PAGE;
+    }
+
     self.addBookmarkAction = CreateOverflowMenuAction(
-        IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark",
+        addBookmarkStringID, @"overflow_menu_action_bookmark",
         kToolsMenuAddToBookmarks, ^{
           [weakSelf addOrEditBookmark];
         });
