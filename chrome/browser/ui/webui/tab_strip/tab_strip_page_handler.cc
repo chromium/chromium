@@ -603,14 +603,12 @@ void TabStripPageHandler::GetThemeColors(GetThemeColorsCallback callback) {
       embedder_->GetColor(ThemeProperties::COLOR_FRAME_ACTIVE));
   colors["--tabstrip-tab-background-color"] = color_utils::SkColorToRgbaString(
       embedder_->GetColor(ThemeProperties::COLOR_TOOLBAR));
-  colors["--tabstrip-tab-text-color"] =
-      color_utils::SkColorToRgbaString(embedder_->GetColor(
-          ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE));
-  colors["--tabstrip-tab-separator-color"] =
-      color_utils::SkColorToRgbaString(SkColorSetA(
-          embedder_->GetColor(
-              ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE),
-          /* 16% opacity */ 0.16 * 255));
+  colors["--tabstrip-tab-text-color"] = color_utils::SkColorToRgbaString(
+      embedder_->GetColorProviderColor(kColorTabForegroundActiveFrameActive));
+  colors["--tabstrip-tab-separator-color"] = color_utils::SkColorToRgbaString(
+      SkColorSetA(embedder_->GetColorProviderColor(
+                      kColorTabForegroundActiveFrameActive),
+                  /* 16% opacity */ 0.16 * 255));
 
   std::string throbber_color = color_utils::SkColorToRgbaString(
       embedder_->GetColorProviderColor(kColorTabThrobber));
@@ -939,11 +937,9 @@ gfx::ImageSkia TabStripPageHandler::ThemeFavicon(const gfx::ImageSkia& source,
   }
 
   return favicon::ThemeFavicon(
-      source, embedder_->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON),
-      embedder_->GetColor(
-          ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE),
-      embedder_->GetColor(
-          ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE));
+      source, embedder_->GetColorProviderColor(kColorToolbarButtonIcon),
+      embedder_->GetColorProviderColor(kColorTabBackgroundActiveFrameActive),
+      embedder_->GetColorProviderColor(kColorTabBackgroundInactiveFrameActive));
 }
 
 void TabStripPageHandler::ActivateTab(int32_t tab_id) {
