@@ -4,9 +4,10 @@
 
 #include "remoting/host/desktop_display_info.h"
 
-#include "base/logging.h"
 #include "build/build_config.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/logging.h"
+#include "remoting/proto/control.pb.h"
 
 namespace remoting {
 
@@ -169,6 +170,26 @@ void DesktopDisplayInfo::AddDisplayFrom(
   display.bpp = 24;
   display.is_default = false;
   displays_.push_back(display);
+}
+
+std::unique_ptr<protocol::VideoLayout> DesktopDisplayInfo::GetVideoLayoutProto()
+    const {
+  auto layout = std::make_unique<protocol::VideoLayout>();
+  HOST_LOG << "Displays loaded:";
+  for (const auto& display : displays()) {
+    protocol::VideoTrackLayout* track = layout->add_video_track();
+    track->set_position_x(display.x);
+    track->set_position_y(display.y);
+    track->set_width(display.width);
+    track->set_height(display.height);
+    track->set_x_dpi(display.dpi);
+    track->set_y_dpi(display.dpi);
+    track->set_screen_id(display.id);
+    HOST_LOG << "   Display: " << display.x << "," << display.y << " "
+             << display.width << "x" << display.height << " @ " << display.dpi
+             << ", id=" << display.id;
+  }
+  return layout;
 }
 
 std::ostream& operator<<(std::ostream& out, const DisplayGeometry& geo) {

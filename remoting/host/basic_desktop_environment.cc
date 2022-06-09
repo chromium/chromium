@@ -105,8 +105,25 @@ BasicDesktopEnvironment::CreateScreenControls() {
 
 DesktopDisplayInfoMonitor* BasicDesktopEnvironment::GetDisplayInfoMonitor() {
   if (!display_info_monitor_) {
+    using VideoLayoutCallback =
+        base::RepeatingCallback<void(std::unique_ptr<protocol::VideoLayout>)>;
+
+    VideoLayoutCallback video_layout_callback =
+        base::BindRepeating(&ClientSessionControl::OnDesktopDisplayChanged,
+                            client_session_control_);
+
+    // |video_layout_callback| is bound to |client_session_control_| which is a
+    // WeakPtr, but it accepts a VideoLayout proto as the parameter. DDIM needs
+    // a callback that accepts a DesktopDisplayInfo& instead.
+    auto converting_callback =
+        base::BindRepeating([](const DesktopDisplayInfo& info) {
+          return info.GetVideoLayoutProto();
+        });
+    DesktopDisplayInfoMonitor::Callback callback =
+        std::move(converting_callback).Then(std::move(video_layout_callback));
+
     display_info_monitor_ = std::make_unique<DesktopDisplayInfoMonitor>(
-        ui_task_runner_, client_session_control_);
+        ui_task_runner_, std::move(callback));
   }
   return display_info_monitor_.get();
 }

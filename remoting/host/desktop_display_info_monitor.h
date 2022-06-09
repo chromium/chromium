@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -20,8 +21,6 @@ class SequencedTaskRunner;
 
 namespace remoting {
 
-class ClientSessionControl;
-
 // This class regularly queries the OS for any changes to the multi-monitor
 // display configuration, and reports any changes to the ClientSession.
 // This class ensures that the DisplayInfo is fetched on the UI thread, which
@@ -31,9 +30,11 @@ class ClientSessionControl;
 // the Desktop process.
 class DesktopDisplayInfoMonitor {
  public:
+  using Callback = base::RepeatingCallback<void(const DesktopDisplayInfo&)>;
+
   DesktopDisplayInfoMonitor(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      base::WeakPtr<ClientSessionControl> client_session_control);
+      Callback callback);
 
   DesktopDisplayInfoMonitor(const DesktopDisplayInfoMonitor&) = delete;
   DesktopDisplayInfoMonitor& operator=(const DesktopDisplayInfoMonitor&) =
@@ -62,9 +63,8 @@ class DesktopDisplayInfoMonitor {
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
-  // Object which receives DesktopDisplayInfo updates.
-  base::WeakPtr<ClientSessionControl> client_session_control_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // Callback which receives DesktopDisplayInfo updates.
+  Callback callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Contains the most recently gathered info about the desktop displays.
   DesktopDisplayInfo desktop_display_info_

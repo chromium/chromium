@@ -27,9 +27,9 @@ constexpr base::TimeDelta kPollingInterval = base::Milliseconds(100);
 
 DesktopDisplayInfoMonitor::DesktopDisplayInfoMonitor(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    base::WeakPtr<ClientSessionControl> client_session_control)
+    Callback callback)
     : ui_task_runner_(ui_task_runner),
-      client_session_control_(client_session_control),
+      callback_(callback),
       desktop_display_info_loader_(DesktopDisplayInfoLoader::Create()) {
   // The loader must be initialized and used on the UI thread (though it can be
   // created on any thread).
@@ -61,7 +61,7 @@ void DesktopDisplayInfoMonitor::QueryDisplayInfo() {
 
 void DesktopDisplayInfoMonitor::QueryDisplayInfoImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (client_session_control_) {
+  if (callback_) {
     ui_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&DesktopDisplayInfoLoader::GetCurrentDisplayInfo,
@@ -74,28 +74,12 @@ void DesktopDisplayInfoMonitor::QueryDisplayInfoImpl() {
 void DesktopDisplayInfoMonitor::OnDisplayInfoLoaded(DesktopDisplayInfo info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!client_session_control_ || desktop_display_info_ == info) {
+  if (!callback_ || desktop_display_info_ == info) {
     return;
   }
 
   desktop_display_info_ = std::move(info);
-
-  auto layout = std::make_unique<protocol::VideoLayout>();
-  HOST_LOG << "DDIM::OnDisplayInfoLoaded";
-  for (const auto& display : desktop_display_info_.displays()) {
-    protocol::VideoTrackLayout* track = layout->add_video_track();
-    track->set_position_x(display.x);
-    track->set_position_y(display.y);
-    track->set_width(display.width);
-    track->set_height(display.height);
-    track->set_x_dpi(display.dpi);
-    track->set_y_dpi(display.dpi);
-    track->set_screen_id(display.id);
-    HOST_LOG << "   Display: " << display.x << "," << display.y << " "
-             << display.width << "x" << display.height << " @ " << display.dpi
-             << ", id=" << display.id;
-  }
-  client_session_control_->OnDesktopDisplayChanged(std::move(layout));
+  callback_.Run(desktop_display_info_);
 }
 
 }  // namespace remoting
