@@ -756,7 +756,12 @@ public class TabGroupModelFilter extends TabModelFilter {
         CriticalPersistedTabData.from(tab).setRootId(id);
     }
 
-    private static int getRootId(Tab tab) {
+    /**
+     * Get the root id for the given tab. The root id is shared for tabs in the same group.
+     * @param tab The {@link Tab}.
+     * @return The root id for the given tab. The root id is shared for tabs in the same group.
+     */
+    public int getRootId(Tab tab) {
         return CriticalPersistedTabData.from(tab).getRootId();
     }
 

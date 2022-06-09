@@ -43,11 +43,13 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -533,6 +535,13 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 tabCreatorManager.getTabCreator(false));
         mIncognitoHelper.setTabModel(mTabModelSelector.getModel(true),
                 tabCreatorManager.getTabCreator(true));
+        if (TabUiFeatureUtilities.isTabletTabManagementImprovementsEnabled(mContext)) {
+            TabModelFilterProvider provider = mTabModelSelector.getTabModelFilterProvider();
+            mNormalHelper.setTabGroupModelFilter(
+                    (TabGroupModelFilter) provider.getTabModelFilter(false));
+            mIncognitoHelper.setTabGroupModelFilter(
+                    (TabGroupModelFilter) provider.getTabModelFilter(true));
+        }
         tabModelSwitched(mTabModelSelector.isIncognitoSelected());
 
         mTabModelSelectorTabModelObserver = new TabModelSelectorTabModelObserver(modelSelector) {

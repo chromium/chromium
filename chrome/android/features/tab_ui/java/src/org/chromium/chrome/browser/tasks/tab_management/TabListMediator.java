@@ -919,6 +919,8 @@ class TabListMediator {
                     TabModel tabModel = mTabModelSelector.getCurrentModel();
                     int curPosition = mModel.indexFromId(currentGroupSelectedTab.getId());
                     if (curPosition == TabModel.INVALID_TAB_INDEX) {
+                        // Model is uninitialized if reordering from tab strip before opening GTS.
+                        if (mModel.size() == 0) return;
                         // Sync TabListModel with updated TabGroupModelFilter.
                         int indexToUpdate = mModel.indexOfNthTabCard(
                                 filter.indexOf(tabModel.getTabAt(tabModelOldIndex)));

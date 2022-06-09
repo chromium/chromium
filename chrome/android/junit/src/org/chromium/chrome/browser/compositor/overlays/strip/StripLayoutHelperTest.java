@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,6 +17,7 @@ import android.app.Activity;
 import android.os.Build;
 import android.text.TextUtils;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +37,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.base.LocalizationUtils;
@@ -43,8 +47,9 @@ import java.util.List;
 
 /** Tests for {@link StripLayoutHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.M)
+@Features.EnableFeatures({ChromeFeatureList.TAB_STRIP_IMPROVEMENTS,
+        ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, ChromeFeatureList.TAB_GROUPS_FOR_TABLETS})
+@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.M, qualifiers = "sw600dp")
 public class StripLayoutHelperTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -54,12 +59,16 @@ public class StripLayoutHelperTest {
     private LayoutRenderHost mRenderHost;
     @Mock
     private CompositorButton mModelSelectorBtn;
+    @Mock
+    private TabGroupModelFilter mTabGroupModelFilter;
 
     private Activity mActivity;
     private TestTabModel mModel = new TestTabModel();
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
     private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
+    private static final String EXPECTED_MARGIN = "The tab should have a trailing margin.";
+    private static final String EXPECTED_NO_MARGIN = "The tab should not have a trailing margin.";
     private static final String CLOSE_TAB = "Close %1$s tab";
     private static final String IDENTIFIER = "Tab";
     private static final String IDENTIFIER_SELECTED = "Selected Tab";
@@ -73,20 +82,29 @@ public class StripLayoutHelperTest {
     private static final float TAB_WIDTH_SMALL = 108.f;
     private static final float TAB_OVERLAP_WIDTH = 24.f;
     private static final float TAB_WIDTH_MEDIUM = 156.f;
+    private static final float TAB_MARGIN_WIDTH = 76.f;
     private static final long TIMESTAMP = 5000;
     private static final float NEW_TAB_BTN_X = 700.f;
 
     private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_END = 72;
     private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_END_MODEL_SELECTOR = 120;
 
+    private static final float EPSILON = 0.001f;
+
     /** Reset the environment before each test. */
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
         when(mModelSelectorBtn.isVisible()).thenReturn(true);
+        when(mTabGroupModelFilter.hasOtherRelatedTabs(any())).thenReturn(false);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         TabUiFeatureUtilities.setTabMinWidthForTesting(null);
+    }
+
+    @After
+    public void tearDown() {
+        if (mStripLayoutHelper != null) mStripLayoutHelper.stopReorderModeForTesting();
     }
 
     /**
@@ -652,6 +670,163 @@ public class StripLayoutHelperTest {
         assertEquals(mStripLayoutHelper.getExpandDurationForTesting(), 450);
     }
 
+    @Test
+    @Feature("Tab Groups on Tab Strip")
+    public void testTabGroupMargins_BetweenTabs() {
+        // Initialize with 3 tabs.
+        initializeTest(false, false, 0, 3);
+
+        // Start reorder.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
+
+        // Verify no tabs have a trailing margin, since there are no tab groups.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertEquals(EXPECTED_NO_MARGIN, tabs[0].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[1].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[2].getTrailingMargin(), 0f, EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Groups on Tab Strip")
+    public void testTabGroupMargins_TabToLeft() {
+        // Mock 1 tab to the left of a tab group with 3 tabs.
+        initializeTest(false, false, 0, 4);
+        groupTabs(1, 4);
+
+        // Start reorder.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
+
+        // Verify the leftmost tab has a trailing margin.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertEquals(EXPECTED_MARGIN, tabs[0].getTrailingMargin(), TAB_MARGIN_WIDTH, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[1].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[2].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[3].getTrailingMargin(), 0f, EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Groups on Tab Strip")
+    public void testTabGroupMargins_TabToRight() {
+        // Mock 1 tab to the right of a tab group with 3 tabs.
+        initializeTest(false, false, 0, 4);
+        groupTabs(0, 3);
+
+        // Start reorder.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
+
+        // Verify the rightmost tab in the tab group has a trailing margin.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertEquals(EXPECTED_NO_MARGIN, tabs[0].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[1].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_MARGIN, tabs[2].getTrailingMargin(), TAB_MARGIN_WIDTH, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[3].getTrailingMargin(), 0f, EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Groups on Tab Strip")
+    public void testTabGroupMargins_BetweenGroups() {
+        // Mock a tab group with 2 tabs to the left of a tab group with 3 tabs.
+        initializeTest(false, false, 0, 5);
+        groupTabs(0, 2);
+        groupTabs(2, 5);
+
+        // Start reorder.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
+
+        // Verify the rightmost tab in the first group has a trailing margin.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertEquals(EXPECTED_NO_MARGIN, tabs[0].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_MARGIN, tabs[1].getTrailingMargin(), TAB_MARGIN_WIDTH, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[2].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[3].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[4].getTrailingMargin(), 0f, EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Groups on Tab Strip")
+    public void testTabGroupMargins_BetweenGroups_Rtl() {
+        // Mock a tab group with 2 tabs to the right of a tab group with 3 tabs.
+        initializeTest(true, false, 0, 5);
+        groupTabs(0, 2);
+        groupTabs(2, 5);
+
+        // Start reorder.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
+
+        // Verify the leftmost tab in the first group has a trailing margin.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertEquals(EXPECTED_NO_MARGIN, tabs[0].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_MARGIN, tabs[1].getTrailingMargin(), TAB_MARGIN_WIDTH, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[2].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[3].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[4].getTrailingMargin(), 0f, EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Groups on Tab Strip")
+    public void testTabGroupMargins_ResetMarginsOnStopReorder() {
+        // Mock 1 tab to the left of a tab group with 3 tabs.
+        initializeTest(false, false, 0, 4);
+        groupTabs(1, 4);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+
+        // Start then stop reorder.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
+        mStripLayoutHelper.stopReorderModeForTesting();
+
+        // Verify no tabs have a trailing margin when reordering is stopped.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertEquals(EXPECTED_NO_MARGIN, tabs[0].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[1].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[2].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_NO_MARGIN, tabs[3].getTrailingMargin(), 0f, EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Groups on Tab Strip")
+    public void testTabGroupMargins_NoScrollOnReorder() {
+        // Mock 1 tab to the right of 2 tab groups with 2 tabs each.
+        initializeTest(false, false, 0, 5);
+        groupTabs(0, 2);
+        groupTabs(2, 4);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.setScrollOffsetForTesting(0);
+
+        // Start reorder on leftmost tab. No margins to left of tab, so shouldn't scroll.
+        // Verify the scroll offset is still 0.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
+        assertEquals("There are no margins left of the selected tab, so we shouldn't scroll.", 0,
+                mStripLayoutHelper.getScrollOffset());
+
+        // Stop reorder. Verify the scroll offset is still 0.
+        mStripLayoutHelper.stopReorderModeForTesting();
+        assertEquals("Scroll offset should return to 0 after stopping reorder mode.", 0,
+                mStripLayoutHelper.getScrollOffset());
+    }
+
+    @Test
+    @Feature("Tab Groups on Tab Strip")
+    public void testTabGroupMargins_ScrollOnReorder() {
+        // Mock 1 tab to the right of 2 tab groups with 2 tabs each.
+        initializeTest(false, false, 0, 5);
+        groupTabs(0, 2);
+        groupTabs(2, 4);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.setScrollOffsetForTesting(0);
+
+        // Start reorder on rightmost tab. 2 margins to left of tab, so should scroll.
+        // Verify the scroll offset is 2 * (-marginWidth) = 2 * -76 = -152
+        int expectedOffset = -152;
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(4);
+        assertEquals("There are margins left of the selected tab, so we should scroll",
+                expectedOffset, mStripLayoutHelper.getScrollOffset());
+
+        // Stop reorder. Verify the scroll offset is once again 0.
+        mStripLayoutHelper.stopReorderModeForTesting();
+        assertEquals("Scroll offset should return to 0 after stopping reorder mode.", 0,
+                mStripLayoutHelper.getScrollOffset());
+    }
+
     private void initializeTest(boolean rtl, boolean incognito, int tabIndex, int numTabs) {
         mStripLayoutHelper = createStripLayoutHelper(rtl, incognito);
         mIncognito = incognito;
@@ -659,15 +834,18 @@ public class StripLayoutHelperTest {
             for (int i = 0; i < numTabs; i++) {
                 mModel.addTab(TEST_TAB_TITLES[i]);
                 when(mModel.getTabAt(i).isHidden()).thenReturn(tabIndex != i);
+                when(mTabGroupModelFilter.getRootId(eq(mModel.getTabAt(i)))).thenReturn(i);
             }
         } else {
             for (int i = 0; i < numTabs; i++) {
                 mModel.addTab("Tab " + i);
                 when(mModel.getTabAt(i).isHidden()).thenReturn(tabIndex != i);
+                when(mTabGroupModelFilter.getRootId(eq(mModel.getTabAt(i)))).thenReturn(i);
             }
         }
         mModel.setIndex(tabIndex);
         mStripLayoutHelper.setTabModel(mModel, null);
+        mStripLayoutHelper.setTabGroupModelFilter(mTabGroupModelFilter);
         mStripLayoutHelper.tabSelected(0, tabIndex, 0, false);
         // Flush UI updated
     }
@@ -746,5 +924,18 @@ public class StripLayoutHelperTest {
         when(tab.getId()).thenReturn(id);
         when(tab.getDrawX()).thenReturn(mDrawX);
         return tab;
+    }
+
+    /**
+     * Mock that the sequence of tabs from startIndex to endIndex are part of that same tab group.
+     * @param startIndex The index where we start including tabs in the group (inclusive).
+     * @param endIndex The index where we stop including tabs in the group (exclusive).
+     */
+    private void groupTabs(int startIndex, int endIndex) {
+        int groupRootId = mModel.getTabAt(startIndex).getId();
+        for (int i = startIndex; i < endIndex; i++) {
+            when(mTabGroupModelFilter.hasOtherRelatedTabs(eq(mModel.getTabAt(i)))).thenReturn(true);
+            when(mTabGroupModelFilter.getRootId(eq(mModel.getTabAt(i)))).thenReturn(groupRootId);
+        }
     }
 }
