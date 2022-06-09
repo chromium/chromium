@@ -1624,11 +1624,14 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskHistogramName, source);
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskTypeHistogramName, close_type);
 
-  Shell::Get()
-      ->accessibility_controller()
-      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
-          IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_REMOVED, removed_desk->name(),
-          active_desk_->name()));
+  // We should only announce desks are being merged if we are combining desks.
+  if (close_type == DeskCloseType::kCombineDesks) {
+    Shell::Get()
+        ->accessibility_controller()
+        ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
+            IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_REMOVED, removed_desk->name(),
+            active_desk_->name()));
+  }
 
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
   desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
@@ -1677,6 +1680,11 @@ void DesksController::UndoDeskRemoval() {
     if (in_overview)
       AppendWindowsToOverview(readded_desk_ptr->windows());
   }
+
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringUTF8(
+          IDS_ASH_DESKS_CLOSE_ALL_UNDONE_NOTIFICATION));
 
   UpdateDesksDefaultNames();
 }
