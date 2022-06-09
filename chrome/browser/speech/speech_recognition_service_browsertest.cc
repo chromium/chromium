@@ -382,11 +382,11 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
   speech_recognition_recognizer_.reset();
   base::RunLoop().RunUntilIdle();
 
-  // Sleep for 50ms to ensure SODA has returned real-time results.
+  // Sleep for 100ms to ensure SODA has returned real-time results.
 #if BUILDFLAG(IS_WIN)
-  ::Sleep(50);
+  ::Sleep(100);
 #else
-  usleep(50000);
+  usleep(100000);
 #endif
   ASSERT_GT(static_cast<int>(recognition_results_.size()), kReplayAudioCount);
   ASSERT_EQ(recognition_results_.back(), "Hey Google Hey Google");
@@ -456,11 +456,11 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
   speech_recognition_recognizer_.reset();
   base::RunLoop().RunUntilIdle();
 
-  // Sleep for 50ms to ensure SODA has returned real-time results.
+  // Sleep for 100ms to ensure SODA has returned real-time results.
 #if BUILDFLAG(IS_WIN)
-  ::Sleep(50);
+  ::Sleep(100);
 #else
-  usleep(50000);
+  usleep(100000);
 #endif
   ASSERT_GT(static_cast<int>(recognition_results_.size()), 3);
   ASSERT_EQ(recognition_results_.back(), "Hey Google Hey Google");
