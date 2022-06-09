@@ -32,13 +32,11 @@ extern const char kAutofillCreditCardSigninPromoImpressionCount[];
 extern const char kAutofillEnabledDeprecated[];
 extern const char kAutofillJapanCityFieldMigratedDeprecated[];
 extern const char kAutofillLastVersionDeduped[];
-extern const char kAutofillLastVersionValidated[];
 extern const char kAutofillLastVersionDisusedAddressesDeleted[];
 extern const char kAutofillLastVersionDisusedCreditCardsDeleted[];
 extern const char kAutofillOrphanRowsRemoved[];
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 extern const char kAutofillProfileEnabled[];
-extern const char kAutofillProfileValidity[];
 extern const char kAutofillSyncTransportOptIn[];
 extern const char kAutofillStatesDataDir[];
 extern const char kAutofillUploadEncodingSeed[];
@@ -83,8 +81,6 @@ void SetAutofillProfileEnabled(PrefService* prefs, bool enabled);
 bool IsPaymentsIntegrationEnabled(const PrefService* prefs);
 
 void SetPaymentsIntegrationEnabled(PrefService* prefs, bool enabled);
-
-std::string GetAllProfilesValidityMapsEncodedString(const PrefService* prefs);
 
 void SetUserOptedInWalletSyncTransport(PrefService* prefs,
                                        const CoreAccountId& account_id,
