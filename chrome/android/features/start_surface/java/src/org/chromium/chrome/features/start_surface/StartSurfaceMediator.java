@@ -653,6 +653,14 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
 
     @Override
     public boolean onBackPressed() {
+        boolean ret = onBackPressedInternal();
+        if (ret) {
+            BackPressManager.record(BackPressHandler.Type.START_SURFACE_MEDIATOR);
+        }
+        return ret;
+    }
+
+    private boolean onBackPressedInternal() {
         boolean isOnHomepage = mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
 
         // When the SecondaryTasksSurface is shown, the TabGridDialog is controlled by
@@ -693,7 +701,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
 
     @Override
     public void handleBackPress() {
-        boolean ret = onBackPressed();
+        boolean ret = onBackPressedInternal();
         assert ret;
     }
 

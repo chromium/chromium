@@ -22,7 +22,7 @@ public interface BackPressHandler {
     // The smaller the value is, the higher the priority is.
     // When adding a new identifier, make corresponding changes in the
     // - tools/metrics/histograms/enums.xml: <enum name="BackPressConsumer">
-    @IntDef({Type.TEXT_BUBBLE, Type.VR_DELEGATE, Type.AR_DELEGATE, Type.LAYOUT_MANAGER,
+    @IntDef({Type.TEXT_BUBBLE, Type.VR_DELEGATE, Type.AR_DELEGATE, Type.SCENE_OVERLAY,
             Type.START_SURFACE_MEDIATOR, Type.SELECTION_POPUP, Type.MANUAL_FILLING,
             Type.TAB_MODAL_HANDLER, Type.FULLSCREEN, Type.TAB_SWITCHER_TO_BROWSING,
             Type.CLOSE_WATCHER, Type.TOOLBAR_TAB_CONTROLLER,
@@ -33,7 +33,7 @@ public interface BackPressHandler {
         int TEXT_BUBBLE = 0;
         int VR_DELEGATE = 1;
         int AR_DELEGATE = 2;
-        int LAYOUT_MANAGER = 3;
+        int SCENE_OVERLAY = 3;
         int START_SURFACE_MEDIATOR = 4;
         int SELECTION_POPUP = 5;
         int MANUAL_FILLING = 6;

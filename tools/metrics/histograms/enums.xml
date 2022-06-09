@@ -10187,7 +10187,7 @@ others/histograms.xml -->
   <int value="0" label="TEXT_BUBBLE"/>
   <int value="1" label="VR_DELEGATE"/>
   <int value="2" label="AR_DELEGATE"/>
-  <int value="3" label="LAYOUT_MANAGER"/>
+  <int value="3" label="SCENE_OVERLAY"/>
   <int value="4" label="START_SURFACE_MEDIATOR"/>
   <int value="5" label="SELECTION_POPUP"/>
   <int value="6" label="MANUAL_FILLING"/>

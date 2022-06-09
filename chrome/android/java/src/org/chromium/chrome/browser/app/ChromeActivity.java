@@ -2233,7 +2233,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 LayoutManagerImpl layoutManager =
                         mCompositorViewHolderSupplier.get().getLayoutManager();
                 if (layoutManager != null && layoutManager.onBackPressed()) {
-                    BackPressManager.record(Type.LAYOUT_MANAGER);
+                    // Back press metrics recording is handled by LayoutManagerImpl internally.
                     return;
                 };
             }
@@ -2282,9 +2282,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
 
             mLayoutManagerSupplier.addObserver((layoutManager) -> {
-                assert !mBackPressManager.has(Type.LAYOUT_MANAGER)
+                assert !mBackPressManager.has(Type.SCENE_OVERLAY)
                     : "LayoutManager should be only set at most once";
-                mBackPressManager.addHandler(layoutManager, Type.LAYOUT_MANAGER);
+                mBackPressManager.addHandler(layoutManager, Type.SCENE_OVERLAY);
             });
 
             mSelectionPopupBackPressInitCallback = (tabModelSelector) -> {
