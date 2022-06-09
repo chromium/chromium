@@ -22,6 +22,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
+#include "ui/native_theme/native_theme_aura.h"
 #include "ui/native_theme/native_theme_base.h"
 #include "ui/qt/qt_interface.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -73,10 +74,11 @@ gfx::FontRenderParams::Hinting QtHintingToGfxHinting(
 }  // namespace
 
 // We currently don't render any QT widgets, so this class is just a stub.
-class QtNativeTheme : public ui::NativeThemeBase {
+class QtNativeTheme : public ui::NativeThemeAura {
  public:
   QtNativeTheme()
-      : ui::NativeThemeBase(/*should_only_use_dark_colors=*/false,
+      : ui::NativeThemeAura(/*use_overlay_scrollbars=*/false,
+                            /*should_only_use_dark_colors=*/false,
                             /*is_custom_system_theme=*/true) {}
   QtNativeTheme(const QtNativeTheme&) = delete;
   QtNativeTheme& operator=(const QtNativeTheme&) = delete;
@@ -354,6 +356,14 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
       {ui::kColorSubtleEmphasisBackground, ColorType::kWindowBg},
       {ui::kColorTextSelectionBackground, ColorType::kHighlightBg},
       {ui::kColorTextSelectionForeground, ColorType::kHighlightFg},
+
+      // UI element colors
+      {ui::kColorMenuBackground, ColorType::kEntryBg},
+      {ui::kColorMenuItemBackgroundHighlighted, ColorType::kHighlightBg},
+      {ui::kColorMenuItemBackgroundSelected, ColorType::kHighlightBg},
+      {ui::kColorMenuItemForeground, ColorType::kEntryFg},
+      {ui::kColorMenuItemForegroundHighlighted, ColorType::kHighlightFg},
+      {ui::kColorMenuItemForegroundSelected, ColorType::kHighlightFg},
 
       // Platform-specific UI elements
       {ui::kColorNativeButtonBorder,
