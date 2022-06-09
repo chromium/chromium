@@ -1204,8 +1204,11 @@ FileSystemURL CopyOrMoveOperationDelegate::CreateDestURL(
   base::FilePath relative = dest_root_.virtual_path();
   src_root_.virtual_path().AppendRelativePath(src_url.virtual_path(),
                                               &relative);
-  return file_system_context()->CreateCrackedFileSystemURL(
+  FileSystemURL dest_url = file_system_context()->CreateCrackedFileSystemURL(
       dest_root_.storage_key(), dest_root_.mount_type(), relative);
+  if (dest_root_.bucket().has_value())
+    dest_url.SetBucket(dest_root_.bucket().value());
+  return dest_url;
 }
 
 }  // namespace storage

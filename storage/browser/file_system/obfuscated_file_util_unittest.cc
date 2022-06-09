@@ -27,6 +27,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -64,7 +65,15 @@ namespace storage {
 
 namespace {
 
-enum TestMode { kRegular, kIncognito };
+// TODO(https://crbug.com/1322223): create an additional parameterized
+// test mode for kIncognitoThirdParty.
+enum TestMode {
+  kRegularFirstParty,
+  kRegularFirstPartyNonDefaultBucket,
+  kRegularThirdParty,
+  kRegularThirdPartyNonDefaultBucket,
+  kIncognitoFirstParty
+};
 
 bool FileExists(const base::FilePath& path) {
   return base::PathExists(path) && !base::DirectoryExists(path);
@@ -124,20 +133,30 @@ const OriginEnumerationTestRecord kOriginEnumerationTestRecords[] = {
 
 FileSystemURL FileSystemURLAppend(const FileSystemURL& url,
                                   const base::FilePath::StringType& child) {
-  return FileSystemURL::CreateForTest(url.storage_key(), url.mount_type(),
-                                      url.virtual_path().Append(child));
+  FileSystemURL new_url = FileSystemURL::CreateForTest(
+      url.storage_key(), url.mount_type(), url.virtual_path().Append(child));
+  if (url.bucket().has_value())
+    new_url.SetBucket(url.bucket().value());
+  return new_url;
 }
 
 FileSystemURL FileSystemURLAppendUTF8(const FileSystemURL& url,
                                       const std::string& child) {
-  return FileSystemURL::CreateForTest(
+  FileSystemURL new_url = FileSystemURL::CreateForTest(
       url.storage_key(), url.mount_type(),
       url.virtual_path().Append(base::FilePath::FromUTF8Unsafe(child)));
+  if (url.bucket().has_value())
+    new_url.SetBucket(url.bucket().value());
+  return new_url;
 }
 
 FileSystemURL FileSystemURLDirName(const FileSystemURL& url) {
-  return FileSystemURL::CreateForTest(url.storage_key(), url.mount_type(),
-                                      VirtualPath::DirName(url.virtual_path()));
+  FileSystemURL new_url =
+      FileSystemURL::CreateForTest(url.storage_key(), url.mount_type(),
+                                   VirtualPath::DirName(url.virtual_path()));
+  if (url.bucket().has_value())
+    new_url.SetBucket(url.bucket().value());
+  return new_url;
 }
 
 std::string GetTypeString(FileSystemType type) {
@@ -166,14 +185,33 @@ class ObfuscatedFileUtilTest : public testing::Test,
         type_(kFileSystemTypeTemporary),
         sandbox_file_system_(storage_key_, type_),
         quota_status_(blink::mojom::QuotaStatusCode::kUnknown),
-        usage_(-1) {}
+        usage_(-1) {
+    if (is_third_party_context()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kThirdPartyStoragePartitioning);
+      // Once we enable third-party storage partitioning, we can create a
+      // third-party StorageKey and re-assign the StorageKey value in the
+      // SandboxFileSystem with this value in SetUp for default buckets.
+      storage_key_ = blink::StorageKey::CreateWithOptionalNonce(
+          storage_key_.origin(), storage_key_.top_level_site(), nullptr,
+          blink::mojom::AncestorChainBit::kCrossSite);
+    }
+  }
 
   ObfuscatedFileUtilTest(const ObfuscatedFileUtilTest&) = delete;
   ObfuscatedFileUtilTest& operator=(const ObfuscatedFileUtilTest&) = delete;
 
   ~ObfuscatedFileUtilTest() override = default;
 
-  bool is_incognito() { return GetParam() == TestMode::kIncognito; }
+  bool is_incognito() { return GetParam() == TestMode::kIncognitoFirstParty; }
+  bool is_third_party_context() {
+    return GetParam() == TestMode::kRegularThirdParty ||
+           (GetParam() == TestMode::kRegularThirdPartyNonDefaultBucket);
+  }
+  bool is_non_default_bucket() {
+    return GetParam() == TestMode::kRegularFirstPartyNonDefaultBucket ||
+           (GetParam() == TestMode::kRegularThirdPartyNonDefaultBucket);
+  }
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
@@ -212,7 +250,31 @@ class ObfuscatedFileUtilTest : public testing::Test,
                        : CreateFileSystemContextForTesting(
                              quota_manager_->proxy(), data_dir_.GetPath());
 
-    sandbox_file_system_.SetUp(file_system_context_);
+    // Create the default bucket member corresponding to the StorageKey member
+    // we created.
+    base::test::TestFuture<QuotaErrorOr<BucketInfo>> default_future;
+    quota_manager_->proxy()->UpdateOrCreateBucket(
+        BucketInitParams::ForDefaultBucket(storage_key()),
+        base::SequencedTaskRunnerHandle::Get(), default_future.GetCallback());
+    QuotaErrorOr<BucketInfo> default_bucket = default_future.Take();
+    CHECK(default_bucket.ok());
+    default_bucket_ = default_bucket.value().ToBucketLocator();
+
+    // Create the non-default bucket member corresponding to the StorageKey
+    // member we created.
+    base::test::TestFuture<QuotaErrorOr<BucketInfo>> custom_future;
+    BucketInitParams params = BucketInitParams::ForDefaultBucket(storage_key());
+    params.name = "non-default bucket";
+    quota_manager_->proxy()->UpdateOrCreateBucket(
+        params, base::SequencedTaskRunnerHandle::Get(),
+        custom_future.GetCallback());
+    QuotaErrorOr<BucketInfo> custom_bucket = custom_future.Take();
+    CHECK(custom_bucket.ok());
+    custom_bucket_ = custom_bucket.value().ToBucketLocator();
+
+    is_non_default_bucket()
+        ? sandbox_file_system_.SetUp(file_system_context_, custom_bucket_)
+        : sandbox_file_system_.SetUp(file_system_context_, storage_key_);
 
     change_observers_ = MockFileChangeObserver::CreateList(&change_observer_);
 
@@ -307,8 +369,8 @@ class ObfuscatedFileUtilTest : public testing::Test,
   void GetUsageFromQuotaManager() {
     int64_t quota = -1;
     quota_status_ = AsyncFileTestHelper::GetUsageAndQuota(
-        quota_manager_->proxy(), origin(), sandbox_file_system_.type(), &usage_,
-        &quota);
+        quota_manager_->proxy(), storage_key(), sandbox_file_system_.type(),
+        &usage_, &quota);
     EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, quota_status_);
   }
 
@@ -363,16 +425,22 @@ class ObfuscatedFileUtilTest : public testing::Test,
     return sandbox_file_system_.usage_cache();
   }
 
+  FileSystemURL CreateURL(const base::FilePath& path) {
+    FileSystemURL test_url = sandbox_file_system_.CreateURL(path);
+    if (is_non_default_bucket())
+      test_url.SetBucket(custom_bucket_);
+    return test_url;
+  }
+
   FileSystemURL CreateURLFromUTF8(const std::string& path) {
-    return sandbox_file_system_.CreateURLFromUTF8(path);
+    FileSystemURL test_url = sandbox_file_system_.CreateURLFromUTF8(path);
+    if (is_non_default_bucket())
+      test_url.SetBucket(custom_bucket_);
+    return test_url;
   }
 
   int64_t PathCost(const FileSystemURL& url) {
     return ObfuscatedFileUtil::ComputeFilePathCost(url.path());
-  }
-
-  FileSystemURL CreateURL(const base::FilePath& path) {
-    return sandbox_file_system_.CreateURL(path);
   }
 
   void CheckFile(const FileSystemURL& url) {
@@ -757,42 +825,43 @@ class ObfuscatedFileUtilTest : public testing::Test,
   }
 
   void DestroyDirectoryDatabase_IsolatedTestBody() {
-    storage_policy_->AddIsolated(storage_key_.origin().GetURL());
-    std::unique_ptr<ObfuscatedFileUtil> file_util =
-        CreateObfuscatedFileUtil(/*storage_policy=*/storage_policy_);
-    const FileSystemURL url = FileSystemURL::CreateForTest(
-        storage_key_, kFileSystemTypePersistent, base::FilePath());
+    storage_policy_->AddIsolated(origin().GetURL());
+    FileSystemURL url = FileSystemURL::CreateForTest(
+        storage_key(), kFileSystemTypePersistent, base::FilePath());
+    if (is_non_default_bucket())
+      url.SetBucket(custom_bucket_);
 
     // Create DirectoryDatabase for isolated origin.
     SandboxDirectoryDatabase* db =
-        file_util->GetDirectoryDatabase(url, true /* create */);
+        ofu()->GetDirectoryDatabase(url, true /* create */);
     ASSERT_TRUE(db != nullptr);
 
     // Destroy it.
-    file_util->DestroyDirectoryDatabase(url.storage_key(),
-                                        GetTypeString(url.type()));
-    ASSERT_TRUE(file_util->directories_.empty());
+    ofu()->DestroyDirectoryDatabase(url.storage_key(),
+                                    GetTypeString(url.type()));
+    ASSERT_TRUE(ofu()->directories_.empty());
   }
 
   void GetDirectoryDatabase_IsolatedTestBody() {
-    storage_policy_->AddIsolated(storage_key_.origin().GetURL());
-    std::unique_ptr<ObfuscatedFileUtil> file_util =
-        CreateObfuscatedFileUtil(storage_policy_);
-    const FileSystemURL url = FileSystemURL::CreateForTest(
-        storage_key_, kFileSystemTypePersistent, base::FilePath());
+    storage_policy_->AddIsolated(origin().GetURL());
+    FileSystemURL url = FileSystemURL::CreateForTest(
+        blink::StorageKey(origin()), kFileSystemTypePersistent,
+        base::FilePath());
+    if (is_non_default_bucket())
+      url.SetBucket(custom_bucket_);
 
     // Create DirectoryDatabase for isolated origin.
     SandboxDirectoryDatabase* db =
-        file_util->GetDirectoryDatabase(url, true /* create */);
+        ofu()->GetDirectoryDatabase(url, true /* create */);
     ASSERT_TRUE(db != nullptr);
-    ASSERT_EQ(1U, file_util->directories_.size());
+    ASSERT_EQ(1U, ofu()->directories_.size());
 
     // Remove isolated.
     storage_policy_->RemoveIsolated(url.origin().GetURL());
 
     // This should still get the same database.
     SandboxDirectoryDatabase* db2 =
-        file_util->GetDirectoryDatabase(url, false /* create */);
+        ofu()->GetDirectoryDatabase(url, false /* create */);
     ASSERT_EQ(db, db2);
   }
 
@@ -816,6 +885,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<leveldb::Env> incognito_leveldb_environment_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
@@ -824,6 +894,8 @@ class ObfuscatedFileUtilTest : public testing::Test,
   scoped_refptr<base::SingleThreadTaskRunner> quota_manager_task_runner_;
   scoped_refptr<FileSystemContext> file_system_context_;
   blink::StorageKey storage_key_;
+  BucketLocator default_bucket_;
+  BucketLocator custom_bucket_;
   FileSystemType type_;
   SandboxFileSystemTestHelper sandbox_file_system_;
   blink::mojom::QuotaStatusCode quota_status_;
@@ -833,10 +905,14 @@ class ObfuscatedFileUtilTest : public testing::Test,
   base::WeakPtrFactory<ObfuscatedFileUtilTest> weak_factory_{this};
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ObfuscatedFileUtilTest,
-                         testing::Values(TestMode::kRegular,
-                                         TestMode::kIncognito));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ObfuscatedFileUtilTest,
+    testing::Values(TestMode::kRegularFirstParty,
+                    TestMode::kRegularFirstPartyNonDefaultBucket,
+                    TestMode::kRegularThirdParty,
+                    TestMode::kRegularThirdPartyNonDefaultBucket,
+                    TestMode::kIncognitoFirstParty));
 
 TEST_P(ObfuscatedFileUtilTest, TestCreateAndDeleteFile) {
   FileSystemURL url = CreateURLFromUTF8("fake/file");
@@ -1602,6 +1678,14 @@ TEST_P(ObfuscatedFileUtilTest, TestStorageKeyEnumerator) {
       ofu()->CreateStorageKeyEnumerator();
   // The test helper starts out with a single filesystem.
   EXPECT_TRUE(enumerator.get());
+  // This test is not relevant for third-party or non-default buckets code paths
+  // because these paths do not add to the OriginDatabase, the structure that
+  // populates the enumerator being tested. So in a test environment, this
+  // enumerator should not have any additional StorageKeys to access via Next().
+  if (is_third_party_context() || is_non_default_bucket()) {
+    EXPECT_EQ(absl::nullopt, enumerator->Next());
+    return;
+  }
   EXPECT_EQ(storage_key(), enumerator->Next());
   ASSERT_TRUE(type() == kFileSystemTypeTemporary);
   EXPECT_TRUE(HasFileSystemType(enumerator.get(), kFileSystemTypeTemporary));
@@ -1724,10 +1808,15 @@ TEST_P(ObfuscatedFileUtilTest, TestRevokeUsageCache) {
   EXPECT_EQ(expected_quota, SizeByQuotaUtil());
 
   // This should reconstruct the cache.
-  GetUsageFromQuotaManager();
-  EXPECT_EQ(expected_quota, SizeInUsageFile());
-  EXPECT_EQ(expected_quota, SizeByQuotaUtil());
-  EXPECT_EQ(expected_quota, usage());
+  // TODO(https://crbug.com/1330922): Once FileSystemQuotaUtil is refactored to
+  // support non-default buckets, this if-statement should be removed and the
+  // assertions inside should pass in all test modes.
+  if (!is_non_default_bucket()) {
+    GetUsageFromQuotaManager();
+    EXPECT_EQ(expected_quota, SizeInUsageFile());
+    EXPECT_EQ(expected_quota, SizeByQuotaUtil());
+    EXPECT_EQ(expected_quota, usage());
+  }
 }
 
 TEST_P(ObfuscatedFileUtilTest, TestInconsistency) {
@@ -2051,12 +2140,12 @@ TEST_P(ObfuscatedFileUtilTest, TestFileEnumeratorTimestamp) {
   while (!(file_path_each = file_enum->Next()).empty()) {
     context = NewContext(nullptr);
     base::File::Info file_info;
-    EXPECT_EQ(base::File::FILE_OK,
-              ofu()->GetFileInfo(
-                  context.get(),
-                  FileSystemURL::CreateForTest(
-                      dir.storage_key(), dir.mount_type(), file_path_each),
-                  &file_info, &file_path));
+    FileSystemURL new_url = FileSystemURL::CreateForTest(
+        dir.storage_key(), dir.mount_type(), file_path_each);
+    if (dir.bucket().has_value())
+      new_url.SetBucket(dir.bucket().value());
+    EXPECT_EQ(base::File::FILE_OK, ofu()->GetFileInfo(context.get(), new_url,
+                                                      &file_info, &file_path));
     EXPECT_EQ(file_info.is_directory, file_enum->IsDirectory());
     EXPECT_EQ(file_info.last_modified, file_enum->LastModifiedTime());
     EXPECT_EQ(file_info.size, file_enum->Size());

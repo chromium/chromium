@@ -12,14 +12,14 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
+namespace blink {
+class StorageKey;
+}
+
 namespace storage {
 class FileSystemContext;
 class FileSystemURL;
 class QuotaManagerProxy;
-}
-
-namespace url {
-class Origin;
 }
 
 namespace storage {
@@ -121,7 +121,7 @@ class AsyncFileTestHelper {
   // |quota|.
   static blink::mojom::QuotaStatusCode GetUsageAndQuota(
       QuotaManagerProxy* quota_manager_proxy,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type,
       int64_t* usage,
       int64_t* quota);
