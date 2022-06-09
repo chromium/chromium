@@ -902,21 +902,6 @@
             ]
         }
     ],
-    "AutofillEnableManualFallbackForVirtualCards": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableManualFallbackForVirtualCards"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableProfileDeduplication": [
         {
             "platforms": [
@@ -1053,26 +1038,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillEnableSupportForParsingWithSharedLabels"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableVirtualCardEnrollment": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableUpdateVirtualCardEnrollment"
                     ]
                 }
             ]

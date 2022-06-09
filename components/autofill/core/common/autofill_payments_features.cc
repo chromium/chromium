@@ -56,7 +56,7 @@ const base::Feature kAutofillCreditCardUploadFeedback{
 // When enabled, enable manual falling component for virtual cards on Android.
 const base::Feature kAutofillEnableManualFallbackForVirtualCards{
     "AutofillEnableManualFallbackForVirtualCards",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, a notification will be displayed on page navigation if the
 // domain has an eligible merchant promo code offer or reward.
@@ -99,7 +99,12 @@ const base::Feature kAutofillEnableUnmaskCardRequestSetInstrumentId{
 // page.
 const base::Feature kAutofillEnableUpdateVirtualCardEnrollment{
     "AutofillEnableUpdateVirtualCardEnrollment",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+#if BUILDFLAG(IS_IOS)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // When enabled, the option of using cloud token virtual card will be offered
 // when all requirements are met.
