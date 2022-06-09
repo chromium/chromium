@@ -138,8 +138,11 @@ Buffer::Texture::Texture(
       texture_target_(GL_TEXTURE_2D),
       query_type_(GL_COMMANDS_COMPLETED_CHROMIUM) {
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
-  const uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY;
+
+  // Add GLES2 usage as it is used by RasterImplementationGLES.
+  const uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                         gpu::SHARED_IMAGE_USAGE_GLES2;
 
   mailbox_ = sii->CreateSharedImage(
       viz::ResourceFormat::RGBA_8888, size, gfx::ColorSpace::CreateSRGB(),
@@ -168,8 +171,11 @@ Buffer::Texture::Texture(
       query_type_(query_type),
       wait_for_release_delay_(wait_for_release_delay) {
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
-  uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY;
+
+  // Add GLES2 usage as it is used by RasterImplementationGLES.
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
+                   gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                   gpu::SHARED_IMAGE_USAGE_GLES2;
   if (is_overlay_candidate) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }

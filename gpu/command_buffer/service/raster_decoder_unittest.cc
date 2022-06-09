@@ -239,6 +239,11 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
     client_texture_mailbox_ =
         CreateMailbox(viz::ResourceFormat::RGBA_8888, /*width=*/2,
                       /*height=*/2, /*cleared=*/false);
+
+    // When creating the mailbox, we create a WrappedSkImage shared image which
+    // sets this flag to true. Some tests expect this flag to be false when
+    // testing so we reset it back here to false.
+    context_state_->set_need_context_state_reset(/*reset=*/false);
   }
   void TearDown() override {
     context_state_->MakeCurrent(nullptr);
@@ -301,7 +306,8 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
     if (cleared) {
       SharedImageRepresentationFactory repr_factory(shared_image_manager(),
                                                     nullptr);
-      auto representation = repr_factory.ProduceGLTexture(mailbox);
+      auto representation =
+          repr_factory.ProduceSkia(mailbox, context_state_.get());
       representation->SetCleared();
     }
 
@@ -383,8 +389,8 @@ TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DSizeMismatch) {
 
   SharedImageRepresentationFactory repr_factory(shared_image_manager(),
                                                 nullptr);
-  auto representation = repr_factory.ProduceGLTexture(client_texture_mailbox_);
-  gles2::Texture* dest_texture = representation->GetTexture();
+  auto representation =
+      repr_factory.ProduceSkia(client_texture_mailbox_, context_state_.get());
 
   {
     // This will initialize the bottom right corner of destination.
@@ -392,8 +398,7 @@ TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DSizeMismatch) {
     cmd.Init(1, 1, 0, 0, 1, 1, false, mailboxes);
     EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
     EXPECT_EQ(GL_NO_ERROR, GetGLError());
-    EXPECT_EQ(dest_texture->GetLevelClearedRect(GL_TEXTURE_2D, 0),
-              gfx::Rect(1, 1, 1, 1));
+    EXPECT_EQ(representation->ClearedRect(), gfx::Rect(1, 1, 1, 1));
   }
 
   {
@@ -402,8 +407,7 @@ TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DSizeMismatch) {
     cmd.Init(2, 2, 0, 0, 1, 1, false, mailboxes);
     EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
     EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
-    EXPECT_EQ(dest_texture->GetLevelClearedRect(GL_TEXTURE_2D, 0),
-              gfx::Rect(1, 1, 1, 1));
+    EXPECT_EQ(representation->ClearedRect(), gfx::Rect(1, 1, 1, 1));
   }
 
   {
@@ -412,8 +416,7 @@ TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DSizeMismatch) {
     cmd.Init(0, 0, 0, 0, 2, 2, false, mailboxes);
     EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
     EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
-    EXPECT_EQ(dest_texture->GetLevelClearedRect(GL_TEXTURE_2D, 0),
-              gfx::Rect(1, 1, 1, 1));
+    EXPECT_EQ(representation->ClearedRect(), gfx::Rect(1, 1, 1, 1));
   }
 }
 
@@ -429,7 +432,8 @@ TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DTwiceClearsUnclearedTexture) {
 
   SharedImageRepresentationFactory repr_factory(shared_image_manager(),
                                                 nullptr);
-  auto representation = repr_factory.ProduceGLTexture(client_texture_mailbox_);
+  auto representation =
+      repr_factory.ProduceSkia(client_texture_mailbox_, context_state_.get());
   EXPECT_FALSE(representation->IsCleared());
 
   // This will initialize the top half of destination.
@@ -465,7 +469,8 @@ TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DPartialFailsWithUnalignedRect) {
 
   SharedImageRepresentationFactory repr_factory(shared_image_manager(),
                                                 nullptr);
-  auto representation = repr_factory.ProduceGLTexture(client_texture_mailbox_);
+  auto representation =
+      repr_factory.ProduceSkia(client_texture_mailbox_, context_state_.get());
   EXPECT_FALSE(representation->IsCleared());
 
   // This will initialize the top half of destination.

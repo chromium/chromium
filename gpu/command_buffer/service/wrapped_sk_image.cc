@@ -597,17 +597,7 @@ bool WrappedSkImageFactory::CanUseWrappedSkImage(
   auto kWrappedSkImageUsage = SHARED_IMAGE_USAGE_DISPLAY |
                               SHARED_IMAGE_USAGE_RASTER |
                               SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-
-  if (gr_context_type != GrContextType::kGL) {
-    // For SkiaRenderer/Vulkan+Dawn use WrappedSkImage if the usage is only
-    // raster and/or display.
-    return (usage & kWrappedSkImageUsage) && !(usage & ~kWrappedSkImageUsage);
-  } else {
-    // For SkiaRenderer/GL only use WrappedSkImages for OOP-R because
-    // CopySubTexture() doesn't use Skia. https://crbug.com/984045
-    return (usage == kWrappedSkImageUsage) ||
-           (usage == SHARED_IMAGE_USAGE_DISPLAY);
-  }
+  return (usage & kWrappedSkImageUsage) && !(usage & ~kWrappedSkImageUsage);
 }
 
 bool WrappedSkImageFactory::IsSupported(uint32_t usage,
@@ -627,6 +617,13 @@ bool WrappedSkImageFactory::IsSupported(uint32_t usage,
   // semaphores.
   if (thread_safe &&
       (!is_drdc_enabled_ || gr_context_type != GrContextType::kVulkan)) {
+    return false;
+  }
+
+  // Currently, WrappedSkImage does not support LUMINANCE_8 format and this
+  // format is used for single channel planes. See https://crbug.com/1252502 for
+  // more details.
+  if (format == viz::LUMINANCE_8) {
     return false;
   }
 
