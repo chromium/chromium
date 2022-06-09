@@ -305,20 +305,9 @@ IN_PROC_BROWSER_TEST_F(AssistantTimersBrowserTest,
   });
 }
 
-// TODO(crbug.com/1334910): Disable AssistantTimersBrowserTest.
-// ShouldTickNotificationsAtRegularIntervals on chromeos,
-// because it is failing on linux-chromeos-chrome.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ShouldTickNotificationsAtRegularIntervals \
-  DISABLED_ShouldTickNotificationsAtRegularIntervals
-#else
-#define MAYBE_ShouldTickNotificationsAtRegularIntervals \
-  ShouldTickNotificationsAtRegularIntervals
-#endif
-
 // Verifies that timer notifications are ticked at regular intervals.
 IN_PROC_BROWSER_TEST_F(AssistantTimersBrowserTest,
-                       MAYBE_ShouldTickNotificationsAtRegularIntervals) {
+                       ShouldTickNotificationsAtRegularIntervals) {
   // Observe notifications.
   MockMessageCenterObserver mock;
   base::ScopedObservation<MessageCenter, MessageCenterObserver>

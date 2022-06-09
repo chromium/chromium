@@ -546,20 +546,8 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   ASSERT_FALSE(HasBadge(profile(), app_id3).value());
 }
 
-// TODO(crbug.com/1334910): Disable AppNotificationsWebNotificationTest.
-// NonPersistentNotificationWhenInstallAndUninstallApp on chromeos,
-// because it is failing on linux-chromeos-chrome and linux-chromeos-rel.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_NonPersistentNotificationWhenInstallAndUninstallApp \
-  DISABLED_NonPersistentNotificationWhenInstallAndUninstallApp
-#else
-#define MAYBE_NonPersistentNotificationWhenInstallAndUninstallApp \
-  NonPersistentNotificationWhenInstallAndUninstallApp
-#endif
-
-IN_PROC_BROWSER_TEST_F(
-    AppNotificationsWebNotificationTest,
-    MAYBE_NonPersistentNotificationWhenInstallAndUninstallApp) {
+IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
+                       NonPersistentNotificationWhenInstallAndUninstallApp) {
   base::HistogramTester histogram_tester;
 
   // Send the notification 1 before installing apps.
