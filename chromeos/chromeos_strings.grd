@@ -3345,8 +3345,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_DESCRIPTION_LABEL" desc="Label of the text box where users can describe a problem they are having">
         Description
       </message>
-      <message name="IDS_FEEDBACK_TOOL_NO_MATCHED_RESULTS" translateable="false" desc="Label for help content when there are no matched results.">
-        No matched results, see popular help content
+      <message name="IDS_FEEDBACK_TOOL_NO_MATCHED_RESULTS" desc="Label for help content when there are no matched results.">
+        No suggested content. See top help content.
       </message>
       <message name="IDS_FEEDBACK_TOOL_PAGE_TITLE" desc="Label showing the title of the feedback tool before a report has been sent">
         Send feedback
