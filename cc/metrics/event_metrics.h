@@ -132,6 +132,14 @@ class CC_EXPORT EventMetrics {
     should_record_tracing_ = false;
   }
 
+  bool requires_main_thread_update() const {
+    return requires_main_thread_update_;
+  }
+  void set_requires_main_thread_update() {
+    DCHECK(!requires_main_thread_update_);
+    requires_main_thread_update_ = true;
+  }
+
  protected:
   EventMetrics(EventType type,
                base::TimeTicks timestamp,
@@ -173,6 +181,12 @@ class CC_EXPORT EventMetrics {
   // recorded to avoid multiple recordings. Also, it is `false` for cloned
   // objects as they are not meant to be recorded in tracings.
   bool should_record_tracing_ = true;
+
+  // This is set on an EventMetrics object that comes from the impl thread, if
+  // the visual update from the event requires the main thread. Currently used
+  // for GestureScrollUpdate with scroll unification, when the scroller isn't
+  // composited or has main-thread scrolling reasons on the ScrollNode.
+  bool requires_main_thread_update_ = false;
 };
 
 class CC_EXPORT ScrollEventMetrics : public EventMetrics {

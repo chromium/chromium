@@ -620,6 +620,21 @@ EventMetrics::List CompositorFrameReporter::TakeEventsMetrics() {
   return result;
 }
 
+EventMetrics::List CompositorFrameReporter::TakeMainBlockedEventsMetrics() {
+  auto mid = std::partition(events_metrics_.begin(), events_metrics_.end(),
+                            [](std::unique_ptr<EventMetrics>& metrics) {
+                              DCHECK(metrics);
+                              bool is_blocked_on_main =
+                                  metrics->requires_main_thread_update();
+                              // Invert so we can take from the end.
+                              return !is_blocked_on_main;
+                            });
+  EventMetrics::List result(std::make_move_iterator(mid),
+                            std::make_move_iterator(events_metrics_.end()));
+  events_metrics_.erase(mid, events_metrics_.end());
+  return result;
+}
+
 void CompositorFrameReporter::TerminateReporter() {
   if (frame_termination_status_ == FrameTerminationStatus::kUnknown)
     TerminateFrame(FrameTerminationStatus::kUnknown, Now());
@@ -1181,6 +1196,11 @@ void CompositorFrameReporter::AdoptReporter(
   // update, then |this| should not have any such dependents.
   DCHECK(!partial_update_decider_);
   DCHECK(!partial_update_dependents_.empty());
+
+  // The adoptee tracks a partial update. If it has metrics that depend on the
+  // main thread update, move them into |this| reporter.
+  AddEventsMetrics(reporter->TakeMainBlockedEventsMetrics());
+
   owned_partial_update_dependents_.push(std::move(reporter));
   DiscardOldPartialUpdateReporters();
 }
