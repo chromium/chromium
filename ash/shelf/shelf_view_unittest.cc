@@ -2513,9 +2513,10 @@ TEST_F(GhostImageShelfViewTest, RemoveGhostImageForRipOffDrag) {
   EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
 }
 
+// Disabled as likely to cause builder failure, see  https://crbug.com/1334936.
 // Tests that the ghost image is reinserted if the app is dragged within the
 // bounds of the shelf after a rip off.
-TEST_F(GhostImageShelfViewTest, ReinsertGhostImageAfterRipOffDrag) {
+TEST_F(GhostImageShelfViewTest, DISABLED_ReinsertGhostImageAfterRipOffDrag) {
   std::vector<std::pair<ShelfID, views::View*>> id_map;
   SetupForDragTest(&id_map);
   ShelfAppButton* first_app = GetButtonByID(id_map[0].first);
