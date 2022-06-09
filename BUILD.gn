@@ -1458,23 +1458,18 @@ if (!is_ios) {
     # This target differs from :blink_web_tests in that it uses the same
     # test harness and a few additional flags but, more importantly, only runs
     # the web_tests/wpt_internal/webgpu tests, so it doesn't have a data
-    # dependency on the whole web_test directory. run_webgpu_cts.py is a wrapper
-    # script around run_web_tests.py which performs additional setup for running
-    # the WebGPU CTS.
+    # dependency on the whole web_test directory.
     script = _common_web_test_script
 
-    # Add run_webgpu_cts.py and remove run_web_tests.py from _common_web_test_args
-    args = [ "@WrappedPath(" +
-             rebase_path("//third_party/blink/tools/run_webgpu_cts.py",
-                         root_build_dir) + ")" ] + _common_web_test_args -
-           [ _common_web_test_args[0] ]
+    args = _common_web_test_args
     if (is_asan) {
       args += [ "--timeout-ms=30000" ]
     }
     args += [
-      "--webgpu-cts-expectations",
+      "--ignore-default-expectations",
+      "--additional-expectations",
       "@WrappedPath(../../third_party/blink/web_tests/WebGPUExpectations)",
-      "--isolated-script-test-filter=wpt_internal/webgpu/web_platform/reftests",
+      "--isolated-script-test-filter=wpt_internal/webgpu/web_platform/reftests/*",
     ]
 
     data_deps = [
