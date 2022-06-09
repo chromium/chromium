@@ -63,6 +63,8 @@ source_set("lib") {
   visibility = [ ":*" ]
 
   sources = [
+    "caller_validation.cc",
+    "caller_validation.h",
     "elevated_recovery_impl.cc",
     "elevated_recovery_impl.h",
     "elevator.cc",
@@ -81,6 +83,10 @@ source_set("lib") {
     "//chrome/install_static:install_static_util",
     "//components/crx_file:crx_file",
     "//third_party/zlib/google:zip",
+  ]
+  libs = [
+    "crypt32.lib",
+    "rpcrt4.lib",
   ]
 }
 
@@ -102,7 +108,9 @@ test("elevation_service_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
+    "caller_validation_unittest.cc",
     "elevated_recovery_unittest.cc",
+    "elevator_unittest.cc",
     "run_all_unittests.cc",
     "scoped_mock_context.cc",
     "scoped_mock_context.h",

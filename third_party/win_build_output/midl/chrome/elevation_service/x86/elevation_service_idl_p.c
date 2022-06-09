@@ -49,11 +49,11 @@
 
 #include "elevation_service_idl.h"
 
-#define TYPE_FORMAT_STRING_SIZE   11                                
-#define PROC_FORMAT_STRING_SIZE   67                                
+#define TYPE_FORMAT_STRING_SIZE   65                                
+#define PROC_FORMAT_STRING_SIZE   169                               
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
-#define WIRE_MARSHAL_TABLE_SIZE   0            
+#define WIRE_MARSHAL_TABLE_SIZE   1            
 
 typedef struct _elevation_service_idl_MIDL_TYPE_FORMAT_STRING
     {
@@ -177,6 +177,7 @@ extern const MIDL_SERVER_INFO IElevatorChromeCanary_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IElevatorChromeCanary_ProxyInfo;
 
 
+extern const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TABLE_SIZE ];
 
 #if !defined(__RPC_WIN32__)
 #error  Invalid build platform for this stub.
@@ -257,6 +258,99 @@ static const elevation_service_idl_MIDL_PROC_FORMAT_STRING elevation_service_idl
 /* 64 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
+	/* Procedure EncryptData */
+
+/* 66 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 68 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 72 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 74 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 76 */	NdrFcShort( 0x6 ),	/* 6 */
+/* 78 */	NdrFcShort( 0x24 ),	/* 36 */
+/* 80 */	0x47,		/* Oi2 Flags:  srv must size, clt must size, has return, has ext, */
+			0x5,		/* 5 */
+/* 82 */	0x8,		/* 8 */
+			0x7,		/* Ext Flags:  new corr desc, clt corr check, srv corr check, */
+/* 84 */	NdrFcShort( 0x1 ),	/* 1 */
+/* 86 */	NdrFcShort( 0x1 ),	/* 1 */
+/* 88 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter protection_level */
+
+/* 90 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 92 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 94 */	0xd,		/* FC_ENUM16 */
+			0x0,		/* 0 */
+
+	/* Parameter plaintext */
+
+/* 96 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
+/* 98 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 100 */	NdrFcShort( 0x24 ),	/* Type Offset=36 */
+
+	/* Parameter ciphertext */
+
+/* 102 */	NdrFcShort( 0x2113 ),	/* Flags:  must size, must free, out, simple ref, srv alloc size=8 */
+/* 104 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 106 */	NdrFcShort( 0x36 ),	/* Type Offset=54 */
+
+	/* Parameter last_error */
+
+/* 108 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
+/* 110 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 112 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Return value */
+
+/* 114 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 116 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 118 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure DecryptData */
+
+/* 120 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 122 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 126 */	NdrFcShort( 0x5 ),	/* 5 */
+/* 128 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 130 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 132 */	NdrFcShort( 0x24 ),	/* 36 */
+/* 134 */	0x47,		/* Oi2 Flags:  srv must size, clt must size, has return, has ext, */
+			0x4,		/* 4 */
+/* 136 */	0x8,		/* 8 */
+			0x7,		/* Ext Flags:  new corr desc, clt corr check, srv corr check, */
+/* 138 */	NdrFcShort( 0x1 ),	/* 1 */
+/* 140 */	NdrFcShort( 0x1 ),	/* 1 */
+/* 142 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter ciphertext */
+
+/* 144 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
+/* 146 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 148 */	NdrFcShort( 0x24 ),	/* Type Offset=36 */
+
+	/* Parameter plaintext */
+
+/* 150 */	NdrFcShort( 0x2113 ),	/* Flags:  must size, must free, out, simple ref, srv alloc size=8 */
+/* 152 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 154 */	NdrFcShort( 0x36 ),	/* Type Offset=54 */
+
+	/* Parameter last_error */
+
+/* 156 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
+/* 158 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 160 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Return value */
+
+/* 162 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 164 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 166 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
 			0x0
         }
     };
@@ -275,10 +369,71 @@ static const elevation_service_idl_MIDL_TYPE_FORMAT_STRING elevation_service_idl
 			0x11, 0xc,	/* FC_RP [alloced_on_stack] [simple_pointer] */
 /*  8 */	0x8,		/* FC_LONG */
 			0x5c,		/* FC_PAD */
+/* 10 */	
+			0x12, 0x0,	/* FC_UP */
+/* 12 */	NdrFcShort( 0xe ),	/* Offset= 14 (26) */
+/* 14 */	
+			0x1b,		/* FC_CARRAY */
+			0x1,		/* 1 */
+/* 16 */	NdrFcShort( 0x2 ),	/* 2 */
+/* 18 */	0x9,		/* Corr desc: FC_ULONG */
+			0x0,		/*  */
+/* 20 */	NdrFcShort( 0xfffc ),	/* -4 */
+/* 22 */	NdrFcShort( 0x1 ),	/* Corr flags:  early, */
+/* 24 */	0x6,		/* FC_SHORT */
+			0x5b,		/* FC_END */
+/* 26 */	
+			0x17,		/* FC_CSTRUCT */
+			0x3,		/* 3 */
+/* 28 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 30 */	NdrFcShort( 0xfff0 ),	/* Offset= -16 (14) */
+/* 32 */	0x8,		/* FC_LONG */
+			0x8,		/* FC_LONG */
+/* 34 */	0x5c,		/* FC_PAD */
+			0x5b,		/* FC_END */
+/* 36 */	0xb4,		/* FC_USER_MARSHAL */
+			0x83,		/* 131 */
+/* 38 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 40 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 42 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 44 */	NdrFcShort( 0xffde ),	/* Offset= -34 (10) */
+/* 46 */	
+			0x11, 0x4,	/* FC_RP [alloced_on_stack] */
+/* 48 */	NdrFcShort( 0x6 ),	/* Offset= 6 (54) */
+/* 50 */	
+			0x13, 0x0,	/* FC_OP */
+/* 52 */	NdrFcShort( 0xffe6 ),	/* Offset= -26 (26) */
+/* 54 */	0xb4,		/* FC_USER_MARSHAL */
+			0x83,		/* 131 */
+/* 56 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 58 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 60 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 62 */	NdrFcShort( 0xfff4 ),	/* Offset= -12 (50) */
 
 			0x0
         }
     };
+
+XFG_TRAMPOLINES(BSTR)
+
+static const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TABLE_SIZE ] = 
+        {
+            
+            {
+            XFG_TRAMPOLINE_FPTR(BSTR_UserSize)
+            ,XFG_TRAMPOLINE_FPTR(BSTR_UserMarshal)
+            ,XFG_TRAMPOLINE_FPTR(BSTR_UserUnmarshal)
+            ,XFG_TRAMPOLINE_FPTR(BSTR_UserFree)
+            
+            }
+            
+
+        };
+
+
+
+/* Standard interface: __MIDL_itf_elevation_service_idl_0000_0000, ver. 0.0,
+   GUID={0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}} */
 
 
 /* Object interface: IUnknown, ver. 0.0,
@@ -291,7 +446,9 @@ static const elevation_service_idl_MIDL_TYPE_FORMAT_STRING elevation_service_idl
 #pragma code_seg(".orpc")
 static const unsigned short IElevator_FormatStringOffsetTable[] =
     {
-    0
+    0,
+    66,
+    120
     };
 
 static const MIDL_STUBLESS_PROXY_INFO IElevator_ProxyInfo =
@@ -315,21 +472,23 @@ static const MIDL_SERVER_INFO IElevator_ServerInfo =
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(4) _IElevatorProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(6) _IElevatorProxyVtbl = 
 {
     &IElevator_ProxyInfo,
     &IID_IElevator,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    (void *) (INT_PTR) -1 /* IElevator::RunRecoveryCRXElevated */
+    (void *) (INT_PTR) -1 /* IElevator::RunRecoveryCRXElevated */ ,
+    (void *) (INT_PTR) -1 /* IElevator::EncryptData */ ,
+    (void *) (INT_PTR) -1 /* IElevator::DecryptData */
 };
 
 const CInterfaceStubVtbl _IElevatorStubVtbl =
 {
     &IID_IElevator,
     &IElevator_ServerInfo,
-    4,
+    6,
     0, /* pure interpreted */
     CStdStubBuffer_METHODS
 };
@@ -342,6 +501,8 @@ const CInterfaceStubVtbl _IElevatorStubVtbl =
 static const unsigned short IElevatorChromium_FormatStringOffsetTable[] =
     {
     0,
+    66,
+    120,
     0
     };
 
@@ -366,19 +527,23 @@ static const MIDL_SERVER_INFO IElevatorChromium_ServerInfo =
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(4) _IElevatorChromiumProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(6) _IElevatorChromiumProxyVtbl = 
 {
     0,
     &IID_IElevatorChromium,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation IElevator::RunRecoveryCRXElevated */
+    0 /* forced delegation IElevator::RunRecoveryCRXElevated */ ,
+    0 /* forced delegation IElevator::EncryptData */ ,
+    0 /* forced delegation IElevator::DecryptData */
 };
 
 
 static const PRPC_STUB_FUNCTION IElevatorChromium_table[] =
 {
+    NdrStubCall2,
+    NdrStubCall2,
     NdrStubCall2
 };
 
@@ -386,7 +551,7 @@ CInterfaceStubVtbl _IElevatorChromiumStubVtbl =
 {
     &IID_IElevatorChromium,
     &IElevatorChromium_ServerInfo,
-    4,
+    6,
     &IElevatorChromium_table[-3],
     CStdStubBuffer_DELEGATING_METHODS
 };
@@ -399,6 +564,8 @@ CInterfaceStubVtbl _IElevatorChromiumStubVtbl =
 static const unsigned short IElevatorChrome_FormatStringOffsetTable[] =
     {
     0,
+    66,
+    120,
     0
     };
 
@@ -423,19 +590,23 @@ static const MIDL_SERVER_INFO IElevatorChrome_ServerInfo =
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(4) _IElevatorChromeProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(6) _IElevatorChromeProxyVtbl = 
 {
     0,
     &IID_IElevatorChrome,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation IElevator::RunRecoveryCRXElevated */
+    0 /* forced delegation IElevator::RunRecoveryCRXElevated */ ,
+    0 /* forced delegation IElevator::EncryptData */ ,
+    0 /* forced delegation IElevator::DecryptData */
 };
 
 
 static const PRPC_STUB_FUNCTION IElevatorChrome_table[] =
 {
+    NdrStubCall2,
+    NdrStubCall2,
     NdrStubCall2
 };
 
@@ -443,7 +614,7 @@ CInterfaceStubVtbl _IElevatorChromeStubVtbl =
 {
     &IID_IElevatorChrome,
     &IElevatorChrome_ServerInfo,
-    4,
+    6,
     &IElevatorChrome_table[-3],
     CStdStubBuffer_DELEGATING_METHODS
 };
@@ -456,6 +627,8 @@ CInterfaceStubVtbl _IElevatorChromeStubVtbl =
 static const unsigned short IElevatorChromeBeta_FormatStringOffsetTable[] =
     {
     0,
+    66,
+    120,
     0
     };
 
@@ -480,19 +653,23 @@ static const MIDL_SERVER_INFO IElevatorChromeBeta_ServerInfo =
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(4) _IElevatorChromeBetaProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(6) _IElevatorChromeBetaProxyVtbl = 
 {
     0,
     &IID_IElevatorChromeBeta,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation IElevator::RunRecoveryCRXElevated */
+    0 /* forced delegation IElevator::RunRecoveryCRXElevated */ ,
+    0 /* forced delegation IElevator::EncryptData */ ,
+    0 /* forced delegation IElevator::DecryptData */
 };
 
 
 static const PRPC_STUB_FUNCTION IElevatorChromeBeta_table[] =
 {
+    NdrStubCall2,
+    NdrStubCall2,
     NdrStubCall2
 };
 
@@ -500,7 +677,7 @@ CInterfaceStubVtbl _IElevatorChromeBetaStubVtbl =
 {
     &IID_IElevatorChromeBeta,
     &IElevatorChromeBeta_ServerInfo,
-    4,
+    6,
     &IElevatorChromeBeta_table[-3],
     CStdStubBuffer_DELEGATING_METHODS
 };
@@ -513,6 +690,8 @@ CInterfaceStubVtbl _IElevatorChromeBetaStubVtbl =
 static const unsigned short IElevatorChromeDev_FormatStringOffsetTable[] =
     {
     0,
+    66,
+    120,
     0
     };
 
@@ -537,19 +716,23 @@ static const MIDL_SERVER_INFO IElevatorChromeDev_ServerInfo =
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(4) _IElevatorChromeDevProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(6) _IElevatorChromeDevProxyVtbl = 
 {
     0,
     &IID_IElevatorChromeDev,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation IElevator::RunRecoveryCRXElevated */
+    0 /* forced delegation IElevator::RunRecoveryCRXElevated */ ,
+    0 /* forced delegation IElevator::EncryptData */ ,
+    0 /* forced delegation IElevator::DecryptData */
 };
 
 
 static const PRPC_STUB_FUNCTION IElevatorChromeDev_table[] =
 {
+    NdrStubCall2,
+    NdrStubCall2,
     NdrStubCall2
 };
 
@@ -557,7 +740,7 @@ CInterfaceStubVtbl _IElevatorChromeDevStubVtbl =
 {
     &IID_IElevatorChromeDev,
     &IElevatorChromeDev_ServerInfo,
-    4,
+    6,
     &IElevatorChromeDev_table[-3],
     CStdStubBuffer_DELEGATING_METHODS
 };
@@ -570,6 +753,8 @@ CInterfaceStubVtbl _IElevatorChromeDevStubVtbl =
 static const unsigned short IElevatorChromeCanary_FormatStringOffsetTable[] =
     {
     0,
+    66,
+    120,
     0
     };
 
@@ -594,19 +779,23 @@ static const MIDL_SERVER_INFO IElevatorChromeCanary_ServerInfo =
     0,
     0,
     0};
-CINTERFACE_PROXY_VTABLE(4) _IElevatorChromeCanaryProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(6) _IElevatorChromeCanaryProxyVtbl = 
 {
     0,
     &IID_IElevatorChromeCanary,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation IElevator::RunRecoveryCRXElevated */
+    0 /* forced delegation IElevator::RunRecoveryCRXElevated */ ,
+    0 /* forced delegation IElevator::EncryptData */ ,
+    0 /* forced delegation IElevator::DecryptData */
 };
 
 
 static const PRPC_STUB_FUNCTION IElevatorChromeCanary_table[] =
 {
+    NdrStubCall2,
+    NdrStubCall2,
     NdrStubCall2
 };
 
@@ -614,7 +803,7 @@ CInterfaceStubVtbl _IElevatorChromeCanaryStubVtbl =
 {
     &IID_IElevatorChromeCanary,
     &IElevatorChromeCanary_ServerInfo,
-    4,
+    6,
     &IElevatorChromeCanary_table[-3],
     CStdStubBuffer_DELEGATING_METHODS
 };
@@ -635,7 +824,7 @@ static const MIDL_STUB_DESC Object_StubDesc =
     0,
     0x8010272, /* MIDL Version 8.1.626 */
     0,
-    0,
+    UserMarshalRoutines,
     0,  /* notify & notify_flag routine table */
     0x1, /* MIDL flag */
     0, /* cs routines */
