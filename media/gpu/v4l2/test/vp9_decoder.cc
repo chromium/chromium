@@ -127,9 +127,30 @@ Vp9Decoder::~Vp9Decoder() = default;
 
 // static
 std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
-    std::unique_ptr<IvfParser> ivf_parser,
-    const media::IvfFileHeader& file_header) {
+    const base::MemoryMappedFile& stream) {
   constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_VP9_FRAME;
+
+  VLOG(2) << "Attempting to create decoder with codec "
+          << media::FourccToString(kDriverCodecFourcc);
+
+  // Set up video parser.
+  auto ivf_parser = std::make_unique<media::IvfParser>();
+  media::IvfFileHeader file_header{};
+
+  if (!ivf_parser->Initialize(stream.data(), stream.length(), &file_header)) {
+    LOG(ERROR) << "Couldn't initialize IVF parser";
+    return nullptr;
+  }
+
+  const auto driver_codec_fourcc =
+      media::v4l2_test::FileFourccToDriverFourcc(file_header.fourcc);
+
+  if (driver_codec_fourcc != kDriverCodecFourcc) {
+    VLOG(2) << "File fourcc (" << media::FourccToString(driver_codec_fourcc)
+            << ") does not match expected fourcc("
+            << media::FourccToString(kDriverCodecFourcc) << ").";
+    return nullptr;
+  }
 
   // MM21 is an uncompressed opaque format that is produced by MediaTek
   // video decoders.

@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "media/base/video_types.h"
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/v4l2/test/av1_pix_fmt.h"
 
@@ -44,11 +45,32 @@ Av1Decoder::~Av1Decoder() {
 
 // static
 std::unique_ptr<Av1Decoder> Av1Decoder::Create(
-    std::unique_ptr<IvfParser> ivf_parser,
-    const media::IvfFileHeader& file_header) {
-  auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>();
-
+    const base::MemoryMappedFile& stream) {
   constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_AV1_FRAME;
+
+  VLOG(2) << "Attempting to create decoder with codec "
+          << media::FourccToString(kDriverCodecFourcc);
+
+  // Set up video parser.
+  auto ivf_parser = std::make_unique<media::IvfParser>();
+  media::IvfFileHeader file_header{};
+
+  if (!ivf_parser->Initialize(stream.data(), stream.length(), &file_header)) {
+    LOG(ERROR) << "Couldn't initialize IVF parser";
+    return nullptr;
+  }
+
+  const auto driver_codec_fourcc =
+      media::v4l2_test::FileFourccToDriverFourcc(file_header.fourcc);
+
+  if (driver_codec_fourcc != kDriverCodecFourcc) {
+    VLOG(2) << "File fourcc (" << media::FourccToString(driver_codec_fourcc)
+            << ") does not match expected fourcc("
+            << media::FourccToString(kDriverCodecFourcc) << ").";
+    return nullptr;
+  }
+
+  auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>();
 
   // MM21 is an uncompressed opaque format that is produced by MediaTek
   // video decoders.

@@ -12,6 +12,7 @@
 #include <set>
 
 #include "base/files/memory_mapped_file.h"
+#include "media/base/video_types.h"
 #include "media/filters/ivf_parser.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
@@ -29,8 +30,7 @@ class Vp9Decoder : public VideoDecoder {
   // Creates a Vp9Decoder after verifying that the underlying implementation
   // supports VP9 stateless decoding.
   static std::unique_ptr<Vp9Decoder> Create(
-      std::unique_ptr<IvfParser> ivf_parser,
-      const media::IvfFileHeader& file_header);
+      const base::MemoryMappedFile& stream);
 
   // Parses next frame from IVF stream and decodes the frame. This method will
   // place the Y, U, and V values into the respective vectors and update the

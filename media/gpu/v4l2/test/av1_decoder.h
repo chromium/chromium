@@ -9,6 +9,7 @@
 
 #include <set>
 
+#include "base/files/memory_mapped_file.h"
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 // For libgav1::ObuSequenceHeader. absl::optional demands ObuSequenceHeader to
@@ -37,8 +38,7 @@ class Av1Decoder : public VideoDecoder {
   // Creates a Av1Decoder after verifying that the underlying implementation
   // supports AV1 stateless decoding.
   static std::unique_ptr<Av1Decoder> Create(
-      std::unique_ptr<IvfParser> ivf_parser,
-      const media::IvfFileHeader& file_header);
+      const base::MemoryMappedFile& stream);
 
   // TODO(stevecho): implement DecodeNextFrame() function
   // Parses next frame from IVF stream and decodes the frame. This method will

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <linux/videodev2.h>
-
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -15,10 +13,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "media/base/video_types.h"
-#include "media/filters/ivf_parser.h"
 #include "media/gpu/v4l2/test/av1_decoder.h"
-#include "media/gpu/v4l2/test/av1_pix_fmt.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
 #include "media/gpu/v4l2/test/vp9_decoder.h"
 
@@ -79,32 +74,12 @@ std::unique_ptr<VideoDecoder> CreateVideoDecoder(
     const base::MemoryMappedFile& stream) {
   CHECK(stream.IsValid());
 
-  // Set up video parser.
-  auto ivf_parser = std::make_unique<media::IvfParser>();
-  media::IvfFileHeader file_header{};
+  std::unique_ptr<VideoDecoder> decoder = Av1Decoder::Create(stream);
 
-  if (!ivf_parser->Initialize(stream.data(), stream.length(), &file_header)) {
-    LOG(ERROR) << "Couldn't initialize IVF parser";
-    return nullptr;
-  }
+  if (!decoder)
+    decoder = Vp9Decoder::Create(stream);
 
-  // Create appropriate decoder for codec.
-  VLOG(1) << "Creating decoder with codec "
-          << media::FourccToString(file_header.fourcc);
-
-  const auto driver_codec_fourcc =
-      media::v4l2_test::FileFourccToDriverFourcc(file_header.fourcc);
-
-  if (driver_codec_fourcc == V4L2_PIX_FMT_AV1_FRAME) {
-    return Av1Decoder::Create(std::move(ivf_parser), file_header);
-  } else if (driver_codec_fourcc == V4L2_PIX_FMT_VP9_FRAME) {
-    return Vp9Decoder::Create(std::move(ivf_parser), file_header);
-  }
-
-  LOG(ERROR) << "Codec " << media::FourccToString(file_header.fourcc)
-             << " not supported.\n"
-             << kUsageMsg;
-  return nullptr;
+  return decoder;
 }
 
 int main(int argc, char** argv) {
