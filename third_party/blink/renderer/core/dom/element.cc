@@ -32,7 +32,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "cc/input/snap_selection_strategy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -203,6 +205,14 @@ namespace blink {
 enum class ClassStringContent { kEmpty, kWhiteSpaceOnly, kHasClasses };
 
 namespace {
+
+bool EarlyExitOnNoopClassOrStyleChange() {
+  static const bool is_enabled = base::FeatureList::IsEnabled(
+      features::kEarlyExitOnNoopClassOrStyleChange);
+  DCHECK_EQ(is_enabled, base::FeatureList::IsEnabled(
+                            features::kEarlyExitOnNoopClassOrStyleChange));
+  return is_enabled;
+}
 
 class DisplayLockStyleScope {
   STACK_ALLOCATED();
@@ -802,7 +812,7 @@ Attr* Element::DetachAttribute(wtf_size_t index) {
   } else {
     attr_node = MakeGarbageCollected<Attr>(GetDocument(), attribute.GetName(),
                                            attribute.Value());
-    RemoveAttributeInternal(index, kNotInSynchronizationOfLazyAttribute);
+    RemoveAttributeInternal(index, AttributeModificationReason::kDirectly);
   }
   return attr_node;
 }
@@ -814,18 +824,15 @@ void Element::DetachAttrNodeAtIndex(Attr* attr, wtf_size_t index) {
   const Attribute& attribute = GetElementData()->Attributes().at(index);
   DCHECK(attribute.GetName() == attr->GetQualifiedName());
   DetachAttrNodeFromElementWithValue(attr, attribute.Value());
-  RemoveAttributeInternal(index, kNotInSynchronizationOfLazyAttribute);
+  RemoveAttributeInternal(index, AttributeModificationReason::kDirectly);
 }
 
 void Element::removeAttribute(const QualifiedName& name) {
-  if (!GetElementData())
-    return;
-
-  wtf_size_t index = GetElementData()->Attributes().FindIndex(name);
+  wtf_size_t index = FindAttributeIndex(name);
   if (index == kNotFound)
     return;
 
-  RemoveAttributeInternal(index, kNotInSynchronizationOfLazyAttribute);
+  RemoveAttributeInternal(index, AttributeModificationReason::kDirectly);
 }
 
 void Element::SetBooleanAttribute(const QualifiedName& name, bool value) {
@@ -2342,6 +2349,11 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       GetDocument().GetStyleEngine().IdChangedForElement(old_id, new_id, *this);
     }
   } else if (name == html_names::kClassAttr) {
+    if (params.old_value == params.new_value &&
+        params.reason != AttributeModificationReason::kByMoveToNewDocument &&
+        EarlyExitOnNoopClassOrStyleChange()) {
+      return;
+    }
     ClassAttributeChanged(params.new_value);
     UpdateClassList(params.old_value, params.new_value);
   } else if (name == html_names::kNameAttr) {
@@ -2356,6 +2368,10 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     SynchronizeContentAttributeAndElementReference(name);
   } else if (IsStyledElement()) {
     if (name == html_names::kStyleAttr) {
+      if (params.old_value == params.new_value &&
+          EarlyExitOnNoopClassOrStyleChange()) {
+        return;
+      }
       StyleAttributeChanged(params.new_value, params.reason);
     } else if (IsPresentationAttribute(name)) {
       GetElementData()->SetPresentationAttributeStyleIsDirty(true);
@@ -4980,9 +4996,8 @@ void Element::setAttributeNS(const AtomicString& namespace_uri,
   setAttribute(parsed_name, value);
 }
 
-void Element::RemoveAttributeInternal(
-    wtf_size_t index,
-    SynchronizationOfLazyAttribute in_synchronization_of_lazy_attribute) {
+void Element::RemoveAttributeInternal(wtf_size_t index,
+                                      AttributeModificationReason reason) {
   MutableAttributeCollection attributes =
       EnsureUniqueElementData().Attributes();
   SECURITY_DCHECK(index < attributes.size());
@@ -4990,7 +5005,8 @@ void Element::RemoveAttributeInternal(
   QualifiedName name = attributes[index].GetName();
   AtomicString value_being_removed = attributes[index].Value();
 
-  if (!in_synchronization_of_lazy_attribute) {
+  if (reason !=
+      AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
     if (!value_being_removed.IsNull()) {
       WillModifyAttribute(name, value_being_removed, g_null_atom);
     } else if (GetCustomElementState() == CustomElementState::kCustom) {
@@ -5005,18 +5021,17 @@ void Element::RemoveAttributeInternal(
 
   attributes.Remove(index);
 
-  if (!in_synchronization_of_lazy_attribute)
+  if (reason != AttributeModificationReason::kBySynchronizationOfLazyAttribute)
     DidRemoveAttribute(name, value_being_removed);
 }
 
-void Element::AppendAttributeInternal(
-    const QualifiedName& name,
-    const AtomicString& value,
-    SynchronizationOfLazyAttribute in_synchronization_of_lazy_attribute) {
-  if (!in_synchronization_of_lazy_attribute)
+void Element::AppendAttributeInternal(const QualifiedName& name,
+                                      const AtomicString& value,
+                                      AttributeModificationReason reason) {
+  if (reason != AttributeModificationReason::kBySynchronizationOfLazyAttribute)
     WillModifyAttribute(name, g_null_atom, value);
   EnsureUniqueElementData().Attributes().Append(name, value);
-  if (!in_synchronization_of_lazy_attribute)
+  if (reason != AttributeModificationReason::kBySynchronizationOfLazyAttribute)
     DidAddAttribute(name, value);
 }
 
@@ -7235,11 +7250,12 @@ void Element::DidAddAttribute(const QualifiedName& name,
 
 void Element::DidModifyAttribute(const QualifiedName& name,
                                  const AtomicString& old_value,
-                                 const AtomicString& new_value) {
+                                 const AtomicString& new_value,
+                                 AttributeModificationReason reason) {
   if (name == html_names::kIdAttr)
     UpdateId(old_value, new_value);
-  AttributeChanged(AttributeModificationParams(
-      name, old_value, new_value, AttributeModificationReason::kDirectly));
+  AttributeChanged(
+      AttributeModificationParams(name, old_value, new_value, reason));
   probe::DidModifyDOMAttr(this, name, new_value);
   // Do not dispatch a DOMSubtreeModified event here; see bug 81141.
 }
@@ -7292,10 +7308,17 @@ void Element::DidMoveToNewDocument(Document& old_document) {
     // element should point to the shareable one.
     EnsureUniqueElementData();
 
-    if (HasID())
-      SetIdAttribute(GetIdAttribute());
-    if (HasClass())
-      setAttribute(html_names::kClassAttr, GetClassAttribute());
+    if (const AtomicString& idAttr = GetIdAttribute())
+      SetIdAttribute(idAttr);
+    if (const AtomicString& classAttr = GetClassAttribute()) {
+      // Going through setAttribute() to synchronize the attribute is only
+      // required when setting the "style" attribute (this sets the "class"
+      // attribute) or for an SVG element (in which case `GetClassAttribute`
+      // above would already have synchronized).
+      SetAttributeInternal(FindAttributeIndex(html_names::kClassAttr),
+                           html_names::kClassAttr, classAttr,
+                           AttributeModificationReason::kByMoveToNewDocument);
+    }
   }
   // TODO(tkent): Even if Documents' modes are same, keeping
   // ShareableElementData owned by old_document isn't right.
@@ -8196,20 +8219,14 @@ std::pair<wtf_size_t, const QualifiedName> Element::LookupAttributeQNameHinted(
 void Element::setAttribute(const QualifiedName& name,
                            const AtomicString& value) {
   SynchronizeAttribute(name);
-  wtf_size_t index = GetElementData()
-                         ? GetElementData()->Attributes().FindIndex(name)
-                         : kNotFound;
-  SetAttributeInternal(index, name, value,
-                       kNotInSynchronizationOfLazyAttribute);
+  SetAttributeInternal(FindAttributeIndex(name), name, value,
+                       AttributeModificationReason::kDirectly);
 }
 
 void Element::setAttribute(const QualifiedName& name,
                            const AtomicString& value,
                            ExceptionState& exception_state) {
   SynchronizeAttribute(name);
-  wtf_size_t index = GetElementData()
-                         ? GetElementData()->Attributes().FindIndex(name)
-                         : kNotFound;
 
   AtomicString trusted_value(
       TrustedTypesCheckFor(ExpectedTrustedTypeForAttribute(name), value,
@@ -8217,16 +8234,15 @@ void Element::setAttribute(const QualifiedName& name,
   if (exception_state.HadException())
     return;
 
-  SetAttributeInternal(index, name, trusted_value,
-                       kNotInSynchronizationOfLazyAttribute);
+  SetAttributeInternal(FindAttributeIndex(name), name, trusted_value,
+                       AttributeModificationReason::kDirectly);
 }
 
 void Element::SetSynchronizedLazyAttribute(const QualifiedName& name,
                                            const AtomicString& value) {
-  wtf_size_t index = GetElementData()
-                         ? GetElementData()->Attributes().FindIndex(name)
-                         : kNotFound;
-  SetAttributeInternal(index, name, value, kInSynchronizationOfLazyAttribute);
+  SetAttributeInternal(
+      FindAttributeIndex(name), name, value,
+      AttributeModificationReason::kBySynchronizationOfLazyAttribute);
 }
 
 void Element::SetAttributeHinted(AtomicString local_name,
@@ -8253,7 +8269,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
     return;
 
   SetAttributeInternal(index, q_name, trusted_value,
-                       kNotInSynchronizationOfLazyAttribute);
+                       AttributeModificationReason::kDirectly);
 }
 
 void Element::SetAttributeHinted(AtomicString local_name,
@@ -8278,23 +8294,28 @@ void Element::SetAttributeHinted(AtomicString local_name,
   if (exception_state.HadException())
     return;
   SetAttributeInternal(index, q_name, value,
-                       kNotInSynchronizationOfLazyAttribute);
+                       AttributeModificationReason::kDirectly);
+}
+
+wtf_size_t Element::FindAttributeIndex(const QualifiedName& name) {
+  if (GetElementData())
+    return GetElementData()->Attributes().FindIndex(name);
+  return kNotFound;
 }
 
 ALWAYS_INLINE void Element::SetAttributeInternal(
     wtf_size_t index,
     const QualifiedName& name,
     const AtomicString& new_value,
-    SynchronizationOfLazyAttribute in_synchronization_of_lazy_attribute) {
+    AttributeModificationReason reason) {
   if (new_value.IsNull()) {
     if (index != kNotFound)
-      RemoveAttributeInternal(index, in_synchronization_of_lazy_attribute);
+      RemoveAttributeInternal(index, reason);
     return;
   }
 
   if (index == kNotFound) {
-    AppendAttributeInternal(name, new_value,
-                            in_synchronization_of_lazy_attribute);
+    AppendAttributeInternal(name, new_value, reason);
     return;
   }
 
@@ -8303,15 +8324,17 @@ ALWAYS_INLINE void Element::SetAttributeInternal(
   AtomicString existing_attribute_value = existing_attribute.Value();
   QualifiedName existing_attribute_name = existing_attribute.GetName();
 
-  if (!in_synchronization_of_lazy_attribute) {
+  if (reason !=
+      AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
     WillModifyAttribute(existing_attribute_name, existing_attribute_value,
                         new_value);
   }
   if (new_value != existing_attribute_value)
     EnsureUniqueElementData().Attributes().at(index).SetValue(new_value);
-  if (!in_synchronization_of_lazy_attribute) {
+  if (reason !=
+      AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
     DidModifyAttribute(existing_attribute_name, existing_attribute_value,
-                       new_value);
+                       new_value, reason);
   }
 }
 
@@ -8375,7 +8398,7 @@ Attr* Element::setAttributeNode(Attr* attr_node,
   }
 
   SetAttributeInternal(index, attr_node->GetQualifiedName(), value,
-                       kNotInSynchronizationOfLazyAttribute);
+                       AttributeModificationReason::kDirectly);
 
   attr_node->AttachToElement(this, local_name);
   GetTreeScope().AdoptIfNeeded(*attr_node);
@@ -8397,7 +8420,7 @@ void Element::RemoveAttributeHinted(const AtomicString& name,
     return;
   }
 
-  RemoveAttributeInternal(index, kNotInSynchronizationOfLazyAttribute);
+  RemoveAttributeInternal(index, AttributeModificationReason::kDirectly);
 }
 
 bool Element::IsDocumentElement() const {

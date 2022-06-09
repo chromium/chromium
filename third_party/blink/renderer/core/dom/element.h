@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace gfx {
@@ -516,7 +517,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   NamedNodeMap* attributesForBindings() const;
   Vector<AtomicString> getAttributeNames() const;
 
-  enum class AttributeModificationReason { kDirectly, kByParser, kByCloning };
+  enum class AttributeModificationReason {
+    kDirectly,
+    kByParser,
+    kByCloning,
+    kByMoveToNewDocument,
+    kBySynchronizationOfLazyAttribute
+  };
   struct AttributeModificationParams {
     STACK_ALLOCATED();
 
@@ -1370,18 +1377,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual void DidAddUserAgentShadowRoot(ShadowRoot&) {}
   virtual bool AlwaysCreateUserAgentShadowRoot() const { return false; }
 
-  enum SynchronizationOfLazyAttribute {
-    kNotInSynchronizationOfLazyAttribute = 0,
-    kInSynchronizationOfLazyAttribute
-  };
-
   void DidAddAttribute(const QualifiedName&, const AtomicString&);
   void WillModifyAttribute(const QualifiedName&,
                            const AtomicString& old_value,
                            const AtomicString& new_value);
   void DidModifyAttribute(const QualifiedName&,
                           const AtomicString& old_value,
-                          const AtomicString& new_value);
+                          const AtomicString& new_value,
+                          AttributeModificationReason reason);
   void DidRemoveAttribute(const QualifiedName&, const AtomicString& old_value);
 
   void SynchronizeAllAttributes() const;
@@ -1402,15 +1405,17 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   NodeType getNodeType() const final;
   bool ChildTypeAllowed(NodeType) const final;
 
+  // Returns the attribute's index or `kNotFound` if not found.
+  wtf_size_t FindAttributeIndex(const QualifiedName&);
+
   void SetAttributeInternal(wtf_size_t index,
                             const QualifiedName&,
                             const AtomicString& value,
-                            SynchronizationOfLazyAttribute);
+                            AttributeModificationReason);
   void AppendAttributeInternal(const QualifiedName&,
                                const AtomicString& value,
-                               SynchronizationOfLazyAttribute);
-  void RemoveAttributeInternal(wtf_size_t index,
-                               SynchronizationOfLazyAttribute);
+                               AttributeModificationReason);
+  void RemoveAttributeInternal(wtf_size_t index, AttributeModificationReason);
   SpecificTrustedType ExpectedTrustedTypeForAttribute(
       const QualifiedName&) const;
 

@@ -775,6 +775,11 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebSQLNonSecureContextAccess;
 // TODO(https://crbug.com/1332598): Remove this feature.
 BLINK_COMMON_EXPORT extern const base::Feature kFileSystemUrlNavigation;
 
+// Early exit when the style or class attribute of an element is set to the same
+// value as before.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kEarlyExitOnNoopClassOrStyleChange;
+
 }  // namespace features
 }  // namespace blink
 

@@ -8,6 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_plugin.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -1108,6 +1110,25 @@ TEST_F(ElementTest, ParseFocusgroupAttrValueClearedAfterNodeRemoved) {
 
   fg2_flags = fg2->GetFocusgroupFlags();
   ASSERT_EQ(fg2_flags, FocusgroupFlags::kNone);
+}
+
+TEST_F(ElementTest, MixStyleAttributeAndCSSOMChanges) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id="elmt" style="color: green;"></div>
+  )HTML");
+
+  Element* elmt = document.getElementById("elmt");
+  elmt->style()->setProperty(GetDocument().GetExecutionContext(), "color",
+                             "red", String(), ASSERT_NO_EXCEPTION);
+
+  // Verify that setting the style attribute back to its initial value is not
+  // mistakenly considered as a no-op attribute change and ignored. It would be
+  // without proper synchronization of attributes.
+  elmt->setAttribute(html_names::kStyleAttr, "color: green;");
+
+  EXPECT_EQ(elmt->getAttribute(html_names::kStyleAttr), "color: green;");
+  EXPECT_EQ(elmt->style()->getPropertyValue("color"), "green");
 }
 
 }  // namespace blink

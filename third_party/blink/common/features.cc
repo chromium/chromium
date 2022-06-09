@@ -1532,5 +1532,8 @@ const base::Feature kWebSQLNonSecureContextAccess{
 const base::Feature kFileSystemUrlNavigation{"FileSystemUrlNavigation",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEarlyExitOnNoopClassOrStyleChange{
+    "EarlyExitOnNoopClassOrStyleChange", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
