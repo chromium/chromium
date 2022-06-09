@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "pdf/accessibility_structs.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/test/test_pdfium_engine.h"
@@ -31,7 +30,6 @@ namespace {
 
 using ::testing::NiceMock;
 using ::testing::Return;
-using ::testing::SaveArg;
 
 // TODO(crbug.com/1302059): Overhaul this when PdfViewPluginBase merges with
 // PdfViewWebPlugin.
@@ -234,66 +232,6 @@ TEST_F(PdfViewPluginBaseWithEngineTest, SetCaretPositionScaled) {
 
   EXPECT_CALL(*engine, SetCaretPosition(gfx::Point(4, 6)));
   fake_plugin_.SetCaretPosition({4.0f, 3.0f});
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, SelectionChanged) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  fake_plugin_.EnableAccessibility();
-  fake_plugin_.DocumentLoadComplete();
-  fake_plugin_.UpdateGeometryOnPluginRectChanged({300, 56, 20, 5}, 1.0f);
-  EXPECT_CALL(*engine, ApplyDocumentLayout)
-      .WillRepeatedly(Return(gfx::Size(16, 9)));
-  SendDefaultViewportMessage();
-
-  AccessibilityViewportInfo viewport_info;
-  EXPECT_CALL(fake_plugin_,
-              NotifySelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
-                                     gfx::PointF(52.0f, 60.0f), 80));
-  EXPECT_CALL(fake_plugin_, SetAccessibilityViewportInfo)
-      .WillOnce(SaveArg<0>(&viewport_info));
-  fake_plugin_.SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80});
-
-  EXPECT_EQ(gfx::Point(), viewport_info.scroll);
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, SelectionChangedNegativeOrigin) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  fake_plugin_.EnableAccessibility();
-  fake_plugin_.DocumentLoadComplete();
-  fake_plugin_.UpdateGeometryOnPluginRectChanged({-300, -56, 20, 5}, 1.0f);
-  EXPECT_CALL(*engine, ApplyDocumentLayout)
-      .WillRepeatedly(Return(gfx::Size(16, 9)));
-  SendDefaultViewportMessage();
-
-  AccessibilityViewportInfo viewport_info;
-  EXPECT_CALL(fake_plugin_,
-              NotifySelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
-                                     gfx::PointF(52.0f, 60.0f), 80));
-  EXPECT_CALL(fake_plugin_, SetAccessibilityViewportInfo)
-      .WillOnce(SaveArg<0>(&viewport_info));
-  fake_plugin_.SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80});
-
-  EXPECT_EQ(gfx::Point(), viewport_info.scroll);
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, SelectionChangedScaled) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  fake_plugin_.EnableAccessibility();
-  fake_plugin_.DocumentLoadComplete();
-  fake_plugin_.UpdateGeometryOnPluginRectChanged({600, 112, 40, 10}, 2.0f);
-  EXPECT_CALL(*engine, ApplyDocumentLayout)
-      .WillRepeatedly(Return(gfx::Size(16, 9)));
-  SendDefaultViewportMessage();
-
-  AccessibilityViewportInfo viewport_info;
-  EXPECT_CALL(fake_plugin_,
-              NotifySelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
-                                     gfx::PointF(52.0f, 60.0f), 80));
-  EXPECT_CALL(fake_plugin_, SetAccessibilityViewportInfo)
-      .WillOnce(SaveArg<0>(&viewport_info));
-  fake_plugin_.SelectionChanged({-20, -40, 60, 80}, {100, 120, 140, 160});
-
-  EXPECT_EQ(gfx::Point(), viewport_info.scroll);
 }
 
 }  // namespace chrome_pdf

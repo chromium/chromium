@@ -98,6 +98,7 @@ using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Pointwise;
 using ::testing::Return;
+using ::testing::SaveArg;
 using ::testing::SizeIs;
 
 // `kCanvasSize` needs to be big enough to hold plugin's snapshots during
@@ -1479,6 +1480,57 @@ TEST_F(PdfViewWebPluginImeTest, ImeCommitTextForPluginUnicode) {
 TEST_F(PdfViewWebPluginImeTest, ImeCommitTextForPluginEmpty) {
   const blink::WebString text;
   TestImeCommitTextForPlugin(text);
+}
+
+TEST_F(PdfViewWebPluginTest, SelectionChanged) {
+  plugin_->EnableAccessibility();
+  plugin_->DocumentLoadComplete();
+  UpdatePluginGeometryWithoutWaiting(1.0f, {300, 56, 20, 5});
+  SetDocumentDimensions({16, 9});
+
+  AccessibilityViewportInfo viewport_info;
+  EXPECT_CALL(pdf_service_, SelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
+                                             gfx::PointF(52.0f, 60.0f), 80));
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityViewportInfo)
+      .WillOnce(SaveArg<0>(&viewport_info));
+  plugin_->SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80});
+
+  EXPECT_EQ(gfx::Point(), viewport_info.scroll);
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginTest, SelectionChangedNegativeOrigin) {
+  plugin_->EnableAccessibility();
+  plugin_->DocumentLoadComplete();
+  UpdatePluginGeometryWithoutWaiting(1.0f, {-300, -56, 20, 5});
+  SetDocumentDimensions({16, 9});
+
+  AccessibilityViewportInfo viewport_info;
+  EXPECT_CALL(pdf_service_, SelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
+                                             gfx::PointF(52.0f, 60.0f), 80));
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityViewportInfo)
+      .WillOnce(SaveArg<0>(&viewport_info));
+  plugin_->SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80});
+
+  EXPECT_EQ(gfx::Point(), viewport_info.scroll);
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginTest, SelectionChangedScaled) {
+  plugin_->EnableAccessibility();
+  plugin_->DocumentLoadComplete();
+  UpdatePluginGeometryWithoutWaiting(2.0f, {600, 112, 40, 10});
+  SetDocumentDimensions({16, 9});
+
+  AccessibilityViewportInfo viewport_info;
+  EXPECT_CALL(pdf_service_, SelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
+                                             gfx::PointF(52.0f, 60.0f), 80));
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityViewportInfo)
+      .WillOnce(SaveArg<0>(&viewport_info));
+  plugin_->SelectionChanged({-20, -40, 60, 80}, {100, 120, 140, 160});
+
+  EXPECT_EQ(gfx::Point(), viewport_info.scroll);
+  pdf_receiver_.FlushForTesting();
 }
 
 TEST_F(PdfViewWebPluginTest, ChangeTextSelection) {
