@@ -253,7 +253,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
-#include "ash/public/cpp/new_window_delegate.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -2765,16 +2764,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_SEARCHWEBFOR:
     case IDC_CONTENT_CONTEXT_GOTOURL:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-          selection_navigation_url_,
-          ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
-#else
       OpenURL(selection_navigation_url_, GURL(),
               ui::DispositionFromEventFlags(
                   event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB),
               ui::PAGE_TRANSITION_LINK);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       break;
 
     case IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS:
