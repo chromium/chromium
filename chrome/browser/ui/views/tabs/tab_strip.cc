@@ -1601,7 +1601,7 @@ absl::optional<int> TabStrip::GetLastTabInGroup(
 
 SkColor TabStrip::GetPaintedGroupColor(
     const tab_groups::TabGroupColorId& color_id) const {
-  return GetThemeProvider()->GetColor(
+  return GetColorProvider()->GetColor(
       GetTabGroupTabStripColorId(color_id, ShouldPaintAsActiveFrame()));
 }
 

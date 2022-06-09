@@ -20,6 +20,7 @@
 #include "components/prefs/pref_change_registrar.h"
 
 class AppControllerProfileObserver;
+class AppControllerNativeThemeObserver;
 @class AppShimMenuController;
 class BookmarkMenuBridge;
 class CommandUpdater;
@@ -35,7 +36,7 @@ class ScopedKeepAlive;
 class TabMenuBridge;
 
 namespace ui {
-class ThemeProvider;
+class ColorProvider;
 }  // namespace ui
 
 // The application controller object, created by loading the MainMenu nib.
@@ -58,6 +59,10 @@ class ThemeProvider;
   // when a profile has been deleted.
   std::unique_ptr<AppControllerProfileObserver>
       _profileAttributesStorageObserver;
+
+  // The NativeThemeObserver observes system-wide theme related settings
+  // change.
+  std::unique_ptr<AppControllerNativeThemeObserver> _nativeThemeObserver;
 
   // Management of the bookmark menu which spans across all windows
   // (and Browser*s). |profileBookmarkMenuBridgeMap_| is a cache that owns one
@@ -115,6 +120,8 @@ class ThemeProvider;
 
   // Request to keep the browser alive during that object's lifetime.
   std::unique_ptr<ScopedKeepAlive> _keep_alive;
+
+  const ui::ColorProvider* _lastActiveColorProvider;
 }
 
 @property(readonly, nonatomic) BOOL startupComplete;
@@ -196,9 +203,11 @@ class ThemeProvider;
 // the original or the incognito profile.
 - (void)setLastProfile:(Profile*)profile;
 
-// Returns the last active ThemeProvider. It is only valid to call this with a
-// last available profile.
-- (const ui::ThemeProvider&)lastActiveThemeProvider;
+// Returns the last active ColorProvider.
+- (const ui::ColorProvider&)lastActiveColorProvider;
+
+// This is called when the system wide light or dark mode changes.
+- (void)nativeThemeDidChange;
 
 // Certain NSMenuItems [Close Tab and Close Window] have different
 // keyEquivalents depending on context. This must be invoked in two locations:
