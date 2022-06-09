@@ -139,23 +139,17 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
 
     // Manually set preferences that aren't direct copies of the settings value.
     {
-      bool record_history =
-          settings->FindBoolPath(supervised_users::kRecordHistory)
-              .value_or(true);
       // Allow history deletion for supervised accounts on supported platforms.
       bool allow_history_deletion = base::FeatureList::IsEnabled(
           supervised_users::kAllowHistoryDeletionForChildAccounts);
       prefs_->SetBoolean(prefs::kAllowDeletingBrowserHistory,
-                         allow_history_deletion || !record_history);
+                         allow_history_deletion);
       // Incognito is disabled for supervised users across platforms.
       // First-party sites use signed-in cookies to ensure that parental
       // restrictions are applied for Unicorn accounts.
-      // TODO(crbug.com/1304177): Set to disabled by default.
       prefs_->SetInteger(
           prefs::kIncognitoModeAvailability,
-          static_cast<int>(record_history
-                               ? IncognitoModePrefs::Availability::kDisabled
-                               : IncognitoModePrefs::Availability::kEnabled));
+          static_cast<int>(IncognitoModePrefs::Availability::kDisabled));
     }
 
     {
