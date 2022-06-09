@@ -20,9 +20,12 @@ class MockWebcamUtils extends TestBrowserProxy implements WebcamUtilsInterface {
   public captureFramesResponse = [];
   public pngUint8Array = new Uint8Array(10);
 
+  /* eslint-disable @typescript-eslint/naming-convention */
   CAPTURE_SIZE = {height: 10, width: 10};
   CAPTURE_INTERVAL_MS = 10;
   CAPTURE_DURATION_MS = 20;
+  /* eslint-enable @typescript-eslint/naming-convention */
+
   kDefaultVideoConstraints = webcamUtils.kDefaultVideoConstraints;
 
   constructor() {

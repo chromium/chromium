@@ -133,6 +133,17 @@ export type DestinationOptionalParams = {
 };
 
 /**
+ * List of capability types considered color.
+ */
+const COLOR_TYPES: string[] = ['STANDARD_COLOR', 'CUSTOM_COLOR'];
+
+/**
+ * List of capability types considered monochrome.
+ */
+const MONOCHROME_TYPES: string[] = ['STANDARD_MONOCHROME', 'CUSTOM_MONOCHROME'];
+
+
+/**
  * Print destination data object.
  */
 export class Destination {
@@ -220,17 +231,6 @@ export class Destination {
   // </if>
 
   private type_: PrinterType;
-
-  /**
-   * List of capability types considered color.
-   */
-  private COLOR_TYPES_: string[] = ['STANDARD_COLOR', 'CUSTOM_COLOR'];
-
-  /**
-   * List of capability types considered monochrome.
-   */
-  private MONOCHROME_TYPES_: string[] =
-      ['STANDARD_MONOCHROME', 'CUSTOM_MONOCHROME'];
 
   constructor(
       id: string, origin: DestinationOrigin, displayName: string,
@@ -511,9 +511,8 @@ export class Destination {
     let hasMonochrome = false;
     capability.option.forEach(option => {
       assert(option.type);
-      hasColor = hasColor || this.COLOR_TYPES_.includes(option.type);
-      hasMonochrome =
-          hasMonochrome || this.MONOCHROME_TYPES_.includes(option.type);
+      hasColor = hasColor || COLOR_TYPES.includes(option.type);
+      hasMonochrome = hasMonochrome || MONOCHROME_TYPES.includes(option.type);
     });
     return hasColor && hasMonochrome;
   }
@@ -523,7 +522,7 @@ export class Destination {
    * @return Selected color option.
    */
   getSelectedColorOption(isColor: boolean): ColorOption|null {
-    const typesToLookFor = isColor ? this.COLOR_TYPES_ : this.MONOCHROME_TYPES_;
+    const typesToLookFor = isColor ? COLOR_TYPES : MONOCHROME_TYPES;
     const capability = this.colorCapability_();
     if (!capability || !capability.option) {
       return null;

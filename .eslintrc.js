@@ -91,6 +91,16 @@ module.exports = {
           trailingUnderscore: 'allow',
         },
         {
+          selector: 'classProperty',
+          format: ['UPPER_CASE'],
+          modifiers: ['static', 'readonly'],
+        },
+        {
+          selector: 'classProperty',
+          format: ['camelCase'],
+          trailingUnderscore: 'allow',
+        },
+        {
           selector: 'parameter',
           format: ['camelCase'],
           leadingUnderscore: 'allow',

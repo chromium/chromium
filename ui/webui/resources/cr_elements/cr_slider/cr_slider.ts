@@ -206,6 +206,8 @@ export class CrSliderElement extends CrSliderElementBase {
   private deltaKeyMap_: Map<string, number>|null = null;
   private draggingEventTracker_: EventTracker|null = null;
   private debouncer_: Debouncer;
+
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
   override _rippleContainer: Element;
 
   override ready() {

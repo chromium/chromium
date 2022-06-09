@@ -67,12 +67,12 @@ export class ZeroTrustConnectorElement extends CustomElement {
     }
   }
 
-  private _signalsString: string = '';
+  private signalsString_: string = '';
   public set signalsString(str: string) {
     const signalsEl = (this.$('#signals') as HTMLElement);
     if (signalsEl) {
       signalsEl.innerText = str;
-      this._signalsString = str;
+      this.signalsString_ = str;
     } else {
       console.error('Could not find #signals element.');
     }
@@ -83,7 +83,7 @@ export class ZeroTrustConnectorElement extends CustomElement {
   }
 
   public get signalsString(): string {
-    return this._signalsString;
+    return this.signalsString_;
   }
 
   private readonly pageHandler: PageHandlerInterface;

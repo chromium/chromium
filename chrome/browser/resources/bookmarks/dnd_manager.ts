@@ -134,11 +134,12 @@ export class DragInfo {
   }
 }
 
+const EXPAND_FOLDER_DELAY: number = 400;
+
 /**
  * Manages auto expanding of sidebar folders on hover while dragging.
  */
 class AutoExpander {
-  EXPAND_FOLDER_DELAY: number = 400;
   private lastElement_: BookmarkElement|null = null;
   private debouncer_: Debouncer;
 
@@ -165,7 +166,7 @@ class AutoExpander {
 
     // If dragging over the same node, reset the expander delay.
     if (overElement && overElement === this.lastElement_) {
-      this.debouncer_.restartTimeout(this.EXPAND_FOLDER_DELAY);
+      this.debouncer_.restartTimeout(EXPAND_FOLDER_DELAY);
       return;
     }
 

@@ -17,9 +17,12 @@ export class BaseDialog {
       title: string, message: string, onOk?: Function|undefined,
       onCancel?: Function|undefined, onShow?: Function|undefined): void;
   hide(onHide?: Function|undefined): void;
+
+  /* eslint-disable @typescript-eslint/naming-convention */
   OK_LABEL: string;
   CANCEL_LABEL: string;
   ANIMATE_STABLE_DURATION: number;
+  /* eslint-enable @typescript-eslint/naming-convention */
 }
 
 export class AlertDialog extends BaseDialog {
