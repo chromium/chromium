@@ -133,6 +133,16 @@ chromium-metrics-reviews@google.com.
   <variant name="WorkerProcess" summary=""/>
 </variants>
 
+<variants name="UrlParamFilterClassificationRole">
+  <variant name=".Destination"
+      summary="parameters classified as having the destination role"/>
+  <variant name=".Invalid"
+      summary="parameters with an unknown role, likely indicating a
+               compatibility issue"/>
+  <variant name=".Source"
+      summary="parameters classified as having the source role"/>
+</variants>
+
 <variants name="VoiceIntentTargetVariant">
   <variant name="Assistant" summary="Assistant voice transcription."/>
   <variant name="System" summary="System voice transcription."/>

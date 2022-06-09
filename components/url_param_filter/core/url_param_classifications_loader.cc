@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
@@ -50,12 +51,7 @@ void AppendParams(ClassificationMap& map,
 }
 
 void ProcessClassification(ClassificationMap& map,
-                           const FilterClassification& classification,
-                           std::string experiment_identifier) {
-  if (!experiment_identifier.empty() &&
-      !HasExperimentTag(classification, experiment_identifier)) {
-    return;
-  }
+                           const FilterClassification& classification) {
   if (classification.use_cases_size() > 0) {
     for (int use_case : classification.use_cases()) {
       AppendParams(map, classification,
@@ -81,7 +77,7 @@ ClassificationMap GetClassificationsFromFeature(
           // When retrieving classifications from the feature, we do not allow
           // additional experiment overrides.
           DCHECK(i.experiment_tags().empty());
-          ProcessClassification(map, i, "");
+          ProcessClassification(map, i);
         }
       }
     }
@@ -96,15 +92,8 @@ ClassificationMap GetClassificationMap(
   if (!classifications.has_value())
     return ClassificationMap();
   ClassificationMap map;
-  std::string experiment_identifier = base::GetFieldTrialParamValueByFeature(
-      features::kIncognitoParamFilterEnabled, "experiment_identifier");
-  // If there is no experiment identifier passed via the feature, then use the
-  // classifications that are marked `default`.
-  if (experiment_identifier.empty()) {
-    experiment_identifier = DEFAULT_TAG;
-  }
   for (const FilterClassification& classification : classifications.value()) {
-    ProcessClassification(map, classification, experiment_identifier);
+    ProcessClassification(map, classification);
   }
   return map;
 }
@@ -138,19 +127,42 @@ void ClassificationsLoader::ReadClassifications(
 
   std::vector<FilterClassification> source_classifications,
       destination_classifications;
+  int total_applicable_source_classifications = 0;
+  int total_applicable_destination_classifications = 0;
+  std::string experiment_identifier = base::GetFieldTrialParamValueByFeature(
+      features::kIncognitoParamFilterEnabled, "experiment_identifier");
+  // If there is no experiment identifier passed via the feature, then use the
+  // classifications that are marked `default`.
+  if (experiment_identifier.empty()) {
+    experiment_identifier = DEFAULT_TAG;
+  }
   for (const FilterClassification& fc : classification_list.classifications()) {
     DCHECK(fc.has_site());
     DCHECK(fc.has_site_role());
-    if (fc.site_role() == FilterClassification_SiteRole_SOURCE)
+    if (!HasExperimentTag(fc, experiment_identifier)) {
+      continue;
+    }
+    if (fc.site_role() == FilterClassification_SiteRole_SOURCE) {
       source_classifications.push_back(fc);
+      total_applicable_source_classifications++;
+    }
 
-    if (fc.site_role() == FilterClassification_SiteRole_DESTINATION)
+    if (fc.site_role() == FilterClassification_SiteRole_DESTINATION) {
       destination_classifications.push_back(fc);
+      total_applicable_destination_classifications++;
+    }
   }
 
   component_source_classifications_ = std::move(source_classifications);
   component_destination_classifications_ =
       std::move(destination_classifications);
+
+  base::UmaHistogramCounts10000(
+      "Navigation.UrlParamFilter.ApplicableClassificationCount.Source",
+      total_applicable_source_classifications);
+  base::UmaHistogramCounts10000(
+      "Navigation.UrlParamFilter.ApplicableClassificationCount.Destination",
+      total_applicable_destination_classifications);
 }
 
 void ClassificationsLoader::ResetListsForTesting() {

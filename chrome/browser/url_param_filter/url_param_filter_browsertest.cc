@@ -39,6 +39,10 @@ constexpr static const char kCrossOtrRefreshCountMetricName[] =
     "Navigation.CrossOtr.ContextMenu.RefreshCount";
 constexpr static const char kFilteredParamCountMetricName[] =
     "Navigation.UrlParamFilter.FilteredParamCount";
+constexpr static const char kApplicableSourceClassificationCount[] =
+    "Navigation.UrlParamFilter.ApplicableClassificationCount.Source";
+constexpr static const char kApplicableDestinationClassificationCount[] =
+    "Navigation.UrlParamFilter.ApplicableClassificationCount.Destination";
 constexpr static const char kDefaultTag[] = "default";
 
 }  // namespace
@@ -1002,14 +1006,13 @@ class ContextMenuIncognitoFilterComponentUpdaterBrowserTest
   }
   base::ScopedTempDir component_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
 // that it filters as expected.
 IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterComponentUpdaterBrowserTest,
                        OpenIncognitoUrlParamFilter) {
-  base::HistogramTester histogram_tester;
-
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1046,12 +1049,13 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterComponentUpdaterBrowserTest,
 
   // The response was a 200 (params filtered => metrics collected), and the
   // navigation went from normal --> OTR browsing.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
   // All params being removed are `default`, and no experiment override is
   // specified on the feature.
-  histogram_tester.ExpectTotalCount(kCrossOtrResponseExperimentalMetricName, 0);
+  histogram_tester_.ExpectTotalCount(kCrossOtrResponseExperimentalMetricName,
+                                     0);
 }
 
 class ContextMenuIncognitoFilterComponentUpdaterExperimentBrowserTest
@@ -1090,8 +1094,6 @@ class ContextMenuIncognitoFilterComponentUpdaterExperimentBrowserTest
 IN_PROC_BROWSER_TEST_F(
     ContextMenuIncognitoFilterComponentUpdaterExperimentBrowserTest,
     OpenIncognitoUrlParamFilter) {
-  base::HistogramTester histogram_tester;
-
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1132,12 +1134,22 @@ IN_PROC_BROWSER_TEST_F(
   // The response was a 200 (params filtered => metrics collected), and the
   // navigation went from normal --> OTR browsing. Because an experimental param
   // was removed, we also validate that the segmented metric was written.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       kCrossOtrResponseExperimentalMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+  histogram_tester_.ExpectTotalCount(kApplicableSourceClassificationCount, 1);
+  histogram_tester_.ExpectTotalCount(kApplicableDestinationClassificationCount,
+                                     1);
+  // Although additional classifications are passed, they are not applicable
+  // given the experiment override.
+  EXPECT_EQ(histogram_tester_.GetTotalSum(kApplicableSourceClassificationCount),
+            1);
+  EXPECT_EQ(
+      histogram_tester_.GetTotalSum(kApplicableDestinationClassificationCount),
+      0);
 }
 
 class ContextMenuIncognitoFilterComponentUpdaterAdditiveExperimentBrowserTest
@@ -1179,8 +1191,6 @@ class ContextMenuIncognitoFilterComponentUpdaterAdditiveExperimentBrowserTest
 IN_PROC_BROWSER_TEST_F(
     ContextMenuIncognitoFilterComponentUpdaterAdditiveExperimentBrowserTest,
     OpenIncognitoUrlParamFilter) {
-  base::HistogramTester histogram_tester;
-
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1221,19 +1231,25 @@ IN_PROC_BROWSER_TEST_F(
   // The response was a 200 (params filtered => metrics collected), and the
   // navigation went from normal --> OTR browsing. Because a param included in
   // the experiment was removed, we should also see that metric written.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       kCrossOtrResponseExperimentalMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+  histogram_tester_.ExpectTotalCount(kApplicableSourceClassificationCount, 1);
+  histogram_tester_.ExpectTotalCount(kApplicableDestinationClassificationCount,
+                                     1);
+  EXPECT_EQ(histogram_tester_.GetTotalSum(kApplicableSourceClassificationCount),
+            2);
+  EXPECT_EQ(
+      histogram_tester_.GetTotalSum(kApplicableDestinationClassificationCount),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ContextMenuIncognitoFilterComponentUpdaterAdditiveExperimentBrowserTest,
     OpenIncognitoUrlParamFilterNoExperimentalParamFiltered) {
-  base::HistogramTester histogram_tester;
-
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1272,10 +1288,11 @@ IN_PROC_BROWSER_TEST_F(
   // The response was a 200 (params filtered => metrics collected), and the
   // navigation went from normal --> OTR browsing. Because no non-default param
   // was removed, the experimental metric should not be written.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       kCrossOtrResponseMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
-  histogram_tester.ExpectTotalCount(kCrossOtrResponseExperimentalMetricName, 0);
+  histogram_tester_.ExpectTotalCount(kCrossOtrResponseExperimentalMetricName,
+                                     0);
 }
 
 }  // namespace url_param_filter
