@@ -8,8 +8,7 @@
 #include "ui/display/win/screen_win.h"
 #include "ui/display/win/topmost_window_finder_win.h"
 
-namespace display {
-namespace win {
+namespace display::win {
 
 // static
 gfx::NativeWindow LocalProcessWindowFinder::GetProcessWindowAtPoint(
@@ -31,44 +30,60 @@ gfx::NativeWindow LocalProcessWindowFinder::GetProcessWindowAtPoint(
 
 bool LocalProcessWindowFinder::ShouldStopIterating(HWND hwnd) {
   RECT r;
+  // Make sure the window is on the same virtual desktop. First check if the
+  // host knows if the window is on the current_workspace or not.
+  gfx::NativeWindow native_win = screen_win_->GetNativeWindowFromHWND(hwnd);
+  absl::optional<bool> on_current_workspace;
+  if (native_win) {
+    on_current_workspace =
+        screen_win_->IsWindowOnCurrentVirtualDesktop(native_win);
+  }
+  if (on_current_workspace == false)
+    return false;
 
-  // Make sure the window is on the same virtual desktop.
-  if (virtual_desktop_manager_) {
+  if (!IsWindowVisible(hwnd) || !GetWindowRect(hwnd, &r) ||
+      !PtInRect(&r, screen_loc_.ToPOINT())) {
+    return false;  // Window is not at `screen_loc_`.
+  }
+
+  // The window is at the correct position on the screen.
+  // If we're Win10 or greater, and host doesn't know if the window is on the
+  // current virtual desktop, create the a VirtualDesktopManager if we haven't
+  // already, and if that succeeds, check if the window is on the current
+  // virtual desktop.
+  if (base::win::GetVersion() >= base::win::Version::WIN10 &&
+      !on_current_workspace.has_value()) {
+    // Lazily create virtual_desktop_manager_ since we should rarely need it.
+    if (!virtual_desktop_manager_) {
+      ::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr, CLSCTX_ALL,
+                         IID_PPV_ARGS(&virtual_desktop_manager_));
+    }
+
     BOOL on_current_desktop;
-    if (SUCCEEDED(virtual_desktop_manager_->IsWindowOnCurrentVirtualDesktop(
+    if (virtual_desktop_manager_ &&
+        SUCCEEDED(virtual_desktop_manager_->IsWindowOnCurrentVirtualDesktop(
             hwnd, &on_current_desktop)) &&
         !on_current_desktop) {
       return false;
     }
   }
 
-  if (IsWindowVisible(hwnd) && GetWindowRect(hwnd, &r) &&
-      PtInRect(&r, screen_loc_.ToPOINT())) {
-    // Don't set result_ if the window is occluded, because there is at least
-    // one window covering the browser window. E.g., tab drag drop shouldn't
-    // drop on an occluded browser window.
-    gfx::NativeWindow native_window =
-        screen_win_->GetNativeWindowFromHWND(hwnd);
-    if (!native_window || !screen_win_->IsNativeWindowOccluded(native_window))
-      result_ = hwnd;
-    return true;
-  }
-  return false;
+  // Don't set result_ if the window is occluded, because there is at least
+  // one window covering the browser window. E.g., tab drag drop shouldn't
+  // drop on an occluded browser window.
+  if (!native_win || !screen_win_->IsNativeWindowOccluded(native_win))
+    result_ = hwnd;
+  return true;
 }
 
 LocalProcessWindowFinder::LocalProcessWindowFinder(const gfx::Point& screen_loc,
                                                    ScreenWin* screen_win,
                                                    const std::set<HWND>& ignore)
     : BaseWindowFinderWin(ignore), result_(nullptr), screen_win_(screen_win) {
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    ::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr, CLSCTX_ALL,
-                       IID_PPV_ARGS(&virtual_desktop_manager_));
-  }
   screen_loc_ = display::win::ScreenWin::DIPToScreenPoint(screen_loc);
   EnumThreadWindows(GetCurrentThreadId(), WindowCallbackProc, as_lparam());
 }
 
 LocalProcessWindowFinder::~LocalProcessWindowFinder() = default;
 
-}  // namespace win
-}  // namespace display
+}  // namespace display::win

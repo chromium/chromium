@@ -702,6 +702,12 @@ bool ScreenWin::IsNativeWindowOccluded(gfx::NativeWindow window) const {
   return false;
 }
 
+absl::optional<bool> ScreenWin::IsWindowOnCurrentVirtualDesktop(
+    gfx::NativeWindow window) const {
+  NOTREACHED();
+  return absl::nullopt;
+}
+
 ScreenWin::ScreenWin(bool initialize) {
   DCHECK(!g_instance);
   g_instance = this;
