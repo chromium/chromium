@@ -262,20 +262,27 @@ class CrashReportDatabaseMac : public CrashReportDatabase {
   // Cleans any attachments that have no associated report in any state.
   void CleanOrphanedAttachments();
 
+  Settings& SettingsInternal() {
+    if (!settings_init_)
+      settings_.Initialize(base_dir_.Append(kSettings));
+    settings_init_ = true;
+    return settings_;
+  }
+
   base::FilePath base_dir_;
   Settings settings_;
+  bool settings_init_;
   bool xattr_new_names_;
   InitializationStateDcheck initialized_;
 };
-
 
 CrashReportDatabaseMac::CrashReportDatabaseMac(const base::FilePath& path)
     : CrashReportDatabase(),
       base_dir_(path),
       settings_(),
+      settings_init_(false),
       xattr_new_names_(false),
-      initialized_() {
-}
+      initialized_() {}
 
 CrashReportDatabaseMac::~CrashReportDatabaseMac() {}
 
@@ -300,9 +307,6 @@ bool CrashReportDatabaseMac::Initialize(bool may_create) {
   if (!CreateOrEnsureDirectoryExists(AttachmentsRootPath())) {
     return false;
   }
-
-  if (!settings_.Initialize(base_dir_.Append(kSettings)))
-    return false;
 
   // Do an xattr operation as the last step, to ensure the filesystem has
   // support for them. This xattr also serves as a marker for whether the
@@ -334,7 +338,7 @@ base::FilePath CrashReportDatabaseMac::DatabasePath() {
 
 Settings* CrashReportDatabaseMac::GetSettings() {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return &settings_;
+  return &SettingsInternal();
 }
 
 CrashReportDatabase::OperationStatus
@@ -527,7 +531,7 @@ CrashReportDatabaseMac::RecordUploadAttempt(UploadReport* report,
     return kDatabaseError;
   }
 
-  if (!settings_.SetLastUploadAttemptTime(now)) {
+  if (!SettingsInternal().SetLastUploadAttemptTime(now)) {
     return kDatabaseError;
   }
 
