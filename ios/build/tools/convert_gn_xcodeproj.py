@@ -218,7 +218,7 @@ class XcodeProject(object):
 
     # TODO(crbug.com/1334028) Disable code signing for Xcode 14.
     lines = check_output(['xcodebuild', '-version']).splitlines()
-    xcode_version_int = int(float(lines[0].split()[-1]))
+    xcode_version_int = int(lines[0].split()[-1].split('.')[0])
 
     for key, obj in list(self.IterObjectsByIsa('XCConfigurationList')):
       # Use the first build configuration as template for creating all the
