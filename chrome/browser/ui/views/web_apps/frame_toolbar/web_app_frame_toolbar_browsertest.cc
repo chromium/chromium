@@ -611,9 +611,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_EQ(gfx::Rect(), bounds);
 }
 
-// TODO(crbug.com/1263672) Enable for LaCrOS when the blocker bug has been
-// fixed.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        GeometryChangeEvent) {
   InstallAndLaunchWebApp();
@@ -644,7 +641,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_EQ(initial_js_overlay_bounds.height(),
             resized_js_overlay_bounds.height());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        NoGeometryChangeEventIfOverlayIsOff) {

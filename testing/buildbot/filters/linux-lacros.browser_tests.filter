@@ -2,7 +2,6 @@
 -AccessContextAuditBrowserTest.CheckSessionOnly
 -AccessContextAuditBrowserTest.RemoveRecords
 -AdsPageLoadMetricsObserverBrowserTest.PageAdDensityIgnoreDisplayNoneFrame
--All/PopupBrowserTest.MoveClampedToCurrentDisplay/*
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/*
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/*
 -BluetoothApiTest.*
@@ -25,11 +24,9 @@
 -PageLoadMetricsBrowserTest.MainFrameIntersectionsMainFrame
 -PreservedWindowPlacement.Test
 -ProfileListDesktopBrowserTest.SwitchToProfile
--SessionRestoreTest.RestoredTabsHaveCorrectInitialSize
 -SSLUITest.TestCloseTabWithUnsafePopup
 -TabHoverCardBubbleViewBrowserTest.WidgetNotVisibleOnMousePressAfterTabFocus
 -TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnKeyPressAfterTabFocus
--TabRestoreTest.RestoreWindowBounds
 # crbug.com/1121486
 # Following tests were flaky. We disable them first until we have time to investigate.
 -AdsPageLoadMetricsObserverBrowserTest.PageAdDensityMultipleFrames
