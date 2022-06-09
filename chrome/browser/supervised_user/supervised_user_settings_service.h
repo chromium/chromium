@@ -107,6 +107,12 @@ class SupervisedUserSettingsService : public KeyedService,
   [[nodiscard]] base::CallbackListSubscription SubscribeForNewWebsiteApproval(
       const WebsiteApprovalCallback& callback);
 
+  // Records that a website has been locally approved for this user.
+  //
+  // This handles updating local and remote state for this setting, and
+  // notifying observers.
+  void RecordLocalWebsiteApproval(const std::string& host);
+
   // Subscribe for a notification when the keyed service is shut down. The
   // subscription can be destroyed to unsubscribe.
   base::CallbackListSubscription SubscribeForShutdown(
@@ -127,12 +133,14 @@ class SupervisedUserSettingsService : public KeyedService,
   static std::string MakeSplitSettingKey(const std::string& prefix,
                                          const std::string& key);
 
-  // Uploads an item to the Sync server. Items are the same data structure as
-  // supervised user settings (i.e. key-value pairs, as described at the top of
-  // the file), but they are only uploaded (whereas supervised user settings are
-  // only downloaded), and never passed to the preference system.
-  // An example of an uploaded item is an access request to a blocked URL.
-  void UploadItem(const std::string& key, std::unique_ptr<base::Value> value);
+  // Sets an item locally and uploads it to the Sync server.
+  //
+  // This handles notifying subscribers of the change.
+  //
+  // This may be called regardless of whether the sync server has completed
+  // initialization; in either case the local changes will be handled
+  // immediately.
+  void SaveItem(const std::string& key, std::unique_ptr<base::Value> value);
 
   // Sets the setting with the given |key| to a copy of the given |value|.
   void SetLocalSetting(const std::string& key,
@@ -183,9 +191,6 @@ class SupervisedUserSettingsService : public KeyedService,
   // Sends the settings to all subscribers. This method should be called by the
   // subclass whenever the settings change.
   void InformSubscribers();
-
-  void PushItemToSync(const std::string& key,
-                      std::unique_ptr<base::Value> value);
 
   // Used for persisting the settings. Unlike other PrefStores, this one is not
   // directly hooked up to the PrefService.

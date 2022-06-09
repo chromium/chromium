@@ -3,14 +3,23 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/supervised_user/web_approvals_manager.h"
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/android/website_parent_approval.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
+#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "components/url_matcher/url_util.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -48,10 +57,14 @@ void WebApprovalsManager::RequestLocalApproval(
   }
   std::move(callback).Run(true);
 #elif BUILDFLAG(IS_ANDROID)
+  SupervisedUserSettingsService* settings_service =
+      SupervisedUserSettingsServiceFactory::GetForKey(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())
+              ->GetProfileKey());
   WebsiteParentApproval::RequestLocalApproval(
       web_contents, url,
       base::BindOnce(&WebApprovalsManager::OnLocalApprovalRequestCompleted,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), settings_service, url));
   std::move(callback).Run(true);
 #endif
 }
@@ -123,8 +136,13 @@ void WebApprovalsManager::OnRemoteApprovalRequestIssued(
 }
 
 void WebApprovalsManager::OnLocalApprovalRequestCompleted(
+    SupervisedUserSettingsService* settings_service,
+    const GURL& url,
     bool request_approved) {
-  // TODO(crbug.com/1324945): write sync data, output metrics.
+  // TODO(crbug.com/1324945): output metrics.
   VLOG(0) << "Local URL approval final result: " << request_approved;
-  NOTIMPLEMENTED();
+
+  if (request_approved) {
+    settings_service->RecordLocalWebsiteApproval(url.host());
+  }
 }

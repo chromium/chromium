@@ -137,6 +137,17 @@ SupervisedUserSettingsService::SubscribeForNewWebsiteApproval(
   return website_approval_callback_list_.Add(callback);
 }
 
+void SupervisedUserSettingsService::RecordLocalWebsiteApproval(
+    const std::string& host) {
+  // Write the sync setting.
+  std::string setting_key = MakeSplitSettingKey(
+      supervised_users::kContentPackManualBehaviorHosts, host);
+  SaveItem(setting_key, std::make_unique<base::Value>(true));
+
+  // Now notify subscribers of the updates.
+  website_approval_callback_list_.Notify(setting_key);
+}
+
 base::CallbackListSubscription
 SupervisedUserSettingsService::SubscribeForShutdown(
     const ShutdownCallback& callback) {
@@ -168,16 +179,10 @@ std::string SupervisedUserSettingsService::MakeSplitSettingKey(
   return prefix + kSplitSettingKeySeparator + key;
 }
 
-void SupervisedUserSettingsService::UploadItem(
+void SupervisedUserSettingsService::SaveItem(
     const std::string& key,
     std::unique_ptr<base::Value> value) {
-  DCHECK(!SettingShouldApplyToPrefs(key));
-  PushItemToSync(key, std::move(value));
-}
-
-void SupervisedUserSettingsService::PushItemToSync(
-    const std::string& key,
-    std::unique_ptr<base::Value> value) {
+  // Update the value in our local dict, and push the changes to sync.
   std::string key_suffix = key;
   base::Value* dict = nullptr;
   if (sync_processor_) {
@@ -200,6 +205,15 @@ void SupervisedUserSettingsService::PushItemToSync(
     dict = GetQueuedItems();
   }
   dict->SetKey(key_suffix, base::Value::FromUniquePtrValue(std::move(value)));
+
+  // Now notify subscribers of the updates.
+  // For simplicity and consistency with ProcessSyncChanges() we notify both
+  // settings keys.
+  store_->ReportValueChanged(kAtomicSettings,
+                             WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+  store_->ReportValueChanged(kSplitSettings,
+                             WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+  InformSubscribers();
 }
 
 void SupervisedUserSettingsService::SetLocalSetting(

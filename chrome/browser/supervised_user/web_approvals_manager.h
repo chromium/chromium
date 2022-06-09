@@ -15,6 +15,7 @@
 
 class GURL;
 class PermissionRequestCreator;
+class SupervisedUserSettingsService;
 
 namespace content {
 class WebContents;
@@ -85,7 +86,10 @@ class WebApprovalsManager {
 
   // Called to indicate that a URL access request has completed (either
   // successfully or not).
-  void OnLocalApprovalRequestCompleted(bool request_approved);
+  void OnLocalApprovalRequestCompleted(
+      SupervisedUserSettingsService* settings_service,
+      const GURL& url,
+      bool request_approved);
 
   // Stores remote approval request creators.
   // The creators are cleared during shutdown.
