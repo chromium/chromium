@@ -36,8 +36,7 @@ using Hardware = metrics::SystemProfileProto::Hardware;
 
 namespace {
 
-constexpr int kTpmV1Family = 0x312e3200;
-constexpr int kTpmV2Family = 0x322e3000;
+constexpr int kTpmFirmwareVersion = 100;
 
 class FakeMultiDeviceSetupClientImplFactory
     : public ash::multidevice_setup::MultiDeviceSetupClientImpl::Factory {
@@ -125,19 +124,6 @@ class ChromeOSMetricsProviderTest : public testing::Test {
     // Initialize the login state trackers.
     if (!chromeos::LoginState::IsInitialized())
       chromeos::LoginState::Initialize();
-  }
-
-  void CheckTpmType(const Hardware::TpmType& expected_tpm_type) {
-    TestChromeOSMetricsProvider provider;
-    provider.OnDidCreateMetricsLog();
-    metrics::SystemProfileProto system_profile;
-    provider.ProvideSystemProfileMetrics(&system_profile);
-
-    ASSERT_TRUE(system_profile.has_hardware());
-    const Hardware::TpmType proto_tpm_type =
-        system_profile.hardware().tpm_type();
-
-    EXPECT_EQ(expected_tpm_type, proto_tpm_type);
   }
 
   void TearDown() override {
@@ -284,68 +270,20 @@ TEST_F(ChromeOSMetricsProviderTest, DemoModeDimensions) {
   EXPECT_EQ(country, expected_country);
 }
 
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeRuntimeSelection) {
-  chromeos::TpmManagerClient::Get()
-      ->GetTestInterface()
-      ->mutable_supported_features_reply()
-      ->set_support_runtime_selection(true);
-
-  CheckTpmType(Hardware::TPM_TYPE_RUNTIME_SELECTION);
-}
-
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeV1) {
+TEST_F(ChromeOSMetricsProviderTest, TpmFirmwareVersion) {
   chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_version_info_reply()
-      ->set_family(kTpmV1Family);
+      ->set_firmware_version(kTpmFirmwareVersion);
 
-  CheckTpmType(Hardware::TPM_TYPE_1);
-}
+  TestChromeOSMetricsProvider provider;
+  provider.OnDidCreateMetricsLog();
+  metrics::SystemProfileProto system_profile;
+  provider.ProvideSystemProfileMetrics(&system_profile);
 
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeCr50) {
-  tpm_manager::GetVersionInfoReply* reply = chromeos::TpmManagerClient::Get()
-                                                ->GetTestInterface()
-                                                ->mutable_version_info_reply();
-  reply->set_gsc_version(tpm_manager::GSC_VERSION_CR50);
-  reply->set_family(kTpmV2Family);
+  ASSERT_TRUE(system_profile.has_hardware());
+  ASSERT_TRUE(system_profile.hardware().has_tpm_firmware_version());
 
-  CheckTpmType(Hardware::TPM_TYPE_CR50);
-}
-
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeTi50) {
-  tpm_manager::GetVersionInfoReply* reply = chromeos::TpmManagerClient::Get()
-                                                ->GetTestInterface()
-                                                ->mutable_version_info_reply();
-  reply->set_gsc_version(tpm_manager::GSC_VERSION_TI50);
-  reply->set_family(kTpmV2Family);
-
-  CheckTpmType(Hardware::TPM_TYPE_TI50);
-}
-
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeInvalidFamily) {
-  chromeos::TpmManagerClient::Get()
-      ->GetTestInterface()
-      ->mutable_version_info_reply()
-      ->set_family(100);
-
-  CheckTpmType(Hardware::TPM_TYPE_UNKNOWN);
-}
-
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeGenericTpm2) {
-  tpm_manager::GetVersionInfoReply* reply = chromeos::TpmManagerClient::Get()
-                                                ->GetTestInterface()
-                                                ->mutable_version_info_reply();
-  reply->set_family(kTpmV2Family);
-
-  CheckTpmType(Hardware::TPM_TYPE_UNKNOWN);
-}
-
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeInvalidGscWithFamilyV1) {
-  tpm_manager::GetVersionInfoReply* reply = chromeos::TpmManagerClient::Get()
-                                                ->GetTestInterface()
-                                                ->mutable_version_info_reply();
-  reply->set_family(kTpmV1Family);
-  reply->set_gsc_version(tpm_manager::GSC_VERSION_CR50);
-
-  CheckTpmType(Hardware::TPM_TYPE_UNKNOWN);
+  EXPECT_EQ(system_profile.hardware().tpm_firmware_version(),
+            kTpmFirmwareVersion);
 }

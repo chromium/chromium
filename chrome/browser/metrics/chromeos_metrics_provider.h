@@ -57,9 +57,9 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   // is run.
   void InitTaskGetCellularDeviceVariant(base::OnceClosure callback);
 
-  // Retrieves TPM type using TpmManagerClient. When this task is complete,
-  // |callback| is run.
-  void InitTaskGetTpmType(base::OnceClosure callback);
+  // Retrieves TPM firmware version using TpmManagerClient. When this task is
+  // complete, |callback| is run.
+  void InitTaskGetTpmFirmwareVersion(base::OnceClosure callback);
 
   // metrics::MetricsProvider:
   void Init() override;
@@ -96,8 +96,7 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   void OnArcFeaturesParsed(base::OnceClosure callback,
                            absl::optional<arc::ArcFeatures> features);
 
-  // Sets the TPM version info (tpm family and GSC version), then calls the
-  // callback.
+  // Sets the TPM firmware version, then calls the callback.
   void OnTpmManagerGetVersionInfo(
       base::OnceClosure callback,
       const tpm_manager::GetVersionInfoReply& reply);
@@ -149,11 +148,8 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   // ARC release version obtained from build properties.
   absl::optional<std::string> arc_release_ = absl::nullopt;
 
-  // The following three fields together determine the TPM
-  // (go/trusted-platform-module) type.
-  absl::optional<uint32_t> tpm_family_ = absl::nullopt;
-  absl::optional<tpm_manager::GscVersion> gsc_version_ = absl::nullopt;
-  absl::optional<bool> tpm_support_runtime_selection_ = absl::nullopt;
+  // The firmware version of the TPM (go/trusted-platform-module).
+  absl::optional<uint64_t> tpm_firmware_version_ = absl::nullopt;
 
   base::WeakPtrFactory<ChromeOSMetricsProvider> weak_ptr_factory_{this};
 };
