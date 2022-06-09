@@ -21,9 +21,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/buckets/bucket_id.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/file_system_access/file_system_access.pb.h"
 #include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_data_transfer_token_impl.h"
@@ -55,6 +59,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -793,7 +798,9 @@ void FileSystemAccessManagerImpl::DidResolveForSerializeHandle(
   } else if (url.type() == storage::kFileSystemTypeTemporary) {
     base::FilePath virtual_path = url.virtual_path();
     data.mutable_sandboxed()->set_virtual_path(SerializePath(virtual_path));
-
+    if (url.bucket().has_value() && !url.bucket()->is_default) {
+      data.mutable_sandboxed()->set_bucket_id(url.bucket()->id.value());
+    }
   } else {
     NOTREACHED();
   }
@@ -803,6 +810,22 @@ void FileSystemAccessManagerImpl::DidResolveForSerializeHandle(
   DCHECK(success);
   std::vector<uint8_t> result(value.begin(), value.end());
   std::move(callback).Run(result);
+}
+
+void FileSystemAccessManagerImpl::DidGetSandboxedBucketForDeserializeHandle(
+    const FileSystemAccessHandleData& data,
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token,
+    const storage::FileSystemURL& url) {
+  auto permission_grant =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          PermissionStatus::GRANTED, base::FilePath());
+  CreateTransferTokenImpl(
+      url, url.storage_key(),
+      SharedHandleState(permission_grant, permission_grant),
+      data.handle_type() == FileSystemAccessHandleData::kDirectory
+          ? HandleType::kDirectory
+          : HandleType::kFile,
+      std::move(token));
 }
 
 void FileSystemAccessManagerImpl::DeserializeHandle(
@@ -825,17 +848,30 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
           DeserializePath(data.sandboxed().virtual_path());
       storage::FileSystemURL url = context()->CreateCrackedFileSystemURL(
           storage_key, storage::kFileSystemTypeTemporary, virtual_path);
-
-      auto permission_grant =
-          base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
-              PermissionStatus::GRANTED, base::FilePath());
-      CreateTransferTokenImpl(
-          url, storage_key,
-          SharedHandleState(permission_grant, permission_grant),
-          data.handle_type() == FileSystemAccessHandleData::kDirectory
-              ? HandleType::kDirectory
-              : HandleType::kFile,
-          std::move(token));
+      if (!data.sandboxed().has_bucket_id()) {
+        // Use the default storage bucket.
+        DidGetSandboxedBucketForDeserializeHandle(data, std::move(token), url);
+      } else {
+        // Apply a custom bucket override.
+        auto bucket_callback = base::BindOnce(
+            [](storage::FileSystemURL url,
+               base::OnceCallback<void(const storage::FileSystemURL&)> callback,
+               storage::QuotaErrorOr<storage::BucketInfo> result) {
+              if (!result.ok()) {
+                // Drop `token`, and directly return.
+                return;
+              }
+              url.SetBucket(result->ToBucketLocator());
+              std::move(callback).Run(url);
+            },
+            url,
+            base::BindOnce(&FileSystemAccessManagerImpl::
+                               DidGetSandboxedBucketForDeserializeHandle,
+                           weak_factory_.GetWeakPtr(), data, std::move(token)));
+        context_->quota_manager_proxy()->GetBucketById(
+            storage::BucketId::FromUnsafeValue(data.sandboxed().bucket_id()),
+            base::SequencedTaskRunnerHandle::Get(), std::move(bucket_callback));
+      }
       break;
     }
     case FileSystemAccessHandleData::kLocal:

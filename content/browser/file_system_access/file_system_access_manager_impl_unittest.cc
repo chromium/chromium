@@ -18,6 +18,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/services/storage/public/cpp/buckets/bucket_id.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/file_system_access/file_system_access_data_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
@@ -323,6 +325,19 @@ class FileSystemAccessManagerImplTest : public testing::Test {
               blink::mojom::FileSystemAccessStatus::kOk);
   }
 
+  storage::BucketLocator CreateBucketForTesting() {
+    base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
+        bucket_future;
+    quota_manager_proxy_->CreateBucketForTesting(
+        kTestStorageKey, "custom_bucket", blink::mojom::StorageType::kTemporary,
+        base::SequencedTaskRunnerHandle::Get(), bucket_future.GetCallback());
+    auto bucket = bucket_future.Take();
+    EXPECT_TRUE(bucket.ok());
+    LOG(INFO) << "Created bucket "
+              << bucket->ToBucketLocator().id.GetUnsafeValue();
+    return bucket->ToBucketLocator();
+  }
+
  protected:
   const GURL kTestURL = GURL("https://example.com/test");
   const blink::StorageKey kTestStorageKey =
@@ -424,6 +439,32 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CustomBucket) {
   // is not exposed to the callback we rely on WPTs to ensure the bucket
   // locator was actually used.
   // TODO(crbug.com/1322897): Ensure the bucket override is actually used.
+  ASSERT_TRUE(root);
+}
+
+TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_BadBucket) {
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
+      directory_remote;
+  FileSystemAccessManagerImpl::BindingContext binding_context = {
+      kTestStorageKey, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
+  const auto bucket = storage::BucketLocator(
+      storage::BucketId(12), kTestStorageKey,
+      blink::mojom::StorageType::kUnknown, /*is_default=*/false);
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+      handle_future;
+  manager_->GetSandboxedFileSystem(binding_context, bucket,
+                                   handle_future.GetCallback());
+  EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOk,
+            handle_future.Get<0>()->status);
+
+  mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> root(
+      std::move(std::get<1>(handle_future.Take())));
+  // Currently we intentionally return a non-functional file/directory handle
+  // in the case of a bad bucket override, as there is currently no better way
+  // of representing a handle to a bucket that no longer exists.
   ASSERT_TRUE(root);
 }
 
@@ -707,7 +748,8 @@ TEST_F(FileSystemAccessManagerImplTest,
       file_system_context_.get(), test_file_url, 3));
 }
 
-TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_SandboxedFile) {
+TEST_F(FileSystemAccessManagerImplTest,
+       SerializeHandle_SandboxedFile_DefaultBucket) {
   auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeTemporary,
       base::FilePath::FromUTF8Unsafe("test/foo/bar"));
@@ -720,6 +762,7 @@ TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_SandboxedFile) {
   FileSystemAccessTransferTokenImpl* token =
       SerializeAndDeserializeToken(std::move(token_remote));
   ASSERT_TRUE(token);
+  ASSERT_FALSE(token->url().bucket().has_value());
   EXPECT_EQ(test_file_url, token->url());
   EXPECT_EQ(HandleType::kFile, token->type());
 
@@ -731,7 +774,35 @@ TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_SandboxedFile) {
   EXPECT_EQ(PermissionStatus::GRANTED, token->GetWriteGrant()->GetStatus());
 }
 
-TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_SandboxedDirectory) {
+TEST_F(FileSystemAccessManagerImplTest,
+       SerializeHandle_SandboxedFile_CustomBucket) {
+  auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary,
+      base::FilePath::FromUTF8Unsafe("test/foo/bar"));
+  test_file_url.SetBucket(CreateBucketForTesting());
+  FileSystemAccessFileHandleImpl file(manager_.get(), kBindingContext,
+                                      test_file_url, {ask_grant_, ask_grant_});
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
+  manager_->CreateTransferToken(file,
+                                token_remote.InitWithNewPipeAndPassReceiver());
+
+  FileSystemAccessTransferTokenImpl* token =
+      SerializeAndDeserializeToken(std::move(token_remote));
+  ASSERT_TRUE(token);
+  ASSERT_TRUE(token->url().bucket().has_value());
+  EXPECT_EQ(test_file_url, token->url());
+  EXPECT_EQ(HandleType::kFile, token->type());
+
+  // Deserialized sandboxed filesystem handles should always be readable and
+  // writable.
+  ASSERT_TRUE(token->GetReadGrant());
+  EXPECT_EQ(PermissionStatus::GRANTED, token->GetReadGrant()->GetStatus());
+  ASSERT_TRUE(token->GetWriteGrant());
+  EXPECT_EQ(PermissionStatus::GRANTED, token->GetWriteGrant()->GetStatus());
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       SerializeHandle_SandboxedDirectory_DefaultBucket) {
   auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeTemporary,
       base::FilePath::FromUTF8Unsafe("hello/world/"));
@@ -744,6 +815,34 @@ TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_SandboxedDirectory) {
   FileSystemAccessTransferTokenImpl* token =
       SerializeAndDeserializeToken(std::move(token_remote));
   ASSERT_TRUE(token);
+  ASSERT_FALSE(token->url().bucket().has_value());
+  EXPECT_EQ(test_file_url, token->url());
+  EXPECT_EQ(HandleType::kDirectory, token->type());
+
+  // Deserialized sandboxed filesystem handles should always be readable and
+  // writable.
+  ASSERT_TRUE(token->GetReadGrant());
+  EXPECT_EQ(PermissionStatus::GRANTED, token->GetReadGrant()->GetStatus());
+  ASSERT_TRUE(token->GetWriteGrant());
+  EXPECT_EQ(PermissionStatus::GRANTED, token->GetWriteGrant()->GetStatus());
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       SerializeHandle_SandboxedDirectory_CustomBucket) {
+  auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary,
+      base::FilePath::FromUTF8Unsafe("hello/world/"));
+  test_file_url.SetBucket(CreateBucketForTesting());
+  FileSystemAccessDirectoryHandleImpl directory(
+      manager_.get(), kBindingContext, test_file_url, {ask_grant_, ask_grant_});
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
+  manager_->CreateTransferToken(directory,
+                                token_remote.InitWithNewPipeAndPassReceiver());
+
+  FileSystemAccessTransferTokenImpl* token =
+      SerializeAndDeserializeToken(std::move(token_remote));
+  ASSERT_TRUE(token);
+  ASSERT_TRUE(token->url().bucket().has_value());
   EXPECT_EQ(test_file_url, token->url());
   EXPECT_EQ(HandleType::kDirectory, token->type());
 

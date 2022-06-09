@@ -16,8 +16,11 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "components/download/public/common/quarantine_connection.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/browser/file_system_access/file_system_access.pb.h"
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/common/content_export.h"
@@ -453,10 +456,14 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void DidResolveForSerializeHandle(
       SerializeHandleCallback callback,
       FileSystemAccessTransferTokenImpl* resolved_token);
+  void DidGetSandboxedBucketForDeserializeHandle(
+      const FileSystemAccessHandleData& data,
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token,
+      const storage::FileSystemURL& url);
 
-  // FileSystemAccessCapacityAllocationHosts may reserve too much capacity from
-  // the quota system. This function determines the file's actual size and
-  // corrects its capacity usage in the quota system.
+  // FileSystemAccessCapacityAllocationHosts may reserve too much capacity
+  // from the quota system. This function determines the file's actual size
+  // and corrects its capacity usage in the quota system.
   void CleanupAccessHandleCapacityAllocation(const storage::FileSystemURL& url,
                                              int64_t allocated_file_size,
                                              base::OnceClosure callback);

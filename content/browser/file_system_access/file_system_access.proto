@@ -44,6 +44,9 @@ message SandboxedFileData {
   // The path to the file or directory relative to the root of the origin's
   // sandboxed file system.
   required bytes virtual_path = 1;
+  // The storage bucket ID. Will be populated only if the non-default bucket
+  // is being used.
+  optional int64 bucket_id = 2;
 }
 
 // Used to serialize any File System Access handle, for example when a handle is
