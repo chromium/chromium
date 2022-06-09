@@ -642,22 +642,6 @@ template("generate_android_wrapper") {
 template("generate_r_java") {
   action_with_pydeps(target_name) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
-    if (!defined(deps)) {
-      deps = []
-    }
-    if (defined(invoker.possible_resource_deps)) {
-      foreach(_dep, invoker.possible_resource_deps) {
-        _target_label = get_label_info(_dep, "label_no_toolchain")
-        if (filter_exclude([ _target_label ], java_library_patterns) == [] &&
-            filter_exclude([ _target_label ], java_resource_patterns) != []) {
-          # Depend on the java libraries' transitive __assetres target instead.
-          # This is required to ensure depending on java_groups works.
-          deps += [ "${_target_label}__assetres" ]
-        } else {
-          deps += [ _dep ]
-        }
-      }
-    }
     depfile = "$target_gen_dir/${invoker.target_name}.d"
     inputs = [ invoker.build_config ]
     outputs = [ invoker.srcjar_path ]
@@ -989,9 +973,6 @@ if (enable_java_templates) {
   template("android_lint") {
     action_with_pydeps(target_name) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      if (!defined(deps)) {
-        deps = []
-      }
 
       # https://crbug.com/1098752 Fix for bot OOM (https://crbug.com/1098333).
       if (defined(java_cmd_pool_size)) {
@@ -1003,21 +984,21 @@ if (enable_java_templates) {
       # Lint requires generated sources and generated resources from the build.
       # Turbine __header targets depend on all generated sources, and the
       # __assetres targets depend on all generated resources.
+      deps = []
       if (defined(invoker.deps)) {
-        foreach(_dep, invoker.deps) {
-          _target_label = get_label_info(_dep, "label_no_toolchain")
-          if (filter_exclude([ _target_label ], java_library_patterns) == [] &&
-              filter_exclude([ _target_label ], java_resource_patterns) != []) {
-            deps += [
-              "${_target_label}__assetres",
-              "${_target_label}__header",
-            ]
-          } else {
-            # Keep non-java deps as they may generate files used only by lint.
-            # e.g. generated suppressions.xml files.
-            deps += [ _dep ]
-          }
+        _lib_deps =
+            filter_exclude(filter_include(invoker.deps, java_library_patterns),
+                           java_resource_patterns)
+        foreach(_lib_dep, _lib_deps) {
+          deps += [
+            "${_lib_dep}__assetres",
+            "${_lib_dep}__header",
+          ]
         }
+
+        # Keep non-java deps as they may generate files used only by lint.
+        # e.g. generated suppressions.xml files.
+        deps += filter_exclude(invoker.deps, _lib_deps)
       }
 
       if (defined(invoker.min_sdk_version)) {
@@ -1822,7 +1803,6 @@ if (enable_java_templates) {
   template("process_java_library") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-    _deps = invoker.jar_deps
     _previous_output_jar = invoker.input_jar_path
 
     if (invoker.jacoco_instrument) {
@@ -1840,7 +1820,7 @@ if (enable_java_templates) {
                                "jar_excluded_patterns",
                                "jar_included_patterns",
                              ])
-      deps = _deps
+      deps = invoker.deps
       input_jar = _previous_output_jar
       output_jar = _filter_jar_output_jar
     }
@@ -1853,7 +1833,7 @@ if (enable_java_templates) {
       # javaagent as the desired coverage data was not being generated.
       # See crbug.com/1097815.
       jacoco_instr(target_name) {
-        deps = [ ":$_filter_jar_target_name" ] + invoker.jar_deps
+        deps = [ ":$_filter_jar_target_name" ] + invoker.deps
         forward_variables_from(invoker,
                                [
                                  "java_files",
@@ -2147,15 +2127,13 @@ if (enable_java_templates) {
     if (defined(invoker.android_manifest_dep)) {
       _deps += [ invoker.android_manifest_dep ]
     }
-    foreach(_dep, invoker.deps) {
-      _target_label = get_label_info(_dep, "label_no_toolchain")
-      if (filter_exclude([ _target_label ], java_library_patterns) == [] &&
-          filter_exclude([ _target_label ], java_resource_patterns) != []) {
-        # Depend on the java libraries' transitive __assetres target instead.
-        _deps += [ "${_target_label}__assetres" ]
-      } else {
-        _deps += [ _dep ]
-      }
+    _lib_deps =
+        filter_exclude(filter_include(invoker.deps, java_library_patterns),
+                       java_resource_patterns)
+    _deps += filter_exclude(invoker.deps, _lib_deps)
+    foreach(_lib_dep, _lib_deps) {
+      # Depend on the java libraries' transitive __assetres target instead.
+      _deps += [ "${_lib_dep}__assetres" ]
     }
 
     if (defined(invoker.arsc_output)) {
@@ -3464,22 +3442,24 @@ if (enable_java_templates) {
     }
 
     if (_is_prebuilt || _has_sources) {
-      _java_res_deps = []
+      _java_assetres_deps =
+          filter_include(_invoker_deps, java_resource_patterns)
+
+      # Cannot use minus operator because it does not work when the operand has
+      # repeated entries.
+      _invoker_deps_minus_assetres =
+          filter_exclude(_invoker_deps, _java_assetres_deps)
+      _lib_deps =
+          filter_include(_invoker_deps_minus_assetres, java_library_patterns)
+      _non_java_deps = filter_exclude(_invoker_deps_minus_assetres, _lib_deps)
+
       _java_header_deps = []
       _java_impl_deps = []
-      _non_java_deps = []
-      foreach(_dep, _invoker_deps) {
-        _target_label = get_label_info(_dep, "label_no_toolchain")
-        if (filter_exclude([ _target_label ], java_resource_patterns) == []) {
-          _java_res_deps += [ _dep ]
-        } else if (filter_exclude([ _target_label ], java_library_patterns) ==
-                   []) {
-          # This is a java library dep, so it has header and impl targets.
-          _java_header_deps += [ "${_target_label}__header" ]
-          _java_impl_deps += [ "${_target_label}__impl" ]
-        } else {
-          _non_java_deps += [ _dep ]
-        }
+      foreach(_lib_dep, _lib_deps) {
+        # This is a java library dep, so it has header and impl targets.
+        _java_header_deps += [ "${_lib_dep}__header" ]
+        _java_impl_deps += [ "${_lib_dep}__impl" ]
+        _java_assetres_deps += [ "${_lib_dep}__assetres" ]
       }
 
       # Don't need to depend on the apk-under-test to be packaged.
@@ -3521,8 +3501,8 @@ if (enable_java_templates) {
                         [ ":$_build_config_target_name" ]
 
       _full_classpath_deps =
-          _java_impl_deps + _java_res_deps + _non_java_deps + _extra_java_deps +
-          [ ":$_build_config_target_name" ]
+          _java_impl_deps + _java_assetres_deps + _non_java_deps +
+          _extra_java_deps + [ ":$_build_config_target_name" ]
     }
 
     # Often needed, but too hard to figure out when ahead of time.
@@ -3684,8 +3664,8 @@ if (enable_java_templates) {
         # this before they can read its output R.txt).
         _fake_rjava_target = "${target_name}__rjava_resources"
         generate_r_java(_fake_rjava_target) {
-          deps = [ ":$_build_config_target_name" ]
-          possible_resource_deps = _invoker_deps
+          deps = [ ":$_build_config_target_name" ] + _java_assetres_deps +
+                 _non_java_deps
           build_config = _build_config
 
           # Filepath has to be exactly this because compile_java looks for the
@@ -3890,7 +3870,7 @@ if (enable_java_templates) {
           # Robolectric tests require these to be on swarming.
           data = [ _host_processed_jar_path ]
           input_jar_path = _unprocessed_jar_path
-          jar_deps = _unprocessed_jar_deps + _full_classpath_deps
+          deps = _unprocessed_jar_deps + _full_classpath_deps
           output_jar_path = _host_processed_jar_path
           jacoco_instrument = _jacoco_instrument
           if (_jacoco_instrument) {
@@ -3911,7 +3891,7 @@ if (enable_java_templates) {
                                      "jar_included_patterns",
                                    ])
             input_jar_path = _unprocessed_jar_path
-            jar_deps = _unprocessed_jar_deps + _full_classpath_deps
+            deps = _unprocessed_jar_deps + _full_classpath_deps
             output_jar_path = _device_processed_jar_path
             jacoco_instrument = _jacoco_instrument
             if (_jacoco_instrument) {
@@ -3947,7 +3927,10 @@ if (enable_java_templates) {
             # Desugaring with D8 requires full classpath.
             build_config = _build_config
             final_ijar_path = _final_ijar_path
-            deps += _classpath_deps + [ ":$_header_target_name" ]
+            deps += _classpath_deps + [
+                      ":$_build_config_target_name",
+                      ":$_header_target_name",
+                    ]
           }
 
           enable_multidex = false
@@ -3960,7 +3943,8 @@ if (enable_java_templates) {
     if (_is_java_binary) {
       # Targets might use the generated script while building, so make it a dep
       # rather than a data_dep.
-      java_binary_script("${target_name}__java_binary_script") {
+      _java_binary_script_target_name = "${target_name}__java_binary_script"
+      java_binary_script(_java_binary_script_target_name) {
         forward_variables_from(invoker,
                                [
                                  "tiered_stop_at_level_one",
@@ -3974,7 +3958,7 @@ if (enable_java_templates) {
         }
         deps = [ ":$_build_config_target_name" ]
       }
-      _public_deps += [ ":${target_name}__java_binary_script" ]
+      _public_deps += [ ":$_java_binary_script_target_name" ]
     }
 
     # The __impl target contains all non-analysis steps for this template.

@@ -1574,8 +1574,6 @@ if (enable_java_templates) {
   #
   # Variables:
   #   output: Path to the output jar.
-  #   override_build_config: Use a pre-existing .build_config. Must be of type
-  #     "apk".
   #   use_interface_jars: Use all dependent interface .jars rather than
   #     implementation .jars.
   #   use_unprocessed_jars: Use unprocessed / undesugared .jars.
@@ -1592,8 +1590,6 @@ if (enable_java_templates) {
     # TODO(crbug.com/1042017): Remove.
     not_needed(invoker, [ "no_build_hooks" ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    _supports_android =
-        !defined(invoker.supports_android) || invoker.supports_android
     _use_interface_jars =
         defined(invoker.use_interface_jars) && invoker.use_interface_jars
     _use_unprocessed_jars =
@@ -1605,30 +1601,23 @@ if (enable_java_templates) {
 
     _jar_target_name = target_name
 
-    _deps = []
-    if (defined(invoker.deps)) {
-      _deps = invoker.deps
-    }
-    if (_supports_android) {
-      _deps += [ "//third_party/android_sdk:android_sdk_java" ]
-    }
-
-    if (defined(invoker.override_build_config)) {
-      _build_config = invoker.override_build_config
+    if (defined(invoker.build_config)) {
+      _build_config = invoker.build_config
+      _build_config_dep = invoker.build_config_dep
     } else {
       _build_config = "$target_gen_dir/$target_name.build_config.json"
       _build_config_target_name = "$target_name$build_config_target_suffix"
+      _build_config_dep = ":$_build_config_target_name"
 
       write_build_config(_build_config_target_name) {
         type = "dist_jar"
-        supports_android = _supports_android
+        supports_android =
+            !defined(invoker.supports_android) || invoker.supports_android
         requires_android =
             defined(invoker.requires_android) && invoker.requires_android
-        possible_config_deps = _deps
+        possible_config_deps = invoker.deps
         build_config = _build_config
       }
-
-      _deps += [ ":$_build_config_target_name" ]
     }
 
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
@@ -1636,7 +1625,20 @@ if (enable_java_templates) {
       forward_variables_from(invoker, [ "data" ])
       script = "//build/android/gyp/zip.py"
       depfile = "$target_gen_dir/$target_name.d"
-      deps = _deps
+      deps = [ _build_config_dep ]
+
+      if (_use_interface_jars) {
+        _lib_deps =
+            filter_exclude(filter_include(invoker.deps, java_library_patterns),
+                           java_resource_patterns)
+        _other_deps = filter_exclude(invoker.deps, _lib_deps)
+        foreach(_lib_dep, _lib_deps) {
+          deps += [ "${_lib_dep}__header" ]
+        }
+        deps += _other_deps
+      } else {
+        deps += invoker.deps
+      }
 
       inputs = [ _build_config ]
 
@@ -2950,14 +2952,12 @@ if (enable_java_templates) {
     if (defined(invoker.dist_ijar_path)) {
       _dist_ijar_path = invoker.dist_ijar_path
       dist_jar("${_template_name}_dist_ijar") {
-        override_build_config = _build_config
+        build_config = _build_config
+        build_config_dep = ":$_build_config_target"
         output = _dist_ijar_path
         data = [ _dist_ijar_path ]
         use_interface_jars = true
-        deps = [
-          ":$_build_config_target",
-          ":$_java_target_name",
-        ]
+        deps = [ ":$_java_target_name" ]
       }
     }
 
@@ -4133,9 +4133,10 @@ if (enable_java_templates) {
       _srcjar_path = "$target_gen_dir/$target_name.srcjar"
       script = "//build/protoc_java.py"
 
-      deps = []
       if (defined(invoker.deps)) {
-        deps += invoker.deps
+        # Need to care only about targets that might generate .proto files.
+        # No need to depend on java_library or android_resource targets.
+        deps = filter_exclude(invoker.deps, java_target_patterns)
       }
 
       sources = invoker.sources
