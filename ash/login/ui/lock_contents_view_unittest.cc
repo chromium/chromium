@@ -3239,7 +3239,10 @@ TEST_F(LockContentsViewUnitTest, SmartLockStateHidesAuthErrorMessage) {
 
 class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
  protected:
-  LockContentsViewWithKioskLicenseTest() = default;
+  LockContentsViewWithKioskLicenseTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kEnableKioskLoginScreen);
+  }
   LockContentsViewWithKioskLicenseTest(LockContentsViewWithKioskLicenseTest&) =
       delete;
   LockContentsViewWithKioskLicenseTest& operator=(
@@ -3265,6 +3268,9 @@ class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
   }
 
   LoginShelfView* login_shelf_view_ = nullptr;  // Unowned.
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Checks default message hides if device is with kiosk license but with apps.

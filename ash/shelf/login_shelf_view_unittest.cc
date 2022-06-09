@@ -1435,8 +1435,10 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest, ClickRestartButton) {
 
 class LoginShelfViewWithKioskLicenseTest : public LoginShelfViewTest {
  public:
-  LoginShelfViewWithKioskLicenseTest() = default;
-
+  LoginShelfViewWithKioskLicenseTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kEnableKioskLoginScreen);
+  }
   LoginShelfViewWithKioskLicenseTest(
       const LoginShelfViewWithKioskLicenseTest&) = delete;
   LoginShelfViewWithKioskLicenseTest& operator=(
@@ -1456,6 +1458,9 @@ class LoginShelfViewWithKioskLicenseTest : public LoginShelfViewTest {
   void SetKioskLicenseModeForTesting(bool is_kiosk_license_mode) {
     login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Checks that kiosk app button and kiosk instruction appears if device is with

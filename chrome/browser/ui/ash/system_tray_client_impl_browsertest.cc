@@ -111,7 +111,11 @@ constexpr char kKioskSkuName[] = "GOOGLE.CHROME_KIOSK_ANNUAL";
 
 class EnterpriseManagedTest : public MixinBasedInProcessBrowserTest {
  public:
-  EnterpriseManagedTest() { device_state_.set_skip_initial_policy_setup(true); }
+  EnterpriseManagedTest() {
+    device_state_.set_skip_initial_policy_setup(true);
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kEnableKioskLoginScreen);
+  }
   ~EnterpriseManagedTest() override = default;
   EnterpriseManagedTest(const EnterpriseManagedTest&) = delete;
   void operator=(const EnterpriseManagedTest&) = delete;
@@ -126,6 +130,7 @@ class EnterpriseManagedTest : public MixinBasedInProcessBrowserTest {
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   policy::DevicePolicyCrosTestHelper policy_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that the management device mode is indeed Kiosk Sku.

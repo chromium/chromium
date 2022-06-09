@@ -194,6 +194,8 @@ class KioskSkuVisibilityTest : public LoginUIShelfVisibilityTest {
  public:
   KioskSkuVisibilityTest() {
     device_state_.set_skip_initial_policy_setup(true);
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kEnableKioskLoginScreen);
   }
   ~KioskSkuVisibilityTest() override = default;
   KioskSkuVisibilityTest(const KioskSkuVisibilityTest&) = delete;
@@ -209,6 +211,7 @@ class KioskSkuVisibilityTest : public LoginUIShelfVisibilityTest {
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   policy::DevicePolicyCrosTestHelper policy_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies that shelf buttons of Guest mode and Add user are shown, and kiosk

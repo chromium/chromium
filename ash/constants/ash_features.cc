@@ -593,6 +593,10 @@ const base::Feature kOobeAddPersonPolymer3{"OobeAddPersonPolymer3",
 const base::Feature kEnableKioskEnrollmentInOobe{
     "EnableKioskEnrollmentInOobe", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables Kiosk UI in Login screen.
+const base::Feature kEnableKioskLoginScreen{"EnableKioskLoginScreen",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables skipping of network screen.
 const base::Feature kEnableOobeNetworkScreenSkip{
     "EnableOobeNetworkScreenSkip", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -2062,6 +2066,10 @@ bool IsOobeAddPersonPolymer3Enabled() {
 
 bool IsKioskEnrollmentInOobeEnabled() {
   return base::FeatureList::IsEnabled(kEnableKioskEnrollmentInOobe);
+}
+
+bool IsKioskLoginScreenEnabled() {
+  return base::FeatureList::IsEnabled(kEnableKioskLoginScreen);
 }
 
 bool IsOobeNetworkScreenSkipEnabled() {

@@ -703,7 +703,7 @@ LockContentsView::LockContentsView(
 
   // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
   // it's false by default.
-  if (features::IsKioskEnrollmentInOobeEnabled()) {
+  if (features::IsKioskLoginScreenEnabled()) {
     kiosk_license_mode_ =
         Shell::Get()
             ->system_tray_model()
@@ -1561,7 +1561,7 @@ void LockContentsView::SuspendImminent(
 void LockContentsView::OnDeviceEnterpriseInfoChanged() {
   // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
   // it's false by default.
-  if (!features::IsKioskEnrollmentInOobeEnabled())
+  if (!features::IsKioskLoginScreenEnabled())
     return;
 
   kiosk_license_mode_ =
