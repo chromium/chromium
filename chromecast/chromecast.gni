@@ -106,7 +106,7 @@ declare_args() {
 
   # Set to true to enable external Mojo services to communicate with services
   # within cast_shell.
-  enable_external_mojo_services = is_linux || is_chromeos
+  enable_external_mojo_services = is_linux || is_chromeos || is_android
 
   # Support using system perfetto tracing
   enable_perfetto_tracing = false
