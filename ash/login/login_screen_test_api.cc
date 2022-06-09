@@ -477,6 +477,11 @@ bool LoginScreenTestApi::LaunchApp(const std::string& app_id) {
 }
 
 // static
+bool LoginScreenTestApi::ClickAppsButton() {
+  return SimulateButtonPressedForTesting(LoginShelfView::kApps);
+}
+
+// static
 bool LoginScreenTestApi::ClickAddUserButton() {
   return SimulateButtonPressedForTesting(LoginShelfView::kAddUser);
 }

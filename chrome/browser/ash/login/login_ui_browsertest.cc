@@ -607,6 +607,7 @@ IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithoutKioskSku) {
   EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
   EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_TRUE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAppsButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
   EXPECT_FALSE(LoginScreenTestApi::IsKioskDefaultMessageShown());
 }
@@ -623,6 +624,7 @@ IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithoutApps) {
   EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAppsButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
   EXPECT_TRUE(LoginScreenTestApi::IsKioskDefaultMessageShown());
 }
@@ -641,7 +643,34 @@ IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithApps) {
   EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
   EXPECT_TRUE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+}
+
+// Verifies kiosk instruction bubble and kiosk
+// default message are hidden when kiosk app menu is opened.
+IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, OpenKioskMenu) {
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      kKioskSkuName);
+  KioskAppsMixin::AppendKioskAccount(
+      &policy_helper()->device_policy()->payload());
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+
+  // Click app menu button
+  EXPECT_TRUE(LoginScreenTestApi::ClickAppsButton());
+
+  // Check visibility
+  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
   EXPECT_FALSE(LoginScreenTestApi::IsKioskDefaultMessageShown());
 }
 
