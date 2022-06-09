@@ -45,7 +45,7 @@ void SaveCardBannerRequestConfig::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
   InfobarOverlayRequestConfig::CreateForUserData(
       user_data, static_cast<InfoBarIOS*>(infobar_),
-      InfobarOverlayType::kBanner, false, true);
+      InfobarOverlayType::kBanner, false);
 }
 
 }  // namespace save_card_infobar_overlays

@@ -18,13 +18,11 @@ OVERLAY_USER_DATA_SETUP_IMPL(InfobarOverlayRequestConfig);
 InfobarOverlayRequestConfig::InfobarOverlayRequestConfig(
     InfoBarIOS* infobar,
     InfobarOverlayType overlay_type,
-    bool is_high_priority,
-    bool use_long_duration)
+    bool is_high_priority)
     : infobar_(infobar->GetWeakPtr()),
       infobar_type_(infobar->infobar_type()),
       has_badge_(BadgeTypeForInfobarType(infobar_type_) != kBadgeTypeNone),
       is_high_priority_(is_high_priority),
-      use_long_duration_(use_long_duration),
       overlay_type_(overlay_type) {}
 
 InfobarOverlayRequestConfig::~InfobarOverlayRequestConfig() = default;
