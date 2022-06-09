@@ -101,12 +101,17 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 - (void)confirmationAlertPrimaryAction {
   [self.feedMetricsRecorder recordFirstFollowTappedGoToFeed];
-  if (self.firstFollowViewController.followedWebChannel.available) {
-    [self.newTabPageCommandsHandler
-        openNTPScrolledIntoFeedType:FeedTypeFollowing];
-  }
   if (self.baseViewController.presentedViewController) {
-    [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+    [self.baseViewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             if (self.firstFollowViewController
+                                     .followedWebChannel.available) {
+                               [self.newTabPageCommandsHandler
+                                   openNTPScrolledIntoFeedType:
+                                       FeedTypeFollowing];
+                             }
+                           }];
   }
 }
 
