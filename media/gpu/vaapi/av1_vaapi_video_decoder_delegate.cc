@@ -737,7 +737,6 @@ AV1VaapiVideoDecoderDelegate::AV1VaapiVideoDecoderDelegate(
 AV1VaapiVideoDecoderDelegate::~AV1VaapiVideoDecoderDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!picture_params_);
-  DCHECK(slice_params_.empty());
   DCHECK(!crypto_params_);
 }
 
@@ -834,17 +833,17 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
     if (!picture_params_)
       return DecodeStatus::kFail;
   }
-  if (slice_params_.size() != slice_params.size()) {
-    while (slice_params_.size() < slice_params.size()) {
-      slice_params_.push_back(vaapi_wrapper_->CreateVABuffer(
-          VASliceParameterBufferType, sizeof(VASliceParameterBufferAV1)));
-      if (!slice_params_.back()) {
-        slice_params_.clear();
-        return DecodeStatus::kFail;
-      }
-    }
-    slice_params_.resize(slice_params.size());
-    slice_params_.shrink_to_fit();
+
+  // TODO(b/235138734): Once the driver is fixed, re-use the
+  // VASliceParameterBufferAV1 buffers across frames instead of creating new
+  // ones every time. Alternatively, consider recreating these buffers only if
+  // |slice_params| changes from frame to frame.
+  std::vector<std::unique_ptr<ScopedVABuffer>> slice_params_va_buffers;
+  for (size_t i = 0; i < slice_params.size(); i++) {
+    slice_params_va_buffers.push_back(vaapi_wrapper_->CreateVABuffer(
+        VASliceParameterBufferType, sizeof(VASliceParameterBufferAV1)));
+    if (!slice_params_va_buffers.back())
+      return DecodeStatus::kFail;
   }
 
   // TODO(hiroh): Don't submit the entire coded data to the buffer. Instead,
@@ -864,9 +863,9 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
        {encoded_data->id(),
         {encoded_data->type(), encoded_data->size(), data.data()}}};
   for (size_t i = 0; i < slice_params.size(); ++i) {
-    buffers.push_back({slice_params_[i]->id(),
-                       {slice_params_[i]->type(), slice_params_[i]->size(),
-                        &slice_params[i]}});
+    buffers.push_back({slice_params_va_buffers[i]->id(),
+                       {slice_params_va_buffers[i]->type(),
+                        slice_params_va_buffers[i]->size(), &slice_params[i]}});
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (uses_crypto) {
@@ -892,7 +891,6 @@ void AV1VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
   // Destroy the member ScopedVABuffers below since they refer to a VAContextID
   // that will be destroyed soon.
   picture_params_.reset();
-  slice_params_.clear();
   crypto_params_.reset();
 }
 }  // namespace media
