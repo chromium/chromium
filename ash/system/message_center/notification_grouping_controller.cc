@@ -186,6 +186,10 @@ void NotificationGroupingController::
         const std::string& notification_id,
         std::string& parent_id,
         Notification* parent_notification) {
+  auto* notification_view_controller = GetActiveNotificationViewController();
+  if (!notification_view_controller)
+    return;
+
   parent_id = SetupParentNotification(parent_notification, parent_id);
 
   grouped_notification_list_->AddGroupedNotification(notification_id,
@@ -195,10 +199,7 @@ void NotificationGroupingController::
   Notification* notification =
       message_center->FindNotificationById(notification_id);
   MessageView* parent_view =
-      GetActiveNotificationViewController()
-          ? GetActiveNotificationViewController()
-                ->GetMessageViewForNotificationId(parent_id)
-          : nullptr;
+      notification_view_controller->GetMessageViewForNotificationId(parent_id);
   if (parent_view)
     parent_view->AddGroupNotification(*notification);
   else
