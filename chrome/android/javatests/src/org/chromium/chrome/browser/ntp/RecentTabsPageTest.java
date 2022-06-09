@@ -71,7 +71,7 @@ public class RecentTabsPageTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(4)
+                    .setRevision(5)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_RECENT_TABS)
                     .build();
 

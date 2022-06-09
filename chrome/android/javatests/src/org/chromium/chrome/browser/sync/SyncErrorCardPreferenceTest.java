@@ -65,7 +65,7 @@ public class SyncErrorCardPreferenceTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(7)
+                    .setRevision(8)
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
                     .build();
 

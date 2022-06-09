@@ -111,7 +111,7 @@ import java.util.HashSet;
 public class MainSettingsFragmentTest {
     private static final String SEARCH_ENGINE_SHORT_NAME = "Google";
 
-    private static final int RENDER_TEST_REVISION = 6;
+    private static final int RENDER_TEST_REVISION = 7;
 
     private final HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 

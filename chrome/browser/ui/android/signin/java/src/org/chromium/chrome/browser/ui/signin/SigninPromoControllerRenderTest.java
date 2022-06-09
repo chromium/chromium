@@ -69,7 +69,7 @@ public class SigninPromoControllerRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
                     .setBugComponent(RenderTestRule.Component.SERVICES_SIGN_IN)
                     .build();
 
