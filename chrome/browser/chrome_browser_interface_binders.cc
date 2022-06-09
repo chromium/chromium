@@ -278,6 +278,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/apps/digital_goods/digital_goods_factory_stub.h"
 #include "chrome/browser/apps/digital_goods/digital_goods_lacros.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
@@ -304,6 +305,9 @@
 #include "chrome/browser/speech/speech_recognition_service.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"  // nogncheck
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
@@ -536,22 +540,30 @@ void BindNetworkHintsHandler(
 void BindSpeechRecognitionContextHandler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
+  if (!captions::IsLiveCaptionFeatureSupported()) {
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On LaCrOS, forward to Ash.
+  auto* service = chromeos::LacrosService::Get();
+  if (service && service->IsAvailable<crosapi::mojom::SpeechRecognition>()) {
+    service->GetRemote<crosapi::mojom::SpeechRecognition>()
+        ->BindSpeechRecognitionContext(std::move(receiver));
+  }
+#else
+  // On other platforms (Ash, desktop), bind via the appropriate factory.
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
-  if (captions::IsLiveCaptionFeatureSupported()) {
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
-    SpeechRecognitionServiceFactory::GetForProfile(profile)
-        ->BindSpeechRecognitionContext(std::move(receiver));
+  auto* factory = SpeechRecognitionServiceFactory::GetForProfile(profile);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-    CrosSpeechRecognitionServiceFactory::GetForProfile(profile)
-        ->BindSpeechRecognitionContext(std::move(receiver));
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(b:223493879): Provide LaCrOS implementation, via go/crosapi.
-#error "LaCrOS speech recognition service factory not implemented yet."
+  auto* factory = CrosSpeechRecognitionServiceFactory::GetForProfile(profile);
 #else
 #error "No speech recognition service factory on this platform."
 #endif
-  }
+  factory->BindSpeechRecognitionContext(std::move(receiver));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void BindSpeechRecognitionClientBrowserInterfaceHandler(
@@ -559,11 +571,20 @@ void BindSpeechRecognitionClientBrowserInterfaceHandler(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionClientBrowserInterface>
         receiver) {
   if (captions::IsLiveCaptionFeatureSupported()) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // On LaCrOS, forward to Ash.
+    auto* service = chromeos::LacrosService::Get();
+    if (service && service->IsAvailable<crosapi::mojom::SpeechRecognition>()) {
+      service->GetRemote<crosapi::mojom::SpeechRecognition>()
+          ->BindSpeechRecognitionClientBrowserInterface(std::move(receiver));
+    }
+#else
+    // On other platforms (Ash, desktop), bind in this process.
     Profile* profile = Profile::FromBrowserContext(
         frame_host->GetProcess()->GetBrowserContext());
-
     SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile)
         ->BindReceiver(std::move(receiver));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 }
 
