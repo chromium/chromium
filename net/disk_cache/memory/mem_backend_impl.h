@@ -148,8 +148,8 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   // most recently used.
   base::LinkedList<MemEntryImpl> lru_list_;
 
-  int32_t max_size_;      // Maximum data size for this instance.
-  int32_t current_size_;
+  int32_t max_size_ = 0;  // Maximum data size for this instance.
+  int32_t current_size_ = 0;
 
   raw_ptr<net::NetLog> net_log_;
   base::OnceClosure post_cleanup_callback_;

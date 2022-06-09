@@ -235,8 +235,7 @@ class CertNetFetcherURLRequestTestWithSecureDnsInterceptor
     : public CertNetFetcherURLRequestTest,
       public WithTaskEnvironment {
  public:
-  CertNetFetcherURLRequestTestWithSecureDnsInterceptor()
-      : invoked_interceptor_(false) {}
+  CertNetFetcherURLRequestTestWithSecureDnsInterceptor() = default;
 
   void SetUp() override {
     URLRequestFilter::GetInstance()->AddHostnameInterceptor(
@@ -249,7 +248,7 @@ class CertNetFetcherURLRequestTestWithSecureDnsInterceptor
   bool invoked_interceptor() { return invoked_interceptor_; }
 
  private:
-  bool invoked_interceptor_;
+  bool invoked_interceptor_ = false;
 };
 
 // Helper to start an AIA fetch using default parameters.

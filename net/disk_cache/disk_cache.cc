@@ -70,7 +70,7 @@ class CacheCreator {
 
   const base::FilePath path_;
   disk_cache::ResetHandling reset_handling_;
-  bool retry_;
+  bool retry_ = false;
   int64_t max_bytes_;
   net::CacheType type_;
   net::BackendType backend_type_;
@@ -104,7 +104,6 @@ CacheCreator::CacheCreator(
     net::CompletionOnceCallback callback)
     : path_(path),
       reset_handling_(reset_handling),
-      retry_(false),
       max_bytes_(max_bytes),
       type_(type),
       backend_type_(backend_type),

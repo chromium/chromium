@@ -215,8 +215,8 @@ class NET_EXPORT GrowableIOBuffer : public IOBuffer {
   ~GrowableIOBuffer() override;
 
   std::unique_ptr<char, base::FreeDeleter> real_data_;
-  int capacity_;
-  int offset_;
+  int capacity_ = 0;
+  int offset_ = 0;
 };
 
 // This versions allows a pickle to be used as the storage for a write-style

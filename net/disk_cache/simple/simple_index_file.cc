@@ -224,10 +224,7 @@ void ProcessEntryFile(BackendFileOperations* file_operations,
 
 }  // namespace
 
-SimpleIndexLoadResult::SimpleIndexLoadResult()
-    : did_load(false),
-      index_write_reason(SimpleIndex::INDEX_WRITE_REASON_MAX),
-      flush_required(false) {}
+SimpleIndexLoadResult::SimpleIndexLoadResult() = default;
 
 SimpleIndexLoadResult::~SimpleIndexLoadResult() = default;
 

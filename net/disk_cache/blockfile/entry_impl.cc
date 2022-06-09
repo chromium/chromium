@@ -104,8 +104,7 @@ namespace disk_cache {
 // total memory used under control.
 class EntryImpl::UserBuffer {
  public:
-  explicit UserBuffer(BackendImpl* backend)
-      : backend_(backend->GetWeakPtr()), offset_(0), grow_allowed_(true) {
+  explicit UserBuffer(BackendImpl* backend) : backend_(backend->GetWeakPtr()) {
     buffer_.reserve(kMaxBlockSize);
   }
 
@@ -148,9 +147,9 @@ class EntryImpl::UserBuffer {
   bool GrowBuffer(int required, int limit);
 
   base::WeakPtr<BackendImpl> backend_;
-  int offset_;
+  int offset_ = 0;
   std::vector<char> buffer_;
-  bool grow_allowed_;
+  bool grow_allowed_ = true;
 };
 
 bool EntryImpl::UserBuffer::PreWrite(int offset, int len) {
@@ -318,9 +317,7 @@ EntryImpl::EntryImpl(BackendImpl* backend, Addr address, bool read_only)
     : entry_(nullptr, Addr(0)),
       node_(nullptr, Addr(0)),
       backend_(backend->GetWeakPtr()),
-      doomed_(false),
-      read_only_(read_only),
-      dirty_(false) {
+      read_only_(read_only) {
   entry_.LazyInit(backend->File(address), address);
   for (int i = 0; i < kNumStreams; i++) {
     unreported_size_[i] = 0;

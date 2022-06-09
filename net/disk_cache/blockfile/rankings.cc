@@ -218,7 +218,7 @@ void Rankings::Iterator::Reset() {
   memset(this, 0, sizeof(Iterator));
 }
 
-Rankings::Rankings() : init_(false) {}
+Rankings::Rankings() = default;
 
 Rankings::~Rankings() = default;
 

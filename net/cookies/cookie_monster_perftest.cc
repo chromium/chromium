@@ -72,7 +72,7 @@ class CookieMonsterTest : public testing::Test {
 
 class CookieTestCallback {
  public:
-  CookieTestCallback() : has_run_(false) {}
+  CookieTestCallback() = default;
 
  protected:
   void WaitForCallback() {
@@ -88,7 +88,7 @@ class CookieTestCallback {
 
   void Run() { has_run_ = true; }
 
-  bool has_run_;
+  bool has_run_ = false;
 };
 
 class SetCookieCallback : public CookieTestCallback {

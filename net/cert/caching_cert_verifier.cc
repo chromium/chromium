@@ -23,11 +23,7 @@ const unsigned kTTLSecs = 1800;  // 30 minutes.
 }  // namespace
 
 CachingCertVerifier::CachingCertVerifier(std::unique_ptr<CertVerifier> verifier)
-    : verifier_(std::move(verifier)),
-      config_id_(0u),
-      cache_(kMaxCacheEntries),
-      requests_(0u),
-      cache_hits_(0u) {
+    : verifier_(std::move(verifier)), cache_(kMaxCacheEntries) {
   CertDatabase::GetInstance()->AddObserver(this);
 }
 
@@ -72,7 +68,7 @@ void CachingCertVerifier::SetConfig(const CertVerifier::Config& config) {
   ClearCache();
 }
 
-CachingCertVerifier::CachedResult::CachedResult() : error(ERR_FAILED) {}
+CachingCertVerifier::CachedResult::CachedResult() = default;
 
 CachingCertVerifier::CachedResult::~CachedResult() = default;
 

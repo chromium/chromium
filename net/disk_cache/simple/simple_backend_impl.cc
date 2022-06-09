@@ -86,15 +86,12 @@ SimpleCacheConsistencyResult FileStructureConsistent(
 struct BarrierContext {
   explicit BarrierContext(net::CompletionOnceCallback final_callback,
                           int expected)
-      : final_callback_(std::move(final_callback)),
-        expected(expected),
-        count(0),
-        had_error(false) {}
+      : final_callback_(std::move(final_callback)), expected(expected) {}
 
   net::CompletionOnceCallback final_callback_;
   const int expected;
-  int count;
-  bool had_error;
+  int count = 0;
+  bool had_error = false;
 };
 
 void BarrierCompletionCallbackImpl(

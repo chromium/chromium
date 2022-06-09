@@ -70,9 +70,9 @@ class MockCertVerifier : public CertVerifier {
 
   int VerifyImpl(const RequestParams& params, CertVerifyResult* verify_result);
 
-  int default_result_;
+  int default_result_ = ERR_CERT_INVALID;
   RuleList rules_;
-  bool async_;
+  bool async_ = false;
 
   base::OnceClosureList request_list_;
 };

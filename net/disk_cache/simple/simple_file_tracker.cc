@@ -109,7 +109,7 @@ SimpleFileTracker::FileHandle SimpleFileTracker::Acquire(
   }
 }
 
-SimpleFileTracker::TrackedFiles::TrackedFiles() : in_lru(false) {
+SimpleFileTracker::TrackedFiles::TrackedFiles() {
   std::fill(state, state + kSimpleEntryTotalFileCount, TF_NO_REGISTRATION);
 }
 

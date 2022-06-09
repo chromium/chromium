@@ -305,9 +305,9 @@ class NET_EXPORT_PRIVATE EntryImpl
   scoped_refptr<File> files_[kNumStreams + 1];
   mutable std::string key_;           // Copy of the key.
   int unreported_size_[kNumStreams];  // Bytes not reported yet to the backend.
-  bool doomed_;               // True if this entry was removed from the cache.
+  bool doomed_ = false;       // True if this entry was removed from the cache.
   bool read_only_;            // True if not yet writing.
-  bool dirty_;                // True if we detected that this is a dirty entry.
+  bool dirty_ = false;        // True if we detected that this is a dirty entry.
   std::unique_ptr<SparseControl> sparse_;  // Support for sparse entries.
 };
 

@@ -36,12 +36,7 @@ const int kFilesPerDirectory = 5;
 class ListerDelegate : public DirectoryLister::DirectoryListerDelegate {
  public:
   explicit ListerDelegate(DirectoryLister::ListingType type)
-      : cancel_lister_on_list_file_(false),
-        cancel_lister_on_list_done_(false),
-        lister_(nullptr),
-        done_(false),
-        error_(-1),
-        type_(type) {}
+      : lister_(nullptr), type_(type) {}
 
   // When set to true, this signals that the directory list operation should be
   // cancelled (And the run loop quit) in the first call to OnListFile.
@@ -114,16 +109,16 @@ class ListerDelegate : public DirectoryLister::DirectoryListerDelegate {
   bool done() const { return done_; }
 
  private:
-  bool cancel_lister_on_list_file_;
-  bool cancel_lister_on_list_done_;
+  bool cancel_lister_on_list_file_ = false;
+  bool cancel_lister_on_list_done_ = false;
 
   // This is owned by the individual tests, rather than the ListerDelegate.
   raw_ptr<DirectoryLister> lister_;
 
   base::RunLoop run_loop;
 
-  bool done_;
-  int error_;
+  bool done_ = false;
+  int error_ = -1;
   DirectoryLister::ListingType type_;
 
   std::vector<base::FileEnumerator::FileInfo> file_list_;
@@ -134,9 +129,7 @@ class ListerDelegate : public DirectoryLister::DirectoryListerDelegate {
 
 class DirectoryListerTest : public PlatformTest, public WithTaskEnvironment {
  public:
-  DirectoryListerTest()
-      : total_created_file_system_objects_in_temp_root_dir_(0),
-        created_file_system_objects_in_temp_root_dir_(0) {}
+  DirectoryListerTest() = default;
 
   void SetUp() override {
     // Randomly create a directory structure of depth 3 in a temporary root
@@ -188,9 +181,9 @@ class DirectoryListerTest : public PlatformTest, public WithTaskEnvironment {
  private:
   // Number of files and directories created in SetUp, excluding
   // |temp_root_dir_| itself.  Includes all nested directories and their files.
-  int total_created_file_system_objects_in_temp_root_dir_;
+  int total_created_file_system_objects_in_temp_root_dir_ = 0;
   // Number of files and directories created directly in |temp_root_dir_|.
-  int created_file_system_objects_in_temp_root_dir_;
+  int created_file_system_objects_in_temp_root_dir_ = 0;
 
   base::ScopedTempDir temp_root_dir_;
 };

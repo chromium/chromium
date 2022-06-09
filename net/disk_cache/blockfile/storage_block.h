@@ -97,9 +97,10 @@ class StorageBlock : public FileBlock {
   raw_ptr<T> data_;
   raw_ptr<MappedFile> file_;
   Addr address_;
-  bool modified_;
-  bool own_data_;  // Is data_ owned by this object or shared with someone else.
-  bool extended_;  // Used to store an entry of more than one block.
+  bool modified_ = false;
+  bool own_data_ =
+      false;  // Is data_ owned by this object or shared with someone else.
+  bool extended_ = false;  // Used to store an entry of more than one block.
 };
 
 }  // namespace disk_cache

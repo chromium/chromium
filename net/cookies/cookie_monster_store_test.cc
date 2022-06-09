@@ -30,8 +30,7 @@ CookieStoreCommand::CookieStoreCommand(Type type, const CanonicalCookie& cookie)
 CookieStoreCommand::CookieStoreCommand(CookieStoreCommand&& other) = default;
 CookieStoreCommand::~CookieStoreCommand() = default;
 
-MockPersistentCookieStore::MockPersistentCookieStore()
-    : store_load_commands_(false), load_return_value_(true), loaded_(false) {}
+MockPersistentCookieStore::MockPersistentCookieStore() = default;
 
 void MockPersistentCookieStore::SetLoadExpectation(
     bool return_value,
@@ -135,9 +134,7 @@ void AddCookieToList(const GURL& url,
   out_list->push_back(std::move(cookie));
 }
 
-MockSimplePersistentCookieStore::MockSimplePersistentCookieStore()
-    : loaded_(false) {
-}
+MockSimplePersistentCookieStore::MockSimplePersistentCookieStore() = default;
 
 void MockSimplePersistentCookieStore::Load(
     LoadedCallback loaded_callback,

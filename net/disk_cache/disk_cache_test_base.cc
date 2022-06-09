@@ -81,20 +81,7 @@ int DiskCacheTestWithCache::TestIterator::OpenNextEntry(
 }
 
 DiskCacheTestWithCache::DiskCacheTestWithCache()
-    : cache_impl_(nullptr),
-      simple_cache_impl_(nullptr),
-      mem_cache_(nullptr),
-      mask_(0),
-      size_(0),
-      type_(net::DISK_CACHE),
-      memory_only_(false),
-      simple_cache_mode_(false),
-      simple_cache_wait_for_index_(true),
-      force_creation_(false),
-      new_eviction_(false),
-      first_cleanup_(true),
-      integrity_(true),
-      use_current_thread_(false) {}
+    : cache_impl_(nullptr), simple_cache_impl_(nullptr), mem_cache_(nullptr) {}
 
 DiskCacheTestWithCache::~DiskCacheTestWithCache() = default;
 

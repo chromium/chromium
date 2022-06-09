@@ -158,7 +158,6 @@ BackendImpl::BackendImpl(
       background_queue_(this, FallbackToInternalIfNull(cache_thread)),
       path_(path),
       block_files_(path),
-      mask_(0),
       user_flags_(0),
       net_log_(net_log) {
   TRACE_EVENT0("disk_cache", "BackendImpl::BackendImpl");

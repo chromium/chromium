@@ -133,17 +133,17 @@ class NET_EXPORT UploadDataStream {
   // at least once before every call to InitInternal.
   virtual void ResetInternal() = 0;
 
-  uint64_t total_size_;
-  uint64_t current_position_;
+  uint64_t total_size_ = 0;
+  uint64_t current_position_ = 0;
 
   const int64_t identifier_;
 
   const bool is_chunked_;
 
   // True if the initialization was successful.
-  bool initialized_successfully_;
+  bool initialized_successfully_ = false;
 
-  bool is_eof_;
+  bool is_eof_ = false;
 
   CompletionOnceCallback callback_;
 

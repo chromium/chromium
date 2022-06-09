@@ -71,9 +71,7 @@ class MockUploadElementReader : public UploadElementReader {
   MockUploadElementReader(int content_length, bool is_in_memory)
       : content_length_(content_length),
         bytes_remaining_(content_length),
-        is_in_memory_(is_in_memory),
-        init_result_(OK),
-        read_result_(OK) {}
+        is_in_memory_(is_in_memory) {}
 
   ~MockUploadElementReader() override = default;
 
@@ -134,10 +132,10 @@ class MockUploadElementReader : public UploadElementReader {
   bool is_in_memory_;
 
   // Result value returned from Init().
-  int init_result_;
+  int init_result_ = OK;
 
   // Result value returned from Read().
-  int read_result_;
+  int read_result_ = OK;
 };
 
 }  // namespace

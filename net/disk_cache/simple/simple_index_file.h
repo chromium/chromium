@@ -33,11 +33,12 @@ struct NET_EXPORT_PRIVATE SimpleIndexLoadResult {
   ~SimpleIndexLoadResult();
   void Reset();
 
-  bool did_load;
+  bool did_load = false;
   SimpleIndex::EntrySet entries;
-  SimpleIndex::IndexWriteToDiskReason index_write_reason;
+  SimpleIndex::IndexWriteToDiskReason index_write_reason =
+      SimpleIndex::INDEX_WRITE_REASON_MAX;
   SimpleIndex::IndexInitMethod init_method;
-  bool flush_required;
+  bool flush_required = false;
 };
 
 // Simple Index File format is a pickle of IndexMetadata and EntryMetadata

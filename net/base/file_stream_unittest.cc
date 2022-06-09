@@ -502,10 +502,7 @@ class TestWriteReadCompletionCallback {
                                   int* total_bytes_written,
                                   int* total_bytes_read,
                                   std::string* data_read)
-      : result_(0),
-        have_result_(false),
-        waiting_for_result_(false),
-        stream_(stream),
+      : stream_(stream),
         total_bytes_written_(total_bytes_written),
         total_bytes_read_(total_bytes_read),
         data_read_(data_read),
@@ -588,9 +585,9 @@ class TestWriteReadCompletionCallback {
       base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
 
-  int result_;
-  bool have_result_;
-  bool waiting_for_result_;
+  int result_ = 0;
+  bool have_result_ = false;
+  bool waiting_for_result_ = false;
   raw_ptr<FileStream> stream_;
   raw_ptr<int> total_bytes_written_;
   raw_ptr<int> total_bytes_read_;
@@ -645,10 +642,7 @@ TEST_F(FileStreamTest, WriteRead) {
 class TestWriteCloseCompletionCallback {
  public:
   TestWriteCloseCompletionCallback(FileStream* stream, int* total_bytes_written)
-      : result_(0),
-        have_result_(false),
-        waiting_for_result_(false),
-        stream_(stream),
+      : stream_(stream),
         total_bytes_written_(total_bytes_written),
         drainable_(
             base::MakeRefCounted<DrainableIOBuffer>(CreateTestDataBuffer(),
@@ -699,9 +693,9 @@ class TestWriteCloseCompletionCallback {
       base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
 
-  int result_;
-  bool have_result_;
-  bool waiting_for_result_;
+  int result_ = 0;
+  bool have_result_ = false;
+  bool waiting_for_result_ = false;
   raw_ptr<FileStream> stream_;
   raw_ptr<int> total_bytes_written_;
   scoped_refptr<DrainableIOBuffer> drainable_;

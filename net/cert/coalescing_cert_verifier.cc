@@ -380,10 +380,7 @@ void CoalescingCertVerifier::Request::OnJobAbort() {
 
 CoalescingCertVerifier::CoalescingCertVerifier(
     std::unique_ptr<CertVerifier> verifier)
-    : verifier_(std::move(verifier)),
-      config_id_(0),
-      requests_(0),
-      inflight_joins_(0) {}
+    : verifier_(std::move(verifier)) {}
 
 CoalescingCertVerifier::~CoalescingCertVerifier() = default;
 

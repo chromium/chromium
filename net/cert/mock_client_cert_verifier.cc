@@ -18,8 +18,7 @@ struct MockClientCertVerifier::Rule {
   int rv;
 };
 
-MockClientCertVerifier::MockClientCertVerifier()
-    : default_result_(ERR_CERT_INVALID) {}
+MockClientCertVerifier::MockClientCertVerifier() = default;
 
 MockClientCertVerifier::~MockClientCertVerifier() = default;
 

@@ -21,11 +21,11 @@
 namespace net {
 
 struct HostMappingRules::MapRule {
-  MapRule() : replacement_port(-1) {}
+  MapRule() = default;
 
   std::string hostname_pattern;
   std::string replacement_hostname;
-  int replacement_port;
+  int replacement_port = -1;
 };
 
 struct HostMappingRules::ExclusionRule {

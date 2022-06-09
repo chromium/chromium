@@ -35,13 +35,7 @@ base::Value CreateReadInfoParams(int current_position) {
 }  // namespace
 
 UploadDataStream::UploadDataStream(bool is_chunked, int64_t identifier)
-    : total_size_(0),
-      current_position_(0),
-      identifier_(identifier),
-      is_chunked_(is_chunked),
-      initialized_successfully_(false),
-      is_eof_(false) {
-}
+    : identifier_(identifier), is_chunked_(is_chunked) {}
 
 UploadDataStream::~UploadDataStream() = default;
 

@@ -197,10 +197,7 @@ bool CopyHashToHashesMapFromHeader(
 
 }  // namespace
 
-CRLSet::CRLSet()
-    : sequence_(0),
-      not_after_(0) {
-}
+CRLSet::CRLSet() = default;
 
 CRLSet::~CRLSet() = default;
 

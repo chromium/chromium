@@ -116,9 +116,7 @@ int FileIndexForSubFile(SimpleFileTracker::SubFile sub_file) {
 class SimpleSynchronousEntry::PrefetchData final {
  public:
   explicit PrefetchData(size_t file_size)
-      : file_size_(file_size),
-        offset_in_file_(0),
-        earliest_requested_offset_(file_size) {}
+      : file_size_(file_size), earliest_requested_offset_(file_size) {}
 
   // Returns true if the specified range within the file has been completely
   // prefetched.  Returns false if any part of the range has not been
@@ -186,7 +184,7 @@ class SimpleSynchronousEntry::PrefetchData final {
   // Prefer to read the prefetch data into a stack buffer to minimize
   // memory pressure on the OS disk cache.
   base::StackVector<char, 1024> buffer_;
-  size_t offset_in_file_;
+  size_t offset_in_file_ = 0;
 
   size_t earliest_requested_offset_;
 };
@@ -299,10 +297,7 @@ SimpleStreamPrefetchData::~SimpleStreamPrefetchData() = default;
 
 SimpleEntryCreationResults::SimpleEntryCreationResults(
     SimpleEntryStat entry_stat)
-    : sync_entry(nullptr),
-      entry_stat(entry_stat),
-      result(net::OK),
-      created(false) {}
+    : sync_entry(nullptr), entry_stat(entry_stat) {}
 
 SimpleEntryCreationResults::~SimpleEntryCreationResults() = default;
 
@@ -319,10 +314,7 @@ SimpleSynchronousEntry::CRCRecord::CRCRecord(int index_p,
 SimpleSynchronousEntry::ReadRequest::ReadRequest(int index_p,
                                                  int offset_p,
                                                  int buf_len_p)
-    : index(index_p),
-      offset(offset_p),
-      buf_len(buf_len_p),
-      request_update_crc(false) {}
+    : index(index_p), offset(offset_p), buf_len(buf_len_p) {}
 
 SimpleSynchronousEntry::WriteRequest::WriteRequest(int index_p,
                                                    int offset_p,

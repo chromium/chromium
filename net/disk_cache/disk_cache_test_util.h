@@ -129,14 +129,14 @@ class MessageLoopHelper {
   void TimerExpired();
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  int num_callbacks_;
-  int num_iterations_;
-  int last_;
-  bool completed_;
+  int num_callbacks_ = 0;
+  int num_iterations_ = 0;
+  int last_ = 0;
+  bool completed_ = false;
 
   // True if a callback was called/reused more than expected.
-  bool callback_reused_error_;
-  int callbacks_called_;
+  bool callback_reused_error_ = false;
+  int callbacks_called_ = 0;
 };
 
 // -----------------------------------------------------------------------

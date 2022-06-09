@@ -67,7 +67,7 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
     CachedResult();
     ~CachedResult();
 
-    int error;                // The return value of CertVerifier::Verify.
+    int error = ERR_FAILED;   // The return value of CertVerifier::Verify.
     CertVerifyResult result;  // The output of CertVerifier::Verify.
   };
 
@@ -129,11 +129,11 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
 
   std::unique_ptr<CertVerifier> verifier_;
 
-  uint32_t config_id_;
+  uint32_t config_id_ = 0u;
   CertVerificationCache cache_;
 
-  uint64_t requests_;
-  uint64_t cache_hits_;
+  uint64_t requests_ = 0u;
+  uint64_t cache_hits_ = 0u;
 };
 
 }  // namespace net
