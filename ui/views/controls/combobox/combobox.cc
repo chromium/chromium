@@ -578,6 +578,10 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
   OnContentSizeMaybeChanged();
 }
 
+void Combobox::OnComboboxModelDestroying(ui::ComboboxModel* model) {
+  SetModel(nullptr);
+}
+
 const base::RepeatingClosure& Combobox::GetCallback() const {
   return callback_;
 }

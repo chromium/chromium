@@ -131,6 +131,7 @@ class VIEWS_EXPORT Combobox : public View,
  protected:
   // Overridden from ComboboxModelObserver:
   void OnComboboxModelChanged(ui::ComboboxModel* model) override;
+  void OnComboboxModelDestroying(ui::ComboboxModel* model) override;
 
   // Getters to be used by metadata.
   const base::RepeatingClosure& GetCallback() const;

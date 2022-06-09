@@ -67,14 +67,6 @@ bool RegionComboboxModel::IsItemSeparatorAt(int index) const {
   return regions_[index].first.empty();
 }
 
-void RegionComboboxModel::AddObserver(ui::ComboboxModelObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void RegionComboboxModel::RemoveObserver(ui::ComboboxModelObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 void RegionComboboxModel::OnRegionDataLoaded(
     const std::vector<const ::i18n::addressinput::RegionData*>& regions) {
   // The RegionDataLoader will eventually self destruct after this call.
@@ -95,7 +87,7 @@ void RegionComboboxModel::OnRegionDataLoaded(
     failed_to_load_data_ = true;
   }
 
-  for (auto& observer : observers_) {
+  for (auto& observer : observers()) {
     observer.OnComboboxModelChanged(this);
   }
 }

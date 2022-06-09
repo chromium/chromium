@@ -190,8 +190,13 @@ class EditableCombobox::EditableComboboxMenuModel
     return combobox_model_->GetDropDownIconAt(items_shown_[index].index);
   }
 
+  // ComboboxModelObserver:
   void OnComboboxModelChanged(ui::ComboboxModel* model) override {
     UpdateItemsShown();
+  }
+
+  void OnComboboxModelDestroying(ui::ComboboxModel* model) override {
+    observation_.Reset();
   }
 
   int GetItemCount() const override { return items_shown_.size(); }

@@ -38,8 +38,6 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   std::u16string GetItemAt(int index) const override;
   bool IsItemSeparatorAt(int index) const override;
   int GetDefaultIndex() const override;
-  void AddObserver(ui::ComboboxModelObserver* observer) override;
-  void RemoveObserver(ui::ComboboxModelObserver* observer) override;
 
   // Overriden from bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bookmarks::BookmarkModel* model,
@@ -90,8 +88,6 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
   const raw_ptr<const bookmarks::BookmarkNode> parent_node_;
-
-  base::ObserverList<ui::ComboboxModelObserver> observers_;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_RECENTLY_USED_FOLDERS_COMBO_MODEL_H_

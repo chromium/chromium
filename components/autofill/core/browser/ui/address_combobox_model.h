@@ -40,8 +40,6 @@ class AddressComboboxModel : public ui::ComboboxModel {
   std::u16string GetItemAt(int index) const override;
   bool IsItemSeparatorAt(int index) const override;
   int GetDefaultIndex() const override;
-  void AddObserver(ui::ComboboxModelObserver* observer) override;
-  void RemoveObserver(ui::ComboboxModelObserver* observer) override;
 
   // Adds |profile| to model and return its combobox index. The lifespan of
   // |profile| beyond this call is undefined so a copy must be made.
@@ -72,9 +70,6 @@ class AddressComboboxModel : public ui::ComboboxModel {
 
   // If non empty, the guid of the address that should be selected by default.
   std::string default_selected_guid_;
-
-  // To be called when the data for the given country code was loaded.
-  base::ObserverList<ui::ComboboxModelObserver> observers_;
 };
 
 }  // namespace autofill
