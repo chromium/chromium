@@ -40813,19 +40813,22 @@ Called by update_permissions_policy_enum.py.-->
       label="User selected the Following feed from the feed header."/>
   <int value="47"
       label="User tapped the Unfollow button on the page overflow menu."/>
-  <int value="48" label="Show Follow Succeed Snackbar"/>
-  <int value="49" label="Show Follow Failed Snackbar"/>
-  <int value="50" label="Show Unfollow Succeed Snackbar"/>
-  <int value="51" label="Show Unfollow Failed Snackbar"/>
+  <int value="48" label="Show Follow Succeed Snackbar."/>
+  <int value="49" label="Show Follow Failed Snackbar."/>
+  <int value="50" label="Show Unfollow Succeed Snackbar."/>
+  <int value="51" label="Show Unfollow Failed Snackbar."/>
   <int value="52"
       label="User tapped to go to feed using the snackbar 'go to feed'
              option."/>
-  <int value="53" label="User tapped the Crow button in the context menu"/>
-  <int value="54" label="Show First Follow Sheet"/>
+  <int value="53" label="User tapped the Crow button in the context menu."/>
+  <int value="54" label="Show First Follow Sheet."/>
   <int value="55"
       label="User tapped the 'Go To Feed' button on the first follow sheet."/>
   <int value="56"
       label="User tapped the 'Got It' button on the first follow sheet."/>
+  <int value="57"
+      label="Show Follow Recommendation IPH telling users that they are able
+             to follow a website."/>
 </enum>
 
 <enum name="FeedUserCommandType">

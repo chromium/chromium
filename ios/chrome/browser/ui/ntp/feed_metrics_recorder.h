@@ -278,6 +278,11 @@ class Time;
 // Record metrics for when the user taps "Got it" on the first follow sheet.
 - (void)recordFirstFollowTappedGotIt;
 
+// Record metrics for when a Follow Recommendation IPH is shown.
+// A follow Recommendation IPH is a textual bublle that tells users that they
+// are able to follow a website.
+- (void)recordFollowRecommendationIPHShown;
+
 // Delegate to get the currently selected feed.
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
 

@@ -24,10 +24,13 @@ source_set("follow_iph") {
     "follow_iph_coordinator.mm",
   ]
   deps = [
+    "//ios/chrome/browser/discover_feed",
+    "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/follow:tab_helper",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/ntp:metrics",
   ]
 }
 

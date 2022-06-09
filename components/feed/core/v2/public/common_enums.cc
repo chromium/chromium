@@ -124,6 +124,8 @@ std::ostream& operator<<(std::ostream& out, FeedUserActionType value) {
       return out << "kFirstFollowSheetTappedGoToFeed";
     case FeedUserActionType::kFirstFollowSheetTappedGotIt:
       return out << "kFirstFollowSheetTappedGotIt";
+    case FeedUserActionType::kFollowRecommendationIPHShown:
+      return out << "kFollowRecommendationIPHShown";
   }
 }
 

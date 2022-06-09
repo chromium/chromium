@@ -818,6 +818,11 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   base::RecordAction(base::UserMetricsAction(kFirstFollowGotItButtonTapped));
 }
 
+- (void)recordFollowRecommendationIPHShown {
+  [self recordDiscoverFeedUserActionHistogram:
+            FeedUserActionType::kFollowRecommendationIPHShown];
+}
+
 #pragma mark - Private
 
 // Returns the UserSettingsOnStart value based on the user settings.

@@ -155,8 +155,11 @@ enum class FeedUserActionType {
   kFirstFollowSheetTappedGoToFeed = 55,
   // User tapped the "Got It" button on the first follow sheet. (IOS)
   kFirstFollowSheetTappedGotIt = 56,
+  // Page load caused a Follow Recommendation IPH to be shown. User action not
+  // reported here. iOS only.
+  kFollowRecommendationIPHShown = 57,
 
-  kMaxValue = kFirstFollowSheetTappedGotIt,
+  kMaxValue = kFollowRecommendationIPHShown,
 };
 
 // For testing and debugging only.

@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/ui/follow/follow_iph_coordinator.h"
 
+#include "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,6 +23,11 @@
   id<BrowserCommands> browserCommandsHandler =
       static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
   [browserCommandsHandler showFollowWhileBrowsingIPH];
+  FeedMetricsRecorder* feedMetricsRecorder =
+      DiscoverFeedServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState())
+          ->GetFeedMetricsRecorder();
+  [feedMetricsRecorder recordFollowRecommendationIPHShown];
 }
 
 @end
