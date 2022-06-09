@@ -60,7 +60,7 @@ struct NET_EXPORT RedirectInfo {
   // The status code for the redirect response. This is almost redundant with
   // the response headers, but some URLRequestJobs emit redirects without
   // headers.
-  int status_code;
+  int status_code = -1;
 
   // The new request method. Depending on the response code, the request method
   // may change.
@@ -77,14 +77,15 @@ struct NET_EXPORT RedirectInfo {
 
   // True if this redirect was upgraded to HTTPS due to the
   // upgrade-insecure-requests policy.
-  bool insecure_scheme_was_upgraded;
+  bool insecure_scheme_was_upgraded = false;
 
   // True if this is a redirect from Signed Exchange to its fallback URL.
-  bool is_signed_exchange_fallback_redirect;
+  bool is_signed_exchange_fallback_redirect = false;
 
   // The new referrer policy that should be obeyed if there are
   // subsequent redirects.
-  ReferrerPolicy new_referrer_policy;
+  ReferrerPolicy new_referrer_policy =
+      ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
 };
 
 }  // namespace net

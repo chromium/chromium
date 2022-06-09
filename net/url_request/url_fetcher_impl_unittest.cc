@@ -66,7 +66,7 @@ using net::test::IsOk;
 // Can only be used once.
 class WaitingURLFetcherDelegate : public URLFetcherDelegate {
  public:
-  WaitingURLFetcherDelegate() : did_complete_(false) {}
+  WaitingURLFetcherDelegate() = default;
 
   WaitingURLFetcherDelegate(const WaitingURLFetcherDelegate&) = delete;
   WaitingURLFetcherDelegate& operator=(const WaitingURLFetcherDelegate&) =
@@ -154,7 +154,7 @@ class WaitingURLFetcherDelegate : public URLFetcherDelegate {
   }
 
  private:
-  bool did_complete_;
+  bool did_complete_ = false;
 
   std::unique_ptr<URLFetcherImpl> fetcher_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_ =
@@ -335,7 +335,7 @@ class FetcherTestURLRequestContextGetter : public URLRequestContextGetter {
 
 class URLFetcherTest : public TestWithTaskEnvironment {
  public:
-  URLFetcherTest() : num_upload_streams_created_(0) {}
+  URLFetcherTest() = default;
 
   static int GetNumFetcherCores() {
     return URLFetcherImpl::GetNumFetcherCores();
@@ -470,7 +470,7 @@ class URLFetcherTest : public TestWithTaskEnvironment {
   std::unique_ptr<EmbeddedTestServer> test_server_;
   GURL hanging_url_;
 
-  size_t num_upload_streams_created_;
+  size_t num_upload_streams_created_ = 0;
 };
 
 namespace {
@@ -939,8 +939,7 @@ TEST_F(URLFetcherTest, PostAppendChunkAfterError) {
 // been uploaded.
 class CheckUploadProgressDelegate : public WaitingURLFetcherDelegate {
  public:
-  CheckUploadProgressDelegate()
-      : chunk_(1 << 16, 'a'), num_chunks_appended_(0), last_seen_progress_(0) {}
+  CheckUploadProgressDelegate() : chunk_(1 << 16, 'a') {}
 
   CheckUploadProgressDelegate(const CheckUploadProgressDelegate&) = delete;
   CheckUploadProgressDelegate& operator=(const CheckUploadProgressDelegate&) =
@@ -978,8 +977,8 @@ class CheckUploadProgressDelegate : public WaitingURLFetcherDelegate {
 
   const std::string chunk_;
 
-  int64_t num_chunks_appended_;
-  int64_t last_seen_progress_;
+  int64_t num_chunks_appended_ = 0;
+  int64_t last_seen_progress_ = 0;
 };
 
 TEST_F(URLFetcherTest, UploadProgress) {
@@ -1009,8 +1008,8 @@ TEST_F(URLFetcherTest, UploadProgress) {
 // that file size is correctly reported.
 class CheckDownloadProgressDelegate : public WaitingURLFetcherDelegate {
  public:
-  CheckDownloadProgressDelegate(int64_t file_size)
-      : file_size_(file_size), last_seen_progress_(0) {}
+  explicit CheckDownloadProgressDelegate(int64_t file_size)
+      : file_size_(file_size) {}
 
   CheckDownloadProgressDelegate(const CheckDownloadProgressDelegate&) = delete;
   CheckDownloadProgressDelegate& operator=(
@@ -1033,7 +1032,7 @@ class CheckDownloadProgressDelegate : public WaitingURLFetcherDelegate {
 
  private:
   int64_t file_size_;
-  int64_t last_seen_progress_;
+  int64_t last_seen_progress_ = 0;
 };
 
 TEST_F(URLFetcherTest, DownloadProgress) {
@@ -1422,8 +1421,7 @@ class ReuseFetcherDelegate : public WaitingURLFetcherDelegate {
   // request. Can't reuse the old one because fetchers release it on completion.
   ReuseFetcherDelegate(
       scoped_refptr<URLRequestContextGetter> second_request_context_getter)
-      : first_request_complete_(false),
-        second_request_context_getter_(second_request_context_getter) {}
+      : second_request_context_getter_(second_request_context_getter) {}
 
   ReuseFetcherDelegate(const ReuseFetcherDelegate&) = delete;
   ReuseFetcherDelegate& operator=(const ReuseFetcherDelegate&) = delete;
@@ -1450,7 +1448,7 @@ class ReuseFetcherDelegate : public WaitingURLFetcherDelegate {
   }
 
  private:
-  bool first_request_complete_;
+  bool first_request_complete_ = false;
   scoped_refptr<URLRequestContextGetter> second_request_context_getter_;
 };
 

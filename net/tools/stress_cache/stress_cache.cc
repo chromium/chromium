@@ -124,7 +124,7 @@ enum Operation { NONE, OPEN, CREATE, READ, WRITE, DOOM };
 // closed or deleted.
 class EntryWrapper {
  public:
-  EntryWrapper() : entry_(nullptr), state_(NONE) {
+  EntryWrapper() {
     buffer_ = base::MakeRefCounted<net::IOBuffer>(kBufferSize);
     memset(buffer_->data(), 'k', kBufferSize);
   }
@@ -143,19 +143,19 @@ class EntryWrapper {
   void OnDeleteDone(int result);
   void DoIdle();
 
-  disk_cache::Entry* entry_;
-  Operation state_;
+  disk_cache::Entry* entry_ = nullptr;
+  Operation state_ = NONE;
   scoped_refptr<net::IOBuffer> buffer_;
 };
 
 // The data that the main thread is working on.
 struct Data {
-  Data() : pendig_operations(0), writes(0), iteration(0), cache(nullptr) {}
+  Data() = default;
 
-  int pendig_operations;  // Counter of simultaneous operations.
-  int writes;             // How many writes since this iteration started.
-  int iteration;          // The iteration (number of crashes).
-  disk_cache::BackendImpl* cache;
+  int pendig_operations = 0;  // Counter of simultaneous operations.
+  int writes = 0;             // How many writes since this iteration started.
+  int iteration = 0;          // The iteration (number of crashes).
+  disk_cache::BackendImpl* cache = nullptr;
   std::string keys[kNumKeys];
   EntryWrapper entries[kNumEntries];
 };

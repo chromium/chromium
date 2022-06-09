@@ -126,7 +126,7 @@ class BasicHttpResponse : public HttpResponse {
   void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override;
 
  private:
-  HttpStatusCode code_;
+  HttpStatusCode code_ = HTTP_OK;
   absl::optional<std::string> reason_;
   std::string content_;
   std::string content_type_;

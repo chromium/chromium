@@ -352,14 +352,14 @@ class NET_EXPORT URLRequestContext {
   std::unique_ptr<std::set<const URLRequest*>> url_requests_;
 
   // Enables Brotli Content-Encoding support.
-  bool enable_brotli_;
+  bool enable_brotli_ = false;
   // Enables checking system policy before allowing a cleartext http or ws
   // request. Only used on Android.
-  bool check_cleartext_permitted_;
+  bool check_cleartext_permitted_ = false;
 
   // Triggers a DCHECK if a NetworkIsolationKey/IsolationInfo is not provided to
   // a request when true.
-  bool require_network_isolation_key_;
+  bool require_network_isolation_key_ = false;
 
   NetworkChangeNotifier::NetworkHandle bound_network_;
 

@@ -84,13 +84,7 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
   const raw_ptr<URLRequestJob> job_;
 };
 
-URLRequestJob::URLRequestJob(URLRequest* request)
-    : request_(request),
-      done_(false),
-      prefilter_bytes_read_(0),
-      postfilter_bytes_read_(0),
-      has_handled_response_(false),
-      expected_content_size_(-1) {}
+URLRequestJob::URLRequestJob(URLRequest* request) : request_(request) {}
 
 URLRequestJob::~URLRequestJob() {
 }

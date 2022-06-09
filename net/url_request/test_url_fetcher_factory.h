@@ -218,26 +218,26 @@ class TestURLFetcher : public URLFetcher {
   std::string upload_data_;
   base::FilePath upload_file_path_;
   std::list<std::string> chunks_;
-  bool did_receive_last_chunk_;
+  bool did_receive_last_chunk_ = false;
 
   // User can use set_* methods to provide values returned by getters.
   // Setting the real values is not possible, because the real class
   // has no setters. The data is a private member of a class defined
   // in a .cc file, so we can't get at it with friendship.
-  int fake_load_flags_;
+  int fake_load_flags_ = 0;
   GURL fake_url_;
   Error fake_error_;
-  int fake_response_code_;
-  ResponseDestinationType fake_response_destination_;
+  int fake_response_code_ = -1;
+  ResponseDestinationType fake_response_destination_ = STRING;
   std::string fake_response_string_;
   base::FilePath fake_response_file_path_;
-  bool write_response_file_;
+  bool write_response_file_ = false;
   ProxyServer fake_proxy_server_;
-  bool fake_was_cached_;
-  int64_t fake_response_bytes_;
+  bool fake_was_cached_ = false;
+  int64_t fake_response_bytes_ = 0;
   scoped_refptr<HttpResponseHeaders> fake_response_headers_;
   HttpRequestHeaders fake_extra_request_headers_;
-  int fake_max_retries_;
+  int fake_max_retries_ = 0;
   std::unique_ptr<URLFetcherResponseWriter> response_writer_;
 };
 

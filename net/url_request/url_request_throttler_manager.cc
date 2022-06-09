@@ -17,9 +17,7 @@ const unsigned int URLRequestThrottlerManager::kMaximumNumberOfEntries = 1500;
 const unsigned int URLRequestThrottlerManager::kRequestsBetweenCollecting = 200;
 
 URLRequestThrottlerManager::URLRequestThrottlerManager()
-    : requests_since_last_gc_(0),
-      logged_for_localhost_disabled_(false),
-      registered_from_thread_(base::kInvalidThreadId) {
+    : registered_from_thread_(base::kInvalidThreadId) {
   url_id_replacements_.ClearPassword();
   url_id_replacements_.ClearUsername();
   url_id_replacements_.ClearQuery();

@@ -37,7 +37,7 @@ namespace net {
 QuicClientMessageLooplNetworkHelper::QuicClientMessageLooplNetworkHelper(
     quic::QuicChromiumClock* clock,
     quic::QuicClientBase* client)
-    : packet_reader_started_(false), clock_(clock), client_(client) {}
+    : clock_(clock), client_(client) {}
 
 QuicClientMessageLooplNetworkHelper::~QuicClientMessageLooplNetworkHelper() =
     default;

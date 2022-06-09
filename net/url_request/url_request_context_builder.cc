@@ -125,8 +125,7 @@ class ContainerURLRequestContext final : public URLRequestContext {
 
 }  // namespace
 
-URLRequestContextBuilder::HttpCacheParams::HttpCacheParams()
-    : type(IN_MEMORY), max_size(0), reset_cache(false) {}
+URLRequestContextBuilder::HttpCacheParams::HttpCacheParams() = default;
 URLRequestContextBuilder::HttpCacheParams::~HttpCacheParams() = default;
 
 URLRequestContextBuilder::URLRequestContextBuilder() = default;

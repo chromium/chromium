@@ -44,9 +44,7 @@ class MockJobInterceptor : public URLRequestInterceptor {
 }  // namespace
 
 URLRequestHangingReadJob::URLRequestHangingReadJob(URLRequest* request)
-    : URLRequestJob(request),
-      // non-zero content-length
-      content_length_(10) {}
+    : URLRequestJob(request) {}
 
 URLRequestHangingReadJob::~URLRequestHangingReadJob() = default;
 

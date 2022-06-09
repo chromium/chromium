@@ -58,7 +58,7 @@ void RawHttpResponse::AddHeader(const std::string& key_value_pair) {
   headers_.append(base::StringPrintf("%s\r\n", key_value_pair.c_str()));
 }
 
-BasicHttpResponse::BasicHttpResponse() : code_(HTTP_OK) {}
+BasicHttpResponse::BasicHttpResponse() = default;
 
 BasicHttpResponse::~BasicHttpResponse() = default;
 

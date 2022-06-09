@@ -254,10 +254,11 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
   // Task runner for upload file access.
   scoped_refptr<base::TaskRunner> upload_file_task_runner_;
   std::unique_ptr<URLRequest> request_;  // The actual request this wraps
-  int load_flags_;                   // Flags for the load operation
+  int load_flags_ = LOAD_NORMAL;         // Flags for the load operation
   // Whether credentials are sent along with the request.
   absl::optional<bool> allow_credentials_;
-  int response_code_;                // HTTP status code for the request
+  int response_code_ =
+      URLFetcher::RESPONSE_CODE_INVALID;  // HTTP status code for the request
   scoped_refptr<IOBuffer> buffer_;
                                      // Read buffer
   scoped_refptr<URLRequestContextGetter> request_context_getter_;
@@ -269,24 +270,25 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
   HttpRequestHeaders extra_request_headers_;
   scoped_refptr<HttpResponseHeaders> response_headers_;
   ProxyServer proxy_server_;
-  bool was_cached_;
-  int64_t received_response_content_length_;
-  int64_t total_received_bytes_;
+  bool was_cached_ = false;
+  int64_t received_response_content_length_ = 0;
+  int64_t total_received_bytes_ = 0;
   IPEndPoint remote_endpoint_;
 
-  bool upload_content_set_;          // SetUploadData has been called
+  bool upload_content_set_ = false;  // SetUploadData has been called
   std::string upload_content_;       // HTTP POST payload
   base::FilePath upload_file_path_;  // Path to file containing POST payload
-  uint64_t upload_range_offset_;     // Offset from the beginning of the file
-                                     // to be uploaded.
-  uint64_t upload_range_length_;     // The length of the part of file to be
-                                     // uploaded.
+  uint64_t upload_range_offset_ = 0;  // Offset from the beginning of the file
+                                      // to be uploaded.
+  uint64_t upload_range_length_ = 0;  // The length of the part of file to be
+                                      // uploaded.
   URLFetcher::CreateUploadStreamCallback
       upload_stream_factory_;        // Callback to create HTTP POST payload.
   std::string upload_content_type_;  // MIME type of POST payload
   std::string referrer_;             // HTTP Referer header value and policy
-  ReferrerPolicy referrer_policy_;
-  bool is_chunked_upload_;           // True if using chunked transfer encoding
+  ReferrerPolicy referrer_policy_ =
+      ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
+  bool is_chunked_upload_ = false;  // True if using chunked transfer encoding
 
   // Used to write to |chunked_stream|, even after ownership has been passed to
   // the URLRequest. Continues to be valid even after the request deletes its
@@ -316,7 +318,7 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
   scoped_refptr<URLRequestThrottlerEntryInterface> url_throttler_entry_;
 
   // True if the URLFetcher has been cancelled.
-  bool was_cancelled_;
+  bool was_cancelled_ = false;
 
   // Writer object to write response to the destination like file and string.
   std::unique_ptr<URLFetcherResponseWriter> response_writer_;
@@ -324,42 +326,42 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
   // By default any server-initiated redirects are automatically followed. If
   // this flag is set to true, however, a redirect will halt the fetch and call
   // back to to the delegate immediately.
-  bool stop_on_redirect_;
+  bool stop_on_redirect_ = false;
   // True when we're actually stopped due to a redirect halted by the above. We
   // use this to ensure that |url_| is set to the redirect destination rather
   // than the originally-fetched URL.
-  bool stopped_on_redirect_;
+  bool stopped_on_redirect_ = false;
 
   // If |automatically_retry_on_5xx_| is false, 5xx responses will be
   // propagated to the observer, if it is true URLFetcher will automatically
   // re-execute the request, after the back-off delay has expired.
   // true by default.
-  bool automatically_retry_on_5xx_;
+  bool automatically_retry_on_5xx_ = true;
   // |num_retries_on_5xx_| indicates how many times we've failed to successfully
   // fetch this URL due to 5xx responses. Once this value exceeds the maximum
   // number of retries specified by the owner URLFetcher instance,
   // we'll give up.
-  int num_retries_on_5xx_;
+  int num_retries_on_5xx_ = 0;
   // Maximum retries allowed when 5xx responses are received.
-  int max_retries_on_5xx_;
+  int max_retries_on_5xx_ = 0;
   // Back-off time delay. 0 by default.
   base::TimeDelta backoff_delay_;
 
   // The number of retries that have been attempted due to ERR_NETWORK_CHANGED.
-  int num_retries_on_network_changes_;
+  int num_retries_on_network_changes_ = 0;
   // Maximum retries allowed when the request fails with ERR_NETWORK_CHANGED.
   // 0 by default.
-  int max_retries_on_network_changes_;
+  int max_retries_on_network_changes_ = 0;
 
   // Timer to poll the progress of uploading for POST and PUT requests.
   // When crbug.com/119629 is fixed, scoped_ptr is not necessary here.
   std::unique_ptr<base::RepeatingTimer> upload_progress_checker_timer_;
   // Number of bytes sent so far.
-  int64_t current_upload_bytes_;
+  int64_t current_upload_bytes_ = -1;
   // Number of bytes received so far.
-  int64_t current_response_bytes_;
+  int64_t current_response_bytes_ = 0;
   // Total expected bytes to receive (-1 if it cannot be determined).
-  int64_t total_response_bytes_;
+  int64_t total_response_bytes_ = -1;
 
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 

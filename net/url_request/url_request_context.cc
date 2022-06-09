@@ -55,9 +55,6 @@ URLRequestContext::URLRequestContext(
       network_error_logging_service_(nullptr),
 #endif  // BUILDFLAG(ENABLE_REPORTING)
       url_requests_(std::make_unique<std::set<const URLRequest*>>()),
-      enable_brotli_(false),
-      check_cleartext_permitted_(false),
-      require_network_isolation_key_(false),
       bound_network_(NetworkChangeNotifier::kInvalidNetworkHandle) {
 }
 

@@ -445,15 +445,15 @@ class BlockingNetworkDelegate : public TestNetworkDelegate {
 
   // Values returned on blocking stages when mode is SYNCHRONOUS or
   // AUTO_CALLBACK. For USER_CALLBACK these are set automatically to IO_PENDING.
-  int retval_;
+  int retval_ = OK;
 
   GURL redirect_url_;  // Used if non-empty during OnBeforeURLRequest.
-  int block_on_;       // Bit mask: in which stages to block.
+  int block_on_ = 0;   // Bit mask: in which stages to block.
 
   // Internal variables, not set by not the user:
   // Last blocked stage waiting for user callback (unused if |block_mode_| !=
   // USER_CALLBACK).
-  Stage stage_blocked_for_callback_;
+  Stage stage_blocked_for_callback_ = NOT_BLOCKED;
 
   // Callback objects stored during blocking stages.
   CompletionOnceCallback callback_;
@@ -465,10 +465,7 @@ class BlockingNetworkDelegate : public TestNetworkDelegate {
 };
 
 BlockingNetworkDelegate::BlockingNetworkDelegate(BlockMode block_mode)
-    : block_mode_(block_mode),
-      retval_(OK),
-      block_on_(0),
-      stage_blocked_for_callback_(NOT_BLOCKED) {}
+    : block_mode_(block_mode) {}
 
 void BlockingNetworkDelegate::RunUntilBlocked() {
   base::RunLoop run_loop;
@@ -6399,7 +6396,7 @@ TEST_F(URLRequestTestHTTP, ProcessSTSOnce) {
 // called.
 class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
  public:
-  MockExpectCTReporter() : num_failures_(0) {}
+  MockExpectCTReporter() = default;
   ~MockExpectCTReporter() override = default;
 
   void OnExpectCTFailed(
@@ -6417,15 +6414,14 @@ class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
   uint32_t num_failures() { return num_failures_; }
 
  private:
-  uint32_t num_failures_;
+  uint32_t num_failures_ = 0;
 };
 
 // A CTPolicyEnforcer that returns a default CTPolicyCompliance value
 // for every certificate.
 class MockCTPolicyEnforcer : public CTPolicyEnforcer {
  public:
-  MockCTPolicyEnforcer()
-      : default_result_(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS) {}
+  MockCTPolicyEnforcer() = default;
   ~MockCTPolicyEnforcer() override = default;
 
   ct::CTPolicyCompliance CheckCompliance(
@@ -6440,7 +6436,8 @@ class MockCTPolicyEnforcer : public CTPolicyEnforcer {
   }
 
  private:
-  ct::CTPolicyCompliance default_result_;
+  ct::CTPolicyCompliance default_result_ =
+      ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
 };
 
 // Tests that Expect CT headers for the preload list are processed correctly.
@@ -9977,9 +9974,7 @@ namespace {
 
 class SSLClientAuthTestDelegate : public TestDelegate {
  public:
-  SSLClientAuthTestDelegate() : on_certificate_requested_count_(0) {
-    set_on_complete(base::DoNothing());
-  }
+  SSLClientAuthTestDelegate() { set_on_complete(base::DoNothing()); }
   void OnCertificateRequested(URLRequest* request,
                               SSLCertRequestInfo* cert_request_info) override {
     on_certificate_requested_count_++;
@@ -9995,7 +9990,7 @@ class SSLClientAuthTestDelegate : public TestDelegate {
   }
 
  private:
-  int on_certificate_requested_count_;
+  int on_certificate_requested_count_ = 0;
   base::OnceClosure on_certificate_requested_;
 };
 

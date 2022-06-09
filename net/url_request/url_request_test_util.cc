@@ -304,24 +304,7 @@ void TestDelegate::OnResponseCompleted(URLRequest* request) {
     std::move(on_complete_).Run();
 }
 
-TestNetworkDelegate::TestNetworkDelegate()
-    : last_error_(0),
-      error_count_(0),
-      created_requests_(0),
-      destroyed_requests_(0),
-      completed_requests_(0),
-      canceled_requests_(0),
-      cookie_options_bit_mask_(0),
-      blocked_annotate_cookies_count_(0),
-      blocked_set_cookie_count_(0),
-      set_cookie_count_(0),
-      before_start_transaction_count_(0),
-      headers_received_count_(0),
-      has_load_timing_info_before_redirect_(false),
-      cancel_request_with_policy_violating_referrer_(false),
-      before_start_transaction_fails_(false),
-      add_header_to_first_response_(false),
-      next_request_id_(0) {}
+TestNetworkDelegate::TestNetworkDelegate() = default;
 
 TestNetworkDelegate::~TestNetworkDelegate() {
   for (auto i = next_states_.begin(); i != next_states_.end(); ++i) {

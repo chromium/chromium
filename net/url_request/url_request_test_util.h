@@ -338,18 +338,18 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   // OnHeadersReceived() stage.
   absl::optional<GURL> preserve_fragment_on_redirect_url_;
 
-  int last_error_;
-  int error_count_;
-  int created_requests_;
-  int destroyed_requests_;
-  int completed_requests_;
-  int canceled_requests_;
-  int cookie_options_bit_mask_;
-  int blocked_annotate_cookies_count_;
-  int blocked_set_cookie_count_;
-  int set_cookie_count_;
-  int before_start_transaction_count_;
-  int headers_received_count_;
+  int last_error_ = 0;
+  int error_count_ = 0;
+  int created_requests_ = 0;
+  int destroyed_requests_ = 0;
+  int completed_requests_ = 0;
+  int canceled_requests_ = 0;
+  int cookie_options_bit_mask_ = 0;
+  int blocked_annotate_cookies_count_ = 0;
+  int blocked_set_cookie_count_ = 0;
+  int set_cookie_count_ = 0;
+  int before_start_transaction_count_ = 0;
+  int headers_received_count_ = 0;
 
   // NetworkDelegate callbacks happen in a particular order (e.g.
   // OnBeforeURLRequest is always called before OnBeforeStartTransaction).
@@ -362,12 +362,13 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   std::map<int, std::string> event_order_;
 
   LoadTimingInfo load_timing_info_before_redirect_;
-  bool has_load_timing_info_before_redirect_;
+  bool has_load_timing_info_before_redirect_ = false;
 
-  bool cancel_request_with_policy_violating_referrer_;  // false by default
-  bool before_start_transaction_fails_;
-  bool add_header_to_first_response_;
-  int next_request_id_;
+  bool cancel_request_with_policy_violating_referrer_ =
+      false;  // false by default
+  bool before_start_transaction_fails_ = false;
+  bool add_header_to_first_response_ = false;
+  int next_request_id_ = 0;
 };
 
 // ----------------------------------------------------------------------------

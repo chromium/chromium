@@ -123,8 +123,7 @@ class TestReportSenderNetworkDelegate : public NetworkDelegateImpl {
  public:
   TestReportSenderNetworkDelegate()
       : url_request_destroyed_callback_(base::DoNothing()),
-        all_url_requests_destroyed_callback_(base::DoNothing()),
-        num_requests_(0) {}
+        all_url_requests_destroyed_callback_(base::DoNothing()) {}
 
   TestReportSenderNetworkDelegate(const TestReportSenderNetworkDelegate&) =
       delete;
@@ -195,7 +194,7 @@ class TestReportSenderNetworkDelegate : public NetworkDelegateImpl {
  private:
   base::RepeatingClosure url_request_destroyed_callback_;
   base::RepeatingClosure all_url_requests_destroyed_callback_;
-  size_t num_requests_;
+  size_t num_requests_ = 0;
   GURL expect_url_;
   std::set<std::string> expect_reports_;
   std::string expected_content_type_;

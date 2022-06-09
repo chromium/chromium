@@ -140,7 +140,7 @@ class NET_EXPORT URLFetcherFileWriter : public URLFetcherResponseWriter {
   base::FilePath file_path_;
 
   // True when this instance is responsible to delete the file at |file_path_|.
-  bool owns_file_;
+  bool owns_file_ = false;
 
   std::unique_ptr<FileStream> file_stream_;
 

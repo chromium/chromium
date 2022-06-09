@@ -64,8 +64,7 @@ const char kTestBody[] = "<html><body>TEST RESPONSE</body></html>";
 
 class TestHostResolverProc : public HostResolverProc {
  public:
-  TestHostResolverProc()
-      : HostResolverProc(nullptr), insecure_queries_served_(0) {}
+  TestHostResolverProc() : HostResolverProc(nullptr) {}
 
   int Resolve(const std::string& hostname,
               AddressFamily address_family,
@@ -80,8 +79,8 @@ class TestHostResolverProc : public HostResolverProc {
   uint32_t insecure_queries_served() { return insecure_queries_served_; }
 
  private:
-  ~TestHostResolverProc() override {}
-  uint32_t insecure_queries_served_;
+  ~TestHostResolverProc() override = default;
+  uint32_t insecure_queries_served_ = 0;
 };
 
 // Runs and waits for the DoH probe to complete in automatic mode. The resolver
@@ -223,7 +222,7 @@ class HttpsWithDnsOverHttpsTest : public DnsOverHttpsIntegrationTest {
 class TestHttpDelegate : public HttpStreamRequest::Delegate {
  public:
   explicit TestHttpDelegate(base::RunLoop* loop) : loop_(loop) {}
-  ~TestHttpDelegate() override {}
+  ~TestHttpDelegate() override = default;
   void OnStreamReady(const SSLConfig& used_ssl_config,
                      const ProxyInfo& used_proxy_info,
                      std::unique_ptr<HttpStream> stream) override {

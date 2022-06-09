@@ -61,12 +61,12 @@ struct HttpRequest {
 
   std::string relative_url;  // Starts with '/'. Example: "/test?query=foo"
   GURL base_url;
-  HttpMethod method;
+  HttpMethod method = METHOD_UNKNOWN;
   std::string method_string;
   std::string all_headers;
   HeaderMap headers;
   std::string content;
-  bool has_content;
+  bool has_content = false;
   absl::optional<SSLInfo> ssl_info;
 };
 
@@ -135,10 +135,10 @@ class HttpRequestParser {
 
   std::unique_ptr<HttpRequest> http_request_;
   std::string buffer_;
-  size_t buffer_position_;  // Current position in the internal buffer.
-  State state_;
+  size_t buffer_position_ = 0;  // Current position in the internal buffer.
+  State state_ = STATE_HEADERS;
   // Content length of the request currently being parsed.
-  size_t declared_content_length_;
+  size_t declared_content_length_ = 0;
 
   std::unique_ptr<HttpChunkedDecoder> chunked_decoder_;
 };

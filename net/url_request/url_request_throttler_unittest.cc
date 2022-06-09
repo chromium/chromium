@@ -101,7 +101,7 @@ class MockURLRequestThrottlerEntry : public URLRequestThrottlerEntry {
 
 class MockURLRequestThrottlerManager : public URLRequestThrottlerManager {
  public:
-  MockURLRequestThrottlerManager() : create_entry_index_(0) {}
+  MockURLRequestThrottlerManager() = default;
 
   // Method to process the URL using URLRequestThrottlerManager protected
   // method.
@@ -129,7 +129,7 @@ class MockURLRequestThrottlerManager : public URLRequestThrottlerManager {
   }
 
  private:
-  int create_entry_index_;
+  int create_entry_index_ = 0;
 };
 
 struct TimeAndBool {

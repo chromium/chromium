@@ -30,9 +30,7 @@ std::string Trim(const std::string& value) {
 
 }  // namespace
 
-HttpRequest::HttpRequest() : method(METHOD_UNKNOWN),
-                             has_content(false) {
-}
+HttpRequest::HttpRequest() = default;
 
 HttpRequest::HttpRequest(const HttpRequest& other) = default;
 
@@ -45,10 +43,7 @@ GURL HttpRequest::GetURL() const {
 }
 
 HttpRequestParser::HttpRequestParser()
-    : http_request_(std::make_unique<HttpRequest>()),
-      buffer_position_(0),
-      state_(STATE_HEADERS),
-      declared_content_length_(0) {}
+    : http_request_(std::make_unique<HttpRequest>()) {}
 
 HttpRequestParser::~HttpRequestParser() = default;
 

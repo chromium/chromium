@@ -42,18 +42,7 @@ ScopedURLFetcherFactory::~ScopedURLFetcherFactory() {
 }
 
 TestURLFetcher::TestURLFetcher(int id, const GURL& url, URLFetcherDelegate* d)
-    : id_(id),
-      original_url_(url),
-      delegate_(d),
-      delegate_for_tests_(nullptr),
-      did_receive_last_chunk_(false),
-      fake_load_flags_(0),
-      fake_response_code_(-1),
-      fake_response_destination_(STRING),
-      write_response_file_(false),
-      fake_was_cached_(false),
-      fake_response_bytes_(0),
-      fake_max_retries_(0) {
+    : id_(id), original_url_(url), delegate_(d), delegate_for_tests_(nullptr) {
   CHECK(original_url_.is_valid());
 }
 

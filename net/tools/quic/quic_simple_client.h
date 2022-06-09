@@ -61,7 +61,7 @@ class QuicSimpleClient : public quic::QuicSpdyClientBase {
   quic::QuicChromiumClock clock_;
 
   // Tracks if the client is initialized to connect.
-  bool initialized_;
+  bool initialized_ = false;
 
   base::WeakPtrFactory<QuicSimpleClient> weak_factory_{this};
 };

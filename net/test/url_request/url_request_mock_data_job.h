@@ -68,7 +68,7 @@ class URLRequestMockDataJob : public URLRequestJob {
 
   absl::optional<std::string> headers_;
   std::string data_;
-  size_t data_offset_;
+  size_t data_offset_ = 0;
   bool request_client_certificate_;
   base::WeakPtrFactory<URLRequestMockDataJob> weak_factory_{this};
 };

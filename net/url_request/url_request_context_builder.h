@@ -110,14 +110,14 @@ class NET_EXPORT URLRequestContextBuilder {
     ~HttpCacheParams();
 
     // The type of HTTP cache. Default is IN_MEMORY.
-    Type type;
+    Type type = IN_MEMORY;
 
     // The max size of the cache in bytes. Default is algorithmically determined
     // based off available disk space.
-    int max_size;
+    int max_size = 0;
 
     // Whether or not we need to reset the cache due to an experiment change.
-    bool reset_cache;
+    bool reset_cache = false;
 
     // The cache path (when type is DISK).
     base::FilePath path;
