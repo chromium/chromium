@@ -7,12 +7,17 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/back_press/BackPressManager.java",
+    "java/src/org/chromium/chrome/browser/back_press/MinimizeAppAndCloseTabBackPressHandler.java",
   ]
 
   deps = [
     "//base:base_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/native_page:java",
     "//components/browser_ui/widget/android:java",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -45,18 +50,22 @@ android_library("javatests") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/back_press/BackPressManagerTest.java",
+    "java/src/org/chromium/chrome/browser/back_press/MinimizeAppAndCloseTabBackPressHandlerUnitTest.java",
   ]
 
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
   ]
 }

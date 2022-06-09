@@ -64666,6 +64666,12 @@ Called by update_use_counter_css.py.-->
   <int value="11" label="text/vtt"/>
 </enum>
 
+<enum name="MinimizeAppAndCloseTabType">
+  <int value="0" label="App is minimized but current tab is not closed"/>
+  <int value="1" label="Current tab is closed but app is not minimized"/>
+  <int value="2" label="App is minimized and current tab is closed"/>
+</enum>
+
 <enum name="MirrorFailureType">
   <int value="0" label="Capture Tab failed due to empty stream"/>
   <int value="1" label="Capture Desktop failed due to timeout"/>

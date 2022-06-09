@@ -65,6 +65,8 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
+import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -377,6 +379,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private ReturnToChromeBackPressHandler mReturnToChromeBackPressHandler;
     private ReadingListBackPressHandler mReadingListBackPressHandler;
     private TabSwitcherBackPressHandler mTabSwitcherBackPressHandler;
+    private MinimizeAppAndCloseTabBackPressHandler mMinimizeAppAndCloseTabBackPressHandler;
 
     // ID assigned to each ChromeTabbedActivity instance in Android S+ where multi-instance feature
     // is supported. This can be explicitly set in the incoming Intent or internally assigned.
@@ -2178,14 +2181,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public boolean handleBackPressed() {
         if (!mUIWithNativeInitialized) return false;
 
+        if (BackPressManager.isEnabled()) return false;
+
         // TODO(1091411): Find a better mechanism for back-press handling for features.
-        if (!BackPressManager.isEnabled()
-                && mRootUiCoordinator.getBottomSheetController().handleBackPress()) {
+        if (mRootUiCoordinator.getBottomSheetController().handleBackPress()) {
             BackPressManager.record(BackPressHandler.Type.BOTTOM_SHEET);
             return true;
         }
 
-        if (!BackPressManager.isEnabled() && mTabModalHandler.onBackPressed()) {
+        if (mTabModalHandler.onBackPressed()) {
             BackPressManager.record(BackPressHandler.Type.TAB_MODAL_HANDLER);
             return true;
         }
@@ -2198,7 +2202,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // If we are in the tab switcher mode (not in the Start surface homepage) and not a tablet,
         // then leave tab switcher mode on back.
-        if (!BackPressManager.isEnabled() && isInOverviewMode() && !isTablet()
+        if (isInOverviewMode() && !isTablet()
                 && (mStartSurfaceSupplier.get() == null
                         || mStartSurfaceSupplier.get().getController().getStartSurfaceState()
                                 == StartSurfaceState.SHOWN_TABSWITCHER)) {
@@ -2216,14 +2220,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
         }
 
-        if (!BackPressManager.isEnabled() && getToolbarManager().back()) {
+        if (getToolbarManager().back()) {
             BackPressManager.record(BackPressHandler.Type.TOOLBAR_TAB_CONTROLLER);
             return true;
         }
 
         // If we aren't in the overview mode, we handle the Tab that is opened from Start Surface.
-        if (!BackPressManager.isEnabled() && !isInOverviewMode()
-                && ReturnToChromeUtil.isTabFromStartSurface(currentTab)) {
+        if (!isInOverviewMode() && ReturnToChromeUtil.isTabFromStartSurface(currentTab)) {
             returnToOverviewModeOnBackPressed();
             BackPressManager.record(BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
             return true;
@@ -2231,7 +2234,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         final @TabLaunchType int type = currentTab.getLaunchType();
 
-        if (!BackPressManager.isEnabled() && type == TabLaunchType.FROM_READING_LIST) {
+        if (type == TabLaunchType.FROM_READING_LIST) {
             assert !isTablet() : "Not expecting to see FROM_READING_LIST on tablets";
             ReadingListUtils.showReadingList(currentTab.isIncognito());
             BackPressManager.record(BackPressHandler.Type.SHOW_READING_LIST);
@@ -2256,13 +2259,18 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
         if (minimizeApp) {
             if (shouldCloseTab) {
+                MinimizeAppAndCloseTabBackPressHandler.record(
+                        MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB);
                 sendToBackground(currentTab);
                 return true;
             } else {
+                MinimizeAppAndCloseTabBackPressHandler.record(
+                        MinimizeAppAndCloseTabType.MINIMIZE_APP);
                 sendToBackground(null);
                 return true;
             }
         } else if (shouldCloseTab) {
+            MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.CLOSE_TAB);
             if (webContents != null) webContents.dispatchBeforeUnload(false);
             return true;
         }
@@ -2298,6 +2306,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     () -> mLayoutManager.showLayout(LayoutType.BROWSING, true));
             mBackPressManager.addHandler(
                     mTabSwitcherBackPressHandler, BackPressHandler.Type.TAB_SWITCHER_TO_BROWSING);
+        }
+        if (mMinimizeAppAndCloseTabBackPressHandler == null) {
+            mMinimizeAppAndCloseTabBackPressHandler =
+                    new MinimizeAppAndCloseTabBackPressHandler(getTabModelSelectorSupplier(),
+                            this::backShouldCloseTab, this::sendToBackground);
+            mBackPressManager.addHandler(mMinimizeAppAndCloseTabBackPressHandler,
+                    BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
         }
     }
 
