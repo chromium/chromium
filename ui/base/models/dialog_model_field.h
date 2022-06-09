@@ -43,13 +43,18 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
     // be reused with views::Link.
     using Callback = base::RepeatingCallback<void(const Event& event)>;
 
-    Link(int message_id, Callback callback);
-    Link(int message_id, base::RepeatingClosure closure);
+    Link(int message_id,
+         Callback callback,
+         std::u16string accessible_name = std::u16string());
+    Link(int message_id,
+         base::RepeatingClosure closure,
+         std::u16string accessible_name = std::u16string());
     Link(const Link&);
     ~Link();
 
     const int message_id;
     const Callback callback;
+    const std::u16string accessible_name;
   };
 
   explicit DialogModelLabel(int message_id);

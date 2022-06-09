@@ -10,13 +10,20 @@
 
 namespace ui {
 
-DialogModelLabel::Link::Link(int message_id, Callback callback)
-    : message_id(message_id), callback(std::move(callback)) {}
-DialogModelLabel::Link::Link(int message_id, base::RepeatingClosure closure)
+DialogModelLabel::Link::Link(int message_id,
+                             Callback callback,
+                             std::u16string accessible_name)
+    : message_id(message_id),
+      callback(std::move(callback)),
+      accessible_name(accessible_name) {}
+DialogModelLabel::Link::Link(int message_id,
+                             base::RepeatingClosure closure,
+                             std::u16string accessible_name)
     : Link(message_id,
            base::BindRepeating([](base::RepeatingClosure closure,
                                   const Event& event) { closure.Run(); },
-                               std::move(closure))) {}
+                               std::move(closure)),
+           accessible_name) {}
 DialogModelLabel::Link::Link(const Link&) = default;
 DialogModelLabel::Link::~Link() = default;
 

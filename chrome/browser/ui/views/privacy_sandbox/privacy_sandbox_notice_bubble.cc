@@ -105,7 +105,9 @@ void ShowPrivacySandboxNoticeBubble(Browser* browser) {
                       base::BindRepeating(
                           &PrivacySandboxNoticeBubbleModelDelegate::
                               OnLearnMoreLinkPressed,
-                          base::Unretained(bubble_delegate)))),
+                          base::Unretained(bubble_delegate)),
+                      l10n_util::GetStringUTF16(
+                          IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION_ESTIMATES_INTERESTS_LINK_A11Y_NAME))),
               kPrivacySandboxLearnMoreTextForTesting)
           .AddOkButton(
               base::BindRepeating(

@@ -69,6 +69,9 @@ class VIEWS_EXPORT StyledLabel : public View {
     // Tooltip for the range.
     std::u16string tooltip;
 
+    // Accessible name for the range.
+    std::u16string accessible_name;
+
     // A custom view shown instead of the underlying text. Ownership of custom
     // views must be passed to StyledLabel via AddCustomView().
     raw_ptr<View> custom_view = nullptr;

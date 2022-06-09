@@ -841,10 +841,12 @@ BubbleDialogModelHost::CreateStyledLabelForDialogModelLabel(
 
   auto styled_label = std::make_unique<StyledLabel>();
   styled_label->SetText(text);
-  styled_label->AddStyleRange(
-      gfx::Range(offset, offset + link_text.length()),
-      StyledLabel::RangeStyleInfo::CreateForLink(
-          dialog_label.links(GetPassKey()).front().callback));
+  auto style_info = StyledLabel::RangeStyleInfo::CreateForLink(
+      dialog_label.links(GetPassKey()).front().callback);
+  style_info.accessible_name =
+      dialog_label.links(GetPassKey()).front().accessible_name;
+  styled_label->AddStyleRange(gfx::Range(offset, offset + link_text.length()),
+                              style_info);
 
   styled_label->SetDefaultTextStyle(dialog_label.is_secondary(GetPassKey())
                                         ? style::STYLE_SECONDARY

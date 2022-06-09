@@ -538,6 +538,8 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
     // Note this ignores |default_text_style_|, in favor of style::STYLE_LINK.
     auto link = std::make_unique<Link>(text, text_context_);
     link->SetCallback(style_info.callback);
+    if (!style_info.accessible_name.empty())
+      link->SetAccessibleName(style_info.accessible_name);
 
     result = std::move(link);
   } else if (style_info.custom_font) {
@@ -553,6 +555,8 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
     result->SetEnabledColor(style_info.override_color.value());
   if (!style_info.tooltip.empty())
     result->SetTooltipText(style_info.tooltip);
+  if (!style_info.accessible_name.empty())
+    result->SetAccessibleName(style_info.accessible_name);
   if (displayed_on_background_color_)
     result->SetBackgroundColor(displayed_on_background_color_.value());
   result->SetAutoColorReadabilityEnabled(auto_color_readability_enabled_);
