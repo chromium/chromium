@@ -44,7 +44,8 @@ class NET_EXPORT_PRIVATE EventCreator {
   NetLogWithSource net_log_;
 
   // The effective connection type when the net log event was last added.
-  EffectiveConnectionType past_effective_connection_type_;
+  EffectiveConnectionType past_effective_connection_type_ =
+      EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 
   //  The network quality when the net log event was last added.
   NetworkQuality past_network_quality_;

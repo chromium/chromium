@@ -414,7 +414,7 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   const std::unique_ptr<NetworkQualityEstimatorParams> params_;
 
   // Number of end to end RTT samples available when the ECT was last computed.
-  size_t end_to_end_rtt_observation_count_at_last_ect_computation_;
+  size_t end_to_end_rtt_observation_count_at_last_ect_computation_ = 0;
 
   // Current count of active peer to peer connections.
   uint32_t p2p_connections_count_ = 0u;
@@ -542,12 +542,12 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   // Determines if the requests to local host can be used in estimating the
   // network quality. Set to true only for tests.
-  bool use_localhost_requests_;
+  bool use_localhost_requests_ = false;
 
   // When set to true, the device offline check is disabled when computing the
   // effective connection type or when writing the prefs. Set to true only for
   // testing.
-  bool disable_offline_check_;
+  bool disable_offline_check_ = false;
 
   // Tick clock used by the network quality estimator.
   raw_ptr<const base::TickClock> tick_clock_;
@@ -576,7 +576,8 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // Estimated network quality when the transaction for the last main frame
   // request was started.
   nqe::internal::NetworkQuality estimated_quality_at_last_main_frame_;
-  EffectiveConnectionType effective_connection_type_at_last_main_frame_;
+  EffectiveConnectionType effective_connection_type_at_last_main_frame_ =
+      EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 
   // Observer lists for round trip times and throughput measurements.
   base::ObserverList<RTTObserver>::Unchecked rtt_observer_list_;
@@ -599,19 +600,19 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   // Number of RTT and bandwidth samples available when effective connection
   // type was last recomputed.
-  size_t rtt_observations_size_at_last_ect_computation_;
-  size_t throughput_observations_size_at_last_ect_computation_;
+  size_t rtt_observations_size_at_last_ect_computation_ = 0;
+  size_t throughput_observations_size_at_last_ect_computation_ = 0;
 
   // Number of transport RTT samples available when the ECT was last computed.
-  size_t transport_rtt_observation_count_last_ect_computation_;
+  size_t transport_rtt_observation_count_last_ect_computation_ = 0;
 
   // Number of RTT observations received since the effective connection type was
   // last computed.
-  size_t new_rtt_observations_since_last_ect_computation_;
+  size_t new_rtt_observations_since_last_ect_computation_ = 0;
 
   // Number of throughput observations received since the effective connection
   // type was last computed.
-  size_t new_throughput_observations_since_last_ect_computation_;
+  size_t new_throughput_observations_since_last_ect_computation_ = 0;
 
   // Current estimate of the network quality.
   nqe::internal::NetworkQuality network_quality_;
@@ -621,14 +622,15 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // events. It is also updated every time there is network traffic (provided
   // the last computation was more than
   // |effective_connection_type_recomputation_interval_| ago).
-  EffectiveConnectionType effective_connection_type_;
+  EffectiveConnectionType effective_connection_type_ =
+      EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 
   // Stores the qualities of different networks.
   std::unique_ptr<nqe::internal::NetworkQualityStore> network_quality_store_;
 
   // True if a cached RTT or throughput estimate was available and the
   // corresponding observation has been added on the current network.
-  bool cached_estimate_applied_;
+  bool cached_estimate_applied_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

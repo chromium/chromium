@@ -106,7 +106,7 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
 
   // True if the first RTT notification from the QUIC connection has been
   // received.
-  bool first_quic_rtt_notification_received_;
+  bool first_quic_rtt_notification_received_ = false;
 
   // A unique identifier for the remote host that this socket connects to.
   const absl::optional<IPHash> host_;

@@ -93,9 +93,6 @@ NetworkQualityEstimator::NetworkQualityEstimator(
     std::unique_ptr<NetworkQualityEstimatorParams> params,
     NetLog* net_log)
     : params_(std::move(params)),
-      end_to_end_rtt_observation_count_at_last_ect_computation_(0),
-      use_localhost_requests_(false),
-      disable_offline_check_(false),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       last_connection_change_(tick_clock_->NowTicks()),
       current_network_id_(nqe::internal::NetworkID(
@@ -123,16 +120,7 @@ NetworkQualityEstimator::NetworkQualityEstimator(
               tick_clock_,
               params_->weight_multiplier_per_second(),
               1.0 /*params_->weight_multiplier_per_signal_strength_level()*/)},
-      effective_connection_type_at_last_main_frame_(
-          EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
       effective_connection_type_recomputation_interval_(base::Seconds(10)),
-      rtt_observations_size_at_last_ect_computation_(0),
-      throughput_observations_size_at_last_ect_computation_(0),
-      transport_rtt_observation_count_last_ect_computation_(0),
-      new_rtt_observations_since_last_ect_computation_(0),
-      new_throughput_observations_since_last_ect_computation_(0),
-      effective_connection_type_(EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
-      cached_estimate_applied_(false),
       net_log_(NetLogWithSource::Make(
           net_log,
           net::NetLogSourceType::NETWORK_QUALITY_ESTIMATOR)),

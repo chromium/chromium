@@ -104,15 +104,15 @@ class MockPersistentNelStore
   std::vector<NetworkErrorLoggingService::NelPolicy> prestored_policies_;
 
   // Set when LoadNelPolicies() is called.
-  bool load_started_;
+  bool load_started_ = false;
 
   // Simulates the total number of policies that would be stored in the store.
   // Updated when pre-stored policies are added, and when Flush() is called.
-  int policy_count_;
+  int policy_count_ = 0;
 
   // Simulates the delta to be added to |policy_count_| the next time Flush() is
   // called. Reset to 0 when Flush() is called.
-  int queued_policy_count_delta_;
+  int queued_policy_count_delta_ = 0;
 };
 
 bool operator==(const MockPersistentNelStore::Command& lhs,

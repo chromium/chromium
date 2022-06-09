@@ -50,8 +50,7 @@ bool operator!=(const MockPersistentNelStore::Command& lhs,
   return !(lhs == rhs);
 }
 
-MockPersistentNelStore::MockPersistentNelStore()
-    : load_started_(false), policy_count_(0), queued_policy_count_delta_(0) {}
+MockPersistentNelStore::MockPersistentNelStore() = default;
 
 MockPersistentNelStore::~MockPersistentNelStore() = default;
 

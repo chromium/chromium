@@ -218,7 +218,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
 
   // Number of bits received prior to |start_| as reported by
   // NetworkActivityMonitor.
-  int64_t bits_received_at_window_start_;
+  int64_t bits_received_at_window_start_ = 0;
 
   // Container that holds active requests that reduce the accuracy of
   // throughput computation. These requests are not used in throughput
@@ -234,7 +234,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   ResponseContentSizes response_content_sizes_;
 
   // The running total of response content size for all inflight requests.
-  int64_t total_response_content_size_;
+  int64_t total_response_content_size_ = 0;
 
   // Last time when the check for hanging requests was run.
   base::TimeTicks last_hanging_request_check_;
@@ -243,11 +243,11 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // observations until Chromium is restarted. This may happen if the throughput
   // analyzer has lost track of the requests that degrade throughput computation
   // accuracy.
-  bool disable_throughput_measurements_;
+  bool disable_throughput_measurements_ = false;
 
   // Determines if the requests to local host can be used in estimating the
   // network quality. Set to true only for tests.
-  bool use_localhost_requests_for_tests_;
+  bool use_localhost_requests_for_tests_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

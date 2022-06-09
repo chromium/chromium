@@ -27,7 +27,7 @@ namespace {
 
 class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
  public:
-  TestPrefDelegate() : write_count_(0), read_count_(0) {}
+  TestPrefDelegate() = default;
 
   TestPrefDelegate(const TestPrefDelegate&) = delete;
   TestPrefDelegate& operator=(const TestPrefDelegate&) = delete;
@@ -63,8 +63,8 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
 
  private:
   // Number of times prefs were written and read, respectively..
-  size_t write_count_;
-  size_t read_count_;
+  size_t write_count_ = 0;
+  size_t read_count_ = 0;
 
   // Current value of the prefs.
   base::Value::Dict value_;

@@ -80,9 +80,7 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
                 &TestThroughputAnalyzer::OnNewThroughputObservationAvailable,
                 base::Unretained(this)),
             tick_clock,
-            NetLogWithSource::Make(NetLogSourceType::NONE)),
-        throughput_observations_received_(0),
-        bits_received_(0) {}
+            NetLogWithSource::Make(NetLogSourceType::NONE)) {}
 
   TestThroughputAnalyzer(const TestThroughputAnalyzer&) = delete;
   TestThroughputAnalyzer& operator=(const TestThroughputAnalyzer&) = delete;
@@ -110,9 +108,9 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
   using internal::ThroughputAnalyzer::IsHangingWindow;
 
  private:
-  int throughput_observations_received_;
+  int throughput_observations_received_ = 0;
 
-  int64_t bits_received_;
+  int64_t bits_received_ = 0;
 };
 
 using ThroughputAnalyzerTest = TestWithTaskEnvironment;

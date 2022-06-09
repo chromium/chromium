@@ -59,10 +59,6 @@ ThroughputAnalyzer::ThroughputAnalyzer(
       tick_clock_(tick_clock),
       last_connection_change_(tick_clock_->NowTicks()),
       window_start_time_(base::TimeTicks()),
-      bits_received_at_window_start_(0),
-      total_response_content_size_(0),
-      disable_throughput_measurements_(false),
-      use_localhost_requests_for_tests_(false),
       net_log_(net_log) {
   DCHECK(tick_clock_);
   DCHECK(network_quality_estimator_);

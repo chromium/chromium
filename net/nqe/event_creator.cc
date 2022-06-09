@@ -72,9 +72,7 @@ bool MetricChangedMeaningfully(int32_t past_value, int32_t current_value) {
 
 }  // namespace
 
-EventCreator::EventCreator(NetLogWithSource net_log)
-    : net_log_(net_log),
-      past_effective_connection_type_(EFFECTIVE_CONNECTION_TYPE_UNKNOWN) {}
+EventCreator::EventCreator(NetLogWithSource net_log) : net_log_(net_log) {}
 
 EventCreator::~EventCreator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

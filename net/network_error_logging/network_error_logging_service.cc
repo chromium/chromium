@@ -155,7 +155,7 @@ void RecordSignedExchangeRequestOutcome(
 class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
  public:
   explicit NetworkErrorLoggingServiceImpl(PersistentNelStore* store)
-      : store_(store), started_loading_policies_(false), initialized_(false) {
+      : store_(store) {
     if (!PoliciesArePersisted())
       initialized_ = true;
   }
@@ -319,7 +319,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 
   // Set to true when we have told the store to load NEL policies. This is to
   // make sure we don't try to load policies multiple times.
-  bool started_loading_policies_;
+  bool started_loading_policies_ = false;
 
   // Set to true when the NEL service has been initialized. Before
   // initialization is complete, commands to the NEL service (i.e. public
@@ -328,7 +328,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   // there is no PersistentNelStore. If there is a store, then initialization is
   // complete when the NEL policies have finished being loaded from the store
   // (either successfully or unsuccessfully).
-  bool initialized_;
+  bool initialized_ = false;
 
   // Backlog of tasks waiting on initialization.
   std::vector<base::OnceClosure> task_backlog_;
@@ -1043,8 +1043,6 @@ ReportingService* NetworkErrorLoggingService::GetReportingServiceForTesting() {
 }
 
 NetworkErrorLoggingService::NetworkErrorLoggingService()
-    : clock_(base::DefaultClock::GetInstance()),
-      reporting_service_(nullptr),
-      shut_down_(false) {}
+    : clock_(base::DefaultClock::GetInstance()), reporting_service_(nullptr) {}
 
 }  // namespace net

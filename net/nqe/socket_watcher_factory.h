@@ -87,7 +87,7 @@ class SocketWatcherFactory : public SocketPerformanceWatcherFactory {
 
   // True if socket watchers constructed by this factory can use the RTT from
   // the sockets that are connected to the private addresses.
-  bool allow_rtt_private_address_;
+  bool allow_rtt_private_address_ = false;
 
   // Called every time a new RTT observation is available.
   OnUpdatedRTTAvailableCallback updated_rtt_observation_callback_;

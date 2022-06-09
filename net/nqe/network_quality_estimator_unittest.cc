@@ -113,9 +113,7 @@ class TestRTTAndThroughputEstimatesObserver
  public:
   TestRTTAndThroughputEstimatesObserver()
       : http_rtt_(nqe::internal::InvalidRTT()),
-        transport_rtt_(nqe::internal::InvalidRTT()),
-        downstream_throughput_kbps_(nqe::internal::INVALID_RTT_THROUGHPUT),
-        notifications_received_(0) {}
+        transport_rtt_(nqe::internal::InvalidRTT()) {}
 
   // RTTAndThroughputEstimatesObserver implementation:
   void OnRTTOrThroughputEstimatesComputed(
@@ -139,8 +137,8 @@ class TestRTTAndThroughputEstimatesObserver
  private:
   base::TimeDelta http_rtt_;
   base::TimeDelta transport_rtt_;
-  int32_t downstream_throughput_kbps_;
-  int notifications_received_;
+  int32_t downstream_throughput_kbps_ = nqe::internal::INVALID_RTT_THROUGHPUT;
+  int notifications_received_ = 0;
 };
 
 class TestRTTObserver : public NetworkQualityEstimator::RTTObserver {
@@ -2182,8 +2180,7 @@ class TestNetworkQualitiesCacheObserver
   TestNetworkQualitiesCacheObserver()
       : network_id_(net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
                     std::string(),
-                    INT32_MIN),
-        notification_received_(0) {}
+                    INT32_MIN) {}
 
   TestNetworkQualitiesCacheObserver(const TestNetworkQualitiesCacheObserver&) =
       delete;
@@ -2210,7 +2207,7 @@ class TestNetworkQualitiesCacheObserver
 
  private:
   nqe::internal::NetworkID network_id_;
-  size_t notification_received_;
+  size_t notification_received_ = 0;
 };
 
 TEST_F(NetworkQualityEstimatorTest, CacheObserver) {

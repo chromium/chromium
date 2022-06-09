@@ -188,7 +188,7 @@ class NET_EXPORT_PRIVATE NtlmBufferWriter {
   uint8_t* GetBufferPtrAtCursor() { return GetBufferPtr() + GetCursor(); }
 
   std::vector<uint8_t> buffer_;
-  size_t cursor_;
+  size_t cursor_ = 0;
 };
 
 }  // namespace ntlm
