@@ -50,6 +50,8 @@ class AutofillPopupDelegate {
   // |payload| is the payload of the suggestion, and it represents the GUID of
   // the backend data model. |position| refers to the index of the suggestion in
   // the suggestion list.
+  // TODO(crbug.com/1335128): Refactor parameters to take in a Suggestion
+  // struct.
   virtual void DidAcceptSuggestion(const std::u16string& value,
                                    int frontend_id,
                                    const Suggestion::Payload& payload,

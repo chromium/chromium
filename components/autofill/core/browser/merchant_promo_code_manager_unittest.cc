@@ -10,8 +10,10 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using testing::Field;
 using testing::UnorderedElementsAre;
@@ -54,12 +56,15 @@ class MerchantPromoCodeManagerTest : public testing::Test {
   }
 
   // Sets up the TestPersonalDataManager with a promo code offer for the given
-  // |origin|. Returns the promo code inserted in case the test wants to match
-  // it against returned suggestions.
-  std::string SetUpPromoCodeOfferWithOrigin(std::string origin) {
+  // |origin|, and sets the offer details url of the offer to
+  // |offer_details_url|. Returns the promo code inserted in case the test wants
+  // to match it against returned suggestions.
+  std::string SetUpPromoCodeOffer(std::string origin,
+                                  const GURL& offer_details_url) {
     personal_data_manager_.get()->SetAutofillWalletImportEnabled(true);
     AutofillOfferData testPromoCodeOfferData =
         test::GetPromoCodeOfferData(GURL(origin));
+    testPromoCodeOfferData.SetOfferDetailsUrl(offer_details_url);
     personal_data_manager_.get()->AddOfferDataForTest(
         std::make_unique<AutofillOfferData>(testPromoCodeOfferData));
     return testPromoCodeOfferData.GetPromoCode();
@@ -82,17 +87,21 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
   TestFormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
-  std::string promo_code =
-      SetUpPromoCodeOfferWithOrigin(last_committed_origin_url);
+  std::string promo_code = SetUpPromoCodeOffer(
+      last_committed_origin_url, GURL("https://offer-details-url.com/"));
   Suggestion promo_code_suggestion = Suggestion(base::ASCIIToUTF16(promo_code));
+  Suggestion footer_suggestion = Suggestion(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT));
 
   // Setting up mock to verify that the handler is returned a list of
-  // promo-code-based suggestions and the Google Pay footer line.
-  EXPECT_CALL(*suggestions_handler.get(),
-              OnSuggestionsReturned(
-                  test_query_id, autoselect_first_suggestion,
-                  UnorderedElementsAre(Field(&Suggestion::main_text,
-                                             promo_code_suggestion.main_text))))
+  // promo-code-based suggestions and the promo code details line.
+  EXPECT_CALL(
+      *suggestions_handler.get(),
+      OnSuggestionsReturned(
+          test_query_id, autoselect_first_suggestion,
+          UnorderedElementsAre(
+              Field(&Suggestion::main_text, promo_code_suggestion.main_text),
+              Field(&Suggestion::main_text, footer_suggestion.main_text))))
       .Times(1);
 
   // Simulate request for suggestions.
@@ -110,8 +119,8 @@ TEST_F(MerchantPromoCodeManagerTest,
        DoesNotShowPromoCodeOffersForOffTheRecord) {
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   std::string last_committed_origin_url = "https://www.example.com";
-  std::string promo_code =
-      SetUpPromoCodeOfferWithOrigin(last_committed_origin_url);
+  std::string promo_code = SetUpPromoCodeOffer(
+      last_committed_origin_url, GURL("https://offer-details-url.com/"));
   FormData form_data;
   form_data.main_frame_origin =
       url::Origin::Create(GURL(last_committed_origin_url));

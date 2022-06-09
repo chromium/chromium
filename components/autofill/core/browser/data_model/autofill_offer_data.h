@@ -125,6 +125,16 @@ class AutofillOfferData {
       const std::vector<int64_t>& eligible_instrument_id) {
     eligible_instrument_id_ = eligible_instrument_id;
   }
+
+  void SetPromoCode(const std::string& promo_code) { promo_code_ = promo_code; }
+
+  void SetValuePropTextInDisplayStrings(const std::string& value_prop_text) {
+    display_strings_.value_prop_text = value_prop_text;
+  }
+
+  void SetOfferDetailsUrl(const GURL& offer_details_url) {
+    offer_details_url_ = offer_details_url;
+  }
 #endif
 
  private:

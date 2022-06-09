@@ -41,8 +41,7 @@ version_info::Channel AutofillClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }
 
-base::WeakPtr<MerchantPromoCodeManager>
-AutofillClient::GetMerchantPromoCodeManager() {
+MerchantPromoCodeManager* AutofillClient::GetMerchantPromoCodeManager() {
   return nullptr;
 }
 

@@ -410,7 +410,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     auto single_field_form_fill_router =
         std::make_unique<NiceMock<MockSingleFieldFormFillRouter>>(
             autocomplete_history_manager_.get(),
-            merchant_promo_code_manager_.get()->GetWeakPtr());
+            merchant_promo_code_manager_.get());
     single_field_form_fill_router_ = single_field_form_fill_router.get();
     browser_autofill_manager_->set_single_field_form_fill_router_for_test(
         std::move(single_field_form_fill_router));
@@ -745,7 +745,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     auto single_field_form_fill_router =
         std::make_unique<NiceMock<MockSingleFieldFormFillRouter>>(
             autocomplete_history_manager_.get(),
-            merchant_promo_code_manager_.get()->GetWeakPtr());
+            merchant_promo_code_manager_.get());
     single_field_form_fill_router_ = single_field_form_fill_router.get();
     browser_autofill_manager_->set_single_field_form_fill_router_for_test(
         std::move(single_field_form_fill_router));

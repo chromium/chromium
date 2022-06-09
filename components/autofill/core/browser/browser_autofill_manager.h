@@ -340,11 +340,11 @@ class BrowserAutofillManager : public AutofillManager,
       FormStructure* form_structure) {
     PreProcessStateMatchingTypes(profiles, form_structure);
   }
-#endif  // defined(UNIT_TEST)
 
-  base::raw_ptr<AutofillSuggestionGenerator> suggestion_generator() {
+  AutofillSuggestionGenerator* suggestion_generator() {
     return suggestion_generator_.get();
   }
+#endif  // defined(UNIT_TEST)
 
  protected:
   // Uploads the form data to the Autofill server. |observed_submission|

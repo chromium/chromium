@@ -255,6 +255,10 @@ class MockAutofillClient : public autofill::AutofillClient {
               LoadRiskData,
               (base::OnceCallback<void(const std::string&)>),
               (override));
+  MOCK_METHOD(void,
+              OnPromoCodeSuggestionsFooterSelected,
+              (const GURL& url),
+              (override));
 };
 
 PasswordForm GetTestAndroidCredential() {

@@ -418,6 +418,14 @@ void ChromeAutofillClientIOS::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
 }
 
+void ChromeAutofillClientIOS::OnPromoCodeSuggestionsFooterSelected(
+    const GURL& url) {
+  web_state_->OpenURL(web::WebState::OpenURLParams(
+      url, web::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+      /*is_renderer_initiated=*/false));
+}
+
 void ChromeAutofillClientIOS::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   std::move(callback).Run(

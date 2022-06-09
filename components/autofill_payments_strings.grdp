@@ -662,6 +662,9 @@
   <message name="IDS_AUTOFILL_OFFERS_REMINDER_POSITIVE_BUTTON_LABEL" desc="Label for the positive button for the bubble/infobar shown on the merchant website when an offer is available to use.">
     Got it
   </message>
+  <message name="IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT" desc="Label for the footer text of the autofill suggestions popup when a user clicks on a promo code field. It redirects the user to the offer webview page for more details on the promo code offers suggested. An example of details the user can see is the terms and conditions of the promo code offers that are shown in the autofill suggestions popup.">
+    See promo code details
+  </message>
   <if expr="not is_ios and not is_android">
     <message name="IDS_AUTOFILL_OFFERS_REMINDER_DESCRIPTION_TEXT" desc="Secondary explanatory text for the Desktop bubble shown on the merchant website when an offer is available to use.">
       Pay with <ph name="CARD_DETAIL">$1<ex>Visa - 1234</ex></ph> at checkout

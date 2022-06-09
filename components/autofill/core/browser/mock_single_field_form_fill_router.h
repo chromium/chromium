@@ -15,7 +15,7 @@ class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
  public:
   explicit MockSingleFieldFormFillRouter(
       AutocompleteHistoryManager* autocomplete_history_manager,
-      base::WeakPtr<MerchantPromoCodeManager> merchant_promo_code_manager);
+      MerchantPromoCodeManager* merchant_promo_code_manager);
   ~MockSingleFieldFormFillRouter() override;
 
   MOCK_METHOD(void,

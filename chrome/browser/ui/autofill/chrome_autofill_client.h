@@ -67,8 +67,7 @@ class ChromeAutofillClient
   version_info::Channel GetChannel() const override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
-  base::WeakPtr<MerchantPromoCodeManager> GetMerchantPromoCodeManager()
-      override;
+  MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
@@ -203,6 +202,7 @@ class ChromeAutofillClient
   bool ShouldShowSigninPromo() override;
   bool AreServerCardsSupported() const override;
   void ExecuteCommand(int id) override;
+  void OnPromoCodeSuggestionsFooterSelected(const GURL& url) override;
   LogManager* GetLogManager() const override;
 
   // RiskDataLoader:

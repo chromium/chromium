@@ -73,7 +73,7 @@ class SingleFieldFormFillRouterTest : public testing::Test {
     single_field_form_fill_router_ =
         std::make_unique<SingleFieldFormFillRouter>(
             autocomplete_history_manager_.get(),
-            merchant_promo_code_manager_.get()->GetWeakPtr());
+            merchant_promo_code_manager_.get());
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;

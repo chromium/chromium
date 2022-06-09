@@ -7,13 +7,14 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
-#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
 #include "components/autofill/core/common/form_data.h"
 
 namespace autofill {
 
+class FormStructure;
+class MerchantPromoCodeManager;
 struct SuggestionsContext;
 
 // Owned by AutofillClient, and is one per tab. Routes single field form filling
@@ -23,7 +24,7 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
  public:
   explicit SingleFieldFormFillRouter(
       AutocompleteHistoryManager* autocomplete_history_manager,
-      base::WeakPtr<MerchantPromoCodeManager> merchant_promo_code_manager);
+      MerchantPromoCodeManager* merchant_promo_code_manager);
   ~SingleFieldFormFillRouter() override;
   SingleFieldFormFillRouter(const SingleFieldFormFillRouter&) = delete;
   SingleFieldFormFillRouter& operator=(const SingleFieldFormFillRouter&) =

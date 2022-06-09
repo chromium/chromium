@@ -157,15 +157,14 @@ ChromeAutofillClient::GetAutocompleteHistoryManager() {
   return AutocompleteHistoryManagerFactory::GetForProfile(profile);
 }
 
-base::WeakPtr<MerchantPromoCodeManager>
-ChromeAutofillClient::GetMerchantPromoCodeManager() {
+MerchantPromoCodeManager* ChromeAutofillClient::GetMerchantPromoCodeManager() {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillFillMerchantPromoCodeFields)) {
     return nullptr;
   }
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  return MerchantPromoCodeManagerFactory::GetForProfile(profile)->GetWeakPtr();
+  return MerchantPromoCodeManagerFactory::GetForProfile(profile);
 }
 
 PrefService* ChromeAutofillClient::GetPrefs() {
@@ -956,6 +955,14 @@ void ChromeAutofillClient::ExecuteCommand(int id) {
     }
   }
 #endif
+}
+
+void ChromeAutofillClient::OnPromoCodeSuggestionsFooterSelected(
+    const GURL& url) {
+  web_contents()->OpenURL(content::OpenURLParams(
+      url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+      /*is_renderer_initiated=*/false));
 }
 
 LogManager* ChromeAutofillClient::GetLogManager() const {

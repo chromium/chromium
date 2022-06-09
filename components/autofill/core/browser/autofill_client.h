@@ -323,7 +323,7 @@ class AutofillClient : public RiskDataLoader {
 
   // Gets the MerchantPromoCodeManager instance associated with the
   // client (can be null for unsupported platforms).
-  virtual base::WeakPtr<MerchantPromoCodeManager> GetMerchantPromoCodeManager();
+  virtual MerchantPromoCodeManager* GetMerchantPromoCodeManager();
 
   // Creates and returns a SingleFieldFormFillRouter using the
   // AutocompleteHistoryManager instance associated with the client.
@@ -691,6 +691,9 @@ class AutofillClient : public RiskDataLoader {
   // Checks whether the current query is the most recent one.
   virtual bool IsQueryIDRelevant(int query_id) = 0;
 #endif
+
+  // Opens a new tab and navigates to the given |url|.
+  virtual void OnPromoCodeSuggestionsFooterSelected(const GURL& url) = 0;
 };
 
 }  // namespace autofill

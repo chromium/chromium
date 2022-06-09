@@ -1508,6 +1508,7 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
       case PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
       case PopupItemId::POPUP_ITEM_ID_CLEAR_FORM:
       case PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS:
+      case PopupItemId::POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
         return true;
 
       default:

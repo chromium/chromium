@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/autofill_suggestion_generator.h"
+
 #include <string>
 
 #include "base/feature_list.h"
-#include "components/autofill/core/browser/autofill_suggestion_generator.h"
-
 #include "base/guid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
@@ -184,15 +184,42 @@ std::vector<Suggestion>
 AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
     const std::vector<const AutofillOfferData*>& promo_code_offers) {
   std::vector<Suggestion> suggestions;
+  GURL footer_offer_details_url;
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
     // For each promo code, create a suggestion.
     suggestions.emplace_back(
         base::ASCIIToUTF16(promo_code_offer->GetPromoCode()));
-    Suggestion* suggestion = &suggestions.back();
-    suggestion->label = base::ASCIIToUTF16(
+    Suggestion& suggestion = suggestions.back();
+    suggestion.label = base::ASCIIToUTF16(
         promo_code_offer->GetDisplayStrings().value_prop_text);
-    suggestion->payload = base::NumberToString(promo_code_offer->GetOfferId());
-    suggestion->frontend_id = POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY;
+    suggestion.payload = base::NumberToString(promo_code_offer->GetOfferId());
+    suggestion.frontend_id = POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY;
+
+    // Every offer for a given merchant leads to the same GURL, so we grab the
+    // first offer's offer details url as the payload for the footer to set
+    // later.
+    if (footer_offer_details_url.is_empty() &&
+        !promo_code_offer->GetOfferDetailsUrl().is_empty() &&
+        promo_code_offer->GetOfferDetailsUrl().is_valid()) {
+      footer_offer_details_url = promo_code_offer->GetOfferDetailsUrl();
+    }
+  }
+
+  // Ensure that there are suggestions and that we were able to find at least
+  // one suggestion with a valid offer details url before adding the footer.
+  DCHECK(suggestions.size() > 0);
+  if (!footer_offer_details_url.is_empty()) {
+    suggestions.emplace_back(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT));
+    Suggestion& suggestion = suggestions.back();
+    suggestion.frontend_id = POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS;
+
+    // We set the payload for the footer as |footer_offer_details_url|, which is
+    // the offer details url of the first offer we had for this merchant. We
+    // will navigate to the url in |footer_offer_details_url| if the footer is
+    // selected in AutofillExternalDelegate::DidAcceptSuggestion().
+    suggestion.payload = std::move(footer_offer_details_url);
+    suggestion.trailing_icon = "google";
   }
   return suggestions;
 }

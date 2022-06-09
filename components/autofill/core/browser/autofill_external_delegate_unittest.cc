@@ -93,6 +93,11 @@ class MockAutofillClient : public TestAutofillClient {
               (override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
   MOCK_METHOD(void, ExecuteCommand, (int), (override));
+  MOCK_METHOD(void,
+              OnPromoCodeSuggestionsFooterSelected,
+              (const GURL& url),
+              (override));
+
   // Mock the client query ID check.
   bool IsQueryIDRelevant(int query_id) { return query_id == kRecentQueryId; }
 };
@@ -653,6 +658,17 @@ TEST_F(AutofillExternalDelegateUnitTest,
       Suggestion::Payload{}, 0);
 }
 
+// Test that the Autofill delegate routes the merchant promo code suggestions
+// footer redirect logic correctly.
+TEST_F(AutofillExternalDelegateUnitTest,
+       ExternalDelegateMerchantPromoCodeSuggestionsFooter) {
+  const GURL gurl{"https://example.com/"};
+  absl::variant<std::string, GURL> payload(absl::in_place_type<GURL>, gurl);
+  EXPECT_CALL(autofill_client_, OnPromoCodeSuggestionsFooterSelected(gurl));
+  external_delegate_->DidAcceptSuggestion(
+      u"baz foo", POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS, payload, 0);
+}
+
 // Test that the ClearPreview call is only sent if the form was being previewed
 // (i.e. it isn't autofilling a password).
 TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
@@ -857,7 +873,8 @@ TEST_F(AutofillExternalDelegateUnitTest, IgnoreAutocompleteOffForAutofill) {
 
 TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
   EXPECT_CALL(autofill_client_,
-              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion))
+      .Times(2);
   IssueOnQuery(456);
   std::u16string dummy_string(u"baz foo");
   EXPECT_CALL(*autofill_driver_,
@@ -871,6 +888,17 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
       dummy_string, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, std::string(), 0);
   histogram_tester.ExpectUniqueSample(
       "Autofill.SuggestionAcceptedIndex.Autocomplete", 0, 1);
+
+  // Test that merchant promo code offers get autofilled.
+  EXPECT_CALL(*autofill_driver_,
+              RendererShouldFillFieldWithValue(field_id_, dummy_string));
+  EXPECT_CALL(*autofill_client_.GetMockMerchantPromoCodeManager(),
+              OnSingleFieldSuggestionSelected(
+                  dummy_string, POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY))
+      .Times(1);
+  external_delegate_->DidAcceptSuggestion(
+      dummy_string, POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY,
+      absl::variant<std::string, GURL>(), 0);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest, ShouldShowGooglePayIcon) {

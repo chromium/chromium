@@ -279,6 +279,13 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     manager_->FillOrPreviewVirtualCardInformation(
         mojom::RendererFormDataAction::kFill, absl::get<std::string>(payload),
         query_id_, query_form_, query_field_);
+  } else if (frontend_id == POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY) {
+    // User selected a merchant promo code, so we fill directly.
+    driver_->RendererShouldFillFieldWithValue(query_field_.global_id(), value);
+  } else if (frontend_id == POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS) {
+    DCHECK(absl::holds_alternative<GURL>(payload));
+    manager_->client()->OnPromoCodeSuggestionsFooterSelected(
+        absl::get<GURL>(payload));
   } else {
     if (frontend_id > 0) {  // Denotes an Autofill suggestion.
       AutofillMetrics::LogAutofillSuggestionAcceptedIndex(
