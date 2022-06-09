@@ -2554,6 +2554,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordViewPage.UserActions"
+    enum="PasswordViewPageInteractions" expires_after="2023-01-01">
+  <owner>derinel@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Records the user actions performed on password viewing page in desktop
+    settings. Reported upon interactions with the password settings page.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PrefilledUsernameFillOutcome"
     enum="PrefilledUsernameFillOutcome" expires_after="M86">
   <owner>khamutov@google.com</owner>

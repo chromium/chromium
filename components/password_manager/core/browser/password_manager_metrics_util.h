@@ -567,6 +567,33 @@ enum class PasswordAccountStorageUsageLevel {
   // The user has enabled Sync.
   kSyncing = 2,
 };
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PasswordViewPageInteractions {
+  // The credential row is clicked in the password list in settings.
+  kCredentialRowClicked = 0,
+  // The user opens the password view page to view an existing credential.
+  kCredentialFound = 1,
+  // The user opens the password view page to view an non-existing credential.
+  // This will close the settings password view page.
+  kCredentialNotFound = 2,
+  // The copy username button in settings password view page is clicked.
+  kUsernameCopyButtonClicked = 3,
+  // The copy password button in settings password view page is clicked.
+  kPasswordCopyButtonClicked = 4,
+  // The show password button in settings password view page is clicked and the
+  // password is revealed.
+  kPasswordShowButtonClicked = 5,
+  // The edit button in settings password view page is clicked.
+  kPasswordEditButtonClicked = 6,
+  // The delete button in settings password view page is clicked.
+  kPasswordDeleteButtonClicked = 7,
+  // The credential's username, password or note is edited in settings password
+  // view page.
+  kCredentialEdited = 8,
+  kMaxValue = kCredentialEdited,
+};
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
     PasswordAccountStorageUsageLevel usage_level);
 

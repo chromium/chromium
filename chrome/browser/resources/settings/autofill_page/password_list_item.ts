@@ -22,7 +22,7 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './password_list_item.html.js';
-import {PasswordViewPageUrlParams} from './password_view.js';
+import {PasswordViewPageInteractions, PasswordViewPageUrlParams, recordPasswordViewInteraction} from './password_view.js';
 import {ShowPasswordMixin, ShowPasswordMixinInterface} from './show_password_mixin.js';
 
 export type PasswordMoreActionsClickedEvent = CustomEvent<{
@@ -123,6 +123,8 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
         params.set(PasswordViewPageUrlParams.ON_DEVICE, 'true');
       }
     }
+    recordPasswordViewInteraction(
+        PasswordViewPageInteractions.CREDENTIAL_ROW_CLICKED);
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
   }
 

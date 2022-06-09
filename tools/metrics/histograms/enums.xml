@@ -74655,6 +74655,22 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="DB Error"/>
 </enum>
 
+<enum name="PasswordViewPageInteractions">
+  <int value="0" label="Credential row is clicked to open password view page"/>
+  <int value="1"
+      label="The user opens the password view page to view an existing
+             credential."/>
+  <int value="2"
+      label="The user opens the password view page to view an non-existing
+             credential"/>
+  <int value="3" label="Copy username button clicked"/>
+  <int value="4" label="Copy password button clicked"/>
+  <int value="5" label="Show password button clicked"/>
+  <int value="6" label="Edit password button clicked"/>
+  <int value="7" label="Delete password button clicked"/>
+  <int value="8" label="Credential username, password or note edited"/>
+</enum>
+
 <enum name="PasswordWeaknessScore">
   <int value="0" label="Too guessable password"/>
   <int value="1" label="Very guessable password"/>

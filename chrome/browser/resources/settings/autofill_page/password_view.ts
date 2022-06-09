@@ -61,6 +61,33 @@ export enum PasswordViewPageUrlParams {
   ON_DEVICE = 'onDevice',
 }
 
+export function recordPasswordViewInteraction(
+    interaction: PasswordViewPageInteractions) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'PasswordManager.PasswordViewPage.UserActions', interaction,
+      PasswordViewPageInteractions.COUNT);
+}
+
+/**
+ * Should be kept in sync with
+ * |password_manager::metrics_util::PasswordViewPageInteractions|.
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ */
+export enum PasswordViewPageInteractions {
+  CREDENTIAL_ROW_CLICKED = 0,
+  CREDENTIAL_FOUND = 1,
+  CREDENTIAL_NOT_FOUND = 2,
+  USERNAME_COPY_BUTTON_CLICKED = 3,
+  PASSWORD_COPY_BUTTON_CLICKED = 4,
+  PASSWORD_SHOW_BUTTON_CLICKED = 5,
+  PASSWORD_EDIT_BUTTON_CLICKED = 6,
+  PASSWORD_DELETE_BUTTON_CLICKED = 7,
+  CREDENTIAL_EDITED = 8,
+  // Must be last.
+  COUNT = 9,
+}
+
 export class PasswordViewElement extends PasswordViewElementBase {
   static get is() {
     return 'password-view';
@@ -246,6 +273,8 @@ export class PasswordViewElement extends PasswordViewElementBase {
   /** Handler to copy the password from the password field. */
   private onCopyPasswordButtonClick_() {
     assert(!this.isFederated_());
+    recordPasswordViewInteraction(
+        PasswordViewPageInteractions.PASSWORD_COPY_BUTTON_CLICKED);
     this.requestPlaintextPassword(
             this.credential!.getAnyId(),
             chrome.passwordsPrivate.PlaintextReason.COPY)
@@ -255,11 +284,15 @@ export class PasswordViewElement extends PasswordViewElementBase {
   /** Handler to copy the username from the username field. */
   private onCopyUsernameButtonClick_() {
     navigator.clipboard.writeText(this.credential!.username);
+    recordPasswordViewInteraction(
+        PasswordViewPageInteractions.USERNAME_COPY_BUTTON_CLICKED);
   }
 
   /** Handler for the remove button. */
   private onDeleteButtonClick_() {
     assert(this.credential);
+    recordPasswordViewInteraction(
+        PasswordViewPageInteractions.PASSWORD_DELETE_BUTTON_CLICKED);
     if (!this.removePassword(this.credential)) {
       return;
     }
@@ -271,6 +304,8 @@ export class PasswordViewElement extends PasswordViewElementBase {
   /** Handler to open edit dialog for the password. */
   private onEditButtonClick_() {
     assert(!this.isFederated_());
+    recordPasswordViewInteraction(
+        PasswordViewPageInteractions.PASSWORD_EDIT_BUTTON_CLICKED);
     this.requestPlaintextPassword(
             this.credential!.getAnyId(),
             chrome.passwordsPrivate.PlaintextReason.EDIT)
@@ -287,6 +322,12 @@ export class PasswordViewElement extends PasswordViewElementBase {
   private onSavedPasswordEdited_(event: SavedPasswordEditedEvent) {
     this.recentlyEdited_ = true;
     const newUsername = event.detail.username;
+    if (event.detail.username !== this.credential!.username ||
+        event.detail.password !== this.credential!.password ||
+        event.detail.note !== this.credential!.note) {
+      recordPasswordViewInteraction(
+          PasswordViewPageInteractions.CREDENTIAL_EDITED);
+    }
     if (this.credential!.username === newUsername) {
       return;
     }
@@ -339,6 +380,8 @@ export class PasswordViewElement extends PasswordViewElementBase {
       this.isPasswordVisible_ = false;
       return;
     }
+    recordPasswordViewInteraction(
+        PasswordViewPageInteractions.PASSWORD_SHOW_BUTTON_CLICKED);
     this.requestPlaintextPassword(
             this.credential!.getAnyId(),
             chrome.passwordsPrivate.PlaintextReason.VIEW)
@@ -384,6 +427,8 @@ export class PasswordViewElement extends PasswordViewElementBase {
       if (!this.recentlyEdited_) {
         // Rerouting might have happened due to the edited username. Do not
         // reroute back.
+        recordPasswordViewInteraction(
+            PasswordViewPageInteractions.CREDENTIAL_NOT_FOUND);
         Router.getInstance().navigateTo(routes.PASSWORDS);
       }
       return;
@@ -395,6 +440,8 @@ export class PasswordViewElement extends PasswordViewElementBase {
     }
     this.showEditDialog_ = false;
     this.recentlyEdited_ = false;
+    recordPasswordViewInteraction(
+        PasswordViewPageInteractions.CREDENTIAL_FOUND);
   }
 }
 
