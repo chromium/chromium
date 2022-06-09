@@ -888,6 +888,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary"
+    units="Boolean" expires_after="2022-11-06">
+  <owner>blundell@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    For each lazy binding check of GLImage performed by GLES2DecoderImpl,
+    records whether binding was actually necessary or not. Used in the effort to
+    eliminate these lazy binding checks (crbug.com/1323341).
+  </summary>
+</histogram>
+
+<histogram
+    name="GPU.GLES2DecoderPassthroughImplLazyBindingCheck.WasBindNecessary"
+    units="Boolean" expires_after="2022-11-06">
+  <owner>blundell@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    For each lazy binding check of GLImage performed by
+    GLES2DecoderPassthroughImpl, records whether binding was actually necessary
+    or not. Used in the effort to eliminate these lazy binding checks
+    (crbug.com/1323341).
+  </summary>
+</histogram>
+
 <histogram name="GPU.GLImplementation" enum="GLImplementation"
     expires_after="2022-10-30">
   <owner>magchen@chromium.org</owner>

@@ -10551,6 +10551,9 @@ bool GLES2DecoderImpl::DoBindOrCopyTexImageIfNeeded(Texture* texture,
     Texture::ImageState old_image_state;
     gl::GLImage* image = texture->GetLevelImage(textarget, 0, &old_image_state);
     if (image && old_image_state == Texture::UNBOUND) {
+      UMA_HISTOGRAM_BOOLEAN(
+          "GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary", true);
+
       ScopedGLErrorSuppressor suppressor(
           "GLES2DecoderImpl::DoBindOrCopyTexImageIfNeeded", error_state_.get());
       if (texture_unit)
@@ -10569,8 +10572,17 @@ bool GLES2DecoderImpl::DoBindOrCopyTexImageIfNeeded(Texture* texture,
         return false;
       }
       return true;
+    } else {
+      // If present, the image was already bound.
+      UMA_HISTOGRAM_BOOLEAN(
+          "GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary", false);
     }
+  } else {
+    // If present, the image was already in use by the texture (i.e., bound).
+    UMA_HISTOGRAM_BOOLEAN(
+        "GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary", false);
   }
+
   return false;
 }
 
