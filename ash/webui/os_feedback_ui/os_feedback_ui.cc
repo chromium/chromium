@@ -51,6 +51,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"suggestedHelpContent", IDS_FEEDBACK_TOOL_SUGGESTED_HELP_CONTENT},
       {"popularHelpContent", IDS_FEEDBACK_TOOL_POPULAR_HELP_CONTENT},
       {"noMatchedResults", IDS_FEEDBACK_TOOL_NO_MATCHED_RESULTS},
+      {"attachFilesLabel", IDS_FEEDBACK_TOOL_ATTACH_FILES_LABEL},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);

@@ -93,6 +93,9 @@ export function shareDataPageTestSuite() {
     // Verify the send button is in the page.
     assertEquals('Send', getElementContent('#buttonSend'));
 
+    // Verify the attach files label is in the page.
+    assertEquals('Attach files', getElementContent('#attachFilesLabel'));
+
     // Screenshot elements.
     assertTrue(!!getElement('#screenshotCheckbox'));
     assertEquals('Screenshot', getElementContent('#screenshotCheckLabel'));

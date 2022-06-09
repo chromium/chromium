@@ -6,7 +6,8 @@ import './os_feedback_shared_css.js';
 import './file_attachment.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FeedbackFlowState} from './feedback_flow.js';
 import {AttachedFile, FeedbackContext, Report} from './feedback_types.js';
@@ -16,7 +17,16 @@ import {AttachedFile, FeedbackContext, Report} from './feedback_types.js';
  * 'share-data-page' is the second page of the feedback tool. It allows users to
  * choose what data to send with the feedback report.
  */
-export class ShareDataPageElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ShareDataPageElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class ShareDataPageElement extends ShareDataPageElementBase {
   static get is() {
     return 'share-data-page';
   }
