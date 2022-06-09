@@ -1692,7 +1692,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AUTHENTICATION_OPERATION_SIGNIN
+      initWithOperation:AuthenticationOperationSigninAndSync
                identity:identity
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:promoAction

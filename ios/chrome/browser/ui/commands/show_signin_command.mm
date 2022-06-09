@@ -25,7 +25,8 @@
                          callback:
                              (ShowSigninCommandCompletionCallback)callback {
   if ((self = [super init])) {
-    DCHECK(operation == AUTHENTICATION_OPERATION_SIGNIN || identity == nil);
+    DCHECK(operation == AuthenticationOperationSigninAndSync ||
+           identity == nil);
     _operation = operation;
     _identity = identity;
     _accessPoint = accessPoint;

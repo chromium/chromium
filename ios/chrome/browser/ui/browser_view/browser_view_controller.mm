@@ -4532,7 +4532,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.dispatcher
               showSignin:
                   [[ShowSigninCommand alloc]
-                      initWithOperation:AUTHENTICATION_OPERATION_REAUTHENTICATE
+                      initWithOperation:AuthenticationOperationReauthenticate
                             accessPoint:signin_metrics::AccessPoint::
                                             ACCESS_POINT_UNKNOWN]
       baseViewController:self];

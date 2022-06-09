@@ -1560,7 +1560,7 @@ bool IsSigninForcedByPolicy() {
   Browser* mainBrowser = self.mainInterface.browser;
 
   switch (command.operation) {
-    case AUTHENTICATION_OPERATION_REAUTHENTICATE:
+    case AuthenticationOperationReauthenticate:
       self.signinCoordinator = [SigninCoordinator
           reAuthenticationCoordinatorWithBaseViewController:baseViewController
                                                     browser:mainBrowser
@@ -1568,7 +1568,7 @@ bool IsSigninForcedByPolicy() {
                                                 promoAction:command
                                                                 .promoAction];
       break;
-    case AUTHENTICATION_OPERATION_SIGNIN:
+    case AuthenticationOperationSigninAndSync:
       self.signinCoordinator = [SigninCoordinator
           userSigninCoordinatorWithBaseViewController:baseViewController
                                               browser:mainBrowser
@@ -1576,13 +1576,13 @@ bool IsSigninForcedByPolicy() {
                                           accessPoint:command.accessPoint
                                           promoAction:command.promoAction];
       break;
-    case AUTHENTICATION_OPERATION_ADD_ACCOUNT:
+    case AuthenticationOperationAddAccount:
       self.signinCoordinator = [SigninCoordinator
           addAccountCoordinatorWithBaseViewController:baseViewController
                                               browser:mainBrowser
                                           accessPoint:command.accessPoint];
       break;
-    case AUTHENTICATION_OPERATION_FORCED_SIGNIN:
+    case AuthenticationOperationForcedSigninAndSync:
       self.signinCoordinator = [SigninCoordinator
           forcedSigninCoordinatorWithBaseViewController:baseViewController
                                                 browser:mainBrowser];

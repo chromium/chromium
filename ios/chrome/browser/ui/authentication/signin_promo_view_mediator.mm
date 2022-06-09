@@ -643,7 +643,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
                                 completion:completion];
   } else {
     ShowSigninCommand* command = [[ShowSigninCommand alloc]
-        initWithOperation:AUTHENTICATION_OPERATION_SIGNIN
+        initWithOperation:AuthenticationOperationSigninAndSync
                  identity:identity
               accessPoint:self.accessPoint
               promoAction:promoAction

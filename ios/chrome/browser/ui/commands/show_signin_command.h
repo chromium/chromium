@@ -13,22 +13,19 @@
 
 typedef void (^ShowSigninCommandCompletionCallback)(BOOL succeeded);
 
-enum AuthenticationOperation {
+typedef NS_ENUM(NSInteger, AuthenticationOperation) {
   // Operation to start a re-authenticate operation. The user is presented with
   // the SSOAuth re-authenticate web page.
-  AUTHENTICATION_OPERATION_REAUTHENTICATE,
-
-  // Operation to start a sign-in operation. The user is presented with the
-  // sign-in page with the user consent.
-  AUTHENTICATION_OPERATION_SIGNIN,
-
+  AuthenticationOperationReauthenticate,
+  // Operation to start a sign-in and sync operation. The user is presented with
+  // the sign-in page with the user consent.
+  AuthenticationOperationSigninAndSync,
   // Operation to add a secondary account. The user is presented with the
   // SSOAUth sin-in page.
-  AUTHENTICATION_OPERATION_ADD_ACCOUNT,
-
+  AuthenticationOperationAddAccount,
   // Operation to start a forced sign-in operation. The user is presented with
   // the sign-in page with information about the policy and cannot dimiss it.
-  AUTHENTICATION_OPERATION_FORCED_SIGNIN,
+  AuthenticationOperationForcedSigninAndSync,
 };
 
 // A command to perform a sign in operation.
@@ -63,7 +60,7 @@ enum AuthenticationOperation {
 // The operation to perform during the sign-in flow.
 @property(nonatomic, readonly) AuthenticationOperation operation;
 
-// Chrome identity is only used for the AUTHENTICATION_OPERATION_SIGNIN
+// Chrome identity is only used for the AuthenticationOperationSigninAndSync
 // operation (should be nil otherwise). If the identity is non-nil, the
 // interaction view controller logins using this identity. If the identity is
 // nil, the interaction view controller asks the user to choose an identity or
