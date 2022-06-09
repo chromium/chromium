@@ -40,6 +40,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -165,8 +166,7 @@ class TitleView : public views::View {
 
       auto* separator = AddChildView(std::make_unique<views::Separator>());
       separator->SetPreferredLength(GetPreferredSize().height());
-      separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kSeparatorColor));
+      separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
     }
 
     help_button_ = AddChildView(std::make_unique<IconButton>(
@@ -673,8 +673,7 @@ void PaletteTray::ShowBubble() {
   auto* separator =
       bubble_view->AddChildView(std::make_unique<views::Separator>());
   setup_layered_view(separator);
-  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor));
+  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kPaddingBetweenTitleAndSeparator, 0, kMenuSeparatorVerticalPadding, 0)));
 

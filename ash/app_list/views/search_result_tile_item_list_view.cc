@@ -91,7 +91,7 @@ SearchResultTileItemListView::SearchResultTileItemListView(
         kSeparatorTopPadding, kSeparatorLeftRightPadding,
         SharedAppListConfig::instance().search_tile_height() - kSeparatorHeight,
         kSeparatorLeftRightPadding)));
-    separator->SetColor(AppListColorProvider::Get()->GetSeparatorColor());
+    separator->SetColorId(AppListColorProvider::Get()->GetSeparatorColorId());
     separator_views_.push_back(separator);
     layout_->SetFlexForView(separator, 0);
 

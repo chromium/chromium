@@ -60,8 +60,10 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -428,13 +430,12 @@ int ShelfView::GetSizeOfAppButtons(int count, int button_size) {
 }
 
 void ShelfView::Init() {
-  separator_ = new views::Separator();
-  separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor));
-  separator_->SetPreferredLength(kSeparatorSize);
-  separator_->SetVisible(false);
-  ConfigureChildView(separator_, ui::LAYER_TEXTURED);
-  AddChildView(separator_);
+  auto separator = std::make_unique<views::Separator>();
+  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+  separator->SetPreferredLength(kSeparatorSize);
+  separator->SetVisible(false);
+  ConfigureChildView(separator.get(), ui::LAYER_TEXTURED);
+  separator_ = AddChildView(std::move(separator));
 
   model()->AddObserver(this);
 
@@ -686,18 +687,6 @@ void ShelfView::OnMouseEvent(ui::MouseEvent* event) {
 views::FocusTraversable* ShelfView::GetPaneFocusTraversable() {
   // ScrollableShelfView should handles the focus traversal.
   return nullptr;
-}
-
-const char* ShelfView::GetClassName() const {
-  return "ShelfView";
-}
-
-void ShelfView::OnThemeChanged() {
-  views::AccessiblePaneView::OnThemeChanged();
-  if (!separator_)
-    return;
-  separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor));
 }
 
 void ShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -2660,5 +2649,8 @@ void ShelfView::ResetActiveMenuModelRequest() {
   context_menu_callback_.Cancel();
   item_awaiting_response_ = ShelfID();
 }
+
+BEGIN_METADATA(ShelfView, views::AccessiblePaneView)
+END_METADATA
 
 }  // namespace ash

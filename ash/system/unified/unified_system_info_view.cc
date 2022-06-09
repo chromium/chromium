@@ -598,6 +598,7 @@ UnifiedSystemInfoView::UnifiedSystemInfoView(
 
   if (PowerStatus::Get()->IsBatteryPresent()) {
     separator_ = AddChildView(std::make_unique<views::Separator>());
+    separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
     separator_->SetPreferredLength(kUnifiedSystemInfoHeight);
 
     const bool use_smart_charging_ui = UseSmartChargingUI();
@@ -625,16 +626,7 @@ void UnifiedSystemInfoView::ChildPreferredSizeChanged(views::View* child) {
   Layout();
 }
 
-const char* UnifiedSystemInfoView::GetClassName() const {
-  return "UnifiedSystemInfoView";
-}
-
-void UnifiedSystemInfoView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  if (separator_) {
-    separator_->SetColor(
-        GetContentLayerColor(ContentLayerType::kSeparatorColor));
-  }
-}
+BEGIN_METADATA(UnifiedSystemInfoView, views::View)
+END_METADATA
 
 }  // namespace ash

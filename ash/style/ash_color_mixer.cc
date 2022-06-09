@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -62,6 +63,12 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAshSystemUIMenuSeparator] = {
       ash_color_provider->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kSeparatorColor)};
+  mixer[ui::kColorAshIconInOobe] = {kIconColorInOobe};
+  mixer[ui::kColorAshArcInputMenuSeparator] = {SK_ColorGRAY};
+  mixer[ui::kColorAshAppListSeparatorLight] = {
+      ui::kColorAshSystemUIMenuSeparator};
+  mixer[ui::kColorAshAppListSeparator] = {
+      SkColorSetA(gfx::kGoogleGrey900, 0x24)};
 }
 
 }  // namespace ash

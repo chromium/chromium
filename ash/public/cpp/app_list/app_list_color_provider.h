@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ash {
@@ -47,7 +48,7 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetContentsBackgroundColor() const = 0;
   virtual SkColor GetGridBackgroundCardActiveColor() const = 0;
   virtual SkColor GetGridBackgroundCardInactiveColor() const = 0;
-  virtual SkColor GetSeparatorColor() const = 0;
+  virtual ui::ColorId GetSeparatorColorId() const = 0;
   virtual SkColor GetFocusRingColor() const = 0;
   virtual SkColor GetInkDropBaseColor(
       SkColor bg_color = gfx::kPlaceholderColor) const = 0;

@@ -20,16 +20,16 @@ Separator::Separator() = default;
 
 Separator::~Separator() = default;
 
-SkColor Separator::GetColor() const {
-  return overridden_color_.value_or(0);
+ui::ColorId Separator::GetColorId() const {
+  return color_id_;
 }
 
-void Separator::SetColor(SkColor color) {
-  if (overridden_color_ == color)
+void Separator::SetColorId(ui::ColorId color_id) {
+  if (color_id_ == color_id)
     return;
 
-  overridden_color_ = color;
-  OnPropertyChanged(&overridden_color_, kPropertyEffectsPaint);
+  color_id_ = color_id;
+  OnPropertyChanged(&color_id_, kPropertyEffectsPaint);
 }
 
 int Separator::GetPreferredLength() const {
@@ -66,9 +66,7 @@ gfx::Size Separator::CalculatePreferredSize() const {
 }
 
 void Separator::OnPaint(gfx::Canvas* canvas) {
-  const SkColor color = overridden_color_
-                            ? *overridden_color_
-                            : GetColorProvider()->GetColor(ui::kColorSeparator);
+  const SkColor color = GetColorProvider()->GetColor(color_id_);
   // Paint background and border, if any.
   View::OnPaint(canvas);
 
@@ -106,7 +104,7 @@ void Separator::OnPaint(gfx::Canvas* canvas) {
 }
 
 BEGIN_METADATA(Separator, View)
-ADD_PROPERTY_METADATA(SkColor, Color, ui::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(ui::ColorId, ColorId)
 ADD_PROPERTY_METADATA(int, PreferredLength)
 ADD_PROPERTY_METADATA(Separator::Orientation, Orientation)
 END_METADATA

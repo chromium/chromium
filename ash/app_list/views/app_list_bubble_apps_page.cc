@@ -205,8 +205,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   separator_ =
       scroll_contents->AddChildView(std::make_unique<views::Separator>());
   separator_->SetBorder(views::CreateEmptyBorder(kSeparatorInsets));
-  separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
-      ColorProvider::ContentLayerType::kSeparatorColor));
+  separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
 
   // Add a empty container view. A toast view should be added to
   // `toast_container_` when the app list starts temporary sorting.
@@ -559,12 +558,6 @@ void AppListBubbleAppsPage::OnViewVisibilityChanged(
     views::View* starting_view) {
   if (starting_view == continue_section_ || starting_view == recent_apps_)
     UpdateSeparatorVisibility();
-}
-
-void AppListBubbleAppsPage::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
-      ColorProvider::ContentLayerType::kSeparatorColor));
 }
 
 void AppListBubbleAppsPage::MoveFocusUpFromRecents() {

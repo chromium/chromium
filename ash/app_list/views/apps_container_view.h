@@ -117,7 +117,6 @@ class ASH_EXPORT AppsContainerView
   const char* GetClassName() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnBoundsChanged(const gfx::Rect& old_bounds) override;
-  void OnThemeChanged() override;
 
   // AppListPage overrides:
   void OnShown() override;
