@@ -4,6 +4,7 @@
 
 #include "content/browser/media/capture/web_contents_frame_tracker.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -27,6 +28,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -70,6 +72,14 @@ class WebContentsContext : public WebContentsFrameTracker::Context {
     if (auto* view = GetCurrentView()) {
       view->SetScaleOverrideForCapture(scale);
     }
+  }
+
+  float GetScaleOverrideForCapture() const override {
+    if (auto* view = GetCurrentView()) {
+      return view->GetScaleOverrideForCapture();
+    }
+    // Otherwise we can assume it's unset and return the default value.
+    return 1.0f;
   }
 
  private:
@@ -121,18 +131,15 @@ void WebContentsFrameTracker::WillStartCapturingWebContents(
     return;
   }
 
-  const gfx::Size preferred_size = CalculatePreferredSize(capture_size);
-  context_->IncrementCapturerCount(preferred_size);
+  capture_size_ = capture_size;
+  context_->IncrementCapturerCount(CalculatePreferredSize(capture_size));
   is_capturing_ = true;
 }
 
 void WebContentsFrameTracker::DidStopCapturingWebContents() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (web_contents()) {
-    if (capture_scale_override_ != 1.0f) {
-      context_->SetScaleOverrideForCapture(1.0f);
-      capture_scale_override_ = 1.0f;
-    }
+    SetCaptureScaleOverride(1.0f);
     DCHECK(is_capturing_);
     context_->DecrementCapturerCount();
     is_capturing_ = false;
@@ -152,24 +159,7 @@ void WebContentsFrameTracker::SetCapturedContentSize(
     // browser tab. If region capture is active, there will be an additional
     // call providing the region size. Lastly, if the scale was modified, there
     // will be another call with the upscaled size.
-    float scale = capture_scale_override_;
-
-    // The heuristic used here should take additional information into account,
-    // including the capture_size, the content type (video vs mostly-static),
-    // and the available system resources. For the initial version, just apply
-    // an arbitrary threshold for ease of testing.
-    if (content_size.width() < 1920 && content_size.height() < 1080) {
-      scale = 2.0f;
-    } else {
-      // Once scaled up, keep it that way. Downscaling causes oscillations since
-      // the content_size is scaled by the capture scale.
-    }
-    if (scale != capture_scale_override_) {
-      DVLOG(1) << __func__ << ": adjusting capture scale from "
-               << capture_scale_override_ << " to " << scale;
-      context_->SetScaleOverrideForCapture(scale);
-      capture_scale_override_ = scale;
-    }
+    SetCaptureScaleOverride(CalculatePreferredScaleFactor(content_size));
   }
 }
 
@@ -214,6 +204,48 @@ gfx::Size WebContentsFrameTracker::CalculatePreferredSize(
     }
   }
   return preferred_size;
+}
+
+// TODO(https://crbug.com/1329704): this should also include live updates
+// about system resource availability. Perhaps we can use FPS or the
+// lossyness of outputted frames?
+float WebContentsFrameTracker::CalculatePreferredScaleFactor(
+    const gfx::Size& content_size) {
+  // A max factor above 2.0 would cause a quality degradation for local
+  // rendering. The downscaling used by the compositor uses a linear filter
+  // which only looks at 4 source pixels, so rendering more than 4 pixels per
+  // destination pixel would result in information loss.
+  constexpr float kMaxFactor = 2.0f;
+
+  // A minimum scale factor of less than 1.0 doesn't really make any sense: this
+  // would only occur if the "preferred size" is larger than the specified
+  // capture size, which should never happen.
+  constexpr float kMinFactor = 1.0f;
+
+  // Ideally is that the |content_size| is the same as |capture_size_|, so if
+  // we are achieving that with current settings we can exit early.
+  if (content_size.width() == capture_size_.width() &&
+      content_size.height() == capture_size_.height()) {
+    return capture_scale_override_;
+  }
+
+  // The content_size should already be scaled based on the currently set
+  // scale factor, so start by looking at what the content size would have been
+  // if scaling was not enabled.
+  const auto unscaled_content_size = gfx::ScaleToCeiledSize(
+      content_size, 1.0f / context_->GetScaleOverrideForCapture());
+
+  // Next, determine what the ideal scale factors in each direction would have
+  // been for this frame.
+  const gfx::Vector2dF factors(
+      static_cast<float>(capture_size_.width()) / unscaled_content_size.width(),
+      static_cast<float>(capture_size_.height()) /
+          unscaled_content_size.height());
+
+  // We prefer to err on the side of having to downscale in one direction rather
+  // than upscale in the other direction, so we use the largest scale factor.
+  const float largest_factor = std::max(factors.x(), factors.y());
+  return std::clamp(largest_factor, kMinFactor, kMaxFactor);
 }
 
 void WebContentsFrameTracker::RenderFrameCreated(
@@ -369,4 +401,10 @@ void WebContentsFrameTracker::SetTargetView(gfx::NativeView view) {
 #endif
 }
 
+void WebContentsFrameTracker::SetCaptureScaleOverride(float new_value) {
+  if (new_value != capture_scale_override_) {
+    capture_scale_override_ = new_value;
+    context_->SetScaleOverrideForCapture(new_value);
+  }
+}
 }  // namespace content

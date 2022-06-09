@@ -56,7 +56,7 @@ class SimpleContext : public WebContentsFrameTracker::Context {
   void SetScaleOverrideForCapture(float scale) override {
     scale_override_ = scale;
   }
-
+  float GetScaleOverrideForCapture() const override { return scale_override_; }
   int capturer_count() const { return capturer_count_; }
   const gfx::Size& last_capture_size() const { return last_capture_size_; }
 
@@ -380,9 +380,24 @@ TEST_F(WebContentsFrameTrackerTest, SetsScaleOverride) {
   EXPECT_EQ(context()->scale_override(), 1.0f);
 
   // Adjust the captured content size to a smaller size. This should activate a
-  // scale override.
+  // scale override correlative to the difference between the two resolutions.
   tracker()->SetCapturedContentSize(kSize720p);
-  EXPECT_EQ(context()->scale_override(), 2.0f);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5);
+
+  // Scaling should go up to a maximum of 2.0.
+  tracker()->SetCapturedContentSize(gfx::Size(960, 540));
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 2.0f);
+
+  // The tracker should assume that we are now already scaled by the override
+  // value, and so shouldn't change the override if we start getting frames that
+  // are large enough.
+  tracker()->SetCapturedContentSize(gfx::Size(1920, 1080));
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 2.0f);
+
+  // If a frame ends up being larger than the capture_size, we should
+  // end up using the maximum scale override of 2.0.
+  tracker()->SetCapturedContentSize(gfx::Size(2304, 1080));
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 2.0f);
 
   // When we stop the tracker, the web contents issues a preferred size change
   // of the "old" size--so it shouldn't change.
@@ -390,6 +405,24 @@ TEST_F(WebContentsFrameTrackerTest, SetsScaleOverride) {
   RunAllTasksUntilIdle();
   EXPECT_EQ(kSize1080p, context()->last_capture_size());
   EXPECT_EQ(context()->capturer_count(), 0);
+}
+
+TEST_F(WebContentsFrameTrackerTest, SettingScaleFactorMaintainsStableCapture) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
+  StartTrackerOnUIThread(kSize1080p);
+  RunAllTasksUntilIdle();
+
+  // Adjust the captured content size to a smaller size. This should activate a
+  // scale override correlative to the difference between the two resolutions.
+  tracker()->SetCapturedContentSize(kSize720p);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5);
+
+  // It should now be scaled to the capture_size, meaning 1080P. The
+  // scale override factor should be unaffected.
+  tracker()->SetCapturedContentSize(kSize1080p);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5);
 }
 
 }  // namespace

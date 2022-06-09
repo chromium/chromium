@@ -648,6 +648,10 @@ void RenderWidgetHostViewBase::SetScaleOverrideForCapture(float scale) {
   UpdateScreenInfo();
 }
 
+float RenderWidgetHostViewBase::GetScaleOverrideForCapture() const {
+  return scale_override_for_capture_;
+}
+
 void RenderWidgetHostViewBase::OnAutoscrollStart() {
   if (!GetMouseWheelPhaseHandler())
     return;

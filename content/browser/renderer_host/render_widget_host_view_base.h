@@ -132,6 +132,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // which modifies the effective device scale factor. Use a scale
   // of 1.0f (exactly) to disable the feature after it was used.
   void SetScaleOverrideForCapture(float scale);
+  float GetScaleOverrideForCapture() const;
 
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;
