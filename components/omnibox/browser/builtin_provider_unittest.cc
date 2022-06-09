@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -347,9 +348,11 @@ TEST_F(BuiltinProviderTest, StarterPack) {
       GURL(TemplateURLStarterPackData::bookmarks.destination_url);
   const GURL kHistoryUrl =
       GURL(TemplateURLStarterPackData::history.destination_url);
+  const GURL kTabsUrl = GURL(TemplateURLStarterPackData::tabs.destination_url);
 
   const std::u16string kBookmarksKeyword = u"@bookmarks";
   const std::u16string kHistoryKeyword = u"@history";
+  const std::u16string kTabsKeyword = u"@tabs";
 
   // Populate template URL with starter pack entries
   std::vector<std::unique_ptr<TemplateURLData>> turls =
@@ -368,9 +371,10 @@ TEST_F(BuiltinProviderTest, StarterPack) {
       {u"history", {}},
       {u"@historyasdjflk", {}},
       {u"@bookmarksasld", {}},
+      {u"tabs", {}},
 
       // Typing '@' should give all the starter pack suggestions.
-      {u"@", {kBookmarksUrl, kHistoryUrl}},
+      {u"@", {kBookmarksUrl, kHistoryUrl, kTabsUrl}},
 
       // Typing a portion of "@bookmarks" should give the bookmarks suggestion.
       {kBookmarksKeyword.substr(0, 3), {kBookmarksUrl}},
@@ -379,6 +383,10 @@ TEST_F(BuiltinProviderTest, StarterPack) {
       // Typing a portion of "@history" should give the default urls.
       {kHistoryKeyword.substr(0, 3), {kHistoryUrl}},
       {kHistoryKeyword, {kHistoryUrl}},
+
+      // Typing a portion of "@tabs" should give the default urls.
+      {kTabsKeyword.substr(0, 3), {kTabsUrl}},
+      {kTabsKeyword, {kTabsUrl}},
   };
 
   RunTest(typing_scheme_cases, std::size(typing_scheme_cases));

@@ -13,7 +13,7 @@
 
 namespace TemplateURLStarterPackData {
 
-const int kCurrentDataVersion = 1;
+const int kCurrentDataVersion = 2;
 
 const StarterPackEngine bookmarks = {
     .name_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME,
@@ -35,9 +35,23 @@ const StarterPackEngine history = {
     .type = SEARCH_ENGINE_STARTER_PACK_HISTORY,
 };
 
+const StarterPackEngine tabs = {
+    .name_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_TABS_NAME,
+    .keyword_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_TABS_KEYWORD,
+    .favicon_url = nullptr,
+    // This search_url and destination_url are placeholder URLs to make
+    // templateURL happy.  chrome://tabs does not currently exist and the tab
+    // search engine will only provide suggestions from the OpenTabProvider.
+    .search_url = "chrome://tabs/?q={searchTerms}",
+    .destination_url = "chrome://tabs",
+    .id = StarterPackID::kTabs,
+    .type = SEARCH_ENGINE_STARTER_PACK_TABS,
+};
+
 const StarterPackEngine* engines[] = {
     &bookmarks,
     &history,
+    &tabs,
 };
 
 int GetDataVersion() {

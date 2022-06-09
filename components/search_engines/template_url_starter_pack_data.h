@@ -24,6 +24,7 @@ namespace TemplateURLStarterPackData {
 typedef enum {
   kBookmarks = 1,
   kHistory = 2,
+  kTabs = 3,
 
   kMaxStarterPackID
 } StarterPackID;
@@ -43,6 +44,7 @@ extern const int kCurrentDataVersion;
 /* Exposed for testing purposes */
 extern const StarterPackEngine bookmarks;
 extern const StarterPackEngine history;
+extern const StarterPackEngine tabs;
 
 // Returns the current version of the starterpack data, so callers can know when
 // they need to re-merge.
