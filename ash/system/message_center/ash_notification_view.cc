@@ -1184,8 +1184,13 @@ void AshNotificationView::ToggleInlineSettings(const ui::Event& event) {
   NotificationViewBase::ToggleInlineSettings(event);
 
   if (is_grouped_parent_view_) {
-    grouped_notifications_scroll_view_->SetVisible(
-        !should_show_inline_settings);
+    if (shown_in_popup_) {
+      grouped_notifications_scroll_view_->SetVisible(
+          !should_show_inline_settings);
+    } else {
+      grouped_notifications_container_->SetVisible(
+          !should_show_inline_settings);
+    }
   } else {
     // In settings UI, we only show the app icon and header row along with the
     // inline settings UI.
