@@ -145,7 +145,7 @@ public class PrivacySandboxBottomSheetNotice implements BottomSheetContent {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        return R.string.privacy_sandbox_notice_sheet_content_description;
+        return R.string.privacy_sandbox_notice_sheet_title;
     }
 
     @Override

@@ -1054,9 +1054,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
       <message name="IDS_PRIVACY_SANDBOX_NOTICE_DESCRIPTION_THREE" desc="A conclusion paragraph for the entire page. It sits beneath the “More control over the ads you see” subtitle but it’s no more associated with that topic than “Limit sharing between sites”.* “in Chrome settings”: The URL is chrome://settings/privacySandbox. We don’t make it a live link because we need the users to stay in this moment until they make a choice.">
         You can learn more about these features in Chrome settings.
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_NOTICE_SHEET_CONTENT_DESCRIPTION" desc="The content description for the Privacy Sandbox prompt bottom sheet. Read as accessibility string when tapping on the bottom sheet.">
-        Privacy Sandbox prompt
-      </message>
       <message name="IDS_PRIVACY_SANDBOX_NOTICE_SHEET_OPENED_HALF" desc="The accessibility string read when the Privacy Sandbox prompt bottom sheet is half opened.">
         Privacy Sandbox prompt opened at half height
       </message>
