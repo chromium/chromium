@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<title>Shared transitions: image element with clip</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+
+<style>
+body {
+  background: grey;
+}
+
+.target {
+  contain: paint;
+  width: 100px;
+  height: 100px;
+  background: blue;
+  clip-path: inset(10px);
+}
+</style>
+
+<div class="target"></div>
+
