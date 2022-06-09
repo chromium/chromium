@@ -3806,6 +3806,7 @@ source_set("unit_tests") {
     "../ash/policy/remote_commands/crd_host_delegate_unittest.cc",
     "../ash/policy/remote_commands/device_command_get_available_routines_job_unittest.cc",
     "../ash/policy/remote_commands/device_command_get_routine_update_job_unittest.cc",
+    "../ash/policy/remote_commands/device_command_refresh_machine_certificate_job_unittest.cc",
     "../ash/policy/remote_commands/device_command_remote_powerwash_job_unittest.cc",
     "../ash/policy/remote_commands/device_command_reset_euicc_job_unittest.cc",
     "../ash/policy/remote_commands/device_command_run_routine_job_unittest.cc",
