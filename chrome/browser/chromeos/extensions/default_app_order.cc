@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -15,6 +16,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -140,6 +142,7 @@ void GetDefault(std::vector<std::string>* app_ids) {
 
     arc::kPlayMoviesAppId,
     extension_misc::kGooglePlayMoviesAppId,
+    arc::kGoogleTVAppId,
 
     arc::kPlayMusicAppId,
     extension_misc::kGooglePlayMusicAppId,
@@ -153,14 +156,12 @@ void GetDefault(std::vector<std::string>* app_ids) {
     arc::kGooglePhotosAppId,
     extension_misc::kGooglePhotosAppId,
 
-    arc::kGoogleDuoAppId,
     web_app::kStadiaAppId,
 
     // First default page break
     app_list::kDefaultPageBreak1,
 
     arc::kGoogleMapsAppId,
-    extension_misc::kGoogleMapsAppId,  // TODO(crbug.com/976578): Remove.
     web_app::kGoogleMapsAppId,
 
     ash::kInternalAppIdSettings,
@@ -178,6 +179,11 @@ void GetDefault(std::vector<std::string>* app_ids) {
     web_app::kYoutubeTVAppId,
     web_app::kGoogleNewsAppId,
     extensions::kWebStoreAppId,
+
+    crostini::kCrostiniTerminalSystemAppId,
+    web_app::kMediaAppId,
+    ash::kChromeUITrustedProjectorSwaAppId,
+
     arc::kLightRoomAppId,
     arc::kInfinitePainterAppId,
     web_app::kShowtimeAppId,
