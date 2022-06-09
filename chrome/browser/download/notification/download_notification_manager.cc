@@ -33,11 +33,9 @@ void DownloadNotificationManager::OnNewDownloadReady(
       new DownloadItemModel(item),
       base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
   ContentId contentId = model->GetContentId();
-  DownloadItemNotification::DownloadItemNotificationPtr notification(
-      new DownloadItemNotification(profile_, std::move(model)),
-      base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
-  notification->SetObserver(this);
-  items_.emplace(contentId, std::move(notification));
+  items_.emplace(contentId,
+                 new DownloadItemNotification(profile_, std::move(model)));
+  items_[contentId]->SetObserver(this);
 }
 
 void DownloadNotificationManager::OnDownloadDestroyed(

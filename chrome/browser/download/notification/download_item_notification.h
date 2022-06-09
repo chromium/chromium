@@ -34,9 +34,6 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
                                  public message_center::NotificationObserver,
                                  public DownloadUIModel::Observer {
  public:
-  using DownloadItemNotificationPtr =
-      std::unique_ptr<DownloadItemNotification, base::OnTaskRunnerDeleter>;
-
   DownloadItemNotification(Profile* profile,
                            DownloadUIModel::DownloadUIModelPtr item);
 

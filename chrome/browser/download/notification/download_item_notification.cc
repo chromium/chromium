@@ -310,10 +310,10 @@ void DownloadItemNotification::OnDownloadDestroyed() {
   // |this| will be deleted before there's a chance for Close() to be called
   // through the delegate, so preemptively call it now.
   Close(false);
+  ShutDown();
 
+  // This object may get deleted after this call.
   observer_->OnDownloadDestroyed(item_->GetContentId());
-
-  item_.reset();
 }
 
 void DownloadItemNotification::DisablePopup() {
