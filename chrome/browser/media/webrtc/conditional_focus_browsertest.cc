@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
   // Test.
   CallFocusAndExpectError(
       "InvalidStateError: Failed to execute 'focus' on "
-      "'FocusableMediaStreamTrack': Method may only be called once.");
+      "'BrowserCaptureMediaStreamTrack': Method may only be called once.");
 }
 
 IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
   EXPECT_EQ(
       script_result,
       "InvalidStateError: Failed to execute 'focus' on "
-      "'FocusableMediaStreamTrack': Method may not be invoked on clones.");
+      "'BrowserCaptureMediaStreamTrack': Method may not be invoked on clones.");
 }
 
 IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
@@ -302,8 +302,8 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
           /*on_correct_microtask=*/false,
           /*expected_result=*/
           "InvalidStateError: Failed to execute 'focus' on "
-          "'FocusableMediaStreamTrack': The microtask on which the Promise was "
-          "settled has terminated.");
+          "'BrowserCaptureMediaStreamTrack': The microtask on which the "
+          "Promise was settled has terminated.");
 }
 
 #endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)

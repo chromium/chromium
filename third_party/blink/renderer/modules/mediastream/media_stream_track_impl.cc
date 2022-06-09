@@ -240,12 +240,6 @@ MediaStreamTrack* MediaStreamTrackImpl::Create(ExecutionContext* context,
       (display_surface_type == media::mojom::DisplayCaptureSurfaceType::WINDOW);
 
   if (is_tab_capture && RuntimeEnabledFeatures::RegionCaptureEnabled(context)) {
-    // Note:
-    // * ConditionalFocus is `implied_by` RegionCapture.
-    // * BrowserCaptureMediaStreamTrack a subclass of FocusableMediaStreamTrack.
-    // Therefore, tab-capture with ConditionalFocus/RegionCapture active
-    // instantiates a track on which focus() is exposed - as intended.
-    DCHECK(RuntimeEnabledFeatures::ConditionalFocusEnabled(context));
     return MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
         context, component, std::move(callback), descriptor_id);
   } else if ((is_tab_capture || is_window_capture) &&
