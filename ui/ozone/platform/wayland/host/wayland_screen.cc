@@ -204,7 +204,9 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
   } else {
     auto nearest_origin = GetDisplayNearestPoint({0, 0}).bounds().origin();
     auto changed_origin = changed_display.bounds().origin();
-    if (changed_origin < nearest_origin || changed_origin == nearest_origin)
+    auto nearest_dist = nearest_origin.OffsetFromOrigin().LengthSquared();
+    auto changed_dist = changed_origin.OffsetFromOrigin().LengthSquared();
+    if (changed_dist < nearest_dist || changed_origin == nearest_origin)
       type = display::DisplayList::Type::PRIMARY;
   }
 

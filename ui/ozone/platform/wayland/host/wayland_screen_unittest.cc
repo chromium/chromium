@@ -503,6 +503,48 @@ TEST_P(WaylandScreenTest, OutputPropertyChangesMissingLogicalSize) {
   platform_screen_->RemoveObserver(&observer);
 }
 
+TEST_P(WaylandScreenTest, OutputPropertyChangesPrimaryDisplayChanged) {
+  TestDisplayObserver observer;
+  platform_screen_->AddObserver(&observer);
+
+  display::Display display1(1, gfx::Rect(0, 0, 800, 600));
+  display::Display display2(2, gfx::Rect(800, 0, 700, 500));
+
+  platform_screen_->OnOutputAddedOrUpdated(
+      display1.id(), display1.bounds().origin(), display1.size(),
+      display1.GetSizeInPixel(), display1.GetWorkAreaInsets(),
+      display1.device_scale_factor(), WL_OUTPUT_TRANSFORM_NORMAL,
+      WL_OUTPUT_TRANSFORM_NORMAL);
+  platform_screen_->OnOutputAddedOrUpdated(
+      display2.id(), display2.bounds().origin(), display2.size(),
+      display2.GetSizeInPixel(), display2.GetWorkAreaInsets(),
+      display2.device_scale_factor(), WL_OUTPUT_TRANSFORM_NORMAL,
+      WL_OUTPUT_TRANSFORM_NORMAL);
+
+  EXPECT_EQ(platform_screen_->GetPrimaryDisplay(), display1);
+
+  // Simulate setting display2 as primary by moving its origin to (0,0) and
+  // shifting display1 to its left.
+  display1.set_bounds(gfx::Rect(-800, 0, 800, 600));
+  display2.set_bounds(gfx::Rect(0, 0, 700, 500));
+
+  // Purposely send the output metrics out of order.
+  platform_screen_->OnOutputAddedOrUpdated(
+      display2.id(), display2.bounds().origin(), display2.size(),
+      display2.GetSizeInPixel(), display2.GetWorkAreaInsets(),
+      display2.device_scale_factor(), WL_OUTPUT_TRANSFORM_NORMAL,
+      WL_OUTPUT_TRANSFORM_NORMAL);
+  platform_screen_->OnOutputAddedOrUpdated(
+      display1.id(), display1.bounds().origin(), display1.size(),
+      display1.GetSizeInPixel(), display1.GetWorkAreaInsets(),
+      display1.device_scale_factor(), WL_OUTPUT_TRANSFORM_NORMAL,
+      WL_OUTPUT_TRANSFORM_NORMAL);
+
+  EXPECT_EQ(platform_screen_->GetPrimaryDisplay(), display2);
+
+  platform_screen_->RemoveObserver(&observer);
+}
+
 TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
   // Now, send enter event for the surface, which was created before.
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
