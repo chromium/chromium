@@ -311,13 +311,20 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   if (!expected_file.empty()) {
     expected_lines = test_helper_.LoadExpectationFile(expected_file);
   }
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   else {
     LOG(INFO) << "No expectation file present, ignoring test on this "
                  "platform.";
     return;
   }
 #endif
+  // TODO: UIA is not yet supported, see crbug.com/1327652, crbug.com/1329523,
+  // crbug.com/1329847.
+  if (GetParam() == ui::AXApiType::kWinUIA) {
+    LOG(INFO) << "No expectation file present, ignoring test on this "
+                 "platform.";
+    return;
+  }
 
   // Get the test URL.
   GURL url(embedded_test_server()->GetURL(
