@@ -430,6 +430,15 @@
       ],
     },
   },
+  'finch-chromium-swarming-pool': {
+    'swarming': {
+      'dimension_sets': [
+        {
+          'pool': 'chromium.tests.finch',
+        },
+      ],
+    },
+  },
   'flame': {
     # Pixel 4
     'swarming': {

@@ -3054,8 +3054,24 @@
   },
   'variations_smoke_tests': {
     'modifications': {
+      'linux-chrome': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chrome.tests.finch',
+            },
+          ],
+        },
+      },
       'win-chrome': {
         'experiment_percentage': 100,
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chrome.tests.finch',
+            },
+          ],
+        },
       },
     },
   },

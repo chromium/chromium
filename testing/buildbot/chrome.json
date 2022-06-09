@@ -2311,7 +2311,7 @@
           "dimension_sets": [
             {
               "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
+              "pool": "chrome.tests.finch"
             }
           ],
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -4267,7 +4267,7 @@
           "dimension_sets": [
             {
               "os": "Windows-10-19042",
-              "pool": "chrome.tests"
+              "pool": "chrome.tests.finch"
             }
           ],
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
