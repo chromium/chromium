@@ -173,6 +173,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.HadInteractionOnClose" enum="Boolean"
+    expires_after="2022-12-01">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Whether current CCT has seen any interactions. &quot;Interactions&quot;
+    includes any form entries for text / drop down, and whether a tab can go
+    forward / back when it is closed. Recorded when CCT tab is closed.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.IncognitoCCTCallerId" enum="IncognitoCCTCallerId"
     expires_after="2022-08-07">
   <owner>roagarwal@chromium.org</owner>

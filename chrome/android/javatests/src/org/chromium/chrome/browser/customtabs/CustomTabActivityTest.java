@@ -1371,6 +1371,10 @@ public class CustomTabActivityTest {
                                    ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION)
                         && SharedPreferencesManager.getInstance().contains(
                                 ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP));
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "CustomTabs.HadInteractionOnClose"));
     }
 
     /**

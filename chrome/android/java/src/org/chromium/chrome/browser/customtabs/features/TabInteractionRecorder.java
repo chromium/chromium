@@ -12,6 +12,7 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -83,6 +84,7 @@ public class TabInteractionRecorder {
         pref.writeLong(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP, timestamp);
         pref.writeBoolean(
                 ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION, hadInteraction);
+        RecordHistogram.recordBooleanHistogram("CustomTabs.HadInteractionOnClose", hadInteraction);
     }
 
     @NativeMethods
