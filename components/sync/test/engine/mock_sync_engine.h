@@ -46,6 +46,7 @@ class MockSyncEngine : public SyncEngine {
   MOCK_METHOD(base::Time, GetLastSyncedTimeForDebugging, (), (const override));
   MOCK_METHOD(void, StartConfiguration, (), (override));
   MOCK_METHOD(void, StartSyncingWithServer, (), (override));
+  MOCK_METHOD(void, StartHandlingInvalidations, (), (override));
   MOCK_METHOD(void,
               SetEncryptionPassphrase,
               (const std::string&, const KeyDerivationParams&),

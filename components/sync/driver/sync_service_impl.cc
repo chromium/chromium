@@ -914,7 +914,12 @@ void SyncServiceImpl::OnConfigureDone(
 
   NotifyObservers();
 
+  // Update configured data types and start handling incoming invalidations. The
+  // order is important to guarantee that data types are configured to prevent
+  // filtering out invalidations. If there are incoming invalidations, they will
+  // be handled immediately after StartHandlingInvalidations() call.
   UpdateDataTypesForInvalidations();
+  engine_->StartHandlingInvalidations();
 
   if (migrator_.get() && migrator_->state() != BackendMigrator::IDLE) {
     // Migration in progress.  Let the migrator know we just finished

@@ -101,6 +101,9 @@ void FCMHandler::ShutdownHandler() {
 
 void FCMHandler::AddListener(InvalidationsListener* listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (listeners_.HasObserver(listener)) {
+    return;
+  }
   listeners_.AddObserver(listener);
 
   // Immediately replay any buffered messages received before the |listener|

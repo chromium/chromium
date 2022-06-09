@@ -1138,6 +1138,7 @@ TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
               SetInterestedDataTypes(AllOf(ContainsDataType(BOOKMARKS),
                                            ContainsDataType(DEVICE_INFO))));
   InitializeForNthSync();
+  EXPECT_TRUE(engine()->started_handling_invalidations());
 }
 
 TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,

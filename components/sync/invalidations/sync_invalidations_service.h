@@ -32,10 +32,14 @@ class SyncInvalidationsService : public KeyedService {
   // Start or stop listening to invalidations.
   virtual void SetActive(bool active) = 0;
 
-  // Add or remove a new listener which will be notified on each new incoming
-  // invalidation. |listener| must not be nullptr. If there is no such
-  // |listener| then RemoveListener will do nothing.
+  // Add a new |listener| which will be notified on each new incoming
+  // invalidation. |listener| must not be nullptr. Does nothing if the
+  // |listener| has already been added before. When a new |listener| is added,
+  // previously received messages will be immediately replayed.
   virtual void AddListener(InvalidationsListener* listener) = 0;
+
+  // Removes |listener|, does nothing if it wasn't added before. |listener| must
+  // not be nullptr.
   virtual void RemoveListener(InvalidationsListener* listener) = 0;
 
   // Add or remove an FCM token change observer. |observer| must not be nullptr.

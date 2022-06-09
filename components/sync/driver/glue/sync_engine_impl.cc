@@ -245,6 +245,18 @@ void SyncEngineImpl::StartSyncingWithServer() {
                                 last_poll_time));
 }
 
+void SyncEngineImpl::StartHandlingInvalidations() {
+  if (sync_invalidations_service_) {
+    // Sync invalidation service must be subscribed to data types by this time.
+    // Without that, incoming invalidations would be filtered out.
+    DCHECK(sync_invalidations_service_->GetInterestedDataTypes().has_value());
+
+    // Adding a listener several times is safe. Only first adding replays last
+    // incoming messages.
+    sync_invalidations_service_->AddListener(this);
+  }
+}
+
 void SyncEngineImpl::SetEncryptionPassphrase(
     const std::string& passphrase,
     const KeyDerivationParams& key_derivation_params) {
@@ -433,10 +445,6 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
         invalidation::InvalidatorState::INVALIDATIONS_ENABLED);
   }
 
-  if (sync_invalidations_service_) {
-    sync_invalidations_service_->AddListener(this);
-  }
-
   active_devices_provider_->SetActiveDevicesChangedCallback(base::BindRepeating(
       &SyncEngineImpl::OnActiveDevicesChanged, weak_ptr_factory_.GetWeakPtr()));
 
@@ -578,15 +586,18 @@ void SyncEngineImpl::OnInvalidatorClientIdChange(const std::string& client_id) {
 
 void SyncEngineImpl::OnInvalidationReceived(const std::string& payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1082122): check that sync engine is fully initialized and
-  // store incoming invalidations until then.
+
+  absl::optional<ModelTypeSet> interested_data_types =
+      sync_invalidations_service_->GetInterestedDataTypes();
+
+  // Interested data types must be initialized before handling invalidations to
+  // prevent missing incoming invalidations which were received during
+  // configuration.
+  DCHECK(interested_data_types.has_value());
   sync_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &SyncEngineBackend::DoOnStandaloneInvalidationReceived, backend_,
-          payload,
-          sync_invalidations_service_->GetInterestedDataTypes().value_or(
-              ModelTypeSet())));
+      base::BindOnce(&SyncEngineBackend::DoOnStandaloneInvalidationReceived,
+                     backend_, payload, *interested_data_types));
 }
 
 // static

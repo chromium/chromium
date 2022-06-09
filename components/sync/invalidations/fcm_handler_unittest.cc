@@ -266,6 +266,9 @@ TEST_F(FCMHandlerTest, ShouldReplayIncomingMessagesOnAddingListener) {
   EXPECT_CALL(mock_listener, OnInvalidationReceived(kPayloadValue1));
   EXPECT_CALL(mock_listener, OnInvalidationReceived(kPayloadValue2));
   fcm_handler_.AddListener(&mock_listener);
+
+  // Adding the same listener twice should have no effect.
+  fcm_handler_.AddListener(&mock_listener);
   fcm_handler_.RemoveListener(&mock_listener);
 }
 

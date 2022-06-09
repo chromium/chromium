@@ -114,6 +114,10 @@ class SyncEngine : public ModelTypeConfigurer {
   // browser from the cloud / sync servers.
   virtual void StartSyncingWithServer() = 0;
 
+  // Starts handling incoming standalone invalidations. This method must be
+  // called when data types are configured.
+  virtual void StartHandlingInvalidations() = 0;
+
   // Asynchronously set a new passphrase for encryption. Note that it is an
   // error to call SetEncryptionPassphrase under the following circumstances:
   // - An explicit passphrase has already been set
