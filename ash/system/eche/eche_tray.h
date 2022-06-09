@@ -91,6 +91,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   bool PerformAction(const ui::Event& event) override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
+  void OnVirtualKeyboardVisibilityChanged() override;
 
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;

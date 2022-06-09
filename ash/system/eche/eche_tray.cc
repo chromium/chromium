@@ -12,6 +12,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
+#include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -56,10 +57,15 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/views_delegate.h"
 #include "url/gurl.h"
+
+// Uncomment the following line to make a fake
+// bubble for local testing only.
+// #define FAKE_BUBBLE_FOR_DEBUG
 
 namespace ash {
 
@@ -183,7 +189,11 @@ void EcheTray::Initialize() {
   TrayBackgroundView::Initialize();
 
   // By default the icon is not visible until Eche notification is clicked on.
-  SetVisiblePreferred(false);
+  bool visibility = false;
+#ifdef FAKE_BUBBLE_FOR_DEBUG
+  visibility = true;
+#endif
+  SetVisiblePreferred(visibility);
 }
 
 void EcheTray::CloseBubble() {
@@ -220,6 +230,10 @@ bool EcheTray::PerformAction(const ui::Event& event) {
   if (bubble_ && bubble_->bubble_view()->GetVisible()) {
     HideBubble();
   } else {
+#ifdef FAKE_BUBBLE_FOR_DEBUG
+    LoadBubble(GURL("http://google.com"), std::move(gfx::Image()),
+               u"visible_name");
+#endif
     ShowBubble();
   }
   return true;
@@ -231,6 +245,11 @@ TrayBubbleView* EcheTray::GetBubbleView() {
 
 views::Widget* EcheTray::GetBubbleWidget() const {
   return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
+}
+
+void EcheTray::OnVirtualKeyboardVisibilityChanged() {
+  OnKeyboardVisibilityChanged(KeyboardController::Get()->IsKeyboardVisible());
+  TrayBackgroundView::OnVirtualKeyboardVisibilityChanged();
 }
 
 std::u16string EcheTray::GetAccessibleNameForBubble() {
@@ -423,6 +442,11 @@ void EcheTray::InitBubble() {
   bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
 
   auto* header_view = bubble_view->AddChildView(CreateBubbleHeaderView());
+
+  // We need the header be always visible with the same size.
+  static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
+      ->SetFlexForView(header_view, 0, true);
+
   // The layer is needed to draw the header non-opaquely that is needed to
   // match the phone hub behavior.
   header_view->SetPaintToLayer();
