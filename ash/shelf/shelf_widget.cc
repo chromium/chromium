@@ -521,7 +521,8 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
   const bool tablet_mode = Shell::Get()->IsInTabletMode();
   const bool in_app = ShelfConfig::Get()->is_in_app();
 
-  bool show_opaque_background = !tablet_mode || in_app;
+  const bool split_view = ShelfConfig::Get()->in_split_view_with_overview();
+  bool show_opaque_background = !tablet_mode || in_app || split_view;
   if (show_opaque_background != opaque_background_layer()->visible())
     opaque_background_layer()->SetVisible(show_opaque_background);
 
@@ -546,7 +547,7 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
   // or whenever we are "in app".
   if (background_type == ShelfBackgroundType::kMaximized ||
       background_type == ShelfBackgroundType::kInApp ||
-      (tablet_mode && in_app)) {
+      (tablet_mode && (in_app || split_view))) {
     opaque_background_.SetRoundedCornerRadius(0);
   } else {
     opaque_background_.SetRoundedCornerRadius(radius);
@@ -565,7 +566,13 @@ void ShelfWidget::DelegateView::UpdateDragHandle() {
     return;
   }
 
-  if (!Shell::Get()->IsInTabletMode() || !ShelfConfig::Get()->is_in_app() ||
+  if (!Shell::Get()->IsInTabletMode()) {
+    drag_handle_->SetVisible(false);
+    return;
+  }
+
+  if ((!ShelfConfig::Get()->in_split_view_with_overview() &&
+       !ShelfConfig::Get()->is_in_app()) ||
       hide_background_for_transitions_) {
     drag_handle_->SetVisible(false);
     return;

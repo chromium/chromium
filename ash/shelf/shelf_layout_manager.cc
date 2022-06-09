@@ -1425,7 +1425,9 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
       if (shelf_->hotseat_widget()->IsShowingShelfMenu())
         return HotseatState::kExtended;
 
-      if (in_overview && !in_split_view) {
+      if (in_overview) {
+        if (in_split_view)
+          return HotseatState::kExtended;
         // Maintain the ShownHomeLauncher state if we enter overview mode
         // from it.
         if (hotseat_state() == HotseatState::kShownHomeLauncher)

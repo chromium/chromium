@@ -790,6 +790,10 @@ bool SplitViewController::InSplitViewMode() const {
   return state_ != State::kNoSnap;
 }
 
+bool SplitViewController::BothSnapped() const {
+  return state_ == State::kBothSnapped;
+}
+
 bool SplitViewController::InClamshellSplitViewMode() const {
   return InSplitViewMode() && split_view_type_ == SplitViewType::kClamshellType;
 }

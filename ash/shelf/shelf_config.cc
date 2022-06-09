@@ -100,12 +100,44 @@ class ShelfConfig::ShelfAccessibilityObserver : public AccessibilityObserver {
       observation_{this};
 };
 
+class ShelfConfig::ShelfSplitViewObserver : public SplitViewObserver {
+ public:
+  explicit ShelfSplitViewObserver(
+      SplitViewController* controller,
+      const base::RepeatingCallback<void(SplitViewController::State,
+                                         SplitViewController::State)>&
+          split_view_state_changed_callback)
+      : split_view_state_changed_callback_(split_view_state_changed_callback) {
+    observation_.Observe(controller);
+  }
+
+  ShelfSplitViewObserver(const ShelfSplitViewObserver& other) = delete;
+  ShelfSplitViewObserver& operator=(const ShelfSplitViewObserver& other) =
+      delete;
+
+  ~ShelfSplitViewObserver() override = default;
+  // SplitViewObserver:
+  void OnSplitViewStateChanged(SplitViewController::State previous_state,
+                               SplitViewController::State state) override {
+    split_view_state_changed_callback_.Run(previous_state, state);
+  }
+
+ private:
+  base::RepeatingCallback<void(SplitViewController::State,
+                               SplitViewController::State)>
+      split_view_state_changed_callback_;
+
+  base::ScopedObservation<SplitViewController, SplitViewObserver> observation_{
+      this};
+};
+
 ShelfConfig::ShelfConfig()
     : use_in_app_shelf_in_overview_(false),
       overview_mode_(false),
       in_tablet_mode_(false),
       is_dense_(false),
       is_in_app_(true),
+      in_split_view_with_overview_(false),
       shelf_controls_shown_(true),
       is_virtual_keyboard_shown_(false),
       is_app_list_visible_(false),
@@ -182,11 +214,28 @@ void ShelfConfig::OnOverviewModeWillStart() {
   DCHECK(!overview_mode_);
   use_in_app_shelf_in_overview_ = is_in_app();
   overview_mode_ = true;
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  in_split_view_with_overview_ = split_view_controller->InSplitViewMode();
+
+  split_view_observer_ = std::make_unique<ShelfSplitViewObserver>(
+      split_view_controller,
+      base::BindRepeating(&ShelfConfig::OnSplitViewStateChanged,
+                          base::Unretained(this)));
 }
 
 void ShelfConfig::OnOverviewModeEnding(OverviewSession* overview_session) {
+  split_view_observer_.reset();
   overview_mode_ = false;
+  in_split_view_with_overview_ = false;
   use_in_app_shelf_in_overview_ = false;
+  UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/false);
+}
+
+void ShelfConfig::OnSplitViewStateChanged(
+    SplitViewController::State previous_state,
+    SplitViewController::State state) {
+  in_split_view_with_overview_ = (state != SplitViewController::State::kNoSnap);
   UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/false);
 }
 
@@ -405,7 +454,8 @@ int ShelfConfig::GetShelfSize(bool ignore_in_app_state) const {
   if (!in_tablet_mode_)
     return 48;
 
-  if (!ignore_in_app_state && is_in_app())
+  // Use in app shelf when split view is enabled.
+  if (!ignore_in_app_state && (is_in_app() || in_split_view_with_overview_))
     return in_app_shelf_size();
 
   return is_dense_ ? 48 : 56;
@@ -505,6 +555,8 @@ bool ShelfConfig::CalculateIsInApp(bool app_list_visible,
     return true;
   if (app_list_visible)
     return false;
+  if (in_split_view_with_overview_)
+    return true;
   if (overview_mode_)
     return use_in_app_shelf_in_overview_;
   return true;
