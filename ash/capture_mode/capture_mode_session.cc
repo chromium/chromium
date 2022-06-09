@@ -1352,8 +1352,9 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
   // long as the cursor is not on top of the capture button, since clicking
   // anywhere outside the bounds of either of them (the menu or the clickable
   // capture button) will dismiss the menu. Also if the event is on the bar, a
-  // pointer will also be used.
+  // pointer will also be used, as long as the bar is visible.
   const bool is_event_on_capture_bar =
+      capture_mode_bar_widget_->GetLayer()->GetTargetOpacity() &&
       capture_mode_bar_widget_->GetWindowBoundsInScreen().Contains(
           location_in_screen);
   if (capture_mode_settings_widget_ || is_event_on_capture_bar) {

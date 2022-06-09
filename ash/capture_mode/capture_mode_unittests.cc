@@ -1367,6 +1367,30 @@ TEST_F(CaptureModeTest, RegionCursorStates) {
   controller->Stop();
 }
 
+// Regression testing for https://crbug.com/1334824.
+TEST_F(CaptureModeTest, CursorShouldNotChangeWhileAdjustingRegion) {
+  UpdateDisplay("800x600");
+  using ui::mojom::CursorType;
+
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  auto* event_generator = GetEventGenerator();
+
+  EXPECT_FALSE(cursor_manager->IsCursorLocked());
+  StartImageRegionCapture();
+  event_generator->MoveMouseTo(gfx::Point(200, 200));
+  EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(300, 300));
+  EXPECT_EQ(CursorType::kSouthEastResize, cursor_manager->GetCursor().type());
+
+  // Drag the region by moving the cursor to the center point of the capture bar
+  // and expect that it doesn't change back to a pointer.
+  const auto capture_bar_center =
+      GetCaptureModeBarView()->GetBoundsInScreen().CenterPoint();
+  event_generator->MoveMouseTo(capture_bar_center);
+  EXPECT_EQ(CursorType::kSouthEastResize, cursor_manager->GetCursor().type());
+}
+
 TEST_F(CaptureModeTest, FullscreenCursorStates) {
   using ui::mojom::CursorType;
 
