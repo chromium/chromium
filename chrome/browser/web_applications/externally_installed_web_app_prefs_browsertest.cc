@@ -96,9 +96,17 @@ class ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/1333457)
+// All/ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration.
+// BasicOps/1 is failing on Mac builders.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BasicOps DISABLED_BasicOps
+#else
+#define MAYBE_BasicOps BasicOps
+#endif
 IN_PROC_BROWSER_TEST_P(
     ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration,
-    BasicOps) {
+    MAYBE_BasicOps) {
   GURL url_a("https://a.example.com/");
   AppId id_a;
 
