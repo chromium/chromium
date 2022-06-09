@@ -174,6 +174,12 @@ void CaptureModeToastController::BuildCaptureToastWidget(
                              kShellWindowId_MenuContainer),
                          CalculateToastWidgetScreenBounds()));
 
+  // We animate the toast widget explicitly in `ShowCaptureToast()` and
+  // `MaybeDismissCaptureToast()`. Any default visibility animations added by
+  // the widget's window should be disabled.
+  capture_toast_widget_->SetVisibilityAnimationTransition(
+      views::Widget::ANIMATE_NONE);
+
   toast_label_view_ = capture_toast_widget_->SetContentsView(
       std::make_unique<views::Label>(label));
   toast_label_view_->SetMultiLine(true);
