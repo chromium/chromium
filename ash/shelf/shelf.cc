@@ -648,10 +648,6 @@ StatusAreaWidget* Shelf::GetStatusAreaWidget() const {
   return shelf_widget_ ? shelf_widget_->status_area_widget() : nullptr;
 }
 
-TrayBackgroundView* Shelf::GetSystemTrayAnchorView() const {
-  return GetStatusAreaWidget()->GetSystemTrayAnchor();
-}
-
 gfx::Rect Shelf::GetSystemTrayAnchorRect() const {
   gfx::Rect work_area = GetWorkAreaInsets()->user_work_area_bounds();
   switch (alignment_) {

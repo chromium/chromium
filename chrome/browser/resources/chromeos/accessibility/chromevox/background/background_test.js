@@ -3015,12 +3015,12 @@ TEST_F(
           .call(doGesture(Gesture.SWIPE_RIGHT4))
           .expectSpeech('Shelf', 'Tool bar')
           .call(doGesture(Gesture.SWIPE_RIGHT4))
-          .expectSpeech(/Status tray*/)
+          .expectSpeech(/Calendar*/)
           .call(doGesture(Gesture.SWIPE_RIGHT4))
           .expectSpeech(/Address and search bar*/)
 
           .call(doGesture(Gesture.SWIPE_LEFT4))
-          .expectSpeech(/Status tray*/)
+          .expectSpeech(/Calendar*/)
           .call(doGesture(Gesture.SWIPE_LEFT4))
           .expectSpeech('Shelf', 'Tool bar')
 

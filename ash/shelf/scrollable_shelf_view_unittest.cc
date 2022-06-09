@@ -1424,13 +1424,20 @@ class ScrollableShelfViewWithAppScalingTest : public ScrollableShelfViewTest {
   // of [1, (hotseat width) / (shelf button + button spacing) + 1].
   // So we can get |kAppCount| in that range manually
   static constexpr int kAppCount = 10;
+
+  // If calendar view is enabled, the space is a little smaller and can only
+  // show 9 apps at one time.
+  static constexpr int kAppCountWithShowingDateTray = 9;
 };
 
 // Verifies the basic function of app scaling which scales down the hotseat and
 // its children's sizes if there is insufficient space for shelf buttons to show
 // without scrolling.
 TEST_F(ScrollableShelfViewWithAppScalingTest, AppScalingBasics) {
-  PopulateAppShortcut(kAppCount);
+  if (features::IsCalendarViewEnabled())
+    PopulateAppShortcut(kAppCountWithShowingDateTray);
+  else
+    PopulateAppShortcut(kAppCount);
   HotseatWidget* hotseat_widget =
       GetPrimaryShelf()->shelf_widget()->hotseat_widget();
   EXPECT_EQ(HotseatDensity::kNormal, hotseat_widget->target_hotseat_density());
@@ -1473,7 +1480,10 @@ TEST_F(ScrollableShelfViewWithAppScalingTest, AppScalingBasics) {
 // Verifies that app scaling works as expected with hotseat state transition.
 TEST_F(ScrollableShelfViewWithAppScalingTest,
        VerifyWithHotseatStateTransition) {
-  PopulateAppShortcut(kAppCount);
+  if (features::IsCalendarViewEnabled())
+    PopulateAppShortcut(kAppCountWithShowingDateTray);
+  else
+    PopulateAppShortcut(kAppCount);
   HotseatWidget* hotseat_widget =
       GetPrimaryShelf()->shelf_widget()->hotseat_widget();
   EXPECT_EQ(HotseatDensity::kNormal, hotseat_widget->target_hotseat_density());

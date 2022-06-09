@@ -268,7 +268,7 @@ const base::Feature kManagedTermsOfService{"ManagedTermsOfService",
 // Enable or disable calendar view from the system tray. Also enables the system
 // tray to show date in the shelf when the screen is sufficiently large.
 const base::Feature kCalendarView{"CalendarView",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable or disable debug mode for CalendarModel.
 const base::Feature kCalendarModelDebugMode{"CalendarModelDebugMode",

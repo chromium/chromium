@@ -4456,8 +4456,10 @@ TEST_F(ShelfLayoutManagerTest, VerifyAutoHideBehaviorOnMultipleDisplays) {
 
 // Tests that pinned app icons are visible on non-primary displays.
 TEST_F(ShelfLayoutManagerTest, ShelfShowsPinnedAppsOnOtherDisplays) {
-  // Create three displays.
-  UpdateDisplay("600x400,1000x700,800x900");
+  // Create three displays. Should use 600+ pixel as the horizontal display
+  // size, otherwise there's no enough space to show both the date tray and
+  // unified system tray on the screen.
+  UpdateDisplay("700x400,1000x700,800x900");
   const unsigned int display_count = 3U;
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   EXPECT_EQ(display_count, root_windows.size());
@@ -4511,6 +4513,7 @@ TEST_F(ShelfLayoutManagerTest, ShelfShowsPinnedAppsOnOtherDisplays) {
                                    .GetViewAt(app_count - 1)
                                    ->GetBoundsInScreen()
                                    .right_center();
+
       EXPECT_EQ(left.x() - display.bounds().x(),
                 display.bounds().right() - right.x())
           << "Apps on either end should be at the same distance from the "

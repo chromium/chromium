@@ -44,7 +44,6 @@ class ShelfView;
 class ShelfWidget;
 class StatusAreaWidget;
 class ShelfObserver;
-class TrayBackgroundView;
 class WorkAreaInsets;
 class ShelfTooltipManager;
 
@@ -193,10 +192,6 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   void NotifyShelfIconPositionsChanged();
 
   StatusAreaWidget* GetStatusAreaWidget() const;
-
-  // Get the tray button that the system tray bubble and the notification center
-  // bubble will be anchored. See also: StatusAreaWidget::GetSystemTrayAnchor()
-  TrayBackgroundView* GetSystemTrayAnchorView() const;
 
   // Get the anchor rect that the system tray bubble and the notification center
   // bubble will be anchored.

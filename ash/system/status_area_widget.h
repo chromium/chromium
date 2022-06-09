@@ -234,6 +234,11 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // current conditions.
   CollapseState CalculateCollapseState() const;
 
+  // Gets the collapse available width based on if the date tray is shown.
+  // If `force_collapsible`, returns a fixed width which is not based on the
+  // shelf width.
+  int GetCollapseAvailableWidth(bool force_collapsible) const;
+
   StatusAreaWidgetDelegate* const status_area_widget_delegate_;
 
   StatusAreaOverflowButtonTray* overflow_button_tray_ = nullptr;
