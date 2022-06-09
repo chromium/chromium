@@ -200,7 +200,6 @@ class DnsUDPAttempt : public DnsAttempt {
                 std::unique_ptr<DnsQuery> query,
                 DnsUdpTracker* udp_tracker)
       : DnsAttempt(server_index),
-        next_state_(STATE_NONE),
         socket_(std::move(socket)),
         server_(server),
         query_(std::move(query)),
@@ -349,7 +348,7 @@ class DnsUDPAttempt : public DnsAttempt {
       std::move(callback_).Run(rv);
   }
 
-  State next_state_;
+  State next_state_ = STATE_NONE;
   base::TimeTicks start_time_;
 
   std::unique_ptr<DatagramClientSocket> socket_;
@@ -649,12 +648,10 @@ class DnsTCPAttempt : public DnsAttempt {
                 std::unique_ptr<StreamSocket> socket,
                 std::unique_ptr<DnsQuery> query)
       : DnsAttempt(server_index),
-        next_state_(STATE_NONE),
         socket_(std::move(socket)),
         query_(std::move(query)),
         length_buffer_(
-            base::MakeRefCounted<IOBufferWithSize>(sizeof(uint16_t))),
-        response_length_(0) {}
+            base::MakeRefCounted<IOBufferWithSize>(sizeof(uint16_t))) {}
 
   DnsTCPAttempt(const DnsTCPAttempt&) = delete;
   DnsTCPAttempt& operator=(const DnsTCPAttempt&) = delete;
@@ -878,7 +875,7 @@ class DnsTCPAttempt : public DnsAttempt {
         base::BindOnce(&DnsTCPAttempt::OnIOComplete, base::Unretained(this)));
   }
 
-  State next_state_;
+  State next_state_ = STATE_NONE;
   base::TimeTicks start_time_;
 
   std::unique_ptr<StreamSocket> socket_;
@@ -886,7 +883,7 @@ class DnsTCPAttempt : public DnsAttempt {
   scoped_refptr<IOBufferWithSize> length_buffer_;
   scoped_refptr<DrainableIOBuffer> buffer_;
 
-  uint16_t response_length_;
+  uint16_t response_length_ = 0;
   std::unique_ptr<DnsResponse> response_;
 
   CompletionOnceCallback callback_;
@@ -1118,11 +1115,7 @@ class DnsTransactionImpl : public DnsTransaction,
         secure_dns_mode_(secure_dns_mode),
         fast_timeout_(fast_timeout),
         net_log_(net_log),
-        qnames_initial_size_(0),
-        attempts_count_(0),
-        had_tcp_retry_(false),
-        resolve_context_(resolve_context->AsSafeRef()),
-        request_priority_(DEFAULT_PRIORITY) {
+        resolve_context_(resolve_context->AsSafeRef()) {
     DCHECK(session_.get());
     DCHECK(!hostname_.empty());
     DCHECK(!IsIPLiteral(hostname_));
@@ -1684,15 +1677,15 @@ class DnsTransactionImpl : public DnsTransaction,
 
   // Search list of fully-qualified DNS names to query next (in DNS format).
   base::circular_deque<std::string> qnames_;
-  size_t qnames_initial_size_;
+  size_t qnames_initial_size_ = 0;
 
   // List of attempts for the current name.
   std::vector<std::unique_ptr<DnsAttempt>> attempts_;
   // Count of attempts, not reset when |attempts_| vector is cleared.
-  int attempts_count_;
+  int attempts_count_ = 0;
 
   // Records when an attempt was retried via TCP due to a truncation error.
-  bool had_tcp_retry_;
+  bool had_tcp_retry_ = false;
 
   // Iterator to get the index of the DNS server for each search query.
   std::unique_ptr<DnsServerIterator> dns_server_iterator_;
@@ -1701,7 +1694,7 @@ class DnsTransactionImpl : public DnsTransaction,
   std::unique_ptr<base::ElapsedTimer> time_from_start_;
 
   base::SafeRef<ResolveContext> resolve_context_;
-  RequestPriority request_priority_;
+  RequestPriority request_priority_ = DEFAULT_PRIORITY;
 
   THREAD_CHECKER(thread_checker_);
 };

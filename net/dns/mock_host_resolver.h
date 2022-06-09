@@ -413,11 +413,11 @@ class MockHostResolverBase
   void AddListener(MdnsListenerImpl* listener);
   void RemoveCancelledListener(MdnsListenerImpl* listener);
 
-  RequestPriority last_request_priority_;
+  RequestPriority last_request_priority_ = DEFAULT_PRIORITY;
   absl::optional<NetworkIsolationKey> last_request_network_isolation_key_;
-  SecureDnsPolicy last_secure_dns_policy_;
-  bool synchronous_mode_;
-  bool ondemand_mode_;
+  SecureDnsPolicy last_secure_dns_policy_ = SecureDnsPolicy::kAllow;
+  bool synchronous_mode_ = false;
+  bool ondemand_mode_ = false;
   RuleResolver rule_resolver_;
   std::unique_ptr<HostCache> cache_;
 
@@ -626,7 +626,7 @@ class RuleBasedHostResolverProc : public HostResolverProc {
   base::Lock rule_lock_;
 
   // Whether changes are allowed.
-  bool modifications_allowed_;
+  bool modifications_allowed_ = true;
 };
 
 // Create rules that map all requests to localhost.

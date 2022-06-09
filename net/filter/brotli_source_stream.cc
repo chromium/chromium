@@ -23,12 +23,7 @@ const char kBrotli[] = "BROTLI";
 class BrotliSourceStream : public FilterSourceStream {
  public:
   explicit BrotliSourceStream(std::unique_ptr<SourceStream> upstream)
-      : FilterSourceStream(SourceStream::TYPE_BROTLI, std::move(upstream)),
-        decoding_status_(DecodingStatus::DECODING_IN_PROGRESS),
-        used_memory_(0),
-        used_memory_maximum_(0),
-        consumed_bytes_(0),
-        produced_bytes_(0) {
+      : FilterSourceStream(SourceStream::TYPE_BROTLI, std::move(upstream)) {
     brotli_state_ =
         BrotliDecoderCreateInstance(AllocateMemory, FreeMemory, this);
     CHECK(brotli_state_);
@@ -169,12 +164,12 @@ class BrotliSourceStream : public FilterSourceStream {
 
   raw_ptr<BrotliDecoderState> brotli_state_;
 
-  DecodingStatus decoding_status_;
+  DecodingStatus decoding_status_ = DecodingStatus::DECODING_IN_PROGRESS;
 
-  size_t used_memory_;
-  size_t used_memory_maximum_;
-  size_t consumed_bytes_;
-  size_t produced_bytes_;
+  size_t used_memory_ = 0;
+  size_t used_memory_maximum_ = 0;
+  size_t consumed_bytes_ = 0;
+  size_t produced_bytes_ = 0;
 };
 
 }  // namespace

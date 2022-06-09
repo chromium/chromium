@@ -177,7 +177,7 @@ struct NET_EXPORT_PRIVATE ProcTaskParams {
   base::TimeDelta unresponsive_delay;
 
   // Factor to grow |unresponsive_delay| when we re-re-try.
-  uint32_t retry_factor;
+  uint32_t retry_factor = 2;
 };
 
 }  // namespace net

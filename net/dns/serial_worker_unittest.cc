@@ -168,8 +168,7 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
         work_allowed_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                       base::WaitableEvent::InitialState::NOT_SIGNALED),
         work_called_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                     base::WaitableEvent::InitialState::NOT_SIGNALED),
-        work_running_(false) {}
+                     base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
   // Helpers for tests.
 
@@ -212,7 +211,7 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
   base::WaitableEvent work_called_;
 
   // Protected by read_lock_. Used to verify that read calls are serialized.
-  bool work_running_;
+  bool work_running_ = false;
   base::Lock work_lock_;
 
   int work_finished_calls_ = 0;

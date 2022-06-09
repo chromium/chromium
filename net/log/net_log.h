@@ -136,7 +136,7 @@ class NET_EXPORT NetLog {
     friend class NetLog;
 
     // Both of these values are only modified by the NetLog.
-    NetLogCaptureMode capture_mode_;
+    NetLogCaptureMode capture_mode_ = NetLogCaptureMode::kDefault;
     raw_ptr<NetLog> net_log_;
   };
 

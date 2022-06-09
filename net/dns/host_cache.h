@@ -526,10 +526,10 @@ class NET_EXPORT HostCache {
   // a resolved result entry.
   EntryMap entries_;
   size_t max_entries_;
-  int network_changes_;
+  int network_changes_ = 0;
   // Number of cache entries that were restored in the last call to
   // RestoreFromListValue(). Used in histograms.
-  size_t restore_size_;
+  size_t restore_size_ = 0;
 
   raw_ptr<PersistenceDelegate> delegate_;
   // Shared tick clock, overridden for testing.

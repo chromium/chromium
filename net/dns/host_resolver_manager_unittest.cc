@@ -144,8 +144,6 @@ class MockHostResolverProc : public HostResolverProc {
 
   MockHostResolverProc()
       : HostResolverProc(nullptr),
-        num_requests_waiting_(0),
-        num_slots_available_(0),
         requests_waiting_(&lock_),
         slots_available_(&lock_) {}
 
@@ -273,8 +271,8 @@ class MockHostResolverProc : public HostResolverProc {
   mutable base::Lock lock_;
   std::map<ResolveKey, AddressList> rules_;
   CaptureList capture_list_;
-  unsigned num_requests_waiting_;
-  unsigned num_slots_available_;
+  unsigned num_requests_waiting_ = 0;
+  unsigned num_slots_available_ = 0;
   base::ConditionVariable requests_waiting_;
   base::ConditionVariable slots_available_;
 };
@@ -358,11 +356,7 @@ class LookupAttemptHostResolverProc : public HostResolverProc {
                                 int total_attempts)
       : HostResolverProc(previous),
         attempt_number_to_resolve_(attempt_number_to_resolve),
-        current_attempt_number_(0),
         total_attempts_(total_attempts),
-        total_attempts_resolved_(0),
-        resolved_attempt_number_(0),
-        num_attempts_waiting_(0),
         all_done_(&lock_),
         blocked_attempt_signal_(&lock_) {}
 
@@ -458,11 +452,11 @@ class LookupAttemptHostResolverProc : public HostResolverProc {
 
  private:
   int attempt_number_to_resolve_;
-  int current_attempt_number_;  // Incremented whenever Resolve is called.
+  int current_attempt_number_ = 0;  // Incremented whenever Resolve is called.
   int total_attempts_;
-  int total_attempts_resolved_;
-  int resolved_attempt_number_;
-  int num_attempts_waiting_;
+  int total_attempts_resolved_ = 0;
+  int resolved_attempt_number_ = 0;
+  int num_attempts_waiting_ = 0;
 
   // All attempts wait for right attempt to be resolve.
   base::Lock lock_;

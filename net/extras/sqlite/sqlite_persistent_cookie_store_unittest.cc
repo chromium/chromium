@@ -65,7 +65,7 @@ class CookieCryptor : public CookieCryptoDelegate {
   bool DecryptString(const std::string& ciphertext,
                      std::string* plaintext) override;
 
-  bool should_encrypt_;
+  bool should_encrypt_ = true;
 
  private:
   std::unique_ptr<crypto::SymmetricKey> key_;
@@ -73,8 +73,7 @@ class CookieCryptor : public CookieCryptoDelegate {
 };
 
 CookieCryptor::CookieCryptor()
-    : should_encrypt_(true),
-      key_(crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
+    : key_(crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
           crypto::SymmetricKey::AES,
           "password",
           "saltiest",

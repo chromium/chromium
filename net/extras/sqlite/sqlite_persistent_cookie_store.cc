@@ -263,10 +263,7 @@ class SQLitePersistentCookieStore::Backend
                                          kCompatibleVersionNumber,
                                          std::move(background_task_runner),
                                          std::move(client_task_runner)),
-        num_pending_(0),
         restore_old_session_cookies_(restore_old_session_cookies),
-        num_priority_waiting_(0),
-        total_priority_requests_(0),
         crypto_(crypto_delegate) {}
 
   Backend(const Backend&) = delete;
@@ -401,7 +398,7 @@ class SQLitePersistentCookieStore::Backend
   typedef std::map<CanonicalCookie::UniqueCookieKey, PendingOperationsForKey>
       PendingOperationsMap;
   PendingOperationsMap pending_ GUARDED_BY(lock_);
-  PendingOperationsMap::size_type num_pending_ GUARDED_BY(lock_);
+  PendingOperationsMap::size_type num_pending_ GUARDED_BY(lock_) = 0;
   // Guard |cookies_|, |pending_|, |num_pending_|.
   base::Lock lock_;
 
@@ -423,9 +420,9 @@ class SQLitePersistentCookieStore::Backend
   // Guards the following metrics-related properties (only accessed when
   // starting/completing priority loads or completing the total load).
   base::Lock metrics_lock_;
-  int num_priority_waiting_ GUARDED_BY(metrics_lock_);
+  int num_priority_waiting_ GUARDED_BY(metrics_lock_) = 0;
   // The total number of priority requests.
-  int total_priority_requests_ GUARDED_BY(metrics_lock_);
+  int total_priority_requests_ GUARDED_BY(metrics_lock_) = 0;
   // The time when |num_priority_waiting_| incremented to 1.
   base::Time current_priority_wait_start_ GUARDED_BY(metrics_lock_);
   // The cumulative duration of time when |num_priority_waiting_| was greater

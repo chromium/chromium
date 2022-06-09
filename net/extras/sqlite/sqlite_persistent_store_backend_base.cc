@@ -28,8 +28,6 @@ SQLitePersistentStoreBackendBase::SQLitePersistentStoreBackendBase(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner)
     : path_(path),
       histogram_tag_(std::move(histogram_tag)),
-      initialized_(false),
-      corruption_detected_(false),
       current_version_number_(current_version_number),
       compatible_version_number_(compatible_version_number),
       background_task_runner_(std::move(background_task_runner)),

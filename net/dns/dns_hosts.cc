@@ -29,8 +29,6 @@ class HostsParser {
       : text_(text),
         data_(text.data()),
         end_(text.size()),
-        pos_(0),
-        token_is_ip_(false),
         comma_mode_(comma_mode) {}
 
   HostsParser(const HostsParser&) = delete;
@@ -127,9 +125,9 @@ class HostsParser {
   const char* data_;
   const size_t end_;
 
-  size_t pos_;
+  size_t pos_ = 0;
   StringPiece token_;
-  bool token_is_ip_;
+  bool token_is_ip_ = false;
 
   const ParseHostsCommaMode comma_mode_;
 };

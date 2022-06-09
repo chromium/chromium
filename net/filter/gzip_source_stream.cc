@@ -53,10 +53,7 @@ std::unique_ptr<GzipSourceStream> GzipSourceStream::Create(
 
 GzipSourceStream::GzipSourceStream(std::unique_ptr<SourceStream> upstream,
                                    SourceStream::SourceType type)
-    : FilterSourceStream(type, std::move(upstream)),
-      gzip_footer_bytes_left_(0),
-      input_state_(STATE_START),
-      replay_state_(STATE_COMPRESSED_BODY) {}
+    : FilterSourceStream(type, std::move(upstream)) {}
 
 bool GzipSourceStream::Init() {
   zlib_stream_ = std::make_unique<z_stream>();

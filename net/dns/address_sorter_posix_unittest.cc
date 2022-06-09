@@ -43,7 +43,7 @@ IPAddress ParseIP(const std::string& str) {
 class TestUDPClientSocket : public DatagramClientSocket {
  public:
   explicit TestUDPClientSocket(const AddressMapping* mapping)
-      : mapping_(mapping), connected_(false)  {}
+      : mapping_(mapping) {}
 
   TestUDPClientSocket(const TestUDPClientSocket&) = delete;
   TestUDPClientSocket& operator=(const TestUDPClientSocket&) = delete;
@@ -139,7 +139,7 @@ class TestUDPClientSocket : public DatagramClientSocket {
  private:
   NetLogWithSource net_log_;
   raw_ptr<const AddressMapping> mapping_;
-  bool connected_;
+  bool connected_ = false;
   IPEndPoint local_endpoint_;
 };
 

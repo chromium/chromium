@@ -443,8 +443,6 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
       ResponseModifierCallback response_modifier = ResponseModifierCallback(),
       UrlRequestStartedCallback on_start = UrlRequestStartedCallback())
       : URLRequestJob(request),
-        content_length_(0),
-        leftover_data_len_(0),
         data_provider_(data_provider),
         response_modifier_(response_modifier),
         on_start_(on_start) {
@@ -585,9 +583,9 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
     return data_len;
   }
 
-  const int content_length_;
+  const int content_length_ = 0;
   const char* leftover_data_;
-  int leftover_data_len_;
+  int leftover_data_len_ = 0;
   raw_ptr<SocketDataProvider> data_provider_;
   const ResponseModifierCallback response_modifier_;
   const UrlRequestStartedCallback on_start_;
@@ -2354,8 +2352,7 @@ void MakeResponseWithCookie(URLRequest* request, HttpResponseInfo* info) {
 
 class CookieCallback {
  public:
-  CookieCallback()
-      : result_(false), loop_to_quit_(std::make_unique<base::RunLoop>()) {}
+  CookieCallback() : loop_to_quit_(std::make_unique<base::RunLoop>()) {}
 
   void SetCookieCallback(CookieAccessResult result) {
     result_ = result.status.IsInclude();
@@ -2380,7 +2377,7 @@ class CookieCallback {
 
  private:
   net::CookieList list_;
-  bool result_;
+  bool result_ = false;
   std::unique_ptr<base::RunLoop> loop_to_quit_;
 };
 
@@ -2548,7 +2545,7 @@ TEST_F(DnsTransactionTest, CanLookupDohServerName) {
 
 class CountingObserver : public net::NetLog::ThreadSafeObserver {
  public:
-  CountingObserver() : count_(0), dict_count_(0) {}
+  CountingObserver() = default;
 
   ~CountingObserver() override {
     if (net_log())
@@ -2566,8 +2563,8 @@ class CountingObserver : public net::NetLog::ThreadSafeObserver {
   int dict_count() const { return dict_count_; }
 
  private:
-  int count_;
-  int dict_count_;
+  int count_ = 0;
+  int dict_count_ = 0;
 };
 
 // Flaky on MSAN. https://crbug.com/1245953

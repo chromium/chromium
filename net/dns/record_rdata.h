@@ -68,9 +68,9 @@ class NET_EXPORT_PRIVATE SrvRecordRdata : public RecordRdata {
  private:
   SrvRecordRdata();
 
-  uint16_t priority_;
-  uint16_t weight_;
-  uint16_t port_;
+  uint16_t priority_ = 0;
+  uint16_t weight_ = 0;
+  uint16_t port_ = 0;
 
   std::string target_;
 };

@@ -30,12 +30,7 @@ const base::TimeDelta DnsConfigService::kInvalidationTimeout =
 DnsConfigService::DnsConfigService(
     base::FilePath::StringPieceType hosts_file_path,
     absl::optional<base::TimeDelta> config_change_delay)
-    : watch_failed_(false),
-      have_config_(false),
-      have_hosts_(false),
-      need_update_(false),
-      last_sent_empty_(true),
-      config_change_delay_(config_change_delay),
+    : config_change_delay_(config_change_delay),
       hosts_file_path_(hosts_file_path) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }

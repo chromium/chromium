@@ -11,11 +11,7 @@ namespace net {
 namespace extras {
 
 PreloadDecoder::BitReader::BitReader(const uint8_t* bytes, size_t num_bits)
-    : bytes_(bytes),
-      num_bits_(num_bits),
-      num_bytes_((num_bits + 7) / 8),
-      current_byte_index_(0),
-      num_bits_used_(8) {}
+    : bytes_(bytes), num_bits_(num_bits), num_bytes_((num_bits + 7) / 8) {}
 
 // Next sets |*out| to the next bit from the input. It returns false if no
 // more bits are available or true otherwise.

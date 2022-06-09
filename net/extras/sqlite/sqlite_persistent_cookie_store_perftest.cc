@@ -58,8 +58,7 @@ perf_test::PerfResultReporter SetUpSQLPCSReporter(const std::string& story) {
 class SQLitePersistentCookieStorePerfTest : public testing::Test {
  public:
   SQLitePersistentCookieStorePerfTest()
-      : seed_multiple_(1),
-        test_start_(base::Time::Now()),
+      : test_start_(base::Time::Now()),
         loaded_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                       base::WaitableEvent::InitialState::NOT_SIGNALED),
         key_loaded_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -146,7 +145,7 @@ class SQLitePersistentCookieStorePerfTest : public testing::Test {
   }
 
  protected:
-  int seed_multiple_;
+  int seed_multiple_ = 1;
   base::Time test_start_;
   base::test::TaskEnvironment task_environment_;
   const scoped_refptr<base::SequencedTaskRunner> background_task_runner_ =

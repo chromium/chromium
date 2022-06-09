@@ -174,10 +174,10 @@ class SQLitePersistentStoreBackendBase
   const std::string histogram_tag_;
 
   // Whether the database has been initialized.
-  bool initialized_;
+  bool initialized_ = false;
 
   // Whether the KillDatabase callback has been scheduled.
-  bool corruption_detected_;
+  bool corruption_detected_ = false;
 
   // Current version number of the database. Must be greater than 0.
   const int current_version_number_;

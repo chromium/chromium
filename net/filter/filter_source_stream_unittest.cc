@@ -177,8 +177,7 @@ class NoOutputSourceStream : public TestFilterSourceStreamBase {
   NoOutputSourceStream(std::unique_ptr<SourceStream> upstream,
                        size_t expected_input_size)
       : TestFilterSourceStreamBase(std::move(upstream)),
-        expected_input_size_(expected_input_size),
-        consumed_all_input_(false) {}
+        expected_input_size_(expected_input_size) {}
 
   NoOutputSourceStream(const NoOutputSourceStream&) = delete;
   NoOutputSourceStream& operator=(const NoOutputSourceStream&) = delete;
@@ -201,7 +200,7 @@ class NoOutputSourceStream : public TestFilterSourceStreamBase {
  private:
   // Expected remaining bytes to be received from |upstream|.
   int expected_input_size_;
-  bool consumed_all_input_;
+  bool consumed_all_input_ = false;
 };
 
 // A FilterSourceStream return an error code in FilterData().

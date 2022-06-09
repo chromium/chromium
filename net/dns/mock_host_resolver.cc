@@ -144,9 +144,7 @@ class MockHostResolverBase::RequestImpl
         priority_(parameters_.initial_priority),
         host_resolver_flags_(ParametersToHostResolverFlags(parameters_)),
         resolve_error_info_(ResolveErrorInfo(ERR_IO_PENDING)),
-        id_(0),
-        resolver_(resolver),
-        complete_(false) {}
+        resolver_(resolver) {}
 
   RequestImpl(const RequestImpl&) = delete;
   RequestImpl& operator=(const RequestImpl&) = delete;
@@ -382,13 +380,13 @@ class MockHostResolverBase::RequestImpl
   ResolveErrorInfo resolve_error_info_;
 
   // Used while stored with the resolver for async resolution.  Otherwise 0.
-  size_t id_;
+  size_t id_ = 0;
 
   CompletionOnceCallback callback_;
   // Use a WeakPtr as the resolver may be destroyed while there are still
   // outstanding request objects.
   base::WeakPtr<MockHostResolverBase> resolver_;
-  bool complete_;
+  bool complete_ = false;
 };
 
 class MockHostResolverBase::ProbeRequestImpl
@@ -882,11 +880,7 @@ MockHostResolverBase::RequestImpl* MockHostResolverBase::request(size_t id) {
 MockHostResolverBase::MockHostResolverBase(bool use_caching,
                                            int cache_invalidation_num,
                                            RuleResolver rule_resolver)
-    : last_request_priority_(DEFAULT_PRIORITY),
-      last_secure_dns_policy_(SecureDnsPolicy::kAllow),
-      synchronous_mode_(false),
-      ondemand_mode_(false),
-      rule_resolver_(std::move(rule_resolver)),
+    : rule_resolver_(std::move(rule_resolver)),
       initial_cache_invalidation_num_(cache_invalidation_num),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       state_(base::MakeRefCounted<State>()) {
@@ -1147,8 +1141,7 @@ RuleBasedHostResolverProc::Rule::~Rule() = default;
 
 RuleBasedHostResolverProc::RuleBasedHostResolverProc(HostResolverProc* previous,
                                                      bool allow_fallback)
-    : HostResolverProc(previous, allow_fallback),
-      modifications_allowed_(true) {}
+    : HostResolverProc(previous, allow_fallback) {}
 
 void RuleBasedHostResolverProc::AddRule(const std::string& host_pattern,
                                         const std::string& replacement) {

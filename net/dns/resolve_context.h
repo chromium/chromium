@@ -206,7 +206,7 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
     ~ServerStats();
 
     // Count of consecutive failures after last success.
-    int last_failure_count;
+    int last_failure_count = 0;
 
     // True if any success has ever been recorded for this server for the
     // current connection.

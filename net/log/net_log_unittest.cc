@@ -186,7 +186,7 @@ TEST(NetLogTest, CaptureModes) {
 
 class CountingObserver : public NetLog::ThreadSafeObserver {
  public:
-  CountingObserver() : count_(0) {}
+  CountingObserver() = default;
 
   ~CountingObserver() override {
     if (net_log())
@@ -198,7 +198,7 @@ class CountingObserver : public NetLog::ThreadSafeObserver {
   int count() const { return count_; }
 
  private:
-  int count_;
+  int count_ = 0;
 };
 
 class LoggingObserver : public NetLog::ThreadSafeObserver {

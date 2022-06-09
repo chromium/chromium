@@ -54,8 +54,7 @@ bool RecordRdata::HasValidSize(const base::StringPiece& data, uint16_t type) {
   }
 }
 
-SrvRecordRdata::SrvRecordRdata() : priority_(0), weight_(0), port_(0) {
-}
+SrvRecordRdata::SrvRecordRdata() = default;
 
 SrvRecordRdata::~SrvRecordRdata() = default;
 

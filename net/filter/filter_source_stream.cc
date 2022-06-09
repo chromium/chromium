@@ -30,11 +30,7 @@ const size_t kBufferSize = 32 * 1024;
 
 FilterSourceStream::FilterSourceStream(SourceType type,
                                        std::unique_ptr<SourceStream> upstream)
-    : SourceStream(type),
-      upstream_(std::move(upstream)),
-      next_state_(STATE_NONE),
-      output_buffer_size_(0),
-      upstream_end_reached_(false) {
+    : SourceStream(type), upstream_(std::move(upstream)) {
   DCHECK(upstream_);
 }
 
