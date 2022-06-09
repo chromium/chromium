@@ -52,8 +52,8 @@ class ChildCallStackProfileCollectorTest : public testing::Test {
   ChildCallStackProfileCollectorTest& operator=(
       const ChildCallStackProfileCollectorTest&) = delete;
 
-  void CollectEmptyProfile() {
-    child_collector_.Collect(base::TimeTicks::Now(), SampledProfile());
+  void CollectEmptyProfile(base::TimeTicks start_time) {
+    child_collector_.Collect(start_time, SampledProfile());
   }
 
   const std::vector<ChildCallStackProfileCollector::ProfileState>& profiles()
@@ -61,7 +61,8 @@ class ChildCallStackProfileCollectorTest : public testing::Test {
     return child_collector_.profiles_;
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   mojo::PendingRemote<mojom::CallStackProfileCollector> collector_remote_;
   std::unique_ptr<Receiver> receiver_impl_;
   ChildCallStackProfileCollector child_collector_;
@@ -72,36 +73,35 @@ TEST_F(ChildCallStackProfileCollectorTest, InterfaceProvided) {
   EXPECT_EQ(0u, profiles().size());
 
   // Add a profile before providing the interface.
-  CollectEmptyProfile();
+  base::TimeTicks start_timestamp = task_environment_.NowTicks();
+  CollectEmptyProfile(start_timestamp);
   ASSERT_EQ(1u, profiles().size());
-  base::TimeTicks start_timestamp = profiles()[0].start_timestamp;
-  EXPECT_GE(base::Milliseconds(10), base::TimeTicks::Now() - start_timestamp);
+  EXPECT_EQ(start_timestamp, profiles()[0].start_timestamp);
 
   // Set the interface. The profiles should be passed to it.
   child_collector_.SetParentProfileCollector(std::move(collector_remote_));
-  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_EQ(0u, profiles().size());
   ASSERT_EQ(1u, receiver_impl_->profile_start_times.size());
   EXPECT_EQ(start_timestamp, receiver_impl_->profile_start_times[0]);
 
   // Add a profile after providing the interface. It should also be passed.
   receiver_impl_->profile_start_times.clear();
-  CollectEmptyProfile();
-  base::RunLoop().RunUntilIdle();
+  CollectEmptyProfile(start_timestamp);
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_EQ(0u, profiles().size());
   ASSERT_EQ(1u, receiver_impl_->profile_start_times.size());
-  EXPECT_GE(base::Milliseconds(10),
-            (base::TimeTicks::Now() - receiver_impl_->profile_start_times[0]));
+  EXPECT_EQ(start_timestamp, receiver_impl_->profile_start_times[0]);
 }
 
 TEST_F(ChildCallStackProfileCollectorTest, InterfaceNotProvided) {
   EXPECT_EQ(0u, profiles().size());
 
   // Add a profile before providing a null interface.
-  CollectEmptyProfile();
+  base::TimeTicks start_timestamp = task_environment_.NowTicks();
+  CollectEmptyProfile(start_timestamp);
   ASSERT_EQ(1u, profiles().size());
-  EXPECT_GE(base::Milliseconds(10),
-            base::TimeTicks::Now() - profiles()[0].start_timestamp);
+  EXPECT_EQ(start_timestamp, profiles()[0].start_timestamp);
 
   // Set the null interface. The profile should be flushed.
   child_collector_.SetParentProfileCollector(mojo::NullRemote());
@@ -110,7 +110,7 @@ TEST_F(ChildCallStackProfileCollectorTest, InterfaceNotProvided) {
 
   // Add a profile after providing a null interface. They should also be
   // flushed.
-  CollectEmptyProfile();
+  CollectEmptyProfile(start_timestamp);
   EXPECT_EQ(0u, profiles().size());
 }
 
