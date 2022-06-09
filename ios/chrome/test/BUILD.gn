@@ -237,6 +237,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/safe_mode:unit_tests",
     "//ios/chrome/browser/screenshot:unit_tests",
     "//ios/chrome/browser/search_engines:unit_tests",
+    "//ios/chrome/browser/segmentation_platform:unit_tests",
     "//ios/chrome/browser/send_tab_to_self:unit_tests",
     "//ios/chrome/browser/sessions:unit_tests",
     "//ios/chrome/browser/signin:signin_util_internal_unit_tests",

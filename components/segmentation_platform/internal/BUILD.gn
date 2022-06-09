@@ -14,6 +14,7 @@ static_library("internal") {
     "//chrome/browser",
     "//chrome/browser/segmentation_platform:*",
     "//chrome/test:*",
+    "//ios/chrome/browser/segmentation_platform:*",
   ]
 
   sources = [
