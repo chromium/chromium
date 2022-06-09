@@ -97,7 +97,7 @@ message RlwePlaintextId {
 
 // Different use cases of the RLWE-based PSM protocol.
 //
-// NEXT ID: 16
+// NEXT ID: 18
 enum RlweUseCase {
   RLWE_USE_CASE_UNDEFINED = 0;
   TEST_USE_CASE = 1;
@@ -114,7 +114,9 @@ enum RlweUseCase {
   // Use-cases for ChromeOS Device Active Reporting to Fresnel.
   CROS_FRESNEL_DAILY = 13;
   CROS_FRESNEL_MONTHLY = 14;
-  CROS_FRESNEL_ALL_TIME = 15;
+  CROS_FRESNEL_FIRST_ACTIVE = 15;
+  CROS_FRESNEL_7DAY_ACTIVE = 16;
+  CROS_FRESNEL_28DAY_ACTIVE = 17;
 
   reserved 4, 6, 7, 8, 9, 10, 11;
 }
@@ -266,6 +268,10 @@ message EncryptedBucket {
     // Value that is encrypted using AES where the key is a serialization
     // of the identifier encrypted using the Elliptic curve commutative cipher.
     bytes encrypted_value = 2;
+
+    // Proto containing the sensitive and non-sensitive portion of the
+    // identifier in plaintext.
+    RlwePlaintextId id = 3;
   }
 }
 

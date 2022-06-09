@@ -14,6 +14,8 @@
 
 #include "third_party/private_membership/src/internal/crypto_utils.h"
 
+#include <string>
+
 #include "third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.h"
 #include "third_party/private_membership/src/private_membership.pb.h"
 #include <gmock/gmock.h>
@@ -27,7 +29,6 @@ namespace {
 constexpr int kCurveId = NID_X9_62_prime256v1;
 
 using ::rlwe::testing::StatusIs;
-using ::testing::Eq;
 using ::testing::HasSubstr;
 
 class CryptoUtilsTest : public ::testing::Test {

@@ -14,6 +14,8 @@
 
 #include "third_party/private_membership/src/internal/crypto_utils.h"
 
+#include <string>
+
 #include "third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.h"
 #include "third_party/private_membership/src/internal/id_utils.h"
 #include "third_party/shell-encryption/src/status_macros.h"

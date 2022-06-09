@@ -14,6 +14,9 @@
 
 #include "third_party/private_membership/src/internal/rlwe_params.h"
 
+#include <memory>
+#include <utility>
+
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "third_party/private_membership/src/internal/constants.h"
 #include "third_party/shell-encryption/src/montgomery.h"
@@ -92,7 +95,7 @@ CreateNttParams(const RlweParameters& rlwe_params,
   RLWE_ASSIGN_OR_RETURN(::rlwe::NttParameters<ModularInt> ntt_params,
                         ::rlwe::InitializeNttParameters<ModularInt>(
                             rlwe_params.log_degree(), modulus_params));
-  return absl::make_unique<const ::rlwe::NttParameters<ModularInt>>(
+  return std::make_unique<const ::rlwe::NttParameters<ModularInt>>(
       std::move(ntt_params));
 }
 
@@ -114,7 +117,7 @@ CreateErrorParams(const RlweParameters& rlwe_params,
                         ::rlwe::ErrorParams<ModularInt>::Create(
                             rlwe_params.log_t(), rlwe_params.variance(),
                             modulus_params, ntt_params));
-  return absl::make_unique<const ::rlwe::ErrorParams<ModularInt>>(error_params);
+  return std::make_unique<const ::rlwe::ErrorParams<ModularInt>>(error_params);
 }
 
 template ::rlwe::StatusOr<

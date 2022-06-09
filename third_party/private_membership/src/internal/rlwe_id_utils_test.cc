@@ -14,7 +14,8 @@
 
 #include "third_party/private_membership/src/internal/rlwe_id_utils.h"
 
-#include "third_party/private_membership/src/private_membership.pb.h"
+#include <string>
+
 #include "third_party/private_membership/src/internal/constants.h"
 #include "third_party/private_membership/src/internal/testing/constants.h"
 #include <gmock/gmock.h>
@@ -34,6 +35,7 @@ using ::testing::HasSubstr;
 TEST(RlweIdUtils, ComputeBucketStoredEncryptedIdSuccess) {
   EncryptedBucketsParameters params;
   params.set_encrypted_bucket_id_length(14);
+  params.set_sensitive_id_hash_type(ENCRYPTED_BUCKET_TEST_HASH_TYPE);
 
   RlwePlaintextId plaintext_id;
   plaintext_id.set_non_sensitive_id("nsid");
@@ -62,6 +64,7 @@ TEST(RlweIdUtils, ComputeBucketStoredEncryptedIdEmpty) {
   EncryptedBucketsParameters empty_id_params;
   empty_id_params.set_encrypted_bucket_id_length(kStoredEncryptedIdByteLength *
                                                  8);
+  empty_id_params.set_sensitive_id_hash_type(ENCRYPTED_BUCKET_TEST_HASH_TYPE);
 
   RlwePlaintextId plaintext_id;
   plaintext_id.set_non_sensitive_id("empty-nsid");
@@ -82,6 +85,7 @@ TEST(RlweIdUtils, ComputeBucketStoredEncryptedIdEmpty) {
 TEST(RlweIdUtils, ComputeBucketStoredEncryptedIdError) {
   EncryptedBucketsParameters params;
   params.set_encrypted_bucket_id_length(14);
+  params.set_sensitive_id_hash_type(ENCRYPTED_BUCKET_TEST_HASH_TYPE);
 
   RlwePlaintextId plaintext_id;
   plaintext_id.set_non_sensitive_id("nsid-test");
@@ -175,6 +179,43 @@ TEST(RlweIdUtils, HashNonsensitiveIdWithSaltRegression) {
       0x4b, 0x51, 0xfe, 0x6d, 0x67, 0x68, 0xf0, 0xa6, 0xe7, 0x0};
   EXPECT_EQ(hash, std::string(reinterpret_cast<const char*>(expected_hash),
                               hash.length()));
+}
+
+TEST(RlweIdUtils, AllSensitiveIdHashTypesCovered) {
+  RlwePlaintextId plaintext_id;
+  plaintext_id.set_non_sensitive_id("nsid");
+  plaintext_id.set_sensitive_id("sid");
+
+  private_join_and_compute::Context ctx;
+  ASSERT_OK_AND_ASSIGN(
+      auto ec_cipher,
+      private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
+          kTestCurveId, private_join_and_compute::ECCommutativeCipher::HashType::SHA256));
+
+  // The EnumerateEnumValues method is unavailable in Chromium.
+  // Test uses a hardcoded vector of the enums in order to allow clean
+  // compilation and have this test coverage in Chromium.
+  // LINT.IfChange(encrypted_bucket_hash_types)
+  std::vector<EncryptedBucketHashType> encrypted_bucket_hash_types = {
+      ENCRYPTED_BUCKET_HASH_TYPE_UNDEFINED, ENCRYPTED_BUCKET_TEST_HASH_TYPE,
+      SHA256_NON_SENSITIVE_AND_SENSITIVE_ID,
+  };
+  // LINT.ThenChange()
+
+  for (const auto& hash_type : encrypted_bucket_hash_types) {
+    EncryptedBucketsParameters params;
+    params.set_encrypted_bucket_id_length(14);
+    params.set_sensitive_id_hash_type(hash_type);
+    if (hash_type == ENCRYPTED_BUCKET_HASH_TYPE_UNDEFINED) {
+      EXPECT_THAT(ComputeBucketStoredEncryptedId(plaintext_id, params,
+                                                 ec_cipher.get(), &ctx),
+                  StatusIs(absl::StatusCode::kInvalidArgument,
+                           HasSubstr("must be defined.")));
+    } else {
+      EXPECT_OK(ComputeBucketStoredEncryptedId(plaintext_id, params,
+                                               ec_cipher.get(), &ctx));
+    }
+  }
 }
 
 }  // namespace

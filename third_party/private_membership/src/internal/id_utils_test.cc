@@ -14,6 +14,8 @@
 
 #include "third_party/private_membership/src/internal/id_utils.h"
 
+#include <string>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

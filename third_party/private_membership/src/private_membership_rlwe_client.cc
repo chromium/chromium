@@ -15,7 +15,9 @@
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
 #include "third_party/private_membership/src/internal/crypto_utils.h"
@@ -43,7 +45,7 @@ namespace rlwe {
 PrivateMembershipRlweClient::Create(
     private_membership::rlwe::RlweUseCase use_case,
     const std::vector<RlwePlaintextId>& plaintext_ids) {
-  return CreateInternal(use_case, plaintext_ids, absl::optional<std::string>(),
+  return CreateInternal(use_case, plaintext_ids, std::optional<std::string>(),
                         internal::PrngSeedGenerator::Create());
 }
 
@@ -55,7 +57,7 @@ PrivateMembershipRlweClient::CreateForTesting(
   RLWE_ASSIGN_OR_RETURN(auto prng_seed_generator,
                         internal::PrngSeedGenerator::CreateDeterministic(seed));
   return CreateInternal(use_case, plaintext_ids,
-                        absl::optional<std::string>(ec_cipher_key),
+                        std::optional<std::string>(ec_cipher_key),
                         std::move(prng_seed_generator));
 }
 
@@ -63,7 +65,7 @@ PrivateMembershipRlweClient::CreateForTesting(
 PrivateMembershipRlweClient::CreateInternal(
     private_membership::rlwe::RlweUseCase use_case,
     const std::vector<RlwePlaintextId>& plaintext_ids,
-    absl::optional<std::string> ec_cipher_key,
+    std::optional<std::string> ec_cipher_key,
     std::unique_ptr<internal::PrngSeedGenerator> prng_seed_generator) {
   if (use_case == private_membership::rlwe::RLWE_USE_CASE_UNDEFINED) {
     return absl::InvalidArgumentError("Use case must be defined.");
@@ -388,7 +390,7 @@ PrngSeedGenerator::CreateDeterministic(absl::string_view seed) {
 PrngSeedGenerator::PrngSeedGenerator(
     std::unique_ptr<SingleThreadPrng> prng_seed_generator)
     : deterministic_prng_seed_generator_(
-          absl::optional<std::unique_ptr<SingleThreadPrng>>(
+          std::optional<std::unique_ptr<SingleThreadPrng>>(
               std::move(prng_seed_generator))) {}
 
 template <typename ModularInt>

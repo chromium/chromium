@@ -14,6 +14,7 @@
 
 #include "third_party/private_membership/src/internal/hashed_bucket_id.h"
 
+#include <string>
 #include <utility>
 
 #include "third_party/private_membership/src/private_membership.pb.h"
