@@ -12,6 +12,8 @@ source_set("connectivity") {
     "//device/bluetooth",
   ]
   sources = [
+    "fast_pair_advertiser.cc",
+    "fast_pair_advertiser.h",
     "target_device_bootstrap_controller.cc",
     "target_device_bootstrap_controller.h",
     "target_device_bootstrap_controller_impl.cc",
@@ -36,5 +38,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//device/bluetooth:mocks",
   ]
-  sources = [ "target_device_bootstrap_controller_impl_unittest.cc" ]
+  sources = [
+    "fast_pair_advertiser_unittest.cc",
+    "target_device_bootstrap_controller_impl_unittest.cc",
+  ]
 }
