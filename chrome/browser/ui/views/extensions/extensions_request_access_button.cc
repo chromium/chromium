@@ -43,6 +43,9 @@ void ExtensionsRequestAccessButton::UpdateExtensionsRequestingAccess(
 }
 
 void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
+  // TODO(crbug.com/1319555): Don't show the hover card if the dialog opened by
+  // pressing the button is still open. This will be easier to add once we
+  // address the TODO below for blocked action dialog.
   if (ExtensionsRequestAccessButtonHoverCard::IsShowing() ||
       !GetWidget()->IsMouseEventsEnabled())
     return;
@@ -58,6 +61,10 @@ std::u16string ExtensionsRequestAccessButton::GetTooltipText(
 }
 
 void ExtensionsRequestAccessButton::OnButtonPressed() {
+  if (ExtensionsRequestAccessButtonHoverCard::IsShowing()) {
+    ExtensionsRequestAccessButtonHoverCard::HideBubble();
+  }
+
   ExtensionsToolbarContainer* const container =
       GetExtensionsToolbarContainer(browser_);
   DCHECK(container);
