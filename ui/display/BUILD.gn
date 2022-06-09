@@ -97,6 +97,7 @@ component("display") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings:struct_traits",
     "//ui/display/mojom:mojom_shared_cpp_sources",
@@ -120,6 +121,7 @@ component("display") {
       "AppKit.framework",
       "CoreGraphics.framework",
       "QuartzCore.framework",
+      "IOKit.framework",
     ]
   }
 }
