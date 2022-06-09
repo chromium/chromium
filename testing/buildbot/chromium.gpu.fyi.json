@@ -8047,12 +8047,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -8077,12 +8076,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -8105,12 +8103,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -8131,12 +8128,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gl_unittests",
@@ -8155,12 +8151,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -8193,12 +8188,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8229,12 +8223,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8265,12 +8258,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8287,7 +8279,7 @@
           "--expected-vendor-id",
           "8086",
           "--expected-device-id",
-          "3e92"
+          "9bc5"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -8305,12 +8297,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8350,12 +8341,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8386,12 +8376,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8431,12 +8420,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8468,12 +8456,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8504,12 +8491,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8542,12 +8528,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -8580,12 +8565,11 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-20.0.8",
-              "os": "Ubuntu-18.04.5",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 7200,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2

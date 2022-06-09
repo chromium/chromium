@@ -708,12 +708,10 @@
   'linux_intel_uhd_630_stable': {
     'swarming': {
       'dimensions': {
-        'gpu': '8086:3e92-20.0.8',
-        'os': 'Ubuntu-18.04.5',
+        'gpu': '8086:9bc5-20.0.8',
+        'os': 'Ubuntu-18.04.6',
         'pool': 'chromium.tests.gpu',
       },
-      # Increase max pending time to 2 hours due to lack of capacity.
-      'expiration': 7200,
     }
   },
   'linux_nvidia_gtx_1660_experimental': {
