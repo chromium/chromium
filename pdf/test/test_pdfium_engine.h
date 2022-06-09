@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_metadata.h"
@@ -60,8 +59,7 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(std::vector<uint8_t>,
               PrintPages,
-              (const std::vector<int>& page_numbers,
-               const blink::WebPrintParams& print_params),
+              (const std::vector<int>&, const blink::WebPrintParams&),
               (override));
 
   MOCK_METHOD(void, ZoomUpdated, (double), (override));
@@ -71,7 +69,7 @@ class TestPDFiumEngine : public PDFiumEngine {
               (const DocumentLayout::Options&),
               (override));
 
-  bool HasPermission(DocumentPermission permission) const override;
+  MOCK_METHOD(bool, HasPermission, (DocumentPermission), (const override));
 
   const std::vector<DocumentAttachmentInfo>& GetDocumentAttachmentInfoList()
       const override;
@@ -95,8 +93,6 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(void, SetCaretPosition, (const gfx::Point&), (override));
 
-  void SetPermissions(const std::vector<DocumentPermission>& permissions);
-
   MOCK_METHOD(void, OnDocumentCanceled, (), (override));
 
  protected:
@@ -110,8 +106,6 @@ class TestPDFiumEngine : public PDFiumEngine {
   std::vector<DocumentAttachmentInfo> doc_attachment_info_list_;
 
   DocumentMetadata metadata_;
-
-  base::flat_set<DocumentPermission> permissions_;
 };
 
 }  // namespace chrome_pdf

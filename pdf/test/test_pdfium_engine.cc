@@ -11,8 +11,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_metadata.h"
@@ -35,10 +33,6 @@ TestPDFiumEngine::TestPDFiumEngine(PDFEngine::Client* client)
     : PDFiumEngine(client, PDFiumFormFiller::ScriptOption::kNoJavaScript) {}
 
 TestPDFiumEngine::~TestPDFiumEngine() = default;
-
-bool TestPDFiumEngine::HasPermission(DocumentPermission permission) const {
-  return base::Contains(permissions_, permission);
-}
 
 const std::vector<DocumentAttachmentInfo>&
 TestPDFiumEngine::GetDocumentAttachmentInfoList() const {
@@ -69,14 +63,6 @@ bool TestPDFiumEngine::ReadLoadedBytes(uint32_t length, void* buffer) {
 
 std::vector<uint8_t> TestPDFiumEngine::GetSaveData() {
   return std::vector<uint8_t>(std::begin(kSaveData), std::end(kSaveData));
-}
-
-void TestPDFiumEngine::SetPermissions(
-    const std::vector<DocumentPermission>& permissions) {
-  permissions_.clear();
-
-  for (auto& permission : permissions)
-    permissions_.insert(permission);
 }
 
 }  // namespace chrome_pdf

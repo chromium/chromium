@@ -4,6 +4,8 @@
 
 #include "pdf/pdf_view_web_plugin.h"
 
+#include <stdint.h>
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -34,6 +36,7 @@
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/test/test_pdfium_engine.h"
+#include "printing/metafile_skia.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,6 +58,7 @@
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -80,11 +84,14 @@ namespace chrome_pdf {
 namespace {
 
 using ::testing::AnyNumber;
+using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
+using ::testing::IsFalse;
+using ::testing::IsTrue;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Pointwise;
@@ -1727,6 +1734,107 @@ TEST_F(PdfViewWebPluginSubmitFormTest, AbsoluteUrlInvalidDocumentUrl) {
   SetUpPluginWithUrl("https://www.%B%Ad.com/path/to/the.pdf");
 
   SubmitFailingForm("https://wwww.example.com");
+}
+
+class PdfViewWebPluginPrintTest : public PdfViewWebPluginTest {
+ protected:
+  void SetUp() override {
+    PdfViewWebPluginTest::SetUp();
+
+    // Size must be at least 1 for conversion to `SkMemoryStream`.
+    ON_CALL(*engine_ptr_, PrintPages)
+        .WillByDefault(Return(std::vector<uint8_t>(1)));
+
+    canvas_.sk_canvas()->SetPrintingMetafile(&metafile_);
+  }
+
+  printing::MetafileSkia metafile_;
+};
+
+TEST_F(PdfViewWebPluginPrintTest, HighQuality) {
+  EXPECT_CALL(*engine_ptr_,
+              HasPermission(DocumentPermission::kPrintHighQuality))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kPrintLowQuality))
+      .WillRepeatedly(Return(true));
+  ASSERT_EQ(static_cast<int>(TestPDFiumEngine::kPageNumber),
+            plugin_->PrintBegin(blink::WebPrintParams()));
+
+  EXPECT_CALL(
+      *engine_ptr_,
+      PrintPages(ElementsAre(0),
+                 Field(&blink::WebPrintParams::rasterize_pdf, IsFalse())));
+  plugin_->PrintPage(0, canvas_.sk_canvas());
+  plugin_->PrintEnd();
+}
+
+TEST_F(PdfViewWebPluginPrintTest, HighQualityRasterized) {
+  EXPECT_CALL(*engine_ptr_,
+              HasPermission(DocumentPermission::kPrintHighQuality))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kPrintLowQuality))
+      .WillRepeatedly(Return(true));
+
+  blink::WebPrintParams params;
+  params.rasterize_pdf = true;
+  ASSERT_EQ(static_cast<int>(TestPDFiumEngine::kPageNumber),
+            plugin_->PrintBegin(params));
+
+  EXPECT_CALL(
+      *engine_ptr_,
+      PrintPages(ElementsAre(0),
+                 Field(&blink::WebPrintParams::rasterize_pdf, IsTrue())));
+  plugin_->PrintPage(0, canvas_.sk_canvas());
+  plugin_->PrintEnd();
+}
+
+// Regression test for crbug.com/1307219.
+TEST_F(PdfViewWebPluginPrintTest, LowQuality) {
+  EXPECT_CALL(*engine_ptr_,
+              HasPermission(DocumentPermission::kPrintHighQuality))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kPrintLowQuality))
+      .WillRepeatedly(Return(true));
+  ASSERT_EQ(static_cast<int>(TestPDFiumEngine::kPageNumber),
+            plugin_->PrintBegin(blink::WebPrintParams()));
+
+  EXPECT_CALL(
+      *engine_ptr_,
+      PrintPages(ElementsAre(0),
+                 Field(&blink::WebPrintParams::rasterize_pdf, IsTrue())));
+  plugin_->PrintPage(0, canvas_.sk_canvas());
+  plugin_->PrintEnd();
+}
+
+// Regression test for crbug.com/1307219.
+TEST_F(PdfViewWebPluginPrintTest, LowQualityRasterized) {
+  EXPECT_CALL(*engine_ptr_,
+              HasPermission(DocumentPermission::kPrintHighQuality))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kPrintLowQuality))
+      .WillRepeatedly(Return(true));
+
+  blink::WebPrintParams params;
+  params.rasterize_pdf = true;
+  ASSERT_EQ(static_cast<int>(TestPDFiumEngine::kPageNumber),
+            plugin_->PrintBegin(params));
+
+  EXPECT_CALL(
+      *engine_ptr_,
+      PrintPages(ElementsAre(0),
+                 Field(&blink::WebPrintParams::rasterize_pdf, IsTrue())));
+  plugin_->PrintPage(0, canvas_.sk_canvas());
+  plugin_->PrintEnd();
+}
+
+TEST_F(PdfViewWebPluginPrintTest, Disabled) {
+  EXPECT_EQ(0, plugin_->PrintBegin(blink::WebPrintParams()));
+}
+
+TEST_F(PdfViewWebPluginPrintTest, DisabledRasterized) {
+  blink::WebPrintParams params;
+  params.rasterize_pdf = true;
+  EXPECT_EQ(0, plugin_->PrintBegin(params));
 }
 
 class PdfViewWebPluginPrintPreviewTest : public PdfViewWebPluginTest {
