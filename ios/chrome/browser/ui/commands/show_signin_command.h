@@ -20,6 +20,9 @@ typedef NS_ENUM(NSInteger, AuthenticationOperation) {
   // Operation to start a sign-in and sync operation. The user is presented with
   // the sign-in page with the user consent.
   AuthenticationOperationSigninAndSync,
+  // Operation to start a sign-in only operation. The user is presented with
+  // the consistency web sign-in dialog.
+  AuthenticationOperationSigninOnly,
   // Operation to add a secondary account. The user is presented with the
   // SSOAUth sin-in page.
   AuthenticationOperationAddAccount,

@@ -1576,6 +1576,12 @@ bool IsSigninForcedByPolicy() {
                                           accessPoint:command.accessPoint
                                           promoAction:command.promoAction];
       break;
+    case AuthenticationOperationSigninOnly:
+      self.signinCoordinator = [SigninCoordinator
+          consistencyPromoSigninCoordinatorWithBaseViewController:
+              baseViewController
+                                                          browser:mainBrowser];
+      break;
     case AuthenticationOperationAddAccount:
       self.signinCoordinator = [SigninCoordinator
           addAccountCoordinatorWithBaseViewController:baseViewController
