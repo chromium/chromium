@@ -215,13 +215,27 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
       SetToEditError();
       break;
     case DisplayMode::kRestore:
-      if (HasFocus())
-        SetToEditDefault();
+      SetToEditDefault();
       break;
     default:
       NOTREACHED();
       break;
   }
+}
+
+bool ActionLabel::ClearFocus() {
+  auto* focus_manager = GetFocusManager();
+  bool has_focus = false;
+  if (focus_manager) {
+    has_focus = HasFocus();
+    focus_manager->ClearFocus();
+
+    // When it has to clear focus explicitly, set focused view back to its
+    // parent, so it can find the focused view when Tab traversal key is
+    // pressed.
+    focus_manager->SetFocusedView(static_cast<ActionView*>(parent()));
+  }
+  return has_focus;
 }
 
 gfx::Size ActionLabel::CalculatePreferredSize() const {
@@ -266,16 +280,6 @@ void ActionLabel::OnBlur() {
   SetToEditDefault();
   LabelButton::OnBlur();
   static_cast<ActionView*>(parent())->RemoveMessage();
-}
-
-bool ActionLabel::ClearFocus() {
-  auto* focus_manager = GetFocusManager();
-  bool has_focus = false;
-  if (focus_manager) {
-    has_focus = HasFocus();
-    focus_manager->ClearFocus();
-  }
-  return has_focus;
 }
 
 void ActionLabel::SetToViewMode() {

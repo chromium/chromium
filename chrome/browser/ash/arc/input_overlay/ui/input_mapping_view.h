@@ -26,6 +26,12 @@ class InputMappingView : public views::View {
   void SetDisplayMode(const DisplayMode mode);
 
  private:
+  void ProcessPressedEvent(const ui::LocatedEvent& event);
+
+  // ui::EventHandler:
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
   DisplayMode current_display_mode_ = DisplayMode::kNone;
 };

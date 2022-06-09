@@ -37,8 +37,8 @@ class ActionLabel : public views::LabelButton {
   void SetTextActionLabel(const std::string& text);
   void SetImageActionLabel(MouseAction mouse_action);
   void SetDisplayMode(DisplayMode mode);
-  void ShowErrorMsg(const base::StringPiece& message);
-  void OnKeyBindingChange(ui::DomCode code);
+  // Return true if it has focus before clear focus.
+  bool ClearFocus();
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -53,9 +53,6 @@ class ActionLabel : public views::LabelButton {
   }
 
  private:
-  // Return true if it has focus before clear focus.
-  bool ClearFocus();
-
   void SetToViewMode();
   void SetToEditMode();
   // In edit mode without mouse hover or focus.
