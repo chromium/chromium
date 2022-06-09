@@ -117,9 +117,6 @@ void ThreadedIconLoader::Start(
 
   ResourceLoaderOptions resource_loader_options(
       execution_context->GetCurrentWorld());
-  if (execution_context->IsWorkerGlobalScope())
-    resource_loader_options.request_initiator_context = kWorkerContext;
-
   threadable_loader_ = MakeGarbageCollected<ThreadableLoader>(
       *execution_context, this, resource_loader_options);
   threadable_loader_->SetTimeout(resource_request.TimeoutInterval());
