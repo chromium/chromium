@@ -4,6 +4,7 @@
 
 import browserbench
 import time
+import logging
 
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -21,10 +22,12 @@ class Speedometer(browserbench.BrowserBench):
   def RunAndExtractMeasurements(self, driver, optargs):
     URL = 'https://browserbench.org/Speedometer2.0/'
     driver.get(URL)
-    WebDriverWait(driver,
-                  timeout=100000).until(lambda driver: driver.execute_script(
-                      '''return window.benchmarkClient !== undefined'''))
-    driver.execute_script('''startTest();''')
+    WebDriverWait(driver, timeout=100000).until(
+        lambda driver: driver.execute_script('''return Suites !== undefined &&
+                         window.benchmarkClient !== undefined'''))
+    logging.info('Page should be ready, test count=%s' %
+                 driver.execute_script('return Suites.length;'))
+    driver.execute_script('startTest();')
     WebDriverWait(
         driver, timeout=100000,
         poll_frequency=30).until(lambda driver: driver.execute_script('''
