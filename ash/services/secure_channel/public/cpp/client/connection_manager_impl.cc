@@ -24,77 +24,20 @@ namespace {
 
 constexpr base::TimeDelta kConnectionTimeoutSeconds(base::Seconds(15u));
 
-void RecordConnectionSuccessMetric(const std::string& metric_name_result,
-                                   bool success) {
-  base::UmaHistogramBoolean(metric_name_result, success);
-}
-
 }  // namespace
-
-ConnectionManagerImpl::MetricsRecorder::MetricsRecorder(
-    ConnectionManager* connection_manager,
-    base::Clock* clock,
-    const std::string& metric_name_result,
-    const std::string& metric_name_latency,
-    const std::string& metric_name_duration)
-    : connection_manager_(connection_manager),
-      status_(connection_manager->GetStatus()),
-      clock_(clock),
-      status_change_timestamp_(clock_->Now()),
-      metric_name_result_(metric_name_result),
-      metric_name_latency_(metric_name_latency),
-      metric_name_duration_(metric_name_duration) {
-  connection_manager_->AddObserver(this);
-}
-
-ConnectionManagerImpl::MetricsRecorder::~MetricsRecorder() {
-  connection_manager_->RemoveObserver(this);
-}
-
-void ConnectionManagerImpl::MetricsRecorder::OnConnectionStatusChanged() {
-  const ConnectionManager::Status prev_status = status_;
-  status_ = connection_manager_->GetStatus();
-
-  const base::TimeDelta delta = clock_->Now() - status_change_timestamp_;
-  status_change_timestamp_ = clock_->Now();
-
-  switch (status_) {
-    case ConnectionManager::Status::kConnecting:
-      break;
-
-    case ConnectionManager::Status::kDisconnected:
-      if (prev_status == ConnectionManager::Status::kConnected) {
-        base::UmaHistogramLongTimes100(metric_name_duration_, delta);
-      } else if (prev_status == ConnectionManager::Status::kConnecting) {
-        RecordConnectionSuccessMetric(metric_name_result_, false);
-      }
-      break;
-
-    case ConnectionManager::Status::kConnected:
-      if (prev_status == ConnectionManager::Status::kConnecting) {
-        base::UmaHistogramTimes(metric_name_latency_, delta);
-        RecordConnectionSuccessMetric(metric_name_result_, true);
-      }
-      break;
-  }
-}
 
 ConnectionManagerImpl::ConnectionManagerImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     device_sync::DeviceSyncClient* device_sync_client,
     SecureChannelClient* secure_channel_client,
     const std::string& feature_name,
-    const std::string& metric_name_result,
-    const std::string& metric_name_latency,
-    const std::string& metric_name_duration)
+    std::unique_ptr<NearbyMetricsRecorder> metrics_recorder)
     : ConnectionManagerImpl(multidevice_setup_client,
                             device_sync_client,
                             secure_channel_client,
                             std::make_unique<base::OneShotTimer>(),
                             feature_name,
-                            metric_name_result,
-                            metric_name_latency,
-                            metric_name_duration,
+                            std::move(metrics_recorder),
                             base::DefaultClock::GetInstance()) {}
 
 ConnectionManagerImpl::ConnectionManagerImpl(
@@ -103,21 +46,17 @@ ConnectionManagerImpl::ConnectionManagerImpl(
     SecureChannelClient* secure_channel_client,
     std::unique_ptr<base::OneShotTimer> timer,
     const std::string& feature_name,
-    const std::string& metric_name_result,
-    const std::string& metric_name_latency,
-    const std::string& metric_name_duration,
+    std::unique_ptr<NearbyMetricsRecorder> metrics_recorder,
     base::Clock* clock)
     : multidevice_setup_client_(multidevice_setup_client),
       device_sync_client_(device_sync_client),
       secure_channel_client_(secure_channel_client),
       timer_(std::move(timer)),
       feature_name_(feature_name),
-      metrics_recorder_(
-          std::make_unique<MetricsRecorder>(this,
-                                            clock,
-                                            metric_name_result,
-                                            metric_name_latency,
-                                            metric_name_duration)) {
+      metrics_recorder_(std::move(metrics_recorder)),
+      last_status_(Status::kDisconnected),
+      status_change_timestamp_(clock->Now()),
+      clock_(clock) {
   DCHECK(multidevice_setup_client_);
   DCHECK(device_sync_client_);
   DCHECK(secure_channel_client_);
@@ -171,7 +110,7 @@ void ConnectionManagerImpl::AttemptNearbyConnection() {
   connection_attempt_->SetDelegate(this);
 
   PA_LOG(INFO) << "ConnectionManager status updated to: " << GetStatus();
-  NotifyStatusChanged();
+  OnStatusChanged();
 
   timer_->Start(FROM_HERE, kConnectionTimeoutSeconds,
                 base::BindOnce(&ConnectionManagerImpl::OnConnectionTimeout,
@@ -228,7 +167,7 @@ void ConnectionManagerImpl::OnConnectionAttemptFailure(
                   << "error: " << reason << ".";
   timer_->Stop();
   connection_attempt_.reset();
-  NotifyStatusChanged();
+  OnStatusChanged();
 }
 
 void ConnectionManagerImpl::OnConnection(
@@ -238,7 +177,7 @@ void ConnectionManagerImpl::OnConnection(
   timer_->Stop();
   channel_ = std::move(channel);
   channel_->AddObserver(this);
-  NotifyStatusChanged();
+  OnStatusChanged();
 }
 
 void ConnectionManagerImpl::OnDisconnected() {
@@ -254,7 +193,7 @@ void ConnectionManagerImpl::OnConnectionTimeout() {
                   << "attempt.";
 
   connection_attempt_.reset();
-  NotifyStatusChanged();
+  OnStatusChanged();
 }
 
 void ConnectionManagerImpl::TearDownConnection() {
@@ -264,7 +203,39 @@ void ConnectionManagerImpl::TearDownConnection() {
   if (channel_)
     channel_->RemoveObserver(this);
   channel_.reset();
+  OnStatusChanged();
+}
+
+void ConnectionManagerImpl::OnStatusChanged() {
   NotifyStatusChanged();
+  RecordMetrics();
+}
+
+void ConnectionManagerImpl::RecordMetrics() {
+  const base::TimeDelta delta = clock_->Now() - status_change_timestamp_;
+  status_change_timestamp_ = clock_->Now();
+
+  const Status status = GetStatus();
+  switch (status) {
+    case Status::kConnecting:
+      break;
+
+    case ConnectionManager::Status::kDisconnected:
+      if (last_status_ == Status::kConnected) {
+        metrics_recorder_->RecordConnectionDuration(delta);
+      } else if (last_status_ == ConnectionManager::Status::kConnecting) {
+        metrics_recorder_->RecordConnectionResult(false);
+      }
+      break;
+
+    case ConnectionManager::Status::kConnected:
+      if (last_status_ == Status::kConnecting) {
+        metrics_recorder_->RecordConnectionLatency(delta);
+        metrics_recorder_->RecordConnectionResult(true);
+      }
+      break;
+  }
+  last_status_ = status;
 }
 
 }  // namespace ash::secure_channel

@@ -10,6 +10,7 @@
 #include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "ash/services/secure_channel/public/cpp/client/nearby_metrics_recorder.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
@@ -43,9 +44,7 @@ class ConnectionManagerImpl : public ConnectionManager,
       device_sync::DeviceSyncClient* device_sync_client,
       SecureChannelClient* secure_channel_client,
       const std::string& feature_name,
-      const std::string& metric_name_result,
-      const std::string& metric_name_latency,
-      const std::string& metric_name_duration);
+      std::unique_ptr<NearbyMetricsRecorder> metrics_recorder);
   ~ConnectionManagerImpl() override;
 
   // ConnectionManager:
@@ -65,39 +64,13 @@ class ConnectionManagerImpl : public ConnectionManager,
  private:
   friend class ConnectionManagerImplTest;
 
-  class MetricsRecorder : public ConnectionManager::Observer {
-   public:
-    MetricsRecorder(ConnectionManager* connection_manager,
-                    base::Clock* clock,
-                    const std::string& metric_name_result,
-                    const std::string& metric_name_latency,
-                    const std::string& metric_name_duration);
-    ~MetricsRecorder() override;
-    MetricsRecorder(const MetricsRecorder&) = delete;
-    MetricsRecorder* operator=(const MetricsRecorder&) = delete;
-
-    // ConnectionManager::Observer:
-    void OnConnectionStatusChanged() override;
-
-   private:
-    ConnectionManager* connection_manager_;
-    ConnectionManager::Status status_;
-    base::Clock* clock_;
-    base::Time status_change_timestamp_;
-    const std::string metric_name_result_;
-    const std::string metric_name_latency_;
-    const std::string metric_name_duration_;
-  };
-
   ConnectionManagerImpl(
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       device_sync::DeviceSyncClient* device_sync_client,
       SecureChannelClient* secure_channel_client,
       std::unique_ptr<base::OneShotTimer> timer,
       const std::string& feature_name,
-      const std::string& metrics_name_result,
-      const std::string& metrics_name_latency,
-      const std::string& metrics_name_duration,
+      std::unique_ptr<NearbyMetricsRecorder> metrics_recorder,
       base::Clock* clock);
 
   // ConnectionAttempt::Delegate:
@@ -112,6 +85,9 @@ class ConnectionManagerImpl : public ConnectionManager,
   void OnConnectionTimeout();
   void TearDownConnection();
 
+  void OnStatusChanged();
+  void RecordMetrics();
+
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   device_sync::DeviceSyncClient* device_sync_client_;
   SecureChannelClient* secure_channel_client_;
@@ -119,7 +95,10 @@ class ConnectionManagerImpl : public ConnectionManager,
   std::unique_ptr<ClientChannel> channel_;
   std::unique_ptr<base::OneShotTimer> timer_;
   const std::string feature_name_;
-  std::unique_ptr<MetricsRecorder> metrics_recorder_;
+  std::unique_ptr<NearbyMetricsRecorder> metrics_recorder_;
+  Status last_status_;
+  base::Time status_change_timestamp_;
+  base::Clock* clock_;
   base::WeakPtrFactory<ConnectionManagerImpl> weak_ptr_factory_{this};
 };
 

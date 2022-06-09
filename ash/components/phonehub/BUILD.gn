@@ -90,6 +90,8 @@ static_library("phonehub") {
     "phone_hub_manager.h",
     "phone_hub_manager_impl.cc",
     "phone_hub_manager_impl.h",
+    "phone_hub_metrics_recorder.cc",
+    "phone_hub_metrics_recorder.h",
     "phone_model.cc",
     "phone_model.h",
     "phone_status_model.cc",

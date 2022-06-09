@@ -36,6 +36,8 @@ static_library("eche_app_ui") {
     "eche_app_manager.h",
     "eche_app_ui.cc",
     "eche_app_ui.h",
+    "eche_connection_metrics_recorder.cc",
+    "eche_connection_metrics_recorder.h",
     "eche_connection_scheduler.h",
     "eche_connection_scheduler_impl.cc",
     "eche_connection_scheduler_impl.h",

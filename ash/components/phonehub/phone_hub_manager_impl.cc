@@ -26,6 +26,7 @@
 #include "ash/components/phonehub/notification_manager_impl.h"
 #include "ash/components/phonehub/notification_processor.h"
 #include "ash/components/phonehub/onboarding_ui_tracker_impl.h"
+#include "ash/components/phonehub/phone_hub_metrics_recorder.h"
 #include "ash/components/phonehub/phone_model.h"
 #include "ash/components/phonehub/phone_status_processor.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler_impl.h"
@@ -40,9 +41,6 @@
 namespace ash {
 namespace {
 const char kSecureChannelFeatureName[] = "phone_hub";
-const char kConnectionResultMetricName[] = "PhoneHub.Connection.Result";
-const char kConnectionDurationMetricName[] = "PhoneHub.Connection.Duration";
-const char kConnectionLatencyMetricName[] = "PhoneHub.Connectivity.Latency";
 }  // namespace
 namespace phonehub {
 
@@ -60,9 +58,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               device_sync_client,
               secure_channel_client,
               kSecureChannelFeatureName,
-              kConnectionResultMetricName,
-              kConnectionLatencyMetricName,
-              kConnectionDurationMetricName)),
+              std::make_unique<PhoneHubMetricsRecorder>())),
       feature_status_provider_(std::make_unique<FeatureStatusProviderImpl>(
           device_sync_client,
           multidevice_setup_client,

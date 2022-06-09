@@ -13,9 +13,11 @@
 #include "ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
 #include "ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
 #include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
+#include "ash/services/secure_channel/public/cpp/client/nearby_metrics_recorder.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -62,6 +64,22 @@ class FakeObserver : public ConnectionManager::Observer {
   std::string last_message_;
 };
 
+class TestMetricsRecorder : public NearbyMetricsRecorder {
+ public:
+  TestMetricsRecorder() = default;
+  ~TestMetricsRecorder() override {}
+
+  void RecordConnectionResult(bool success) override {
+    base::UmaHistogramBoolean(kConnectionResultMetricName, success);
+  }
+  void RecordConnectionLatency(const base::TimeDelta& latency) override {
+    base::UmaHistogramTimes(kConnectionLatencyMetricName, latency);
+  }
+  void RecordConnectionDuration(const base::TimeDelta& duration) override {
+    base::UmaHistogramLongTimes100(kConnectionDurationMetricName, duration);
+  }
+};
+
 }  // namespace
 
 class ConnectionManagerImplTest : public testing::Test {
@@ -91,8 +109,7 @@ class ConnectionManagerImplTest : public testing::Test {
     connection_manager_ = base::WrapUnique(new ConnectionManagerImpl(
         &fake_multidevice_setup_client_, &fake_device_sync_client_,
         fake_secure_channel_client_.get(), std::move(timer),
-        kSecureChannelFeatureName, kConnectionResultMetricName,
-        kConnectionLatencyMetricName, kConnectionDurationMetricName,
+        kSecureChannelFeatureName, std::make_unique<TestMetricsRecorder>(),
         test_clock_.get()));
     connection_manager_->AddObserver(&fake_observer_);
     EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());

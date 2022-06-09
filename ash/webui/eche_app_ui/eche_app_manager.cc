@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
+#include <memory>
 
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
@@ -10,6 +11,7 @@
 #include "ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
+#include "ash/webui/eche_app_ui/eche_connection_metrics_recorder.h"
 #include "ash/webui/eche_app_ui/eche_connection_scheduler_impl.h"
 #include "ash/webui/eche_app_ui/eche_connector_impl.h"
 #include "ash/webui/eche_app_ui/eche_message_receiver_impl.h"
@@ -26,9 +28,6 @@
 namespace ash {
 namespace {
 const char kSecureChannelFeatureName[] = "eche";
-const char kMetricNameResult[] = "Eche.Connection.Result";
-const char kMetricNameDuration[] = "Eche.Connection.Duration";
-const char kMetricNameLatency[] = "Eche.Connectivity.Latency";
 }  // namespace
 
 namespace eche_app {
@@ -51,9 +50,7 @@ EcheAppManager::EcheAppManager(
               device_sync_client,
               secure_channel_client,
               kSecureChannelFeatureName,
-              kMetricNameResult,
-              kMetricNameLatency,
-              kMetricNameDuration)),
+              std::make_unique<EcheConnectionMetricsRecorder>())),
       feature_status_provider_(std::make_unique<EcheFeatureStatusProvider>(
           phone_hub_manager,
           device_sync_client,
