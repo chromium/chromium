@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 
@@ -49,6 +50,7 @@ public interface ButtonData {
         private final IPHCommandBuilder mIPHCommandBuilder;
         @AdaptiveToolbarButtonVariant
         private final int mButtonVariant;
+        private final boolean mIsDynamicAction;
 
         public ButtonSpec(@NonNull Drawable drawable, @NonNull View.OnClickListener onClickListener,
                 @Nullable View.OnLongClickListener onLongClickListener, int contentDescriptionResId,
@@ -61,6 +63,7 @@ public interface ButtonData {
             mSupportsTinting = supportsTinting;
             mIPHCommandBuilder = iphCommandBuilder;
             mButtonVariant = buttonVariant;
+            mIsDynamicAction = AdaptiveToolbarFeatures.isDynamicAction(mButtonVariant);
         }
 
         /** Returns the {@link Drawable} for the button icon. */
@@ -106,6 +109,11 @@ public interface ButtonData {
         @AdaptiveToolbarButtonVariant
         public int getButtonVariant() {
             return mButtonVariant;
+        }
+
+        /** Returns {@code true} if the button is a contextual page action. False otherwise. */
+        public boolean isDynamicAction() {
+            return mIsDynamicAction;
         }
     }
 }

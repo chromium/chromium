@@ -220,8 +220,7 @@ public class AdaptiveToolbarStatePredictor {
      * Conversion method between {@link SegmentId} and {@link
      * AdaptiveToolbarButtonVariant}.
      */
-    @VisibleForTesting
-    static @AdaptiveToolbarButtonVariant int getAdaptiveToolbarButtonVariantFromSegmentId(
+    public static @AdaptiveToolbarButtonVariant int getAdaptiveToolbarButtonVariantFromSegmentId(
             SegmentId segmentId) {
         switch (segmentId) {
             case OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:

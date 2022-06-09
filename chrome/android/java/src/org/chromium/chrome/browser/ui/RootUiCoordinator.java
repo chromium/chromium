@@ -94,6 +94,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareButtonController;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -236,6 +237,7 @@ public class RootUiCoordinator
     private List<ButtonDataProvider> mButtonDataProviders;
     @Nullable
     private AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
+    private ContextualPageActionController mContextualPageActionController;
     private IdentityDiscController mIdentityDiscController;
     private ChromeActionModeHandler mChromeActionModeHandler;
     private final ToolbarActionModeCallback mActionModeControllerCallback;
@@ -539,6 +541,11 @@ public class RootUiCoordinator
             }
             mToolbarManager.destroy();
             mToolbarManager = null;
+        }
+
+        if (mContextualPageActionController != null) {
+            mContextualPageActionController.destroy();
+            mContextualPageActionController = null;
         }
 
         if (mAdaptiveToolbarButtonController != null) {
@@ -1098,6 +1105,8 @@ public class RootUiCoordinator
                     AdaptiveToolbarButtonVariant.VOICE, voiceToolbarButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.PRICE_TRACKING, priceTrackingButtonController);
+            mContextualPageActionController = new ContextualPageActionController(
+                    mProfileSupplier, mActivityTabProvider, adaptiveToolbarButtonController);
             mButtonDataProviders =
                     Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
 
