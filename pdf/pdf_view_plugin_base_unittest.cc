@@ -5,27 +5,20 @@
 #include "pdf/pdf_view_plugin_base.h"
 
 #include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/values_test_util.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/accessibility_structs.h"
-#include "pdf/document_attachment_info.h"
-#include "pdf/document_metadata.h"
 #include "pdf/pdf_engine.h"
-#include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/test/test_pdfium_engine.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -48,13 +41,8 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   using PdfViewPluginBase::engine;
   using PdfViewPluginBase::HandleInputEvent;
   using PdfViewPluginBase::HandleMessage;
-  using PdfViewPluginBase::PrintBegin;
-  using PdfViewPluginBase::PrintEnd;
-  using PdfViewPluginBase::PrintPages;
   using PdfViewPluginBase::SetCaretPosition;
-  using PdfViewPluginBase::SetZoom;
   using PdfViewPluginBase::UpdateGeometryOnPluginRectChanged;
-  using PdfViewPluginBase::UpdateScroll;
 
   MOCK_METHOD(std::string, GetURL, (), (override));
 
@@ -202,77 +190,6 @@ TEST_F(PdfViewPluginBaseWithEngineTest, HandleInputEvent) {
   mouse_event.SetPositionInWidget(10.0f, 20.0f);
 
   EXPECT_TRUE(fake_plugin_.HandleInputEvent(mouse_event));
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScroll) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  EXPECT_CALL(*engine, ScrolledToXPosition(0));
-  EXPECT_CALL(*engine, ScrolledToYPosition(0));
-
-  fake_plugin_.UpdateScroll({0, 0});
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScrollStopped) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  EXPECT_CALL(*engine, ScrolledToXPosition).Times(0);
-  EXPECT_CALL(*engine, ScrolledToYPosition).Times(0);
-
-  base::Value message = base::test::ParseJson(R"({
-    "type": "stopScrolling",
-  })");
-  fake_plugin_.HandleMessage(message.GetDict());
-  fake_plugin_.UpdateScroll({0, 0});
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScrollUnderflow) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  EXPECT_CALL(*engine, ApplyDocumentLayout)
-      .WillRepeatedly(Return(gfx::Size(16, 9)));
-  SendDefaultViewportMessage();
-  EXPECT_CALL(*engine, ScrolledToXPosition(0));
-  EXPECT_CALL(*engine, ScrolledToYPosition(0));
-
-  fake_plugin_.UpdateScroll({-1, -1});
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScrollOverflow) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  fake_plugin_.UpdateGeometryOnPluginRectChanged({3, 2}, 1.0f);
-  EXPECT_CALL(*engine, ApplyDocumentLayout)
-      .WillRepeatedly(Return(gfx::Size(16, 9)));
-  SendDefaultViewportMessage();
-
-  EXPECT_CALL(*engine, ScrolledToXPosition(13));
-  EXPECT_CALL(*engine, ScrolledToYPosition(7));
-
-  fake_plugin_.UpdateScroll({14, 8});
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScrollOverflowZoomed) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  fake_plugin_.UpdateGeometryOnPluginRectChanged({3, 2}, 1.0f);
-  EXPECT_CALL(*engine, ApplyDocumentLayout)
-      .WillRepeatedly(Return(gfx::Size(16, 9)));
-  SendDefaultViewportMessage();
-  fake_plugin_.SetZoom(2.0);
-
-  EXPECT_CALL(*engine, ScrolledToXPosition(29));
-  EXPECT_CALL(*engine, ScrolledToYPosition(16));
-
-  fake_plugin_.UpdateScroll({30, 17});
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScrollScaled) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  fake_plugin_.UpdateGeometryOnPluginRectChanged({3, 2}, 2.0f);
-  EXPECT_CALL(*engine, ApplyDocumentLayout)
-      .WillRepeatedly(Return(gfx::Size(16, 9)));
-  SendDefaultViewportMessage();
-
-  EXPECT_CALL(*engine, ScrolledToXPosition(4));
-  EXPECT_CALL(*engine, ScrolledToYPosition(2));
-
-  fake_plugin_.UpdateScroll({2, 1});
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, SetCaretPosition) {

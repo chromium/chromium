@@ -456,6 +456,10 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
   void SetDocumentDimensions(const gfx::Size& dimensions) {
     EXPECT_CALL(*engine_ptr_, ApplyDocumentLayout)
         .WillRepeatedly(Return(dimensions));
+    SendViewportMessage(/*zoom=*/1.0);
+  }
+
+  void SendViewportMessage(double zoom) {
     base::Value message = base::test::ParseJson(R"({
       "type": "viewport",
       "userInitiated": false,
@@ -469,6 +473,7 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
       "yOffset": 0,
       "pinchPhase": 0,
     })");
+    message.GetDict().Set("zoom", zoom);
     plugin_->OnMessage(message.GetDict());
   }
 
@@ -999,7 +1004,70 @@ TEST_F(PdfViewWebPluginTest,
   }
 }
 
+TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRectWithEmptyWindow) {
+  EXPECT_CALL(*engine_ptr_, ZoomUpdated).Times(0);
+  TestUpdateGeometrySetsPluginRect(
+      /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(2, 2, 0, 0),
+      /*expected_device_scale=*/1.0f, /*expected_plugin_rect=*/gfx::Rect());
+}
+
 TEST_F(PdfViewWebPluginTest, UpdateGeometryScroll) {
+  SetDocumentDimensions({100, 200});
+
+  EXPECT_CALL(*client_ptr_, GetScrollPosition)
+      .WillRepeatedly(Return(gfx::PointF(4.0f, 6.0f)));
+  EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(4));
+  EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(6));
+  UpdatePluginGeometryWithoutWaiting(1.0f, gfx::Rect(3, 4, 5, 6));
+}
+
+TEST_F(PdfViewWebPluginTest, UpdateGeometryScrollStopped) {
+  SetDocumentDimensions({100, 200});
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "stopScrolling",
+  })");
+  plugin_->OnMessage(message.GetDict());
+
+  EXPECT_CALL(*client_ptr_, GetScrollPosition)
+      .WillRepeatedly(Return(gfx::PointF(4.0f, 6.0f)));
+  EXPECT_CALL(*engine_ptr_, ScrolledToXPosition).Times(0);
+  EXPECT_CALL(*engine_ptr_, ScrolledToYPosition).Times(0);
+  UpdatePluginGeometryWithoutWaiting(1.0f, gfx::Rect(3, 4, 5, 6));
+}
+
+TEST_F(PdfViewWebPluginTest, UpdateGeometryScrollUnderflow) {
+  SetDocumentDimensions({100, 200});
+
+  EXPECT_CALL(*client_ptr_, GetScrollPosition)
+      .WillRepeatedly(Return(gfx::PointF(-1.0f, -1.0f)));
+  EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(0));
+  EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(0));
+  UpdatePluginGeometryWithoutWaiting(1.0f, gfx::Rect(3, 4, 5, 6));
+}
+
+TEST_F(PdfViewWebPluginTest, UpdateGeometryScrollOverflow) {
+  SetDocumentDimensions({100, 200});
+
+  EXPECT_CALL(*client_ptr_, GetScrollPosition)
+      .WillRepeatedly(Return(gfx::PointF(96.0f, 195.0f)));
+  EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(95));
+  EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(194));
+  UpdatePluginGeometryWithoutWaiting(1.0f, gfx::Rect(3, 4, 5, 6));
+}
+
+TEST_F(PdfViewWebPluginTest, UpdateGeometryScrollOverflowZoomed) {
+  SetDocumentDimensions({100, 200});
+  SendViewportMessage(/*zoom=*/2.0);
+
+  EXPECT_CALL(*client_ptr_, GetScrollPosition)
+      .WillRepeatedly(Return(gfx::PointF(196.0f, 395.0f)));
+  EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(195));
+  EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(394));
+  UpdatePluginGeometryWithoutWaiting(1.0f, gfx::Rect(3, 4, 5, 6));
+}
+
+TEST_F(PdfViewWebPluginTest, UpdateGeometryScrollScaled) {
   SetDocumentDimensions({100, 200});
 
   EXPECT_CALL(*client_ptr_, GetScrollPosition)
@@ -1009,11 +1077,14 @@ TEST_F(PdfViewWebPluginTest, UpdateGeometryScroll) {
   UpdatePluginGeometryWithoutWaiting(2.0f, gfx::Rect(3, 4, 5, 6));
 }
 
-TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRectWithEmptyWindow) {
-  EXPECT_CALL(*engine_ptr_, ZoomUpdated).Times(0);
-  TestUpdateGeometrySetsPluginRect(
-      /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(2, 2, 0, 0),
-      /*expected_device_scale=*/1.0f, /*expected_plugin_rect=*/gfx::Rect());
+TEST_F(PdfViewWebPluginTest, UpdateGeometryScrollOverflowScaled) {
+  SetDocumentDimensions({100, 200});
+
+  EXPECT_CALL(*client_ptr_, GetScrollPosition)
+      .WillRepeatedly(Return(gfx::PointF(195.0f, 395.0f)));
+  EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(194));
+  EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(394));
+  UpdatePluginGeometryWithoutWaiting(2.0f, gfx::Rect(3, 4, 5, 6));
 }
 
 TEST_F(PdfViewWebPluginTest, SetCaretPositionIgnoresOrigin) {
