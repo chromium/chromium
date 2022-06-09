@@ -469,8 +469,8 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
 
   const WeakPtr<internal::SequenceManagerImpl> sequence_manager_;
 
-  scoped_refptr<internal::AssociatedThreadId> associated_thread_;
-  scoped_refptr<SingleThreadTaskRunner> default_task_runner_;
+  const scoped_refptr<const internal::AssociatedThreadId> associated_thread_;
+  const scoped_refptr<SingleThreadTaskRunner> default_task_runner_;
 
   int enabled_voter_count_ = 0;
   int voter_count_ = 0;

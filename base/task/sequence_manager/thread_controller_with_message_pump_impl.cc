@@ -80,9 +80,7 @@ void ThreadControllerWithMessagePumpImpl::ResetFeatures() {
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     const SequenceManager::Settings& settings)
-    : associated_thread_(AssociatedThreadId::CreateUnbound()),
-      work_deduplicator_(associated_thread_),
-      time_source_(settings.clock) {}
+    : work_deduplicator_(associated_thread_), time_source_(settings.clock) {}
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     std::unique_ptr<MessagePump> message_pump,
@@ -266,29 +264,24 @@ void ThreadControllerWithMessagePumpImpl::RemoveNestingObserver(
   RunLoop::RemoveNestingObserverOnCurrentThread(this);
 }
 
-const scoped_refptr<AssociatedThreadId>&
-ThreadControllerWithMessagePumpImpl::GetAssociatedThread() const {
-  return associated_thread_;
-}
-
 void ThreadControllerWithMessagePumpImpl::OnBeginWorkItem() {
   MaybeStartWatchHangsInScope();
   work_id_provider_->IncrementWorkId();
-  main_thread_only().run_level_tracker.OnTaskStarted();
+  run_level_tracker_.OnTaskStarted();
 }
 
 void ThreadControllerWithMessagePumpImpl::OnEndWorkItem() {
   // Work completed, stop hang watching this specific work item.
   hang_watch_scope_.reset();
   work_id_provider_->IncrementWorkId();
-  main_thread_only().run_level_tracker.OnTaskEnded();
+  run_level_tracker_.OnTaskEnded();
 }
 
 void ThreadControllerWithMessagePumpImpl::BeforeWait() {
   work_id_provider_->IncrementWorkId();
   // The loop is going to sleep, stop watching for hangs.
   hang_watch_scope_.reset();
-  main_thread_only().run_level_tracker.OnIdle();
+  run_level_tracker_.OnIdle();
 }
 
 MessagePump::Delegate::NextWorkInfo
@@ -497,7 +490,7 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
     }
   }
 
-  main_thread_only().run_level_tracker.OnIdle();
+  run_level_tracker_.OnIdle();
 
   // Check if any runloop timeout has expired.
   if (main_thread_only().quit_runloop_after != TimeTicks::Max() &&
@@ -525,8 +518,7 @@ void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed,
       (timeout == TimeDelta::Max()) ? TimeTicks::Max()
                                     : time_source_->NowTicks() + timeout);
 
-  main_thread_only().run_level_tracker.OnRunLoopStarted(
-      RunLevelTracker::kSelectingNextTask);
+  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kSelectingNextTask);
 
   // Quit may have been called outside of a Run(), so |quit_pending| might be
   // true here. We can't use InTopLevelDoWork() in Quit() as this call may be
@@ -542,7 +534,7 @@ void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed,
     pump_->Run(this);
   }
 
-  main_thread_only().run_level_tracker.OnRunLoopEnded();
+  run_level_tracker_.OnRunLoopEnded();
   main_thread_only().quit_pending = false;
 
   // All work items should be over when exiting the loop so hang watching should
@@ -624,7 +616,7 @@ void ThreadControllerWithMessagePumpImpl::AttachToMessagePump() {
 #endif
 
 bool ThreadControllerWithMessagePumpImpl::ShouldQuitRunLoopWhenIdle() {
-  if (main_thread_only().run_level_tracker.num_run_levels() == 0)
+  if (run_level_tracker_.num_run_levels() == 0)
     return false;
   // It's only safe to call ShouldQuitWhenIdle() when in a RunLoop.
   return ShouldQuitWhenIdle();

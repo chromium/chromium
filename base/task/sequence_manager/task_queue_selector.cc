@@ -20,7 +20,7 @@ namespace sequence_manager {
 namespace internal {
 
 TaskQueueSelector::TaskQueueSelector(
-    scoped_refptr<AssociatedThreadId> associated_thread,
+    scoped_refptr<const AssociatedThreadId> associated_thread,
     const SequenceManager::Settings& settings)
     : associated_thread_(std::move(associated_thread)),
       delayed_work_queue_sets_("delayed", this, settings),

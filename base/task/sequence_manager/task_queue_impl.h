@@ -335,9 +335,10 @@ class BASE_EXPORT TaskQueueImpl {
 
   class TaskRunner final : public SingleThreadTaskRunner {
    public:
-    explicit TaskRunner(scoped_refptr<GuardedTaskPoster> task_poster,
-                        scoped_refptr<AssociatedThreadId> associated_thread,
-                        TaskType task_type);
+    explicit TaskRunner(
+        scoped_refptr<GuardedTaskPoster> task_poster,
+        scoped_refptr<const AssociatedThreadId> associated_thread,
+        TaskType task_type);
 
     bool PostDelayedTask(const Location& location,
                          OnceClosure callback,
@@ -366,7 +367,7 @@ class BASE_EXPORT TaskQueueImpl {
     ~TaskRunner() final;
 
     const scoped_refptr<GuardedTaskPoster> task_poster_;
-    const scoped_refptr<AssociatedThreadId> associated_thread_;
+    const scoped_refptr<const AssociatedThreadId> associated_thread_;
     const TaskType task_type_;
   };
 
@@ -375,7 +376,7 @@ class BASE_EXPORT TaskQueueImpl {
    public:
     OnTaskPostedCallbackHandleImpl(
         TaskQueueImpl* task_queue_impl,
-        scoped_refptr<AssociatedThreadId> associated_thread_);
+        scoped_refptr<const AssociatedThreadId> associated_thread_);
     ~OnTaskPostedCallbackHandleImpl() override;
 
     // Callback handles can outlive the associated TaskQueueImpl, so the
@@ -384,7 +385,7 @@ class BASE_EXPORT TaskQueueImpl {
 
    private:
     raw_ptr<TaskQueueImpl> task_queue_impl_;
-    scoped_refptr<AssociatedThreadId> associated_thread_;
+    const scoped_refptr<const AssociatedThreadId> associated_thread_;
   };
 
   // A queue for holding delayed tasks before their delay has expired.
@@ -557,7 +558,7 @@ class BASE_EXPORT TaskQueueImpl {
   const char* name_;
   const raw_ptr<SequenceManagerImpl> sequence_manager_;
 
-  scoped_refptr<AssociatedThreadId> associated_thread_;
+  const scoped_refptr<const AssociatedThreadId> associated_thread_;
 
   const scoped_refptr<GuardedTaskPoster> task_poster_;
 

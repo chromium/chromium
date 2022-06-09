@@ -33,7 +33,7 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
  public:
   using SelectTaskOption = SequencedTaskSource::SelectTaskOption;
 
-  TaskQueueSelector(scoped_refptr<AssociatedThreadId> associated_thread,
+  TaskQueueSelector(scoped_refptr<const AssociatedThreadId> associated_thread,
                     const SequenceManager::Settings& settings);
 
   TaskQueueSelector(const TaskQueueSelector&) = delete;
@@ -221,7 +221,7 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   // Returns true if there are pending tasks with priority |priority|.
   bool HasTasksWithPriority(TaskQueue::QueuePriority priority) const;
 
-  scoped_refptr<AssociatedThreadId> associated_thread_;
+  const scoped_refptr<const AssociatedThreadId> associated_thread_;
 
   // Count of the number of sets (delayed or immediate) for each priority.
   // Should only contain 0, 1 or 2.

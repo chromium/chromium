@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/common/task_annotator.h"
-#include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
 #include "base/task/sequence_manager/thread_controller.h"
@@ -74,7 +73,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void RestoreDefaultTaskRunner() override;
   void AddNestingObserver(RunLoop::NestingObserver* observer) override;
   void RemoveNestingObserver(RunLoop::NestingObserver* observer) override;
-  const scoped_refptr<AssociatedThreadId>& GetAssociatedThread() const override;
   void SetTaskExecutionAllowed(bool allowed) override;
   bool IsTaskExecutionAllowed() const override;
   MessagePump* GetBoundMessagePump() const override;
@@ -129,9 +127,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     // yield to the MessagePump after |work_batch_size| work items.
     base::TimeTicks yield_to_native_after_batch = base::TimeTicks();
 
-    // Tracks the number and state of each run-level managed by this instance.
-    RunLevelTracker run_level_tracker;
-
     // When the next scheduled delayed work should run, if any.
     TimeTicks next_delayed_do_work = TimeTicks::Max();
 
@@ -175,8 +170,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   // watching is activated via finch.
   void MaybeStartWatchHangsInScope();
 
-  // TODO(altimin): Merge with the one in SequenceManager.
-  scoped_refptr<AssociatedThreadId> associated_thread_;
   MainThreadOnly main_thread_only_;
 
   mutable base::internal::CheckedLock task_runner_lock_;

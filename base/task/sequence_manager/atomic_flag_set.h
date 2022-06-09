@@ -28,7 +28,8 @@ class BASE_EXPORT AtomicFlagSet {
   struct Group;
 
  public:
-  explicit AtomicFlagSet(scoped_refptr<AssociatedThreadId> associated_thread);
+  explicit AtomicFlagSet(
+      scoped_refptr<const AssociatedThreadId> associated_thread);
   AtomicFlagSet(const AtomicFlagSet&) = delete;
   AtomicFlagSet& operator=(const AtomicFlagSet&) = delete;
   // AtomicFlags need to be released (or deleted) before this can be deleted.
@@ -129,7 +130,7 @@ class BASE_EXPORT AtomicFlagSet {
   // This does not delete |element|.
   void RemoveFromPartiallyFreeList(Group* element);
 
-  scoped_refptr<AssociatedThreadId> associated_thread_;
+  const scoped_refptr<const AssociatedThreadId> associated_thread_;
   std::unique_ptr<Group> alloc_list_head_;
   raw_ptr<Group> partially_free_list_head_ = nullptr;
 };

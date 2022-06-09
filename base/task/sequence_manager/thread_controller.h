@@ -9,12 +9,15 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/run_loop.h"
+#include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/task/sequence_manager/tasks.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -27,7 +30,6 @@ struct PendingTask;
 namespace sequence_manager {
 namespace internal {
 
-class AssociatedThreadId;
 class SequencedTaskSource;
 
 // Implementation of this interface is used by SequenceManager to schedule
@@ -35,7 +37,8 @@ class SequencedTaskSource;
 // interface will become more concise.
 class ThreadController {
  public:
-  virtual ~ThreadController() = default;
+  ThreadController();
+  virtual ~ThreadController();
 
   // Sets the number of tasks executed in a single invocation of DoWork.
   // Increasing the batch size can reduce the overhead of yielding back to the
@@ -132,10 +135,14 @@ class ThreadController {
   virtual void RestoreDefaultTaskRunner() = 0;
   virtual void AddNestingObserver(RunLoop::NestingObserver* observer) = 0;
   virtual void RemoveNestingObserver(RunLoop::NestingObserver* observer) = 0;
-  virtual const scoped_refptr<AssociatedThreadId>& GetAssociatedThread()
-      const = 0;
+
+  const scoped_refptr<AssociatedThreadId>& GetAssociatedThread() const {
+    return associated_thread_;
+  }
 
  protected:
+  const scoped_refptr<AssociatedThreadId> associated_thread_;
+
   // Tracks the state of each run-level (main and nested ones) in its associated
   // ThreadController. It does so using two high-level principles:
   //  1) #task-in-task-implies-nested :
@@ -191,7 +198,7 @@ class ThreadController {
       kRunningTask,
     };
 
-    RunLevelTracker();
+    explicit RunLevelTracker(const ThreadController& outer);
     ~RunLevelTracker();
 
     void OnRunLoopStarted(State initial_state);
@@ -200,7 +207,10 @@ class ThreadController {
     void OnTaskEnded();
     void OnIdle();
 
-    size_t num_run_levels() const { return run_levels_.size(); }
+    size_t num_run_levels() const {
+      DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
+      return run_levels_.size();
+    }
 
     // Observers changes of state sent as trace-events so they can be tested.
     class TraceObserverForTesting {
@@ -237,10 +247,13 @@ class ThreadController {
       size_t thread_controller_active_id_ = 0;
     };
 
-    std::stack<RunLevel, std::vector<RunLevel>> run_levels_;
+    [[maybe_unused]] const ThreadController& outer_;
+
+    std::stack<RunLevel, std::vector<RunLevel>> run_levels_
+        GUARDED_BY_CONTEXT(outer_.associated_thread_->thread_checker);
 
     static TraceObserverForTesting* trace_observer_for_testing_;
-  };
+  } run_level_tracker_{*this};
 };
 
 }  // namespace internal

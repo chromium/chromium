@@ -11,17 +11,29 @@ namespace base {
 namespace sequence_manager {
 namespace internal {
 
-ThreadController::RunLevelTracker::RunLevelTracker() = default;
+ThreadController::ThreadController()
+    : associated_thread_(AssociatedThreadId::CreateUnbound()) {}
+
+ThreadController::~ThreadController() = default;
+
+ThreadController::RunLevelTracker::RunLevelTracker(
+    const ThreadController& outer)
+    : outer_(outer) {}
 ThreadController::RunLevelTracker::~RunLevelTracker() {
+  DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
+
   // There shouldn't be any remaining |run_levels_| by the time this unwinds.
   DCHECK_EQ(run_levels_.size(), 0u);
 }
 
 void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
   run_levels_.emplace(initial_state, !run_levels_.empty());
 }
 
 void ThreadController::RunLevelTracker::OnRunLoopEnded() {
+  DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
+
   // Normally this will occur while kIdle or kSelectingNextTask but it can also
   // occur while kRunningTask in rare situations where the owning
   // ThreadController is deleted from within a task. Ref.
@@ -33,6 +45,7 @@ void ThreadController::RunLevelTracker::OnRunLoopEnded() {
 }
 
 void ThreadController::RunLevelTracker::OnTaskStarted() {
+  DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
   // Ignore tasks outside the main run loop.
   // The only practical case where this would happen is if a native loop is spun
   // outside the main runloop (e.g. system dialog during startup). We cannot
@@ -53,6 +66,7 @@ void ThreadController::RunLevelTracker::OnTaskStarted() {
 }
 
 void ThreadController::RunLevelTracker::OnTaskEnded() {
+  DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
   if (run_levels_.empty())
     return;
 
@@ -67,6 +81,7 @@ void ThreadController::RunLevelTracker::OnTaskEnded() {
 }
 
 void ThreadController::RunLevelTracker::OnIdle() {
+  DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
   if (run_levels_.empty())
     return;
 

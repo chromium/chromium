@@ -15,7 +15,7 @@ namespace sequence_manager {
 namespace internal {
 
 WakeUpQueue::WakeUpQueue(
-    scoped_refptr<internal::AssociatedThreadId> associated_thread)
+    scoped_refptr<const internal::AssociatedThreadId> associated_thread)
     : associated_thread_(std::move(associated_thread)) {}
 
 WakeUpQueue::~WakeUpQueue() {

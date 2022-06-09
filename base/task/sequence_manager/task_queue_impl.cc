@@ -128,7 +128,7 @@ DelayedTaskHandle TaskQueueImpl::GuardedTaskPoster::PostCancelableTask(
 
 TaskQueueImpl::TaskRunner::TaskRunner(
     scoped_refptr<GuardedTaskPoster> task_poster,
-    scoped_refptr<AssociatedThreadId> associated_thread,
+    scoped_refptr<const AssociatedThreadId> associated_thread,
     TaskType task_type)
     : task_poster_(std::move(task_poster)),
       associated_thread_(std::move(associated_thread)),
@@ -1626,7 +1626,7 @@ bool TaskQueueImpl::DelayedIncomingQueue::Compare::operator()(
 
 TaskQueueImpl::OnTaskPostedCallbackHandleImpl::OnTaskPostedCallbackHandleImpl(
     TaskQueueImpl* task_queue_impl,
-    scoped_refptr<AssociatedThreadId> associated_thread)
+    scoped_refptr<const AssociatedThreadId> associated_thread)
     : task_queue_impl_(task_queue_impl),
       associated_thread_(std::move(associated_thread)) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);

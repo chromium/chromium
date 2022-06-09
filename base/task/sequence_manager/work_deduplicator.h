@@ -35,7 +35,7 @@ class BASE_EXPORT WorkDeduplicator {
   // Creates an unbound WorkDeduplicator. BindToCurrentThread must be called
   // before work can be scheduled.
   explicit WorkDeduplicator(
-      scoped_refptr<AssociatedThreadId> associated_thread);
+      scoped_refptr<const AssociatedThreadId> associated_thread);
 
   ~WorkDeduplicator();
 
@@ -135,7 +135,7 @@ class BASE_EXPORT WorkDeduplicator {
 
   std::atomic<int> state_{State::kUnbound};
 
-  scoped_refptr<AssociatedThreadId> associated_thread_;
+  const scoped_refptr<const AssociatedThreadId> associated_thread_;
 };
 
 }  // namespace internal
