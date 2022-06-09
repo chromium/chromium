@@ -618,6 +618,27 @@ ci.builder(
 
 ci.builder(
     name = "ios-asan",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "ios",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            gs_bucket = "chromium-browser-asan",
+            gs_acl = "public-read",
+            archive_name_prefix = "ios-asan",
+            archive_subdir = "ios-asan",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "iOS",
         short_name = "asn",

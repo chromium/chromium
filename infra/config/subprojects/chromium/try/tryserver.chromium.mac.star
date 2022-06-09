@@ -244,6 +244,9 @@ try_.builder(
 
 ios_builder(
     name = "ios-asan",
+    mirrors = [
+        "ci/ios-asan",
+    ],
 )
 
 ios_builder(
