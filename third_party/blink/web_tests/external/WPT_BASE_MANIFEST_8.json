@@ -15538,6 +15538,21 @@
       ]
      ]
     },
+    "css-tables": {
+     "tfoot-crash-print.html": [
+      "00fa0070c507de945ae0653a3f5fcbb4e206185f",
+      [
+       null,
+       [
+        [
+         "/common/blank.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ]
+    },
     "css-values": {
      "viewport-units-001-print.html": [
       "3bff494e535b9101a11222a40a382384415eee3f",
@@ -86561,6 +86576,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "svg-with-transform.html": [
+      "3aa7facf2d6a08e18a792b8739341b9bcc5014e5",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -252622,6 +252650,12 @@
       "1017427c5c28f582c92ba356af2153e4f9851a84",
       []
      ],
+     "fedcm-manifest-not-in-list": {
+      "fedcm.json": [
+       "9d919790050b4c0aaf8bd5a666ccf8a0ab40a40c",
+       []
+      ]
+     },
      "fedcm-mock.js": [
       "955cb9727f4d6333336da89f7c274317c725a706",
       []
@@ -368349,7 +368383,7 @@
      ]
     ],
     "fedcm-network-requests.sub.https.html": [
-     "16da68b807932edd0128f15c25884f68d6da1f64",
+     "93899619e3f5dcbce6b7e5ef3d257e8e3a0827e1",
      [
       null,
       {}
