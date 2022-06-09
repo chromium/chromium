@@ -725,8 +725,10 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
   if ([self isOverscrollActionEnabled]) {
     const BOOL isOverscrollStateActionReady =
         self.overscrollState == OverscrollState::ACTION_READY;
+    const OverscrollAction selectedAction =
+        self.overscrollActionView.selectedAction;
     const BOOL isOverscrollActionNone =
-        self.overscrollActionView.selectedAction == OverscrollAction::NONE;
+        selectedAction == OverscrollAction::NONE;
 
     if ((!isOverscrollStateActionReady && _didTransitionToActionReady) ||
         (isOverscrollStateActionReady && isOverscrollActionNone)) {
@@ -743,12 +745,10 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
         [[self scrollView] setContentOffset:contentOffset animated:YES];
         [self.overscrollActionView displayActionAnimation];
         dispatch_async(dispatch_get_main_queue(), ^{
-          [self recordMetricForTriggeredAction:self.overscrollActionView
-                                                   .selectedAction];
+          [self recordMetricForTriggeredAction:selectedAction];
           TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleMedium);
           [self.delegate overscrollActionsController:self
-                                    didTriggerAction:self.overscrollActionView
-                                                         .selectedAction];
+                                    didTriggerAction:selectedAction];
         });
       }
     }
