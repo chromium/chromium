@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_reader.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_writer.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
@@ -209,13 +210,13 @@ void ClipboardPromise::WriteNextRepresentation() {
       clipboard_item_data_[clipboard_representation_index_].second;
 
   DCHECK(!clipboard_writer_);
-  wtf_size_t item_index = custom_format_items_.Find(type);
-  if (item_index != kNotFound) {
-    clipboard_writer_ =
-        ClipboardWriter::Create(local_frame->GetSystemClipboard(), type, this);
-  } else {
-    clipboard_writer_ =
-        ClipboardWriter::Create(local_frame->GetSystemClipboard(), type, this);
+  clipboard_writer_ =
+      ClipboardWriter::Create(local_frame->GetSystemClipboard(), type, this);
+  if (!clipboard_writer_) {
+    script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError,
+        "Type " + type + " is not supported"));
+    return;
   }
   clipboard_writer_->WriteToSystem(blob);
 }
@@ -408,10 +409,16 @@ void ClipboardPromise::HandlePromiseBlobsWrite(
   for (const auto& blob_item : *blob_list) {
     const String& type = clipboard_item_types_[clipboard_item_index];
     const String& type_with_args = blob_item->type();
-    // For normal (not-custom) write, blobs may have a full MIME type with args
-    // (ex. 'text/plain;charset=utf-8'), whereas the type must not have args
-    // (ex. 'text/plain' only), so ensure that Blob->type is contained in type.
-    if (!type_with_args.Contains(type.LowerASCII())) {
+    // For web custom types, extract the MIME type after removing the "web "
+    // prefix. For normal (not-custom) write, blobs may have a full MIME type
+    // with args (ex. 'text/plain;charset=utf-8'), whereas the type must not
+    // have args (ex. 'text/plain' only), so ensure that Blob->type is contained
+    // in type.
+    String web_custom_format = Clipboard::ParseWebCustomFormat(type);
+    if ((!type_with_args.Contains(type.LowerASCII()) &&
+         web_custom_format.IsEmpty()) ||
+        (!web_custom_format.IsEmpty() &&
+         !type_with_args.Contains(web_custom_format))) {
       script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "Type " + type + " does not match the blob's type " +

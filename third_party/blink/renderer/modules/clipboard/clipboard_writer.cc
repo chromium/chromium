@@ -262,15 +262,14 @@ ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
                                          ClipboardPromise* promise) {
   DCHECK(ClipboardWriter::IsValidType(mime_type));
+  String web_custom_format = Clipboard::ParseWebCustomFormat(mime_type);
   if (RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() &&
-      !Clipboard::ParseWebCustomFormat(mime_type).IsEmpty()) {
+      !web_custom_format.IsEmpty()) {
     // We write the custom MIME type without the "web " prefix into the web
     // custom format map so native applications don't have to add any string
     // parsing logic to read format from clipboard.
     return MakeGarbageCollected<ClipboardCustomFormatWriter>(
-        system_clipboard, promise,
-        mime_type.Substring(
-            static_cast<unsigned>(std::strlen(ui::kWebClipboardFormatPrefix))));
+        system_clipboard, promise, web_custom_format);
   }
   if (mime_type == kMimeTypeImagePng) {
     return MakeGarbageCollected<ClipboardImageWriter>(system_clipboard,
