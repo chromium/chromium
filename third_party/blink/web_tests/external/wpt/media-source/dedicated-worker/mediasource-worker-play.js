@@ -11,7 +11,6 @@ onmessage = function(evt) {
 let util = new MediaSourceWorkerUtil();
 
 util.mediaSource.addEventListener("sourceopen", () => {
-  URL.revokeObjectURL(util.mediaSourceObjectUrl);
   sourceBuffer = util.mediaSource.addSourceBuffer(util.mediaMetadata.type);
   sourceBuffer.onerror = (err) => {
     postMessage({ subject: messageSubject.ERROR, info: err });
@@ -43,4 +42,4 @@ util.mediaSource.addEventListener("sourceopen", () => {
                              err => { postMessage({ subject: messageSubject.ERROR, info: err }) });
 }, { once : true });
 
-postMessage({ subject: messageSubject.OBJECT_URL, info: util.mediaSourceObjectUrl });
+postMessage({ subject: messageSubject.HANDLE, info: util.mediaSource.getHandle() });
