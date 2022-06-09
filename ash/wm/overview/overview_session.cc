@@ -1020,8 +1020,10 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
 void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state,
                                               const base::GUID& item_to_focus,
                                               aura::Window* const root_window) {
-  if (IsShowingDesksTemplatesGrid())
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
+      IsShowingDesksTemplatesGrid()) {
     return;
+  }
 
   const bool created_grid_widgets =
       !grid_list_.front()->GetSavedDeskLibraryView();

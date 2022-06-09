@@ -67,6 +67,7 @@ SavedDeskPresenter::SavedDeskPresenter(OverviewSession* overview_session)
   GetAllEntries(base::GUID(), Shell::GetPrimaryRootWindow());
 
   should_show_templates_ui_ =
+      !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
       (GetEntryCount(DeskTemplateType::kTemplate) +
        GetEntryCount(DeskTemplateType::kSaveAndRecall)) > 0u;
 }
