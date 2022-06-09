@@ -477,6 +477,14 @@ export class Dictation {
   runHiddenMacroForTesting(name) {
     this.hiddenMacroManager_.runMacroForTesting(name);
   }
+
+  /**
+   * @param {!MacroName} Name The macro to run.
+   * @param {string} arg
+   */
+  runHiddenMacroWithStringArgForTesting(name, arg) {
+    this.hiddenMacroManager_.runMacroWithStringArgForTesting(name, arg);
+  }
 }
 
 /**

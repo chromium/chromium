@@ -227,6 +227,45 @@ export class InputController {
       offset
     });
   }
+
+  /**
+   * Deletes a phrase to the left of the text caret. If multiple instances of
+   * `phrase` are present, it deletes the one closest to the text caret.
+   * @param {string} phrase The phrase to be deleted.
+   */
+  smartDeletePhrase(phrase) {
+    const editableNode = this.focusHandler_.getEditableNode();
+    if (!editableNode || !editableNode.value ||
+        editableNode.textSelStart !== editableNode.textSelEnd) {
+      return;
+    }
+
+    const value = editableNode.value;
+    const caretIndex = editableNode.textSelStart;
+    const leftOfCaret = value.substring(0, caretIndex);
+    const rightOfCaret = value.substring(caretIndex);
+    phrase = phrase.toLowerCase().trim();
+
+    // Require `phrase` to be separated by word boundaries and prefer the
+    // RegExps that include a leading/trailing space to preserve spacing.
+    const lastPhrase = new RegExp(`(\\b${phrase}\\b)(?!.*\\b\\1\\b)`, 'i');
+    const lastPhraseLeadingSpace =
+        new RegExp(`(\\b ${phrase}\\b)(?!.*\\b\\1\\b)`, 'i');
+    const lastPhraseTrailingSpace =
+        new RegExp(`(\\b${phrase} \\b)(?!.*\\b\\1\\b)`, 'i');
+
+    let newLeft;
+    if (lastPhraseLeadingSpace.test(leftOfCaret)) {
+      newLeft = leftOfCaret.replace(lastPhraseLeadingSpace, '');
+    } else if (lastPhraseTrailingSpace.test(leftOfCaret)) {
+      newLeft = leftOfCaret.replace(lastPhraseTrailingSpace, '');
+    } else {
+      newLeft = leftOfCaret.replace(lastPhrase, '');
+    }
+
+    const newValue = newLeft + rightOfCaret;
+    editableNode.setValue(newValue);
+  }
 }
 
 /**

@@ -82,5 +82,8 @@ export const MacroName = {
   // Move the cursor to the previous word.
   NAV_PREV_WORD: 20,
 
+  // Deletes a provided word or phrase.
+  SMART_DELETE_PHRASE: 21,
+
   // Any new actions should match with Voice Access's semantic tags.
 };

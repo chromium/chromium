@@ -51,6 +51,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/macros/macro.js",
     "dictation/macros/macro_names.js",
     "dictation/macros/repeatable_key_press_macro.js",
+    "dictation/macros/smart_delete_phrase_macro.js",
     "dictation/macros/stop_listening_macro.js",
     "dictation/metrics_utils.js",
     "dictation/parse/input_text_strategy.js",
@@ -240,6 +241,7 @@ js_library("dictation_macros") {
     "dictation/macros/macro.js",
     "dictation/macros/macro_names.js",
     "dictation/macros/repeatable_key_press_macro.js",
+    "dictation/macros/smart_delete_phrase_macro.js",
     "dictation/macros/stop_listening_macro.js",
   ]
   deps = [
