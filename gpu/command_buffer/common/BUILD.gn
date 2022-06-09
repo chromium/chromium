@@ -203,12 +203,12 @@ source_set("webgpu_sources") {
   ]
 
   if (use_dawn) {
-    deps += [ "//third_party/dawn/src/dawn_wire" ]
+    deps += [ "//third_party/dawn/src/dawn/wire" ]
   }
 
   public_deps = [
     ":common",
-    "//third_party/dawn/src/dawn_wire:dawn_wire_headers",
+    "//third_party/dawn/src/dawn/wire:headers",
     "//ui/gl:buildflags",
   ]
 }
