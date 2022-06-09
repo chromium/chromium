@@ -8,11 +8,12 @@
 #include <IOSurface/IOSurface.h>
 #include <QuartzCore/QuartzCore.h>
 
+#include <list>
 #include <memory>
-#include <vector>
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 #include "ui/gfx/geometry/rect.h"
@@ -84,8 +85,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
 
   class RootLayer {
    public:
-    RootLayer();
+    RootLayer(CARendererLayerTree* tree);
 
+    RootLayer(RootLayer&&) = delete;
     RootLayer(const RootLayer&) = delete;
     RootLayer& operator=(const RootLayer&) = delete;
 
@@ -109,25 +111,28 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // to nil, so that its destructor will not remove an active CALayer.
     void CommitToCA(CALayer* superlayer,
                     RootLayer* old_layer,
-                    const gfx::Size& pixel_size,
-                    float scale_factor);
+                    const gfx::Size& pixel_size);
 
     // Return true if the CALayer tree is just a video layer on a black or
     // transparent background, false otherwise.
     bool WantsFullcreenLowPowerBackdrop() const;
 
-    std::vector<ClipAndSortingLayer> clip_and_sorting_layers_;
+    // Tree that owns `this`.
+    const raw_ptr<CARendererLayerTree> tree_;
+
+    std::list<ClipAndSortingLayer> clip_and_sorting_layers_;
     base::scoped_nsobject<CALayer> ca_layer_;
   };
   class ClipAndSortingLayer {
    public:
-    ClipAndSortingLayer(bool is_clipped,
+    ClipAndSortingLayer(RootLayer* root_layer,
+                        bool is_clipped,
                         gfx::Rect clip_rect,
                         gfx::RRectF rounded_corner_bounds,
                         unsigned sorting_context_id,
                         bool is_singleton_sorting_context);
-    ClipAndSortingLayer(ClipAndSortingLayer&& layer);
 
+    ClipAndSortingLayer(ClipAndSortingLayer&& layer) = delete;
     ClipAndSortingLayer(const ClipAndSortingLayer&) = delete;
     ClipAndSortingLayer& operator=(const ClipAndSortingLayer&) = delete;
 
@@ -136,11 +141,13 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     ~ClipAndSortingLayer();
     void AddContentLayer(CARendererLayerTree* tree,
                          const CARendererLayerParams& params);
-    void CommitToCA(CALayer* superlayer,
-                    ClipAndSortingLayer* old_layer,
-                    float scale_factor);
+    void CommitToCA(ClipAndSortingLayer* old_layer);
+    CARendererLayerTree* tree() { return parent_layer_->tree_; }
 
-    std::vector<TransformLayer> transform_layers_;
+    // Parent layer that owns `this`, and child layers that `this` owns.
+    const raw_ptr<RootLayer> parent_layer_;
+    std::list<TransformLayer> transform_layers_;
+
     bool is_clipped_ = false;
     gfx::Rect clip_rect_;
     gfx::RRectF rounded_corner_bounds_;
@@ -151,9 +158,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   };
   class TransformLayer {
    public:
-    TransformLayer(const gfx::Transform& transform);
-    TransformLayer(TransformLayer&& layer);
+    TransformLayer(ClipAndSortingLayer* parent_layer,
+                   const gfx::Transform& transform);
 
+    TransformLayer(TransformLayer&& layer) = delete;
     TransformLayer(const TransformLayer&) = delete;
     TransformLayer& operator=(const TransformLayer&) = delete;
 
@@ -162,17 +170,19 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     ~TransformLayer();
     void AddContentLayer(CARendererLayerTree* tree,
                          const CARendererLayerParams& params);
-    void CommitToCA(CALayer* superlayer,
-                    TransformLayer* old_layer,
-                    float scale_factor);
+    void CommitToCA(TransformLayer* old_layer);
+    CARendererLayerTree* tree() { return parent_layer_->tree(); }
+
+    // Parent layer that owns `this`, and child layers that `this` owns.
+    const raw_ptr<ClipAndSortingLayer> parent_layer_;
+    std::list<ContentLayer> content_layers_;
 
     gfx::Transform transform_;
-    std::vector<ContentLayer> content_layers_;
     base::scoped_nsobject<CALayer> ca_layer_;
   };
   class ContentLayer {
    public:
-    ContentLayer(CARendererLayerTree* tree,
+    ContentLayer(TransformLayer* parent_layer,
                  base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
                  base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer,
                  const gfx::RectF& contents_rect,
@@ -183,17 +193,19 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
                  float opacity,
                  unsigned filter,
                  gfx::ProtectedVideoType protected_video_type);
-    ContentLayer(ContentLayer&& layer);
 
+    ContentLayer(ContentLayer&& layer) = delete;
     ContentLayer(const ContentLayer&) = delete;
     ContentLayer& operator=(const ContentLayer&) = delete;
 
     // See the behavior of RootLayer for the effects of these functions on the
     // |ca_layer| member and |old_layer| argument.
     ~ContentLayer();
-    void CommitToCA(CALayer* parent,
-                    ContentLayer* old_layer,
-                    float scale_factor);
+    void CommitToCA(ContentLayer* old_layer);
+    CARendererLayerTree* tree() { return parent_layer_->tree(); }
+
+    // Parent layer that owns `this`.
+    const raw_ptr<TransformLayer> parent_layer_;
 
     // Ensure that the IOSurface be marked as in-use as soon as it is received.
     // When they are committed to the window server, that will also increment
@@ -234,7 +246,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     base::scoped_nsobject<CALayer> update_indicator_layer_;
   };
 
-  RootLayer root_layer_;
+  RootLayer root_layer_{this};
   float scale_factor_ = 1;
   bool has_committed_ = false;
   const bool allow_av_sample_buffer_display_layer_ = true;
