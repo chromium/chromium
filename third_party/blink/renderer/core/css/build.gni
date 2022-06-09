@@ -454,6 +454,7 @@ blink_core_sources_css = [
   "media_query_list_listener.h",
   "media_query_matcher.cc",
   "media_query_matcher.h",
+  "media_query_set_owner.h",
   "media_value_change.h",
   "media_values.cc",
   "media_values.h",

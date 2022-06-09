@@ -23,6 +23,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IMPORT_RULE_H_
 
 #include "third_party/blink/renderer/core/css/css_rule.h"
+#include "third_party/blink/renderer/core/css/media_query_set_owner.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -31,7 +32,7 @@ namespace blink {
 class MediaList;
 class StyleRuleImport;
 
-class CSSImportRule final : public CSSRule {
+class CSSImportRule final : public CSSRule, public MediaQuerySetOwner {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -42,7 +43,7 @@ class CSSImportRule final : public CSSRule {
   void Reattach(StyleRuleBase*) override;
 
   String href() const;
-  MediaList* media() const;
+  MediaList* media();
   CSSStyleSheet* styleSheet() const;
 
   String layerName() const;
@@ -51,6 +52,10 @@ class CSSImportRule final : public CSSRule {
 
  private:
   CSSRule::Type GetType() const override { return kImportRule; }
+
+  MediaQuerySetOwner* GetMediaQuerySetOwner() override { return this; }
+  const MediaQuerySet* MediaQueries() const override;
+  void SetMediaQueries(const MediaQuerySet*) override;
 
   Member<StyleRuleImport> import_rule_;
   mutable Member<MediaList> media_cssom_wrapper_;

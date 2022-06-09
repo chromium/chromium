@@ -166,19 +166,15 @@ CSSStyleSheet::CSSStyleSheet(StyleSheetContents* contents,
   ClearOwnerNode();
   ClearOwnerRule();
   Contents()->RegisterClient(this);
-  MediaQuerySet* media_query_set = nullptr;
   switch (options->media()->GetContentType()) {
     case V8UnionMediaListOrString::ContentType::kMediaList:
-      media_query_set = options->media()->GetAsMediaList()->Queries()->Copy();
+      media_queries_ = options->media()->GetAsMediaList()->Queries();
       break;
     case V8UnionMediaListOrString::ContentType::kString:
-      media_query_set = MediaQuerySet::Create(options->media()->GetAsString(),
-                                              document.GetExecutionContext());
+      media_queries_ = MediaQuerySet::Create(options->media()->GetAsString(),
+                                             document.GetExecutionContext());
       break;
   }
-  auto* media_list = MakeGarbageCollected<MediaList>(
-      media_query_set, const_cast<CSSStyleSheet*>(this));
-  SetMedia(media_list);
   if (options->alternate())
     SetAlternateFromConstructor(true);
   if (options->disabled())
@@ -290,12 +286,6 @@ void CSSStyleSheet::setDisabled(bool disabled) {
   is_disabled_ = disabled;
 
   DidMutate(Mutation::kSheet);
-}
-
-void CSSStyleSheet::SetMediaQueries(MediaQuerySet* media_queries) {
-  media_queries_ = media_queries;
-  if (media_cssom_wrapper_ && media_queries_)
-    media_cssom_wrapper_->Reattach(media_queries_);
 }
 
 bool CSSStyleSheet::MatchesMediaQueries(const MediaQueryEvaluator& evaluator) {
@@ -530,16 +520,9 @@ bool CSSStyleSheet::IsLoading() const {
 MediaList* CSSStyleSheet::media() {
   if (!media_queries_)
     media_queries_ = MediaQuerySet::Create();
-
-  if (!media_cssom_wrapper_) {
-    media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(
-        media_queries_.Get(), const_cast<CSSStyleSheet*>(this));
-  }
+  if (!media_cssom_wrapper_)
+    media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(this);
   return media_cssom_wrapper_.Get();
-}
-
-void CSSStyleSheet::SetMedia(MediaList* media_list) {
-  media_cssom_wrapper_ = media_list;
 }
 
 CSSStyleSheet* CSSStyleSheet::parentStyleSheet() const {

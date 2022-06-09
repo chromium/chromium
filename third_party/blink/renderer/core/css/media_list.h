@@ -40,6 +40,7 @@ class ExceptionState;
 class ExecutionContext;
 class MediaList;
 class MediaQuery;
+class MediaQuerySetOwner;
 
 class CORE_EXPORT MediaQuerySet : public GarbageCollected<MediaQuerySet> {
  public:
@@ -54,9 +55,9 @@ class CORE_EXPORT MediaQuerySet : public GarbageCollected<MediaQuerySet> {
   explicit MediaQuerySet(HeapVector<Member<const MediaQuery>>);
   void Trace(Visitor*) const;
 
-  bool Set(const String&, const ExecutionContext*);
-  bool Add(const String&, const ExecutionContext*);
-  bool Remove(const String&, const ExecutionContext*);
+  const MediaQuerySet* CopyAndAdd(const String&, const ExecutionContext*) const;
+  const MediaQuerySet* CopyAndRemove(const String&,
+                                     const ExecutionContext*) const;
 
   const HeapVector<Member<const MediaQuery>>& QueryVector() const {
     return queries_;
@@ -65,22 +66,18 @@ class CORE_EXPORT MediaQuerySet : public GarbageCollected<MediaQuerySet> {
   String MediaText() const;
   bool HasUnknown() const;
 
-  MediaQuerySet* Copy() const {
-    return MakeGarbageCollected<MediaQuerySet>(*this);
-  }
-
  private:
   HeapVector<Member<const MediaQuery>> queries_;
 };
 
-class MediaList final : public ScriptWrappable {
+class CORE_EXPORT MediaList final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  MediaList(MediaQuerySet*, CSSStyleSheet* parent_sheet);
-  MediaList(MediaQuerySet*, CSSRule* parent_rule);
+  explicit MediaList(CSSStyleSheet* parent_sheet);
+  explicit MediaList(CSSRule* parent_rule);
 
-  unsigned length() const { return media_queries_->QueryVector().size(); }
+  unsigned length() const { return Queries()->QueryVector().size(); }
   String item(unsigned index) const;
   void deleteMedium(const ExecutionContext*,
                     const String& old_medium,
@@ -93,22 +90,21 @@ class MediaList final : public ScriptWrappable {
   // ExecutionContext.
   //
   // Prefer MediaTextInternal for internal use. (Avoids use-counter).
-  CORE_EXPORT String mediaText(ExecutionContext*) const;
+  String mediaText(ExecutionContext*) const;
   void setMediaText(const ExecutionContext*, const String&);
-  String MediaTextInternal() const { return media_queries_->MediaText(); }
+  String MediaTextInternal() const { return Queries()->MediaText(); }
 
   // Not part of CSSOM.
   CSSRule* ParentRule() const { return parent_rule_; }
   CSSStyleSheet* ParentStyleSheet() const { return parent_style_sheet_; }
 
-  const MediaQuerySet* Queries() const { return media_queries_.Get(); }
-
-  void Reattach(MediaQuerySet*);
+  const MediaQuerySet* Queries() const;
 
   void Trace(Visitor*) const override;
 
  private:
-  Member<MediaQuerySet> media_queries_;
+  MediaQuerySetOwner* Owner() const;
+
   Member<CSSStyleSheet> parent_style_sheet_;
   Member<CSSRule> parent_rule_;
 };

@@ -355,11 +355,15 @@ class CORE_EXPORT StyleRuleCondition : public StyleRuleGroup {
 
 class CORE_EXPORT StyleRuleMedia : public StyleRuleCondition {
  public:
-  StyleRuleMedia(MediaQuerySet*,
+  StyleRuleMedia(const MediaQuerySet*,
                  HeapVector<Member<StyleRuleBase>>& adopt_rules);
-  StyleRuleMedia(const StyleRuleMedia&);
+  StyleRuleMedia(const StyleRuleMedia&) = default;
 
-  MediaQuerySet* MediaQueries() const { return media_queries_.Get(); }
+  const MediaQuerySet* MediaQueries() const { return media_queries_.Get(); }
+
+  void SetMediaQueries(const MediaQuerySet* media_queries) {
+    media_queries_ = media_queries;
+  }
 
   StyleRuleMedia* Copy() const {
     return MakeGarbageCollected<StyleRuleMedia>(*this);
@@ -368,7 +372,7 @@ class CORE_EXPORT StyleRuleMedia : public StyleRuleCondition {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  Member<MediaQuerySet> media_queries_;
+  Member<const MediaQuerySet> media_queries_;
 };
 
 class StyleRuleSupports : public StyleRuleCondition {

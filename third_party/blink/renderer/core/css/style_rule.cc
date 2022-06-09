@@ -595,15 +595,9 @@ StyleRuleCondition::StyleRuleCondition(
 StyleRuleCondition::StyleRuleCondition(
     const StyleRuleCondition& condition_rule) = default;
 
-StyleRuleMedia::StyleRuleMedia(MediaQuerySet* media,
+StyleRuleMedia::StyleRuleMedia(const MediaQuerySet* media,
                                HeapVector<Member<StyleRuleBase>>& adopt_rules)
     : StyleRuleCondition(kMedia, adopt_rules), media_queries_(media) {}
-
-StyleRuleMedia::StyleRuleMedia(const StyleRuleMedia& media_rule)
-    : StyleRuleCondition(media_rule) {
-  if (media_rule.media_queries_)
-    media_queries_ = media_rule.media_queries_->Copy();
-}
 
 void StyleRuleMedia::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleCondition::TraceAfterDispatch(visitor);

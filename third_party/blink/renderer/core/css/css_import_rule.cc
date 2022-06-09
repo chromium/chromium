@@ -41,11 +41,9 @@ String CSSImportRule::href() const {
   return import_rule_->Href();
 }
 
-MediaList* CSSImportRule::media() const {
-  if (!media_cssom_wrapper_) {
-    media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(
-        import_rule_->MediaQueries(), const_cast<CSSImportRule*>(this));
-  }
+MediaList* CSSImportRule::media() {
+  if (!media_cssom_wrapper_)
+    media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(this);
   return media_cssom_wrapper_.Get();
 }
 
@@ -98,6 +96,14 @@ String CSSImportRule::layerName() const {
 void CSSImportRule::Reattach(StyleRuleBase*) {
   // FIXME: Implement when enabling caching for stylesheets with import rules.
   NOTREACHED();
+}
+
+const MediaQuerySet* CSSImportRule::MediaQueries() const {
+  return import_rule_->MediaQueries();
+}
+
+void CSSImportRule::SetMediaQueries(const MediaQuerySet* media_queries) {
+  import_rule_->SetMediaQueries(media_queries);
 }
 
 void CSSImportRule::Trace(Visitor* visitor) const {
