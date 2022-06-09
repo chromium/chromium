@@ -142,8 +142,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, CreateIntentFilters) {
     const web_app::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
     filters = CreateWebAppIntentFilters(
-        app_id, /*is_note_taking_web_app*/ false,
-        provider.registrar().GetAppScope(app_id),
+        app_id, provider.registrar().GetAppScope(app_id),
         provider.registrar().GetAppShareTarget(app_id),
         provider.os_integration_manager().GetEnabledFileHandlers(app_id));
   }
@@ -176,8 +175,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, PartialWild) {
     const web_app::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
     filters = CreateWebAppIntentFilters(
-        app_id, /*is_note_taking_web_app*/ false,
-        provider.registrar().GetAppScope(app_id),
+        app_id, provider.registrar().GetAppScope(app_id),
         provider.registrar().GetAppShareTarget(app_id),
         provider.os_integration_manager().GetEnabledFileHandlers(app_id));
   }
@@ -207,8 +205,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, ShareTargetWithoutFiles) {
     const web_app::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
     filters = CreateWebAppIntentFilters(
-        app_id, /*is_note_taking_web_app*/ false,
-        provider.registrar().GetAppScope(app_id),
+        app_id, provider.registrar().GetAppScope(app_id),
         provider.registrar().GetAppShareTarget(app_id),
         provider.os_integration_manager().GetEnabledFileHandlers(app_id));
   }

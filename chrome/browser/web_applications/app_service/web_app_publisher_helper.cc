@@ -536,13 +536,16 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   app->paused = IsPaused(web_app->app_id());
 
   // Add the intent filters for PWAs.
-  base::Extend(app->intent_filters,
-               apps_util::CreateIntentFiltersForWebApp(
-                   web_app->app_id(), IsNoteTakingWebApp(*web_app),
-                   registrar().GetAppScope(web_app->app_id()),
-                   registrar().GetAppShareTarget(web_app->app_id()),
-                   provider_->os_integration_manager().GetEnabledFileHandlers(
-                       web_app->app_id())));
+  base::Extend(
+      app->intent_filters,
+      apps_util::CreateIntentFiltersForWebApp(
+          web_app->app_id(), registrar().GetAppScope(web_app->app_id()),
+          registrar().GetAppShareTarget(web_app->app_id()),
+          provider_->os_integration_manager().GetEnabledFileHandlers(
+              web_app->app_id())));
+
+  if (IsNoteTakingWebApp(*web_app))
+    app->intent_filters.push_back(apps_util::CreateNoteTakingFilter());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (web_app->app_id() == crostini::kCrostiniTerminalSystemAppId) {
@@ -626,13 +629,16 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
                              : apps::mojom::OptionalBool::kFalse;
 
   // Add the intent filters for PWAs.
-  base::Extend(app->intent_filters,
-               apps_util::CreateWebAppIntentFilters(
-                   web_app->app_id(), IsNoteTakingWebApp(*web_app),
-                   registrar().GetAppScope(web_app->app_id()),
-                   registrar().GetAppShareTarget(web_app->app_id()),
-                   provider_->os_integration_manager().GetEnabledFileHandlers(
-                       web_app->app_id())));
+  base::Extend(
+      app->intent_filters,
+      apps_util::CreateWebAppIntentFilters(
+          web_app->app_id(), registrar().GetAppScope(web_app->app_id()),
+          registrar().GetAppShareTarget(web_app->app_id()),
+          provider_->os_integration_manager().GetEnabledFileHandlers(
+              web_app->app_id())));
+
+  if (IsNoteTakingWebApp(*web_app))
+    app->intent_filters.push_back(apps_util::CreateNoteTakingFilterMojom());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (web_app->app_id() == crostini::kCrostiniTerminalSystemAppId) {

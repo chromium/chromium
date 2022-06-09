@@ -186,7 +186,7 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForWebApp_WebApp_HasUrlFilter) {
   web_app->SetScope(scope);
 
   IntentFilters filters = apps_util::CreateIntentFiltersForWebApp(
-      web_app->app_id(), /*is_note_taking_web_app*/ false, scope,
+      web_app->app_id(), scope,
       /*app_share_target*/ nullptr, /*enabled_file_handlers*/ nullptr);
 
   ASSERT_EQ(filters.size(), 1u);
@@ -241,9 +241,9 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_WebApp_HasUrlFilter) {
   web_app->SetScope(scope);
 
   std::vector<apps::mojom::IntentFilterPtr> filters =
-      apps_util::CreateWebAppIntentFilters(
-          web_app->app_id(), /*is_note_taking_web_app*/ false, scope,
-          /*app_share_target*/ nullptr, /*enabled_file_handlers*/ nullptr);
+      apps_util::CreateWebAppIntentFilters(web_app->app_id(), scope,
+                                           /*app_share_target*/ nullptr,
+                                           /*enabled_file_handlers*/ nullptr);
 
   ASSERT_EQ(filters.size(), 1u);
   apps::mojom::IntentFilterPtr& filter = filters[0];
@@ -312,7 +312,7 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForWebApp_FileHandlers) {
   web_app->SetFileHandlers(file_handlers);
 
   IntentFilters filters = apps_util::CreateIntentFiltersForWebApp(
-      web_app->app_id(), /*is_note_taking_web_app*/ false, scope,
+      web_app->app_id(), scope,
       /*app_share_target*/ nullptr, &file_handlers);
 
   ASSERT_EQ(filters.size(), 2u);
@@ -356,9 +356,9 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_FileHandlers) {
   web_app->SetFileHandlers(file_handlers);
 
   std::vector<apps::mojom::IntentFilterPtr> filters =
-      apps_util::CreateWebAppIntentFilters(
-          web_app->app_id(), /*is_note_taking_web_app*/ false, scope,
-          /*app_share_target*/ nullptr, &file_handlers);
+      apps_util::CreateWebAppIntentFilters(web_app->app_id(), scope,
+                                           /*app_share_target*/ nullptr,
+                                           &file_handlers);
 
   ASSERT_EQ(filters.size(), 2u);
   // 1st filter is URL filter.
@@ -383,58 +383,35 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_FileHandlers) {
   EXPECT_EQ(file_cond.condition_values[1]->value, ".txt");
 }
 
-TEST_F(IntentUtilsTest, CreateIntentFiltersForWebApp_NoteTakingApp) {
-  auto web_app = web_app::test::CreateWebApp();
-  DCHECK(web_app->start_url().is_valid());
-  GURL scope = web_app->start_url().GetWithoutFilename();
-  web_app->SetScope(scope);
-  GURL new_note_url = scope.Resolve("/new_note.html");
-  web_app->SetNoteTakingNewNoteUrl(new_note_url);
+TEST_F(IntentUtilsTest, CreateNoteTakingFilter) {
+  IntentFilterPtr filter = apps_util::CreateNoteTakingFilter();
 
-  IntentFilters filters = apps_util::CreateIntentFiltersForWebApp(
-      web_app->app_id(), /*is_note_taking_web_app*/ true, scope,
-      /*app_share_target*/ nullptr, /*enabled_file_handlers*/ nullptr);
-
-  ASSERT_EQ(filters.size(), 2u);
-
-  // 2nd filter is note-taking filter.
-  ASSERT_EQ(filters[1]->conditions.size(), 1u);
-  const Condition& condition = *filters[1]->conditions[0];
+  ASSERT_EQ(filter->conditions.size(), 1u);
+  const Condition& condition = *filter->conditions[0];
   EXPECT_EQ(condition.condition_type, ConditionType::kAction);
   ASSERT_EQ(condition.condition_values.size(), 1u);
   EXPECT_EQ(condition.condition_values[0]->value,
             apps_util::kIntentActionCreateNote);
+
+  apps::IntentPtr intent =
+      apps::ConvertMojomIntentToIntent(apps_util::CreateCreateNoteIntent());
+  EXPECT_TRUE(intent->MatchFilter(filter));
 }
 
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_NoteTakingApp) {
-  auto web_app = web_app::test::CreateWebApp();
-  DCHECK(web_app->start_url().is_valid());
-  GURL scope = web_app->start_url().GetWithoutFilename();
-  web_app->SetScope(scope);
-  GURL new_note_url = scope.Resolve("/new_note.html");
-  web_app->SetNoteTakingNewNoteUrl(new_note_url);
+TEST_F(IntentUtilsTest, CreateNoteTakingFilterMojom) {
+  apps::mojom::IntentFilterPtr filter =
+      apps_util::CreateNoteTakingFilterMojom();
 
-  std::vector<apps::mojom::IntentFilterPtr> filters =
-      apps_util::CreateWebAppIntentFilters(
-          web_app->app_id(), /*is_note_taking_web_app*/ true, scope,
-          /*app_share_target*/ nullptr, /*enabled_file_handlers*/ nullptr);
-
-  ASSERT_EQ(filters.size(), 2u);
-
-  // 1st filter is URL filter.
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(
-      apps_util::CreateIntentFromUrl(scope), filters[0]));
-
-  // 2nd filter is note-taking filter.
-  ASSERT_EQ(filters[1]->conditions.size(), 1u);
-  const apps::mojom::Condition& condition = *filters[1]->conditions[0];
+  ASSERT_EQ(filter->conditions.size(), 1u);
+  const apps::mojom::Condition& condition = *filter->conditions[0];
   EXPECT_EQ(condition.condition_type, apps::mojom::ConditionType::kAction);
   ASSERT_EQ(condition.condition_values.size(), 1u);
   EXPECT_EQ(condition.condition_values[0]->value,
             apps_util::kIntentActionCreateNote);
+
   EXPECT_TRUE(apps_util::IntentMatchesFilter(
-      apps_util::CreateCreateNoteIntent(), filters[1]));
+      apps_util::CreateCreateNoteIntent(), filter));
 }
 
 TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_FileHandlers) {

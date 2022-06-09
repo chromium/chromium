@@ -73,7 +73,6 @@ apps::IntentFilters CreateIntentFiltersFromArcBridge(
 // shortcuts.
 apps::IntentFilters CreateIntentFiltersForWebApp(
     const web_app::AppId& app_id,
-    bool is_note_taking_web_app,
     const GURL& app_scope,
     const apps::ShareTarget* app_share_target,
     const apps::FileHandlers* enabled_file_handlers);
@@ -84,7 +83,6 @@ apps::IntentFilters CreateIntentFiltersForWebApp(
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
     const web_app::AppId& app_id,
-    bool is_note_taking_web_app,
     const GURL& app_scope,
     const apps::ShareTarget* app_share_target,
     const apps::FileHandlers* enabled_file_handlers);
@@ -110,6 +108,13 @@ apps::IntentFilters CreateIntentFiltersForExtension(
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 std::vector<apps::mojom::IntentFilterPtr> CreateExtensionIntentFilters(
     const extensions::Extension* extension);
+
+// Create an intent filter for a note-taking app.
+apps::IntentFilterPtr CreateNoteTakingFilter();
+
+// Create a mojom intent filter for a note-taking app.
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+apps::mojom::IntentFilterPtr CreateNoteTakingFilterMojom();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Create an intent struct with filesystem:// type URLs from the file paths and

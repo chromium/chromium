@@ -242,14 +242,6 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppFileHandlerIntentFilters(
   return filters;
 }
 
-apps::mojom::IntentFilterPtr CreateNoteTakingIntentFilter() {
-  auto intent_filter = apps::mojom::IntentFilter::New();
-  AddSingleValueCondition(apps::mojom::ConditionType::kAction,
-                          kIntentActionCreateNote,
-                          apps::mojom::PatternMatchType::kNone, intent_filter);
-  return intent_filter;
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kIntentExtraText[] = "S.android.intent.extra.TEXT";
 constexpr char kIntentExtraSubject[] = "S.android.intent.extra.SUBJECT";
@@ -425,7 +417,6 @@ apps::IntentFilters CreateIntentFiltersFromArcBridge(
 
 apps::IntentFilters CreateIntentFiltersForWebApp(
     const web_app::AppId& app_id,
-    bool is_note_taking_web_app,
     const GURL& app_scope,
     const apps::ShareTarget* app_share_target,
     const apps::FileHandlers* enabled_file_handlers) {
@@ -446,11 +437,6 @@ apps::IntentFilters CreateIntentFiltersForWebApp(
                  CreateIntentFiltersFromFileHandlers(*enabled_file_handlers));
   }
 
-  if (is_note_taking_web_app) {
-    filters.push_back(apps::ConvertMojomIntentFilterToIntentFilter(
-        CreateNoteTakingIntentFilter()));
-  }
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::features::IsProjectorEnabled() &&
       app_id == ash::kChromeUITrustedProjectorSwaAppId) {
@@ -465,7 +451,6 @@ apps::IntentFilters CreateIntentFiltersForWebApp(
 
 std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
     const web_app::AppId& app_id,
-    bool is_note_taking_web_app,
     const GURL& app_scope,
     const apps::ShareTarget* app_share_target,
     const apps::FileHandlers* enabled_file_handlers) {
@@ -482,10 +467,6 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
   if (enabled_file_handlers) {
     base::Extend(filters,
                  CreateWebAppFileHandlerIntentFilters(*enabled_file_handlers));
-  }
-
-  if (is_note_taking_web_app) {
-    filters.push_back(CreateNoteTakingIntentFilter());
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -610,6 +591,18 @@ std::vector<apps::mojom::IntentFilterPtr> CreateExtensionIntentFilters(
 #else
   return {};
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+apps::IntentFilterPtr CreateNoteTakingFilter() {
+  auto intent_filter = std::make_unique<apps::IntentFilter>();
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAction,
+                                         kIntentActionCreateNote,
+                                         apps::PatternMatchType::kNone);
+  return intent_filter;
+}
+
+apps::mojom::IntentFilterPtr CreateNoteTakingFilterMojom() {
+  return apps::ConvertIntentFilterToMojomIntentFilter(CreateNoteTakingFilter());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
