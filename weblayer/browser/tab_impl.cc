@@ -1130,7 +1130,7 @@ void TabImpl::RequestMediaAccessPermission(
   MediaStreamManager::FromWebContents(web_contents)
       ->RequestMediaAccessPermission(request, std::move(callback));
 #else
-  std::move(callback).Run(blink::mojom::StreamDevices(),
+  std::move(callback).Run(blink::mojom::StreamDevicesSet(),
                           blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
                           nullptr);
 #endif

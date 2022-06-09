@@ -116,7 +116,7 @@ void BackgroundLoaderContents::RequestMediaAccessPermission(
     content::MediaResponseCallback callback) {
   // No permissions granted, act as if dismissed.
   std::move(callback).Run(
-      blink::mojom::StreamDevices(),
+      blink::mojom::StreamDevicesSet(),
       blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED,
       std::unique_ptr<content::MediaStreamUI>());
 }

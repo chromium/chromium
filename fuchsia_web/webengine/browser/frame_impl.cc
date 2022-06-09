@@ -8,6 +8,7 @@
 #include <lib/fpromise/result.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
+#include <algorithm>
 #include <limits>
 
 #include "base/bind.h"
@@ -206,14 +207,15 @@ void HandleMediaPermissionsRequestResult(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback,
     const std::vector<blink::mojom::PermissionStatus>& result) {
-  blink::mojom::StreamDevices devices;
+  // TODO(crbug.com/1300883): Generalize to multiple streams.
+  blink::mojom::StreamDevicesPtr devices = blink::mojom::StreamDevices::New();
 
   int result_pos = 0;
 
   if (request.audio_type ==
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
     if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
-      devices.audio_device = blink::MediaStreamDevice(
+      devices->audio_device = blink::MediaStreamDevice(
           request.audio_type, request.requested_audio_device_id,
           /*name=*/"");
     }
@@ -223,15 +225,19 @@ void HandleMediaPermissionsRequestResult(
   if (request.video_type ==
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
     if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
-      devices.video_device = blink::MediaStreamDevice(
+      devices->video_device = blink::MediaStreamDevice(
           request.video_type, request.requested_video_device_id,
           /*name=*/"");
     }
   }
 
+  blink::mojom::StreamDevicesSet stream_devices_set;
+  if (devices->audio_device.has_value() || devices->video_device.has_value()) {
+    stream_devices_set.stream_devices.emplace_back(std::move(devices));
+  }
   std::move(callback).Run(
-      devices,
-      (!devices.audio_device.has_value() && !devices.video_device.has_value())
+      stream_devices_set,
+      stream_devices_set.stream_devices.empty()
           ? blink::mojom::MediaStreamRequestResult::NO_HARDWARE
           : blink::mojom::MediaStreamRequestResult::OK,
       nullptr);
@@ -1245,7 +1251,7 @@ void FrameImpl::RequestMediaAccessPermission(
     permissions.push_back(blink::PermissionType::AUDIO_CAPTURE);
   } else if (request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, nullptr);
     return;
   }
@@ -1255,7 +1261,7 @@ void FrameImpl::RequestMediaAccessPermission(
     permissions.push_back(blink::PermissionType::VIDEO_CAPTURE);
   } else if (request.video_type != blink::mojom::MediaStreamType::NO_SERVICE) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, nullptr);
     return;
   }
@@ -1264,7 +1270,7 @@ void FrameImpl::RequestMediaAccessPermission(
       request.render_process_id, request.render_frame_id);
   if (!render_frame_host) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::INVALID_STATE, nullptr);
     return;
   }
@@ -1272,7 +1278,7 @@ void FrameImpl::RequestMediaAccessPermission(
   if (url::Origin::Create(request.security_origin) !=
       render_frame_host->GetLastCommittedOrigin()) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
         nullptr);
     return;

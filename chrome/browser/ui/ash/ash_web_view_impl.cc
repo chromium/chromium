@@ -136,7 +136,7 @@ void AshWebViewImpl::RequestMediaAccessPermission(
     content::MediaResponseCallback callback) {
   if (!params_.can_record_media) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
         std::unique_ptr<content::MediaStreamUI>());
     return;

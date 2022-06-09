@@ -72,10 +72,19 @@ class MediaStreamUIProxy::Core {
                 bool is_from_timer);
 #endif
 
+  // The type blink::mojom::StreamDevices is not movable, therefore stream
+  // devices cannot be captured for usage with PostTask.
+  void ProcessAccessRequestResponseForPostTask(
+      int render_process_id,
+      int render_frame_id,
+      blink::mojom::StreamDevicesSetPtr stream_devices_set_ptr,
+      blink::mojom::MediaStreamRequestResult result,
+      std::unique_ptr<MediaStreamUI> stream_ui);
+
   void ProcessAccessRequestResponse(
       int render_process_id,
       int render_frame_id,
-      const blink::mojom::StreamDevices& devices,
+      const blink::mojom::StreamDevicesSet& stream_devices_set,
       blink::mojom::MediaStreamRequestResult result,
       std::unique_ptr<MediaStreamUI> stream_ui);
 
@@ -137,7 +146,7 @@ void MediaStreamUIProxy::Core::RequestAccess(
   if (!render_delegate) {
     ProcessAccessRequestResponse(
         request->render_process_id, request->render_frame_id,
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
         std::unique_ptr<MediaStreamUI>());
     return;
@@ -213,15 +222,40 @@ void MediaStreamUIProxy::Core::SetFocus(const DesktopMediaID& media_id,
 }
 #endif
 
-void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
+void MediaStreamUIProxy::Core::ProcessAccessRequestResponseForPostTask(
     int render_process_id,
     int render_frame_id,
-    const blink::mojom::StreamDevices& devices,
+    blink::mojom::StreamDevicesSetPtr stream_devices_set_ptr,
     blink::mojom::MediaStreamRequestResult result,
     std::unique_ptr<MediaStreamUI> stream_ui) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(stream_devices_set_ptr);
+  ProcessAccessRequestResponse(render_process_id, render_frame_id,
+                               *stream_devices_set_ptr, result,
+                               std::move(stream_ui));
+}
 
-  blink::mojom::StreamDevices filtered_devices;
+void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
+    int render_process_id,
+    int render_frame_id,
+    const blink::mojom::StreamDevicesSet& stream_devices_set,
+    blink::mojom::MediaStreamRequestResult result,
+    std::unique_ptr<MediaStreamUI> stream_ui) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK((result != blink::mojom::MediaStreamRequestResult::OK &&
+          stream_devices_set.stream_devices.empty()) ||
+         (result == blink::mojom::MediaStreamRequestResult::OK &&
+          stream_devices_set.stream_devices.size() == 1u));
+
+  blink::mojom::StreamDevicesSetPtr filtered_devices_set =
+      blink::mojom::StreamDevicesSet::New();
+  blink::mojom::StreamDevices devices;
+  if (!stream_devices_set.stream_devices.empty()) {
+    devices = *stream_devices_set.stream_devices[0];
+    filtered_devices_set->stream_devices.emplace_back(
+        blink::mojom::StreamDevices::New());
+  }
+
   auto* host = RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
   if (devices.audio_device.has_value()) {
     const blink::MediaStreamDevice& audio_device = devices.audio_device.value();
@@ -229,7 +263,7 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
             blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
         IsFeatureEnabled(host, tests_use_fake_render_frame_hosts_,
                          blink::mojom::PermissionsPolicyFeature::kMicrophone)) {
-      filtered_devices.audio_device = audio_device;
+      filtered_devices_set->stream_devices[0]->audio_device = audio_device;
     }
   }
 
@@ -239,14 +273,17 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
             blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
         IsFeatureEnabled(host, tests_use_fake_render_frame_hosts_,
                          blink::mojom::PermissionsPolicyFeature::kCamera)) {
-      filtered_devices.video_device = video_device;
+      filtered_devices_set->stream_devices[0]->video_device = video_device;
     }
   }
 
-  if (!filtered_devices.audio_device.has_value() &&
-      !filtered_devices.video_device.has_value() &&
-      result == blink::mojom::MediaStreamRequestResult::OK)
+  if ((filtered_devices_set->stream_devices.empty() ||
+       (!filtered_devices_set->stream_devices[0]->audio_device.has_value() &&
+        !filtered_devices_set->stream_devices[0]->video_device.has_value())) &&
+      result == blink::mojom::MediaStreamRequestResult::OK) {
     result = blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
+    filtered_devices_set->stream_devices.clear();
+  }
 
   if (stream_ui) {
     // Callbacks that were supplied to the existing `ui_` are no longer
@@ -264,7 +301,7 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaStreamUIProxy::ProcessAccessRequestResponse, proxy_,
-                     std::move(filtered_devices), result));
+                     std::move(filtered_devices_set), result));
 }
 
 void MediaStreamUIProxy::Core::ProcessStopRequestFromUI() {
@@ -407,11 +444,11 @@ void MediaStreamUIProxy::SetFocus(const DesktopMediaID& media_id,
 #endif
 
 void MediaStreamUIProxy::ProcessAccessRequestResponse(
-    const blink::mojom::StreamDevices& devices,
+    blink::mojom::StreamDevicesSetPtr stream_devices_set,
     blink::mojom::MediaStreamRequestResult result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!response_callback_.is_null());
-  std::move(response_callback_).Run(devices, result);
+  std::move(response_callback_).Run(*stream_devices_set, result);
 }
 
 void MediaStreamUIProxy::ProcessStopRequestFromUI() {
@@ -482,9 +519,9 @@ void FakeMediaStreamUIProxy::RequestAccess(
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &MediaStreamUIProxy::Core::ProcessAccessRequestResponse,
+            &MediaStreamUIProxy::Core::ProcessAccessRequestResponseForPostTask,
             core_->GetWeakPtr(), request->render_process_id,
-            request->render_frame_id, blink::mojom::StreamDevices(),
+            request->render_frame_id, blink::mojom::StreamDevicesSet::New(),
             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
             std::unique_ptr<MediaStreamUI>()));
     return;
@@ -492,7 +529,12 @@ void FakeMediaStreamUIProxy::RequestAccess(
 
   // Use the first capture device of the same media type in the list for the
   // fake UI.
-  blink::mojom::StreamDevices devices_to_use;
+  blink::mojom::StreamDevicesSetPtr devices_set_to_use =
+      blink::mojom::StreamDevicesSet::New();
+  devices_set_to_use->stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  blink::mojom::StreamDevices& devices_to_use =
+      *devices_set_to_use->stream_devices[0];
   for (const blink::MediaStreamDevice& device : devices_) {
     if (!devices_to_use.audio_device.has_value() &&
         blink::IsAudioInputMediaType(request->audio_type) &&
@@ -519,15 +561,18 @@ void FakeMediaStreamUIProxy::RequestAccess(
 
   const bool is_devices_empty = !devices_to_use.audio_device.has_value() &&
                                 !devices_to_use.video_device.has_value();
+  if (is_devices_empty) {
+    devices_set_to_use->stream_devices.clear();
+  }
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&MediaStreamUIProxy::Core::ProcessAccessRequestResponse,
-                     core_->GetWeakPtr(), request->render_process_id,
-                     request->render_frame_id, devices_to_use,
-                     is_devices_empty
-                         ? blink::mojom::MediaStreamRequestResult::NO_HARDWARE
-                         : blink::mojom::MediaStreamRequestResult::OK,
-                     std::unique_ptr<MediaStreamUI>()));
+      base::BindOnce(
+          &MediaStreamUIProxy::Core::ProcessAccessRequestResponseForPostTask,
+          core_->GetWeakPtr(), request->render_process_id,
+          request->render_frame_id, std::move(devices_set_to_use),
+          is_devices_empty ? blink::mojom::MediaStreamRequestResult::NO_HARDWARE
+                           : blink::mojom::MediaStreamRequestResult::OK,
+          std::unique_ptr<MediaStreamUI>()));
 }
 
 void FakeMediaStreamUIProxy::OnStarted(

@@ -97,11 +97,17 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
         [](base::RunLoop* wait_loop,
            blink::mojom::MediaStreamRequestResult* request_result,
            blink::mojom::StreamDevices* devices_result,
-           const blink::mojom::StreamDevices& devices,
+           const blink::mojom::StreamDevicesSet& stream_devices_set,
            blink::mojom::MediaStreamRequestResult result,
            std::unique_ptr<content::MediaStreamUI> ui) {
           *request_result = result;
-          *devices_result = devices;
+          if (result == blink::mojom::MediaStreamRequestResult::OK) {
+            ASSERT_EQ(stream_devices_set.stream_devices.size(), 1u);
+            *devices_result = *stream_devices_set.stream_devices[0];
+          } else {
+            ASSERT_TRUE(stream_devices_set.stream_devices.empty());
+            *devices_result = blink::mojom::StreamDevices();
+          }
           wait_loop->Quit();
         },
         wait_loop, request_result, &devices_result);
@@ -508,12 +514,17 @@ TEST_F(DisplayMediaAccessHandlerTest, MultipleRequests) {
         [](base::RunLoop* wait_loop,
            blink::mojom::MediaStreamRequestResult* request_result,
            blink::MediaStreamDevices* devices_result,
-           const blink::mojom::StreamDevices& devices,
+           const blink::mojom::StreamDevicesSet& stream_devices_set,
            blink::mojom::MediaStreamRequestResult result,
            std::unique_ptr<content::MediaStreamUI> ui) {
           *request_result = result;
-          *devices_result =
-              blink::StreamDevicesToMediaStreamDevicesList(devices);
+          if (result == blink::mojom::MediaStreamRequestResult::OK) {
+            ASSERT_EQ(stream_devices_set.stream_devices.size(), 1u);
+            *devices_result =
+                blink::ToMediaStreamDevicesList(stream_devices_set);
+          } else {
+            ASSERT_TRUE(stream_devices_set.stream_devices.empty());
+          }
           wait_loop->Quit();
         },
         &wait_loop[i], &result, &devices);

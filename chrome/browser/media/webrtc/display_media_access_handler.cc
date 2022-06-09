@@ -101,7 +101,7 @@ void DisplayMediaAccessHandler::HandleRequest(
                                              web_contents) ==
       AllowedScreenCaptureLevel::kDisallowed) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
         /*ui=*/nullptr);
     return;
@@ -116,7 +116,7 @@ void DisplayMediaAccessHandler::HandleRequest(
           web_contents);
   if (observer) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
         /*ui=*/nullptr);
     observer->OnDesktopCaptureRequest();
@@ -133,7 +133,7 @@ void DisplayMediaAccessHandler::HandleRequest(
       request.request_type != blink::MEDIA_DEVICE_UPDATE) {
     LOG(ERROR) << "Do not allow getDisplayMedia() on a backgrounded page.";
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::INVALID_STATE, /*ui=*/nullptr);
     return;
   }
@@ -159,7 +159,7 @@ void DisplayMediaAccessHandler::HandleRequest(
         request.render_process_id, request.render_frame_id);
     if (!rfh) {
       std::move(callback).Run(
-          blink::mojom::StreamDevices(),
+          blink::mojom::StreamDevicesSet(),
           blink::mojom::MediaStreamRequestResult::INVALID_STATE,
           /*ui=*/nullptr);
       return;
@@ -179,7 +179,7 @@ void DisplayMediaAccessHandler::HandleRequest(
             rfh->GetProcess(), bad_message::BadMessageReason::
                                    RFH_DISPLAY_CAPTURE_PERMISSION_MISSING);
         std::move(callback).Run(
-            blink::mojom::StreamDevices(),
+            blink::mojom::StreamDevicesSet(),
             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
             /*ui=*/nullptr);
         return;
@@ -190,7 +190,7 @@ void DisplayMediaAccessHandler::HandleRequest(
   std::unique_ptr<DesktopMediaPicker> picker = picker_factory_->CreatePicker();
   if (!picker) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::INVALID_STATE, /*ui=*/nullptr);
     return;
   }
@@ -371,7 +371,7 @@ void DisplayMediaAccessHandler::RejectRequest(
     return;
   PendingAccessRequest& mutable_request = *mutable_queue.front();
   std::move(mutable_request.callback)
-      .Run(blink::mojom::StreamDevices(), result, /*ui=*/nullptr);
+      .Run(blink::mojom::StreamDevicesSet(), result, /*ui=*/nullptr);
   mutable_queue.pop_front();
   if (!mutable_queue.empty())
     ProcessQueuedAccessRequest(mutable_queue, web_contents);
@@ -398,15 +398,20 @@ void DisplayMediaAccessHandler::AcceptRequest(
       (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) &&
       media_id.web_contents_id.disable_local_echo;
 
-  blink::mojom::StreamDevices devices;
+  blink::mojom::StreamDevicesSet stream_devices_set;
+  stream_devices_set.stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  blink::mojom::StreamDevices& stream_devices =
+      *stream_devices_set.stream_devices[0];
   std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
       pending_request.request, web_contents, media_id, media_id.audio_share,
       disable_local_echo, display_notification_,
-      GetApplicationTitle(web_contents), devices);
+      GetApplicationTitle(web_contents), stream_devices);
   UpdateTarget(pending_request.request, media_id);
 
   std::move(pending_request.callback)
-      .Run(devices, blink::mojom::MediaStreamRequestResult::OK, std::move(ui));
+      .Run(stream_devices_set, blink::mojom::MediaStreamRequestResult::OK,
+           std::move(ui));
   queue.pop_front();
 
   if (!queue.empty())

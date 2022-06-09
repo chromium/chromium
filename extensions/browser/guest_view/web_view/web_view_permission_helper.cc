@@ -214,7 +214,7 @@ void WebViewPermissionHelper::OnMediaPermissionResponse(
     const std::string& user_input) {
   if (!allow) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
         std::unique_ptr<content::MediaStreamUI>());
     return;
@@ -222,7 +222,7 @@ void WebViewPermissionHelper::OnMediaPermissionResponse(
   if (!web_view_guest()->attached() ||
       !web_view_guest()->embedder_web_contents()->GetDelegate()) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::INVALID_STATE,
         std::unique_ptr<content::MediaStreamUI>());
     return;

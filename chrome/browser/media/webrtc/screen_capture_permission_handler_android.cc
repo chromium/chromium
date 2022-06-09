@@ -31,7 +31,12 @@ void GetScreenCapturePermissionAndroid(
           ? blink::mojom::MediaStreamRequestResult::OK
           : blink::mojom::MediaStreamRequestResult::INVALID_STATE;
 
-  blink::mojom::StreamDevices devices;
+  // TODO(crbug.com/1300883): Generalize to multiple streams.
+  blink::mojom::StreamDevicesSet stream_devices_set;
+  stream_devices_set.stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  blink::mojom::StreamDevices& stream_devices =
+      *stream_devices_set.stream_devices[0];
   std::unique_ptr<content::MediaStreamUI> ui;
   if (result == blink::mojom::MediaStreamRequestResult::OK) {
     if (request.video_type ==
@@ -40,20 +45,20 @@ void GetScreenCapturePermissionAndroid(
       screen_id.type = content::DesktopMediaID::TYPE_WEB_CONTENTS;
       screen_id.web_contents_id = content::WebContentsMediaCaptureId(
           request.render_process_id, request.render_frame_id);
-      devices.video_device = blink::MediaStreamDevice(
+      stream_devices.video_device = blink::MediaStreamDevice(
           request.video_type, screen_id.ToString(), "Current Tab");
     } else {
       content::DesktopMediaID screen_id = content::DesktopMediaID(
           content::DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId);
-      devices.video_device = blink::MediaStreamDevice(
+      stream_devices.video_device = blink::MediaStreamDevice(
           request.video_type, screen_id.ToString(), "Screen");
     }
 
     ui = MediaCaptureDevicesDispatcher::GetInstance()
              ->GetMediaStreamCaptureIndicator()
-             ->RegisterMediaStream(web_contents, devices);
+             ->RegisterMediaStream(web_contents, stream_devices);
   }
 
-  std::move(callback).Run(devices, result, std::move(ui));
+  std::move(callback).Run(stream_devices_set, result, std::move(ui));
 }
 }  // namespace screen_capture

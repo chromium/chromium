@@ -50,7 +50,7 @@ class CONTENT_EXPORT CaptureHandleManager {
   // then calling OnTabCaptureStarted() on all |new_devices|.
   void OnTabCaptureDevicesUpdated(
       const std::string& label,
-      const blink::mojom::StreamDevices& new_devices,
+      blink::mojom::StreamDevicesSetPtr new_stream_devices,
       GlobalRenderFrameHostId capturer,
       DeviceCaptureHandleChangeCallback handle_change_callback);
 

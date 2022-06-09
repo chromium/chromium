@@ -57,7 +57,7 @@ class MediaStreamManager {
 
   void OnMediaAccessPermissionResult(
       content::MediaResponseCallback callback,
-      const blink::mojom::StreamDevices& devices,
+      const blink::mojom::StreamDevicesSet& stream_devices_set,
       blink::mojom::MediaStreamRequestResult result,
       bool blocked_by_permissions_policy,
       ContentSetting audio_setting,
@@ -73,16 +73,17 @@ class MediaStreamManager {
   // approval.
   struct RequestPendingClientApproval {
     RequestPendingClientApproval();
-    RequestPendingClientApproval(content::MediaResponseCallback callback,
-                                 const blink::mojom::StreamDevices& devices,
-                                 blink::mojom::MediaStreamRequestResult result);
+    RequestPendingClientApproval(
+        content::MediaResponseCallback callback,
+        const blink::mojom::StreamDevicesSet& stream_devices_set,
+        blink::mojom::MediaStreamRequestResult result);
     ~RequestPendingClientApproval();
 
     RequestPendingClientApproval& operator=(
         RequestPendingClientApproval&& other);
 
     content::MediaResponseCallback callback;
-    blink::mojom::StreamDevices devices;
+    blink::mojom::StreamDevicesSetPtr stream_devices_set_;
     blink::mojom::MediaStreamRequestResult result;
   };
   std::map<int, RequestPendingClientApproval> requests_pending_client_approval_;

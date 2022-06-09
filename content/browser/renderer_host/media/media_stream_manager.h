@@ -459,7 +459,7 @@ class CONTENT_EXPORT MediaStreamManager
   void HandleAccessRequestResponse(
       const std::string& label,
       const media::AudioParameters& output_parameters,
-      const blink::mojom::StreamDevices& devices,
+      const blink::mojom::StreamDevicesSet& devices_set,
       blink::mojom::MediaStreamRequestResult result);
   void HandleChangeSourceRequestResponse(
       const std::string& label,

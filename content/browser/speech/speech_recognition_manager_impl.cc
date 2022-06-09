@@ -307,9 +307,9 @@ void SpeechRecognitionManagerImpl::MediaRequestPermissionCallback(
   // which is only supported in combination with the getDisplayMediaSet API.
   DCHECK_EQ(stream_devices_set.stream_devices.size(), 1u);
   DCHECK(stream_devices_set.stream_devices[0]);
+
   blink::MediaStreamDevices devices_list =
-      blink::StreamDevicesToMediaStreamDevicesList(
-          *stream_devices_set.stream_devices[0]);
+      blink::ToMediaStreamDevicesList(stream_devices_set);
   const bool is_allowed = !devices_list.empty();
   if (is_allowed) {
     // Copy the approved devices array to the context for UI indication.

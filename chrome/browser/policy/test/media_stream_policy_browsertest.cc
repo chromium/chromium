@@ -108,22 +108,29 @@ class MediaStreamDevicesControllerBrowserTest
     }
   }
 
-  void Accept(const blink::mojom::StreamDevices& devices,
+  void Accept(const blink::mojom::StreamDevicesSet& stream_devices_set,
               blink::mojom::MediaStreamRequestResult result,
               bool blocked_by_permissions_policy,
               ContentSetting audio_setting,
               ContentSetting video_setting) {
-    if (policy_value_ || request_url_allowed_via_allowlist_) {
-      ASSERT_EQ(1, devices.audio_device.has_value() +
-                       devices.video_device.has_value());
-      if (devices.audio_device.has_value()) {
-        ASSERT_EQ("fake_dev", devices.audio_device.value().id);
-      } else if (devices.video_device.has_value()) {
-        ASSERT_EQ("fake_dev", devices.video_device.value().id);
+    if (result == blink::mojom::MediaStreamRequestResult::OK) {
+      ASSERT_EQ(stream_devices_set.stream_devices.size(), 1u);
+      const blink::mojom::StreamDevices& devices =
+          *stream_devices_set.stream_devices[0];
+      if (policy_value_ || request_url_allowed_via_allowlist_) {
+        ASSERT_EQ(1, devices.audio_device.has_value() +
+                         devices.video_device.has_value());
+        if (devices.audio_device.has_value()) {
+          ASSERT_EQ("fake_dev", devices.audio_device.value().id);
+        } else if (devices.video_device.has_value()) {
+          ASSERT_EQ("fake_dev", devices.video_device.value().id);
+        }
+      } else {
+        ASSERT_FALSE(devices.audio_device.has_value());
+        ASSERT_FALSE(devices.video_device.has_value());
       }
     } else {
-      ASSERT_FALSE(devices.audio_device.has_value());
-      ASSERT_FALSE(devices.video_device.has_value());
+      ASSERT_EQ(0u, stream_devices_set.stream_devices.size());
     }
   }
 

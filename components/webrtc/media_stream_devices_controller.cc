@@ -63,7 +63,7 @@ void MediaStreamDevicesController::RequestPermissions(
   // The RFH may have been destroyed by the time the request is processed.
   if (!rfh) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN, false,
         {}, {});
     return;
@@ -71,7 +71,7 @@ void MediaStreamDevicesController::RequestPermissions(
 
   if (rfh->GetLastCommittedOrigin().GetURL().is_empty()) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, false, {},
         {});
     return;
@@ -79,7 +79,7 @@ void MediaStreamDevicesController::RequestPermissions(
 
   if (rfh->GetLastCommittedOrigin().GetURL() != request.security_origin) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN, false,
         {}, {});
     return;
@@ -166,7 +166,7 @@ void MediaStreamDevicesController::RequestPermissions(
 MediaStreamDevicesController::~MediaStreamDevicesController() {
   if (!callback_.is_null()) {
     std::move(callback_).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN, false,
         {}, {});
   }
@@ -202,16 +202,21 @@ bool MediaStreamDevicesController::ShouldRequestVideo() const {
   return video_setting_ == CONTENT_SETTING_ASK;
 }
 
-blink::mojom::StreamDevices MediaStreamDevicesController::GetDevices(
+blink::mojom::StreamDevicesSetPtr MediaStreamDevicesController::GetDevices(
     ContentSetting audio_setting,
     ContentSetting video_setting) {
   bool audio_allowed = audio_setting == CONTENT_SETTING_ALLOW;
   bool video_allowed = video_setting == CONTENT_SETTING_ALLOW;
 
+  blink::mojom::StreamDevicesSetPtr stream_devices_set =
+      blink::mojom::StreamDevicesSet::New();
   if (!audio_allowed && !video_allowed)
-    return blink::mojom::StreamDevices();
+    return nullptr;
 
-  blink::mojom::StreamDevices devices;
+  // TODO(crbug.com/1300883): Generalize to multiple streams.
+  stream_devices_set->stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  blink::mojom::StreamDevices& devices = *stream_devices_set->stream_devices[0];
   switch (request_.request_type) {
     case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY: {
       // For open device request, when requested device_id is empty, pick
@@ -303,14 +308,14 @@ blink::mojom::StreamDevices MediaStreamDevicesController::GetDevices(
     }
   }  // switch
 
-  return devices;
+  return stream_devices_set;
 }
 
 void MediaStreamDevicesController::RunCallback(
     bool blocked_by_permissions_policy) {
   CHECK(callback_);
 
-  blink::mojom::StreamDevices devices;
+  blink::mojom::StreamDevicesSetPtr stream_devices_set;
   // If all requested permissions are allowed then the callback should report
   // success, otherwise we report |denial_reason_|.
   blink::mojom::MediaStreamRequestResult request_result =
@@ -319,7 +324,14 @@ void MediaStreamDevicesController::RunCallback(
        audio_setting_ == CONTENT_SETTING_DEFAULT) &&
       (video_setting_ == CONTENT_SETTING_ALLOW ||
        video_setting_ == CONTENT_SETTING_DEFAULT)) {
-    devices = GetDevices(audio_setting_, video_setting_);
+    stream_devices_set = GetDevices(audio_setting_, video_setting_);
+    DCHECK(!stream_devices_set ||
+           stream_devices_set->stream_devices.size() <= 1u);
+    blink::mojom::StreamDevices devices;
+    if (stream_devices_set && !stream_devices_set->stream_devices.empty()) {
+      devices = *stream_devices_set->stream_devices[0];
+    }
+
     if (!devices.audio_device.has_value() &&
         !devices.video_device.has_value()) {
       // Even if all requested permissions are allowed, if there are no devices
@@ -329,9 +341,10 @@ void MediaStreamDevicesController::RunCallback(
   } else {
     DCHECK_NE(blink::mojom::MediaStreamRequestResult::OK, denial_reason_);
     request_result = denial_reason_;
+    stream_devices_set = blink::mojom::StreamDevicesSet::New();
   }
 
-  std::move(callback_).Run(devices, request_result,
+  std::move(callback_).Run(*stream_devices_set, request_result,
                            blocked_by_permissions_policy, audio_setting_,
                            video_setting_);
 }

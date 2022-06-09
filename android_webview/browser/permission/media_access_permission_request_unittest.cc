@@ -80,10 +80,10 @@ class MediaAccessPermissionRequestTest : public testing::Test {
   blink::mojom::MediaStreamRequestResult result_;
 
  private:
-  void Callback(const blink::mojom::StreamDevices& devices,
+  void Callback(const blink::mojom::StreamDevicesSet& stream_devices_set,
                 blink::mojom::MediaStreamRequestResult result,
                 std::unique_ptr<content::MediaStreamUI> ui) {
-    devices_ = blink::StreamDevicesToMediaStreamDevicesList(devices);
+    devices_ = blink::ToMediaStreamDevicesList(stream_devices_set);
     result_ = result;
   }
 };

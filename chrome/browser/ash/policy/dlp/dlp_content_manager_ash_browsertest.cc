@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 
 #include <functional>
@@ -54,6 +55,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
@@ -874,23 +876,27 @@ class DlpContentManagerAshScreenShareBrowserTest
                              bool expect_warning) {
     // First check for the permission to start screen sharing.
     // It should call DlpContentManager::CheckScreenShareRestriction().
-    base::test::TestFuture<const blink::mojom::StreamDevices&,
-                           blink::mojom::MediaStreamRequestResult,
-                           std::unique_ptr<content::MediaStreamUI>>
-        test_future;
+    blink::mojom::MediaStreamRequestResult received_result =
+        blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS;
+    base::RunLoop run_loop;
     handler->HandleRequest(
         web_contents, request,
-        test_future.GetCallback<const blink::mojom::StreamDevices&,
-                                blink::mojom::MediaStreamRequestResult,
-                                std::unique_ptr<content::MediaStreamUI>>(),
+        base::BindLambdaForTesting(
+            [&received_result, &run_loop](
+                const blink::mojom::StreamDevicesSet&,
+                blink::mojom::MediaStreamRequestResult result,
+                std::unique_ptr<content::MediaStreamUI>) {
+              received_result = result;
+              run_loop.Quit();
+            }),
         /*extension=*/nullptr);
 
     if (expect_warning)
       DismissDialog(expect_allowed);
 
-    ASSERT_TRUE(test_future.Wait()) << "MediaResponseCallback timed out.";
+    run_loop.Run();
     EXPECT_EQ(
-        test_future.Get<1>(),
+        received_result,
         (expect_allowed
              ? blink::mojom::MediaStreamRequestResult::OK
              : blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED));

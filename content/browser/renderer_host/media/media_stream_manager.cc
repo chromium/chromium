@@ -2119,7 +2119,7 @@ MediaStreamDevices MediaStreamManager::GetDevicesOpenedByRequest(
   DeviceRequest* request = FindRequest(label);
   if (!request)
     return MediaStreamDevices();
-  return blink::StreamDevicesToMediaStreamDevicesList(request->devices);
+  return blink::ToMediaStreamDevicesList(request->devices);
 }
 
 bool MediaStreamManager::FindExistingRequestedDevice(
@@ -2407,8 +2407,7 @@ void MediaStreamManager::FinalizeOpenDevice(const std::string& label,
   if (request->open_device_cb) {
     std::move(request->open_device_cb)
         .Run(true /* success */, label,
-             blink::StreamDevicesToMediaStreamDevicesList(request->devices)
-                 .front());
+             blink::ToMediaStreamDevicesList(request->devices).front());
   }
 }
 
@@ -2739,9 +2738,19 @@ void MediaStreamManager::AddLogMessageOnIOThread(const std::string& message) {
 void MediaStreamManager::HandleAccessRequestResponse(
     const std::string& label,
     const media::AudioParameters& output_parameters,
-    const blink::mojom::StreamDevices& devices,
+    const blink::mojom::StreamDevicesSet& devices_set,
     MediaStreamRequestResult result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK((result == MediaStreamRequestResult::OK &&
+          devices_set.stream_devices.size() == 1u) ||
+         (result != MediaStreamRequestResult::OK &&
+          devices_set.stream_devices.empty()));
+
+  blink::mojom::StreamDevices devices;
+  if (result == MediaStreamRequestResult::OK) {
+    DCHECK_EQ(1u, devices_set.stream_devices.size());
+    devices = *devices_set.stream_devices[0];
+  }
   DeviceRequest* request = FindRequest(label);
   if (!request) {
     // The request has been canceled before the UI returned.
@@ -3251,8 +3260,7 @@ void MediaStreamManager::OnStreamStarted(const std::string& label) {
       RequestTypeToString(request->request_type())));
 
   MediaStreamUI::SourceCallback device_changed_cb;
-  if (EnableChangeSource(
-          blink::StreamDevicesToMediaStreamDevicesList(request->devices)) &&
+  if (EnableChangeSource(blink::ToMediaStreamDevicesList(request->devices)) &&
       base::FeatureList::IsEnabled(features::kDesktopCaptureChangeSource)) {
     device_changed_cb = base::BindRepeating(
         &MediaStreamManager::ChangeMediaStreamSourceFromBrowser,
@@ -3573,7 +3581,12 @@ void MediaStreamManager::MaybeUpdateTrackedCaptureHandleConfigs(
     GlobalRenderFrameHostId capturer) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  blink::mojom::StreamDevices filtered_new_devices;
+  blink::mojom::StreamDevicesSetPtr filtered_new_devices_set =
+      blink::mojom::StreamDevicesSet::New();
+  filtered_new_devices_set->stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  blink::mojom::StreamDevices& filtered_new_devices =
+      *filtered_new_devices_set->stream_devices[0];
   if (new_devices.video_device.has_value() &&
       WebContentsMediaCaptureId::Parse(new_devices.video_device->id, nullptr)) {
     filtered_new_devices.video_device = new_devices.video_device.value();
@@ -3587,7 +3600,7 @@ void MediaStreamManager::MaybeUpdateTrackedCaptureHandleConfigs(
       base::BindOnce(
           &CaptureHandleManager::OnTabCaptureDevicesUpdated,
           base::Unretained(&capture_handle_manager_), label,
-          std::move(filtered_new_devices), capturer,
+          std::move(filtered_new_devices_set), capturer,
           base::BindPostTask(
               GetIOThreadTaskRunner({}),
               base::BindRepeating(&MediaStreamManager::OnCaptureHandleChange,

@@ -3214,11 +3214,11 @@ TEST_F(WebContentsImplTest, RequestMediaAccessPermissionNoDelegate) {
   contents()->RequestMediaAccessPermission(
       dummy_request,
       base::BindLambdaForTesting(
-          [&callback_run](const blink::mojom::StreamDevices& stream_devices,
-                          blink::mojom::MediaStreamRequestResult result,
-                          std::unique_ptr<MediaStreamUI> ui) {
-            EXPECT_FALSE(stream_devices.audio_device.has_value());
-            EXPECT_FALSE(stream_devices.video_device.has_value());
+          [&callback_run](
+              const blink::mojom::StreamDevicesSet& stream_devices_set,
+              blink::mojom::MediaStreamRequestResult result,
+              std::unique_ptr<MediaStreamUI> ui) {
+            EXPECT_TRUE(stream_devices_set.stream_devices.empty());
             EXPECT_EQ(
                 result,
                 blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN);
