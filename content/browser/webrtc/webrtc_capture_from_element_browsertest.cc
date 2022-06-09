@@ -119,8 +119,9 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                   kCanvasCaptureTestHtmlFile);
 }
 
+// TODO(crbug.com/1334909): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
-                       VerifyCanvasCaptureBitmapRendererFrames) {
+                       DISABLED_VerifyCanvasCaptureBitmapRendererFrames) {
   MakeTypicalCall("testCanvasCapture(drawBitmapRenderer);",
                   kCanvasCaptureTestHtmlFile);
 }
