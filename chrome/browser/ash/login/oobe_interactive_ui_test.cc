@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "content/public/test/browser_test.h"
@@ -394,6 +395,25 @@ void HandleGestureNavigationScreen() {
   }
 
   OobeScreenExitWaiter(GestureNavigationScreenView::kScreenId).Wait();
+}
+
+// Waits for theme selection to get shown, then taps through the screen
+// and waits for the screen to exit.
+void HandleThemeSelectionScreen() {
+  OobeScreenWaiter(ThemeSelectionScreenView::kScreenId).Wait();
+
+  // Enable the tablet mode shelf navigation buttons so that the next button
+  // is shown on the marketing opt in screen in tablet mode.
+  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, true);
+
+  test::OobeJS().CreateVisibilityWaiter(true, {"theme-selection"})->Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, {"theme-selection", "nextButton"})
+      ->Wait();
+  test::OobeJS().TapOnPath({"theme-selection", "nextButton"});
+
+  OobeScreenExitWaiter(ThemeSelectionScreenView::kScreenId).Wait();
 }
 
 // Waits for marketing opt in screen to get shown, then taps through the screen
@@ -799,6 +819,11 @@ void OobeInteractiveUITest::PerformSessionSignInSteps(bool is_managed) {
     HandleGestureNavigationScreen();
   }
 
+  if (features::IsDarkLightModeEnabled() &&
+      features::IsOobeThemeSelectionEnabled()) {
+    HandleThemeSelectionScreen();
+  }
+
   HandleMarketingOptInScreen();
 }
 
@@ -1144,6 +1169,12 @@ IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, DISABLED_RegularEphemeralUser) {
   if (test_setup()->is_tablet() &&
       test_setup()->hide_shelf_controls_in_tablet_mode()) {
     HandleGestureNavigationScreen();
+
+    if (features::IsDarkLightModeEnabled() &&
+        features::IsOobeThemeSelectionEnabled()) {
+      HandleThemeSelectionScreen();
+    }
+
     HandleMarketingOptInScreen();
   }
 
