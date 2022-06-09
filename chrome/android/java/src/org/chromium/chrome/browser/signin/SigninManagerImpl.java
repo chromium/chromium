@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -471,6 +472,14 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     }
 
     /**
+     * Returns true if sign out can be started now.
+     */
+    @Override
+    public boolean isSignOutAllowed() {
+        return !Profile.getLastUsedRegularProfile().isChild();
+    }
+
+    /**
      * Signs out of Chrome. This method clears the signed-in username, stops sync and sends out a
      * sign-out notification on the native side.
      *
@@ -558,6 +567,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
     @Override
     public void onAccountsCookieDeletedByUserAction() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_CBD_SIGN_OUT)) {
+            return;
+        }
+
         // Clearing account cookies should trigger sign-out only when user is
         // signed in without sync. If the user consented for sync, then the user
         // should not be signed out, since account cookies will be rebuilt by

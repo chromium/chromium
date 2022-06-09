@@ -61,6 +61,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Tests for {@link SigninManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
+@DisableFeatures({ChromeFeatureList.ENABLE_CBD_SIGN_OUT})
 public class SigninManagerImplTest {
     private static final long NATIVE_SIGNIN_MANAGER = 10001L;
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
@@ -405,6 +406,22 @@ public class SigninManagerImplTest {
                 .clearPrimaryAccount(
                         SignoutReason.USER_DELETED_ACCOUNT_COOKIES, SignoutDelete.IGNORE_METRIC);
         // Sign-out triggered by wiping account cookies shouldn't wipe data.
+        verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
+        verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ENABLE_CBD_SIGN_OUT})
+    public void clearingAccountCookieDoesNotTriggerSignoutWhenNormalUserIsSignedInWithoutSync() {
+        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
+                     NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
+                .thenReturn(ACCOUNT_INFO);
+        mFakeAccountManagerFacade.addAccount(
+                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()));
+
+        mIdentityManager.onAccountsCookieDeletedByUserAction();
+
+        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt());
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
     }

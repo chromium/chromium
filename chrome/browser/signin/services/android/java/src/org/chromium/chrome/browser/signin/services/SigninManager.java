@@ -175,6 +175,12 @@ public interface SigninManager {
             boolean forceWipeUserData);
 
     /**
+     * Returns true if sign out can be started now.
+     * TODO(https://crbug.com/1334918): Add onSignOutAllowedChanged() in SignInStateObserver
+     */
+    boolean isSignOutAllowed();
+
+    /**
      * Invokes signOut with no callback.
      */
     default void signOut(@SignoutReason int signoutSource) {

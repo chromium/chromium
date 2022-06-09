@@ -75,6 +75,8 @@ enum ProfileSignout : int {
   // The email address of the primary account on the device was updated,
   // triggering an automatic signout followed by signin.
   ACCOUNT_EMAIL_UPDATED = 20,
+  // User clicked on sign-out from the clear browsing data page.
+  USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE = 21,
   // Keep this as the last enum.
   NUM_PROFILE_SIGNOUT_METRICS,
 };

@@ -87200,6 +87200,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     to gmail address), triggering an automatic signout followed by signin.
     Android only.
   </int>
+  <int value="21" label="User clicked signout from clear browsing data page">
+    User clicked sign-out in the clear browsing data page.
+  </int>
 </enum>
 
 <enum name="SigninSource">
