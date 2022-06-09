@@ -264,7 +264,7 @@ public class MainSettingsFragmentTest {
 
         verify(mMockSyncConsentActivityLauncher)
                 .launchActivityForPromoDefaultFlow(any(Activity.class),
-                        eq(SigninAccessPoint.SETTINGS), eq(accountInfo.getEmail()));
+                        eq(SigninAccessPoint.SETTINGS_SYNC_OFF_ROW), eq(accountInfo.getEmail()));
     }
 
     @Test
@@ -285,7 +285,7 @@ public class MainSettingsFragmentTest {
 
         verify(mMockSyncConsentActivityLauncher)
                 .launchActivityForPromoDefaultFlow(any(Activity.class),
-                        eq(SigninAccessPoint.SETTINGS), eq(accountInfo.getEmail()));
+                        eq(SigninAccessPoint.SETTINGS_SYNC_OFF_ROW), eq(accountInfo.getEmail()));
     }
 
     @Test

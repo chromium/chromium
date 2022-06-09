@@ -307,10 +307,11 @@ public class MainSettings extends PreferenceFragmentCompat
                 settingsLauncher.launchSettingsActivity(context, ManageSyncSettings.class);
             } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)) {
                 TangibleSyncCoordinator.start(requireContext(), mModalDialogManagerSupplier.get(),
-                        SyncConsentActivityLauncherImpl.get(), SigninAccessPoint.SETTINGS);
+                        SyncConsentActivityLauncherImpl.get(),
+                        SigninAccessPoint.SETTINGS_SYNC_OFF_ROW);
             } else {
                 SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                        context, SigninAccessPoint.SETTINGS, primaryAccountName);
+                        context, SigninAccessPoint.SETTINGS_SYNC_OFF_ROW, primaryAccountName);
             }
             return true;
         });

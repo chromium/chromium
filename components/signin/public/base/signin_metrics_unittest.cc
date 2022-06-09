@@ -145,6 +145,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "SendTabToSelfPromo";
       case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
         return "NTPFeedTopPromo";
+      case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
+        return "SettingsSyncOffRow";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";
