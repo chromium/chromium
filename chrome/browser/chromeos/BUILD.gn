@@ -1035,6 +1035,8 @@ source_set("chromeos") {
     "../ash/lock_screen_apps/first_app_run_toast_manager.cc",
     "../ash/lock_screen_apps/first_app_run_toast_manager.h",
     "../ash/lock_screen_apps/focus_cycler_delegate.h",
+    "../ash/lock_screen_apps/lock_screen_helper.cc",
+    "../ash/lock_screen_apps/lock_screen_helper.h",
     "../ash/lock_screen_apps/lock_screen_profile_creator.cc",
     "../ash/lock_screen_apps/lock_screen_profile_creator.h",
     "../ash/lock_screen_apps/lock_screen_profile_creator_impl.cc",

@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_helper.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -73,15 +74,15 @@ enum class AppUnloadStatus {
 };
 
 ActionAvailability ToActionAvailability(
-    ash::NoteTakingLockScreenSupport lock_screen_support) {
+    ash::LockScreenAppSupport lock_screen_support) {
   switch (lock_screen_support) {
-    case ash::NoteTakingLockScreenSupport::kNotSupported:
+    case ash::LockScreenAppSupport::kNotSupported:
       return ActionAvailability::kAppNotSupportingLockScreen;
-    case ash::NoteTakingLockScreenSupport::kSupported:
+    case ash::LockScreenAppSupport::kSupported:
       return ActionAvailability::kActionNotEnabledOnLockScreen;
-    case ash::NoteTakingLockScreenSupport::kNotAllowedByPolicy:
+    case ash::LockScreenAppSupport::kNotAllowedByPolicy:
       return ActionAvailability::kDisallowedByPolicy;
-    case ash::NoteTakingLockScreenSupport::kEnabled:
+    case ash::LockScreenAppSupport::kEnabled:
       return ActionAvailability::kAvailable;
   }
 
@@ -352,8 +353,9 @@ void AppManagerImpl::UpdateLockScreenAppState() {
 std::string AppManagerImpl::FindLockScreenAppId() const {
   ash::NoteTakingHelper* helper = ash::NoteTakingHelper::Get();
   std::string app_id = helper->GetPreferredAppId(primary_profile_);
-  ash::NoteTakingLockScreenSupport lock_screen_support =
-      helper->GetLockScreenSupportForApp(primary_profile_, app_id);
+  ash::LockScreenAppSupport lock_screen_support =
+      ash::LockScreenHelper::GetInstance().GetLockScreenSupportForApp(
+          primary_profile_, app_id);
 
   ActionAvailability availability =
       app_id.empty() ? ActionAvailability::kNoActionHandlerApp

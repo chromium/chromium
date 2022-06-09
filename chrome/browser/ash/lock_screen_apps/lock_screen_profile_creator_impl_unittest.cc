@@ -21,6 +21,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_helper.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -246,6 +247,7 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
 
     AddTestUserProfile();
 
+    ash::LockScreenHelper::GetInstance().Initialize(primary_profile_);
     lock_screen_profile_creator_ =
         std::make_unique<LockScreenProfileCreatorImpl>(primary_profile_,
                                                        &tick_clock_);
@@ -254,6 +256,7 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
   void TearDown() override {
     lock_screen_profile_creator_.reset();
     arc_session_manager_.reset();
+    ash::LockScreenHelper::GetInstance().Shutdown();
     ash::NoteTakingHelper::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
 
@@ -360,9 +363,6 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
     profile_manager_->RegisterTestingProfile(std::move(primary_profile),
                                              false /*add_to_storage*/);
     InitExtensionSystem(primary_profile_);
-
-    ash::NoteTakingHelper::Get()->SetProfileWithEnabledLockScreenApps(
-        primary_profile_);
   }
 
   base::ScopedTempDir user_data_dir_;

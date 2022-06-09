@@ -39,12 +39,12 @@ void LockScreenProfileCreatorImpl::OnPreferredNoteTakingAppUpdated(
 
   ash::NoteTakingHelper* helper = ash::NoteTakingHelper::Get();
   std::string app_id = helper->GetPreferredAppId(primary_profile_);
-  ash::NoteTakingLockScreenSupport support =
-      helper->GetLockScreenSupportForApp(primary_profile_, app_id);
+  ash::LockScreenAppSupport support =
+      ash::LockScreenHelper::GetInstance().GetLockScreenSupportForApp(
+          primary_profile_, app_id);
 
-  if (support != ash::NoteTakingLockScreenSupport::kEnabled) {
+  if (support != ash::LockScreenAppSupport::kEnabled)
     return;
-  }
 
   // Lock screen profile creation should be attempted only once - stop observing
   // note taking apps status so profile creation is not attempted again if lock

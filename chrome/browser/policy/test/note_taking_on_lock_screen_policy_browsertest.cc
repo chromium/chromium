@@ -62,9 +62,9 @@ class NoteTakingOnLockScreenPolicyTest : public ExtensionPolicyTestBase {
     UpdateProviderPolicy(policies);
   }
 
-  ash::NoteTakingLockScreenSupport GetLockScreenSupportForApp(
+  ash::LockScreenAppSupport GetLockScreenSupportForApp(
       const std::string& app_id) {
-    return ash::NoteTakingHelper::Get()->GetLockScreenSupportForApp(
+    return ash::LockScreenHelper::GetInstance().GetLockScreenSupportForApp(
         browser()->profile(), app_id);
   }
 
@@ -83,15 +83,15 @@ IN_PROC_BROWSER_TEST_F(NoteTakingOnLockScreenPolicyTest,
   ASSERT_EQ(kTestAppId, app->id());
 
   SetUserLevelPrefValue(app->id(), true);
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kEnabled,
+  EXPECT_EQ(ash::LockScreenAppSupport::kEnabled,
             GetLockScreenSupportForApp(app->id()));
 
   SetPolicyValue(base::Value(base::Value::Type::LIST));
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kNotAllowedByPolicy,
+  EXPECT_EQ(ash::LockScreenAppSupport::kNotAllowedByPolicy,
             GetLockScreenSupportForApp(app->id()));
 
   SetPolicyValue(absl::nullopt);
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kEnabled,
+  EXPECT_EQ(ash::LockScreenAppSupport::kEnabled,
             GetLockScreenSupportForApp(app->id()));
 }
 
@@ -103,18 +103,18 @@ IN_PROC_BROWSER_TEST_F(NoteTakingOnLockScreenPolicyTest,
   ASSERT_EQ(kTestAppId, app->id());
 
   SetUserLevelPrefValue(app->id(), false);
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kSupported,
+  EXPECT_EQ(ash::LockScreenAppSupport::kSupported,
             GetLockScreenSupportForApp(app->id()));
 
   base::Value policy(base::Value::Type::LIST);
   policy.Append(kTestAppId);
   SetPolicyValue(std::move(policy));
 
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kSupported,
+  EXPECT_EQ(ash::LockScreenAppSupport::kSupported,
             GetLockScreenSupportForApp(app->id()));
 
   SetUserLevelPrefValue(app->id(), true);
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kEnabled,
+  EXPECT_EQ(ash::LockScreenAppSupport::kEnabled,
             GetLockScreenSupportForApp(app->id()));
 }
 

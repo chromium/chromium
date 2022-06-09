@@ -29,6 +29,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_helper.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/note_taking_controller_client.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -82,14 +83,12 @@ using LaunchResult = NoteTakingHelper::LaunchResult;
 
 namespace {
 
-constexpr NoteTakingLockScreenSupport kNotSupported =
-    NoteTakingLockScreenSupport::kNotSupported;
-constexpr NoteTakingLockScreenSupport kNotAllowedByPolicy =
-    NoteTakingLockScreenSupport::kNotAllowedByPolicy;
-constexpr NoteTakingLockScreenSupport kSupported =
-    NoteTakingLockScreenSupport::kSupported;
-constexpr NoteTakingLockScreenSupport kEnabled =
-    NoteTakingLockScreenSupport::kEnabled;
+constexpr LockScreenAppSupport kNotSupported =
+    LockScreenAppSupport::kNotSupported;
+constexpr LockScreenAppSupport kNotAllowedByPolicy =
+    LockScreenAppSupport::kNotAllowedByPolicy;
+constexpr LockScreenAppSupport kSupported = LockScreenAppSupport::kSupported;
+constexpr LockScreenAppSupport kEnabled = LockScreenAppSupport::kEnabled;
 
 auto& kDevKeepExtensionId = NoteTakingHelper::kDevKeepExtensionId;
 auto& kProdKeepExtensionId = NoteTakingHelper::kProdKeepExtensionId;
@@ -106,7 +105,7 @@ const char kDevKeepAppName[] = "Google Keep [dev]";
 std::string GetAppString(const std::string& id,
                          const std::string& name,
                          bool preferred,
-                         NoteTakingLockScreenSupport lock_screen_support) {
+                         LockScreenAppSupport lock_screen_support) {
   return base::StringPrintf("{%s, %s, %d, %d}", id.c_str(), name.c_str(),
                             preferred, static_cast<int>(lock_screen_support));
 }
@@ -187,6 +186,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
           ->arc_bridge_service()
           ->file_system()
           ->CloseInstance(file_system_.get());
+      LockScreenHelper::GetInstance().Shutdown();
       NoteTakingHelper::Shutdown();
       intent_helper_host_.reset();
       file_system_bridge_.reset();
@@ -210,6 +210,10 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   };
 
   static NoteTakingHelper* helper() { return NoteTakingHelper::Get(); }
+
+  static LockScreenHelper& lock_screen_helper() {
+    return LockScreenHelper::GetInstance();
+  }
 
   NoteTakingControllerClient* note_taking_client() {
     return helper()->GetNoteTakingControllerClientForTesting();
@@ -261,10 +265,10 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     profile()->GetPrefs()->SetBoolean(arc::prefs::kArcEnabled,
                                       flags & ENABLE_PLAY_STORE);
     NoteTakingHelper::Initialize();
-    NoteTakingHelper::Get()->SetProfileWithEnabledLockScreenApps(profile());
     NoteTakingHelper::Get()->set_launch_chrome_app_callback_for_test(
         base::BindRepeating(&NoteTakingHelperTest::LaunchChromeApp,
                             base::Unretained(this)));
+    LockScreenHelper::GetInstance().Initialize(profile());
   }
 
   // Creates an extension.
@@ -517,9 +521,9 @@ TEST_F(NoteTakingHelperTest, ListChromeApps) {
                                      {kProdKeepAppName, kProdKeepExtensionId,
                                       true /*preferred*/, kNotSupported}}));
   EXPECT_EQ(helper()->GetPreferredAppId(profile()), kProdKeepExtensionId);
-  EXPECT_EQ(
-      helper()->GetLockScreenSupportForApp(profile(), kProdKeepExtensionId),
-      kNotSupported);
+  EXPECT_EQ(lock_screen_helper().GetLockScreenSupportForApp(
+                profile(), kProdKeepExtensionId),
+            kNotSupported);
 }
 
 TEST_F(NoteTakingHelperTest, ListChromeAppsWithLockScreenNotesSupported) {
@@ -585,9 +589,9 @@ TEST_F(NoteTakingHelperTest, PreferredAppEnabledOnLockScreen) {
       profile(),
       {{kDevKeepAppName, kDevKeepExtensionId, true /*preferred*/, kEnabled}}));
   EXPECT_EQ(helper()->GetPreferredAppId(profile()), kDevKeepExtensionId);
-  EXPECT_EQ(
-      helper()->GetLockScreenSupportForApp(profile(), kDevKeepExtensionId),
-      kEnabled);
+  EXPECT_EQ(lock_screen_helper().GetLockScreenSupportForApp(
+                profile(), kDevKeepExtensionId),
+            kEnabled);
 
   helper()->SetPreferredAppEnabledOnLockScreen(profile(), false);
 
@@ -595,9 +599,9 @@ TEST_F(NoteTakingHelperTest, PreferredAppEnabledOnLockScreen) {
       AvailableAppsMatch(profile(), {{kDevKeepAppName, kDevKeepExtensionId,
                                       true /*preferred*/, kSupported}}));
   EXPECT_EQ(helper()->GetPreferredAppId(profile()), kDevKeepExtensionId);
-  EXPECT_EQ(
-      helper()->GetLockScreenSupportForApp(profile(), kDevKeepExtensionId),
-      kSupported);
+  EXPECT_EQ(lock_screen_helper().GetLockScreenSupportForApp(
+                profile(), kDevKeepExtensionId),
+            kSupported);
 }
 
 TEST_F(NoteTakingHelperTest, PreferredAppWithNoLockScreenPermission) {
@@ -617,9 +621,9 @@ TEST_F(NoteTakingHelperTest, PreferredAppWithNoLockScreenPermission) {
       AvailableAppsMatch(profile(), {{kDevKeepAppName, kDevKeepExtensionId,
                                       true /*preferred*/, kNotSupported}}));
   EXPECT_EQ(helper()->GetPreferredAppId(profile()), kDevKeepExtensionId);
-  EXPECT_EQ(
-      helper()->GetLockScreenSupportForApp(profile(), kDevKeepExtensionId),
-      kNotSupported);
+  EXPECT_EQ(lock_screen_helper().GetLockScreenSupportForApp(
+                profile(), kDevKeepExtensionId),
+            kNotSupported);
 }
 
 TEST_F(NoteTakingHelperTest,
@@ -667,8 +671,9 @@ TEST_F(NoteTakingHelperTest,
       {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/, kEnabled},
        {kName, kNewNoteId, true /*preferred*/, kNotSupported}}));
   EXPECT_EQ(helper()->GetPreferredAppId(profile()), kNewNoteId);
-  EXPECT_EQ(helper()->GetLockScreenSupportForApp(profile(), kNewNoteId),
-            kNotSupported);
+  EXPECT_EQ(
+      lock_screen_helper().GetLockScreenSupportForApp(profile(), kNewNoteId),
+      kNotSupported);
 }
 
 // Verify the note helper detects apps with "new_note" "action_handler" manifest
@@ -1002,7 +1007,8 @@ TEST_F(NoteTakingHelperTest, ListAndroidApps) {
                   {kName2, kPackage2, false /*preferred*/, kNotSupported}}));
   // Preferred app is not actually installed, so no app ID should be returned.
   EXPECT_TRUE(helper()->GetPreferredAppId(profile()).empty());
-  EXPECT_EQ(helper()->GetLockScreenSupportForApp(profile(), ""), kNotSupported);
+  EXPECT_EQ(lock_screen_helper().GetLockScreenSupportForApp(profile(), ""),
+            kNotSupported);
 
   // Disable Play Store and check that the apps are no longer returned.
   profile()->GetPrefs()->SetBoolean(arc::prefs::kArcEnabled, false);
@@ -1291,7 +1297,7 @@ TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
       CreateAndInstallLockScreenAppWithPermissions(
           kUnsupportedAppId, kUnsupportedAppName, nullptr, profile());
 
-  // Disabling preffered app on lock screen should fail if there is no preferred
+  // Disabling preferred app on lock screen should fail if there is no preferred
   // app.
   EXPECT_FALSE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), true));
 
@@ -1515,8 +1521,8 @@ TEST_F(NoteTakingHelperTest, LockScreenSupportInSecondaryProfile) {
                                   {kUnsupportedAppName, kUnsupportedAppId,
                                    false /*preferred*/, kNotSupported}}));
   EXPECT_EQ(helper()->GetPreferredAppId(second_profile), kProdKeepExtensionId);
-  EXPECT_EQ(helper()->GetLockScreenSupportForApp(second_profile,
-                                                 kProdKeepExtensionId),
+  EXPECT_EQ(lock_screen_helper().GetLockScreenSupportForApp(
+                second_profile, kProdKeepExtensionId),
             kNotSupported);
 }
 

@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/lock_screen_apps/app_window_metrics_tracker.h"
 #include "chrome/browser/ash/lock_screen_apps/first_app_run_toast_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_helper.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator_impl.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -172,6 +173,7 @@ void StateController::Shutdown() {
     app_manager_.reset();
   }
   first_app_run_toast_manager_.reset();
+  ash::LockScreenHelper::GetInstance().Shutdown();
   lock_screen_profile_creator_.reset();
   focus_cycler_delegate_ = nullptr;
   power_manager_client_observation_.Reset();
@@ -212,7 +214,7 @@ void StateController::InitializeWithCryptoKey(Profile* profile,
           base_path.AppendASCII("lock_screen_app_data_v2"));
   lock_screen_data_->SetSessionLocked(false);
 
-  ash::NoteTakingHelper::Get()->SetProfileWithEnabledLockScreenApps(profile);
+  ash::LockScreenHelper::GetInstance().Initialize(profile);
 
   // Lock screen profile creator might have been set by a test.
   if (!lock_screen_profile_creator_) {

@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/fake_lock_screen_profile_creator.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_helper.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -173,8 +174,7 @@ class LockScreenAppManagerImplTest
             base::BindRepeating(&ArcSessionFactory)));
 
     ash::NoteTakingHelper::Initialize();
-    ash::NoteTakingHelper::Get()->SetProfileWithEnabledLockScreenApps(
-        profile());
+    ash::LockScreenHelper::GetInstance().Initialize(profile());
 
     lock_screen_profile_creator_ =
         std::make_unique<lock_screen_apps::FakeLockScreenProfileCreator>(
@@ -191,6 +191,7 @@ class LockScreenAppManagerImplTest
     app_manager_.reset();
 
     lock_screen_profile_creator_.reset();
+    ash::LockScreenHelper::GetInstance().Shutdown();
     ash::NoteTakingHelper::Shutdown();
     arc_session_manager_.reset();
     extensions::ExtensionSystem::Get(profile())->Shutdown();
