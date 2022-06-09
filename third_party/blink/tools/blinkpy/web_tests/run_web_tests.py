@@ -351,9 +351,9 @@ def parse_args(args):
             optparse.make_option(
                 '--enable-tracing',
                 type='string',
-                help='Capture and write a trace file with the specied '
+                help='Capture and write a trace file with the specified '
                 'categories for each test. Passes appropriate --trace-startup '
-                'flags to the driver.'),
+                'flags to the driver. If in doubt, use "*".'),
             optparse.make_option(
                 '--exit-after-n-crashes-or-timeouts',
                 type='int',
