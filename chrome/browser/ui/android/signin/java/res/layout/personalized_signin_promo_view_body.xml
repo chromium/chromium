@@ -29,6 +29,7 @@
         android:gravity="center"
         android:lineSpacingMultiplier="1.25"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:includeFontPadding="false"
         android:visibility="gone"
         tools:text="@string/sync_promo_title_settings"/>
 
@@ -42,6 +43,7 @@
         android:gravity="center"
         android:lineSpacingMultiplier="1.25"
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        android:includeFontPadding="false"
         tools:text="@string/sync_promo_description_settings"/>
 
     <TextView

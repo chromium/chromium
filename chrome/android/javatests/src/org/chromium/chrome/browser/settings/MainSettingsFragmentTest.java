@@ -111,7 +111,7 @@ import java.util.HashSet;
 public class MainSettingsFragmentTest {
     private static final String SEARCH_ENGINE_SHORT_NAME = "Google";
 
-    private static final int RENDER_TEST_REVISION = 5;
+    private static final int RENDER_TEST_REVISION = 6;
 
     private final HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
@@ -417,6 +417,8 @@ public class MainSettingsFragmentTest {
                 mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
     }
 
+    // TODO(crbug.com/1334912): This test should be removed, since we have a similar test in
+    // SigninPromoControllerRenderTest.
     @Test
     @LargeTest
     @Feature({"RenderTest"})

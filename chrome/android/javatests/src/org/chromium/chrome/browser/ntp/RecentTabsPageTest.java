@@ -71,7 +71,7 @@ public class RecentTabsPageTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(3)
+                    .setRevision(4)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_RECENT_TABS)
                     .build();
 
@@ -239,6 +239,8 @@ public class RecentTabsPageTest {
         waitForViewToDisappear(eventString);
     }
 
+    // TODO(crbug.com/1334912): This test should be removed, since we have a similar test in
+    // SigninPromoControllerRenderTest.
     @Test
     @LargeTest
     @Feature("RenderTest")
@@ -254,6 +256,8 @@ public class RecentTabsPageTest {
                         ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
     }
 
+    // TODO(crbug.com/1334912): This test should be removed, since we have a similar test in
+    // SigninPromoControllerRenderTest.
     @Test
     @LargeTest
     @Feature("RenderTest")
