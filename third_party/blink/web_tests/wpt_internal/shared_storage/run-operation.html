@@ -15,5 +15,17 @@ promise_test(() => {
     {data: {'custom-key': 'custom-value'}});
 }, 'run() with custom data');
 
+promise_test(async t => {
+  try {
+    const blob = new Blob(["abc"], {type: 'text/plain'});
+    await sharedStorage.run("operation1", {data: blob});
+  } catch (e) {
+    assert_equals(e.name, 'Error');
+    assert_equals(e.message, '#<Blob> could not be cloned.');
+    return;
+  }
+  assert_unreached("did not reject");
+}, 'run() with unsupported serializable type');
+
 </script>
 </body>
