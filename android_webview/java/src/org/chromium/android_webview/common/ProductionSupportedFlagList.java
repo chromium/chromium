@@ -340,6 +340,8 @@ public final class ProductionSupportedFlagList {
                     "Run tasks in queue for 8ms before before sending a system message."),
             Flag.baseFeature(BlinkFeatures.OFFSET_PARENT_NEW_SPEC_BEHAVIOR,
                     "Enables new HTMLElement.offsetParent behavior to match other browsers."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_RECORD_APP_DATA_DIRECTORY_SIZE,
+                    "Record the size of the embedding app's data directory")
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

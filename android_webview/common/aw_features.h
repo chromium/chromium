@@ -32,6 +32,7 @@ extern const base::Feature kWebViewLegacyTlsSupport;
 extern const base::Feature kWebViewMeasureScreenCoverage;
 extern const base::Feature kWebViewMixedContentAutoupgrades;
 extern const base::Feature kWebViewOriginTrials;
+extern const base::Feature kWebViewRecordAppDataDirectorySize;
 extern const base::Feature kWebViewSendVariationsHeaders;
 extern const base::Feature kWebViewSuppressDifferentOriginSubframeJSDialogs;
 extern const base::Feature kWebViewTestFeature;

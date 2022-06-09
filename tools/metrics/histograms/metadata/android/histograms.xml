@@ -3490,6 +3490,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.AppDataDirectory.Size" units="KiB"
+    expires_after="2022-12-01">
+  <owner>xiaq@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Size on disk taken by the embedding app's data directory, recorded once per
+    WebView startup after a small delay.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.AppDataDirectory.TimeToComputeSize" units="ms"
+    expires_after="2022-12-01">
+  <owner>xiaq@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Time to compute the size on disk taken by the embedding app's data
+    directory, recorded once per WebView startup after a small delay.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Callback.Counts" enum="WebViewCallbackType"
     expires_after="2022-11-13">
   <owner>ntfschr@chromium.org</owner>

@@ -89,6 +89,11 @@ const base::Feature kWebViewMeasureScreenCoverage{
 const base::Feature kWebViewOriginTrials{"WebViewOriginTrials",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Whether to record size of the embedding app's data directory to the UMA
+// histogram Android.WebView.AppDataDirectorySize.
+const base::Feature kWebViewRecordAppDataDirectorySize{
+    "WebViewRecordAppDataDirectorySize", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Whether WebView will send variations headers on URLs where applicable.
 const base::Feature kWebViewSendVariationsHeaders{
     "WebViewSendVariationsHeaders", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -56239,7 +56239,6 @@ from previous Chrome versions.
   <int value="-1151615978" label="BorealisBigGl:disabled"/>
   <int value="-1151476162" label="LacrosMergeIcuDataFile:disabled"/>
   <int value="-1151014496" label="NearbySharingDeviceContacts:disabled"/>
-  <int value="-1149544733" label="OffsetparentNewSpecBehavior:enabled"/>
   <int value="-1146814438" label="TabbedAppOverflowMenuIcons:enabled"/>
   <int value="-1146310028" label="HardwareSecureDecryptionFallback:enabled"/>
   <int value="-1145905507" label="SendTabToSelfWhenSignedIn:disabled"/>
@@ -57810,7 +57809,6 @@ from previous Chrome versions.
   <int value="-92116820" label="InlineUpdateFlow:enabled"/>
   <int value="-91767554" label="enable-de-jelly"/>
   <int value="-91370149" label="UseSerialBusEnumerator:enabled"/>
-  <int value="-90799024" label="OffsetparentNewSpecBehavior:disabled"/>
   <int value="-90521375" label="PDFTwoUpView:enabled"/>
   <int value="-90032223" label="BuiltInModuleInfra:disabled"/>
   <int value="-89690053" label="MaterialDesignUserManager:enabled"/>
@@ -58625,6 +58623,7 @@ from previous Chrome versions.
   <int value="427184788" label="WebFeed:enabled"/>
   <int value="427807224" label="IPH_Snooze:disabled"/>
   <int value="427945554" label="StrictExtensionIsolation:enabled"/>
+  <int value="428554364" label="OffsetParentNewSpecBehavior:disabled"/>
   <int value="430776375" label="TextureLayerSkipWaitForActivation:disabled"/>
   <int value="430959979" label="SyncStandaloneTransport:disabled"/>
   <int value="431691805" label="MediaDocumentDownloadButton:enabled"/>
@@ -59117,6 +59116,7 @@ from previous Chrome versions.
   <int value="749516419" label="DragToSnapInClamshellMode:disabled"/>
   <int value="749994865" label="MessagesForAndroidSyncError:enabled"/>
   <int value="750028579" label="CommerceCoupons:disabled"/>
+  <int value="751862578" label="OffsetParentNewSpecBehavior:enabled"/>
   <int value="752194066" label="enable-app-window-cycling"/>
   <int value="752416911" label="FastPair:disabled"/>
   <int value="752939691" label="disable-tab-for-desktop-share"/>
@@ -61047,6 +61047,7 @@ from previous Chrome versions.
   <int value="2032880973" label="U2FSecurityKeyAPI:disabled"/>
   <int value="2034198538" label="TabHoverCards:enabled"/>
   <int value="2035415906" label="Win11StyleMenus:enabled"/>
+  <int value="2035524582" label="WebViewRecordAppDataDirectorySize:disabled"/>
   <int value="2037562553" label="OmniboxBubbleUrlSuggestions:disabled"/>
   <int value="2037756154" label="enable-impl-side-painting"/>
   <int value="2038036881" label="NewShortcutMapping:enabled"/>
@@ -61202,6 +61203,7 @@ from previous Chrome versions.
   <int value="2142661816" label="AllowRemoteContextForNotifications:disabled"/>
   <int value="2142979536" label="EnableManualFallbacksFilling:disabled"/>
   <int value="2144581598" label="UpcomingSharingFeatures:enabled"/>
+  <int value="2145140507" label="WebViewRecordAppDataDirectorySize:enabled"/>
 </enum>
 
 <enum name="LoginDatabaseInitError">
