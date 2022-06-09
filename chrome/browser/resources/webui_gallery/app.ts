@@ -33,6 +33,10 @@ export class WebuiGalleryAppElement extends PolymerElement {
             {
               name: 'cr-checkbox demo',
               url: 'cr_checkbox_demo.html',
+            },
+            {
+              name: 'cr-dialog demo',
+              url: 'cr_dialog_demo.html',
             }
           ];
         },

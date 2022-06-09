@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 # Files holding a Polymer element definition AND have an equivalent .html file.
-web_component_files = [ "app.ts" ]
+web_component_files = [
+  "app.ts",
+  "demos/cr_dialog_demo_component.ts",
+]
 
 # Files that are passed as input to html_to_wrapper().
 html_files = []

@@ -32,6 +32,7 @@ generate_grd("build_grd") {
     "demos/demo.css",
     "demos/cr_button_demo.html",
     "demos/cr_checkbox_demo.html",
+    "demos/cr_dialog_demo.html",
     "webui_gallery.html",
   ]
   input_files_base_dir = rebase_path(".", "//")
@@ -45,7 +46,7 @@ html_to_wrapper("html_wrapper_files") {
 
 copy("copy_ts_files") {
   sources = ts_files
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+  outputs = [ "$target_gen_dir/{{source_target_relative}}" ]
 }
 
 ts_library("build_ts") {
