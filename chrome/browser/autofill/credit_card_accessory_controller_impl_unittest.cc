@@ -92,8 +92,7 @@ class CreditCardAccessoryControllerTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kAutofillEnableMerchantBoundVirtualCards,
-         features::kAutofillEnableManualFallbackForVirtualCards,
+        {features::kAutofillEnableManualFallbackForVirtualCards,
          features::kAutofillShowUnmaskedCachedCardInManualFillingView},
         /*disabled_features=*/{features::kAutofillFillMerchantPromoCodeFields});
     ChromeRenderViewHostTestHarness::SetUp();
@@ -166,8 +165,7 @@ class CreditCardAccessoryControllerTestSupportingPromoCodeOffers
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kAutofillEnableMerchantBoundVirtualCards,
-         features::kAutofillShowUnmaskedCachedCardInManualFillingView,
+        {features::kAutofillShowUnmaskedCachedCardInManualFillingView,
          features::kAutofillFillMerchantPromoCodeFields},
         /*disabled_features=*/{});
     ChromeRenderViewHostTestHarness::SetUp();

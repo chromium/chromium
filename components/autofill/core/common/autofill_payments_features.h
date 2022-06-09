@@ -22,7 +22,6 @@ extern const base::Feature kAutofillAutoTriggerManualFallbackForCards;
 extern const base::Feature kAutofillCreditCardAuthentication;
 extern const base::Feature kAutofillCreditCardUploadFeedback;
 extern const base::Feature kAutofillEnableManualFallbackForVirtualCards;
-extern const base::Feature kAutofillEnableMerchantBoundVirtualCards;
 extern const base::Feature kAutofillEnableOfferNotificationForPromoCodes;
 extern const base::Feature kAutofillEnableOffersInClankKeyboardAccessory;
 extern const base::Feature kAutofillEnableSendingBcnInGetUploadDetails;
@@ -37,8 +36,6 @@ extern const base::Feature
 extern const base::Feature kAutofillEnableVirtualCardMetadata;
 extern const base::Feature kAutofillEnforceDelaysInStrikeDatabase;
 extern const base::Feature kAutofillFillMerchantPromoCodeFields;
-extern const base::FeatureParam<int>
-    kAutofillImageFetcherDiskCacheExpirationInMinutes;
 extern const base::Feature kAutofillParseMerchantPromoCodeFields;
 extern const base::Feature kAutofillRemoveCardExpiryFromDownstreamSuggestion;
 extern const base::Feature kAutofillSaveCardDismissOnNavigation;

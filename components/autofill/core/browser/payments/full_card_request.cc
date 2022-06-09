@@ -297,14 +297,9 @@ void FullCardRequest::OnDidGetRealPan(
       // to avoid an unwanted registration prompt.
       unmask_response_details_ = response_details;
 
-      const std::u16string cvc =
-          (base::FeatureList::IsEnabled(
-               features::kAutofillAlwaysReturnCloudTokenizedCard) ||
-           base::FeatureList::IsEnabled(
-               features::kAutofillEnableMerchantBoundVirtualCards)) &&
-                  !response_details.dcvv.empty()
-              ? base::UTF8ToUTF16(response_details.dcvv)
-              : request_->user_response.cvc;
+      const std::u16string cvc = !response_details.dcvv.empty()
+                                     ? base::UTF8ToUTF16(response_details.dcvv)
+                                     : request_->user_response.cvc;
       if (result_delegate_)
         result_delegate_->OnFullCardRequestSucceeded(*this, request_->card,
                                                      cvc);

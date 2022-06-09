@@ -4938,9 +4938,6 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardShownFormEvents) {
 // Test that we log specific suggestion shown form events for virtual credit
 // cards.
 TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableMerchantBoundVirtualCards);
-
   // Set up our form data.  https:// is required.
   FormData form;
   form.name = u"TestForm";

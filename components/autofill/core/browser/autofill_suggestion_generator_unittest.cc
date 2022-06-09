@@ -33,8 +33,6 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
   AutofillSuggestionGeneratorTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableMerchantBoundVirtualCards);
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     personal_data_.Init(/*profile_database=*/database_,
                         /*account_database=*/nullptr,

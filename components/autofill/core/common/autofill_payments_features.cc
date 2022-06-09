@@ -53,12 +53,6 @@ const base::Feature kAutofillCreditCardAuthentication{
 const base::Feature kAutofillCreditCardUploadFeedback{
     "AutofillCreditCardUploadFeedback", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, merchant bound virtual cards will be offered when users
-// interact with a payment form.
-const base::Feature kAutofillEnableMerchantBoundVirtualCards{
-    "AutofillEnableMerchantBoundVirtualCards",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, enable manual falling component for virtual cards on Android.
 const base::Feature kAutofillEnableManualFallbackForVirtualCards{
     "AutofillEnableManualFallbackForVirtualCards",
@@ -141,13 +135,6 @@ const base::Feature kAutofillEnforceDelaysInStrikeDatabase{
 // fields when data is available.
 const base::Feature kAutofillFillMerchantPromoCodeFields{
     "AutofillFillMerchantPromoCodeFields", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// The merchant bound virtual card feature introduces new customized card art
-// images. This parameter defines the expiration of the fetched image in the
-// disk cache of the image fetcher.
-const base::FeatureParam<int> kAutofillImageFetcherDiskCacheExpirationInMinutes{
-    &kAutofillEnableMerchantBoundVirtualCards,
-    "autofill_image_fetcher_disk_cache_expiration_in_minutes", 10};
 
 // When enabled, Autofill will attempt to find merchant promo/coupon/gift code
 // fields when parsing forms.

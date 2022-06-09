@@ -19,7 +19,9 @@
 namespace autofill {
 
 namespace {
+
 constexpr char kUmaClientName[] = "AutofillImageFetcher";
+
 constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("autofill_image_fetcher_card_art_image",
                                         R"(
@@ -48,6 +50,11 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
           }
         }
       })");
+
+// Defines the expiration of the fetched image in the disk cache of the image
+// fetcher.
+constexpr base::TimeDelta kDiskCacheExpiry = base::Minutes(10);
+
 }  // namespace
 
 ImageFetchOperation::ImageFetchOperation(size_t image_count,
@@ -121,8 +128,7 @@ void AutofillImageFetcher::FetchImageForUrl(
 
   image_fetcher::ImageFetcherParams params(kCardArtImageTrafficAnnotation,
                                            kUmaClientName);
-  params.set_hold_for_expiration_interval(base::Minutes(
-      features::kAutofillImageFetcherDiskCacheExpirationInMinutes.Get()));
+  params.set_hold_for_expiration_interval(kDiskCacheExpiry);
   image_fetcher_->FetchImage(
       card_art_url,
       base::BindOnce(&AutofillImageFetcher::OnCardArtImageFetched, operation,

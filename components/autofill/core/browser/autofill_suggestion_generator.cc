@@ -389,12 +389,6 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
     const CreditCard* candidate_card,
     const FormStructure& form_structure) const {
-  // If virtual card experiment is disabled:
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableMerchantBoundVirtualCards)) {
-    return false;
-  }
-
   // If the form is an incomplete form and the incomplete form experiment is
   // disabled, do not offer a virtual card option. We will likely not be able to
   // fill in all information, and the user doesn't have the info either.

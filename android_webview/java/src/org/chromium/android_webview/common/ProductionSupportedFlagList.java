@@ -171,9 +171,6 @@ public final class ProductionSupportedFlagList {
                             + "names and house numberse."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_FIX_FILLABLE_FIELD_TYPES,
                     "Fix how it is determined if a field type is fillable with Autofill"),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_MERCHANT_BOUND_VIRTUAL_CARDS,
-                    "When enabled, merchant bound virtual cards will be offered when users "
-                            + "interact with a payment form."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_AUGMENTED_PHONE_COUNTRY_CODE,
                     "Enables support for phone code number fields with additional text."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENFORCE_DELAYS_IN_STRIKE_DATABASE,

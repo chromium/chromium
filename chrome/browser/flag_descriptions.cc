@@ -324,12 +324,6 @@ const char kAutofillTypeSpecificPopupWidthDescription[] =
     "Controls if different width limits are used for the popup that provides "
     "Autofill suggestions, depending on the type of data that is filled.";
 
-const char kAutofillEnableMerchantBoundVirtualCardsName[] =
-    "Offer merchant bound virtual cards in Autofill";
-const char kAutofillEnableMerchantBoundVirtualCardsDescription[] =
-    "When enabled, Autofill will offer to use merchant bound virtual cards in "
-    "payment forms.";
-
 const char kAutofillEnableManualFallbackForVirtualCardsName[] =
     "Show manual fallback for virtual cards";
 const char kAutofillEnableManualFallbackForVirtualCardsDescription[] =

@@ -7854,13 +7854,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ui::kEnableInputEventLogging)},
 #endif
 
-    {"autofill-enable-merchant-bound-virtual-cards",
-     flag_descriptions::kAutofillEnableMerchantBoundVirtualCardsName,
-     flag_descriptions::kAutofillEnableMerchantBoundVirtualCardsDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableMerchantBoundVirtualCards)},
-
     {"autofill-enable-sticky-manual-fallback-for-cards",
      flag_descriptions::kAutofillEnableStickyManualFallbackForCardsName,
      flag_descriptions::kAutofillEnableStickyManualFallbackForCardsDescription,

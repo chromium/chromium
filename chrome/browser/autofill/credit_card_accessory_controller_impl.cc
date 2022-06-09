@@ -109,9 +109,7 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
 }
 
 bool ShouldCreateVirtualCard(const CreditCard* card) {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnableMerchantBoundVirtualCards) &&
-         card->virtual_card_enrollment_state() == CreditCard::ENROLLED;
+  return card->virtual_card_enrollment_state() == CreditCard::ENROLLED;
 }
 
 const CreditCard* UnwrapCardOrVirtualCard(

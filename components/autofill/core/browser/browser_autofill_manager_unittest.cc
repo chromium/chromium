@@ -8249,9 +8249,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        GetCreditCardSuggestions_VirtualCard) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillEnableMerchantBoundVirtualCards},
-      {features::kAutofillSuggestVirtualCardsOnIncompleteForm});
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillSuggestVirtualCardsOnIncompleteForm);
 
   personal_data().ClearCreditCards();
   CreditCard masked_server_card(CreditCard::MASKED_SERVER_CARD,

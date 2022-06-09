@@ -190,8 +190,6 @@ void CreditCardOtpAuthenticator::ShowOtpDialog() {
   // Before showing OTP dialog, let's load required risk data if it's not
   // prepared. Risk data is only required for unmask request. Not required for
   // select challenge option request.
-  // TODO(crbug.com/1243475): Explore the possibility of sending one
-  // LoadRiskData request per session.
   if (risk_data_.empty()) {
     autofill_client_->LoadRiskData(
         base::BindOnce(&CreditCardOtpAuthenticator::OnDidGetUnmaskRiskData,

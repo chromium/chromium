@@ -410,11 +410,6 @@
     "expiry_milestone": 106
   },
   {
-    "name": "autofill-enable-merchant-bound-virtual-cards",
-    "owners": [ "siashah", "siyua" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "autofill-enable-offer-notification-for-promo-codes",
     "owners": [ "jsaul@google.com", "siyua" ],
     "expiry_milestone": 105
