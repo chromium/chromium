@@ -284,6 +284,9 @@ class HttpBridge;
 namespace ui {
 class DrmThreadProxy;
 }
+namespace value_store {
+class LeveldbValueStore;
+}
 namespace weblayer {
 class BrowserContextImpl;
 class ContentBrowserClientImpl;
@@ -592,6 +595,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class storage::ObfuscatedFileUtil;
   friend class syncer::HttpBridge;
   friend class syncer::GetLocalChangesRequest;
+  friend class value_store::LeveldbValueStore;
   friend class webrtc::DesktopConfigurationMonitor;
 
   // Usage that should be fixed:
