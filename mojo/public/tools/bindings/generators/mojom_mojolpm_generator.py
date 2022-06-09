@@ -128,7 +128,7 @@ class Generator(CppGenerator):
         AddKind(kind.key_kind)
         AddKind(kind.value_kind)
       elif (mojom.IsStructKind(kind) or mojom.IsUnionKind(kind)
-            or mojom.IsEnumKind(kind) or mojom.IsInterfaceKind(kind)):
+            or mojom.IsEnumKind(kind)):
         name = self._GetFullMojomNameForKind(kind)
         if name in seen_types:
           return
