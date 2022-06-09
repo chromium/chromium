@@ -31,6 +31,7 @@
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
 #include "pdf/content_restriction.h"
+#include "pdf/document_layout.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_accessibility_data_handler.h"
@@ -1134,6 +1135,132 @@ TEST_F(PdfViewWebPluginTest, UpdateLayerTransformWithScaleAndTranslate) {
                      /*window_rect=*/gfx::Rect(10, 10, 20, 20),
                      /*paint_rect=*/gfx::Rect(10, 10, 20, 20),
                      /*expected_clipped_rect=*/gfx::Rect(10, 15, 5, 10));
+}
+
+TEST_F(PdfViewWebPluginTest, HandleViewportMessageBeforeDocumentLoadComplete) {
+  EXPECT_CALL(*engine_ptr_, ApplyDocumentLayout(DocumentLayout::Options()));
+  EXPECT_CALL(*client_ptr_, PostMessage).Times(0);
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "viewport",
+    "userInitiated": false,
+    "zoom": 1,
+    "layoutOptions": {
+      "direction": 0,
+      "defaultPageOrientation": 0,
+      "twoUpViewEnabled": false,
+    },
+    "xOffset": 0,
+    "yOffset": 0,
+    "pinchPhase": 0,
+  })");
+  plugin_->OnMessage(message.GetDict());
+}
+
+TEST_F(PdfViewWebPluginTest, HandleViewportMessageAfterDocumentLoadComplete) {
+  plugin_->DocumentLoadComplete();
+
+  EXPECT_CALL(*engine_ptr_, ApplyDocumentLayout(DocumentLayout::Options()));
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "loadProgress",
+    "progress": 100.0,
+  })")));
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "viewport",
+    "userInitiated": false,
+    "zoom": 1,
+    "layoutOptions": {
+      "direction": 0,
+      "defaultPageOrientation": 0,
+      "twoUpViewEnabled": false,
+    },
+    "xOffset": 0,
+    "yOffset": 0,
+    "pinchPhase": 0,
+  })");
+  plugin_->OnMessage(message.GetDict());
+}
+
+TEST_F(PdfViewWebPluginTest, HandleViewportMessageSubsequently) {
+  base::Value message1 = base::test::ParseJson(R"({
+    "type": "viewport",
+    "userInitiated": false,
+    "zoom": 1,
+    "layoutOptions": {
+      "direction": 0,
+      "defaultPageOrientation": 0,
+      "twoUpViewEnabled": false,
+    },
+    "xOffset": 0,
+    "yOffset": 0,
+    "pinchPhase": 0,
+  })");
+  plugin_->OnMessage(message1.GetDict());
+
+  DocumentLayout::Options two_up_options;
+  two_up_options.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
+  EXPECT_CALL(*engine_ptr_, ApplyDocumentLayout(two_up_options));
+  EXPECT_CALL(*client_ptr_, PostMessage).Times(0);
+
+  base::Value message2 = base::test::ParseJson(R"({
+    "type": "viewport",
+    "userInitiated": false,
+    "zoom": 1,
+    "layoutOptions": {
+      "direction": 0,
+      "defaultPageOrientation": 0,
+      "twoUpViewEnabled": true,
+    },
+    "xOffset": 0,
+    "yOffset": 0,
+    "pinchPhase": 0,
+  })");
+  plugin_->OnMessage(message2.GetDict());
+}
+
+TEST_F(PdfViewWebPluginTest, HandleViewportMessageScroll) {
+  EXPECT_CALL(*engine_ptr_, ApplyDocumentLayout)
+      .WillRepeatedly(Return(gfx::Size(16, 9)));
+  EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(2));
+  EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(3));
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "viewport",
+    "userInitiated": false,
+    "zoom": 1,
+    "layoutOptions": {
+      "direction": 2,
+      "defaultPageOrientation": 0,
+      "twoUpViewEnabled": false,
+    },
+    "xOffset": 2,
+    "yOffset": 3,
+    "pinchPhase": 0,
+  })");
+  plugin_->OnMessage(message.GetDict());
+}
+
+TEST_F(PdfViewWebPluginTest, HandleViewportMessageScrollRightToLeft) {
+  EXPECT_CALL(*engine_ptr_, ApplyDocumentLayout)
+      .WillRepeatedly(Return(gfx::Size(16, 9)));
+  EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(2));
+  EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(3));
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "viewport",
+    "userInitiated": false,
+    "zoom": 1,
+    "layoutOptions": {
+      "direction": 1,
+      "defaultPageOrientation": 0,
+      "twoUpViewEnabled": false,
+    },
+    "xOffset": 2,
+    "yOffset": 3,
+    "pinchPhase": 0,
+  })");
+  plugin_->OnMessage(message.GetDict());
 }
 
 TEST_F(PdfViewWebPluginTest, HandleSetBackgroundColorMessage) {

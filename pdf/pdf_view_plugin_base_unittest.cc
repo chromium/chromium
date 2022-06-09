@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/document_attachment_info.h"
-#include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
@@ -37,8 +36,6 @@ namespace chrome_pdf {
 
 namespace {
 
-using ::testing::ElementsAre;
-using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -205,146 +202,6 @@ TEST_F(PdfViewPluginBaseWithEngineTest, HandleInputEvent) {
   mouse_event.SetPositionInWidget(10.0f, 20.0f);
 
   EXPECT_TRUE(fake_plugin_.HandleInputEvent(mouse_event));
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest,
-       HandleViewportMessageBeforeDocumentLoadComplete) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  EXPECT_CALL(*engine, ApplyDocumentLayout(DocumentLayout::Options()));
-
-  base::Value message = base::test::ParseJson(R"({
-    "type": "viewport",
-    "userInitiated": false,
-    "zoom": 1,
-    "layoutOptions": {
-      "direction": 0,
-      "defaultPageOrientation": 0,
-      "twoUpViewEnabled": false,
-    },
-    "xOffset": 0,
-    "yOffset": 0,
-    "pinchPhase": 0,
-  })");
-  fake_plugin_.HandleMessage(message.GetDict());
-
-  EXPECT_THAT(fake_plugin_.sent_messages(), IsEmpty());
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest,
-       HandleViewportMessageAfterDocumentLoadComplete) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  EXPECT_CALL(*engine, ApplyDocumentLayout(DocumentLayout::Options()));
-
-  fake_plugin_.DocumentLoadComplete();
-  fake_plugin_.clear_sent_messages();
-
-  base::Value message = base::test::ParseJson(R"({
-    "type": "viewport",
-    "userInitiated": false,
-    "zoom": 1,
-    "layoutOptions": {
-      "direction": 0,
-      "defaultPageOrientation": 0,
-      "twoUpViewEnabled": false,
-    },
-    "xOffset": 0,
-    "yOffset": 0,
-    "pinchPhase": 0,
-  })");
-  fake_plugin_.HandleMessage(message.GetDict());
-
-  EXPECT_THAT(fake_plugin_.sent_messages(), ElementsAre(base::test::IsJson(R"({
-    "type": "loadProgress",
-    "progress": 100.0,
-  })")));
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageSubsequently) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-
-  base::Value message1 = base::test::ParseJson(R"({
-    "type": "viewport",
-    "userInitiated": false,
-    "zoom": 1,
-    "layoutOptions": {
-      "direction": 0,
-      "defaultPageOrientation": 0,
-      "twoUpViewEnabled": false,
-    },
-    "xOffset": 0,
-    "yOffset": 0,
-    "pinchPhase": 0,
-  })");
-  fake_plugin_.HandleMessage(message1.GetDict());
-  fake_plugin_.clear_sent_messages();
-
-  DocumentLayout::Options two_up_options;
-  two_up_options.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
-  EXPECT_CALL(*engine, ApplyDocumentLayout(two_up_options));
-
-  base::Value message2 = base::test::ParseJson(R"({
-    "type": "viewport",
-    "userInitiated": false,
-    "zoom": 1,
-    "layoutOptions": {
-      "direction": 0,
-      "defaultPageOrientation": 0,
-      "twoUpViewEnabled": true,
-    },
-    "xOffset": 0,
-    "yOffset": 0,
-    "pinchPhase": 0,
-  })");
-  fake_plugin_.HandleMessage(message2.GetDict());
-
-  EXPECT_THAT(fake_plugin_.sent_messages(), IsEmpty());
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageScroll) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  EXPECT_CALL(*engine, ApplyDocumentLayout)
-      .WillRepeatedly(Return(gfx::Size(16, 9)));
-  EXPECT_CALL(*engine, ScrolledToXPosition(2));
-  EXPECT_CALL(*engine, ScrolledToYPosition(3));
-
-  base::Value message = base::test::ParseJson(R"({
-    "type": "viewport",
-    "userInitiated": false,
-    "zoom": 1,
-    "layoutOptions": {
-      "direction": 2,
-      "defaultPageOrientation": 0,
-      "twoUpViewEnabled": false,
-    },
-    "xOffset": 2,
-    "yOffset": 3,
-    "pinchPhase": 0,
-  })");
-  fake_plugin_.HandleMessage(message.GetDict());
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest,
-       HandleViewportMessageScrollRightToLeft) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  EXPECT_CALL(*engine, ApplyDocumentLayout)
-      .WillRepeatedly(Return(gfx::Size(16, 9)));
-  EXPECT_CALL(*engine, ScrolledToXPosition(2));
-  EXPECT_CALL(*engine, ScrolledToYPosition(3));
-
-  base::Value message = base::test::ParseJson(R"({
-    "type": "viewport",
-    "userInitiated": false,
-    "zoom": 1,
-    "layoutOptions": {
-      "direction": 1,
-      "defaultPageOrientation": 0,
-      "twoUpViewEnabled": false,
-    },
-    "xOffset": 2,
-    "yOffset": 3,
-    "pinchPhase": 0,
-  })");
-  fake_plugin_.HandleMessage(message.GetDict());
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScroll) {
