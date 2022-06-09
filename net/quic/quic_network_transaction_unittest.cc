@@ -253,10 +253,7 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
 class TestSocketPerformanceWatcherFactory
     : public SocketPerformanceWatcherFactory {
  public:
-  TestSocketPerformanceWatcherFactory()
-      : watcher_count_(0u),
-        should_notify_updated_rtt_(true),
-        rtt_notification_received_(false) {}
+  TestSocketPerformanceWatcherFactory() = default;
 
   TestSocketPerformanceWatcherFactory(
       const TestSocketPerformanceWatcherFactory&) = delete;
@@ -287,9 +284,9 @@ class TestSocketPerformanceWatcherFactory
   }
 
  private:
-  size_t watcher_count_;
-  bool should_notify_updated_rtt_;
-  bool rtt_notification_received_;
+  size_t watcher_count_ = 0u;
+  bool should_notify_updated_rtt_ = true;
+  bool rtt_notification_received_ = false;
 };
 
 class QuicNetworkTransactionTest

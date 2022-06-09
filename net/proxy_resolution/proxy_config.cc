@@ -41,10 +41,7 @@ void AddProxyURIListToProxyList(std::string uri_list,
 
 }  // namespace
 
-ProxyConfig::ProxyRules::ProxyRules()
-    : reverse_bypass(false),
-      type(Type::EMPTY) {
-}
+ProxyConfig::ProxyRules::ProxyRules() = default;
 
 ProxyConfig::ProxyRules::ProxyRules(const ProxyRules& other) = default;
 
@@ -210,7 +207,7 @@ const ProxyList* ProxyConfig::ProxyRules::GetProxyListForWebSocketScheme()
   return nullptr;
 }
 
-ProxyConfig::ProxyConfig() : auto_detect_(false), pac_mandatory_(false) {}
+ProxyConfig::ProxyConfig() = default;
 
 ProxyConfig::ProxyConfig(const ProxyConfig& config) = default;
 

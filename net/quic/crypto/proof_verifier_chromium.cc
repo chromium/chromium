@@ -34,8 +34,7 @@ using std::string;
 
 namespace net {
 
-ProofVerifyDetailsChromium::ProofVerifyDetailsChromium()
-    : pkp_bypassed(false), is_fatal_cert_error(false) {}
+ProofVerifyDetailsChromium::ProofVerifyDetailsChromium() = default;
 
 ProofVerifyDetailsChromium::~ProofVerifyDetailsChromium() {}
 
@@ -165,7 +164,7 @@ class ProofVerifierChromium::Job {
   // passed to CertVerifier::Verify.
   int cert_verify_flags_;
 
-  State next_state_;
+  State next_state_ = STATE_NONE;
 
   base::TimeTicks start_time_;
 
@@ -186,7 +185,6 @@ ProofVerifierChromium::Job::Job(
       transport_security_state_(transport_security_state),
       sct_auditing_delegate_(sct_auditing_delegate),
       cert_verify_flags_(cert_verify_flags),
-      next_state_(STATE_NONE),
       start_time_(base::TimeTicks::Now()),
       net_log_(net_log) {
   CHECK(proof_verifier_);

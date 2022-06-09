@@ -71,8 +71,6 @@ MockCryptoClientStream::MockCryptoClientStream(
                              /*has_application_state = */ true),
       QuicCryptoHandshaker(this, session),
       handshake_mode_(handshake_mode),
-      encryption_established_(false),
-      handshake_confirmed_(false),
       crypto_negotiated_params_(new QuicCryptoNegotiatedParameters),
       use_mock_crypter_(use_mock_crypter),
       server_id_(server_id),

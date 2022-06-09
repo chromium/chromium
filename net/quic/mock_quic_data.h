@@ -68,7 +68,7 @@ class MockQuicData {
   std::unique_ptr<MockConnect> connect_;
   std::vector<MockWrite> writes_;
   std::vector<MockRead> reads_;
-  size_t sequence_number_;
+  size_t sequence_number_ = 0;
   std::unique_ptr<SequencedSocketData> socket_data_;
   QuicPacketPrinter printer_;
 };

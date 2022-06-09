@@ -14,7 +14,7 @@ namespace {
 
 class TestDelegate : public quic::QuicAlarm::DelegateWithoutContext {
  public:
-  TestDelegate() : fired_(false) {}
+  TestDelegate() = default;
 
   void OnAlarm() override { fired_ = true; }
 
@@ -22,7 +22,7 @@ class TestDelegate : public quic::QuicAlarm::DelegateWithoutContext {
   void Clear() { fired_ = false; }
 
  private:
-  bool fired_;
+  bool fired_ = false;
 };
 
 class QuicChromiumAlarmFactoryTest : public ::testing::Test {

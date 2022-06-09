@@ -107,7 +107,7 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   int DoReadReply();
   int DoReadReplyComplete(int result);
 
-  State next_state_;
+  State next_state_ = STATE_DISCONNECTED;
 
   // Handle to the QUIC Stream that this sits on top of.
   std::unique_ptr<QuicChromiumClientStream::Handle> stream_;
@@ -124,7 +124,7 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   // Stores the callback for Write().
   CompletionOnceCallback write_callback_;
   // Stores the write buffer length for Write().
-  int write_buf_len_;
+  int write_buf_len_ = 0;
 
   // CONNECT request and response.
   HttpRequestInfo request_;

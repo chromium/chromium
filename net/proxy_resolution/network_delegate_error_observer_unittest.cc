@@ -23,7 +23,7 @@ namespace {
 
 class TestNetworkDelegate : public NetworkDelegateImpl {
  public:
-  TestNetworkDelegate() : got_pac_error_(false) {}
+  TestNetworkDelegate() = default;
   ~TestNetworkDelegate() override = default;
 
   bool got_pac_error() const { return got_pac_error_; }
@@ -34,7 +34,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
     got_pac_error_ = true;
   }
 
-  bool got_pac_error_;
+  bool got_pac_error_ = false;
 };
 
 // Check that the OnPACScriptError method can be called from an arbitrary

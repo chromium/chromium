@@ -318,9 +318,6 @@ void PacFileFetcherImpl::OnReadCompleted(URLRequest* request, int num_bytes) {
 PacFileFetcherImpl::PacFileFetcherImpl(URLRequestContext* url_request_context)
     : url_request_context_(url_request_context),
       buf_(base::MakeRefCounted<IOBuffer>(kBufSize)),
-      next_id_(0),
-      cur_request_id_(0),
-      result_code_(OK),
       result_text_(nullptr),
       max_response_bytes_(kDefaultMaxResponseBytes),
       max_duration_(kDefaultMaxDuration) {

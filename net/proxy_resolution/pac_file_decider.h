@@ -186,24 +186,24 @@ class NET_EXPORT_PRIVATE PacFileDecider {
 
   CompletionOnceCallback callback_;
 
-  size_t current_pac_source_index_;
+  size_t current_pac_source_index_ = 0u;
 
   // Filled when the PAC script fetch completes.
   std::u16string pac_script_;
 
   // Flag indicating whether the caller requested a mandatory PAC script
   // (i.e. fallback to direct connections are prohibited).
-  bool pac_mandatory_;
+  bool pac_mandatory_ = false;
 
   // Whether we have an existing custom PAC URL.
   bool have_custom_pac_url_;
 
   PacSourceList pac_sources_;
-  State next_state_;
+  State next_state_ = STATE_NONE;
 
   NetLogWithSource net_log_;
 
-  bool fetch_pac_bytes_;
+  bool fetch_pac_bytes_ = false;
 
   base::TimeDelta wait_delay_;
   base::OneShotTimer wait_timer_;
@@ -211,7 +211,7 @@ class NET_EXPORT_PRIVATE PacFileDecider {
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
 
   // Whether to do DNS quick check
-  bool quick_check_enabled_;
+  bool quick_check_enabled_ = true;
 
   // Results.
   ProxyConfigWithAnnotation effective_config_;

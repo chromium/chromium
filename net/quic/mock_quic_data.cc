@@ -9,7 +9,7 @@ namespace net {
 namespace test {
 
 MockQuicData::MockQuicData(quic::ParsedQuicVersion version)
-    : sequence_number_(0), printer_(version) {}
+    : printer_(version) {}
 
 MockQuicData::~MockQuicData() {}
 

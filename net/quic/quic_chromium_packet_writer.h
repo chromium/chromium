@@ -44,7 +44,7 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
    private:
     ~ReusableIOBuffer() override;
     size_t capacity_;
-    size_t size_;
+    size_t size_ = 0;
   };
   // Delegate interface which receives notifications on socket write events.
   class NET_EXPORT_PRIVATE Delegate {

@@ -178,7 +178,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
 
     raw_ptr<QuicChromiumClientStream> stream_;  // Unowned.
 
-    bool may_invoke_callbacks_;  // True when callbacks may be invoked.
+    bool may_invoke_callbacks_ = true;  // True when callbacks may be invoked.
 
     // Callback to be invoked when ReadInitialHeaders completes asynchronously.
     CompletionOnceCallback read_headers_callback_;
@@ -188,7 +188,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     // Callback to be invoked when ReadBody completes asynchronously.
     CompletionOnceCallback read_body_callback_;
     raw_ptr<IOBuffer> read_body_buffer_;
-    int read_body_buffer_len_;
+    int read_body_buffer_len_ = 0;
 
     // Callback to be invoked when WriteStreamData or WritevStreamData completes
     // asynchronously.
@@ -206,7 +206,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     size_t num_bytes_consumed_;
     Idempotency idempotency_ = DEFAULT_IDEMPOTENCY;
 
-    int net_error_;
+    int net_error_ = ERR_UNEXPECTED;
 
     NetLogWithSource net_log_;
 

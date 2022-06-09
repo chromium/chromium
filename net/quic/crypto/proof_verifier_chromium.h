@@ -47,11 +47,11 @@ class NET_EXPORT_PRIVATE ProofVerifyDetailsChromium
   std::string pinning_failure_log;
 
   // True if PKP was bypassed due to a local trust anchor.
-  bool pkp_bypassed;
+  bool pkp_bypassed = false;
 
   // True if there was a certificate error which should be treated as fatal,
   // and false otherwise.
-  bool is_fatal_cert_error;
+  bool is_fatal_cert_error = false;
 };
 
 // ProofVerifyContextChromium is the implementation-specific information that a

@@ -162,7 +162,7 @@ class MultiThreadedProxyResolver : public ProxyResolver,
 
 class Job : public base::RefCountedThreadSafe<Job> {
  public:
-  Job() : executor_(nullptr), was_cancelled_(false) {}
+  Job() : executor_(nullptr) {}
 
   void set_executor(Executor* executor) {
     executor_ = executor;
@@ -209,7 +209,7 @@ class Job : public base::RefCountedThreadSafe<Job> {
 
  private:
   raw_ptr<Executor> executor_;
-  bool was_cancelled_;
+  bool was_cancelled_ = false;
 };
 
 class MultiThreadedProxyResolver::RequestImpl : public ProxyResolver::Request {
@@ -281,8 +281,7 @@ class MultiThreadedProxyResolver::GetProxyForURLJob : public Job {
         results_(results),
         net_log_(net_log),
         url_(url),
-        network_isolation_key_(network_isolation_key),
-        was_waiting_for_thread_(false) {
+        network_isolation_key_(network_isolation_key) {
     DCHECK(callback_);
   }
 
@@ -348,7 +347,7 @@ class MultiThreadedProxyResolver::GetProxyForURLJob : public Job {
   // Usable from within DoQuery on the worker thread.
   ProxyInfo results_buf_;
 
-  bool was_waiting_for_thread_;
+  bool was_waiting_for_thread_ = false;
 };
 
 // Executor ----------------------------------------

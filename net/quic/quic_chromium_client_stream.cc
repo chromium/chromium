@@ -46,10 +46,7 @@ class ScopedBoolSaver {
 
 QuicChromiumClientStream::Handle::Handle(QuicChromiumClientStream* stream)
     : stream_(stream),
-      may_invoke_callbacks_(true),
       read_headers_buffer_(nullptr),
-      read_body_buffer_len_(0),
-      net_error_(ERR_UNEXPECTED),
       net_log_(stream->net_log()) {
   SaveState();
 }

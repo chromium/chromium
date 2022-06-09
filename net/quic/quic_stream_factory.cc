@@ -509,7 +509,7 @@ class QuicStreamFactory::Job {
     UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.StaleAndFreshHostMatched", matched);
   }
 
-  IoState io_state_;
+  IoState io_state_ = STATE_RESOLVE_HOST;
   raw_ptr<QuicStreamFactory> factory_;
   quic::ParsedQuicVersion quic_version_;
   raw_ptr<HostResolver> host_resolver_;
@@ -523,9 +523,9 @@ class QuicStreamFactory::Job {
   const bool retry_on_alternate_network_before_handshake_;
   const bool race_stale_dns_on_connection_;
   const NetLogWithSource net_log_;
-  bool host_resolution_finished_;
-  bool connection_retried_;
-  QuicChromiumClientSession* session_;
+  bool host_resolution_finished_ = false;
+  bool connection_retried_ = false;
+  QuicChromiumClientSession* session_ = nullptr;
   // If connection migraiton is supported, |network_| denotes the network on
   // which |session_| is created.
   NetworkChangeNotifier::NetworkHandle network_;
@@ -556,8 +556,7 @@ QuicStreamFactory::Job::Job(
     bool require_dns_https_alpn,
     int cert_verify_flags,
     const NetLogWithSource& net_log)
-    : io_state_(STATE_RESOLVE_HOST),
-      factory_(factory),
+    : factory_(factory),
       quic_version_(quic_version),
       host_resolver_(host_resolver),
       key_(key),
@@ -574,9 +573,6 @@ QuicStreamFactory::Job::Job(
       net_log_(
           NetLogWithSource::Make(net_log.net_log(),
                                  NetLogSourceType::QUIC_STREAM_FACTORY_JOB)),
-      host_resolution_finished_(false),
-      connection_retried_(false),
-      session_(nullptr),
       network_(NetworkChangeNotifier::kInvalidNetworkHandle) {
   DCHECK_EQ(quic_version.IsKnown(), !require_dns_https_alpn);
   net_log_.BeginEvent(NetLogEventType::QUIC_STREAM_FACTORY_JOB,
@@ -1033,7 +1029,7 @@ int QuicStreamFactory::Job::DoConfirmConnection(int rv) {
 }
 
 QuicStreamRequest::QuicStreamRequest(QuicStreamFactory* factory)
-    : factory_(factory), expect_on_host_resolution_(false) {}
+    : factory_(factory) {}
 
 QuicStreamRequest::~QuicStreamRequest() {
   if (factory_ && !callback_.is_null())
@@ -1171,8 +1167,7 @@ QuicStreamFactory::QuicStreamFactory(
     SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
     QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory,
     QuicContext* quic_context)
-    : is_quic_known_to_work_on_current_network_(false),
-      net_log_(net_log),
+    : net_log_(net_log),
       host_resolver_(host_resolver),
       client_socket_factory_(client_socket_factory),
       http_server_properties_(http_server_properties),
@@ -1201,9 +1196,6 @@ QuicStreamFactory::QuicStreamFactory(
       yield_after_duration_(quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds)),
       default_network_(NetworkChangeNotifier::kInvalidNetworkHandle),
-      need_to_check_persisted_supports_quic_(true),
-      prefer_aes_gcm_recorded_(false),
-      num_push_streams_created_(0),
       connectivity_monitor_(default_network_),
       tick_clock_(nullptr),
       task_runner_(nullptr),

@@ -31,8 +31,6 @@ QuicChromiumPacketReader::QuicChromiumPacketReader(
     const NetLogWithSource& net_log)
     : socket_(socket),
       visitor_(visitor),
-      read_pending_(false),
-      num_packets_read_(0),
       clock_(clock),
       yield_after_packets_(yield_after_packets),
       yield_after_duration_(yield_after_duration),

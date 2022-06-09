@@ -237,14 +237,7 @@ const char kProxyGSettingsSchema[] = "org.gnome.system.proxy";
 class SettingGetterImplGSettings
     : public ProxyConfigServiceLinux::SettingGetter {
  public:
-  SettingGetterImplGSettings()
-      : client_(nullptr),
-        http_client_(nullptr),
-        https_client_(nullptr),
-        ftp_client_(nullptr),
-        socks_client_(nullptr),
-        notify_delegate_(nullptr),
-        debounce_timer_(new base::OneShotTimer()) {}
+  SettingGetterImplGSettings() : debounce_timer_(new base::OneShotTimer()) {}
 
   SettingGetterImplGSettings(const SettingGetterImplGSettings&) = delete;
   SettingGetterImplGSettings& operator=(const SettingGetterImplGSettings&) =
@@ -472,12 +465,12 @@ class SettingGetterImplGSettings
     setting_getter->OnChangeNotification();
   }
 
-  GSettings* client_;
-  GSettings* http_client_;
-  GSettings* https_client_;
-  GSettings* ftp_client_;
-  GSettings* socks_client_;
-  ProxyConfigServiceLinux::Delegate* notify_delegate_;
+  GSettings* client_ = nullptr;
+  GSettings* http_client_ = nullptr;
+  GSettings* https_client_ = nullptr;
+  GSettings* ftp_client_ = nullptr;
+  GSettings* socks_client_ = nullptr;
+  ProxyConfigServiceLinux::Delegate* notify_delegate_ = nullptr;
   std::unique_ptr<base::OneShotTimer> debounce_timer_;
 
   // Task runner for the thread that we make gsettings calls on. It should
@@ -522,12 +515,7 @@ int StringToIntOrDefault(base::StringPiece value, int default_value) {
 class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
  public:
   explicit SettingGetterImplKDE(base::Environment* env_var_getter)
-      : inotify_fd_(-1),
-        notify_delegate_(nullptr),
-        debounce_timer_(new base::OneShotTimer()),
-        indirect_manual_(false),
-        auto_no_pac_(false),
-        reversed_bypass_list_(false),
+      : debounce_timer_(new base::OneShotTimer()),
         env_var_getter_(env_var_getter),
         file_task_runner_(nullptr) {
     // This has to be called on the UI thread (http://crbug.com/69057).
@@ -1020,14 +1008,14 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
   typedef std::map<StringListSetting,
                    std::vector<std::string> > strings_map_type;
 
-  int inotify_fd_;
+  int inotify_fd_ = -1;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> inotify_watcher_;
-  ProxyConfigServiceLinux::Delegate* notify_delegate_;
+  ProxyConfigServiceLinux::Delegate* notify_delegate_ = nullptr;
   std::unique_ptr<base::OneShotTimer> debounce_timer_;
   std::vector<base::FilePath> kde_config_dirs_;
-  bool indirect_manual_;
-  bool auto_no_pac_;
-  bool reversed_bypass_list_;
+  bool indirect_manual_ = false;
+  bool auto_no_pac_ = false;
+  bool reversed_bypass_list_ = false;
   // We don't own |env_var_getter_|.  It's safe to hold a pointer to it, since
   // both it and us are owned by ProxyConfigServiceLinux::Delegate, and have the
   // same lifetime.

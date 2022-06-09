@@ -46,7 +46,7 @@ class MockPacFileFetcher : public PacFileFetcher {
   CompletionOnceCallback pending_request_callback_;
   raw_ptr<std::u16string> pending_request_text_;
   base::OnceClosure on_fetch_complete_;
-  bool is_shutdown_;
+  bool is_shutdown_ = false;
 };
 
 }  // namespace net

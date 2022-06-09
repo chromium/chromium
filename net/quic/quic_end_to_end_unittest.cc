@@ -93,8 +93,7 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
         ssl_config_service_(new SSLConfigServiceDefaults),
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
-        auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
-        strike_register_no_startup_period_(false) {
+        auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()) {
     request_.method = "GET";
     request_.url = GURL("https://test.example.com/");
     request_.load_flags = 0;
@@ -237,7 +236,7 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
   quic::QuicConfig server_config_;
   quic::QuicCryptoServerConfig::ConfigOptions server_config_options_;
   bool server_started_;
-  bool strike_register_no_startup_period_;
+  bool strike_register_no_startup_period_ = false;
 };
 
 TEST_F(QuicEndToEndTest, LargeGetWithNoPacketLoss) {

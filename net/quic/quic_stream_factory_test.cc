@@ -150,7 +150,7 @@ std::vector<TestParams> GetTestParams() {
 // IPV4 address.
 class TestConnectionMigrationSocketFactory : public MockClientSocketFactory {
  public:
-  TestConnectionMigrationSocketFactory() : next_source_host_num_(1u) {}
+  TestConnectionMigrationSocketFactory() = default;
 
   TestConnectionMigrationSocketFactory(
       const TestConnectionMigrationSocketFactory&) = delete;
@@ -171,14 +171,14 @@ class TestConnectionMigrationSocketFactory : public MockClientSocketFactory {
   }
 
  private:
-  uint8_t next_source_host_num_;
+  uint8_t next_source_host_num_ = 1u;
 };
 
 // TestPortMigrationSocketFactory will vend sockets with incremental port
 // number.
 class TestPortMigrationSocketFactory : public MockClientSocketFactory {
  public:
-  TestPortMigrationSocketFactory() : next_source_port_num_(1u) {}
+  TestPortMigrationSocketFactory() = default;
 
   TestPortMigrationSocketFactory(const TestPortMigrationSocketFactory&) =
       delete;
@@ -199,7 +199,7 @@ class TestPortMigrationSocketFactory : public MockClientSocketFactory {
   }
 
  private:
-  uint16_t next_source_port_num_;
+  uint16_t next_source_port_num_ = 1u;
 };
 
 class QuicStreamFactoryTestBase : public WithTaskEnvironment {
@@ -238,11 +238,9 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
         url2_(kServer2Url),
         url3_(kServer3Url),
         url4_(kServer4Url),
-        privacy_mode_(PRIVACY_MODE_DISABLED),
         failed_on_default_network_callback_(base::BindRepeating(
             &QuicStreamFactoryTestBase::OnFailedOnDefaultNetwork,
             base::Unretained(this))),
-        failed_on_default_network_(false),
         quic_params_(context_.params()) {
     FLAGS_quic_enable_http3_grease_randomness = false;
     FLAGS_quic_enable_chaos_protection = false;
@@ -966,11 +964,11 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   GURL url3_;
   GURL url4_;
 
-  PrivacyMode privacy_mode_;
+  PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
   NetLogWithSource net_log_;
   TestCompletionCallback callback_;
   const CompletionRepeatingCallback failed_on_default_network_callback_;
-  bool failed_on_default_network_;
+  bool failed_on_default_network_ = false;
   NetErrorDetails net_error_details_;
 
   raw_ptr<QuicParams> quic_params_;

@@ -604,8 +604,8 @@ class QuicTestPacketMaker {
   quic::test::MockRandom random_generator_;
   std::map<quic::QuicStreamId, quic::QuicStreamOffset> stream_offsets_;
   quic::Perspective perspective_;
-  quic::EncryptionLevel encryption_level_;
-  quic::QuicLongHeaderType long_header_type_;
+  quic::EncryptionLevel encryption_level_ = quic::ENCRYPTION_FORWARD_SECURE;
+  quic::QuicLongHeaderType long_header_type_ = quic::INVALID_PACKET_TYPE;
   // If true, generated request headers will include non-default HTTP2 stream
   // dependency info.
   bool client_headers_include_h2_stream_dependency_;
@@ -614,7 +614,7 @@ class QuicTestPacketMaker {
   std::vector<std::unique_ptr<std::string>> saved_stream_data_;
   // If |save_packet_frames_| is true, save generated packets in
   // |saved_frames_|, allowing retransmission packets to be built.
-  bool save_packet_frames_;
+  bool save_packet_frames_ = false;
   std::map<quic::QuicPacketNumber, quic::QuicFrames> saved_frames_;
 
   // State necessary for building the current packet.

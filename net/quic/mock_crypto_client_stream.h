@@ -101,8 +101,8 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
   void FillCryptoParams();
 
   HandshakeMode handshake_mode_;
-  bool encryption_established_;
-  bool handshake_confirmed_;
+  bool encryption_established_ = false;
+  bool handshake_confirmed_ = false;
   quiche::QuicheReferenceCountedPointer<quic::QuicCryptoNegotiatedParameters>
       crypto_negotiated_params_;
   quic::CryptoFramer crypto_framer_;

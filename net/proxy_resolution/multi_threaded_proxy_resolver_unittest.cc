@@ -111,7 +111,7 @@ class BlockableProxyResolver : public MockProxyResolver {
     WILL_BLOCK,
   };
 
-  BlockableProxyResolver() : state_(State::NONE), condition_(&lock_) {}
+  BlockableProxyResolver() : condition_(&lock_) {}
 
   BlockableProxyResolver(const BlockableProxyResolver&) = delete;
   BlockableProxyResolver& operator=(const BlockableProxyResolver&) = delete;
@@ -172,7 +172,7 @@ class BlockableProxyResolver : public MockProxyResolver {
   }
 
  private:
-  State state_;
+  State state_ = State::NONE;
   base::Lock lock_;
   base::ConditionVariable condition_;
 };
