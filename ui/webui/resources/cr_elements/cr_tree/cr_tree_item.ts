@@ -75,6 +75,10 @@ export class CrTreeItemElement extends CrTreeBaseElement {
     super.attributeChangedCallback(name, oldValue, newValue);
   }
 
+  forceHoverStyle(hover: boolean) {
+    this.toggleAttribute('force-hover-style', hover);
+  }
+
   private onSelectedChange_(selected: boolean) {
     if (selected) {
       this.reveal();
@@ -214,7 +218,13 @@ export class CrTreeItemElement extends CrTreeBaseElement {
   get labelElement(): HTMLElement {
     const labelEl = this.shadowRoot!.querySelector<HTMLElement>('.tree-label');
     assert(labelEl);
-    return labelEl as HTMLElement;
+    return labelEl;
+  }
+
+  get rowElement(): HTMLElement {
+    const rowEl = this.shadowRoot!.querySelector<HTMLElement>('.tree-row');
+    assert(rowEl);
+    return rowEl;
   }
 
   /**

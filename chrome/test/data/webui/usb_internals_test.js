@@ -344,8 +344,8 @@ suite('UsbInternalsUITest', function() {
     // The tab panel of the first device is opened in previous test as the
     // third tab panel.
     const deviceTab = app.shadowRoot.querySelectorAll('div[slot=\'panel\']')[2];
-    const tree = deviceTab.querySelector('tree');
-    const treeItems = tree.querySelectorAll('.tree-item');
+    const tree = deviceTab.querySelector('cr-tree');
+    const treeItems = tree.items;
     assertEquals(11, treeItems.length);
 
     const labels = [
@@ -355,8 +355,7 @@ suite('UsbInternalsUITest', function() {
       'WebUSB Landing Page: http://google.com', 'Active Configuration: 1'
     ];
     labels.forEach((label, i) => {
-      assertEquals(
-          label, treeItems[i].querySelector('.tree-label').textContent);
+      assertEquals(label, treeItems[i].labelElement.textContent);
     });
   });
 
@@ -374,7 +373,7 @@ suite('UsbInternalsUITest', function() {
     const panel = deviceTab.querySelector('.device-descriptor-panel');
     assertEquals(1, panel.querySelectorAll('descriptorpanel').length);
     assertEquals(0, panel.querySelectorAll('error').length);
-    const treeItems = panel.querySelectorAll('.tree-item');
+    const treeItems = panel.querySelector('cr-tree').items;
     assertEquals(14, treeItems.length);
 
     const labels = [
@@ -386,8 +385,7 @@ suite('UsbInternalsUITest', function() {
       'Serial Number Index: 0', 'Number of Configurations: 1'
     ];
     labels.forEach((label, i) => {
-      assertEquals(
-          label, treeItems[i].querySelector('.tree-label').textContent);
+      assertEquals(label, treeItems[i].labelElement.textContent);
     });
 
     const byteElements = panel.querySelectorAll('.raw-data-byte-view span');
@@ -398,15 +396,15 @@ suite('UsbInternalsUITest', function() {
 
     // Click a single byte tree item (Length) and check that both the item
     // and the related byte are highlighted.
-    treeItems[0].querySelector('.tree-row').click();
-    assertTrue(treeItems[0].selected);
+    treeItems[0].rowElement.click();
+    assertTrue(treeItems[0].hasAttribute('selected'));
     assertTrue(byteElements[0].classList.contains('selected-field'));
     // Click a multi-byte tree item (Vendor ID) and check that both the
     // item and the related bytes are highlighted, and other items and bytes
     // are not highlighted.
-    treeItems[7].querySelector('.tree-row').click();
-    assertFalse(treeItems[0].selected);
-    assertTrue(treeItems[7].selected);
+    treeItems[7].rowElement.click();
+    assertFalse(treeItems[0].hasAttribute('selected'));
+    assertTrue(treeItems[7].hasAttribute('selected'));
     assertFalse(byteElements[0].classList.contains('selected-field'));
     assertTrue(byteElements[8].classList.contains('selected-field'));
     assertTrue(byteElements[9].classList.contains('selected-field'));
@@ -414,15 +412,15 @@ suite('UsbInternalsUITest', function() {
     // byte and the related item are highlighted, and other items and bytes
     // are not highlighted.
     byteElements[1].click();
-    assertFalse(treeItems[7].selected);
-    assertTrue(treeItems[1].selected);
+    assertFalse(treeItems[7].hasAttribute('selected'));
+    assertTrue(treeItems[1].hasAttribute('selected'));
     assertTrue(byteElements[1].classList.contains('selected-field'));
     // Click any byte element of a multi-byte element (Product ID) and check
     // that both the bytes and the related item are highlighted, and other
     // items and bytes are not highlighted.
     byteElements[11].click();
-    assertFalse(treeItems[1].selected);
-    assertTrue(treeItems[8].selected);
+    assertFalse(treeItems[1].hasAttribute('selected'));
+    assertTrue(treeItems[8].hasAttribute('selected'));
     assertTrue(byteElements[10].classList.contains('selected-field'));
     assertTrue(byteElements[11].classList.contains('selected-field'));
   });
@@ -448,7 +446,7 @@ suite('UsbInternalsUITest', function() {
     assertEquals('Field at offset 8 is invalid.', errors[0].textContent);
     assertEquals('Descriptor is too short.', errors[1].textContent);
     // For the short response, the returned data should still be rendered.
-    const treeItems = panel.querySelectorAll('.tree-item');
+    const treeItems = panel.querySelector('cr-tree').items;
     assertEquals(7, treeItems.length);
 
     const labels = [
@@ -457,8 +455,7 @@ suite('UsbInternalsUITest', function() {
       'Protocol Code: 0', 'Control Pipe Maximum Packet Size: 64'
     ];
     labels.forEach((label, i) => {
-      assertEquals(
-          label, treeItems[i].querySelector('.tree-label').textContent);
+      assertEquals(label, treeItems[i].labelElement.textContent);
     });
 
     const byteElements = panel.querySelectorAll('.raw-data-byte-view span');
@@ -470,15 +467,15 @@ suite('UsbInternalsUITest', function() {
 
     // Click a single byte tree item (Length) and check that both the item
     // and the related byte are highlighted.
-    treeItems[0].querySelector('.tree-row').click();
-    assertTrue(treeItems[0].selected);
+    treeItems[0].rowElement.click();
+    assertTrue(treeItems[0].hasAttribute('selected'));
     assertTrue(byteElements[0].classList.contains('selected-field'));
     // Click a multi-byte tree item (USB Version) and check that both the
     // item and the related bytes are highlighted, and other items and bytes
     // are not highlighted.
-    treeItems[2].querySelector('.tree-row').click();
-    assertFalse(treeItems[0].selected);
-    assertTrue(treeItems[2].selected);
+    treeItems[2].rowElement.click();
+    assertFalse(treeItems[0].hasAttribute('selected'));
+    assertTrue(treeItems[2].hasAttribute('selected'));
     assertFalse(byteElements[0].classList.contains('selected-field'));
     assertTrue(byteElements[2].classList.contains('selected-field'));
     assertTrue(byteElements[3].classList.contains('selected-field'));
@@ -486,21 +483,21 @@ suite('UsbInternalsUITest', function() {
     // byte and the related item are highlighted, and other items and bytes
     // are not highlighted.
     byteElements[1].click();
-    assertFalse(treeItems[2].selected);
-    assertTrue(treeItems[1].selected);
+    assertFalse(treeItems[2].hasAttribute('selected'));
+    assertTrue(treeItems[1].hasAttribute('selected'));
     assertTrue(byteElements[1].classList.contains('selected-field'));
     // Click any byte element of a multi-byte element (USB Version) and
     // check that both the bytes and the related item are highlighted, and
     // other items and bytes are not highlighted.
     byteElements[3].click();
-    assertFalse(treeItems[1].selected);
-    assertTrue(treeItems[2].selected);
+    assertFalse(treeItems[1].hasAttribute('selected'));
+    assertTrue(treeItems[2].hasAttribute('selected'));
     assertTrue(byteElements[2].classList.contains('selected-field'));
     assertTrue(byteElements[3].classList.contains('selected-field'));
     // Click the invalid field's byte (Vendor ID) will do nothing, check the
     // highlighted item and bytes are not changed.
     byteElements[8].click();
-    assertTrue(treeItems[2].selected);
+    assertTrue(treeItems[2].hasAttribute('selected'));
     assertTrue(byteElements[2].classList.contains('selected-field'));
     assertTrue(byteElements[3].classList.contains('selected-field'));
     assertFalse(byteElements[8].classList.contains('selected-field'));

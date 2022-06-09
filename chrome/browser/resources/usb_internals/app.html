@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="chrome://resources/css/tree.css">
 <link rel="stylesheet" href="usb_internals.css">
 <cr-tab-box sticky-tabs hidden>
   <div slot="tab">Test Devices</div>
@@ -98,7 +97,7 @@
 
 <template id="device-tabpanel-template">
   <div slot="panel">
-    <tree class="tree-view"></tree>
+    <cr-tree class="tree-view"></cr-tree>
     <div class="descriptor-button">
       <button class="device-descriptor-button">Get Device Descriptor</button>
     </div>
@@ -192,7 +191,7 @@
 
 <template id="descriptor-panel-template">
   <descriptorpanel>
-    <tree class="raw-data-tree-view"></tree>
+    <cr-tree class="raw-data-tree-view"></cr-tree>
     <div class="raw-data-byte-view"></div>
   </descriptorpanel>
 </template>
