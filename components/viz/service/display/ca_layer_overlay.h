@@ -71,7 +71,7 @@ class VIZ_SERVICE_EXPORT CALayerOverlay {
   // The opacity property for the CAayer.
   float opacity = 1;
   // The background color property for the CALayer.
-  SkColor background_color = SK_ColorTRANSPARENT;
+  SkColor4f background_color = SkColors::kTransparent;
   // The edge anti-aliasing mask property for the CALayer.
   unsigned edge_aa_mask = 0;
   // The minification and magnification filters for the CALayer.

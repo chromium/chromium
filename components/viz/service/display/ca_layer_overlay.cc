@@ -160,7 +160,7 @@ gfx::CALayerResult FromSolidColorDrawQuad(const SolidColorDrawQuad* quad,
                                           CALayerOverlay* ca_layer_overlay,
                                           bool* skip) {
   // Do not generate quads that are completely transparent.
-  if (SkColorGetA(quad->color) == 0) {
+  if (quad->color.fA == 0.0f) {
     *skip = true;
     return gfx::kCALayerSuccess;
   }

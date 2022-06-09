@@ -28,8 +28,8 @@ class VIZ_COMMON_EXPORT SolidColorDrawQuad : public DrawQuad {
               SkColor c,
               bool anti_aliasing_off);
 
-  SkColor color;
-  bool force_anti_aliasing_off;
+  SkColor4f color;
+  bool force_anti_aliasing_off = false;
 
   static const SolidColorDrawQuad* MaterialCast(const DrawQuad*);
 

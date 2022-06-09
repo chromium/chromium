@@ -587,7 +587,8 @@ TEST_F(StructTraitsTest, CompositorFrame) {
       SolidColorDrawQuad::MaterialCast(out_render_pass->quad_list.ElementAt(1));
   EXPECT_EQ(rect2, out_solid_color_draw_quad->rect);
   EXPECT_EQ(rect2, out_solid_color_draw_quad->visible_rect);
-  EXPECT_EQ(color2, out_solid_color_draw_quad->color);
+  // TODO(crbug.com/1308932) Make color2 an SkColor4f
+  EXPECT_EQ(SkColor4f::FromColor(color2), out_solid_color_draw_quad->color);
   EXPECT_EQ(force_anti_aliasing_off,
             out_solid_color_draw_quad->force_anti_aliasing_off);
 }
@@ -1046,7 +1047,8 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect2, out_solid_color_draw_quad->rect);
   EXPECT_EQ(rect2, out_solid_color_draw_quad->visible_rect);
   EXPECT_FALSE(out_solid_color_draw_quad->needs_blending);
-  EXPECT_EQ(color2, out_solid_color_draw_quad->color);
+  // TODO(crbug.com/1308932) Make color2 an SkColor4f
+  EXPECT_EQ(SkColor4f::FromColor(color2), out_solid_color_draw_quad->color);
   EXPECT_EQ(force_anti_aliasing_off,
             out_solid_color_draw_quad->force_anti_aliasing_off);
 
@@ -1057,7 +1059,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_TRUE(out_primary_surface_draw_quad->needs_blending);
   EXPECT_EQ(primary_surface_id,
             out_primary_surface_draw_quad->surface_range.end());
-  EXPECT_EQ(SK_ColorBLUE,
+  EXPECT_EQ(SkColors::kBlue,
             out_primary_surface_draw_quad->default_background_color);
   EXPECT_EQ(fallback_surface_id,
             out_primary_surface_draw_quad->surface_range.start());
@@ -1092,7 +1094,9 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(premultiplied_alpha, out_texture_draw_quad->premultiplied_alpha);
   EXPECT_EQ(uv_top_left, out_texture_draw_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, out_texture_draw_quad->uv_bottom_right);
-  EXPECT_EQ(background_color, out_texture_draw_quad->background_color);
+  // TODO(crbug.com/1308932) Make background_color an SkColor4f
+  EXPECT_EQ(SkColor4f::FromColor(background_color),
+            out_texture_draw_quad->background_color);
   EXPECT_EQ(vertex_opacity[0], out_texture_draw_quad->vertex_opacity[0]);
   EXPECT_EQ(vertex_opacity[1], out_texture_draw_quad->vertex_opacity[1]);
   EXPECT_EQ(vertex_opacity[2], out_texture_draw_quad->vertex_opacity[2]);

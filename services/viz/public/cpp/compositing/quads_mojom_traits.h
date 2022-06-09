@@ -335,7 +335,7 @@ struct StructTraits<viz::mojom::CompositorRenderPassQuadStateDataView,
 
 template <>
 struct StructTraits<viz::mojom::SolidColorQuadStateDataView, viz::DrawQuad> {
-  static uint32_t color(const viz::DrawQuad& input) {
+  static SkColor4f color(const viz::DrawQuad& input) {
     const viz::SolidColorDrawQuad* quad =
         viz::SolidColorDrawQuad::MaterialCast(&input);
     return quad->color;
@@ -389,7 +389,7 @@ struct StructTraits<viz::mojom::SurfaceQuadStateDataView, viz::DrawQuad> {
     return quad->surface_range;
   }
 
-  static uint32_t default_background_color(const viz::DrawQuad& input) {
+  static const SkColor4f default_background_color(const viz::DrawQuad& input) {
     const viz::SurfaceDrawQuad* quad =
         viz::SurfaceDrawQuad::MaterialCast(&input);
     return quad->default_background_color;
@@ -449,7 +449,7 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     return quad->uv_bottom_right;
   }
 
-  static uint32_t background_color(const viz::DrawQuad& input) {
+  static SkColor4f background_color(const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);
     return quad->background_color;

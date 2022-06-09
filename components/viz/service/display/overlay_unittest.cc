@@ -1673,7 +1673,7 @@ TEST_F(SingleOverlayOnTopTest, RejectBackgroundColor) {
   TextureDrawQuad* quad = CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  quad->background_color = SK_ColorRED;
+  quad->background_color = SkColors::kRed;
 
   OverlayCandidateList candidate_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -1695,7 +1695,7 @@ TEST_F(SingleOverlayOnTopTest, AcceptBlackBackgroundColor) {
   TextureDrawQuad* quad = CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  quad->background_color = SK_ColorBLACK;
+  quad->background_color = SkColors::kBlack;
 
   OverlayCandidateList candidate_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -1717,7 +1717,7 @@ TEST_F(SingleOverlayOnTopTest, RejectBlackBackgroundColorWithBlending) {
   TextureDrawQuad* quad = CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  quad->background_color = SK_ColorBLACK;
+  quad->background_color = SkColors::kBlack;
   quad->needs_blending = true;
 
   OverlayCandidateList candidate_list;
@@ -1867,9 +1867,9 @@ TEST_F(UnderlayTest, ReplacementQuad) {
       &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, pass_list.size());
   ASSERT_EQ(1U, pass_list.front()->quad_list.size());
-  EXPECT_EQ(SK_ColorTRANSPARENT, static_cast<SolidColorDrawQuad*>(
-                                     pass_list.front()->quad_list.front())
-                                     ->color);
+  EXPECT_EQ(SkColors::kTransparent, static_cast<SolidColorDrawQuad*>(
+                                        pass_list.front()->quad_list.front())
+                                        ->color);
   EXPECT_FALSE(pass_list.front()->quad_list.front()->ShouldDrawWithBlending());
   EXPECT_FALSE(pass_list.front()
                    ->quad_list.front()
@@ -2709,7 +2709,7 @@ TEST_F(UnderlayTest, OverlayLayerUnderMainLayer) {
   auto* quad = static_cast<SolidColorDrawQuad*>(main_pass->quad_list.back());
   EXPECT_EQ(quad->rect, quad->visible_rect);
   EXPECT_EQ(false, quad->needs_blending);
-  EXPECT_EQ(SK_ColorTRANSPARENT, quad->color);
+  EXPECT_EQ(SkColors::kTransparent, quad->color);
 }
 
 TEST_F(UnderlayTest, AllowOnTop) {
@@ -2742,7 +2742,7 @@ TEST_F(UnderlayTest, AllowOnTop) {
   auto* quad = static_cast<SolidColorDrawQuad*>(main_pass->quad_list.front());
   EXPECT_EQ(quad->rect, quad->visible_rect);
   EXPECT_EQ(false, quad->needs_blending);
-  EXPECT_EQ(SK_ColorTRANSPARENT, quad->color);
+  EXPECT_EQ(SkColors::kTransparent, quad->color);
 }
 
 // Pure overlays have a very specific optimization that does not produce damage
@@ -2930,9 +2930,9 @@ TEST_F(TransitionOverlayTypeTest, MaskFilterBringsUnderlay) {
 
   ASSERT_EQ(1U, pass_list.size());
   ASSERT_EQ(2U, pass_list.front()->quad_list.size());
-  EXPECT_EQ(SK_ColorBLACK, static_cast<SolidColorDrawQuad*>(
-                               pass_list.front()->quad_list.front())
-                               ->color);
+  EXPECT_EQ(SkColors::kBlack, static_cast<SolidColorDrawQuad*>(
+                                  pass_list.front()->quad_list.front())
+                                  ->color);
   EXPECT_FALSE(pass_list.front()
                    ->quad_list.front()
                    ->shared_quad_state->are_contents_opaque);
@@ -3695,9 +3695,9 @@ TEST_F(UnderlayCastTest, ReplacementQuad) {
       &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, pass_list.size());
   ASSERT_EQ(1U, pass_list.front()->quad_list.size());
-  EXPECT_EQ(SK_ColorTRANSPARENT, static_cast<SolidColorDrawQuad*>(
-                                     pass_list.front()->quad_list.front())
-                                     ->color);
+  EXPECT_EQ(SkColors::kTransparent, static_cast<SolidColorDrawQuad*>(
+                                        pass_list.front()->quad_list.front())
+                                        ->color);
   EXPECT_FALSE(pass_list.front()->quad_list.front()->ShouldDrawWithBlending());
   EXPECT_FALSE(pass_list.front()
                    ->quad_list.front()
@@ -3954,9 +3954,9 @@ TEST_F(UnderlayCastTest, OverlayPromotionWithMaskFilter) {
 
   ASSERT_EQ(1U, pass_list.size());
   ASSERT_EQ(1U, pass_list.front()->quad_list.size());
-  EXPECT_EQ(SK_ColorBLACK, static_cast<SolidColorDrawQuad*>(
-                               pass_list.front()->quad_list.front())
-                               ->color);
+  EXPECT_EQ(SkColors::kBlack, static_cast<SolidColorDrawQuad*>(
+                                  pass_list.front()->quad_list.front())
+                                  ->color);
   EXPECT_FALSE(pass_list.front()
                    ->quad_list.front()
                    ->shared_quad_state->are_contents_opaque);

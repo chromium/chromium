@@ -30,7 +30,8 @@ void SurfaceDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSurfaceContent, rect,
                    visible_rect, needs_blending);
   surface_range = range;
-  default_background_color = background_color;
+  // TODO(crbug/1308932) remove FromColor and make all SkColor4f
+  default_background_color = SkColor4f::FromColor(background_color);
   stretch_content_to_fill_bounds = stretch_content;
 }
 
@@ -46,7 +47,8 @@ void SurfaceDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSurfaceContent, rect,
                    visible_rect, needs_blending);
   surface_range = range;
-  default_background_color = background_color;
+  // TODO(crbug/1308932) remove FromColor and make all SkColor4f
+  default_background_color = SkColor4f::FromColor(background_color);
   stretch_content_to_fill_bounds = stretch_content;
   is_reflection = reflection;
   allow_merge = merge;

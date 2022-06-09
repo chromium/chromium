@@ -53,7 +53,7 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
   premultiplied_alpha = premultiplied;
   uv_top_left = top_left;
   uv_bottom_right = bottom_right;
-  background_color = background;
+  background_color = SkColor4f::FromColor(background);
   vertex_opacity[0] = opacity[0];
   vertex_opacity[1] = opacity[1];
   vertex_opacity[2] = opacity[2];
@@ -87,7 +87,7 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
   premultiplied_alpha = premultiplied;
   uv_top_left = top_left;
   uv_bottom_right = bottom_right;
-  background_color = background;
+  background_color = SkColor4f::FromColor(background);
   vertex_opacity[0] = opacity[0];
   vertex_opacity[1] = opacity[1];
   vertex_opacity[2] = opacity[2];
@@ -112,7 +112,7 @@ void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
   cc::MathUtil::AddToTracedValue("uv_bottom_right", uv_bottom_right, value);
 
   value->SetString("background_color",
-                   color_utils::SkColorToRgbaString(background_color));
+                   color_utils::SkColor4fToRgbaString(background_color));
 
   value->BeginArray("vertex_opacity");
   for (size_t i = 0; i < 4; ++i)

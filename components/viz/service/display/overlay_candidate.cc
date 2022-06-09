@@ -169,8 +169,8 @@ bool OverlayCandidate::IsInvisibleQuad(const DrawQuad* quad) {
     return true;
   if (quad->material != DrawQuad::Material::kSolidColor)
     return false;
-  const SkColor color = SolidColorDrawQuad::MaterialCast(quad)->color;
-  const float alpha = (SkColorGetA(color) * (1.f / 255.f)) * opacity;
+  const float alpha =
+      SolidColorDrawQuad::MaterialCast(quad)->color.fA * opacity;
   return quad->ShouldDrawWithBlending() &&
          cc::MathUtil::IsWithinEpsilon(alpha, 0.f);
 }
@@ -408,7 +408,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromSolidColorQuad(
   auto rtn = FromDrawQuadResource(quad, kInvalidResourceId, false, candidate);
 
   if (rtn == CandidateStatus::kSuccess) {
-    candidate.color = quad->color;
+    // TODO(crbug/1308932) remove toSkColor and make all SkColor4f
+    candidate.color = quad->color.toSkColor();
     // Mark this candidate a solid color as the |color| member can be either a
     // background of the overlay or a color of the solid color quad.
     candidate.is_solid_color = true;
@@ -470,15 +471,16 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
   if (quad->nearest_neighbor)
     return CandidateStatus::kFailNearFilter;
 
-  if (quad->background_color != SK_ColorTRANSPARENT &&
-      (quad->background_color != SK_ColorBLACK ||
+  if (quad->background_color != SkColors::kTransparent &&
+      (quad->background_color != SkColors::kBlack ||
        quad->ShouldDrawWithBlending())) {
     // This path can also be used by other platforms like Ash/Chrome, which does
     // not support overlays with background color. Only LaCros/Wayland supports
     // that.
     if (!is_delegated_context_)
       return CandidateStatus::kFailBlending;
-    candidate.color = quad->background_color;
+    // TODO(crbug/1308932) remove toSkColor and make all SkColor4f
+    candidate.color = quad->background_color.toSkColor();
   }
 
   candidate.uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);

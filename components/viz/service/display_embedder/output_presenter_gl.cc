@@ -511,8 +511,8 @@ void OutputPresenterGL::ScheduleOverlays(
         overlay.shared_state->sorting_context_id,
         gfx::Transform(overlay.shared_state->transform), gl_image,
         overlay.contents_rect, gfx::ToEnclosingRect(overlay.bounds_rect),
-        overlay.background_color, overlay.edge_aa_mask, overlay.opacity,
-        overlay.filter, overlay.protected_video_type));
+        overlay.background_color.toSkColor(), overlay.edge_aa_mask,
+        overlay.opacity, overlay.filter, overlay.protected_video_type));
 #endif
   }
 #endif  //  BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || defined(USE_OZONE)

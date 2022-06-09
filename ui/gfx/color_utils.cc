@@ -606,9 +606,18 @@ std::string SkColorToRgbaString(SkColor color) {
       base::NumberToString(SkColorGetA(color) / 255.0).c_str());
 }
 
+std::string SkColor4fToRgbaString(SkColor4f color) {
+  return base::StringPrintf("rgba(%f, %f, %f, %f", color.fR, color.fG, color.fB,
+                            color.fA);
+}
+
 std::string SkColorToRgbString(SkColor color) {
   return base::StringPrintf("%d,%d,%d", SkColorGetR(color), SkColorGetG(color),
                             SkColorGetB(color));
+}
+
+std::string SkColor4fToRgbString(SkColor4f color) {
+  return base::StringPrintf("rgba(%f, %f, %f", color.fR, color.fG, color.fB);
 }
 
 SkColor SetDarkestColorForTesting(SkColor color) {

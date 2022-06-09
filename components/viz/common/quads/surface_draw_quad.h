@@ -38,7 +38,7 @@ class VIZ_COMMON_EXPORT SurfaceDrawQuad : public DrawQuad {
               bool merge);
 
   SurfaceRange surface_range;
-  SkColor default_background_color = SK_ColorWHITE;
+  SkColor4f default_background_color = SkColors::kWhite;
   bool stretch_content_to_fill_bounds = false;
   bool is_reflection = false;
   // If true, allows this surface to be merged into the embedding surface,

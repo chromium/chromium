@@ -44,7 +44,10 @@ TEST_F(SolidColorLayerImplTest, VerifyTilingCompleteAndNoOverlap) {
 }
 
 TEST_F(SolidColorLayerImplTest, VerifyCorrectBackgroundColorInQuad) {
-  SkColor4f test_color{0.647058f, 0.352941f, 1.0f, 1.0f};
+  // TODO(crbug.com/1308932): Somewhere along the path this gets cast to an int
+  // so the test fails if the values are not x/255. This should not be the case
+  // when the SkColor4f project is completed.
+  SkColor4f test_color{165.0f / 255.0f, 90.0f / 255.0f, 1.0f, 1.0f};
   auto render_pass = viz::CompositorRenderPass::Create();
   gfx::Size layer_size = gfx::Size(100, 100);
   gfx::Rect visible_layer_rect = gfx::Rect(layer_size);
@@ -64,11 +67,10 @@ TEST_F(SolidColorLayerImplTest, VerifyCorrectBackgroundColorInQuad) {
   layer->AppendQuads(render_pass.get(), &data);
 
   ASSERT_EQ(render_pass->quad_list.size(), 1U);
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
   EXPECT_EQ(
       viz::SolidColorDrawQuad::MaterialCast(render_pass->quad_list.front())
           ->color,
-      test_color.toSkColor());
+      test_color);
 }
 
 TEST_F(SolidColorLayerImplTest, VerifyCorrectOpacityInQuad) {

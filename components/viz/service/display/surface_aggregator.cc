@@ -975,15 +975,17 @@ void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
 
   // No matching surface was found so create a SolidColorDrawQuad with the
   // SurfaceDrawQuad default background color.
-  SkColor background_color = surface_quad->default_background_color;
+  SkColor4f background_color = surface_quad->default_background_color;
   auto* shared_quad_state =
       CopySharedQuadState(surface_quad->shared_quad_state, target_transform,
                           clip_rect, mask_filter_info, dest_pass);
 
   auto* solid_color_quad =
       dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  // TODO(crbug/1308932) remove toSkColor and make all SkColor4f
   solid_color_quad->SetNew(shared_quad_state, surface_quad->rect,
-                           surface_quad->visible_rect, background_color, false);
+                           surface_quad->visible_rect,
+                           background_color.toSkColor(), false);
 }
 
 void SurfaceAggregator::EmitGutterQuadsIfNecessary(

@@ -176,9 +176,11 @@ GFX_EXPORT SkColor PickGoogleColor(SkColor color,
 
 // Creates an rgba string for an SkColor. For example: 'rgba(255,0,255,0.5)'.
 GFX_EXPORT std::string SkColorToRgbaString(SkColor color);
+GFX_EXPORT std::string SkColor4fToRgbaString(SkColor4f color);
 
 // Creates an rgb string for an SkColor. For example: '255,0,255'.
 GFX_EXPORT std::string SkColorToRgbString(SkColor color);
+GFX_EXPORT std::string SkColor4fToRgbString(SkColor4f color);
 
 // Sets the darkest available color to |color|.  Returns the previous darkest
 // color.

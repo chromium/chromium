@@ -333,7 +333,7 @@ TEST(CompositorRenderPassTest, ReplacedQuadsGetColor) {
   quad->SetNew(quad_state, quad_rect, quad_rect, SK_ColorRED, false);
   pass->ReplaceExistingQuadWithSolidColor(pass->quad_list.begin(),
                                           SK_ColorGREEN, SkBlendMode::kSrcOver);
-  EXPECT_EQ(SK_ColorGREEN, quad->color);
+  EXPECT_EQ(SkColors::kGreen, quad->color);
 }
 
 TEST(CompositorRenderPassTest, ReplacedQuadsGetBlendMode) {

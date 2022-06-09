@@ -341,7 +341,8 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
 
         const auto* solid_color_quad = SolidColorDrawQuad::MaterialCast(quad);
 
-        EXPECT_EQ(expected_quad.color, solid_color_quad->color);
+        EXPECT_EQ(SkColor4f::FromColor(expected_quad.color),
+                  solid_color_quad->color);
         EXPECT_EQ(expected_quad.rect, solid_color_quad->rect);
         break;
       }

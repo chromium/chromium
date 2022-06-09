@@ -20,6 +20,7 @@ void DebugBorderDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
   bool needs_blending = SkColorGetA(c) < 255;
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kDebugBorder, rect,
                    visible_rect, needs_blending);
+  // TODO(crbug/1308932) remove FromColor and make all SkColor4f
   color = SkColor4f::FromColor(c);
   width = w;
 }
@@ -32,6 +33,7 @@ void DebugBorderDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                                  int w) {
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kDebugBorder, rect,
                    visible_rect, needs_blending);
+  // TODO(crbug/1308932) remove FromColor and make all SkColor4f
   color = SkColor4f::FromColor(c);
   width = w;
 }

@@ -2109,7 +2109,7 @@ void SkiaRenderer::DrawPictureQuad(const PictureDrawQuad* quad,
 void SkiaRenderer::DrawSolidColorQuad(const SolidColorDrawQuad* quad,
                                       const DrawRPDQParams* rpdq_params,
                                       DrawQuadParams* params) {
-  DrawColoredQuad(SkColor4f::FromColor(quad->color), rpdq_params, params);
+  DrawColoredQuad(quad->color, rpdq_params, params);
 }
 
 void SkiaRenderer::DrawStreamVideoQuad(const StreamVideoDrawQuad* quad,
@@ -2202,7 +2202,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   // 2. The vertex opacities are not all 1s.
   // 3. The quad contains video which might need special white level adjustment.
   const bool blend_background =
-      quad->background_color != SK_ColorTRANSPARENT && !image->isOpaque();
+      quad->background_color != SkColors::kTransparent && !image->isOpaque();
   const bool vertex_alpha =
       quad->vertex_opacity[0] < 1.f || quad->vertex_opacity[1] < 1.f ||
       quad->vertex_opacity[2] < 1.f || quad->vertex_opacity[3] < 1.f;
@@ -2288,8 +2288,9 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   if (blend_background) {
     // Add a color filter that does DstOver blending between texture and the
     // background color. Then, modulate by quad's opacity *after* blending.
-    sk_sp<SkColorFilter> cf =
-        SkColorFilters::Blend(quad->background_color, SkBlendMode::kDstOver);
+    // TODO(crbug/1308932) remove toSkColor and make all SkColor4f
+    sk_sp<SkColorFilter> cf = SkColorFilters::Blend(
+        quad->background_color.toSkColor(), SkBlendMode::kDstOver);
     if (quad_alpha < 1.f) {
       cf = MakeOpacityFilter(quad_alpha, std::move(cf));
       quad_alpha = 1.f;

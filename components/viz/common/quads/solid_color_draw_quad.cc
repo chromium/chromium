@@ -11,7 +11,7 @@
 namespace viz {
 
 SolidColorDrawQuad::SolidColorDrawQuad()
-    : color(0), force_anti_aliasing_off(false) {}
+    : color(SkColors::kTransparent), force_anti_aliasing_off(false) {}
 
 void SolidColorDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                                 const gfx::Rect& rect,
@@ -21,7 +21,7 @@ void SolidColorDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
   bool needs_blending = SkColorGetA(c) != 255;
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSolidColor, rect,
                    visible_rect, needs_blending);
-  color = c;
+  color = SkColor4f::FromColor(c);
   force_anti_aliasing_off = anti_aliasing_off;
 }
 
@@ -33,7 +33,7 @@ void SolidColorDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                                 bool anti_aliasing_off) {
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSolidColor, rect,
                    visible_rect, needs_blending);
-  color = c;
+  color = SkColor4f::FromColor(c);
   force_anti_aliasing_off = anti_aliasing_off;
 }
 
@@ -45,7 +45,7 @@ const SolidColorDrawQuad* SolidColorDrawQuad::MaterialCast(
 
 void SolidColorDrawQuad::ExtendValue(
     base::trace_event::TracedValue* value) const {
-  value->SetString("color", color_utils::SkColorToRgbaString(color));
+  value->SetString("color", color_utils::SkColor4fToRgbaString(color));
   value->SetBoolean("force_anti_aliasing_off", force_anti_aliasing_off);
 }
 

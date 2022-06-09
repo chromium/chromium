@@ -91,7 +91,7 @@ bool OverlayStrategyUnderlayCast::Attempt(
 
     if (!found_underlay && quad->material == DrawQuad::Material::kSolidColor) {
       const SolidColorDrawQuad* solid = SolidColorDrawQuad::MaterialCast(quad);
-      if (solid->color == SK_ColorBLACK)
+      if (solid->color == SkColors::kBlack)
         continue;
     }
 
@@ -222,7 +222,7 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
 
     if (!found_underlay && quad->material == DrawQuad::Material::kSolidColor) {
       const SolidColorDrawQuad* solid = SolidColorDrawQuad::MaterialCast(quad);
-      if (solid->color == SK_ColorBLACK)
+      if (solid->color == SkColors::kBlack)
         continue;
     }
 

@@ -645,7 +645,7 @@ TEST_F(DCLayerOverlayTest, RoundedCorners) {
     // rounded corner mask filter for the replaced solid quad.
     EXPECT_EQ(replaced_sqs->blend_mode, SkBlendMode::kDstOut);
     EXPECT_EQ(SolidColorDrawQuad::MaterialCast(replaced_quad)->color,
-              SK_ColorBLACK);
+              SkColors::kBlack);
     EXPECT_TRUE(replaced_sqs->mask_filter_info.HasRoundedCorners());
 
     // The whole frame is damaged.
@@ -703,7 +703,7 @@ TEST_F(DCLayerOverlayTest, RoundedCorners) {
     // rounded corner mask filter for the replaced solid quad.
     EXPECT_EQ(replaced_sqs->blend_mode, SkBlendMode::kDstOut);
     EXPECT_EQ(SolidColorDrawQuad::MaterialCast(replaced_quad)->color,
-              SK_ColorBLACK);
+              SkColors::kBlack);
     EXPECT_TRUE(replaced_sqs->mask_filter_info.HasRoundedCorners());
 
     // Only the UI is damaged.
@@ -761,7 +761,7 @@ TEST_F(DCLayerOverlayTest, RoundedCorners) {
     // solid quad.
     EXPECT_EQ(replaced_sqs->blend_mode, SkBlendMode::kDstOut);
     EXPECT_EQ(SolidColorDrawQuad::MaterialCast(replaced_quad)->color,
-              SK_ColorBLACK);
+              SkColors::kBlack);
     EXPECT_TRUE(replaced_sqs->mask_filter_info.HasRoundedCorners());
 
     // Zero root damage rect.
