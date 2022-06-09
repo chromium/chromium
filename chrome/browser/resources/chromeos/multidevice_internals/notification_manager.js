@@ -93,7 +93,7 @@ Polymer({
    * @private
    */
   onRemoveNotification_(e) {
-    const notificationEl = e.path[0];
+    const notificationEl = e.composedPath()[0];
     const notificationIndex =
         this.$.notificationList.indexForElement(notificationEl);
     this.notificationList_.splice(notificationIndex, 1);
