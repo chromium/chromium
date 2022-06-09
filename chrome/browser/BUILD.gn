@@ -4372,6 +4372,7 @@ static_library("browser") {
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/autofill_assistant/password_change/proto:proto",
       "//chrome/browser/cart:mojo_bindings",
+      "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/enterprise/signals:utils",
       "//chrome/browser/first_party_sets",
       "//chrome/browser/image_editor:image_editor_component_util",
