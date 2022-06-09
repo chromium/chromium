@@ -136,9 +136,9 @@ chacha20_poly1305_seal:
 .cfi_offset	w30, -72
 .cfi_offset	w29, -80
 	mov	x29, sp
-# We probably could do .cfi_def_cfa w29, 80 at this point, but since
-# we don't actually use the frame pointer like that, it's probably not
-# worth bothering.
+    // We probably could do .cfi_def_cfa w29, 80 at this point, but since
+    // we don't actually use the frame pointer like that, it's probably not
+    // worth bothering.
 	stp	d8, d9, [sp, #16]
 	stp	d10, d11, [sp, #32]
 	stp	d12, d13, [sp, #48]
@@ -1274,7 +1274,7 @@ chacha20_poly1305_seal:
 	adds	x8, x8, x13
 	adcs	x9, x9, x12
 	adc	x10, x10, xzr      // At this point acc2 has the value of 4 at most
-    # Final reduction step
+    // Final reduction step
 	sub	x12, xzr, x15
 	orr	x13, xzr, #3
 	subs	x11, x8, #-5
@@ -1492,9 +1492,9 @@ chacha20_poly1305_open:
 .cfi_offset	w30, -72
 .cfi_offset	w29, -80
 	mov	x29, sp
-# We probably could do .cfi_def_cfa w29, 80 at this point, but since
-# we don't actually use the frame pointer like that, it's probably not
-# worth bothering.
+    // We probably could do .cfi_def_cfa w29, 80 at this point, but since
+    // we don't actually use the frame pointer like that, it's probably not
+    // worth bothering.
 	stp	d8, d9, [sp, #16]
 	stp	d10, d11, [sp, #32]
 	stp	d12, d13, [sp, #48]
@@ -2632,7 +2632,7 @@ chacha20_poly1305_open:
 	adds	x8, x8, x13
 	adcs	x9, x9, x12
 	adc	x10, x10, xzr      // At this point acc2 has the value of 4 at most
-    # Final reduction step
+    // Final reduction step
 	sub	x12, xzr, x15
 	orr	x13, xzr, #3
 	subs	x11, x8, #-5
