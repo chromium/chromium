@@ -18,7 +18,6 @@ goog.require('LogStore');
 goog.require('Msgs');
 goog.require('NavBraille');
 goog.require('OutputAction');
-goog.require('OutputAncestryInfo');
 goog.require('OutputContextOrder');
 goog.require('OutputEarconAction');
 goog.require('OutputEventType');

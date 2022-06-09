@@ -7,12 +7,6 @@
  * chains given the current node.
  */
 
-goog.provide('OutputAncestryInfo');
-
-goog.require('constants');
-goog.require('OutputRoleInfo');
-
-goog.scope(function() {
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 const RoleType = chrome.automation.RoleType;
@@ -24,7 +18,7 @@ const RoleType = chrome.automation.RoleType;
  * so are generally valid for the current call stack, wherein ancestry data is
  * stable.
  */
-OutputAncestryInfo = class {
+export class OutputAncestryInfo {
   /**
    * @param {!AutomationNode} node The primary node to consider for ancestry
    *     computation.
@@ -156,5 +150,4 @@ OutputAncestryInfo = class {
     }
     return rest.concat(contextFirst.reverse());
   }
-};
-});  // goog.scope
+}

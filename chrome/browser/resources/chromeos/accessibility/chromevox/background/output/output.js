@@ -6,6 +6,7 @@
  * @fileoverview Provides output services for ChromeVox.
  */
 import {EventSourceState} from '/chromevox/background/event_source.js';
+import {OutputAncestryInfo} from '/chromevox/background/output/output_ancestry_info.js';
 import {EventSourceType} from '/chromevox/common/event_source_type.js';
 
 const AriaCurrentState = chrome.automation.AriaCurrentState;
