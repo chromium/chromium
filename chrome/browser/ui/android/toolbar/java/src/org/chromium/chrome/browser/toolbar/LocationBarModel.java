@@ -290,8 +290,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         String url = getTab() != null && getTab().isInitialized()
                 ? getTab().getUrl().getSpec().trim()
                 : "";
-        if (isInOverviewAndShowingOmnibox()
-                || StartSurfaceConfiguration.shouldHandleAsNtp(getTab(), url)) {
+        if (isInOverviewAndShowingOmnibox()) {
             return UrlConstants.NTP_URL;
         }
 
@@ -327,7 +326,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         // the investigation is complete.
         try (TraceEvent te = TraceEvent.scoped("LocationBarModel.getUrlBarData")) {
             String url = getCurrentUrl();
-            if (!hasTab() || StartSurfaceConfiguration.shouldHandleAsNtp(getTab(), url)) {
+            if (!hasTab()) {
                 return UrlBarData.EMPTY;
             }
 
@@ -574,10 +573,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         // Start Surface homepage is not bound with a tab and mTab is kept as the previous tab if
         // the homepage is shown. This is added here to make sure Start Surface homepage is not
         // regarded as a paint preview.
-        if (isInOverviewAndShowingOmnibox()
-                || StartSurfaceConfiguration.shouldHandleAsNtp(getTab())) {
-            return false;
-        }
+        if (isInOverviewAndShowingOmnibox()) return false;
         return hasTab() && TabbedPaintPreview.get(mTab).isShowing();
     }
 
@@ -597,12 +593,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         // navigation entry.
         if (isInOverviewAndShowingOmnibox()) {
             return StartSurfaceConfiguration.getPageClassificationForHomepage();
-        }
-
-        // Provides NTP or START_SURFACE_NEW_TAB as page class if it is a new Tab with Omnibox
-        // focused.
-        if (StartSurfaceConfiguration.shouldHandleAsNtp(getTab())) {
-            return StartSurfaceConfiguration.getPageClassificationForNewTab();
         }
 
         return LocationBarModelJni.get().getPageClassification(

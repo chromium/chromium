@@ -10,7 +10,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
@@ -58,13 +57,6 @@ public class ChromeTabCreator extends TabCreator {
          */
         boolean handleCreateNTPIfNeeded(boolean isNTP, boolean isIncognito, Tab parentTab,
                 @NewTabPageLaunchOrigin int launchOrigin);
-
-        /**
-         * Called before the Tab's initialization.
-         * @param tab The newly created Tab.
-         * @param url The URL to load.
-         */
-        void preTabInitialization(Tab tab, String url);
     }
 
     private static final String TAG = "ChromeTabCreator";
@@ -219,12 +211,6 @@ public class ChromeTabCreator extends TabCreator {
                 creationState = TabCreationState.FROZEN_FOR_LAZY_LOAD;
             } else {
                 TraceEvent.begin("ChromeTabCreator.loadUrl");
-                Callback<Tab> action = null;
-                if (mOverviewNTPCreator != null) {
-                    action = (newTab) -> {
-                        mOverviewNTPCreator.preTabInitialization(newTab, loadUrlParams.getUrl());
-                    };
-                }
                 tab = TabBuilder.createLiveTab(!openInForeground)
                               .setParent(parent)
                               .setIncognito(mIncognito)
@@ -232,7 +218,6 @@ public class ChromeTabCreator extends TabCreator {
                               .setLaunchType(type)
                               .setDelegateFactory(delegateFactory)
                               .setInitiallyHidden(!openInForeground)
-                              .setPreInitializeAction(action)
                               .build();
                 tab.loadUrl(loadUrlParams);
                 TraceEvent.end("ChromeTabCreator.loadUrl");

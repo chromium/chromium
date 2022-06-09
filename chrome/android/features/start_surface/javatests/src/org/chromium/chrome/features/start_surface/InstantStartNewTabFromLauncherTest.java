@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -82,23 +81,6 @@ public class InstantStartNewTabFromLauncherTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS + "/omnibox_focused_on_new_tab/true"})
-    @DisabledTest(message = "https://crbug.com/1192559")
-    public void testNewTabFromLauncher() throws IOException {
-        testNewTabFromLauncherImpl();
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.INSTANT_START)
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS + "/omnibox_focused_on_new_tab/true"})
-    public void testNewTabFromLauncherWithInstantStartDisabled() throws IOException {
-        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        testNewTabFromLauncherImpl();
-    }
-
-    @Test
-    @MediumTest
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
     public void testNewTabFromLauncherWithHomepageDisabled_NoFinale() throws IOException {
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
@@ -110,23 +92,6 @@ public class InstantStartNewTabFromLauncherTest {
     @DisableFeatures(ChromeFeatureList.INSTANT_START)
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
     public void testNewTabFromLauncherWithHomepageDisabled_NoFinale_NoInstant() throws IOException {
-        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        testNewTabFromLauncherWithHomepageDisabledImpl();
-    }
-
-    @Test
-    @MediumTest
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS + "/omnibox_focused_on_new_tab/true"})
-    public void testNewTabFromLauncherWithHomepageDisabled_Finale() throws IOException {
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        testNewTabFromLauncherWithHomepageDisabledImpl();
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.INSTANT_START)
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS + "/omnibox_focused_on_new_tab/true"})
-    public void testNewTabFromLauncherWithHomepageDisabled_Finale_NoInstant() throws IOException {
         Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
         testNewTabFromLauncherWithHomepageDisabledImpl();
     }

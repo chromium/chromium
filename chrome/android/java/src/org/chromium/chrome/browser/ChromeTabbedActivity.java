@@ -1930,11 +1930,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     }
                     return shouldShowStart;
                 }
-
-                @Override
-                public void preTabInitialization(Tab tab, String url) {
-                    StartSurfaceConfiguration.maySetUserDataForEmptyTab(tab, url);
-                }
             };
         }
         return Pair.create(
@@ -2515,15 +2510,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         getTabModelSelector().selectModel(incognito);
-        if (StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB.getValue()
-                && launchOrigin != NewTabPageLaunchOrigin.WEB_FEED) {
-            Runnable emptyTabCloseCallback = isInOverviewMode() ? () -> {
-                showOverview(StartSurfaceState.SHOWING_PREVIOUS, launchOrigin);
-            } : null;
-            ReturnToChromeUtil.handleLoadUrlFromStartSurfaceAsNewTab(null,
-                    PageTransition.AUTO_TOPLEVEL, incognito, parentTab, getCurrentTabModel(),
-                    emptyTabCloseCallback);
-        } else if (isInstantStartEnabled()
+        if (isInstantStartEnabled()
                 || (getTabModelSelector().isTabStateInitialized() && isLayoutManagerCreated())) {
             showOverview(StartSurfaceState.SHOWING_HOMEPAGE, launchOrigin);
         }

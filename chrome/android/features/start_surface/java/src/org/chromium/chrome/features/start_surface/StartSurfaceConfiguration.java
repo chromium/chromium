@@ -18,12 +18,9 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 
 /**
@@ -220,59 +217,6 @@ public class StartSurfaceConfiguration {
     public static String getHistogramName(String name, boolean isInstantStart) {
         return STARTUP_UMA_PREFIX + name
                 + (isInstantStart ? INSTANT_START_SUBFIX : REGULAR_START_SUBFIX);
-    }
-
-    /**
-     * Returns whether the given Tab has the flag of focusing on its Omnibox on the first time the
-     * Tab is showing, and resets the flag in the Tab's UserData. This function returns true only
-     * when {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled.
-     */
-    public static boolean consumeFocusOnOmnibox(Tab tab, @LayoutType int layout) {
-        if (tab != null && tab.getUrl().isEmpty() && layout == LayoutType.BROWSING
-                && StartSurfaceUserData.getFocusOnOmnibox(tab)) {
-            assert OMNIBOX_FOCUSED_ON_NEW_TAB.getValue();
-            StartSurfaceUserData.setFocusOnOmnibox(tab, false);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @return Whether the given tab should be treated as chrome://newTab. This function returns
-     *         true only when {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled, the tab is newly
-     *         created from the new Tab menu or "+" button, and it hasn't navigate to any URL yet.
-     */
-    public static boolean shouldHandleAsNtp(Tab tab) {
-        // TODO(https://crbug.com/1305397): Rule out a null url here and assert that it's non-null.
-        if (tab == null || tab.getUrl() == null) return false;
-
-        return tab.getUrl().isEmpty() && StartSurfaceUserData.getCreatedAsNtp(tab);
-    }
-
-    /**
-     * @return Whether the given tab with the given url should be treated as chrome://newTab. This
-     *         function returns true only when {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled, the
-     *         tab is newly created from the new Tab menu or "+" button, and it hasn't navigate to
-     *         any URL yet.
-     */
-    // TODO(https://crbug.com/1305374): migrate to GURL.
-    public static boolean shouldHandleAsNtp(Tab tab, String url) {
-        if (tab == null || url == null) return false;
-
-        return url.isEmpty() && StartSurfaceUserData.getCreatedAsNtp(tab);
-    }
-
-    /**
-     * Sets the UserData if the Tab is a newly created empty Tab when
-     * {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled.
-     */
-    public static void maySetUserDataForEmptyTab(Tab tab, String url) {
-        if (!OMNIBOX_FOCUSED_ON_NEW_TAB.getValue() || tab == null || !TextUtils.isEmpty(url)
-                || tab.getLaunchType() != TabLaunchType.FROM_START_SURFACE) {
-            return;
-        }
-        StartSurfaceUserData.setFocusOnOmnibox(tab, true);
-        StartSurfaceUserData.setCreatedAsNtp(tab);
     }
 
     /**

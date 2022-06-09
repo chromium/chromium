@@ -145,7 +145,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -690,9 +689,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
              * reduce server pressure.
              */
             private void maybeTriggerCacheRefreshForZeroSuggest(Tab tab, GURL url) {
-                if (url != null
-                        && (UrlUtilities.isNTPUrl(url)
-                                || StartSurfaceConfiguration.shouldHandleAsNtp(tab))) {
+                if (url != null && UrlUtilities.isNTPUrl(url)) {
                     mLocationBarModel.notifyZeroSuggestRefresh();
                 }
             }
@@ -994,25 +991,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             }
         }
         mToolbar.setContentAttached(layoutType == LayoutType.BROWSING);
-
-        maybeFocusOmnibox(layoutType, mActivityTabProvider.get());
-    }
-
-    /**
-     * May set Omnibox focused if the Tab has the flag to require focusing the Omnibox.
-     */
-    private void maybeFocusOmnibox(@LayoutType int layout, Tab tab) {
-        if (StartSurfaceConfiguration.consumeFocusOnOmnibox(tab, layout)) {
-            if (mLocationBar.getOmniboxStub() == null
-                    || mLocationBar.getOmniboxStub().isUrlBarFocused()) {
-                return;
-            }
-            // Note: this is executed during native initialization.
-            // Defer Omnibox focus, giving Autocomplete time to finish initialization.
-            mHandler.post(() -> setUrlBarFocus(true, OmniboxFocusReason.FOCUS_ON_NEW_TAB));
-            maybeShowCursorInLocationBar();
-            updateButtonStatus();
-        }
     }
 
     private TopToolbarCoordinator createTopToolbarCoordinator(
@@ -1369,7 +1347,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 && !currentTab.getUrl().isEmpty()) {
             mControlContainer.setReadyForBitmapCapture(true);
         }
-        maybeFocusOmnibox(mLayoutManager.getActiveLayout().getLayoutType(), currentTab);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
             UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, mHandler);
