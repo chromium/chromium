@@ -153,6 +153,8 @@ namespace autotestPrivate {
     DOMString? email;
     // User display email. Set only if `isLoggedIn`.
     DOMString? displayEmail;
+    // User display name. Set only if `isLoggedIn`.
+    DOMString? displayName;
     // User image: 'file', 'profile' or a number. Set only if `isLoggedIn`.
     DOMString? userImage;
     // Whether the user has a valid oauth2 token. Only set for gaia user.

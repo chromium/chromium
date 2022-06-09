@@ -1332,6 +1332,7 @@ ExtensionFunction::ResponseAction AutotestPrivateLoginStatusFunction::Run() {
       const user_manager::User* user = user_manager->GetActiveUser();
       result->SetStringKey("email", user->GetAccountId().GetUserEmail());
       result->SetStringKey("displayEmail", user->display_email());
+      result->SetStringKey("displayName", user->display_name());
 
       std::string user_image;
       switch (user->image_index()) {
