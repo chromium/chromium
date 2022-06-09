@@ -26,7 +26,7 @@ namespace test {
 AshBrowserTestStarter::AshBrowserTestStarter() = default;
 AshBrowserTestStarter::~AshBrowserTestStarter() = default;
 
-bool AshBrowserTestStarter::HasLacrosArgument() {
+bool AshBrowserTestStarter::HasLacrosArgument() const {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kLacrosChromePath);
 }
