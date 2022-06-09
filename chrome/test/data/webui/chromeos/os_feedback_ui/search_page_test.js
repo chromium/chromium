@@ -48,7 +48,7 @@ export function searchPageTestSuite() {
   test('SearchPageLoaded', async () => {
     await initializePage();
     // Verify the title is in the page.
-    const title = page.shadowRoot.querySelector('#title');
+    const title = page.shadowRoot.querySelector('.page-title');
     assertTrue(!!title);
     assertEquals('Send feedback', title.textContent.trim());
 

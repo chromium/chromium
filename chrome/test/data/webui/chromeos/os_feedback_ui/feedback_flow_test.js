@@ -63,7 +63,7 @@ export function FeedbackFlowTestSuite() {
     assertEquals('searchPage', activePage.id);
 
     // Verify the title is in the page.
-    const title = activePage.shadowRoot.querySelector('#title');
+    const title = activePage.shadowRoot.querySelector('.page-title');
     assertTrue(!!title);
     assertEquals('Send feedback', title.textContent.trim());
 
@@ -85,7 +85,7 @@ export function FeedbackFlowTestSuite() {
 
     assertTrue(!!activePage);
     // Verify the title is in the page.
-    const title = activePage.shadowRoot.querySelector('#title');
+    const title = activePage.shadowRoot.querySelector('.page-title');
     assertTrue(!!title);
     assertEquals('Send feedback', title.textContent.trim());
 
@@ -112,7 +112,7 @@ export function FeedbackFlowTestSuite() {
     assertEquals('confirmationPage', activePage.id);
 
     // Verify the title is in the page.
-    const title = activePage.shadowRoot.querySelector('#title');
+    const title = activePage.shadowRoot.querySelector('.page-title');
     assertTrue(!!title);
     assertEquals('Thanks for your feedback', title.textContent.trim());
 

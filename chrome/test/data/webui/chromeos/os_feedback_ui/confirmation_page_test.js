@@ -83,10 +83,10 @@ export function confirmationPageTest() {
    */
   function verifyElementsByStatus(isOnline) {
     if (isOnline) {
-      assertEquals(ONLINE_TITLE, getElementContent(page, '#title'));
+      assertEquals(ONLINE_TITLE, getElementContent(page, '.page-title'));
       assertEquals(ONLINE_MESSAGE, getElementContent(page, '#message'));
     } else {
-      assertEquals(OFFLINE_TITLE, getElementContent(page, '#title'));
+      assertEquals(OFFLINE_TITLE, getElementContent(page, '.page-title'));
       assertEquals(OFFLINE_MESSAGE, getElementContent(page, '#message'));
     }
 
