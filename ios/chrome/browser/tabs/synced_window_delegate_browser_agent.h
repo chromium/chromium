@@ -5,11 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_TABS_SYNCED_WINDOW_DELEGATE_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_TABS_SYNCED_WINDOW_DELEGATE_BROWSER_AGENT_H_
 
-#include "components/sessions/core/session_id.h"
-#include "components/sync_sessions/synced_window_delegate.h"
-#include "ios/chrome/browser/main/browser_observer.h"
-#include "ios/chrome/browser/main/browser_user_data.h"
-#include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "components/sessions/core/session_id.h"
+#import "components/sync_sessions/synced_window_delegate.h"
+#import "ios/chrome/browser/main/browser_observer.h"
+#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
 class WebStateList;
 
@@ -58,10 +58,11 @@ class SyncedWindowDelegateBrowserAgent
                           int index) override;
 
  private:
-  explicit SyncedWindowDelegateBrowserAgent(Browser* browser);
-
   friend class BrowserUserData<SyncedWindowDelegateBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit SyncedWindowDelegateBrowserAgent(Browser* browser);
+
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;
 

@@ -5,16 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_BROWSER_AGENT_H_
 
-#include <CoreFoundation/CoreFoundation.h>
+#import <CoreFoundation/CoreFoundation.h>
 
-#include <string>
-#include <vector>
+#import <string>
+#import <vector>
 
-#include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
+#import "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
-#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_observer.h"
 
 namespace web {
 class WebState;
@@ -65,9 +65,10 @@ class SendTabToSelfBrowserAgent
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
-  explicit SendTabToSelfBrowserAgent(Browser* browser);
   friend class BrowserUserData<SendTabToSelfBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit SendTabToSelfBrowserAgent(Browser* browser);
 
   // BrowserObserver::
   void BrowserDestroyed(Browser* browser) override;

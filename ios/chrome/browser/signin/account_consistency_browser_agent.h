@@ -52,12 +52,12 @@ class AccountConsistencyBrowserAgent
   void OnGoIncognito(const GURL& url) override;
 
  private:
+  friend class BrowserUserData<AccountConsistencyBrowserAgent>;
+  BROWSER_USER_DATA_KEY_DECL();
+
   AccountConsistencyBrowserAgent(Browser* browser,
                                  UIViewController* base_view_controller,
                                  id<ApplicationCommands> handler);
-
-  friend class BrowserUserData<AccountConsistencyBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;

@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_WEB_WEB_NAVIGATION_BROWSER_AGENT_H_
 
 #import "ios/chrome/browser/main/browser_user_data.h"
-#include "ios/web/common/user_agent.h"
+#import "ios/web/common/user_agent.h"
 
 class Browser;
 @protocol WebNavigationNTPDelegate;
@@ -53,8 +53,9 @@ class WebNavigationBrowserAgent
 
  private:
   friend class BrowserUserData<WebNavigationBrowserAgent>;
-  explicit WebNavigationBrowserAgent(Browser* browser);
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit WebNavigationBrowserAgent(Browser* browser);
 
   // Reloads the original url of the last non-redirect item (including
   // non-history items) with |userAgentType|.

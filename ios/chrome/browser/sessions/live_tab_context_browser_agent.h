@@ -5,14 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_SESSIONS_LIVE_TAB_CONTEXT_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_SESSIONS_LIVE_TAB_CONTEXT_BROWSER_AGENT_H_
 
-#include <map>
-#include <string>
-#include <vector>
+#import <map>
+#import <string>
+#import <vector>
 
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/sessions/core/live_tab_context.h"
-#include "ios/chrome/browser/main/browser_observer.h"
-#include "ios/chrome/browser/main/browser_user_data.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/sessions/core/live_tab_context.h"
+#import "ios/chrome/browser/main/browser_observer.h"
+#import "ios/chrome/browser/main/browser_user_data.h"
 
 class WebStateList;
 
@@ -76,9 +76,10 @@ class LiveTabContextBrowserAgent
   void CloseTab() override;
 
  private:
-  explicit LiveTabContextBrowserAgent(Browser* browser);
   friend class BrowserUserData<LiveTabContextBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit LiveTabContextBrowserAgent(Browser* browser);
 
   ChromeBrowserState* browser_state_;
   WebStateList* web_state_list_;

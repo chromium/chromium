@@ -31,9 +31,10 @@ class SyncErrorBrowserAgent : public BrowserObserver,
   void ClearUIProviders();
 
  private:
-  explicit SyncErrorBrowserAgent(Browser* browser);
   friend class BrowserUserData<SyncErrorBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit SyncErrorBrowserAgent(Browser* browser);
 
   // BrowserObserver methods
   void BrowserDestroyed(Browser* browser) override;

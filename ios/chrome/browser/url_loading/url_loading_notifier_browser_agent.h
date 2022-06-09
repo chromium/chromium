@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_URL_LOADING_URL_LOADING_NOTIFIER_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_URL_LOADING_URL_LOADING_NOTIFIER_BROWSER_AGENT_H_
 
-#include "base/observer_list.h"
-#include "ios/chrome/browser/main/browser_user_data.h"
-#include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
+#import "base/observer_list.h"
+#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 class UrlLoadingObserverBridge;
 
@@ -66,9 +66,10 @@ class UrlLoadingNotifierBrowserAgent
   void DidSwitchToTabWithUrl(const GURL& url, int new_web_state_index);
 
  private:
-  explicit UrlLoadingNotifierBrowserAgent(Browser* browser);
   friend class BrowserUserData<UrlLoadingNotifierBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit UrlLoadingNotifierBrowserAgent(Browser* browser);
 
   base::ObserverList<UrlLoadingObserverBridge>::Unchecked observers_;
 };

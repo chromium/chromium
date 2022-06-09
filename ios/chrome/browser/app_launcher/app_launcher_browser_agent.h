@@ -20,8 +20,8 @@ class AppLauncherBrowserAgent
   ~AppLauncherBrowserAgent() override;
 
  private:
-  explicit AppLauncherBrowserAgent(Browser* browser);
   friend class BrowserUserData<AppLauncherBrowserAgent>;
+  explicit AppLauncherBrowserAgent(Browser* browser);
 
   // Helper object that handles delegated AppLauncherTabHelper functionality.
   class TabHelperDelegate : public AppLauncherTabHelperDelegate {

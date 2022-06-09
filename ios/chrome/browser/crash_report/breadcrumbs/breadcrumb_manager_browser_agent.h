@@ -5,15 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_BREADCRUMB_MANAGER_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_BREADCRUMB_MANAGER_BROWSER_AGENT_H_
 
-#include <string>
+#import <string>
 
-#include "base/scoped_observation.h"
-#include "components/breadcrumbs/core/breadcrumb_manager_browser_agent.h"
-#include "ios/chrome/browser/main/browser_observer.h"
-#include "ios/chrome/browser/main/browser_user_data.h"
-#include "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#include "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
-#include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "base/scoped_observation.h"
+#import "components/breadcrumbs/core/breadcrumb_manager_browser_agent.h"
+#import "ios/chrome/browser/main/browser_observer.h"
+#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
 class Browser;
 class WebStateList;
@@ -57,9 +57,10 @@ class BreadcrumbManagerBrowserAgent
   ~BreadcrumbManagerBrowserAgent() override;
 
  private:
-  explicit BreadcrumbManagerBrowserAgent(Browser* browser);
   friend class BrowserUserData<BreadcrumbManagerBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit BreadcrumbManagerBrowserAgent(Browser* browser);
 
   // breadcrumbs::BreadcrumbManagerBrowserAgent:
   void PlatformLogEvent(const std::string& event) override;

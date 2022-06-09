@@ -5,17 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_BROWSER_AGENT_H_
 
-#include <CoreFoundation/CoreFoundation.h>
+#import <CoreFoundation/CoreFoundation.h>
 
-#include <memory>
-#include <string>
-#include <vector>
+#import <memory>
+#import <string>
+#import <vector>
 
-#include "base/observer_list.h"
-#include "ios/chrome/browser/main/browser_observer.h"
-#include "ios/chrome/browser/main/browser_user_data.h"
-#include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
-#include "ios/web/public/web_state_observer.h"
+#import "base/observer_list.h"
+#import "ios/chrome/browser/main/browser_observer.h"
+#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "ios/web/public/web_state_observer.h"
 
 class AllWebStateObservationForwarder;
 class ChromeBrowserState;
@@ -77,11 +77,11 @@ class SessionRestorationBrowserAgent
   bool IsRestoringSession();
 
  private:
-  SessionRestorationBrowserAgent(Browser* browser,
-                                 SessionServiceIOS* session_service);
-
   friend class BrowserUserData<SessionRestorationBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  SessionRestorationBrowserAgent(Browser* browser,
+                                 SessionServiceIOS* session_service);
 
   // Returns true if the current session can be saved.
   bool CanSaveSession();

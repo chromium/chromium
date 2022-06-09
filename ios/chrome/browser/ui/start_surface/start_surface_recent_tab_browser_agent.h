@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_RECENT_TAB_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_RECENT_TAB_BROWSER_AGENT_H_
 
-#include "base/observer_list.h"
-#include "base/scoped_observation.h"
-#include "components/favicon/ios/web_favicon_driver.h"
-#include "ios/chrome/browser/main/browser_observer.h"
+#import "base/observer_list.h"
+#import "base/scoped_observation.h"
+#import "components/favicon/ios/web_favicon_driver.h"
+#import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
-#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_observer.h"
 
 namespace web {
 class WebState;
@@ -66,10 +66,11 @@ class StartSurfaceRecentTabBrowserAgent
       const StartSurfaceRecentTabBrowserAgent&) = delete;
 
  private:
-  // Constructor used by CreateForBrowser().
   friend class BrowserUserData<StartSurfaceRecentTabBrowserAgent>;
-  explicit StartSurfaceRecentTabBrowserAgent(Browser* browser);
   BROWSER_USER_DATA_KEY_DECL();
+
+  // Constructor used by CreateForBrowser().
+  explicit StartSurfaceRecentTabBrowserAgent(Browser* browser);
 
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;

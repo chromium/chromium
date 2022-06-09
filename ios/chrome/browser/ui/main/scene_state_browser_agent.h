@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_MAIN_SCENE_STATE_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_UI_MAIN_SCENE_STATE_BROWSER_AGENT_H_
 
-#include "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/main/browser_user_data.h"
 
 @class SceneState;
 
@@ -26,10 +26,10 @@ class SceneStateBrowserAgent : public BrowserUserData<SceneStateBrowserAgent> {
   SceneState* GetSceneState();
 
  private:
-  SceneStateBrowserAgent(Browser* browser, SceneState* scene_state);
-
   friend class BrowserUserData<SceneStateBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  SceneStateBrowserAgent(Browser* browser, SceneState* scene_state);
 
   // The associated SceneState.
   __weak SceneState* scene_state_;

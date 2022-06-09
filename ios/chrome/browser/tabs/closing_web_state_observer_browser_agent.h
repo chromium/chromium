@@ -29,9 +29,10 @@ class ClosingWebStateObserverBrowserAgent
   ~ClosingWebStateObserverBrowserAgent() override;
 
  private:
-  explicit ClosingWebStateObserverBrowserAgent(Browser* browser);
   friend class BrowserUserData<ClosingWebStateObserverBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit ClosingWebStateObserverBrowserAgent(Browser* browser);
 
   // Records history for a given non-incognito WebState and does not record
   // history if the tab has no navigation or has only presented the NTP or the
