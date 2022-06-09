@@ -225,10 +225,11 @@ RequestIdTokenStatus FederatedAuthRequestResultToRequestIdTokenStatus(
 
 }  // namespace
 
-FederatedAuthRequestImpl::FederatedAuthRequestImpl(RenderFrameHostImpl* host,
-                                                   const url::Origin& origin)
-    : render_frame_host_(host),
-      origin_(origin),
+FederatedAuthRequestImpl::FederatedAuthRequestImpl(
+    RenderFrameHostImpl* host,
+    mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
+    : DocumentService(host, std::move(receiver)),
+      render_frame_host_(host),
       delay_timer_(FROM_HERE,
                    kRequestRejectionDelay,
                    this,
@@ -256,12 +257,35 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   }
 }
 
-void FederatedAuthRequestImpl::RequestIdToken(
-    const GURL& provider,
-    const std::string& client_id,
-    const std::string& nonce,
-    bool prefer_auto_sign_in,
-    blink::mojom::FederatedAuthRequest::RequestIdTokenCallback callback) {
+// static
+void FederatedAuthRequestImpl::Create(
+    RenderFrameHostImpl* host,
+    mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
+  DCHECK(host);
+
+  // TODO(yigu): Once cross-orign support is implemented, we should reject the
+  // request with specific error messages instead of crashing the renderer.
+  // https://crbug.com/1286839.
+  // It is safe to access host->GetLastCommittedOrigin during construction
+  // but DocumentService::origin() should be used thereafter.
+  if (!IsSameOriginWithAncestors(host, host->GetLastCommittedOrigin())) {
+    mojo::ReportBadMessage(
+        "navigator.credentials.get() cannot be invoked from within "
+        "cross-origin iframes.");
+    return;
+  }
+
+  // FederatedAuthRequestImpl owns itself. It will self-destruct when a mojo
+  // interface error occurs, the RenderFrameHost is deleted, or the
+  // RenderFrameHost navigates to a new document.
+  new FederatedAuthRequestImpl(host, std::move(receiver));
+}
+
+void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
+                                              const std::string& client_id,
+                                              const std::string& nonce,
+                                              bool prefer_auto_sign_in,
+                                              RequestIdTokenCallback callback) {
   if (HasPendingRequest()) {
     RecordRequestIdTokenStatus(IdTokenStatus::kTooManyRequests,
                                render_frame_host_->GetPageUkmSourceId());
@@ -296,7 +320,7 @@ void FederatedAuthRequestImpl::RequestIdToken(
   }
 
   FederatedApiPermissionStatus permission_status =
-      GetApiPermissionContext()->GetApiPermissionStatus(origin_);
+      GetApiPermissionContext()->GetApiPermissionStatus(origin());
 
   absl::optional<IdTokenStatus> error_id_token_status;
   FederatedAuthRequestResult request_result =
@@ -349,11 +373,10 @@ void FederatedAuthRequestImpl::CancelTokenRequest() {
                   /*should_call_callback=*/true);
 }
 
-void FederatedAuthRequestImpl::Revoke(
-    const GURL& provider,
-    const std::string& client_id,
-    const std::string& hint,
-    blink::mojom::FederatedAuthRequest::RevokeCallback callback) {
+void FederatedAuthRequestImpl::Revoke(const GURL& provider,
+                                      const std::string& client_id,
+                                      const std::string& hint,
+                                      RevokeCallback callback) {
   if (HasPendingRequest()) {
     RecordRevokeStatus(RevokeStatusForMetrics::kTooManyRequests,
                        render_frame_host_->GetPageUkmSourceId());
@@ -384,7 +407,7 @@ void FederatedAuthRequestImpl::Revoke(
   }
 
   FederatedApiPermissionStatus permission_status =
-      GetApiPermissionContext()->GetApiPermissionStatus(origin_);
+      GetApiPermissionContext()->GetApiPermissionStatus(origin());
 
   absl::optional<RevokeStatusForMetrics> error_revoke_status;
   switch (permission_status) {
@@ -415,7 +438,7 @@ void FederatedAuthRequestImpl::Revoke(
 
   if (!GetSharingPermissionContext() ||
       !GetSharingPermissionContext()->HasSharingPermissionForAnyAccount(
-          origin_, url::Origin::Create(provider_))) {
+          origin(), url::Origin::Create(provider_))) {
     RecordRevokeStatus(RevokeStatusForMetrics::kNoAccountToRevoke,
                        render_frame_host_->GetPageUkmSourceId());
     CompleteRevokeRequest(RevokeStatus::kError,
@@ -426,25 +449,25 @@ void FederatedAuthRequestImpl::Revoke(
   FetchManifest(kForRevoke);
 }
 
-void FederatedAuthRequestImpl::Logout(
-    const GURL& provider,
-    const std::string& account_id,
-    blink::mojom::FederatedAuthRequest::LogoutCallback callback) {
+void FederatedAuthRequestImpl::Logout(const GURL& provider,
+                                      const std::string& account_id,
+                                      LogoutCallback callback) {
   url::Origin idp_origin(url::Origin::Create(provider));
   auto* context = GetActiveSessionPermissionContext();
-  if (!context || !context->HasActiveSession(origin_, idp_origin, account_id)) {
+  if (!context ||
+      !context->HasActiveSession(origin(), idp_origin, account_id)) {
     std::move(callback).Run(LogoutStatus::kNotLoggedIn);
     return;
   }
 
   if (!GetApiPermissionContext() ||
-      GetApiPermissionContext()->GetApiPermissionStatus(origin_) !=
+      GetApiPermissionContext()->GetApiPermissionStatus(origin()) !=
           FederatedApiPermissionStatus::GRANTED) {
     std::move(callback).Run(LogoutStatus::kNotLoggedIn);
     return;
   }
 
-  context->RevokeActiveSession(origin_, idp_origin, account_id);
+  context->RevokeActiveSession(origin(), idp_origin, account_id);
   std::move(callback).Run(LogoutStatus::kSuccess);
 }
 
@@ -456,7 +479,7 @@ void FederatedAuthRequestImpl::Logout(
 // https://crbug.com/1200581
 void FederatedAuthRequestImpl::LogoutRps(
     std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
-    blink::mojom::FederatedAuthRequest::LogoutRpsCallback callback) {
+    LogoutRpsCallback callback) {
   if (HasPendingRequest()) {
     std::move(callback).Run(LogoutRpsStatus::kErrorTooManyRequests);
     return;
@@ -484,7 +507,7 @@ void FederatedAuthRequestImpl::LogoutRps(
     logout_requests_.push(std::move(request));
   }
 
-  network_manager_ = CreateNetworkManager(origin_.GetURL());
+  network_manager_ = CreateNetworkManager(origin().GetURL());
   if (!network_manager_ || !GetApiPermissionContext()) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
     return;
@@ -495,7 +518,7 @@ void FederatedAuthRequestImpl::LogoutRps(
     return;
   }
 
-  if (GetApiPermissionContext()->GetApiPermissionStatus(origin_) !=
+  if (GetApiPermissionContext()->GetApiPermissionStatus(origin()) !=
       FederatedApiPermissionStatus::GRANTED) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
     return;
@@ -865,12 +888,12 @@ void FederatedAuthRequestImpl::OnRevokeResponse(
     url::Origin idp_origin{url::Origin::Create(provider_)};
     // Since the account is now deleted, revoke the permission.
     if (GetSharingPermissionContext()) {
-      GetSharingPermissionContext()->RevokeSharingPermission(origin_,
+      GetSharingPermissionContext()->RevokeSharingPermission(origin(),
                                                              idp_origin, hint_);
     }
     if (GetActiveSessionPermissionContext()) {
       GetActiveSessionPermissionContext()->RevokeActiveSession(
-          origin_, idp_origin, hint_);
+          origin(), idp_origin, hint_);
     }
     RecordRevokeStatus(RevokeStatusForMetrics::kSuccess,
                        render_frame_host_->GetPageUkmSourceId());
@@ -967,7 +990,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         // this account before.
         if (GetSharingPermissionContext() &&
             GetSharingPermissionContext()->HasSharingPermission(
-                origin_, url::Origin::Create(provider_), account.id)) {
+                origin(), url::Origin::Create(provider_), account.id)) {
           login_state = LoginState::kSignIn;
         }
         account.login_state = login_state;
@@ -1011,7 +1034,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
   // settings are changed while an existing FedCM UI is displayed. Ideally, we
   // should enforce this check before all requests but users typically won't
   // have time to disable the FedCM API in other types of requests.
-  if (GetApiPermissionContext()->GetApiPermissionStatus(origin_) !=
+  if (GetApiPermissionContext()->GetApiPermissionStatus(origin()) !=
       FederatedApiPermissionStatus::GRANTED) {
     RecordRequestIdTokenStatus(IdTokenStatus::kDisabledInSettings,
                                render_frame_host_->GetPageUkmSourceId());
@@ -1030,7 +1053,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
                                render_frame_host_->GetPageUkmSourceId());
 
     if (should_embargo && GetApiPermissionContext()) {
-      GetApiPermissionContext()->RecordDismissAndEmbargo(origin_);
+      GetApiPermissionContext()->RecordDismissAndEmbargo(origin());
     }
 
     CompleteRequest(FederatedAuthRequestResult::kError, "",
@@ -1041,7 +1064,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
   RecordIsSignInUser(is_sign_in);
 
   if (GetApiPermissionContext()) {
-    GetApiPermissionContext()->RemoveEmbargoAndResetCounts(origin_);
+    GetApiPermissionContext()->RemoveEmbargoAndResetCounts(origin());
   }
 
   account_id_ = account_id;
@@ -1134,12 +1157,12 @@ void FederatedAuthRequestImpl::CompleteIdTokenRequest(
         // https://crbug.com/1199088
         CHECK(!account_id_.empty());
         GetSharingPermissionContext()->GrantSharingPermission(
-            origin_, url::Origin::Create(provider_), account_id_);
+            origin(), url::Origin::Create(provider_), account_id_);
       }
 
       if (GetActiveSessionPermissionContext()) {
         GetActiveSessionPermissionContext()->GrantActiveSession(
-            origin_, url::Origin::Create(provider_), account_id_);
+            origin(), url::Origin::Create(provider_), account_id_);
       }
 
       RecordIdTokenResponseAndTurnaroundTime(
@@ -1168,13 +1191,13 @@ void FederatedAuthRequestImpl::DispatchOneLogout() {
   }
 
   if (GetActiveSessionPermissionContext()->HasActiveSession(
-          logout_origin, origin_, account_id)) {
+          logout_origin, origin(), account_id)) {
     network_manager_->SendLogout(
         logout_request->url,
         base::BindOnce(&FederatedAuthRequestImpl::OnLogoutCompleted,
                        weak_ptr_factory_.GetWeakPtr()));
     GetActiveSessionPermissionContext()->RevokeActiveSession(
-        logout_origin, origin_, account_id);
+        logout_origin, origin(), account_id);
   } else {
     if (logout_requests_.empty()) {
       CompleteLogoutRequest(LogoutRpsStatus::kSuccess);

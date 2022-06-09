@@ -18,7 +18,6 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
-#include "content/browser/webid/federated_auth_request_service.h"
 #include "content/browser/webid/test/mock_active_session_permission_delegate.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
@@ -587,12 +586,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
 
-    // `FederatedAuthRequestService` derives from `DocumentService` and
-    // controls its own lifetime.
-    federated_auth_request_impl_ =
-        (new FederatedAuthRequestService(
-             main_test_rfh(), request_remote_.BindNewPipeAndPassReceiver()))
-            ->GetImplForTesting();
+    federated_auth_request_impl_ = new FederatedAuthRequestImpl(
+        main_test_rfh(), request_remote_.BindNewPipeAndPassReceiver());
     auto mock_dialog_controller =
         std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
     mock_dialog_controller_ = mock_dialog_controller.get();
@@ -884,9 +879,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
  protected:
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
-  // |federated_auth_request_impl_| is owned by FederatedAuthRequestService
-  // which owns itself and will generally be deleted when the
-  // TestRenderFrameHost is torn down at `TearDown()` time.
   raw_ptr<FederatedAuthRequestImpl> federated_auth_request_impl_;
 
   std::unique_ptr<TestIdpNetworkRequestManager> test_network_request_manager_;
