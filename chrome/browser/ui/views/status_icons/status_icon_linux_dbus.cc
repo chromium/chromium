@@ -151,6 +151,7 @@ bool ShouldWriteIconToFile() {
       return true;
     case base::nix::DESKTOP_ENVIRONMENT_OTHER:
     case base::nix::DESKTOP_ENVIRONMENT_CINNAMON:
+    case base::nix::DESKTOP_ENVIRONMENT_DEEPIN:
     case base::nix::DESKTOP_ENVIRONMENT_KDE3:
     case base::nix::DESKTOP_ENVIRONMENT_KDE4:
     case base::nix::DESKTOP_ENVIRONMENT_KDE5:
