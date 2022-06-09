@@ -33,7 +33,6 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.content.res.Configuration;
 import android.graphics.drawable.Animatable;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -42,6 +41,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
+import androidx.test.uiautomator.UiDevice;
 
 import org.junit.After;
 import org.junit.Before;

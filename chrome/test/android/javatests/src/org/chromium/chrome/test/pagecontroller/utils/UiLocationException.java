@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.test.pagecontroller.utils;
 
-import android.support.test.uiautomator.UiObject2;
+import androidx.test.uiautomator.UiObject2;
 
 /**
  * Exception class that represents an unexpected failure when trying to find

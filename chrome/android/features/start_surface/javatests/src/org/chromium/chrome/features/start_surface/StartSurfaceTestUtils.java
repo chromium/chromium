@@ -27,7 +27,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +36,7 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.uiautomator.UiDevice;
 
 import org.hamcrest.Matcher;
 import org.junit.Assert;

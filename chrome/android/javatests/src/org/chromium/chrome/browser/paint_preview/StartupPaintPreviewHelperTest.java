@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.paint_preview;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.uiautomator.UiDevice;
 
 import org.junit.Assert;
 import org.junit.Rule;

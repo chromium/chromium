@@ -28,7 +28,6 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -36,6 +35,7 @@ import android.widget.TextView;
 import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
+import androidx.test.uiautomator.UiDevice;
 
 import org.junit.After;
 import org.junit.Before;

@@ -14,10 +14,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
+import androidx.test.uiautomator.UiDevice;
 
 import org.junit.Assert;
 import org.junit.Before;

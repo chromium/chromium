@@ -48,7 +48,6 @@ android_library("chrome_java_test_pagecontroller") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
     "//third_party/junit",
-    "//third_party/ub-uiautomator:ub_uiautomator_java",
   ]
 }
 
@@ -225,7 +224,7 @@ junit_binary("chrome_java_test_pagecontroller_junit_tests") {
     ":chrome_java_test_pagecontroller",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//third_party/ub-uiautomator:ub_uiautomator_java",
+    "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
   ]
 }
 
@@ -391,11 +390,11 @@ android_library("chrome_java_integration_only_test_support") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
     "//third_party/blink/public:blink_headers_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
-    "//third_party/ub-uiautomator:ub_uiautomator_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
     "//url:gurl_java",

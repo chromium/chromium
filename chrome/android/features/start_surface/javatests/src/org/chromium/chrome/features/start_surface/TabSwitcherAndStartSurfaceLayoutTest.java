@@ -54,7 +54,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -68,6 +67,7 @@ import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.contrib.AccessibilityChecks;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
+import androidx.test.uiautomator.UiDevice;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;

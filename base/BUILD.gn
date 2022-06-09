@@ -4281,9 +4281,9 @@ if (is_android) {
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/junit",
-      "//third_party/ub-uiautomator:ub_uiautomator_java",
     ]
 
     sources = [

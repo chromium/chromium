@@ -7,9 +7,8 @@ package org.chromium.chrome.browser.paint_preview;
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.chrome.browser.paint_preview.TabbedPaintPreviewTest.assertAttachedAndShown;
 
-import android.support.test.uiautomator.UiObjectNotFoundException;
-
 import androidx.test.filters.MediumTest;
+import androidx.test.uiautomator.UiObjectNotFoundException;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
