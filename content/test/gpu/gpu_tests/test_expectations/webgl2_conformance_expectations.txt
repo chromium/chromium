@@ -251,6 +251,7 @@ crbug.com/1254497 conformance/misc/type-conversion-test.html [ RetryOnFailure ]
 
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
+crbug.com/angleproject/7109 [ win angle-d3d11 ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
 
 # Windows only.
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
@@ -391,6 +392,7 @@ crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-rend
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturespecification/basic_copyteximage2d.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturespecification/basic_copytexsubimage2d.html [ Failure ]
 crbug.com/1298619 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
+crbug.com/angleproject/7397 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
 
 ######################################################################
 # Mac failures (mainly OpenGL; some need to be reevaluated on Metal) #
@@ -566,6 +568,7 @@ crbug.com/angleproject/5223 [ mac passthrough ] conformance2/textures/misc/tex-m
 # Mac Passthrough / AMD
 crbug.com/angleproject/5224 [ mac passthrough angle-opengl amd ] conformance2/rendering/instanced-arrays.html [ Failure ]
 crbug.com/angleproject/5225 [ mac passthrough angle-opengl amd ] conformance2/rendering/vertex-id.html [ Failure ]
+crbug.com/angleproject/7412 [ mac passthrough angle-opengl amd ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
 
 crbug.com/1227762 [ bigsur amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/texturespecification/teximage3d_pbo_2d_array_00.html [ Failure ]
 crbug.com/1227762 [ bigsur amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/texturespecification/teximage3d_pbo_2d_array_01.html [ Failure ]
@@ -769,7 +772,6 @@ crbug.com/1215698 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles
 crbug.com/1218607 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/rendering/blitframebuffer-filter-srgb.html [ Failure ]
-crbug.com/1221365 [ chromeos chromeos-board-amd64-generic ] deqp/data/gles3/shaders/conversions.html [ Failure ]
 crbug.com/1221365 [ chromeos chromeos-board-amd64-generic ] deqp/data/gles3/shaders/swizzles.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
