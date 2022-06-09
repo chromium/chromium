@@ -5752,6 +5752,11 @@
         ],
       },
       'WebRTC Chromium Win10 Tester': {
+        'swarming': {
+          'dimensions': {
+            'os': 'Windows-10',
+          },
+        },
         'mixins': [
           'chromium-webrtc-rel-win10',
         ],
