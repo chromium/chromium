@@ -24,7 +24,6 @@ namespace ash {
 class HoldingSpaceItemView;
 class HoldingSpaceItemViewsSection;
 class HoldingSpaceViewDelegate;
-class ViewShadow;
 
 // Child bubble of the `HoldingSpaceTrayBubble`.
 class HoldingSpaceTrayChildBubble : public views::View,
@@ -104,8 +103,6 @@ class HoldingSpaceTrayChildBubble : public views::View,
 
   // Whether or not this view is currently being animated out.
   bool is_animating_out_ = false;
-
-  std::unique_ptr<ViewShadow> shadow_;
 
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>

@@ -10,7 +10,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/view_shadow.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_views_section.h"
 #include "ash/system/holding_space/holding_space_util.h"
@@ -20,7 +19,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor_extra/shadow.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
@@ -145,11 +143,6 @@ void HoldingSpaceTrayChildBubble::Init() {
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetOpacity(0.f);
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
-
-  // Create a view shadow.
-  shadow_ = std::make_unique<ViewShadow>(this, kBubbleShadowElevation);
-  shadow_->shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
-  shadow_->SetRoundedCornerRadius(kBubbleCornerRadius);
 
   // Sections.
   for (auto& section : CreateSections()) {
