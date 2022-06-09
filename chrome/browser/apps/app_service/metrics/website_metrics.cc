@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "ui/aura/window.h"
@@ -30,9 +32,15 @@ wm::ActivationClient* GetActivationClientWithTabStripModel(
 
 namespace apps {
 
-WebsiteMetrics::WebsiteMetrics() : browser_tab_strip_tracker_(this, nullptr) {
+WebsiteMetrics::WebsiteMetrics(Profile* profile)
+    : browser_tab_strip_tracker_(this, nullptr) {
   BrowserList::GetInstance()->AddObserver(this);
   browser_tab_strip_tracker_.Init();
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfileWithoutCreating(profile);
+  if (history_service) {
+    history_observation_.Observe(history_service);
+  }
 }
 
 WebsiteMetrics::~WebsiteMetrics() {
@@ -74,6 +82,17 @@ void WebsiteMetrics::OnWindowActivated(ActivationReason reason,
   // url.
 }
 
+void WebsiteMetrics::OnURLsDeleted(history::HistoryService* history_service,
+                                   const history::DeletionInfo& deletion_info) {
+  // TODO(crbug.com/1334173): Remove local records for urls in `deletion_info`.
+}
+
+void WebsiteMetrics::HistoryServiceBeingDeleted(
+    history::HistoryService* history_service) {
+  DCHECK(history_observation_.IsObservingSource(history_service));
+  history_observation_.Reset();
+}
+
 void WebsiteMetrics::OnTabStripModelChangeInsert(
     TabStripModel* tab_strip_model,
     const TabStripModelChange::Insert& insert,
@@ -88,8 +107,9 @@ void WebsiteMetrics::OnTabStripModelChangeInsert(
     // tracked browser matching it).
     auto* activation_client =
         GetActivationClientWithTabStripModel(tab_strip_model);
-    if (!activation_client_observations_.IsObservingSource(activation_client))
+    if (!activation_client_observations_.IsObservingSource(activation_client)) {
       activation_client_observations_.AddObservation(activation_client);
+    }
   }
 }
 
@@ -103,8 +123,9 @@ void WebsiteMetrics::OnTabStripModelChangeRemove(
     // window if the last browser using it was just removed.
     auto* activation_client =
         GetActivationClientWithTabStripModel(tab_strip_model);
-    if (activation_client_observations_.IsObservingSource(activation_client))
+    if (activation_client_observations_.IsObservingSource(activation_client)) {
       activation_client_observations_.RemoveObservation(activation_client);
+    }
   }
 }
 

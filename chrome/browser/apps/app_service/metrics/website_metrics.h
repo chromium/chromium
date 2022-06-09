@@ -6,13 +6,17 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_H_
 
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
 
 class Browser;
+class Profile;
 
 namespace apps {
 
@@ -20,9 +24,10 @@ namespace apps {
 // TabStripModel to record the website usage time metrics.
 class WebsiteMetrics : public BrowserListObserver,
                        public TabStripModelObserver,
-                       public wm::ActivationChangeObserver {
+                       public wm::ActivationChangeObserver,
+                       public history::HistoryServiceObserver {
  public:
-  WebsiteMetrics();
+  explicit WebsiteMetrics(Profile* profile);
 
   WebsiteMetrics(const WebsiteMetrics&) = delete;
   WebsiteMetrics& operator=(const WebsiteMetrics&) = delete;
@@ -44,6 +49,12 @@ class WebsiteMetrics : public BrowserListObserver,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
+  // history::HistoryServiceObserver:
+  void OnURLsDeleted(history::HistoryService* history_service,
+                     const history::DeletionInfo& deletion_info) override;
+  void HistoryServiceBeingDeleted(
+      history::HistoryService* history_service) override;
+
  private:
   void OnTabStripModelChangeInsert(TabStripModel* tab_strip_model,
                                    const TabStripModelChange::Insert& insert,
@@ -58,6 +69,10 @@ class WebsiteMetrics : public BrowserListObserver,
   base::ScopedMultiSourceObservation<wm::ActivationClient,
                                      wm::ActivationChangeObserver>
       activation_client_observations_{this};
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_observation_{this};
 };
 
 }  // namespace apps
