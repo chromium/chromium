@@ -40304,6 +40304,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4260" label="DeferredShapingReshapedByForceLayout"/>
   <int value="4261" label="MediaSourceGetHandle"/>
   <int value="4262" label="IdentityInCanMakePaymentEvent"/>
+  <int value="4263" label="SharedStorageAPI_SharedStorage_DOMReference"/>
+  <int value="4264" label="SharedStorageAPI_AddModule_Method"/>
+  <int value="4265" label="SharedStorageAPI_Set_Method"/>
+  <int value="4266" label="SharedStorageAPI_Append_Method"/>
+  <int value="4267" label="SharedStorageAPI_Delete_Method"/>
+  <int value="4268" label="SharedStorageAPI_Clear_Method"/>
+  <int value="4269" label="SharedStorageAPI_SelectURL_Method"/>
+  <int value="4270" label="SharedStorageAPI_Run_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

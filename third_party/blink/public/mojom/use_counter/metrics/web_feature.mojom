@@ -3581,6 +3581,14 @@ enum WebFeature {
   kDeferredShapingReshapedByForceLayout = 4260,
   kMediaSourceGetHandle = 4261,
   kIdentityInCanMakePaymentEvent = 4262,
+  kSharedStorageAPI_SharedStorage_DOMReference = 4263,
+  kSharedStorageAPI_AddModule_Method = 4264,
+  kSharedStorageAPI_Set_Method = 4265,
+  kSharedStorageAPI_Append_Method = 4266,
+  kSharedStorageAPI_Delete_Method = 4267,
+  kSharedStorageAPI_Clear_Method = 4268,
+  kSharedStorageAPI_SelectURL_Method = 4269,
+  kSharedStorageAPI_Run_Method = 4270,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
