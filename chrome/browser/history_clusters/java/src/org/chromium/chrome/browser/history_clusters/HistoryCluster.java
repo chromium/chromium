@@ -49,4 +49,8 @@ class HistoryCluster {
     public List<String> getRelatedSearches() {
         return mRelatedSearches;
     }
+
+    public List<MatchPosition> getMatchPositions() {
+        return mMatchPositions;
+    }
 }

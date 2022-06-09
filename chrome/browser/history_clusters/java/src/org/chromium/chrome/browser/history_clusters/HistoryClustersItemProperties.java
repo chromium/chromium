@@ -40,8 +40,8 @@ class HistoryClustersItemProperties {
     static final WritableObjectPropertyKey<String> LABEL = new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<List<String>> RELATED_SEARCHES =
             new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<String> URL = new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<CharSequence> TITLE = new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<CharSequence> URL = new WritableObjectPropertyKey<>();
     static final WritableIntPropertyKey VISIBILITY = new WritableIntPropertyKey();
 
     static final PropertyKey[] ALL_KEYS = {CHIP_CLICK_HANDLER, CLICK_HANDLER, END_BUTTON_DRAWABLE,

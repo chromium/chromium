@@ -16,6 +16,9 @@ import static org.robolectric.Shadows.shadowOf;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Typeface;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -37,6 +40,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.history_clusters.HistoryCluster.MatchPosition;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -145,10 +149,14 @@ public class HistoryClustersMediatorTest {
 
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService);
-        mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1");
-        mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 2");
-        mVisit3 = new ClusterVisit(1.0F, mGurl3, "Title 3");
-        mVisit4 = new ClusterVisit(1.0F, mGurl3, "Title 4");
+        mVisit1 = new ClusterVisit(
+                1.0F, mGurl1, "Title 1", "url1.com/", new ArrayList<>(), new ArrayList<>());
+        mVisit2 = new ClusterVisit(
+                1.0F, mGurl2, "Title 2", "url2.com/", new ArrayList<>(), new ArrayList<>());
+        mVisit3 = new ClusterVisit(
+                1.0F, mGurl3, "Title 3", "url3.com/", new ArrayList<>(), new ArrayList<>());
+        mVisit4 = new ClusterVisit(
+                1.0F, mGurl3, "Title 4", "url3.com/foo", new ArrayList<>(), new ArrayList<>());
         mCluster1 = new HistoryCluster(Arrays.asList("foo"), Arrays.asList(mVisit1, mVisit2),
                 "label1", new ArrayList<>(), 456L, Arrays.asList("search 1", "search 2"));
         mCluster2 = new HistoryCluster(Arrays.asList("bar", "baz"), Arrays.asList(mVisit3),
@@ -358,6 +366,22 @@ public class HistoryClustersMediatorTest {
         // There should have been no further calls to loadMoreClusters since the current result
         // specifies that it has no more data.
         verify(mBridge).loadMoreClusters("query");
+    }
+
+    @Test
+    public void testBolding() {
+        String text = "this is fun";
+        List<MatchPosition> matchPositions =
+                Arrays.asList(new MatchPosition(0, 5), new MatchPosition(8, 10));
+        SpannableString result = mMediator.applyBolding(text, matchPositions);
+
+        StyleSpan[] styleSpans = result.getSpans(0, 5, StyleSpan.class);
+        assertEquals(styleSpans.length, 1);
+        assertEquals(styleSpans[0].getStyle(), Typeface.BOLD);
+
+        styleSpans = result.getSpans(8, 10, StyleSpan.class);
+        assertEquals(styleSpans.length, 1);
+        assertEquals(styleSpans[0].getStyle(), Typeface.BOLD);
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {

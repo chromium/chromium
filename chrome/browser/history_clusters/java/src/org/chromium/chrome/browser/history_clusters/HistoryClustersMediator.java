@@ -8,8 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -21,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
+import org.chromium.chrome.browser.history_clusters.HistoryCluster.MatchPosition;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -191,7 +195,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
         for (HistoryCluster cluster : result.getClusters()) {
             PropertyModel clusterModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
-            clusterModel.set(HistoryClustersItemProperties.TITLE, cluster.getLabel());
+            clusterModel.set(HistoryClustersItemProperties.TITLE,
+                    applyBolding(cluster.getLabel(), cluster.getMatchPositions()));
             Drawable journeysDrawable =
                     AppCompatResources.getDrawable(mContext, R.drawable.ic_journeys);
             clusterModel.set(HistoryClustersItemProperties.ICON_DRAWABLE, journeysDrawable);
@@ -210,8 +215,11 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             for (ClusterVisit visit : cluster.getVisits()) {
                 PropertyModel visitModel =
                         new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
-                visitModel.set(HistoryClustersItemProperties.TITLE, visit.getTitle());
-                visitModel.set(HistoryClustersItemProperties.URL, visit.getGURL().getHost());
+                visitModel.set(HistoryClustersItemProperties.TITLE,
+                        new SpannableString(
+                                applyBolding(visit.getTitle(), visit.getTitleMatchPositions())));
+                visitModel.set(HistoryClustersItemProperties.URL,
+                        applyBolding(visit.getUrlForDisplay(), visit.getUrlMatchPositions()));
                 visitModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
                         (v) -> navigateToItemUrl(visit.getGURL()));
                 visitModel.set(HistoryClustersItemProperties.VISIBILITY, View.VISIBLE);
@@ -320,5 +328,16 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         } else {
             return mResources.getString(R.string.just_now);
         }
+    }
+
+    @VisibleForTesting
+    SpannableString applyBolding(String text, List<MatchPosition> matchPositions) {
+        SpannableString spannableString = new SpannableString(text);
+        for (MatchPosition matchPosition : matchPositions) {
+            spannableString.setSpan(new StyleSpan(Typeface.BOLD), matchPosition.mMatchStart,
+                    matchPosition.mMatchEnd, 0);
+        }
+
+        return spannableString;
     }
 }

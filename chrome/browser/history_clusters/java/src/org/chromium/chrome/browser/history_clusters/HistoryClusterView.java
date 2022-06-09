@@ -37,11 +37,11 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
                 SemanticColorUtils.getDefaultIconColorSecondary(getContext()));
     }
 
-    void setTitle(String text) {
+    void setTitle(CharSequence text) {
         mTitleView.setText(text);
     }
 
-    void setLabel(String text) {
+    void setLabel(CharSequence text) {
         mDescriptionView.setText(text);
     }
 

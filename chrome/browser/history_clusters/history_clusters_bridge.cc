@@ -103,12 +103,32 @@ void HistoryClustersBridge::ClustersQueryDone(
   for (const history::Cluster& cluster : clusters) {
     std::vector<ScopedJavaLocalRef<jobject>> cluster_visits;
     for (const history::ClusterVisit& visit : cluster.visits) {
+      std::vector<int> title_match_starts;
+      std::vector<int> title_match_ends;
+      for (const auto& match : visit.title_match_positions) {
+        title_match_starts.push_back(match.first);
+        title_match_ends.push_back(match.second);
+      }
+
+      std::vector<int> url_match_starts;
+      std::vector<int> url_match_ends;
+      for (const auto& match : visit.url_for_display_match_positions) {
+        url_match_starts.push_back(match.first);
+        url_match_ends.push_back(match.second);
+      }
+
       const ScopedJavaLocalRef<jobject>& j_cluster_visit =
           Java_HistoryClustersBridge_buildClusterVisit(
               env, visit.score,
               url::GURLAndroid::FromNativeGURL(env, visit.normalized_url),
+              base::android::ConvertUTF16ToJavaString(env,
+                                                      visit.url_for_display),
               base::android::ConvertUTF16ToJavaString(
-                  env, visit.annotated_visit.url_row.title()));
+                  env, visit.annotated_visit.url_row.title()),
+              base::android::ToJavaIntArray(env, title_match_starts),
+              base::android::ToJavaIntArray(env, title_match_ends),
+              base::android::ToJavaIntArray(env, url_match_starts),
+              base::android::ToJavaIntArray(env, url_match_ends));
       cluster_visits.push_back(j_cluster_visit);
     }
     base::Time visit_time;

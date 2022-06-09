@@ -80,8 +80,26 @@ class HistoryClustersBridge {
     }
 
     @CalledByNative
-    static ClusterVisit buildClusterVisit(float score, GURL url, String title) {
-        return new ClusterVisit(score, url, title);
+    static ClusterVisit buildClusterVisit(float score, GURL url, String urlForDisplay, String title,
+            int[] titleMatchStarts, int[] titleMatchEnds, int[] urlMatchStarts,
+            int[] urlMatchEnds) {
+        assert titleMatchStarts.length == titleMatchEnds.length;
+        assert urlMatchStarts.length == urlMatchEnds.length;
+
+        List<MatchPosition> titleMatchPositions = new ArrayList<>(titleMatchStarts.length);
+        for (int i = 0; i < titleMatchStarts.length; i++) {
+            MatchPosition matchPosition = new MatchPosition(titleMatchStarts[i], titleMatchEnds[i]);
+            titleMatchPositions.add(matchPosition);
+        }
+
+        List<MatchPosition> urlMatchPositions = new ArrayList<>(urlMatchStarts.length);
+        for (int i = 0; i < urlMatchStarts.length; i++) {
+            MatchPosition matchPosition = new MatchPosition(urlMatchStarts[i], urlMatchEnds[i]);
+            urlMatchPositions.add(matchPosition);
+        }
+
+        return new ClusterVisit(
+                score, url, title, urlForDisplay, titleMatchPositions, urlMatchPositions);
     }
 
     @NativeMethods
