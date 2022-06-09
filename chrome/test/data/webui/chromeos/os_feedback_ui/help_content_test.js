@@ -104,7 +104,7 @@ export function helpContentTestSuite() {
     // Verify the title is in the helpContentElement.
     const title = getElement('#helpContentLabel');
     assertTrue(!!title);
-    assertEquals('Popular help content', title.textContent);
+    assertEquals('Top help content', title.textContent);
 
     verifyPopularHelpContent();
   });
