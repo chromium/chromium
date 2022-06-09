@@ -5849,11 +5849,6 @@
     "expiry_milestone":103
   },
   {
-      "name": "tailored-security-integration",
-      "owners": ["drubery", "chrome-counter-abuse-core@google.com"],
-      "expiry_milestone":102
-  },
-  {
     "name": "tangible-sync",
     "owners": [ "aliceywang", "chrome-signin-team" ],
     "expiry_milestone":120

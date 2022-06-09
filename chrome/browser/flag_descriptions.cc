@@ -2585,12 +2585,6 @@ const char kTabSearchFuzzySearchName[] = "Fuzzy search for Tab Search";
 const char kTabSearchFuzzySearchDescription[] =
     "Enable fuzzy search for Tab Search.";
 
-const char kTailoredSecurityIntegrationName[] =
-    "Account-level tailored security integration";
-const char kTailoredSecurityIntegrationDescription[] =
-    "Enable the integration between Enhanced Safe Browsing in Chrome and in "
-    "the account";
-
 const char kTFLiteLanguageDetectionName[] = "TFLite-based Language Detection";
 const char kTFLiteLanguageDetectionDescription[] =
     "Uses TFLite for language detection in place of CLD3";
