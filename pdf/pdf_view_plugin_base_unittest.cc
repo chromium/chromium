@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/test/icu_test_util.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -38,7 +37,6 @@ namespace chrome_pdf {
 
 namespace {
 
-using ::testing::ByMove;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
@@ -162,12 +160,7 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
 }  // namespace
 
-class PdfViewPluginBaseTest : public testing::Test {
- protected:
-  NiceMock<FakePdfViewPluginBase> fake_plugin_;
-};
-
-class PdfViewPluginBaseWithEngineTest : public PdfViewPluginBaseTest {
+class PdfViewPluginBaseWithEngineTest : public testing::Test {
  public:
   void SetUp() override {
     auto engine = std::make_unique<NiceMock<TestPDFiumEngine>>(&fake_plugin_);
@@ -191,45 +184,9 @@ class PdfViewPluginBaseWithEngineTest : public PdfViewPluginBaseTest {
     })");
     fake_plugin_.HandleMessage(message.GetDict());
   }
+
+  NiceMock<FakePdfViewPluginBase> fake_plugin_;
 };
-
-class PdfViewPluginBaseWithScopedLocaleTest
-    : public PdfViewPluginBaseWithEngineTest {
- protected:
-  base::test::ScopedRestoreICUDefaultLocale scoped_locale_{"en_US"};
-  base::test::ScopedRestoreDefaultTimezone la_time_{"America/Los_Angeles"};
-};
-
-TEST_F(PdfViewPluginBaseTest, DocumentLoadProgress) {
-  fake_plugin_.DocumentLoadProgress(10, 200);
-
-  EXPECT_THAT(fake_plugin_.sent_messages(), ElementsAre(base::test::IsJson(R"({
-    "type": "loadProgress",
-    "progress": 5.0,
-  })")));
-}
-
-TEST_F(PdfViewPluginBaseTest, DocumentLoadProgressIgnoreSmall) {
-  fake_plugin_.DocumentLoadProgress(2, 100);
-  fake_plugin_.clear_sent_messages();
-
-  fake_plugin_.DocumentLoadProgress(3, 100);
-
-  EXPECT_THAT(fake_plugin_.sent_messages(), IsEmpty());
-}
-
-TEST_F(PdfViewPluginBaseTest, DocumentLoadProgressMultipleSmall) {
-  fake_plugin_.DocumentLoadProgress(2, 100);
-  fake_plugin_.clear_sent_messages();
-
-  fake_plugin_.DocumentLoadProgress(3, 100);
-  fake_plugin_.DocumentLoadProgress(4, 100);
-
-  EXPECT_THAT(fake_plugin_.sent_messages(), ElementsAre(base::test::IsJson(R"({
-    "type": "loadProgress",
-    "progress": 4.0,
-  })")));
-}
 
 TEST_F(PdfViewPluginBaseWithEngineTest, HandleInputEvent) {
   auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());

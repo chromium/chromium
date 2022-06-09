@@ -781,6 +781,32 @@ TEST_F(PdfViewWebPluginFullFrameTest,
   pdf_receiver_.FlushForTesting();
 }
 
+TEST_F(PdfViewWebPluginTest, DocumentLoadProgress) {
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "loadProgress",
+    "progress": 5.0,
+  })")));
+  plugin_->DocumentLoadProgress(10, 200);
+}
+
+TEST_F(PdfViewWebPluginTest, DocumentLoadProgressIgnoreSmall) {
+  plugin_->DocumentLoadProgress(2, 100);
+
+  EXPECT_CALL(*client_ptr_, PostMessage).Times(0);
+  plugin_->DocumentLoadProgress(3, 100);
+}
+
+TEST_F(PdfViewWebPluginTest, DocumentLoadProgressMultipleSmall) {
+  plugin_->DocumentLoadProgress(2, 100);
+
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "loadProgress",
+    "progress": 4.0,
+  })")));
+  plugin_->DocumentLoadProgress(3, 100);
+  plugin_->DocumentLoadProgress(4, 100);
+}
+
 TEST_F(PdfViewWebPluginTest, EnableAccessibilityBeforeDocumentLoadComplete) {
   EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
       .Times(0);
