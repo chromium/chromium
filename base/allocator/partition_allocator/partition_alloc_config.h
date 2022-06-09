@@ -78,16 +78,15 @@ static_assert(sizeof(void*) != 8, "");
 // - On Linux, futex(2)
 // - On Windows, a fast userspace "try" operation which is available
 //   with SRWLock
-// - Otherwise, a fast userspace pthread_mutex_trylock().
-//
-// On macOS, pthread_mutex_trylock() is fast by default starting with macOS
-// 10.14. Chromium targets an earlier version, so it cannot be known at
-// compile-time. So we use something different. On other POSIX systems, we
-// assume that pthread_mutex_trylock() is suitable.
+// - On macOS, pthread_mutex_trylock() is fast by default starting with macOS
+//   10.14. Chromium targets an earlier version, so it cannot be known at
+//   compile-time. So we use something different.
+// - Otherwise, on POSIX we assume that a fast userspace pthread_mutex_trylock()
+//   is available.
 //
 // Otherwise, a userspace spinlock implementation is used.
 #if defined(PA_HAS_LINUX_KERNEL) || BUILDFLAG(IS_WIN) || \
-    (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #define PA_HAS_FAST_MUTEX
 #endif
 
