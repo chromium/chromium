@@ -136,7 +136,7 @@ public class SettingsControllerForCodelab extends PageController {
 ``` java
 package org.chromium.chrome.test.pagecontroller.controllers.codelab;
 
-import android.support.test.uiautomator.UiObject2;
+import androidx.test.uiautomator.UiObject2;
 import android.util.Pair;
 
 import org.chromium.chrome.R;
