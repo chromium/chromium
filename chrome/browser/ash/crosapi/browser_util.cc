@@ -295,6 +295,8 @@ const char kDataVerPref[] = "lacros.data_version";
 const char kRequiredDataVersion[] = "92.0.0.0";
 const char kProfileMigrationCompletedForUserPref[] =
     "lacros.profile_migration_completed_for_user";
+const char kProfileMoveMigrationCompletedForUserPref[] =
+    "lacros.profile_move_migration_completed_for_user";
 // This pref is to record whether the user clicks "Go to files" button
 // on error page of the data migration.
 const char kGotoFilesPref[] = "lacros.goto_files";
@@ -308,6 +310,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kDataVerPref);
   registry->RegisterDictionaryPref(kProfileMigrationCompletedForUserPref,
+                                   base::DictionaryValue());
+  registry->RegisterDictionaryPref(kProfileMoveMigrationCompletedForUserPref,
                                    base::DictionaryValue());
   registry->RegisterListPref(kGotoFilesPref);
 }
@@ -363,10 +367,12 @@ bool IsLacrosEnabled() {
           user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId())) {
     PrefService* local_state = g_browser_process->local_state();
     // Note that local_state can be nullptr in tests.
-    if (local_state && !IsProfileMigrationCompletedForUser(
-                           local_state, user_manager::UserManager::Get()
-                                            ->GetPrimaryUser()
-                                            ->username_hash())) {
+    if (local_state &&
+        !IsProfileMigrationCompletedForUser(
+            local_state,
+            user_manager::UserManager::Get()->GetPrimaryUser()->username_hash(),
+            GetMigrationMode(user_manager::UserManager::Get()->GetPrimaryUser(),
+                             PolicyInitState::kAfterInit))) {
       // If migration has not been completed, do not enable lacros.
       return false;
     }
@@ -451,8 +457,9 @@ bool IsProfileMigrationAvailable() {
     return false;
 
   // If migration is already completed, it is not necessary to run again.
-  if (IsProfileMigrationCompletedForUser(user_manager->GetLocalState(),
-                                         user->username_hash())) {
+  if (IsProfileMigrationCompletedForUser(
+          user_manager->GetLocalState(), user->username_hash(),
+          GetMigrationMode(user, PolicyInitState::kAfterInit))) {
     return false;
   }
 
@@ -787,9 +794,9 @@ void RecordDataVer(PrefService* local_state,
   dict->SetStringKey(user_id_hash, version.GetString());
 }
 
-bool IsDataWipeRequired(const std::string& user_id_hash) {
-  base::Version data_version =
-      GetDataVer(g_browser_process->local_state(), user_id_hash);
+bool IsDataWipeRequired(PrefService* local_state,
+                        const std::string& user_id_hash) {
+  base::Version data_version = GetDataVer(local_state, user_id_hash);
   const base::Version& current_version = version_info::GetVersion();
   base::Version required_version =
       base::Version(base::StringPiece(kRequiredDataVersion));
@@ -904,15 +911,25 @@ MigrationMode GetMigrationMode(const user_manager::User* user,
 }
 
 bool IsProfileMigrationCompletedForUser(PrefService* local_state,
-                                        const std::string& user_id_hash) {
+                                        const std::string& user_id_hash,
+                                        MigrationMode mode) {
   // Allows tests to avoid marking profile migration as completed by getting
   // user_id_hash of the logged in user and updating
   // g_browser_process->local_state() etc.
   if (g_profile_migration_completed_for_test)
     return true;
 
-  const auto* pref =
-      local_state->FindPreference(kProfileMigrationCompletedForUserPref);
+  std::string pref_name;
+  switch (mode) {
+    case MigrationMode::kCopy:
+      pref_name = kProfileMigrationCompletedForUserPref;
+      break;
+    case MigrationMode::kMove:
+      pref_name = kProfileMoveMigrationCompletedForUserPref;
+      break;
+  }
+
+  const auto* pref = local_state->FindPreference(pref_name);
   // Return if the pref is not registered. This can happen in browsertests. In
   // such a case, assume that migration was completed.
   if (!pref)
@@ -927,19 +944,36 @@ bool IsProfileMigrationCompletedForUser(PrefService* local_state,
 }
 
 void SetProfileMigrationCompletedForUser(PrefService* local_state,
-                                         const std::string& user_id_hash) {
+                                         const std::string& user_id_hash,
+                                         MigrationMode mode) {
   DictionaryPrefUpdate update(local_state,
                               kProfileMigrationCompletedForUserPref);
   base::Value* dict = update.Get();
   dict->SetBoolKey(user_id_hash, true);
+
+  if (mode == MigrationMode::kMove) {
+    DictionaryPrefUpdate update(local_state,
+                                kProfileMoveMigrationCompletedForUserPref);
+    base::Value* dict = update.Get();
+    dict->SetBoolKey(user_id_hash, true);
+  }
 }
 
 void ClearProfileMigrationCompletedForUser(PrefService* local_state,
                                            const std::string& user_id_hash) {
-  DictionaryPrefUpdate update(local_state,
-                              kProfileMigrationCompletedForUserPref);
-  base::Value* dict = update.Get();
-  dict->RemoveKey(user_id_hash);
+  {
+    DictionaryPrefUpdate update(local_state,
+                                kProfileMigrationCompletedForUserPref);
+    base::Value* dict = update.Get();
+    dict->RemoveKey(user_id_hash);
+  }
+
+  {
+    DictionaryPrefUpdate update(local_state,
+                                kProfileMoveMigrationCompletedForUserPref);
+    base::Value* dict = update.Get();
+    dict->RemoveKey(user_id_hash);
+  }
 }
 
 void SetProfileMigrationCompletedForTest(bool is_completed) {

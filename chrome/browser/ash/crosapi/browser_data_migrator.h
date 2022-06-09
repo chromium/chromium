@@ -207,6 +207,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
                            MigrateOutOfDiskForMove);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorRestartTest,
                            MaybeRestartToMigrateWithMigrationStep);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorRestartTest,
+                           MaybeRestartToMigrateMoveAfterCopy);
 
   // The common implementation of `MaybeRestartToMigrate` and
   // `MaybeRestartToMigrateWithDiskCheck`.
@@ -249,7 +251,9 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
       crosapi::browser_util::PolicyInitState policy_init_state);
 
   // Called on UI thread once migration is finished.
-  void MigrateInternalFinishedUIThread(MigrationResult result);
+  void MigrateInternalFinishedUIThread(
+      crosapi::browser_util::MigrationMode mode,
+      MigrationResult result);
 
   // Path to the original profile data directory, which is directly under the
   // user data directory.

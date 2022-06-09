@@ -272,7 +272,8 @@ void RecordDataVer(PrefService* local_state,
 
 // Checks if lacros' data directory needs to be wiped for backward incompatible
 // data.
-bool IsDataWipeRequired(const std::string& user_id_hash);
+bool IsDataWipeRequired(PrefService* local_state,
+                        const std::string& user_id_hash);
 
 // Exposed for testing. The arguments are passed to
 // `IsDataWipeRequiredInternal()`.
@@ -323,12 +324,14 @@ MigrationMode GetMigrationMode(const user_manager::User* user,
 // Checks if profile migration has been completed. This is reset if profile
 // migration is initiated for example due to lacros data directory being wiped.
 bool IsProfileMigrationCompletedForUser(PrefService* local_state,
-                                        const std::string& user_id_hash);
+                                        const std::string& user_id_hash,
+                                        MigrationMode mode);
 
 // Sets the value of `kProfileMigrationCompletedForUser1Pref` to be true
 // for the user identified by `user_id_hash`.
 void SetProfileMigrationCompletedForUser(PrefService* local_state,
-                                         const std::string& user_id_hash);
+                                         const std::string& user_id_hash,
+                                         MigrationMode mode);
 
 // Clears the value of `kProfileMigrationCompletedForUser1Pref` for user
 // identified by `user_id_hash`.

@@ -275,8 +275,9 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
     crosapi::browser_util::RecordDataVer(local_state, user_id_hash,
                                          version_info::GetVersion());
 
-    crosapi::browser_util::SetProfileMigrationCompletedForUser(local_state,
-                                                               user_id_hash);
+    crosapi::browser_util::SetProfileMigrationCompletedForUser(
+        local_state, user_id_hash,
+        crosapi::browser_util::GetMigrationMode(user, policy_init_state));
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
     // this log message.
     LOG(WARNING) << "Setting migration as completed since it is a new user.";
@@ -295,7 +296,7 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
     return false;
   }
 
-  if (crosapi::browser_util::IsDataWipeRequired(user_id_hash)) {
+  if (crosapi::browser_util::IsDataWipeRequired(local_state, user_id_hash)) {
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
     // this log message.
     LOG(WARNING)
@@ -305,12 +306,25 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
     return true;
   }
 
-  if (crosapi::browser_util::IsProfileMigrationCompletedForUser(local_state,
-                                                                user_id_hash)) {
+  crosapi::browser_util::MigrationMode mode =
+      crosapi::browser_util::GetMigrationMode(user, policy_init_state);
+
+  if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
+          local_state, user_id_hash, mode)) {
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
     // remove this log message.
     LOG(WARNING) << "Profile migration has been completed already.";
     return false;
+  }
+
+  // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
+  // remove this log message.
+  if (mode == crosapi::browser_util::MigrationMode::kMove &&
+      crosapi::browser_util::IsProfileMigrationCompletedForUser(
+          local_state, user_id_hash,
+          crosapi::browser_util::MigrationMode::kCopy)) {
+    LOG(WARNING) << "Only copy migration is marked as completed. Running "
+                    "profile move migraiton.";
   }
 
   return true;
@@ -397,7 +411,7 @@ void BrowserDataMigratorImpl::Migrate(crosapi::browser_util::MigrationMode mode,
           cancel_flag_, local_state_,
           base::BindOnce(
               &BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
-              weak_factory_.GetWeakPtr()));
+              weak_factory_.GetWeakPtr(), mode));
       break;
     case crosapi::browser_util::MigrationMode::kCopy:
       LOG(WARNING) << "Initializing CopyMigrator.";
@@ -406,7 +420,7 @@ void BrowserDataMigratorImpl::Migrate(crosapi::browser_util::MigrationMode mode,
           cancel_flag_,
           base::BindOnce(
               &BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
-              weak_factory_.GetWeakPtr()));
+              weak_factory_.GetWeakPtr(), mode));
       break;
   }
 
@@ -419,6 +433,7 @@ void BrowserDataMigratorImpl::Cancel() {
 }
 
 void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
+    crosapi::browser_util::MigrationMode mode,
     MigrationResult result) {
   DCHECK(local_state_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -440,8 +455,8 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
   }
 
   if (result.data_migration_result.kind == ResultKind::kSucceeded) {
-    crosapi::browser_util::SetProfileMigrationCompletedForUser(local_state_,
-                                                               user_id_hash_);
+    crosapi::browser_util::SetProfileMigrationCompletedForUser(
+        local_state_, user_id_hash_, mode);
 
     ClearMigrationAttemptCountForUser(local_state_, user_id_hash_);
   }

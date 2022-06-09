@@ -162,8 +162,9 @@ TEST_F(BrowserUtilTest, LacrosDisabledWithoutMigration) {
   // false.
   EXPECT_FALSE(browser_util::IsLacrosEnabled());
 
-  browser_util::SetProfileMigrationCompletedForUser(&pref_service_,
-                                                    user->username_hash());
+  browser_util::SetProfileMigrationCompletedForUser(
+      &pref_service_, user->username_hash(),
+      browser_util::MigrationMode::kCopy);
 
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
 }
@@ -752,21 +753,35 @@ TEST_F(BrowserUtilTest, StatefulLacrosSelectionUpdateChannel) {
 
 TEST_F(BrowserUtilTest, IsProfileMigrationCompletedForUser) {
   const std::string user_id_hash = "abcd";
-
-  // `IsLacrosDisabledAfterSkippedOrFailedMigration()` should return
+  // `IsProfileMigrationCompletedForUser()` should return
   // false by default.
-  EXPECT_FALSE(browser_util::IsProfileMigrationCompletedForUser(&pref_service_,
-                                                                user_id_hash));
+  EXPECT_FALSE(browser_util::IsProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash, browser_util::MigrationMode::kCopy));
+  EXPECT_FALSE(browser_util::IsProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash, browser_util::MigrationMode::kMove));
 
-  browser_util::SetProfileMigrationCompletedForUser(&pref_service_,
-                                                    user_id_hash);
-  EXPECT_TRUE(browser_util::IsProfileMigrationCompletedForUser(&pref_service_,
-                                                               user_id_hash));
+  browser_util::SetProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash, browser_util::MigrationMode::kCopy);
+  EXPECT_TRUE(browser_util::IsProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash, browser_util::MigrationMode::kCopy));
+  EXPECT_FALSE(browser_util::IsProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash, browser_util::MigrationMode::kMove));
 
   browser_util::ClearProfileMigrationCompletedForUser(&pref_service_,
                                                       user_id_hash);
-  EXPECT_FALSE(browser_util::IsProfileMigrationCompletedForUser(&pref_service_,
-                                                                user_id_hash));
+  EXPECT_FALSE(browser_util::IsProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash, browser_util::MigrationMode::kCopy));
+  EXPECT_FALSE(browser_util::IsProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash, browser_util::MigrationMode::kMove));
+
+  // Setting completion for move sets completion for both copy (non move) and
+  // move.
+  browser_util::SetProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash, browser_util::MigrationMode::kMove);
+  EXPECT_TRUE(browser_util::IsProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash, browser_util::MigrationMode::kCopy));
+  EXPECT_TRUE(browser_util::IsProfileMigrationCompletedForUser(
+      &pref_service_, user_id_hash, browser_util::MigrationMode::kMove));
 }
 
 TEST_F(BrowserUtilTest, IsAshBrowserSyncEnabled) {

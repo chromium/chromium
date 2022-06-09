@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
@@ -119,7 +120,8 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
   EXPECT_TRUE(base::PathExists(new_user_data_dir.Append(kFirstRun)));
   // Check that migration is marked as completed for the user.
   EXPECT_TRUE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
-      &pref_service_, user_id_hash));
+      &pref_service_, user_id_hash,
+      crosapi::browser_util::MigrationMode::kCopy));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(BrowserDataMigrator::ResultKind::kSucceeded, result->kind);
   EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationStep(&pref_service_),
@@ -165,7 +167,8 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
       new_user_data_dir.Append("Default");
   EXPECT_FALSE(base::PathExists(new_user_data_dir.Append(kFirstRun)));
   EXPECT_FALSE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
-      &pref_service_, user_id_hash));
+      &pref_service_, user_id_hash,
+      crosapi::browser_util::MigrationMode::kCopy));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(BrowserDataMigrator::ResultKind::kCancelled, result->kind);
   EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationStep(&pref_service_),
@@ -431,4 +434,102 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
   }
 }
 
+TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
+  // Check that `MaybeRestartToMigrateInternal()` returns true after completion
+  // of copy migration if move migration is enabled.
+  AddRegularUser("user@gmail.com");
+  const user_manager::User* const user =
+      ash::ProfileHelper::Get()->GetUserByProfile(testing_profile());
+
+  crosapi::browser_util::RecordDataVer(
+      local_state(), user->username_hash(),
+      base::Version(
+          base::StringPiece(crosapi::browser_util::kRequiredDataVersion)));
+
+  {
+    // If Lacros is not enabled, migration should not run.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosProfileMigrationForAnyUser}, {});
+    EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
+                  user, crosapi::browser_util::PolicyInitState::kAfterInit),
+              crosapi::browser_util::MigrationMode::kCopy);
+    EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+
+  {
+    // If Lacros is enabled, migration should run.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosSupport,
+         ash::features::kLacrosProfileMigrationForAnyUser},
+        {});
+    EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
+                  user, crosapi::browser_util::PolicyInitState::kAfterInit),
+              crosapi::browser_util::MigrationMode::kCopy);
+    EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+
+  // Mark copy migration as completed.
+  crosapi::browser_util::SetProfileMigrationCompletedForUser(
+      local_state(), user->username_hash(),
+      crosapi::browser_util::MigrationMode::kCopy);
+  {
+    // If migration is marked as completed, migration should not run.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosSupport,
+         ash::features::kLacrosProfileMigrationForAnyUser},
+        {});
+    EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
+                  user, crosapi::browser_util::PolicyInitState::kAfterInit),
+              crosapi::browser_util::MigrationMode::kCopy);
+    EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+
+  {
+    // If copy migration is marked as completed but not move then migration
+    // should run if move migration is enabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForAnyUser},
+        {});
+    EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
+                  user, crosapi::browser_util::PolicyInitState::kAfterInit),
+              crosapi::browser_util::MigrationMode::kMove);
+    EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+
+  // Mark move migration as completed.
+  crosapi::browser_util::ClearProfileMigrationCompletedForUser(
+      local_state(), user->username_hash());
+  crosapi::browser_util::SetProfileMigrationCompletedForUser(
+      local_state(), user->username_hash(),
+      crosapi::browser_util::MigrationMode::kMove);
+  {
+    // If move migration is marked as completed, move migration should not run.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForAnyUser},
+        {});
+    EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
+                  user, crosapi::browser_util::PolicyInitState::kAfterInit),
+              crosapi::browser_util::MigrationMode::kMove);
+    EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+}
 }  // namespace ash
