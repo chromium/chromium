@@ -41,11 +41,8 @@ constexpr int kMaxJsonDepth = 5;
 // Tasks are queued pending completion of loading from the store.
 class ReportingServiceImpl : public ReportingService {
  public:
-  ReportingServiceImpl(std::unique_ptr<ReportingContext> context)
-      : context_(std::move(context)),
-        shut_down_(false),
-        started_loading_from_store_(false),
-        initialized_(false) {
+  explicit ReportingServiceImpl(std::unique_ptr<ReportingContext> context)
+      : context_(std::move(context)) {
     if (!context_->IsClientDataPersisted())
       initialized_ = true;
   }
@@ -301,9 +298,9 @@ class ReportingServiceImpl : public ReportingService {
   }
 
   std::unique_ptr<ReportingContext> context_;
-  bool shut_down_;
-  bool started_loading_from_store_;
-  bool initialized_;
+  bool shut_down_ = false;
+  bool started_loading_from_store_ = false;
+  bool initialized_ = false;
   std::vector<base::OnceClosure> task_backlog_;
 
   bool respect_network_isolation_key_ = base::FeatureList::IsEnabled(

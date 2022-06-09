@@ -106,8 +106,7 @@ class MockCTPolicyEnforcer : public CTPolicyEnforcer {
 
 class FakeDataChannel {
  public:
-  FakeDataChannel()
-      : read_buf_len_(0), closed_(false), write_called_after_close_(false) {}
+  FakeDataChannel() = default;
 
   FakeDataChannel(const FakeDataChannel&) = delete;
   FakeDataChannel& operator=(const FakeDataChannel&) = delete;
@@ -203,19 +202,19 @@ class FakeDataChannel {
 
   CompletionOnceCallback read_callback_;
   scoped_refptr<IOBuffer> read_buf_;
-  int read_buf_len_;
+  int read_buf_len_ = 0;
 
   CompletionOnceCallback write_callback_;
 
   base::queue<scoped_refptr<DrainableIOBuffer>> data_;
 
   // True if Close() has been called.
-  bool closed_;
+  bool closed_ = false;
 
   // Controls the completion of Write() after the FakeDataChannel is closed.
   // After the FakeDataChannel is closed, the first Write() call completes
   // asynchronously.
-  bool write_called_after_close_;
+  bool write_called_after_close_ = false;
 
   base::WeakPtrFactory<FakeDataChannel> weak_factory_{this};
 };

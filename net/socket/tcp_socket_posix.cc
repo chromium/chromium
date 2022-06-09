@@ -162,7 +162,6 @@ TCPSocketPosix::TCPSocketPosix(
     NetLog* net_log,
     const NetLogSource& source)
     : socket_performance_watcher_(std::move(socket_performance_watcher)),
-      logging_multiple_connect_attempts_(false),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {
   net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
 }

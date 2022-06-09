@@ -56,7 +56,7 @@ class WebSocket final {
   const raw_ptr<HttpServer> server_;
   const raw_ptr<HttpConnection> connection_;
   std::unique_ptr<WebSocketEncoder> encoder_;
-  bool closed_;
+  bool closed_ = false;
   std::unique_ptr<NetworkTrafficAnnotationTag> traffic_annotation_ = nullptr;
 };
 

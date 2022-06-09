@@ -132,7 +132,7 @@ class HttpServer {
   std::unique_ptr<StreamSocket> accepted_socket_;
   const raw_ptr<HttpServer::Delegate> delegate_;
 
-  int last_id_;
+  int last_id_ = 0;
   std::map<int, std::unique_ptr<HttpConnection>> id_to_connection_;
 
   base::WeakPtrFactory<HttpServer> weak_ptr_factory_{this};

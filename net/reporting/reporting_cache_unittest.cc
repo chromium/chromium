@@ -37,8 +37,7 @@ using CommandType = MockPersistentReportingStore::Command::Type;
 
 class TestReportingCacheObserver : public ReportingCacheObserver {
  public:
-  TestReportingCacheObserver()
-      : cached_reports_update_count_(0), cached_clients_update_count_(0) {}
+  TestReportingCacheObserver() = default;
 
   void OnReportsUpdated() override { ++cached_reports_update_count_; }
   void OnClientsUpdated() override { ++cached_clients_update_count_; }
@@ -51,8 +50,8 @@ class TestReportingCacheObserver : public ReportingCacheObserver {
   }
 
  private:
-  int cached_reports_update_count_;
-  int cached_clients_update_count_;
+  int cached_reports_update_count_ = 0;
+  int cached_clients_update_count_ = 0;
 };
 
 // The tests are parametrized on a boolean value which represents whether or not

@@ -86,8 +86,7 @@ struct PendingUpload {
                 const std::string& json,
                 int max_depth,
                 ReportingUploader::UploadCallback callback)
-      : state(CREATED),
-        report_origin(report_origin),
+      : report_origin(report_origin),
         url(url),
         isolation_info(isolation_info),
         payload_reader(UploadOwnedBytesElementReader::CreateWithString(json)),
@@ -98,7 +97,7 @@ struct PendingUpload {
     std::move(callback).Run(outcome);
   }
 
-  State state;
+  State state = CREATED;
   const url::Origin report_origin;
   const GURL url;
   const IsolationInfo isolation_info;

@@ -52,7 +52,7 @@ std::string ValidResponseString(
 }  // namespace
 
 WebSocket::WebSocket(HttpServer* server, HttpConnection* connection)
-    : server_(server), connection_(connection), closed_(false) {}
+    : server_(server), connection_(connection) {}
 
 WebSocket::~WebSocket() = default;
 

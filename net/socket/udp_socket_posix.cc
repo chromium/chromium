@@ -133,29 +133,16 @@ UDPSocketPosix::UDPSocketPosix(DatagramSocket::BindType bind_type,
     : write_async_watcher_(std::make_unique<WriteAsyncWatcher>(this)),
       sender_(new UDPSocketPosixSender()),
       socket_(kInvalidSocket),
-      socket_hash_(0),
-      addr_family_(0),
-      is_connected_(false),
-      socket_options_(SOCKET_OPTION_MULTICAST_LOOP),
-      sendto_flags_(0),
-      multicast_interface_(0),
-      multicast_time_to_live_(1),
       bind_type_(bind_type),
       read_socket_watcher_(FROM_HERE),
       write_socket_watcher_(FROM_HERE),
       read_watcher_(this),
       write_watcher_(this),
-      last_async_result_(0),
-      write_async_timer_running_(false),
-      write_async_outstanding_(0),
-      read_buf_len_(0),
       recv_from_address_(nullptr),
-      write_buf_len_(0),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::UDP_SOCKET)),
       bound_network_(NetworkChangeNotifier::kInvalidNetworkHandle),
       always_update_bytes_received_(base::FeatureList::IsEnabled(
-          features::kUdpSocketPosixAlwaysUpdateBytesReceived)),
-      experimental_recv_optimization_enabled_(false) {
+          features::kUdpSocketPosixAlwaysUpdateBytesReceived)) {
   net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
 }
 
@@ -1077,11 +1064,11 @@ void UDPSocketPosix::ApplySocketTag(const SocketTag& tag) {
   tag_ = tag;
 }
 
-UDPSocketPosixSender::UDPSocketPosixSender() : sendmmsg_enabled_(false) {}
-UDPSocketPosixSender::~UDPSocketPosixSender() {}
+UDPSocketPosixSender::UDPSocketPosixSender() = default;
+UDPSocketPosixSender::~UDPSocketPosixSender() = default;
 
 SendResult::SendResult() : rv(0), write_count(0) {}
-SendResult::~SendResult() {}
+SendResult::~SendResult() = default;
 SendResult::SendResult(int _rv, int _write_count, DatagramBuffers _buffers)
     : rv(_rv), write_count(_write_count), buffers(std::move(_buffers)) {}
 SendResult::SendResult(SendResult&& other) = default;

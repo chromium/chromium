@@ -43,8 +43,7 @@ class TestConnectJob : public ConnectJob {
                    nullptr /* net_log */,
                    NetLogSourceType::TRANSPORT_CONNECT_JOB,
                    NetLogEventType::TRANSPORT_CONNECT_JOB_CONNECT),
-        job_type_(job_type),
-        last_seen_priority_(DEFAULT_PRIORITY) {
+        job_type_(job_type) {
     switch (job_type_) {
       case JobType::kSyncSuccess:
         socket_data_provider_.set_connect_data(MockConnect(SYNCHRONOUS, OK));
@@ -87,7 +86,7 @@ class TestConnectJob : public ConnectJob {
  protected:
   const JobType job_type_;
   StaticSocketDataProvider socket_data_provider_;
-  RequestPriority last_seen_priority_;
+  RequestPriority last_seen_priority_ = DEFAULT_PRIORITY;
 };
 
 class ConnectJobTest : public testing::Test {

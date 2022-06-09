@@ -37,9 +37,7 @@ WebSocketTransportClientSocketPool::WebSocketTransportClientSocketPool(
                        common_connect_job_params,
                        std::make_unique<ConnectJobFactory>()),
       proxy_server_(proxy_server),
-      max_sockets_(max_sockets),
-      handed_out_socket_count_(0),
-      flushing_(false) {
+      max_sockets_(max_sockets) {
   DCHECK(common_connect_job_params->websocket_endpoint_lock_manager);
 }
 

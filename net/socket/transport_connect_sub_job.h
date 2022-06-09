@@ -75,9 +75,9 @@ class TransportConnectSubJob : public WebSocketEndpointLockManager::Waiter {
   const raw_ptr<TransportConnectJob> parent_job_;
 
   std::vector<IPEndPoint> addresses_;
-  size_t current_address_index_;
+  size_t current_address_index_ = 0;
 
-  State next_state_;
+  State next_state_ = STATE_NONE;
   const SubJobType type_;
 
   std::unique_ptr<StreamSocket> transport_socket_;

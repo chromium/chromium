@@ -80,9 +80,9 @@ class NET_EXPORT SSLClientSocket : public SSLSocket {
                            ConnectSignedCertTimestampsEnablesOCSP);
 
   // True if SCTs were received via a TLS extension.
-  bool signed_cert_timestamps_received_;
+  bool signed_cert_timestamps_received_ = false;
   // True if a stapled OCSP response was received.
-  bool stapled_ocsp_response_received_;
+  bool stapled_ocsp_response_received_ = false;
 };
 
 // Shared state and configuration across multiple SSLClientSockets.

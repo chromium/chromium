@@ -203,8 +203,8 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   StalledRequestQueue stalled_request_queue_;
   StalledRequestMap stalled_request_map_;
   const int max_sockets_;
-  int handed_out_socket_count_;
-  bool flushing_;
+  int handed_out_socket_count_ = 0;
+  bool flushing_ = false;
 
   base::WeakPtrFactory<WebSocketTransportClientSocketPool> weak_factory_{this};
 };

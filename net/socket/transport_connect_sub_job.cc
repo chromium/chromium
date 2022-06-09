@@ -120,11 +120,7 @@ TransportConnectSubJob::TransportConnectSubJob(
     std::vector<IPEndPoint> addresses,
     TransportConnectJob* parent_job,
     SubJobType type)
-    : parent_job_(parent_job),
-      addresses_(std::move(addresses)),
-      current_address_index_(0),
-      next_state_(STATE_NONE),
-      type_(type) {}
+    : parent_job_(parent_job), addresses_(std::move(addresses)), type_(type) {}
 
 TransportConnectSubJob::~TransportConnectSubJob() = default;
 

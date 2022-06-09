@@ -54,9 +54,7 @@ constexpr NetworkTrafficAnnotationTag
 
 HttpServer::HttpServer(std::unique_ptr<ServerSocket> server_socket,
                        HttpServer::Delegate* delegate)
-    : server_socket_(std::move(server_socket)),
-      delegate_(delegate),
-      last_id_(0) {
+    : server_socket_(std::move(server_socket)), delegate_(delegate) {
   DCHECK(server_socket_);
   // Start accepting connections in next run loop in case when delegate is not
   // ready to get callbacks.

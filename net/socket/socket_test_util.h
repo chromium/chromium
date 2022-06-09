@@ -409,9 +409,9 @@ class StaticSocketDataHelper {
   const MockWrite& PeekRealWrite() const;
 
   const base::span<const MockRead> reads_;
-  size_t read_index_;
+  size_t read_index_ = 0;
   const base::span<const MockWrite> writes_;
-  size_t write_index_;
+  size_t write_index_ = 0;
 };
 
 // SocketDataProvider which responds based on static tables of mock reads and
@@ -483,7 +483,7 @@ struct SSLSocketDataProvider {
   base::RepeatingClosure confirm_callback;
 
   // Result for GetNegotiatedProtocol().
-  NextProto next_proto;
+  NextProto next_proto = kProtoUnknown;
 
   // Result for GetPeerApplicationSettings().
   absl::optional<std::string> peer_application_settings;
@@ -492,7 +492,7 @@ struct SSLSocketDataProvider {
   SSLInfo ssl_info;
 
   // Result for GetSSLCertRequestInfo().
-  SSLCertRequestInfo* cert_request_info;
+  SSLCertRequestInfo* cert_request_info = nullptr;
 
   // Result for GetECHRetryConfigs().
   std::vector<uint8_t> ech_retry_configs;
@@ -713,7 +713,7 @@ class MockClientSocketFactory : public ClientSocketFactory {
 
   // If true, ReadIfReady() is enabled; otherwise ReadIfReady() returns
   // ERR_READ_IF_READY_NOT_IMPLEMENTED.
-  bool enable_read_if_ready_;
+  bool enable_read_if_ready_ = false;
 };
 
 class MockClientSocket : public TransportClientSocket {
@@ -761,7 +761,7 @@ class MockClientSocket : public TransportClientSocket {
   void RunCallback(CompletionOnceCallback callback, int result);
 
   // True if Connect completed successfully and Disconnect hasn't been called.
-  bool connected_;
+  bool connected_ = false;
 
   IPEndPoint local_addr_;
   IPEndPoint peer_addr_;
@@ -837,18 +837,18 @@ class MockTCPClientSocket : public MockClientSocket, public AsyncSocket {
   AddressList addresses_;
 
   raw_ptr<SocketDataProvider> data_;
-  int read_offset_;
+  int read_offset_ = 0;
   MockRead read_data_;
-  bool need_read_data_;
+  bool need_read_data_ = true;
 
   // True if the peer has closed the connection.  This allows us to simulate
   // the recv(..., MSG_PEEK) call in the IsConnectedAndIdle method of the real
   // TCPClientSocket.
-  bool peer_closed_connection_;
+  bool peer_closed_connection_ = false;
 
   // While an asynchronous read is pending, we save our user-buffer state.
   scoped_refptr<IOBuffer> pending_read_buf_;
-  int pending_read_buf_len_;
+  int pending_read_buf_len_ = 0;
   CompletionOnceCallback pending_read_callback_;
 
   // Non-null when a ReadIfReady() is pending.
@@ -856,11 +856,11 @@ class MockTCPClientSocket : public MockClientSocket, public AsyncSocket {
 
   CompletionOnceCallback pending_connect_callback_;
   CompletionOnceCallback pending_write_callback_;
-  bool was_used_to_convey_data_;
+  bool was_used_to_convey_data_ = false;
 
   // If true, ReadIfReady() is enabled; otherwise ReadIfReady() returns
   // ERR_READ_IF_READY_NOT_IMPLEMENTED.
-  bool enable_read_if_ready_;
+  bool enable_read_if_ready_ = false;
 
   BeforeConnectCallback before_connect_callback_;
 };
@@ -1033,13 +1033,13 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   void RunCallbackAsync(CompletionOnceCallback callback, int result);
   void RunCallback(CompletionOnceCallback callback, int result);
 
-  bool connected_;
+  bool connected_ = false;
   raw_ptr<SocketDataProvider> data_;
-  int read_offset_;
+  int read_offset_ = 0;
   MockRead read_data_;
-  bool need_read_data_;
+  bool need_read_data_ = true;
   IPAddress source_host_;
-  uint16_t source_port_;  // Ephemeral source port.
+  uint16_t source_port_ = 123;  // Ephemeral source port.
 
   // Address of the "remote" peer we're connected to.
   IPEndPoint peer_addr_;
@@ -1049,7 +1049,7 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
 
   // While an asynchronous IO is pending, we save our user-buffer state.
   scoped_refptr<IOBuffer> pending_read_buf_;
-  int pending_read_buf_len_;
+  int pending_read_buf_len_ = 0;
   CompletionOnceCallback pending_read_callback_;
   CompletionOnceCallback pending_write_callback_;
 
@@ -1154,7 +1154,7 @@ class ClientSocketPoolTest {
  private:
   std::vector<std::unique_ptr<TestSocketRequest>> requests_;
   std::vector<TestSocketRequest*> request_order_;
-  size_t completion_count_;
+  size_t completion_count_ = 0;
 };
 
 class MockTransportSocketParams
@@ -1249,9 +1249,9 @@ class MockTransportClientSocketPool : public TransportClientSocketPool {
  private:
   raw_ptr<ClientSocketFactory> client_socket_factory_;
   std::vector<std::unique_ptr<MockConnectJob>> job_list_;
-  RequestPriority last_request_priority_;
-  int release_count_;
-  int cancel_count_;
+  RequestPriority last_request_priority_ = DEFAULT_PRIORITY;
+  int release_count_ = 0;
+  int cancel_count_ = 0;
 };
 
 // WrappedStreamSocket is a base class that wraps an existing StreamSocket,

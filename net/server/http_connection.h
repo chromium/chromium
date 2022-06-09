@@ -109,7 +109,7 @@ class HttpConnection {
     // This needs to indirect since we need pointer stability for the payload
     // chunks, as they may be handed out via net::IOBuffer::data().
     base::queue<std::unique_ptr<std::string>> pending_data_;
-    int total_size_;
+    int total_size_ = 0;
     int max_buffer_size_;
   };
 

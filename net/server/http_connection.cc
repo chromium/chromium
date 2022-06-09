@@ -92,9 +92,7 @@ void HttpConnection::ReadIOBuffer::DidConsume(int bytes) {
 }
 
 HttpConnection::QueuedWriteIOBuffer::QueuedWriteIOBuffer()
-    : total_size_(0),
-      max_buffer_size_(kDefaultMaxBufferSize) {
-}
+    : max_buffer_size_(kDefaultMaxBufferSize) {}
 
 HttpConnection::QueuedWriteIOBuffer::~QueuedWriteIOBuffer() {
   data_ = nullptr;  // pending_data_ owns data_.

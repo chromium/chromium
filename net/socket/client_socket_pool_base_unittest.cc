@@ -148,10 +148,7 @@ void TestLoadTimingInfoNotConnected(const ClientSocketHandle& handle) {
 class MockClientSocket : public StreamSocket {
  public:
   explicit MockClientSocket(net::NetLog* net_log)
-      : connected_(false),
-        has_unread_data_(false),
-        net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)),
-        was_used_to_convey_data_(false) {}
+      : net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {}
 
   MockClientSocket(const MockClientSocket&) = delete;
   MockClientSocket& operator=(const MockClientSocket&) = delete;
@@ -218,17 +215,17 @@ class MockClientSocket : public StreamSocket {
   void ApplySocketTag(const SocketTag& tag) override {}
 
  private:
-  bool connected_;
-  bool has_unread_data_;
+  bool connected_ = false;
+  bool has_unread_data_ = false;
   NetLogWithSource net_log_;
-  bool was_used_to_convey_data_;
+  bool was_used_to_convey_data_ = false;
 };
 
 class TestConnectJob;
 
 class MockClientSocketFactory : public ClientSocketFactory {
  public:
-  MockClientSocketFactory() : allocation_count_(0) {}
+  MockClientSocketFactory() = default;
 
   std::unique_ptr<DatagramClientSocket> CreateDatagramClientSocket(
       DatagramSocket::BindType bind_type,
@@ -273,7 +270,7 @@ class MockClientSocketFactory : public ClientSocketFactory {
   int allocation_count() const { return allocation_count_; }
 
  private:
-  int allocation_count_;
+  int allocation_count_ = 0;
   std::vector<TestConnectJob*> waiting_jobs_;
 };
 
@@ -320,10 +317,7 @@ class TestConnectJob : public ConnectJob {
                    NetLogSourceType::TRANSPORT_CONNECT_JOB,
                    NetLogEventType::TRANSPORT_CONNECT_JOB_CONNECT),
         job_type_(job_type),
-        client_socket_factory_(client_socket_factory),
-        load_state_(LOAD_STATE_IDLE),
-        has_established_connection_(false),
-        store_additional_error_state_(false) {}
+        client_socket_factory_(client_socket_factory) {}
 
   TestConnectJob(const TestConnectJob&) = delete;
   TestConnectJob& operator=(const TestConnectJob&) = delete;
@@ -517,9 +511,9 @@ class TestConnectJob : public ConnectJob {
   bool waiting_success_;
   const JobType job_type_;
   const raw_ptr<MockClientSocketFactory> client_socket_factory_;
-  LoadState load_state_;
-  bool has_established_connection_;
-  bool store_additional_error_state_;
+  LoadState load_state_ = LOAD_STATE_IDLE;
+  bool has_established_connection_ = false;
+  bool store_additional_error_state_ = false;
 
   base::WeakPtrFactory<TestConnectJob> weak_factory_{this};
 };
@@ -4860,7 +4854,7 @@ class MockLayeredPool : public HigherLayeredPool {
  public:
   MockLayeredPool(TransportClientSocketPool* pool,
                   const ClientSocketPool::GroupId& group_id)
-      : pool_(pool), group_id_(group_id), can_release_connection_(true) {
+      : pool_(pool), group_id_(group_id) {
     pool_->AddHigherLayeredPool(this);
   }
 
@@ -4902,7 +4896,7 @@ class MockLayeredPool : public HigherLayeredPool {
   ClientSocketHandle handle_;
   TestCompletionCallback callback_;
   const ClientSocketPool::GroupId group_id_;
-  bool can_release_connection_;
+  bool can_release_connection_ = true;
 };
 
 // Tests the basic case of closing an idle socket in a higher layered pool when

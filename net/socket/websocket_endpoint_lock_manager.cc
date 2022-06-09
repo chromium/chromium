@@ -47,8 +47,7 @@ WebSocketEndpointLockManager::LockReleaser::~LockReleaser() {
 }
 
 WebSocketEndpointLockManager::WebSocketEndpointLockManager()
-    : unlock_delay_(base::Milliseconds(kUnlockDelayInMs)),
-      pending_unlock_count_(0) {}
+    : unlock_delay_(base::Milliseconds(kUnlockDelayInMs)) {}
 
 WebSocketEndpointLockManager::~WebSocketEndpointLockManager() {
   DCHECK_EQ(lock_info_map_.size(), pending_unlock_count_);

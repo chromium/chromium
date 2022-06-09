@@ -61,9 +61,9 @@ class NET_EXPORT UDPServerSocket : public DatagramServerSocket {
 
  private:
   UDPSocket socket_;
-  bool allow_address_reuse_;
-  bool allow_broadcast_;
-  bool allow_address_sharing_for_multicast_;
+  bool allow_address_reuse_ = false;
+  bool allow_broadcast_ = false;
+  bool allow_address_sharing_for_multicast_ = false;
 };
 
 }  // namespace net

@@ -15,9 +15,7 @@
 
 namespace net {
 
-SSLClientSocket::SSLClientSocket()
-    : signed_cert_timestamps_received_(false),
-      stapled_ocsp_response_received_(false) {}
+SSLClientSocket::SSLClientSocket() = default;
 
 // static
 void SSLClientSocket::SetSSLKeyLogger(std::unique_ptr<SSLKeyLogger> logger) {

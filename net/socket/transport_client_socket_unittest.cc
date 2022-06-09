@@ -45,8 +45,7 @@ class TransportClientSocketTest : public ::testing::Test,
                                   public WithTaskEnvironment {
  public:
   TransportClientSocketTest()
-      : listen_port_(0),
-        socket_factory_(ClientSocketFactory::GetDefaultFactory()) {}
+      : socket_factory_(ClientSocketFactory::GetDefaultFactory()) {}
 
   ~TransportClientSocketTest() override = default;
 
@@ -68,7 +67,7 @@ class TransportClientSocketTest : public ::testing::Test,
 
  protected:
   base::RunLoop connect_loop_;
-  uint16_t listen_port_;
+  uint16_t listen_port_ = 0;
   RecordingNetLogObserver net_log_observer_;
   const raw_ptr<ClientSocketFactory> socket_factory_;
   std::unique_ptr<StreamSocket> sock_;

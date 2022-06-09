@@ -38,12 +38,7 @@ SOCKS5ClientSocket::SOCKS5ClientSocket(
     : io_callback_(base::BindRepeating(&SOCKS5ClientSocket::OnIOComplete,
                                        base::Unretained(this))),
       transport_socket_(std::move(transport_socket)),
-      next_state_(STATE_NONE),
-      completed_handshake_(false),
-      bytes_sent_(0),
-      bytes_received_(0),
       read_header_size(kReadHeaderSize),
-      was_ever_used_(false),
       destination_(destination),
       net_log_(transport_socket_->NetLog()),
       traffic_annotation_(traffic_annotation) {}

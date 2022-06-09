@@ -382,23 +382,12 @@ SSLClientSocketImpl::SSLClientSocketImpl(
     const HostPortPair& host_and_port,
     const SSLConfig& ssl_config)
     : pending_read_error_(kSSLClientSocketNoPendingResult),
-      pending_read_ssl_error_(SSL_ERROR_NONE),
-      completed_connect_(false),
-      was_ever_used_(false),
       context_(context),
       cert_verification_result_(kCertVerifyPending),
       stream_socket_(std::move(stream_socket)),
       host_and_port_(host_and_port),
       ssl_config_(ssl_config),
-      next_handshake_state_(STATE_NONE),
-      in_confirm_handshake_(false),
-      peek_complete_(false),
-      disconnected_(false),
-      negotiated_protocol_(kProtoUnknown),
-      certificate_requested_(false),
       signature_result_(kSSLClientSocketNoPendingResult),
-      pkp_bypassed_(false),
-      is_fatal_cert_error_(false),
       net_log_(stream_socket_->NetLog()) {
   CHECK(context_);
 }

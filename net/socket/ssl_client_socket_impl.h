@@ -239,7 +239,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   // If there is a pending read result, the OpenSSL result code (output of
   // SSL_get_error) associated with it.
-  int pending_read_ssl_error_;
+  int pending_read_ssl_error_ = SSL_ERROR_NONE;
 
   // If there is a pending read result, the OpenSSLErrorInfo associated with it.
   OpenSSLErrorInfo pending_read_error_info_;
@@ -247,11 +247,11 @@ class SSLClientSocketImpl : public SSLClientSocket,
   // Set when Connect finishes.
   scoped_refptr<X509Certificate> server_cert_;
   CertVerifyResult server_cert_verify_result_;
-  bool completed_connect_;
+  bool completed_connect_ = false;
 
   // Set when Read() or Write() successfully reads or writes data to or from the
   // network.
-  bool was_ever_used_;
+  bool was_ever_used_ = false;
 
   const raw_ptr<SSLClientContext> context_;
 
@@ -274,24 +274,24 @@ class SSLClientSocketImpl : public SSLClientSocket,
     STATE_HANDSHAKE,
     STATE_HANDSHAKE_COMPLETE,
   };
-  State next_handshake_state_;
+  State next_handshake_state_ = STATE_NONE;
 
   // True if we are currently confirming the handshake.
-  bool in_confirm_handshake_;
+  bool in_confirm_handshake_ = false;
 
   // True if the post-handshake SSL_peek has completed.
-  bool peek_complete_;
+  bool peek_complete_ = false;
 
   // True if the socket has been disconnected.
-  bool disconnected_;
+  bool disconnected_ = false;
 
   // True if certificate verification used an ECH name override.
   bool used_ech_name_override_ = false;
 
-  NextProto negotiated_protocol_;
+  NextProto negotiated_protocol_ = kProtoUnknown;
 
   // Set to true if a CertificateRequest was received.
-  bool certificate_requested_;
+  bool certificate_requested_ = false;
 
   int signature_result_;
   std::vector<uint8_t> signature_;
@@ -302,11 +302,11 @@ class SSLClientSocketImpl : public SSLClientSocket,
   std::string pinning_failure_log_;
 
   // True if PKP is bypassed due to a local trust anchor.
-  bool pkp_bypassed_;
+  bool pkp_bypassed_ = false;
 
   // True if there was a certificate error which should be treated as fatal,
   // and false otherwise.
-  bool is_fatal_cert_error_;
+  bool is_fatal_cert_error_ = false;
 
   // True if the socket should respond to client certificate requests with
   // |client_cert_| and |client_private_key_|, which may be null to continue

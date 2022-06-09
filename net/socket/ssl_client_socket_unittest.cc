@@ -531,9 +531,7 @@ void FakeBlockingStreamSocket::ReturnReadResult() {
 class CountingStreamSocket : public WrappedStreamSocket {
  public:
   explicit CountingStreamSocket(std::unique_ptr<StreamSocket> transport)
-      : WrappedStreamSocket(std::move(transport)),
-        read_count_(0),
-        write_count_(0) {}
+      : WrappedStreamSocket(std::move(transport)) {}
   ~CountingStreamSocket() override = default;
 
   // Socket implementation:
@@ -556,8 +554,8 @@ class CountingStreamSocket : public WrappedStreamSocket {
   int write_count() const { return write_count_; }
 
  private:
-  int read_count_;
-  int write_count_;
+  int read_count_ = 0;
+  int write_count_ = 0;
 };
 
 // A helper class that will delete |socket| when the callback is invoked.
@@ -593,7 +591,7 @@ class DeleteSocketCallback : public TestCompletionCallbackBase {
 // reported and the number of violations reported.
 class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
  public:
-  MockExpectCTReporter() : num_failures_(0) {}
+  MockExpectCTReporter() = default;
   ~MockExpectCTReporter() override = default;
 
   void OnExpectCTFailed(
@@ -634,7 +632,7 @@ class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
  private:
   HostPortPair host_port_pair_;
   GURL report_uri_;
-  uint32_t num_failures_;
+  uint32_t num_failures_ = 0;
   raw_ptr<const X509Certificate> served_certificate_chain_;
   raw_ptr<const X509Certificate> validated_certificate_chain_;
   SignedCertificateTimestampAndStatusList signed_certificate_timestamps_;

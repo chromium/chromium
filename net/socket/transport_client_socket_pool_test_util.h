@@ -145,8 +145,8 @@ class MockTransportClientSocketFactory : public ClientSocketFactory {
 
  private:
   raw_ptr<NetLog> net_log_;
-  int allocation_count_;
-  Type client_socket_type_;
+  int allocation_count_ = 0;
+  Type client_socket_type_ = Type::kSynchronous;
   base::span<const Rule> rules_;
   base::TimeDelta delay_;
   base::queue<base::OnceClosure> triggerable_sockets_;

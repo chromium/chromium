@@ -134,9 +134,7 @@ SSLConnectJob::SSLConnectJob(
           NetLogEventType::SSL_CONNECT_JOB_CONNECT),
       params_(std::move(params)),
       callback_(base::BindRepeating(&SSLConnectJob::OnIOComplete,
-                                    base::Unretained(this))),
-      ssl_negotiation_started_(false),
-      disable_legacy_crypto_with_fallback_(true) {}
+                                    base::Unretained(this))) {}
 
 SSLConnectJob::~SSLConnectJob() {
   // In the case the job was canceled, need to delete nested job first to

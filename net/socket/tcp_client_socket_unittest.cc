@@ -295,7 +295,7 @@ TEST_F(TCPClientSocketTest, DnsAliasesPersistForReuse) {
 
 class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
  public:
-  TestSocketPerformanceWatcher() : connection_changed_count_(0u) {}
+  TestSocketPerformanceWatcher() = default;
 
   TestSocketPerformanceWatcher(const TestSocketPerformanceWatcher&) = delete;
   TestSocketPerformanceWatcher& operator=(const TestSocketPerformanceWatcher&) =
@@ -312,7 +312,7 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
   size_t connection_changed_count() const { return connection_changed_count_; }
 
  private:
-  size_t connection_changed_count_;
+  size_t connection_changed_count_ = 0u;
 };
 
 // TestSocketPerformanceWatcher requires kernel support for tcp_info struct, and

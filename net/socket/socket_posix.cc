@@ -72,10 +72,7 @@ SocketPosix::SocketPosix()
     : socket_fd_(kInvalidSocket),
       accept_socket_watcher_(FROM_HERE),
       read_socket_watcher_(FROM_HERE),
-      read_buf_len_(0),
-      write_socket_watcher_(FROM_HERE),
-      write_buf_len_(0),
-      waiting_connect_(false) {}
+      write_socket_watcher_(FROM_HERE) {}
 
 SocketPosix::~SocketPosix() {
   Close();

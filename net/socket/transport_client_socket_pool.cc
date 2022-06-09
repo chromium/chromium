@@ -1440,10 +1440,7 @@ TransportClientSocketPool::Group::Group(
     TransportClientSocketPool* client_socket_pool)
     : group_id_(group_id),
       client_socket_pool_(client_socket_pool),
-      never_assigned_job_count_(0),
-      unbound_requests_(NUM_PRIORITIES),
-      active_socket_count_(0),
-      generation_(0) {}
+      unbound_requests_(NUM_PRIORITIES) {}
 
 TransportClientSocketPool::Group::~Group() {
   DCHECK_EQ(0u, never_assigned_job_count());

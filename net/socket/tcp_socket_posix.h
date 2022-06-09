@@ -218,7 +218,7 @@ class NET_EXPORT TCPSocketPosix {
   // |socket_performance_watcher_|. May be nullptr.
   std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher_;
 
-  bool logging_multiple_connect_attempts_;
+  bool logging_multiple_connect_attempts_ = false;
 
   NetLogWithSource net_log_;
 

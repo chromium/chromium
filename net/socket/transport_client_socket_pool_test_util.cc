@@ -44,8 +44,7 @@ IPAddress ParseIP(const std::string& ip) {
 class MockConnectClientSocket : public TransportClientSocket {
  public:
   MockConnectClientSocket(const AddressList& addrlist, net::NetLog* net_log)
-      : connected_(false),
-        addrlist_(addrlist),
+      : addrlist_(addrlist),
         net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {}
 
   MockConnectClientSocket(const MockConnectClientSocket&) = delete;
@@ -106,7 +105,7 @@ class MockConnectClientSocket : public TransportClientSocket {
   int SetSendBufferSize(int32_t size) override { return OK; }
 
  private:
-  bool connected_;
+  bool connected_ = false;
   const AddressList addrlist_;
   NetLogWithSource net_log_;
 };
@@ -186,7 +185,6 @@ class MockTriggerableClientSocket : public TransportClientSocket {
                               Error connect_error,
                               net::NetLog* net_log)
       : connect_error_(connect_error),
-        is_connected_(false),
         addrlist_(addrlist),
         net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {}
 
@@ -299,7 +297,7 @@ class MockTriggerableClientSocket : public TransportClientSocket {
   }
 
   Error connect_error_;
-  bool is_connected_;
+  bool is_connected_ = false;
   const AddressList addrlist_;
   NetLogWithSource net_log_;
   CompletionOnceCallback callback_;
@@ -364,8 +362,6 @@ MockTransportClientSocketFactory::Rule::operator=(const Rule&) = default;
 MockTransportClientSocketFactory::MockTransportClientSocketFactory(
     NetLog* net_log)
     : net_log_(net_log),
-      allocation_count_(0),
-      client_socket_type_(Type::kSynchronous),
       delay_(base::Milliseconds(ClientSocketPool::kMaxConnectRetryIntervalMs)) {
 }
 

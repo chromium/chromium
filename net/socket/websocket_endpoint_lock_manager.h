@@ -134,7 +134,7 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
   base::TimeDelta unlock_delay_;
 
   // Number of sockets currently pending unlock.
-  size_t pending_unlock_count_;
+  size_t pending_unlock_count_ = 0;
 
   base::WeakPtrFactory<WebSocketEndpointLockManager> weak_factory_{this};
 };

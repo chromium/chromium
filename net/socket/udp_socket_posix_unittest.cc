@@ -133,8 +133,7 @@ class UDPSocketPosixTest : public TestWithTaskEnvironment {
   UDPSocketPosixTest()
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        socket_(DatagramSocket::DEFAULT_BIND, NetLog::Get(), NetLogSource()),
-        callback_fired_(false) {
+        socket_(DatagramSocket::DEFAULT_BIND, NetLog::Get(), NetLogSource()) {
     write_callback_ = base::BindRepeating(&UDPSocketPosixTest::OnWriteComplete,
                                           weak_factory_.GetWeakPtr());
   }
@@ -223,7 +222,7 @@ class UDPSocketPosixTest : public TestWithTaskEnvironment {
   RecordingNetLogObserver net_log_observer_;
   MockUDPSocketPosix socket_;
   DatagramBuffers buffers_;
-  bool callback_fired_;
+  bool callback_fired_ = false;
   int rv_;
   std::string msgs_[kNumMsgs] = {kHelloMsg, kSecondMsg, kThirdMsg};
   int lengths_[kNumMsgs] = {static_cast<int>(kHelloMsg.length()),
