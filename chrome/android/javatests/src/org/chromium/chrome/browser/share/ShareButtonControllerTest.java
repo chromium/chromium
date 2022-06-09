@@ -40,7 +40,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -64,13 +64,13 @@ public final class ShareButtonControllerTest {
     private final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    private final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    private final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     // Mock sign-in environment needs to be destroyed after ChromeActivity in case there are
     // observers registered in the AccountManagerFacade mock.
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mAccountManagerTestRule).around(mActivityTestRule);
+            RuleChain.outerRule(mSigninTestRule).around(mActivityTestRule);
 
     private boolean mButtonExpected;
 
@@ -137,7 +137,7 @@ public final class ShareButtonControllerTest {
     public void
     testShareButtonInToolbarNotAffectedByOverview() throws TimeoutException {
         // Sign in.
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()

@@ -5,22 +5,21 @@
 package org.chromium.chrome.browser.sync;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 
 /**
  * Utility class for sign-in functionalities in native Sync browser tests.
  */
 final class SyncTestSigninUtils {
-    private static final AccountManagerTestRule sAccountManagerTestRule =
-            new AccountManagerTestRule();
+    private static final SigninTestRule sSigninTestRule = new SigninTestRule();
 
     /**
      * Sets up the test account and signs in.
      */
     @CalledByNative
     private static void setUpAccountAndSignInForTesting() {
-        sAccountManagerTestRule.waitForSeeding();
-        sAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        sSigninTestRule.waitForSeeding();
+        sSigninTestRule.addTestAccountThenSigninAndEnableSync();
     }
 
     /**
@@ -28,7 +27,7 @@ final class SyncTestSigninUtils {
      */
     @CalledByNative
     private static void setUpAuthForTesting() {
-        sAccountManagerTestRule.setUpRule();
+        sSigninTestRule.setUpRule();
     }
 
     /**
@@ -37,6 +36,6 @@ final class SyncTestSigninUtils {
     @CalledByNative
     private static void tearDownAuthForTesting() {
         // The seeded account is removed automatically when user signs out
-        sAccountManagerTestRule.tearDownRule();
+        sSigninTestRule.tearDownRule();
     }
 }

@@ -38,7 +38,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -74,7 +74,7 @@ public class SigninPromoControllerRenderTest {
                     .build();
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -180,7 +180,7 @@ public class SigninPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testBookmarkSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
                 R.layout.personalized_signin_promo_view_bookmarks);
@@ -195,7 +195,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testBookmarkSyncPromoViewSignedOutAndAccountAvailableWithIllustration() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
                 R.layout.personalized_signin_promo_view_bookmarks);
@@ -211,7 +211,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testBookmarkSyncPromoViewSignedOutAndAccountAvailableWithSingleButton() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
                 R.layout.personalized_signin_promo_view_bookmarks);
@@ -227,7 +227,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testBookmarkSyncPromoViewSignedOutAndAccountAvailableWithTitle() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
                 R.layout.personalized_signin_promo_view_bookmarks);
@@ -238,8 +238,7 @@ public class SigninPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testBookmarkSyncPromoViewSignedInAndNotSyncing() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
@@ -255,8 +254,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testBookmarkSyncPromoViewSignedInAndNotSyncingWithIllustration() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
@@ -272,8 +270,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testBookmarkSyncPromoViewSignedInAndNotSyncingWithSingleButton() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
@@ -289,8 +286,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testBookmarkSyncPromoViewSignedInAndNotSyncingWithTitle() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
@@ -389,7 +385,7 @@ public class SigninPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testSettingsSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
                 R.layout.personalized_signin_promo_view_settings);
@@ -405,7 +401,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testSettingsSyncPromoViewSignedOutAndAccountAvailableWithAlternativeTitle() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
                 R.layout.personalized_signin_promo_view_settings);
@@ -421,7 +417,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testSettingsSyncPromoViewSignedOutAndAccountAvailableWithIllustration() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
                 R.layout.personalized_signin_promo_view_settings);
@@ -437,7 +433,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testSettingsSyncPromoViewSignedOutAndAccountAvailableWithSingleButton() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
                 R.layout.personalized_signin_promo_view_settings);
@@ -453,7 +449,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testSettingsSyncPromoViewSignedOutAndAccountAvailableWithTitle() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
                 R.layout.personalized_signin_promo_view_settings);
@@ -464,8 +460,7 @@ public class SigninPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testSettingsSyncPromoViewSignedInAndNotSyncing() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
@@ -482,8 +477,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testSettingsSyncPromoViewSignedInAndNotSyncingWithAlternativeTitle() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
@@ -500,8 +494,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testSettingsSyncPromoViewSignedInAndNotSyncingWithIllustration() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
@@ -517,8 +510,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testSettingsSyncPromoViewSignedInAndNotSyncingWithSingleButton() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
@@ -534,8 +526,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testSettingsSyncPromoViewSignedInAndNotSyncingWithTitle() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
@@ -635,7 +626,7 @@ public class SigninPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testRecentTabsSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
                 R.layout.personalized_signin_promo_view_recent_tabs);
@@ -652,7 +643,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testRecentTabsSyncPromoViewSignedOutAndAccountAvailableWithAlternativeTitle() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
                 R.layout.personalized_signin_promo_view_recent_tabs);
@@ -668,7 +659,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testRecentTabsSyncPromoViewSignedOutAndAccountAvailableWithIllustration() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
                 R.layout.personalized_signin_promo_view_recent_tabs);
@@ -684,7 +675,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testRecentTabsSyncPromoViewSignedOutAndAccountAvailableWithSingleButton() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
                 R.layout.personalized_signin_promo_view_recent_tabs);
@@ -700,7 +691,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testRecentTabsSyncPromoViewSignedOutAndAccountAvailableWithTitle() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
                 R.layout.personalized_signin_promo_view_recent_tabs);
@@ -712,8 +703,7 @@ public class SigninPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testRecentTabsSyncPromoViewSignedInAndNotSyncing() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
@@ -730,8 +720,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testRecentTabsSyncPromoViewSignedInAndNotSyncingWithAlternativeTitle() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
@@ -748,8 +737,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testRecentTabsSyncPromoViewSignedInAndNotSyncingWithIllustration() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
@@ -766,8 +754,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testRecentTabsSyncPromoViewSignedInAndNotSyncingWithSingleButton() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
@@ -784,8 +771,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testRecentTabsSyncPromoViewSignedInAndNotSyncingWithTitle() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
@@ -884,7 +870,7 @@ public class SigninPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testNTPSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,
                 R.layout.personalized_signin_promo_view_modern_content_suggestions);
@@ -901,7 +887,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testNTPSyncPromoViewSignedOutAndAccountAvailableWithAlternativeTitle() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,
                 R.layout.personalized_signin_promo_view_modern_content_suggestions);
@@ -917,7 +903,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testNTPSyncPromoViewSignedOutAndAccountAvailableWithIllustration() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,
                 R.layout.personalized_signin_promo_view_modern_content_suggestions);
@@ -933,7 +919,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testNTPSyncPromoViewSignedOutAndAccountAvailableWithSingleButton() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,
                 R.layout.personalized_signin_promo_view_modern_content_suggestions);
@@ -949,7 +935,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testNTPSyncPromoViewSignedOutAndAccountAvailableWithTitle() throws Throwable {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,
                 R.layout.personalized_signin_promo_view_modern_content_suggestions);
@@ -961,8 +947,7 @@ public class SigninPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testNTPSyncPromoViewSignedInAndNotSyncing() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,
@@ -980,8 +965,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testNTPSyncPromoViewSignedInAndNotSyncingWithAlternativeTitle() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,
@@ -998,8 +982,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testNTPSyncPromoViewSignedInAndNotSyncingWithIllustration() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,
@@ -1016,8 +999,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testNTPSyncPromoViewSignedInAndNotSyncingWithSingleButton() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,
@@ -1034,8 +1016,7 @@ public class SigninPromoControllerRenderTest {
     })
     public void
     testNTPSyncPromoViewSignedInAndNotSyncingWithTitle() throws Throwable {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,

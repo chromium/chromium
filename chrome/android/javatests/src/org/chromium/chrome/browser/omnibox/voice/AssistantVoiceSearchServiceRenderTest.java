@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
@@ -61,7 +61,7 @@ public class AssistantVoiceSearchServiceRenderTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Mock
     private GSAState mGsaState;
@@ -105,7 +105,7 @@ public class AssistantVoiceSearchServiceRenderTest {
         setAssistantVoiceSearchEnabled(true);
         setColorfulMicEnabled(true);
         mActivityTestRule.startMainActivityOnBlankPage();
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(R.id.ntp_content),
@@ -124,7 +124,7 @@ public class AssistantVoiceSearchServiceRenderTest {
         setAssistantVoiceSearchEnabled(true);
         setColorfulMicEnabled(false);
         mActivityTestRule.startMainActivityOnBlankPage();
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
         // TODO(crbug.com/1291209): Add a #testAssistantMic_WithScrollableMVT test with

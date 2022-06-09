@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -62,7 +62,7 @@ public class AccountsReloadingTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
@@ -85,7 +85,7 @@ public class AccountsReloadingTest {
     @Test
     @MediumTest
     public void testRefreshTokenUpdateWhenSigninInWithoutSyncWithOneAccountOnDevice() {
-        final CoreAccountInfo account1 = mAccountManagerTestRule.addTestAccountThenSignin();
+        final CoreAccountInfo account1 = mSigninTestRule.addTestAccountThenSignin();
 
         CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 1);
         Assert.assertEquals(new HashSet<>(Arrays.asList(account1)), mObserver.mAccountsUpdated);
@@ -94,10 +94,8 @@ public class AccountsReloadingTest {
     @Test
     @MediumTest
     public void testRefreshTokenUpdateWhenDefaultAccountSignsinWithoutSync() {
-        final CoreAccountInfo account1 =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL1);
-        final CoreAccountInfo account2 =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL2);
+        final CoreAccountInfo account1 = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL1);
+        final CoreAccountInfo account2 = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL2);
         CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 0);
         Assert.assertEquals(Collections.emptySet(), mObserver.mAccountsUpdated);
 
@@ -115,10 +113,8 @@ public class AccountsReloadingTest {
     @Test
     @MediumTest
     public void testRefreshTokenUpdateWhenDefaultAccountSignsinWithSync() {
-        final CoreAccountInfo account1 =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL1);
-        final CoreAccountInfo account2 =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL2);
+        final CoreAccountInfo account1 = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL1);
+        final CoreAccountInfo account2 = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL2);
         CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 0);
         Assert.assertEquals(Collections.emptySet(), mObserver.mAccountsUpdated);
         final SyncService syncService =
@@ -138,11 +134,11 @@ public class AccountsReloadingTest {
     @Test
     @MediumTest
     public void testRefreshTokenUpdateWhenSecondaryAccountSignsInWithoutSync() {
-        final CoreAccountInfo account1 = mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        final CoreAccountInfo account1 = mSigninTestRule.addAccount(TEST_EMAIL1);
         CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 0);
         Assert.assertEquals(Collections.emptySet(), mObserver.mAccountsUpdated);
 
-        final CoreAccountInfo account2 = mAccountManagerTestRule.addTestAccountThenSignin();
+        final CoreAccountInfo account2 = mSigninTestRule.addTestAccountThenSignin();
 
         CriteriaHelper.pollUiThread(()
                                             -> mObserver.mCallCount == 2,
@@ -156,12 +152,11 @@ public class AccountsReloadingTest {
     @Test
     @MediumTest
     public void testRefreshTokenUpdateWhenSecondaryAccountSignsInWithSync() {
-        final CoreAccountInfo account1 = mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        final CoreAccountInfo account1 = mSigninTestRule.addAccount(TEST_EMAIL1);
         CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 0);
         Assert.assertEquals(Collections.emptySet(), mObserver.mAccountsUpdated);
 
-        final CoreAccountInfo account2 =
-                mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        final CoreAccountInfo account2 = mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
         CriteriaHelper.pollUiThread(()
                                             -> mObserver.mCallCount == 2,
@@ -175,13 +170,12 @@ public class AccountsReloadingTest {
     @Test
     @MediumTest
     public void testRefreshTokenUpdateWhenSignedInUserAddsNewAccount() {
-        final CoreAccountInfo account1 = mAccountManagerTestRule.addTestAccountThenSignin();
+        final CoreAccountInfo account1 = mSigninTestRule.addTestAccountThenSignin();
         CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 1);
         Assert.assertEquals(new HashSet<>(Arrays.asList(account1)), mObserver.mAccountsUpdated);
         mObserver.mAccountsUpdated.clear();
 
-        final CoreAccountInfo account2 =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL2);
+        final CoreAccountInfo account2 = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL2);
 
         CriteriaHelper.pollUiThread(()
                                             -> mObserver.mCallCount == 3,
@@ -195,14 +189,12 @@ public class AccountsReloadingTest {
     @Test
     @MediumTest
     public void testRefreshTokenUpdateWhenSignedInAndSyncUserAddsNewAccount() {
-        final CoreAccountInfo account1 =
-                mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        final CoreAccountInfo account1 = mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 1);
         Assert.assertEquals(new HashSet<>(Arrays.asList(account1)), mObserver.mAccountsUpdated);
         mObserver.mAccountsUpdated.clear();
 
-        final CoreAccountInfo account2 =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL2);
+        final CoreAccountInfo account2 = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL2);
 
         CriteriaHelper.pollUiThread(()
                                             -> mObserver.mCallCount == 3,

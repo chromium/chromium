@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.sync.ModelType;
@@ -61,7 +61,7 @@ public class ClearBrowsingDataFragmentBasicTest {
             RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -128,7 +128,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderSignedInAndSyncing() throws IOException {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         setSyncable(true);
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -154,7 +154,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderSearchHistoryLinkSignedInGoogleDSE() throws IOException {
-        mAccountManagerTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addTestAccountThenSignin();
         setSyncable(false);
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -168,7 +168,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderSearchHistoryLinkSignedInKnownNonGoogleDSE() throws IOException {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         setSyncable(false);
         configureMockSearchEngine();
         Mockito.doReturn(false).when(mMockTemplateUrlService).isDefaultSearchEngineGoogle();
@@ -186,7 +186,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderSearchHistoryLinkSignedInUnknownNonGoogleDSE() throws IOException {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         setSyncable(false);
         configureMockSearchEngine();
         Mockito.doReturn(false).when(mMockTemplateUrlService).isDefaultSearchEngineGoogle();
