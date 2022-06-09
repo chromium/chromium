@@ -629,7 +629,7 @@ ExtensionFunction::ResponseAction TerminalPrivateOpenWindowFunction::Run() {
       OpenWindow::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  const std::string* url = &crostini::GetTerminalDefaultUrl();
+  const std::string* url = &crostini::GetTerminalHomeUrl();
   bool as_tab = false;
 
   auto& data = params->data;

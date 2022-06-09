@@ -137,8 +137,7 @@ void LaunchTerminalImpl(Profile* profile,
   // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.
   // If opening a new tab, first pin home tab.
   full_restore::FullRestoreSaveHandler::GetInstance();
-  GURL home(
-      base::StrCat({chrome::kChromeUIUntrustedTerminalURL, kTerminalHomePath}));
+  GURL home(GetTerminalHomeUrl());
   Browser* browser = web_app::LaunchSystemWebAppImpl(
       profile, ash::SystemWebAppType::TERMINAL, home, params);
   if (!browser) {
@@ -163,9 +162,9 @@ void RemoveTerminalFromRegistry(PrefService* prefs) {
   apps->RemoveKey(kCrostiniTerminalSystemAppId);
 }
 
-const std::string& GetTerminalDefaultUrl() {
-  static const base::NoDestructor<std::string> url(base::StrCat(
-      {chrome::kChromeUIUntrustedTerminalURL, "html/terminal.html"}));
+const std::string& GetTerminalHomeUrl() {
+  static const base::NoDestructor<std::string> url(
+      base::StrCat({chrome::kChromeUIUntrustedTerminalURL, kTerminalHomePath}));
   return *url;
 }
 
@@ -220,10 +219,7 @@ void LaunchTerminal(Profile* profile,
 }
 
 void LaunchTerminalHome(Profile* profile, int64_t display_id) {
-  LaunchTerminalWithUrl(
-      profile, display_id,
-      GURL(base::StrCat(
-          {chrome::kChromeUIUntrustedTerminalURL, kTerminalHomePath})));
+  LaunchTerminalWithUrl(profile, display_id, GURL(GetTerminalHomeUrl()));
 }
 
 void LaunchTerminalWithUrl(Profile* profile,

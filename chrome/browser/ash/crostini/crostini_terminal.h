@@ -112,7 +112,7 @@ enum class TerminalSetting {
 // Remove Terminal app id from crostini.registry.<terminal-app-id>.
 void RemoveTerminalFromRegistry(PrefService* prefs);
 
-const std::string& GetTerminalDefaultUrl();
+const std::string& GetTerminalHomeUrl();
 
 // Generate URL to launch terminal.
 GURL GenerateTerminalURL(
