@@ -89435,6 +89435,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="52393" label="TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256"/>
 </enum>
 
+<enum name="SSLECHResult">
+  <summary>The result of a TLS connection that offered ECH</summary>
+  <int value="0" label="The connection succeeded on the initial connection"/>
+  <int value="1"
+      label="The connection failed on the initial connection, without
+             providing retry configs"/>
+  <int value="2" label="The connection succeeded after getting retry configs"/>
+  <int value="3" label="The connection failed after getting retry configs"/>
+  <int value="4"
+      label="The connection succeeded after getting a rollback signal"/>
+  <int value="5" label="The connection failed after getting a rollback signal"/>
+</enum>
+
 <enum name="SSLErrorCauses">
   <int value="0" label="CLOCK_PAST: System clock set early">
     This cause is recorded if the SSL error is CERT_DATE_INVALID and Chrome had

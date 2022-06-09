@@ -4571,6 +4571,17 @@ chromium-metrics-reviews@google.com.
   <summary>The number of push streams received over a single session.</summary>
 </histogram>
 
+<histogram name="Net.SSL.ECHResult" enum="SSLECHResult"
+    expires_after="2023-07-08">
+  <owner>davidben@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    For each TLS connection that offered Encrypted ClientHello (ECH), what was
+    the result of that connection. In particular, this measures if the recovery
+    flow was needed and, if so, whether it fixed the connection.
+  </summary>
+</histogram>
+
 <histogram name="Net.SSL_CipherSuite" enum="SSLCipherSuite"
     expires_after="never">
 <!-- expires-never: Used to keep track of the TLS ecosystem. -->
@@ -4593,11 +4604,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SSL_Connection_Error_ECH" enum="NetErrorCodes"
+    expires_after="2023-07-08">
+  <owner>davidben@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Counts of specific error codes returned when opening an SSL connection.
+    Recorded for connections to servers that advertise support for Encrypted
+    ClientHello (ECH) in DNS. (Specifically, connections where the HTTPS record
+    used included an ECHConfigList.)
+  </summary>
+</histogram>
+
 <histogram name="Net.SSL_Connection_Latency_2" units="ms" expires_after="never">
 <!-- expires-never: Used to keep track of the TLS ecosystem. -->
 
   <owner>agl@chromium.org</owner>
   <summary>Time from when the Connect() starts until it completes.</summary>
+</histogram>
+
+<histogram name="Net.SSL_Connection_Latency_ECH" units="ms"
+    expires_after="2023-07-08">
+  <owner>davidben@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Time from when the Connect() starts until it completes. Recorded for
+    successful connections to servers that advertise support for Encrypted
+    ClientHello (ECH) in DNS. (Specifically, connects where the HTTPS record
+    used included an ECHConfigList.)
+  </summary>
 </histogram>
 
 <histogram name="Net.SSL_KeyExchange.ECDHE" enum="ECDHECurves"
