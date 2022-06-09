@@ -493,7 +493,7 @@ class NET_EXPORT SpdySessionPool
   SpdySessionRequestMap spdy_session_request_map_;
 
   TimeFunc time_func_;
-  raw_ptr<ServerPushDelegate> push_delegate_;
+  raw_ptr<ServerPushDelegate> push_delegate_ = nullptr;
 
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
 

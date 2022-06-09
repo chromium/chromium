@@ -219,8 +219,7 @@ class NetworkChangeNotifier::ObserverList {
                 base::ObserverListPolicy::EXISTING_ONLY)),
         default_network_active_observer_list_(
             new base::ObserverListThreadSafe<DefaultNetworkActiveObserver>(
-                base::ObserverListPolicy::EXISTING_ONLY)),
-        connection_cost_observers_added_(false) {}
+                base::ObserverListPolicy::EXISTING_ONLY)) {}
 
   ObserverList(const ObserverList&) = delete;
   ObserverList& operator=(const ObserverList&) = delete;
@@ -254,7 +253,7 @@ class NetworkChangeNotifier::ObserverList {
   // Indicates if connection cost observer was added before
   // network_change_notifier was initialized, if so ConnectionCostObserverAdded
   // is invoked from constructor.
-  std::atomic_bool connection_cost_observers_added_;
+  std::atomic_bool connection_cost_observers_added_ = false;
 };
 
 class NetworkChangeNotifier::SystemDnsConfigObserver

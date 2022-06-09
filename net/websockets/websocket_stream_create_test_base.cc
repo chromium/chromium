@@ -92,8 +92,7 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
   base::OnceClosure done_callback_;
 };
 
-WebSocketStreamCreateTestBase::WebSocketStreamCreateTestBase()
-    : url_request_(nullptr) {}
+WebSocketStreamCreateTestBase::WebSocketStreamCreateTestBase() = default;
 
 WebSocketStreamCreateTestBase::~WebSocketStreamCreateTestBase() = default;
 

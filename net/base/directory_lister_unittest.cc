@@ -35,8 +35,7 @@ const int kFilesPerDirectory = 5;
 
 class ListerDelegate : public DirectoryLister::DirectoryListerDelegate {
  public:
-  explicit ListerDelegate(DirectoryLister::ListingType type)
-      : lister_(nullptr), type_(type) {}
+  explicit ListerDelegate(DirectoryLister::ListingType type) : type_(type) {}
 
   // When set to true, this signals that the directory list operation should be
   // cancelled (And the run loop quit) in the first call to OnListFile.
@@ -113,7 +112,7 @@ class ListerDelegate : public DirectoryLister::DirectoryListerDelegate {
   bool cancel_lister_on_list_done_ = false;
 
   // This is owned by the individual tests, rather than the ListerDelegate.
-  raw_ptr<DirectoryLister> lister_;
+  raw_ptr<DirectoryLister> lister_ = nullptr;
 
   base::RunLoop run_loop;
 

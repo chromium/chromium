@@ -290,7 +290,7 @@ class ReportingTestBase : public TestWithTaskEnvironment {
   base::SimpleTestClock clock_;
   base::SimpleTestTickClock tick_clock_;
   std::unique_ptr<TestReportingContext> context_;
-  raw_ptr<ReportingCache::PersistentReportingStore> store_;
+  raw_ptr<ReportingCache::PersistentReportingStore> store_ = nullptr;
 };
 
 class TestReportingService : public ReportingService {

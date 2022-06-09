@@ -84,7 +84,6 @@ URLFetcherCore::URLFetcherCore(
       delegate_(d),
       delegate_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       allow_credentials_(absl::nullopt),
-      url_request_data_key_(nullptr),
       traffic_annotation_(traffic_annotation) {
   CHECK(original_url_.is_valid());
 }

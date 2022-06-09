@@ -80,7 +80,7 @@ class URLRequestFailedJob : public URLRequestJob {
   HttpResponseInfo response_info_;
   const FailurePhase phase_;
   const int net_error_;
-  int64_t total_received_bytes_;
+  int64_t total_received_bytes_ = 0;
 
   base::WeakPtrFactory<URLRequestFailedJob> weak_factory_{this};
 };

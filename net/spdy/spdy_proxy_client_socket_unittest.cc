@@ -219,8 +219,7 @@ class SpdyProxyClientSocketTest : public PlatformTest,
 };
 
 SpdyProxyClientSocketTest::SpdyProxyClientSocketTest()
-    : read_buf_(nullptr),
-      connect_data_(SYNCHRONOUS, OK),
+    : connect_data_(SYNCHRONOUS, OK),
       user_agent_(kUserAgent),
       url_(kRequestUrl),
       proxy_host_port_(kProxyHost, kProxyPort),

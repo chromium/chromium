@@ -86,8 +86,8 @@ class NET_EXPORT_PRIVATE BidirectionalStreamQuicImpl
   const std::unique_ptr<QuicChromiumClientSession::Handle> session_;
   std::unique_ptr<QuicChromiumClientStream::Handle> stream_;
 
-  raw_ptr<const BidirectionalStreamRequestInfo> request_info_;
-  raw_ptr<BidirectionalStreamImpl::Delegate> delegate_;
+  raw_ptr<const BidirectionalStreamRequestInfo> request_info_ = nullptr;
+  raw_ptr<BidirectionalStreamImpl::Delegate> delegate_ = nullptr;
   // Saves the response status if the stream is explicitly closed via OnError
   // or OnClose with an error. Once all buffered data has been returned, this
   // will be used as the final response.

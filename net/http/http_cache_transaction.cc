@@ -161,13 +161,7 @@ static bool HeaderMatches(const HttpRequestHeaders& headers,
 //-----------------------------------------------------------------------------
 
 HttpCache::Transaction::Transaction(RequestPriority priority, HttpCache* cache)
-    : initial_request_(nullptr),
-      request_(nullptr),
-      priority_(priority),
-      cache_(cache->GetWeakPtr()),
-      entry_(nullptr),
-      new_response_(nullptr),
-      websocket_handshake_stream_base_create_helper_(nullptr) {
+    : priority_(priority), cache_(cache->GetWeakPtr()) {
   TRACE_EVENT1("net", "HttpCacheTransaction::Transaction", "priority",
                RequestPriorityToString(priority));
   static_assert(HttpCache::Transaction::kNumValidationHeaders ==

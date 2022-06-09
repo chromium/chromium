@@ -229,8 +229,6 @@ URLRequestHttpJob::URLRequestHttpJob(
     URLRequest* request,
     const HttpUserAgentSettings* http_user_agent_settings)
     : URLRequestJob(request),
-      response_info_(nullptr),
-      throttling_entry_(nullptr),
       http_user_agent_settings_(http_user_agent_settings) {
   URLRequestThrottlerManager* manager = request->context()->throttler_manager();
   if (manager)

@@ -521,7 +521,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   raw_ptr<HostResolver> host_resolver_;
   raw_ptr<ClientSocketFactory> client_socket_factory_;
   raw_ptr<HttpServerProperties> http_server_properties_;
-  raw_ptr<ServerPushDelegate> push_delegate_;
+  raw_ptr<ServerPushDelegate> push_delegate_ = nullptr;
   const raw_ptr<CertVerifier> cert_verifier_;
   const raw_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
   const raw_ptr<TransportSecurityState> transport_security_state_;
@@ -608,9 +608,9 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
 
   QuicConnectivityMonitor connectivity_monitor_;
 
-  raw_ptr<const base::TickClock> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
 
-  raw_ptr<base::SequencedTaskRunner> task_runner_;
+  raw_ptr<base::SequencedTaskRunner> task_runner_ = nullptr;
 
   const raw_ptr<SSLConfigService> ssl_config_service_;
 

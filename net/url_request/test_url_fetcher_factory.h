@@ -213,7 +213,7 @@ class TestURLFetcher : public URLFetcher {
   const int id_;
   const GURL original_url_;
   raw_ptr<URLFetcherDelegate> delegate_;
-  raw_ptr<DelegateForTests> delegate_for_tests_;
+  raw_ptr<DelegateForTests> delegate_for_tests_ = nullptr;
   std::string upload_content_type_;
   std::string upload_data_;
   base::FilePath upload_file_path_;

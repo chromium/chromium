@@ -35,8 +35,6 @@ static bool CalculateReachability(SCNetworkConnectionFlags flags) {
 
 NetworkChangeNotifierMac::NetworkChangeNotifierMac()
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsMac()),
-      connection_type_(CONNECTION_UNKNOWN),
-      connection_type_initialized_(false),
       initial_connection_type_cv_(&connection_type_lock_),
       forwarder_(this) {
   // Must be initialized after the rest of this object, as it may call back into

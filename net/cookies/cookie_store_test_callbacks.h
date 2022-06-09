@@ -54,7 +54,7 @@ class CookieCallback {
   raw_ptr<base::Thread> run_in_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> run_in_task_runner_;
   base::RunLoop loop_to_quit_;
-  bool was_run_;
+  bool was_run_ = false;
 };
 
 // Callback implementations for the asynchronous CookieStore methods.

@@ -410,9 +410,7 @@ class MockDnsTransactionFactory::MockTransaction
                   SecureDnsMode secure_dns_mode,
                   ResolveContext* resolve_context,
                   bool fast_timeout)
-      : result_(MockDnsClientRule::ResultType::kFail),
-        hostname_(std::move(hostname)),
-        qtype_(qtype) {
+      : hostname_(std::move(hostname)), qtype_(qtype) {
     // Do not allow matching any rules if transaction is secure and no DoH
     // servers are available.
     if (!secure || force_doh_server_available ||
@@ -581,7 +579,7 @@ class MockDnsTransactionFactory::MockTransaction
 
   void SetRequestPriority(RequestPriority priority) override {}
 
-  MockDnsClientRule::Result result_;
+  MockDnsClientRule::Result result_{MockDnsClientRule::ResultType::kFail};
   const std::string hostname_;
   const uint16_t qtype_;
   ResponseCallback callback_;

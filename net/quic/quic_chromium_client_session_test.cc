@@ -138,7 +138,6 @@ class QuicChromiumClientSessionTest
         socket_data_(
             new SequencedSocketData(base::make_span(default_read_.get(), 1),
                                     base::span<MockWrite>())),
-        random_(0),
         helper_(&clock_, &random_),
         transport_security_state_(std::make_unique<TransportSecurityState>()),
         session_key_(kServerHostname,
@@ -297,7 +296,7 @@ class QuicChromiumClientSessionTest
   std::unique_ptr<MockRead> default_read_;
   std::unique_ptr<SequencedSocketData> socket_data_;
   quic::MockClock clock_;
-  quic::test::MockRandom random_;
+  quic::test::MockRandom random_{0};
   QuicChromiumConnectionHelper helper_;
   quic::test::MockAlarmFactory alarm_factory_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;

@@ -176,7 +176,7 @@ class NET_EXPORT DrainableIOBuffer : public IOBuffer {
 
   scoped_refptr<IOBuffer> base_;
   int size_;
-  int used_;
+  int used_ = 0;
 };
 
 // This version provides a resizable buffer and a changeable offset.

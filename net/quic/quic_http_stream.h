@@ -160,20 +160,20 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
 
   // The request to send.
   // Only valid before the response body is read.
-  raw_ptr<const HttpRequestInfo> request_info_;
+  raw_ptr<const HttpRequestInfo> request_info_ = nullptr;
 
   // Whether this request can be sent without confirmation.
   bool can_send_early_ = false;
 
   // The request body to send, if any, owned by the caller.
-  raw_ptr<UploadDataStream> request_body_stream_;
+  raw_ptr<UploadDataStream> request_body_stream_ = nullptr;
   // Time the request was issued.
   base::Time request_time_;
   // The priority of the request.
   RequestPriority priority_ = MINIMUM_PRIORITY;
   // |response_info_| is the HTTP response data object which is filled in
   // when a the response headers are read.  It is not owned by this stream.
-  raw_ptr<HttpResponseInfo> response_info_;
+  raw_ptr<HttpResponseInfo> response_info_ = nullptr;
   bool has_response_status_ = false;  // true if response_status_ as been set.
   // Because response data is buffered, also buffer the response status if the
   // stream is explicitly closed via OnError or OnClose with an error.

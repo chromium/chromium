@@ -21,9 +21,7 @@
 namespace net {
 
 ClientSocketHandle::ClientSocketHandle()
-    : pool_(nullptr),
-      higher_pool_(nullptr),
-      resolve_error_info_(ResolveErrorInfo(OK)) {}
+    : resolve_error_info_(ResolveErrorInfo(OK)) {}
 
 ClientSocketHandle::~ClientSocketHandle() {
   Reset();

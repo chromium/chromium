@@ -630,7 +630,6 @@ const HostCache::EntryStaleness HostCache::kNotStale = {base::Seconds(-1), 0,
 
 HostCache::HostCache(size_t max_entries)
     : max_entries_(max_entries),
-      delegate_(nullptr),
       tick_clock_(base::DefaultTickClock::GetInstance()) {}
 
 HostCache::~HostCache() {

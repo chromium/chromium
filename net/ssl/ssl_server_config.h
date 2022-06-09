@@ -40,8 +40,8 @@ struct NET_EXPORT SSLServerConfig {
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined in ssl_config.h)
   // SSL 2.0 and SSL 3.0 are not supported. If version_max < version_min, it
   // means no protocol versions are enabled.
-  uint16_t version_min;
-  uint16_t version_max;
+  uint16_t version_min = kDefaultSSLVersionMin;
+  uint16_t version_max = kDefaultSSLVersionMax;
 
   // Whether early data is enabled on this connection. The caller is obligated
   // to reject early data that is non-safe to be replayed.
@@ -101,7 +101,7 @@ struct NET_EXPORT SSLServerConfig {
   // and must outlive any sockets spawned from this SSLServerContext.
   // This field is meaningful only if client certificates are requested.
   // If a verifier is not provided then all certificates are accepted.
-  raw_ptr<ClientCertVerifier> client_cert_verifier;
+  raw_ptr<ClientCertVerifier> client_cert_verifier = nullptr;
 
   // The list of application level protocols supported with ALPN (Application
   // Layer Protocol Negotiation), in decreasing order of preference.  Protocols

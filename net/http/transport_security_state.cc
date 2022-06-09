@@ -404,10 +404,7 @@ TransportSecurityState::TransportSecurityState()
 
 TransportSecurityState::TransportSecurityState(
     std::vector<std::string> hsts_host_bypass_list)
-    : enable_static_pins_(true),
-      enable_static_expect_ct_(true),
-      enable_pkp_bypass_for_local_trust_anchors_(true),
-      sent_hpkp_reports_cache_(kMaxReportCacheEntries),
+    : sent_hpkp_reports_cache_(kMaxReportCacheEntries),
       sent_expect_ct_reports_cache_(kMaxReportCacheEntries),
       key_expect_ct_by_nik_(base::FeatureList::IsEnabled(
           features::kPartitionExpectCTStateByNetworkIsolationKey)) {

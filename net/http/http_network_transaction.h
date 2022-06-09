@@ -328,7 +328,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   NetLogWithSource net_log_;
 
   // Reset to null at the start of the Read state machine.
-  raw_ptr<const HttpRequestInfo> request_;
+  raw_ptr<const HttpRequestInfo> request_ = nullptr;
 
   // The requested URL.
   GURL url_;

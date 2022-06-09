@@ -94,12 +94,12 @@ class StorageBlock : public FileBlock {
   void DeleteData();
   uint32_t CalculateHash() const;
 
-  raw_ptr<T> data_;
+  raw_ptr<T> data_ = nullptr;
   raw_ptr<MappedFile> file_;
   Addr address_;
   bool modified_ = false;
-  bool own_data_ =
-      false;  // Is data_ owned by this object or shared with someone else.
+  // Is data_ owned by this object or shared with someone else.
+  bool own_data_ = false;
   bool extended_ = false;  // Used to store an entry of more than one block.
 };
 

@@ -210,22 +210,22 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   CompletionOnceCallback write_callback_;
 
   // The next state for the Connect() state machine.
-  ConnectState next_connect_state_;
+  ConnectState next_connect_state_ = CONNECT_STATE_NONE;
 
   // This socket was previously disconnected and has not been re-connected.
-  bool previously_disconnected_;
+  bool previously_disconnected_ = false;
 
   // Total number of bytes received by the socket.
-  int64_t total_received_bytes_;
+  int64_t total_received_bytes_ = 0;
 
   BeforeConnectCallback before_connect_callback_;
 
-  bool was_ever_used_;
+  bool was_ever_used_ = false;
 
   // Set to true if the socket was disconnected due to entering suspend mode.
   // Once set, read/write operations return ERR_NETWORK_IO_SUSPENDED, until
   // Connect() or Disconnect() is called.
-  bool was_disconnected_on_suspend_;
+  bool was_disconnected_on_suspend_ = false;
 
   // The time when the latest connect attempt was started.
   absl::optional<base::TimeTicks> start_connect_attempt_;

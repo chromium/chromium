@@ -85,7 +85,6 @@ BidirectionalStream::BidirectionalStream(
                                       NetLogSourceType::BIDIRECTIONAL_STREAM)),
       session_(session),
       send_request_headers_automatically_(send_request_headers_automatically),
-      request_headers_sent_(false),
       delegate_(delegate),
       timer_(std::move(timer)) {
   DCHECK(delegate_);

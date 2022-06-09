@@ -11,11 +11,11 @@ namespace net {
 
 namespace der {
 
-Parser::Parser() : advance_len_(0) {
+Parser::Parser() {
   CBS_init(&cbs_, nullptr, 0);
 }
 
-Parser::Parser(const Input& input) : advance_len_(0) {
+Parser::Parser(const Input& input) {
   CBS_init(&cbs_, input.UnsafeData(), input.Length());
 }
 

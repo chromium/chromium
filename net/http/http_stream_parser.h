@@ -246,7 +246,7 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   // cannot be safely accessed after reading the final set of headers, as the
   // caller of SendRequest may have been destroyed - this happens in the case an
   // HttpResponseBodyDrainer is used.
-  raw_ptr<HttpResponseInfo> response_;
+  raw_ptr<HttpResponseInfo> response_ = nullptr;
 
   // Time at which the first bytes of the first header response including
   // informational responses (1xx) are about to be parsed. This corresponds to

@@ -15,10 +15,7 @@ namespace net {
 
 FuzzedServerSocket::FuzzedServerSocket(FuzzedDataProvider* data_provider,
                                        net::NetLog* net_log)
-    : data_provider_(data_provider),
-      net_log_(net_log),
-      first_accept_(true),
-      listen_called_(false) {}
+    : data_provider_(data_provider), net_log_(net_log) {}
 
 FuzzedServerSocket::~FuzzedServerSocket() = default;
 

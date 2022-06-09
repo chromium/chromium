@@ -81,18 +81,12 @@ void QuicChromiumPacketWriter::ReusableIOBuffer::Set(const char* buffer,
   std::memcpy(data(), buffer, buf_len);
 }
 
-QuicChromiumPacketWriter::QuicChromiumPacketWriter() {}
-
 QuicChromiumPacketWriter::QuicChromiumPacketWriter(
     DatagramClientSocket* socket,
     base::SequencedTaskRunner* task_runner)
     : socket_(socket),
-      delegate_(nullptr),
-      packet_(
-          base::MakeRefCounted<ReusableIOBuffer>(quic::kMaxOutgoingPacketSize)),
-      write_in_progress_(false),
-      force_write_blocked_(false),
-      retry_count_(0) {
+      packet_(base::MakeRefCounted<ReusableIOBuffer>(
+          quic::kMaxOutgoingPacketSize)) {
   retry_timer_.SetTaskRunner(task_runner);
   write_callback_ = base::BindRepeating(
       &QuicChromiumPacketWriter::OnWriteComplete, weak_factory_.GetWeakPtr());

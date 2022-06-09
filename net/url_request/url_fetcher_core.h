@@ -265,7 +265,7 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
                                      // Cookie/cache info for the request
   absl::optional<url::Origin> initiator_;  // The request's initiator
   // The user data to add to each newly-created URLRequest.
-  raw_ptr<const void> url_request_data_key_;
+  raw_ptr<const void> url_request_data_key_ = nullptr;
   URLFetcher::CreateDataCallback url_request_create_data_callback_;
   HttpRequestHeaders extra_request_headers_;
   scoped_refptr<HttpResponseHeaders> response_headers_;

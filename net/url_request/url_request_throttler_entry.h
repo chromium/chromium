@@ -141,7 +141,7 @@ class NET_EXPORT URLRequestThrottlerEntry
   const int max_send_threshold_;
 
   // True if DisableBackoffThrottling() has been called on this object.
-  bool is_backoff_disabled_;
+  bool is_backoff_disabled_ = false;
 
   // Access it through GetBackoffEntry() to allow a unit test seam.
   BackoffEntry backoff_entry_;

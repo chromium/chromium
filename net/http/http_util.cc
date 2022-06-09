@@ -917,12 +917,10 @@ HttpUtil::NameValuePairsIterator::NameValuePairsIterator(
     Values optional_values,
     Quotes strict_quotes)
     : props_(begin, end, delimiter),
-      valid_(true),
       name_begin_(end),
       name_end_(end),
       value_begin_(end),
       value_end_(end),
-      value_is_quoted_(false),
       values_optional_(optional_values == Values::NOT_REQUIRED),
       strict_quotes_(strict_quotes == Quotes::STRICT_QUOTES) {}
 

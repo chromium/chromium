@@ -234,7 +234,7 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
   bool send_request_headers_automatically_;
   // Whether request headers have been sent, as indicated in OnStreamReady()
   // callback.
-  bool request_headers_sent_;
+  bool request_headers_sent_ = false;
 
   const raw_ptr<Delegate> delegate_;
 

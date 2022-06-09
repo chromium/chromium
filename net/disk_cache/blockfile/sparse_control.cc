@@ -202,7 +202,6 @@ namespace disk_cache {
 
 SparseControl::SparseControl(EntryImpl* entry)
     : entry_(entry),
-      child_(nullptr),
       child_map_(child_data_.bitmap, kNumSparseBits, kNumSparseBits / 32) {
   memset(&sparse_header_, 0, sizeof(sparse_header_));
   memset(&child_data_, 0, sizeof(child_data_));

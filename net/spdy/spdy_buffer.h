@@ -100,7 +100,7 @@ class NET_EXPORT_PRIVATE SpdyBuffer {
 
   const scoped_refptr<SharedFrame> shared_frame_;
   std::vector<ConsumeCallback> consume_callbacks_;
-  size_t offset_;
+  size_t offset_ = 0;
 };
 
 }  // namespace net

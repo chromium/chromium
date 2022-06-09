@@ -189,7 +189,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
 
   CertVerifier::Config config_;
   std::unique_ptr<net::URLRequestContext> context_;
-  raw_ptr<MockSystemTrustStore> mock_system_trust_store_;
+  raw_ptr<MockSystemTrustStore> mock_system_trust_store_ = nullptr;
   scoped_refptr<CertVerifyProc> verify_proc_;
   scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
 };

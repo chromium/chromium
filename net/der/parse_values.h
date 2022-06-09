@@ -53,7 +53,7 @@ namespace der {
 // * There may be at most 7 unused bits.
 class NET_EXPORT BitString {
  public:
-  BitString() : unused_bits_(0) {}
+  BitString() = default;
 
   // |unused_bits| represents the number of bits in the last octet of |bytes|,
   // starting from the least significant bit, that are unused. It MUST be < 8.
@@ -73,7 +73,7 @@ class NET_EXPORT BitString {
 
  private:
   Input bytes_;
-  uint8_t unused_bits_;
+  uint8_t unused_bits_ = 0;
 
   // Default assignment and copy constructor are OK.
 };

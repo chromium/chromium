@@ -205,7 +205,7 @@ class NET_EXPORT Parser {
 
  private:
   CBS cbs_;
-  size_t advance_len_;
+  size_t advance_len_ = 0;
 };
 
 }  // namespace der

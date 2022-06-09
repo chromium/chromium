@@ -779,13 +779,13 @@ class NET_EXPORT TransportSecurityState {
   raw_ptr<ReportSenderInterface> report_sender_ = nullptr;
 
   // True if static pins should be used.
-  bool enable_static_pins_;
+  bool enable_static_pins_ = true;
 
   // True if static expect-CT state should be used.
-  bool enable_static_expect_ct_;
+  bool enable_static_expect_ct_ = true;
 
   // True if public key pinning bypass is enabled for local trust anchors.
-  bool enable_pkp_bypass_for_local_trust_anchors_;
+  bool enable_pkp_bypass_for_local_trust_anchors_ = true;
 
   raw_ptr<ExpectCTReporter> expect_ct_reporter_ = nullptr;
 

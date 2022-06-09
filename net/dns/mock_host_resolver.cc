@@ -421,10 +421,7 @@ class MockHostResolverBase::MdnsListenerImpl
   MdnsListenerImpl(const HostPortPair& host,
                    DnsQueryType query_type,
                    base::WeakPtr<MockHostResolverBase> resolver)
-      : host_(host),
-        query_type_(query_type),
-        delegate_(nullptr),
-        resolver_(resolver) {
+      : host_(host), query_type_(query_type), resolver_(resolver) {
     DCHECK_NE(DnsQueryType::UNSPECIFIED, query_type_);
     DCHECK(resolver_);
   }
@@ -471,7 +468,7 @@ class MockHostResolverBase::MdnsListenerImpl
   const HostPortPair host_;
   const DnsQueryType query_type_;
 
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   // Use a WeakPtr as the resolver may be destroyed while there are still
   // outstanding listener objects.

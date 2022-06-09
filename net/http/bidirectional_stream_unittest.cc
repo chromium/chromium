@@ -104,16 +104,7 @@ class TestDelegateBase : public BidirectionalStream::Delegate {
                    std::unique_ptr<base::OneShotTimer> timer)
       : read_buf_(read_buf),
         read_buf_len_(read_buf_len),
-        timer_(std::move(timer)),
-        loop_(nullptr),
-        received_bytes_(0),
-        sent_bytes_(0),
-        error_(OK),
-        on_data_read_count_(0),
-        on_data_sent_count_(0),
-        do_not_start_read_(false),
-        run_until_completion_(false),
-        not_expect_callback_(false) {}
+        timer_(std::move(timer)) {}
 
   TestDelegateBase(const TestDelegateBase&) = delete;
   TestDelegateBase& operator=(const TestDelegateBase&) = delete;
@@ -298,17 +289,17 @@ class TestDelegateBase : public BidirectionalStream::Delegate {
   spdy::Http2HeaderBlock response_headers_;
   spdy::Http2HeaderBlock trailers_;
   NextProto next_proto_;
-  int64_t received_bytes_;
-  int64_t sent_bytes_;
+  int64_t received_bytes_ = 0;
+  int64_t sent_bytes_ = 0;
   LoadTimingInfo load_timing_info_;
-  int error_;
-  int on_data_read_count_;
-  int on_data_sent_count_;
-  bool do_not_start_read_;
-  bool run_until_completion_;
+  int error_ = OK;
+  int on_data_read_count_ = 0;
+  int on_data_sent_count_ = 0;
+  bool do_not_start_read_ = false;
+  bool run_until_completion_ = false;
   // This is to ensure that delegate callback is not invoked synchronously when
   // calling into |stream_|.
-  bool not_expect_callback_;
+  bool not_expect_callback_ = false;
 
   CompletionOnceCallback callback_;
 };

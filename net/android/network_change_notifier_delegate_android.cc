@@ -94,8 +94,7 @@ NetworkChangeNotifierDelegateAndroid::NetworkChangeNotifierDelegateAndroid()
       // TODO(crbug.com/1042122): Remove once Cronet drops Kitkat support.
       is_default_network_active_api_supported_(
           base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SDK_VERSION_LOLLIPOP),
-      default_network_active_observers_(0) {
+          base::android::SDK_VERSION_LOLLIPOP) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NetworkChangeNotifier_addNativeObserver(
       env, java_network_change_notifier_, reinterpret_cast<intptr_t>(this));

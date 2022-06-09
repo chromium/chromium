@@ -592,11 +592,11 @@ class SequencedSocketData : public SocketDataProvider {
 
   StaticSocketDataHelper helper_;
   raw_ptr<SocketDataPrinter> printer_ = nullptr;
-  int sequence_number_;
-  IoState read_state_;
-  IoState write_state_;
+  int sequence_number_ = 0;
+  IoState read_state_ = IoState::kIdle;
+  IoState write_state_ = IoState::kIdle;
 
-  bool busy_before_sync_reads_;
+  bool busy_before_sync_reads_ = false;
 
   // Used by RunUntilPaused.  NULL at all other times.
   std::unique_ptr<base::RunLoop> run_until_paused_run_loop_;
@@ -847,7 +847,7 @@ class MockTCPClientSocket : public MockClientSocket, public AsyncSocket {
   bool peer_closed_connection_ = false;
 
   // While an asynchronous read is pending, we save our user-buffer state.
-  scoped_refptr<IOBuffer> pending_read_buf_;
+  scoped_refptr<IOBuffer> pending_read_buf_ = nullptr;
   int pending_read_buf_len_ = 0;
   CompletionOnceCallback pending_read_callback_;
 
@@ -1045,10 +1045,11 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   IPEndPoint peer_addr_;
 
   // Network that the socket is bound to.
-  NetworkChangeNotifier::NetworkHandle network_;
+  NetworkChangeNotifier::NetworkHandle network_ =
+      NetworkChangeNotifier::kInvalidNetworkHandle;
 
   // While an asynchronous IO is pending, we save our user-buffer state.
-  scoped_refptr<IOBuffer> pending_read_buf_;
+  scoped_refptr<IOBuffer> pending_read_buf_ = nullptr;
   int pending_read_buf_len_ = 0;
   CompletionOnceCallback pending_read_callback_;
   CompletionOnceCallback pending_write_callback_;

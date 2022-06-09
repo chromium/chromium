@@ -235,10 +235,7 @@ void AddEvent(NetLog* net_log) {
 // RunTestThread.
 class NetLogTestThread : public base::SimpleThread {
  public:
-  NetLogTestThread()
-      : base::SimpleThread("NetLogTest"),
-        net_log_(nullptr),
-        start_event_(nullptr) {}
+  NetLogTestThread() : base::SimpleThread("NetLogTest") {}
 
   NetLogTestThread(const NetLogTestThread&) = delete;
   NetLogTestThread& operator=(const NetLogTestThread&) = delete;
@@ -260,12 +257,12 @@ class NetLogTestThread : public base::SimpleThread {
   virtual void RunTestThread() = 0;
 
  protected:
-  raw_ptr<NetLog> net_log_;
+  raw_ptr<NetLog> net_log_ = nullptr;
 
  private:
   // Only triggered once all threads have been created, to make it less likely
   // each thread completes before the next one starts.
-  raw_ptr<base::WaitableEvent> start_event_;
+  raw_ptr<base::WaitableEvent> start_event_ = nullptr;
 };
 
 // A thread that adds a bunch of events to the NetLog.

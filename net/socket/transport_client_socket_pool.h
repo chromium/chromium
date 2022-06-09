@@ -143,7 +143,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     const absl::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag_;
     const NetLogWithSource net_log_;
     const SocketTag socket_tag_;
-    raw_ptr<ConnectJob> job_;
+    raw_ptr<ConnectJob> job_ = nullptr;
   };
 
   TransportClientSocketPool(
@@ -764,13 +764,13 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   PendingCallbackMap pending_callback_map_;
 
   // The total number of idle sockets in the system.
-  int idle_socket_count_;
+  int idle_socket_count_ = 0;
 
   // Number of connecting sockets across all groups.
-  int connecting_socket_count_;
+  int connecting_socket_count_ = 0;
 
   // Number of connected sockets we handed out across all groups.
-  int handed_out_socket_count_;
+  int handed_out_socket_count_ = 0;
 
   // The maximum total number of sockets. See ReachedMaxSocketsLimit.
   const int max_sockets_;

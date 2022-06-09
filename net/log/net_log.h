@@ -137,7 +137,7 @@ class NET_EXPORT NetLog {
 
     // Both of these values are only modified by the NetLog.
     NetLogCaptureMode capture_mode_ = NetLogCaptureMode::kDefault;
-    raw_ptr<NetLog> net_log_;
+    raw_ptr<NetLog> net_log_ = nullptr;
   };
 
   // An observer that is notified of changes in the capture mode set, and has

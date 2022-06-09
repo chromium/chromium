@@ -14,7 +14,7 @@
 
 namespace net {
 
-NetLog::ThreadSafeObserver::ThreadSafeObserver() : net_log_(nullptr) {}
+NetLog::ThreadSafeObserver::ThreadSafeObserver() = default;
 
 NetLog::ThreadSafeObserver::~ThreadSafeObserver() {
   // Make sure we aren't watching a NetLog on destruction.  Because the NetLog

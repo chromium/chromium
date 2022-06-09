@@ -116,7 +116,6 @@ HttpNetworkTransaction::HttpNetworkTransaction(RequestPriority priority,
     : io_callback_(base::BindRepeating(&HttpNetworkTransaction::OnIOComplete,
                                        base::Unretained(this))),
       session_(session),
-      request_(nullptr),
       priority_(priority) {}
 
 HttpNetworkTransaction::~HttpNetworkTransaction() {

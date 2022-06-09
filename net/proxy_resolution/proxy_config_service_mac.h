@@ -76,7 +76,7 @@ class ProxyConfigServiceMac : public ProxyConfigService {
   base::ObserverList<Observer>::Unchecked observers_;
 
   // Holds the last system proxy settings that we fetched.
-  bool has_fetched_config_;
+  bool has_fetched_config_ = false;
   ProxyConfigWithAnnotation last_config_fetched_;
 
   scoped_refptr<Helper> helper_;

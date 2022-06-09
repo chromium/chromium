@@ -353,11 +353,7 @@ SequencedSocketData::SequencedSocketData()
 
 SequencedSocketData::SequencedSocketData(base::span<const MockRead> reads,
                                          base::span<const MockWrite> writes)
-    : helper_(reads, writes),
-      sequence_number_(0),
-      read_state_(IoState::kIdle),
-      write_state_(IoState::kIdle),
-      busy_before_sync_reads_(false) {
+    : helper_(reads, writes) {
   // Check that reads and writes have a contiguous set of sequence numbers
   // starting from 0 and working their way up, with no repeats and skipping
   // no values.
@@ -939,8 +935,7 @@ MockTCPClientSocket::MockTCPClientSocket(const AddressList& addresses,
     : MockClientSocket(NetLogWithSource::Make(net_log, NetLogSourceType::NONE)),
       addresses_(addresses),
       data_(data),
-      read_data_(SYNCHRONOUS, ERR_UNEXPECTED),
-      pending_read_buf_(nullptr) {
+      read_data_(SYNCHRONOUS, ERR_UNEXPECTED) {
   DCHECK(data_);
   peer_addr_ = data->connect_data().peer_addr;
   data_->Initialize(this);
@@ -1504,8 +1499,6 @@ MockUDPClientSocket::MockUDPClientSocket(SocketDataProvider* data,
     : data_(data),
       read_data_(SYNCHRONOUS, ERR_UNEXPECTED),
       source_host_(IPAddress(192, 0, 2, 33)),
-      network_(NetworkChangeNotifier::kInvalidNetworkHandle),
-      pending_read_buf_(nullptr),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::NONE)) {
   if (data_) {
     data_->Initialize(this);

@@ -29,7 +29,6 @@ ConfiguredProxyResolutionRequest::ConfiguredProxyResolutionRequest(
       url_(url),
       method_(method),
       network_isolation_key_(network_isolation_key),
-      resolve_job_(nullptr),
       net_log_(net_log),
       creation_time_(base::TimeTicks::Now()) {
   DCHECK(!user_callback_.is_null());

@@ -94,7 +94,7 @@ class NET_EXPORT_PRIVATE DatagramBuffer {
   void Set(const char* buffer, size_t buf_len);
 
   std::unique_ptr<char[]> data_;
-  size_t length_;
+  size_t length_ = 0;
 };
 
 }  // namespace net

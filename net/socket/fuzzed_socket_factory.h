@@ -61,7 +61,7 @@ class FuzzedSocketFactory : public ClientSocketFactory {
 
  private:
   FuzzedDataProvider* data_provider_;
-  bool fuzz_connect_result_;
+  bool fuzz_connect_result_ = true;
 };
 
 }  // namespace net

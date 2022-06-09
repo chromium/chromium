@@ -14,12 +14,11 @@
 namespace net {
 
 CookieCallback::CookieCallback(base::Thread* run_in_thread)
-    : run_in_thread_(run_in_thread), was_run_(false) {}
+    : run_in_thread_(run_in_thread) {}
 
 CookieCallback::CookieCallback()
     : run_in_thread_(nullptr),
-      run_in_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      was_run_(false) {}
+      run_in_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 CookieCallback::~CookieCallback() = default;
 

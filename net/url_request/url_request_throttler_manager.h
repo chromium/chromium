@@ -141,7 +141,7 @@ class NET_EXPORT_PRIVATE URLRequestThrottlerManager
   NetLogWithSource net_log_;
 
   // Valid once we've registered for network notifications.
-  base::PlatformThreadId registered_from_thread_;
+  base::PlatformThreadId registered_from_thread_ = base::kInvalidThreadId;
 
   THREAD_CHECKER(thread_checker_);
 };

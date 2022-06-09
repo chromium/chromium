@@ -504,7 +504,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   const base::WeakPtr<SpdySession> session_;
 
   // The transaction should own the delegate.
-  raw_ptr<SpdyStream::Delegate> delegate_;
+  raw_ptr<SpdyStream::Delegate> delegate_ = nullptr;
 
   // The headers for the request to send.
   bool request_headers_valid_ = false;

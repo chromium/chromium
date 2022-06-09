@@ -19,8 +19,7 @@ class WaitTillHttpCloseDelegate : public net::HttpServer::Delegate {
  public:
   WaitTillHttpCloseDelegate(FuzzedDataProvider* data_provider,
                             base::OnceClosure done_closure)
-      : server_(nullptr),
-        data_provider_(data_provider),
+      : data_provider_(data_provider),
         done_closure_(std::move(done_closure)),
         action_flags_(data_provider_->ConsumeIntegral<uint8_t>()) {}
 
@@ -89,7 +88,7 @@ class WaitTillHttpCloseDelegate : public net::HttpServer::Delegate {
     CLOSE_WEBSOCKET_RATHER_THAN_ACCEPT = 16
   };
 
-  net::HttpServer* server_;
+  net::HttpServer* server_ = nullptr;
   FuzzedDataProvider* const data_provider_;
   base::OnceClosure done_closure_;
   const uint8_t action_flags_;

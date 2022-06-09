@@ -130,13 +130,7 @@ std::string URLRequestTestJob::test_error_headers() {
 URLRequestTestJob::URLRequestTestJob(URLRequest* request, bool auto_advance)
     : URLRequestJob(request),
       auto_advance_(auto_advance),
-      stage_(WAITING),
-      priority_(DEFAULT_PRIORITY),
-      offset_(0),
-      async_buf_(nullptr),
-      async_buf_size_(0),
-      response_headers_length_(0),
-      async_reads_(false) {}
+      response_headers_length_(0) {}
 
 URLRequestTestJob::URLRequestTestJob(URLRequest* request,
                                      const std::string& response_headers,
@@ -144,16 +138,10 @@ URLRequestTestJob::URLRequestTestJob(URLRequest* request,
                                      bool auto_advance)
     : URLRequestJob(request),
       auto_advance_(auto_advance),
-      stage_(WAITING),
-      priority_(DEFAULT_PRIORITY),
       response_data_(response_data),
-      offset_(0),
-      async_buf_(nullptr),
-      async_buf_size_(0),
       response_headers_(base::MakeRefCounted<net::HttpResponseHeaders>(
           net::HttpUtil::AssembleRawHeaders(response_headers))),
-      response_headers_length_(response_headers.size()),
-      async_reads_(false) {}
+      response_headers_length_(response_headers.size()) {}
 
 URLRequestTestJob::~URLRequestTestJob() {
   base::Erase(g_pending_jobs.Get(), this);

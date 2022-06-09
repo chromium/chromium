@@ -80,8 +80,7 @@ int DiskCacheTestWithCache::TestIterator::OpenNextEntry(
   return rv;
 }
 
-DiskCacheTestWithCache::DiskCacheTestWithCache()
-    : cache_impl_(nullptr), simple_cache_impl_(nullptr), mem_cache_(nullptr) {}
+DiskCacheTestWithCache::DiskCacheTestWithCache() = default;
 
 DiskCacheTestWithCache::~DiskCacheTestWithCache() = default;
 

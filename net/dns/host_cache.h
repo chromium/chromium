@@ -531,7 +531,7 @@ class NET_EXPORT HostCache {
   // RestoreFromListValue(). Used in histograms.
   size_t restore_size_ = 0;
 
-  raw_ptr<PersistenceDelegate> delegate_;
+  raw_ptr<PersistenceDelegate> delegate_ = nullptr;
   // Shared tick clock, overridden for testing.
   raw_ptr<const base::TickClock> tick_clock_;
 

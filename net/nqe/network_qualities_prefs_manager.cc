@@ -57,8 +57,7 @@ ParsedPrefs ConvertDictionaryValueToMap(const base::Value::Dict& value) {
 NetworkQualitiesPrefsManager::NetworkQualitiesPrefsManager(
     std::unique_ptr<PrefDelegate> pref_delegate)
     : pref_delegate_(std::move(pref_delegate)),
-      prefs_(pref_delegate_->GetDictionaryValue()),
-      network_quality_estimator_(nullptr) {
+      prefs_(pref_delegate_->GetDictionaryValue()) {
   DCHECK(pref_delegate_);
   DCHECK_GE(kMaxCacheSize, prefs_.size());
 }

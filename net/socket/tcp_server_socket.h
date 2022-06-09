@@ -71,7 +71,7 @@ class NET_EXPORT TCPServerSocket : public ServerSocket {
 
   std::unique_ptr<TCPSocket> accepted_socket_;
   IPEndPoint accepted_address_;
-  bool pending_accept_;
+  bool pending_accept_ = false;
 };
 
 }  // namespace net

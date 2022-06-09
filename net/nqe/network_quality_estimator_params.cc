@@ -446,7 +446,6 @@ NetworkQualityEstimatorParams::NetworkQualityEstimatorParams(
               params_,
               "hanging_request_http_rtt_upper_bound_http_rtt_multiplier",
               6)),
-      hanging_request_upper_bound_min_http_rtt_(base::Milliseconds(500)),
       http_rtt_transport_rtt_min_count_(
           GetValueForVariationParam(params_,
                                     "http_rtt_transport_rtt_min_count",
@@ -470,7 +469,6 @@ NetworkQualityEstimatorParams::NetworkQualityEstimatorParams(
           params_,
           "hanging_request_duration_http_rtt_multiplier",
           5)),
-      hanging_request_min_duration_(base::Milliseconds(3000)),
       add_default_platform_observations_(
           GetStringValueForVariationParamWithDefaultValue(
               params_,

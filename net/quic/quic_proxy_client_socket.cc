@@ -33,7 +33,6 @@ QuicProxyClientSocket::QuicProxyClientSocket(
     ProxyDelegate* proxy_delegate)
     : stream_(std::move(stream)),
       session_(std::move(session)),
-      read_buf_(nullptr),
       endpoint_(endpoint),
       auth_(auth_controller),
       proxy_server_(proxy_server),

@@ -418,8 +418,7 @@ GURL SanitizeUrl(const GURL& url) {
 
 class ConfiguredProxyResolutionService::InitProxyResolver {
  public:
-  InitProxyResolver()
-      : proxy_resolver_factory_(nullptr), proxy_resolver_(nullptr) {}
+  InitProxyResolver() = default;
 
   InitProxyResolver(const InitProxyResolver&) = delete;
   InitProxyResolver& operator=(const InitProxyResolver&) = delete;
@@ -600,9 +599,9 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   PacFileDataWithSource script_data_;
   base::TimeDelta wait_delay_;
   std::unique_ptr<PacFileDecider> decider_;
-  raw_ptr<ProxyResolverFactory> proxy_resolver_factory_;
+  raw_ptr<ProxyResolverFactory> proxy_resolver_factory_ = nullptr;
   std::unique_ptr<ProxyResolverFactory::Request> create_resolver_request_;
-  raw_ptr<std::unique_ptr<ProxyResolver>> proxy_resolver_;
+  raw_ptr<std::unique_ptr<ProxyResolver>> proxy_resolver_ = nullptr;
   CompletionOnceCallback callback_;
   State next_state_ = State::kNone;
   bool quick_check_enabled_ = true;

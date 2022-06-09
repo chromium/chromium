@@ -598,7 +598,7 @@ class NET_EXPORT UDPSocketPosix {
   // The buffer used by InternalRead() to retry Read requests
   scoped_refptr<IOBuffer> read_buf_;
   int read_buf_len_ = 0;
-  raw_ptr<IPEndPoint> recv_from_address_;
+  raw_ptr<IPEndPoint> recv_from_address_ = nullptr;
 
   // The buffer used by InternalWrite() to retry Write requests
   scoped_refptr<IOBuffer> write_buf_;

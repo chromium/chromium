@@ -30,12 +30,7 @@ void ReportingPolicy::UsePolicyForTesting(const ReportingPolicy& policy) {
   *owned_policy = policy;
 }
 
-ReportingPolicy::ReportingPolicy()
-    : delivery_interval(base::Minutes(1)),
-      persistence_interval(base::Minutes(1)),
-      garbage_collection_interval(base::Minutes(5)),
-      max_report_age(base::Minutes(15)),
-      max_group_staleness(base::Days(7)) {
+ReportingPolicy::ReportingPolicy() {
   endpoint_backoff_policy.num_errors_to_ignore = 0;
   endpoint_backoff_policy.initial_delay_ms = 60 * 1000;  // 1 minute
   endpoint_backoff_policy.multiply_factor = 2.0;

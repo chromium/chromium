@@ -24,7 +24,7 @@ TCPServerSocket::TCPServerSocket(NetLog* net_log, const NetLogSource& source)
                                       source)) {}
 
 TCPServerSocket::TCPServerSocket(std::unique_ptr<TCPSocket> socket)
-    : socket_(std::move(socket)), pending_accept_(false) {}
+    : socket_(std::move(socket)) {}
 
 int TCPServerSocket::AdoptSocket(SocketDescriptor socket) {
   return socket_->AdoptUnconnectedSocket(socket);

@@ -48,11 +48,9 @@ WebSocketHttp2HandshakeStream::WebSocketHttp2HandshakeStream(
     std::set<std::string> dns_aliases)
     : session_(session),
       connect_delegate_(connect_delegate),
-      http_response_info_(nullptr),
       requested_sub_protocols_(requested_sub_protocols),
       requested_extensions_(requested_extensions),
       stream_request_(request),
-      request_info_(nullptr),
       dns_aliases_(std::move(dns_aliases)) {
   DCHECK(connect_delegate);
   DCHECK(request);

@@ -167,12 +167,12 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
   FetcherVector fetchers_;
 
   // Current state of this state machine.
-  State state_;
+  State state_ = STATE_START;
 
   // The following members are associated with the latest call to Fetch().
 
   // Number of fetchers we are waiting for.
-  int num_pending_fetchers_;
+  int num_pending_fetchers_ = 0;
 
   // Lets our client know we're done. Not valid in states START or DONE.
   CompletionOnceCallback callback_;
@@ -182,7 +182,7 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
 
   // Pointer to string we will write results to. Not valid in states
   // START and DONE.
-  raw_ptr<std::u16string> destination_string_;
+  raw_ptr<std::u16string> destination_string_ = nullptr;
 
   // PAC URL retrieved from DHCP, if any. Valid only in state STATE_DONE.
   GURL pac_url_;

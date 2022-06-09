@@ -120,7 +120,7 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   // Stores the callback for Read().
   CompletionOnceCallback read_callback_;
   // Stores the read buffer pointer for Read().
-  raw_ptr<IOBuffer> read_buf_;
+  raw_ptr<IOBuffer> read_buf_ = nullptr;
   // Stores the callback for Write().
   CompletionOnceCallback write_callback_;
   // Stores the write buffer length for Write().

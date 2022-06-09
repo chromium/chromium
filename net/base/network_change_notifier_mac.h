@@ -68,8 +68,8 @@ class NetworkChangeNotifierMac: public NetworkChangeNotifier {
 
   // These must be constructed before config_watcher_ to ensure
   // the lock is in a valid state when Forwarder::Init is called.
-  ConnectionType connection_type_;
-  bool connection_type_initialized_;
+  ConnectionType connection_type_ = CONNECTION_UNKNOWN;
+  bool connection_type_initialized_ = false;
   mutable base::Lock connection_type_lock_;
   mutable base::ConditionVariable initial_connection_type_cv_;
   base::ScopedCFTypeRef<SCNetworkReachabilityRef> reachability_;

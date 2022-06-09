@@ -138,7 +138,6 @@ UDPSocketPosix::UDPSocketPosix(DatagramSocket::BindType bind_type,
       write_socket_watcher_(FROM_HERE),
       read_watcher_(this),
       write_watcher_(this),
-      recv_from_address_(nullptr),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::UDP_SOCKET)),
       bound_network_(NetworkChangeNotifier::kInvalidNetworkHandle),
       always_update_bytes_received_(base::FeatureList::IsEnabled(

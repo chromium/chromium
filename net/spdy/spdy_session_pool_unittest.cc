@@ -62,7 +62,7 @@ class SpdySessionPoolTest : public TestWithTaskEnvironment {
     SPDY_POOL_CLOSE_IDLE_SESSIONS,
   };
 
-  SpdySessionPoolTest() : spdy_session_pool_(nullptr) {}
+  SpdySessionPoolTest() = default;
 
   void CreateNetworkSession() {
     http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
@@ -91,7 +91,7 @@ class SpdySessionPoolTest : public TestWithTaskEnvironment {
 
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> http_session_;
-  raw_ptr<SpdySessionPool> spdy_session_pool_;
+  raw_ptr<SpdySessionPool> spdy_session_pool_ = nullptr;
   std::vector<std::unique_ptr<SSLSocketDataProvider>> ssl_data_vector_;
 };
 

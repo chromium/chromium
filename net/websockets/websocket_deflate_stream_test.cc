@@ -198,7 +198,7 @@ class WebSocketDeflatePredictorMock : public WebSocketDeflatePredictor {
 
 class WebSocketDeflateStreamTest : public ::testing::Test {
  public:
-  WebSocketDeflateStreamTest() : mock_stream_(nullptr), predictor_(nullptr) {}
+  WebSocketDeflateStreamTest() = default;
   ~WebSocketDeflateStreamTest() override = default;
 
   void SetUp() override {
@@ -247,9 +247,9 @@ class WebSocketDeflateStreamTest : public ::testing::Test {
 
   std::unique_ptr<WebSocketDeflateStream> deflate_stream_;
   // Owned by |deflate_stream_|.
-  raw_ptr<MockWebSocketStream> mock_stream_;
+  raw_ptr<MockWebSocketStream> mock_stream_ = nullptr;
   // Owned by |deflate_stream_|.
-  raw_ptr<WebSocketDeflatePredictorMock> predictor_;
+  raw_ptr<WebSocketDeflatePredictorMock> predictor_ = nullptr;
 
   // TODO(yoichio): Make this type std::vector<std::string>.
   std::vector<std::unique_ptr<const char[]>> data_buffers;

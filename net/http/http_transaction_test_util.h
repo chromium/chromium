@@ -33,6 +33,7 @@
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
+#include "net/log/net_log_source.h"
 #include "net/socket/connection_attempts.h"
 
 namespace net {
@@ -295,7 +296,7 @@ class MockNetworkTransaction
   // connection. Requires Start() be passed a NetLogWithSource with a real
   // NetLog to
   // be initialized.
-  unsigned int socket_log_id_;
+  unsigned int socket_log_id_ = NetLogSource::kInvalidId;
 
   bool done_reading_called_ = false;
   bool reading_ = false;

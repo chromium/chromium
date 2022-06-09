@@ -155,11 +155,6 @@ TCPClientSocket::TCPClientSocket(
       bind_address_(std::move(bind_address)),
       addresses_(addresses),
       current_address_index_(current_address_index),
-      next_connect_state_(CONNECT_STATE_NONE),
-      previously_disconnected_(false),
-      total_received_bytes_(0),
-      was_ever_used_(false),
-      was_disconnected_on_suspend_(false),
       network_quality_estimator_(network_quality_estimator),
       network_(network) {
   DCHECK(socket_);

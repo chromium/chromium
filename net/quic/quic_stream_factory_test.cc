@@ -229,8 +229,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
                       false),
         http_server_properties_(std::make_unique<HttpServerProperties>()),
         cert_verifier_(std::make_unique<MockCertVerifier>()),
-        scoped_mock_network_change_notifier_(nullptr),
-        factory_(nullptr),
         scheme_host_port_(url::kHttpsScheme,
                           kDefaultServerHostName,
                           kDefaultServerPort),

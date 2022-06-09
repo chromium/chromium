@@ -162,7 +162,7 @@ class MultiThreadedProxyResolver : public ProxyResolver,
 
 class Job : public base::RefCountedThreadSafe<Job> {
  public:
-  Job() : executor_(nullptr) {}
+  Job() = default;
 
   void set_executor(Executor* executor) {
     executor_ = executor;
@@ -208,7 +208,7 @@ class Job : public base::RefCountedThreadSafe<Job> {
   virtual ~Job() = default;
 
  private:
-  raw_ptr<Executor> executor_;
+  raw_ptr<Executor> executor_ = nullptr;
   bool was_cancelled_ = false;
 };
 

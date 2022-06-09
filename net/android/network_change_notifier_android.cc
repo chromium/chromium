@@ -214,8 +214,7 @@ NetworkChangeNotifierAndroid::NetworkChangeNotifierAndroid(
     NetworkChangeNotifierDelegateAndroid* delegate)
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsAndroid()),
       delegate_(delegate),
-      blocking_thread_objects_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
-      force_network_handles_supported_for_testing_(false) {
+      blocking_thread_objects_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
   CHECK_EQ(NetId::INVALID, NetworkChangeNotifier::kInvalidNetworkHandle)
       << "kInvalidNetworkHandle doesn't match NetId::INVALID";
   delegate_->RegisterObserver(this);

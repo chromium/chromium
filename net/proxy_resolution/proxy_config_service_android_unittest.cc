@@ -214,13 +214,12 @@ TEST_F(ProxyConfigServiceAndroidTest, TestClearProxy) {
 
 struct ProxyCallback {
   ProxyCallback()
-      : called(false),
-        callback(base::BindOnce(&ProxyCallback::Call, base::Unretained(this))) {
+      : callback(base::BindOnce(&ProxyCallback::Call, base::Unretained(this))) {
   }
 
   void Call() { called = true; }
 
-  bool called;
+  bool called = false;
   base::OnceClosure callback;
 };
 

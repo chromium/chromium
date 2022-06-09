@@ -112,7 +112,6 @@ SpdySessionPool::SpdySessionPool(
       enable_priority_update_(enable_priority_update),
       go_away_on_ip_change_(go_away_on_ip_change),
       time_func_(time_func),
-      push_delegate_(nullptr),
       network_quality_estimator_(network_quality_estimator),
       cleanup_sessions_on_ip_address_changed_(
           cleanup_sessions_on_ip_address_changed) {

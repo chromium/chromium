@@ -133,10 +133,10 @@ class TCPSocketWin::Core : public base::RefCounted<Core> {
   // The buffers used in Read() and Write().
   scoped_refptr<IOBuffer> read_iobuffer_;
   scoped_refptr<IOBuffer> write_iobuffer_;
-  int read_buffer_length_;
-  int write_buffer_length_;
+  int read_buffer_length_ = 0;
+  int write_buffer_length_ = 0;
 
-  bool non_blocking_reads_initialized_;
+  bool non_blocking_reads_initialized_ = false;
 
  private:
   friend class base::RefCounted<Core>;
@@ -183,9 +183,6 @@ class TCPSocketWin::Core : public base::RefCounted<Core> {
 
 TCPSocketWin::Core::Core(TCPSocketWin* socket)
     : read_event_(WSACreateEvent()),
-      read_buffer_length_(0),
-      write_buffer_length_(0),
-      non_blocking_reads_initialized_(false),
       socket_(socket),
       reader_(this),
       writer_(this) {
@@ -263,13 +260,6 @@ TCPSocketWin::TCPSocketWin(
     : socket_(INVALID_SOCKET),
       socket_performance_watcher_(std::move(socket_performance_watcher)),
       accept_event_(WSA_INVALID_EVENT),
-      accept_socket_(nullptr),
-      accept_address_(nullptr),
-      waiting_connect_(false),
-      waiting_read_(false),
-      waiting_write_(false),
-      connect_os_error_(0),
-      logging_multiple_connect_attempts_(false),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {
   net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
   EnsureWinsockInit();

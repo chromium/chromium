@@ -516,8 +516,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
  public:
   explicit SettingGetterImplKDE(base::Environment* env_var_getter)
       : debounce_timer_(new base::OneShotTimer()),
-        env_var_getter_(env_var_getter),
-        file_task_runner_(nullptr) {
+        env_var_getter_(env_var_getter) {
     // This has to be called on the UI thread (http://crbug.com/69057).
     base::ThreadRestrictions::ScopedAllowIO allow_io;
 

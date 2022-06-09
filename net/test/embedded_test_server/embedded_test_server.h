@@ -571,8 +571,8 @@ class EmbeddedTestServer {
   std::unique_ptr<TCPServerSocket> listen_socket_;
   std::unique_ptr<StreamSocket> accepted_socket_;
 
-  raw_ptr<EmbeddedTestServerConnectionListener> connection_listener_;
-  uint16_t port_;
+  raw_ptr<EmbeddedTestServerConnectionListener> connection_listener_ = nullptr;
+  uint16_t port_ = 0;
   GURL base_url_;
   IPEndPoint local_endpoint_;
 
@@ -586,7 +586,7 @@ class EmbeddedTestServer {
   base::ThreadChecker thread_checker_;
 
   net::SSLServerConfig ssl_config_;
-  ServerCertificate cert_;
+  ServerCertificate cert_ = CERT_OK;
   ServerCertificateConfig cert_config_;
   scoped_refptr<X509Certificate> x509_cert_;
   bssl::UniquePtr<EVP_PKEY> private_key_;

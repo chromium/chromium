@@ -180,11 +180,12 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
   const std::unordered_set<std::string> ignored_interfaces_;
 
   base::Lock connection_type_lock_;
-  bool connection_type_initialized_;
+  bool connection_type_initialized_ = false;
   base::ConditionVariable connection_type_initialized_cv_;
-  NetworkChangeNotifier::ConnectionType current_connection_type_;
+  NetworkChangeNotifier::ConnectionType current_connection_type_ =
+      NetworkChangeNotifier::CONNECTION_NONE;
   bool tracking_;
-  int threads_waiting_for_connection_type_initialization_;
+  int threads_waiting_for_connection_type_initialization_ = 0;
 
   // Used to verify single-threaded access in non-tracking mode.
   base::ThreadChecker thread_checker_;

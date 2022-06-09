@@ -276,13 +276,15 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   const double upper_bound_http_rtt_endtoend_rtt_multiplier_;
   const int hanging_request_http_rtt_upper_bound_transport_rtt_multiplier_;
   const int hanging_request_http_rtt_upper_bound_http_rtt_multiplier_;
-  const base::TimeDelta hanging_request_upper_bound_min_http_rtt_;
+  const base::TimeDelta hanging_request_upper_bound_min_http_rtt_ =
+      base::Milliseconds(500);
   const size_t http_rtt_transport_rtt_min_count_;
   const base::TimeDelta increase_in_transport_rtt_logging_interval_;
   const base::TimeDelta recent_time_threshold_;
   const base::TimeDelta historical_time_threshold_;
   const int hanging_request_duration_http_rtt_multiplier_;
-  const base::TimeDelta hanging_request_min_duration_;
+  const base::TimeDelta hanging_request_min_duration_ =
+      base::Milliseconds(3000);
   const bool add_default_platform_observations_;
   const base::TimeDelta socket_watchers_min_notification_interval_;
   const bool use_end_to_end_rtt_ = true;

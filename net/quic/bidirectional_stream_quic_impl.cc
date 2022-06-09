@@ -40,10 +40,7 @@ class ScopedBoolSaver {
 
 BidirectionalStreamQuicImpl::BidirectionalStreamQuicImpl(
     std::unique_ptr<QuicChromiumClientSession::Handle> session)
-    : session_(std::move(session)),
-      stream_(nullptr),
-      request_info_(nullptr),
-      delegate_(nullptr) {}
+    : session_(std::move(session)) {}
 
 BidirectionalStreamQuicImpl::~BidirectionalStreamQuicImpl() {
   if (stream_) {

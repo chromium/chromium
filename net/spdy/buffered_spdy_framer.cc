@@ -25,7 +25,6 @@ BufferedSpdyFramer::BufferedSpdyFramer(uint32_t max_header_list_size,
                                        const NetLogWithSource& net_log,
                                        TimeFunc time_func)
     : spdy_framer_(spdy::SpdyFramer::ENABLE_COMPRESSION),
-      visitor_(nullptr),
       max_header_list_size_(max_header_list_size),
       net_log_(net_log),
       time_func_(time_func) {

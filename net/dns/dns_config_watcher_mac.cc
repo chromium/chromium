@@ -20,10 +20,7 @@ class DnsInfoApi {
   typedef dns_config_t* (*dns_configuration_copy_t)();
   typedef void (*dns_configuration_free_t)(dns_config_t*);
 
-  DnsInfoApi()
-      : dns_configuration_notify_key(NULL),
-        dns_configuration_copy(NULL),
-        dns_configuration_free(NULL) {
+  DnsInfoApi() {
     handle_ = dlopen("/usr/lib/libSystem.dylib",
                      RTLD_LAZY | RTLD_NOLOAD);
     if (!handle_)
@@ -44,9 +41,9 @@ class DnsInfoApi {
       dlclose(handle_);
   }
 
-  dns_configuration_notify_key_t dns_configuration_notify_key;
-  dns_configuration_copy_t dns_configuration_copy;
-  dns_configuration_free_t dns_configuration_free;
+  dns_configuration_notify_key_t dns_configuration_notify_key = nullptr;
+  dns_configuration_copy_t dns_configuration_copy = nullptr;
+  dns_configuration_free_t dns_configuration_free = nullptr;
 
  private:
   void* handle_;

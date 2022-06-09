@@ -64,7 +64,7 @@ class HttpConnection {
     ~ReadIOBuffer() override;
 
     scoped_refptr<GrowableIOBuffer> base_;
-    int max_buffer_size_;
+    int max_buffer_size_ = kDefaultMaxBufferSize;
   };
 
   // IOBuffer of pending data to write which has a queue of pending data. Each
@@ -110,7 +110,7 @@ class HttpConnection {
     // chunks, as they may be handed out via net::IOBuffer::data().
     base::queue<std::unique_ptr<std::string>> pending_data_;
     int total_size_ = 0;
-    int max_buffer_size_;
+    int max_buffer_size_ = kDefaultMaxBufferSize;
   };
 
   HttpConnection(int id, std::unique_ptr<StreamSocket> socket);

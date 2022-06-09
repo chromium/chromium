@@ -75,8 +75,7 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
       : stream_(std::make_unique<BidirectionalStreamSpdyImpl>(session,
                                                               NetLogSource())),
         read_buf_(read_buf),
-        read_buf_len_(read_buf_len),
-        loop_(nullptr) {}
+        read_buf_len_(read_buf_len) {}
 
   TestDelegateBase(const TestDelegateBase&) = delete;
   TestDelegateBase& operator=(const TestDelegateBase&) = delete;

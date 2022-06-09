@@ -289,14 +289,11 @@ MemEntryImpl::MemEntryImpl(base::WeakPtr<MemBackendImpl> backend,
                            MemEntryImpl* parent,
                            net::NetLog* net_log)
     : key_(key),
-      ref_count_(0),
       child_id_(child_id),
-      child_first_pos_(0),
       parent_(parent),
       last_modified_(MemBackendImpl::Now(backend)),
       last_used_(last_modified_),
-      backend_(backend),
-      doomed_(false) {
+      backend_(backend) {
   backend_->OnEntryInserted(this);
   net_log_ = net::NetLogWithSource::Make(
       net_log, net::NetLogSourceType::MEMORY_CACHE_ENTRY);

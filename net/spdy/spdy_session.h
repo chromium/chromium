@@ -1086,7 +1086,7 @@ class NET_EXPORT SpdySession
   std::set<SpdySessionKey> pooled_aliases_;
 
   // |pool_| owns us, therefore its lifetime must exceed ours.
-  raw_ptr<SpdySessionPool> pool_;
+  raw_ptr<SpdySessionPool> pool_ = nullptr;
   raw_ptr<HttpServerProperties> http_server_properties_;
 
   raw_ptr<TransportSecurityState> transport_security_state_;
@@ -1103,7 +1103,7 @@ class NET_EXPORT SpdySession
   std::unique_ptr<LoadTimingInfo::ConnectTiming> connect_timing_;
 
   // The socket for this session.
-  raw_ptr<StreamSocket> socket_;
+  raw_ptr<StreamSocket> socket_ = nullptr;
 
   // The read buffer used to read data from the socket.
   // Non-null if there is a Read() pending.

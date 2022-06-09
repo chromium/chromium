@@ -91,8 +91,8 @@ class NET_EXPORT_PRIVATE BidirectionalStreamSpdyImpl
   bool MaybeHandleStreamClosedInSendData();
 
   const base::WeakPtr<SpdySession> spdy_session_;
-  raw_ptr<const BidirectionalStreamRequestInfo> request_info_;
-  raw_ptr<BidirectionalStreamImpl::Delegate> delegate_;
+  raw_ptr<const BidirectionalStreamRequestInfo> request_info_ = nullptr;
+  raw_ptr<BidirectionalStreamImpl::Delegate> delegate_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
   SpdyStreamRequest stream_request_;
   base::WeakPtr<SpdyStream> stream_;

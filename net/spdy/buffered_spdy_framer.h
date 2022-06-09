@@ -250,7 +250,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
  private:
   spdy::SpdyFramer spdy_framer_;
   http2::Http2DecoderAdapter deframer_;
-  raw_ptr<BufferedSpdyFramerVisitorInterface> visitor_;
+  raw_ptr<BufferedSpdyFramerVisitorInterface> visitor_ = nullptr;
 
   int frames_received_ = 0;
 

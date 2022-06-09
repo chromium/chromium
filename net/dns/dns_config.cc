@@ -21,18 +21,7 @@ DnsConfig::DnsConfig(const DnsConfig& other) = default;
 DnsConfig::DnsConfig(DnsConfig&& other) = default;
 
 DnsConfig::DnsConfig(std::vector<IPEndPoint> nameservers)
-    : nameservers(std::move(nameservers)),
-      dns_over_tls_active(false),
-      unhandled_options(false),
-      append_to_multi_label_name(true),
-      ndots(1),
-      fallback_period(kDnsDefaultFallbackPeriod),
-      attempts(2),
-      doh_attempts(1),
-      rotate(false),
-      use_local_ipv6(false),
-      secure_dns_mode(SecureDnsMode::kOff),
-      allow_dns_over_https_upgrade(false) {}
+    : nameservers(std::move(nameservers)) {}
 
 DnsConfig::~DnsConfig() = default;
 

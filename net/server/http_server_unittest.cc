@@ -943,7 +943,7 @@ TEST_F(HttpServerTest, WrongProtocolRequest) {
 
 class MockStreamSocket : public StreamSocket {
  public:
-  MockStreamSocket() : read_buf_(nullptr) {}
+  MockStreamSocket() = default;
 
   MockStreamSocket(const MockStreamSocket&) = delete;
   MockStreamSocket& operator=(const MockStreamSocket&) = delete;

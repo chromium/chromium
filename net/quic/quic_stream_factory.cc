@@ -1171,7 +1171,6 @@ QuicStreamFactory::QuicStreamFactory(
       host_resolver_(host_resolver),
       client_socket_factory_(client_socket_factory),
       http_server_properties_(http_server_properties),
-      push_delegate_(nullptr),
       cert_verifier_(cert_verifier),
       ct_policy_enforcer_(ct_policy_enforcer),
       transport_security_state_(transport_security_state),
@@ -1197,8 +1196,6 @@ QuicStreamFactory::QuicStreamFactory(
           kQuicYieldAfterDurationMilliseconds)),
       default_network_(NetworkChangeNotifier::kInvalidNetworkHandle),
       connectivity_monitor_(default_network_),
-      tick_clock_(nullptr),
-      task_runner_(nullptr),
       ssl_config_service_(ssl_config_service),
       use_network_isolation_key_for_crypto_configs_(
           base::FeatureList::IsEnabled(

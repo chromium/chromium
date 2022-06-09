@@ -52,11 +52,7 @@ class MockDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
       URLRequestContext* context,
       scoped_refptr<base::TaskRunner> task_runner)
       : DhcpPacFileAdapterFetcher(context, task_runner),
-        dhcp_delay_(base::Milliseconds(1)),
         timeout_(TestTimeouts::action_timeout()),
-        configured_url_(kPacUrl),
-        fetcher_delay_ms_(1),
-        fetcher_result_(OK),
         pac_script_("bingo") {}
 
   void Cancel() override {
@@ -139,11 +135,11 @@ class MockDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
     dhcp_query_->test_finished_event_.Signal();
   }
 
-  base::TimeDelta dhcp_delay_;
+  base::TimeDelta dhcp_delay_ = base::Milliseconds(1);
   base::TimeDelta timeout_;
-  std::string configured_url_;
-  int fetcher_delay_ms_;
-  int fetcher_result_;
+  std::string configured_url_{kPacUrl};
+  int fetcher_delay_ms_ = 1;
+  int fetcher_result_ = OK;
   std::string pac_script_;
   raw_ptr<MockPacFileFetcher> fetcher_;
   base::OneShotTimer fetcher_timer_;

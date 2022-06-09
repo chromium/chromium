@@ -16,7 +16,7 @@ namespace {
 // Threadsafe singleton for tracking the process-wide count of UDP sockets.
 class GlobalUDPSocketCounts {
  public:
-  GlobalUDPSocketCounts() : count_(0) {}
+  GlobalUDPSocketCounts() = default;
 
   ~GlobalUDPSocketCounts() = delete;
 
@@ -47,7 +47,7 @@ class GlobalUDPSocketCounts {
   int GetCountForTesting() { return count_.SubtleRefCountForDebug(); }
 
  private:
-  base::AtomicRefCount count_;
+  base::AtomicRefCount count_{0};
 };
 
 }  // namespace

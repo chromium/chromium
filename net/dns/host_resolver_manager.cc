@@ -3120,17 +3120,12 @@ HostResolverManager::HostResolverManager(
     SystemDnsConfigChangeNotifier* system_dns_config_notifier,
     NetworkChangeNotifier::NetworkHandle target_network,
     NetLog* net_log)
-    : max_queued_jobs_(0),
-      proc_params_(nullptr, options.max_system_retry_attempts),
+    : proc_params_(nullptr, options.max_system_retry_attempts),
       net_log_(net_log),
       system_dns_config_notifier_(system_dns_config_notifier),
       target_network_(target_network),
       check_ipv6_on_wifi_(options.check_ipv6_on_wifi),
-      last_ipv6_probe_result_(true),
-      additional_resolver_flags_(0),
-      allow_fallback_to_proctask_(true),
-      tick_clock_(base::DefaultTickClock::GetInstance()),
-      invalidation_in_progress_(false) {
+      tick_clock_(base::DefaultTickClock::GetInstance()) {
   PrioritizedDispatcher::Limits job_limits = GetDispatcherLimits(options);
   dispatcher_ = std::make_unique<PrioritizedDispatcher>(job_limits);
   max_queued_jobs_ = job_limits.total_jobs * 100u;

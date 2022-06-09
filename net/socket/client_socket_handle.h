@@ -229,8 +229,8 @@ class NET_EXPORT ClientSocketHandle {
   void ResetErrorState();
 
   bool is_initialized_ = false;
-  raw_ptr<ClientSocketPool> pool_;
-  raw_ptr<HigherLayeredPool> higher_pool_;
+  raw_ptr<ClientSocketPool> pool_ = nullptr;
+  raw_ptr<HigherLayeredPool> higher_pool_ = nullptr;
   std::unique_ptr<StreamSocket> socket_;
   ClientSocketPool::GroupId group_id_;
   SocketReuseType reuse_type_ = ClientSocketHandle::UNUSED;

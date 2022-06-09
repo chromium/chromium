@@ -288,7 +288,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
                       kDefaultServerHostName,
                       quic::Perspective::IS_SERVER,
                       false),
-        random_generator_(0),
         printer_(version_) {
     FLAGS_quic_enable_http3_grease_randomness = false;
     quic::QuicEnableVersion(version_);
@@ -702,7 +701,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   QuicTestPacketMaker server_maker_;
   IPEndPoint self_addr_;
   IPEndPoint peer_addr_;
-  quic::test::MockRandom random_generator_;
+  quic::test::MockRandom random_generator_{0};
   ProofVerifyDetailsChromium verify_details_;
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
   std::unique_ptr<StaticSocketDataProvider> socket_data_;

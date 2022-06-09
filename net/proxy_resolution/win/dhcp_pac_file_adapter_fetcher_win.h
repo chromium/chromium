@@ -16,6 +16,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -171,10 +172,10 @@ class NET_EXPORT_PRIVATE DhcpPacFileAdapterFetcher
   scoped_refptr<base::TaskRunner> task_runner_;
 
   // Current state of this state machine.
-  State state_;
+  State state_ = STATE_START;
 
   // A network error indicating result of operation.
-  int result_;
+  int result_ = ERR_IO_PENDING;
 
   // Empty string or the PAC script downloaded.
   std::u16string pac_script_;

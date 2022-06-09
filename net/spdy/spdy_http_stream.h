@@ -189,12 +189,12 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   // |this| to be shared for reading and to possibly outlive request_info_'s
   // owner. Setting to null happens after headers are completely read or upload
   // data stream is uploaded, whichever is later.
-  raw_ptr<const HttpRequestInfo> request_info_;
+  raw_ptr<const HttpRequestInfo> request_info_ = nullptr;
 
   // |response_info_| is the HTTP response data object which is filled in
   // when a response HEADERS comes in for the stream.
   // It is not owned by this stream object, or point to |push_response_info_|.
-  raw_ptr<HttpResponseInfo> response_info_;
+  raw_ptr<HttpResponseInfo> response_info_ = nullptr;
 
   std::unique_ptr<HttpResponseInfo> push_response_info_;
 

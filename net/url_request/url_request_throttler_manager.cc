@@ -16,8 +16,7 @@ namespace net {
 const unsigned int URLRequestThrottlerManager::kMaximumNumberOfEntries = 1500;
 const unsigned int URLRequestThrottlerManager::kRequestsBetweenCollecting = 200;
 
-URLRequestThrottlerManager::URLRequestThrottlerManager()
-    : registered_from_thread_(base::kInvalidThreadId) {
+URLRequestThrottlerManager::URLRequestThrottlerManager() {
   url_id_replacements_.ClearPassword();
   url_id_replacements_.ClearUsername();
   url_id_replacements_.ClearQuery();

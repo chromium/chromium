@@ -155,11 +155,8 @@ AddressTrackerLinux::AddressTrackerLinux()
       link_callback_(base::DoNothing()),
       tunnel_callback_(base::DoNothing()),
       ignored_interfaces_(),
-      connection_type_initialized_(false),
       connection_type_initialized_cv_(&connection_type_lock_),
-      current_connection_type_(NetworkChangeNotifier::CONNECTION_NONE),
-      tracking_(false),
-      threads_waiting_for_connection_type_initialization_(0) {}
+      tracking_(false) {}
 
 AddressTrackerLinux::AddressTrackerLinux(
     const base::RepeatingClosure& address_callback,
@@ -171,11 +168,8 @@ AddressTrackerLinux::AddressTrackerLinux(
       link_callback_(link_callback),
       tunnel_callback_(tunnel_callback),
       ignored_interfaces_(ignored_interfaces),
-      connection_type_initialized_(false),
       connection_type_initialized_cv_(&connection_type_lock_),
-      current_connection_type_(NetworkChangeNotifier::CONNECTION_NONE),
-      tracking_(true),
-      threads_waiting_for_connection_type_initialization_(0) {
+      tracking_(true) {
   DCHECK(!address_callback.is_null());
   DCHECK(!link_callback.is_null());
 }

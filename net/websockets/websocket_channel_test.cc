@@ -593,7 +593,7 @@ class UnWriteableFakeWebSocketStream : public FakeWebSocketStream {
 // otherwise the ReadFrames() callback will never be called.
 class EchoeyFakeWebSocketStream : public FakeWebSocketStream {
  public:
-  EchoeyFakeWebSocketStream() : read_frames_(nullptr) {}
+  EchoeyFakeWebSocketStream() = default;
 
   int WriteFrames(std::vector<std::unique_ptr<WebSocketFrame>>* frames,
                   CompletionOnceCallback callback) override {
@@ -658,7 +658,7 @@ class EchoeyFakeWebSocketStream : public FakeWebSocketStream {
   std::vector<std::unique_ptr<WebSocketFrame>> stored_frames_;
   CompletionOnceCallback read_callback_;
   // Owned by the caller of ReadFrames().
-  raw_ptr<std::vector<std::unique_ptr<WebSocketFrame>>> read_frames_;
+  raw_ptr<std::vector<std::unique_ptr<WebSocketFrame>>> read_frames_ = nullptr;
   std::vector<scoped_refptr<IOBuffer>> buffers_;
   // True if we should close the connection.
   bool done_ = false;

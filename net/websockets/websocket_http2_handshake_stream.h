@@ -136,7 +136,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   // |connect_delegate| will live during the lifetime of this object.
   const raw_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;
 
-  raw_ptr<HttpResponseInfo> http_response_info_;
+  raw_ptr<HttpResponseInfo> http_response_info_ = nullptr;
 
   spdy::Http2HeaderBlock http2_request_headers_;
 
@@ -148,7 +148,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
 
   const raw_ptr<WebSocketStreamRequestAPI> stream_request_;
 
-  raw_ptr<const HttpRequestInfo> request_info_;
+  raw_ptr<const HttpRequestInfo> request_info_ = nullptr;
 
   RequestPriority priority_;
 

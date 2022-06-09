@@ -73,7 +73,7 @@ class Eviction {
   int SelectListByLength(Rankings::ScopedRankingsBlock* next);
   void ReportListStats();
 
-  raw_ptr<BackendImpl> backend_;
+  raw_ptr<BackendImpl> backend_ = nullptr;
   raw_ptr<Rankings> rankings_;
   raw_ptr<IndexHeader> header_;
   int max_size_;

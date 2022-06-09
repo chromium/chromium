@@ -142,7 +142,7 @@ class NetworkConfigWatcherMacThread : public base::Thread {
   base::ScopedCFTypeRef<CFRunLoopSourceRef> run_loop_source_;
   NetworkConfigWatcherMac::Delegate* const delegate_;
 #if !BUILDFLAG(IS_IOS)
-  int num_retry_;
+  int num_retry_ = 0;
 #endif  // !BUILDFLAG(IS_IOS)
   base::WeakPtrFactory<NetworkConfigWatcherMacThread> weak_factory_;
 };
@@ -151,11 +151,7 @@ NetworkConfigWatcherMacThread::NetworkConfigWatcherMacThread(
     NetworkConfigWatcherMac::Delegate* delegate)
     : base::Thread("NetworkConfigWatcher"),
       delegate_(delegate),
-#if !BUILDFLAG(IS_IOS)
-      num_retry_(0),
-#endif  // !BUILDFLAG(IS_IOS)
-      weak_factory_(this) {
-}
+      weak_factory_(this) {}
 
 NetworkConfigWatcherMacThread::~NetworkConfigWatcherMacThread() {
   // This is expected to be invoked during shutdown.

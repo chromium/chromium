@@ -44,7 +44,7 @@ class NET_EXPORT TraceNetLogObserver
   void OnTraceLogDisabled() override;
 
  private:
-  raw_ptr<NetLog> net_log_to_watch_;
+  raw_ptr<NetLog> net_log_to_watch_ = nullptr;
   base::WeakPtrFactory<TraceNetLogObserver> weak_factory_{this};
 };
 

@@ -62,10 +62,6 @@ QuicHttpStream::QuicHttpStream(
     std::unique_ptr<QuicChromiumClientSession::Handle> session,
     std::set<std::string> dns_aliases)
     : MultiplexedHttpStream(std::move(session)),
-      stream_(nullptr),
-      request_info_(nullptr),
-      request_body_stream_(nullptr),
-      response_info_(nullptr),
       dns_aliases_(std::move(dns_aliases)) {}
 
 QuicHttpStream::~QuicHttpStream() {

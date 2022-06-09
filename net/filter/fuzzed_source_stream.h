@@ -46,10 +46,10 @@ class FuzzedSourceStream : public SourceStream {
   FuzzedDataProvider* data_provider_;
 
   // Whether there is a pending Read().
-  bool read_pending_;
+  bool read_pending_ = false;
 
   // Last result returned by Read() is an error or 0.
-  bool end_returned_;
+  bool end_returned_ = false;
 };
 
 }  // namespace net

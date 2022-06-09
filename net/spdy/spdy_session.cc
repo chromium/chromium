@@ -936,11 +936,9 @@ SpdySession::SpdySession(
     NetworkQualityEstimator* network_quality_estimator,
     NetLog* net_log)
     : spdy_session_key_(spdy_session_key),
-      pool_(nullptr),
       http_server_properties_(http_server_properties),
       transport_security_state_(transport_security_state),
       ssl_config_service_(ssl_config_service),
-      socket_(nullptr),
       stream_hi_water_mark_(kFirstStreamId),
       push_delegate_(push_delegate),
       initial_settings_(initial_settings),

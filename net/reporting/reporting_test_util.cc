@@ -191,7 +191,7 @@ TestReportingContext::~TestReportingContext() {
   garbage_collection_timer_ = nullptr;
 }
 
-ReportingTestBase::ReportingTestBase() : store_(nullptr) {
+ReportingTestBase::ReportingTestBase() {
   // For tests, disable jitter.
   ReportingPolicy policy;
   policy.endpoint_backoff_policy.jitter_factor = 0.0;

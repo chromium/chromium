@@ -67,7 +67,6 @@ URLRequestThrottlerEntry::URLRequestThrottlerEntry(
     const std::string& url_id)
     : sliding_window_period_(base::Milliseconds(kDefaultSlidingWindowPeriodMs)),
       max_send_threshold_(kDefaultMaxSendThreshold),
-      is_backoff_disabled_(false),
       backoff_entry_(&backoff_policy_),
       manager_(manager),
       url_id_(url_id),
@@ -89,7 +88,6 @@ URLRequestThrottlerEntry::URLRequestThrottlerEntry(
     int maximum_backoff_ms)
     : sliding_window_period_(base::Milliseconds(sliding_window_period_ms)),
       max_send_threshold_(max_send_threshold),
-      is_backoff_disabled_(false),
       backoff_entry_(&backoff_policy_),
       manager_(manager),
       url_id_(url_id) {

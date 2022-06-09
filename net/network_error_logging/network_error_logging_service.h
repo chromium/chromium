@@ -292,7 +292,7 @@ class NET_EXPORT NetworkErrorLoggingService {
 
   // Unowned:
   raw_ptr<const base::Clock> clock_;
-  raw_ptr<ReportingService> reporting_service_;
+  raw_ptr<ReportingService> reporting_service_ = nullptr;
   bool shut_down_ = false;
 };
 

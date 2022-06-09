@@ -117,7 +117,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierAndroid
   // Also used for DnsConfigService which also must live on blocking sequences.
   std::unique_ptr<BlockingThreadObjects, base::OnTaskRunnerDeleter>
       blocking_thread_objects_;
-  bool force_network_handles_supported_for_testing_;
+  bool force_network_handles_supported_for_testing_ = false;
 };
 
 }  // namespace net

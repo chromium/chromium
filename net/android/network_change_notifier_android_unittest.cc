@@ -40,11 +40,7 @@ class NetworkChangeNotifierDelegateAndroidObserver
   typedef NetworkChangeNotifier::NetworkHandle NetworkHandle;
   typedef NetworkChangeNotifier::NetworkList NetworkList;
 
-  NetworkChangeNotifierDelegateAndroidObserver()
-      : type_notifications_count_(0),
-        cost_notifications_count_(0),
-        max_bandwidth_notifications_count_(0),
-        default_network_active_notifications_count_(0) {}
+  NetworkChangeNotifierDelegateAndroidObserver() = default;
 
   // NetworkChangeNotifierDelegateAndroid::Observer:
   void OnConnectionTypeChanged() override { type_notifications_count_++; }
@@ -79,16 +75,16 @@ class NetworkChangeNotifierDelegateAndroidObserver
   }
 
  private:
-  int type_notifications_count_;
-  int cost_notifications_count_;
-  int max_bandwidth_notifications_count_;
-  int default_network_active_notifications_count_;
+  int type_notifications_count_ = 0;
+  int cost_notifications_count_ = 0;
+  int max_bandwidth_notifications_count_ = 0;
+  int default_network_active_notifications_count_ = 0;
 };
 
 class NetworkChangeNotifierObserver
     : public NetworkChangeNotifier::ConnectionTypeObserver {
  public:
-  NetworkChangeNotifierObserver() : notifications_count_(0) {}
+  NetworkChangeNotifierObserver() = default;
 
   // NetworkChangeNotifier::ConnectionTypeObserver:
   void OnConnectionTypeChanged(
@@ -101,7 +97,7 @@ class NetworkChangeNotifierObserver
   }
 
  private:
-  int notifications_count_;
+  int notifications_count_ = 0;
 };
 
 class NetworkChangeNotifierConnectionCostObserver

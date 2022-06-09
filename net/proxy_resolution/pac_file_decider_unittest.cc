@@ -103,8 +103,7 @@ class Rules {
 
 class RuleBasedPacFileFetcher : public PacFileFetcher {
  public:
-  explicit RuleBasedPacFileFetcher(const Rules* rules)
-      : rules_(rules), request_context_(nullptr) {}
+  explicit RuleBasedPacFileFetcher(const Rules* rules) : rules_(rules) {}
 
   virtual void SetRequestContext(URLRequestContext* context) {
     request_context_ = context;
@@ -133,7 +132,7 @@ class RuleBasedPacFileFetcher : public PacFileFetcher {
 
  private:
   raw_ptr<const Rules> rules_;
-  raw_ptr<URLRequestContext> request_context_;
+  raw_ptr<URLRequestContext> request_context_ = nullptr;
 };
 
 // A mock retriever, returns asynchronously when CompleteRequests() is called.

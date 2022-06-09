@@ -124,7 +124,7 @@ class SynchronizedRunLoopObserver final {
   base::Lock& lock_;
   // Indicates whether the current observer holds the lock. It is used to
   // avoid double locking and releasing.
-  bool lock_acquired_;
+  bool lock_acquired_ = false;
   // The underlying CFRunLoopObserverRef structure wrapped by this instance.
   base::ScopedCFTypeRef<CFRunLoopObserverRef> observer_;
   // Validates that all methods of this class are executed on the same thread.
@@ -132,7 +132,7 @@ class SynchronizedRunLoopObserver final {
 };
 
 SynchronizedRunLoopObserver::SynchronizedRunLoopObserver(base::Lock& lock)
-    : lock_(lock), lock_acquired_(false) {
+    : lock_(lock) {
   CFRunLoopObserverContext observer_context = {0, this, NULL, NULL, NULL};
   observer_.reset(CFRunLoopObserverCreate(
       kCFAllocatorDefault,

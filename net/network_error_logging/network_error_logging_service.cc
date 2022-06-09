@@ -1043,6 +1043,6 @@ ReportingService* NetworkErrorLoggingService::GetReportingServiceForTesting() {
 }
 
 NetworkErrorLoggingService::NetworkErrorLoggingService()
-    : clock_(base::DefaultClock::GetInstance()), reporting_service_(nullptr) {}
+    : clock_(base::DefaultClock::GetInstance()) {}
 
 }  // namespace net

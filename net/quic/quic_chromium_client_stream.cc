@@ -45,9 +45,7 @@ class ScopedBoolSaver {
 }  // namespace
 
 QuicChromiumClientStream::Handle::Handle(QuicChromiumClientStream* stream)
-    : stream_(stream),
-      read_headers_buffer_(nullptr),
-      net_log_(stream->net_log()) {
+    : stream_(stream), net_log_(stream->net_log()) {
   SaveState();
 }
 
@@ -446,15 +444,8 @@ QuicChromiumClientStream::QuicChromiumClientStream(
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : quic::QuicSpdyStream(id, session, type),
       net_log_(net_log),
-      handle_(nullptr),
-      initial_headers_sent_(false),
       session_(session),
-      quic_version_(session->connection()->transport_version()),
-      can_migrate_to_cellular_network_(true),
-      initial_headers_arrived_(false),
-      headers_delivered_(false),
-      initial_headers_frame_len_(0),
-      trailing_headers_frame_len_(0) {}
+      quic_version_(session->connection()->transport_version()) {}
 
 QuicChromiumClientStream::QuicChromiumClientStream(
     quic::PendingStream* pending,
@@ -463,15 +454,8 @@ QuicChromiumClientStream::QuicChromiumClientStream(
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : quic::QuicSpdyStream(pending, session),
       net_log_(net_log),
-      handle_(nullptr),
-      initial_headers_sent_(false),
       session_(session),
-      quic_version_(session->connection()->transport_version()),
-      can_migrate_to_cellular_network_(true),
-      initial_headers_arrived_(false),
-      headers_delivered_(false),
-      initial_headers_frame_len_(0),
-      trailing_headers_frame_len_(0) {}
+      quic_version_(session->connection()->transport_version()) {}
 
 QuicChromiumClientStream::~QuicChromiumClientStream() {
   if (handle_)

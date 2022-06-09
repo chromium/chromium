@@ -181,11 +181,8 @@ HttpStreamParser::HttpStreamParser(StreamSocket* stream_socket,
                                    GrowableIOBuffer* read_buffer,
                                    const NetLogWithSource& net_log)
     : request_(request),
-      request_headers_(nullptr),
       read_buf_(read_buffer),
       response_header_start_offset_(std::string::npos),
-      response_(nullptr),
-      user_read_buf_(nullptr),
       stream_socket_(stream_socket),
       connection_is_reused_(connection_is_reused),
       net_log_(net_log) {

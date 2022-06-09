@@ -4183,8 +4183,7 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
           base::test::TaskEnvironment::TimeSource::MOCK_TIME)
       : HostResolverManagerTest(time_source),
         notifier_task_runner_(
-            base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
-        dns_client_(nullptr) {
+            base::MakeRefCounted<base::TestMockTimeTaskRunner>()) {
     auto config_service = std::make_unique<TestDnsConfigService>();
     config_service_ = config_service.get();
     notifier_ = std::make_unique<SystemDnsConfigChangeNotifier>(
@@ -4467,7 +4466,7 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
   std::unique_ptr<SystemDnsConfigChangeNotifier> notifier_;
 
   // Owned by |resolver_|.
-  raw_ptr<MockDnsClient> dns_client_;
+  raw_ptr<MockDnsClient> dns_client_ = nullptr;
 };
 
 TEST_F(HostResolverManagerDnsTest, FlushCacheOnDnsConfigChange) {

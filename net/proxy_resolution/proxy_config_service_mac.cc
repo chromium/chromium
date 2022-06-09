@@ -199,7 +199,6 @@ ProxyConfigServiceMac::ProxyConfigServiceMac(
     const scoped_refptr<base::SequencedTaskRunner>& sequenced_task_runner,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : forwarder_(this),
-      has_fetched_config_(false),
       helper_(new Helper(this)),
       sequenced_task_runner_(sequenced_task_runner),
       traffic_annotation_(traffic_annotation) {

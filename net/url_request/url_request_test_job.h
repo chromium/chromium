@@ -161,20 +161,20 @@ class URLRequestTestJob : public URLRequestJob {
 
   bool auto_advance_;
 
-  Stage stage_;
+  Stage stage_ = WAITING;
 
-  RequestPriority priority_;
+  RequestPriority priority_ = DEFAULT_PRIORITY;
 
   // The data to send, will be set in Start() if not provided in the explicit
   // ctor.
   std::string response_data_;
 
   // current offset within response_data_
-  int offset_;
+  int offset_ = 0;
 
   // Holds the buffer for an asynchronous ReadRawData call
-  raw_ptr<IOBuffer> async_buf_;
-  int async_buf_size_;
+  raw_ptr<IOBuffer> async_buf_ = nullptr;
+  int async_buf_size_ = 0;
 
   LoadTimingInfo load_timing_info_;
 
@@ -186,7 +186,7 @@ class URLRequestTestJob : public URLRequestJob {
   // Original size in bytes of the response headers before decoding.
   int response_headers_length_;
 
-  bool async_reads_;
+  bool async_reads_ = false;
 
   base::WeakPtrFactory<URLRequestTestJob> weak_factory_{this};
 };

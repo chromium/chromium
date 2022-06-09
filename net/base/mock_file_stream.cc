@@ -17,18 +17,12 @@ namespace testing {
 
 MockFileStream::MockFileStream(
     const scoped_refptr<base::TaskRunner>& task_runner)
-    : FileStream(task_runner),
-      forced_error_(OK),
-      async_error_(false),
-      throttled_(false) {}
+    : FileStream(task_runner) {}
 
 MockFileStream::MockFileStream(
     base::File file,
     const scoped_refptr<base::TaskRunner>& task_runner)
-    : FileStream(std::move(file), task_runner),
-      forced_error_(OK),
-      async_error_(false),
-      throttled_(false) {}
+    : FileStream(std::move(file), task_runner) {}
 
 MockFileStream::~MockFileStream() = default;
 

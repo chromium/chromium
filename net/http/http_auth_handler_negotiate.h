@@ -149,7 +149,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
 
   // Things which vary each round.
   CompletionOnceCallback callback_;
-  raw_ptr<std::string> auth_token_;
+  raw_ptr<std::string> auth_token_ = nullptr;
 
   State next_state_ = STATE_NONE;
 

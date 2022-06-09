@@ -251,9 +251,6 @@ int SystemHostResolverProc::Resolve(const std::string& hostname,
 
 SystemHostResolverProc::~SystemHostResolverProc() = default;
 
-const base::TimeDelta ProcTaskParams::kDnsDefaultUnresponsiveDelay =
-    base::Seconds(6);
-
 ProcTaskParams::ProcTaskParams(HostResolverProc* resolver_proc,
                                size_t in_max_retry_attempts)
     : resolver_proc(resolver_proc),

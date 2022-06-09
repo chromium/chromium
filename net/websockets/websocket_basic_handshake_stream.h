@@ -128,7 +128,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   const raw_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;
 
   // This is stored in SendRequest() for use by ReadResponseHeaders().
-  raw_ptr<HttpResponseInfo> http_response_info_;
+  raw_ptr<HttpResponseInfo> http_response_info_ = nullptr;
 
   // The key to be sent in the next Sec-WebSocket-Key header. Usually NULL (the
   // key is generated on the fly).

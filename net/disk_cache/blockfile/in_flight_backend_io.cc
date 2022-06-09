@@ -57,18 +57,7 @@ BackendIO::BackendIO(InFlightIO* controller,
 }
 
 BackendIO::BackendIO(InFlightIO* controller, BackendImpl* backend)
-    : BackgroundIO(controller),
-      backend_(backend),
-      operation_(OP_NONE),
-      out_entry_(nullptr),
-      out_entry_opened_(false),
-      iterator_(nullptr),
-      entry_(nullptr),
-      index_(0),
-      offset_(0),
-      buf_len_(0),
-      truncate_(false),
-      offset64_(0) {
+    : BackgroundIO(controller), backend_(backend) {
   start_time_ = base::TimeTicks::Now();
 }
 

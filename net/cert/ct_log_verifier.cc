@@ -67,7 +67,7 @@ scoped_refptr<const CTLogVerifier> CTLogVerifier::Create(
 }
 
 CTLogVerifier::CTLogVerifier(std::string description)
-    : description_(std::move(description)), public_key_(nullptr) {}
+    : description_(std::move(description)) {}
 
 bool CTLogVerifier::Verify(const ct::SignedEntryData& entry,
                            const ct::SignedCertificateTimestamp& sct) const {

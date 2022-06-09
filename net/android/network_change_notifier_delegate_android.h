@@ -228,7 +228,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
 
   // Used to enable/disable default network active notifications on the Java
   // side.
-  std::atomic_int default_network_active_observers_;
+  std::atomic_int default_network_active_observers_ = 0;
 };
 
 }  // namespace net

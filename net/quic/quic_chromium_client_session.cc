@@ -628,7 +628,6 @@ QuicChromiumClientSession::StreamRequest::StreamRequest(
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : session_(session),
       requires_confirmation_(requires_confirmation),
-      stream_(nullptr),
       traffic_annotation_(traffic_annotation) {}
 
 QuicChromiumClientSession::StreamRequest::~StreamRequest() {

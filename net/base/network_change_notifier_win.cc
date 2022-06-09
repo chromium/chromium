@@ -119,7 +119,6 @@ NetworkChangeNotifierWin::NetworkChangeNotifierWin()
       blocking_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       last_computed_connection_type_(RecomputeCurrentConnectionType()),
-      last_computed_connection_cost_(ConnectionCost::CONNECTION_COST_UNKNOWN),
       last_announced_offline_(last_computed_connection_type_ ==
                               CONNECTION_NONE),
       sequence_runner_for_registration_(

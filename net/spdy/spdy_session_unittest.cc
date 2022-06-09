@@ -176,8 +176,6 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
             HttpNetworkSession::NORMAL_SOCKET_POOL)),
         old_max_pool_sockets_(ClientSocketPoolManager::max_sockets_per_pool(
             HttpNetworkSession::NORMAL_SOCKET_POOL)),
-        test_push_delegate_(nullptr),
-        spdy_session_pool_(nullptr),
         test_url_(kDefaultUrl),
         test_server_(test_url_),
         key_(HostPortPair::FromURL(test_url_),
@@ -391,8 +389,8 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> http_session_;
   base::WeakPtr<SpdySession> session_;
-  raw_ptr<TestServerPushDelegate> test_push_delegate_;
-  raw_ptr<SpdySessionPool> spdy_session_pool_;
+  raw_ptr<TestServerPushDelegate> test_push_delegate_ = nullptr;
+  raw_ptr<SpdySessionPool> spdy_session_pool_ = nullptr;
   const GURL test_url_;
   const url::SchemeHostPort test_server_;
   SpdySessionKey key_;

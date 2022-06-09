@@ -51,8 +51,8 @@ class FuzzedServerSocket : public ServerSocket {
   net::NetLog* net_log_;
 
   IPEndPoint listening_on_;
-  bool first_accept_;
-  bool listen_called_;
+  bool first_accept_ = true;
+  bool listen_called_ = false;
 
   base::WeakPtrFactory<FuzzedServerSocket> weak_factory_{this};
 };

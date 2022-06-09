@@ -92,8 +92,7 @@ TransportClientSocketPool::Request::Request(
       socket_params_(std::move(socket_params)),
       proxy_annotation_tag_(proxy_annotation_tag),
       net_log_(net_log),
-      socket_tag_(socket_tag),
-      job_(nullptr) {
+      socket_tag_(socket_tag) {
   if (respect_limits_ == ClientSocketPool::RespectLimits::DISABLED)
     DCHECK_EQ(priority_, MAXIMUM_PRIORITY);
 }
@@ -782,9 +781,6 @@ TransportClientSocketPool::TransportClientSocketPool(
     : ClientSocketPool(is_for_websockets,
                        common_connect_job_params,
                        std::move(connect_job_factory)),
-      idle_socket_count_(0),
-      connecting_socket_count_(0),
-      handed_out_socket_count_(0),
       max_sockets_(max_sockets),
       max_sockets_per_group_(max_sockets_per_group),
       unused_idle_socket_timeout_(unused_idle_socket_timeout),

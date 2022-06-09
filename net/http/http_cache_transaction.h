@@ -611,9 +611,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   State next_state_{STATE_NONE};
 
   // Initial request with which Start() was invoked.
-  raw_ptr<const HttpRequestInfo> initial_request_;
+  raw_ptr<const HttpRequestInfo> initial_request_ = nullptr;
 
-  raw_ptr<const HttpRequestInfo> request_;
+  raw_ptr<const HttpRequestInfo> request_ = nullptr;
 
   std::string method_;
   RequestPriority priority_;
@@ -624,7 +624,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // |external_validation_| contains the value of those headers.
   ValidationHeaders external_validation_;
   base::WeakPtr<HttpCache> cache_;
-  raw_ptr<HttpCache::ActiveEntry> entry_;
+  raw_ptr<HttpCache::ActiveEntry> entry_ = nullptr;
   HttpCache::ActiveEntry* new_entry_ = nullptr;
   std::unique_ptr<HttpTransaction> network_trans_;
   CompletionOnceCallback callback_;  // Consumer's callback.
@@ -640,7 +640,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // WriteResponseInfoToEntry() resets this to absl::nullopt.
   std::unique_ptr<HttpResponseInfo> updated_prefetch_response_;
 
-  raw_ptr<const HttpResponseInfo> new_response_;
+  raw_ptr<const HttpResponseInfo> new_response_ = nullptr;
   std::string cache_key_;
   Mode mode_ = NONE;
   bool reading_ = false;          // We are already reading. Never reverts to
@@ -715,7 +715,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // This is passed to the underlying network transaction. It is stored here in
   // case the transaction does not exist yet.
   raw_ptr<WebSocketHandshakeStreamBase::CreateHelper>
-      websocket_handshake_stream_base_create_helper_;
+      websocket_handshake_stream_base_create_helper_ = nullptr;
 
   // Set if we are currently calculating a checksum of the resource to validate
   // it against the expected checksum for the single-keyed cache. Accumulates a

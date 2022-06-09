@@ -10,10 +10,7 @@
 
 namespace net {
 
-SSLServerConfig::SSLServerConfig()
-    : version_min(kDefaultSSLVersionMin),
-      version_max(kDefaultSSLVersionMax),
-      client_cert_verifier(nullptr) {}
+SSLServerConfig::SSLServerConfig() = default;
 
 SSLServerConfig::SSLServerConfig(const SSLServerConfig& other) = default;
 

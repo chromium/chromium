@@ -161,13 +161,11 @@ const char16_t kValidPacScript216[] = u"pac-script-v2-FindProxyForURL";
 class MockProxyConfigService : public ProxyConfigService {
  public:
   explicit MockProxyConfigService(const ProxyConfig& config)
-      : availability_(CONFIG_VALID),
-        config_(
+      : config_(
             ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS)) {}
 
   explicit MockProxyConfigService(const std::string& pac_url)
-      : availability_(CONFIG_VALID),
-        config_(ProxyConfig::CreateFromCustomPacURL(GURL(pac_url)),
+      : config_(ProxyConfig::CreateFromCustomPacURL(GURL(pac_url)),
                 TRAFFIC_ANNOTATION_FOR_TESTS) {}
 
   void AddObserver(Observer* observer) override {
@@ -199,7 +197,7 @@ class MockProxyConfigService : public ProxyConfigService {
   }
 
  private:
-  ConfigAvailability availability_;
+  ConfigAvailability availability_ = CONFIG_VALID;
   ProxyConfigWithAnnotation config_;
   base::ObserverList<Observer, true>::Unchecked observers_;
 };

@@ -137,7 +137,7 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
 
   // This buffer is owned by the owner of |callback|, and will be filled with
   // UTF16 response on completion.
-  raw_ptr<std::u16string> result_text_;
+  raw_ptr<std::u16string> result_text_ = nullptr;
 
   // The maximum number of bytes to allow in responses.
   size_t max_response_bytes_;

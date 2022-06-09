@@ -110,8 +110,6 @@ SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
       pushed_stream_id_(pushed_stream_id),
       is_reused_(spdy_session_->IsReused()),
       source_dependency_(source_dependency),
-      request_info_(nullptr),
-      response_info_(nullptr),
       dns_aliases_(std::move(dns_aliases)) {
   DCHECK(spdy_session_.get());
 }
