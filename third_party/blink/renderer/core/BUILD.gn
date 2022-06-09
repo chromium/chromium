@@ -1291,15 +1291,6 @@ source_set("unit_tests") {
     "exported/web_searchable_form_data_test.cc",
     "exported/web_selector_test.cc",
     "exported/web_view_test.cc",
-    "fragment_directive/css_selector_fragment_anchor_test.cc",
-    "fragment_directive/same_block_word_iterator_test.cc",
-    "fragment_directive/text_fragment_anchor_metrics_test.cc",
-    "fragment_directive/text_fragment_anchor_test.cc",
-    "fragment_directive/text_fragment_finder_test.cc",
-    "fragment_directive/text_fragment_generation_navigation_test.cc",
-    "fragment_directive/text_fragment_handler_test.cc",
-    "fragment_directive/text_fragment_selector_generator_test.cc",
-    "fragment_directive/text_fragment_selector_test.cc",
     "fullscreen/scoped_allow_fullscreen_test.cc",
     "geometry/dom_matrix_test.cc",
     "imagebitmap/image_bitmap_test.cc",
@@ -1330,28 +1321,10 @@ source_set("unit_tests") {
     "speculation_rules/speculation_rules_origin_trial_test.cc",
     "speculation_rules/stub_speculation_host.cc",
     "speculation_rules/stub_speculation_host.h",
-    "timing/background_tracing_helper_test.cc",
-    "timing/memory_info_test.cc",
-    "timing/performance_entry_test.cc",
-    "timing/performance_mark_test.cc",
-    "timing/performance_navigation_timing_test.cc",
-    "timing/performance_observer_test.cc",
-    "timing/performance_resource_timing_test.cc",
-    "timing/performance_test.cc",
-    "timing/profiler_group_test.cc",
-    "timing/time_clamper_test.cc",
-    "timing/window_performance_test.cc",
     "trustedtypes/trusted_types_util_test.cc",
     "typed_arrays/array_buffer/array_buffer_contents_test.cc",
     "typed_arrays/dom_array_buffer_test.cc",
     "url/url_search_params_test.cc",
-    "workers/dedicated_worker_test.cc",
-    "workers/dedicated_worker_test.h",
-    "workers/main_thread_worklet_test.cc",
-    "workers/threaded_worklet_test.cc",
-    "workers/worker_thread_test.cc",
-    "workers/worklet_global_scope_test_helper.h",
-    "workers/worklet_module_responses_map_test.cc",
     "xml/parser/shared_buffer_reader_test.cc",
     "xml/parser/xml_document_parser_test.cc",
     "xml/xpath_functions_test.cc",
@@ -1369,6 +1342,8 @@ source_set("unit_tests") {
   sources += rebase_path(blink_core_tests_events, "", "events")
   sources += rebase_path(blink_core_tests_fetch, "", "fetch")
   sources += rebase_path(blink_core_tests_fileapi, "", "fileapi")
+  sources +=
+      rebase_path(blink_core_tests_fragment_directive, "", "fragment_directive")
   sources += rebase_path(blink_core_tests_frame, "", "frame")
   sources += rebase_path(blink_core_tests_html, "", "html")
   sources += rebase_path(blink_core_tests_input, "", "input")
@@ -1381,6 +1356,8 @@ source_set("unit_tests") {
   sources += rebase_path(blink_core_tests_streams, "", "streams")
   sources += rebase_path(blink_core_tests_style, "", "style")
   sources += rebase_path(blink_core_tests_svg, "", "svg")
+  sources += rebase_path(blink_core_tests_timing, "", "timing")
+  sources += rebase_path(blink_core_tests_workers, "", "workers")
 
   if (is_debug || dcheck_always_on) {
     sources += [ "exported/web_disallow_transition_scope_test.cc" ]

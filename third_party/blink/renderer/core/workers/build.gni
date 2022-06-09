@@ -83,3 +83,13 @@ blink_core_sources_workers = [
   "worklet_pending_tasks.h",
   "worklet_thread_holder.h",
 ]
+
+blink_core_tests_workers = [
+  "dedicated_worker_test.cc",
+  "dedicated_worker_test.h",
+  "main_thread_worklet_test.cc",
+  "threaded_worklet_test.cc",
+  "worker_thread_test.cc",
+  "worklet_global_scope_test_helper.h",
+  "worklet_module_responses_map_test.cc",
+]
