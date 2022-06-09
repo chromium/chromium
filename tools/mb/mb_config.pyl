@@ -388,7 +388,7 @@
       'ios15-sdk-device': 'ios_device_release_static_bot_xctest',
       'ios15-sdk-simulator': 'ios_simulator_debug_static_bot_xctest',
       'ios16-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
-      'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest',
+      'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_no_lld_treat_warnings_as_errors',
       'lacros-amd64-generic-rel (goma cache silo)': 'chromeos_amd64-generic_lacros_rel',
       'lacros-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_lacros_rel_reclient',
       'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel_reclient',
@@ -1171,7 +1171,7 @@
       'ios15-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
       'ios15-sdk-simulator': 'ios_simulator_debug_static_bot_xctest',
       'ios16-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
-      'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest',
+      'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_no_lld_treat_warnings_as_errors',
       'mac-arm64-on-arm64-rel': 'mac_arm64_release_trybot',
       'mac-builder-next-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'mac-clang-tidy-rel': 'release_trybot',
@@ -2795,6 +2795,10 @@
         'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation', 'no_lld',
     ],
 
+    'ios_simulator_debug_static_bot_xctest_no_lld_treat_warnings_as_errors': [
+        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation', 'no_lld', 'treat_warnings_as_errors'
+    ],
+
     'ios_simulator_debug_static_bot_xctest_reclient': [
         'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
     ],
@@ -4356,6 +4360,10 @@
 
     'thin_lto_opt': {
       'gn_args': 'use_thin_lto=true thin_lto_enable_optimizations=true',
+    },
+
+   'treat_warnings_as_errors': {
+      'gn_args': 'treat_warnings_as_errors=false',
     },
 
     'tsan': {
