@@ -38,8 +38,8 @@ namespace blink {
 
 class LocalFrame;
 class MediaQuery;
-class MediaQueryExp;
 class MediaQueryExpNode;
+class MediaQueryFeatureExpNode;
 class MediaQueryResult;
 class MediaQuerySet;
 class MediaQuerySetResult;
@@ -115,10 +115,6 @@ class CORE_EXPORT MediaQueryEvaluator final
   KleeneValue Eval(const MediaQueryExpNode&) const;
   KleeneValue Eval(const MediaQueryExpNode&, Results) const;
 
-  // Evaluates media query subexpression, ie "and (media-feature: value)" part.
-  bool Eval(const MediaQueryExp&) const;
-  bool Eval(const MediaQueryExp&, Results) const;
-
   // Returns true if any of the media queries in the results lists changed its
   // evaluation.
   bool DidResultsChange(const HeapVector<MediaQuerySetResult>& results) const;
@@ -133,7 +129,7 @@ class CORE_EXPORT MediaQueryEvaluator final
   KleeneValue EvalOr(const MediaQueryExpNode&,
                      const MediaQueryExpNode&,
                      Results) const;
-  KleeneValue EvalFeature(const MediaQueryExp&, Results) const;
+  KleeneValue EvalFeature(const MediaQueryFeatureExpNode&, Results) const;
 
   const String MediaType() const;
 

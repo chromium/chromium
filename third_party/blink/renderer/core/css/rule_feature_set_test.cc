@@ -40,11 +40,16 @@ class RuleFeatureSetTest : public testing::Test {
     document_->body()->setInnerHTML("<b><i></i></b>");
   }
 
-  HeapVector<MediaQueryExp> ExpressionsFrom(const MediaQuery& query) {
+  HeapVector<Member<const MediaQueryFeatureExpNode>> FeaturesFrom(
+      const MediaQuery& query) {
     HeapVector<MediaQueryExp> expressions;
     if (query.ExpNode())
       query.ExpNode()->CollectExpressions(expressions);
-    return expressions;
+    HeapVector<Member<const MediaQueryFeatureExpNode>> features;
+    for (const MediaQueryExp& exp : expressions) {
+      features.push_back(MakeGarbageCollected<MediaQueryFeatureExpNode>(exp));
+    }
+    return features;
   }
 
   RuleFeatureSet::SelectorPreMatch CollectFeatures(
@@ -1496,13 +1501,13 @@ TEST_F(RuleFeatureSetTest, MediaQueryResultListEquality) {
     RuleFeatureSet set2;
     RuleFeatureSet set3;
     for (const auto& query : min_width1->QueryVector()) {
-      for (const auto& expresssion : ExpressionsFrom(*query)) {
+      for (const auto& feature : FeaturesFrom(*query)) {
         set1.ViewportDependentMediaQueryResults().push_back(
-            MediaQueryResult(expresssion, true));
+            MediaQueryResult(*feature, true));
         set2.ViewportDependentMediaQueryResults().push_back(
-            MediaQueryResult(expresssion, true));
+            MediaQueryResult(*feature, true));
         set3.ViewportDependentMediaQueryResults().push_back(
-            MediaQueryResult(expresssion, false));
+            MediaQueryResult(*feature, false));
       }
     }
     EXPECT_EQ(set1, set2);
@@ -1513,17 +1518,17 @@ TEST_F(RuleFeatureSetTest, MediaQueryResultListEquality) {
   {
     RuleFeatureSet set1;
     for (const auto& query : min_width1->QueryVector()) {
-      for (const auto& expresssion : ExpressionsFrom(*query)) {
+      for (const auto& feature : FeaturesFrom(*query)) {
         set1.ViewportDependentMediaQueryResults().push_back(
-            MediaQueryResult(expresssion, true));
+            MediaQueryResult(*feature, true));
       }
     }
 
     RuleFeatureSet set2;
     for (const auto& query : min_width2->QueryVector()) {
-      for (const auto& expresssion : ExpressionsFrom(*query)) {
+      for (const auto& feature : FeaturesFrom(*query)) {
         set1.ViewportDependentMediaQueryResults().push_back(
-            MediaQueryResult(expresssion, true));
+            MediaQueryResult(*feature, true));
       }
     }
 
@@ -1535,13 +1540,13 @@ TEST_F(RuleFeatureSetTest, MediaQueryResultListEquality) {
     RuleFeatureSet set2;
     RuleFeatureSet set3;
     for (const auto& query : min_resolution1->QueryVector()) {
-      for (const auto& expresssion : ExpressionsFrom(*query)) {
+      for (const auto& feature : FeaturesFrom(*query)) {
         set1.DeviceDependentMediaQueryResults().push_back(
-            MediaQueryResult(expresssion, true));
+            MediaQueryResult(*feature, true));
         set2.DeviceDependentMediaQueryResults().push_back(
-            MediaQueryResult(expresssion, true));
+            MediaQueryResult(*feature, true));
         set3.DeviceDependentMediaQueryResults().push_back(
-            MediaQueryResult(expresssion, false));
+            MediaQueryResult(*feature, false));
       }
     }
     EXPECT_EQ(set1, set2);
@@ -1552,17 +1557,17 @@ TEST_F(RuleFeatureSetTest, MediaQueryResultListEquality) {
   {
     RuleFeatureSet set1;
     for (const auto& query : min_resolution1->QueryVector()) {
-      for (const auto& expresssion : ExpressionsFrom(*query)) {
+      for (const auto& feature : FeaturesFrom(*query)) {
         set1.DeviceDependentMediaQueryResults().push_back(
-            MediaQueryResult(expresssion, true));
+            MediaQueryResult(*feature, true));
       }
     }
 
     RuleFeatureSet set2;
     for (const auto& query : min_resolution2->QueryVector()) {
-      for (const auto& expresssion : ExpressionsFrom(*query)) {
+      for (const auto& feature : FeaturesFrom(*query)) {
         set2.DeviceDependentMediaQueryResults().push_back(
-            MediaQueryResult(expresssion, true));
+            MediaQueryResult(*feature, true));
       }
     }
 

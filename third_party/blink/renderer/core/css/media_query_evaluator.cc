@@ -185,7 +185,7 @@ KleeneValue MediaQueryEvaluator::Eval(const MediaQueryExpNode& node,
     return EvalOr(n->Left(), n->Right(), results);
   if (auto* n = DynamicTo<MediaQueryUnknownExpNode>(node))
     return KleeneValue::kUnknown;
-  return EvalFeature(To<MediaQueryFeatureExpNode>(node).Expression(), results);
+  return EvalFeature(To<MediaQueryFeatureExpNode>(node), results);
 }
 
 KleeneValue MediaQueryEvaluator::EvalNot(const MediaQueryExpNode& operand_node,
@@ -220,23 +220,6 @@ KleeneValue MediaQueryEvaluator::EvalOr(const MediaQueryExpNode& left_node,
   if (left == KleeneValue::kTrue)
     return left;
   return Eval(right_node, results);
-}
-
-KleeneValue MediaQueryEvaluator::EvalFeature(const MediaQueryExp& expr,
-                                             Results results) const {
-  if (media_values_) {
-    if (!media_values_->Width().has_value() && expr.IsWidthDependent())
-      return KleeneValue::kUnknown;
-    if (!media_values_->Height().has_value() && expr.IsHeightDependent())
-      return KleeneValue::kUnknown;
-    if (!media_values_->InlineSize().has_value() &&
-        expr.IsInlineSizeDependent()) {
-      return KleeneValue::kUnknown;
-    }
-    if (!media_values_->BlockSize().has_value() && expr.IsBlockSizeDependent())
-      return KleeneValue::kUnknown;
-  }
-  return Eval(expr, results) ? KleeneValue::kTrue : KleeneValue::kFalse;
 }
 
 bool MediaQueryEvaluator::DidResultsChange(
@@ -1301,33 +1284,38 @@ void MediaQueryEvaluator::Init() {
 #undef ADD_TO_FUNCTIONMAP
 }
 
-bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr) const {
-  return Eval(expr, Results());
-}
-
-bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr,
-                               Results results) const {
+KleeneValue MediaQueryEvaluator::EvalFeature(
+    const MediaQueryFeatureExpNode& feature,
+    Results results) const {
   if (!media_values_ || !media_values_->HasValues()) {
     // media_values_ should only be nullptr when parsing UA stylesheets. The
     // only media queries we support in UA stylesheets are media type queries.
     // If HasValues() return false, it means the document frame is nullptr.
     NOTREACHED();
-    return false;
+    return KleeneValue::kFalse;
   }
 
-  DCHECK(media_values_->Width().has_value() || !expr.IsWidthDependent());
-  DCHECK(media_values_->Height().has_value() || !expr.IsHeightDependent());
+  if (!media_values_->Width().has_value() && feature.IsWidthDependent())
+    return KleeneValue::kUnknown;
+  if (!media_values_->Height().has_value() && feature.IsHeightDependent())
+    return KleeneValue::kUnknown;
+  if (!media_values_->InlineSize().has_value() &&
+      feature.IsInlineSizeDependent()) {
+    return KleeneValue::kUnknown;
+  }
+  if (!media_values_->BlockSize().has_value() && feature.IsBlockSizeDependent())
+    return KleeneValue::kUnknown;
 
   DCHECK(g_function_map);
 
   // Call the media feature evaluation function. Assume no prefix and let
   // trampoline functions override the prefix if prefix is used.
-  EvalFunc func = g_function_map->at(expr.MediaFeature().Impl());
+  EvalFunc func = g_function_map->at(feature.Name().Impl());
 
   if (!func)
-    return false;
+    return KleeneValue::kFalse;
 
-  const auto& bounds = expr.Bounds();
+  const auto& bounds = feature.Bounds();
 
   bool result = true;
 
@@ -1342,14 +1330,14 @@ bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr,
     result &= func(bounds.left.value, op, *media_values_);
   }
 
-  if (results.viewport_dependent && expr.IsViewportDependent())
-    results.viewport_dependent->push_back(MediaQueryResult(expr, result));
-  if (results.device_dependent && expr.IsDeviceDependent())
-    results.device_dependent->push_back(MediaQueryResult(expr, result));
+  if (results.viewport_dependent && feature.IsViewportDependent())
+    results.viewport_dependent->push_back(MediaQueryResult(feature, result));
+  if (results.device_dependent && feature.IsDeviceDependent())
+    results.device_dependent->push_back(MediaQueryResult(feature, result));
   if (results.unit_flags)
-    *results.unit_flags |= expr.GetUnitFlags();
+    *results.unit_flags |= feature.GetUnitFlags();
 
-  return result;
+  return result ? KleeneValue::kTrue : KleeneValue::kFalse;
 }
 
 }  // namespace blink

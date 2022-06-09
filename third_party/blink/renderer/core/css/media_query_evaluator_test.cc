@@ -749,154 +749,159 @@ TEST(MediaQueryEvaluatorTest, RangedValues) {
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
   MediaQueryEvaluator media_query_evaluator(media_values);
 
+  auto eval = [&media_query_evaluator](MediaQueryExp exp) {
+    const auto* feature = MakeGarbageCollected<MediaQueryFeatureExpNode>(exp);
+    return media_query_evaluator.Eval(*feature) == KleeneValue::kTrue;
+  };
+
   // (width < 600px)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                    PxValue(600), MediaQueryOperator::kLt)))));
 
   // (width < 501px)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                    PxValue(501), MediaQueryOperator::kLt)))));
 
   // (width < 500px)
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_FALSE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                    PxValue(500), MediaQueryOperator::kLt)))));
 
   // (width > 500px)
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_FALSE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                    PxValue(500), MediaQueryOperator::kGt)))));
 
   // (width < 501px)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                    PxValue(501), MediaQueryOperator::kLt)))));
 
   // (width <= 500px)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                    PxValue(500), MediaQueryOperator::kLe)))));
 
   // (400px < width)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                                        PxValue(400), MediaQueryOperator::kLt),
                                    MediaQueryExpComparison()))));
 
   // (600px < width)
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_FALSE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                                        PxValue(600), MediaQueryOperator::kLt),
                                    MediaQueryExpComparison()))));
 
   // (400px > width)
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_FALSE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                                        PxValue(400), MediaQueryOperator::kGt),
                                    MediaQueryExpComparison()))));
 
   // (600px > width)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                                        PxValue(600), MediaQueryOperator::kGt),
                                    MediaQueryExpComparison()))));
 
   // (400px <= width)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                                        PxValue(400), MediaQueryOperator::kLe),
                                    MediaQueryExpComparison()))));
 
   // (600px <= width)
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_FALSE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                                        PxValue(600), MediaQueryOperator::kLe),
                                    MediaQueryExpComparison()))));
 
   // (400px >= width)
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_FALSE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                                        PxValue(400), MediaQueryOperator::kGe),
                                    MediaQueryExpComparison()))));
 
   // (600px >= width)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                                        PxValue(600), MediaQueryOperator::kGe),
                                    MediaQueryExpComparison()))));
 
   // (width = 500px)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                    PxValue(500), MediaQueryOperator::kEq)))));
 
   // (width = 400px)
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_FALSE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                    PxValue(400), MediaQueryOperator::kEq)))));
 
   // (500px = width)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                                        PxValue(500), MediaQueryOperator::kEq),
                                    MediaQueryExpComparison()))));
 
   // (400px = width)
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_FALSE(eval(MediaQueryExp::Create(
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                                        PxValue(400), MediaQueryOperator::kEq),
                                    MediaQueryExpComparison()))));
 
   // (400px < width < 600px)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "width",
       MediaQueryExpBounds(
           MediaQueryExpComparison(PxValue(400), MediaQueryOperator::kLt),
           MediaQueryExpComparison(PxValue(600), MediaQueryOperator::kLt)))));
 
   // (550px < width < 600px)
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_FALSE(eval(MediaQueryExp::Create(
       "width",
       MediaQueryExpBounds(
           MediaQueryExpComparison(PxValue(550), MediaQueryOperator::kLt),
           MediaQueryExpComparison(PxValue(600), MediaQueryOperator::kLt)))));
 
   // (400px < width < 450px)
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_FALSE(eval(MediaQueryExp::Create(
       "width",
       MediaQueryExpBounds(
           MediaQueryExpComparison(PxValue(400), MediaQueryOperator::kLt),
           MediaQueryExpComparison(PxValue(450), MediaQueryOperator::kLt)))));
 
   // (aspect-ratio = 2/1)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "aspect-ratio", MediaQueryExpBounds(MediaQueryExpComparison(
                           RatioValue(2, 1), MediaQueryOperator::kEq)))));
 
   // (aspect-ratio = 3/1)
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_FALSE(eval(MediaQueryExp::Create(
       "aspect-ratio", MediaQueryExpBounds(MediaQueryExpComparison(
                           RatioValue(3, 1), MediaQueryOperator::kEq)))));
 
   // (aspect-ratio < 1/1)
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_FALSE(eval(MediaQueryExp::Create(
       "aspect-ratio", MediaQueryExpBounds(MediaQueryExpComparison(
                           RatioValue(1, 1), MediaQueryOperator::kLt)))));
 
   // (aspect-ratio < 3/1)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "aspect-ratio", MediaQueryExpBounds(MediaQueryExpComparison(
                           RatioValue(3, 1), MediaQueryOperator::kLt)))));
 
   // (aspect-ratio > 1/1)
-  EXPECT_TRUE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_TRUE(eval(MediaQueryExp::Create(
       "aspect-ratio", MediaQueryExpBounds(MediaQueryExpComparison(
                           RatioValue(1, 1), MediaQueryOperator::kGt)))));
 
   // (aspect-ratio > 3/1)
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryExp::Create(
+  EXPECT_FALSE(eval(MediaQueryExp::Create(
       "aspect-ratio", MediaQueryExpBounds(MediaQueryExpComparison(
                           RatioValue(3, 1), MediaQueryOperator::kGt)))));
 }
@@ -1008,7 +1013,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
     media_query_evaluator.Eval(*width_lt_400, results);
 
     ASSERT_EQ(1u, viewport_dependent.size());
-    EXPECT_EQ(width_lt_400->Expression(), viewport_dependent[0].Expression());
+    EXPECT_EQ(width_lt_400, &viewport_dependent[0].Feature());
 
     EXPECT_TRUE(device_dependent.IsEmpty());
   }
@@ -1021,8 +1026,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
     media_query_evaluator.Eval(*device_width_lt_600, results);
 
     ASSERT_EQ(1u, device_dependent.size());
-    EXPECT_EQ(device_width_lt_600->Expression(),
-              device_dependent[0].Expression());
+    EXPECT_EQ(device_width_lt_600, &device_dependent[0].Feature());
 
     EXPECT_TRUE(viewport_dependent.IsEmpty());
   }
@@ -1037,8 +1041,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
         results);
 
     ASSERT_EQ(1u, device_dependent.size());
-    EXPECT_EQ(device_width_lt_600->Expression(),
-              device_dependent[0].Expression());
+    EXPECT_EQ(device_width_lt_600, &device_dependent[0].Feature());
 
     EXPECT_TRUE(viewport_dependent.IsEmpty());
   }
@@ -1053,8 +1056,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
         results);
 
     ASSERT_EQ(1u, device_dependent.size());
-    EXPECT_EQ(device_width_lt_600->Expression(),
-              device_dependent[0].Expression());
+    EXPECT_EQ(device_width_lt_600, &device_dependent[0].Feature());
 
     EXPECT_TRUE(viewport_dependent.IsEmpty());
   }
@@ -1070,11 +1072,10 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
                                results);
 
     ASSERT_EQ(1u, viewport_dependent.size());
-    EXPECT_EQ(width_lt_400->Expression(), viewport_dependent[0].Expression());
+    EXPECT_EQ(width_lt_400, &viewport_dependent[0].Feature());
 
     ASSERT_EQ(1u, device_dependent.size());
-    EXPECT_EQ(device_width_lt_600->Expression(),
-              device_dependent[0].Expression());
+    EXPECT_EQ(device_width_lt_600, &device_dependent[0].Feature());
   }
 
   // "not (width < 400px) and (device-width < 600px)" should be
@@ -1093,7 +1094,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
         results);
 
     ASSERT_EQ(1u, viewport_dependent.size());
-    EXPECT_EQ(width_lt_400->Expression(), viewport_dependent[0].Expression());
+    EXPECT_EQ(width_lt_400, &viewport_dependent[0].Feature());
 
     EXPECT_EQ(0u, device_dependent.size());
   }
@@ -1112,7 +1113,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
                                results);
 
     ASSERT_EQ(1u, viewport_dependent.size());
-    EXPECT_EQ(width_lt_400->Expression(), viewport_dependent[0].Expression());
+    EXPECT_EQ(width_lt_400, &viewport_dependent[0].Feature());
 
     EXPECT_EQ(0u, device_dependent.size());
   }
@@ -1130,11 +1131,10 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
         results);
 
     ASSERT_EQ(1u, viewport_dependent.size());
-    EXPECT_EQ(width_lt_400->Expression(), viewport_dependent[0].Expression());
+    EXPECT_EQ(width_lt_400, &viewport_dependent[0].Feature());
 
     ASSERT_EQ(1u, device_dependent.size());
-    EXPECT_EQ(device_width_lt_600->Expression(),
-              device_dependent[0].Expression());
+    EXPECT_EQ(device_width_lt_600, &device_dependent[0].Feature());
   }
 }
 

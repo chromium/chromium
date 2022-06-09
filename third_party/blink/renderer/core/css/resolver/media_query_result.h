@@ -35,23 +35,23 @@ class CORE_EXPORT MediaQueryResult {
   DISALLOW_NEW();
 
  public:
-  MediaQueryResult(const MediaQueryExp& expr, bool result)
-      : expression_(expr), result_(result) {}
-  void Trace(Visitor* visitor) const { visitor->Trace(expression_); }
+  MediaQueryResult(const MediaQueryFeatureExpNode& feature, bool result)
+      : feature_(&feature), result_(result) {}
+  void Trace(Visitor* visitor) const { visitor->Trace(feature_); }
 
   bool operator==(const MediaQueryResult& other) const {
-    return expression_ == other.expression_ && result_ == other.result_;
+    return feature_ == other.feature_ && result_ == other.result_;
   }
   bool operator!=(const MediaQueryResult& other) const {
     return !(*this == other);
   }
 
-  const MediaQueryExp& Expression() const { return expression_; }
+  const MediaQueryFeatureExpNode& Feature() const { return *feature_; }
 
   bool Result() const { return result_; }
 
  private:
-  const MediaQueryExp expression_;
+  Member<const MediaQueryFeatureExpNode> feature_;
   bool result_;
 };
 

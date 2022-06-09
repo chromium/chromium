@@ -344,7 +344,16 @@ class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
   explicit MediaQueryFeatureExpNode(const MediaQueryExp& exp) : exp_(exp) {}
   void Trace(Visitor*) const override;
 
-  MediaQueryExp Expression() const { return exp_; }
+  const String& Name() const { return exp_.MediaFeature(); }
+  const MediaQueryExpBounds& Bounds() const { return exp_.Bounds(); }
+
+  unsigned GetUnitFlags() const;
+  bool IsViewportDependent() const;
+  bool IsDeviceDependent() const;
+  bool IsWidthDependent() const;
+  bool IsHeightDependent() const;
+  bool IsInlineSizeDependent() const;
+  bool IsBlockSizeDependent() const;
 
   Type GetType() const override { return Type::kFeature; }
   void SerializeTo(StringBuilder&) const override;

@@ -632,6 +632,34 @@ const MediaQueryExpNode* MediaQueryExpNode::Or(const MediaQueryExpNode* left,
   return MakeGarbageCollected<MediaQueryOrExpNode>(left, right);
 }
 
+bool MediaQueryFeatureExpNode::IsViewportDependent() const {
+  return exp_.IsViewportDependent();
+}
+
+bool MediaQueryFeatureExpNode::IsDeviceDependent() const {
+  return exp_.IsDeviceDependent();
+}
+
+unsigned MediaQueryFeatureExpNode::GetUnitFlags() const {
+  return exp_.GetUnitFlags();
+}
+
+bool MediaQueryFeatureExpNode::IsWidthDependent() const {
+  return exp_.IsWidthDependent();
+}
+
+bool MediaQueryFeatureExpNode::IsHeightDependent() const {
+  return exp_.IsHeightDependent();
+}
+
+bool MediaQueryFeatureExpNode::IsInlineSizeDependent() const {
+  return exp_.IsInlineSizeDependent();
+}
+
+bool MediaQueryFeatureExpNode::IsBlockSizeDependent() const {
+  return exp_.IsBlockSizeDependent();
+}
+
 void MediaQueryFeatureExpNode::SerializeTo(StringBuilder& builder) const {
   builder.Append(exp_.Serialize());
 }
