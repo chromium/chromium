@@ -17,6 +17,7 @@
 #include <signal.h>
 #include <unistd.h>
 
+#include <atomic>
 #include <ios>
 #include <iterator>
 
@@ -219,9 +220,19 @@ class CrashHandler : public Thread,
                                  MachMessageServer::kPersistent,
                                  MachMessageServer::kReceiveLargeIgnore,
                                  kMachMessageTimeoutWaitIndefinitely);
-      MACH_CHECK(mr == (mach_handler_running_ ? MACH_SEND_INVALID_DEST
-                                              : MACH_RCV_PORT_CHANGED),
-                 mr)
+      MACH_CHECK(
+          mach_handler_running_
+              ? mr == MACH_SEND_INVALID_DEST  // This shouldn't happen for
+                                              // exception messages that come
+                                              // from the kernel itself, but if
+                                              // something else in-process sends
+                                              // exception messages and breaks,
+                                              // handle that case.
+              : (mr == MACH_RCV_PORT_CHANGED ||  // Port was closed while the
+                                                 // thread was listening.
+                 mr == MACH_RCV_INVALID_NAME),  // Port was closed before the
+                                                // thread started listening.
+          mr)
           << "MachMessageServer::Run";
     }
   }
@@ -384,7 +395,7 @@ class CrashHandler : public Thread,
   struct sigaction old_action_ = {};
   internal::InProcessHandler in_process_handler_;
   static CrashHandler* instance_;
-  bool mach_handler_running_ = false;
+  std::atomic<bool> mach_handler_running_ = false;
   InitializationStateDcheck initialized_;
 };
 

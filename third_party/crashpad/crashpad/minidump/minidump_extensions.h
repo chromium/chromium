@@ -93,6 +93,11 @@ enum MinidumpStreamType : uint32_t {
   //! \sa MemoryInfoListStream
   kMinidumpStreamTypeMemoryInfoList = MemoryInfoListStream,
 
+  //! \brief The stream type for MINIDUMP_THREAD_NAME_LIST.
+  //!
+  //! \sa ThreadNamesStream
+  kMinidumpStreamTypeThreadNameList = ThreadNamesStream,
+
   //! \brief The last reserved minidump stream.
   //!
   //! \sa MemoryInfoListStream

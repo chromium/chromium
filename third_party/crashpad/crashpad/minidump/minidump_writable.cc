@@ -75,6 +75,12 @@ void MinidumpWritable::RegisterRVA(RVA* rva) {
   registered_rvas_.push_back(rva);
 }
 
+void MinidumpWritable::RegisterRVA(RVA64* rva64) {
+  DCHECK_LE(state_, kStateFrozen);
+
+  registered_rva64s_.push_back(rva64);
+}
+
 void MinidumpWritable::RegisterLocationDescriptor(
     MINIDUMP_LOCATION_DESCRIPTOR* location_descriptor) {
   DCHECK_LE(state_, kStateFrozen);
@@ -82,12 +88,20 @@ void MinidumpWritable::RegisterLocationDescriptor(
   registered_location_descriptors_.push_back(location_descriptor);
 }
 
+void MinidumpWritable::RegisterLocationDescriptor(
+    MINIDUMP_LOCATION_DESCRIPTOR64* location_descriptor64) {
+  DCHECK_LE(state_, kStateFrozen);
+
+  registered_location_descriptor64s_.push_back(location_descriptor64);
+}
+
 MinidumpWritable::MinidumpWritable()
     : registered_rvas_(),
+      registered_rva64s_(),
       registered_location_descriptors_(),
+      registered_location_descriptor64s_(),
       leading_pad_bytes_(0),
-      state_(kStateMutable) {
-}
+      state_(kStateMutable) {}
 
 bool MinidumpWritable::Freeze() {
   DCHECK_EQ(state_, kStateMutable);
@@ -160,10 +174,10 @@ size_t MinidumpWritable::WillWriteAtOffset(
       return kInvalidSize;
     }
 
-    // Populate the RVA fields in other objects that have registered to point to
-    // this one. Typically, a parent object will have registered to point to its
-    // children, but this can also occur where no parent-child relationship
-    // exists.
+    // Populate the 32-bit RVA fields in other objects that have registered to
+    // point to this one. Typically, a parent object will have registered to
+    // point to its children, but this can also occur where no parent-child
+    // relationship exists.
     if (!registered_rvas_.empty() ||
         !registered_location_descriptors_.empty()) {
       RVA local_rva;
@@ -191,12 +205,45 @@ size_t MinidumpWritable::WillWriteAtOffset(
       }
     }
 
-    // This object is now considered writable. However, if it contains RVA or
-    // MINIDUMP_LOCATION_DESCRIPTOR fields, they may not be fully updated yet,
-    // because it’s the repsonsibility of these fields’ pointees to update them.
-    // Once WillWriteAtOffset has completed running for both phases on an entire
-    // tree, and the entire tree has moved into kStateFrozen, all RVA and
-    // MINIDUMP_LOCATION_DESCRIPTOR fields within that tree will be populated.
+    // Populate the 64-bit RVA fields in other objects that have registered to
+    // point to this one. Typically, a parent object will have registered to
+    // point to its children, but this can also occur where no parent-child
+    // relationship exists.
+    if (!registered_rva64s_.empty() ||
+        !registered_location_descriptor64s_.empty()) {
+      RVA64 local_rva64;
+      if (!AssignIfInRange(&local_rva64, local_offset)) {
+        LOG(ERROR) << "offset " << local_offset << " out of range";
+        return kInvalidSize;
+      }
+
+      for (RVA64* rva64 : registered_rva64s_) {
+        *rva64 = local_rva64;
+      }
+
+      if (!registered_location_descriptor64s_.empty()) {
+        decltype(registered_location_descriptor64s_[0]->DataSize) local_size;
+        if (!AssignIfInRange(&local_size, size)) {
+          LOG(ERROR) << "size " << size << " out of range";
+          return kInvalidSize;
+        }
+
+        for (MINIDUMP_LOCATION_DESCRIPTOR64* location_descriptor :
+             registered_location_descriptor64s_) {
+          location_descriptor->DataSize = local_size;
+          location_descriptor->Rva = local_rva64;
+        }
+      }
+    }
+
+    // This object is now considered writable. However, if it contains RVA/RVA64
+    // or MINIDUMP_LOCATION_DESCRIPTOR/MINIDUMP_LOCATION_DESCRIPTOR64 fields,
+    // they may not be fully updated yet, because it’s the repsonsibility of
+    // these fields’ pointees to update them. Once WillWriteAtOffset has
+    // completed running for both phases on an entire tree, and the entire tree
+    // has moved into kStateFrozen, all RVA/RVA64 and
+    // MINIDUMP_LOCATION_DESCRIPTOR/MINIDUMP_LOCATION_DESCRIPTOR64 fields within
+    // that tree will be populated.
     state_ = kStateWritable;
   } else {
     if (phase == kPhaseEarly) {

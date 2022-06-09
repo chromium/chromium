@@ -131,7 +131,6 @@ MinidumpContextX86Writer::MinidumpContextX86Writer()
 MinidumpContextX86Writer::~MinidumpContextX86Writer() {
 }
 
-
 void MinidumpContextX86Writer::InitializeFromSnapshot(
     const CPUContextX86* context_snapshot) {
   DCHECK_EQ(state(), kStateMutable);
@@ -288,8 +287,8 @@ bool MinidumpContextAMD64Writer::WriteObject(FileWriterInterface* file_writer) {
   memcpy(buf, &context_, sizeof(context_));
 
   if (xsave_entries_.size() > 0) {
-    MinidumpContextExHeader context_ex = {{0}, {0}, {0}};
-    MinidumpXSaveAreaHeader xsave_header = {0};
+    MinidumpContextExHeader context_ex = {{0, 0}, {0, 0}, {0, 0}};
+    MinidumpXSaveAreaHeader xsave_header = {0, 0, {}};
 
     // CONTEXT_EX goes directly after the CONTEXT. |offset| is relative to
     // &CONTEXT_EX.

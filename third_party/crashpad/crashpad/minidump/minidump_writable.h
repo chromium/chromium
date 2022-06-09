@@ -70,6 +70,7 @@ class MinidumpWritable {
   // This is public instead of protected because objects of derived classes need
   // to be able to register their own pointers with distinct objects.
   void RegisterRVA(RVA* rva);
+  void RegisterRVA(RVA64* rva);
 
   //! \brief Registers a location descriptor as one that should point to the
   //!     object on which this method is called.
@@ -88,6 +89,8 @@ class MinidumpWritable {
   // to be able to register their own pointers with distinct objects.
   void RegisterLocationDescriptor(
       MINIDUMP_LOCATION_DESCRIPTOR* location_descriptor);
+  void RegisterLocationDescriptor(
+      MINIDUMP_LOCATION_DESCRIPTOR64* location_descriptor64);
 
  protected:
   //! \brief Identifies the state of an object.
@@ -267,8 +270,14 @@ class MinidumpWritable {
  private:
   std::vector<RVA*> registered_rvas_;  // weak
 
+  std::vector<RVA64*> registered_rva64s_;  // weak
+
   // weak
   std::vector<MINIDUMP_LOCATION_DESCRIPTOR*> registered_location_descriptors_;
+
+  // weak
+  std::vector<MINIDUMP_LOCATION_DESCRIPTOR64*>
+      registered_location_descriptor64s_;
 
   size_t leading_pad_bytes_;
   State state_;

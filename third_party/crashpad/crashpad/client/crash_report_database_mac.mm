@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <uuid/uuid.h>
 
+#include <array>
 #include <iterator>
 #include <tuple>
 
@@ -57,7 +58,7 @@ constexpr char kCompletedDirectory[] = "completed";
 
 constexpr char kSettings[] = "settings.dat";
 
-constexpr const char* kReportDirectories[] = {
+constexpr std::array<const char*, 3> kReportDirectories = {
     kWriteDirectory,
     kUploadPendingDirectory,
     kCompletedDirectory,
@@ -291,8 +292,8 @@ bool CrashReportDatabaseMac::Initialize(bool may_create) {
   }
 
   // Create the three processing directories for the database.
-  for (size_t i = 0; i < std::size(kReportDirectories); ++i) {
-    if (!CreateOrEnsureDirectoryExists(base_dir_.Append(kReportDirectories[i])))
+  for (const auto& dir : kReportDirectories) {
+    if (!CreateOrEnsureDirectoryExists(base_dir_.Append(dir)))
       return false;
   }
 
