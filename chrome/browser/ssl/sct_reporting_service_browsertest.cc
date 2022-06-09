@@ -421,21 +421,6 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   size_t error_count_ = 0;
 };
 
-// Tests that reports should not be sent when extended reporting is not opted
-// in.
-IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
-                       NotOptedIn_ShouldNotEnqueueReport) {
-  SetExtendedReportingEnabled(false);
-
-  // Visit an HTTPS page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL("a.test", "/")));
-
-  // Check that no reports are sent.
-  EXPECT_EQ(0u, requests_seen());
-  EXPECT_TRUE(FlushAndCheckZeroReports());
-}
-
 // Tests that reports should be sent when extended reporting is opted in.
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
                        OptedIn_ShouldEnqueueReport) {
