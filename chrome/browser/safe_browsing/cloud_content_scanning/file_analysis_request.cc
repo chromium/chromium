@@ -148,6 +148,7 @@ FileAnalysisRequest::FileAnalysisRequest(
     : Request(std::move(callback), analysis_settings.analysis_url),
       has_cached_result_(false),
       block_unsupported_types_(analysis_settings.block_unsupported_file_types),
+      tag_settings_(analysis_settings.tags),
       path_(std::move(path)),
       file_name_(std::move(file_name)),
       delay_opening_file_(delay_opening_file) {
@@ -194,9 +195,10 @@ void FileAnalysisRequest::OpenFile() {
 bool FileAnalysisRequest::FileSupportedByDlp(
     const std::string& mime_type) const {
   for (const std::string& tag : content_analysis_request().tags()) {
-    if (tag == "dlp") {
-      return FileTypeSupportedForDlp(file_name_) ||
-             MimeTypeSupportedForDlp(mime_type);
+    if (tag == "dlp" && tag_settings_.count("dlp")) {
+      const auto* supported_files = tag_settings_.at("dlp").supported_files;
+      return supported_files->FileExtensionSupported(file_name_) ||
+             supported_files->MimeTypeSupported(mime_type);
     }
   }
 

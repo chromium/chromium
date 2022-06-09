@@ -248,43 +248,6 @@ TEST_P(DeepScanningUtilsUMATest, InvalidDuration) {
       histograms().GetTotalCountsForPrefix("SafeBrowsing.DeepScan.").size());
 }
 
-class DeepScanningUtilsDlpFileSupportedTest : public testing::Test {
- protected:
-  std::vector<base::FilePath::StringType> UnsupportedDlpFileTypes() {
-    return {FILE_PATH_LITERAL(".these"), FILE_PATH_LITERAL(".types"),
-            FILE_PATH_LITERAL(".are"), FILE_PATH_LITERAL(".not"),
-            FILE_PATH_LITERAL(".supported")};
-  }
-
-  std::vector<std::string> UnsupportedDlpMimeTypes() {
-    return {"image/png", "video/webm", "audio/wav", "i/made", "this/up", "foo"};
-  }
-
-  base::FilePath FilePath(const base::FilePath::StringType& type) {
-    return base::FilePath(FILE_PATH_LITERAL("foo") + type);
-  }
-};
-
-TEST_F(DeepScanningUtilsDlpFileSupportedTest, FileExtension) {
-  // With a DLP-only scan, only the types returned by SupportedDlpFileTypes()
-  // will be supported, and other types will fail.
-  for (const base::FilePath::StringType& type : SupportedDlpFileTypes()) {
-    EXPECT_TRUE(FileTypeSupportedForDlp(FilePath(type)));
-  }
-  for (const base::FilePath::StringType& type : UnsupportedDlpFileTypes()) {
-    EXPECT_FALSE(FileTypeSupportedForDlp(FilePath(type)));
-  }
-}
-
-TEST_F(DeepScanningUtilsDlpFileSupportedTest, MimeType) {
-  for (const std::string& type : SupportedDlpMimeTypes()) {
-    EXPECT_TRUE(MimeTypeSupportedForDlp(type));
-  }
-  for (const std::string& type : UnsupportedDlpMimeTypes()) {
-    EXPECT_FALSE(MimeTypeSupportedForDlp(type));
-  }
-}
-
 #if !BUILDFLAG(USE_CRASH_KEY_STUBS)
 class DeepScanningUtilsCrashKeysTest
     : public testing::TestWithParam<std::pair<ScanningCrashKey, const char*>> {

@@ -108,6 +108,9 @@ AnalysisServiceSettings::AnalysisServiceSettings(
       tags_[tag.GetString()].requires_justification = true;
     }
   }
+
+  for (const SupportedTag& supported_tag : analysis_config_->supported_tags)
+    tags_[supported_tag.name].supported_files = supported_tag.supported_files;
 }
 
 // static

@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/supports_user_data.h"
+#include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "content/public/browser/download_manager_delegate.h"
@@ -86,6 +87,7 @@ struct CustomMessageData {
 struct TagSettings {
   CustomMessageData custom_message;
   bool requires_justification = false;
+  const SupportedFiles* supported_files = nullptr;
 };
 
 // Structs representing settings to be used for an analysis or a report. These

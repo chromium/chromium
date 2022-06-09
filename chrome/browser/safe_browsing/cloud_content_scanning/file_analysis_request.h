@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 
@@ -58,7 +59,10 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
   BinaryUploadService::Result cached_result_;
   Data cached_data_;
 
+  // Analysis settings relevant to file analysis requests, copied from the
+  // overall analysis settings.
   bool block_unsupported_types_;
+  std::map<std::string, enterprise_connectors::TagSettings> tag_settings_;
 
   // Path to the file on disk.
   base::FilePath path_;
