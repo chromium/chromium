@@ -89,8 +89,8 @@ class NET_EXPORT_PRIVATE WebSocketInflater {
 
     const size_t capacity_;
     std::vector<char> buffer_;
-    size_t head_;
-    size_t tail_;
+    size_t head_ = 0;
+    size_t tail_ = 0;
   };
 
   class InputQueue {
@@ -114,8 +114,8 @@ class NET_EXPORT_PRIVATE WebSocketInflater {
     size_t PushToLastBuffer(const char* data, size_t size);
 
     const size_t capacity_;
-    size_t head_of_first_buffer_;
-    size_t tail_of_last_buffer_;
+    size_t head_of_first_buffer_ = 0;
+    size_t tail_of_last_buffer_ = 0;
     base::circular_deque<scoped_refptr<IOBufferWithSize>> buffers_;
   };
 

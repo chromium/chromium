@@ -71,7 +71,7 @@ class NET_EXPORT_PRIVATE WebSocketDeflater {
   base::circular_deque<char> buffer_;
   std::vector<char> fixed_buffer_;
   // true if bytes were added after last Finish().
-  bool are_bytes_added_;
+  bool are_bytes_added_ = false;
 };
 
 }  // namespace net

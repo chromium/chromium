@@ -36,8 +36,7 @@ const size_t kMaximumFrameHeaderSize =
 
 namespace net {
 
-WebSocketFrameParser::WebSocketFrameParser()
-    : frame_offset_(0), websocket_error_(kWebSocketNormalClosure) {}
+WebSocketFrameParser::WebSocketFrameParser() = default;
 
 WebSocketFrameParser::~WebSocketFrameParser() = default;
 

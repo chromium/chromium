@@ -94,7 +94,7 @@ class MockWebSocketStream : public WebSocketStream {
 //  - RecordWrittenDataFrame is called before writing the frame.
 class WebSocketDeflatePredictorMock : public WebSocketDeflatePredictor {
  public:
-  WebSocketDeflatePredictorMock() : result_(DEFLATE) {}
+  WebSocketDeflatePredictorMock() = default;
 
   WebSocketDeflatePredictorMock(const WebSocketDeflatePredictorMock&) = delete;
   WebSocketDeflatePredictorMock& operator=(
@@ -185,7 +185,7 @@ class WebSocketDeflatePredictorMock : public WebSocketDeflatePredictor {
   }
 
  private:
-  Result result_;
+  Result result_ = DEFLATE;
   // Data frames which will be recorded by |RecordInputFrames|.
   // Pushed by |AddFrameToBeInput| and popped and verified by
   // |RecordInputFrames|.

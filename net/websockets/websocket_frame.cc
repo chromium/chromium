@@ -79,7 +79,7 @@ WebSocketFrame::WebSocketFrame(WebSocketFrameHeader::OpCode opcode)
 
 WebSocketFrame::~WebSocketFrame() = default;
 
-WebSocketFrameChunk::WebSocketFrameChunk() : final_chunk(false) {}
+WebSocketFrameChunk::WebSocketFrameChunk() = default;
 
 WebSocketFrameChunk::~WebSocketFrameChunk() = default;
 

@@ -81,9 +81,9 @@ class NET_EXPORT WebSocketFrameParser {
   std::unique_ptr<WebSocketFrameHeader> current_frame_header_;
 
   // Amount of payload data read so far for the current frame.
-  uint64_t frame_offset_;
+  uint64_t frame_offset_ = 0;
 
-  WebSocketError websocket_error_;
+  WebSocketError websocket_error_ = kWebSocketNormalClosure;
 };
 
 }  // namespace net

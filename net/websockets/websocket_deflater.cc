@@ -15,8 +15,7 @@
 
 namespace net {
 
-WebSocketDeflater::WebSocketDeflater(ContextTakeOverMode mode)
-    : mode_(mode), are_bytes_added_(false) {}
+WebSocketDeflater::WebSocketDeflater(ContextTakeOverMode mode) : mode_(mode) {}
 
 WebSocketDeflater::~WebSocketDeflater() {
   if (stream_) {

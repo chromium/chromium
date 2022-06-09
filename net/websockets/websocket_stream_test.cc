@@ -101,11 +101,7 @@ static IsolationInfo CreateIsolationInfo() {
 class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
                                   public WebSocketStreamCreateTestBase {
  protected:
-  WebSocketStreamCreateTest()
-      : stream_type_(GetParam()),
-        http2_response_status_("200"),
-        reset_websocket_http2_stream_(false),
-        sequence_number_(0) {
+  WebSocketStreamCreateTest() : stream_type_(GetParam()) {
     // Make sure these tests all pass with connection partitioning enabled. The
     // disabled case is less interesting, and is tested more directly at lower
     // layers.
@@ -398,12 +394,12 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
 
   std::unique_ptr<base::OneShotTimer> timer_;
   std::string additional_data_;
-  const char* http2_response_status_;
-  bool reset_websocket_http2_stream_;
+  const char* http2_response_status_ = "200";
+  bool reset_websocket_http2_stream_ = false;
   SpdyTestUtil spdy_util_;
   NetLogWithSource log_;
 
-  int sequence_number_;
+  int sequence_number_ = 0;
 
   // Store mock HTTP/2 data.
   std::vector<spdy::SpdySerializedFrame> frames_;

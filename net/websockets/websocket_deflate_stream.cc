@@ -42,10 +42,6 @@ WebSocketDeflateStream::WebSocketDeflateStream(
     : stream_(std::move(stream)),
       deflater_(params.client_context_take_over_mode()),
       inflater_(kChunkSize, kChunkSize),
-      reading_state_(NOT_READING),
-      writing_state_(NOT_WRITING),
-      current_reading_opcode_(WebSocketFrameHeader::kOpCodeText),
-      current_writing_opcode_(WebSocketFrameHeader::kOpCodeText),
       predictor_(std::move(predictor)) {
   DCHECK(stream_);
   DCHECK(params.IsValidAsResponse());

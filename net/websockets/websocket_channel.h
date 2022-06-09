@@ -366,28 +366,28 @@ class NET_EXPORT WebSocketChannel {
   // Storage for the status code and reason from the time the Close frame
   // arrives until the connection is closed and they are passed to
   // OnDropChannel().
-  bool has_received_close_frame_;
-  uint16_t received_close_code_;
+  bool has_received_close_frame_ = false;
+  uint16_t received_close_code_ = 0;
   std::string received_close_reason_;
 
   // The current state of the channel. Mainly used for sanity checking, but also
   // used to track the close state.
-  State state_;
+  State state_ = FRESHLY_CONSTRUCTED;
 
   // UTF-8 validator for outgoing Text messages.
   base::StreamingUtf8Validator outgoing_utf8_validator_;
-  bool sending_text_message_;
+  bool sending_text_message_ = false;
 
   // UTF-8 validator for incoming Text messages.
   base::StreamingUtf8Validator incoming_utf8_validator_;
-  bool receiving_text_message_;
+  bool receiving_text_message_ = false;
 
   // True if we are in the middle of receiving a message.
-  bool expecting_to_handle_continuation_;
+  bool expecting_to_handle_continuation_ = false;
 
   // True if we have already sent the type (Text or Binary) of the current
   // message to the renderer. This can be false if the message is empty so far.
-  bool initial_frame_forwarded_;
+  bool initial_frame_forwarded_ = false;
 
   // True if we're waiting for OnReadDone() callback.
   bool is_reading_ = false;

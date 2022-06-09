@@ -159,7 +159,7 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
   void QuitNestedEventLoop();
 
   // failed_ is true if the handshake failed (ie. OnFailChannel was called).
-  bool failed_;
+  bool failed_ = false;
   std::unique_ptr<WebSocketHandshakeResponseInfo> response_;
   std::string selected_subprotocol_;
   std::string extensions_;
@@ -167,8 +167,7 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
   base::RunLoop run_loop_;
 };
 
-ConnectTestingEventInterface::ConnectTestingEventInterface() : failed_(false) {
-}
+ConnectTestingEventInterface::ConnectTestingEventInterface() = default;
 
 void ConnectTestingEventInterface::WaitForResponse() {
   run_loop_.Run();

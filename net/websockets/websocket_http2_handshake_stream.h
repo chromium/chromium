@@ -127,7 +127,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
                  int net_error,
                  absl::optional<int> response_code);
 
-  HandshakeResult result_;
+  HandshakeResult result_ = HandshakeResult::HTTP2_INCOMPLETE;
 
   // The connection to open the Websocket stream on.
   base::WeakPtr<SpdySession> session_;
@@ -165,14 +165,14 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   std::unique_ptr<WebSocketSpdyStreamAdapter> stream_adapter_;
 
   // True if |stream_| has been created then closed.
-  bool stream_closed_;
+  bool stream_closed_ = false;
 
   // The error code corresponding to the reason for closing the stream.
   // Only meaningful if |stream_closed_| is true.
-  int stream_error_;
+  int stream_error_ = OK;
 
   // True if complete response headers have been received.
-  bool response_headers_complete_;
+  bool response_headers_complete_ = false;
 
   // Save callback provided in asynchronous HttpStream methods.
   CompletionOnceCallback callback_;

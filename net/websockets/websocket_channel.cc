@@ -150,7 +150,7 @@ class DependentIOBuffer : public WrappedIOBuffer {
 // those frames.
 class WebSocketChannel::SendBuffer {
  public:
-  SendBuffer() : total_bytes_(0) {}
+  SendBuffer() = default;
 
   // Add a WebSocketFrame to the buffer and increase total_bytes_.
   void AddFrame(std::unique_ptr<WebSocketFrame> chunk,
@@ -168,7 +168,7 @@ class WebSocketChannel::SendBuffer {
   // The total size of the payload data in |frames_|. This will be used to
   // measure the throughput of the link.
   // TODO(ricea): Measure the throughput of the link.
-  uint64_t total_bytes_;
+  uint64_t total_bytes_ = 0;
 };
 
 void WebSocketChannel::SendBuffer::AddFrame(
@@ -248,14 +248,7 @@ WebSocketChannel::WebSocketChannel(
       closing_handshake_timeout_(
           base::Seconds(kClosingHandshakeTimeoutSeconds)),
       underlying_connection_close_timeout_(
-          base::Seconds(kUnderlyingConnectionCloseTimeoutSeconds)),
-      has_received_close_frame_(false),
-      received_close_code_(0),
-      state_(FRESHLY_CONSTRUCTED),
-      sending_text_message_(false),
-      receiving_text_message_(false),
-      expecting_to_handle_continuation_(false),
-      initial_frame_forwarded_(false) {}
+          base::Seconds(kUnderlyingConnectionCloseTimeoutSeconds)) {}
 
 WebSocketChannel::~WebSocketChannel() {
   // The stream may hold a pointer to read_frames_, and so it needs to be
