@@ -2402,6 +2402,7 @@ class ModelTypeWorkerPasswordsTestWithNotes
 
 TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
        ShouldIgnoreTheEncryptedNotesBackupWhenNotesInPasswordSpecificsData) {
+  base::HistogramTester histogram_tester;
   const std::string kPasswordInSpecificsNote = "Note Value";
   const std::string kPasswordNoteBackup = "Note Backup";
   NormalInitialize();
@@ -2443,10 +2444,14 @@ TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
                                           .notes()
                                           .note(0)
                                           .value());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PasswordNotesStateInUpdate",
+      syncer::PasswordNotesStateForUMA::kSetInSpecificsData, 1);
 }
 
 TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
        ShouldUseTheEncryptedNotesBackupWhenMissingInPasswordSpecificsData) {
+  base::HistogramTester histogram_tester;
   const std::string kPasswordNoteBackup = "Note Backup";
   NormalInitialize();
 
@@ -2454,7 +2459,6 @@ TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
   AddPendingKey();
   DecryptPendingKey();
 
-  // Set a value for the note in the PasswordSpecificsData.
   sync_pb::PasswordSpecificsData unencrypted_password;
   unencrypted_password.set_password_value(kPassword);
   sync_pb::EntitySpecifics encrypted_specifics =
@@ -2485,6 +2489,78 @@ TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
                                      .notes()
                                      .note(0)
                                      .value());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PasswordNotesStateInUpdate",
+      syncer::PasswordNotesStateForUMA::kSetOnlyInBackup, 1);
+}
+
+TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
+       ShouldEmitUnsetWhenNoNotesInUpdate) {
+  base::HistogramTester histogram_tester;
+  NormalInitialize();
+
+  // Create a new Nigori and allow the cryptographer to decrypt it.
+  AddPendingKey();
+  DecryptPendingKey();
+
+  sync_pb::PasswordSpecificsData unencrypted_password;
+  unencrypted_password.set_password_value(kPassword);
+  sync_pb::EntitySpecifics encrypted_specifics =
+      EncryptPasswordSpecificsWithNthKey(1, unencrypted_password);
+
+  // Receive an encrypted password, encrypted with a key that is already known.
+  SyncEntity entity = server()->UpdateFromServer(
+      /*version_offset=*/10, kHash1, encrypted_specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller());
+
+  ASSERT_TRUE(processor()->HasUpdateResponse(kHash1));
+  histogram_tester.ExpectUniqueSample("Sync.PasswordNotesStateInUpdate",
+                                      syncer::PasswordNotesStateForUMA::kUnset,
+                                      1);
+}
+
+TEST_F(ModelTypeWorkerPasswordsTestWithNotes, ShouldEmitNotesBackupCorrupted) {
+  base::HistogramTester histogram_tester;
+  const std::string kPasswordNoteBackup = "Note Backup";
+  NormalInitialize();
+
+  // Create a new Nigori and allow the cryptographer to decrypt it.
+  AddPendingKey();
+  DecryptPendingKey();
+
+  sync_pb::PasswordSpecificsData unencrypted_password;
+  unencrypted_password.set_password_value(kPassword);
+  sync_pb::EntitySpecifics encrypted_specifics =
+      EncryptPasswordSpecificsWithNthKey(1, unencrypted_password);
+
+  sync_pb::PasswordSpecificsData_Notes notes_backup;
+  notes_backup.add_note()->set_value(kPasswordNoteBackup);
+
+  FakeCryptographer::FromSingleDefaultKey(GetNthKeyName(1))
+      ->EncryptString(notes_backup.SerializeAsString(),
+                      encrypted_specifics.mutable_password()
+                          ->mutable_encrypted_notes_backup());
+
+  // Replace a few bytes to corrupt it.
+  encrypted_specifics.mutable_password()
+      ->mutable_encrypted_notes_backup()
+      ->mutable_blob()
+      ->replace(0, 4, "xyz!");
+
+  // Receive an encrypted password, encrypted with a key that is already known.
+  SyncEntity entity = server()->UpdateFromServer(
+      /*version_offset=*/10, kHash1, encrypted_specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PasswordNotesStateInUpdate",
+      syncer::PasswordNotesStateForUMA::kSetOnlyInBackupButCorrupted, 1);
 }
 
 }  // namespace syncer

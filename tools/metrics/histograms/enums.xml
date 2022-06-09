@@ -91563,6 +91563,16 @@ would be helpful to identify which type is being sent.
   <int value="6" label="Trusted vault passphrase"/>
 </enum>
 
+<enum name="SyncPasswordNotesStateInUpdate">
+  <int value="0"
+      label="Notes field is not set either in the specifics data or the
+             backup"/>
+  <int value="1" label="Notes field is set in the specifics data."/>
+  <int value="2" label="Notes field is set only in the backup"/>
+  <int value="3"
+      label="Notes field is set only in the backup but not decryptable"/>
+</enum>
+
 <enum name="SyncPositioningScheme">
   <int value="0" label="UNIQUE_POSITION"/>
   <int value="1" label="POSITION_IN_PARENT"/>

@@ -847,6 +847,18 @@ chromium-metrics-reviews@google.com.
   <summary>Sync passphrase type collected at each metrics upload.</summary>
 </histogram>
 
+<histogram name="Sync.PasswordNotesStateInUpdate"
+    enum="SyncPasswordNotesStateInUpdate" expires_after="2023-02-01">
+  <owner>mamir@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records whether password notes are set in password specifics proto or the
+    backup field. Recorded when decrypting password entity update upon download
+    from the sync server.
+  </summary>
+</histogram>
+
 <histogram name="Sync.PostedClientToServerMessage"
     enum="SyncClientToServerMessageContents" expires_after="2022-10-23">
   <owner>mastiz@chromium.org</owner>

@@ -52,6 +52,12 @@ const char kUndecryptablePendingUpdatesDroppedHistogramName[] =
     "Sync.ModelTypeUndecryptablePendingUpdatesDropped";
 const char kBlockedByUndecryptableUpdateHistogramName[] =
     "Sync.ModelTypeBlockedDueToUndecryptableUpdate";
+const char kPasswordNotesStateHistogramName[] =
+    "Sync.PasswordNotesStateInUpdate";
+
+void LogPasswordNotesState(PasswordNotesStateForUMA state) {
+  base::UmaHistogramEnumeration(kPasswordNotesStateHistogramName, state);
+}
 
 // A proxy which can be called from any sequence and delegates the work to the
 // commit queue injected on construction.
@@ -169,9 +175,11 @@ bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
   // The `notes` field in the PasswordSpecificsData is the authoritative value.
   // When set, it disregards whatever `encrypted_notes_backup` contains.
   if (out->password().client_only_encrypted_data().has_notes()) {
+    LogPasswordNotesState(PasswordNotesStateForUMA::kSetInSpecificsData);
     return true;
   }
   if (!in.password().has_encrypted_notes_backup()) {
+    LogPasswordNotesState(PasswordNotesStateForUMA::kUnset);
     return true;
   }
   if (!base::FeatureList::IsEnabled(
@@ -185,10 +193,11 @@ bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
                              out->mutable_password()
                                  ->mutable_client_only_encrypted_data()
                                  ->mutable_notes())) {
-    // TODO(crbug.com/1326554): Log UMA metrics for cases when notes backup
-    // encrypted blob is corrupted.
+    LogPasswordNotesState(
+        PasswordNotesStateForUMA::kSetOnlyInBackupButCorrupted);
     return false;
   }
+  LogPasswordNotesState(PasswordNotesStateForUMA::kSetOnlyInBackup);
   // TODO(crbug.com/1326554): Properly handle the case when both blobs are
   // decryptable but with different keys. Ideally the password should be
   // re-uploaded potentially by setting needs_reupload boolean in
