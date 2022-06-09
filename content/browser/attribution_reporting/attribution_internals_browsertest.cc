@@ -589,6 +589,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   EXPECT_CALL(*manager(), ClearData)
       .WillOnce([](base::Time delete_begin, base::Time delete_end,
                    base::RepeatingCallback<bool(const url::Origin&)> filter,
+                   bool delete_rate_limit_data,
                    base::OnceClosure done) { std::move(done).Run(); });
 
   // Verify both rows get rendered.
@@ -634,9 +635,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   manager()->NotifySourceDeactivated(
       SourceBuilder(now + base::Hours(2)).SetSourceEventId(6).BuildStored());
 
-  EXPECT_CALL(*manager(), ClearData)
+  EXPECT_CALL(*manager(),
+              ClearData(base::Time::Min(), base::Time::Max(), _, true, _))
       .WillOnce([](base::Time delete_begin, base::Time delete_end,
                    base::RepeatingCallback<bool(const url::Origin&)> filter,
+                   bool delete_rate_limit_data,
                    base::OnceClosure done) { std::move(done).Run(); });
 
   // Verify both rows get rendered.

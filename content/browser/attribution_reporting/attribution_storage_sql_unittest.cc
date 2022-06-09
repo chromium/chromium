@@ -484,6 +484,44 @@ TEST_F(AttributionStorageSqlTest, DeleteEverything) {
       "Conversions.ReportsDeletedInDataClearOperation", 2, 1);
 }
 
+TEST_F(AttributionStorageSqlTest, ClearData_KeepRateLimitData) {
+  OpenDatabase();
+  storage()->StoreSource(SourceBuilder().Build());
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+
+  CloseDatabase();
+  {
+    sql::Database raw_db;
+    EXPECT_TRUE(raw_db.Open(db_path()));
+    size_t impression_rows;
+    sql::test::CountTableRows(&raw_db, "sources", &impression_rows);
+    EXPECT_EQ(1u, impression_rows);
+
+    size_t rate_limit_rows;
+    sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
+    EXPECT_EQ(2u, rate_limit_rows);
+  }
+
+  OpenDatabase();
+  storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                       base::NullCallback(),
+                       /*delete_rate_limit_data=*/false);
+  CloseDatabase();
+
+  {
+    sql::Database raw_db;
+    EXPECT_TRUE(raw_db.Open(db_path()));
+    size_t impression_rows;
+    sql::test::CountTableRows(&raw_db, "sources", &impression_rows);
+    EXPECT_EQ(0u, impression_rows);
+
+    size_t rate_limit_rows;
+    sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
+    EXPECT_EQ(2u, rate_limit_rows);
+  }
+}
+
 TEST_F(AttributionStorageSqlTest, MaxSourcesPerOrigin) {
   OpenDatabase();
   delegate()->set_max_sources_per_origin(2);

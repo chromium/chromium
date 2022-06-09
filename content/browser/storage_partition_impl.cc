@@ -2499,9 +2499,15 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
 
   auto filter = CreateGenericOriginMatcher(storage_origin, origin_matcher,
                                            storage_policy_ref);
-  if (attribution_manager && (remove_mask_ & REMOVE_DATA_MASK_CONVERSIONS)) {
+
+  // It is not expected to only delete internal attribution reporting data.
+  DCHECK(!(remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL) ||
+         remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED);
+  if (attribution_manager &&
+      (remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED)) {
     attribution_manager->ClearData(
         begin, end, filter,
+        remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL,
         CreateTaskCompletionClosure(TracingDataType::kConversions));
   }
 

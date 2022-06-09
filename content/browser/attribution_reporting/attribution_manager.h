@@ -76,6 +76,7 @@ class AttributionManager {
       base::Time delete_begin,
       base::Time delete_end,
       base::RepeatingCallback<bool(const url::Origin&)> filter,
+      bool delete_rate_limit_data,
       base::OnceClosure done) = 0;
 };
 

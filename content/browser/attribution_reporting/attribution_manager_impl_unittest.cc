@@ -868,7 +868,7 @@ TEST_F(AttributionManagerImplTest, ClearData) {
         start, start + base::Minutes(1),
         base::BindLambdaForTesting(
             [match_url](const url::Origin& _) { return match_url; }),
-        run_loop.QuitClosure());
+        /*delete_rate_limit_data=*/true, run_loop.QuitClosure());
     run_loop.Run();
 
     size_t expected_reports = match_url ? 0u : 1u;
@@ -1227,7 +1227,7 @@ TEST_F(AttributionManagerImplTest, ClearData_NotifiesObservers) {
   attribution_manager_->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating([](const url::Origin& _) { return false; }),
-      run_loop.QuitClosure());
+      /*delete_rate_limit_data=*/true, run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -1649,8 +1649,9 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
                 ElementsAre(SourceDebugKeyIs(test_case.expected_debug_key)))
         << test_case.name;
 
-    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
-                                    base::NullCallback(), base::DoNothing());
+    attribution_manager_->ClearData(
+        base::Time::Min(), base::Time::Max(), base::NullCallback(),
+        /*delete_rate_limit_data=*/true, base::DoNothing());
   }
 }
 
@@ -1680,8 +1681,9 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
                           TriggerDebugKeyIs(test_case.expected_debug_key))))
         << test_case.name;
 
-    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
-                                    base::NullCallback(), base::DoNothing());
+    attribution_manager_->ClearData(
+        base::Time::Min(), base::Time::Max(), base::NullCallback(),
+        /*delete_rate_limit_data=*/true, base::DoNothing());
   }
 }
 
@@ -1752,8 +1754,9 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
       EXPECT_THAT(report_sender_->debug_calls(), IsEmpty());
     }
 
-    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
-                                    base::NullCallback(), base::DoNothing());
+    attribution_manager_->ClearData(
+        base::Time::Min(), base::Time::Max(), base::NullCallback(),
+        /*delete_rate_limit_data=*/true, base::DoNothing());
 
     ::testing::Mock::VerifyAndClear(&observer);
   }

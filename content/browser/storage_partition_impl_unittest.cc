@@ -2028,9 +2028,10 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
   attribution_manager->HandleTrigger(DefaultTrigger());
 
   base::RunLoop run_loop;
-  partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0,
-                       source.common_info().impression_origin().GetURL(), now,
-                       now, run_loop.QuitClosure());
+  partition->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED, 0,
+      source.common_info().impression_origin().GetURL(), now, now,
+      run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(GetAttributionReportsForTesting(attribution_manager).empty());
@@ -2077,8 +2078,9 @@ TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
     attribution_manager->HandleSource(source);
   }
   base::RunLoop run_loop;
-  partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0,
-                       GURL(), now, now, run_loop.QuitClosure());
+  partition->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED, 0,
+      GURL(), now, now, run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(GetAttributionReportsForTesting(attribution_manager).empty());
@@ -2121,8 +2123,9 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
                origin == url::Origin::Create(GURL("https://rep-4.com/")) ||
                origin == url::Origin::Create(GURL("https://imp-4.com/"));
       });
-  partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0, func,
-                       nullptr, false, now, now, run_loop.QuitClosure());
+  partition->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED, 0,
+      func, nullptr, false, now, now, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(2u, GetAttributionReportsForTesting(attribution_manager).size());
 }

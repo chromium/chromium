@@ -1707,7 +1707,7 @@ TEST_F(PrivacySandboxServiceTest, DisablingV2SandboxClearsData) {
   prefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
   EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
                 content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
-                content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS |
+                content::BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING |
                 content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
             browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
   EXPECT_EQ(base::Time::Min(),

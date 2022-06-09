@@ -300,7 +300,8 @@ void ProfileImpl::ClearBrowsingData(
         remove_mask |= BrowsingDataRemoverDelegate::DATA_TYPE_FAVICONS;
         remove_mask |= BrowsingDataRemoverDelegate::DATA_TYPE_AD_INTERVENTIONS;
         remove_mask |= content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS;
-        remove_mask |= content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS;
+        remove_mask |=
+            content::BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING;
         remove_mask |=
             content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE;
         break;

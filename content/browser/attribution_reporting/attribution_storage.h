@@ -130,7 +130,8 @@ class AttributionStorage {
   virtual void ClearData(
       base::Time delete_begin,
       base::Time delete_end,
-      base::RepeatingCallback<bool(const url::Origin& origin)> filter) = 0;
+      base::RepeatingCallback<bool(const url::Origin& origin)> filter,
+      bool delete_rate_limit_data = true) = 0;
 };
 
 }  // namespace content

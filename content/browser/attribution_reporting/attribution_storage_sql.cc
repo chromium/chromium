@@ -1575,7 +1575,8 @@ AttributionStorageSql::AdjustOfflineEventLevelReportTimes(
 void AttributionStorageSql::ClearData(
     base::Time delete_begin,
     base::Time delete_end,
-    base::RepeatingCallback<bool(const url::Origin&)> filter) {
+    base::RepeatingCallback<bool(const url::Origin&)> filter,
+    bool delete_rate_limit_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return;
@@ -1583,7 +1584,7 @@ void AttributionStorageSql::ClearData(
   SCOPED_UMA_HISTOGRAM_TIMER("Conversions.ClearDataTime");
   if (filter.is_null() && (delete_begin.is_null() || delete_begin.is_min()) &&
       delete_end.is_max()) {
-    ClearAllDataAllTime();
+    ClearAllDataAllTime(delete_rate_limit_data);
     return;
   }
 
@@ -1682,12 +1683,13 @@ void AttributionStorageSql::ClearData(
   if (!ClearAggregatableAttributionsForSourceIds(source_ids_to_delete))
     return;
 
-  if (!rate_limit_table_.ClearDataForSourceIds(db_.get(),
-                                               source_ids_to_delete)) {
+  if (delete_rate_limit_data && !rate_limit_table_.ClearDataForSourceIds(
+                                    db_.get(), source_ids_to_delete)) {
     return;
   }
 
-  if (!rate_limit_table_.ClearDataForOriginsInRange(db_.get(), delete_begin,
+  if (delete_rate_limit_data &&
+      !rate_limit_table_.ClearDataForOriginsInRange(db_.get(), delete_begin,
                                                     delete_end, filter)) {
     return;
   }
@@ -1699,7 +1701,7 @@ void AttributionStorageSql::ClearData(
   RecordReportsDeleted(num_reports_deleted);
 }
 
-void AttributionStorageSql::ClearAllDataAllTime() {
+void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
     return;
@@ -1739,7 +1741,8 @@ void AttributionStorageSql::ClearAllDataAllTime() {
   if (!delete_all_contributions_statement.Run())
     return;
 
-  if (!rate_limit_table_.ClearAllDataAllTime(db_.get()))
+  if (delete_rate_limit_data &&
+      !rate_limit_table_.ClearAllDataAllTime(db_.get()))
     return;
 
   if (!transaction.Commit())

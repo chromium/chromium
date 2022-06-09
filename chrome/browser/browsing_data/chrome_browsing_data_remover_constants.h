@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_CHROME_BROWSING_DATA_REMOVER_CONSTANTS_H_
 #define CHROME_BROWSER_BROWSING_DATA_CHROME_BROWSING_DATA_REMOVER_CONSTANTS_H_
 
+#include <stdint.h>
+
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -54,7 +56,8 @@ constexpr DataType DATA_TYPE_SITE_DATA =
 #endif
     DATA_TYPE_SITE_USAGE_DATA | DATA_TYPE_DURABLE_PERMISSION |
     DATA_TYPE_EXTERNAL_PROTOCOL_DATA | DATA_TYPE_ISOLATED_ORIGINS |
-    content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
+    content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX |
+    content::BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING;
 
 // Datatypes protected by Important Sites.
 constexpr DataType IMPORTANT_SITES_DATA_TYPES =

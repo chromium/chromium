@@ -1312,13 +1312,21 @@ TEST_F(BrowsingDataRemoverImplTest,
           StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE);
 }
 
-TEST_F(BrowsingDataRemoverImplTest, RemoveConversions) {
-  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
-                                BrowsingDataRemover::DATA_TYPE_CONVERSIONS,
-                                false);
+TEST_F(BrowsingDataRemoverImplTest, RemoveAttributionReporting) {
+  BlockUntilBrowsingDataRemoved(
+      base::Time(), base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING_SITE_CREATED, false);
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_EQ(
+      removal_data.remove_mask,
+      StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED);
+
+  BlockUntilBrowsingDataRemoved(
+      base::Time(), base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL, false);
+  removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
-            StoragePartition::REMOVE_DATA_MASK_CONVERSIONS);
+            StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL);
 }
 
 TEST_F(BrowsingDataRemoverImplTest, RemoveAggregationServiceData) {

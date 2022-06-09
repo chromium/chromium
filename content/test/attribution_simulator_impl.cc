@@ -335,6 +335,7 @@ class AttributionEventHandler : public AttributionObserver {
 
     base::RunLoop run_loop;
     manager_->ClearData(clear.delete_begin, clear.delete_end, std::move(filter),
+                        /*delete_rate_limit_data=*/true,
                         run_loop.QuitClosure());
     run_loop.Run();
   }

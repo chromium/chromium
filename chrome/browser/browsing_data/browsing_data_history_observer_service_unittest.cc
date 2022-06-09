@@ -81,7 +81,10 @@ TEST_F(BrowsingDataHistoryObserverServiceTest, AllHistoryDeleted_DataCleared) {
 
   const absl::optional<RemovalData>& removal_data = partition.GetRemovalData();
   EXPECT_TRUE(removal_data.has_value());
-  EXPECT_EQ(content::StoragePartition::REMOVE_DATA_MASK_CONVERSIONS,
+  EXPECT_EQ(content::StoragePartition::
+                    REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED |
+                content::StoragePartition::
+                    REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL,
             removal_data->removal_mask);
   EXPECT_EQ(0u, removal_data->quota_storage_removal_mask);
   EXPECT_EQ(base::Time(), removal_data->begin);

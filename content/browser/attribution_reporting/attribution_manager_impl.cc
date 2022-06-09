@@ -304,7 +304,8 @@ AttributionManagerImpl::~AttributionManagerImpl() {
           &IsOriginSessionOnly, std::move(special_storage_policy_));
   attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
       .WithArgs(base::Time::Min(), base::Time::Max(),
-                std::move(session_only_origin_predicate));
+                std::move(session_only_origin_predicate),
+                /*delete_rate_limit_data=*/true);
 }
 
 void AttributionManagerImpl::AddObserver(AttributionObserver* observer) {
@@ -566,9 +567,11 @@ void AttributionManagerImpl::ClearData(
     base::Time delete_begin,
     base::Time delete_end,
     base::RepeatingCallback<bool(const url::Origin&)> filter,
+    bool delete_rate_limit_data,
     base::OnceClosure done) {
   attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
-      .WithArgs(delete_begin, delete_end, std::move(filter))
+      .WithArgs(delete_begin, delete_end, std::move(filter),
+                delete_rate_limit_data)
       .Then(base::BindOnce(
           [](base::OnceClosure done,
              base::WeakPtr<AttributionManagerImpl> manager) {

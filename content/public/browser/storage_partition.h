@@ -174,7 +174,7 @@ class CONTENT_EXPORT StoragePartition {
     // Private File System.
     REMOVE_DATA_MASK_PLUGIN_PRIVATE_DATA = 1 << 9,
     REMOVE_DATA_MASK_BACKGROUND_FETCH = 1 << 10,
-    REMOVE_DATA_MASK_CONVERSIONS = 1 << 11,
+    REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED = 1 << 11,
     // Interest groups are stored as part of the Interest Group API experiment
     // Public explainer here:
     // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
@@ -188,6 +188,8 @@ class CONTENT_EXPORT StoragePartition {
     // Public explainer here:
     // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
     REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE = 1 << 15,
+
+    REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL = 1 << 16,
 
     REMOVE_DATA_MASK_ALL = 0xFFFFFFFF,
 

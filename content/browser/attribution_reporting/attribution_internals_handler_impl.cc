@@ -237,7 +237,8 @@ void AttributionInternalsHandlerImpl::ClearStorage(
   if (AttributionManager* manager =
           AttributionManager::FromWebContents(web_ui_->GetWebContents())) {
     manager->ClearData(base::Time::Min(), base::Time::Max(),
-                       base::NullCallback(), std::move(callback));
+                       base::NullCallback(),
+                       /*delete_rate_limit_data=*/true, std::move(callback));
   } else {
     std::move(callback).Run();
   }
