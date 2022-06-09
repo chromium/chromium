@@ -87,11 +87,9 @@ void CreateSubsequentRunTrial(base::FeatureList* feature_list,
 
 }  // namespace
 
-// Experiment is currently disabled on all channels due to a bug. Storing the
-// pref before the experiment is enabled would cause a skew when this experiment
-// is rolled out as existing clients would be in the |kDisabled| group.
+// Experiment is enabled on all channels except STABLE.
 bool ShouldEnableTrial(version_info::Channel channel) {
-  return false;
+  return channel != version_info::Channel::STABLE;
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -99,6 +97,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 void Create(base::FeatureList* feature_list, PrefService* local_state) {
+  // Storing the pref before the experiment is enabled would cause a skew when
+  // this experiment is rolled out as existing clients would be in the
+  // |kDisabled| group.
   if (!ShouldEnableTrial(chrome::GetChannel()))
     return;
 
