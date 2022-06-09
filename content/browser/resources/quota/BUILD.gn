@@ -61,7 +61,10 @@ ts_library("build_ts") {
     "quota_internals_browser_proxy.ts",
     "quota_internals.mojom-webui.js",
   ]
-  deps = [ "//ui/webui/resources/mojo:library" ]
+  deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
   extra_deps = [
     ":copy_mojo",
     ":copy_ts",

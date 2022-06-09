@@ -10,13 +10,10 @@
   <script type="module" src="quota_internals.js" defer></script>
 </head>
   <body>
-    <tabbox>
-      <tabs class="new-style-tabs">
-        <tab id="summary-tab">Summary</tab>
-        <tab id="usage-tab">Usage &amp; Quota</tab>
-      </tabs>
-      <tabpanels class="new-style-tabs">
-        <tabpanel id="summary-tabpanel" selected="selected">
+    <cr-tab-box>
+        <div id="summary-tab" slot="tab">Summary</div>
+        <div id="usage-tab" slot="tab">Usage &amp; Quota</div>
+        <div id="summary-tabpanel" slot="panel">
           <!-- Summary -->
           <h2>Summary</h2>
           <h3>Disk Availability</h3>
@@ -55,9 +52,9 @@
               Trigger Storage Pressure Notification
             </button>
           </form>
-        </tabpanel>
+        </div>
 
-        <tabpanel id="usage-tabpanel">
+        <div id="usage-tabpanel" slot="panel">
           <!-- Usage and Quota -->
           <h2>Host Usage Data</h2>
           <table>
@@ -73,9 +70,8 @@
             </thead>
             <tbody id="usage-and-quota-tbody"></tbody>
           </table>
-        </tabpanel>
-      </tabpanels>
-    </tabbox>
+        </div>
+    </cr-tab-box>
 
     <template id="listener-row">
       <tr>

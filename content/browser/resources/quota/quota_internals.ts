@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
+
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {QuotaInternalsBrowserProxy} from './quota_internals_browser_proxy.js';
@@ -292,16 +294,4 @@ document.addEventListener('DOMContentLoaded', () => {
   renderUsageAndQuotaStats();
   document.body.querySelector('#trigger-notification')!.addEventListener(
       'click', () => getProxy().simulateStoragePressure());
-
-  document.body.querySelector('#summary-tab')!.addEventListener('click', () => {
-    document.body.querySelector('#usage-tabpanel')!.removeAttribute('selected');
-    document.body.querySelector('#summary-tabpanel')!.setAttribute(
-        'selected', 'selected');
-  });
-
-  document.querySelector('#usage-tab')!.addEventListener('click', () => {
-    document.querySelector('#summary-tabpanel')!.removeAttribute('selected');
-    document.querySelector('#usage-tabpanel')!.setAttribute(
-        'selected', 'selected');
-  });
 });
