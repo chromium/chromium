@@ -68,6 +68,7 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
  protected:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+
     appController_.reset([[AppController alloc] init]);
     [appController_ setLastProfileForTesting:profile()];
     previousApplicationDelegate_ = [NSApp delegate];

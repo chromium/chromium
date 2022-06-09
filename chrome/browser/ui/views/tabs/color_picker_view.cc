@@ -150,7 +150,7 @@ class ColorPickerElementView : public views::Button {
     DCHECK_EQ(bounds.width(), bounds.height());
 
     const SkColor color =
-        GetColorProvider()->GetColor(GetTabGroupDialogColorId(color_id_));
+        GetThemeProvider()->GetColor(GetTabGroupDialogColorId(color_id_));
 
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
