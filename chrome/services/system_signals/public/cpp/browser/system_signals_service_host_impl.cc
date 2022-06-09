@@ -8,8 +8,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/time/time.h"
-#include "chrome/grit/generated_resources.h"
-#include "content/public/browser/service_process_host.h"
+#include "chrome/grit/generated_resources.h"              // nogncheck
+#include "content/public/browser/service_process_host.h"  // nogncheck
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/services/system_signals/mac/mac_system_signals_service.h"
 #elif BUILDFLAG(IS_LINUX)
@@ -36,7 +36,7 @@ SystemSignalsServiceHostImpl::GetService() {
             .Pass());
     remote_service_.reset_on_idle_timeout(base::Seconds(10));
   }
-  return &remote_service_;
+  return remote_service_.get();
 }
 
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)

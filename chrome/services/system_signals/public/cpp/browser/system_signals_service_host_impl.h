@@ -7,12 +7,13 @@
 
 #include "build/build_config.h"
 #include "components/device_signals/core/browser/system_signals_service_host.h"
-#include "components/device_signals/core/common/mojom/system_signals.mojom-forward.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "components/device_signals/core/common/mojom/system_signals.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #include <memory>
+#include "components/device_signals/core/common/mojom/system_signals.mojom-forward.h"
 #endif
 
 namespace system_signals {
@@ -21,7 +22,7 @@ class SystemSignalsServiceHostImpl
     : public device_signals::SystemSignalsServiceHost {
  public:
   SystemSignalsServiceHostImpl();
-  ~SystemSignalsServiceHostImpl();
+  ~SystemSignalsServiceHostImpl() override;
 
   SystemSignalsServiceHostImpl(const SystemSignalsServiceHostImpl&) = delete;
   SystemSignalsServiceHostImpl& operator=(const SystemSignalsServiceHostImpl&) =
@@ -32,7 +33,7 @@ class SystemSignalsServiceHostImpl
 
  private:
 #if BUILDFLAG(IS_WIN)
-  mojom::Remote<device_signals::mojom::SystemSignalsService> remote_service_;
+  mojo::Remote<device_signals::mojom::SystemSignalsService> remote_service_;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   std::unique_ptr<device_signals::mojom::SystemSignalsService> local_service_;
 #endif

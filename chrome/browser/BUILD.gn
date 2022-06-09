@@ -3755,8 +3755,6 @@ static_library("browser") {
       "enterprise/signals/device_info_fetcher.h",
       "enterprise/signals/signals_common.cc",
       "enterprise/signals/signals_common.h",
-      "enterprise/signals/user_delegate_impl.cc",
-      "enterprise/signals/user_delegate_impl.h",
       "feedback/feedback_dialog_utils.cc",
       "feedback/feedback_dialog_utils.h",
       "feedback/feedback_uploader_chrome.cc",
@@ -6114,15 +6112,32 @@ static_library("browser") {
       "enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h",
       "enterprise/remote_commands/rotate_attestation_credential_job.cc",
       "enterprise/remote_commands/rotate_attestation_credential_job.h",
+      "enterprise/signals/signals_aggregator_factory.cc",
+      "enterprise/signals/signals_aggregator_factory.h",
+      "enterprise/signals/system_signals_service_host_factory.cc",
+      "enterprise/signals/system_signals_service_host_factory.h",
+      "enterprise/signals/user_delegate_impl.cc",
+      "enterprise/signals/user_delegate_impl.h",
+      "enterprise/signals/user_permission_service_factory.cc",
+      "enterprise/signals/user_permission_service_factory.h",
     ]
-    public_deps += [
+    deps += [
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:google_key_proto",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:interface_proto",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
+      "//chrome/services/system_signals/public/cpp/browser",
+      "//components/device_signals/core/browser",
       "//components/device_signals/core/common",
     ]
+
+    if (is_win) {
+      deps += [
+        "//components/device_signals/core/browser/win",
+        "//components/device_signals/core/common/win",
+      ]
+    }
   }
 
   if (is_linux || is_chromeos) {

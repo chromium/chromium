@@ -10,8 +10,7 @@ source_set("browser") {
   sources = [ "system_signals_service_host_impl.cc" ]
 
   public_deps = [
-    "//build",
-    "//components/device_signals/core/common",
+    "//components/device_signals/core/browser",
     "//components/device_signals/core/common/mojom",
     "//mojo/public/mojom/base",
   ]
