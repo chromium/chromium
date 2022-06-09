@@ -190,7 +190,7 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
       int min_height = bounds.height() * kMinimumPercentOnScreenArea;
       AdjustBoundsToEnsureWindowVisibility(display_area, min_width, min_height,
                                            &bounds);
-      window_state->AdjustSnappedBounds(&bounds);
+      window_state->AdjustSnappedBoundsForDisplayWorkspaceChange(&bounds);
       window_state->SetBoundsConstrained(bounds);
       return;
     }
@@ -648,7 +648,7 @@ void DefaultState::UpdateBoundsForDisplayOrWorkAreaBoundsChange(
     bounds.AdjustToFit(work_area_in_parent);
   else if (!::wm::GetTransientParent(window_state->window()))
     AdjustBoundsToEnsureMinimumWindowVisibility(work_area_in_parent, &bounds);
-  window_state->AdjustSnappedBounds(&bounds);
+  window_state->AdjustSnappedBoundsForDisplayWorkspaceChange(&bounds);
 
   if (window_state->window()->GetTargetBounds() == bounds)
     return;

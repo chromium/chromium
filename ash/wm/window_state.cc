@@ -462,7 +462,7 @@ void WindowState::RestoreZOrdering() {
 void WindowState::OnWMEvent(const WMEvent* event) {
   current_state_->OnWMEvent(this, event);
 
-  UpdateSnapRatio(event);
+  MaybeUpdateSnapRatio(event);
 
   PersistentDesksBarController* bar_controller =
       Shell::Get()->persistent_desks_bar_controller();
@@ -568,7 +568,7 @@ std::unique_ptr<WindowState::State> WindowState::SetStateObject(
   return old_object;
 }
 
-void WindowState::UpdateSnapRatio(const WMEvent* event) {
+void WindowState::MaybeUpdateSnapRatio(const WMEvent* event) {
   if (!IsSnapped()) {
     snap_ratio_.reset();
     return;
@@ -579,7 +579,7 @@ void WindowState::UpdateSnapRatio(const WMEvent* event) {
   if (type == WM_EVENT_SNAP_PRIMARY || type == WM_EVENT_SNAP_SECONDARY ||
       type == WM_EVENT_CYCLE_SNAP_PRIMARY ||
       type == WM_EVENT_CYCLE_SNAP_SECONDARY) {
-    // Since |UpdateSnapRatio()| is called post WMEvent taking effect,
+    // Since |MaybeUpdateSnapRatio()| is called post WMEvent taking effect,
     // |window_|'s bounds is in a correct state for ratio update.
     snap_ratio_ = absl::make_optional(GetCurrentSnapRatio(window_));
     return;
@@ -778,7 +778,8 @@ void WindowState::SetBoundsInScreen(const gfx::Rect& bounds_in_screen) {
   window_->SetBounds(bounds_in_parent);
 }
 
-void WindowState::AdjustSnappedBounds(gfx::Rect* bounds) {
+void WindowState::AdjustSnappedBoundsForDisplayWorkspaceChange(
+    gfx::Rect* bounds) {
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   const bool in_tablet =
       tablet_mode_controller && tablet_mode_controller->InTabletMode();

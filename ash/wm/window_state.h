@@ -236,8 +236,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // by this object and the returned object will be owned by the caller.
   std::unique_ptr<State> SetStateObject(std::unique_ptr<State> new_state);
 
-  // Updates |snap_ratio_| based on |event|.
-  void UpdateSnapRatio(const WMEvent* event);
+  // Updates |snap_ratio_| iff |event| is a snapping event or bounds event.
+  void MaybeUpdateSnapRatio(const WMEvent* event);
   absl::optional<float> snap_ratio() const { return snap_ratio_; }
 
   // True if the window should be unminimized to the restore bounds, as
@@ -461,7 +461,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Adjusts the |bounds| so that they are flush with the edge of the
   // workspace in clamshell mode if the window represented by |window_state|
   // is side snapped. It is called for workspace events.
-  void AdjustSnappedBounds(gfx::Rect* bounds);
+  void AdjustSnappedBoundsForDisplayWorkspaceChange(gfx::Rect* bounds);
 
   // Updates the window properties(show state, pin type) according to the
   // current window state type.
@@ -568,9 +568,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool allow_set_bounds_direct_ = false;
 
   // A property to save the ratio between snapped window width (or height
-  // for vertical layout) and display workarea width (or height). It is used
-  // to update snapped window width (or height) on AdjustSnappedBounds() when
-  // handling workspace events.
+  // for vertical layout) and display workarea width (or height). The ratio
+  // should be preserved when the display or workspace size changes.
   absl::optional<float> snap_ratio_;
 
   // A property to remember the window position which was set before the
