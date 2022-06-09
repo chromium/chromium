@@ -10,7 +10,7 @@
 @protocol TableViewModalPresenting;
 
 // BookmarkNavigationControllerDelegate serves as a delegate for
-// TableViewNavigationController. It uses |modalController| to update the modal
+// TableViewNavigationController. It uses `modalController` to update the modal
 // presentation state when view controllers are pushed onto or popped off of the
 // navigation stack.
 @interface BookmarkNavigationControllerDelegate

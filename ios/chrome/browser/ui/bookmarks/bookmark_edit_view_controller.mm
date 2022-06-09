@@ -96,9 +96,9 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 // Reference to the bookmark model.
 @property(nonatomic, assign) BookmarkModel* bookmarkModel;
 
-// The parent of the bookmark. This may be different from |bookmark->parent()|
-// if the changes have not been saved yet. |folder| then represents the
-// candidate for the new parent of |bookmark|.  This property is always a
+// The parent of the bookmark. This may be different from `bookmark->parent()`
+// if the changes have not been saved yet. `folder` then represents the
+// candidate for the new parent of `bookmark`.  This property is always a
 // non-NULL, valid folder.
 @property(nonatomic, assign) const BookmarkNode* folder;
 
@@ -134,7 +134,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 // bookmark.
 - (void)commitBookmarkChanges;
 
-// Changes |self.folder| and updates the UI accordingly.
+// Changes `self.folder` and updates the UI accordingly.
 // The change is not committed until the user taps the Save button.
 - (void)changeFolder:(const BookmarkNode*)folder;
 
@@ -321,7 +321,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   base::AutoReset<BOOL> autoReset(&_ignoresBookmarkModelChanges, YES);
 
   GURL url = ConvertUserDataToGURL([self inputURLString]);
-  // If the URL was not valid, the |save| message shouldn't have been sent.
+  // If the URL was not valid, the `save` message shouldn't have been sent.
   DCHECK([self inputURLIsValid]);
 
   // Tell delegate if bookmark name or title has been changed.
@@ -569,10 +569,10 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   // - the user selected a folder in the folder picker. In that case, the folder
   // picker should be popped;
   // - the user created a new folder, in which case the navigation stack
-  // contains this bookmark editor (|self|), a folder picker and a folder
+  // contains this bookmark editor (`self`), a folder picker and a folder
   // creator. In such a case, both the folder picker and creator shoud be popped
   // to reveal this bookmark editor. Thus the call to
-  // |popToViewController:animated:|.
+  // `popToViewController:animated:`.
   [self.navigationController popToViewController:self animated:YES];
   self.folderViewController.delegate = nil;
   self.folderViewController = nil;
@@ -580,8 +580,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 - (void)folderPickerDidCancel:(BookmarkFolderViewController*)folderPicker {
   // This delegate method can only be called from the folder picker, which is
-  // the only view controller on top of this bookmark editor (|self|). Thus the
-  // call to |popViewControllerAnimated:|.
+  // the only view controller on top of this bookmark editor (`self`). Thus the
+  // call to `popViewControllerAnimated:`.
   [self.navigationController popViewControllerAnimated:YES];
   self.folderViewController.delegate = nil;
   self.folderViewController = nil;

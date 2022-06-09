@@ -16,7 +16,7 @@
     (BookmarkInteractionController*)controller;
 
 // Called when the controller is stopped and the receiver can safely free any
-// references to |controller|.
+// references to `controller`.
 - (void)bookmarkInteractionControllerDidStop:
     (BookmarkInteractionController*)controller;
 

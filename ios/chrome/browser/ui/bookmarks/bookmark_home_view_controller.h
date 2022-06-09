@@ -20,13 +20,13 @@ class BookmarkNode;
 class GURL;
 
 @protocol BookmarkHomeViewControllerDelegate
-// The view controller wants to be dismissed. If |urls| is not empty, then
+// The view controller wants to be dismissed. If `urls` is not empty, then
 // the user has selected to navigate to those URLs in the current tab mode.
 - (void)bookmarkHomeViewControllerWantsDismissal:
             (BookmarkHomeViewController*)controller
                                 navigationToUrls:(const std::vector<GURL>&)urls;
 
-// The view controller wants to be dismissed. If |urls| is not empty, then
+// The view controller wants to be dismissed. If `urls` is not empty, then
 // the user has selected to navigate to those URLs with specified tab mode.
 - (void)bookmarkHomeViewControllerWantsDismissal:
             (BookmarkHomeViewController*)controller
@@ -57,7 +57,7 @@ class GURL;
 
 // Returns an array of BookmarkHomeViewControllers, one per BookmarkNode in the
 // path from this view controller's node to the latest cached node (as
-// determined by BookmarkPathCache).  Includes |self| as the first element of
+// determined by BookmarkPathCache).  Includes `self` as the first element of
 // the returned array.  Sets the cached scroll position for the last element of
 // the returned array, if appropriate.
 - (NSArray<BookmarkHomeViewController*>*)cachedViewControllerStack;

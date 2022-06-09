@@ -8,7 +8,7 @@
 // Delegates the cell's text field's event.
 @protocol BookmarkTableCellTitleEditDelegate
 
-// Called when the |titleText| of the cell was changed.
+// Called when the `titleText` of the cell was changed.
 - (void)textDidChangeTo:(NSString*)newName;
 
 @end

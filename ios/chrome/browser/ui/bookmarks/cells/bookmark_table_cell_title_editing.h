@@ -12,10 +12,10 @@
 
 // Receives the text field events.
 @property(nonatomic, weak) id<BookmarkTableCellTitleEditDelegate> textDelegate;
-// Start editing the |folderTitleTextField| of this cell.
+// Start editing the `folderTitleTextField` of this cell.
 - (void)startEdit;
 // Stop editing the title's text of this cell. This will call textDidChangeTo:
-// on |textDelegate| with the cell's title text value at the moment.
+// on `textDelegate` with the cell's title text value at the moment.
 - (void)stopEdit;
 
 @end

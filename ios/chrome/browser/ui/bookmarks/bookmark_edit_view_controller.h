@@ -20,11 +20,11 @@ class BookmarkNode;
 @protocol BookmarkEditViewControllerDelegate
 
 // Called when the edited bookmark is set for deletion.
-// If the delegate returns |YES|, all nodes matching the URL of |bookmark| will
+// If the delegate returns `YES`, all nodes matching the URL of `bookmark` will
 // be deleted.
-// If the delegate returns |NO|, only |bookmark| will be deleted.
+// If the delegate returns `NO`, only `bookmark` will be deleted.
 // If the delegate doesn't implement this method, the default behavior is to
-// delete all nodes matching the URL of |bookmark|.
+// delete all nodes matching the URL of `bookmark`.
 - (BOOL)bookmarkEditor:(BookmarkEditViewController*)controller
     shoudDeleteAllOccurencesOfBookmark:(const bookmarks::BookmarkNode*)bookmark;
 
@@ -52,7 +52,7 @@ class BookmarkNode;
 // id<SnacbarCommands> handler property.
 
 // Designated initializer.
-// |bookmark|: mustn't be NULL at initialization time. It also mustn't be a
+// `bookmark`: mustn't be NULL at initialization time. It also mustn't be a
 //             folder.
 - (instancetype)initWithBookmark:(const bookmarks::BookmarkNode*)bookmark
                          browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;

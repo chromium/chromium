@@ -32,7 +32,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 namespace {
 
 // Returns an AppLaunchConfiguration containing the given policy data.
-// |policyData| must be in XML format.
+// `policyData` must be in XML format.
 AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data) {
   AppLaunchConfiguration config;
   // Remove whitespace from the policy data, because the XML parser does not

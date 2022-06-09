@@ -77,7 +77,7 @@ typedef NS_ENUM(NSInteger, BookmarkHomeItemType) {
 @property(nonatomic, assign) BOOL addingNewFolder;
 
 // The cell for the newly created folder while its name is being edited. Set
-// to nil once the editing completes. Corresponds to |editingFolderNode|.
+// to nil once the editing completes. Corresponds to `editingFolderNode`.
 @property(nonatomic, weak)
     UITableViewCell<BookmarkTableCellTitleEditing>* editingFolderCell;
 

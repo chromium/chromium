@@ -35,7 +35,7 @@ class ChromeBrowserState;
 
 // Rebuilds the table view model data for the bookmarks matching the given text.
 // Deletes any existing data first.  If no items found, an entry with
-// |noResults' message is added to the table.
+// `noResults' message is added to the table.
 - (void)computeBookmarkTableViewDataMatching:(NSString*)searchText
                   orShowMessageWhenNoResults:(NSString*)noResults;
 

@@ -63,8 +63,8 @@ void BookmarkModelBridge::BookmarkNodeRemoved(
     size_t old_index,
     const BookmarkNode* node,
     const std::set<GURL>& removed_urls) {
-  // Hold a non-weak reference to |observer_|, in case the first event below
-  // destroys |this|.
+  // Hold a non-weak reference to `observer_`, in case the first event below
+  // destroys `this`.
   id<BookmarkModelBridgeObserver> observer = observer_;
 
   [observer bookmarkNodeDeleted:node fromFolder:parent];

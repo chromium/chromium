@@ -18,7 +18,7 @@ class BookmarkNode;
 }  // namespace bookmarks
 
 @protocol BookmarkFolderViewControllerDelegate
-// Called when a bookmark folder is selected. |folder| is the newly selected
+// Called when a bookmark folder is selected. `folder` is the newly selected
 // folder.
 - (void)folderPicker:(BookmarkFolderViewController*)folderPicker
     didFinishWithFolder:(const bookmarks::BookmarkNode*)folder;
@@ -43,12 +43,12 @@ class BookmarkNode;
 @property(nonatomic, assign, readonly)
     std::set<const bookmarks::BookmarkNode*>& editedNodes;
 
-// Initializes the view controller with a bookmarks model. |allowsNewFolders|
+// Initializes the view controller with a bookmarks model. `allowsNewFolders`
 // will instruct the controller to provide the necessary UI to create a folder.
-// |bookmarkModel| must not be NULL and must be loaded.
-// |editedNodes| affects which cells can be selected, since it is not possible
+// `bookmarkModel` must not be NULL and must be loaded.
+// `editedNodes` affects which cells can be selected, since it is not possible
 // to move a node into its subnode.
-// |allowsCancel| puts a cancel and done button in the navigation bar instead of
+// `allowsCancel` puts a cancel and done button in the navigation bar instead of
 // a back button, which is needed if this view controller is presented modally.
 - (instancetype)
     initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel

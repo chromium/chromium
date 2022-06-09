@@ -17,12 +17,12 @@ class BookmarkNode;
 }  // namespace bookmarks
 
 @protocol BookmarkFolderEditorViewControllerDelegate
-// Called when the controller successfully created or edited |folder|.
+// Called when the controller successfully created or edited `folder`.
 - (void)bookmarkFolderEditor:(BookmarkFolderEditorViewController*)folderEditor
       didFinishEditingFolder:(const bookmarks::BookmarkNode*)folder;
 // Called when the user deletes the edited folder.
 // This is never called if the editor is created with
-// |folderCreatorWithBookmarkModel:parentFolder:|.
+// `folderCreatorWithBookmarkModel:parentFolder:`.
 - (void)bookmarkFolderEditorDidDeleteEditedFolder:
     (BookmarkFolderEditorViewController*)folderEditor;
 // Called when the user cancels the folder creation.
@@ -48,17 +48,17 @@ class BookmarkNode;
 
 // Designated factory methods.
 
-// Returns a view controller set to create a new folder in |parentFolder|.
-// If |parentFolder| is NULL, a default parent will be set.
-// |bookmarkModel| must not be NULL and must be loaded.
+// Returns a view controller set to create a new folder in `parentFolder`.
+// If `parentFolder` is NULL, a default parent will be set.
+// `bookmarkModel` must not be NULL and must be loaded.
 + (instancetype)
     folderCreatorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                       parentFolder:(const bookmarks::BookmarkNode*)parentFolder
                            browser:(Browser*)browser;
 
-// |bookmarkModel| must not be null and must be loaded.
-// |folder| must not be NULL and be editable.
-// |browser| must not be null.
+// `bookmarkModel` must not be null and must be loaded.
+// `folder` must not be NULL and be editable.
+// `browser` must not be null.
 + (instancetype)
     folderEditorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                            folder:(const bookmarks::BookmarkNode*)folder

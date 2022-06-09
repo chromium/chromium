@@ -71,7 +71,7 @@ id<GREYMatcher> SearchIconButton();
 // Navigates to the bookmark manager UI.
 - (void)openBookmarks;
 
-// Navigates to the bookmark manager UI in window with number |windowNumber|.
+// Navigates to the bookmark manager UI in window with number `windowNumber`.
 // Sets and Leaves the root matcher to the given window.
 - (void)openBookmarksInWindowWithNumber:(int)windowNumber;
 
@@ -82,16 +82,16 @@ id<GREYMatcher> SearchIconButton();
 - (void)starCurrentTab;
 
 // Creates a new folder starting from the folder picker.
-// Passing a |name| of 0 length will use the default value.
+// Passing a `name` of 0 length will use the default value.
 - (void)addFolderWithName:(NSString*)name;
 
-// Waits for the disparition of the given |title| in the UI.
+// Waits for the disparition of the given `title` in the UI.
 - (void)waitForDeletionOfBookmarkWithTitle:(NSString*)title;
 
 // Wait for Undo toast to go away.
 - (void)waitForUndoToastToGoAway;
 
-// Rename folder title to |folderTitle|. Must be in edit folder UI.
+// Rename folder title to `folderTitle`. Must be in edit folder UI.
 - (void)renameBookmarkFolderWithFolderTitle:(NSString*)folderTitle;
 
 // Close edit mode.
@@ -167,7 +167,7 @@ id<GREYMatcher> SearchIconButton();
 - (void)createNewBookmarkFolderWithFolderTitle:(NSString*)folderTitle
                                    pressReturn:(BOOL)pressReturn;
 
-// Bookmarks the current tab using |title| as Bookmark title. Make sure the
+// Bookmarks the current tab using `title` as Bookmark title. Make sure the
 // Bookmark loaded is loaded before by calling [BookmarkEarlGrey
 // waitForBookmarkModelLoaded:YES];
 - (void)bookmarkCurrentTabWithTitle:(NSString*)title;

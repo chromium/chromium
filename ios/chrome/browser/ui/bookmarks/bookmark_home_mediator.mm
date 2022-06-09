@@ -412,7 +412,7 @@ const int kMaxBookmarksSearchResults = 50;
   }
 }
 
-// |node| was deleted from |folder|.
+// `node` was deleted from `folder`.
 - (void)bookmarkNodeDeleted:(const BookmarkNode*)node
                  fromFolder:(const BookmarkNode*)folder {
   if (self.sharedState.currentlyShowingSearchResults) {
@@ -541,7 +541,7 @@ const int kMaxBookmarksSearchResults = 50;
          !self.sharedState.tableViewDisplayedRootNode->children().empty();
 }
 
-// Delete all items for the given |sectionIdentifier| section, or create it
+// Delete all items for the given `sectionIdentifier` section, or create it
 // if it doesn't exist, hence ensuring the section exists and is empty.
 - (void)deleteAllItemsOrAddSectionWithIdentifier:(NSInteger)sectionIdentifier {
   if ([self.sharedState.tableViewModel

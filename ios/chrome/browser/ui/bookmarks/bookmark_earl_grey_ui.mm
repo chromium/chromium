@@ -305,7 +305,7 @@ id<GREYMatcher> SearchIconButton() {
 
   // Verify options on the action sheets..
   // Verify that the edit menu option is enabled/disabled according to
-  // |editEnabled|.
+  // `editEnabled`.
   id<GREYMatcher> matcher =
       editEnabled ? grey_sufficientlyVisible()
                   : grey_accessibilityTrait(UIAccessibilityTraitNotEnabled);
@@ -335,7 +335,7 @@ id<GREYMatcher> SearchIconButton() {
 
   // Verify options on the action sheets.
   // Verify that the edit menu option is enabled/disabled according to
-  // |editEnabled|.
+  // `editEnabled`.
   id<GREYMatcher> matcher =
       editEnabled ? grey_sufficientlyVisible()
                   : grey_accessibilityTrait(UIAccessibilityTraitNotEnabled);

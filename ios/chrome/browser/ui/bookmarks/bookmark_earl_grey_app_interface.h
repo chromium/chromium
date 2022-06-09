@@ -25,10 +25,10 @@
 // height.
 + (NSError*)setupBookmarksWhichExceedsScreenHeightUsingURL:(NSString*)URL;
 
-// Waits for the Bookmark modedl to be |loaded|.
+// Waits for the Bookmark modedl to be `loaded`.
 + (BOOL)waitForBookmarkModelLoaded:(BOOL)loaded;
 
-// Asserts that |expectedCount| bookmarks exist with the corresponding |title|
+// Asserts that `expectedCount` bookmarks exist with the corresponding `title`
 // using the BookmarkModel.
 + (NSError*)verifyBookmarksWithTitle:(NSString*)title
                        expectedCount:(NSUInteger)expectedCount;
@@ -39,22 +39,22 @@
 // Removes programmatically the first bookmark with the given title.
 + (NSError*)removeBookmarkWithTitle:(NSString*)title;
 
-// Moves bookmark with title |bookmarkTitle| into a folder with title
-// |newFolder|.
+// Moves bookmark with title `bookmarkTitle` into a folder with title
+// `newFolder`.
 + (NSError*)moveBookmarkWithTitle:(NSString*)bookmarkTitle
                 toFolderWithTitle:(NSString*)newFolder;
 
-// Verifies that there is |count| children on the bookmark folder with |name|.
+// Verifies that there is `count` children on the bookmark folder with `name`.
 + (NSError*)verifyChildCount:(size_t)count inFolderWithName:(NSString*)name;
 
-// Verifies the existence of a Bookmark with |URL| and |name|.
+// Verifies the existence of a Bookmark with `URL` and `name`.
 + (NSError*)verifyExistenceOfBookmarkWithURL:(NSString*)URL
                                         name:(NSString*)name;
 
-// Verifies the absence of a Bookmark with |URL|.
+// Verifies the absence of a Bookmark with `URL`.
 + (NSError*)verifyAbsenceOfBookmarkWithURL:(NSString*)URL;
 
-// Verifies that a folder called |title| exists.
+// Verifies that a folder called `title` exists.
 + (NSError*)verifyExistenceOfFolderWithTitle:(NSString*)title;
 
 // Checks that the promo has already been seen or not.
@@ -63,7 +63,7 @@
 // Checks that the promo has already been seen or not.
 + (void)setPromoAlreadySeen:(BOOL)seen;
 
-// Sets that the promo has already been seen |times| number of times.
+// Sets that the promo has already been seen `times` number of times.
 + (void)setPromoAlreadySeenNumberOfTimes:(int)times;
 
 // Returns the number of times a Promo has been seen.

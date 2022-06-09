@@ -97,12 +97,12 @@ enum class PresentedState {
 @property(nonatomic, assign) PresentedState currentPresentedState;
 
 // The navigation controller that is being presented, if any.
-// |self.bookmarkBrowser|, |self.bookmarkEditor|, and |self.folderEditor| are
+// `self.bookmarkBrowser`, `self.bookmarkEditor`, and `self.folderEditor` are
 // children of this navigation controller.
 @property(nonatomic, strong)
     UINavigationController* bookmarkNavigationController;
 
-// The delegate provided to |self.bookmarkNavigationController|.
+// The delegate provided to `self.bookmarkNavigationController`.
 @property(nonatomic, strong)
     BookmarkNavigationControllerDelegate* bookmarkNavigationControllerDelegate;
 
@@ -110,19 +110,19 @@ enum class PresentedState {
 @property(nonatomic, assign) BookmarkModel* bookmarkModel;
 
 // A reference to the potentially presented bookmark browser. This will be
-// non-nil when |currentPresentedState| is BOOKMARK_BROWSER.
+// non-nil when `currentPresentedState` is BOOKMARK_BROWSER.
 @property(nonatomic, strong) BookmarkHomeViewController* bookmarkBrowser;
 
 // A reference to the potentially presented single bookmark editor. This will be
-// non-nil when |currentPresentedState| is BOOKMARK_EDITOR.
+// non-nil when `currentPresentedState` is BOOKMARK_EDITOR.
 @property(nonatomic, strong) BookmarkEditViewController* bookmarkEditor;
 
 // A reference to the potentially presented folder editor. This will be non-nil
-// when |currentPresentedState| is FOLDER_EDITOR.
+// when `currentPresentedState` is FOLDER_EDITOR.
 @property(nonatomic, strong) BookmarkFolderEditorViewController* folderEditor;
 
 // A reference to the potentially presented folder selector. This will be
-// non-nil when |currentPresentedState| is FOLDER_SELECTION.
+// non-nil when `currentPresentedState` is FOLDER_SELECTION.
 @property(nonatomic, strong) BookmarkFolderViewController* folderSelector;
 
 @property(nonatomic, copy) void (^folderSelectionCompletionBlock)
@@ -131,17 +131,17 @@ enum class PresentedState {
 @property(nonatomic, strong) BookmarkMediator* mediator;
 
 // TODO(crbug.com/1323778): This should use an explicit (separate)
-// SnackbarCommands handler. This can be set from the |browser| used on init,
+// SnackbarCommands handler. This can be set from the `browser` used on init,
 // although ideally it would be injected by the owning coordinator.
 @property(nonatomic, readonly, weak) id<ApplicationCommands, BrowserCommands>
     handler;
 
 // The transitioning delegate that is used when presenting
-// |self.bookmarkBrowser|.
+// `self.bookmarkBrowser`.
 @property(nonatomic, strong)
     BookmarkTransitioningDelegate* bookmarkTransitioningDelegate;
 
-// Dismisses the bookmark browser.  If |urlsToOpen| is not empty, then the user
+// Dismisses the bookmark browser.  If `urlsToOpen` is not empty, then the user
 // has selected to navigate to those URLs with specified tab mode.
 - (void)dismissBookmarkBrowserAnimated:(BOOL)animated
                             urlsToOpen:(const std::vector<GURL>&)urlsToOpen
@@ -216,7 +216,7 @@ enum class PresentedState {
     return;
 
   __weak BookmarkInteractionController* weakSelf = self;
-  // Copy of |URL| to be captured in block.
+  // Copy of `URL` to be captured in block.
   GURL bookmarkedURL(URL);
   void (^editAction)() = ^{
     [weakSelf presentBookmarkEditorForURL:bookmarkedURL];
@@ -631,14 +631,14 @@ bookmarkHomeViewControllerWantsDismissal:(BookmarkHomeViewController*)controller
 
 #pragma mark - Private
 
-// Presents |viewController| using the appropriate presentation and styling,
+// Presents `viewController` using the appropriate presentation and styling,
 // depending on whether the UIRefresh experiment is enabled or disabled. Sets
-// |self.bookmarkNavigationController| to the UINavigationController subclass
-// used, and may set |self.bookmarkNavigationControllerDelegate| or
-// |self.bookmarkTransitioningDelegate| depending on whether or not the desired
-// transition requires those objects.  If |replacementViewControllers| is not
+// `self.bookmarkNavigationController` to the UINavigationController subclass
+// used, and may set `self.bookmarkNavigationControllerDelegate` or
+// `self.bookmarkTransitioningDelegate` depending on whether or not the desired
+// transition requires those objects.  If `replacementViewControllers` is not
 // nil, those controllers are swapped in to the UINavigationController instead
-// of |viewController|.
+// of `viewController`.
 - (void)presentTableViewController:
             (ChromeTableViewController<
                 UIAdaptivePresentationControllerDelegate>*)viewController

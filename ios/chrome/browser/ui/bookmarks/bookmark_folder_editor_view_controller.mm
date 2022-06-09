@@ -77,7 +77,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // The action sheet coordinator, if one is currently being shown.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
 
-// |bookmarkModel| must not be NULL and must be loaded.
+// `bookmarkModel` must not be NULL and must be loaded.
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
     NS_DESIGNATED_INITIALIZER;
 

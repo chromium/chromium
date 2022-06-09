@@ -19,7 +19,7 @@
 
 namespace {
 // Width by which to indent folder cell's content. This is multiplied by the
-// |indentationLevel| of the cell.
+// `indentationLevel` of the cell.
 const CGFloat kFolderCellIndentationWidth = 32.0;
 // The amount in points by which to inset horizontally the cell contents.
 const CGFloat kFolderCellHorizonalInset = 17.0;

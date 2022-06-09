@@ -121,7 +121,7 @@ NSString* subtitleForBookmarkNode(const BookmarkNode* node) {
 
 #pragma mark - Updating Bookmarks
 
-// Deletes all subnodes of |node|, including |node|, that are in |bookmarks|.
+// Deletes all subnodes of `node`, including `node`, that are in `bookmarks`.
 void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
                      bookmarks::BookmarkModel* model,
                      const BookmarkNode* node) {
@@ -311,7 +311,7 @@ bool MoveBookmarks(const std::set<const BookmarkNode*>& bookmarks,
   bool didPerformMove = false;
 
   // Calling Move() on the model will triger observer methods to fire, one of
-  // them may modify the passed in |bookmarks|. To protect against this scenario
+  // them may modify the passed in `bookmarks`. To protect against this scenario
   // a copy of the set is made first.
   const std::set<const BookmarkNode*> bookmarks_copy(bookmarks);
   for (const BookmarkNode* node : bookmarks_copy) {
@@ -438,18 +438,18 @@ void segregateNodes(
 
 #pragma mark - Useful bookmark manipulation.
 
-// Adds all children of |folder| that are not obstructed to |results|. They are
-// placed immediately after |folder|, using a depth-first, then alphabetically
-// ordering. |results| must contain |folder|.
+// Adds all children of `folder` that are not obstructed to `results`. They are
+// placed immediately after `folder`, using a depth-first, then alphabetically
+// ordering. `results` must contain `folder`.
 void UpdateFoldersFromNode(const BookmarkNode* folder,
                            NodeVector* results,
                            const NodeSet& obstructions);
-// Returns whether |folder| has an ancestor in any of the nodes in
-// |bookmarkNodes|.
+// Returns whether `folder` has an ancestor in any of the nodes in
+// `bookmarkNodes`.
 bool FolderHasAncestorInBookmarkNodes(const BookmarkNode* folder,
                                       const NodeSet& bookmarkNodes);
 // Returns true if the node is not a folder, is not visible, or is an ancestor
-// of any of the nodes in |obstructions|.
+// of any of the nodes in `obstructions`.
 bool IsObstructed(const BookmarkNode* node, const NodeSet& obstructions);
 
 namespace {
@@ -461,7 +461,7 @@ class FolderNodeComparator : public std::binary_function<const BookmarkNode*,
   explicit FolderNodeComparator(icu::Collator* collator)
       : collator_(collator) {}
 
-  // Returns true if |n1| precedes |n2|.
+  // Returns true if `n1` precedes `n2`.
   bool operator()(const BookmarkNode* n1, const BookmarkNode* n2) {
     if (!collator_)
       return n1->GetTitle() < n2->GetTitle();
@@ -547,7 +547,7 @@ NodeVector VisibleNonDescendantNodes(const NodeSet& obstructions,
   return results;
 }
 
-// Whether |vector1| contains only elements of |vector2| in the same order.
+// Whether `vector1` contains only elements of `vector2` in the same order.
 BOOL IsSubvectorOfNodes(const NodeVector& vector1, const NodeVector& vector2) {
   NodeVector::const_iterator it = vector2.begin();
   // Scan the first vector.
@@ -565,9 +565,9 @@ BOOL IsSubvectorOfNodes(const NodeVector& vector1, const NodeVector& vector2) {
   return YES;
 }
 
-// Returns the indices in |vector2| of the items in |vector2| that are not
-// present in |vector1|.
-// |vector1| MUST be a subvector of |vector2| in the sense of |IsSubvector|.
+// Returns the indices in `vector2` of the items in `vector2` that are not
+// present in `vector1`.
+// `vector1` MUST be a subvector of `vector2` in the sense of `IsSubvector`.
 std::vector<NodeVector::size_type> MissingNodesIndices(
     const NodeVector& vector1,
     const NodeVector& vector2) {
