@@ -125,7 +125,7 @@ message ManagementToExternalConfigInfo {
 // app_id is a hash of launch_url. app_id is the client tag for sync system.
 // app_id is the storage key in ModelTypeStore.
 message WebAppProto {
-  reserved "is_in_sync_install";
+  reserved "is_in_sync_install", "is_placeholder";
   reserved 53;
 
   // Synced data. It is replicated across all devices with WEB_APPS.
@@ -342,6 +342,9 @@ message WebAppProto {
   // There should be only one entry per WebAppManagement source.
   repeated ManagementToExternalConfigInfo management_to_external_config_info =
       52;
+
+  // Stores whether the app is a placeholder app or not.
+  // optional bool is_placeholder = 53;
 
   // The amount of storage (in bytes) used by the app and its related data.
   optional uint64 app_size_in_bytes = 54;
