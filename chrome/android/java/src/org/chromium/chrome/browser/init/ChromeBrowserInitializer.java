@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.crash.LogcatExtractionRunnable;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
+import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -431,6 +432,7 @@ public class ChromeBrowserInitializer {
                 });
 
         MemoryPressureUma.initializeForBrowser();
+        UmaUtils.recordBackgroundRestrictions();
 
         // Needed for field trial metrics to be properly collected in minimal browser mode.
         ChromeCachedFlags.getInstance().cacheMinimalBrowserFlags();
