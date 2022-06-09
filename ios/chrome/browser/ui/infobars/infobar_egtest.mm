@@ -33,13 +33,10 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
       visible ? @"Waiting for infobar to show" : @"Waiting for infobar to hide";
   id<GREYMatcher> expected_visibility = visible ? grey_notNil() : grey_nil();
 
-  // After |kInfobarBannerLongPresentationDurationInSeconds| seconds the
+  // After |kInfobarBannerDefaultPresentationDurationInSeconds| seconds the
   // banner should disappear. Includes |kWaitForUIElementTimeout| for EG
   // synchronization.
-  // TODO(crbug.com/1284475): After the experiment, the delay time should be
-  // set back to |kInfobarBannerDefaultPresentationDurationInSeconds| +
-  // |kWaitForUIElementTimeout|to save testing time.
-  NSTimeInterval delay = kInfobarBannerLongPresentationDurationInSeconds +
+  NSTimeInterval delay = kInfobarBannerDefaultPresentationDurationInSeconds +
                          base::test::ios::kWaitForUIElementTimeout;
   BOOL bannerShown =
       WaitUntilConditionOrTimeout(delay, ^{

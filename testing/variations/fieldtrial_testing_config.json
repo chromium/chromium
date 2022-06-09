@@ -5210,25 +5210,6 @@
             ]
         }
     ],
-    "LongMessageDurationIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enable_14s_20220118",
-                    "params": {
-                        "DefaultPresentationMessagesDurationFeatureParam": "14",
-                        "LongPresentationMessagesDurationFeatureParam": "14"
-                    },
-                    "enable_features": [
-                        "EnableLongMessageDuration"
-                    ]
-                }
-            ]
-        }
-    ],
     "MacAllowBackgroundingProcesses": [
         {
             "platforms": [

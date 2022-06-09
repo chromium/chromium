@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_transition_driver.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/autofill_address_profile/save_address_profile_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/confirm/confirm_infobar_banner_overlay_mediator.h"
-#import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_features.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/save_password_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/update_password_infobar_banner_overlay_mediator.h"
@@ -121,19 +120,12 @@
   self.started = YES;
 
   if (!UIAccessibilityIsVoiceOverRunning()) {
-    NSTimeInterval timeout;
-    if (IsLongMessageDurationEnabled()) {
-      // If long message duration is enabled, set a longer timeout.
-      timeout = config->is_high_priority()
-                    ? GetLongPresentationMessageDuration()
-                    : GetDefaultPresentationMessageDuration();
-    } else {
-      // Auto-dismiss the banner after timeout if VoiceOver is off (banner
-      // should persist until user explicitly swipes it away).
-      timeout = config->is_high_priority()
-                    ? kInfobarBannerLongPresentationDurationInSeconds
-                    : kInfobarBannerDefaultPresentationDurationInSeconds;
-    }
+    // Auto-dismiss the banner after timeout if VoiceOver is off (banner should
+    // persist until user explicitly swipes it away).
+    NSTimeInterval timeout =
+        config->is_high_priority()
+            ? kInfobarBannerLongPresentationDurationInSeconds
+            : kInfobarBannerDefaultPresentationDurationInSeconds;
     [self performSelector:@selector(dismissBannerIfReady)
                withObject:nil
                afterDelay:timeout];
