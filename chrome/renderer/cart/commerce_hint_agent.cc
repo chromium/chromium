@@ -26,6 +26,8 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/loader/http_body_element_type.h"
 #include "third_party/blink/public/platform/web_http_body.h"
@@ -598,6 +600,11 @@ CommerceHintAgent::CommerceHintAgent(content::RenderFrame* render_frame)
 
   // Subframes including fenced frames shouldn't be reached here.
   DCHECK(render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree());
+
+  mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+  content::RenderThread::Get()->BindHostReceiver(
+      recorder.InitWithNewPipeAndPassReceiver());
+  ukm_recorder_ = std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
 }
 
 CommerceHintAgent::~CommerceHintAgent() = default;
@@ -755,19 +762,22 @@ void CommerceHintAgent::JavaScriptRequest::Completed(
     const blink::WebVector<v8::Local<v8::Value>>& result) {
   // Only record when the start time is correctly captured.
   DCHECK(!start_time_.is_null());
-  if (!start_time_.is_null()) {
-    base::UmaHistogramTimes("Commerce.Carts.ExtractionExecutionTime",
-                            base::TimeTicks::Now() - start_time_);
-  }
   if (!agent_)
     return;
   if (result.empty() || result[0].IsEmpty())
     return;
   blink::WebLocalFrame* main_frame = agent_->render_frame()->GetWebFrame();
   v8::Local<v8::Context> context = main_frame->MainWorldScriptContext();
-
-  agent_->OnProductsExtracted(
-      content::V8ValueConverter::Create()->FromV8Value(result[0], context));
+  std::unique_ptr<base::Value> results =
+      content::V8ValueConverter::Create()->FromV8Value(result[0], context);
+  if (!results->is_dict())
+    return;
+  if (!start_time_.is_null()) {
+    results->GetDict().Set(
+        "execution_ms",
+        (base::TimeTicks::Now() - start_time_).InMillisecondsF());
+  }
+  agent_->OnProductsExtracted(std::move(results));
 }
 
 void CommerceHintAgent::OnProductsExtracted(
@@ -782,25 +792,41 @@ void CommerceHintAgent::OnProductsExtracted(
     return;
   }
 
+  auto builder = ukm::builders::Shopping_CartExtraction(
+      render_frame()->GetWebFrame()->GetDocument().GetUkmSourceId());
   auto record_time = [&](const std::string& key,
-                         const std::string& histograme_name) {
+                         const std::string& metric_name) {
     auto* value = results->FindKey(key);
     if (!value)
       return;
     if (value->is_int() || value->is_double()) {
-      base::UmaHistogramTimes(histograme_name,
-                              base::Milliseconds(value->GetDouble()));
+      double time_value = value->GetDouble();
+      base::TimeDelta time = base::Milliseconds(time_value);
+      base::UmaHistogramTimes("Commerce.Carts." + metric_name, time);
+
+      if (metric_name == "ExtractionLongestTaskTime") {
+        builder.SetExtractionLongestTaskTime(time_value);
+      } else if (metric_name == "ExtractionTotalTasksTime") {
+        builder.SetExtractionTotalTasksTime(time_value);
+      } else if (metric_name == "ExtractionElapsedTime") {
+        builder.SetExtractionElapsedTime(time_value);
+      } else if (metric_name == "ExtractionExecutionTime") {
+        builder.SetExtractionExecutionTime(time_value);
+      }
     }
   };
-  record_time("longest_task_ms", "Commerce.Carts.ExtractionLongestTaskTime");
-  record_time("total_tasks_ms", "Commerce.Carts.ExtractionTotalTasksTime");
-  record_time("elapsed_ms", "Commerce.Carts.ExtractionElapsedTime");
+  record_time("longest_task_ms", "ExtractionLongestTaskTime");
+  record_time("total_tasks_ms", "ExtractionTotalTasksTime");
+  record_time("elapsed_ms", "ExtractionElapsedTime");
+  record_time("execution_ms", "ExtractionExecutionTime");
 
   auto* timedout = results->FindKey("timedout");
   if (timedout && timedout->is_bool()) {
     base::UmaHistogramBoolean("Commerce.Carts.ExtractionTimedOut",
                               timedout->GetBool());
+    builder.SetExtractionTimedOut(timedout->GetBool());
   }
+  builder.Record(ukm_recorder_.get());
 
   auto* extracted_products = results->FindKey("products");
   if (!extracted_products)

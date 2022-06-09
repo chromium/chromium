@@ -389,6 +389,8 @@ static_library("renderer") {
       "//components/commerce/core:heuristics_provider",
       "//components/crx_file",
       "//components/search:search",
+      "//services/metrics/public/cpp:metrics_cpp",
+      "//services/metrics/public/cpp:ukm_builders",
     ]
   }
 

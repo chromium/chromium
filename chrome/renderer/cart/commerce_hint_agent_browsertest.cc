@@ -175,6 +175,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
  public:
   using FormSubmittedEntry = ukm::builders::Shopping_FormSubmitted;
   using XHREntry = ukm::builders::Shopping_WillSendRequest;
+  using ExtractionEntry = ukm::builders::Shopping_CartExtraction;
 
   CommerceHintAgentTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -373,18 +374,17 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
     std::move(closure).Run();
   }
 
-  void ExpectUKM(base::StringPiece entry_name, const std::string& metric_name) {
+  void ExpectUKMCount(base::StringPiece entry_name,
+                      const std::string& metric_name,
+                      int expected_count) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
-
-    ASSERT_FALSE(entries.empty());
-
+    int count = 0;
     for (const auto* const entry : entries) {
       if (ukm_recorder()->GetEntryMetric(entry, metric_name)) {
-        SUCCEED();
-        return;
+        count += 1;
       }
     }
-    FAIL() << "Expected UKM \"" << metric_name << "\" was not recorded";
+    EXPECT_EQ(count, expected_count);
   }
 
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm) {
 
   WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
   WaitForCartCount(kExpectedExampleFallbackCart);
-  ExpectUKM(XHREntry::kEntryName, "IsAddToCart");
+  ExpectUKMCount(XHREntry::kEntryName, "IsAddToCart", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithLink) {
@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithLink) {
 
   WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
   WaitForCartCount(kExpectedExampleLinkCart);
-  ExpectUKM(XHREntry::kEntryName, "IsAddToCart");
+  ExpectUKMCount(XHREntry::kEntryName, "IsAddToCart", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithWrongLink) {
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithWrongLink) {
 
   WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
   WaitForCartCount(kExpectedAmazon);
-  ExpectUKM(XHREntry::kEntryName, "IsAddToCart");
+  ExpectUKMCount(XHREntry::kEntryName, "IsAddToCart", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {
 
   WaitForUmaCount("Commerce.Carts.AddToCartByURL", 1);
   WaitForCartCount(kExpectedExampleFallbackCart);
-  ExpectUKM(XHREntry::kEntryName, "IsAddToCart");
+  ExpectUKMCount(XHREntry::kEntryName, "IsAddToCart", 1);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -565,6 +565,11 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart_ScriptFromResource) {
   histogram_tester_.ExpectBucketCount(
       "Commerce.Heuristics.CartExtractionScriptSource",
       CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_RESOURCE, 1);
+  ExpectUKMCount(ExtractionEntry::kEntryName, "ExtractionExecutionTime", 1);
+  ExpectUKMCount(ExtractionEntry::kEntryName, "ExtractionLongestTaskTime", 1);
+  ExpectUKMCount(ExtractionEntry::kEntryName, "ExtractionTotalTasksTime", 1);
+  ExpectUKMCount(ExtractionEntry::kEntryName, "ExtractionElapsedTime", 1);
+  ExpectUKMCount(ExtractionEntry::kEntryName, "ExtractionTimedOut", 1);
 
   SendXHR("/add-to-cart", "product: 123");
 
@@ -735,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
   load_observer.WaitForNavigationFinished();
   WaitForUmaCount("Commerce.Carts.PurchaseByPOST", 1);
   WaitForCartCount(kEmptyExpected);
-  ExpectUKM(FormSubmittedEntry::kEntryName, "IsTransaction");
+  ExpectUKMCount(FormSubmittedEntry::kEntryName, "IsTransaction", 1);
 }
 
 // TODO(crbug.com/1180268): CrOS multi-profiles implementation is different from

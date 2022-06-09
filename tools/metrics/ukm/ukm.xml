@@ -18090,6 +18090,51 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Shopping.CartExtraction">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <summary>
+    Metrics related to performance of cart content extraction in ChromeCart.
+  </summary>
+  <metric name="ExtractionElapsedTime">
+    <summary>
+      Logged when cart content extraction is executed for ChromeCart and records
+      the elapsed time within the JavaScript, so script parsing/compilation time
+      is excluded. Shopping.CartExtraction.ExtractionExecutionTime is measured
+      in native, and is the end-to-end elapsed time. This is expressed in
+      milliseconds.
+    </summary>
+  </metric>
+  <metric name="ExtractionExecutionTime">
+    <summary>
+      Logged when cart content extraction is executed for ChromeCart and records
+      the elapsed time between the start and the end of the extraction
+      JavaScript request execution. This includes script parsing/compilation
+      time and sleeping time. This is expressed in milliseconds.
+    </summary>
+  </metric>
+  <metric name="ExtractionLongestTaskTime">
+    <summary>
+      Logged when cart content extraction is executed for ChromeCart and records
+      the time span of the longest task blocking the main thread of the renderer
+      process. This is expressed in milliseconds.
+    </summary>
+  </metric>
+  <metric name="ExtractionTimedOut" enum="Boolean">
+    <summary>
+      Logged when cart content extraction is executed for ChromeCart and records
+      whether the cart content extraction has timed out.
+    </summary>
+  </metric>
+  <metric name="ExtractionTotalTasksTime">
+    <summary>
+      Logged when cart content extraction is executed for ChromeCart and records
+      the time spent on execution, excluding sleeping time. This is expressed in
+      milliseconds.
+    </summary>
+  </metric>
+</event>
+
 <event name="Shopping.ChromeCart">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
