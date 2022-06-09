@@ -99,6 +99,9 @@ enum ViewID {
   // The Download shelf.
   VIEW_ID_DOWNLOAD_SHELF,
 
+  // The header in the App Identity Update dialog.
+  VIEW_ID_APP_IDENTITY_UPDATE_HEADER,
+
   // Used in chrome/browser/ui/cocoa/view_id_util_browsertest.mm.
   // If you add new ids, make sure the above test passes.
   VIEW_ID_PREDEFINED_COUNT,
