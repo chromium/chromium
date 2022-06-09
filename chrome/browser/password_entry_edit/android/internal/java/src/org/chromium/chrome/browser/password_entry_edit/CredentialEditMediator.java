@@ -25,8 +25,6 @@ import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProp
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.URL_OR_APP;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.USERNAME;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.Resources;
 
@@ -39,8 +37,8 @@ import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentVi
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
@@ -229,7 +227,7 @@ public class CredentialEditMediator implements UiActionHandler {
     @Override
     public void onCopyUsername(Context context) {
         recordUsernameCopied();
-        copyToClipboard(context, "username", USERNAME);
+        Clipboard.getInstance().setText("username", mModel.get(USERNAME));
         Toast.makeText(context, R.string.password_entry_viewer_username_copied_into_clipboard,
                      Toast.LENGTH_SHORT)
                 .show();
@@ -268,7 +266,7 @@ public class CredentialEditMediator implements UiActionHandler {
             if (!reauthSucceeded) return;
             RecordHistogram.recordEnumeratedHistogram(
                     SAVED_PASSWORD_ACTION_HISTOGRAM, COPIED_PASSWORD, ACTION_COUNT);
-            copyToClipboard(context, "password", PASSWORD);
+            Clipboard.getInstance().setPassword(mModel.get(PASSWORD));
             Toast.makeText(context, R.string.password_entry_viewer_password_copied_into_clipboard,
                          Toast.LENGTH_SHORT)
                     .show();
@@ -281,14 +279,6 @@ public class CredentialEditMediator implements UiActionHandler {
             return;
         }
         mReauthenticationHelper.reauthenticate(reason, action);
-    }
-
-    private void copyToClipboard(
-            Context context, CharSequence label, ReadableObjectPropertyKey<String> dataKey) {
-        ClipboardManager clipboard =
-                (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText(label, mModel.get(dataKey));
-        clipboard.setPrimaryClip(clip);
     }
 
     private void recordUsernameCopied() {

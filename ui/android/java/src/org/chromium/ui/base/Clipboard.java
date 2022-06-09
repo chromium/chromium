@@ -215,10 +215,20 @@ public class Clipboard {
      * {@link android.text.ClipboardManager#setText(CharSequence)}, setting the
      * clipboard's current primary clip to a plain-text clip that consists of
      * the specified string.
-     * @param text  will become the content of the clipboard's primary clip
+     * @param text  will become the content of the clipboard's primary clip.
      */
     @CalledByNative
     public void setText(final String text) {
+        Log.w(TAG, "setText is a no-op because Clipboard service isn't available");
+    }
+
+    /**
+     * Writes text to the clipboard.
+     *
+     * @param label the label for the clip data.
+     * @param text  will become the content of the clipboard's primary clip.
+     */
+    public void setText(final String label, final String text) {
         Log.w(TAG, "setText is a no-op because Clipboard service isn't available");
     }
 
@@ -233,6 +243,14 @@ public class Clipboard {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void setHTMLText(final String html, final String text) {
         Log.w(TAG, "setHTMLText is a no-op because Clipboard service isn't available");
+    }
+
+    /**
+     * Writes password to the clipboard, and set the Clipdata is sensitive.
+     * @param password  will become the content of the clipboard's primary clip.
+     */
+    public void setPassword(final String password) {
+        Log.w(TAG, "setPassword is a no-op because Clipboard service isn't available");
     }
 
     /**
