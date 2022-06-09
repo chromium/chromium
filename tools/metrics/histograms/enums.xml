@@ -32184,6 +32184,15 @@ Called by update_document_policy_enum.py.-->
   <int value="6" label="EXPECT_CT_HEADER_PROCESSED"/>
 </enum>
 
+<enum name="ExperienceKitCalendarTypes">
+  <summary>
+    This list corresponds to the calendar providers supported by Experience Kit
+    on iOS.
+  </summary>
+  <int value="0" label="Google Calendar"/>
+  <int value="1" label="Apple Calendar"/>
+</enum>
+
 <!-- This must be kept current with explore_sites.h's
      ExploreSitesCatalogError. -->
 

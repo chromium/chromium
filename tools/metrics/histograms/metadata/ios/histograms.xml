@@ -480,6 +480,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ExperienceKitCalendar.Present"
+    enum="ExperienceKitCalendarTypes" expires_after="2022-09-08">
+  <owner>djean@chromium.org</owner>
+  <owner>erahmaoui@google.com</owner>
+  <summary>
+    The type of calendar chosen by the user on the ExperienceKit context menu.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ExperienceKitCalendar.Success"
+    enum="ExperienceKitCalendarTypes" expires_after="2022-09-08">
+  <owner>djean@chromium.org</owner>
+  <owner>erahmaoui@google.com</owner>
+  <summary>
+    The type of calendar the event was created in using the ExperienceKit
+    context menu.
+  </summary>
+</histogram>
+
 <histogram name="IOS.FinishedNavigationHasContext" enum="Boolean"
     expires_after="2019-05-01">
   <owner>gambard@chromium.org</owner>
