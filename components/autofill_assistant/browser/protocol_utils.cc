@@ -208,6 +208,7 @@ std::string ProtocolUtils::CreateNextScriptActionsRequest(
   ScriptActionRequestProto request_proto;
   request_proto.set_global_payload(global_payload);
   request_proto.set_script_payload(script_payload);
+
   NextScriptActionsRequestProto* next_request =
       request_proto.mutable_next_request();
   for (const auto& processed_action : processed_actions) {
@@ -768,7 +769,8 @@ bool ProtocolUtils::ParseActions(ActionDelegate* delegate,
                                  std::string* return_script_payload,
                                  std::vector<std::unique_ptr<Action>>* actions,
                                  std::vector<std::unique_ptr<Script>>* scripts,
-                                 bool* should_update_scripts) {
+                                 bool* should_update_scripts,
+                                 std::string* js_flow_library) {
   DCHECK(actions);
   DCHECK(scripts);
 
@@ -786,6 +788,9 @@ bool ProtocolUtils::ParseActions(ActionDelegate* delegate,
   }
   if (return_script_payload) {
     *return_script_payload = response_proto.script_payload();
+  }
+  if (js_flow_library) {
+    *js_flow_library = std::move(*response_proto.mutable_js_flow_library());
   }
 
   for (const auto& action : response_proto.actions()) {

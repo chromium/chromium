@@ -96,6 +96,8 @@ class ServiceImpl : public Service {
 
   void UpdateAnnotateDomModelContext(int64_t model_version) override;
 
+  void UpdateJsFlowLibraryLoaded(bool js_flow_library_loaded) override;
+
  private:
   void SendUserDataRequest(
       uint64_t run_id,

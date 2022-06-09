@@ -62,6 +62,8 @@ class Service {
 
   virtual void UpdateAnnotateDomModelContext(int64_t model_version) {}
 
+  virtual void UpdateJsFlowLibraryLoaded(bool js_flow_library_loaded){};
+
  protected:
   Service() = default;
 };

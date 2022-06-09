@@ -67,6 +67,7 @@ TEST_F(ClientContextTest, Initialize) {
   EXPECT_THAT(actual_client_context.window_size().height_pixels(), Eq(1920));
   EXPECT_THAT(actual_client_context.screen_orientation(),
               ClientContextProto::PORTRAIT);
+  EXPECT_EQ(actual_client_context.js_flow_library_loaded(), false);
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(actual_client_context.platform_type(),
               ClientContextProto::PLATFORM_TYPE_ANDROID);
@@ -206,6 +207,15 @@ TEST_F(ClientContextTest, SignedInStatus) {
   ClientContextImpl client_context_b(&mock_client_);
   EXPECT_THAT(client_context_b.AsProto().signed_into_chrome_status(),
               Eq(ClientContextProto::SIGNED_IN));
+}
+
+TEST_F(ClientContextTest, UpdateJsFlowLibraryLoaded) {
+  ClientContextImpl client_context(&mock_client_);
+  EXPECT_EQ(client_context.AsProto().js_flow_library_loaded(), false);
+  client_context.UpdateJsFlowLibraryLoaded(true);
+  EXPECT_EQ(client_context.AsProto().js_flow_library_loaded(), true);
+  client_context.UpdateJsFlowLibraryLoaded(false);
+  EXPECT_EQ(client_context.AsProto().js_flow_library_loaded(), false);
 }
 
 }  // namespace

@@ -259,5 +259,10 @@ TEST_F(ServiceImplTest, UpdateAnnotateDomModelService) {
   service_->UpdateAnnotateDomModelContext(123456);
 }
 
+TEST_F(ServiceImplTest, UpdateJsFlowLibraryLoaded) {
+  EXPECT_CALL(*mock_client_context_, UpdateJsFlowLibraryLoaded(true));
+  service_->UpdateJsFlowLibraryLoaded(true);
+}
+
 }  // namespace
 }  // namespace autofill_assistant
