@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/store_metrics_reporter.h"
+#include <string>
 
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -10,9 +11,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/mock_password_reuse_manager.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -132,8 +135,9 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
     // should be mocked.
     OSCryptMocker::SetUp();
 
-    feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {features::kPasswordReuseDetectionEnabled, features::kPasswordNotes},
+        {});
 
     prefs_.registry()->RegisterBooleanPref(prefs::kCredentialsEnableService,
                                            false);
@@ -177,6 +181,8 @@ TEST_P(StoreMetricsReporterTestWithParams, StoreIndependentMetrics) {
   histogram_tester.ExpectUniqueSample("PasswordManager.Enabled3",
                                       password_manager_enabled, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, StoreMetricsReporterTestWithParams, Bool());
 
 TEST_F(StoreMetricsReporterTest, ReportMetricsAtMostOncePerDay) {
   auto profile_store =
@@ -987,6 +993,90 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
   RunUntilIdle();
 }
 
-INSTANTIATE_TEST_SUITE_P(All, StoreMetricsReporterTestWithParams, Bool());
+TEST_F(StoreMetricsReporterTest, ReportPasswordNoteMetrics) {
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
+
+  PasswordForm password_form;
+  password_form.url = GURL("http://example.com");
+  password_form.username_value = u"test1@gmail.com";
+  password_form.notes = {PasswordNote(u"note", base::Time::Now())};
+  profile_store->AddLogin(password_form);
+  // ProfileStore - CountCredentialsWithNonEmptyNotes: 1
+
+  password_form.username_value = u"test2@gmail.com";
+  password_form.notes = {PasswordNote(u"another note", base::Time::Now()),
+                         PasswordNote(std::u16string(), base::Time::Now())};
+  profile_store->AddLogin(password_form);
+  // ProfileStore - CountCredentialsWithNonEmptyNotes: 2
+
+  password_form.username_value = u"test3@gmail.com";
+  password_form.notes = {PasswordNote(std::u16string(), base::Time::Now()),
+                         PasswordNote(u"some note", base::Time::Now())};
+  profile_store->AddLogin(password_form);
+  // ProfileStore -  CountCredentialsWithNonEmptyNotes: 3
+
+  password_form.username_value = u"test4@gmail.com";
+  password_form.notes = {PasswordNote(std::u16string(), base::Time::Now())};
+  profile_store->AddLogin(password_form);
+  // ProfileStore - CountCredentialsWithNonEmptyNotes: 3
+
+  password_form.username_value = u"test5@gmail.com";
+  password_form.notes = {};
+  profile_store->AddLogin(password_form);
+  // ProfileStore - CountCredentialsWithNonEmptyNotes: 3
+
+  auto account_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
+  account_store->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
+
+  account_store->AddLogin(password_form);
+  // AccountStore - CountCredentialsWithNonEmptyNotes: 0
+
+  password_form.username_value = u"test6@gmail.com";
+  password_form.notes = {PasswordNote(std::u16string(), base::Time::Now())};
+  account_store->AddLogin(password_form);
+  // AccountStore - CountCredentialsWithNonEmptyNotes: 0
+
+  password_form.username_value = u"test7@gmail.com";
+  password_form.notes = {PasswordNote(u"note", base::Time::Now())};
+  account_store->AddLogin(password_form);
+  // AccountStore - CountCredentialsWithNonEmptyNotes: 1
+
+  base::HistogramTester histogram_tester;
+  StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
+                                sync_service(), identity_manager(), &prefs_,
+                                /*password_reuse_manager=*/nullptr,
+                                /*is_under_advanced_protection=*/false,
+                                /*done_callback*/ base::DoNothing());
+
+  RunUntilIdle();
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.ProfileStore.PasswordNotes.CountNotesPerCredential"),
+      BucketsAre(base::Bucket(0, 1), base::Bucket(1, 2), base::Bucket(2, 2)));
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.ProfileStore.PasswordNotes."
+      "CountCredentialsWithNonEmptyNotes",
+      3, 1);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.AccountStore.PasswordNotes.CountNotesPerCredential"),
+      BucketsAre(base::Bucket(0, 1), base::Bucket(1, 2)));
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.AccountStore.PasswordNotes."
+      "CountCredentialsWithNonEmptyNotes",
+      1, 1);
+
+  account_store->ShutdownOnUIThread();
+  profile_store->ShutdownOnUIThread();
+  // Make sure the PasswordStore destruction parts on the background sequence
+  // finish, otherwise we get memory leak reports.
+  RunUntilIdle();
+}
+
 }  // namespace
 }  // namespace password_manager
