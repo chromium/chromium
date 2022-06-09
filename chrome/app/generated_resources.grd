@@ -12486,6 +12486,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_SIDE_SEARCH_PROMO" desc="Promo UI shown next to the side search button to encourage its use.">
         See more search results in side panel
       </message>
+      <message name="IDS_SIDE_SEARCH_ENTRYPOINT_LABEL" desc="The label text that is animated-in when the omnibox entrypoint is first shown.">
+        See more search results
+      </message>
       <message name="IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON_ACTIVATED" desc="The tooltip for the side search toolbar button when the button is active and the side panel is open.">
         Close search in side panel
       </message>

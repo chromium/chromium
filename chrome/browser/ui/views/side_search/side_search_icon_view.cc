@@ -36,8 +36,7 @@ SideSearchIconView::SideSearchIconView(
   image()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kSideSearchButtonElementId);
   SetVisible(false);
-  SetLabel(l10n_util::GetStringUTF16(
-      IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED));
+  SetLabel(l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_ENTRYPOINT_LABEL));
   SetUpForInOutAnimation();
   SetPaintLabelOverSolidBackground(true);
 }
