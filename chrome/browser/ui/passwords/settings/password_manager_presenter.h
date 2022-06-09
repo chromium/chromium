@@ -26,7 +26,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
-class MovePasswordToAccountStoreHelper;
 class PasswordManagerClient;
 struct PasswordForm;
 }  // namespace password_manager
@@ -143,9 +142,6 @@ class PasswordManagerPresenter
       std::map<std::string,
                std::vector<std::unique_ptr<password_manager::PasswordForm>>>;
 
-  using MovePasswordToAccountStoreHelperList = std::list<
-      std::unique_ptr<password_manager::MovePasswordToAccountStoreHelper>>;
-
   // Attempts to remove the entries corresponding to |index| from |form_map|.
   // This will also add a corresponding undo operation to |undo_manager_|.
   // Returns whether removing the entry succeeded.
@@ -174,11 +170,6 @@ class PasswordManagerPresenter
   void SetPasswordList();
   void SetPasswordExceptionList();
 
-  // Called when the helper pointed by |done_helper_it| has finished the moving
-  // task. Removes it from |move_to_account_helpers_|.
-  void OnMovePasswordToAccountCompleted(
-      MovePasswordToAccountStoreHelperList::iterator done_helper_it);
-
   PasswordFormMap password_map_;
   PasswordFormMap exception_map_;
 
@@ -189,9 +180,6 @@ class PasswordManagerPresenter
 
   // UI view that owns this presenter.
   raw_ptr<PasswordUIView> password_view_;
-
-  // Contains the helpers currently executing moving tasks.
-  MovePasswordToAccountStoreHelperList move_to_account_helpers_;
 
   base::WeakPtrFactory<PasswordManagerPresenter> weak_ptr_factory_{this};
 };
