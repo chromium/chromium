@@ -13047,6 +13047,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA" desc="Generic feature name during alpha phase, to be displayed in educational and settigns UI.">
         Game controls
       </message>
+      <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_TITLE_ALPHA" desc="Feature title via Educational menu.">
+        Game controls now available
+      </message>
       <message name="IDS_INPUT_OVERLAY_ACCESSIBILITY_ALPHA" desc="Text tied to the close button on Settings menu, readable via Chromevox.">
         Close game controls
       </message>
@@ -13062,8 +13065,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_INPUT_OVERLAY_MENU_CUSTOMIZE_BUTTON" desc="Text displayed to engage in key binding edition.">
         Customize
       </message>
+      <message name="IDS_INPUT_OVERLAY_MENU_EDIT_BUTTON" desc="Text displayed to engage in key binding edition.">
+        Edit
+      </message>
       <message name="IDS_INPUT_OVERLAY_MENU_SHOW_HINT_OVERLAY" desc="Text shown next to the toggle to enable/disable the display overlay to the user.">
         Show hint overlay
+      </message>
+      <message name="IDS_INPUT_OVERLAY_MENU_SHOW_KEY_MAPPING" desc="Text tied to the key-mapping toggle on Settings UI.">
+        Show key mapping
       </message>
       <message name="IDS_INPUT_OVERLAY_MENU_SEND_FEEDBACK" desc="Entry point to send feedback regarding input-overlay.">
         Send feedback
@@ -13095,6 +13104,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_DESCRIPTION" desc="Text on the educational dialog describing the funcionality introduced by this feature.">
         You’ve been invited to try out keyboard control for this game.
       </message>
+      <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_DESCRIPTION_ALPHA" desc="Text shown on the educational dialog during alpha relase.">
+        Play using your Chromebook keyboard. You can customize keys to specific actions.
+      </message>
       <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_ACCEPT_BUTTON" desc="Educational dialog's accept button text.">
         Got it
       </message>
@@ -13106,6 +13118,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_INPUT_OVERLAY_SETTINGS_NUDGE" desc="Label displayed next to the Settings UI's entry point so the user is aware.">
         Click here to customize controls
+      </message>
+      <message name="IDS_INPUT_OVERLAY_SETTINGS_NUDGE_ALPHA" desc="Label displayed next to Settings UI's entry point during alpha phase.">
+        Click to customize your game controls
       </message>
       <message name="IDS_INPUT_OVERLAY_CLOSE_MENU" desc="Accessibility name tied to the close button.">
         Close menu

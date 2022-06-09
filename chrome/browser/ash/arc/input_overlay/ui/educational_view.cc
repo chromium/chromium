@@ -104,7 +104,7 @@ void EducationalView::Init(views::View* parent) {
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
     auto* game_control = ash::login_views_utils::CreateBubbleLabel(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA),
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDUCATIONAL_TITLE_ALPHA),
         /*view_defining_max_width=*/nullptr,
         /*color=*/
         GetContentLayerColor(
@@ -141,7 +141,8 @@ void EducationalView::Init(views::View* parent) {
   {
     // Feature's description text.
     auto* description_label = ash::login_views_utils::CreateBubbleLabel(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDUCATIONAL_DESCRIPTION),
+        l10n_util::GetStringUTF16(
+            IDS_INPUT_OVERLAY_EDUCATIONAL_DESCRIPTION_ALPHA),
         /*view_defining_max_width=*/this,
         /*color=*/
         GetContentLayerColor(

@@ -108,7 +108,7 @@ void DisplayOverlayController::AddNudgeView(views::Widget* overlay_widget) {
   auto nudge_view = std::make_unique<ash::PillButton>(
       base::BindRepeating(&DisplayOverlayController::OnNudgeDismissed,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_SETTINGS_NUDGE),
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_SETTINGS_NUDGE_ALPHA),
       ash::PillButton::Type::kIcon, &kTipIcon);
   nudge_view->SetSize(
       gfx::Size(nudge_view->GetPreferredSize().width(), kNudgeHeight));

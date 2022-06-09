@@ -254,14 +254,14 @@ void InputMenuView::Init() {
         /*line_height=*/kRowMinHeight);
     customize_view->AddChildView(key_mapping_label);
 
-    customize_button_ =
+    edit_button_ =
         customize_view->AddChildView(std::make_unique<ash::PillButton>(
-            base::BindRepeating(&InputMenuView::OnButtonCustomizedPressed,
+            base::BindRepeating(&InputMenuView::OnEditButtonPressed,
                                 base::Unretained(this)),
-            l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_CUSTOMIZE_BUTTON),
+            l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_EDIT_BUTTON),
             ash::PillButton::Type::kIconless,
             /*icon=*/nullptr));
-    customize_button_->SetEnabled(game_control_toggle_->GetIsOn());
+    edit_button_->SetEnabled(game_control_toggle_->GetIsOn());
     key_mapping_label->SetBorder(views::CreateEmptyBorder(
         CalculateInsets(customize_view.get(), /*left=*/kSideInset,
                         /*right=*/kSideInset, /*other_spacing=*/0)));
@@ -275,25 +275,25 @@ void InputMenuView::Init() {
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
-    auto* hint_label = ash::login_views_utils::CreateBubbleLabel(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SHOW_HINT_OVERLAY),
+    auto* mapping_label = ash::login_views_utils::CreateBubbleLabel(
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SHOW_KEY_MAPPING),
         /*view_defining_max_width=*/nullptr, color,
         /*font_list=*/
         gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
                       kBodyFontSize, gfx::Font::Weight::NORMAL),
         /*line_height=*/kRowMinHeight);
-    hint_view->AddChildView(hint_label);
-    show_hint_toggle_ = hint_view->AddChildView(
+    hint_view->AddChildView(mapping_label);
+    show_mapping_toggle_ = hint_view->AddChildView(
         std::make_unique<views::ToggleButton>(base::BindRepeating(
             &InputMenuView::OnToggleShowHintPressed, base::Unretained(this))));
-    show_hint_toggle_->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SHOW_HINT_OVERLAY));
-    show_hint_toggle_->SetEnabled(game_control_toggle_->GetIsOn());
-    show_hint_toggle_->SetIsOn(
+    show_mapping_toggle_->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SHOW_KEY_MAPPING));
+    show_mapping_toggle_->SetEnabled(game_control_toggle_->GetIsOn());
+    show_mapping_toggle_->SetIsOn(
         game_control_toggle_->GetIsOn() &&
         display_overlay_controller_->GetInputMappingViewVisible());
-    SetCustomToggleColor(show_hint_toggle_);
-    hint_label->SetBorder(views::CreateEmptyBorder(
+    SetCustomToggleColor(show_mapping_toggle_);
+    mapping_label->SetBorder(views::CreateEmptyBorder(
         CalculateInsets(hint_view.get(), /*left=*/kSideInset,
                         /*right=*/kSideInset, /*other_spacing=*/0)));
     AddChildView(std::move(hint_view));
@@ -333,25 +333,25 @@ void InputMenuView::OnToggleGameControlPressed() {
   const bool enabled = game_control_toggle_->GetIsOn();
   display_overlay_controller_->SetTouchInjectorEnable(enabled);
   // Adjust |enabled_| and |visible_| properties to match |Game controls|.
-  show_hint_toggle_->SetIsOn(enabled);
+  show_mapping_toggle_->SetIsOn(enabled);
   display_overlay_controller_->SetInputMappingVisible(enabled);
-  show_hint_toggle_->SetEnabled(enabled);
-  customize_button_->SetEnabled(enabled);
+  show_mapping_toggle_->SetEnabled(enabled);
+  edit_button_->SetEnabled(enabled);
 }
 
 void InputMenuView::OnToggleShowHintPressed() {
   DCHECK(display_overlay_controller_);
   display_overlay_controller_->SetInputMappingVisible(
-      show_hint_toggle_->GetIsOn());
+      show_mapping_toggle_->GetIsOn());
 }
 
-void InputMenuView::OnButtonCustomizedPressed() {
+void InputMenuView::OnEditButtonPressed() {
   DCHECK(display_overlay_controller_);
   if (!display_overlay_controller_)
     return;
   // Force key-binding labels ON before entering edit mode.
-  if (!show_hint_toggle_->GetIsOn()) {
-    show_hint_toggle_->SetIsOn(true);
+  if (!show_mapping_toggle_->GetIsOn()) {
+    show_mapping_toggle_->SetIsOn(true);
     display_overlay_controller_->SetInputMappingVisible(true);
   }
   // Change display mode, load edit UI per action and overall edit buttons.
