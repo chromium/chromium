@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/cookies/site_for_cookies.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
 #include "pdf/content_restriction.h"
 #include "pdf/mojom/pdf.mojom.h"
@@ -821,6 +822,118 @@ TEST_F(PdfViewWebPluginTest,
   EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
       .Times(0);
   plugin_->EnableAccessibility();
+}
+
+TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithNoPermissions) {
+  EXPECT_EQ(kContentRestrictionCopy | kContentRestrictionCut |
+                kContentRestrictionPaste | kContentRestrictionPrint,
+            plugin_->GetContentRestrictions());
+}
+
+TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithCopyAllowed) {
+  EXPECT_CALL(*engine_ptr_, HasPermission).WillRepeatedly(Return(false));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopy))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_EQ(kContentRestrictionCut | kContentRestrictionPaste |
+                kContentRestrictionPrint,
+            plugin_->GetContentRestrictions());
+}
+
+TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithPrintLowQualityAllowed) {
+  EXPECT_CALL(*engine_ptr_, HasPermission).WillRepeatedly(Return(false));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kPrintLowQuality))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_EQ(kContentRestrictionCopy | kContentRestrictionCut |
+                kContentRestrictionPaste,
+            plugin_->GetContentRestrictions());
+}
+
+TEST_F(PdfViewWebPluginTest,
+       GetContentRestrictionsWithCopyAndPrintLowQualityAllowed) {
+  EXPECT_CALL(*engine_ptr_, HasPermission).WillRepeatedly(Return(false));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopy))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kPrintLowQuality))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_EQ(kContentRestrictionCut | kContentRestrictionPaste,
+            plugin_->GetContentRestrictions());
+}
+
+TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithPrintAllowed) {
+  EXPECT_CALL(*engine_ptr_, HasPermission).WillRepeatedly(Return(false));
+  EXPECT_CALL(*engine_ptr_,
+              HasPermission(DocumentPermission::kPrintHighQuality))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kPrintLowQuality))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_EQ(kContentRestrictionCopy | kContentRestrictionCut |
+                kContentRestrictionPaste,
+            plugin_->GetContentRestrictions());
+}
+
+TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithCopyAndPrintAllowed) {
+  EXPECT_CALL(*engine_ptr_, HasPermission).WillRepeatedly(Return(false));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopy))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*engine_ptr_,
+              HasPermission(DocumentPermission::kPrintHighQuality))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kPrintLowQuality))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_EQ(kContentRestrictionCut | kContentRestrictionPaste,
+            plugin_->GetContentRestrictions());
+}
+
+TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithNoPermissions) {
+  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfo();
+
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
+  EXPECT_FALSE(doc_info.text_accessible);
+  EXPECT_FALSE(doc_info.text_copyable);
+}
+
+TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithCopyAllowed) {
+  EXPECT_CALL(*engine_ptr_, HasPermission).WillRepeatedly(Return(false));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopy))
+      .WillRepeatedly(Return(true));
+
+  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfo();
+
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
+  EXPECT_FALSE(doc_info.text_accessible);
+  EXPECT_TRUE(doc_info.text_copyable);
+}
+
+TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithCopyAccessibleAllowed) {
+  EXPECT_CALL(*engine_ptr_, HasPermission).WillRepeatedly(Return(false));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopyAccessible))
+      .WillRepeatedly(Return(true));
+
+  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfo();
+
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
+  EXPECT_TRUE(doc_info.text_accessible);
+  EXPECT_FALSE(doc_info.text_copyable);
+}
+
+TEST_F(PdfViewWebPluginTest,
+       GetAccessibilityDocInfoWithCopyAndCopyAccessibleAllowed) {
+  EXPECT_CALL(*engine_ptr_, HasPermission).WillRepeatedly(Return(false));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopy))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopyAccessible))
+      .WillRepeatedly(Return(true));
+
+  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfo();
+
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
+  EXPECT_TRUE(doc_info.text_accessible);
+  EXPECT_TRUE(doc_info.text_copyable);
 }
 
 TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {

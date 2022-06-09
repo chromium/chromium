@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/accessibility_structs.h"
-#include "pdf/content_restriction.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
@@ -191,24 +190,6 @@ class PdfViewPluginBaseWithEngineTest : public PdfViewPluginBaseTest {
       "pinchPhase": 0,
     })");
     fake_plugin_.HandleMessage(message.GetDict());
-  }
-
-  void SetEnginePermissions(
-      const std::vector<DocumentPermission>& permissions) {
-    TestPDFiumEngine& engine =
-        *static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-
-    // TODO(crbug.com/1323307): Break up tests instead of "resetting" mocks.
-    for (DocumentPermission permission :
-         {DocumentPermission::kCopy, DocumentPermission::kCopyAccessible,
-          DocumentPermission::kPrintLowQuality,
-          DocumentPermission::kPrintHighQuality}) {
-      ON_CALL(engine, HasPermission(permission)).WillByDefault(Return(false));
-    }
-
-    for (DocumentPermission permission : permissions) {
-      ON_CALL(engine, HasPermission(permission)).WillByDefault(Return(true));
-    }
   }
 };
 
@@ -582,91 +563,6 @@ TEST_F(PdfViewPluginBaseWithEngineTest, SelectionChangedScaled) {
   fake_plugin_.SelectionChanged({-20, -40, 60, 80}, {100, 120, 140, 160});
 
   EXPECT_EQ(gfx::Point(-300, -56), viewport_info.scroll);
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, GetContentRestrictions) {
-  static constexpr int kContentRestrictionCutPaste =
-      kContentRestrictionCut | kContentRestrictionPaste;
-
-  // Test engine without any permissions.
-  SetEnginePermissions({});
-
-  int content_restrictions = fake_plugin_.GetContentRestrictions();
-  EXPECT_EQ(kContentRestrictionCutPaste | kContentRestrictionCopy |
-                kContentRestrictionPrint,
-            content_restrictions);
-
-  // Test engine with only copy permission.
-  SetEnginePermissions({DocumentPermission::kCopy});
-
-  content_restrictions = fake_plugin_.GetContentRestrictions();
-  EXPECT_EQ(kContentRestrictionCutPaste | kContentRestrictionPrint,
-            content_restrictions);
-
-  // Test engine with only print low quality permission.
-  SetEnginePermissions({DocumentPermission::kPrintLowQuality});
-
-  content_restrictions = fake_plugin_.GetContentRestrictions();
-  EXPECT_EQ(kContentRestrictionCutPaste | kContentRestrictionCopy,
-            content_restrictions);
-
-  // Test engine with both copy and print low quality permissions.
-  SetEnginePermissions(
-      {DocumentPermission::kCopy, DocumentPermission::kPrintLowQuality});
-
-  content_restrictions = fake_plugin_.GetContentRestrictions();
-  EXPECT_EQ(kContentRestrictionCutPaste, content_restrictions);
-
-  // Test engine with print high and low quality permissions.
-  SetEnginePermissions({DocumentPermission::kPrintHighQuality,
-                        DocumentPermission::kPrintLowQuality});
-
-  content_restrictions = fake_plugin_.GetContentRestrictions();
-  EXPECT_EQ(kContentRestrictionCutPaste | kContentRestrictionCopy,
-            content_restrictions);
-
-  // Test engine with copy, print high and low quality permissions.
-  SetEnginePermissions({DocumentPermission::kCopy,
-                        DocumentPermission::kPrintHighQuality,
-                        DocumentPermission::kPrintLowQuality});
-
-  content_restrictions = fake_plugin_.GetContentRestrictions();
-  EXPECT_EQ(kContentRestrictionCutPaste, content_restrictions);
-}
-
-TEST_F(PdfViewPluginBaseWithEngineTest, GetAccessibilityDocInfo) {
-  // Test engine without any permissions.
-  SetEnginePermissions({});
-
-  AccessibilityDocInfo doc_info = fake_plugin_.GetAccessibilityDocInfo();
-  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
-  EXPECT_FALSE(doc_info.text_accessible);
-  EXPECT_FALSE(doc_info.text_copyable);
-
-  // Test engine with only copy permission.
-  SetEnginePermissions({DocumentPermission::kCopy});
-
-  doc_info = fake_plugin_.GetAccessibilityDocInfo();
-  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
-  EXPECT_FALSE(doc_info.text_accessible);
-  EXPECT_TRUE(doc_info.text_copyable);
-
-  // Test engine with only copy accessible permission.
-  SetEnginePermissions({DocumentPermission::kCopyAccessible});
-
-  doc_info = fake_plugin_.GetAccessibilityDocInfo();
-  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
-  EXPECT_TRUE(doc_info.text_accessible);
-  EXPECT_FALSE(doc_info.text_copyable);
-
-  // Test engine with both copy and copy accessible permission.
-  SetEnginePermissions(
-      {DocumentPermission::kCopy, DocumentPermission::kCopyAccessible});
-
-  doc_info = fake_plugin_.GetAccessibilityDocInfo();
-  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
-  EXPECT_TRUE(doc_info.text_accessible);
-  EXPECT_TRUE(doc_info.text_copyable);
 }
 
 }  // namespace chrome_pdf
