@@ -1,3 +1,4 @@
+#![cfg(feature = "alloc")]
 #![allow(missing_docs)]
 
 use crate::rust_string::RustString;
@@ -66,6 +67,10 @@ impl<T> RustVec<T> {
 
     pub unsafe fn set_len(&mut self, len: usize) {
         unsafe { self.as_mut_vec().set_len(len) }
+    }
+
+    pub fn truncate(&mut self, len: usize) {
+        self.as_mut_vec().truncate(len);
     }
 }
 

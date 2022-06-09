@@ -1,5 +1,8 @@
 use crate::actually_private::Private;
+use crate::lossy;
+#[cfg(feature = "alloc")]
 use alloc::borrow::Cow;
+#[cfg(feature = "alloc")]
 use alloc::string::String;
 use core::cmp::Ordering;
 use core::fmt::{self, Debug, Display};
@@ -144,6 +147,8 @@ impl CxxString {
     /// Cow::Owned String.
     ///
     /// [replacement character]: https://doc.rust-lang.org/std/char/constant.REPLACEMENT_CHARACTER.html
+    #[cfg(feature = "alloc")]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "alloc")))]
     pub fn to_string_lossy(&self) -> Cow<str> {
         String::from_utf8_lossy(self.as_bytes())
     }
@@ -204,13 +209,13 @@ impl CxxString {
 
 impl Display for CxxString {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        Display::fmt(self.to_string_lossy().as_ref(), f)
+        lossy::display(self.as_bytes(), f)
     }
 }
 
 impl Debug for CxxString {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        Debug::fmt(self.to_string_lossy().as_ref(), f)
+        lossy::debug(self.as_bytes(), f)
     }
 }
 

@@ -92,6 +92,7 @@ impl<'a> Types<'a> {
                         EnumRepr::Native { atom: _, repr_type } => {
                             all.insert(repr_type);
                         }
+                        #[cfg(feature = "experimental-enum-variants-from-header")]
                         EnumRepr::Foreign { rust_type: _ } => {}
                     }
                     let ident = &enm.name.rust;

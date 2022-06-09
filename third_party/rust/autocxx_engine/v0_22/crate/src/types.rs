@@ -195,6 +195,16 @@ impl QualifiedName {
         }
     }
 
+    pub(crate) fn type_path_from_root(&self) -> TypePath {
+        let segs = self
+            .ns_segment_iter()
+            .chain(std::iter::once(&self.1))
+            .map(make_ident);
+        parse_quote! {
+            #(#segs)::*
+        }
+    }
+
     /// Iterator over segments in the namespace of this name.
     pub(crate) fn ns_segment_iter(&self) -> impl Iterator<Item = &String> {
         self.0.iter()
@@ -227,6 +237,8 @@ pub fn validate_ident_ok_for_cxx(id: &str) -> Result<(), ConvertError> {
     validate_ident_ok_for_rust(id)?;
     if id.contains("__") {
         Err(ConvertError::TooManyUnderscores)
+    } else if id.starts_with("_bindgen_ty_") {
+        Err(ConvertError::BindgenTy)
     } else {
         Ok(())
     }

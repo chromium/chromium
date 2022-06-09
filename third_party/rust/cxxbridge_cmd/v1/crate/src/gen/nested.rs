@@ -52,6 +52,7 @@ fn sort_by_inner_namespace(apis: Vec<&Api>, depth: usize) -> NamespaceEntries {
 mod tests {
     use super::NamespaceEntries;
     use crate::syntax::attrs::OtherAttrs;
+    use crate::syntax::cfg::CfgExpr;
     use crate::syntax::namespace::Namespace;
     use crate::syntax::{Api, Doc, ExternType, ForeignName, Lang, Lifetimes, Pair};
     use proc_macro2::{Ident, Span};
@@ -128,6 +129,7 @@ mod tests {
     fn make_api(ns: Option<&str>, ident: &str) -> Api {
         let ns = ns.map_or(Namespace::ROOT, |ns| syn::parse_str(ns).unwrap());
         Api::CxxType(ExternType {
+            cfg: CfgExpr::Unconditional,
             lang: Lang::Rust,
             doc: Doc::new(),
             derives: Vec::new(),

@@ -63,13 +63,13 @@ impl Depfile {
 mod tests {
     use std::{fs::File, io::Read};
 
-    use tempdir::TempDir;
+    use tempfile::tempdir;
 
     use super::Depfile;
 
     #[test]
     fn test_simple_depfile() {
-        let tmp_dir = TempDir::new("depfile-test").unwrap();
+        let tmp_dir = tempdir().unwrap();
         let f = tmp_dir.path().join("depfile.d");
         let mut df = Depfile::new(&f).unwrap();
         df.add_output(&tmp_dir.path().join("a/b"));
@@ -85,7 +85,7 @@ mod tests {
 
     #[test]
     fn test_multiple_outputs() {
-        let tmp_dir = TempDir::new("depfile-test").unwrap();
+        let tmp_dir = tempdir().unwrap();
         let f = tmp_dir.path().join("depfile.d");
         let mut df = Depfile::new(&f).unwrap();
         df.add_output(&tmp_dir.path().join("a/b"));

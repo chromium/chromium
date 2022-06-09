@@ -2,8 +2,9 @@
 of a crate in the current workspace.
 """
 
-load("@rules_rust//rust:repositories.bzl", "load_arbitrary_tool")
 load("@rules_rust//rust:defs.bzl", "rust_common")
+load("@rules_rust//rust:repositories.bzl", "load_arbitrary_tool")
+load("@rules_rust//rust/platform:triple.bzl", "get_host_triple")
 
 def _impl(repository_ctx):
     # Link cxx repository into @third-party.
@@ -20,12 +21,8 @@ def _impl(repository_ctx):
     # Figure out which version of cargo to use.
     if repository_ctx.attr.target_triple:
         target_triple = repository_ctx.attr.target_triple
-    elif "mac" in repository_ctx.os.name:
-        target_triple = "x86_64-apple-darwin"
-    elif "windows" in repository_ctx.os.name:
-        target_triple = "x86_64-pc-windows-msvc"
     else:
-        target_triple = "x86_64-unknown-linux-gnu"
+        target_triple = get_host_triple(repository_ctx).str
 
     # Download cargo.
     load_arbitrary_tool(
@@ -78,7 +75,6 @@ vendor = repository_rule(
     attrs = {
         "cargo_version": attr.string(
             doc = "The version of cargo to use",
-            default = rust_common.default_version,
         ),
         "cargo_iso_date": attr.string(
             doc = "The date of the tool (or None, if the version is a specific version)",

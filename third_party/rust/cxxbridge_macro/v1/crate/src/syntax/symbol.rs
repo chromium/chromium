@@ -38,12 +38,6 @@ impl Symbol {
         assert!(!symbol.0.is_empty());
         symbol
     }
-
-    /// For example, for taking a symbol and then making a new symbol
-    /// for a vec of that symbol.
-    pub fn prefix_with(&self, prefix: &str) -> Symbol {
-        Symbol(format!("{}{}", prefix, self))
-    }
 }
 
 pub trait Segment {

@@ -14,13 +14,17 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "1.0.57"
+  cargo_pkg_version = "1.0.68"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "cxx"
   cargo_pkg_description = "Safe interop between Rust and C++"
   deps = [
     "//third_party/rust/cxxbridge_macro/v1:lib",
     "//third_party/rust/link_cplusplus/v1:lib",
+  ]
+  features = [
+    "alloc",
+    "std",
   ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]

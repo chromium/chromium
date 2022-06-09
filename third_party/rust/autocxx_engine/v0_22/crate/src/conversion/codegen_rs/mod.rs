@@ -17,7 +17,7 @@ pub(crate) mod unqualify;
 use indexmap::map::IndexMap as HashMap;
 use indexmap::set::IndexSet as HashSet;
 
-use autocxx_parser::{ExternCppType, IncludeCppConfig, RustFun};
+use autocxx_parser::{ExternCppType, IncludeCppConfig, RustFun, UnsafePolicy};
 
 use itertools::Itertools;
 use proc_macro2::{Span, TokenStream};
@@ -134,6 +134,7 @@ fn get_string_items() -> Vec<Item> {
 /// In practice, much of the "generation" involves connecting together
 /// existing lumps of code within the Api structures.
 pub(crate) struct RsCodeGenerator<'a> {
+    unsafe_policy: &'a UnsafePolicy,
     include_list: &'a [String],
     bindgen_mod: ItemMod,
     original_name_map: CppNameMap,
@@ -145,12 +146,14 @@ impl<'a> RsCodeGenerator<'a> {
     /// Generate code for a set of APIs that was discovered during parsing.
     pub(crate) fn generate_rs_code(
         all_apis: ApiVec<FnPhase>,
+        unsafe_policy: &'a UnsafePolicy,
         include_list: &'a [String],
         bindgen_mod: ItemMod,
         config: &'a IncludeCppConfig,
         header_name: Option<String>,
     ) -> Vec<Item> {
         let c = Self {
+            unsafe_policy,
             include_list,
             bindgen_mod,
             original_name_map: original_name_map_from_apis(&all_apis),
@@ -502,19 +505,30 @@ impl<'a> RsCodeGenerator<'a> {
                 ..Default::default()
             },
             Api::Struct {
-                details, analysis, ..
+                details,
+                analysis:
+                    PodAndDepAnalysis {
+                        pod:
+                            PodAnalysis {
+                                is_generic, kind, ..
+                            },
+                        constructors,
+                        ..
+                    },
+                ..
             } => {
                 let doc_attrs = get_doc_attrs(&details.item.attrs);
                 let layout = details.layout.clone();
                 self.generate_type(
                     &name,
                     id,
-                    analysis.pod.kind,
-                    analysis.constructors.move_constructor,
-                    analysis.constructors.destructor,
+                    kind,
+                    constructors.move_constructor,
+                    constructors.destructor,
                     || Some((Item::Struct(details.item), doc_attrs)),
                     associated_methods,
                     layout,
+                    is_generic,
                 )
             }
             Api::Enum { item, .. } => {
@@ -528,6 +542,7 @@ impl<'a> RsCodeGenerator<'a> {
                     || Some((Item::Enum(item), doc_attrs)),
                     associated_methods,
                     None,
+                    false,
                 )
             }
             Api::ForwardDeclaration { .. }
@@ -541,6 +556,7 @@ impl<'a> RsCodeGenerator<'a> {
                 || None,
                 associated_methods,
                 None,
+                false,
             ),
             Api::CType { .. } => RsCodegenResult {
                 extern_c_mod_items: vec![ForeignItem::Verbatim(quote! {
@@ -596,8 +612,11 @@ impl<'a> RsCodeGenerator<'a> {
                 name, superclass, ..
             } => {
                 let methods = associated_methods.get(&superclass);
-                let generate_peer_constructor =
-                    subclasses_with_a_single_trivial_constructor.contains(&name.0.name);
+                let generate_peer_constructor = subclasses_with_a_single_trivial_constructor.contains(&name.0.name) &&
+                    // TODO: Create an UnsafeCppPeerConstructor trait for calling an unsafe
+                    // constructor instead? Need to create unsafe versions of everything that uses
+                    // it too.
+                    matches!(self.unsafe_policy, UnsafePolicy::AllFunctionsSafe);
                 self.generate_subclass(name, &superclass, methods, generate_peer_constructor)
             }
             Api::ExternCppType {
@@ -710,6 +729,10 @@ impl<'a> RsCodeGenerator<'a> {
         extern_c_mod_items.push(parse_quote! {
             fn #as_mut_id(self: Pin<&mut #cpp_id>) -> Pin<&mut #super_cxxxbridge_id>;
         });
+        let as_unique_ptr_id = make_ident(format!("{}_As_{}_UniquePtr", cpp_id, super_name));
+        extern_c_mod_items.push(parse_quote! {
+            fn #as_unique_ptr_id(u: UniquePtr<#cpp_id>) -> UniquePtr<#super_cxxxbridge_id>;
+        });
         bindgen_mod_items.push(parse_quote! {
             impl AsRef<#super_path> for super::super::super::#id {
                 fn as_ref(&self) -> &cxxbridge::#super_cxxxbridge_id {
@@ -724,6 +747,14 @@ impl<'a> RsCodeGenerator<'a> {
                 pub fn pin_mut(&mut self) -> ::std::pin::Pin<&mut cxxbridge::#super_cxxxbridge_id> {
                     use autocxx::subclass::CppSubclass;
                     self.peer_mut().#as_mut_id()
+                }
+            }
+        });
+        let rs_as_unique_ptr_id = make_ident(format!("as_{}_unique_ptr", super_name));
+        bindgen_mod_items.push(parse_quote! {
+            impl super::super::super::#id {
+                pub fn #rs_as_unique_ptr_id(u: cxx::UniquePtr<#cpp_id>) -> cxx::UniquePtr<cxxbridge::#super_cxxxbridge_id> {
+                    cxxbridge::#as_unique_ptr_id(u)
                 }
             }
         });
@@ -800,7 +831,7 @@ impl<'a> RsCodeGenerator<'a> {
                         .as_ref()
                         .#borrow()
                         .expect(#reentrancy_panic_msg);
-                    let r = std::ops::#deref_ty::#deref_call(& #mut_token b);
+                    let r = ::std::ops::#deref_ty::#deref_call(& #mut_token b);
                     #methods_trait :: #method_name
                         (r,
                         #args)
@@ -832,6 +863,7 @@ impl<'a> RsCodeGenerator<'a> {
         item_creator: F,
         associated_methods: &HashMap<QualifiedName, Vec<SuperclassMethod>>,
         layout: Option<Layout>,
+        is_generic: bool,
     ) -> RsCodegenResult
     where
         F: FnOnce() -> Option<(Item, Vec<Attribute>)>,
@@ -878,25 +910,43 @@ impl<'a> RsCodeGenerator<'a> {
                 }
                 bindgen_mod_items.push(item);
 
-                RsCodegenResult {
-                    global_items: self.generate_extern_type_impl(type_kind, name),
-                    bridge_items: create_impl_items(&id, movable, destroyable, self.config),
-                    extern_c_mod_items: vec![self.generate_cxxbridge_type(name, true, doc_attrs)],
-                    bindgen_mod_items,
-                    materializations,
-                    ..Default::default()
+                if is_generic {
+                    // Still generate the type as emitted by bindgen,
+                    // but don't attempt to tell cxx about it
+                    RsCodegenResult {
+                        bindgen_mod_items,
+                        materializations,
+                        ..Default::default()
+                    }
+                } else {
+                    RsCodegenResult {
+                        global_items: self.generate_extern_type_impl(type_kind, name),
+                        bridge_items: create_impl_items(&id, movable, destroyable, self.config),
+                        extern_c_mod_items: vec![
+                            self.generate_cxxbridge_type(name, true, doc_attrs)
+                        ],
+                        bindgen_mod_items,
+                        materializations,
+                        ..Default::default()
+                    }
                 }
             }
             TypeKind::Abstract => {
-                // Feed cxx "type T;"
-                // We MUST do this because otherwise cxx assumes this can be
-                // instantiated using UniquePtr etc.
-                bindgen_mod_items.push(Item::Use(parse_quote! { pub use cxxbridge::#id; }));
-                RsCodegenResult {
-                    extern_c_mod_items: vec![self.generate_cxxbridge_type(name, false, doc_attrs)],
-                    bindgen_mod_items,
-                    materializations,
-                    ..Default::default()
+                if is_generic {
+                    RsCodegenResult::default()
+                } else {
+                    // Feed cxx "type T;"
+                    // We MUST do this because otherwise cxx assumes this can be
+                    // instantiated using UniquePtr etc.
+                    bindgen_mod_items.push(Item::Use(parse_quote! { pub use cxxbridge::#id; }));
+                    RsCodegenResult {
+                        extern_c_mod_items: vec![
+                            self.generate_cxxbridge_type(name, false, doc_attrs)
+                        ],
+                        bindgen_mod_items,
+                        materializations,
+                        ..Default::default()
+                    }
                 }
             }
         }
@@ -980,7 +1030,7 @@ impl<'a> RsCodeGenerator<'a> {
         rust_path: TypePath,
         ns_depth: usize,
     ) -> RsCodegenResult {
-        let id = name.get_final_ident();
+        let id = name.type_path_from_root();
         let super_duper = std::iter::repeat(make_ident("super"));
         let supers = super_duper.take(ns_depth + 2);
         let use_statement = parse_quote! {

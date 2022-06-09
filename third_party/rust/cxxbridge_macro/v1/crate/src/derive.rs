@@ -15,11 +15,11 @@ pub fn expand_struct(strct: &Struct, actual_derives: &mut Option<TokenStream>) -
             Trait::Clone => expanded.extend(struct_clone(strct, span)),
             Trait::Debug => expanded.extend(struct_debug(strct, span)),
             Trait::Default => expanded.extend(struct_default(strct, span)),
-            Trait::Eq => traits.push(quote_spanned!(span=> ::std::cmp::Eq)),
+            Trait::Eq => traits.push(quote_spanned!(span=> ::cxx::core::cmp::Eq)),
             Trait::ExternType => unreachable!(),
-            Trait::Hash => traits.push(quote_spanned!(span=> ::std::hash::Hash)),
+            Trait::Hash => traits.push(quote_spanned!(span=> ::cxx::core::hash::Hash)),
             Trait::Ord => expanded.extend(struct_ord(strct, span)),
-            Trait::PartialEq => traits.push(quote_spanned!(span=> ::std::cmp::PartialEq)),
+            Trait::PartialEq => traits.push(quote_spanned!(span=> ::cxx::core::cmp::PartialEq)),
             Trait::PartialOrd => expanded.extend(struct_partial_ord(strct, span)),
             Trait::Serialize => traits.push(quote_spanned!(span=> ::serde::Serialize)),
             Trait::Deserialize => traits.push(quote_spanned!(span=> ::serde::Deserialize)),
@@ -57,14 +57,14 @@ pub fn expand_enum(enm: &Enum, actual_derives: &mut Option<TokenStream>) -> Toke
             Trait::Debug => expanded.extend(enum_debug(enm, span)),
             Trait::Default => unreachable!(),
             Trait::Eq => {
-                traits.push(quote_spanned!(span=> ::std::cmp::Eq));
+                traits.push(quote_spanned!(span=> ::cxx::core::cmp::Eq));
                 has_eq = true;
             }
             Trait::ExternType => unreachable!(),
-            Trait::Hash => traits.push(quote_spanned!(span=> ::std::hash::Hash)),
+            Trait::Hash => traits.push(quote_spanned!(span=> ::cxx::core::hash::Hash)),
             Trait::Ord => expanded.extend(enum_ord(enm, span)),
             Trait::PartialEq => {
-                traits.push(quote_spanned!(span=> ::std::cmp::PartialEq));
+                traits.push(quote_spanned!(span=> ::cxx::core::cmp::PartialEq));
                 has_partial_eq = true;
             }
             Trait::PartialOrd => expanded.extend(enum_partial_ord(enm, span)),
@@ -83,10 +83,10 @@ pub fn expand_enum(enm: &Enum, actual_derives: &mut Option<TokenStream>) -> Toke
     if !has_eq {
         // Required to be derived in order for the enum's "variants" to be
         // usable in patterns.
-        traits.push(quote!(::std::cmp::Eq));
+        traits.push(quote!(::cxx::core::cmp::Eq));
     }
     if !has_partial_eq {
-        traits.push(quote!(::std::cmp::PartialEq));
+        traits.push(quote!(::cxx::core::cmp::PartialEq));
     }
 
     *actual_derives = Some(quote!(#[derive(#(#traits),*)]));
@@ -99,7 +99,7 @@ fn struct_copy(strct: &Struct, span: Span) -> TokenStream {
     let generics = &strct.generics;
 
     quote_spanned! {span=>
-        impl #generics ::std::marker::Copy for #ident #generics {}
+        impl #generics ::cxx::core::marker::Copy for #ident #generics {}
     }
 }
 
@@ -118,12 +118,12 @@ fn struct_clone(strct: &Struct, span: Span) -> TokenStream {
             quote_spanned!(span=> &self.#ident)
         });
         quote_spanned!(span=> #ident {
-            #(#fields: ::std::clone::Clone::clone(#values),)*
+            #(#fields: ::cxx::core::clone::Clone::clone(#values),)*
         })
     };
 
     quote_spanned! {span=>
-        impl #generics ::std::clone::Clone for #ident #generics {
+        impl #generics ::cxx::core::clone::Clone for #ident #generics {
             fn clone(&self) -> Self {
                 #body
             }
@@ -139,8 +139,8 @@ fn struct_debug(strct: &Struct, span: Span) -> TokenStream {
     let field_names = fields.clone().map(Ident::to_string);
 
     quote_spanned! {span=>
-        impl #generics ::std::fmt::Debug for #ident #generics {
-            fn fmt(&self, formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        impl #generics ::cxx::core::fmt::Debug for #ident #generics {
+            fn fmt(&self, formatter: &mut ::cxx::core::fmt::Formatter<'_>) -> ::cxx::core::fmt::Result {
                 formatter.debug_struct(#struct_name)
                     #(.field(#field_names, &self.#fields))*
                     .finish()
@@ -156,11 +156,11 @@ fn struct_default(strct: &Struct, span: Span) -> TokenStream {
 
     quote_spanned! {span=>
         #[allow(clippy::derivable_impls)] // different spans than the derived impl
-        impl #generics ::std::default::Default for #ident #generics {
+        impl #generics ::cxx::core::default::Default for #ident #generics {
             fn default() -> Self {
                 #ident {
                     #(
-                        #fields: ::std::default::Default::default(),
+                        #fields: ::cxx::core::default::Default::default(),
                     )*
                 }
             }
@@ -174,15 +174,15 @@ fn struct_ord(strct: &Struct, span: Span) -> TokenStream {
     let fields = strct.fields.iter().map(|field| &field.name.rust);
 
     quote_spanned! {span=>
-        impl #generics ::std::cmp::Ord for #ident #generics {
-            fn cmp(&self, other: &Self) -> ::std::cmp::Ordering {
+        impl #generics ::cxx::core::cmp::Ord for #ident #generics {
+            fn cmp(&self, other: &Self) -> ::cxx::core::cmp::Ordering {
                 #(
-                    match ::std::cmp::Ord::cmp(&self.#fields, &other.#fields) {
-                        ::std::cmp::Ordering::Equal => {}
+                    match ::cxx::core::cmp::Ord::cmp(&self.#fields, &other.#fields) {
+                        ::cxx::core::cmp::Ordering::Equal => {}
                         ordering => return ordering,
                     }
                 )*
-                ::std::cmp::Ordering::Equal
+                ::cxx::core::cmp::Ordering::Equal
             }
         }
     }
@@ -194,24 +194,24 @@ fn struct_partial_ord(strct: &Struct, span: Span) -> TokenStream {
 
     let body = if derive::contains(&strct.derives, Trait::Ord) {
         quote! {
-            ::std::option::Option::Some(::std::cmp::Ord::cmp(self, other))
+            ::cxx::core::option::Option::Some(::cxx::core::cmp::Ord::cmp(self, other))
         }
     } else {
         let fields = strct.fields.iter().map(|field| &field.name.rust);
         quote! {
             #(
-                match ::std::cmp::PartialOrd::partial_cmp(&self.#fields, &other.#fields) {
-                    ::std::option::Option::Some(::std::cmp::Ordering::Equal) => {}
+                match ::cxx::core::cmp::PartialOrd::partial_cmp(&self.#fields, &other.#fields) {
+                    ::cxx::core::option::Option::Some(::cxx::core::cmp::Ordering::Equal) => {}
                     ordering => return ordering,
                 }
             )*
-            ::std::option::Option::Some(::std::cmp::Ordering::Equal)
+            ::cxx::core::option::Option::Some(::cxx::core::cmp::Ordering::Equal)
         }
     };
 
     quote_spanned! {span=>
-        impl #generics ::std::cmp::PartialOrd for #ident #generics {
-            fn partial_cmp(&self, other: &Self) -> ::std::option::Option<::std::cmp::Ordering> {
+        impl #generics ::cxx::core::cmp::PartialOrd for #ident #generics {
+            fn partial_cmp(&self, other: &Self) -> ::cxx::core::option::Option<::cxx::core::cmp::Ordering> {
                 #body
             }
         }
@@ -222,7 +222,7 @@ fn enum_copy(enm: &Enum, span: Span) -> TokenStream {
     let ident = &enm.name.rust;
 
     quote_spanned! {span=>
-        impl ::std::marker::Copy for #ident {}
+        impl ::cxx::core::marker::Copy for #ident {}
     }
 }
 
@@ -230,7 +230,7 @@ fn enum_clone(enm: &Enum, span: Span) -> TokenStream {
     let ident = &enm.name.rust;
 
     quote_spanned! {span=>
-        impl ::std::clone::Clone for #ident {
+        impl ::cxx::core::clone::Clone for #ident {
             fn clone(&self) -> Self {
                 *self
             }
@@ -250,11 +250,11 @@ fn enum_debug(enm: &Enum, span: Span) -> TokenStream {
     let fallback = format!("{}({{}})", ident);
 
     quote_spanned! {span=>
-        impl ::std::fmt::Debug for #ident {
-            fn fmt(&self, formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        impl ::cxx::core::fmt::Debug for #ident {
+            fn fmt(&self, formatter: &mut ::cxx::core::fmt::Formatter<'_>) -> ::cxx::core::fmt::Result {
                 match *self {
                     #(#variants)*
-                    _ => ::std::write!(formatter, #fallback, self.repr),
+                    _ => ::cxx::core::write!(formatter, #fallback, self.repr),
                 }
             }
         }
@@ -265,9 +265,9 @@ fn enum_ord(enm: &Enum, span: Span) -> TokenStream {
     let ident = &enm.name.rust;
 
     quote_spanned! {span=>
-        impl ::std::cmp::Ord for #ident {
-            fn cmp(&self, other: &Self) -> ::std::cmp::Ordering {
-                ::std::cmp::Ord::cmp(&self.repr, &other.repr)
+        impl ::cxx::core::cmp::Ord for #ident {
+            fn cmp(&self, other: &Self) -> ::cxx::core::cmp::Ordering {
+                ::cxx::core::cmp::Ord::cmp(&self.repr, &other.repr)
             }
         }
     }
@@ -277,9 +277,9 @@ fn enum_partial_ord(enm: &Enum, span: Span) -> TokenStream {
     let ident = &enm.name.rust;
 
     quote_spanned! {span=>
-        impl ::std::cmp::PartialOrd for #ident {
-            fn partial_cmp(&self, other: &Self) -> ::std::option::Option<::std::cmp::Ordering> {
-                ::std::cmp::PartialOrd::partial_cmp(&self.repr, &other.repr)
+        impl ::cxx::core::cmp::PartialOrd for #ident {
+            fn partial_cmp(&self, other: &Self) -> ::cxx::core::option::Option<::cxx::core::cmp::Ordering> {
+                ::cxx::core::cmp::PartialOrd::partial_cmp(&self.repr, &other.repr)
             }
         }
     }

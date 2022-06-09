@@ -6,7 +6,7 @@ use crate::syntax::atom::Atom::{self, *};
 use crate::syntax::instantiate::{ImplKey, NamedImplKey};
 use crate::syntax::map::UnorderedMap as Map;
 use crate::syntax::set::UnorderedSet;
-use crate::syntax::symbol::Symbol;
+use crate::syntax::symbol::{self, Symbol};
 use crate::syntax::trivial::{self, TrivialReason};
 use crate::syntax::{
     derive, mangle, Api, Doc, Enum, EnumRepr, ExternFn, ExternType, Pair, Signature, Struct, Trait,
@@ -318,6 +318,7 @@ fn write_struct_decl(out: &mut OutFile, ident: &Pair) {
 
 fn write_enum_decl(out: &mut OutFile, enm: &Enum) {
     let repr = match &enm.repr {
+        #[cfg(feature = "experimental-enum-variants-from-header")]
         EnumRepr::Foreign { .. } => return,
         EnumRepr::Native { atom, .. } => *atom,
     };
@@ -381,6 +382,7 @@ fn write_opaque_type<'a>(out: &mut OutFile<'a>, ety: &'a ExternType, methods: &[
 
 fn write_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
     let repr = match &enm.repr {
+        #[cfg(feature = "experimental-enum-variants-from-header")]
         EnumRepr::Foreign { .. } => return,
         EnumRepr::Native { atom, .. } => *atom,
     };
@@ -406,6 +408,7 @@ fn write_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
 
 fn check_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
     let repr = match &enm.repr {
+        #[cfg(feature = "experimental-enum-variants-from-header")]
         EnumRepr::Foreign { .. } => return,
         EnumRepr::Native { atom, .. } => *atom,
     };
@@ -467,7 +470,25 @@ fn check_trivial_extern_type(out: &mut OutFile, alias: &TypeAlias, reasons: &[Tr
     let id = alias.name.to_fully_qualified();
     out.builtin.relocatable = true;
     writeln!(out, "static_assert(");
-    writeln!(out, "    ::rust::IsRelocatable<{}>::value,", id);
+    if reasons
+        .iter()
+        .all(|r| matches!(r, TrivialReason::StructField(_)))
+    {
+        // If the type is only used as a struct field and not as by-value
+        // function argument or any other use, then C array of trivially
+        // relocatable type is also permissible.
+        //
+        //     --- means something sane:
+        //     struct T { char buf[N]; };
+        //
+        //     --- means something totally different:
+        //     void f(char buf[N]);
+        //
+        out.builtin.relocatable_or_array = true;
+        writeln!(out, "    ::rust::IsRelocatableOrArray<{}>::value,", id);
+    } else {
+        writeln!(out, "    ::rust::IsRelocatable<{}>::value,", id);
+    }
     writeln!(
         out,
         "    \"type {} should be trivially move constructible and trivially destructible in C++ to be used as {} in Rust\");",
@@ -1372,7 +1393,9 @@ impl<'a> ToMangled for UniquePtr<'a> {
     fn to_mangled(&self, types: &Types) -> Symbol {
         match self {
             UniquePtr::Ident(ident) => ident.to_mangled(types),
-            UniquePtr::CxxVector(element) => element.to_mangled(types).prefix_with("std$vector$"),
+            UniquePtr::CxxVector(element) => {
+                symbol::join(&[&"std", &"vector", &element.to_mangled(types)])
+            }
         }
     }
 }
@@ -1473,6 +1496,11 @@ fn write_rust_vec_extern(out: &mut OutFile, key: NamedImplKey) {
     writeln!(
         out,
         "void cxxbridge1$rust_vec${}$set_len(::rust::Vec<{}> *ptr, ::std::size_t len) noexcept;",
+        instance, inner,
+    );
+    writeln!(
+        out,
+        "void cxxbridge1$rust_vec${}$truncate(::rust::Vec<{}> *ptr, ::std::size_t len) noexcept;",
         instance, inner,
     );
 }
@@ -1582,6 +1610,16 @@ fn write_rust_vec_impl(out: &mut OutFile, key: NamedImplKey) {
     writeln!(
         out,
         "  return cxxbridge1$rust_vec${}$set_len(this, len);",
+        instance,
+    );
+    writeln!(out, "}}");
+
+    writeln!(out, "template <>");
+    begin_function_definition(out);
+    writeln!(out, "void Vec<{}>::truncate(::std::size_t len) {{", inner,);
+    writeln!(
+        out,
+        "  return cxxbridge1$rust_vec${}$truncate(this, len);",
         instance,
     );
     writeln!(out, "}}");

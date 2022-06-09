@@ -10,7 +10,7 @@ use indexmap::map::IndexMap as HashMap;
 
 use syn::{parse_quote, FnArg, PatType, Type, TypePtr};
 
-use crate::conversion::analysis::fun::{FnKind, MethodKind, ReceiverMutability};
+use crate::conversion::analysis::fun::{FnKind, MethodKind, ReceiverMutability, UnsafePolicy};
 use crate::conversion::analysis::pod::PodPhase;
 use crate::conversion::api::{
     CppVisibility, FuncToConvert, Provenance, RustSubclassFnDetails, SubclassConstructorDetails,
@@ -79,12 +79,18 @@ pub(super) fn create_subclass_trait_item(
     receiver_mutability: &ReceiverMutability,
     receiver: QualifiedName,
     is_pure_virtual: bool,
+    unsafe_policy: &UnsafePolicy,
 ) -> Api<FnPrePhase1> {
     let param_names = analysis
         .param_details
         .iter()
         .map(|pd| pd.name.clone())
         .collect();
+    let requires_unsafe = if matches!(unsafe_policy, UnsafePolicy::AllFunctionsUnsafe) {
+        UnsafetyNeeded::Always
+    } else {
+        UnsafetyNeeded::from_param_details(&analysis.param_details, false)
+    };
     Api::SubclassTraitItem {
         name,
         details: SuperclassMethod {
@@ -93,7 +99,7 @@ pub(super) fn create_subclass_trait_item(
             ret_type: analysis.ret_type.clone(),
             param_names,
             receiver_mutability: receiver_mutability.clone(),
-            requires_unsafe: UnsafetyNeeded::from_param_details(&analysis.param_details, false),
+            requires_unsafe,
             is_pure_virtual,
             receiver,
         },
@@ -107,6 +113,7 @@ pub(super) fn create_subclass_function(
     receiver_mutability: &ReceiverMutability,
     superclass: &QualifiedName,
     dependencies: Vec<QualifiedName>,
+    unsafe_policy: &UnsafePolicy,
 ) -> Api<FnPrePhase1> {
     let cpp = sub.cpp();
     let holder_name = sub.holder();
@@ -131,6 +138,11 @@ pub(super) fn create_subclass_function(
         .skip(1)
         .map(|p| p.conversion.clone())
         .collect();
+    let requires_unsafe = if matches!(unsafe_policy, UnsafePolicy::AllFunctionsUnsafe) {
+        UnsafetyNeeded::Always
+    } else {
+        UnsafetyNeeded::from_param_details(&analysis.param_details, false)
+    };
     Api::RustSubclassFn {
         name: ApiName::new_in_root_namespace(rust_call_name.clone()),
         subclass: sub.clone(),
@@ -151,7 +163,7 @@ pub(super) fn create_subclass_function(
             superclass: superclass.clone(),
             receiver_mutability: receiver_mutability.clone(),
             dependencies,
-            requires_unsafe: UnsafetyNeeded::from_param_details(&analysis.param_details, false),
+            requires_unsafe,
             is_pure_virtual: matches!(
                 analysis.kind,
                 FnKind::Method {

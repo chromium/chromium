@@ -241,11 +241,9 @@ extern "C" {
 }
 
 unsafe impl UniquePtrTarget for CxxString {
-    #[doc(hidden)]
     fn __typename(f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("CxxString")
     }
-    #[doc(hidden)]
     fn __null() -> MaybeUninit<*mut c_void> {
         let mut repr = MaybeUninit::uninit();
         unsafe {
@@ -253,21 +251,17 @@ unsafe impl UniquePtrTarget for CxxString {
         }
         repr
     }
-    #[doc(hidden)]
     unsafe fn __raw(raw: *mut Self) -> MaybeUninit<*mut c_void> {
         let mut repr = MaybeUninit::uninit();
         unsafe { unique_ptr_std_string_raw(&mut repr, raw) }
         repr
     }
-    #[doc(hidden)]
     unsafe fn __get(repr: MaybeUninit<*mut c_void>) -> *const Self {
         unsafe { unique_ptr_std_string_get(&repr) }
     }
-    #[doc(hidden)]
     unsafe fn __release(mut repr: MaybeUninit<*mut c_void>) -> *mut Self {
         unsafe { unique_ptr_std_string_release(&mut repr) }
     }
-    #[doc(hidden)]
     unsafe fn __drop(mut repr: MaybeUninit<*mut c_void>) {
         unsafe { unique_ptr_std_string_drop(&mut repr) }
     }
@@ -277,27 +271,21 @@ unsafe impl<T> UniquePtrTarget for CxxVector<T>
 where
     T: VectorElement,
 {
-    #[doc(hidden)]
     fn __typename(f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "CxxVector<{}>", display(T::__typename))
     }
-    #[doc(hidden)]
     fn __null() -> MaybeUninit<*mut c_void> {
         T::__unique_ptr_null()
     }
-    #[doc(hidden)]
     unsafe fn __raw(raw: *mut Self) -> MaybeUninit<*mut c_void> {
         unsafe { T::__unique_ptr_raw(raw) }
     }
-    #[doc(hidden)]
     unsafe fn __get(repr: MaybeUninit<*mut c_void>) -> *const Self {
         unsafe { T::__unique_ptr_get(repr) }
     }
-    #[doc(hidden)]
     unsafe fn __release(repr: MaybeUninit<*mut c_void>) -> *mut Self {
         unsafe { T::__unique_ptr_release(repr) }
     }
-    #[doc(hidden)]
     unsafe fn __drop(repr: MaybeUninit<*mut c_void>) {
         unsafe { T::__unique_ptr_drop(repr) }
     }

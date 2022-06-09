@@ -18,7 +18,7 @@ use syn::{ItemEnum, ItemStruct, Type, Visibility};
 use crate::{
     conversion::{
         analysis::type_converter::{self, add_analysis, TypeConversionContext, TypeConverter},
-        api::{AnalysisPhase, Api, ApiName, CppVisibility, NullPhase, StructDetails, TypeKind},
+        api::{AnalysisPhase, Api, ApiName, NullPhase, StructDetails, TypeKind},
         apivec::ApiVec,
         convert_error::{ConvertErrorWithContext, ErrorContext},
         error_reporter::convert_apis,
@@ -46,6 +46,7 @@ pub(crate) struct PodAnalysis {
     pub(crate) field_deps: HashSet<QualifiedName>,
     pub(crate) field_info: Vec<FieldInfo>,
     pub(crate) is_generic: bool,
+    pub(crate) in_anonymous_namespace: bool,
 }
 
 pub(crate) struct PodPhase;
@@ -133,12 +134,6 @@ fn analyze_struct(
     config: &IncludeCppConfig,
 ) -> Result<Box<dyn Iterator<Item = Api<PodPhase>>>, ConvertErrorWithContext> {
     let id = name.name.get_final_ident();
-    if details.vis != CppVisibility::Public {
-        return Err(ConvertErrorWithContext(
-            ConvertError::NonPublicNestedType,
-            Some(ErrorContext::new_for_item(id)),
-        ));
-    }
     let metadata = BindgenSemanticAttributes::new_retaining_others(&mut details.item.attrs);
     metadata.check_for_fatal_attrs(&id)?;
     let bases = get_bases(&details.item);
@@ -179,6 +174,10 @@ fn analyze_struct(
         .cloned()
         .collect();
     let is_generic = !details.item.generics.params.is_empty();
+    let in_anonymous_namespace = name
+        .name
+        .ns_segment_iter()
+        .any(|ns| ns.starts_with("_bindgen_mod"));
     Ok(Box::new(std::iter::once(Api::Struct {
         name,
         details,
@@ -189,6 +188,7 @@ fn analyze_struct(
             field_deps,
             field_info,
             is_generic,
+            in_anonymous_namespace,
         },
     })))
 }
@@ -202,9 +202,14 @@ fn get_struct_field_types(
     extra_apis: &mut ApiVec<NullPhase>,
 ) -> Vec<ConvertError> {
     let mut convert_errors = Vec::new();
+    let struct_type_params = s
+        .generics
+        .type_params()
+        .map(|tp| tp.ident.clone())
+        .collect();
+    let type_conversion_context = TypeConversionContext::WithinStructField { struct_type_params };
     for f in &s.fields {
-        let annotated =
-            type_converter.convert_type(f.ty.clone(), ns, &TypeConversionContext::WithinReference);
+        let annotated = type_converter.convert_type(f.ty.clone(), ns, &type_conversion_context);
         match annotated {
             Ok(mut r) => {
                 extra_apis.append(&mut r.extra_apis);

@@ -684,6 +684,13 @@ impl<'a> CppCodeGenerator<'a> {
             "{}& As_{}_mut() {{ return *this; }}",
             super_name, super_name
         ));
+        self.additional_functions.push(ExtraCpp {
+            declaration: Some(format!(
+                "inline std::unique_ptr<{}> {}_As_{}_UniquePtr(std::unique_ptr<{}> u) {{ return std::unique_ptr<{}>(u.release()); }}",
+                superclass.to_cpp_name(), subclass.cpp(), super_name, subclass.cpp(), superclass.to_cpp_name(),
+                )),
+                ..Default::default()
+        });
         // And now constructors
         let mut constructor_decls: Vec<String> = Vec::new();
         for constructor in constructors {
@@ -700,7 +707,7 @@ impl<'a> CppCodeGenerator<'a> {
         }
         self.additional_functions.push(ExtraCpp {
             type_definition: Some(format!(
-                "class {} : {}\n{{\npublic:\n{}\n{}\nvoid {}() const;\nprivate:rust::Box<{}> obs;\nvoid really_remove_ownership();\n\n}};",
+                "class {} : public {}\n{{\npublic:\n{}\n{}\nvoid {}() const;\nprivate:rust::Box<{}> obs;\nvoid really_remove_ownership();\n\n}};",
                 subclass.cpp(),
                 superclass.to_cpp_name(),
                 constructor_decls.join("\n"),

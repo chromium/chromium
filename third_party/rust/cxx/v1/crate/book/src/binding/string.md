@@ -18,14 +18,23 @@ public:
   String(String &&) noexcept;
   ~String() noexcept;
 
-  // Throws std::invalid_argument if not utf-8.
+  // Throws std::invalid_argument if not UTF-8.
   String(const std::string &);
   String(const char *);
   String(const char *, size_t);
 
-  // Throws std::invalid_argument if not utf-16.
+  // Replaces invalid UTF-8 data with the replacement character (U+FFFD).
+  static String lossy(const std::string &) noexcept;
+  static String lossy(const char *) noexcept;
+  static String lossy(const char *, size_t) noexcept;
+
+  // Throws std::invalid_argument if not UTF-16.
   String(const char16_t *);
   String(const char16_t *, size_t);
+
+  // Replaces invalid UTF-16 data with the replacement character (U+FFFD).
+  static String lossy(const char16_t *) noexcept;
+  static String lossy(const char16_t *, size_t) noexcept;
 
   String &operator=(const String &) noexcept;
   String &operator=(String &&) noexcept;

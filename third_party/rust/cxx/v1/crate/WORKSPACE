@@ -4,20 +4,21 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "rules_rust",
-    sha256 = "4d6aa4554eaf5c7bf6da1dd1371b1455b3234676b234a299791635c50c61df91",
-    strip_prefix = "rules_rust-238b998f108a099e5a227dbe312526406dda1f2d",
+    sha256 = "617082067629939c0a22f587811a3e822a50a203119a90380e21f5aec3373da9",
+    strip_prefix = "rules_rust-e07881fa22a5f0d16230d8b23bbff2bf358823b8",
     urls = [
-        # Main branch as of 2021-10-01
-        "https://github.com/bazelbuild/rules_rust/archive/238b998f108a099e5a227dbe312526406dda1f2d.tar.gz",
+        # Main branch as of 2022-04-27
+        "https://github.com/bazelbuild/rules_rust/archive/e07881fa22a5f0d16230d8b23bbff2bf358823b8.tar.gz",
     ],
 )
 
-load("@rules_rust//rust:repositories.bzl", "rust_repositories")
+load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains")
 
-RUST_VERSION = "1.55.0"
+RUST_VERSION = "1.60.0"
 
-rust_repositories(
-    edition = "2018",
+rules_rust_dependencies()
+
+rust_register_toolchains(
     version = RUST_VERSION,
 )
 
@@ -25,6 +26,6 @@ load("//tools/bazel:vendor.bzl", "vendor")
 
 vendor(
     name = "third-party",
-    lockfile = "//third-party:Cargo.lock",
     cargo_version = RUST_VERSION,
+    lockfile = "//third-party:Cargo.lock",
 )

@@ -54,7 +54,6 @@ pub(crate) enum CppVisibility {
 
 /// Details about a C++ struct.
 pub(crate) struct StructDetails {
-    pub(crate) vis: CppVisibility,
     pub(crate) item: ItemStruct,
     pub(crate) layout: Option<Layout>,
     pub(crate) has_rvalue_reference_fields: bool,

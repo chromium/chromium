@@ -368,7 +368,6 @@ pub unsafe trait VectorElement: Sized {
 macro_rules! vector_element_by_value_methods {
     (opaque, $segment:expr, $ty:ty) => {};
     (trivial, $segment:expr, $ty:ty) => {
-        #[doc(hidden)]
         unsafe fn __push_back(v: Pin<&mut CxxVector<$ty>>, value: &mut ManuallyDrop<$ty>) {
             extern "C" {
                 attr! {
@@ -378,7 +377,6 @@ macro_rules! vector_element_by_value_methods {
             }
             unsafe { __push_back(v, value) }
         }
-        #[doc(hidden)]
         unsafe fn __pop_back(v: Pin<&mut CxxVector<$ty>>, out: &mut MaybeUninit<$ty>) {
             extern "C" {
                 attr! {
@@ -397,11 +395,9 @@ macro_rules! impl_vector_element {
         const_assert_eq!(1, mem::align_of::<CxxVector<$ty>>());
 
         unsafe impl VectorElement for $ty {
-            #[doc(hidden)]
             fn __typename(f: &mut fmt::Formatter) -> fmt::Result {
                 f.write_str($name)
             }
-            #[doc(hidden)]
             fn __vector_size(v: &CxxVector<$ty>) -> usize {
                 extern "C" {
                     attr! {
@@ -411,7 +407,6 @@ macro_rules! impl_vector_element {
                 }
                 unsafe { __vector_size(v) }
             }
-            #[doc(hidden)]
             unsafe fn __get_unchecked(v: *mut CxxVector<$ty>, pos: usize) -> *mut $ty {
                 extern "C" {
                     attr! {
@@ -422,7 +417,6 @@ macro_rules! impl_vector_element {
                 unsafe { __get_unchecked(v, pos) }
             }
             vector_element_by_value_methods!($kind, $segment, $ty);
-            #[doc(hidden)]
             fn __unique_ptr_null() -> MaybeUninit<*mut c_void> {
                 extern "C" {
                     attr! {
@@ -434,7 +428,6 @@ macro_rules! impl_vector_element {
                 unsafe { __unique_ptr_null(&mut repr) }
                 repr
             }
-            #[doc(hidden)]
             unsafe fn __unique_ptr_raw(raw: *mut CxxVector<Self>) -> MaybeUninit<*mut c_void> {
                 extern "C" {
                     attr! {
@@ -446,7 +439,6 @@ macro_rules! impl_vector_element {
                 unsafe { __unique_ptr_raw(&mut repr, raw) }
                 repr
             }
-            #[doc(hidden)]
             unsafe fn __unique_ptr_get(repr: MaybeUninit<*mut c_void>) -> *const CxxVector<Self> {
                 extern "C" {
                     attr! {
@@ -456,7 +448,6 @@ macro_rules! impl_vector_element {
                 }
                 unsafe { __unique_ptr_get(&repr) }
             }
-            #[doc(hidden)]
             unsafe fn __unique_ptr_release(mut repr: MaybeUninit<*mut c_void>) -> *mut CxxVector<Self> {
                 extern "C" {
                     attr! {
@@ -466,7 +457,6 @@ macro_rules! impl_vector_element {
                 }
                 unsafe { __unique_ptr_release(&mut repr) }
             }
-            #[doc(hidden)]
             unsafe fn __unique_ptr_drop(mut repr: MaybeUninit<*mut c_void>) {
                 extern "C" {
                     attr! {

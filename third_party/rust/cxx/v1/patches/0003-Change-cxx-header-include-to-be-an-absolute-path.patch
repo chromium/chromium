@@ -1,14 +1,15 @@
-From a84e98d2ea96b737e68b8ea638eb3216d2bc9e5d Mon Sep 17 00:00:00 2001
+From b7aee81fc1fdab77833a5f3e4ee1110f6aa57692 Mon Sep 17 00:00:00 2001
 From: danakj <danakj@chromium.org>
 Date: Tue, 2 Nov 2021 17:11:20 -0400
-Subject: [PATCH] Change cxx header include to be an absolute path
+Subject: [PATCH 3/4] Change cxx header include to be an absolute path
 
+Signed-off-by: Collin Baker <collinbaker@chromium.org>
 ---
  third_party/rust/cxx/v1/crate/src/cxx.cc | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/third_party/rust/cxx/v1/crate/src/cxx.cc b/third_party/rust/cxx/v1/crate/src/cxx.cc
-index 5dca531bed94f..686b1a9cdaab0 100644
+index 1601a05ab6e11..1860f1337cc2f 100644
 --- a/third_party/rust/cxx/v1/crate/src/cxx.cc
 +++ b/third_party/rust/cxx/v1/crate/src/cxx.cc
 @@ -1,4 +1,4 @@
@@ -18,5 +19,5 @@ index 5dca531bed94f..686b1a9cdaab0 100644
  #include <iostream>
  #include <memory>
 -- 
-2.33.1.1089.g2158813163f-goog
+2.36.1.255.ge46751e96f-goog
 

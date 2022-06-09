@@ -1,9 +1,11 @@
+#![cfg(feature = "alloc")]
+
+use crate::c_char::c_char;
 use crate::rust_string::RustString;
 use crate::rust_vec::RustVec;
 use alloc::vec::Vec;
 use core::mem;
 use core::ptr;
-use std::os::raw::c_char;
 
 macro_rules! rust_vec_shims {
     ($segment:expr, $ty:ty) => {
@@ -52,6 +54,12 @@ macro_rules! rust_vec_shims {
                 #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$set_len")]
                 unsafe extern "C" fn __set_len(this: *mut RustVec<$ty>, len: usize) {
                     unsafe { (*this).set_len(len) }
+                }
+            }
+            attr! {
+                #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$truncate")]
+                unsafe extern "C" fn __truncate(this: *mut RustVec<$ty>, len: usize) {
+                    unsafe { (*this).truncate(len) }
                 }
             }
         };

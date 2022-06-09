@@ -11,9 +11,9 @@
 
 [package]
 edition = "2018"
-rust-version = "1.48"
+rust-version = "1.54"
 name = "cxxbridge-cmd"
-version = "1.0.57"
+version = "1.0.68"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 exclude = ["build.rs"]
 description = "C++ code generator for integrating `cxx` crate into a non-Cargo build."
@@ -22,14 +22,21 @@ keywords = ["ffi"]
 categories = ["development-tools::ffi"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/cxx"
+
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [[bin]]
 name = "cxxbridge"
 path = "src/main.rs"
+
 [dependencies.clap]
-version = "2.33"
+version = "3.1"
+features = [
+    "std",
+    "suggestions",
+]
+default-features = false
 
 [dependencies.codespan-reporting]
 version = "0.11"
@@ -45,5 +52,13 @@ default-features = false
 
 [dependencies.syn]
 version = "1.0.70"
-features = ["parsing", "printing", "clone-impls", "full"]
+features = [
+    "parsing",
+    "printing",
+    "clone-impls",
+    "full",
+]
 default-features = false
+
+[features]
+experimental-async-fn = []

@@ -13,20 +13,26 @@
 edition = "2018"
 rust-version = "1.48"
 name = "cxxbridge-macro"
-version = "1.0.57"
+version = "1.0.68"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
-exclude = ["build.rs", "README.md"]
+exclude = [
+    "build.rs",
+    "README.md",
+]
 description = "Implementation detail of the `cxx` crate."
 homepage = "https://cxx.rs"
+readme = "README.md"
 keywords = ["ffi"]
 categories = ["development-tools::ffi"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/cxx"
+
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [lib]
 proc-macro = true
+
 [dependencies.clang-ast]
 version = "0.1"
 optional = true
@@ -57,8 +63,16 @@ optional = true
 [dependencies.syn]
 version = "1.0.70"
 features = ["full"]
+
 [dev-dependencies.cxx]
 version = "1.0"
 
 [features]
-experimental = ["clang-ast", "flate2", "memmap", "serde", "serde_json"]
+experimental-async-fn = []
+experimental-enum-variants-from-header = [
+    "clang-ast",
+    "flate2",
+    "memmap",
+    "serde",
+    "serde_json",
+]
