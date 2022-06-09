@@ -353,7 +353,8 @@ void TerminalPrivateOpenTerminalProcessFunction::OnCrostiniRestarted(
     OpenVmshellProcess(user_id_hash, std::move(cmdline));
   } else {
     const std::string msg =
-        base::StringPrintf("Error starting crostini for terminal: %d", result);
+        base::StringPrintf("Error starting crostini for terminal: %d (%s)",
+                           result, CrostiniResultString(result));
     LOG(ERROR) << msg;
     Respond(Error(msg));
   }

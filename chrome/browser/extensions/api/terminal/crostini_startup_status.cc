@@ -59,7 +59,8 @@ void CrostiniStartupStatus::OnCrostiniRestarted(
   if (result != crostini::CrostiniResult::SUCCESS) {
     PrintAfterStage(
         kColor1RedBright,
-        base::StringPrintf("Error starting penguin container: %d\r\n", result));
+        base::StringPrintf("\rError starting penguin container: %d (%s)\r\n",
+                           result, CrostiniResultString(result)));
     crostini::RecordAppLaunchResultHistogram(
         crostini::CrostiniAppLaunchAppType::kTerminal, result);
   } else {
@@ -82,7 +83,8 @@ void CrostiniStartupStatus::OnCrostiniConnected(
     PrintAfterStage(
         kColor1RedBright,
         base::StringPrintf(
-            "Error connecting shell to penguin container: %d\r\n", result));
+            "\rError connecting shell to penguin container: %d (%s)\r\n",
+            result, CrostiniResultString(result)));
   } else {
     if (verbose_) {
       stage_index_ = kMaxStage + 1;  // done.

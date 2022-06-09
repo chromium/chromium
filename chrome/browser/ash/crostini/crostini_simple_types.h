@@ -29,6 +29,7 @@ namespace crostini {
 // If you add anything here make sure to also update enums.xml and the plx
 // scripts in
 // https://plx.corp.google.com/home2/home/collections/c16e3c1474497b821
+// and CrostiniResultString in crostini_simple_types.cc.
 enum class CrostiniResult {
   SUCCESS = 0,
   // DBUS_ERROR = 1,
@@ -106,6 +107,9 @@ enum class CrostiniResult {
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };
+
+// Returns the string name of the CrostiniResult.
+const char* CrostiniResultString(const CrostiniResult res);
 
 using CrostiniSuccessCallback =
     base::OnceCallback<void(bool success, const std::string& failure_reason)>;
