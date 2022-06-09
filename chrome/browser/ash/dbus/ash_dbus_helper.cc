@@ -8,6 +8,7 @@
 #include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
+#include "ash/webui/shimless_rma/shimless_rma.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
@@ -175,7 +176,7 @@ void InitializeFeatureListDependentDBus() {
     InitializeDBusClient<CfmHotlineClient>(bus);
   }
 #endif
-  if (ash::features::IsShimlessRMAFlowEnabled()) {
+  if (ash::shimless_rma::IsShimlessRmaAllowed()) {
     InitializeDBusClient<RmadClient>(bus);
   }
   if (ash::features::IsRgbKeyboardEnabled()) {
@@ -222,7 +223,7 @@ void ShutdownDBus() {
   if (ash::features::IsRgbKeyboardEnabled()) {
     RgbkbdClient::Shutdown();
   }
-  if (ash::features::IsShimlessRMAFlowEnabled()) {
+  if (ash::shimless_rma::IsShimlessRmaAllowed()) {
     RmadClient::Shutdown();
   }
   chromeos::PowerManagerClient::Shutdown();
