@@ -214,6 +214,24 @@ void FastPairRepositoryImpl::AssociateAccountKey(
                      device->classic_address().value(), account_key));
 }
 
+bool FastPairRepositoryImpl::AssociateAccountKeyLocally(
+    scoped_refptr<Device> device) {
+  QP_LOG(VERBOSE) << __func__;
+
+  absl::optional<std::vector<uint8_t>> account_key =
+      device->GetAdditionalData(Device::AdditionalDataType::kAccountKey);
+  if (!account_key) {
+    QP_LOG(WARNING) << __func__ << ": Account key not found for device.";
+    return false;
+  }
+
+  DCHECK(device->classic_address());
+  saved_device_registry_->SaveAccountKey(device->classic_address().value(),
+                                         account_key.value());
+  QP_LOG(INFO) << __func__ << ": Saved account key locally.";
+  return true;
+}
+
 void FastPairRepositoryImpl::AddDeviceToFootprints(
     const std::string& hex_model_id,
     const std::string& mac_address,
@@ -326,18 +344,49 @@ void FastPairRepositoryImpl::OnGetSavedDevices(
   std::move(callback).Run(opt_in_status, std::move(saved_devices));
 }
 
-bool FastPairRepositoryImpl::DeleteAssociatedDevice(
-    const device::BluetoothDevice* device) {
+void FastPairRepositoryImpl::DeleteAssociatedDevice(
+    const std::string& mac_address,
+    DeleteAssociatedDeviceCallback callback) {
   absl::optional<const std::vector<uint8_t>> account_key =
-      saved_device_registry_->GetAccountKey(device->GetAddress());
-  if (!account_key)
-    return false;
+      saved_device_registry_->GetAccountKey(mac_address);
+  if (!account_key) {
+    QP_LOG(WARNING) << __func__ << ": No saved account key.";
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
 
-  QP_LOG(INFO) << __func__ << ": Removing device from Footprints.";
-  footprints_fetcher_->DeleteUserDevice(base::HexEncode(*account_key),
-                                        base::DoNothing());
-  // TODO(b/221126805): Handle saving pending update to disk + retries.
-  return true;
+  QP_LOG(VERBOSE) << __func__
+                  << ": Removing device from Footprints with address: "
+                  << mac_address;
+  footprints_fetcher_->DeleteUserDevice(
+      base::HexEncode(*account_key),
+      base::BindOnce(&FastPairRepositoryImpl::OnDeleteAssociatedDevice,
+                     weak_ptr_factory_.GetWeakPtr(), mac_address,
+                     std::move(callback)));
+}
+
+void FastPairRepositoryImpl::OnDeleteAssociatedDevice(
+    const std::string& mac_address,
+    DeleteAssociatedDeviceCallback callback,
+    bool success) {
+  if (!success) {
+    // TODO(b/221126805): Handle saving pending update to disk + retries.
+    QP_LOG(WARNING) << __func__ << ": Failed to remove device from Footprints.";
+  }
+  QP_LOG(INFO) << __func__ << ": Successfully removed device from Footprints.";
+
+  // TODO(b/221126805): Check for successful Footprints delete before deleting
+  // from the Saved Device registry once Footprints retries are implemented.
+  if (saved_device_registry_->DeleteAccountKey(mac_address)) {
+    QP_LOG(INFO) << __func__
+                 << ": Successfully removed device from Saved Device Registry.";
+    std::move(callback).Run(/*success=*/success);
+    return;
+  }
+
+  QP_LOG(WARNING) << __func__
+                  << ": Failed to remove device from Saved Device Registry.";
+  std::move(callback).Run(/*success=*/false);
 }
 
 void FastPairRepositoryImpl::DeleteAssociatedDeviceByAccountKey(
@@ -366,7 +415,7 @@ void FastPairRepositoryImpl::FetchDeviceImages(scoped_refptr<Device> device) {
   // device::BluetoothDevice.
   if (!device_id_map_->SaveModelIdForDevice(device)) {
     QP_LOG(WARNING) << __func__
-                    << ": Unable to save address -> model ID"
+                    << ": Unable to save device ID -> model ID"
                        " mapping for model ID "
                     << device->metadata_id;
   }

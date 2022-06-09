@@ -54,21 +54,6 @@ class FastPairUnpairHandlerTest : public testing::Test {
   std::unique_ptr<MockFastPairRepository> mock_repository_;
 };
 
-TEST_F(FastPairUnpairHandlerTest, DoesntDeleteIfDevicePaired) {
-  EXPECT_CALL(*(mock_repository_.get()), DeleteAssociatedDevice).Times(0);
-  SetPaired(/*is_paired=*/true);
-  NotifyRemoved();
-}
-
-TEST_F(FastPairUnpairHandlerTest, DeletesExpectedDevice) {
-  EXPECT_CALL(*(mock_repository_.get()), DeleteAssociatedDevice(device_.get()))
-      .Times(1);
-  ON_CALL(*(mock_repository_.get()), DeleteAssociatedDevice(device_.get()))
-      .WillByDefault(testing::Return(true));
-  SetPaired(/*is_paired=*/false);
-  NotifyRemoved();
-}
-
 TEST_F(FastPairUnpairHandlerTest, DoesntEvictIfDevicePaired) {
   EXPECT_CALL(*(mock_repository_.get()), EvictDeviceImages).Times(0);
   SetPaired(/*is_paired=*/true);

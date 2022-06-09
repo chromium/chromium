@@ -62,7 +62,9 @@ class FakeFastPairRepository : public FastPairRepository {
                         CheckAccountKeysCallback callback) override;
   void AssociateAccountKey(scoped_refptr<Device> device,
                            const std::vector<uint8_t>& account_key) override;
-  bool DeleteAssociatedDevice(const device::BluetoothDevice* device) override;
+  bool AssociateAccountKeyLocally(scoped_refptr<Device> device) override;
+  void DeleteAssociatedDevice(const std::string& mac_address,
+                              DeleteAssociatedDeviceCallback callback) override;
   void FetchDeviceImages(scoped_refptr<Device> device) override;
   bool PersistDeviceImages(scoped_refptr<Device> device) override;
   bool EvictDeviceImages(const device::BluetoothDevice* device) override;

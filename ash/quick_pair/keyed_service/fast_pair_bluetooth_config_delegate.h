@@ -46,6 +46,7 @@ class FastPairBluetoothConfigDelegate
   // chromeos::bluetooth_config::FastPairDelegate
   absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
   GetDeviceImageInfo(const std::string& device_id) override;
+  void ForgetDevice(const std::string& mac_address) override;
   void SetAdapterStateController(
       chromeos::bluetooth_config::AdapterStateController*
           adapter_state_controller) override;

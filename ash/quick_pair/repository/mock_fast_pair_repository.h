@@ -36,8 +36,13 @@ class MockFastPairRepository : public FastPairRepository {
                const std::vector<uint8_t>& account_key),
               (override));
   MOCK_METHOD(bool,
+              AssociateAccountKeyLocally,
+              (scoped_refptr<Device> device),
+              (override));
+  MOCK_METHOD(void,
               DeleteAssociatedDevice,
-              (const device::BluetoothDevice* device),
+              (const std::string& mac_address,
+               DeleteAssociatedDeviceCallback callback),
               (override));
   MOCK_METHOD(void,
               FetchDeviceImages,

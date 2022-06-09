@@ -43,10 +43,12 @@ namespace bluetooth_config {
 DeviceOperationHandlerImpl::DeviceOperationHandlerImpl(
     AdapterStateController* adapter_state_controller,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-    DeviceNameManager* device_name_manager)
+    DeviceNameManager* device_name_manager,
+    FastPairDelegate* fast_pair_delegate)
     : DeviceOperationHandler(adapter_state_controller),
       bluetooth_adapter_(std::move(bluetooth_adapter)),
-      device_name_manager_(device_name_manager) {}
+      device_name_manager_(device_name_manager),
+      fast_pair_delegate_(fast_pair_delegate) {}
 
 DeviceOperationHandlerImpl::~DeviceOperationHandlerImpl() = default;
 
@@ -101,6 +103,9 @@ void DeviceOperationHandlerImpl::PerformForget(const std::string& device_id) {
     return;
   }
 
+  // Cache the address here in case the device stops existing after forget.
+  const std::string address = device->GetAddress();
+
   // We do not expect "Forget" operations to ever fail, so don't bother passing
   // success and failure callbacks here.
   device->Forget(base::DoNothing(), base::BindOnce(
@@ -112,6 +117,10 @@ void DeviceOperationHandlerImpl::PerformForget(const std::string& device_id) {
                                         device_id));
 
   device_name_manager_->RemoveDeviceNickname(device_id);
+  // This delegate will not exist if the Fast Pair feature flag is disabled.
+  if (fast_pair_delegate_) {
+    fast_pair_delegate_->ForgetDevice(address);
+  }
   HandleFinishedOperation(/*success=*/true);
 }
 

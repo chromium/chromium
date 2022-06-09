@@ -89,10 +89,47 @@ TEST_F(SavedDeviceRegistryTest, MissingPrefService) {
   ASSERT_EQ(absl::nullopt, first);
   ASSERT_EQ(absl::nullopt, second);
 
+  EXPECT_FALSE(saved_device_registry_->DeleteAccountKey(kFirstSavedMacAddress));
+  EXPECT_FALSE(
+      saved_device_registry_->DeleteAccountKey(kSecondSavedMacAddress));
+
   EXPECT_FALSE(
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
   EXPECT_FALSE(
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+}
+
+TEST_F(SavedDeviceRegistryTest, DeleteAccountKey) {
+  saved_device_registry_->SaveAccountKey(kFirstSavedMacAddress, kAccountKey1);
+  saved_device_registry_->SaveAccountKey(kSecondSavedMacAddress, kAccountKey2);
+
+  auto first = saved_device_registry_->GetAccountKey(kFirstSavedMacAddress);
+  auto second = saved_device_registry_->GetAccountKey(kSecondSavedMacAddress);
+
+  ASSERT_EQ(kAccountKey1, *first);
+  ASSERT_EQ(kAccountKey2, *second);
+
+  EXPECT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  EXPECT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+
+  // Remove the first account key.
+  EXPECT_TRUE(saved_device_registry_->DeleteAccountKey(kFirstSavedMacAddress));
+  EXPECT_FALSE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  EXPECT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+
+  // Remove the second account key.
+  EXPECT_TRUE(saved_device_registry_->DeleteAccountKey(kSecondSavedMacAddress));
+  EXPECT_FALSE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  EXPECT_FALSE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+
+  // Removing a key that doesn't exist/is already removed should return false.
+  EXPECT_FALSE(saved_device_registry_->DeleteAccountKey(kFirstSavedMacAddress));
 }
 
 }  // namespace quick_pair

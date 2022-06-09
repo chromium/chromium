@@ -70,9 +70,17 @@ void FakeFastPairRepository::AssociateAccountKey(
   saved_account_keys_[device->ble_address] = account_key;
 }
 
-bool FakeFastPairRepository::DeleteAssociatedDevice(
-    const device::BluetoothDevice* device) {
-  return saved_account_keys_.erase(device->GetAddress()) == 1;
+bool FakeFastPairRepository::AssociateAccountKeyLocally(
+    scoped_refptr<Device> device) {
+  std::vector<uint8_t> fake_account_key;
+  saved_account_keys_[device->ble_address] = fake_account_key;
+  return true;
+}
+
+void FakeFastPairRepository::DeleteAssociatedDevice(
+    const std::string& mac_address,
+    DeleteAssociatedDeviceCallback callback) {
+  std::move(callback).Run(saved_account_keys_.erase(mac_address) == 1);
 }
 
 void FakeFastPairRepository::SetOptInStatus(
