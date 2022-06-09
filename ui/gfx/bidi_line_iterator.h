@@ -5,6 +5,7 @@
 #ifndef UI_GFX_BIDI_LINE_ITERATOR_H_
 #define UI_GFX_BIDI_LINE_ITERATOR_H_
 
+#include <memory>
 #include <string>
 
 #include "base/i18n/rtl.h"
@@ -15,6 +16,11 @@
 
 namespace ui {
 namespace gfx {
+
+class UBiDiDeleter {
+ public:
+  void operator()(UBiDi* ptr) { ubidi_close(ptr); }
+};
 
 // A simple wrapper class for the bidirectional iterator of ICU.
 // This class uses the bidirectional iterator of ICU to split a line of
@@ -42,7 +48,7 @@ class GFX_EXPORT BiDiLineIterator {
   void GetLogicalRun(int start, int* end, UBiDiLevel* level) const;
 
  private:
-  raw_ptr<UBiDi> bidi_;
+  std::unique_ptr<UBiDi, UBiDiDeleter> bidi_;
 };
 
 }  // namespace gfx
