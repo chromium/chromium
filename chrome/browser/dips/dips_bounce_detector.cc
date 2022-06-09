@@ -12,8 +12,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
-#include "chrome/browser/dips/cookie_access_type.h"
-#include "chrome/browser/dips/cookie_mode.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "components/site_engagement/content/site_engagement_service.h"

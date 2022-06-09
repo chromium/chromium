@@ -63,16 +63,3 @@ bool CookieAccessFilter::Filter(const std::vector<GURL>& urls,
   // AddAccess().
   return access_idx == accesses_.size();
 }
-
-base::StringPiece CookieAccessTypeToString(CookieAccessType type) {
-  switch (type) {
-    case CookieAccessType::kNone:
-      return "None";
-    case CookieAccessType::kRead:
-      return "Read";
-    case CookieAccessType::kWrite:
-      return "Write";
-    case CookieAccessType::kReadWrite:
-      return "ReadWrite";
-  }
-}

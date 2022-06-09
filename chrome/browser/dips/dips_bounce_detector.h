@@ -7,8 +7,6 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/dips/cookie_access_type.h"
-#include "chrome/browser/dips/cookie_mode.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents_observer.h"
