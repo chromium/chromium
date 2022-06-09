@@ -104,6 +104,12 @@ struct CORE_EXPORT GridItemData {
     return false;
   }
 
+  bool IsConsideredForSizing(
+      const GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns) ? is_considered_for_column_sizing
+                                            : is_considered_for_row_sizing;
+  }
+
   bool IsGridContainingBlock() const { return node.IsContainingBlockNGGrid(); }
   bool IsOutOfFlow() const { return node.IsOutOfFlowPositioned(); }
 
@@ -155,6 +161,10 @@ struct CORE_EXPORT GridItemData {
   bool is_inline_axis_overflow_safe : 1;
   bool is_sizing_dependent_on_block_size : 1;
   bool is_subgridded_to_parent_grid : 1;
+  bool is_considered_for_column_sizing : 1;
+  bool is_considered_for_row_sizing : 1;
+  bool can_subgrid_items_in_column_direction : 1;
+  bool can_subgrid_items_in_row_direction : 1;
 
   AxisEdge inline_axis_alignment;
   AxisEdge block_axis_alignment;

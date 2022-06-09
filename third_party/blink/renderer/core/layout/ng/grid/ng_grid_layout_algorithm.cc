@@ -937,6 +937,13 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     GridItemData* grid_item) const {
   DCHECK(grid_item);
 
+  if (!grid_item->IsConsideredForSizing(track_direction)) {
+    // From https://drafts.csswg.org/css-grid-2/#subgrid-size-contribution:
+    //   The subgrid itself [...] acts as if it was completely empty for track
+    //   sizing purposes in the subgridded dimension.
+    return LayoutUnit();
+  }
+
   const auto& node = grid_item->node;
   const auto& item_style = node.Style();
 
@@ -944,14 +951,6 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
   const bool is_parallel = IsParallelWritingMode(Style().GetWritingMode(),
                                                  item_style.GetWritingMode());
   const bool is_parallel_with_track_direction = is_for_columns == is_parallel;
-
-  if (grid_item->HasSubgriddedAxis(
-          is_parallel_with_track_direction ? kForColumns : kForRows)) {
-    // From https://drafts.csswg.org/css-grid-2/#subgrid-size-contribution:
-    //   The subgrid itself [...] acts as if it was completely empty for track
-    //   sizing purposes in the subgridded dimension.
-    return LayoutUnit();
-  }
 
   // TODO(ikilpatrick): We'll need to record if any child used an indefinite
   // size for its contribution, such that we can then do the 2nd pass on the
