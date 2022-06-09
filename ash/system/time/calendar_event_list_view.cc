@@ -4,6 +4,7 @@
 
 #include "ash/system/time/calendar_event_list_view.h"
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -115,6 +116,11 @@ CalendarEventListView::CalendarEventListView(
       AshColorProvider::BaseLayerType::kOpaque);
   SetBackground(views::CreateSolidBackground(background_color));
   SetPaintToLayer();
+
+  // Set the bottom corners to be rounded so that `CalendarEventListView` is
+  // contained in `CalendarView`.
+  layer()->SetRoundedCornerRadius(
+      {0, 0, kBubbleCornerRadius, kBubbleCornerRadius});
 
   views::BoxLayout* button_layout = close_button_container_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(

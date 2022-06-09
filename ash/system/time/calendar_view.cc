@@ -57,6 +57,8 @@ constexpr int kWeekRowHorizontalPadding =
     kContentHorizontalPadding - calendar_utils::kDateHorizontalPadding;
 constexpr int kExpandedCalendarPadding = 8;
 constexpr int kChevronPadding = calendar_utils::kColumnSetPadding - 1;
+constexpr int kEventListViewVerticalPadding = 6;
+constexpr int kEventListViewHorizontalOffset = 1;
 
 // The offset for `month_label_` to make it align with `month_header`.
 constexpr int kMonthLabelPaddingOffset = -1;
@@ -1015,13 +1017,14 @@ void CalendarView::OpenEventList() {
   // scroll view. Only the position will be animated, so give the view its final
   // bounds.
   event_list_view_->SetBounds(
-      scroll_view_->x(),
+      scroll_view_->x() + kEventListViewHorizontalOffset,
       scroll_view_->y() +
           calendar_view_controller_->GetRowHeightWithEventListView(),
-      scroll_view_->GetVisibleRect().width(),
+      scroll_view_->GetVisibleRect().width() -
+          kEventListViewHorizontalOffset * 2,
       scroll_view_->GetVisibleRect().height() -
           calendar_view_controller_->GetRowHeightWithEventListView() +
-          kContentVerticalPadding);
+          kEventListViewVerticalPadding);
 
   set_should_months_animate(false);
   gfx::Vector2dF moving_up_location = gfx::Vector2dF(
