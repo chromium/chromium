@@ -33,8 +33,7 @@ void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state) {
 
 void ThreadController::RunLevelTracker::OnRunLoopEnded() {
   DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
-
-  // Normally this will occur while kIdle or kSelectingNextTask but it can also
+  // Normally this will occur while kIdle or kInBetweenTasks but it can also
   // occur while kRunningTask in rare situations where the owning
   // ThreadController is deleted from within a task. Ref.
   // SequenceManagerWithTaskRunnerTest.DeleteSequenceManagerInsideATask. Thus we
@@ -60,7 +59,7 @@ void ThreadController::RunLevelTracker::OnTaskStarted() {
     // #task-in-task-implies-nested
     run_levels_.emplace(kRunningTask, true);
   } else {
-    // Simply going from kIdle or kSelectingNextTask to kRunningTask.
+    // Going from kIdle or kInBetweenTasks to kRunningTask.
     run_levels_.top().UpdateState(kRunningTask);
   }
 }
@@ -75,9 +74,9 @@ void ThreadController::RunLevelTracker::OnTaskEnded() {
     run_levels_.pop();
 
   // Whether we exited a nested run-level or not: the current run-level is now
-  // transitioning from kRunningTask to kSelectingNextTask.
+  // transitioning from kRunningTask to kInBetweenTasks.
   DCHECK_EQ(run_levels_.top().state(), kRunningTask);
-  run_levels_.top().UpdateState(kSelectingNextTask);
+  run_levels_.top().UpdateState(kInBetweenTasks);
 }
 
 void ThreadController::RunLevelTracker::OnIdle() {

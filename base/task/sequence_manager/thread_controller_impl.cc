@@ -182,17 +182,21 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
 
   WeakPtr<ThreadControllerImpl> weak_ptr = weak_factory_.GetWeakPtr();
   for (int i = 0; i < main_sequence_only().work_batch_size_; i++) {
+    // Include SelectNextTask() in the scope of the work item. This ensures it's
+    // covered in tracing and hang reports. This is particularly important when
+    // SelectNextTask() finds no work immediately after a wakeup, otherwise the
+    // power-inefficient wakeup is invisible in tracing.
+    DCHECK_GT(run_level_tracker_.num_run_levels(), 0U);
+    run_level_tracker_.OnTaskStarted();
+
     LazyNow lazy_now(recent_time, time_source_);
     absl::optional<SequencedTaskSource::SelectedTask> selected_task =
         sequence_->SelectNextTask(lazy_now);
-    if (!selected_task)
+    if (!selected_task) {
+      run_level_tracker_.OnTaskEnded();
       break;
+    }
 
-    // [OnTaskStarted(), OnTaskEnded()] must outscope all other tracing calls
-    // so that the "ThreadController active" trace event lives on top of all
-    // "run task" events.
-    DCHECK_GT(run_level_tracker_.num_run_levels(), 0U);
-    run_level_tracker_.OnTaskStarted();
     {
       // Trace-parsing tools (DevTools, Lighthouse, etc) consume this event
       // to determine long tasks.
@@ -312,7 +316,7 @@ void ThreadControllerImpl::RemoveNestingObserver(
 }
 
 void ThreadControllerImpl::OnBeginNestedRunLoop() {
-  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kSelectingNextTask);
+  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kInBetweenTasks);
 
   // Just assume we have a pending task and post a DoWork to make sure we don't
   // grind to a halt while nested.

@@ -518,7 +518,7 @@ void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed,
       (timeout == TimeDelta::Max()) ? TimeTicks::Max()
                                     : time_source_->NowTicks() + timeout);
 
-  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kSelectingNextTask);
+  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kInBetweenTasks);
 
   // Quit may have been called outside of a Run(), so |quit_pending| might be
   // true here. We can't use InTopLevelDoWork() in Quit() as this call may be

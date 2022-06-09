@@ -174,27 +174,28 @@ class ThreadController {
   //         #task-in-task-implies-nested triggers and the nested loop is
   //         visible.
   //     iii) Instrumented tasks run *and* current state is kIdle or
-  //          kSelectingNextTask ((A) is a task run by a native loop):
+  //          kInBetweenTasks ((A) is a task run by a native loop):
   //          #task-in-task-implies-nested doesn't trigger and tasks (iii) look
   //          like a non-nested continuation of tasks at the current RunLevel.
-  //  B) When task (A) exits its nested loop and completes, either:
+  //  B) When task (A) exits its nested loop and completes, respectively:
   //     i) The loop was invisible so no RunLevel was created for it and
   //        #done-task-while-not-running-implies-done-nested doesn't trigger so
   //        it balances out.
   //     ii) Instrumented tasks did run in which case |state_| is
-  //         kSelectingNextTask or kIdle. When the task in which (A) runs
-  //         completes #done-task-while-not-running-implies-done-nested triggers
-  //         and everything balances out.
-  //     iii) Same as (ii) but we're back to kSelectingNextTask or kIdle as
-  //          before and (A) was a no-op on the RunLevels.
+  //         kInBetweenTasks or kIdle. When the task in which (A) runs completes
+  //         #done-task-while-not-running-implies-done-nested triggers and
+  //         everything balances out.
+  //     iii) Nested instrumented tasks were visible but didn't appear nested,
+  //          state is now back to kInBetweenTasks or kIdle as before (A).
   class BASE_EXPORT RunLevelTracker {
    public:
     enum State {
-      // Waiting for work.
+      // Waiting for work (pending wakeup).
       kIdle,
       // Between two tasks but not idle.
-      kSelectingNextTask,
-      // Running and currently processing a unit of work.
+      kInBetweenTasks,
+      // Running and currently processing a unit of work (includes selecting the
+      // next task).
       kRunningTask,
     };
 
