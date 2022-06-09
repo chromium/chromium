@@ -42,6 +42,7 @@ KioskAppDefaultMessage::KioskAppDefaultMessage()
           nullptr,
           Shell::Get()->wallpaper_controller()) {
   auto* layout_provider = views::LayoutProvider::Get();
+  set_close_on_deactivate(false);
   set_margins(gfx::Insets(layout_provider->GetDistanceMetric(
       views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL)));
   SetShowCloseButton(false);
@@ -74,10 +75,13 @@ KioskAppDefaultMessage::KioskAppDefaultMessage()
   TrayPopupUtils::SetLabelFontList(title_,
                                    TrayPopupUtils::FontStyle::kSmallTitle);
 
+  // TODO(crbug.com/1334979): We should refactor KioskAppDefaultMessage so that
+  // it's own by LockContentsView.
   views::DialogDelegate::CreateDialogWidget(
       this, nullptr /* context */,
-      Shell::GetContainer(ash::Shell::GetRootWindowForNewWindows(),
-                          kShellWindowId_SettingBubbleContainer) /* parent */);
+      Shell::GetContainer(
+          ash::Shell::GetRootWindowForNewWindows(),
+          kShellWindowId_LockScreenRelatedContainersContainer) /* parent */);
 
   GetBubbleFrameView()->SetCornerRadius(
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
