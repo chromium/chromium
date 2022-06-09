@@ -24500,6 +24500,7 @@ Called by update_debug_scenarios.py.-->
   <int value="54" label="User imported a trace into the performance panel"/>
   <int value="55" label="User exported a trace from the performance panel"/>
   <int value="56" label="Stack frame restarted"/>
+  <int value="57" label="Capture test protocol button clicked"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
