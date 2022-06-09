@@ -44,6 +44,7 @@ enum ActiveWindowStateType {
   ACTIVE_WINDOW_STATE_TYPE_PINNED,
   ACTIVE_WINDOW_STATE_TYPE_TRUSTED_PINNED,
   ACTIVE_WINDOW_STATE_TYPE_PIP,
+  ACTIVE_WINDOW_STATE_TYPE_FLOATED,
   ACTIVE_WINDOW_STATE_TYPE_COUNT,
 };
 
@@ -71,6 +72,9 @@ ActiveWindowStateType GetActiveWindowState() {
         break;
       case WindowStateType::kPip:
         active_window_state_type = ACTIVE_WINDOW_STATE_TYPE_PIP;
+        break;
+      case WindowStateType::kFloated:
+        active_window_state_type = ACTIVE_WINDOW_STATE_TYPE_FLOATED;
         break;
       case WindowStateType::kDefault:
       case WindowStateType::kNormal:

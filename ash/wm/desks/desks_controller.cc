@@ -1216,6 +1216,8 @@ bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
             case chromeos::WindowStateType::kPinned:
             case chromeos::WindowStateType::kTrustedPinned:
             case chromeos::WindowStateType::kPip:
+            // TODO(crbug.com/1331825): Float state support for desk template.
+            case chromeos::WindowStateType::kFloated:
               NOTREACHED();
               break;
           }

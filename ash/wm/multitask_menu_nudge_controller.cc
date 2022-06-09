@@ -149,7 +149,9 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
   // restore button (depending on the window state).
   auto* frame_header = chromeos::FrameHeader::Get(
       views::Widget::GetWidgetForNativeWindow(window_));
-  DCHECK(frame_header);
+  // Frame might not be in tests.
+  if (!frame_header)
+    return;
   anchor_view_ = frame_header->caption_button_container()->size_button();
   DCHECK(anchor_view_);
 

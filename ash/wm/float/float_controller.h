@@ -32,8 +32,7 @@ class ASH_EXPORT FloatController : public aura::WindowObserver {
   void OnWindowDestroying(aura::Window* window) override;
 
  private:
-  friend class WindowState;
-
+  friend class DefaultState;
   // Floats/Unfloats `window`.
   // Only one floating window is allowed, floating a new window will
   // unfloat the other floated window (if any).

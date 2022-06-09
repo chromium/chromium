@@ -135,6 +135,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool IsPinned() const;
   bool IsTrustedPinned() const;
   bool IsPip() const;
+  bool IsFloated() const;
 
   // True if the window's state type is chromeos::WindowStateType::kMaximized,
   // chromeos::WindowStateType::kFullscreen or

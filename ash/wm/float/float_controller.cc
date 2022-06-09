@@ -31,7 +31,7 @@ void FloatController::Float(aura::Window* window) {
   // Only one floating window is allowed, reset previously floated window.
   ResetFloatedWindow();
   DCHECK(!float_window_);
-  DCHECK(window->GetProperty(chromeos::kWindowFloatTypeKey));
+  DCHECK(window->GetProperty(chromeos::kWindowToggleFloatKey));
   float_window_ = window;
   float_window_observation_.Observe(float_window_);
   aura::Window* float_container =
@@ -41,8 +41,8 @@ void FloatController::Float(aura::Window* window) {
 }
 
 void FloatController::Unfloat(aura::Window* window) {
-  DCHECK(!window->GetProperty(chromeos::kWindowFloatTypeKey));
-  // Re-parent window to active desk container.
+  DCHECK(!window->GetProperty(chromeos::kWindowToggleFloatKey));
+  //  Re-parent window to active desk container.
   desks_util::GetActiveDeskContainerForRoot(float_window_->GetRootWindow())
       ->AddChild(float_window_);
   float_window_observation_.Reset();
@@ -51,7 +51,7 @@ void FloatController::Unfloat(aura::Window* window) {
 
 void FloatController::ResetFloatedWindow() {
   if (float_window_)
-    float_window_->SetProperty(chromeos::kWindowFloatTypeKey, false);
+    float_window_->SetProperty(chromeos::kWindowToggleFloatKey, false);
 }
 
 }  // namespace ash

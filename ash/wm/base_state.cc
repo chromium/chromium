@@ -85,6 +85,8 @@ WindowStateType BaseState::GetStateForTransitionEvent(WindowState* window_state,
       return WindowStateType::kPinned;
     case WM_EVENT_PIP:
       return WindowStateType::kPip;
+    case WM_EVENT_FLOAT:
+      return WindowStateType::kFloated;
     case WM_EVENT_TRUSTED_PIN:
       return WindowStateType::kTrustedPinned;
     default:

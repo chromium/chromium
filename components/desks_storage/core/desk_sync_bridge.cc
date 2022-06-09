@@ -365,6 +365,8 @@ WindowState FromChromeOsWindowState(chromeos::WindowStateType state) {
     case chromeos::WindowStateType::kPinned:
     case chromeos::WindowStateType::kTrustedPinned:
     case chromeos::WindowStateType::kPip:
+    // TODO(crbug.com/1331825): Float state support for desk template.
+    case chromeos::WindowStateType::kFloated:
       return WindowState::WorkspaceDeskSpecifics_WindowState_NORMAL;
     case chromeos::WindowStateType::kMinimized:
       return WindowState::WorkspaceDeskSpecifics_WindowState_MINIMIZED;

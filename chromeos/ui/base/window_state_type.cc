@@ -34,6 +34,8 @@ std::ostream& operator<<(std::ostream& stream, WindowStateType state) {
       return stream << "kTrustedPinned";
     case WindowStateType::kPip:
       return stream << "kPip";
+    case WindowStateType::kFloated:
+      return stream << "kFloated";
   }
 
   NOTREACHED();
@@ -69,6 +71,7 @@ ui::WindowShowState ToWindowShowState(WindowStateType type) {
     case WindowStateType::kPrimarySnapped:
     case WindowStateType::kAutoPositioned:
     case WindowStateType::kPip:
+    case WindowStateType::kFloated:
       return ui::SHOW_STATE_NORMAL;
 
     case WindowStateType::kMinimized:

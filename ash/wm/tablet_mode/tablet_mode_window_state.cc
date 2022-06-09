@@ -280,7 +280,6 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
         UpdateWindow(window_state, WindowStateType::kTrustedPinned,
                      true /* animated */);
       break;
-    case WM_EVENT_TOGGLE_FLOATING:
     case WM_EVENT_TOGGLE_MAXIMIZE_CAPTION:
     case WM_EVENT_TOGGLE_VERTICAL_MAXIMIZE:
     case WM_EVENT_TOGGLE_HORIZONTAL_MAXIMIZE:
@@ -308,6 +307,9 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       }
       break;
     }
+    // TODO(shidi): Float is currently disabled for tablet mode.
+    case WM_EVENT_FLOAT:
+      break;
     case WM_EVENT_SNAP_PRIMARY:
     case WM_EVENT_SNAP_SECONDARY:
       DoTabletSnap(window_state, event->type());

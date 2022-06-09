@@ -100,6 +100,10 @@ constexpr auto kWindowStateRestoreHistoryLayerMap =
         {WindowStateType::kSecondarySnapped, 1},
         {WindowStateType::kMaximized, 2},
         {WindowStateType::kFullscreen, 3},
+        // TODO(crbug.com/1330999): Special handling is needed for
+        // Fullscreen/Float restore behavior in
+        // WindowState::UpdateWindowStateRestoreHistoryStack.
+        {WindowStateType::kFloated, 3},
         {WindowStateType::kPip, 4},
         {WindowStateType::kMinimized, 4},
     });
@@ -331,6 +335,10 @@ bool WindowState::IsTrustedPinned() const {
 
 bool WindowState::IsPip() const {
   return GetStateType() == WindowStateType::kPip;
+}
+
+bool WindowState::IsFloated() const {
+  return GetStateType() == WindowStateType::kFloated;
 }
 
 bool WindowState::IsNormalStateType() const {
@@ -1142,15 +1150,20 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
     }
     return;
   }
-  if (key == chromeos::kWindowFloatTypeKey) {
+  // `kWindowToggleFloatKey` is only used to toggle float event, not an
+  // indicator of window's float state. this is created to allow access from
+  // both chromeos/ash and avoid recursive call to `kWindowStateTypeKey`.
+  // TODO(shidi): Create API to allow outside access and remove this property.
+  if (key == chromeos::kWindowToggleFloatKey) {
     DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
-    auto* const float_controller = Shell::Get()->float_controller();
-    if (window->GetProperty(chromeos::kWindowFloatTypeKey)) {
-      float_controller->Float(window);
+    if (IsFloated()) {
+      // If window is already floated, unfloat and restore.
+      Restore();
     } else {
-      float_controller->Unfloat(window);
+      WMEvent event(WM_EVENT_FLOAT);
+      OnWMEvent(&event);
+      return;
     }
-    return;
   }
   if (key == chromeos::kWindowStateTypeKey) {
     if (!ignore_property_change_) {

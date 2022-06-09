@@ -105,6 +105,14 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
     generator->ClickLeftButton();
     base::RunLoop().RunUntilIdle();
   }
+
+  void ClickFloatButton(FrameCaptionButtonContainerView::TestApi* testApi) {
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    auto* float_button = testApi->float_button();
+    generator->MoveMouseTo(float_button->GetBoundsInScreen().CenterPoint());
+    generator->ClickLeftButton();
+    base::RunLoop().RunUntilIdle();
+  }
 };
 
 // Test float button requires kFloatWindow feature to be enabled during setup.
@@ -335,24 +343,18 @@ TEST_F(WindowFloatButtonTest, TestFloatButtonBehavior) {
   container.Layout();
   FrameCaptionButtonContainerView::TestApi testApi(&container);
   FloatController* controller = Shell::Get()->float_controller();
-
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->MoveMouseTo(
-      testApi.float_button()->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
-
+  ClickFloatButton(&testApi);
+  auto* window_state = WindowState::Get(widget->GetNativeWindow());
   // Check if window is floated.
   auto* window = widget->GetNativeWindow();
-  EXPECT_TRUE(window->GetProperty(chromeos::kWindowFloatTypeKey));
+  EXPECT_TRUE(window_state->IsFloated());
+  EXPECT_TRUE(window->GetProperty(chromeos::kWindowToggleFloatKey));
   EXPECT_TRUE(controller->IsFloated(window));
-
-  generator->MoveMouseTo(
-      testApi.float_button()->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
-
+  ClickFloatButton(&testApi);
   // Check if window is unfloated.
-  EXPECT_FALSE(window->GetProperty(chromeos::kWindowFloatTypeKey));
+  EXPECT_TRUE(window_state->IsNormalStateType());
   EXPECT_FALSE(controller->IsFloated(window));
+  EXPECT_FALSE(window->GetProperty(chromeos::kWindowToggleFloatKey));
 }
 
 }  // namespace ash

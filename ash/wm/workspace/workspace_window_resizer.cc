@@ -368,9 +368,9 @@ int GetDraggingThreshold(const DragDetails& details) {
 #if DCHECK_IS_ON()
   // Other state types either create a different window resizer, or none at all.
   std::vector<WindowStateType> draggable_states = {
-      WindowStateType::kDefault, WindowStateType::kNormal,
+      WindowStateType::kDefault,        WindowStateType::kNormal,
       WindowStateType::kPrimarySnapped, WindowStateType::kSecondarySnapped,
-      WindowStateType::kMaximized};
+      WindowStateType::kMaximized,      WindowStateType::kFloated};
   DCHECK(base::Contains(draggable_states, state));
 #endif
 
