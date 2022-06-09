@@ -21,7 +21,7 @@ def parseGeneratorOptionList(options):
     if options is None:
         return result
     for key_value_pair in options:
-        key, value = key_value_pair.split("=", 1)
+        key, value = key_value_pair.split('=', 1)
         key = key.strip()
         result[key] = value
     return result
@@ -36,40 +36,52 @@ def main():
         ProtoStyleGenerator, ProtoJSONStyleGenerator, TSStyleGenerator
     ]
 
-    parser.add_argument('--generator',
-                        choices=[g.GetName() for g in generators],
-                        required=True,
-                        help='type of file to generate')
+    parser.add_argument(
+        '--generator',
+        choices=[g.GetName() for g in generators],
+        required=True,
+        help='type of file to generate, provide this option multiple '
+        'times to use multiple generators',
+        action='append')
     parser.add_argument('--generate-single-mode',
                         choices=Modes.ALL,
                         help='generates output for a single mode')
-    parser.add_argument('--out-file', help='file to write output to')
-    parser.add_argument("--generator-option",
-                        metavar="KEY=VALUE",
-                        action="append",
-                        help="Set a option specific to the selected generator"
-                        "via a key value pair. See the README.md for a"
-                        "full list of generator specific options.")
+    parser.add_argument(
+        '--out-file',
+        help='file to write output to, the number of out-files '
+        'must match the number of generators if specified',
+        action='append')
+    parser.add_argument('--generator-option',
+                        metavar='KEY=VALUE',
+                        action='append',
+                        help='Set a option specific to the selected generator '
+                        'via a key value pair. See the README.md for a '
+                        'full list of generator specific options.')
     parser.add_argument('targets', nargs='+', help='source json5 color files')
 
     args = parser.parse_args()
 
-    for g in generators:
-        if args.generator == g.GetName():
-            style_generator = g()
+    if args.out_file and len(args.generator) != len(args.out_file):
+        raise ValueError(
+            'number of --out-files must match number of --generators')
 
-    style_generator.AddJSONFilesToModel(args.targets)
+    for i, g in enumerate(args.generator):
+        gen_constructor = next(x for x in generators if g == x.GetName())
+        style_generator = gen_constructor()
 
-    style_generator.generate_single_mode = args.generate_single_mode
-    style_generator.out_file_path = args.out_file
-    style_generator.generator_options = parseGeneratorOptionList(
-        args.generator_option)
+        style_generator.AddJSONFilesToModel(args.targets)
 
-    if args.out_file:
-        with open(args.out_file, 'w') as f:
-            f.write(style_generator.Render())
-    else:
-        print(style_generator.Render())
+        style_generator.generate_single_mode = args.generate_single_mode
+        style_generator.generator_options = parseGeneratorOptionList(
+            args.generator_option)
+
+        if args.out_file:
+            style_generator.out_file_path = args.out_file[i]
+            with open(args.out_file[i], 'w') as f:
+                f.write(style_generator.Render())
+        else:
+            print('=========', style_generator.GetName(), '=========')
+            print(style_generator.Render())
 
     return 0
 
