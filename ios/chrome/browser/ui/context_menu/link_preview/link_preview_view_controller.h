@@ -12,7 +12,7 @@
 // ViewController for the link preview. It displays a loaded webState UIView.
 @interface LinkPreviewViewController : UIViewController <LinkPreviewConsumer>
 
-// Inits the view controller with the |webStateView| and the |origin| of the
+// Inits the view controller with the `webStateView` and the `origin` of the
 // preview.
 - (instancetype)initWithView:(UIView*)webStateView
                       origin:(NSString*)origin NS_DESIGNATED_INITIALIZER;
