@@ -32,6 +32,10 @@ def updater_windows_builder(*, name, **kwargs):
 
 updater_mac_builder(
     name = "mac-updater-try-builder-dbg",
+    mirrors = [
+        "ci/mac-updater-builder-dbg",
+        "ci/mac10.15-updater-tester-dbg",
+    ],
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
