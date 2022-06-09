@@ -43,7 +43,8 @@ const test::UIPath kGotoFilesButton = {kLacrosDataMigrationId,
 class FakeMigrator : public BrowserDataMigrator {
  public:
   // BrowserDataMigrator overrides.
-  void Migrate(MigrateCallback callback) override {
+  void Migrate(crosapi::browser_util::MigrationMode mode,
+               MigrateCallback callback) override {
     callback_ = std::move(callback);
   }
   void Cancel() override { cancel_called_ = true; }

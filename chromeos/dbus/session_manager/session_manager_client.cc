@@ -25,6 +25,7 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "chromeos/dbus/common/blocking_method_caller.h"
@@ -403,18 +404,24 @@ class SessionManagerClientImpl : public SessionManagerClient {
   }
 
   bool RequestBrowserDataMigration(
-      const cryptohome::AccountIdentifier& cryptohome_id) override {
+      const cryptohome::AccountIdentifier& cryptohome_id,
+      const bool is_move) override {
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,
         login_manager::kSessionManagerStartBrowserDataMigration);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(cryptohome_id.account_id());
+    writer.AppendBool(is_move);
     dbus::ScopedDBusError error;
     std::unique_ptr<dbus::Response> response =
         blocking_method_caller_->CallMethodAndBlockWithError(&method_call,
                                                              &error);
     if (!response) {
-      LOG(ERROR) << "RequestBrowserDataMigration failed.";
+      LOG(ERROR) << "RequestBrowserDataMigration failed"
+                 << (error.is_set()
+                         ? base::StringPrintf(" :%s:%s", error.name(),
+                                              error.message())
+                         : ".");
       return false;
     }
 

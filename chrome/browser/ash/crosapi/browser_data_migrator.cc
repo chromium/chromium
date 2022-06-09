@@ -325,15 +325,21 @@ bool BrowserDataMigratorImpl::RestartToMigrate(const AccountId& account_id,
 
   local_state->CommitPendingWrite();
 
+  const bool is_move = base::FeatureList::IsEnabled(
+                           ash::features::kLacrosMoveProfileMigration) ||
+                       MoveMigrator::ResumeRequired(local_state, user_id_hash);
+
   // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
   // this log message.
   LOG(WARNING) << "Making a dbus method call to session_manager";
   bool success = SessionManagerClient::Get()->RequestBrowserDataMigration(
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id));
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id), is_move);
 
   // TODO(crbug.com/1261730): Add an UMA.
-  if (!success)
+  if (!success) {
+    LOG(ERROR) << "SessionManagerClient::RequestBrowserDataMigration() failed.";
     return false;
+  }
 
   AttemptRestart();
   return true;
@@ -358,7 +364,8 @@ BrowserDataMigratorImpl::~BrowserDataMigratorImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void BrowserDataMigratorImpl::Migrate(MigrateCallback callback) {
+void BrowserDataMigratorImpl::Migrate(crosapi::browser_util::MigrationMode mode,
+                                      MigrateCallback callback) {
   DCHECK(local_state_);
   DCHECK(completion_callback_.is_null());
   completion_callback_ = std::move(callback);
@@ -370,24 +377,25 @@ void BrowserDataMigratorImpl::Migrate(MigrateCallback callback) {
   DCHECK(GetMigrationStep(local_state_) == MigrationStep::kRestartCalled);
   SetMigrationStep(local_state_, MigrationStep::kStarted);
 
-  if (base::FeatureList::IsEnabled(
-          ash::features::kLacrosMoveProfileMigration) ||
-      MoveMigrator::ResumeRequired(local_state_, user_id_hash_)) {
-    LOG(WARNING) << "Initializing MoveMigrator.";
-    migrator_delegate_ = std::make_unique<MoveMigrator>(
-        original_profile_dir_, user_id_hash_, std::move(progress_tracker_),
-        cancel_flag_, local_state_,
-        base::BindOnce(
-            &BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
-            weak_factory_.GetWeakPtr()));
-  } else {
-    LOG(WARNING) << "Initializing CopyMigrator.";
-    migrator_delegate_ = std::make_unique<CopyMigrator>(
-        original_profile_dir_, user_id_hash_, std::move(progress_tracker_),
-        cancel_flag_,
-        base::BindOnce(
-            &BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
-            weak_factory_.GetWeakPtr()));
+  switch (mode) {
+    case crosapi::browser_util::MigrationMode::kMove:
+      LOG(WARNING) << "Initializing MoveMigrator.";
+      migrator_delegate_ = std::make_unique<MoveMigrator>(
+          original_profile_dir_, user_id_hash_, std::move(progress_tracker_),
+          cancel_flag_, local_state_,
+          base::BindOnce(
+              &BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
+              weak_factory_.GetWeakPtr()));
+      break;
+    case crosapi::browser_util::MigrationMode::kCopy:
+      LOG(WARNING) << "Initializing CopyMigrator.";
+      migrator_delegate_ = std::make_unique<CopyMigrator>(
+          original_profile_dir_, user_id_hash_, std::move(progress_tracker_),
+          cancel_flag_,
+          base::BindOnce(
+              &BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
+              weak_factory_.GetWeakPtr()));
+      break;
   }
 
   migrator_delegate_->Migrate();

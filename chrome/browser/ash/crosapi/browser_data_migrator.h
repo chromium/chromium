@@ -77,9 +77,11 @@ class BrowserDataMigrator {
 
   virtual ~BrowserDataMigrator() = default;
 
-  // Carries out the migration. It needs to be called on UI thread.
-  // |callback| will be called on the end of the migration procedure.
-  virtual void Migrate(MigrateCallback callback) = 0;
+  // Carries out the migration with the mode specified by `MigrationMode`. It
+  // needs to be called on UI thread. |callback| will be called on the end of
+  // the migration procedure.
+  virtual void Migrate(crosapi::browser_util::MigrationMode mode,
+                       MigrateCallback callback) = 0;
 
   // Cancels the migration. This should be called on UI thread.
   // If this is called during the migration, it is expected that |callback|
@@ -115,17 +117,6 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
     DataWipeResult data_wipe_result;
     // Describes the end result of data migration.
     Result data_migration_result;
-  };
-
-  // Specifies the mode of migration.
-  enum class Mode {
-    kCopy = 0,  // Copies browser related files to lacros.
-    kMove = 1,  // Moves browser related files to lacros while copying files
-                // that are needed by both ash and lacros.
-    kDeleteAndCopy = 2,  // Similar to kCopy but deletes
-                         // TargetInfo::no_copy_items to make extra space.
-    kDeleteAndMove = 3   // Similar to kMove but deletes
-                         // TargetInfo::no_copy_items to make extra space.
   };
 
   // Delegate interface which is responsible for the actual task of setting up
@@ -187,7 +178,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
       base::OnceCallback<void(bool, const absl::optional<uint64_t>&)> callback);
 
   // `BrowserDataMigrator` methods.
-  void Migrate(MigrateCallback callback) override;
+  void Migrate(crosapi::browser_util::MigrationMode mode,
+               MigrateCallback callback) override;
   void Cancel() override;
 
   // Registers boolean pref `kCheckForMigrationOnRestart` with default as false.

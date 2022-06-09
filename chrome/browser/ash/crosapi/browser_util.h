@@ -90,6 +90,13 @@ struct ComponentInfo {
   const char* const crx_id;
 };
 
+// Specifies the mode of migration. The values correspond to `MigratorDelegate`
+// either being `CopyMigrator` or `MoveMigrator`.
+enum class MigrationMode {
+  kCopy = 0,  // Migrate using `CopyMigrator`.
+  kMove = 1,  // Migrate using `MoveMigrator`.
+};
+
 extern const ComponentInfo kLacrosDogfoodCanaryInfo;
 extern const ComponentInfo kLacrosDogfoodDevInfo;
 extern const ComponentInfo kLacrosDogfoodBetaInfo;
