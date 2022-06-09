@@ -129,7 +129,11 @@ class WebAppInstallTask : content::WebContentsObserver {
                                OnceInstallCallback callback);
 
   // Perform installation after manifest is retrieved and validated, starts the
-  // installation flow from `OnDidPerformInstallableCheck`
+  // installation flow from `OnDidPerformInstallableCheck`.
+  //
+  // When |dialog_callback| is null (aka |base::NullCallback|) the command
+  // doesn't show installation prompt in UI and installs the application in
+  // background.
   void InstallWebAppOnManifestValidated(
       content::WebContents* contents,
       WebAppInstallDialogCallback dialog_callback,
