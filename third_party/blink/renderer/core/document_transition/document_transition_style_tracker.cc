@@ -17,6 +17,8 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
@@ -467,6 +469,8 @@ bool DocumentTransitionStyleTracker::Start() {
   // new elements in the DOM.
   InvalidateStyle();
 
+  if (auto* page = document_->GetPage())
+    page->Animator().SetHasSharedElementTransition(true);
   return true;
 }
 
@@ -491,6 +495,8 @@ void DocumentTransitionStyleTracker::EndTransition() {
   pending_shared_element_tags_.clear();
   set_element_sequence_id_ = 0;
   document_->GetStyleEngine().SetDocumentTransitionTags({});
+  if (auto* page = document_->GetPage())
+    page->Animator().SetHasSharedElementTransition(false);
 }
 
 void DocumentTransitionStyleTracker::UpdateElementIndicesAndSnapshotId(

@@ -25,6 +25,10 @@ using SmoothEffectDrivingThread = FrameInfo::SmoothEffectDrivingThread;
 
 bool ShouldReportForAnimation(FrameSequenceTrackerType sequence_type,
                               SmoothEffectDrivingThread thread_type) {
+  // kSETMainThreadAnimation and kSETCompositorAnimation sequences are a subset
+  // of kMainThreadAnimation and kCompositorAnimation sequences. So these are
+  // excluded from the AllAnimation metric to avoid double counting.
+
   if (sequence_type == FrameSequenceTrackerType::kCompositorAnimation)
     return thread_type == SmoothEffectDrivingThread::kCompositor;
 
@@ -156,11 +160,13 @@ void FrameSequenceMetrics::SetCustomReporter(CustomReporter custom_reporter) {
 SmoothEffectDrivingThread FrameSequenceMetrics::GetEffectiveThread() const {
   switch (type_) {
     case FrameSequenceTrackerType::kCompositorAnimation:
+    case FrameSequenceTrackerType::kSETCompositorAnimation:
     case FrameSequenceTrackerType::kPinchZoom:
     case FrameSequenceTrackerType::kVideo:
       return SmoothEffectDrivingThread::kCompositor;
 
     case FrameSequenceTrackerType::kMainThreadAnimation:
+    case FrameSequenceTrackerType::kSETMainThreadAnimation:
     case FrameSequenceTrackerType::kRAF:
     case FrameSequenceTrackerType::kCanvasAnimation:
     case FrameSequenceTrackerType::kJSAnimation:
@@ -311,7 +317,6 @@ void FrameSequenceMetrics::ReportMetrics() {
         base::LinearHistogram::FactoryGet(
             GetThroughputV2HistogramName(type(), thread_name), 1, 100, 101,
             base::HistogramBase::kUmaTargetedHistogramFlag));
-
     v2_ = {};
   }
 
@@ -513,14 +518,16 @@ bool FrameSequenceMetrics::ThroughputData::CanReportHistogram(
   const auto sequence_type = metrics->type();
   DCHECK_LT(sequence_type, FrameSequenceTrackerType::kMaxType);
 
-  // All video frames are compositor thread only.
-  if (sequence_type == FrameSequenceTrackerType::kVideo &&
+  // All video frames and SET compositor animations are compositor thread only.
+  if ((sequence_type == FrameSequenceTrackerType::kVideo ||
+       sequence_type == FrameSequenceTrackerType::kSETCompositorAnimation) &&
       thread_type == SmoothEffectDrivingThread::kMain)
     return false;
 
-  // RAF and CanvasAnimation are main thread only.
+  // RAF, CanvasAnimation and SET main thread animations are main thread only.
   if ((sequence_type == FrameSequenceTrackerType::kRAF ||
-       sequence_type == FrameSequenceTrackerType::kCanvasAnimation) &&
+       sequence_type == FrameSequenceTrackerType::kCanvasAnimation ||
+       sequence_type == FrameSequenceTrackerType::kSETMainThreadAnimation) &&
       thread_type == SmoothEffectDrivingThread::kCompositor)
     return false;
 
@@ -533,7 +540,9 @@ bool FrameSequenceMetrics::ThroughputData::CanReportHistogram(
   return is_animation || IsInteractionType(sequence_type) ||
          sequence_type == FrameSequenceTrackerType::kVideo ||
          sequence_type == FrameSequenceTrackerType::kRAF ||
-         sequence_type == FrameSequenceTrackerType::kCanvasAnimation;
+         sequence_type == FrameSequenceTrackerType::kCanvasAnimation ||
+         sequence_type == FrameSequenceTrackerType::kSETMainThreadAnimation ||
+         sequence_type == FrameSequenceTrackerType::kSETCompositorAnimation;
 }
 
 int FrameSequenceMetrics::ThroughputData::ReportDroppedFramePercentHistogram(

@@ -74,6 +74,10 @@ const char* FrameSequenceTracker::GetFrameSequenceTrackerTypeName(
       return "CanvasAnimation";
     case FrameSequenceTrackerType::kJSAnimation:
       return "JSAnimation";
+    case FrameSequenceTrackerType::kSETMainThreadAnimation:
+      return "SETMainThreadAnimation";
+    case FrameSequenceTrackerType::kSETCompositorAnimation:
+      return "SETCompositorAnimation";
     case FrameSequenceTrackerType::kMaxType:
       return "";
   }

@@ -51,7 +51,11 @@ void UkmManager::RecordThroughputUKM(
         CASE_FOR_MAIN_THREAD_TRACKER(CanvasAnimation);
         CASE_FOR_MAIN_THREAD_TRACKER(JSAnimation);
 #undef CASE_FOR_MAIN_THREAD_TRACKER
-        default:
+        case FrameSequenceTrackerType::kSETCompositorAnimation:
+        case FrameSequenceTrackerType::kSETMainThreadAnimation:
+          break;
+        case FrameSequenceTrackerType::kCustom:
+        case FrameSequenceTrackerType::kMaxType:
           NOTREACHED();
           break;
       }
@@ -74,7 +78,13 @@ void UkmManager::RecordThroughputUKM(
         CASE_FOR_COMPOSITOR_THREAD_TRACKER(Video);
         CASE_FOR_COMPOSITOR_THREAD_TRACKER(WheelScroll);
 #undef CASE_FOR_COMPOSITOR_THREAD_TRACKER
-        default:
+        case FrameSequenceTrackerType::kCanvasAnimation:
+        case FrameSequenceTrackerType::kJSAnimation:
+        case FrameSequenceTrackerType::kSETCompositorAnimation:
+        case FrameSequenceTrackerType::kSETMainThreadAnimation:
+          break;
+        case FrameSequenceTrackerType::kCustom:
+        case FrameSequenceTrackerType::kMaxType:
           NOTREACHED();
           break;
       }
@@ -138,7 +148,7 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame);
       CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
-      default:
+      case StageType::kStageTypeCount:
         NOTREACHED();
         break;
     }
@@ -165,7 +175,7 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_BLINK_BREAKDOWN(UpdateLayers);
       CASE_FOR_BLINK_BREAKDOWN(BeginMainSentToStarted);
 #undef CASE_FOR_BLINK_BREAKDOWN
-      default:
+      case CompositorFrameReporter::BlinkBreakdown::kBreakdownCount:
         NOTREACHED();
         break;
     }
@@ -190,7 +200,7 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_VIZ_BREAKDOWN(BufferReadyToLatch);
       CASE_FOR_VIZ_BREAKDOWN(LatchToSwapEnd);
 #undef CASE_FOR_VIZ_BREAKDOWN
-      default:
+      case CompositorFrameReporter::VizBreakdown::kBreakdownCount:
         NOTREACHED();
         break;
     }
@@ -218,7 +228,11 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_TRACKER(CanvasAnimation);
       CASE_FOR_TRACKER(JSAnimation);
 #undef CASE_FOR_TRACKER
-      default:
+      case FrameSequenceTrackerType::kSETCompositorAnimation:
+      case FrameSequenceTrackerType::kSETMainThreadAnimation:
+        break;
+      case FrameSequenceTrackerType::kCustom:
+      case FrameSequenceTrackerType::kMaxType:
         NOTREACHED();
         break;
     }
@@ -355,7 +369,8 @@ void UkmManager::RecordEventLatencyUKM(
           CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame,
                          SubmitCompositorFrame);
 #undef CASE_FOR_STAGE
-          default:
+          case StageType::kTotalLatency:
+          case StageType::kStageTypeCount:
             NOTREACHED();
             break;
         }
@@ -376,7 +391,8 @@ void UkmManager::RecordEventLatencyUKM(
           CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame,
                          SubmitCompositorFrame);
 #undef CASE_FOR_STAGE
-          default:
+          case StageType::kTotalLatency:
+          case StageType::kStageTypeCount:
             NOTREACHED();
             break;
         }
@@ -385,7 +401,6 @@ void UkmManager::RecordEventLatencyUKM(
         NOTREACHED();
         break;
     }
-
     for (; stage_it != stage_history.end(); ++stage_it) {
       // Total latency is calculated since the event timestamp.
       const base::TimeTicks start_time =
@@ -407,7 +422,7 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame);
         CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
-        default:
+        case StageType::kStageTypeCount:
           NOTREACHED();
           break;
       }
@@ -434,7 +449,7 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_BLINK_BREAKDOWN(UpdateLayers);
         CASE_FOR_BLINK_BREAKDOWN(BeginMainSentToStarted);
 #undef CASE_FOR_BLINK_BREAKDOWN
-        default:
+        case CompositorFrameReporter::BlinkBreakdown::kBreakdownCount:
           NOTREACHED();
           break;
       }
@@ -459,7 +474,7 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_VIZ_BREAKDOWN(BufferReadyToLatch);
         CASE_FOR_VIZ_BREAKDOWN(LatchToSwapEnd);
 #undef CASE_FOR_VIZ_BREAKDOWN
-        default:
+        case CompositorFrameReporter::VizBreakdown::kBreakdownCount:
           NOTREACHED();
           break;
       }

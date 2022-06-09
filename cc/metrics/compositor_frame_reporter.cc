@@ -347,6 +347,16 @@ CompositorFrameReporter::CompositorFrameReporter(
     DCHECK(smooth_thread_ == SmoothThread::kSmoothMain ||
            smooth_thread_ == SmoothThread::kSmoothBoth);
   }
+  // If we have a SET version of the animation, then we should also have a
+  // non-SET version of the same animation.
+  DCHECK(!active_trackers_.test(static_cast<size_t>(
+             FrameSequenceTrackerType::kSETCompositorAnimation)) ||
+         active_trackers_.test(static_cast<size_t>(
+             FrameSequenceTrackerType::kCompositorAnimation)));
+  DCHECK(!active_trackers_.test(static_cast<size_t>(
+             FrameSequenceTrackerType::kSETMainThreadAnimation)) ||
+         active_trackers_.test(static_cast<size_t>(
+             FrameSequenceTrackerType::kMainThreadAnimation)));
 }
 
 // static
@@ -776,6 +786,14 @@ void CompositorFrameReporter::ReportCompositorLatencyMetrics() const {
         case FrameSequenceTrackerType::kJSAnimation:
           UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.JSAnimation",
                                     report_type);
+          break;
+        case FrameSequenceTrackerType::kSETCompositorAnimation:
+          UMA_HISTOGRAM_ENUMERATION(
+              "CompositorLatency.Type.SETCompositorAnimation", report_type);
+          break;
+        case FrameSequenceTrackerType::kSETMainThreadAnimation:
+          UMA_HISTOGRAM_ENUMERATION(
+              "CompositorLatency.Type.SETMainThreadAnimation", report_type);
           break;
         case FrameSequenceTrackerType::kCustom:
         case FrameSequenceTrackerType::kMaxType:

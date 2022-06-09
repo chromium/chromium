@@ -765,6 +765,8 @@ chromium-metrics-reviews@google.com.
     <variant name=".PinchZoom"/>
     <variant name=".RAF"/>
     <variant name=".ScrollbarScroll"/>
+    <variant name=".SETCompositorAnimation"/>
+    <variant name=".SETMainThreadAnimation"/>
     <variant name=".TouchScroll"/>
     <variant name=".WheelScroll"/>
   </token>
@@ -839,6 +841,8 @@ chromium-metrics-reviews@google.com.
     <variant name=".PinchZoom"/>
     <variant name=".RAF"/>
     <variant name=".ScrollbarScroll"/>
+    <variant name=".SETCompositorAnimation"/>
+    <variant name=".SETMainThreadAnimation"/>
     <variant name=".TouchScroll"/>
     <variant name=".WheelScroll"/>
   </token>
@@ -1184,6 +1188,12 @@ chromium-metrics-reviews@google.com.
     <variant name="RAF" summary="reported for all raf driven animations."/>
     <variant name="ScrollbarScroll"
         summary="reported for all scrollbar scrolling."/>
+    <variant name="SETCompositorAnimation"
+        summary="reported for all compositor animations during a shared
+                 element transition"/>
+    <variant name="SETMainThreadAnimation"
+        summary="reported for all main thread animations during a shared
+                 element transition"/>
     <variant name="TouchScroll" summary="reported for all touch scrolling."/>
     <variant name="WheelScroll" summary="reported for all wheel scrolling."/>
   </token>
@@ -1239,6 +1249,12 @@ chromium-metrics-reviews@google.com.
     <variant name="RAF" summary="reported for all raf driven animations."/>
     <variant name="ScrollbarScroll"
         summary="reported for all scrollbar scrolling."/>
+    <variant name="SETCompositorAnimation"
+        summary="reported for all compositor animations during a shared
+                 element transition"/>
+    <variant name="SETMainThreadAnimation"
+        summary="reported for all main thread animations during a shared
+                 element transition"/>
     <variant name="TouchScroll" summary="reported for all touch scrolling."/>
     <variant name="WheelScroll" summary="reported for all wheel scrolling."/>
   </token>
