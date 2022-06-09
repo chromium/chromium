@@ -24,7 +24,7 @@
 
   for (const node of rootNode.pseudoElements) {
     const styles = await dp.CSS.getMatchedStylesForNode({'nodeId': node.nodeId});
-    testRunner.log(styles, "Dumping styles for : " + node.localName);
+    testRunner.log(styles, "Dumping styles for : " + node.localName + " with id " + node.pseudoIdentifier);
   }
 
   testRunner.completeTest();

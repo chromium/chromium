@@ -408,6 +408,7 @@ void InspectorDOMSnapshotAgent::VisitDocument(Document* document) {
                   .setOptionSelected(BooleanData())
                   .setContentDocumentIndex(IntegerData())
                   .setPseudoType(StringData())
+                  .setPseudoIdentifier(StringData())
                   .setIsClickable(BooleanData())
                   .setCurrentSourceURL(StringData())
                   .setOriginURL(StringData())
@@ -565,6 +566,9 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
       SetRare(
           nodes->getPseudoType(nullptr), index,
           InspectorDOMAgent::ProtocolPseudoElementType(element->GetPseudoId()));
+      if (auto tag = To<PseudoElement>(element)->document_transition_tag()) {
+        SetRare(nodes->getPseudoIdentifier(nullptr), index, tag);
+      }
     }
     VisitPseudoElements(element, index, contrast);
 

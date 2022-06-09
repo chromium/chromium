@@ -1331,6 +1331,8 @@ experimental domain CSS
     properties
       # Pseudo element type.
       DOM.PseudoType pseudoType
+      # Pseudo element custom ident.
+      optional string pseudoIdentifier
       # Matches of CSS rules applicable to the pseudo style.
       array of RuleMatch matches
 
@@ -2251,6 +2253,9 @@ domain DOM
       optional string value
       # Pseudo element type for this node.
       optional PseudoType pseudoType
+      # Pseudo element identifier for this node. Only present if there is a
+      # valid pseudoType.
+      optional string pseudoIdentifier
       # Shadow root type.
       optional ShadowRootType shadowRootType
       # Frame ID for frame owner elements.
@@ -3283,6 +3288,9 @@ experimental domain DOMSnapshot
       optional RareIntegerData contentDocumentIndex
       # Type of a pseudo element node.
       optional RareStringData pseudoType
+      # Pseudo element identifier for this node. Only present if there is a
+      # valid pseudoType.
+      optional RareStringData pseudoIdentifier
       # Whether this DOM node responds to mouse clicks. This includes nodes that have had click
       # event listeners attached via JavaScript as well as anchor tags that naturally navigate when
       # clicked.

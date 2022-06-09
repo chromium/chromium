@@ -1029,6 +1029,10 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
                 InspectorDOMAgent::ProtocolPseudoElementType(match->pseudo_id))
             .setMatches(BuildArrayForMatchedRuleList(match->matched_rules))
             .build());
+    if (match->document_transition_tag) {
+      pseudo_id_matches->fromJust()->back()->setPseudoIdentifier(
+          match->document_transition_tag);
+    }
   }
 
   // Inherited styles.
@@ -1065,6 +1069,10 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
               .setMatches(
                   BuildArrayForMatchedRuleList(pseudo_match->matched_rules))
               .build());
+      if (pseudo_match->document_transition_tag) {
+        parent_pseudo_element_matches->back()->setPseudoIdentifier(
+            pseudo_match->document_transition_tag);
+      }
     }
 
     std::unique_ptr<protocol::CSS::InheritedPseudoElementMatches>

@@ -1804,6 +1804,8 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
 
     if (element->GetPseudoId()) {
       value->setPseudoType(ProtocolPseudoElementType(element->GetPseudoId()));
+      if (auto tag = To<PseudoElement>(element)->document_transition_tag())
+        value->setPseudoIdentifier(tag);
     } else {
       if (!element->ownerDocument()->xmlVersion().IsEmpty())
         value->setXmlVersion(element->ownerDocument()->xmlVersion());
