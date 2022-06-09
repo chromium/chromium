@@ -75,3 +75,6 @@ const base::Feature kUseSFSymbols{"UseSFSymbols",
 
 const base::Feature kCalendarExperienceKit{"CalendarExperienceKit",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnableExpKitAppleCalendar{
+    "EnableExpKitAppleCalendar", base::FEATURE_DISABLED_BY_DEFAULT};

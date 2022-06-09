@@ -2095,6 +2095,10 @@
     // stack switching features in WebAssembly.
     "expiry_milestone": 115
   },
+  {"name": "enable-expkit-apple-calendar",
+      "owners": ["erahmaoui@google.com", "djean@google.com", "bling-flags@google.com"],
+      "expiry_milestone":107
+  },
   {
     "name": "enable-external-keyboards-in-diagnostics-app",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],

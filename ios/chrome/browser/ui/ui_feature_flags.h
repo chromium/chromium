@@ -88,7 +88,10 @@ extern const base::Feature kAddSettingForDefaultPageMode;
 // Feature flag to switch images to SFSymbols when enabled.
 extern const base::Feature kUseSFSymbols;
 
-// Feature flag to enable Calandar event in experience kit.
+// Feature flag to enable Calendar event in experience kit.
 extern const base::Feature kCalendarExperienceKit;
+
+// Feature flag to enable Apple Calendar event in experience kit.
+extern const base::Feature kEnableExpKitAppleCalendar;
 
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_
