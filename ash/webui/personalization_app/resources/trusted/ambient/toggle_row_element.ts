@@ -38,6 +38,10 @@ export class ToggleRow extends WithPersonalizationStore {
   checked: boolean;
   override ariaLabel: string;
 
+  override focus() {
+    this.$.toggle.focus();
+  }
+
   private getAriaLabel_(): string {
     return this.i18n(this.checked ? 'ambientModeOn' : 'ambientModeOff');
   }

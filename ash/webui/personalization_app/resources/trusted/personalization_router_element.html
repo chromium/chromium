@@ -57,7 +57,7 @@
   <template is="dom-if" if="[[shouldShowRootPage_(path_)]]">
     <personalization-main path="[[path_]]"></personalization-main>
   </template>
-  <template is="dom-if" if="[[shouldShowAmbientSubpage_(path_)]]">
+  <template is="dom-if" if="[[shouldShowAmbientSubpage_(path_)]]" restamp>
     <ambient-subpage path="[[path_]]" query-params="[[queryParams_]]">
     </ambient-subpage>
   </template>
