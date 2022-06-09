@@ -326,6 +326,10 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     return request_browser_data_migration_called_;
   }
 
+  bool request_browser_data_migration_for_move_called() const {
+    return request_browser_data_migration_for_move_called_;
+  }
+
  private:
   // Called in response to writing owner key file specified in new device
   // policy - used for in-memory fake only.
@@ -398,6 +402,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   std::string login_password_;
 
   bool request_browser_data_migration_called_ = false;
+  bool request_browser_data_migration_for_move_called_ = false;
 
   // Contains last request passed to StartArcMiniContainer
   login_manager::StartArcMiniContainerRequest

@@ -150,9 +150,11 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // `MaybeRestartToMigrate()` it returns true if the D-Bus call to the
   // session_manager is made and successful. The return value of true means that
   // `chrome::AttemptRestart()` has been called.
-  static bool MaybeForceResumeMoveMigration(PrefService* local_state,
-                                            const AccountId& account_id,
-                                            const std::string& user_id_hash);
+  static bool MaybeForceResumeMoveMigration(
+      PrefService* local_state,
+      const AccountId& account_id,
+      const std::string& user_id_hash,
+      crosapi::browser_util::PolicyInitState policy_init_state);
 
   // Checks if migration is required for the user identified by `user_id_hash`
   // and if it is required, calls a D-Bus method to session_manager and
@@ -240,9 +242,11 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
 
   // Called from `MaybeRestartToMigrate()` to proceed with restarting to start
   // the migration. It returns true if D-Bus call was successful.
-  static bool RestartToMigrate(const AccountId& account_id,
-                               const std::string& user_id_hash,
-                               PrefService* local_state);
+  static bool RestartToMigrate(
+      const AccountId& account_id,
+      const std::string& user_id_hash,
+      PrefService* local_state,
+      crosapi::browser_util::PolicyInitState policy_init_state);
 
   // Called on UI thread once migration is finished.
   void MigrateInternalFinishedUIThread(MigrationResult result);

@@ -80,12 +80,14 @@ ScopedRestartAttemptForTesting::~ScopedRestartAttemptForTesting() {
 bool BrowserDataMigratorImpl::MaybeForceResumeMoveMigration(
     PrefService* local_state,
     const AccountId& account_id,
-    const std::string& user_id_hash) {
+    const std::string& user_id_hash,
+    crosapi::browser_util::PolicyInitState policy_init_state) {
   LOG(WARNING) << "MaybeForceResumeMoveMigration() is called.";
   if (!MoveMigrator::ResumeRequired(local_state, user_id_hash))
     return false;
 
-  return RestartToMigrate(account_id, user_id_hash, local_state);
+  return RestartToMigrate(account_id, user_id_hash, local_state,
+                          policy_init_state);
 }
 
 // static
@@ -108,7 +110,8 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
     return false;
   }
   return RestartToMigrate(account_id, user_id_hash,
-                          user_manager::UserManager::Get()->GetLocalState());
+                          user_manager::UserManager::Get()->GetLocalState(),
+                          policy_init_state);
 }
 
 void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
@@ -154,7 +157,8 @@ void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheckAfterDiskCheck(
 
   bool result =
       RestartToMigrate(account_id, user_id_hash,
-                       user_manager::UserManager::Get()->GetLocalState());
+                       user_manager::UserManager::Get()->GetLocalState(),
+                       crosapi::browser_util::PolicyInitState::kAfterInit);
   std::move(callback).Run(result, absl::nullopt);
 }
 
@@ -313,9 +317,11 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
 }
 
 // static
-bool BrowserDataMigratorImpl::RestartToMigrate(const AccountId& account_id,
-                                               const std::string& user_id_hash,
-                                               PrefService* local_state) {
+bool BrowserDataMigratorImpl::RestartToMigrate(
+    const AccountId& account_id,
+    const std::string& user_id_hash,
+    PrefService* local_state,
+    crosapi::browser_util::PolicyInitState policy_init_state) {
   SetMigrationStep(local_state, MigrationStep::kRestartCalled);
 
   UpdateMigrationAttemptCountForUser(local_state, user_id_hash);
@@ -325,9 +331,15 @@ bool BrowserDataMigratorImpl::RestartToMigrate(const AccountId& account_id,
 
   local_state->CommitPendingWrite();
 
-  const bool is_move = base::FeatureList::IsEnabled(
-                           ash::features::kLacrosMoveProfileMigration) ||
-                       MoveMigrator::ResumeRequired(local_state, user_id_hash);
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  // `user` should exist by the time `RestartToMigrate()` is called.
+  CHECK(user) << "User could not be found for " << account_id.GetUserEmail()
+              << " but RestartToMigrate() was called.";
+  const bool is_move =
+      crosapi::browser_util::GetMigrationMode(user, policy_init_state) ==
+          crosapi::browser_util::MigrationMode::kMove ||
+      MoveMigrator::ResumeRequired(local_state, user_id_hash);
 
   // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
   // this log message.

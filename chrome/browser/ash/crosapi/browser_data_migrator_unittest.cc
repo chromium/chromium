@@ -21,10 +21,13 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/version_info/version_info.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -253,26 +256,40 @@ class BrowserDataMigratorRestartTest : public ::testing::Test {
   ~BrowserDataMigratorRestartTest() override = default;
 
   void SetUp() override {
-    user_manager_.CreateLocalState();
+    fake_user_manager_ = new ash::FakeChromeUserManager;
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        base::WrapUnique(fake_user_manager_));
+    fake_user_manager_->CreateLocalState();
+
     auto* local_state_simple =
         static_cast<TestingPrefServiceSimple*>(local_state());
     BrowserDataMigratorImpl::RegisterLocalStatePrefs(
         local_state_simple->registry());
     crosapi::browser_util::RegisterLocalStatePrefs(
         local_state_simple->registry());
-    user_manager_.Initialize();
   }
 
-  void TearDown() override { user_manager_.Destroy(); }
+  void AddRegularUser(const std::string& email) {
+    AccountId account_id = AccountId::FromUserEmail(email);
+    const user_manager::User* user = fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                     /*browser_restart=*/false,
+                                     /*is_child=*/false);
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        user, &testing_profile_);
+  }
 
  protected:
-  ash::FakeChromeUserManager* user_manager() { return &user_manager_; }
-  PrefService* local_state() { return user_manager_.GetLocalState(); }
+  TestingProfile* testing_profile() { return &testing_profile_; }
+  ash::FakeChromeUserManager* user_manager() { return fake_user_manager_; }
+  PrefService* local_state() { return fake_user_manager_->GetLocalState(); }
 
  private:
-  ash::FakeChromeUserManager user_manager_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile testing_profile_;
+  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   FakeSessionManagerClient session_manager_;
-  base::test::TaskEnvironment task_environment;
 };
 
 TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithMigrationStep) {
@@ -305,12 +322,17 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithCommandLine) {
   ScopedRestartAttemptForTesting scoped_restart_attempt(
       base::BindLambdaForTesting(
           [&restart_called]() { restart_called = true; }));
+
+  base::test::ScopedFeatureList feature_list;
+  AddRegularUser("user@gmail.com");
+  const user_manager::User* const user =
+      ash::ProfileHelper::Get()->GetUserByProfile(testing_profile());
   {
     base::test::ScopedCommandLine command_line;
     command_line.GetProcessCommandLine()->AppendSwitchASCII(
         switches::kForceBrowserDataMigrationForTesting, "force-skip");
     EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrate(
-        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        user->GetAccountId(), user->username_hash(),
         crosapi::browser_util::PolicyInitState::kAfterInit));
   }
   {
@@ -318,7 +340,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithCommandLine) {
     command_line.GetProcessCommandLine()->AppendSwitchASCII(
         switches::kForceBrowserDataMigrationForTesting, "force-migration");
     EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrate(
-        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        user->GetAccountId(), user->username_hash(),
         crosapi::browser_util::PolicyInitState::kAfterInit));
   }
 }
@@ -329,6 +351,10 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
       base::BindLambdaForTesting(
           [&restart_called]() { restart_called = true; }));
 
+  base::test::ScopedFeatureList feature_list;
+  AddRegularUser("user@gmail.com");
+  const user_manager::User* const user =
+      ash::ProfileHelper::Get()->GetUserByProfile(testing_profile());
   // If MaybeRestartToMigrate will skip the restarting, WithDiskCheck variation
   // also skips it.
   {
@@ -338,7 +364,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
         switches::kForceBrowserDataMigrationForTesting, "force-skip");
     absl::optional<bool> result;
     BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
-        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        user->GetAccountId(), user->username_hash(),
         base::BindLambdaForTesting(
             [&out_result = result](bool result,
                                    const absl::optional<uint64_t>& size) {
@@ -364,7 +390,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
     absl::optional<uint64_t> out_size;
     base::RunLoop run_loop;
     BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
-        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        user->GetAccountId(), user->username_hash(),
         base::BindLambdaForTesting(
             [&out_result = result, &out_size, &run_loop](
                 bool result, const absl::optional<uint64_t>& size) {
@@ -391,7 +417,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
     absl::optional<bool> result;
     base::RunLoop run_loop;
     BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
-        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        user->GetAccountId(), user->username_hash(),
         base::BindLambdaForTesting(
             [&out_result = result, &run_loop](
                 bool result, const absl::optional<uint64_t>& size) {

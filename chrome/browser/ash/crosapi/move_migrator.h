@@ -139,7 +139,7 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
                            MigrateResumeFromMoveSplitItems);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorMigrateTest,
                            MigrateResumeFromMoveTmpDir);
-  friend class BrowserDataMigratorResumeOnSignInTest;
+  friend class BrowserDataMigratorResumeOnSignIn;
   friend class BrowserDataMigratorResumeRestartInSession;
 
   // These values are persisted to logs. Entries should not be renumbered and

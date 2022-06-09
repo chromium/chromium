@@ -1009,7 +1009,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
             switches::kLoginProfile);
 
     if (BrowserDataMigratorImpl::MaybeForceResumeMoveMigration(
-            g_browser_process->local_state(), account_id, user_id_hash)) {
+            g_browser_process->local_state(), account_id, user_id_hash,
+            crosapi::browser_util::PolicyInitState::kBeforeInit)) {
       LOG(WARNING) << "Restarting chrome to resume move migration.";
       return;
     }

@@ -949,7 +949,8 @@ void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
 
   if (BrowserDataMigratorImpl::MaybeForceResumeMoveMigration(
           g_browser_process->local_state(), user_context.GetAccountId(),
-          user_context.GetUserIDHash())) {
+          user_context.GetUserIDHash(),
+          crosapi::browser_util::PolicyInitState::kAfterInit)) {
     // TODO(crbug.com/1261730): Add an UMA.
     LOG(WARNING) << "Restarting Chrome to resume move migration.";
     return;

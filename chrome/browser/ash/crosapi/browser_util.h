@@ -299,6 +299,10 @@ ComponentInfo GetLacrosComponentInfo();
 version_info::Channel GetLacrosSelectionUpdateChannel(
     LacrosSelection selection);
 
+// Exposed for testing. Sets lacros-availability cache for testing.
+void SetCachedLacrosAvailabilityForTesting(
+    LacrosAvailability lacros_availability);
+
 // Exposed for testing. Returns the lacros integration suggested by the policy
 // lacros-availability, modified by Finch flags and user flags as appropriate.
 LacrosAvailability GetCachedLacrosAvailabilityForTesting();
