@@ -176,6 +176,8 @@ generate_grd("build_grd") {
     "images/icon_pair_bluetooth.svg",
     "images/keyboard_shortcut_dark.svg",
     "images/keyboard_shortcut.svg",
+    "images/multidevice_permission_setup_connecting.svg",
+    "images/multidevice_permission_setup_connecting_dark.svg",
     "images/notification_access_connecting_dark.svg",
     "images/notification_access_connecting.svg",
     "images/notification_access_error_dark.svg",
