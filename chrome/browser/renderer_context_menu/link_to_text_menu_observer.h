@@ -109,7 +109,6 @@ class LinkToTextMenuObserver
   raw_ptr<RenderViewContextMenuProxy> proxy_;
   GURL url_;
   GURL raw_url_;
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
 
   std::unordered_map<content::GlobalRenderFrameHostId,
                      std::vector<std::string>,
