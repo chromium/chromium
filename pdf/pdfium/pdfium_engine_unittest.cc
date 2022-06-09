@@ -468,6 +468,39 @@ TEST_F(PDFiumEngineTest, GetBadPdfVersion) {
   EXPECT_EQ(PdfVersion::kUnknown, doc_metadata.version);
 }
 
+TEST_F(PDFiumEngineTest, GetNamedDestination) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("named_destinations.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(2, engine->GetNumberOfPages());
+
+  // A destination with a valid page object
+  absl::optional<PDFEngine::NamedDestination> valid_page_obj =
+      engine->GetNamedDestination("ValidPageObj");
+  ASSERT_TRUE(valid_page_obj.has_value());
+  EXPECT_EQ(0u, valid_page_obj->page);
+  EXPECT_EQ("XYZ", valid_page_obj->view);
+  ASSERT_EQ(3u, valid_page_obj->num_params);
+  EXPECT_EQ(1.2f, valid_page_obj->params[2]);
+
+  // A destination with an invalid page object
+  absl::optional<PDFEngine::NamedDestination> invalid_page_obj =
+      engine->GetNamedDestination("InvalidPageObj");
+  ASSERT_FALSE(invalid_page_obj.has_value());
+
+  // A destination with a valid page number
+  absl::optional<PDFEngine::NamedDestination> valid_page_number =
+      engine->GetNamedDestination("ValidPageNumber");
+  ASSERT_TRUE(valid_page_number.has_value());
+  EXPECT_EQ(1u, valid_page_number->page);
+
+  // A destination with an out-of-range page number
+  absl::optional<PDFEngine::NamedDestination> invalid_page_number =
+      engine->GetNamedDestination("OutOfRangePageNumber");
+  EXPECT_FALSE(invalid_page_number.has_value());
+}
+
 TEST_F(PDFiumEngineTest, PluginSizeUpdatedBeforeLoad) {
   NiceMock<MockTestClient> client;
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
