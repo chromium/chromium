@@ -942,16 +942,16 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
   } else if (delegate()->ConvertRectToPixels(pending_bounds_dip_) ==
                  GetBoundsInPixels() &&
              pending_configures_.empty()) {
-    // If |pending_bounds_dip_| matches GetBounds(), and |pending_configures_|
-    // is empty, implying that the window is already rendering at
-    // |pending_bounds_dip_|, then a frame matching |pending_bounds_dip_| may
-    // not arrive soon, despite the window delegate receives the updated bounds.
-    // Without a new frame, UpdateVisualSize() is not invoked, leaving this
-    // |configure| unacknowledged.
-    //   E.g. With static window content, |configure| that does not
-    //     change window size will not cause the window to redraw.
-    // Hence, acknowledge this |configure| now to tell the Wayland compositor
-    // that this window has been configured.
+    // If |pending_bounds_dip_| matches the current window bounds, and
+    // |pending_configures_| is empty, which implies that the window is already
+    // rendering at |pending_bounds_dip_|, then a new frame matching it may take
+    // some time to arrive, despite the window delegate receives the updated
+    // bounds. Without a new frame, UpdateVisualSize() is not invoked, leaving
+    // this configure sequence unacknowledged. E.g: With static window content,
+    // a configure sequence that does not change the window size will not cause
+    // the window to redraw. Hence, acknowledge this configure sequence now to
+    // tell the Wayland compositor that the requested configuration for this
+    // window has been applied.
     SetWindowGeometry(pending_bounds_dip_);
     AckConfigure(serial);
     connection()->ScheduleFlush();
