@@ -8,24 +8,46 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "ui/aura/window.h"
 
 namespace {
 
-wm::ActivationClient* GetActivationClientWithTabStripModel(
-    TabStripModel* tab_strip_model) {
+// Checks if a given browser is running a windowed app. It will return true for
+// web apps, hosted apps, and packaged V1 apps.
+bool IsAppBrowser(const Browser* browser) {
+  return (browser->is_type_app() || browser->is_type_app_popup()) &&
+         !web_app::GetAppIdFromApplicationName(browser->app_name()).empty();
+}
+
+aura::Window* GetWindowWithBrowser(Browser* browser) {
+  if (!browser) {
+    return nullptr;
+  }
+  BrowserWindow* browser_window = browser->window();
+  // In some test cases, browser window might be skipped.
+  return browser_window ? browser_window->GetNativeWindow() : nullptr;
+}
+
+aura::Window* GetWindowWithTabStripModel(TabStripModel* tab_strip_model) {
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->tab_strip_model() == tab_strip_model) {
-      BrowserWindow* browser_window = browser->window();
-      DCHECK(browser_window);
-      aura::Window* window = browser_window->GetNativeWindow();
-      DCHECK(window);
-      auto* root_window = window->GetRootWindow();
-      DCHECK(root_window);
-      return wm::GetActivationClient(root_window);
+      return GetWindowWithBrowser(browser);
     }
   }
   return nullptr;
+}
+
+wm::ActivationClient* GetActivationClientWithTabStripModel(
+    TabStripModel* tab_strip_model) {
+  auto* window = GetWindowWithTabStripModel(tab_strip_model);
+  if (!window) {
+    return nullptr;
+  }
+
+  auto* root_window = window->GetRootWindow();
+  DCHECK(root_window);
+  return wm::GetActivationClient(root_window);
 }
 
 }  // namespace
@@ -48,11 +70,21 @@ WebsiteMetrics::~WebsiteMetrics() {
 }
 
 void WebsiteMetrics::OnBrowserAdded(Browser* browser) {
-  // TODO(crbug.com/1334173): Save the browser window.
+  if (IsAppBrowser(browser)) {
+    return;
+  }
+
+  auto* window = GetWindowWithBrowser(browser);
+  if (window) {
+    window_to_web_contents_[window] = nullptr;
+  }
 }
 
 void WebsiteMetrics::OnBrowserRemoved(Browser* browser) {
-  // TODO(crbug.com/1334173): Remove the browser window.
+  auto* window = GetWindowWithBrowser(browser);
+  if (window) {
+    window_to_web_contents_.erase(window);
+  }
 }
 
 void WebsiteMetrics::OnTabStripModelChanged(

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_H_
 
+#include "base/containers/flat_map.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -64,6 +65,9 @@ class WebsiteMetrics : public BrowserListObserver,
                                    const TabStripSelectionChange& selection);
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
+
+  // The map from the window to the active tab contents.
+  base::flat_map<aura::Window*, content::WebContents*> window_to_web_contents_;
 
   // A set of observed activation clients for all browser's windows.
   base::ScopedMultiSourceObservation<wm::ActivationClient,
