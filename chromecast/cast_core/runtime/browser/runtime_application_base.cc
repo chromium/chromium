@@ -5,6 +5,7 @@
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "chromecast/browser/cast_web_service.h"
@@ -151,9 +152,7 @@ void RuntimeApplicationBase::Launch(
 
   // Initiate application initialization flow where bindings and any extra setup
   // happens.
-  InitializeApplication(
-      base::BindOnce(&RuntimeApplicationBase::OnApplicationInitialized,
-                     weak_factory_.GetWeakPtr()));
+  LaunchApplication();
 }
 
 base::Value RuntimeApplicationBase::GetRendererFeatures() const {
@@ -243,23 +242,24 @@ RuntimeApplicationBase::GetAdditionalFeaturePermissionOrigins() const {
   return feature_permission_origins;
 }
 
-void RuntimeApplicationBase::OnApplicationInitialized() {
+void RuntimeApplicationBase::LoadPage(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GetCastWebContents()->AddRendererFeatures(GetRendererFeatures());
-
-  // TODO(b/203580094): Currently we assume the app is not audio only.
   GetCastWebContents()->SetAppProperties(
-      GetAppConfig().app_id(), GetCastSessionId(), GetIsAudioOnly(),
-      GetApplicationUrl(), GetEnforceFeaturePermissions(),
-      GetFeaturePermissions(), GetAdditionalFeaturePermissionOrigins());
-  GetCastWebContents()->LoadUrl(GetApplicationUrl());
+      GetAppConfig().app_id(), GetCastSessionId(), GetIsAudioOnly(), url,
+      GetEnforceFeaturePermissions(), GetFeaturePermissions(),
+      GetAdditionalFeaturePermissionOrigins());
 
-  // Show the web view.
-  cast_web_view_->window()->GrantScreenAccess();
-  cast_web_view_->window()->CreateWindow(
-      ::chromecast::mojom::ZOrder::APP,
-      chromecast::VisibilityPriority::STICKY_ACTIVITY);
+  // Start loading the URL while JS visibility is disabled and no window is
+  // created. This way users won't see the progressive UI updates as the page is
+  // formed and styles are applied. The actual window will be created in
+  // OnApplicationLaunched when application is fully launched.
+  GetCastWebContents()->LoadUrl(url);
+
+  // This needs to be called to get the PageState::LOADED event as it's fully
+  // loaded.
+  GetCastWebContents()->SetWebVisibilityAndPaint(false);
 }
 
 void RuntimeApplicationBase::HandlePostMessage(
@@ -301,26 +301,23 @@ void RuntimeApplicationBase::HandleSetUrlRewriteRules(
   reactor->Write(cast::v2::SetUrlRewriteRulesResponse());
 }
 
-void RuntimeApplicationBase::SetApplicationState(
-    cast::v2::ApplicationStatusRequest::State state,
-    StatusCallback callback) {
+void RuntimeApplicationBase::OnApplicationLaunched() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(state == cast::v2::ApplicationStatusRequest::STARTED ||
-         state == cast::v2::ApplicationStatusRequest::STOPPED);
+  LOG(INFO) << "Application is launched: " << *this;
 
+  // Create the window and show the web view.
+  cast_web_view_->window()->GrantScreenAccess();
+  cast_web_view_->window()->CreateWindow(
+      ::chromecast::mojom::ZOrder::APP,
+      chromecast::VisibilityPriority::STICKY_ACTIVITY);
+  GetCastWebContents()->SetWebVisibilityAndPaint(true);
+
+  // Notify Cast Core.
   auto call = core_app_stub_->CreateCall<
       cast::v2::CoreApplicationServiceStub::SetApplicationStatus>();
   call.request().set_cast_session_id(GetCastSessionId());
-  call.request().set_state(state);
-  if (state == cast::v2::ApplicationStatusRequest::STOPPED) {
-    call.request().set_stop_reason(
-        cast::v2::ApplicationStatusRequest::USER_REQUEST);
-  }
-  std::move(call).InvokeAsync(base::BindOnce(
-      [](StatusCallback callback,
-         cast::utils::GrpcStatusOr<cast::v2::ApplicationStatusResponse>
-             response_or) { std::move(callback).Run(response_or.status()); },
-      std::move(callback)));
+  call.request().set_state(cast::v2::ApplicationStatusRequest::STARTED);
+  std::move(call).InvokeAsync(base::DoNothing());
 }
 
 CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
@@ -338,7 +335,8 @@ CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
   return cast_web_view;
 }
 
-void RuntimeApplicationBase::StopApplication() {
+void RuntimeApplicationBase::StopApplication(
+    cast::v2::ApplicationStatusRequest::StopReason stop_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(grpc_server_);
 
@@ -350,8 +348,13 @@ void RuntimeApplicationBase::StopApplication() {
   is_application_running_ = false;
 
   if (core_app_stub_) {
-    SetApplicationState(cast::v2::ApplicationStatusRequest_State_STOPPED,
-                        base::DoNothing());
+    // Notify application has stopped.
+    auto call = core_app_stub_->CreateCall<
+        cast::v2::CoreApplicationServiceStub::SetApplicationStatus>();
+    call.request().set_cast_session_id(GetCastSessionId());
+    call.request().set_state(cast::v2::ApplicationStatusRequest::STOPPED);
+    call.request().set_stop_reason(stop_reason);
+    std::move(call).InvokeAsync(base::DoNothing());
   }
 
   if (cast_web_view_) {

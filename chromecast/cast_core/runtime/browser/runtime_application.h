@@ -33,9 +33,6 @@ class RuntimeApplication {
   // NOTE: These fields are the empty string until after Load().
   virtual const std::string& GetCastSessionId() const = 0;
 
-  // Returns the Cast application URL.
-  virtual const GURL& GetApplicationUrl() const = 0;
-
   // Returns the root instance of CastWebContents.
   virtual CastWebContents* GetCastWebContents() = 0;
 

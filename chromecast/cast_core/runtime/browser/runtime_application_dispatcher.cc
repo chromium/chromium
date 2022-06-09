@@ -116,17 +116,16 @@ void RuntimeApplicationDispatcher::Stop() {
     heartbeat_reactor_ = nullptr;
   }
 
-  if (grpc_server_) {
-    grpc_server_->Stop();
-    grpc_server_.reset();
-  }
-
   if (metrics_recorder_service_) {
     metrics_recorder_service_->OnCloseSoon(base::DoNothing());
     metrics_recorder_service_.reset();
   }
 
-  LOG(INFO) << "Runtime service stopped";
+  if (grpc_server_) {
+    grpc_server_->Stop();
+    grpc_server_.reset();
+    LOG(INFO) << "Runtime service stopped";
+  }
 }
 
 void RuntimeApplicationDispatcher::HandleLoadApplication(

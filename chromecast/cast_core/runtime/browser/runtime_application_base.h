@@ -43,11 +43,8 @@ class RuntimeApplicationBase : public RuntimeApplication {
 
   // Stops the running application. Must be called before destruction of any
   // instance of the implementing object.
-  virtual void StopApplication();
-
-  // Reports the application |state| to Cast Core.
-  void SetApplicationState(cast::v2::ApplicationStatusRequest::State state,
-                           StatusCallback callback);
+  virtual void StopApplication(
+      cast::v2::ApplicationStatusRequest::StopReason stop_reason);
 
   // Returns current TaskRunner.
   scoped_refptr<base::SequencedTaskRunner> task_runner() {
@@ -69,10 +66,9 @@ class RuntimeApplicationBase : public RuntimeApplication {
   CastWebContents* GetCastWebContents() override;
   const std::string& GetCastMediaServiceEndpoint() const override;
 
-  // Initializes the Cast application. If initialization passes, the
-  // |app_initialized_callback| is called.
-  virtual void InitializeApplication(
-      base::OnceClosure app_initialized_callback) = 0;
+  // Launches the Cast application. The |OnApplicationLaunched| must be called
+  // if launch is successful. Otherwise, StopApplication must be called.
+  virtual void LaunchApplication() = 0;
 
   // Processes an incoming |message|, returning the status of this processing in
   // |response| after being received over gRPC.
@@ -98,6 +94,10 @@ class RuntimeApplicationBase : public RuntimeApplication {
   std::vector<int> GetFeaturePermissions() const;
   // Returns additional feature permission origins.
   std::vector<std::string> GetAdditionalFeaturePermissionOrigins() const;
+  // Loads the page at the given |url| in the CastWebContents.
+  void LoadPage(const GURL& url);
+  // Notifies the application has launched.
+  void OnApplicationLaunched();
 
  private:
   // RuntimeApplicationService handlers:
@@ -113,9 +113,6 @@ class RuntimeApplicationBase : public RuntimeApplication {
 
   // Creates the root CastWebView for this Cast session.
   CastWebView::Scoped CreateCastWebView();
-
-  // Notifies that the application has been initialized.
-  void OnApplicationInitialized();
 
   const std::string cast_session_id_;
   const cast::common::ApplicationConfig app_config_;
