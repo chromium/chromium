@@ -218,12 +218,6 @@ void SharingHubBubbleControllerDesktopImpl::OnActionSelected(
 
       dialog_controller->ShowMediaRouterDialog(
           media_router::MediaRouterDialogOpenOrigin::SHARING_HUB);
-
-      // TODO(crbug.com/1333335): Look into moving this metrics logging to a
-      // single location, like
-      // MediaRouterDialogController::ShowMediaRouterDialog().
-      media_router::MediaRouterMetrics::RecordMediaRouterDialogOrigin(
-          media_router::MediaRouterDialogOpenOrigin::SHARING_HUB);
     } else {
       chrome::ExecuteCommand(browser, command_id);
     }

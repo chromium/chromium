@@ -61,7 +61,6 @@
 #include "components/dom_distiller/content/browser/uma_helper.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
-#include "components/media_router/browser/media_router_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -514,10 +513,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       if (!uma_action_recorded_)
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Cast", delta);
       LogMenuAction(MENU_ACTION_CAST);
-      // TODO(takumif): Look into moving this metrics logging to a single
-      // location, like MediaRouterDialogController::ShowMediaRouterDialog().
-      media_router::MediaRouterMetrics::RecordMediaRouterDialogOrigin(
-          media_router::MediaRouterDialogOpenOrigin::APP_MENU);
       break;
 
     // Edit menu.

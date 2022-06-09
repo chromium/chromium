@@ -219,8 +219,6 @@ void CastToolbarButton::ButtonPressed() {
   } else {
     dialog_controller->ShowMediaRouterDialog(
         MediaRouterDialogOpenOrigin::TOOLBAR);
-    MediaRouterMetrics::RecordMediaRouterDialogOrigin(
-        MediaRouterDialogOpenOrigin::TOOLBAR);
   }
 }
 

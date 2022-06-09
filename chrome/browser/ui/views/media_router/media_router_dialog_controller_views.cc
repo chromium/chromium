@@ -91,6 +91,8 @@ void MediaRouterDialogControllerViews::CreateMediaRouterDialog(
 
   if (dialog_creation_callback_)
     dialog_creation_callback_.Run();
+
+  MediaRouterMetrics::RecordMediaRouterDialogOrigin(activation_location);
 }
 
 void MediaRouterDialogControllerViews::CloseMediaRouterDialog() {

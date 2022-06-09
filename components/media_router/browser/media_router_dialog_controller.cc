@@ -92,8 +92,6 @@ bool MediaRouterDialogController::ShowMediaRouterDialogForPresentation(
   }
 
   start_presentation_context_ = std::move(context);
-  MediaRouterMetrics::RecordMediaRouterDialogOrigin(
-      MediaRouterDialogOpenOrigin::PAGE);
   FocusOnMediaRouterDialog(true, MediaRouterDialogOpenOrigin::PAGE);
   return true;
 }
