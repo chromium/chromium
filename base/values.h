@@ -521,6 +521,11 @@ class BASE_EXPORT GSL_OWNER Value {
     // Serializes to a string for logging and debug purposes.
     std::string DebugString() const;
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+    // Write this object into a trace.
+    void WriteIntoTrace(perfetto::TracedValue) const;
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
    private:
     BASE_EXPORT friend bool operator==(const Dict& lhs, const Dict& rhs);
     BASE_EXPORT friend bool operator!=(const Dict& lhs, const Dict& rhs);
@@ -637,6 +642,11 @@ class BASE_EXPORT GSL_OWNER Value {
 
     // Serializes to a string for logging and debug purposes.
     std::string DebugString() const;
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+    // Write this object into a trace.
+    void WriteIntoTrace(perfetto::TracedValue) const;
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
    private:
     BASE_EXPORT friend bool operator==(const List& lhs, const List& rhs);

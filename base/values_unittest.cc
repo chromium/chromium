@@ -2497,14 +2497,18 @@ TEST(ValuesTest, TracingSupport) {
   EXPECT_EQ(perfetto::TracedValueToString(Value("value")), "value");
   EXPECT_EQ(perfetto::TracedValueToString(Value(Value::Type::NONE)), "<none>");
   {
-    Value::ListStorage list;
-    list.emplace_back(2);
-    list.emplace_back(3);
-    EXPECT_EQ(perfetto::TracedValueToString(Value(list)), "[2,3]");
+    Value::List list;
+    EXPECT_EQ(perfetto::TracedValueToString(list), "{}");
+    list.Append(2);
+    list.Append(3);
+    EXPECT_EQ(perfetto::TracedValueToString(list), "[2,3]");
+    EXPECT_EQ(perfetto::TracedValueToString(Value(std::move(list))), "[2,3]");
   }
   {
     Value::Dict dict;
+    EXPECT_EQ(perfetto::TracedValueToString(dict), "{}");
     dict.Set("key", "value");
+    EXPECT_EQ(perfetto::TracedValueToString(dict), "{key:value}");
     EXPECT_EQ(perfetto::TracedValueToString(Value(std::move(dict))),
               "{key:value}");
   }

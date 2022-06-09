@@ -789,6 +789,13 @@ std::string Value::Dict::DebugString() const {
   return DebugStringImpl(*this);
 }
 
+void Value::Dict::WriteIntoTrace(perfetto::TracedValue context) const {
+  perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
+  for (auto kv : *this) {
+    dict.Add(perfetto::DynamicString(kv.first), kv.second);
+  }
+}
+
 Value::Dict::Dict(
     const flat_map<std::string, std::unique_ptr<Value>>& storage) {
   storage_.reserve(storage.size());
@@ -990,6 +997,13 @@ size_t Value::List::EraseValue(const Value& value) {
 
 std::string Value::List::DebugString() const {
   return DebugStringImpl(*this);
+}
+
+void Value::List::WriteIntoTrace(perfetto::TracedValue context) const {
+  perfetto::TracedArray array = std::move(context).WriteArray();
+  for (const auto& item : *this) {
+    array.Append(item);
+  }
 }
 
 Value::List::List(const std::vector<Value>& storage) {
@@ -1522,38 +1536,26 @@ std::string Value::DebugString() const {
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 void Value::WriteIntoTrace(perfetto::TracedValue context) const {
-  switch (type()) {
-    case Type::BOOLEAN:
-      std::move(context).WriteBoolean(GetBool());
-      return;
-    case Type::INTEGER:
-      std::move(context).WriteInt64(GetInt());
-      return;
-    case Type::DOUBLE:
-      std::move(context).WriteDouble(GetDouble());
-      return;
-    case Type::STRING:
-      std::move(context).WriteString(GetString());
-      return;
-    case Type::BINARY:
-      std::move(context).WriteString("<binary data not supported>");
-      return;
-    case Type::DICTIONARY: {
-      perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
-      for (auto kv : DictItems())
-        dict.Add(perfetto::DynamicString{kv.first}, kv.second);
-      return;
-    }
-    case Type::LIST: {
-      perfetto::TracedArray array = std::move(context).WriteArray();
-      for (const auto& item : GetListDeprecated())
-        array.Append(item);
-      return;
-    }
-    case Type::NONE:
+  Visit([&](const auto& member) {
+    using T = std::decay_t<decltype(member)>;
+    if constexpr (std::is_same_v<T, absl::monostate>) {
       std::move(context).WriteString("<none>");
-      return;
-  }
+    } else if constexpr (std::is_same_v<T, bool>) {
+      std::move(context).WriteBoolean(member);
+    } else if constexpr (std::is_same_v<T, int>) {
+      std::move(context).WriteInt64(member);
+    } else if constexpr (std::is_same_v<T, DoubleStorage>) {
+      std::move(context).WriteDouble(member);
+    } else if constexpr (std::is_same_v<T, std::string>) {
+      std::move(context).WriteString(member);
+    } else if constexpr (std::is_same_v<T, BlobStorage>) {
+      std::move(context).WriteString("<binary data not supported>");
+    } else if constexpr (std::is_same_v<T, Dict>) {
+      member.WriteIntoTrace(std::move(context));
+    } else if constexpr (std::is_same_v<T, List>) {
+      member.WriteIntoTrace(std::move(context));
+    }
+  });
 }
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
