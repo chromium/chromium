@@ -3170,6 +3170,7 @@ test("ash_pixeltests") {
   sources = [
     "test/ash_pixel_diff_test_base.cc",
     "test/ash_pixel_diff_test_base.h",
+    "test/demo_ash_pixel_diff_test.cc",
   ]
 
   deps = [

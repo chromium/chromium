@@ -320,6 +320,18 @@
       },
     },
 
+    'ash_pixel_gtests': {
+      'ash_pixeltests': {
+         'args': [
+          '--enable-pixel-output-in-tests',
+        ],
+        'experiment_percentage': 100,
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
+    },
+
     'aura_gtests': {
       'aura_unittests': {},
       'compositor_unittests': {},
@@ -6603,6 +6615,7 @@
       'linux_chromeos_browser_tests_require_lacros',
       'linux_flavor_specific_chromium_gtests',
       'non_android_chromium_gtests',
+      'ash_pixel_gtests',
     ],
 
     'linux_viz_gtests': [

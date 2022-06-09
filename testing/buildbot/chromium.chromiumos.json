@@ -3169,6 +3169,34 @@
         "test_id_prefix": "ninja://ash/components:ash_components_unittests/"
       },
       {
+        "args": [
+          "--enable-pixel-output-in-tests",
+          "--git-revision=${got_revision}"
+        ],
+        "experiment_percentage": 100,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ash_pixeltests",
+        "test_id_prefix": "ninja://ash:ash_pixeltests/"
+      },
+      {
         "isolate_profile_data": true,
         "merge": {
           "args": [],

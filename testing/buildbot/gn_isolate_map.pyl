@@ -209,6 +209,10 @@
     "label": "//ash:ash_unittests",
     "type": "windowed_test_launcher",
   },
+  "ash_pixeltests": {
+    "label": "//ash:ash_pixeltests",
+    "type": "windowed_test_launcher",
+  },
   "aura_unittests": {
     "label": "//ui/aura:aura_unittests",
     "type": "windowed_test_launcher",
