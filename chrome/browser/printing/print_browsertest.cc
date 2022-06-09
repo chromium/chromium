@@ -204,12 +204,12 @@ mojom::PrintParamsPtr GetPrintParams() {
   return params;
 }
 
-void UpdatePrintSettingsReplyOnIO(
+void OnDidUpdatePrintSettings(
     std::unique_ptr<PrintSettings>& snooped_settings,
     scoped_refptr<PrintQueriesQueue> queue,
     std::unique_ptr<PrinterQuery> printer_query,
     mojom::PrintManagerHost::UpdatePrintSettingsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(printer_query);
   auto params = mojom::PrintPagesParams::New();
   params->params = mojom::PrintParams::New();
@@ -225,40 +225,13 @@ void UpdatePrintSettingsReplyOnIO(
 
   params->params = GetPrintParams();
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](mojom::PrintManagerHost::UpdatePrintSettingsCallback callback,
-             mojom::PrintPagesParamsPtr params, bool canceled) {
-            DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-            std::move(callback).Run(std::move(params), canceled);
-          },
-          std::move(callback), std::move(params), canceled));
+  std::move(callback).Run(std::move(params), canceled);
 
   if (printer_query->cookie() && printer_query->settings().dpi()) {
     queue->QueuePrinterQuery(std::move(printer_query));
   } else {
     printer_query->StopWorker();
   }
-}
-
-void UpdatePrintSettingsOnIO(
-    std::unique_ptr<PrintSettings>& snooped_settings,
-    int32_t cookie,
-    mojom::PrintManagerHost::UpdatePrintSettingsCallback callback,
-    scoped_refptr<PrintQueriesQueue> queue,
-    base::Value::Dict job_settings) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  std::unique_ptr<PrinterQuery> printer_query = queue->PopPrinterQuery(cookie);
-  if (!printer_query) {
-    printer_query =
-        queue->CreatePrinterQuery(content::GlobalRenderFrameHostId());
-  }
-  auto* printer_query_ptr = printer_query.get();
-  printer_query_ptr->SetSettings(
-      std::move(job_settings),
-      base::BindOnce(&UpdatePrintSettingsReplyOnIO, std::ref(snooped_settings),
-                     queue, std::move(printer_query), std::move(callback)));
 }
 
 class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
@@ -598,11 +571,18 @@ class TestPrintViewManager : public PrintViewManager {
   void UpdatePrintSettings(int32_t cookie,
                            base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&UpdatePrintSettingsOnIO, std::ref(snooped_settings_),
-                       cookie, std::move(callback), queue_,
-                       std::move(job_settings)));
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    std::unique_ptr<PrinterQuery> printer_query =
+        queue_->PopPrinterQuery(cookie);
+    if (!printer_query) {
+      printer_query =
+          queue_->CreatePrinterQuery(content::GlobalRenderFrameHostId());
+    }
+    auto* printer_query_ptr = printer_query.get();
+    printer_query_ptr->SetSettings(
+        std::move(job_settings),
+        base::BindOnce(&OnDidUpdatePrintSettings, std::ref(snooped_settings_),
+                       queue_, std::move(printer_query), std::move(callback)));
   }
 
   std::unique_ptr<PrintSettings> snooped_settings_;

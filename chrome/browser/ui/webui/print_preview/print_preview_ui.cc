@@ -106,17 +106,15 @@ constexpr char kInvalidPageCountForMetafileReadyForPrinting[] =
 PrintPreviewUI::TestDelegate* g_test_delegate = nullptr;
 
 void StopWorker(int document_cookie) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (document_cookie <= 0)
     return;
   scoped_refptr<PrintQueriesQueue> queue =
       g_browser_process->print_job_manager()->queue();
   std::unique_ptr<PrinterQuery> printer_query =
       queue->PopPrinterQuery(document_cookie);
-  if (printer_query) {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PrinterQuery::StopWorker, std::move(printer_query)));
-  }
+  if (printer_query)
+    printer_query->StopWorker();
 }
 
 bool IsValidPageNumber(uint32_t page_number, uint32_t page_count) {

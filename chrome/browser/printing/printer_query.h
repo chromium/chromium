@@ -30,10 +30,10 @@ using CreatePrintJobWorkerCallback =
     base::RepeatingCallback<std::unique_ptr<PrintJobWorker>(
         content::GlobalRenderFrameHostId rfh_id)>;
 
-// Query the printer for settings.
+// Query the printer for settings.  All code in this class runs in the UI
+// thread.
 class PrinterQuery {
  public:
-  // Can only be called on the IO thread.
   explicit PrinterQuery(content::GlobalRenderFrameHostId rfh_id);
 
   PrinterQuery(const PrinterQuery&) = delete;
@@ -43,8 +43,6 @@ class PrinterQuery {
 
   // Detach the PrintJobWorker associated to this object. Virtual so that tests
   // can override.
-  // Called on the UI thread.
-  // TODO(thestig): Do `worker_` and `callback_` need locks?
   virtual std::unique_ptr<PrintJobWorker> DetachWorker();
 
   const PrintSettings& settings() const;
@@ -97,10 +95,10 @@ class PrinterQuery {
                                std::unique_ptr<PrintSettings> new_settings,
                                mojom::ResultCode result);
 
-  void PostSettingsDoneToIO(base::OnceClosure callback,
-                            absl::optional<bool> maybe_is_modifiable,
-                            std::unique_ptr<PrintSettings> new_settings,
-                            mojom::ResultCode result);
+  void PostSettingsDone(base::OnceClosure callback,
+                        absl::optional<bool> maybe_is_modifiable,
+                        std::unique_ptr<PrintSettings> new_settings,
+                        mojom::ResultCode result);
 
   void SetSettingsForTest(std::unique_ptr<PrintSettings> settings);
 

@@ -130,18 +130,11 @@ PrintJobWorker::PrintJobWorker(content::GlobalRenderFrameHostId rfh_id)
           PrintingContext::Create(printing_context_delegate_.get(),
                                   ShouldPrintingContextSkipSystemCalls())),
       thread_("Printing_Worker") {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 PrintJobWorker::~PrintJobWorker() {
-  // The object is normally deleted by PrintJob in the UI thread, but when the
-  // user cancels printing or in the case of print preview, the worker is
-  // destroyed with the PrinterQuery, which is on the I/O thread.
-  if (print_job_) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  } else {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  }
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Stop();
 }
 
