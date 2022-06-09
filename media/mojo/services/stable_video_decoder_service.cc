@@ -52,7 +52,7 @@ void StableVideoDecoderService::Construct(
   DCHECK(!stable_media_log_remote_.is_bound());
   stable_media_log_remote_.Bind(std::move(stable_media_log_remote));
 
-  DCHECK(!video_frame_handle_releaser_remote_);
+  DCHECK(!video_frame_handle_releaser_remote_.is_bound());
   DCHECK(!stable_video_frame_handle_releaser_receiver_.is_bound());
   stable_video_frame_handle_releaser_receiver_.Bind(
       std::move(stable_video_frame_handle_releaser_receiver));
@@ -71,7 +71,28 @@ void StableVideoDecoderService::Initialize(
     mojo::PendingRemote<stable::mojom::StableCdmContext> cdm_context,
     InitializeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
+  if (!video_decoder_client_receiver_.is_bound()) {
+    std::move(callback).Run(DecoderStatus::Codes::kFailedToCreateDecoder,
+                            /*needs_bitstream_conversion=*/false,
+                            /*max_decode_requests=*/1,
+                            VideoDecoderType::kUnknown);
+    return;
+  }
+
+  // The |config| should have been validated at deserialization time.
+  DCHECK(config.IsValidConfig());
+
+  // TODO(b/195769334): implement out-of-process video decoding of hardware
+  // protected content.
+  if (config.is_encrypted()) {
+    std::move(callback).Run(DecoderStatus::Codes::kUnsupportedConfig,
+                            /*needs_bitstream_conversion=*/false,
+                            /*max_decode_requests=*/1,
+                            VideoDecoderType::kUnknown);
+    return;
+  }
+  dst_video_decoder_remote_->Initialize(
+      config, low_delay, /*cdm_id=*/absl::nullopt, std::move(callback));
 }
 
 void StableVideoDecoderService::Decode(
