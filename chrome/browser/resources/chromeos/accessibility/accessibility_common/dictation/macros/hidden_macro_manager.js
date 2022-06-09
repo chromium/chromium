@@ -6,6 +6,7 @@ import {DeletePrevSentMacro} from '/accessibility_common/dictation/macros/delete
 import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
 import {DeletePrevWordMacro, NavNextWordMacro, NavPrevWordMacro} from '/accessibility_common/dictation/macros/repeatable_key_press_macro.js';
 import {SmartDeletePhraseMacro} from '/accessibility_common/dictation/macros/smart_delete_phrase_macro.js';
+import {SmartReplacePhraseMacro} from '/accessibility_common/dictation/macros/smart_replace_phrase_macro.js';
 import {StopListeningMacro} from '/accessibility_common/dictation/macros/stop_listening_macro.js';
 
 /**
@@ -65,6 +66,27 @@ export class HiddenMacroManager {
   }
 
   /**
+   * @param {!MacroName} name The macro to run.
+   * @param {string} arg1
+   * @param {string} arg2
+   */
+  runMacroWithTwoStringArgsForTesting(name, arg1, arg2) {
+    if (!HiddenMacroManager.isHiddenMacro(name)) {
+      throw new Error('HiddenMacroManager can only invoke hidden macros.');
+    }
+
+    switch (name) {
+      case MacroName.SMART_REPLACE_PHRASE:
+        new SmartReplacePhraseMacro(this.inputController_, arg1, arg2)
+            .runMacro();
+        break;
+      default:
+        throw new Error(`Cannot run macro: ${name} with string arg1: ${
+            arg1} and arg2: ${arg2} for testing`);
+    }
+  }
+
+  /**
    * @param {!MacroName} name
    * @return {boolean}
    */
@@ -85,4 +107,5 @@ HiddenMacroManager.HIDDEN_MACROS_ = [
   MacroName.NAV_NEXT_WORD,
   MacroName.NAV_PREV_WORD,
   MacroName.SMART_DELETE_PHRASE,
+  MacroName.SMART_REPLACE_PHRASE,
 ];

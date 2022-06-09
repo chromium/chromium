@@ -234,6 +234,17 @@ export class InputController {
    * @param {string} phrase The phrase to be deleted.
    */
   smartDeletePhrase(phrase) {
+    this.smartReplacePhrase(phrase, '');
+  }
+
+  /**
+   * Replaces a phrase to the left of the text caret with another phrase. If
+   * multiple instances of `deletePhrase` are present, this function will
+   * replace the one closest to the text caret.
+   * @param {string} deletePhrase The phrase to be deleted.
+   * @param {string} insertPhrase The phrase to be inserted.
+   */
+  smartReplacePhrase(deletePhrase, insertPhrase) {
     const editableNode = this.focusHandler_.getEditableNode();
     if (!editableNode || !editableNode.value ||
         editableNode.textSelStart !== editableNode.textSelEnd) {
@@ -244,23 +255,26 @@ export class InputController {
     const caretIndex = editableNode.textSelStart;
     const leftOfCaret = value.substring(0, caretIndex);
     const rightOfCaret = value.substring(caretIndex);
-    phrase = phrase.toLowerCase().trim();
+    const performingDelete = insertPhrase === '';
+    deletePhrase = deletePhrase.trim();
+    insertPhrase = insertPhrase.trim();
 
-    // Require `phrase` to be separated by word boundaries and prefer the
-    // RegExps that include a leading/trailing space to preserve spacing.
-    const lastPhrase = new RegExp(`(\\b${phrase}\\b)(?!.*\\b\\1\\b)`, 'i');
-    const lastPhraseLeadingSpace =
-        new RegExp(`(\\b ${phrase}\\b)(?!.*\\b\\1\\b)`, 'i');
-    const lastPhraseTrailingSpace =
-        new RegExp(`(\\b${phrase} \\b)(?!.*\\b\\1\\b)`, 'i');
+    // Find the right-most occurrence of `deletePhrase`. Require `deletePhrase`
+    // to be separated by word boundaries. If we're deleting text, prefer
+    // the RegExps that include a leading/trailing space to preserve spacing.
+    const re = new RegExp(`(\\b${deletePhrase}\\b)(?!.*\\b\\1\\b)`, 'i');
+    const reWithLeadingSpace =
+        new RegExp(`(\\b ${deletePhrase}\\b)(?!.*\\b\\1\\b)`, 'i');
+    const reWithTrailingSpace =
+        new RegExp(`(\\b${deletePhrase} \\b)(?!.*\\b\\1\\b)`, 'i');
 
     let newLeft;
-    if (lastPhraseLeadingSpace.test(leftOfCaret)) {
-      newLeft = leftOfCaret.replace(lastPhraseLeadingSpace, '');
-    } else if (lastPhraseTrailingSpace.test(leftOfCaret)) {
-      newLeft = leftOfCaret.replace(lastPhraseTrailingSpace, '');
+    if (performingDelete && reWithLeadingSpace.test(leftOfCaret)) {
+      newLeft = leftOfCaret.replace(reWithLeadingSpace, insertPhrase);
+    } else if (performingDelete && reWithTrailingSpace.test(leftOfCaret)) {
+      newLeft = leftOfCaret.replace(reWithTrailingSpace, insertPhrase);
     } else {
-      newLeft = leftOfCaret.replace(lastPhrase, '');
+      newLeft = leftOfCaret.replace(re, insertPhrase);
     }
 
     const newValue = newLeft + rightOfCaret;

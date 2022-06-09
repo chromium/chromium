@@ -85,5 +85,8 @@ export const MacroName = {
   // Deletes a provided word or phrase.
   SMART_DELETE_PHRASE: 21,
 
+  // Replaces a provided word or phrase.
+  SMART_REPLACE_PHRASE: 22,
+
   // Any new actions should match with Voice Access's semantic tags.
 };

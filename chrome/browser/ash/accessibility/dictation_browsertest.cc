@@ -1162,10 +1162,7 @@ class DictationHiddenMacrosTest : public DictationTest {
       window.domAutomationController.send("done");
     )",
                                             macro);
-    extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-        /*context=*/browser()->profile(),
-        /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
-        /*script=*/script);
+    ExecuteAccessibilityCommonScript(script);
   }
 
   void RunHiddenMacroWithStringArg(int macro, const std::string& arg) {
@@ -1176,10 +1173,20 @@ class DictationHiddenMacrosTest : public DictationTest {
     )",
                                             macro, arg.c_str());
 
-    extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-        /*context=*/browser()->profile(),
-        /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
-        /*script=*/script);
+    ExecuteAccessibilityCommonScript(script);
+  }
+
+  void RunHiddenMacroWithTwoStringArgs(int macro,
+                                       const std::string& arg1,
+                                       const std::string& arg2) {
+    std::string script = base::StringPrintf(R"(
+      accessibilityCommon.dictation_.
+          runHiddenMacroWithTwoStringArgsForTesting(%d, "%s", "%s");
+      window.domAutomationController.send("done");
+    )",
+                                            macro, arg1.c_str(), arg2.c_str());
+
+    ExecuteAccessibilityCommonScript(script);
   }
 
   void RunMacroAndWaitForCaretBoundsChanged(int macro) {
@@ -1191,6 +1198,14 @@ class DictationHiddenMacrosTest : public DictationTest {
     RunHiddenMacro(macro);
     caret_waiter.Wait();
     std::ignore = selection_waiter.WaitForNotification();
+  }
+
+ private:
+  void ExecuteAccessibilityCommonScript(const std::string& script) {
+    extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+        /*context=*/browser()->profile(),
+        /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
+        /*script=*/script);
   }
 };
 
@@ -1371,6 +1386,18 @@ IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest,
   // Deletes the first word "a", not the first character "a".
   RunHiddenMacroWithStringArg(/* SMART_DELETE_PHRASE */ 21, "a");
   WaitForTextAreaValue("A square is also rectangle.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, SmartReplacePhrase) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("This is a difficult test.",
+                                         "This is a difficult test.");
+  RunHiddenMacroWithTwoStringArgs(/* SMART_REPLACE_PHRASE */ 22, "difficult",
+                                  "simple");
+  WaitForTextAreaValue("This is a simple test.");
+  RunHiddenMacroWithTwoStringArgs(/*SMART_REPLACE_PHRASE*/ 22, "is", "isn't");
+  WaitForTextAreaValue("This isn't a simple test.");
 }
 
 // Tests behavior of Dictation and installation of Pumpkin.
