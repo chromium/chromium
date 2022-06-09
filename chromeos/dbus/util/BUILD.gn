@@ -9,7 +9,11 @@ assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
 component("util") {
   output_name = "chromeos_dbus_util"
   defines = [ "IS_CHROMEOS_DBUS_UTIL_IMPL" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromeos/strings",
+    "//ui/base",
+  ]
   sources = [
     "version_loader.cc",
     "version_loader.h",

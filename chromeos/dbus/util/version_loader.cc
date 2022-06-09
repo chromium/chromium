@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -17,8 +18,11 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
 namespace version_loader {
@@ -34,6 +38,9 @@ const char kVersionKey[] = "CHROMEOS_RELEASE_VERSION";
 
 // Same but for ARC version.
 const char kArcVersionKey[] = "CHROMEOS_ARC_VERSION";
+
+// Same but for ARC Android SDK Version
+const char kArcAndroidSdkVersionKey[] = "CHROMEOS_ARC_ANDROID_SDK_VERSION";
 
 // Beginning of line we look for that gives the firmware version.
 const char kFirmwarePrefix[] = "version";
@@ -68,6 +75,24 @@ std::string GetARCVersion() {
         << "No LSB version key: " << kArcVersionKey;
   }
   return version;
+}
+
+std::string GetARCAndroidSDKVersion() {
+  std::string arc_version = GetARCVersion();
+  std::string arc_sdk_version;
+
+  std::string sdk_label =
+      base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ARC_SDK_VERSION_LABEL));
+  if (!base::SysInfo::GetLsbReleaseValue(kArcAndroidSdkVersionKey,
+                                         &arc_sdk_version)) {
+    LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
+        << "No LSB version key: " << kArcAndroidSdkVersionKey;
+    arc_sdk_version = base::UTF16ToUTF8(
+        l10n_util::GetStringUTF16(IDS_ARC_SDK_VERSION_UNKNOWN));
+  }
+
+  return base::StringPrintf("%s %s %s", arc_version.c_str(), sdk_label.c_str(),
+                            arc_sdk_version.c_str());
 }
 
 std::string GetFirmware() {

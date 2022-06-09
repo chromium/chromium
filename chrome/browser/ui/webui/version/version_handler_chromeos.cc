@@ -54,7 +54,7 @@ void VersionHandlerChromeOS::HandleRequestVersionInfo(
                      weak_factory_.GetWeakPtr()));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&chromeos::version_loader::GetARCVersion),
+      base::BindOnce(&chromeos::version_loader::GetARCAndroidSDKVersion),
       base::BindOnce(&VersionHandlerChromeOS::OnARCVersion,
                      weak_factory_.GetWeakPtr()));
 
