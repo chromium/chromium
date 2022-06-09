@@ -34,8 +34,12 @@ class Browser;
 @class DownloadManagerCoordinator;
 @class KeyCommandsProvider;
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
+@protocol PopupMenuUIUpdating;
 class PrerenderService;
+@class PrimaryToolbarCoordinator;
+@class SecondaryToolbarCoordinator;
 @class ToolbarAccessoryPresenter;
+@protocol ToolbarCoordinating;
 @protocol IncognitoReauthCommands;
 
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
@@ -45,6 +49,10 @@ typedef struct {
   PrerenderService* prerenderService;
   BubblePresenter* bubblePresenter;
   DownloadManagerCoordinator* downloadManagerCoordinator;
+  id<ToolbarCoordinating> toolbarInterface;
+  id<PopupMenuUIUpdating> UIUpdater;
+  PrimaryToolbarCoordinator* primaryToolbarCoordinator;
+  SecondaryToolbarCoordinator* secondaryToolbarCoordinator;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

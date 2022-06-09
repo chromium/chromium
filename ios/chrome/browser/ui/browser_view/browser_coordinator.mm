@@ -107,6 +107,10 @@
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
+#import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_coordinating.h"
+#import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
+#import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_adaptor.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/webui/net_export_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -306,6 +310,9 @@
       _scopedWebStateListObservation;
   PrerenderService* _prerenderService;
   BubblePresenter* _bubblePresenter;
+  ToolbarCoordinatorAdaptor* _toolbarCoordinatorAdaptor;
+  PrimaryToolbarCoordinator* _primaryToolbarCoordinator;
+  SecondaryToolbarCoordinator* _secondaryToolbarCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -327,6 +334,20 @@
 
     _bubblePresenter =
         [[BubblePresenter alloc] initWithBrowserState:browserState];
+
+    _primaryToolbarCoordinator =
+        [[PrimaryToolbarCoordinator alloc] initWithBrowser:browser];
+
+    _secondaryToolbarCoordinator =
+        [[SecondaryToolbarCoordinator alloc] initWithBrowser:browser];
+
+    _toolbarCoordinatorAdaptor =
+        [[ToolbarCoordinatorAdaptor alloc] initWithDispatcher:_dispatcher];
+
+    [_toolbarCoordinatorAdaptor
+        addToolbarCoordinator:_primaryToolbarCoordinator];
+    [_toolbarCoordinatorAdaptor
+        addToolbarCoordinator:_secondaryToolbarCoordinator];
   }
   return self;
 }
@@ -806,9 +827,14 @@
   dependencies.prerenderService = _prerenderService;
   dependencies.bubblePresenter = _bubblePresenter;
   dependencies.downloadManagerCoordinator = self.downloadManagerCoordinator;
+  dependencies.toolbarInterface = _toolbarCoordinatorAdaptor;
+  dependencies.UIUpdater = _toolbarCoordinatorAdaptor;
+  dependencies.primaryToolbarCoordinator = _primaryToolbarCoordinator;
+  dependencies.secondaryToolbarCoordinator = _secondaryToolbarCoordinator;
 
   return dependencies;
 }
+
 #pragma mark - ActivityServiceCommands
 
 - (void)sharePage {

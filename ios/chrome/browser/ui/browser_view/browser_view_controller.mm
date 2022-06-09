@@ -116,9 +116,9 @@
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui_broadcasting_util.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_coordinating.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_adaptor.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -329,10 +329,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // button.
   BookmarkInteractionController* _bookmarkInteractionController;
 
-  // TODO(crbug.com/1329110): Move this out of the BVC; inject it as the
-  // ToolbarInterface as an interim step if needed.
-  ToolbarCoordinatorAdaptor* _toolbarCoordinatorAdaptor;
-
   // Toolbar state that broadcasts changes to min and max heights.
   ToolbarUIState* _toolbarUIState;
 
@@ -344,6 +340,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // The updater that adjusts the toolbar's layout for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
+
+  // Popup Menu UI Updater.
+  id<PopupMenuUIUpdating> _UIUpdater;
 
   // TODO(crbug.com/1331229): Remove all use of the download manager coordinator
   // from BVC Coordinator for the Download Manager UI.
@@ -545,6 +544,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // TODO(crbug.com/1331229): Remove all use of the download manager
     // coordinator from BVC
     _downloadManagerCoordinator = dependencies.downloadManagerCoordinator;
+    _UIUpdater = dependencies.UIUpdater;
+    self.toolbarInterface = dependencies.toolbarInterface;
+    self.primaryToolbarCoordinator = dependencies.primaryToolbarCoordinator;
+    self.secondaryToolbarCoordinator = dependencies.secondaryToolbarCoordinator;
+
     // TODO(crbug.com/1329089): Inject this handler.
     self.textZoomHandler =
         HandlerForProtocol(self.commandDispatcher, TextZoomCommands);
@@ -556,10 +560,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self.commandDispatcher
         startDispatchingToTarget:self
                      forProtocol:@protocol(NewTabPageCommands)];
-
-    _toolbarCoordinatorAdaptor =
-        [[ToolbarCoordinatorAdaptor alloc] initWithDispatcher:self.dispatcher];
-    self.toolbarInterface = _toolbarCoordinatorAdaptor;
 
     _inNewTabAnimation = NO;
 
@@ -1810,22 +1810,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       [[PopupMenuCoordinator alloc] initWithBaseViewController:self
                                                        browser:self.browser];
   self.popupMenuCoordinator.bubblePresenter = _bubblePresenter;
-  self.popupMenuCoordinator.UIUpdater = _toolbarCoordinatorAdaptor;
+  self.popupMenuCoordinator.UIUpdater = _UIUpdater;
   [self.popupMenuCoordinator start];
 
-  // TODO(crbug.com/1329095): Inject this coordinator instead of creating it.
-  PrimaryToolbarCoordinator* topToolbarCoordinator =
-      [[PrimaryToolbarCoordinator alloc] initWithBrowser:self.browser];
-  self.primaryToolbarCoordinator = topToolbarCoordinator;
-  topToolbarCoordinator.delegate = self;
-  topToolbarCoordinator.popupPresenterDelegate = self;
-  topToolbarCoordinator.longPressDelegate = self.popupMenuCoordinator;
-  [topToolbarCoordinator start];
-  // TODO(crbug.com/1329095): Inject this coordinator instead of creating it.
-  SecondaryToolbarCoordinator* bottomToolbarCoordinator =
-      [[SecondaryToolbarCoordinator alloc] initWithBrowser:self.browser];
-  self.secondaryToolbarCoordinator = bottomToolbarCoordinator;
-  bottomToolbarCoordinator.longPressDelegate = self.popupMenuCoordinator;
+  self.primaryToolbarCoordinator.delegate = self;
+  self.primaryToolbarCoordinator.popupPresenterDelegate = self;
+  self.primaryToolbarCoordinator.longPressDelegate = self.popupMenuCoordinator;
+  [self.primaryToolbarCoordinator start];
+
+  self.secondaryToolbarCoordinator.longPressDelegate =
+      self.popupMenuCoordinator;
 
   // TODO(crbug.com/880672): Finish ToolbarContainer work.
   if (base::FeatureList::IsEnabled(
@@ -1835,14 +1829,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
             initWithBrowser:self.browser
                        type:ToolbarContainerType::kSecondary];
     self.secondaryToolbarContainerCoordinator.toolbarCoordinators =
-        @[ bottomToolbarCoordinator ];
+        @[ self.secondaryToolbarCoordinator ];
     [self.secondaryToolbarContainerCoordinator start];
   } else {
-    [bottomToolbarCoordinator start];
+    [self.secondaryToolbarCoordinator start];
   }
-
-  [_toolbarCoordinatorAdaptor addToolbarCoordinator:topToolbarCoordinator];
-  [_toolbarCoordinatorAdaptor addToolbarCoordinator:bottomToolbarCoordinator];
 
   self.sideSwipeController.toolbarInteractionHandler = self.toolbarInterface;
   self.sideSwipeController.primaryToolbarSnapshotProvider =
