@@ -26,12 +26,12 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.AwActivityTestRule.PopupInfo;
 import org.chromium.android_webview.test.TestAwContentsClient.ShouldInterceptRequestHelper;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -386,7 +386,6 @@ public class PopupWindowTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/1251900")
     public void testPopupWindowHasUserGestureForUserInitiated() throws Throwable {
         runPopupUserGestureTest(true);
     }
@@ -394,7 +393,6 @@ public class PopupWindowTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/1251900")
     public void testPopupWindowHasUserGestureForUserInitiatedNoOpener() throws Throwable {
         runPopupUserGestureTest(false);
     }
@@ -423,7 +421,7 @@ public class PopupWindowTest {
         TestAwContentsClient.OnCreateWindowHelper onCreateWindowHelper =
                 mParentContentsClient.getOnCreateWindowHelper();
         int currentCallCount = onCreateWindowHelper.getCallCount();
-        DOMUtils.clickNode(mParentContents.getWebContents(), "link");
+        JSUtils.clickNodeWithUserGesture(mParentContents.getWebContents(), "link");
         onCreateWindowHelper.waitForCallback(
                 currentCallCount, 1, AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
