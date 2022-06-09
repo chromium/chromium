@@ -6,7 +6,7 @@
   }
 
   div[slot='body'] {
-    height: 255px;
+    height: 252px;
     overflow: hidden;
     position: relative;
   }
@@ -25,8 +25,10 @@
     animation-play-state: paused;
     animation-timing-function: ease-in-out;
     background-color: white;
+    border-radius: 8px;
     bottom: 0;
     left: 0;
+    margin: 0 24px;
     opacity: 0;
     position: absolute;
     right: 0;
@@ -39,6 +41,7 @@
 
   #webcamVideo {
     border-radius: 8px;
+    height: 100%;
     /*
      * Mirror the webcam feed because people are used to seeing themselves in a
      * mirror. Still has to be mirrored even in RTL layouts.
