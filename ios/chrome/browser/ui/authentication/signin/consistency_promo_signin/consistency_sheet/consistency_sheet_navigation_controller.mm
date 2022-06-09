@@ -125,7 +125,7 @@ constexpr CGFloat kCornerRadius = 12.;
 #pragma mark - SwipeGesture
 
 // Called when the swipe gesture is active. This method controls the sliding
-// between two view controls in |self|.
+// between two view controls in `self`.
 - (void)swipeAction:(UIScreenEdgePanGestureRecognizer*)gestureRecognizer {
   if (!gestureRecognizer.view) {
     self.interactionTransition = nil;

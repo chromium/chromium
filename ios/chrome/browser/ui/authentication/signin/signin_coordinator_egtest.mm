@@ -95,12 +95,12 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
 
-  // Sign in to |fakeIdentity1|.
+  // Sign in to `fakeIdentity1`.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
   [SigninEarlGreyUI
       signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
 
-  // Sign in with |fakeIdentity2|.
+  // Sign in with `fakeIdentity2`.
   [ChromeEarlGreyUI openSettingsMenu];
   [[EarlGrey selectElementWithMatcher:SecondarySignInButton()]
       performAction:grey_tap()];
@@ -109,7 +109,7 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
       performAction:grey_tap()];
   [SigninEarlGreyUI tapSigninConfirmationDialog];
 
-  // Switch Sync account to |fakeIdentity2| should ask whether date should be
+  // Switch Sync account to `fakeIdentity2` should ask whether date should be
   // imported or kept separate. Choose to keep data separate.
   CloseImportDataDialog(choiceButtonMatcher);
 
@@ -175,7 +175,7 @@ void ExpectSyncConsentHistogram(
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
-  // Check |fakeIdentity| is signed-in.
+  // Check `fakeIdentity` is signed-in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kRegular);
   ExpectSyncConsentHistogram(signin_metrics::SigninAccountType::kRegular);
@@ -266,7 +266,7 @@ void ExpectSyncConsentHistogram(
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
 
-  // This signs in |fakeIdentity2| first, ensuring that the "Clear Data Before
+  // This signs in `fakeIdentity2` first, ensuring that the "Clear Data Before
   // Syncing" dialog is shown during the second sign-in. This dialog will
   // effectively block the authentication flow, ensuring that the authentication
   // flow is always still running when the sign-in is being cancelled.
@@ -275,7 +275,7 @@ void ExpectSyncConsentHistogram(
   // Sign out.
   [SigninEarlGreyUI
       signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
-  // Sign in with |fakeIdentity1|.
+  // Sign in with `fakeIdentity1`.
   [ChromeEarlGreyUI openSettingsMenu];
   [[EarlGrey selectElementWithMatcher:SecondarySignInButton()]
       performAction:grey_tap()];
@@ -497,8 +497,8 @@ void ExpectSyncConsentHistogram(
 #pragma mark - Utils
 
 // Opens sign-in view.
-// |openSigninMethod| is the way to start the sign-in.
-// |tapSettingsLink| if YES, the setting link is tapped before opening the URL.
+// `openSigninMethod` is the way to start the sign-in.
+// `tapSettingsLink` if YES, the setting link is tapped before opening the URL.
 - (void)openSigninFromView:(OpenSigninMethod)openSigninMethod
            tapSettingsLink:(BOOL)tapSettingsLink {
   switch (openSigninMethod) {
@@ -529,8 +529,8 @@ void ExpectSyncConsentHistogram(
 }
 
 // Starts the sign-in workflow, and simulates opening an URL from another app.
-// |openSigninMethod| is the way to start the sign-in.
-// |tapSettingsLink| if YES, the setting link is tapped before opening the URL.
+// `openSigninMethod` is the way to start the sign-in.
+// `tapSettingsLink` if YES, the setting link is tapped before opening the URL.
 - (void)assertOpenURLWhenSigninFromView:(OpenSigninMethod)openSigninMethod
                         tapSettingsLink:(BOOL)tapSettingsLink {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
@@ -725,7 +725,7 @@ void ExpectSyncConsentHistogram(
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
-  // Check |fakeIdentity| is signed-in.
+  // Check `fakeIdentity` is signed-in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   // Check the Settings Menu labels for sync state.
@@ -906,7 +906,7 @@ void ExpectSyncConsentHistogram(
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
-// Tests that a user in the |ConsentLevel::kSignin| state will be signed out
+// Tests that a user in the `ConsentLevel::kSignin` state will be signed out
 // after clearing their browsing history.
 - (void)testUserSignedOutWhenClearingBrowsingData {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];

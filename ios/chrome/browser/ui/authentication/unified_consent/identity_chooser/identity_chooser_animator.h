@@ -11,10 +11,10 @@
 @interface IdentityChooserAnimator
     : NSObject<UIViewControllerAnimatedTransitioning>
 
-// Whether the IdentityChooser is |appearing|.
+// Whether the IdentityChooser is `appearing`.
 @property(nonatomic, assign) BOOL appearing;
 
-// Origin of the animation, in window coordinates. Only user if |appearing| is
+// Origin of the animation, in window coordinates. Only user if `appearing` is
 // true. Not user if equals to CGPointZero.
 @property(nonatomic, assign) CGPoint origin;
 

@@ -24,14 +24,14 @@ enum class ConsentLevel;
 // TODO(crbug.com/974833): Consider moving these into ChromeEarlGrey.
 @interface SigninEarlGreyImpl : BaseEGTestHelperImpl
 
-// Adds |fakeIdentity| to the fake identity service.
+// Adds `fakeIdentity` to the fake identity service.
 - (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
 
-// Maps |capabilities| to the |fakeIdentity|. Check fails if the
-// |fakeIdentity| has not been added to the fake identity service.
+// Maps `capabilities` to the `fakeIdentity`. Check fails if the
+// `fakeIdentity` has not been added to the fake identity service.
 - (void)setCapabilities:(NSDictionary*)capabilities forIdentity:fakeIdentity;
 
-// Removes |fakeIdentity| from the fake identity service asynchronously to
+// Removes `fakeIdentity` from the fake identity service asynchronously to
 // simulate identity removal from the device.
 - (void)forgetFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
 
@@ -39,11 +39,11 @@ enum class ConsentLevel;
 // app fails to sign out.
 - (void)signOut;
 
-// Induces a GREYAssert if |fakeIdentity| is not signed in to the active
+// Induces a GREYAssert if `fakeIdentity` is not signed in to the active
 // profile.
 - (void)verifySignedInWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
 
-// Induces a GREYAssert if the user is not signed in with |expectedEmail|.
+// Induces a GREYAssert if the user is not signed in with `expectedEmail`.
 - (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail
                               consent:(signin::ConsentLevel)consent;
 
@@ -53,7 +53,7 @@ enum class ConsentLevel;
 // Induces a GREYAssert if there are no signed-in identities.
 - (void)verifyAuthenticated;
 
-// Induces a GREYAssert if the Sync state does not match |enabled|.
+// Induces a GREYAssert if the Sync state does not match `enabled`.
 - (void)verifySyncUIEnabled:(BOOL)enabled;
 
 // Induces a GREYAssert if the Sync cell is not hidden.

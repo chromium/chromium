@@ -92,12 +92,12 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   self.subtitleText = l10n_util::GetNSString([self subtitleTextID]);
 
   if (!self.primaryActionString) {
-    // |primaryActionString| could already be set using the consumer methods.
+    // `primaryActionString` could already be set using the consumer methods.
     self.primaryActionString =
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION);
   }
   // Set the consent ID associated with the primary action string to
-  // |self.activateSyncButtonID| regardless of its current value because this
+  // `self.activateSyncButtonID` regardless of its current value because this
   // is the only string that will be used in the button when enabling sync.
   [self.delegate signinSyncViewController:self
                        addConsentStringID:self.activateSyncButtonID];
@@ -335,14 +335,14 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
 #pragma mark - Private
 
-// Callback for |identityControl|.
+// Callback for `identityControl`.
 - (void)identityButtonControlTapped:(id)sender forEvent:(UIEvent*)event {
   UITouch* touch = event.allTouches.anyObject;
   [self.delegate signinSyncViewController:self
                showAccountPickerFromPoint:[touch locationInView:nil]];
 }
 
-// Updates the UI to adapt for |identityAvailable| or not.
+// Updates the UI to adapt for `identityAvailable` or not.
 - (void)updateUIForIdentityAvailable:(BOOL)identityAvailable {
   self.identityControl.hidden = !identityAvailable;
   [self updateIdentityControlButtonVerticalLayout];
@@ -362,7 +362,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   }
 }
 
-// Appends |restrictionString| to |existingString|, adding padding if needed.
+// Appends `restrictionString` to `existingString`, adding padding if needed.
 - (void)appendRestrictionString:(NSString*)restrictionString
                        toString:(NSMutableString*)existingString {
   NSString* padding = @"\n\n";

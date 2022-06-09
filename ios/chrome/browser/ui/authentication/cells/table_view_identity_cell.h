@@ -23,7 +23,7 @@
 // -[TableViewIdentityCell initWithStyle:reuseIdentifier:] should be used.
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Configures the cell with the title, subtitle and image. If |checked| is YES,
+// Configures the cell with the title, subtitle and image. If `checked` is YES,
 // the cell displays a checkmark.
 - (void)configureCellWithTitle:(NSString*)title
                       subtitle:(NSString*)subtitle

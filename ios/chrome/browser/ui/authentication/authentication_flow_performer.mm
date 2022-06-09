@@ -63,12 +63,12 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
                                           SettingsNavigationControllerDelegate>
 
 // Starts the watchdog timer with a timeout of
-// |kAuthenticationFlowTimeoutSeconds| for the fetching managed status
-// operation. It will notify |_delegate| of the failure unless
-// |stopWatchdogTimer| is called before it times out.
+// `kAuthenticationFlowTimeoutSeconds` for the fetching managed status
+// operation. It will notify `_delegate` of the failure unless
+// `stopWatchdogTimer` is called before it times out.
 - (void)startWatchdogTimerForManagedStatus;
 
-// Stops the watchdog timer, and doesn't call the |timeoutDelegateSelector|.
+// Stops the watchdog timer, and doesn't call the `timeoutDelegateSelector`.
 // Returns whether the watchdog was actually running.
 - (BOOL)stopWatchdogTimer;
 
@@ -456,7 +456,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 
 - (void)alertControllerDidDisappear:(AlertCoordinator*)alertCoordinator {
   if (_alertCoordinator != alertCoordinator) {
-    // Do not reset the |_alertCoordinator| if it has changed. This typically
+    // Do not reset the `_alertCoordinator` if it has changed. This typically
     // happens when the user taps on any of the actions on "Clear Data Before
     // Syncing?" dialog, as the sign-in confirmation dialog is created before
     // the "Clear Data Before Syncing?" dialog is dismissed.

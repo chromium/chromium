@@ -20,10 +20,10 @@
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Designated initializer.
-// |viewController| presents the sign-in.
-// |identity| is the identity preselected with the sign-in opens.
-// |signinIntent| is the intent for the UI displayed in the sign-in flow.
-// |logger| is the logger for sign-in flow operations. This should not be nil.
+// `viewController` presents the sign-in.
+// `identity` is the identity preselected with the sign-in opens.
+// `signinIntent` is the intent for the UI displayed in the sign-in flow.
+// `logger` is the logger for sign-in flow operations. This should not be nil.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                   identity:(ChromeIdentity*)identity

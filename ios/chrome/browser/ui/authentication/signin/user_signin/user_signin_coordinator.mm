@@ -185,10 +185,10 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 }
 
 // Interrupts the sign-in flow.
-// |signinCompletion(SigninCoordinatorResultInterrupted, nil)| is guaranteed to
-// be called before |completion()|.
-// |action| action describing how to interrupt the sign-in.
-// |completion| called once the sign-in is fully interrupted.
+// `signinCompletion(SigninCoordinatorResultInterrupted, nil)` is guaranteed to
+// be called before `completion()`.
+// `action` action describing how to interrupt the sign-in.
+// `completion` called once the sign-in is fully interrupted.
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
   if (self.mediator.isAuthenticationInProgress) {
@@ -207,30 +207,30 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
                                    completion:completion];
   };
   if (self.addAccountSigninCoordinator) {
-    // |self.addAccountSigninCoordinator| needs to be interupted before
-    // interrupting |self.viewController|.
+    // `self.addAccountSigninCoordinator` needs to be interupted before
+    // interrupting `self.viewController`.
     // The add account view should not be dismissed since the
-    // |self.viewController| will take care of that according to |action|.
+    // `self.viewController` will take care of that according to `action`.
     [self.addAccountSigninCoordinator
         interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
                  completion:^{
-                   // |self.addAccountSigninCoordinator.signinCompletion|
+                   // `self.addAccountSigninCoordinator.signinCompletion`
                    // is expected to be called before this block.
-                   // Therefore |weakSelf.addAccountSigninCoordinator| is
+                   // Therefore `weakSelf.addAccountSigninCoordinator` is
                    // expected to be nil.
                    DCHECK(!weakSelf.addAccountSigninCoordinator);
                    completionAction();
                  }];
     return;
   } else if (self.advancedSettingsSigninCoordinator) {
-    // |self.viewController| has already been dismissed. The interruption should
-    // be sent to |self.advancedSettingsSigninCoordinator|.
+    // `self.viewController` has already been dismissed. The interruption should
+    // be sent to `self.advancedSettingsSigninCoordinator`.
     [self.advancedSettingsSigninCoordinator
         interruptWithAction:action
                  completion:^{
-                   // |self.advancedSettingsSigninCoordinator.signinCompletion|
+                   // `self.advancedSettingsSigninCoordinator.signinCompletion`
                    // is expected to be called before this block.
-                   // Therefore |weakSelf.advancedSettingsSigninCoordinator| is
+                   // Therefore `weakSelf.advancedSettingsSigninCoordinator` is
                    // expected to be nil.
                    DCHECK(!weakSelf.advancedSettingsSigninCoordinator);
                    completionAction();
@@ -419,8 +419,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
                     object:self];
 }
 
-// Called when |self.viewController| is dismissed. The sign-in is
-// finished and |runCompletionCallbackWithSigninResult:completionInfo:| is
+// Called when `self.viewController` is dismissed. The sign-in is
+// finished and `runCompletionCallbackWithSigninResult:completionInfo:` is
 // called.
 - (void)viewControllerDismissedWithResult:(SigninCoordinatorResult)signinResult
                            completionInfo:
@@ -510,8 +510,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   }
 }
 
-// Presents |self.viewController|. This method is only relevant when
-// |self.signinIntent| is not UserSigninIntentFirstRun.
+// Presents `self.viewController`. This method is only relevant when
+// `self.signinIntent` is not UserSigninIntentFirstRun.
 - (void)presentUserViewControllerToBaseViewController {
   DCHECK_NE(UserSigninIntentFirstRun, self.signinIntent);
   DCHECK(self.baseViewController);
@@ -534,10 +534,10 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
                                       completion:completion];
 }
 
-// Interrupts the sign-in when |self.viewController| is presented, by dismissing
-// it if needed (according to |action|). Then |completion| is called.
-// This method should not be called if |self.addAccountSigninCoordinator| has
-// not been stopped before. |signinCompletionInfo| is used for the signin
+// Interrupts the sign-in when `self.viewController` is presented, by dismissing
+// it if needed (according to `action`). Then `completion` is called.
+// This method should not be called if `self.addAccountSigninCoordinator` has
+// not been stopped before. `signinCompletionInfo` is used for the signin
 // callback.
 - (void)interruptUserSigninUIWithAction:(SigninCoordinatorInterruptAction)action
                    signinCompletionInfo:
@@ -631,9 +631,9 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
             authenticationFlow:authenticationFlow];
 }
 
-// Triggers |self.signinCompletion| by calling
-// |runCompletionCallbackWithSigninResult:completionInfo:| when
-// |self.advancedSettingsSigninCoordinator| is done.
+// Triggers `self.signinCompletion` by calling
+// `runCompletionCallbackWithSigninResult:completionInfo:` when
+// `self.advancedSettingsSigninCoordinator` is done.
 - (void)advancedSettingsSigninCoordinatorFinishedWithResult:
             (SigninCoordinatorResult)signinResult
                                                    identity:(ChromeIdentity*)
@@ -666,7 +666,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   // The view should be dismissible only if there is no sign-in in progress.
-  // See |presentationControllerShouldDismiss:|.
+  // See `presentationControllerShouldDismiss:`.
   DCHECK(!self.mediator.isAuthenticationInProgress);
   [self cancelSignin];
 }

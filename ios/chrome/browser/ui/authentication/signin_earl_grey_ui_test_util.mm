@@ -41,7 +41,7 @@ using chrome_test_util::IdentityCellMatcherForEmail;
 
 namespace {
 
-// Closes the managed account dialog, if |fakeIdentity| is a managed account.
+// Closes the managed account dialog, if `fakeIdentity` is a managed account.
 void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
   if (![fakeIdentity.userEmail hasSuffix:ios::kManagedIdentityEmailSuffix]) {
     return;

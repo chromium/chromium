@@ -12,9 +12,9 @@
 // Coordinator for the screen allowing the user to Sign-in and Sync.
 @interface SigninSyncCoordinator : InterruptibleChromeCoordinator
 
-// Initiates a SigninSyncCoordinator with |navigationController|,
-// |browser| and |delegate|.
-// The |delegate| parameter is for handling the transfer between screens.
+// Initiates a SigninSyncCoordinator with `navigationController`,
+// `browser` and `delegate`.
+// The `delegate` parameter is for handling the transfer between screens.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser

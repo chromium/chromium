@@ -37,7 +37,7 @@ namespace {
 // automatically dismissed.
 const int kAutomaticSigninPromoViewDismissCount = 20;
 
-// Returns true if the sign-in promo is supported for |access_point|.
+// Returns true if the sign-in promo is supported for `access_point`.
 bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
   switch (access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
@@ -265,7 +265,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
   }
 }
 
-// Returns the DisplayedCount preference key string for |access_point|.
+// Returns the DisplayedCount preference key string for `access_point`.
 const char* DisplayedCountPreferenceKey(
     signin_metrics::AccessPoint access_point) {
   switch (access_point) {
@@ -313,7 +313,7 @@ const char* DisplayedCountPreferenceKey(
   }
 }
 
-// Returns AlreadySeen preference key string for |access_point|.
+// Returns AlreadySeen preference key string for `access_point`.
 const char* AlreadySeenSigninViewPreferenceKey(
     signin_metrics::AccessPoint access_point) {
   switch (access_point) {
@@ -618,7 +618,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   self.signinInProgress = NO;
 }
 
-// Starts sign-in process with the Chrome identity from |identity|.
+// Starts sign-in process with the Chrome identity from `identity`.
 - (void)showSigninWithIdentity:(ChromeIdentity*)identity
                    promoAction:(signin_metrics::PromoAction)promoAction {
   self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;

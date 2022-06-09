@@ -194,7 +194,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
       break;
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      // Sign out can be triggered from |onAccountsInCookieUpdated:error:|,
+      // Sign out can be triggered from `onAccountsInCookieUpdated:error:`,
       // if there is cookie fetch error.
       return;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
@@ -207,9 +207,9 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
                             error:(const GoogleServiceAuthError&)error {
   if (!self.signingIdentity) {
     // TODO(crbug.com/1204528): This case should not happen, but
-    // |onAccountsInCookieUpdated:error:| can be called twice when there is an
-    // error. Once this bug is fixed, this |if| should be replaced with
-    // |DCHECK(!self.alertCoordinator)|.
+    // `onAccountsInCookieUpdated:error:` can be called twice when there is an
+    // error. Once this bug is fixed, this `if` should be replaced with
+    // `DCHECK(!self.alertCoordinator)`.
     return;
   }
   _signinTimeoutClosure.Cancel();

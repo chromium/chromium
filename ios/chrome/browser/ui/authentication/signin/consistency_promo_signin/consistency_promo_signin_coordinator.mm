@@ -51,7 +51,7 @@
 // Coordinator to select another identity.
 @property(nonatomic, strong)
     ConsistencyAccountChooserCoordinator* accountChooserCoordinator;
-// |self.defaultAccountCoordinator.selectedIdentity|.
+// `self.defaultAccountCoordinator.selectedIdentity`.
 @property(nonatomic, strong, readonly) ChromeIdentity* selectedIdentity;
 // Coordinator to add an account to the device.
 @property(nonatomic, strong) SigninCoordinator* addAccountCoordinator;

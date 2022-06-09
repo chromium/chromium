@@ -18,14 +18,14 @@
     (IdentityChooserCoordinator*)coordinator;
 
 // Called when the user taps on "Add Account…" button. The view controller is
-// already dimissed when this call is made. This call is followed by
-// |-identityChooserCoordinatorDidClose:|.
+// already dismissed when this call is made. This call is followed by
+// `-identityChooserCoordinatorDidClose:`.
 - (void)identityChooserCoordinatorDidTapOnAddAccount:
     (IdentityChooserCoordinator*)coordinator;
 
 // Called when the user selects an identity. The view controller is
-// already dimissed when this call is made. This call is followed by
-// |-identityChooserCoordinatorDidClose:|.
+// already dismissed when this call is made. This call is followed by
+// `-identityChooserCoordinatorDidClose:`.
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
                  didSelectIdentity:(ChromeIdentity*)identity;
 

@@ -156,7 +156,7 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   DCHECK_EQ(IdentityChooserCoordinatorStateStarted, self.state);
   [self.identityChooserMediator selectIdentityWithGaiaID:gaiaID];
   // If the account refresh token is invalidated during this
-  // operation then |identity| will be nil.
+  // operation then `identity` will be nil.
   if (self.selectedIdentity) {
     self.state = IdentityChooserCoordinatorStateClosedBySelectingIdentity;
   }

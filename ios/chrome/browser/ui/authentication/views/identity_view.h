@@ -37,7 +37,7 @@
 // image.
 - (void)setAvatar:(UIImage*)avatar;
 
-// Sets the title and subtitle. |subtitle| can be nil.
+// Sets the title and subtitle. `subtitle` can be nil.
 - (void)setTitle:(NSString*)title subtitle:(NSString*)subtitle;
 
 // Sets the color of the title.

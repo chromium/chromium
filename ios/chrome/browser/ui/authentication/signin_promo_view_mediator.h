@@ -24,8 +24,8 @@ enum class AccessPoint;
 
 namespace ios {
 // Enums for the sign-in promo view state. Those states are sequential, with no
-// way to go backwards. All states can be skipped except |NeverVisible| and
-// |Invalid|.
+// way to go backwards. All states can be skipped except `NeverVisible` and
+// `Invalid`.
 enum class SigninPromoViewState {
   // Initial state. When -[SigninPromoViewMediator disconnect] is called with
   // that state, no metrics is recorded.
@@ -67,7 +67,7 @@ class PrefRegistrySyncable;
 @property(nonatomic, assign, readonly, getter=isSigninInProgress)
     BOOL signinInProgress;
 
-// Returns YES if the sign-in promo view is |Invalid|, |Closed| or invisible.
+// Returns YES if the sign-in promo view is `Invalid`, `Closed` or invisible.
 @property(nonatomic, assign, readonly, getter=isInvalidClosedOrNeverVisible)
     BOOL invalidClosedOrNeverVisible;
 

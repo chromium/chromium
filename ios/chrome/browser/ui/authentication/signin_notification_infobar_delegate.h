@@ -39,7 +39,7 @@ class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   ~SigninNotificationInfoBarDelegate() override;
 
-  // Creates a sign-in notification infobar and adds it to |infobar_manager|.
+  // Creates a sign-in notification infobar and adds it to `infobar_manager`.
   static bool Create(infobars::InfoBarManager* infobar_manager,
                      ChromeBrowserState* browser_state,
                      id<ApplicationSettingsCommands> dispatcher,

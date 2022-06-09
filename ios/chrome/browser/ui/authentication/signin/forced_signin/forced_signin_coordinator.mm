@@ -94,7 +94,7 @@
                                                 completion:completion];
 }
 
-// Presents the screen of certain |type|.
+// Presents the screen of certain `type`.
 - (void)presentScreen:(ScreenType)type {
   // If there are no screens remaining, call delegate to stop presenting
   // screens.
@@ -106,7 +106,7 @@
   [self.childCoordinator start];
 }
 
-// Creates a screen coordinator according to |type|.
+// Creates a screen coordinator according to `type`.
 - (InterruptibleChromeCoordinator*)createChildCoordinatorWithScreenType:
     (ScreenType)type {
   switch (type) {

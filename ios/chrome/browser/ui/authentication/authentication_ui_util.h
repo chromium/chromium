@@ -32,7 +32,7 @@ using SignoutActionSheetCoordinatorCompletion =
 // Returns the hosted domain for the primary account.
 std::u16string HostedDomainForPrimaryAccount(Browser* browser);
 
-// Returns the sign in alert coordinator for |error|. |dismissAction| is called
+// Returns the sign in alert coordinator for `error`. `dismissAction` is called
 // when the dialog is dismissed (the user taps on the Ok button) or cancelled
 // (the alert coordinator is cancelled programatically).
 AlertCoordinator* ErrorCoordinator(NSError* error,
@@ -48,7 +48,7 @@ AlertCoordinator* ErrorCoordinator(NSError* error,
 //  * underlying errors recursively (only the domain name and the error code)
 NSString* DialogMessageFromError(NSError* error);
 
-// Returns the sign in alert coordinator for |error|, with no associated
+// Returns the sign in alert coordinator for `error`, with no associated
 // action. An action should be added before starting it.
 AlertCoordinator* ErrorCoordinatorNoItem(NSError* error,
                                          UIViewController* viewController,

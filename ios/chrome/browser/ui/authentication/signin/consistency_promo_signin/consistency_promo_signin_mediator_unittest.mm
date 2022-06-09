@@ -31,7 +31,7 @@
 #endif
 
 // Subclass of ConsistencyPromoSigninMediator to override
-// |signinTimeoutDurationSeconds| property.
+// `signinTimeoutDurationSeconds` property.
 @interface TestConsistencyPromoSigninMediator : ConsistencyPromoSigninMediator
 
 @property(nonatomic, assign) NSInteger signinTimeoutDurationSeconds;

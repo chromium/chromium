@@ -15,7 +15,7 @@ class ChromeBrowserState;
 // while the application was in background.
 @interface SignedInAccountsViewController : UIViewController
 
-// Returns whether the collection view should be presented for |browserState|,
+// Returns whether the collection view should be presented for `browserState`,
 // which happens when the accounts have changed while in background.
 + (BOOL)shouldBePresentedForBrowserState:(ChromeBrowserState*)browserState;
 

@@ -16,9 +16,9 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 // Initializes the instance.
-// If |viewMode| is SigninPromoViewModeNoAccounts, then |userEmail|,
-// |userGivenName| and |userImage| have to be nil.
-// Otherwise |userEmail| and |userImage| can't be nil. |userImage| has to be to
+// If `viewMode` is SigninPromoViewModeNoAccounts, then `userEmail`,
+// `userGivenName` and `userImage` have to be nil.
+// Otherwise `userEmail` and `userImage` can't be nil. `userImage` has to be to
 // the size of IdentityAvatarSize::SmallSize.
 // TODO(crbug.com/1328877): Consider adding a parameter for
 // SigninPromoViewStyle.
@@ -31,10 +31,10 @@
 
 // Configures a sign-in promo view with the default standard style.
 // TODO(crbug.com/1328877): Remove this method and replace usages with the
-// |configureSigninPromoView:WithStyle:|.
+// `configureSigninPromoView:WithStyle:`.
 - (void)configureSigninPromoView:(SigninPromoView*)signinPromoView;
 
-// Configure |signinPromoView| with the given |promoViewStyle| style.
+// Configure `signinPromoView` with the given `promoViewStyle` style.
 - (void)configureSigninPromoView:(SigninPromoView*)signinPromoView
                        withStyle:(SigninPromoViewStyle)promoViewStyle;
 

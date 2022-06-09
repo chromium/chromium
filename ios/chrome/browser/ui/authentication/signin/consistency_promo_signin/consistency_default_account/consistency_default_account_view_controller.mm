@@ -24,9 +24,9 @@
 
 namespace {
 
-// Margins for |self.contentView| (top, bottom, leading and trailing).
+// Margins for `self.contentView` (top, bottom, leading and trailing).
 constexpr CGFloat kContentMargin = 16.;
-// Space between elements in |self.contentView|.
+// Space between elements in `self.contentView`.
 constexpr CGFloat kContentSpacing = 16.;
 
 }
@@ -40,10 +40,10 @@ constexpr CGFloat kContentSpacing = 16.;
 @property(nonatomic, strong) IdentityButtonControl* identityButtonControl;
 // Button to confirm the default identity and sign-in.
 @property(nonatomic, strong) UIButton* continueAsButton;
-// Title for |self.continueAsButton|. This property is needed to hide the title
+// Title for `self.continueAsButton`. This property is needed to hide the title
 // the activity indicator is shown.
 @property(nonatomic, strong) NSString* continueAsTitle;
-// Activity indicator on top of |self.continueAsButton|.
+// Activity indicator on top of `self.continueAsButton`.
 @property(nonatomic, strong) UIActivityIndicatorView* activityIndicatorView;
 
 @end
@@ -235,7 +235,7 @@ constexpr CGFloat kContentSpacing = 16.;
     case ConsistencySheetDisplayStyleCentered:
       break;
   }
-  // Safe area insets needs to be based on the window since the |self.view|
+  // Safe area insets needs to be based on the window since the `self.view`
   // might not be part of the window hierarchy when the animation is configured.
   return self.navigationController.navigationBar.frame.size.height +
          kContentMargin + size.height + kContentMargin + safeAreaInsetsHeight;

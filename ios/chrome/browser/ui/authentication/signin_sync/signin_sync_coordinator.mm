@@ -230,7 +230,7 @@
   [self.identityChooserCoordinator stop];
   self.identityChooserCoordinator = nil;
 
-  // If |_addAccountSigninCoordinator| or |_advancedSettingsSigninCoordinator|
+  // If `_addAccountSigninCoordinator` or `_advancedSettingsSigninCoordinator`
   // weren't stopped yet (which can happen when closing the scene), try to
   // call -interruptWithAction: to properly tear down the coordinators.
   SigninCoordinator* signinCoordinator = self.addAccountSigninCoordinator;
@@ -388,7 +388,7 @@
 
 #pragma mark - Private
 
-// Dismisses the Signed Out modal if it is still present and |skipScreens|.
+// Dismisses the Signed Out modal if it is still present and `skipScreens`.
 - (void)dismissSignedOutModalAndSkipScreens:(BOOL)skipScreens {
   [self.enterprisePromptCoordinator stop];
   self.enterprisePromptCoordinator = nil;
@@ -407,7 +407,7 @@
 }
 
 // Completes the presentation of the screen, recording the metrics and notifying
-// the delegate to skip the rest of the FRE if |skipRemainingScreens| is YES, or
+// the delegate to skip the rest of the FRE if `skipRemainingScreens` is YES, or
 // to continue the FRE.
 - (void)finishPresentingAndSkipRemainingScreens:(BOOL)skipRemainingScreens {
   signin::IdentityManager* identityManager =

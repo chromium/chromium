@@ -23,12 +23,12 @@ class IdentityManager;
 @protocol AddAccountSigninManagerDelegate
 
 // Shows alert modal dialog and interrupts sign-in operation.
-// |error| is the error to be displayed.
+// `error` is the error to be displayed.
 - (void)addAccountSigninManagerFailedWithError:(NSError*)error;
 
 // Completes the sign-in operation.
-// |signinResult| is the state of sign-in at add account flow completion.
-// |identity| is the identity of the added account.
+// `signinResult` is the state of sign-in at add account flow completion.
+// `identity` is the identity of the added account.
 - (void)addAccountSigninManagerFinishedWithSigninResult:
             (SigninCoordinatorResult)signinResult
                                                identity:
@@ -52,7 +52,7 @@ class IdentityManager;
     NS_DESIGNATED_INITIALIZER;
 
 // Displays the add account sign-in flow.
-// |signinIntent| is the add account intent.
+// `signinIntent` is the add account intent.
 - (void)showSigninWithIntent:(AddAccountSigninIntent)addAccountSigninIntent;
 
 // Interrupts the add account view.

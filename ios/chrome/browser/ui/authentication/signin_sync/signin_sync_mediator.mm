@@ -248,7 +248,7 @@
   }
 }
 
-// Callback used when the sign-in flow is complete, with/without |success|.
+// Callback used when the sign-in flow is complete, with/without `success`.
 - (void)signinCompletedWithSuccess:(BOOL)success
                     confirmationID:(const int)confirmationID
                         consentIDs:(NSArray<NSNumber*>*)consentIDs {
@@ -296,7 +296,7 @@
 }
 
 // Callback used when the sign-in flow used for advanced settings is complete,
-// with/without |success|.
+// with/without `success`.
 - (void)signinForAdvancedSettingsCompletedWithSuccess:(BOOL)success {
   self.authenticationFlow = nil;
   [self.consumer setActionToDone];

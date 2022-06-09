@@ -107,7 +107,7 @@ class UserSigninMediatorTest : public PlatformTest {
   }
 
   // Sets up the necessary mocks for authentication operations in
-  // |authentication_flow_|.
+  // `authentication_flow_`.
   void CreateAuthenticationFlow(PostSignInAction postSignInAction) {
     presenting_view_controller_mock_ =
         OCMStrictClassMock([UIViewController class]);

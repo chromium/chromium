@@ -27,18 +27,18 @@ class Browser;
 
 @end
 
-// |AuthenticationFlow| manages the authentication flow for a given identity.
+// `AuthenticationFlow` manages the authentication flow for a given identity.
 //
-// A new instance of |AuthenticationFlow| should be used each time an identity
+// A new instance of `AuthenticationFlow` should be used each time an identity
 // needs to be signed in.
 @interface AuthenticationFlow : NSObject<AuthenticationFlowPerformerDelegate>
 
 // Designated initializer.
-// * |browser| is the current browser where the authentication flow is being
+// * `browser` is the current browser where the authentication flow is being
 //   presented.
-// * |postSignInAction| represents the action to be taken once |identity| is
+// * `postSignInAction` represents the action to be taken once `identity` is
 //   signed in.
-// * |presentingViewController| is the top presented view controller.
+// * `presentingViewController` is the top presented view controller.
 - (instancetype)initWithBrowser:(Browser*)browser
                        identity:(ChromeIdentity*)identity
                postSignInAction:(PostSignInAction)postSignInAction
@@ -50,12 +50,12 @@ class Browser;
 // Starts the sign in flow for the identity given in the constructor. Displays
 // the signed inconfirmation dialog allowing the user to sign out or configure
 // sync.
-// It is safe to destroy this authentication flow when |completion| is called.
-// |completion| must not be nil.
+// It is safe to destroy this authentication flow when `completion` is called.
+// `completion` must not be nil.
 - (void)startSignInWithCompletion:(signin_ui::CompletionCallback)completion;
 
 // Cancels the current sign-in operation (if any) and dismiss any UI presented
-// by this authentication flow with animation if |animated|. Calls the
+// by this authentication flow with animation if `animated`. Calls the
 // completion callback with the sign-in flag set to NO. Does nothing if the sign
 // in flow is already done.
 - (void)cancelAndDismissAnimated:(BOOL)animated;

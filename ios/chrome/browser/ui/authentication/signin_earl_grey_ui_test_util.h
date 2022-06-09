@@ -23,8 +23,8 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // Calls +[SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES].
 + (void)signinWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
 
-// Signs the account for |fakeIdentity| into Chrome through the Settings screen,
-// with sync enabled or not according to |enableSync|.
+// Signs the account for `fakeIdentity` into Chrome through the Settings screen,
+// with sync enabled or not according to `enableSync`.
 // There will be a GREYAssert if the tools menus is open when calling this
 // method or if the account is not successfully signed in.
 + (void)signinWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity
@@ -32,7 +32,7 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 
 // Signs the primary account out of Chrome through the accounts list screen.
 // Taps the "Sign Out" button, and then validated the confirmation dialog
-// according to |confirmation|.
+// according to `confirmation`.
 + (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation;
 
 // Taps the sign in confirmation page, scrolls first to make the OK button
@@ -68,7 +68,7 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 + (void)verifySigninPromoVisibleWithMode:(SigninPromoViewMode)mode;
 
 // Checks that the sign-in promo view is visible using the right mode. If
-// |closeButton| is set to YES, the close button in the sign-in promo has to be
+// `closeButton` is set to YES, the close button in the sign-in promo has to be
 // visible.
 + (void)verifySigninPromoVisibleWithMode:(SigninPromoViewMode)mode
                              closeButton:(BOOL)closeButton;
@@ -76,7 +76,7 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // Checks that the sign-in promo view is not visible.
 + (void)verifySigninPromoNotVisible;
 
-// Checks that the web sign-in consistency sheet visibility matches |isVisible|.
+// Checks that the web sign-in consistency sheet visibility matches `isVisible`.
 + (void)verifyWebSigninIsVisible:(BOOL)isVisible;
 
 // Submits encryption passphrase, if the user is on the Encryption page.

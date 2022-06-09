@@ -26,7 +26,7 @@
 - (void)unifiedConsentViewControllerDidTapLearnMoreLink:
     (UnifiedConsentViewController*)controller;
 
-// Called when the user taps at |point| on the IdentityButtonControl. |point| is
+// Called when the user taps at `point` on the IdentityButtonControl. `point` is
 // in the window coordinates.
 - (void)unifiedConsentViewControllerDidTapIdentityButtonControl:
             (UnifiedConsentViewController*)controller

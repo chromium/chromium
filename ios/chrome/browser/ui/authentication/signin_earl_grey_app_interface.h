@@ -19,15 +19,15 @@ enum class ConsentLevel;
 // compiled into the app binary and can be called from either app or test code.
 @interface SigninEarlGreyAppInterface : NSObject
 
-// Adds |fakeIdentity| to the fake identity service.
+// Adds `fakeIdentity` to the fake identity service.
 + (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
 
-// Maps |capabilities| to the |fakeIdentity|.
-// Must be called after |addFakeIdentity|.
+// Maps `capabilities` to the `fakeIdentity`.
+// Must be called after `addFakeIdentity`.
 + (void)setCapabilities:(NSDictionary*)capabilities
             forIdentity:(FakeChromeIdentity*)fakeIdentity;
 
-// Removes |fakeIdentity| from the fake chrome identity service asynchronously
+// Removes `fakeIdentity` from the fake chrome identity service asynchronously
 // to simulate identity removal from the device.
 + (void)forgetFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
 
@@ -35,7 +35,7 @@ enum class ConsentLevel;
 // If there is no signed-in account returns an empty string.
 + (NSString*)primaryAccountGaiaID;
 
-// Returns the email of the primary account base on |consentLevel|.
+// Returns the email of the primary account base on `consentLevel`.
 // If there is no signed-in account returns an empty string.
 + (NSString*)primaryAccountEmailWithConsent:(signin::ConsentLevel)consentLevel;
 

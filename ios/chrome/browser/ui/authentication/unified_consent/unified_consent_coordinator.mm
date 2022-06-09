@@ -118,7 +118,7 @@
 
 #pragma mark - Private
 
-// Opens the identity chooser dialog with an animation from |point|.
+// Opens the identity chooser dialog with an animation from `point`.
 - (void)showIdentityChooserDialogWithPoint:(CGPoint)point {
   self.identityChooserCoordinator = [[IdentityChooserCoordinator alloc]
       initWithBaseViewController:self.unifiedConsentViewController

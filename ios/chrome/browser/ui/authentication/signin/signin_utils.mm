@@ -54,12 +54,12 @@ NSSet<NSString*>* GaiaIdSetWithIdentities(
   return [gaia_id_set copy];
 }
 
-// Returns whether the gaia ids |recorded_gaia_ids| is a strict subset of the
-// current |identities| (i.e. all the gaia ids are in identities but there is
+// Returns whether the gaia ids `recorded_gaia_ids` is a strict subset of the
+// current `identities` (i.e. all the gaia ids are in identities but there is
 // at least one new identity).
 bool IsStrictSubset(NSArray<NSString*>* recorded_gaia_ids,
                     NSArray<ChromeIdentity*>* identities) {
-  // Optimisation for the case of a nil or empty |recorded_gaia_ids|.
+  // Optimisation for the case of a nil or empty `recorded_gaia_ids`.
   // This allow not special casing the construction of the NSSet (as
   // -[NSSet setWithArray:] does not support nil for the array).
   if (recorded_gaia_ids.count == 0)

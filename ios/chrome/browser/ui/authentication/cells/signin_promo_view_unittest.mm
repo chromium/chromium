@@ -61,7 +61,7 @@ TEST_F(SigninPromoViewTest, SecondaryButtonVisibility) {
   EXPECT_TRUE(view.secondaryButton.hidden);
 }
 
-// Tests the accessibility label (based on the |textLabel| and the primary
+// Tests the accessibility label (based on the `textLabel` and the primary
 // button title).
 TEST_F(SigninPromoViewTest, AccessibilityLabel) {
   UIWindow* currentWindow = GetAnyKeyWindow();

@@ -272,8 +272,8 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 
   // Adding constraints for header image.
   AddSameCenterXConstraint(self.view, headerImageView);
-  // |headerView| fills 20% of |view|, capped at
-  // |kAuthenticationHeaderImageHeight|.
+  // `headerView` fills 20% of `view`, capped at
+  // `kAuthenticationHeaderImageHeight`.
   [headerImageView.heightAnchor
       constraintLessThanOrEqualToAnchor:self.view.heightAnchor
                              multiplier:0.2]
@@ -296,7 +296,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   [container.widthAnchor constraintEqualToAnchor:safeArea.widthAnchor].active =
       YES;
 
-  // Adding constraints for |imageBackgroundView|.
+  // Adding constraints for `imageBackgroundView`.
   AddSameCenterXConstraint(self.view, imageBackgroundView);
   [imageBackgroundView.widthAnchor
       constraintEqualToAnchor:self.view.widthAnchor]
@@ -402,7 +402,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   return _managementNoticeTextView;
 }
 
-// Adds label with title |stringId| into |parentView|.
+// Adds label with title `stringId` into `parentView`.
 - (UILabel*)addLabelWithStringId:(int)stringId
                        fontStyle:(UIFontTextStyle)fontStyle
                        textColor:(UIColor*)textColor
@@ -464,8 +464,8 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   return NO;
 }
 
-// Updates constraints and content insets for the |scrollView| and
-// |imageBackgroundView| related to non-safe area.
+// Updates constraints and content insets for the `scrollView` and
+// `imageBackgroundView` related to non-safe area.
 - (void)updateScrollViewAndImageBackgroundView {
   self.scrollView.contentInset = self.view.safeAreaInsets;
   self.imageBackgroundViewHeightConstraint.constant =
@@ -485,7 +485,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 }
 
 // Updates the header view constraints based on the height class traits of
-// |view|.
+// `view`.
 - (void)updateHeaderViewConstraints {
   if (IsCompactHeight(self)) {
     self.headerViewMaxHeightConstraint.constant = 0;

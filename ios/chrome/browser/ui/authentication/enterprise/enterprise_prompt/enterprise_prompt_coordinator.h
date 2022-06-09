@@ -14,7 +14,7 @@
 @protocol EnterprisePromptCoordinatorDelegate
 
 // Command to clean up the prompt. Stops the coordinator and sets it to
-// nil. |learnMore| is YES if the user tapped the "learn more" button.
+// nil. `learnMore` is YES if the user tapped the "learn more" button.
 - (void)hideEnterprisePrompForLearnMore:(BOOL)learnMore;
 
 @end
@@ -22,7 +22,7 @@
 // Coordinator for enterprise prompt alerts.
 @interface EnterprisePromptCoordinator : ChromeCoordinator
 
-// Initializes this Coordinator with its |browser| and the |promptType|.
+// Initializes this Coordinator with its `browser` and the `promptType`.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
                                 promptType:(EnterprisePromptType)promptType

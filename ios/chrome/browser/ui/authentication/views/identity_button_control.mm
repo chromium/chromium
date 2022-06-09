@@ -30,8 +30,8 @@ const CGFloat kArrowDownMargin = 12.;
 @interface IdentityButtonControl ()
 
 @property(nonatomic, strong) IdentityView* identityView;
-// Image View for the arrow (down or left according to |style|, see the
-// |arrowDirection| property), letting the user know that more profiles can be
+// Image View for the arrow (down or left according to `style`, see the
+// `arrowDirection` property), letting the user know that more profiles can be
 // selected.
 @property(nonatomic, strong) UIImageView* arrowImageView;
 

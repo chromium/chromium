@@ -29,7 +29,7 @@
     : UINavigationController <ConsistencyLayoutDelegate>
 
 // Returns the desired size related to the current view controller shown by
-// |ConsistencySheetNavigationController|, based on |width|.
+// `ConsistencySheetNavigationController`, based on `width`.
 - (CGSize)layoutFittingSizeForWidth:(CGFloat)width;
 
 // Updates internal views according to the consistency sheet view position.
