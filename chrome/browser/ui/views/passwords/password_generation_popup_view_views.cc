@@ -314,6 +314,9 @@ void PasswordGenerationPopupViewViews::OnPaint(gfx::Canvas* canvas) {
 
 void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
+  if (!controller_) {
+    return;
+  }
   node_data->SetName(base::JoinString(
       {controller_->SuggestedText(), controller_->password()}, u" "));
   node_data->SetDescription(controller_->HelpText());

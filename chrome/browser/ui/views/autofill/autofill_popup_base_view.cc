@@ -189,6 +189,26 @@ bool AutofillPopupBaseView::DoShow() {
 }
 
 void AutofillPopupBaseView::DoHide() {
+  if (is_ax_menu_start_event_fired_) {
+    // Fire menu end event.
+    // The menu start event is delayed until the user
+    // navigates into the menu, otherwise some screen readers will ignore
+    // any focus events outside of the menu, including a focus event on
+    // the form control itself.
+    NotifyAccessibilityEvent(ax::mojom::Event::kMenuEnd, true);
+    GetViewAccessibility().EndPopupFocusOverride();
+
+    // Also fire an accessible focus event on what currently has focus,
+    // typically the widget associated with this popup.
+    if (parent_widget_) {
+      if (views::FocusManager* focus_manager =
+              parent_widget_->GetFocusManager()) {
+        if (View* focused_view = focus_manager->GetFocusedView())
+          focused_view->GetViewAccessibility().FireFocusAfterMenuClose();
+      }
+    }
+  }
+
   // The controller is no longer valid after it hides us.
   delegate_ = nullptr;
 
@@ -202,32 +222,6 @@ void AutofillPopupBaseView::DoHide() {
     GetWidget()->Close();
   } else {
     delete this;
-  }
-}
-
-void AutofillPopupBaseView::VisibilityChanged(View* starting_from,
-                                              bool is_visible) {
-  if (!is_visible) {
-    if (is_ax_menu_start_event_fired_) {
-      // Fire menu end event.
-      // The menu start event is delayed until the user
-      // navigates into the menu, otherwise some screen readers will ignore
-      // any focus events outside of the menu, including a focus event on
-      // the form control itself.
-      NotifyAccessibilityEvent(ax::mojom::Event::kMenuEnd, true);
-      GetViewAccessibility().EndPopupFocusOverride();
-
-      // Also fire an accessible focus event on what currently has focus,
-      // typically the widget associated with this popup.
-      if (parent_widget_) {
-        if (views::FocusManager* focus_manager =
-                parent_widget_->GetFocusManager()) {
-          if (View* focused_view = focus_manager->GetFocusedView())
-            focused_view->GetViewAccessibility().FireFocusAfterMenuClose();
-        }
-      }
-    }
-    is_ax_menu_start_event_fired_ = false;
   }
 }
 

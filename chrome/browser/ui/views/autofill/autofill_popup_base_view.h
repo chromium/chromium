@@ -53,9 +53,6 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // text).
   static int GetHorizontalPadding();
 
-  // views::View:
-  void VisibilityChanged(View* starting_from, bool is_visible) override;
-
   // Notify accessibility that an item has been selected.
   void NotifyAXSelection(View*);
 
