@@ -3313,6 +3313,14 @@ be describing additional metrics about the same event.
       The time taken for accessibility for the main frame in microseconds during
       the sampled frame.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="AccessibilityBeginMainFrame">
     <summary>
