@@ -184,6 +184,9 @@
     'audio_service': {
       'filepath': 'services/audio/'
     },
+    'audio_settings': {
+      'filepath': 'ash/components/audio/'
+    },
     'aura': {
       'filepath': 'ui/aura/',
     },
@@ -2206,6 +2209,9 @@
     'assistive': ['croissant-eng+reviews@chromium.org'],
     'audio_service': ['marinaciocea+watch@chromium.org',
                       'olka+watch@chromium.org'],
+    'audio_settings': ['gordonseto+audio-settings-watch@google.com',
+                       'michaelcheco+audio-settings-watch@google.com',
+                       'owenzhang+audio-settings-watch@google.com'],
     'aura': ['sadrul@chromium.org'],
     'aura_compositor': ['jbauman+watch@chromium.org'],
     'autoclick': ['katie+watch@chromium.org'],
