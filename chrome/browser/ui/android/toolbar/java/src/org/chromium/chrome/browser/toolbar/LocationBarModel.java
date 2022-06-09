@@ -409,18 +409,21 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                 autocompleteSchemeClassifier = new ChromeAutocompleteSchemeClassifier(getProfile());
             }
 
-            if (cachedSpannableDisplayText != null) {
-                return UrlBarData.forUrlAndText(url, cachedSpannableDisplayText, editingText);
-            } else {
-                OmniboxUrlEmphasizer.emphasizeUrl(spannableDisplayText,
-                        autocompleteSchemeClassifier, getSecurityLevel(), isInternalPage,
-                        shouldEmphasizeHttpsScheme(), nonEmphasizedColor, emphasizedColor,
-                        dangerColor, secureColor);
-                if (mOptimizationsEnabled) {
-                    mSpannableDisplayTextCache.put(cacheKey, spannableDisplayText);
+            try {
+                if (cachedSpannableDisplayText != null) {
+                    return UrlBarData.forUrlAndText(url, cachedSpannableDisplayText, editingText);
+                } else {
+                    OmniboxUrlEmphasizer.emphasizeUrl(spannableDisplayText,
+                            autocompleteSchemeClassifier, getSecurityLevel(), isInternalPage,
+                            shouldEmphasizeHttpsScheme(), nonEmphasizedColor, emphasizedColor,
+                            dangerColor, secureColor);
+                    if (mOptimizationsEnabled) {
+                        mSpannableDisplayTextCache.put(cacheKey, spannableDisplayText);
+                    }
                 }
+            } finally {
+                if (!mOptimizationsEnabled) autocompleteSchemeClassifier.destroy();
             }
-            if (!mOptimizationsEnabled) autocompleteSchemeClassifier.destroy();
         }
         return UrlBarData.forUrlAndText(url, spannableDisplayText, editingText);
     }
