@@ -1,6 +1,6 @@
 - name: 2d.fillStyle.invalidstring
   testing:
-  - 2d.colours.invalidstring
+  - 2d.colors.invalidstring
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -12,7 +12,7 @@
 
 - name: 2d.fillStyle.invalidtype
   testing:
-  - 2d.colours.invalidtype
+  - 2d.colors.invalidtype
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -24,8 +24,8 @@
 
 - name: 2d.fillStyle.get.solid
   testing:
-  - 2d.colours.getcolour
-  - 2d.serializecolour.solid
+  - 2d.colors.getcolor
+  - 2d.serializecolor.solid
   code: |
     ctx.fillStyle = '#fa0';
     @assert ctx.fillStyle === '#ffaa00';
@@ -33,8 +33,8 @@
 
 - name: 2d.fillStyle.get.semitransparent
   testing:
-  - 2d.colours.getcolour
-  - 2d.serializecolour.transparent
+  - 2d.colors.getcolor
+  - 2d.serializecolor.transparent
   code: |
     ctx.fillStyle = 'rgba(255,255,255,0.45)';
     @assert ctx.fillStyle =~ /^rgba\(255, 255, 255, 0\.4\d+\)$/;
@@ -42,8 +42,8 @@
 
 - name: 2d.fillStyle.get.halftransparent
   testing:
-  - 2d.colours.getcolour
-  - 2d.serializecolour.transparent
+  - 2d.colors.getcolor
+  - 2d.serializecolor.transparent
   code: |
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     @assert ctx.fillStyle === 'rgba(255, 255, 255, 0.5)';
@@ -51,8 +51,8 @@
 
 - name: 2d.fillStyle.get.transparent
   testing:
-  - 2d.colours.getcolour
-  - 2d.serializecolour.transparent
+  - 2d.colors.getcolor
+  - 2d.serializecolor.transparent
   code: |
     ctx.fillStyle = 'rgba(0,0,0,0)';
     @assert ctx.fillStyle === 'rgba(0, 0, 0, 0)';
@@ -60,14 +60,14 @@
 
 - name: 2d.fillStyle.default
   testing:
-  - 2d.colours.default
+  - 2d.colors.default
   code: |
     @assert ctx.fillStyle === '#000000';
     t.done();
 
 - name: 2d.strokeStyle.default
   testing:
-  - 2d.colours.default
+  - 2d.colors.default
   code: |
     @assert ctx.strokeStyle === '#000000';
     t.done();
@@ -75,7 +75,7 @@
 - name: 2d.fillStyle.toStringFunctionCallback
   desc: Passing a function in to ctx.fillStyle or ctx.strokeStyle with a toString callback works as specified
   testing:
-    2d.colours.toStringFunctionCallback
+    2d.colors.toStringFunctionCallback
   code: |
     ctx.fillStyle = { toString: function() { return "#008000"; } };
     @assert ctx.fillStyle === "#008000";
@@ -105,7 +105,7 @@
     @assert pixel 50,25 == 0,255,0,255;
     t.done();
 
-- name: 2d.gradient.interpolate.colour
+- name: 2d.gradient.interpolate.color
   testing:
   - 2d.gradient.interpolate.linear
   code: |
@@ -135,7 +135,7 @@
     @assert pixel 75,25 ==~ 63,63,191,255 +/- 3;
     t.done();
 
-- name: 2d.gradient.interpolate.colouralpha
+- name: 2d.gradient.interpolate.coloralpha
   testing:
   - 2d.gradient.interpolate.alpha
   code: |
@@ -387,9 +387,9 @@
     @assert throws TypeError g.addColorStop(NaN, '#000');
     t.done();
 
-- name: 2d.gradient.object.invalidcolour
+- name: 2d.gradient.object.invalidcolor
   testing:
-  - 2d.gradient.invalidcolour
+  - 2d.gradient.invalidcolor
   code: |
     var g = ctx.createLinearGradient(0, 0, 100, 0);
     @assert throws SYNTAX_ERR g.addColorStop(0, "");

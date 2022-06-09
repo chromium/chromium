@@ -137,10 +137,10 @@
     t.done();
 
 
-- name: initial.colour
+- name: initial.color
   desc: Initial state is transparent black
   testing:
-  - initial.colour
+  - initial.color
   code: |
     @assert pixel 20,20 == 0,0,0,0;
     t.done();
