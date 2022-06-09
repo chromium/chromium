@@ -260,6 +260,10 @@ interface LaunchQueue
 # crbug.com/1326898
 interface FontData
 
+# Event.path is disabled in pre-Beta channels to help the deprecation.
+interface Event
+    getter path                        # crbug.com/1277431
+
 [GLOBAL OBJECT]
     method openDatabase
     attribute eventSender                    # test only
