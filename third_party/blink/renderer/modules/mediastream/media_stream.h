@@ -131,8 +131,9 @@ class MODULES_EXPORT MediaStream final
   void RegisterObserver(MediaStreamObserver*);
   void UnregisterObserver(MediaStreamObserver*);
 
+  void StreamEnded();
+
   // MediaStreamDescriptorClient implementation
-  void StreamEnded() override;
   void AddTrackByComponentAndFireEvents(MediaStreamComponent*,
                                         DispatchEventTiming) override;
   void RemoveTrackByComponentAndFireEvents(MediaStreamComponent*,
