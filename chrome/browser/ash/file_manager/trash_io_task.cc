@@ -90,22 +90,6 @@ TrashEntry::~TrashEntry() = default;
 TrashEntry::TrashEntry(TrashEntry&& other) = default;
 TrashEntry& TrashEntry::operator=(TrashEntry&& other) = default;
 
-TrashLocation::TrashLocation(const base::FilePath supplied_relative_folder_path,
-                             const base::FilePath parent_path,
-                             const base::FilePath prefix_path)
-    : relative_folder_path(supplied_relative_folder_path),
-      trash_parent_path(parent_path),
-      prefix_restore_path(prefix_path) {}
-
-TrashLocation::TrashLocation(const base::FilePath supplied_relative_folder_path,
-                             const base::FilePath parent_path)
-    : relative_folder_path(supplied_relative_folder_path),
-      trash_parent_path(parent_path) {}
-TrashLocation::~TrashLocation() = default;
-
-TrashLocation::TrashLocation(TrashLocation&& other) = default;
-TrashLocation& TrashLocation::operator=(TrashLocation&& other) = default;
-
 }  // namespace
 
 TrashIOTask::TrashIOTask(
@@ -148,48 +132,8 @@ void TrashIOTask::Execute(IOTask::ProgressCallback progress_callback,
 
   // Build the list of known paths that are enabled, for now Downloads is a bind
   // mount at MyFiles/Downloads so treat them as separate volumes.
-  free_space_map_.try_emplace(
-      util::GetMyFilesFolderForProfile(profile_),
-      TrashLocation(base::FilePath(kTrashFolderName),
-                    util::GetMyFilesFolderForProfile(profile_)));
-  free_space_map_.try_emplace(
-      util::GetDownloadsFolderForProfile(profile_),
-      TrashLocation(base::FilePath(kTrashFolderName),
-                    util::GetDownloadsFolderForProfile(profile_),
-                    util::GetDownloadsFolderForProfile(profile_).BaseName()));
-
-  auto* integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
-  if (integration_service) {
-    free_space_map_.try_emplace(
-        integration_service->GetMountPointPath(),
-        TrashLocation(base::FilePath(".Trash-1000"),
-                      integration_service->GetMountPointPath()));
-  }
-
-  // Ensure Crostini is running before adding it as an enabled path.
-  file_manager::VolumeManager* const volume_manager =
-      file_manager::VolumeManager::Get(profile_);
-  if (crostini::CrostiniManager::GetForProfile(profile_) &&
-      crostini::IsCrostiniRunning(profile_) && volume_manager) {
-    // A `base_path_` is supplied in tests to ensure files are only added to
-    // temporary directories. If `base_path_` has been supplied, use the mocked
-    // volume mount path instead of the real mount path.
-    const base::FilePath crostini_mount_point =
-        (base_path_.empty())
-            ? file_manager::util::GetCrostiniMountDirectory(profile_)
-            : base_path_.Append("crostini");
-    base::WeakPtr<file_manager::Volume> volume =
-        volume_manager->FindVolumeFromPath(crostini_mount_point);
-    if (volume) {
-      free_space_map_.try_emplace(
-          crostini_mount_point,
-          TrashLocation(
-              base::FilePath(".local").Append("share").Append("Trash"),
-              crostini_mount_point, volume->remote_mount_path()));
-    }
-  }
-
+  free_space_map_ =
+      GenerateEnabledTrashLocationsForProfile(profile_, base_path_);
   progress_.state = State::kInProgress;
 
   UpdateTrashEntry(0);

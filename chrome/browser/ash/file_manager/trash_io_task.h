@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/speedometer.h"
+#include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -49,46 +50,6 @@ struct TrashEntry {
 
   // The source file size.
   int64_t source_file_size;
-};
-
-struct TrashLocation {
-  TrashLocation(const base::FilePath supplied_relative_folder_path,
-                const base::FilePath parent_path,
-                const base::FilePath prefix_path);
-  // Constructor used when no prefix path is required.
-  TrashLocation(const base::FilePath supplied_relative_folder_path,
-                const base::FilePath parent_path);
-  ~TrashLocation();
-
-  TrashLocation(TrashLocation&& other);
-  TrashLocation& operator=(TrashLocation&& other);
-
-  // The location of the .Trash/files folder.
-  storage::FileSystemURL trash_files;
-
-  // The location of the .Trash/info folder.
-  storage::FileSystemURL trash_info;
-
-  // The folder path for the Trash folder. This is parented by
-  // `trash_parent_path` and typically represents the .Trash folder. However, in
-  // some cases this can represent a path instead. This path must be relative
-  // from the `trash_parent_path`, i.e. not an absolute path.
-  base::FilePath relative_folder_path;
-
-  // The parent folder path of this trash entry.
-  base::FilePath trash_parent_path;
-
-  // For some trash directories, the restore path requires a prefix to ensure
-  // restoration is done correctly.
-  base::FilePath prefix_restore_path;
-
-  // The free space on the underlying filesystem that .Trash is located on.
-  int64_t free_space;
-
-  // Whether this directory require setting up. This is enabled once free space
-  // has been retrieved for the underlying file system. If false directory setup
-  // is skipped.
-  bool require_setup = false;
 };
 
 }  // namespace
@@ -131,7 +92,6 @@ class TrashIOTask : public IOTask {
       const base::FilePath& path);
   void SetCurrentOperationID(
       storage::FileSystemOperationRunner::OperationID id);
-  using TrashPathsMap = std::map<const base::FilePath, TrashLocation>;
   void ValidateAndDecrementFreeSpace(size_t source_idx,
                                      const TrashPathsMap::reverse_iterator& it);
   // Get the free disk space for `trash_parent_path` to know whether the
