@@ -105,6 +105,8 @@ import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryItem;
 import org.chromium.chrome.browser.history.TestBrowsingHistoryObserver;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -221,6 +223,11 @@ public class CustomTabActivityTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION);
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP);
 
         stopAndShutdownEmbeddedTestServer();
 
@@ -1341,6 +1348,29 @@ public class CustomTabActivityTest {
         CriteriaHelper.pollUiThread(()
                                             -> WarmupManager.getInstance().hasSpareWebContents(),
                 "No new spare renderer", 2000, 200);
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @Features.EnableFeatures(ChromeFeatureList.CCT_RETAINING_STATE)
+    public void testInteractionRecordedOnClose() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation()
+                                  .getTargetContext()
+                                  .getApplicationContext();
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
+                CustomTabsTestUtils.createMinimalCustomTabIntent(context, mTestPage));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            final CustomTabActivity activity = mCustomTabActivityTestRule.getActivity();
+            activity.getComponent().resolveNavigationController().finish(FinishReason.OTHER);
+        });
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> SharedPreferencesManager.getInstance().contains(
+                                   ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION)
+                        && SharedPreferencesManager.getInstance().contains(
+                                ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP));
     }
 
     /**

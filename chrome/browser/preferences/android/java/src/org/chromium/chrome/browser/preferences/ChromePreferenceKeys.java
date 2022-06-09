@@ -209,6 +209,10 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix CUSTOM_TABS_DEX_LAST_UPDATE_TIME_PREF_PREFIX =
             new KeyPrefix("pref_local_custom_tabs_module_dex_last_update_time_*");
     public static final String CUSTOM_TABS_LAST_URL = "pref_last_custom_tab_url";
+    public static final String CUSTOM_TABS_LAST_CLOSE_TIMESTAMP =
+            "Chrome.CustomTabs.LastCloseTimestamp";
+    public static final String CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION =
+            "Chrome.CustomTabs.LastCloseTabInteraction";
 
     /**
      * Keys used to save whether it is ready to promo.
@@ -966,6 +970,8 @@ public final class ChromePreferenceKeys {
                 CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
                 CONTINUOUS_SEARCH_DISMISSAL_COUNT,
                 CRYPTID_LAST_RENDER_TIMESTAMP,
+                CUSTOM_TABS_LAST_CLOSE_TIMESTAMP,
+                CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION,
                 DEFAULT_BROWSER_PROMO_LAST_DEFAULT_STATE,
                 DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME,
                 DEFAULT_BROWSER_PROMO_PROMOED_BY_SYSTEM_SETTINGS,

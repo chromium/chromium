@@ -2604,6 +2604,8 @@ static_library("browser") {
       "android/customtabs/detached_resource_request.h",
       "android/customtabs/origin_verifier.cc",
       "android/customtabs/origin_verifier.h",
+      "android/customtabs/tab_interaction_recorder_android.cc",
+      "android/customtabs/tab_interaction_recorder_android.h",
       "android/devtools_manager_delegate_android.cc",
       "android/devtools_manager_delegate_android.h",
       "android/devtools_server.cc",
