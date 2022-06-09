@@ -172,9 +172,6 @@ namespace {
 
 const size_t kMaxURLDisplayChars = 32 * 1024;
 
-// Duration of the toolbar animation.
-const NSTimeInterval kLegacyFullscreenControllerToolbarAnimationDuration = 0.3;
-
 // When the tab strip moves beyond this origin offset, switch the status bar
 // appearance from light to dark.
 const CGFloat kTabStripAppearanceOffset = -29;
@@ -548,6 +545,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.toolbarInterface = dependencies.toolbarInterface;
     self.primaryToolbarCoordinator = dependencies.primaryToolbarCoordinator;
     self.secondaryToolbarCoordinator = dependencies.secondaryToolbarCoordinator;
+    self.tabStripCoordinator = dependencies.tabStripCoordinator;
+    self.legacyTabStripCoordinator = dependencies.legacyTabStripCoordinator;
 
     // TODO(crbug.com/1329089): Inject this handler.
     self.textZoomHandler =
@@ -1853,16 +1852,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Potentially inject these coordinators as a stopgap.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
-      self.tabStripCoordinator =
-          [[TabStripCoordinator alloc] initWithBrowser:self.browser];
       [self.tabStripCoordinator start];
     } else {
-      self.legacyTabStripCoordinator = [[TabStripLegacyCoordinator alloc]
-          initWithBaseViewController:self
-                             browser:self.browser];
       self.legacyTabStripCoordinator.presentationProvider = self;
-      self.legacyTabStripCoordinator.animationWaitDuration =
-          kLegacyFullscreenControllerToolbarAnimationDuration;
       self.legacyTabStripCoordinator.longPressDelegate =
           self.popupMenuCoordinator;
 
@@ -2058,9 +2050,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // TODO(crbug.com/1329098): Assuming all of the coordinators are in
   // BrowserCoordinator, move this setup there as well.
-  self.primaryToolbarCoordinator.longPressDelegate = self.popupMenuCoordinator;
-  self.secondaryToolbarCoordinator.longPressDelegate =
-      self.popupMenuCoordinator;
   if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
     self.legacyTabStripCoordinator.longPressDelegate =
         self.popupMenuCoordinator;

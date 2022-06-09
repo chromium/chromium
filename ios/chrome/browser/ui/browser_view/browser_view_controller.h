@@ -38,6 +38,8 @@ class Browser;
 class PrerenderService;
 @class PrimaryToolbarCoordinator;
 @class SecondaryToolbarCoordinator;
+@class TabStripCoordinator;
+@class TabStripLegacyCoordinator;
 @class ToolbarAccessoryPresenter;
 @protocol ToolbarCoordinating;
 @protocol IncognitoReauthCommands;
@@ -53,6 +55,8 @@ typedef struct {
   id<PopupMenuUIUpdating> UIUpdater;
   PrimaryToolbarCoordinator* primaryToolbarCoordinator;
   SecondaryToolbarCoordinator* secondaryToolbarCoordinator;
+  TabStripCoordinator* tabStripCoordinator;
+  TabStripLegacyCoordinator* legacyTabStripCoordinator;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

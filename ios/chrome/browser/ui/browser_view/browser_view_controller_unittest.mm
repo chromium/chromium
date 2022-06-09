@@ -37,6 +37,8 @@
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
+#import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_adaptor.h"
@@ -198,6 +200,12 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     secondary_toolbar_coordinator_ =
         [[SecondaryToolbarCoordinator alloc] initWithBrowser:browser_.get()];
 
+    tab_strip_coordinator_ =
+        [[TabStripCoordinator alloc] initWithBrowser:browser_.get()];
+
+    legacy_tab_strip_coordinator_ =
+        [[TabStripLegacyCoordinator alloc] initWithBrowser:browser_.get()];
+
     BrowserViewControllerDependencies dependencies;
     dependencies.prerenderService = fake_prerender_service_.get();
     dependencies.bubblePresenter = bubble_presenter_;
@@ -205,6 +213,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.toolbarInterface = toolbar_coordinator_adaptor_;
     dependencies.primaryToolbarCoordinator = primary_toolbar_coordinator_;
     dependencies.secondaryToolbarCoordinator = secondary_toolbar_coordinator_;
+    dependencies.tabStripCoordinator = tab_strip_coordinator_;
+    dependencies.legacyTabStripCoordinator = legacy_tab_strip_coordinator_;
 
     bvc_ = [[BrowserViewController alloc]
                        initWithBrowser:browser_.get()
@@ -254,6 +264,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   ToolbarCoordinatorAdaptor* toolbar_coordinator_adaptor_;
   PrimaryToolbarCoordinator* primary_toolbar_coordinator_;
   SecondaryToolbarCoordinator* secondary_toolbar_coordinator_;
+  TabStripCoordinator* tab_strip_coordinator_;
+  TabStripLegacyCoordinator* legacy_tab_strip_coordinator_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {

@@ -103,6 +103,8 @@
 #import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
+#import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/text_fragments/text_fragments_coordinator.h"
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
@@ -127,11 +129,16 @@
 #import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+// Duration of the toolbar animation.
+constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
+    base::Milliseconds(300);
 
 @interface BrowserCoordinator () <ActivityServiceCommands,
                                   BrowserCoordinatorCommands,
@@ -313,6 +320,8 @@
   ToolbarCoordinatorAdaptor* _toolbarCoordinatorAdaptor;
   PrimaryToolbarCoordinator* _primaryToolbarCoordinator;
   SecondaryToolbarCoordinator* _secondaryToolbarCoordinator;
+  TabStripCoordinator* _tabStripCoordinator;
+  TabStripLegacyCoordinator* _legacyTabStripCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -348,6 +357,18 @@
         addToolbarCoordinator:_primaryToolbarCoordinator];
     [_toolbarCoordinatorAdaptor
         addToolbarCoordinator:_secondaryToolbarCoordinator];
+
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+        _tabStripCoordinator =
+            [[TabStripCoordinator alloc] initWithBrowser:browser];
+      } else {
+        _legacyTabStripCoordinator =
+            [[TabStripLegacyCoordinator alloc] initWithBrowser:browser];
+        _legacyTabStripCoordinator.animationWaitDuration =
+            kLegacyFullscreenControllerToolbarAnimationDuration.InSecondsF();
+      }
+    }
   }
   return self;
 }
@@ -831,6 +852,8 @@
   dependencies.UIUpdater = _toolbarCoordinatorAdaptor;
   dependencies.primaryToolbarCoordinator = _primaryToolbarCoordinator;
   dependencies.secondaryToolbarCoordinator = _secondaryToolbarCoordinator;
+  dependencies.tabStripCoordinator = _tabStripCoordinator;
+  dependencies.legacyTabStripCoordinator = _legacyTabStripCoordinator;
 
   return dependencies;
 }
