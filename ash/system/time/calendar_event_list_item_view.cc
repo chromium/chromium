@@ -34,6 +34,9 @@
 namespace ash {
 namespace {
 
+// The paddings for `CalendarEventListViewItem`.
+constexpr auto kEventListItemInsets = gfx::Insets::VH(0, 20);
+
 // Paddings in this view.
 constexpr int kEntryHorizontalPadding = 20;
 
@@ -146,6 +149,7 @@ CalendarEventListItemView::CalendarEventListItemView(
       end_time_string, calendar_utils::GetTimeZone(start_time),
       base::UTF8ToUTF16(event.summary())));
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  SetBorder(views::CreateEmptyBorder(kEventListItemInsets));
   summary_->SetText(event.summary().empty()
                         ? l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_TITLE)
                         : base::UTF8ToUTF16(event.summary()));
