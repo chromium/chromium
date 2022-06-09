@@ -61,9 +61,6 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/scheme_host_port.mojom";
 import "url/mojom/url.mojom";
 
-[Native]
-struct PageState;
-
 // A View (i.e. a "main frame") can be created for a few different cases, these
 // values are used to specify which it is.
 enum ViewWidgetType {
