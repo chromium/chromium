@@ -162,10 +162,16 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
 
   // Sets the current read fence. If a resource is locked for read
   // and has read fences enabled, the resource will not allow writes
-  // until this fence has passed.
-  void SetReadLockFence(ResourceFence* fence) {
-    current_read_lock_fence_ = fence;
+  // until this fence has passed. This is used if a client uses
+  // TransferableResource::SynchronizationType::kGpuCommandsCompleted.
+  void SetGpuCommandsCompletedFence(ResourceFence* fence) {
+    current_gpu_commands_completed_fence_ = fence;
   }
+  // Sets the current release fence. If a client uses
+  // TransferableResource::SynchronizationType::kReleaseFence, resources must be
+  // returned only after a release fence is stored in this resource fence.
+  // Returned only when gpu commands and the gpu fence are submitted.
+  void SetReleaseFence(ResourceFence* fence) { current_release_fence_ = fence; }
 
   // Creates accounting for a child. Returns a child ID. surface_id is used to
   // associate resources to the surface they belong to. This is used for
@@ -333,12 +339,14 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     // mapped for use in the display compositor.
     base::UnguessableToken shared_bitmap_tracing_guid;
 
-    // A fence used for accessing a gpu resource for reading, that ensures any
-    // writing done to the resource has been completed. This is implemented and
-    // used to implement transferring ownership of the resource from the client
-    // to the service, and in the GL drawing code before reading from the
-    // texture.
-    scoped_refptr<ResourceFence> read_lock_fence;
+    // A fence used for returning resources after the display compositor has
+    // completed accessing the resources it received from a client. This can
+    // either be a read lock or a release fence. If the |transferable| has
+    // synchronization type set as kGpuCommandsCompleted, the resource can be
+    // returned after ResourceFence::HasPassed is true. If the |transferable|
+    // has the synchronization type set as kReleaseFence, the resource can be
+    // returned after the fence has a release fence set.
+    scoped_refptr<ResourceFence> resource_fence;
 
     // SkiaRenderer specific details about this resource. Added to ChildResource
     // to avoid map lookups further down the pipeline.
@@ -371,10 +379,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   ChildResource* TryGetResource(ResourceId id);
 
   void TryReleaseResource(ResourceId id, ChildResource* resource);
-  // Binds the given GL resource to a texture target for sampling using the
-  // specified filter for both minification and magnification. Returns the
-  // texture target used. The resource must be locked for reading.
-  bool ReadLockFenceHasPassed(const ChildResource* resource);
+  bool ResourceFenceHasPassed(const ChildResource* resource);
 
   void DeleteAndReturnUnusedResourcesToChild(
       ChildMap::iterator child_it,
@@ -404,7 +409,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   ChildMap children_;
 
   base::flat_map<int, std::vector<ResourceId>> batched_returning_resources_;
-  scoped_refptr<ResourceFence> current_read_lock_fence_;
+  scoped_refptr<ResourceFence> current_gpu_commands_completed_fence_;
+  scoped_refptr<ResourceFence> current_release_fence_;
   // Keep track of whether deleted resources should be batched up or returned
   // immediately.
   int batch_return_resources_lock_count_ = 0;

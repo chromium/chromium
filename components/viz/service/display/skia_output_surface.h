@@ -17,6 +17,7 @@
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "ui/gfx/gpu_fence_handle.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
@@ -129,8 +130,13 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // play the DDL back on GPU thread on a cached SkSurface.
   // Optionally the caller may specify |on_finished| callback to be called after
   // the GPU has finished processing all submitted commands. The callback may be
-  // called on a different thread.
-  virtual void EndPaint(base::OnceClosure on_finished) = 0;
+  // called on a different thread. The caller may also specify
+  // |return_release_fence_cb| callback to be called after all commands are
+  // submitted. The callback will return the release fence which will be
+  // signaled once the submitted commands are processed.
+  virtual void EndPaint(base::OnceClosure on_finished,
+                        base::OnceCallback<void(gfx::GpuFenceHandle)>
+                            return_release_fence_cb) = 0;
 
   // Make a promise SkImage from a render pass id. The render pass has been
   // painted with BeginPaintRenderPass and FinishPaintRenderPass. The format

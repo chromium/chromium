@@ -38,6 +38,9 @@ struct VIZ_COMMON_EXPORT TransferableResource {
     // other words, the resource will be returned only when gpu commands are
     // completed.
     kGpuCommandsCompleted,
+    // Commands submitted (release fence) - a resource will be returned after
+    // gpu service submitted commands to the gpu and provide the fence.
+    kReleaseFence,
   };
 
   TransferableResource();

@@ -26,6 +26,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_utils.h"
@@ -184,13 +185,17 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
   return sk_surface->getCanvas();
 }
 
-void FakeSkiaOutputSurface::EndPaint(base::OnceClosure on_finished) {
+void FakeSkiaOutputSurface::EndPaint(
+    base::OnceClosure on_finished,
+    base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   sk_surfaces_[current_render_pass_id_]->flushAndSubmit();
   current_render_pass_id_ = AggregatedRenderPassId{0};
 
   if (on_finished)
     std::move(on_finished).Run();
+  if (return_release_fence_cb)
+    std::move(return_release_fence_cb).Run(gfx::GpuFenceHandle());
 }
 
 sk_sp<SkImage> FakeSkiaOutputSurface::MakePromiseSkImageFromRenderPass(
