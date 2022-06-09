@@ -387,8 +387,7 @@
       "is_lsan": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_rbe": true,
-      "use_remoteexec": true
+      "use_goma": true
     }
   },
   "linux-lacros-fyi-rel": {

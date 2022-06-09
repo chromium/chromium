@@ -357,12 +357,12 @@ linux_memory_builder(
             config = "chromium_no_telemetry_dependencies",
             apply_configs = [
                 "chromeos",
+                "enable_reclient",
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "chromium_asan",
+            config = "chromium",
             apply_configs = [
-                "lsan",
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
@@ -375,9 +375,6 @@ linux_memory_builder(
         category = "lacros|asan",
         short_name = "asan",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
     # TODO(crbug.com/1324240) Enable when it's stable.
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,

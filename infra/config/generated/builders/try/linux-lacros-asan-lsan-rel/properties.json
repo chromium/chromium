@@ -15,17 +15,17 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "lsan",
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "chromium_asan",
+                "config": "chromium",
                 "target_arch": "intel",
                 "target_bits": 64
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "chromeos"
+                  "chromeos",
+                  "enable_reclient"
                 ],
                 "config": "chromium_no_telemetry_dependencies"
               }

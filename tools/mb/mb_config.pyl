@@ -1088,7 +1088,7 @@
       'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang_cxx11',
       'linux-headless-shell-rel': 'headless_shell_release_bot',
       'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials',
-      'linux-lacros-asan-lsan-rel': 'asan_lsan_lacros_release_bot_dcheck_always_on_reclient',
+      'linux-lacros-asan-lsan-rel': 'asan_lsan_lacros_release_bot_dcheck_always_on',
       'linux-lacros-fyi-rel': 'lacros_on_linux_release_trybot',
       'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot',
       'linux-layout-tests-edit-ng': 'release_trybot',
@@ -1835,6 +1835,10 @@
 
     'asan_lsan_fuzzer_v8_heap_release_bot_reclient': [
       'asan', 'lsan', 'fuzzer', 'v8_heap', 'release_bot_reclient',
+    ],
+
+    'asan_lsan_lacros_release_bot_dcheck_always_on': [
+      'asan', 'lsan', 'release_trybot_minimal_symbols', 'lacros_on_linux', 'also_build_ash_chrome'
     ],
 
     'asan_lsan_lacros_release_bot_dcheck_always_on_reclient': [
