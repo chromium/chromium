@@ -1131,10 +1131,13 @@ def _LogRerunStatement(failed_tests):
   index = 0
   while index < len(sys.argv):
     arg = sys.argv[index]
-    # Skip adding the filter and the filter arg as it's going to add its own
-    # filter arg.
+    # Skip adding the filter=<file> and/or the filter arg as we're replacing
+    # it with the new filter arg.
+    # This covers --test-filter=, --test-launcher-filter-file=, --gtest-filter=,
+    # --test-filter *Foobar.baz, -f *foobar, --package-filter <package>,
+    # --runner-filter <runner>.
     if 'filter' in arg or arg == '-f':
-      index += 2
+      index += 1 if '=' in arg else 2
       continue
 
     rerun_arg_list.append(arg)
