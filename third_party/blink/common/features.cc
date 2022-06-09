@@ -1414,7 +1414,7 @@ const base::Feature kWindowPlacement{"WindowPlacement",
 // Allows sites to request fullscreen and open a popup from a single gesture.
 const base::Feature kWindowPlacementFullscreenCompanionWindow{
     "WindowPlacementFullscreenCompanionWindow",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Allows sites to request fullscreen when the set of screens change.
 const base::Feature kWindowPlacementFullscreenOnScreensChange{
