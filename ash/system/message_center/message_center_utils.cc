@@ -83,8 +83,9 @@ message_center::NotificationViewController*
 GetActiveNotificationViewControllerForDisplay(int64_t display_id) {
   RootWindowController* root_window_controller =
       Shell::GetRootWindowControllerWithDisplayId(display_id);
-  if (!root_window_controller)
+  if (!root_window_controller || !root_window_controller->GetStatusAreaWidget())
     return nullptr;
+
   return root_window_controller->GetStatusAreaWidget()
       ->unified_system_tray()
       ->GetNotificationGroupingController()

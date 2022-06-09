@@ -260,7 +260,7 @@ class ASH_EXPORT UnifiedSystemTray
   // removing bubble related observers.
   void DestroyBubbles();
 
-  const std::unique_ptr<UiDelegate> ui_delegate_;
+  std::unique_ptr<UiDelegate> ui_delegate_;
 
   std::unique_ptr<UnifiedSystemTrayBubble> bubble_;
 

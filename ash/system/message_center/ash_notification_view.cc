@@ -1457,9 +1457,10 @@ void AshNotificationView::AnimateResizeAfterRemoval(
       grouped_notifications_container_->GetIndexOf(to_be_removed);
   grouped_notifications_container_->RemoveChildViewT(to_be_removed).reset();
 
-  message_center_utils::GetActiveNotificationViewControllerForNotificationView(
-      this)
-      ->AnimateResize();
+  auto* notification_view_controller = message_center_utils::
+      GetActiveNotificationViewControllerForNotificationView(this);
+  if (notification_view_controller)
+    notification_view_controller->AnimateResize();
 
   if (shown_in_popup_) {
     grouped_notifications_scroll_view_->Layout();

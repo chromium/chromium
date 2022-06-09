@@ -103,7 +103,7 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
 
  private:
   std::unique_ptr<MessageCenterUiController> const ui_controller_;
-  std::unique_ptr<AshMessagePopupCollection> const message_popup_collection_;
+  std::unique_ptr<AshMessagePopupCollection> message_popup_collection_;
 
   UnifiedSystemTray* const owner_;
 
@@ -131,7 +131,12 @@ UnifiedSystemTray::UiDelegate::UiDelegate(UnifiedSystemTray* owner)
                   owner->shelf()->GetStatusAreaWidget()->GetNativeWindow()));
 }
 
-UnifiedSystemTray::UiDelegate::~UiDelegate() = default;
+UnifiedSystemTray::UiDelegate::~UiDelegate() {
+  // We need to destruct `message_popup_collection_` before
+  // `grouping_controller_` to prevent a msan failure, so explicitly delete
+  // it here.
+  message_popup_collection_.reset();
+}
 
 void UnifiedSystemTray::UiDelegate::OnMessageCenterContentsChanged() {
   owner_->UpdateNotificationInternal();
@@ -247,6 +252,10 @@ UnifiedSystemTray::~UnifiedSystemTray() {
   Shell::Get()->RemoveShellObserver(this);
 
   DestroyBubbles();
+
+  // We need to destruct `ui_delegate_` before `timer_` to prevent a msan
+  // failure, so explicitly delete it here.
+  ui_delegate_.reset();
 }
 
 void UnifiedSystemTray::AddObserver(Observer* observer) {
@@ -669,11 +678,21 @@ UnifiedSystemTray::GetPopupViewForNotificationID(
 }
 
 AshMessagePopupCollection* UnifiedSystemTray::GetMessagePopupCollection() {
+  // We need a check here since this function might be called when UiDelegate's
+  // dtor is triggered. In that case, the unique_ptr `ui_delegate_` is null even
+  // though the UiDelegate object is still in the middle of dtor process.
+  if (!ui_delegate_)
+    return nullptr;
   return ui_delegate_->message_popup_collection();
 }
 
 NotificationGroupingController*
 UnifiedSystemTray::GetNotificationGroupingController() {
+  // We need a check here since this function might be called when UiDelegate's
+  // dtor is triggered. In that case, the unique_ptr `ui_delegate_` is null even
+  // though the UiDelegate object is still in the middle of dtor process.
+  if (!ui_delegate_)
+    return nullptr;
   return ui_delegate_->grouping_controller();
 }
 
