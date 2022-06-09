@@ -18,7 +18,6 @@ class DownloadManager;
 
 class Profile;
 class DownloadBubbleUIController;
-using DownloadUIModelPtr = ::OfflineItemModel::DownloadUIModelPtr;
 
 namespace base {
 class TimeDelta;
