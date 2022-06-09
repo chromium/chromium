@@ -96,7 +96,15 @@ class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
  public:
   ContentSettingImageModelTest()
       : request_(permissions::RequestType::kNotifications,
-                 permissions::PermissionRequestGestureType::GESTURE) {}
+                 permissions::PermissionRequestGestureType::GESTURE) {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kQuietNotificationPrompts,
+         // Enable all sensors just to avoid hardcoding the expected messages
+         // to the motion sensor-specific ones.
+         features::kGenericSensorExtraClasses},
+        {permissions::features::kBlockRepeatedNotificationPermissionPrompts,
+         permissions::features::kPermissionQuietChip});
+  }
 
   ContentSettingImageModelTest(const ContentSettingImageModelTest&) = delete;
   ContentSettingImageModelTest& operator=(const ContentSettingImageModelTest&) =
@@ -143,6 +151,7 @@ class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   permissions::MockPermissionRequest request_;
   raw_ptr<permissions::PermissionRequestManager> manager_ = nullptr;
   raw_ptr<content::NavigationController> controller_ = nullptr;
@@ -219,11 +228,6 @@ TEST_F(ContentSettingImageModelTest, CookieAccessed) {
 }
 
 TEST_F(ContentSettingImageModelTest, SensorAccessed) {
-  // Enable all sensors just to avoid hardcoding the expected messages to the
-  // motion sensor-specific ones.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGenericSensorExtraClasses);
-
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
       std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
@@ -298,7 +302,6 @@ TEST_F(ContentSettingImageModelTest, SensorAccessed) {
 // Test the correct ContentSettingImageModel for various permutations of site
 // and system level Geolocation permissions
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
-  base::test::ScopedFeatureList feature_list;
   auto test_geolocation_manager =
       std::make_unique<device::FakeGeolocationManager>();
   device::FakeGeolocationManager* geolocation_manager =
@@ -359,7 +362,6 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
 }
 
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
-  base::test::ScopedFeatureList feature_list;
   auto test_geolocation_manager =
       std::make_unique<device::FakeGeolocationManager>();
   test_geolocation_manager->SetSystemPermission(
@@ -478,11 +480,6 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessDeniedExperiment) {
 // Regression test for https://crbug.com/955408
 // See also: ContentSettingBubbleModelTest.SensorAccessPermissionsChanged
 TEST_F(ContentSettingImageModelTest, SensorAccessPermissionsChanged) {
-  // Enable all sensors just to avoid hardcoding the expected messages to the
-  // motion sensor-specific ones.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGenericSensorExtraClasses);
-
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
       std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
@@ -655,11 +652,6 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconVisibility) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContentSettingImageModelTest, NotificationsPrompt) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kQuietNotificationPrompts},
-      {permissions::features::kBlockRepeatedNotificationPermissionPrompts});
-
   auto* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   profile->GetPrefs()->SetBoolean(prefs::kEnableQuietNotificationPermissionUi,
@@ -682,9 +674,6 @@ TEST_F(ContentSettingImageModelTest, NotificationsPrompt) {
 }
 
 TEST_F(ContentSettingImageModelTest, NotificationsPromptCrowdDeny) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kQuietNotificationPrompts);
-
   auto content_setting_image_model =
       ContentSettingImageModel::CreateForContentType(
           ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
@@ -703,9 +692,6 @@ TEST_F(ContentSettingImageModelTest, NotificationsPromptCrowdDeny) {
 }
 
 TEST_F(ContentSettingImageModelTest, NotificationsPromptAbusive) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kQuietNotificationPrompts);
-
   auto content_setting_image_model =
       ContentSettingImageModel::CreateForContentType(
           ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
@@ -724,9 +710,6 @@ TEST_F(ContentSettingImageModelTest, NotificationsPromptAbusive) {
 }
 
 TEST_F(ContentSettingImageModelTest, NotificationsContentAbusive) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kQuietNotificationPrompts);
-
   auto content_setting_image_model =
       ContentSettingImageModel::CreateForContentType(
           ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);

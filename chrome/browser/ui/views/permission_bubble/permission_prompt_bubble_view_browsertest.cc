@@ -416,10 +416,11 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
 class QuietUIPromoBrowserTest : public PermissionPromptBubbleViewBrowserTest {
  public:
   QuietUIPromoBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kQuietNotificationPrompts,
-        {{QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
-          "true"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kQuietNotificationPrompts,
+          {{QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
+            "true"}}}},
+        {{permissions::features::kPermissionQuietChip}});
   }
 
  private:

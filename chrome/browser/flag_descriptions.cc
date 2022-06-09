@@ -2116,10 +2116,9 @@ const char kPermissionPredictionsDescription[] =
 
 const char kPermissionQuietChipName[] = "Quiet Permission Chip Experiment";
 const char kPermissionQuietChipDescription[] =
-    "Enables an experimental permission prompt that uses the quiet chip "
-    "instead of the right-hand side address bar icon for quiet permission "
-    "prompts. Requires chrome://flags/#quiet-notification-prompts to be "
-    "enabled.";
+    "Enables a permission prompt that uses the quiet chip instead of the "
+    "right-hand side address bar icon for quiet permission prompts. Requires "
+    "chrome://flags/#quiet-notification-prompts to be enabled.";
 
 const char kPersistentQuotaIsTemporaryQuotaName[] =
     "window.PERSISTENT is temporary quota.";

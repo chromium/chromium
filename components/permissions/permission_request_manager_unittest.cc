@@ -58,8 +58,16 @@ class PermissionRequestManagerTest
                                             RequestType::kStorageAccess),
         iframe_request_mic_other_domain_(GURL("https://www.youtube.com"),
                                          RequestType::kMicStream) {
-    feature_list_.InitWithFeatureState(permissions::features::kPermissionChip,
-                                       GetParam());
+
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {permissions::features::kPermissionChip},
+          {permissions::features::kPermissionQuietChip});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {permissions::features::kPermissionChip,
+               permissions::features::kPermissionQuietChip});
+    }
   }
 
   void SetUp() override {

@@ -764,10 +764,11 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
 class QuietUIPromoInteractiveTest : public PermissionChipInteractiveTest {
  public:
   QuietUIPromoInteractiveTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kQuietNotificationPrompts,
-        {{QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
-          "true"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kQuietNotificationPrompts,
+          {{QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
+            "true"}}}},
+        {{permissions::features::kPermissionQuietChip}});
   }
 
  private:
