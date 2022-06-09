@@ -140,23 +140,26 @@ bool SideSearchIconView::ShouldShowPageActionLabel() const {
       SideSearchTabContentsHelper::FromWebContents(active_contents);
   DCHECK(tab_contents_helper);
 
-  switch (features::kSideSearchPageActionLabelAnimationFrequency.Get()) {
-    case features::kSideSearchLabelAnimationFrequencyOption::kOncePerProfile: {
-      // Only checking the per-profile bit in the config is necessary.
+  if (!tab_contents_helper->GetAndResetCanShowPageActionLabel())
+    return false;
+
+  const int max_label_show_count =
+      features::kSideSearchPageActionLabelAnimationMaxCount.Get();
+
+  switch (features::kSideSearchPageActionLabelAnimationType.Get()) {
+    case features::kSideSearchLabelAnimationTypeOption::kProfile: {
       auto* side_search_config =
           SideSearchConfig::Get(active_contents->GetBrowserContext());
-      return !side_search_config->page_action_label_shown();
+      return side_search_config->page_action_label_shown_count() <
+             max_label_show_count;
     }
-    case features::kSideSearchLabelAnimationFrequencyOption::kOncePerWindow: {
-      // Show the label for the current window only if it hasn't been shown
-      // already for the active tab. This covers the case where the user drags
-      // a tab with the side search page action icon active into a new window.
-      return !page_action_label_shown_ &&
-             !tab_contents_helper->page_action_label_shown();
+    case features::kSideSearchLabelAnimationTypeOption::kWindow: {
+      return page_action_label_shown_count_ < max_label_show_count;
     }
-    case features::kSideSearchLabelAnimationFrequencyOption::kOncePerTab:
-      // Only checking the per-tab bit is necessary.
-      return !tab_contents_helper->page_action_label_shown();
+    case features::kSideSearchLabelAnimationTypeOption::kTab: {
+      return tab_contents_helper->page_action_label_shown_count() <
+             max_label_show_count;
+    }
   }
 }
 
@@ -164,19 +167,16 @@ void SideSearchIconView::SetPageActionLabelShown() {
   content::WebContents* active_contents = GetWebContents();
   DCHECK(active_contents);
 
-  // Set the shown bit at the profile level.
   auto* side_search_config =
       SideSearchConfig::Get(active_contents->GetBrowserContext());
-  side_search_config->set_page_action_label_shown(true);
+  side_search_config->DidShowPageActionLabel();
 
-  // Set the shown bit at the browser level.
-  page_action_label_shown_ = true;
+  ++page_action_label_shown_count_;
 
-  // Set the shown bit at the tab level.
   auto* tab_contents_helper =
       SideSearchTabContentsHelper::FromWebContents(active_contents);
   DCHECK(tab_contents_helper);
-  tab_contents_helper->set_page_action_label_shown(true);
+  tab_contents_helper->DidShowPageActionLabel();
 }
 
 BEGIN_METADATA(SideSearchIconView, PageActionIconView)

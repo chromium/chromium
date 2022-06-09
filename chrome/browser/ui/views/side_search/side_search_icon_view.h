@@ -47,9 +47,9 @@ class SideSearchIconView : public PageActionIconView {
   // Called when the page action icon label has been shown.
   void SetPageActionLabelShown();
 
-  // Tracks whether the page action icon has animated-in its label text. Track
-  // this to ensure we only show this at most once per window.
-  bool page_action_label_shown_ = false;
+  // Tracks the number of times the page action icon has animated-in its label
+  // text for this window.
+  int page_action_label_shown_count_ = 0;
 
   raw_ptr<Browser> browser_ = nullptr;
 

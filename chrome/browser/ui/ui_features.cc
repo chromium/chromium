@@ -105,20 +105,22 @@ const base::Feature kSideSearchPageActionLabelAnimation{
 
 // Controls the frequency that the Side Search page action's label is shown. If
 // enabled the label text is shown one per window.
-const base::FeatureParam<kSideSearchLabelAnimationFrequencyOption>::Option
-    kSideSearchPageActionLabelAnimationFrequencyParamOptions[] = {
-        {kSideSearchLabelAnimationFrequencyOption::kOncePerProfile,
-         "OncePerProfile"},
-        {kSideSearchLabelAnimationFrequencyOption::kOncePerWindow,
-         "OncePerWindow"},
-        {kSideSearchLabelAnimationFrequencyOption::kOncePerTab, "OncePerTab"}};
+const base::FeatureParam<kSideSearchLabelAnimationTypeOption>::Option
+    kSideSearchPageActionLabelAnimationTypeParamOptions[] = {
+        {kSideSearchLabelAnimationTypeOption::kProfile, "Profile"},
+        {kSideSearchLabelAnimationTypeOption::kWindow, "Window"},
+        {kSideSearchLabelAnimationTypeOption::kTab, "Tab"}};
 
-const base::FeatureParam<kSideSearchLabelAnimationFrequencyOption>
-    kSideSearchPageActionLabelAnimationFrequency{
+const base::FeatureParam<kSideSearchLabelAnimationTypeOption>
+    kSideSearchPageActionLabelAnimationType{
         &kSideSearchPageActionLabelAnimation,
-        "SideSearchPageActionLabelAnimationFrequency",
-        kSideSearchLabelAnimationFrequencyOption::kOncePerWindow,
-        &kSideSearchPageActionLabelAnimationFrequencyParamOptions};
+        "SideSearchPageActionLabelAnimationType",
+        kSideSearchLabelAnimationTypeOption::kWindow,
+        &kSideSearchPageActionLabelAnimationTypeParamOptions};
+
+const base::FeatureParam<int> kSideSearchPageActionLabelAnimationMaxCount{
+    &kSideSearchPageActionLabelAnimation,
+    "SideSearchPageActionLabelAnimationMaxCount", 1};
 
 // Whether to clobber all side search side panels in the current browser window
 // or only the side search in the current tab before read later or lens side
