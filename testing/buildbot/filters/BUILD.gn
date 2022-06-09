@@ -351,8 +351,6 @@ source_set("viz_unittests_filters") {
   testonly = true
 
   data = [
-    "//testing/buildbot/filters/android.emulator.viz_unittests.filter",
-    "//testing/buildbot/filters/android.emulator_11.viz_unittests.filter",
     "//testing/buildbot/filters/fuchsia.debug.viz_unittests.filter",
     "//testing/buildbot/filters/fuchsia.viz_unittests.filter",
     "//testing/buildbot/filters/lacros-arm.viz_unittests.filter",
