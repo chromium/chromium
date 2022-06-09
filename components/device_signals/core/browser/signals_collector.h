@@ -6,7 +6,7 @@
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SIGNALS_COLLECTOR_H_
 
 #include <string>
-#include <vector>
+#include <unordered_set>
 
 #include "base/callback_forward.h"
 
@@ -22,8 +22,8 @@ class SignalsCollector {
 
   virtual ~SignalsCollector() = default;
 
-  // Returns the array of signal names that this collector can collect.
-  virtual const std::vector<std::string> GetSupportedSignalNames() = 0;
+  // Returns the set of signal names that this collector can collect.
+  virtual const std::unordered_set<std::string> GetSupportedSignalNames() = 0;
 
   // Collects the signal named `signal_name` using `params` (if needed), and
   // invokes `callback` with the signal value.

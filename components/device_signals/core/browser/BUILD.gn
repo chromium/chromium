@@ -7,6 +7,7 @@ static_library("browser") {
     "signals_aggregator.h",
     "signals_aggregator_impl.h",
     "signals_collector.h",
+    "system_signals_service_host.h",
     "user_context.h",
     "user_delegate.h",
     "user_permission_service.h",
@@ -19,10 +20,14 @@ static_library("browser") {
     "user_permission_service_impl.cc",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
-    "//components/device_signals/core/common",
+    "//components/device_signals/core/common/mojom",
     "//components/keyed_service/core",
+  ]
+
+  deps = [
+    "//components/device_signals/core/common",
     "//components/policy/core/common",
     "//components/signin/public/identity_manager",
   ]
@@ -33,6 +38,8 @@ static_library("test_support") {
   sources = [
     "mock_signals_collector.cc",
     "mock_signals_collector.h",
+    "mock_system_signals_service_host.cc",
+    "mock_system_signals_service_host.h",
     "mock_user_delegate.cc",
     "mock_user_delegate.h",
     "mock_user_permission_service.cc",
@@ -42,6 +49,7 @@ static_library("test_support") {
   deps = [
     ":browser",
     "//base",
+    "//components/device_signals/core/common/mojom",
     "//components/signin/public/identity_manager",
     "//testing/gmock",
   ]
@@ -65,4 +73,8 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//testing/gtest",
   ]
+
+  if (is_win) {
+    deps += [ "//components/device_signals/core/browser/win:unit_tests" ]
+  }
 }

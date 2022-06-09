@@ -4,7 +4,7 @@
 
 import("//build/config/features.gni")
 
-source_set("cpp") {
+source_set("browser") {
   public = [ "system_signals_service_host_impl.h" ]
 
   sources = [ "system_signals_service_host_impl.cc" ]

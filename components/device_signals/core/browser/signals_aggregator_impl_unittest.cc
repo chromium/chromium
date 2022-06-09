@@ -5,6 +5,7 @@
 #include "components/device_signals/core/browser/signals_aggregator_impl.h"
 
 #include <memory>
+#include <unordered_set>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -56,7 +57,8 @@ base::Value GetOtherFakeSignalValue() {
 std::unique_ptr<MockSignalsCollector> GetCollectorForFakeSignal() {
   auto mock_collector = std::make_unique<MockSignalsCollector>();
   ON_CALL(*mock_collector.get(), GetSupportedSignalNames())
-      .WillByDefault(Return(std::vector<std::string>({kFakeSignalName})));
+      .WillByDefault(
+          Return(std::unordered_set<std::string>({kFakeSignalName})));
 
   ON_CALL(*mock_collector.get(), GetSignal(kFakeSignalName, _, _))
       .WillByDefault(
@@ -72,7 +74,8 @@ std::unique_ptr<MockSignalsCollector> GetCollectorForFakeSignal() {
 std::unique_ptr<MockSignalsCollector> GetCollectorForOtherFakeSignal() {
   auto mock_collector = std::make_unique<MockSignalsCollector>();
   ON_CALL(*mock_collector.get(), GetSupportedSignalNames())
-      .WillByDefault(Return(std::vector<std::string>({kOtherFakeSignalName})));
+      .WillByDefault(
+          Return(std::unordered_set<std::string>({kOtherFakeSignalName})));
 
   ON_CALL(*mock_collector.get(), GetSignal(kOtherFakeSignalName, _, _))
       .WillByDefault(

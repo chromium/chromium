@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/system_signals/public/cpp/system_signals_service_host.h"
+#include "chrome/services/system_signals/public/cpp/browser/system_signals_service_host_impl.h"
 
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
 

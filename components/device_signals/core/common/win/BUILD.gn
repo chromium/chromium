@@ -12,6 +12,7 @@ static_library("win") {
   ]
 
   sources = [
+    "win_types.cc",
     "wmi_client.cc",
     "wmi_client_impl.cc",
     "wsc_client.cc",
@@ -47,6 +48,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "win_types_unittest.cc",
     "wmi_client_impl_unittest.cc",
     "wsc_client_impl_unittest.cc",
   ]

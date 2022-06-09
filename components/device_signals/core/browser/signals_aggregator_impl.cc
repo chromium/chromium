@@ -76,19 +76,19 @@ void SignalsAggregatorImpl::OnUserPermissionChecked(
   std::pair<const std::string&, const base::Value&> signal_request =
       *parameters.begin();
   for (const auto& collector : collectors_) {
-    for (const auto& supported_signal : collector->GetSupportedSignalNames()) {
-      if (base::EqualsCaseInsensitiveASCII(supported_signal,
-                                           signal_request.first)) {
-        // Current collector supports collecting the current signal.
-        auto return_callback =
-            base::BindOnce(&SignalsAggregatorImpl::OnSignalCollected,
-                           weak_factory_.GetWeakPtr(), signal_request.first,
-                           std::move(callback));
-        collector->GetSignal(signal_request.first, signal_request.second,
-                             std::move(return_callback));
-        return;
-      }
+    const auto signals_set = collector->GetSupportedSignalNames();
+    if (signals_set.find(signal_request.first) == signals_set.end()) {
+      // Signal is not supported by current collector.
+      continue;
     }
+
+    // Signal is supported by current collector.
+    auto return_callback = base::BindOnce(
+        &SignalsAggregatorImpl::OnSignalCollected, weak_factory_.GetWeakPtr(),
+        signal_request.first, std::move(callback));
+    collector->GetSignal(signal_request.first, signal_request.second,
+                         std::move(return_callback));
+    return;
   }
 
   // Not a supported signal.

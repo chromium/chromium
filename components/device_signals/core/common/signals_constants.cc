@@ -151,6 +151,10 @@ const char kUnaffiliatedUser[] = "UNAFFILIATED_USER";
 // Returned when the specified signal is not supported.
 const char kUnsupported[] = "UNSUPPORTED";
 
+// Returned when the signals collection code in unable to get a reference to
+// the SystemSignalsService.
+const char kMissingSystemService[] = "MISSING_SYSTEM_SERVICE";
+
 }  // namespace errors
 
 }  // namespace device_signals

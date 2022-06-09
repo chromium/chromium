@@ -3,14 +3,9 @@
 # found in the LICENSE file.
 
 static_library("common") {
-  public = [
-    "signals_constants.h",
-    "system_signals_service_host.h",
-  ]
+  public = [ "signals_constants.h" ]
 
   sources = [ "signals_constants.cc" ]
-
-  public_deps = [ "//components/device_signals/core/common/mojom" ]
 }
 
 source_set("unit_tests") {

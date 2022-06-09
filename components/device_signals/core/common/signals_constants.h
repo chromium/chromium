@@ -53,6 +53,7 @@ namespace errors {
 extern const char kConsentRequired[];
 extern const char kUnaffiliatedUser[];
 extern const char kUnsupported[];
+extern const char kMissingSystemService[];
 
 }  // namespace errors
 

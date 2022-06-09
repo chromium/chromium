@@ -7,6 +7,10 @@
 
 #include <string>
 
+namespace base {
+class Value;
+}  // namespace base
+
 namespace device_signals {
 
 // Various states in which an AntiVirus software can be.
@@ -24,6 +28,8 @@ struct AvProduct {
   // `get_ProductGuid` function to retrieve an GUID representing an Antivirus
   // software.
   std::string product_id;
+
+  base::Value ToValue() const;
 };
 
 // Metadata about an installed Hotfix update.
@@ -32,6 +38,8 @@ struct InstalledHotfix {
   // "Win32_QuickFixEngineering". They have a format looking like `KB123123`.
   // https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-quickfixengineering
   std::string hotfix_id;
+
+  base::Value ToValue() const;
 };
 
 }  // namespace device_signals

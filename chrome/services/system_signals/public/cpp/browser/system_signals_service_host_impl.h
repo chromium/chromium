@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_SYSTEM_SIGNALS_PUBLIC_CPP_SYSTEM_SIGNALS_SERVICE_HOST_IMPL_H_
-#define CHROME_SERVICES_SYSTEM_SIGNALS_PUBLIC_CPP_SYSTEM_SIGNALS_SERVICE_HOST_IMPL_H_
+#ifndef CHROME_SERVICES_SYSTEM_SIGNALS_PUBLIC_CPP_BROWSER_SYSTEM_SIGNALS_SERVICE_HOST_IMPL_H_
+#define CHROME_SERVICES_SYSTEM_SIGNALS_PUBLIC_CPP_BROWSER_SYSTEM_SIGNALS_SERVICE_HOST_IMPL_H_
 
 #include "build/build_config.h"
+#include "components/device_signals/core/browser/system_signals_service_host.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom-forward.h"
-#include "components/device_signals/core/common/system_signals_service_host.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "mojo/public/cpp/bindings/remote.h"
@@ -40,4 +40,4 @@ class SystemSignalsServiceHostImpl
 
 }  // namespace system_signals
 
-#endif  // CHROME_SERVICES_SYSTEM_SIGNALS_PUBLIC_CPP_SYSTEM_SIGNALS_SERVICE_HOST_IMPL_H_
+#endif  // CHROME_SERVICES_SYSTEM_SIGNALS_PUBLIC_CPP_BROWSER_SYSTEM_SIGNALS_SERVICE_HOST_IMPL_H_
