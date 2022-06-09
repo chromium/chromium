@@ -71,6 +71,7 @@
     "aggregatable_results": [
       {
         "payload": {
+          "attribution_destination": "https://destination.test",
           "histograms": [
             {
               "key": "0x559",

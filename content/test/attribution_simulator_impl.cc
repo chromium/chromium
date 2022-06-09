@@ -9,6 +9,7 @@
 #include <memory>
 #include <ostream>
 #include <sstream>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -23,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/values.h"
@@ -55,6 +57,7 @@
 #include "net/cookies/cookie_options.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
@@ -129,7 +132,25 @@ struct AttributionReportJsonConverter {
     if (remove_assembled_report &&
         absl::holds_alternative<AttributionReport::AggregatableAttributionData>(
             report.data())) {
-      report_body.Remove("shared_info");
+      // Output attribution_destination from the shared_info field.
+      absl::optional<base::Value> shared_info =
+          report_body.Extract("shared_info");
+      DCHECK(shared_info);
+      std::string* shared_info_str = shared_info->GetIfString();
+      DCHECK(shared_info_str);
+
+      base::Value shared_info_value = base::test::ParseJson(*shared_info_str);
+      DCHECK(shared_info_value.is_dict());
+
+      static constexpr char kKeyAttributionDestination[] =
+          "attribution_destination";
+      std::string* attribution_destination =
+          shared_info_value.GetDict().FindString(kKeyAttributionDestination);
+      DCHECK(attribution_destination);
+      DCHECK(!report_body.contains(kKeyAttributionDestination));
+      report_body.Set(kKeyAttributionDestination,
+                      std::move(*attribution_destination));
+
       report_body.Remove("aggregation_service_payloads");
       report_body.Remove("source_registration_time");
     }
