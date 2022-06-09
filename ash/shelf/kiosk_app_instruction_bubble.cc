@@ -5,6 +5,7 @@
 #include "ash/shelf/kiosk_app_instruction_bubble.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -65,6 +66,14 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
   title_->SetText(l10n_util::GetStringUTF16(IDS_SHELF_KIOSK_APP_INSTRUCTION));
   title_->SetMultiLine(true);
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  // TODO(crbug.com/1334998): We should inherit directly from
+  // views::BubbleDialogDelegateView as ShelfBubble by default puts the bubble
+  // in the container of kShellWindowId_SettingBubbleContainer.
+
+  set_parent_window(
+      anchor_widget()->GetNativeWindow()->GetRootWindow()->GetChildById(
+          kShellWindowId_LockScreenRelatedContainersContainer));
 
   CreateBubble();
 
