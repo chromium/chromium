@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_V4L2_TEST_VIDEO_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_VIDEO_DECODER_H_
 
-#include "media/filters/ivf_parser.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 
 namespace media {
@@ -18,7 +17,7 @@ namespace v4l2_test {
 // which is a format supported on driver.
 uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc);
 
-// VideoDecoder decodes encoded IVF streams using v4l2 ioctl calls.
+// VideoDecoder decodes encoded video streams using v4l2 ioctl calls.
 class VideoDecoder {
  public:
   // Result of decoding the current frame.
@@ -28,8 +27,7 @@ class VideoDecoder {
     kEOStream,
   };
 
-  VideoDecoder(std::unique_ptr<IvfParser> ivf_parser,
-               std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
+  VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                std::unique_ptr<V4L2Queue> OUTPUT_queue,
                std::unique_ptr<V4L2Queue> CAPTURE_queue);
 
@@ -59,9 +57,6 @@ class VideoDecoder {
                                char* src_y,
                                char* src_uv,
                                gfx::Size size);
-
-  // Parser for the IVF stream to decode.
-  const std::unique_ptr<IvfParser> ivf_parser_;
 
   // Wrapper for V4L2 ioctl requests.
   const std::unique_ptr<V4L2IoctlShim> v4l2_ioctl_;

@@ -68,6 +68,9 @@ class Vp9Decoder : public VideoDecoder {
                                       scoped_refptr<MmapedBuffer> buffer,
                                       uint32_t last_queued_buffer_index);
 
+  // Parser for the IVF stream to decode.
+  const std::unique_ptr<IvfParser> ivf_parser_;
+
   // VP9-specific data.
   const std::unique_ptr<Vp9Parser> vp9_parser_;
 

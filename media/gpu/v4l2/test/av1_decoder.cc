@@ -24,10 +24,10 @@ Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                        std::unique_ptr<V4L2Queue> OUTPUT_queue,
                        std::unique_ptr<V4L2Queue> CAPTURE_queue)
-    : VideoDecoder::VideoDecoder(std::move(ivf_parser),
-                                 std::move(v4l2_ioctl),
+    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl),
                                  std::move(OUTPUT_queue),
                                  std::move(CAPTURE_queue)),
+      ivf_parser_(std::move(ivf_parser)),
       buffer_pool_(std::make_unique<libgav1::BufferPool>(
           /*on_frame_buffer_size_changed=*/nullptr,
           /*get_frame_buffer=*/nullptr,

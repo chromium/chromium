@@ -87,6 +87,9 @@ class Av1Decoder : public VideoDecoder {
   // Reference frames currently in use.
   std::array<scoped_refptr<MmapedBuffer>, kAv1NumRefFrames> ref_frames_;
 
+  // Parser for the IVF stream to decode.
+  const std::unique_ptr<IvfParser> ivf_parser_;
+
   IvfFrameHeader ivf_frame_header_{};
   const uint8_t* ivf_frame_data_ = nullptr;
 
