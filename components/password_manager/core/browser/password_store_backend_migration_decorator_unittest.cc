@@ -44,6 +44,8 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
         prefs::kRequiresMigrationAfterSyncStatusChange, false);
     prefs_.registry()->RegisterStringPref(::prefs::kGoogleServicesLastUsername,
                                           "testaccount@gmail.com");
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
 
     feature_list_.InitAndEnableFeatureWithParameters(
         /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
@@ -435,6 +437,54 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   EXPECT_CALL(*android_backend(), GetAllLoginsForAccountAsync).Times(0);
   sync_status_changed_closure.Run();
   RunUntilIdle();
+}
+
+TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+       NonSyncableDataMigrationDoesNotStartForUsersUnenrolledFromUPM) {
+  prefs().SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                     true);
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
+  base::RepeatingClosure sync_status_changed_closure;
+
+  // Init backend.
+  EXPECT_CALL(mock_completion_callback, Run(/*success=*/true));
+  EXPECT_CALL(*built_in_backend(), InitBackend)
+      .WillOnce(WithArgs<1, 2>(
+          [&sync_status_changed_closure](auto sync_status_changed,
+                                         auto completion_callback) {
+            std::move(completion_callback).Run(/*success=*/true);
+            // Capture |sync_enabled_or_disabled_cb| passed to the
+            // build_in_backend.
+            sync_status_changed_closure = std::move(sync_status_changed);
+          }));
+  EXPECT_CALL(*android_backend(), InitBackend)
+      .WillOnce(WithArg<2>([](auto completion_callback) {
+        std::move(completion_callback).Run(/*success=*/true);
+      }));
+  backend_migration_decorator()->InitBackend(
+      /*remote_form_changes_received=*/base::DoNothing(),
+      /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
+      /*completion=*/mock_completion_callback.Get());
+
+  InitSyncService(/*is_password_sync_enabled=*/false);
+
+  // Invoke sync callback to simulate a change in sync status. Set expectation
+  // for sync to be turned on.
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+  // Migration of non-syncable data to the android backend will not start and
+  // therefore will not trigger any logins retrieval.
+  EXPECT_CALL(*built_in_backend(), GetAllLoginsAsync).Times(0);
+  EXPECT_CALL(*android_backend(), GetAllLoginsAsync).Times(0);
+
+  sync_status_changed_closure.Run();
+  RunUntilIdle();
+
+  // Verify that migration attempt did not happen by checking that the time of
+  // the last migration attempt did not change.
+  EXPECT_EQ(
+      prefs().GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt),
+      0.0);
 }
 
 }  // namespace password_manager

@@ -35,7 +35,8 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
     return std::make_unique<PasswordStoreBackendMigrationDecorator>(
         std::make_unique<PasswordStoreBuiltInBackend>(
             CreateLoginDatabaseForProfileStorage(login_db_path)),
-        std::make_unique<PasswordStoreAndroidBackend>(std::move(sync_delegate)),
+        std::make_unique<PasswordStoreAndroidBackend>(std::move(sync_delegate),
+                                                      prefs),
         prefs, raw_sync_delegate.get());
   }
   return std::make_unique<PasswordStoreBuiltInBackend>(

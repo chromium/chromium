@@ -21,6 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_operation_target.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
@@ -31,6 +32,8 @@
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -269,11 +272,14 @@ PasswordStoreAndroidBackend::JobReturnHandler::GetElapsedTimeSinceStart()
 }
 
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
-    std::unique_ptr<SyncDelegate> sync_delegate)
+    std::unique_ptr<SyncDelegate> sync_delegate,
+    PrefService* prefs)
     : lifecycle_helper_(std::make_unique<PasswordManagerLifecycleHelperImpl>()),
       bridge_(PasswordStoreAndroidBackendBridge::Create()),
       sync_delegate_(std::move(sync_delegate)) {
   DCHECK(bridge_);
+  prefs_ = prefs;
+  DCHECK(prefs_);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
   sync_controller_delegate_ =
       std::make_unique<PasswordSyncControllerDelegateAndroid>(
@@ -287,12 +293,15 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
     std::unique_ptr<SyncDelegate> sync_delegate,
     std::unique_ptr<PasswordSyncControllerDelegateAndroid>
-        sync_controller_delegate)
+        sync_controller_delegate,
+    PrefService* prefs)
     : lifecycle_helper_(std::move(lifecycle_helper)),
       bridge_(std::move(bridge)),
       sync_delegate_(std::move(sync_delegate)),
       sync_controller_delegate_(std::move(sync_controller_delegate)) {
   DCHECK(bridge_);
+  prefs_ = prefs;
+  DCHECK(prefs_);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -599,11 +608,31 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   if (!reply.has_value())
     return;  // Task cleaned up after returning from background.
   if (error.api_error_code.has_value() && sync_service_) {
-    // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code, 10) to catch dev
-    // errors.
+    // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code,
+    // AndroidBackendAPIErrorCode::kDeveloperError) to catch dev errors.
     DCHECK_EQ(AndroidBackendErrorType::kExternalError, error.type);
     RecordApiErrorInCombinationWithSyncStatus(error.api_error_code.value(),
                                               sync_service_->GetAuthError());
+
+    // If the user is experiencing an error unresolvable by Chrome or by the
+    // user, unenroll the user from the UPM experience.
+    int api_error = error.api_error_code.value();
+    if (api_error !=
+            static_cast<int>(AndroidBackendAPIErrorCode::kDeveloperError) &&
+        api_error !=
+            static_cast<int>(AndroidBackendAPIErrorCode::kPassphraseRequired)) {
+      // TODO(crbug.com/1334565): Record a metric on user unenrollment (to see
+      // how many clients are lost each day) & an additional metric on startup
+      // (to see which share of clients is unenrolled).
+      prefs_->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                         true);
+      // Reset migration prefs so when the user can join the experiment again,
+      // non-syncable data and settings can be migrated to GMS Core.
+      prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
+                         0);
+      prefs_->SetDouble(prefs::kTimeOfLastMigrationAttempt, 0.0);
+      prefs_->SetBoolean(prefs::kSettingsMigratedToUPM, false);
+    }
   }
   reply->RecordMetrics(std::move(error));
   if (reply->Holds<LoginsOrErrorReply>()) {

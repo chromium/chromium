@@ -650,11 +650,10 @@ void PasswordStoreProxyBackend::OnRemoteFormChangesReceived(
 }
 
 bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackend() {
-  if (!sync_delegate_->IsSyncingPasswordsEnabled())
+  if (prefs_->GetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors))
     return false;
 
-  // Check for sync service errors if sync service is already initialized.
-  if (sync_util::CannotUseUPMDueToPersistentSyncError(sync_service_))
+  if (!sync_delegate_->IsSyncingPasswordsEnabled())
     return false;
 
   if (!base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerAndroid))

@@ -83,6 +83,8 @@ class PasswordStoreProxyBackendTest : public testing::Test {
 
     prefs_.registry()->RegisterIntegerPref(
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
 
     // Initialize sync service.
     EXPECT_CALL(android_backend(), OnSyncServiceInitialized(&sync_service_));
@@ -729,45 +731,20 @@ TEST_F(PasswordStoreProxyBackendTest,
 }
 
 TEST_F(PasswordStoreProxyBackendTest,
-       UsesAndroidBackendAsMainBackendSyncPersistentAuthError) {
+       UsesAndroidBackendAsMainBackendUserUnenrolledFromUPMDueToErrors) {
   base::test::ScopedFeatureList feature_list;
   // Enable UPM for syncing users only.
   feature_list.InitAndEnableFeatureWithParameters(
       features::kUnifiedPasswordManagerAndroid, {{"stage", "2"}});
+  prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                      true);
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
       .WillRepeatedly(Return(true));
-
-  GoogleServiceAuthError persistent_error(
-      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
-  ASSERT_TRUE(persistent_error.IsPersistentError());
-  sync_service()->SetAuthError(persistent_error);
 
   // Verify that android backend is not used.
   EXPECT_CALL(android_backend(), GetAllLoginsAsync).Times(0);
   EXPECT_CALL(built_in_backend(), GetAllLoginsAsync);
-  proxy_backend().GetAllLoginsAsync(base::DoNothing());
-}
-
-TEST_F(PasswordStoreProxyBackendTest,
-       UsesAndroidBackendAsMainBackendSyncTransientAuthError) {
-  base::test::ScopedFeatureList feature_list;
-  // Enable UPM for syncing users only.
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerAndroid, {{"stage", "2"}});
-
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillRepeatedly(Return(true));
-
-  GoogleServiceAuthError transient_error(
-      GoogleServiceAuthError::CONNECTION_FAILED);
-  ASSERT_TRUE(transient_error.IsTransientError());
-  sync_service()->SetAuthError(transient_error);
-
-  // Transient errors should not stop users from accessing android backend, as
-  // they are likely to succeed on retries.
-  EXPECT_CALL(android_backend(), GetAllLoginsAsync);
-  EXPECT_CALL(built_in_backend(), GetAllLoginsAsync).Times(0);
   proxy_backend().GetAllLoginsAsync(base::DoNothing());
 }
 

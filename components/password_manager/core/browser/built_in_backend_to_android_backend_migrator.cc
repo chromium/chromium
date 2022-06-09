@@ -471,12 +471,11 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
 }
 
 bool BuiltInBackendToAndroidBackendMigrator::ShouldMigrateNonSyncableData() {
-  // 1. Check that feature and prefs state allow migration.
+  // 1. Check that pref state allows migration.
   // 2. Check that the user either needs migration due to a sync setting change,
   // or because sync is enabled and the user needs initial migration of
   // non-syncable data (e.g. after enrolling into the experiment).
-  return features::RequiresMigrationForUnifiedPasswordManager() &&
-         IsMigrationNeeded(prefs_) &&
+  return IsMigrationNeeded(prefs_) &&
          (prefs_->GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange) ||
           sync_delegate_->IsSyncingPasswordsEnabled());
 }

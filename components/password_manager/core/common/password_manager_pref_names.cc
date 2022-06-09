@@ -28,6 +28,9 @@ const char kRequiresMigrationAfterSyncStatusChange[] =
 
 const char kPasswordsPrefWithNewLabelUsed[] =
     "passwords_pref_with_new_label_used";
+
+const char kUnenrolledFromGoogleMobileServicesDueToErrors[] =
+    "unenrolled_from_google_mobile_services_due_to_errors";
 #endif
 
 #if BUILDFLAG(IS_WIN)

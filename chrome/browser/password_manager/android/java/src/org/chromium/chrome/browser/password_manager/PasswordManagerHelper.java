@@ -15,7 +15,6 @@ import android.os.Looper;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.common.base.Optional;
@@ -26,11 +25,14 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.ModelType;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
@@ -132,8 +134,7 @@ public class PasswordManagerHelper {
         RecordHistogram.recordEnumeratedHistogram("PasswordManager.ManagePasswordsReferrer",
                 referrer, ManagePasswordsReferrer.MAX_VALUE + 1);
 
-        if (credentialManagerLauncher != null && hasChosenToSyncPasswords(syncService)
-                && !hasPersistentAuthError(syncService)) {
+        if (credentialManagerLauncher != null && canUseUpmCheckup()) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
                     LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
             launchTheCredentialManager(
@@ -152,8 +153,11 @@ public class PasswordManagerHelper {
     // share the same preconditions, e.g. launching the credential manager).
     public static boolean canUseUpmCheckup() {
         SyncService syncService = SyncService.get();
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
         return PasswordManagerHelper.usesUnifiedPasswordManagerUI() && syncService != null
-                && hasChosenToSyncPasswords(syncService) && !hasPersistentAuthError(syncService);
+                && hasChosenToSyncPasswords(syncService)
+                && !prefService.getBoolean(
+                        Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS);
     }
 
     public static void showPasswordCheckup(Context context, @PasswordCheckReferrer int referrer,
@@ -337,29 +341,6 @@ public class PasswordManagerHelper {
                             loadingDialogCoordinator.getState());
                     loadingDialogCoordinator.dismiss();
                 });
-    }
-
-    private static boolean hasPersistentAuthError(@NonNull SyncService syncService) {
-        // TODO(crbug.com/1327311): Ensure that the enum is generated from C++ and maybe
-        // that the transient check is properly mirrored in java to avoid manual code duplication
-        // which is error-prone.
-        switch (syncService.getAuthError()) {
-            // These are failures that are likely to succeed if tried again (or there is no
-            // failure.
-            case GoogleServiceAuthError.State.NONE:
-            case GoogleServiceAuthError.State.CONNECTION_FAILED:
-            case GoogleServiceAuthError.State.SERVICE_UNAVAILABLE:
-            case GoogleServiceAuthError.State.REQUEST_CANCELED:
-                return false;
-            case GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS:
-            case GoogleServiceAuthError.State.USER_NOT_SIGNED_UP:
-            case GoogleServiceAuthError.State.UNEXPECTED_SERVICE_RESPONSE:
-            case GoogleServiceAuthError.State.SERVICE_ERROR:
-                return true;
-            default:
-                assert false : "All error values should be classified as persistent or transient";
-                return true;
-        }
     }
 
     private static void recordFailureMetrics(
