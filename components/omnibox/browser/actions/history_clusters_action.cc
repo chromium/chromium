@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/optimization_guide/core/entity_metadata.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 
@@ -49,6 +50,16 @@ int TopRelevance(const AutocompleteResult& result, bool search) {
                           : 0;
              })
       ->relevance;
+}
+
+// Record the entity collection level CTR metric for the journey chip.
+void RecordEntityCollectionCtrForJourney(const std::string& collection_label,
+                                         bool executed) {
+  // Append an entity collection label.
+  std::string uma_metric_name = base::StringPrintf(
+      "Omnibox.SuggestionUsed.ResumeJourney.PageEntityCollection.%s.CTR",
+      collection_label.c_str());
+  base::UmaHistogramBoolean(uma_metric_name, executed);
 }
 
 }  // namespace
@@ -85,6 +96,27 @@ void HistoryClustersAction::RecordActionShown(size_t position,
 
   base::UmaHistogramBoolean("Omnibox.SuggestionUsed.ResumeJourneyCTR",
                             executed);
+
+  if (matched_keyword_data_.entity_collections.empty()) {
+    return;
+  }
+
+  // Record entity collection UMA metrics.
+  const auto& collection_str = matched_keyword_data_.entity_collections.front();
+  const optimization_guide::PageEntityCollection collection =
+      optimization_guide::GetPageEntityCollectionForString(collection_str);
+
+  base::UmaHistogramEnumeration(
+      "Omnibox.ResumeJourneyShown.PageEntityCollection", collection);
+  if (executed) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.SuggestionUsed.ResumeJourney.PageEntityCollection",
+        collection);
+  }
+
+  const auto collection_label =
+      optimization_guide::GetPageEntityCollectionLabel(collection_str);
+  RecordEntityCollectionCtrForJourney(collection_label, executed);
 }
 
 int32_t HistoryClustersAction::GetID() const {

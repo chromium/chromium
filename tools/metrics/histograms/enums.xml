@@ -71375,6 +71375,84 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="OptimizationGuidePageEntityCollection">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Accommodations"/>
+  <int value="2" label="Actors"/>
+  <int value="3" label="Airports"/>
+  <int value="4" label="AnatomicalStructures"/>
+  <int value="5" label="Artworks"/>
+  <int value="6" label="Athletes"/>
+  <int value="7" label="Authors"/>
+  <int value="8" label="BookEditions"/>
+  <int value="9" label="BusinessOperations"/>
+  <int value="10" label="Cars"/>
+  <int value="11" label="CausesOfDeath"/>
+  <int value="12" label="CelestialObjectWithCoordinateSystems"/>
+  <int value="13" label="ChemicalCompounds"/>
+  <int value="14" label="ConsumerProducts"/>
+  <int value="15" label="Cuisines"/>
+  <int value="16" label="CulinaryMeasures"/>
+  <int value="17" label="Currencies"/>
+  <int value="18" label="Diets"/>
+  <int value="19" label="DiseaseOrMedicalConditions"/>
+  <int value="20" label="EducationalInstitutions"/>
+  <int value="21" label="Employers"/>
+  <int value="22" label="Events"/>
+  <int value="23" label="FictionalCharacters"/>
+  <int value="24" label="FilmActors"/>
+  <int value="25" label="FilmScreeningVenues"/>
+  <int value="26" label="FilmSeries"/>
+  <int value="27" label="Films"/>
+  <int value="28" label="Foods"/>
+  <int value="29" label="Garments"/>
+  <int value="30" label="GeoBusinessChain"/>
+  <int value="31" label="GeoEstablishment"/>
+  <int value="32" label="GeoLocality"/>
+  <int value="33" label="GeoNaturalFeature"/>
+  <int value="34" label="GeoPolitical"/>
+  <int value="35" label="Holidays"/>
+  <int value="36" label="HumanLanguages"/>
+  <int value="37" label="Software"/>
+  <int value="38" label="JobTitles"/>
+  <int value="39" label="LiterarySeries"/>
+  <int value="40" label="LocalShoppingBuyables"/>
+  <int value="41" label="Materials"/>
+  <int value="42" label="MedicalTreatments"/>
+  <int value="43" label="Models"/>
+  <int value="44" label="MusicGroupMembers"/>
+  <int value="45" label="MusicalAlbums"/>
+  <int value="46" label="MusicalArtists"/>
+  <int value="47" label="MusicalGenres"/>
+  <int value="48" label="MusicalGroups"/>
+  <int value="49" label="MusicalRecordings"/>
+  <int value="50" label="MusicalReleases"/>
+  <int value="51" label="Musicians"/>
+  <int value="52" label="OrganismClassifications"/>
+  <int value="53" label="Organizations"/>
+  <int value="54" label="People"/>
+  <int value="55" label="Periodicals"/>
+  <int value="56" label="Politicians"/>
+  <int value="57" label="RecordingClusters"/>
+  <int value="58" label="Religions"/>
+  <int value="59" label="Restaurants"/>
+  <int value="60" label="RideOfferingServices"/>
+  <int value="61" label="ShoppingCenters"/>
+  <int value="62" label="SocialNetworkServiceWebsites"/>
+  <int value="63" label="Sports"/>
+  <int value="64" label="SportsTeams"/>
+  <int value="65" label="Structures"/>
+  <int value="66" label="TouristAttractions"/>
+  <int value="67" label="TravelDestinations"/>
+  <int value="68" label="TvActors"/>
+  <int value="69" label="TvEpisodes"/>
+  <int value="70" label="TvPrograms"/>
+  <int value="71" label="Venues"/>
+  <int value="72" label="VideoGames"/>
+  <int value="73" label="Websites"/>
+  <int value="74" label="WrittenWorks"/>
+</enum>
+
 <enum name="OptimizationGuidePageTopicsOverrideListFileLoadResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>
