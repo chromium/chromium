@@ -49,6 +49,11 @@ public final class FirstRunSignInProcessor {
      * @param activity The context for the FRE parameters processor.
      */
     public static void start(final Activity activity) {
+        // TODO(crbug.com/1335029): This avoids a crash. Some code relies on SigninManager being
+        // instantiated unconditionally here. Long term this should be elsewhere.
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
+                Profile.getLastUsedRegularProfile());
+
         // Skip signin if the first run flow is not complete. Examples of cases where the user
         // would not have gone through the FRE:
         // - FRE is disabled, or
@@ -67,10 +72,9 @@ public final class FirstRunSignInProcessor {
             assert ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE);
             openAdvancedSyncSettings(activity);
             setFirstRunFlowSignInComplete(true);
+            return;
         }
 
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
         if (!FirstRunUtils.canAllowSync() || !signinManager.isSyncOptInAllowed()
                 || TextUtils.isEmpty(accountName)) {
             setFirstRunFlowSignInComplete(true);
