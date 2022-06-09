@@ -13,11 +13,11 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/google/core/common/google_util.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -110,15 +110,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeOnDeviceEncryptionOptedInLearnMore,
 };
 
-std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
+std::vector<password_manager::CredentialUIEntry> CopyOf(
     const std::vector<password_manager::PasswordForm>& password_list) {
-  std::vector<std::unique_ptr<password_manager::PasswordForm>>
-      password_list_copy;
+  std::vector<password_manager::CredentialUIEntry> credentials;
   for (const auto& form : password_list) {
-    password_list_copy.push_back(
-        std::make_unique<password_manager::PasswordForm>(form));
+    credentials.push_back(password_manager::CredentialUIEntry(form));
   }
-  return password_list_copy;
+  return credentials;
 }
 
 bool ArePasswordsListsEqual(

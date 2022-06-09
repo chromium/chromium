@@ -20,7 +20,7 @@ class WebContents;
 }
 
 namespace password_manager {
-class CredentialProviderInterface;
+class SavedPasswordsPresenter;
 class PasswordManagerExporter;
 }  // namespace password_manager
 
@@ -36,11 +36,10 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener,
       base::RepeatingCallback<void(password_manager::ExportProgressStatus,
                                    const std::string&)>;
 
-  // |credential_provider_interface| provides the credentials which can be
-  // exported. |on_export_progress_callback| will be called with updates to
-  // the progress of exporting.
-  PasswordManagerPorter(password_manager::CredentialProviderInterface*
-                            credential_provider_interface,
+  // |presenter| provides the credentials which can be exported.
+  // |on_export_progress_callback| will be called with updates to the progress
+  // of exporting.
+  PasswordManagerPorter(password_manager::SavedPasswordsPresenter* presenter,
                         ProgressCallback on_export_progress_callback);
 
   PasswordManagerPorter(const PasswordManagerPorter&) = delete;
@@ -96,11 +95,10 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener,
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   Profile* profile_ = nullptr;
 
-  // We store |credential_provider_interface_| and
+  // We store |presenter_| and
   // |on_export_progress_callback_| to use them to create a new
   // PasswordManagerExporter instance for each export.
-  raw_ptr<password_manager::CredentialProviderInterface>
-      credential_provider_interface_;
+  raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
   ProgressCallback on_export_progress_callback_;
   // If |exporter_for_testing_| is set, the next export will make it the current
   // exporter, instead of creating a new instance.

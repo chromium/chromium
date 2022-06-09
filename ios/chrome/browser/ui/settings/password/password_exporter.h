@@ -12,7 +12,7 @@
 #include <vector>
 
 namespace password_manager {
-struct PasswordForm;
+struct CredentialUIEntry;
 }  // namespace password_manager
 
 enum class WriteToURLStatus {
@@ -44,8 +44,7 @@ enum class ExportState {
 // Posts task to serialize passwords and calls `serializedPasswordsHandler`
 // when serialization is finished.
 - (void)serializePasswords:
-            (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
-                passwords
+            (const std::vector<password_manager::CredentialUIEntry>&)passwords
                    handler:(void (^)(std::string))serializedPasswordsHandler;
 
 @end
@@ -108,7 +107,7 @@ enum class ExportState {
 // Method to be called in order to start the export flow. This initiates
 // the reauthentication procedure and asks for password serialization.
 - (void)startExportFlow:
-    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)passwords;
+    (const std::vector<password_manager::CredentialUIEntry>&)passwords;
 
 // Called when the user cancels the export operation.
 - (void)cancelExport;

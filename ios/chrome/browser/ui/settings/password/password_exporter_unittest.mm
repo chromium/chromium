@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/password_test_util.h"
@@ -35,8 +36,7 @@
 }
 
 - (void)serializePasswords:
-            (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
-                passwords
+            (const std::vector<password_manager::CredentialUIEntry>&)passwords
                    handler:(void (^)(std::string))serializedPasswordsHandler {
   _serializedPasswordsHandler = serializedPasswordsHandler;
 }
@@ -107,16 +107,13 @@ class PasswordExporterTest : public PlatformTest {
                               delegate:password_exporter_delegate_];
   }
 
-  std::vector<std::unique_ptr<password_manager::PasswordForm>>
-  CreatePasswordList() {
-    auto password_form = std::make_unique<password_manager::PasswordForm>();
-    password_form->url = GURL("http://accounts.google.com/a/LoginAuth");
-    password_form->username_value = u"test@testmail.com";
-    password_form->password_value = u"test1";
+  std::vector<password_manager::CredentialUIEntry> CreatePasswordList() {
+    password_manager::PasswordForm password_form;
+    password_form.url = GURL("http://accounts.google.com/a/LoginAuth");
+    password_form.username_value = u"test@testmail.com";
+    password_form.password_value = u"test1";
 
-    std::vector<std::unique_ptr<password_manager::PasswordForm>> password_forms;
-    password_forms.push_back(std::move(password_form));
-    return password_forms;
+    return {password_manager::CredentialUIEntry(password_form)};
   }
 
   id password_exporter_delegate_;

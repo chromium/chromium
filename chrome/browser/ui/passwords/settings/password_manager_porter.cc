@@ -113,10 +113,9 @@ void PasswordImportConsumer::ConsumePassword(
 }  // namespace
 
 PasswordManagerPorter::PasswordManagerPorter(
-    password_manager::CredentialProviderInterface*
-        credential_provider_interface,
+    password_manager::SavedPasswordsPresenter* presenter,
     ProgressCallback on_export_progress_callback)
-    : credential_provider_interface_(credential_provider_interface),
+    : presenter_(presenter),
       on_export_progress_callback_(on_export_progress_callback) {}
 
 PasswordManagerPorter::~PasswordManagerPorter() = default;
@@ -132,11 +131,10 @@ bool PasswordManagerPorter::Store() {
   }
 
   // Set a new exporter for this request.
-  exporter_ =
-      exporter_for_testing_
-          ? std::move(exporter_for_testing_)
-          : std::make_unique<password_manager::PasswordManagerExporter>(
-                credential_provider_interface_, on_export_progress_callback_);
+  exporter_ = exporter_for_testing_
+                  ? std::move(exporter_for_testing_)
+                  : std::make_unique<password_manager::PasswordManagerExporter>(
+                        presenter_, on_export_progress_callback_);
 
   // Start serialising while the user selects a file.
   exporter_->PreparePasswordsForExport();
