@@ -104,8 +104,15 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
   MakeTypicalCall("testCanvasCapture(draw2d);", kCanvasCaptureTestHtmlFile);
 }
 
+#if BUILDFLAG(IS_MAC)
+// https://crbug.com/1335032
+#define MAYBE_VerifyCanvasCaptureWebGLFrames \
+  DISABLED_VerifyCanvasCaptureWebGLFrames
+#else
+#define MAYBE_VerifyCanvasCaptureWebGLFrames VerifyCanvasCaptureWebGLFrames
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
-                       VerifyCanvasCaptureWebGLFrames) {
+                       MAYBE_VerifyCanvasCaptureWebGLFrames) {
   MakeTypicalCall("testCanvasCapture(drawWebGL);", kCanvasCaptureTestHtmlFile);
 }
 
