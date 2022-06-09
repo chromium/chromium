@@ -515,12 +515,7 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
       VaapiWrapper::GetSupportedScalabilityModes(
           H264PROFILE_BASELINE, VAProfileH264ConstrainedBaseline);
 #if BUILDFLAG(IS_CHROMEOS)
-  // TODO(b/199487660): Enable H.264 temporal layer encoding on AMD once their
-  // drivers support them.
-  const auto implementation = VaapiWrapper::GetImplementationType();
-  if (base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding) &&
-      (implementation == VAImplementation::kIntelI965 ||
-       implementation == VAImplementation::kIntelIHD)) {
+  if (base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding)) {
     EXPECT_EQ(scalability_modes_h264_baseline, kSupportedTemporalSVC);
   } else {
     EXPECT_TRUE(scalability_modes_h264_baseline.empty());

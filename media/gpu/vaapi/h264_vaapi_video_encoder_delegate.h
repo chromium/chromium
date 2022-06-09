@@ -152,10 +152,6 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   // RefPicList0 per spec (spec section 8.2.4.2).
   base::circular_deque<scoped_refptr<H264Picture>> ref_pic_list0_;
 
-  // Sets true if and only if testing.
-  // TODO(b/199487660): Remove once all drivers support temporal layers.
-  bool supports_temporal_layer_for_testing_ = false;
-
   uint8_t num_temporal_layers_ = 1;
 };
 

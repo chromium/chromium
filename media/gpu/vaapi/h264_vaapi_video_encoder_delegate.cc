@@ -226,22 +226,6 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
     DVLOGF(1) << "Spatial layer encoding is not supported";
     return false;
   }
-  if (config.HasTemporalLayer() && !supports_temporal_layer_for_testing_) {
-    bool support_temporal_layer = false;
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
-    VAImplementation implementation = VaapiWrapper::GetImplementationType();
-    // TODO(b/199487660): Enable H.264 temporal layer encoding on AMD once their
-    // drivers support them.
-    support_temporal_layer =
-        base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding) &&
-        (implementation == VAImplementation::kIntelI965 ||
-         implementation == VAImplementation::kIntelIHD);
-#endif
-    if (!support_temporal_layer) {
-      DVLOGF(1) << "Temporal layer encoding is not supported";
-      return false;
-    }
-  }
 
   visible_size_ = config.input_visible_size;
   // For 4:2:0, the pixel sizes have to be even.
@@ -288,15 +272,6 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
         num_temporal_layers_ < kMinSupportedH264TemporalLayers) {
       DVLOGF(1) << "Unsupported number of temporal layers: "
                 << base::strict_cast<size_t>(num_temporal_layers_);
-      return false;
-    }
-
-    // |ave_config.max_num_ref_frames| represents the maximum number of
-    // reference frames for both the reference picture list 0 (bottom 16 bits)
-    // and the reference picture list 1 (top 16 bits) in H264 encoding.
-    const size_t max_p_frame_slots = ave_config.max_num_ref_frames & 0xffff;
-    if (max_p_frame_slots < num_temporal_layers_ - 1) {
-      DVLOGF(1) << "P frame slots is too short: " << max_p_frame_slots;
       return false;
     }
   }

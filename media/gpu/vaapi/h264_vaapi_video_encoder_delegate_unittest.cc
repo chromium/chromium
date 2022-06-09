@@ -188,8 +188,6 @@ void H264VaapiVideoEncoderDelegateTest::SetUp() {
       base::BindRepeating(&H264VaapiVideoEncoderDelegateTest::OnError,
                           base::Unretained(this)));
   EXPECT_CALL(*this, OnError()).Times(0);
-
-  encoder_->supports_temporal_layer_for_testing_ = true;
 }
 
 bool H264VaapiVideoEncoderDelegateTest::InitializeEncoder(
