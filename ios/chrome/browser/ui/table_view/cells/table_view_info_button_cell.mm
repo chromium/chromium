@@ -61,6 +61,7 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
     self.isAccessibilityElement = YES;
+    _isButtonSelectedForVoiceOver = YES;
 
     _iconImageView = [[UIImageView alloc] init];
     _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -326,7 +327,11 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
 
 - (CGPoint)accessibilityActivationPoint {
   // Center the activation point over the info button, so that double-tapping
-  // triggers to show the popover.
+  // triggers to show the popover if `isButtonSelectedForVoiceOver` is
+  // true.
+  if (!self.isButtonSelectedForVoiceOver)
+    return self.center;
+
   CGRect buttonFrame = UIAccessibilityConvertFrameToScreenCoordinates(
       self.trailingButton.frame, self);
   return CGPointMake(CGRectGetMidX(buttonFrame), CGRectGetMidY(buttonFrame));

@@ -37,6 +37,12 @@
 // The customized accessibility hint text string.
 @property(nonatomic, copy) NSString* customizedAccessibilityHint;
 
+// Boolean for if accessibility activation point should be on the button when
+// VoiceOver is enabled. By default, YES makes the accessibility
+// activation point on the UIButton. If NO, the default activation point,
+// the center, will be used.
+@property(nonatomic, assign) BOOL isButtonSelectedForVoiceOver;
+
 // Sets the icon `image` and tint `color` for it that should be displayed at the
 // leading edge of the cell. If set to nil, the icon will be hidden and the
 // remaining content will expand to fill the full width of the cell.

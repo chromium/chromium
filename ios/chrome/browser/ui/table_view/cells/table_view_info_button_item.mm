@@ -19,6 +19,7 @@
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [TableViewInfoButtonCell class];
+    _accessibilityActivationPointOnButton = YES;
   }
   return self;
 }
@@ -48,6 +49,7 @@
   if (self.accessibilityDelegate) {
     cell.accessibilityCustomActions = [self createAccessibilityActions];
   }
+  cell.isButtonSelectedForVoiceOver = self.accessibilityActivationPointOnButton;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
   // Update the icon image, if one is present.

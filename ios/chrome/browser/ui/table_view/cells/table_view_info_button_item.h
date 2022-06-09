@@ -45,6 +45,11 @@
 @property(nonatomic, weak) id<TableViewInfoButtonItemDelegate>
     accessibilityDelegate;
 
+// Boolean for if the accessibility activation point should be on the button of
+// cell. The default value is YES. If value is changed to NO, the activation
+// point will be on the center of the cell.
+@property(nonatomic, assign) BOOL accessibilityActivationPointOnButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_INFO_BUTTON_ITEM_H_
