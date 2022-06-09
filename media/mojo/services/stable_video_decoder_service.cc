@@ -4,6 +4,8 @@
 
 #include "media/mojo/services/stable_video_decoder_service.h"
 
+#include "media/mojo/common/media_type_converters.h"
+
 namespace media {
 
 StableVideoDecoderService::StableVideoDecoderService(
@@ -72,6 +74,7 @@ void StableVideoDecoderService::Initialize(
     InitializeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!video_decoder_client_receiver_.is_bound()) {
+    DVLOG(2) << __func__ << " Construct() must be called first";
     std::move(callback).Run(DecoderStatus::Codes::kFailedToCreateDecoder,
                             /*needs_bitstream_conversion=*/false,
                             /*max_decode_requests=*/1,
@@ -99,7 +102,17 @@ void StableVideoDecoderService::Decode(
     const scoped_refptr<DecoderBuffer>& buffer,
     DecodeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
+  if (!video_decoder_client_receiver_.is_bound()) {
+    DVLOG(2) << __func__ << " Construct() must be called first";
+    std::move(callback).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
+    return;
+  }
+
+  CHECK(buffer);
+  mojom::DecoderBufferPtr mojo_buffer = mojom::DecoderBuffer::From(*buffer);
+  CHECK(mojo_buffer);
+  dst_video_decoder_remote_->Decode(std::move(mojo_buffer),
+                                    std::move(callback));
 }
 
 void StableVideoDecoderService::Reset(ResetCallback callback) {
