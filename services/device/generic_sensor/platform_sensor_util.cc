@@ -17,6 +17,9 @@ namespace {
 static_assert(kAccelerometerRoundingMultiple > 0.0,
               "Rounding multiple must be positive.");
 
+static_assert(kAlsRoundingMultiple > 0,
+              "Rounding multiple must be positive.");
+
 static_assert(kGyroscopeRoundingMultiple > 0.0,
               "Rounding multiple must be positive.");
 
