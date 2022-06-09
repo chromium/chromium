@@ -87,11 +87,19 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
     }
 
     private String getPublicationId(GURL url) {
+        String host = url.getHost();
+
+        // First check the downloaded component.
+        String publicationID = CrowBridge.getPublicationIDForHost(host);
+        if (!publicationID.isEmpty()) {
+            return publicationID;
+        }
+
+        // Then check the experimental Finch config.
         if (mDomainIdMap == null) {
             mDomainIdMap = parseDomainIdMap(ChromeFeatureList.getFieldTrialParamByFeature(
                     ChromeFeatureList.SHARE_CROW_BUTTON, DOMAIN_LIST_URL_PARAM));
         }
-        String host = url.getHost();
         if (!mDomainIdMap.containsKey(host)) {
             return DOMAIN_ID_NONE;
         }

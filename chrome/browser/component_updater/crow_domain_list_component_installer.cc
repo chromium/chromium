@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/share/core/crow/crow_configuration.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/feed/feed_feature_list.h"
@@ -54,7 +55,7 @@ void LoadCrowConfigFromDisk(const base::FilePath& pb_path) {
     return;
   }
 
-  // TODO(crbug.com/1320476): Update a config class.
+  crow::CrowConfiguration::GetInstance()->PopulateFromBinaryPb(binary_pb);
 }
 
 }  // namespace

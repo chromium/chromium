@@ -28,10 +28,10 @@ source_set("share_targets_unittest") {
 
   deps = [
     ":share_targets",
-    "//base:base",
+    "//base",
     "//build:chromeos_buildflags",
     "//components/country_codes",
-    "//testing/gmock:gmock",
-    "//testing/gtest:gtest",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }
