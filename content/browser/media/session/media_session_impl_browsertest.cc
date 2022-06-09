@@ -3231,6 +3231,75 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplPrerenderingBrowserTest,
   EXPECT_NE(player_observer->GetAudioOutputSinkId(player_1), "speaker1");
 }
 
+IN_PROC_BROWSER_TEST_F(MediaSessionImplPrerenderingBrowserTest,
+                       DontClearFaviconCacheOnPrerenderNavigation) {
+  {
+    std::vector<media_session::MediaImage> expected_images;
+    media_session::MediaImage test_image;
+    test_image.src =
+        embedded_test_server()->GetURL("example.com", "/favicon.ico");
+    test_image.sizes.emplace_back(kDefaultFaviconSize);
+    expected_images.emplace_back(test_image);
+
+    media_session::test::MockMediaSessionMojoObserver observer(*media_session_);
+
+    observer.WaitForExpectedImagesOfType(
+        media_session::mojom::MediaSessionImageType::kSourceIcon,
+        expected_images);
+  }
+
+  std::vector<gfx::Size> valid_sizes;
+  valid_sizes.emplace_back(gfx::Size(100, 100));
+  valid_sizes.emplace_back(gfx::Size(200, 200));
+
+  GURL test_image_src = favicon_server().GetURL("/favicon.ico");
+  EXPECT_FALSE(media_session_->HasImageCacheForTest(test_image_src));
+
+  std::vector<blink::mojom::FaviconURLPtr> favicons;
+  favicons.emplace_back(blink::mojom::FaviconURL::New(
+      test_image_src, blink::mojom::FaviconIconType::kFavicon, valid_sizes));
+
+  media_session_->DidUpdateFaviconURL(shell()->web_contents()->GetMainFrame(),
+                                      favicons);
+  media_session::MediaImage test_image;
+  test_image.src = test_image_src;
+  test_image.sizes = valid_sizes;
+
+  {
+    EXPECT_EQ(0, get_favicon_calls());
+
+    base::RunLoop run_loop;
+    media_session_->GetMediaImageBitmap(
+        test_image, 100, 100,
+        base::BindLambdaForTesting([&](const SkBitmap&) { run_loop.Quit(); }));
+    run_loop.Run();
+
+    EXPECT_EQ(2, get_favicon_calls());
+  }
+
+  EXPECT_TRUE(media_session_->HasImageCacheForTest(test_image_src));
+
+  // Prerender the next page.
+  auto prerender_url =
+      embedded_test_server()->GetURL("example.com", "/title2.html");
+  int host_id = prerender_helper_.AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+  EXPECT_NE(prerender_rfh, nullptr);
+
+  {
+    base::RunLoop run_loop;
+    media_session_->GetMediaImageBitmap(
+        test_image, 100, 100,
+        base::BindLambdaForTesting([&](const SkBitmap&) { run_loop.Quit(); }));
+    run_loop.Run();
+
+    EXPECT_EQ(3, get_favicon_calls());
+  }
+
+  EXPECT_TRUE(media_session_->HasImageCacheForTest(test_image_src));
+}
+
 class MediaSessionImplWithBackForwardCacheBrowserTest
     : public MediaSessionImplBrowserTest {
  protected:

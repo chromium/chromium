@@ -319,8 +319,6 @@ void MediaSessionImpl::DidFinishNavigation(
     return;
   }
 
-  image_cache_.clear();
-
   auto new_origin = url::Origin::Create(navigation_handle->GetURL());
   if (navigation_handle->IsInPrimaryMainFrame() &&
       !new_origin.IsSameOriginWith(origin_)) {
@@ -889,8 +887,10 @@ void MediaSessionImpl::OnImageDownloadComplete(
     }
   }
 
-  if (source_icon)
-    image_cache_.emplace(image_url, bitmap);
+  if (source_icon) {
+    GetPageData(web_contents()->GetPrimaryPage())
+        .AddImageCache(image_url, bitmap);
+  }
 
   std::move(callback).Run(bitmap);
 }
@@ -1299,9 +1299,12 @@ void MediaSessionImpl::GetMediaImageBitmap(
   }
 
   // Check the cache.
-  if (source_icon && base::Contains(image_cache_, image.src)) {
-    std::move(callback).Run(image_cache_.at(image.src));
-    return;
+  PageData& page_data = GetPageData(web_contents()->GetPrimaryPage());
+  if (source_icon) {
+    if (auto* bitmap = page_data.GetImageCache(image.src)) {
+      std::move(callback).Run(*bitmap);
+      return;
+    }
   }
 
   const gfx::Size preferred_size(desired_size_px, desired_size_px);
@@ -1867,6 +1870,22 @@ void MediaSessionImpl::SetShouldThrottleDurationUpdateForTest(
     bool should_throttle) {
   should_throttle_duration_update_ = should_throttle;
 }
+
+bool MediaSessionImpl::HasImageCacheForTest(const GURL& image_url) const {
+  return GetPageData(web_contents()->GetPrimaryPage()).GetImageCache(image_url);
+}
+
+MediaSessionImpl::PageData::PageData(content::Page& page)
+    : PageUserData(page) {}
+
+MediaSessionImpl::PageData::~PageData() = default;
+
+MediaSessionImpl::PageData& MediaSessionImpl::GetPageData(
+    content::Page& page) const {
+  return *PageData::GetOrCreateForPage(page);
+}
+
+PAGE_USER_DATA_KEY_IMPL(MediaSessionImpl::PageData);
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaSessionImpl);
 
