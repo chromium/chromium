@@ -28,8 +28,6 @@ accessibility/slot-poison.html [ Failure ]
 
 # Temporarily disabled for DevTools.
 crbug.com/1304217 http/tests/devtools/text-source-map.js [ Skip ]
-crbug.com/1330482 http/tests/devtools/unit/viewport-datagrid-items-attached-to-dom.js [ Skip ]
-crbug.com/1330482 http/tests/devtools/unit/viewport-datagrid-items-expandable-attached-to-dom.js [ Skip ]
 
 # Expected to time out.
 external/wpt/infrastructure/expected-fail/timeout.html [ Timeout ]
