@@ -2576,13 +2576,14 @@ static PhysicalRect BoundingBoxInPaginationContainer(
       // because it doesn't have contents visual overflow.
       !object.IsTableSection()) {
     const auto* layer = To<LayoutBoxModelObject>(object).Layer();
-    DCHECK(layer->EnclosingPaginationLayer());
-    ClipRect clip;
-    layer->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
-        .CalculateBackgroundClipRect(
-            ClipRectsContext(&enclosing_pagination_layer, nullptr), clip);
-    return Intersection(
-        clip.Rect(), layer->PhysicalBoundingBox(&enclosing_pagination_layer));
+    if (layer->EnclosingPaginationLayer()) {
+      ClipRect clip;
+      layer->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
+          .CalculateBackgroundClipRect(
+              ClipRectsContext(&enclosing_pagination_layer, nullptr), clip);
+      return Intersection(
+          clip.Rect(), layer->PhysicalBoundingBox(&enclosing_pagination_layer));
+    }
   }
 
   PhysicalRect local_bounds;
