@@ -954,11 +954,17 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
 
   // Mimic successful key downloading, it should make fetch keys attempt
   // completed. Note that the client should keep old key as well.
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(fetch_keys_callback,
               Run(/*keys=*/ElementsAre(kInitialVaultKey, kNewVaultKey)));
   std::move(download_keys_callback)
       .Run(TrustedVaultDownloadKeysStatus::kSuccess, {kNewVaultKey},
            kNewLastKeyVersion);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDownloadKeysStatus",
+      /*sample=*/TrustedVaultDownloadKeysStatus::kSuccess,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
@@ -994,10 +1000,15 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   Mock::VerifyAndClearExpectations(connection());
 
   // Mimic transient failure.
+  base::HistogramTester histogram_tester;
   std::move(download_keys_callback)
       .Run(TrustedVaultDownloadKeysStatus::kOtherError,
            /*keys=*/std::vector<std::vector<uint8_t>>(),
            /*last_key_version=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDownloadKeysStatus",
+      /*sample=*/TrustedVaultDownloadKeysStatus::kOtherError,
+      /*expected_bucket_count=*/1);
 
   download_keys_callback = TrustedVaultConnection::DownloadNewKeysCallback();
   EXPECT_CALL(*connection(), DownloadNewKeys).Times(0);

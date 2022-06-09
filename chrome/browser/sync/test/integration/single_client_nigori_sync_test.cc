@@ -45,6 +45,7 @@
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
 #include "components/sync/trusted_vault/fake_security_domains_server.h"
 #include "components/sync/trusted_vault/securebox.h"
+#include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -1351,6 +1352,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
   // Rotate trusted vault key and mimic transition to trusted vault passphrase
   // type.
+  base::HistogramTester histogram_tester;
   std::vector<uint8_t> new_trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
           /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
@@ -1369,6 +1371,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
       trusted_vault_key_params.derivation_params, GetFakeServer());
   EXPECT_TRUE(PasswordFormsChecker(0, {password_form}).Wait());
   EXPECT_FALSE(GetSecurityDomainsServer()->ReceivedInvalidRequest());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDownloadKeysStatus",
+      /*sample=*/syncer::TrustedVaultDownloadKeysStatus::kSuccess,
+      /*expected_bucket_count=*/1);
 }
 
 // Regression test for crbug.com/1267391: after following key rotation the
