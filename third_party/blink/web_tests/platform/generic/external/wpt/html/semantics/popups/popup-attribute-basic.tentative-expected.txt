@@ -7,7 +7,7 @@ PASS The .showPopup() and .hidePopup() work on a popup, for <div popup="async">P
 PASS The .showPopup() and .hidePopup() do NOT work on elements without a 'popup' attribute, <div>Non-popup</div>.
 PASS The .showPopup() and .hidePopup() do NOT work on elements without a 'popup' attribute, <div popup="popup">Non-popup</div>.
 PASS The .showPopup() and .hidePopup() do NOT work on elements without a 'popup' attribute, <div popup="invalid">Non-popup</div>.
-FAIL IDL attribute reflection assert_equals: Invalid values should reflect as null expected (object) null but got (string) ""
+FAIL IDL attribute reflection assert_equals: Attribute for "null" should still get set expected (string) "null" but got (object) null
 PASS Popup attribute value should be case insensitive
 PASS Changing attribute values for popup should work
 PASS Changing attribute values should close open popups

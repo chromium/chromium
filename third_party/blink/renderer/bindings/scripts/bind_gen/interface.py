@@ -613,13 +613,12 @@ def _make_reflect_process_keyword_state(cg_context):
     if not cg_context.attribute_get:
         return None
 
+    is_nullable = cg_context.return_type.unwrap(nullable=False).is_nullable
     ext_attrs = cg_context.attribute.extended_attributes
-    keywords = ext_attrs.values_of("ReflectOnly")
-    missing_default = ext_attrs.value_of("ReflectMissing")
-    empty_default = ext_attrs.value_of("ReflectEmpty")
-    invalid_default = ext_attrs.value_of("ReflectInvalid")
 
     def constant(keyword):
+        if keyword is None and is_nullable:
+            return "g_null_atom"
         if not keyword:
             return "g_empty_atom"
         return "keywords::{}".format(name_style.constant(keyword))
@@ -634,32 +633,36 @@ def _make_reflect_process_keyword_state(cg_context):
         branches,
     ]
 
-    if missing_default is not None:
+    if "ReflectMissing" in ext_attrs:
+        missing_default = ext_attrs.value_of("ReflectMissing")
         branches.append(
             cond="reflect_value.IsNull()",
             body=F("${return_value} = {};", constant(missing_default)))
-    elif cg_context.return_type.unwrap(nullable=False).is_nullable:
+    elif is_nullable:
         branches.append(
             cond="reflect_value.IsNull()",
             body=T("// Null string to IDL null."))
 
-    if empty_default is not None:
+    if "ReflectEmpty" in ext_attrs:
+        empty_default = ext_attrs.value_of("ReflectEmpty")
         branches.append(
             cond="reflect_value.IsEmpty()",
             body=F("${return_value} = {};", constant(empty_default)))
 
+    keywords = ext_attrs.values_of("ReflectOnly")
     expr = " || ".join(
         map(lambda keyword: "reflect_value == {}".format(constant(keyword)),
             keywords))
     branches.append(cond=expr, body=T("${return_value} = reflect_value;"))
 
-    if invalid_default is not None:
+    if "ReflectInvalid" in ext_attrs:
+        invalid_default = ext_attrs.value_of("ReflectInvalid")
         branches.append(
             cond=True,
             body=F("${return_value} = {};", constant(invalid_default)))
     else:
-        branches.append(
-            cond=True, body=F("${return_value} = {};", constant("")))
+        branches.append(cond=True,
+                        body=F("${return_value} = {};", constant(None)))
 
     return SequenceNode(nodes)
 
