@@ -28,7 +28,7 @@
 
 // Public macro to use in test helpers methods. Usage example:
 //
-// @interface MyEarlGreyImpl : TestHelperImpl
+// @interface MyEarlGreyImpl : BaseEGTestHelperImpl
 // @end
 // @implementation MyEarlGreyImpl
 // - (void)waitForLoadCompletion {
@@ -38,7 +38,7 @@
 // @end
 //
 // In this example WaitForLoadCompletion() must return bool indicating success
-// and MyEarlGreyImpl has to be a subclass of TestHelperImpl.
+// and MyEarlGreyImpl has to be a subclass of BaseEGTestHelperImpl.
 //
 #define EG_TEST_HELPER_ASSERT_TRUE(__expression, __description) \
   [self fail:!__expression                                      \
