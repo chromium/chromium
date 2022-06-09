@@ -2946,9 +2946,17 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
   // TODO(penghuang): check supported format correctly.
   gpu::Capabilities caps;
   caps.texture_format_bgra8888 = true;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1317015): add support RGBA_F16 in LaCrOS.
+  auto format = color_space.IsHDR()
+                    ? RGBA_1010102
+                    : PlatformColor::BestSupportedTextureFormat(caps);
+#else
   auto format = color_space.IsHDR()
                     ? RGBA_F16
                     : PlatformColor::BestSupportedTextureFormat(caps);
+#endif
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY;
   if (requirements.generate_mipmap)
     usage |= gpu::SHARED_IMAGE_USAGE_MIPMAP;
