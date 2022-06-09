@@ -64,6 +64,14 @@ bool CheckSecurityRestrictions(LocalFrame& frame) {
     return false;
   }
 
+  // TODO(bokan): Reevaluate whether it's safe to allow text fragments inside a
+  // fenced frame. https://crbug.com/1334788.
+  if (frame.IsFencedFrameRoot()) {
+    TRACE_EVENT_INSTANT("blink", "CheckSecurityRestrictions", "Result",
+                        "Fenced Frame");
+    return false;
+  }
+
   // For cross origin initiated navigations, we only allow text
   // fragments if the frame is not script accessible by another frame, i.e. no
   // cross origin iframes or window.open.
