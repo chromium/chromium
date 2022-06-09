@@ -8,14 +8,12 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-<if expr="not is_chromecast">
 body {
   -webkit-user-select: none;
   cursor: default;
   font-family: $FONTFAMILY;
   font-size: $FONTSIZE;
 }
-</if>
 
 webview, appview {
   display: inline-block;

@@ -84,14 +84,12 @@
 
 namespace gpu {
 
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) &&          \
-    !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMECAST) && \
-    BUILDFLAG(ENABLE_VULKAN)
-
 namespace {
 
+#if defined(USE_OZONE) && BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
+
 bool ShouldUseExternalVulkanImageFactory() {
-#if defined(USE_OZONE)
+#if BUILDFLAG(ENABLE_VULKAN)
   return ui::OzonePlatform::GetInstance()
       ->GetPlatformProperties()
       .uses_external_vulkan_image_factory;
@@ -100,11 +98,7 @@ bool ShouldUseExternalVulkanImageFactory() {
 #endif
 }
 
-}  // namespace
-
-#endif
-
-namespace {
+#endif  // defined(USE_OZONE) && BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
 
 bool ShouldUseOzoneFactory() {
 #if defined(USE_OZONE)
@@ -387,8 +381,7 @@ SharedImageFactory::SharedImageFactory(
     factories_.push_back(std::move(external_vk_image_factory));
   }
 #elif defined(USE_OZONE)
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-    !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
   // Desktop Linux, not ChromeOS.
   if (ShouldUseOzoneFactory()) {
     auto ozone_factory =
