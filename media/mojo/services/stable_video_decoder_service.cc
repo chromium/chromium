@@ -11,9 +11,12 @@ StableVideoDecoderService::StableVideoDecoderService(
     : video_decoder_client_receiver_(this),
       media_log_receiver_(this),
       stable_video_frame_handle_releaser_receiver_(this),
-      dst_video_decoder_(std::move(dst_video_decoder)) {
+      dst_video_decoder_(std::move(dst_video_decoder)),
+      dst_video_decoder_receiver_(dst_video_decoder_.get()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!!dst_video_decoder_);
+  dst_video_decoder_remote_.Bind(
+      dst_video_decoder_receiver_.BindNewPipeAndPassRemote());
 }
 
 StableVideoDecoderService::~StableVideoDecoderService() {
@@ -54,11 +57,11 @@ void StableVideoDecoderService::Construct(
   stable_video_frame_handle_releaser_receiver_.Bind(
       std::move(stable_video_frame_handle_releaser_receiver));
 
-  dst_video_decoder_->Construct(
+  dst_video_decoder_remote_->Construct(
       video_decoder_client_receiver_.BindNewEndpointAndPassRemote(),
       media_log_receiver_.BindNewPipeAndPassRemote(),
       video_frame_handle_releaser_remote_.BindNewPipeAndPassReceiver(),
-      std::move(decoder_buffer_pipe), mojom::CommandBufferId::New(),
+      std::move(decoder_buffer_pipe), mojom::CommandBufferIdPtr(),
       target_color_space);
 }
 
@@ -94,7 +97,10 @@ void StableVideoDecoderService::OnVideoFrameDecoded(
     bool can_read_without_stalling,
     const absl::optional<base::UnguessableToken>& release_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
+  DCHECK(stable_video_decoder_client_remote_.is_bound());
+  DCHECK(release_token.has_value());
+  stable_video_decoder_client_remote_->OnVideoFrameDecoded(
+      frame, can_read_without_stalling, *release_token);
 }
 
 void StableVideoDecoderService::OnWaiting(WaitingReason reason) {

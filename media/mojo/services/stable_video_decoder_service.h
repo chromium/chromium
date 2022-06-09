@@ -110,8 +110,18 @@ class MEDIA_MOJO_EXPORT StableVideoDecoderService
       video_frame_handle_releaser_remote_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The incoming stable::mojom::StableVideoDecoder requests are forwarded to
-  // |dst_video_decoder_|.
+  // |dst_video_decoder_receiver_| through |dst_video_decoder_remote_|.
+  //
+  // Note: the implementation behind |dst_video_decoder_receiver_| (i.e.,
+  // |dst_video_decoder_|) lives in-process. The reason we don't just make calls
+  // directly to that implementation is that when we call Construct(), we need
+  // to pass a mojo::PendingAssociatedRemote which needs to be sent over an
+  // existing pipe before using it to make calls.
   std::unique_ptr<mojom::VideoDecoder> dst_video_decoder_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  mojo::Receiver<mojom::VideoDecoder> dst_video_decoder_receiver_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  mojo::Remote<mojom::VideoDecoder> dst_video_decoder_remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -19,6 +19,7 @@ using testing::_;
 using testing::ByMove;
 using testing::Mock;
 using testing::Return;
+using testing::SaveArg;
 using testing::StrictMock;
 
 namespace media {
@@ -365,6 +366,36 @@ TEST_F(StableVideoDecoderServiceTest,
   EXPECT_TRUE(ConstructStableVideoDecoder(stable_video_decoder_remote,
                                           *mock_video_decoder_raw,
                                           /*expect_construct_call=*/false));
+}
+
+TEST_F(StableVideoDecoderServiceTest,
+       StableVideoDecoderClientReceivesOnVideoFrameDecodedEvent) {
+  auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
+  auto* mock_video_decoder_raw = mock_video_decoder.get();
+  auto stable_video_decoder_remote =
+      CreateStableVideoDecoder(std::move(mock_video_decoder));
+  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
+  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
+  auto auxiliary_endpoints = ConstructStableVideoDecoder(
+      stable_video_decoder_remote, *mock_video_decoder_raw,
+      /*expect_construct_call=*/true);
+  ASSERT_TRUE(auxiliary_endpoints);
+  ASSERT_TRUE(auxiliary_endpoints->video_decoder_client_remote);
+  ASSERT_TRUE(auxiliary_endpoints->mock_stable_video_decoder_client);
+
+  const auto token_for_release = base::UnguessableToken::Create();
+  scoped_refptr<VideoFrame> video_frame_to_send = VideoFrame::CreateEOSFrame();
+  scoped_refptr<VideoFrame> video_frame_received;
+  constexpr bool kCanReadWithoutStalling = true;
+  EXPECT_CALL(
+      *auxiliary_endpoints->mock_stable_video_decoder_client,
+      OnVideoFrameDecoded(_, kCanReadWithoutStalling, token_for_release))
+      .WillOnce(SaveArg<0>(&video_frame_received));
+  auxiliary_endpoints->video_decoder_client_remote->OnVideoFrameDecoded(
+      video_frame_to_send, kCanReadWithoutStalling, token_for_release);
+  auxiliary_endpoints->video_decoder_client_remote.FlushForTesting();
+  ASSERT_TRUE(video_frame_received);
+  EXPECT_TRUE(video_frame_received->metadata().end_of_stream);
 }
 
 }  // namespace
