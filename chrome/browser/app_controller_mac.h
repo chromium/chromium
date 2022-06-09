@@ -115,6 +115,13 @@ class ThemeProvider;
 
   // Request to keep the browser alive during that object's lifetime.
   std::unique_ptr<ScopedKeepAlive> _keep_alive;
+
+  // Remembers whether _lastProfile had TabRestoreService entries. This is saved
+  // when _lastProfile is destroyed and Chromium enters the zero-profile state.
+  //
+  // By remembering this bit, Chromium knows whether to enable or disable
+  // Cmd+Shift+T and the related "File > Reopen Closed Tab" entry.
+  BOOL _tabRestoreWasEnabled;
 }
 
 @property(readonly, nonatomic) BOOL startupComplete;

@@ -104,6 +104,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/sessions/core/tab_restore_service_observer.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/plugin_service.h"
 #include "extensions/browser/extension_registry.h"
@@ -135,6 +136,47 @@ class RunInSafeProfileHelper {
   static Profile* GetSafeProfile(Profile* loaded_profile,
                                  Profile::CreateStatus status);
 };
+
+// Waits for the TabRestoreService to have loaded its entries, then calls
+// OpenWindowWithRestoredTabs().
+//
+// Owned by itself.
+class TabRestorer : public sessions::TabRestoreServiceObserver {
+ public:
+  explicit TabRestorer(Profile* profile) : profile_(profile) {}
+  ~TabRestorer() override = default;
+
+  void TabRestoreServiceDestroyed(
+      sessions::TabRestoreService* service) override {
+    service->RemoveObserver(this);
+    delete this;
+  }
+
+  void TabRestoreServiceLoaded(sessions::TabRestoreService* service) override {
+    chrome::OpenWindowWithRestoredTabs(profile_);
+    service->RemoveObserver(this);
+    delete this;
+  }
+
+ private:
+  raw_ptr<Profile> profile_;
+};
+
+// TODO(crbug.com/1334721): Single-tab windows get restored as tabs instead of
+// windows, which is confusing.
+void RestoreTab(Profile* profile) {
+  auto* service = TabRestoreServiceFactory::GetForProfile(profile);
+  if (!service)
+    return;
+  if (service->IsLoaded()) {
+    chrome::OpenWindowWithRestoredTabs(profile);
+  } else {
+    // TabRestoreService isn't loaded. Tell it to load entries, and call
+    // OpenWindowWithRestoredTabs() when it's done.
+    service->AddObserver(new TabRestorer(profile));
+    service->LoadTabsFromLastSession();
+  }
+}
 
 // How long we allow a workspace change notification to wait to be
 // associated with a dock activation. The animation lasts 250ms. See
@@ -1013,10 +1055,13 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 // Called to determine if we should enable the "restore tab" menu item.
 // Checks with the TabRestoreService to see if there's anything there to
 // restore and returns YES if so.
+//
+// In the zero-profile state, use the value from when the last profile was
+// still loaded (if ever).
 - (BOOL)canRestoreTab {
   Profile* lastProfile = [self lastProfileIfLoaded];
   if (!lastProfile)
-    return NO;
+    return _tabRestoreWasEnabled;
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(lastProfile);
   return service && !service->entries().empty();
@@ -1240,7 +1285,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
       CreateBrowser(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
       break;
     case IDC_RESTORE_TAB:
-      chrome::OpenWindowWithRestoredTabs(profile);
+      RestoreTab(profile);
       break;
     case IDC_OPEN_FILE:
       chrome::ExecuteCommand(CreateBrowser(profile), IDC_OPEN_FILE);
@@ -1666,6 +1711,11 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 - (void)setLastProfile:(Profile*)profile {
   if (profile == _lastProfile)
     return;
+
+  // If _lastProfile becomes null, remember the last state of Cmd+Shift+T so the
+  // command can continue working (or stay disabled). This is primarily meant
+  // for the zero-profile state.
+  _tabRestoreWasEnabled = profile == nullptr && [self canRestoreTab];
 
   // Before tearing down the menu controller bridges, return the history menu to
   // its initial state.
