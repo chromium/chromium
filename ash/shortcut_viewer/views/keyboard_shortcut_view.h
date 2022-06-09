@@ -9,8 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/search_box/search_box_view_delegate.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -141,7 +141,7 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   // initialization of background panes in the following frame.
   bool did_first_paint_ = false;
 
-  ash::ColorProvider* color_provider_;  // Not owned.
+  ash::AshColorProvider* color_provider_;
 
   base::WeakPtrFactory<KeyboardShortcutView> weak_factory_{this};
 };

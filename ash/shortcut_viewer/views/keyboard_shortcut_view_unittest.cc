@@ -24,11 +24,19 @@
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 
 namespace keyboard_shortcut_viewer {
+
+namespace {
+
+constexpr SkColor kTitleAndFrameColorLight = SK_ColorWHITE;
+constexpr SkColor kTitleAndFrameColorDark = gfx::kGoogleGrey900;
+
+}  // namespace
 
 class KeyboardShortcutViewTest : public ash::AshTestBase {
  public:
@@ -298,20 +306,19 @@ TEST_F(KeyboardShortcutViewTest, FrameAndBackgroundColorUpdates) {
   Toggle();
 
   auto* window = GetSearchBoxView()->GetWidget()->GetNativeWindow();
-  EXPECT_EQ(SK_ColorWHITE, window->GetProperty(chromeos::kFrameActiveColorKey));
-  EXPECT_EQ(SK_ColorWHITE,
+  EXPECT_EQ(kTitleAndFrameColorLight,
+            window->GetProperty(chromeos::kFrameActiveColorKey));
+  EXPECT_EQ(kTitleAndFrameColorLight,
             window->GetProperty(chromeos::kFrameInactiveColorKey));
-  EXPECT_EQ(SK_ColorWHITE, GetView()->GetBackground()->get_color());
+  EXPECT_EQ(kTitleAndFrameColorLight, GetView()->GetBackground()->get_color());
 
   ash::AshColorProvider::Get()->ToggleColorMode();
 
-  SkColor dark_mode_color = ash::AshColorProvider::Get()->GetBaseLayerColor(
-      ash::ColorProvider::BaseLayerType::kOpaque);
-  EXPECT_EQ(dark_mode_color,
+  EXPECT_EQ(kTitleAndFrameColorDark,
             window->GetProperty(chromeos::kFrameActiveColorKey));
-  EXPECT_EQ(dark_mode_color,
+  EXPECT_EQ(kTitleAndFrameColorDark,
             window->GetProperty(chromeos::kFrameInactiveColorKey));
-  EXPECT_EQ(dark_mode_color, GetView()->GetBackground()->get_color());
+  EXPECT_EQ(kTitleAndFrameColorDark, GetView()->GetBackground()->get_color());
 }
 
 }  // namespace keyboard_shortcut_viewer
