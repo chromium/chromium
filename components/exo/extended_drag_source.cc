@@ -167,6 +167,9 @@ ExtendedDragSource::~ExtendedDragSource() {
   if (source_)
     source_->RemoveObserver(this);
 
+  if (drag_source_window_)
+    drag_source_window_->RemoveObserver(this);
+
   DCHECK_EQ(instance_, this);
   instance_ = nullptr;
 }
@@ -217,6 +220,8 @@ void ExtendedDragSource::OnToplevelWindowDragStarted(
   drag_event_source_ = source;
   drag_source_window_ =
       drag_source_window ? drag_source_window->GetToplevelWindow() : nullptr;
+  if (drag_source_window_)
+    drag_source_window_->AddObserver(this);
   MaybeLockCursor();
 
   if (dragged_window_holder_ && dragged_window_holder_->toplevel_window())
@@ -265,6 +270,11 @@ void ExtendedDragSource::OnDataSourceDestroying(DataSource* source) {
   DCHECK_EQ(source, source_);
   source_->RemoveObserver(this);
   source_ = nullptr;
+}
+
+void ExtendedDragSource::OnWindowDestroyed(aura::Window* window) {
+  if (drag_source_window_ == window)
+    drag_source_window_ = nullptr;
 }
 
 void ExtendedDragSource::MaybeLockCursor() {
@@ -330,9 +340,8 @@ void ExtendedDragSource::OnDraggedWindowVisibilityChanging(bool visible) {
 
   aura::Window* toplevel = dragged_window_holder_->toplevel_window();
   DCHECK(toplevel);
-  DCHECK(drag_source_window_);
   toplevel->SetProperty(ash::kIsDraggingTabsKey, true);
-  if (drag_source_window_ != toplevel) {
+  if (drag_source_window_ && drag_source_window_ != toplevel) {
     toplevel->SetProperty(ash::kTabDraggingSourceWindowKey,
                           drag_source_window_);
   }
@@ -349,7 +358,6 @@ void ExtendedDragSource::OnDraggedWindowVisibilityChanged(bool visible) {
 
   aura::Window* toplevel = dragged_window_holder_->toplevel_window();
   DCHECK(toplevel);
-  DCHECK(drag_source_window_);
 
   // The |toplevel| window for the dragged surface has just been created and
   // it's about to be mapped. Calculate and set its position based on
@@ -360,7 +368,7 @@ void ExtendedDragSource::OnDraggedWindowVisibilityChanged(bool visible) {
   auto toplevel_bounds =
       gfx::Rect({screen_location, toplevel->bounds().size()});
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
-      drag_source_window_);
+      drag_source_window_ ? drag_source_window_ : toplevel);
   toplevel->SetBoundsInScreen(toplevel_bounds, display);
 
   if (WMHelper::GetInstance()->InTabletMode()) {
@@ -383,6 +391,8 @@ void ExtendedDragSource::Cleanup() {
         aura::client::kAnimationsDisabledKey);
   }
   event_blocker_.reset();
+  if (drag_source_window_)
+    drag_source_window_->RemoveObserver(this);
   drag_source_window_ = nullptr;
   UnlockCursor();
 }
@@ -397,6 +407,10 @@ absl::optional<gfx::Vector2d> ExtendedDragSource::GetDragOffsetForTesting()
   return dragged_window_holder_
              ? absl::optional<gfx::Vector2d>(dragged_window_holder_->offset())
              : absl::nullopt;
+}
+
+aura::Window* ExtendedDragSource::GetDragSourceWindowForTesting() {
+  return drag_source_window_;
 }
 
 }  // namespace exo

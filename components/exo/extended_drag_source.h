@@ -36,6 +36,7 @@ class DataSource;
 class Surface;
 
 class ExtendedDragSource : public DataSourceObserver,
+                           public aura::WindowObserver,
                            public ash::ToplevelWindowDragDelegate {
  public:
   class Delegate {
@@ -84,8 +85,12 @@ class ExtendedDragSource : public DataSourceObserver,
   // DataSourceObserver:
   void OnDataSourceDestroying(DataSource* source) override;
 
+  // aura::WindowObserver:
+  void OnWindowDestroyed(aura::Window* window) override;
+
   aura::Window* GetDraggedWindowForTesting();
   absl::optional<gfx::Vector2d> GetDragOffsetForTesting() const;
+  aura::Window* GetDragSourceWindowForTesting();
 
  private:
   class DraggedWindowHolder;

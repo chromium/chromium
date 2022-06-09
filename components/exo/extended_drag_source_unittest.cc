@@ -533,6 +533,33 @@ TEST_F(ExtendedDragSourceTest, DestroyDraggedSurfaceWhileDragging) {
   EXPECT_TRUE(surface->window()->GetBoundsInScreen().origin().IsOrigin());
 }
 
+// Regression test for crbug.com/1330125.
+// In exo, the drag source window could be destroyed while the dragged window
+// is updating its visibility. The example in this bug was while merging a
+// single-tab browser window in and out of another browser window.
+TEST_F(ExtendedDragSourceTest, DestroyDragSourceWindowWhileDragging) {
+  auto shell_surface =
+      exo::test::ShellSurfaceBuilder({32, 32}).BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+  // Start hidden so when it's shown later it triggers the memory violation.
+  shell_surface->GetWidget()->Hide();
+
+  extended_drag_source_->Drag(surface, gfx::Vector2d());
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(window, extended_drag_source_->GetDraggedWindowForTesting());
+
+  auto drag_source_window = CreateToplevelTestWindow({20, 30, 200, 100});
+  extended_drag_source_->OnToplevelWindowDragStarted(
+      {70.0, 70.0}, ui::mojom::DragEventSource::kMouse,
+      drag_source_window.get());
+  EXPECT_EQ(extended_drag_source_->GetDragSourceWindowForTesting(),
+            drag_source_window.get());
+  drag_source_window.reset();
+  EXPECT_EQ(extended_drag_source_->GetDragSourceWindowForTesting(), nullptr);
+  // Without the fix, in asan build, this should cause the use-after-free.
+  shell_surface->GetWidget()->Show();
+}
+
 TEST_F(ExtendedDragSourceTest, DragRequestsInRow_NoCrash) {
   // Create and map a toplevel shell surface, but hidden.
   auto shell_surface =
