@@ -819,8 +819,19 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(CSSParserTokenStream& stream) {
   if (style_sheet_)
     style_sheet_->SetHasMediaQueries();
 
-  MediaQuerySet* media = MediaQueryParser::ParseMediaQuerySet(
-      prelude, context_->GetExecutionContext());
+  String prelude_string =
+      stream
+          .StringRangeAt(prelude_offset_start,
+                         prelude_offset_end - prelude_offset_start)
+          .ToString();
+  Member<const MediaQuerySet>& media =
+      media_query_cache_.insert(prelude_string, nullptr).stored_value->value;
+
+  if (!media) {
+    media = MediaQueryParser::ParseMediaQuerySet(
+        prelude, context_->GetExecutionContext());
+    DCHECK(media);
+  }
 
   ConsumeRuleList(stream, kRegularRuleList,
                   [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
