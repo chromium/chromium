@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -65,6 +66,15 @@ Registry CreateRegistryForTesting(const std::string& base_url, int num_apps) {
   }
 
   return registry;
+}
+
+int CountApps(const WebAppRegistrar::AppSet& app_set) {
+  int count = 0;
+  for (const auto& web_app : app_set) {
+    EXPECT_FALSE(web_app.is_uninstalling());
+    ++count;
+  }
+  return count;
 }
 
 }  // namespace
@@ -219,6 +229,7 @@ TEST_F(WebAppRegistrarTest, CreateRegisterUnregister) {
   const WebApp* app2 = registrar().GetAppById(app_id2);
   EXPECT_EQ(app_id2, app2->app_id());
   EXPECT_FALSE(registrar().is_empty());
+  EXPECT_EQ(CountApps(registrar().GetApps()), 2);
 
   UnregisterApp(app_id);
   EXPECT_FALSE(registrar().IsInstalled(app_id));
@@ -234,6 +245,7 @@ TEST_F(WebAppRegistrarTest, CreateRegisterUnregister) {
   EXPECT_FALSE(registrar().IsInstalled(app_id2));
   EXPECT_EQ(nullptr, registrar().GetAppById(app_id2));
   EXPECT_TRUE(registrar().is_empty());
+  EXPECT_EQ(CountApps(registrar().GetApps()), 0);
 }
 
 TEST_F(WebAppRegistrarTest, DestroyRegistrarOwningRegisteredApps) {
@@ -1195,19 +1207,6 @@ TEST_F(WebAppRegistrarTest, TestIsDefaultManagementInstalled) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-namespace {
-
-int CountApps(const WebAppRegistrar::AppSet& app_set) {
-  int count = 0;
-  for (const auto& web_app : app_set) {
-    EXPECT_FALSE(web_app.is_uninstalling());
-    ++count;
-  }
-  return count;
-}
-
-}  // namespace
-
 class WebAppRegistrarAshTest : public WebAppTest, public WithCrosapiParam {
  public:
   WebAppRegistrarAshTest() {
@@ -1278,6 +1277,7 @@ TEST_P(WebAppRegistrarAshTest, SourceSupported) {
   EXPECT_EQ(registrar.GetAppScope(uninstalling_id),
             GURL("https://example.com/uninstalling/"));
   EXPECT_TRUE(registrar.GetAppUserDisplayMode(uninstalling_id).has_value());
+  EXPECT_FALSE(base::Contains(registrar.GetAppIds(), uninstalling_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1285,6 +1285,89 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(CrosapiParam::kEnabled,
                                            CrosapiParam::kDisabled),
                          WithCrosapiParam::ParamToString);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+enum class SystemWebAppsInLacrosParam {
+  kDisabled = 0,
+  kEnabled = 1,
+};
+
+class WebAppRegistrarLacrosTest
+    : public WebAppTest,
+      public testing::WithParamInterface<SystemWebAppsInLacrosParam> {
+ public:
+  WebAppRegistrarLacrosTest() {
+    if (GetParam() == SystemWebAppsInLacrosParam::kEnabled) {
+      EnableSystemWebAppsInLacrosForTesting();
+    }
+  }
+  ~WebAppRegistrarLacrosTest() override = default;
+};
+
+TEST_P(WebAppRegistrarLacrosTest, SourceSupported) {
+  const GURL example_url("https://example.com/my-app/start");
+  const GURL swa_url("chrome://swa/start");
+  const GURL uninstalling_url("https://example.com/uninstalling/start");
+
+  AppId example_id;
+  AppId swa_id;
+  AppId uninstalling_id;
+  WebAppRegistrarMutable registrar(profile());
+  {
+    Registry registry;
+
+    auto example_app = test::CreateWebApp(example_url);
+    example_id = example_app->app_id();
+    registry.emplace(example_id, std::move(example_app));
+
+    auto swa_app = test::CreateWebApp(swa_url, WebAppManagement::Type::kSystem);
+    swa_id = swa_app->app_id();
+    registry.emplace(swa_id, std::move(swa_app));
+
+    auto uninstalling_app = test::CreateWebApp(uninstalling_url);
+    uninstalling_app->SetIsUninstalling(true);
+    uninstalling_id = uninstalling_app->app_id();
+    registry.emplace(uninstalling_id, std::move(uninstalling_app));
+
+    registrar.InitRegistry(std::move(registry));
+  }
+
+  EXPECT_EQ(registrar.FindAppWithUrlInScope(example_url), example_id);
+  EXPECT_EQ(registrar.GetAppScope(example_id),
+            GURL("https://example.com/my-app/"));
+  EXPECT_TRUE(registrar.GetAppUserDisplayMode(example_id).has_value());
+  EXPECT_EQ(registrar.CountUserInstalledApps(), 1);
+
+  if (GetParam() == SystemWebAppsInLacrosParam::kEnabled) {
+    EXPECT_EQ(CountApps(registrar.GetApps()), 2);
+
+    EXPECT_EQ(registrar.FindAppWithUrlInScope(swa_url), swa_id);
+    EXPECT_EQ(registrar.GetAppScope(swa_id), GURL("chrome://swa/"));
+    EXPECT_TRUE(registrar.GetAppUserDisplayMode(swa_id).has_value());
+  } else {
+    // System web apps are managed by Ash, excluded in Lacros
+    // WebAppRegistrar.
+    EXPECT_EQ(CountApps(registrar.GetApps()), 1);
+
+    EXPECT_FALSE(registrar.FindAppWithUrlInScope(swa_url).has_value());
+    EXPECT_TRUE(registrar.GetAppScope(swa_id).is_empty());
+    EXPECT_FALSE(registrar.GetAppUserDisplayMode(swa_id).has_value());
+  }
+
+  EXPECT_FALSE(registrar.FindAppWithUrlInScope(uninstalling_url).has_value());
+  EXPECT_EQ(registrar.GetAppScope(uninstalling_id),
+            GURL("https://example.com/uninstalling/"));
+  EXPECT_TRUE(registrar.GetAppUserDisplayMode(uninstalling_id).has_value());
+  EXPECT_FALSE(base::Contains(registrar.GetAppIds(), uninstalling_id));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebAppRegistrarLacrosTest,
+    ::testing::Values(SystemWebAppsInLacrosParam::kDisabled,
+                      SystemWebAppsInLacrosParam::kEnabled));
 #endif
 
 }  // namespace web_app
