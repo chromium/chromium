@@ -62,6 +62,7 @@ class ASH_EXPORT NetworkListViewControllerImpl
     kMobileSectionHeader = 15,
     kWifiSeperator = 16,
     kWifiSectionHeader = 17,
+    kWifiStatusMessage = 18,
   };
 
   // Map of network guids and their corresponding list item views.
@@ -84,8 +85,9 @@ class ASH_EXPORT NetworkListViewControllerImpl
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
 
-  // Checks |networks| and caches whether mobile network exist in the list
-  // of |networks|. Also caches if a Mobile networks are enabled.
+  // Checks |networks| and caches whether Mobile network, WiFi networks and vpn
+  // networks exist in the list of |networks|. Also caches if a Mobile and
+  // WiFi networks are enabled.
   void UpdateNetworkTypeExistence(
       const std::vector<
           chromeos::network_config::mojom::NetworkStatePropertiesPtr>&
@@ -104,13 +106,22 @@ class ASH_EXPORT NetworkListViewControllerImpl
   int CreateSeparatorIfMissingAndReorder(int index,
                                          views::Separator** separator_view);
 
-  // Updates mobile data section, updates add eSIM button states and
+  // Updates Mobile data section, updates add eSIM button states and
   // calls UpdateMobileToggleAndSetStatusMessage().
-  void UpdateMobileSectionHeader();
+  void UpdateMobileSection();
+
+  // Updates the WiFi data section. This method creates a new header if one does
+  // not exist, and will update both the WiFi toggle and "add network" button.
+  // If there are no WiFi networks or WiFi is disabled, this method will also
+  // add an info message.
+  void UpdateWifiSection();
 
   // Updated mobile data toggle states and sets mobile data status message.
   void UpdateMobileToggleAndSetStatusMessage();
-  void CreateMobileInfoLabelIfMissingAndUpdate(int message_id);
+
+  // Creates an info label if missing and updates info label message.
+  void CreateInfoLabelIfMissingAndUpdate(int message_id,
+                                         TrayInfoLabel** info_label_ptr);
 
   // Creates a NetworkListNetworkItem if it does not exist else uses the
   // existing view, also reorders it in NetworkDetailedNetworkView scroll list.
@@ -146,8 +157,10 @@ class ASH_EXPORT NetworkListViewControllerImpl
 
   NetworkListWifiHeaderView* wifi_header_view_ = nullptr;
   views::Separator* wifi_separator_view_ = nullptr;
+  TrayInfoLabel* wifi_status_message_ = nullptr;
 
   bool has_mobile_networks_;
+  bool has_wifi_networks_;
   bool is_vpn_connected_;
   bool is_mobile_network_enabled_;
   bool is_wifi_enabled_;

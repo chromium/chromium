@@ -135,7 +135,7 @@ void NetworkListViewControllerImpl::NetworkListChanged() {
 }
 
 void NetworkListViewControllerImpl::GlobalPolicyChanged() {
-  UpdateMobileSectionHeader();
+  UpdateMobileSection();
 };
 
 void NetworkListViewControllerImpl::OnPropertiesUpdated(
@@ -144,7 +144,7 @@ void NetworkListViewControllerImpl::OnPropertiesUpdated(
     return;
 
   bluetooth_system_state_ = properties->system_state;
-  UpdateMobileSectionHeader();
+  UpdateMobileSection();
 }
 
 void NetworkListViewControllerImpl::GetNetworkStateList() {
@@ -196,7 +196,7 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
           NetworkListViewControllerViewChildId::kMobileSectionHeader));
     }
 
-    UpdateMobileSectionHeader();
+    UpdateMobileSection();
 
     network_detailed_network_view()->network_list()->ReorderChildView(
         mobile_header_view_, index++);
@@ -222,23 +222,17 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     RemoveAndResetViewIfExists(&wifi_separator_view_);
   }
 
-  if (!wifi_header_view_) {
-    wifi_header_view_ = network_detailed_network_view()->AddWifiSectionHeader();
-    wifi_header_view_->SetID(static_cast<int>(
-        NetworkListViewControllerViewChildId::kWifiSectionHeader));
-  }
-
-  wifi_header_view_->SetJoinWifiButtonState(/*enabled=*/is_wifi_enabled_,
-                                            /*visible=*/true);
-  wifi_header_view_->SetToggleVisibility(/*visible=*/true);
-  wifi_header_view_->SetToggleState(/*enabled=*/true,
-                                    /*is_on=*/is_wifi_enabled_);
+  UpdateWifiSection();
 
   network_detailed_network_view()->network_list()->ReorderChildView(
       wifi_header_view_, index++);
 
   index = CreateItemViewsIfMissingAndReorder(NetworkType::kWiFi, index,
                                              networks, &previous_network_views);
+  if (wifi_status_message_) {
+    network_detailed_network_view()->network_list()->ReorderChildView(
+        wifi_status_message_, index++);
+  }
 
   // Remaining views in |previous_network_views| are no longer needed
   // and should be deleted.
@@ -254,11 +248,14 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
 void NetworkListViewControllerImpl::UpdateNetworkTypeExistence(
     const std::vector<NetworkStatePropertiesPtr>& networks) {
   has_mobile_networks_ = false;
+  has_wifi_networks_ = false;
   is_vpn_connected_ = false;
 
   for (auto& network : networks) {
     if (NetworkTypeMatchesType(network->type, NetworkType::kMobile)) {
       has_mobile_networks_ = true;
+    } else if (NetworkTypeMatchesType(network->type, NetworkType::kWiFi)) {
+      has_wifi_networks_ = true;
     } else if (NetworkTypeMatchesType(network->type, NetworkType::kVPN) &&
                StateIsConnected(network->connection_state)) {
       is_vpn_connected_ = true;
@@ -352,7 +349,7 @@ int NetworkListViewControllerImpl::CreateSeparatorIfMissingAndReorder(
   return index;
 }
 
-void NetworkListViewControllerImpl::UpdateMobileSectionHeader() {
+void NetworkListViewControllerImpl::UpdateMobileSection() {
   if (!mobile_header_view_)
     return;
 
@@ -375,6 +372,30 @@ void NetworkListViewControllerImpl::UpdateMobileSectionHeader() {
   UpdateMobileToggleAndSetStatusMessage();
 }
 
+void NetworkListViewControllerImpl::UpdateWifiSection() {
+  if (!wifi_header_view_) {
+    wifi_header_view_ = network_detailed_network_view()->AddWifiSectionHeader();
+    wifi_header_view_->SetID(static_cast<int>(
+        NetworkListViewControllerViewChildId::kWifiSectionHeader));
+  }
+
+  wifi_header_view_->SetJoinWifiButtonState(/*enabled=*/is_wifi_enabled_,
+                                            /*visible=*/true);
+  wifi_header_view_->SetToggleVisibility(/*visible=*/true);
+  wifi_header_view_->SetToggleState(/*enabled=*/true,
+                                    /*is_on=*/is_wifi_enabled_);
+
+  if (!is_wifi_enabled_) {
+    CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_NETWORK_WIFI_DISABLED,
+                                      &wifi_status_message_);
+  } else if (!has_wifi_networks_) {
+    CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_NETWORK_WIFI_ENABLED,
+                                      &wifi_status_message_);
+  } else {
+    RemoveAndResetViewIfExists(&wifi_status_message_);
+  }
+}
+
 void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
   if (!mobile_header_view_)
     return;
@@ -387,8 +408,8 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
   const bool is_secondary_user = IsSecondaryUser();
 
   if (cellular_state == DeviceStateType::kUninitialized) {
-    CreateMobileInfoLabelIfMissingAndUpdate(
-        IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR);
+    CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR,
+                                      &mobile_status_message_);
     mobile_header_view_->SetToggleVisibility(/*visible=*/false);
     return;
   }
@@ -415,8 +436,9 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
                                         /*is_on=*/cellular_enabled);
 
     if (cellular_state == DeviceStateType::kDisabling) {
-      CreateMobileInfoLabelIfMissingAndUpdate(
-          IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLING);
+      CreateInfoLabelIfMissingAndUpdate(
+          IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLING,
+          &mobile_status_message_);
       return;
     }
 
@@ -426,13 +448,13 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
         return;
       }
 
-      CreateMobileInfoLabelIfMissingAndUpdate(
-          IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS);
+      CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS,
+                                        &mobile_status_message_);
       return;
     }
 
-    CreateMobileInfoLabelIfMissingAndUpdate(
-        IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLED);
+    CreateInfoLabelIfMissingAndUpdate(
+        IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLED, &mobile_status_message_);
     return;
   }
 
@@ -444,14 +466,15 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
     if (bluetooth_system_state_ == BluetoothSystemState::kEnabling) {
       mobile_header_view_->SetToggleState(/*toggle_enabled=*/false,
                                           /*is_on=*/true);
-      CreateMobileInfoLabelIfMissingAndUpdate(
-          IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR);
+      CreateInfoLabelIfMissingAndUpdate(
+          IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR, &mobile_status_message_);
       return;
     }
     mobile_header_view_->SetToggleState(
         /*toggle_enabled=*/!is_secondary_user, /*is_on=*/false);
-    CreateMobileInfoLabelIfMissingAndUpdate(
-        IDS_ASH_STATUS_TRAY_ENABLING_MOBILE_ENABLES_BLUETOOTH);
+    CreateInfoLabelIfMissingAndUpdate(
+        IDS_ASH_STATUS_TRAY_ENABLING_MOBILE_ENABLES_BLUETOOTH,
+        &mobile_status_message_);
     return;
   }
 
@@ -461,28 +484,41 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
   mobile_header_view_->SetToggleState(/*toggle_enabled=*/!is_secondary_user,
                                       /*is_on=*/tether_enabled);
   if (tether_enabled && !has_mobile_networks_) {
-    CreateMobileInfoLabelIfMissingAndUpdate(
-        IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND);
+    CreateInfoLabelIfMissingAndUpdate(
+        IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND, &mobile_status_message_);
     return;
   }
 
   RemoveAndResetViewIfExists(&mobile_status_message_);
 }
 
-void NetworkListViewControllerImpl::CreateMobileInfoLabelIfMissingAndUpdate(
-    int message_id) {
+void NetworkListViewControllerImpl::CreateInfoLabelIfMissingAndUpdate(
+    int message_id,
+    TrayInfoLabel** info_label_ptr) {
   DCHECK(message_id);
+  DCHECK(info_label_ptr);
 
-  if (mobile_status_message_) {
-    mobile_status_message_->Update(message_id);
+  TrayInfoLabel* info_label = *info_label_ptr;
+
+  if (info_label) {
+    info_label->Update(message_id);
     return;
   }
 
   std::unique_ptr<TrayInfoLabel> info =
       std::make_unique<TrayInfoLabel>(message_id);
-  info->SetID(static_cast<int>(
-      NetworkListViewControllerViewChildId::kMobileStatusMessage));
-  mobile_status_message_ =
+
+  if (info_label_ptr == &mobile_status_message_) {
+    info->SetID(static_cast<int>(
+        NetworkListViewControllerViewChildId::kMobileStatusMessage));
+  } else if (info_label_ptr == &wifi_status_message_) {
+    info->SetID(static_cast<int>(
+        NetworkListViewControllerViewChildId::kWifiStatusMessage));
+  } else {
+    NOTREACHED();
+  }
+
+  *info_label_ptr =
       network_detailed_network_view()->network_list()->AddChildView(
           std::move(info));
 }

@@ -220,6 +220,12 @@ class NetworkListViewControllerTest : public AshTestBase {
             kMobileStatusMessage);
   }
 
+  TrayInfoLabel* GetWifiStatusMessage() {
+    return FindViewById<TrayInfoLabel*>(
+        NetworkListViewControllerImpl::NetworkListViewControllerViewChildId::
+            kWifiStatusMessage);
+  }
+
   TriView* GetConnectionWarning() {
     return FindViewById<TriView*>(
         NetworkListViewControllerImpl::NetworkListViewControllerViewChildId::
@@ -301,6 +307,15 @@ class NetworkListViewControllerTest : public AshTestBase {
       CheckNetworkListItem(NetworkType::kWiFi, index, /*guid=*/absl::nullopt);
       EXPECT_STREQ(network_list()->children().at(index++)->GetClassName(),
                    kNetworkListNetworkItemView);
+    }
+
+    if (!wifi_network_count) {
+      // When no WiFi networks are available, status message is shown.
+      EXPECT_NE(nullptr, GetWifiStatusMessage());
+      index++;
+    } else {
+      // Status message is not shown when WiFi networks are available.
+      EXPECT_EQ(nullptr, GetWifiStatusMessage());
     }
   }
 
@@ -701,6 +716,9 @@ TEST_F(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
 TEST_F(NetworkListViewControllerTest, HasCorrectWifiNetworkList) {
   std::vector<NetworkStatePropertiesPtr> networks;
 
+  // Add an enabled wifi device.
+  AddWifiDevice();
+
   // Add Wifi network.
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
       kWifiName, NetworkType::kWiFi, ConnectionStateType::kNotConnected);
@@ -894,6 +912,40 @@ TEST_F(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
   // No message shown when Tether devices are added.
   AddTetherNetworkState();
   EXPECT_EQ(nullptr, GetMobileStatusMessage());
+}
+
+TEST_F(NetworkListViewControllerTest, HasCorrectWifiStatusMessage) {
+  EXPECT_EQ(nullptr, GetWifiStatusMessage());
+
+  // Add an enabled wifi device.
+  AddWifiDevice();
+
+  // Wifi is enabled but not networks are added.
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_WIFI_ENABLED),
+            GetWifiStatusMessage()->label()->GetText());
+
+  // Disable wifi device.
+  network_state_handler()->SetTechnologyEnabled(
+      NetworkTypePattern::WiFi(), /*enabled=*/false, base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_WIFI_DISABLED),
+      GetWifiStatusMessage()->label()->GetText());
+
+  // Enable and add wifi network.
+  network_state_handler()->SetTechnologyEnabled(
+      NetworkTypePattern::WiFi(), /*enabled=*/true, base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  std::vector<NetworkStatePropertiesPtr> networks;
+  networks.push_back(CreateStandaloneNetworkProperties(
+      kWifiName, NetworkType::kWiFi, ConnectionStateType::kNotConnected));
+  UpdateNetworkList(networks);
+
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*mobile_network_count=*/-1,
+                           /*wifi_network_count=*/1);
 }
 
 TEST_F(NetworkListViewControllerTest, HasConnectionWarning) {
