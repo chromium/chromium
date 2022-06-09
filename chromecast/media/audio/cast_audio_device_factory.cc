@@ -184,39 +184,13 @@ CastAudioDeviceFactory::~CastAudioDeviceFactory() {
   DVLOG(1) << "Unregister CastAudioDeviceFactory";
 }
 
-scoped_refptr<::media::AudioRendererSink>
-CastAudioDeviceFactory::CreateFinalAudioRendererSink(
-    const blink::LocalFrameToken& frame_token,
-    const ::media::AudioSinkParameters& params,
-    base::TimeDelta auth_timeout) {
-  // Use default implementation.
-  return nullptr;
-}
-
-scoped_refptr<::media::AudioRendererSink>
-CastAudioDeviceFactory::CreateAudioRendererSink(
-    blink::WebAudioDeviceSourceType source_type,
-    const blink::LocalFrameToken& frame_token,
-    const ::media::AudioSinkParameters& params) {
-  // Use default implementation.
-  return nullptr;
-}
-
 scoped_refptr<::media::SwitchableAudioRendererSink>
-CastAudioDeviceFactory::CreateSwitchableAudioRendererSink(
+CastAudioDeviceFactory::NewSwitchableAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
     const blink::LocalFrameToken& frame_token,
     const ::media::AudioSinkParameters& params) {
   return base::MakeRefCounted<NonSwitchableAudioRendererSink>(frame_token,
                                                               params);
-}
-
-scoped_refptr<::media::AudioCapturerSource>
-CastAudioDeviceFactory::CreateAudioCapturerSource(
-    const blink::LocalFrameToken& frame_token,
-    const ::media::AudioSourceParameters& params) {
-  // Use default implementation.
-  return nullptr;
 }
 
 }  // namespace media

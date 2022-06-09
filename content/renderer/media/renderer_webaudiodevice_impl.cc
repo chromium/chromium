@@ -102,8 +102,8 @@ media::AudioParameters GetOutputDeviceParameters(
     const blink::LocalFrameToken& frame_token,
     const base::UnguessableToken& session_id,
     const std::string& device_id) {
-  return AudioDeviceFactory::GetOutputDeviceInfo(frame_token,
-                                                 {session_id, device_id})
+  return AudioDeviceFactory::GetInstance()
+      ->GetOutputDeviceInfo(frame_token, {session_id, device_id})
       .output_params();
 }
 
@@ -187,7 +187,7 @@ void RendererWebAudioDeviceImpl::Start() {
   if (sink_)
     return;  // Already started.
 
-  sink_ = AudioDeviceFactory::NewAudioRendererSink(
+  sink_ = AudioDeviceFactory::GetInstance()->NewAudioRendererSink(
       GetLatencyHintSourceType(latency_hint_.Category()), frame_token_,
       media::AudioSinkParameters(session_id_, std::string()));
 

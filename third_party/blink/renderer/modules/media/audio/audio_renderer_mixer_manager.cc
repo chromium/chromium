@@ -117,14 +117,6 @@ AudioRendererMixerManager::~AudioRendererMixerManager() {
   // |mixers_| may leak (i.e., may be non-empty at this time) as well.
 }
 
-// static
-AudioRendererMixerManager& AudioRendererMixerManager::GetInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      AudioRendererMixerManager, instance,
-      (base::BindRepeating(&AudioDeviceFactory::NewAudioRendererMixerSink)));
-  return instance;
-}
-
 scoped_refptr<media::AudioRendererMixerInput>
 AudioRendererMixerManager::CreateInput(
     const blink::LocalFrameToken& source_frame_token,

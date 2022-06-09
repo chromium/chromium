@@ -142,9 +142,9 @@ media::AudioParameters GetAudioHardwareParams() {
   if (!render_frame)
     return media::AudioParameters::UnavailableDeviceParams();
 
-  return blink::AudioDeviceFactory::GetOutputDeviceInfo(
-             render_frame->GetWebFrame()->GetLocalFrameToken(),
-             media::AudioSinkParameters())
+  return blink::AudioDeviceFactory::GetInstance()
+      ->GetOutputDeviceInfo(render_frame->GetWebFrame()->GetLocalFrameToken(),
+                            media::AudioSinkParameters())
       .output_params();
 }
 
@@ -543,7 +543,7 @@ scoped_refptr<media::AudioCapturerSource>
 RendererBlinkPlatformImpl::NewAudioCapturerSource(
     blink::WebLocalFrame* web_frame,
     const media::AudioSourceParameters& params) {
-  return blink::AudioDeviceFactory::NewAudioCapturerSource(
+  return blink::AudioDeviceFactory::GetInstance()->NewAudioCapturerSource(
       web_frame->GetLocalFrameToken(), params);
 }
 
@@ -592,7 +592,7 @@ RendererBlinkPlatformImpl::NewAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
     blink::WebLocalFrame* web_frame,
     const media::AudioSinkParameters& params) {
-  return blink::AudioDeviceFactory::NewAudioRendererSink(
+  return blink::AudioDeviceFactory::GetInstance()->NewAudioRendererSink(
       source_type, web_frame->GetLocalFrameToken(), params);
 }
 
