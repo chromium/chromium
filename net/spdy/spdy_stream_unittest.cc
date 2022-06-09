@@ -87,7 +87,6 @@ class SpdyStreamTest : public ::testing::Test, public WithTaskEnvironment {
       : WithTaskEnvironment(time_source),
         url_(kDefaultUrl),
         session_(SpdySessionDependencies::SpdyCreateSession(&session_deps_)),
-        offset_(0),
         ssl_(SYNCHRONOUS, OK) {}
 
   ~SpdyStreamTest() override = default;
@@ -176,7 +175,7 @@ class SpdyStreamTest : public ::testing::Test, public WithTaskEnvironment {
   // Used by Add{Read,Write}() above.
   std::vector<MockWrite> writes_;
   std::vector<MockRead> reads_;
-  int offset_;
+  int offset_ = 0;
   SSLSocketDataProvider ssl_;
 };
 

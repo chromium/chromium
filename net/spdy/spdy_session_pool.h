@@ -442,7 +442,7 @@ class NET_EXPORT SpdySessionPool
   const quic::ParsedQuicVersionVector quic_supported_versions_;
 
   // Defaults to true. May be controlled via SpdySessionPoolPeer for tests.
-  bool enable_sending_initial_data_;
+  bool enable_sending_initial_data_ = true;
   bool enable_ping_based_connection_checking_;
 
   const bool is_http2_enabled_;

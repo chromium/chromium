@@ -99,7 +99,6 @@ SpdySessionPool::SpdySessionPool(
       ssl_client_context_(ssl_client_context),
       resolver_(resolver),
       quic_supported_versions_(quic_supported_versions),
-      enable_sending_initial_data_(true),
       enable_ping_based_connection_checking_(
           enable_ping_based_connection_checking),
       is_http2_enabled_(is_http2_enabled),

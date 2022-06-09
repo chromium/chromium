@@ -121,7 +121,7 @@ class NET_EXPORT SSLClientSessionCache {
   raw_ptr<base::Clock> clock_;
   Config config_;
   base::LRUCache<Key, Entry> cache_;
-  size_t lookups_since_flush_;
+  size_t lookups_since_flush_ = 0;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 };
 

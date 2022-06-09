@@ -24,10 +24,7 @@
 
 namespace net {
 
-SslSetClearMask::SslSetClearMask()
-    : set_mask(0),
-      clear_mask(0) {
-}
+SslSetClearMask::SslSetClearMask() = default;
 
 void SslSetClearMask::ConfigureFlag(long flag, bool state) {
   (state ? set_mask : clear_mask) |= flag;

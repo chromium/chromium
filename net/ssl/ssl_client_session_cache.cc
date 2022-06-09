@@ -44,8 +44,7 @@ bool SSLClientSessionCache::Key::operator<(const Key& other) const {
 SSLClientSessionCache::SSLClientSessionCache(const Config& config)
     : clock_(base::DefaultClock::GetInstance()),
       config_(config),
-      cache_(config.max_entries),
-      lookups_since_flush_(0) {
+      cache_(config.max_entries) {
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::BindRepeating(&SSLClientSessionCache::OnMemoryPressure,
                                      base::Unretained(this)));

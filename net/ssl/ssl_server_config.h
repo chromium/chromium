@@ -45,7 +45,7 @@ struct NET_EXPORT SSLServerConfig {
 
   // Whether early data is enabled on this connection. The caller is obligated
   // to reject early data that is non-safe to be replayed.
-  bool early_data_enabled;
+  bool early_data_enabled = false;
 
   // Presorted list of cipher suites which should be explicitly prevented from
   // being used in addition to those disabled by the net built-in policy.
@@ -71,7 +71,7 @@ struct NET_EXPORT SSLServerConfig {
   std::vector<uint16_t> disabled_cipher_suites;
 
   // If true, causes only ECDHE cipher suites to be enabled.
-  bool require_ecdhe;
+  bool require_ecdhe = false;
 
   // cipher_suite_for_testing, if set, causes the server to only support the
   // specified cipher suite in TLS 1.2 and below. This should only be used in
@@ -88,7 +88,7 @@ struct NET_EXPORT SSLServerConfig {
   std::vector<int> curves_for_testing;
 
   // Sets the requirement for client certificates during handshake.
-  ClientCertType client_cert_type;
+  ClientCertType client_cert_type = NO_CLIENT_CERT;
 
   // List of DER-encoded X.509 DistinguishedName of certificate authorities
   // to be included in the CertificateRequest handshake message,

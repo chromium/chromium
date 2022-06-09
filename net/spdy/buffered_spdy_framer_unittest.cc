@@ -20,12 +20,6 @@ class TestBufferedSpdyVisitor : public BufferedSpdyFramerVisitorInterface {
  public:
   TestBufferedSpdyVisitor()
       : buffered_spdy_framer_(kMaxHeaderListSizeForTest, NetLogWithSource()),
-        error_count_(0),
-        setting_count_(0),
-        headers_frame_count_(0),
-        push_promise_frame_count_(0),
-        goaway_count_(0),
-        altsvc_count_(0),
         header_stream_id_(static_cast<spdy::SpdyStreamId>(-1)),
         promised_stream_id_(static_cast<spdy::SpdyStreamId>(-1)) {}
 
@@ -157,12 +151,12 @@ class TestBufferedSpdyVisitor : public BufferedSpdyFramerVisitorInterface {
   BufferedSpdyFramer buffered_spdy_framer_;
 
   // Counters from the visitor callbacks.
-  int error_count_;
-  int setting_count_;
-  int headers_frame_count_;
-  int push_promise_frame_count_;
-  int goaway_count_;
-  int altsvc_count_;
+  int error_count_ = 0;
+  int setting_count_ = 0;
+  int headers_frame_count_ = 0;
+  int push_promise_frame_count_ = 0;
+  int goaway_count_ = 0;
+  int altsvc_count_ = 0;
 
   // Header block streaming state:
   spdy::SpdyStreamId header_stream_id_;

@@ -8,8 +8,7 @@
 
 namespace net {
 
-SSLCertRequestInfo::SSLCertRequestInfo() : is_proxy(false) {
-}
+SSLCertRequestInfo::SSLCertRequestInfo() = default;
 
 void SSLCertRequestInfo::Reset() {
   host_and_port = HostPortPair();

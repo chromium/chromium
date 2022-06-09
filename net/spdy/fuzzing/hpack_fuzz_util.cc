@@ -38,7 +38,7 @@ using std::map;
 HpackFuzzUtil::GeneratorContext::GeneratorContext() = default;
 HpackFuzzUtil::GeneratorContext::~GeneratorContext() = default;
 
-HpackFuzzUtil::Input::Input() : offset(0) {}
+HpackFuzzUtil::Input::Input() = default;
 HpackFuzzUtil::Input::~Input() = default;
 
 HpackFuzzUtil::FuzzerContext::FuzzerContext() = default;

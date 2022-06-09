@@ -44,7 +44,7 @@ SpdyWriteQueue::PendingWrite::PendingWrite(PendingWrite&& other) = default;
 SpdyWriteQueue::PendingWrite& SpdyWriteQueue::PendingWrite::operator=(
     PendingWrite&& other) = default;
 
-SpdyWriteQueue::SpdyWriteQueue() : removing_writes_(false) {}
+SpdyWriteQueue::SpdyWriteQueue() = default;
 
 SpdyWriteQueue::~SpdyWriteQueue() {
   DCHECK_GE(num_queued_capped_frames_, 0);

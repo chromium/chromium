@@ -46,9 +46,6 @@ SpdyProxyClientSocket::SpdyProxyClientSocket(
       proxy_server_(proxy_server),
       proxy_delegate_(proxy_delegate),
       user_agent_(user_agent),
-      user_buffer_len_(0),
-      write_buffer_len_(0),
-      was_ever_used_(false),
       net_log_(NetLogWithSource::Make(spdy_stream->net_log().net_log(),
                                       NetLogSourceType::PROXY_CLIENT_SOCKET)),
       source_dependency_(source_net_log.source()) {

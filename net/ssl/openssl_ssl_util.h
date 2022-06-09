@@ -34,8 +34,8 @@ struct SslSetClearMask {
   SslSetClearMask();
   void ConfigureFlag(long flag, bool state);
 
-  long set_mask;
-  long clear_mask;
+  long set_mask = 0;
+  long clear_mask = 0;
 };
 
 // Converts an OpenSSL error code into a net error code, walking the OpenSSL
@@ -50,11 +50,11 @@ NET_EXPORT_PRIVATE int MapOpenSSLError(
 
 // Helper struct to store information about an OpenSSL error stack entry.
 struct OpenSSLErrorInfo {
-  OpenSSLErrorInfo() : error_code(0), file(nullptr), line(0) {}
+  OpenSSLErrorInfo() = default;
 
-  uint32_t error_code;
-  const char* file;
-  int line;
+  uint32_t error_code = 0;
+  const char* file = nullptr;
+  int line = 0;
 };
 
 // Converts an OpenSSL error code into a net error code, walking the OpenSSL

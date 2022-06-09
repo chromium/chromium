@@ -182,7 +182,7 @@ namespace {
 
 class PriorityGetter : public BufferedSpdyFramerVisitorInterface {
  public:
-  PriorityGetter() : priority_(0) {}
+  PriorityGetter() = default;
   ~PriorityGetter() override = default;
 
   spdy::SpdyPriority priority() const { return priority_; }
@@ -236,7 +236,7 @@ class PriorityGetter : public BufferedSpdyFramerVisitorInterface {
   }
 
  private:
-  spdy::SpdyPriority priority_;
+  spdy::SpdyPriority priority_ = 0;
 };
 
 }  // namespace
