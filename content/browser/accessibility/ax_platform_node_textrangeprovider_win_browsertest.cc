@@ -224,11 +224,11 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
   //                        bottom viewport alignment
   void ScrollIntoViewBrowserTestTemplate(
       const ax::mojom::Role expected_start_role,
-      BrowserAccessibility* (BrowserAccessibility::*fstart)(uint32_t) const,
-      const uint32_t fstart_arg,
+      BrowserAccessibility* (BrowserAccessibility::*fstart)(size_t) const,
+      const size_t fstart_arg,
       const ax::mojom::Role expected_end_role,
-      BrowserAccessibility* (BrowserAccessibility::*fend)(uint32_t) const,
-      const uint32_t fend_arg,
+      BrowserAccessibility* (BrowserAccessibility::*fend)(size_t) const,
+      const size_t fend_arg,
       const bool align_to_top) {
     BrowserAccessibility* root_browser_accessibility =
         GetRootAndAssertNonNull();
@@ -357,11 +357,11 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
 
   void ScrollIntoViewTopBrowserTestTemplate(
       const ax::mojom::Role expected_role_start,
-      BrowserAccessibility* (BrowserAccessibility::*fstart)(uint32_t) const,
-      const uint32_t fstart_arg,
+      BrowserAccessibility* (BrowserAccessibility::*fstart)(size_t) const,
+      const size_t fstart_arg,
       const ax::mojom::Role expected_role_end,
-      BrowserAccessibility* (BrowserAccessibility::*fend)(uint32_t) const,
-      const uint32_t fend_arg) {
+      BrowserAccessibility* (BrowserAccessibility::*fend)(size_t) const,
+      const size_t fend_arg) {
     ScrollIntoViewBrowserTestTemplate(expected_role_start, fstart, fstart_arg,
                                       expected_role_end, fend, fend_arg, true);
   }
@@ -384,11 +384,11 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
 
   void ScrollIntoViewBottomBrowserTestTemplate(
       const ax::mojom::Role expected_role_start,
-      BrowserAccessibility* (BrowserAccessibility::*fstart)(uint32_t) const,
-      const uint32_t fstart_arg,
+      BrowserAccessibility* (BrowserAccessibility::*fstart)(size_t) const,
+      const size_t fstart_arg,
       const ax::mojom::Role expected_role_end,
-      BrowserAccessibility* (BrowserAccessibility::*fend)(uint32_t) const,
-      const uint32_t fend_arg) {
+      BrowserAccessibility* (BrowserAccessibility::*fend)(size_t) const,
+      const size_t fend_arg) {
     ScrollIntoViewBrowserTestTemplate(expected_role_start, fstart, fstart_arg,
                                       expected_role_end, fend, fend_arg, false);
   }

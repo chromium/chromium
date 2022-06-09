@@ -1139,7 +1139,10 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_previousSibling(
   if (!node)
     return E_INVALIDARG;
 
-  if (!owner()->PlatformGetParent() || GetIndexInParent() <= 0) {
+  absl::optional<size_t> index_in_parent = absl::nullopt;
+  if (owner()->PlatformGetParent())
+    index_in_parent = GetIndexInParent();
+  if (!index_in_parent.has_value() || index_in_parent.value() == 0) {
     *node = NULL;
     return S_FALSE;
   }
@@ -1158,10 +1161,12 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nextSibling(
   if (!node)
     return E_INVALIDARG;
 
-  if (!owner()->PlatformGetParent() || GetIndexInParent() < 0 ||
-      GetIndexInParent() >=
-          static_cast<int>(owner()->PlatformGetParent()->InternalChildCount()) -
-              1) {
+  absl::optional<size_t> index_in_parent = absl::nullopt;
+  if (owner()->PlatformGetParent())
+    index_in_parent = GetIndexInParent();
+  if (!index_in_parent.has_value() ||
+      (index_in_parent.value() + 1) >=
+          owner()->PlatformGetParent()->InternalChildCount()) {
     *node = NULL;
     return S_FALSE;
   }

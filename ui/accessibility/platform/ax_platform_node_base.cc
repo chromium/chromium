@@ -38,16 +38,16 @@ base::LazyInstance<std::map<ax::mojom::Event, base::RepeatingClosure>>::
 // Check for descendant comment, using limited depth first search.
 bool FindDescendantRoleWithMaxDepth(const AXPlatformNodeBase* node,
                                     ax::mojom::Role descendant_role,
-                                    int max_depth,
-                                    int max_children_to_check) {
+                                    size_t max_depth,
+                                    size_t max_children_to_check) {
   if (node->GetRole() == descendant_role)
     return true;
   if (max_depth <= 1)
     return false;
 
-  int num_children_to_check =
+  size_t num_children_to_check =
       std::min(node->GetChildCount(), max_children_to_check);
-  for (int index = 0; index < num_children_to_check; index++) {
+  for (size_t index = 0; index < num_children_to_check; index++) {
     auto* child = static_cast<AXPlatformNodeBase*>(
         AXPlatformNode::FromNativeViewAccessible(node->ChildAtIndex(index)));
     if (child &&
@@ -144,13 +144,13 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetPlatformTextFieldAncestor() const {
   return nullptr;
 }
 
-int AXPlatformNodeBase::GetChildCount() const {
+size_t AXPlatformNodeBase::GetChildCount() const {
   if (delegate_)
     return delegate_->GetChildCount();
   return 0;
 }
 
-gfx::NativeViewAccessible AXPlatformNodeBase::ChildAtIndex(int index) const {
+gfx::NativeViewAccessible AXPlatformNodeBase::ChildAtIndex(size_t index) const {
   if (delegate_)
     return delegate_->ChildAtIndex(index);
   return nullptr;
@@ -198,7 +198,7 @@ std::string AXPlatformNodeBase::GetName() const {
   return std::string();
 }
 
-absl::optional<int> AXPlatformNodeBase::GetIndexInParent() {
+absl::optional<size_t> AXPlatformNodeBase::GetIndexInParent() {
   AXPlatformNodeBase* parent = FromNativeViewAccessible(GetParent());
   if (!parent)
     return absl::nullopt;
@@ -211,7 +211,7 @@ absl::optional<int> AXPlatformNodeBase::GetIndexInParent() {
     return absl::nullopt;
   }
 
-  int child_count = parent->GetChildCount();
+  size_t child_count = parent->GetChildCount();
   if (child_count == 0) {
     // |child_count| could be 0 if the parent is IsLeaf.
     DCHECK(parent->IsLeaf());
@@ -224,13 +224,13 @@ absl::optional<int> AXPlatformNodeBase::GetIndexInParent() {
   // returns -1). Also, delegates may not know the correct answer if this
   // node is the root of a tree that's embedded in another tree, in which
   // case the delegate should return -1 and we'll compute it.
-  int index = delegate_ ? delegate_->GetIndexInParent() : -1;
-  if (index >= 0 && index < child_count)
+  auto index = delegate_ ? delegate_->GetIndexInParent() : absl::nullopt;
+  if (index.has_value() && index.value() < child_count)
     return index;
 
   // Otherwise, search the parent's children.
   gfx::NativeViewAccessible current = GetNativeViewAccessible();
-  for (int i = 0; i < child_count; i++) {
+  for (size_t i = 0; i < child_count; i++) {
     if (parent->ChildAtIndex(i) == current)
       return i;
   }
@@ -1818,12 +1818,13 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
       return endpoint_offset;
     } else {
       DCHECK_GE(endpoint_offset, 0);
-      DCHECK_LE(endpoint_offset,
+      DCHECK_LE(static_cast<size_t>(endpoint_offset),
                 endpoint_object->GetDelegate()->GetChildCount());
 
       // Adjust the |endpoint_offset| because the selection endpoint is a tree
       // position, i.e. it represents a child index and not a text offset.
-      if (endpoint_offset >= endpoint_object->GetChildCount()) {
+      if (static_cast<size_t>(endpoint_offset) >=
+          endpoint_object->GetChildCount()) {
         return static_cast<int>(endpoint_object->GetHypertext().size());
       } else {
         auto* child = static_cast<AXPlatformNodeBase*>(FromNativeViewAccessible(
@@ -1835,7 +1836,7 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
   }
 
   AXPlatformNodeBase* common_parent = this;
-  absl::optional<int> index_in_common_parent = GetIndexInParent();
+  absl::optional<size_t> index_in_common_parent = GetIndexInParent();
   while (common_parent && !endpoint_object->IsDescendantOf(common_parent)) {
     index_in_common_parent = common_parent->GetIndexInParent();
     common_parent = static_cast<AXPlatformNodeBase*>(
@@ -1871,7 +1872,7 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
   //
   // We can safely assume that the endpoint is in another part of the tree or
   // at common parent, and that this object is a descendant of common parent.
-  absl::optional<int> endpoint_index_in_common_parent;
+  absl::optional<size_t> endpoint_index_in_common_parent;
   for (auto child_iter = common_parent->AXPlatformNodeChildrenBegin();
        child_iter != common_parent->AXPlatformNodeChildrenEnd(); ++child_iter) {
     if (endpoint_object->IsDescendantOf(child_iter.get())) {
@@ -1883,7 +1884,7 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
   if (endpoint_index_in_common_parent < index_in_common_parent)
     return 0;
   if (endpoint_index_in_common_parent > index_in_common_parent)
-    return static_cast<int32_t>(GetHypertext().size());
+    return static_cast<int>(GetHypertext().size());
 
   NOTREACHED();
   return -1;
@@ -2010,7 +2011,7 @@ void AXPlatformNodeBase::GetSelectionOffsetsFromTree(
 
   int child_index = index_iter->second;
   DCHECK_GE(child_index, 0);
-  DCHECK_LT(child_index, GetChildCount());
+  DCHECK_LT(static_cast<size_t>(child_index), GetChildCount());
   AXPlatformNodeBase* hyperlink = static_cast<AXPlatformNodeBase*>(
       AXPlatformNode::FromNativeViewAccessible(ChildAtIndex(child_index)));
   if (!hyperlink)
@@ -2495,8 +2496,8 @@ std::string AXPlatformNodeBase::ComputeDetailsRoles() const {
 // static
 bool AXPlatformNodeBase::DescendantHasComment(const AXPlatformNodeBase* node) {
   // These should still report comment if there are comments inside them.
-  constexpr int kMaxChildrenToCheck = 8;
-  constexpr int kMaxDepthToCheck = 4;
+  constexpr size_t kMaxChildrenToCheck = 8;
+  constexpr size_t kMaxDepthToCheck = 4;
   if (FindDescendantRoleWithMaxDepth(node, ax::mojom::Role::kComment,
                                      kMaxDepthToCheck, kMaxChildrenToCheck)) {
     return true;

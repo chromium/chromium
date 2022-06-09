@@ -27,8 +27,8 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
 
   // BrowserAccessibility overrides.
   void OnDataChanged() override;
-  uint32_t PlatformChildCount() const override;
-  BrowserAccessibility* PlatformGetChild(uint32_t child_index) const override;
+  size_t PlatformChildCount() const override;
+  BrowserAccessibility* PlatformGetChild(size_t child_index) const override;
 
   BrowserAccessibility* PlatformGetFirstChild() const override;
   BrowserAccessibility* PlatformGetLastChild() const override;

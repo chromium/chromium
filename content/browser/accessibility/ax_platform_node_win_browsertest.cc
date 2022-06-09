@@ -147,9 +147,9 @@ class AXPlatformNodeWinBrowserTest : public AccessibilityContentBrowserTest {
 
   void UIAIWindowProviderGetIsModalBrowserTestTemplate(
       ax::mojom::Role expected_role,
-      content::BrowserAccessibility* (content::BrowserAccessibility::*f)(
-          uint32_t) const,
-      uint32_t index_arg,
+      content::BrowserAccessibility* (content::BrowserAccessibility::*f)(size_t)
+          const,
+      size_t index_arg,
       bool expected_is_modal,
       bool expected_is_window_provider_available) {
     BrowserAccessibility* root_browser_accessibility =

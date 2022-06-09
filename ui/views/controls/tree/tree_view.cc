@@ -537,8 +537,7 @@ void TreeView::TreeNodesAdded(TreeModel* model,
     std::unique_ptr<AXVirtualView> ax_view =
         CreateAndSetAccessibilityView(child.get());
     parent_node->Add(std::move(child), i);
-    DCHECK_LE(static_cast<int>(i),
-              parent_node->accessibility_view()->GetChildCount());
+    DCHECK_LE(i, parent_node->accessibility_view()->GetChildCount());
     parent_node->accessibility_view()->AddChildViewAt(std::move(ax_view), i);
   }
   if (IsExpanded(parent)) {

@@ -373,7 +373,7 @@ void BrowserAccessibilityManagerAuraLinux::OnNodeDataWillChange(
       if (!CanEmitChildrenChanged(obj))
         return;
       g_signal_emit_by_name(obj->GetParent(), "children-changed::remove",
-                            obj->GetIndexInParent(),
+                            static_cast<gint>(obj->GetIndexInParent().value()),
                             obj->GetNativeViewAccessible());
     }
   }

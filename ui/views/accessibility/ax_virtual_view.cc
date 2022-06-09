@@ -262,8 +262,8 @@ const ui::AXNodeData& AXVirtualView::GetData() const {
   return node_data;
 }
 
-int AXVirtualView::GetChildCount() const {
-  int count = 0;
+size_t AXVirtualView::GetChildCount() const {
+  size_t count = 0;
   for (const std::unique_ptr<AXVirtualView>& child : children_) {
     if (child->IsIgnored()) {
       count += child->GetChildCount();
@@ -274,14 +274,13 @@ int AXVirtualView::GetChildCount() const {
   return count;
 }
 
-gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(int index) {
-  DCHECK_GE(index, 0) << "|index| should be greater or equal to 0.";
+gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(size_t index) {
   DCHECK_LT(index, GetChildCount())
       << "|index| should be less than the child count.";
 
   for (const std::unique_ptr<AXVirtualView>& child : children_) {
     if (child->IsIgnored()) {
-      int child_count = child->GetChildCount();
+      size_t child_count = child->GetChildCount();
       if (index < child_count)
         return child->ChildAtIndex(index);
       index -= child_count;
@@ -290,8 +289,6 @@ gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(int index) {
         return child->GetNativeObject();
       --index;
     }
-
-    DCHECK_GE(index, 0) << "|index| should be less than the child count.";
   }
 
   NOTREACHED() << "|index| should be less than the child count.";

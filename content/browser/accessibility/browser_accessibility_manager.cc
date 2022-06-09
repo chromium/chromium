@@ -1200,28 +1200,24 @@ bool BrowserAccessibilityManager::FindIndicesInCommonParent(
     const BrowserAccessibility& object1,
     const BrowserAccessibility& object2,
     BrowserAccessibility** common_parent,
-    int* child_index1,
-    int* child_index2) {
+    size_t* child_index1,
+    size_t* child_index2) {
   DCHECK(common_parent && child_index1 && child_index2);
   auto* ancestor1 = const_cast<BrowserAccessibility*>(&object1);
   auto* ancestor2 = const_cast<BrowserAccessibility*>(&object2);
   do {
-    *child_index1 = ancestor1->GetIndexInParent();
+    *child_index1 = ancestor1->GetIndexInParent().value_or(0);
     ancestor1 = ancestor1->PlatformGetParent();
   } while (
       ancestor1 &&
       // |BrowserAccessibility::IsAncestorOf| returns true if objects are equal.
       (ancestor1 == ancestor2 || !ancestor2->IsDescendantOf(ancestor1)));
 
-  if (!ancestor1) {
-    *common_parent = nullptr;
-    *child_index1 = -1;
-    *child_index2 = -1;
+  if (!ancestor1)
     return false;
-  }
 
   do {
-    *child_index2 = ancestor2->GetIndexInParent();
+    *child_index2 = ancestor2->GetIndexInParent().value();
     ancestor2 = ancestor2->PlatformGetParent();
   } while (ancestor1 != ancestor2);
 
@@ -1237,8 +1233,8 @@ ax::mojom::TreeOrder BrowserAccessibilityManager::CompareNodes(
     return ax::mojom::TreeOrder::kEqual;
 
   BrowserAccessibility* common_parent;
-  int child_index1;
-  int child_index2;
+  size_t child_index1;
+  size_t child_index2;
   if (FindIndicesInCommonParent(object1, object2, &common_parent, &child_index1,
                                 &child_index2)) {
     if (child_index1 < child_index2)
@@ -1260,8 +1256,8 @@ BrowserAccessibilityManager::FindTextOnlyObjectsInRange(
     const BrowserAccessibility& start_object,
     const BrowserAccessibility& end_object) {
   std::vector<const BrowserAccessibility*> text_only_objects;
-  int child_index1 = -1;
-  int child_index2 = -1;
+  size_t child_index1 = 0;
+  size_t child_index2 = 0;
   if (&start_object != &end_object) {
     BrowserAccessibility* common_parent;
     if (!FindIndicesInCommonParent(start_object, end_object, &common_parent,
@@ -1270,8 +1266,6 @@ BrowserAccessibilityManager::FindTextOnlyObjectsInRange(
     }
 
     DCHECK(common_parent);
-    DCHECK_GE(child_index1, 0);
-    DCHECK_GE(child_index2, 0);
     // If the child indices are equal, one object is a descendant of the other.
     DCHECK(child_index1 != child_index2 ||
            start_object.IsDescendantOf(&end_object) ||

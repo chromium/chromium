@@ -85,7 +85,7 @@ TEST_F(BrowserAccessibilityManagerWinTest, DynamicallyAddedIFrame) {
       std::make_unique<ui::AXFragmentRootWin>(gfx::kMockAcceleratedWidget,
                                               &test_fragment_root_delegate);
 
-  EXPECT_EQ(fragment_root->GetChildCount(), 1);
+  EXPECT_EQ(fragment_root->GetChildCount(), 1u);
   EXPECT_EQ(fragment_root->ChildAtIndex(0),
             root_document_root_node->GetNativeViewAccessible());
 
@@ -102,7 +102,7 @@ TEST_F(BrowserAccessibilityManagerWinTest, DynamicallyAddedIFrame) {
 
   // The new frame is not a root frame, so the fragment root's lone child should
   // still be the same as before.
-  EXPECT_EQ(fragment_root->GetChildCount(), 1);
+  EXPECT_EQ(fragment_root->GetChildCount(), 1u);
   EXPECT_EQ(fragment_root->ChildAtIndex(0),
             root_document_root_node->GetNativeViewAccessible());
 }
@@ -142,7 +142,7 @@ TEST_F(BrowserAccessibilityManagerWinTest, ChildTree) {
       std::make_unique<ui::AXFragmentRootWin>(gfx::kMockAcceleratedWidget,
                                               &test_fragment_root_delegate);
 
-  EXPECT_EQ(fragment_root->GetChildCount(), 1);
+  EXPECT_EQ(fragment_root->GetChildCount(), 1u);
   EXPECT_EQ(fragment_root->ChildAtIndex(0),
             root_document_root_node->GetNativeViewAccessible());
 
@@ -156,7 +156,7 @@ TEST_F(BrowserAccessibilityManagerWinTest, ChildTree) {
                                           child_tree_delegate.get()));
 
   // The fragment root's lone child should still be the same as before.
-  EXPECT_EQ(fragment_root->GetChildCount(), 1);
+  EXPECT_EQ(fragment_root->GetChildCount(), 1u);
   EXPECT_EQ(fragment_root->ChildAtIndex(0),
             root_document_root_node->GetNativeViewAccessible());
 }

@@ -64,8 +64,8 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
 
   // ui::AXPlatformNodeDelegate.
   const ui::AXNodeData& GetData() const override;
-  int GetChildCount() const override;
-  gfx::NativeViewAccessible ChildAtIndex(int index) override;
+  size_t GetChildCount() const override;
+  gfx::NativeViewAccessible ChildAtIndex(size_t index) override;
   bool HasModalDialog() const override;
   // Also in |ViewAccessibility|.
   bool IsChildOfLeaf() const override;

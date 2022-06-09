@@ -2322,7 +2322,7 @@ bool content::IsNSRange(id value) {
     if (child->PlatformGetParent() != _owner)
       return nil;
 
-    return @(child->GetIndexInParent());
+    return @(child->GetIndexInParent().value());
   }
 
   return nil;

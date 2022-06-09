@@ -1846,7 +1846,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accSelection(VARIANT* selected) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ACC_SELECTION);
   COM_OBJECT_VALIDATE_1_ARG(selected);
   std::vector<Microsoft::WRL::ComPtr<IDispatch>> selected_nodes;
-  for (int i = 0; i < GetDelegate()->GetChildCount(); ++i) {
+  for (size_t i = 0; i < GetDelegate()->GetChildCount(); ++i) {
     auto* node = static_cast<AXPlatformNodeWin*>(
         FromNativeViewAccessible(GetDelegate()->ChildAtIndex(i)));
     if (node && node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
@@ -2375,7 +2375,8 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelectionRanges(LONG nRanges,
       return E_INVALIDARG;
     }
   } else {
-    if (ranges->anchorOffset > anchor_node->GetChildCount())
+    if (static_cast<size_t>(ranges->anchorOffset) >
+        anchor_node->GetChildCount())
       return E_INVALIDARG;
   }
 
@@ -2384,7 +2385,7 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelectionRanges(LONG nRanges,
         focus_node->GetHypertext().length())
       return E_INVALIDARG;
   } else {
-    if (ranges->activeOffset > focus_node->GetChildCount())
+    if (static_cast<size_t>(ranges->activeOffset) > focus_node->GetChildCount())
       return E_INVALIDARG;
   }
 
@@ -7738,7 +7739,7 @@ HRESULT AXPlatformNodeWin::ComputeListItemNameAsBstr(BSTR* value_bstr) const {
   std::wstring str;
   // The list item name will result in the concatenation of its children's
   // accessible names, excluding the list item marker.
-  for (int i = 0; i < GetChildCount(); ++i) {
+  for (size_t i = 0; i < GetChildCount(); ++i) {
     auto* child = static_cast<AXPlatformNodeWin*>(
         FromNativeViewAccessible(ChildAtIndex(i)));
     if (child->GetDelegate()->IsText() &&
@@ -7801,11 +7802,12 @@ AXPlatformNodeWin* AXPlatformNodeWin::GetTargetFromChildID(
   if (child_id == CHILDID_SELF)
     return this;
 
-  if (child_id >= 1 && child_id <= GetDelegate()->GetChildCount()) {
+  if (child_id >= 1 &&
+      static_cast<size_t>(child_id) <= GetDelegate()->GetChildCount()) {
     // Positive child ids are a 1-based child index, used by clients
     // that want to enumerate all immediate children.
-    AXPlatformNodeBase* base =
-        FromNativeViewAccessible(GetDelegate()->ChildAtIndex(child_id - 1));
+    AXPlatformNodeBase* base = FromNativeViewAccessible(
+        GetDelegate()->ChildAtIndex(static_cast<size_t>(child_id - 1)));
     return static_cast<AXPlatformNodeWin*>(base);
   }
 
