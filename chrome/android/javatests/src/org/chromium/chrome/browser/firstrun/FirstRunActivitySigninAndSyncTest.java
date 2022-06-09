@@ -44,6 +44,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -274,6 +275,7 @@ public class FirstRunActivitySigninAndSyncTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
+    @DisabledTest(message = "https://crbug.com/1335094")
     public void
     clickingSettingsEndsFreAndStartsEnablingSyncIfEnableSyncImmediatelyFeatureEnabled() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
