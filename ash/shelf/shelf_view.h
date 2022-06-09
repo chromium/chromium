@@ -29,7 +29,6 @@
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
@@ -86,7 +85,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                              public ShelfTooltipDelegate,
                              public TabletModeObserver {
  public:
-  METADATA_HEADER(ShelfView);
   // Used to communicate with the container class ScrollableShelfView.
   class Delegate {
    public:
@@ -168,6 +166,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   FocusTraversable* GetPaneFocusTraversable() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
+  const char* GetClassName() const override;
+  void OnThemeChanged() override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
 

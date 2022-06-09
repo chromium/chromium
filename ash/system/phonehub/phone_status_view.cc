@@ -24,7 +24,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
@@ -139,7 +138,8 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
   AddView(TriView::Container::CENTER, battery_label_);
 
   separator_ = new views::Separator();
-  separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+  separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor));
   separator_->SetPreferredLength(kSeparatorHeight);
   AddView(TriView::Container::CENTER, separator_);
 

@@ -616,7 +616,6 @@ test("wayland_client_tests") {
     "//components/exo",
     "//components/exo/wayland",
     "//ui/base",
-    "//ui/color:color",
     "//ui/gl:test_support",
   ]
 

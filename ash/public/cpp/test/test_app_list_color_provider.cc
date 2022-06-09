@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 
-#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ash {
@@ -104,8 +103,8 @@ SkColor TestAppListColorProvider::GetGridBackgroundCardInactiveColor() const {
   return SkColorSetA(SK_ColorWHITE, 41 /* 16% */);
 }
 
-ui::ColorId TestAppListColorProvider::GetSeparatorColorId() const {
-  return ui::kColorAshSystemUIMenuSeparator;
+SkColor TestAppListColorProvider::GetSeparatorColor() const {
+  return SkColorSetA(SK_ColorWHITE, 0x24);
 }
 
 SkColor TestAppListColorProvider::GetFocusRingColor() const {

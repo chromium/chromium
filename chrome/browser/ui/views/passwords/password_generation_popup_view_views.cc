@@ -309,8 +309,7 @@ void PasswordGenerationPopupViewViews::OnPaint(gfx::Canvas* canvas) {
   // will overwrite the divider.
   gfx::Rect divider_bounds(0, password_view_->bounds().bottom(),
                            password_view_->width(), 1);
-  canvas->FillRect(divider_bounds,
-                   GetColorProvider()->GetColor(GetSeparatorColorId()));
+  canvas->FillRect(divider_bounds, GetSeparatorColor());
 }
 
 void PasswordGenerationPopupViewViews::GetAccessibleNodeData(

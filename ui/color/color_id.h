@@ -194,16 +194,11 @@
   E_CPONLY(kColorAshSystemUILightBorderColor2) \
   E_CPONLY(kColorAshSystemUILightHighlightColor1) \
   E_CPONLY(kColorAshSystemUILightHighlightColor2) \
-  E_CPONLY(kColorAshAppListSeparatorLight) \
   \
   E_CPONLY(kColorAshSystemUIMenuBackground) \
   E_CPONLY(kColorAshSystemUIMenuIcon) \
   E_CPONLY(kColorAshSystemUIMenuItemBackgroundSelected) \
   E_CPONLY(kColorAshSystemUIMenuSeparator) \
-  E_CPONLY(kColorAshIconInOobe) \
-  \
-  E_CPONLY(kColorAshAppListSeparator) \
-  E_CPONLY(kColorAshArcInputMenuSeparator) \
   E_CPONLY(kColorNativeColor1) \
   E_CPONLY(kColorNativeColor1Shade1) \
   E_CPONLY(kColorNativeColor1Shade2) \

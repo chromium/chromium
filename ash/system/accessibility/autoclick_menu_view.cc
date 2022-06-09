@@ -17,7 +17,6 @@
 #include "base/metrics/user_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -111,7 +110,6 @@ AutoclickMenuView::AutoclickMenuView(AutoclickEventType type,
           views::Builder<views::Separator>()
               .CopyAddressTo(&separator_)
               .SetPreferredLength(kSeparatorHeight)
-              .SetColorId(ui::kColorAshSystemUIMenuSeparator)
               .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
                   separator_spacing - kUnifiedTopShortcutSpacing, 0,
                   separator_spacing, 0))),
@@ -170,6 +168,12 @@ void AutoclickMenuView::UpdatePosition(FloatingMenuPosition position) {
                                           : kAutoclickPositionBottomRightIcon);
       return;
   }
+}
+
+void AutoclickMenuView::OnThemeChanged() {
+  views::BoxLayoutView::OnThemeChanged();
+  separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor));
 }
 
 void AutoclickMenuView::OnAutoclickButtonPressed(views::Button* sender) {

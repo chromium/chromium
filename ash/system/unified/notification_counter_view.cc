@@ -20,7 +20,6 @@
 #include "ash/system/unified/notification_icons_controller.h"
 #include "base/i18n/number_formatting.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -56,10 +55,11 @@ gfx::FontList GetNumberIconFontList() {
   return gfx::FontList(font);
 }
 
-ui::ColorId SeparatorIconColorId(session_manager::SessionState state) {
+SkColor SeparatorIconColor(session_manager::SessionState state) {
   if (state == session_manager::SessionState::OOBE)
-    return ui::kColorAshIconInOobe;
-  return ui::kColorAshSystemUIMenuSeparator;
+    return kIconColorInOobe;
+  return AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor);
 }
 
 class NumberIconImageSource : public gfx::CanvasImageSource {
@@ -211,11 +211,11 @@ const char* QuietModeView::GetClassName() const {
 
 SeparatorTrayItemView::SeparatorTrayItemView(Shelf* shelf)
     : TrayItemView(shelf) {
-  auto separator = std::make_unique<views::Separator>();
-  separator->SetColorId(SeparatorIconColorId(
+  views::Separator* separator = new views::Separator();
+  separator->SetColor(SeparatorIconColor(
       Shell::Get()->session_controller()->GetSessionState()));
   separator->SetBorder(views::CreateEmptyBorder(kSeparatorPadding));
-  separator_ = AddChildView(std::move(separator));
+  separator_ = AddChildView(separator);
 
   set_use_scale_in_animation(false);
 }
@@ -229,7 +229,7 @@ const char* SeparatorTrayItemView::GetClassName() const {
 }
 
 void SeparatorTrayItemView::UpdateColor(session_manager::SessionState state) {
-  separator_->SetColorId(SeparatorIconColorId(state));
+  separator_->SetColor(SeparatorIconColor(state));
 }
 
 }  // namespace ash

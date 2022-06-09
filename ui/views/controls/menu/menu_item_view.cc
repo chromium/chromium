@@ -97,6 +97,9 @@ class VerticalSeparator : public Separator {
   VerticalSeparator(const VerticalSeparator&) = delete;
   VerticalSeparator& operator=(const VerticalSeparator&) = delete;
   ~VerticalSeparator() override = default;
+
+  // Separator:
+  void OnThemeChanged() override;
 };
 
 VerticalSeparator::VerticalSeparator() {
@@ -106,11 +109,15 @@ VerticalSeparator::VerticalSeparator() {
       gfx::Size(config.actionable_submenu_vertical_separator_width,
                 config.actionable_submenu_vertical_separator_height));
   SetCanProcessEventsWithinSubtree(false);
+}
+
+void VerticalSeparator::OnThemeChanged() {
+  Separator::OnThemeChanged();
   ui::ColorId id = ui::kColorMenuSeparator;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   id = ui::kColorAshSystemUIMenuSeparator;
 #endif
-  SetColorId(id);
+  SetColor(GetColorProvider()->GetColor(id));
 }
 
 BEGIN_METADATA(VerticalSeparator, Separator)

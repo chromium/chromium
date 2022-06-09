@@ -304,6 +304,9 @@ class PopupSeparator : public views::Separator {
   METADATA_HEADER(PopupSeparator);
   explicit PopupSeparator(AutofillPopupBaseView* popup);
 
+  // views::Separator:
+  void OnThemeChanged() override;
+
  private:
   raw_ptr<AutofillPopupBaseView> popup_;
 };
@@ -317,7 +320,11 @@ PopupSeparator::PopupSeparator(AutofillPopupBaseView* popup) : popup_(popup) {
   SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       GetContentsVerticalPadding(), 0,
       UseImprovedSuggestionUi() ? GetContentsVerticalPadding() : 0, 0)));
-  SetColorId(popup_->GetSeparatorColorId());
+}
+
+void PopupSeparator::OnThemeChanged() {
+  views::Separator::OnThemeChanged();
+  SetColor(popup_->GetSeparatorColor());
 }
 
 BEGIN_METADATA(PopupSeparator, views::Separator)
@@ -1190,7 +1197,7 @@ void AutofillPopupFooterView::RefreshStyle() {
               ? 0
               : views::MenuConfig::instance().separator_thickness,
           0, 0, 0),
-      GetColorProvider()->GetColor(popup_view()->GetSeparatorColorId())));
+      popup_view()->GetSeparatorColor()));
 }
 
 int AutofillPopupFooterView::GetPrimaryTextStyle() {

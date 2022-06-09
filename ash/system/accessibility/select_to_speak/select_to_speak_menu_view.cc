@@ -149,7 +149,8 @@ SelectToSpeakMenuView::SelectToSpeakMenuView(Delegate* delegate)
                           base::Unretained(this),
                           base::Unretained(speed_button_)))),
           views::Builder<views::Separator>()
-              .SetColorId(ui::kColorAshSystemUIMenuSeparator)
+              .SetColor(AshColorProvider::Get()->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kSeparatorColor))
               .SetPreferredLength(kSeparatorHeight)
               .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
                   separator_spacing - kUnifiedTopShortcutSpacing, 0,

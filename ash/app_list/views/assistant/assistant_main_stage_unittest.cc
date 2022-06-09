@@ -15,7 +15,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
@@ -72,15 +71,17 @@ TEST_F(AssistantMainStageTest, DarkAndLightTheme) {
   views::Separator* separator = static_cast<views::Separator*>(
       main_stage->GetViewByID(kHorizontalSeparator));
 
-  EXPECT_EQ(separator->GetColorId(), ui::kColorAshSystemUIMenuSeparator);
+  EXPECT_EQ(separator->GetColor(),
+            color_provider->GetContentLayerColor(
+                ColorProvider::ContentLayerType::kSeparatorColor));
 
   // Switch the color mode.
   color_provider->ToggleColorMode();
   ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
 
-  EXPECT_EQ(separator->GetColorId(), ui::kColorAshSystemUIMenuSeparator);
-  EXPECT_EQ(GetCenterColor(separator), separator->GetColorProvider()->GetColor(
-                                           ui::kColorAshSystemUIMenuSeparator));
+  EXPECT_EQ(separator->GetColor(),
+            color_provider->GetContentLayerColor(
+                ColorProvider::ContentLayerType::kSeparatorColor));
 
   // Turn off dark mode, this will make NativeTheme::ShouldUseDarkColors return
   // false. See a comment in TearDown about details.
@@ -103,12 +104,10 @@ TEST_F(AssistantMainStageTest, DarkAndLightModeFlagOff) {
 
   ASSERT_FALSE(page_view()->GetNativeTheme()->ShouldUseDarkColors());
 
-  // We use default color of views::Separator. Expects that
-  // Separator::GetColorId returns ui::kColorSeparator as we have not specified
-  // a ColorId.
-  EXPECT_EQ(separator->GetColorId(), ui::kColorSeparator);
-  EXPECT_EQ(GetCenterColor(separator),
-            separator->GetColorProvider()->GetColor(ui::kColorSeparator));
+  // We use default color of views::Separator. Expects that Separator::GetColor
+  // returns 0 as we have not specified a color.
+  EXPECT_EQ(separator->GetColor(), 0u);
+  EXPECT_EQ(GetCenterColor(separator), gfx::kGoogleGrey300);
 
   // Avoid test teardown issues by explicitly closing the launcher.
   CloseAssistantUi();

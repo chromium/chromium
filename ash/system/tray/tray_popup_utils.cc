@@ -21,7 +21,6 @@
 #include "base/bind.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -269,7 +268,8 @@ views::LabelButton* TrayPopupUtils::CreateTrayPopupButton(
 views::Separator* TrayPopupUtils::CreateVerticalSeparator() {
   views::Separator* separator = new views::Separator();
   separator->SetPreferredLength(24);
-  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor));
   return separator;
 }
 
@@ -311,7 +311,8 @@ void TrayPopupUtils::InstallHighlightPathGenerator(
 
 views::Separator* TrayPopupUtils::CreateListSubHeaderSeparator() {
   views::Separator* separator = new views::Separator();
-  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor));
   separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kMenuSeparatorVerticalPadding - views::Separator::kThickness, 0, 0, 0)));
   return separator;
@@ -319,7 +320,8 @@ views::Separator* TrayPopupUtils::CreateListSubHeaderSeparator() {
 
 views::Separator* TrayPopupUtils::CreateListItemSeparator(bool left_inset) {
   views::Separator* separator = new views::Separator();
-  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor));
   separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kMenuSeparatorVerticalPadding - views::Separator::kThickness,
       left_inset ? kMenuExtraMarginFromLeftEdge + kMenuButtonSize +

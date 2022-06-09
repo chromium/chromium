@@ -27,7 +27,6 @@
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
@@ -146,7 +145,8 @@ void AppListAssistantMainStage::OnThemeChanged() {
   if (!use_dark_light_mode_colors_)
     return;
 
-  horizontal_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+  horizontal_separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
+      ColorProvider::ContentLayerType::kSeparatorColor));
 }
 
 void AppListAssistantMainStage::OnViewPreferredSizeChanged(views::View* view) {
@@ -259,8 +259,10 @@ AppListAssistantMainStage::CreateDividerLayoutContainer() {
   horizontal_separator_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(vertical_inset, 0)));
   // We use default color of views::Separator if dark light mode flag is off.
-  if (use_dark_light_mode_colors_)
-    horizontal_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+  if (use_dark_light_mode_colors_) {
+    horizontal_separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor));
+  }
   horizontal_separator_->SetPreferredSize(gfx::Size(
       kSeparatorWidthDip, progress_indicator_->GetPreferredSize().height()));
   horizontal_separator_->SetPaintToLayer();
