@@ -807,7 +807,7 @@ const base::Feature kPwaUpdateDialogForIcon{"PwaUpdateDialogForIcon",
 
 // Shows a confirmation dialog when updates to a PWAs name has been detected.
 const base::Feature kPwaUpdateDialogForName{"PwaUpdateDialogForName",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables using quiet prompts for notification permission requests.
 const base::Feature kQuietNotificationPrompts{"QuietNotificationPrompts",
