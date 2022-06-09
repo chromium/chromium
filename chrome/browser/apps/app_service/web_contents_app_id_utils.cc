@@ -163,7 +163,6 @@ bool IsInstalledApp(Profile* profile, const std::string& app_id) {
       extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
           app_id);
   if (extension) {
-    DCHECK(extension->is_app());
     return true;
   }
   return IsAppReady(profile, app_id);

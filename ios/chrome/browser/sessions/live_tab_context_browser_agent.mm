@@ -41,6 +41,12 @@ SessionID LiveTabContextBrowserAgent::GetSessionID() const {
   return session_id_;
 }
 
+sessions::SessionWindow::WindowType LiveTabContextBrowserAgent::GetWindowType()
+    const {
+  // Not supported by iOS.
+  return sessions::SessionWindow::TYPE_NORMAL;
+}
+
 int LiveTabContextBrowserAgent::GetTabCount() const {
   return web_state_list_->count();
 }

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
+#include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/browser_context.h"
@@ -27,6 +28,12 @@ void AndroidLiveTabContext::ShowBrowserWindow() {}
 
 SessionID AndroidLiveTabContext::GetSessionID() const {
   return tab_model_->GetSessionId();
+}
+
+sessions::SessionWindow::WindowType AndroidLiveTabContext::GetWindowType()
+    const {
+  // Not applicable to android.
+  return sessions::SessionWindow::TYPE_NORMAL;
 }
 
 int AndroidLiveTabContext::GetTabCount() const {

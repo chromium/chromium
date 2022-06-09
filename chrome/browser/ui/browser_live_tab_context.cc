@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/closed_tab_cache.h"
 #include "chrome/browser/sessions/closed_tab_cache_service_factory.h"
+#include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -29,6 +30,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_platform_specific_tab_data.h"
+#include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/navigation_controller.h"
@@ -74,6 +76,11 @@ void BrowserLiveTabContext::ShowBrowserWindow() {
 
 SessionID BrowserLiveTabContext::GetSessionID() const {
   return browser_->session_id();
+}
+
+sessions::SessionWindow::WindowType BrowserLiveTabContext::GetWindowType()
+    const {
+  return WindowTypeForBrowserType(browser_->type());
 }
 
 int BrowserLiveTabContext::GetTabCount() const {
@@ -282,6 +289,7 @@ void BrowserLiveTabContext::CloseTab() {
 // static
 sessions::LiveTabContext* BrowserLiveTabContext::Create(
     Profile* profile,
+    sessions::SessionWindow::WindowType type,
     const std::string& app_name,
     const gfx::Rect& bounds,
     ui::WindowShowState show_state,
@@ -291,10 +299,17 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
   std::unique_ptr<Browser::CreateParams> create_params;
   if (ShouldCreateAppWindowForAppName(profile, app_name)) {
     // Only trusted app popup windows should ever be restored.
-    create_params = std::make_unique<Browser::CreateParams>(
-        Browser::CreateParams::CreateForApp(app_name, true /* trusted_source */,
-                                            bounds, profile,
-                                            true /* user_gesture */));
+    if (type == sessions::SessionWindow::TYPE_APP_POPUP) {
+      create_params = std::make_unique<Browser::CreateParams>(
+          Browser::CreateParams::CreateForAppPopup(
+              app_name, /*trusted_source=*/true, bounds, profile,
+              /*user_gesture=*/true));
+    } else {
+      create_params = std::make_unique<Browser::CreateParams>(
+          Browser::CreateParams::CreateForApp(app_name, /*trusted_source=*/true,
+                                              bounds, profile,
+                                              /*user_gesture=*/true));
+    }
   } else {
     create_params = std::make_unique<Browser::CreateParams>(
         Browser::CreateParams(profile, true));

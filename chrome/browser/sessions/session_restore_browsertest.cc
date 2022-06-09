@@ -3717,9 +3717,10 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   web_app::AppId app_id2 = InstallPWA(profile, example_url2);
   web_app::AppId app_id3 = InstallPWA(profile, example_url3);
 
-  // Open all 3.
+  // Open all 3, browser 2 is app_popup.
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
-  Browser* app_browser2 = web_app::LaunchWebAppBrowserAndWait(profile, app_id2);
+  Browser* app_browser2 = web_app::LaunchWebAppBrowserAndWait(
+      profile, app_id2, WindowOpenDisposition::NEW_POPUP);
   Browser* app_browser3 = web_app::LaunchWebAppBrowserAndWait(profile, app_id3);
 
   // 3 apps + basic browser.
@@ -3744,17 +3745,18 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   bool app3_seen = false;
   ASSERT_EQ(4u, BrowserList::GetInstance()->size());
   for (Browser* browser : *(BrowserList::GetInstance())) {
-    if (browser->type() == Browser::Type::TYPE_APP) {
-      if (web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
-        EXPECT_FALSE(app1_seen);
-        app1_seen = true;
-      } else if (web_app::AppBrowserController::IsForWebApp(browser, app_id2)) {
-        EXPECT_FALSE(app2_seen);
-        app2_seen = true;
-      } else if (web_app::AppBrowserController::IsForWebApp(browser, app_id3)) {
-        EXPECT_FALSE(app3_seen);
-        app3_seen = true;
-      }
+    if (web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
+      EXPECT_FALSE(app1_seen);
+      EXPECT_TRUE(browser->is_type_app());
+      app1_seen = true;
+    } else if (web_app::AppBrowserController::IsForWebApp(browser, app_id2)) {
+      EXPECT_FALSE(app2_seen);
+      EXPECT_TRUE(browser->is_type_app_popup());
+      app2_seen = true;
+    } else if (web_app::AppBrowserController::IsForWebApp(browser, app_id3)) {
+      EXPECT_FALSE(app3_seen);
+      EXPECT_TRUE(browser->is_type_app());
+      app3_seen = true;
     }
   }
   EXPECT_TRUE(app1_seen);

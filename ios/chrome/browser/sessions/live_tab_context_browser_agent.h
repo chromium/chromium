@@ -31,6 +31,7 @@ class LiveTabContextBrowserAgent
   // Sessions::LiveTabContext:
   void ShowBrowserWindow() override;
   SessionID GetSessionID() const override;
+  sessions::SessionWindow::WindowType GetWindowType() const override;
   int GetTabCount() const override;
   int GetSelectedIndex() const override;
   std::string GetAppName() const override;

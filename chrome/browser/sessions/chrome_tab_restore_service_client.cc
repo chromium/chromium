@@ -36,6 +36,7 @@ ChromeTabRestoreServiceClient::~ChromeTabRestoreServiceClient() {}
 
 sessions::LiveTabContext* ChromeTabRestoreServiceClient::CreateLiveTabContext(
     sessions::LiveTabContext* existing_context,
+    sessions::SessionWindow::WindowType type,
     const std::string& app_name,
     const gfx::Rect& bounds,
     ui::WindowShowState show_state,
@@ -48,8 +49,9 @@ sessions::LiveTabContext* ChromeTabRestoreServiceClient::CreateLiveTabContext(
   DCHECK(existing_context);
   return existing_context;
 #else
-  return BrowserLiveTabContext::Create(profile_, app_name, bounds, show_state,
-                                       workspace, user_title, extra_data);
+  return BrowserLiveTabContext::Create(profile_, type, app_name, bounds,
+                                       show_state, workspace, user_title,
+                                       extra_data);
 #endif
 }
 
