@@ -3105,14 +3105,6 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
       Chính sách này sẽ bị bỏ qua và thông báo sẽ luôn hiển thị nếu thiết bị không được quản lý hoặc chỉ có một người dùng.
 
       Nếu có nhiều tài khoản người dùng trên một thiết bị được quản lý, thì thông báo sẽ chỉ hiển thị khi bạn đặt chính sách này thành bật.</translation>
-<translation id="4293593564662654474">Chính sách này được coi là một cách để chọn không áp dụng tính năng First-Party Sets.
-
-                  Khi chính sách này không được đặt hoặc được đặt thành Bật (Enabled), tính năng First-Party Sets sẽ được bật.
-
-                  Khi chính sách này được đặt thành Tắt (Disabled), tính năng First-Party Sets sẽ bị tắt.
-
-                  Trạng thái của tính năng First-Party Sets xác định liệu Chrome có truy xuất danh sách First-Party Sets hay không.
-                  Trạng thái này cũng kiểm soát việc liệu Chrome có hỗ trợ các tính năng liên quan tới First-Party Sets hay không (chẳng hạn như thuộc tính cookie SameParty).</translation>
 <translation id="4311195029067684288">Đầy</translation>
 <translation id="4313767483634435271">Địa chỉ MAC chỉ định cho đế sạc của thiết bị</translation>
 <translation id="4314538398999793073">Tắt tính năng tra cứu CNAME trong quá trình xác thực Kerberos</translation>

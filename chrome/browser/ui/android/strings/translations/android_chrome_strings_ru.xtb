@@ -587,6 +587,7 @@
 <translation id="4227318652298512614">Посещайте любые сайты</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
 <translation id="4248098802131000011">Защитите пароли от утечки данных и других проблем с безопасностью</translation>
+<translation id="424864128008805179">Выйти из Chrome?</translation>
 <translation id="4249955472157341256">Сортировать по дате</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4256782883801055595">Лицензии на ПО с открытым кодом</translation>
@@ -654,7 +655,6 @@
 <translation id="4594952190837476234">Офлайн-версия страницы сохранена <ph name="CREATION_TIME" />. Она может отличаться от онлайн-версии.</translation>
 <translation id="4616150815774728855">Открыть <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Подтвердить личность</translation>
-<translation id="4627165777145349100">Подробнее об этой странице</translation>
 <translation id="4634124774493850572">Использовать пароль</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 раскрытый пароль.}one{# раскрытый пароль.}few{# раскрытых пароля.}many{# раскрытых паролей.}other{# раскрытого пароля.}}</translation>
 <translation id="4650364565596261010">По умолчанию</translation>
@@ -793,7 +793,6 @@
 <translation id="5342314432463739672">Запросы разрешений</translation>
 <translation id="5355191726083956201">Улучшенная защита включена.</translation>
 <translation id="5368227114232678694">Чтобы анонимно работать в интернете на этом устройстве, воспользуйтесь режимом инкогнито.</translation>
-<translation id="5371717687506906963">Уведомление Privacy Sandbox</translation>
 <translation id="5375577065097716013">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Отклик изменен</translation>
 <translation id="5401851137404501592">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт.</translation>

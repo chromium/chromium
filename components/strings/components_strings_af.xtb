@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Toelae, beurse en finansiële hulp</translation>
 <translation id="1048785276086539861">Hierdie dokument sal na enkelbladsyaansig toe terugkeer wanneer jy aantekeninge redigeer</translation>
 <translation id="1050038467049342496">Maak ander programme toe</translation>
+<translation id="1053959602163383901">Jy het gekies om met ’n stawingstoestel te verifieer op webwerwe wat <ph name="PROVIDER_ORIGIN" /> gebruik. Hierdie verskaffer het dalk inligting oor jou betaalmetode geberg, wat jy kan <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">Ontdoen byvoeging</translation>
 <translation id="1056663316309890343">Fotosagteware</translation>
 <translation id="1056898198331236512">Waarskuwing</translation>
@@ -426,6 +427,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2053111141626950936">Bladsye in <ph name="LANGUAGE" /> sal nie vertaal word nie.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Wanneer hierdie kontrole aan is en die status aktief is, bepaal Chrome met watter groot groep mense, of "kohort", jou onlangse blaai-aktiwiteit die meeste ooreenstem. Adverteerders kan advertensies vir die groep kies en jou blaai-aktiwiteit word privaat op jou toestel gehou. Jou groep word elke dag opgedateer.}=1{Wanneer hierdie kontrole aan is en die status aktief is, bepaal Chrome met watter groot groep mense, of "kohort", jou onlangse blaai-aktiwiteit die meeste ooreenstem. Adverteerders kan advertensies vir die groep kies en jou blaai-aktiwiteit word privaat op jou toestel gehou. Jou groep word elke dag opgedateer.}other{Wanneer hierdie kontrole aan is en die status aktief is, bepaal Chrome met watter groot groep mense, of "kohort", jou onlangse blaai-aktiwiteit die meeste ooreenstem. Adverteerders kan advertensies vir die groep kies en jou blaai-aktiwiteit word privaat op jou toestel gehou. Jou groep word elke {NUM_DAYS} dae opgedateer.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 voorstel}other{# voorstelle}}</translation>
+<translation id="2066915425250589881">versoek om uit te vee</translation>
 <translation id="2068528718802935086">Babas en kleuters</translation>
 <translation id="2071156619270205202">Hierdie kaart kwalifiseer nie vir virtuele kaartnommer nie.</translation>
 <translation id="2071692954027939183">Kennisgewings is outomaties geblokkeer omdat jy hulle gewoonlik nie toelaat nie</translation>
@@ -582,6 +584,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2512101340618156538">Nie toegelaat nie (verstek)</translation>
 <translation id="2512413427717747692">Stel Chrome as verstekblaaierknoppie; druk Enter om Chrome in iOS-instellings as die stelsel se verstekblaaier te stel</translation>
 <translation id="2515629240566999685">Die sein in jou omgewing nagaan</translation>
+<translation id="2515761554693942801">Jy het gekies om met Raak-ID te verifieer op webwerwe wat <ph name="PROVIDER_ORIGIN" /> gebruik. Hierdie verskaffer het dalk inligting oor jou betaalmetode geberg, wat jy kan <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Kram regs onder</translation>
 <translation id="2521736961081452453">Skep vorm</translation>
 <translation id="2523886232349826891">Net op hierdie toestel gestoor</translation>
@@ -703,7 +706,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2854764410992194509">Internetdiensverskaffers</translation>
 <translation id="2856444702002559011">Aanvallers probeer dalk om jou inligting (byvoorbeeld: wagwoorde, boodskappe of kredietkaartinligting) op <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> te steel. <ph name="BEGIN_LEARN_MORE_LINK" />Kom meer te wete<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Hierdie werf wys indringerige of misleidende advertensies.</translation>
-<translation id="286512204874376891">'n Virtuele kaart verberg jou werklike kaart om te help om jou teen potensiële bedrog te beskerm. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Vriendelik</translation>
 <translation id="28761159517501904">Flieks</translation>
 <translation id="2876489322757410363">Verlaat tans Incognitomodus om deur 'n eksterne program te betaal. Gaan voort?</translation>
@@ -1336,7 +1338,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4607603470419975064">Sien Chrome-wenke-knoppie; druk Enter om meer oor Chrome-kenmerke te wete te kom</translation>
 <translation id="4607608436550361748">Sien Chrome-wenke</translation>
 <translation id="4617273035598175554">Grafika- en animasiesagteware</translation>
-<translation id="4627165777145349100">Meer oor hierdie bladsy</translation>
 <translation id="4627675673814409125">Hierdie beleid kan nie op die Chrome-profielvlak gestel word nie en sal geïgnoreer word.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Kontantterugbetaling is gekoppel</translation>
@@ -1501,6 +1502,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5051305769747448211">Regstreekse komedie</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Maak spasie (<ph name="DISK_SPACE_SIZE" />) op jou toestel beskikbaar as jy hierdie lêer met Nabydeling wil stuur}other{Maak spasie (<ph name="DISK_SPACE_SIZE" />) op jou toestel beskikbaar as jy hierdie lêers met Nabydeling wil stuur}}</translation>
 <translation id="5056549851600133418">Artikels vir jou</translation>
+<translation id="5060483733937416656">Jy het gekies om met Windows Hello te verifieer op webwerwe wat <ph name="PROVIDER_ORIGIN" /> gebruik. Hierdie verskaffer het dalk inligting oor jou betaalmetode geberg, wat jy kan <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Het jy bedoel <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Drukgeskiedenis</translation>
 <translation id="5068234115460527047">Skansfondse</translation>
@@ -1870,7 +1872,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6061154937977953833">Stoei</translation>
 <translation id="6064217302520318294">Skermslot</translation>
 <translation id="6064602040258638498">Koepons en afslagaanbiedings</translation>
-<translation id="6078813287646374487">Wys meer inligting oor hierdie bladsy</translation>
 <translation id="6080696365213338172">Jy het met behulp van 'n sertifikaat wat deur 'n administrateur voorsien is, by inhoud ingegaan. Data wat jy aan <ph name="DOMAIN" /> voorsien, kan deur die administrateur onderskep word.</translation>
 <translation id="6087312102907839798">Verwante soektogte</translation>
 <translation id="6094273045989040137">Maak aantekeninge</translation>
@@ -2794,6 +2795,7 @@ Bykomende besonderhede:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> is jou kode vir <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Boekmerk hierdie oortjie</translation>
 <translation id="8751426954251315517">Probeer volgende keer weer</translation>
+<translation id="8757526089434340176">Google Pay-aanbieding beskikbaar</translation>
 <translation id="8758885506338294482">Mededingende videospeletjies</translation>
 <translation id="8759274551635299824">Hierdie kaart het verval</translation>
 <translation id="87601671197631245">Hierdie werf gebruik 'n verouderde sekuriteitopstelling, wat jou inligting (byvoorbeeld, wagwoorde, boodskappe of kredietkaarte) kan blootstel wanneer dit na hierdie werf toe gestuur word.</translation>

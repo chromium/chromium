@@ -699,7 +699,6 @@
 <translation id="2854764410992194509">互联网服务提供商 (ISP)</translation>
 <translation id="2856444702002559011">攻击者可能会试图从 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 窃取您的信息（例如：密码、通讯内容或信用卡信息）。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">此网站展示过侵扰性或误导性广告。</translation>
-<translation id="286512204874376891">虚拟卡会伪装成实体卡，从而保护您免遭欺诈。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">友好</translation>
 <translation id="28761159517501904">影片</translation>
 <translation id="2876489322757410363">将要退出无痕模式，以便通过外部应用付款。是否继续？</translation>
@@ -1323,7 +1322,6 @@
 <translation id="4607603470419975064">“查看 Chrome 提示”按钮，按 Enter 键即可了解各项 Chrome 功能</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
 <translation id="4617273035598175554">图形与动画软件</translation>
-<translation id="4627165777145349100">详细了解此页面</translation>
 <translation id="4627675673814409125">此政策无法在 Chrome 个人资料级别设置，因而会被忽略。</translation>
 <translation id="4628948037717959914">照片</translation>
 <translation id="4631649115723685955">已关联返现</translation>
@@ -1857,7 +1855,6 @@
 <translation id="6061154937977953833">摔跤</translation>
 <translation id="6064217302520318294">屏幕锁定</translation>
 <translation id="6064602040258638498">优惠券与折扣优惠</translation>
-<translation id="6078813287646374487">显示此页面的更多相关信息</translation>
 <translation id="6080696365213338172">您已使用管理员提供的证书访问了内容，因此管理员可以拦截您提供给 <ph name="DOMAIN" /> 的数据。</translation>
 <translation id="6087312102907839798">相关搜索</translation>
 <translation id="6094273045989040137">注释</translation>
@@ -2781,6 +2778,7 @@
 <translation id="8742371904523228557">您的 <ph name="ORIGIN" /> 验证码是 <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">为此标签页添加书签</translation>
 <translation id="8751426954251315517">请稍后重试</translation>
+<translation id="8757526089434340176">有可用的 Google Pay 优惠</translation>
 <translation id="8758885506338294482">竞技类视频游戏</translation>
 <translation id="8759274551635299824">此信用卡已失效</translation>
 <translation id="87601671197631245">此网站使用的安全性配置已过时，这可能会导致您的信息（例如密码、消息或信用卡卡号）在发送至此网站的过程中遭到泄露。</translation>

@@ -18,6 +18,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="MANAGER" /> башкарат.</translation>
 <translation id="1175951029573070619">Орточо (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
+<translation id="1190378975642195988">Негизги акселерометр</translation>
 <translation id="1195447618553298278">Белгисиз ката.</translation>
 <translation id="1196959502276349371"><ph name="VERSION" /> версиясы</translation>
 <translation id="1199355487114804640">Ойнотуу/Тындыруу</translation>
@@ -214,7 +215,6 @@
 <translation id="2878387241690264070">Батареянын кубаты <ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> түгөндү.</translation>
 <translation id="291142119251986300">Шайкеш келбеген курамдык бөлүктөр</translation>
 <translation id="2926057806159140518">Колдонуучу атыңызды жана сырсөзүңүздү киргизип же QR кодуңузду скандаңыз</translation>
-<translation id="2928420929544864228">Орнотулду.</translation>
 <translation id="3008341117444806826">ЖАҢЫРТУУ</translation>
 <translation id="3009958530611748826">Скандалган нерселерди сактоо үчүн папка тандаңыз</translation>
 <translation id="3017079585324758401">Фон</translation>
@@ -268,6 +268,7 @@
 <translation id="3484914941826596830">Орнотулган программа жаңыртылып жатканда, тышкы түзмөктү ажыратпаңыз же компьютерди өчүрбөңүз. Бул терезени кичирейтип койсоңуз болот. Жаңыртуу бир нече мүнөткө созулуп, ал эми тышкы түзмөгүңүз бул убакытта иштебеши мүмкүн.</translation>
 <translation id="3486220673238053218">аныктама</translation>
 <translation id="3488065109653206955">Жарым-жартылай жандырылган</translation>
+<translation id="3492982278147736083">Капкактын гироскобу</translation>
 <translation id="3517001332549868749">ChromeOS жаңыртуусу</translation>
 <translation id="3527036260304016759">Басылып чыгарылган жок - Белгисиз ката</translation>
 <translation id="3532980081107202182">Болжол менен <ph name="MIN_REMAINING" /> мүнөт калды</translation>
@@ -301,9 +302,11 @@
 <translation id="3820172043799983114">PIN код жараксыз.</translation>
 <translation id="3838338534323494292">Жаңы сырсөз</translation>
 <translation id="385051799172605136">Артка</translation>
+<translation id="3856304145690230735">Негизги гироскоп</translation>
 <translation id="385832974417157471">Өчүрүүдөн мурда түзмөктү жууп салыңыз. Эгер түзмөгүңүздүн капкагы болсо, түзмөк жуулуп бүтмөйүнчө, капкакты жаппай туруңуз. Жууп салуу бир мүнөткө чейин созулушу мүмкүн.</translation>
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="3865414814144988605">Чечилиш</translation>
+<translation id="3866249974567520381">Сүрөттөлүшү</translation>
 <translation id="387301095347517405">Батарея толук кубатталган циклдердин саны</translation>
 <translation id="3885327323343477505">Көшөгөнү өзгөртүү</translation>
 <translation id="3923184630988645767">Маалыматтардын өткөрүлүшү</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Баштоо</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Демейкиден башка тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
+<translation id="4500213108254186382">Капкактын акселерометри</translation>
 <translation id="4503223151711056411">Солго жебе</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Субъекттин кошумча аталышына окшош</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM картанын кулпусу ачылды</translation>
 <translation id="4562494484721939086">Тейленбейт</translation>
 <translation id="4568938274596692027">Орнотулуп бүттү. Өчүрүп-күйгүзүүгө даярдалууда…</translation>
+<translation id="4576943788798178439">Стилусту колдоого алуу</translation>
 <translation id="458794348635939462">Бардык башкы түйүндөр чечилген жок</translation>
 <translation id="4593212453765072419">Проксиде аныктыгын текшерүү талап кылынат</translation>
 <translation id="4609350030397390689">Баскычтоптун жарыктыгын азайтуу</translation>
@@ -430,6 +435,7 @@
 <translation id="4915052247106771211">Ушуну менен түзмөк демейки жөндөөлөргө кайтарылат (Жууп салуу).</translation>
 <translation id="4917385247580444890">Күчтүү</translation>
 <translation id="4917889632206600977">Токтоду – Кагаз түгөнүп калды</translation>
+<translation id="491791267030419270">Пикир жазуу боюнча кеңештер</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> кубатталды.</translation>
 <translation id="4930320165497208503">Туташууну тууралоо же жаңыртуу үчүн <ph name="BEGIN_LINK" />Жөндөөлөргө<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="4932733599132424254">Күнү</translation>
@@ -536,6 +542,7 @@
 <translation id="5866840822086176774">Абдан күчтүү</translation>
 <translation id="588258955323874662">Толук экран</translation>
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
+<translation id="5898758006340607522">Күйгүзүү/өчүрүү баскычы</translation>
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5903200662178656908">Түзмөк баскычтоп менен чычкандан турат.</translation>
 <translation id="5916084858004523819">Тыюу салынат</translation>
@@ -858,6 +865,7 @@
 <translation id="8919792139048574232">Эмнелер оңдолгонун көрүңүз</translation>
 <translation id="8919837981463578619">Басылып чыгарылган жок - Такта ордунда эмес</translation>
 <translation id="8923267550422472772">Баштапкы абалга келтирүү күнү</translation>
+<translation id="8925613211674558308">Vpd кештелген</translation>
 <translation id="8928727111548978589">Басылып чыгарылган жок - Кагаз түгөнүп калды</translation>
 <translation id="8930521118335213258">Жупташкан түзмөк</translation>
 <translation id="8930622219860340959">Зымсыз</translation>
@@ -899,6 +907,7 @@
 <translation id="922179502584117429">Учурдагы <ph name="VERSION_NUMBER" /> версиясы эскирип калган</translation>
 <translation id="932327136139879170">Башкы</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 <translation id="952992212772159698">Жандырылган эмес</translation>
 <translation id="960719561871045870">Оператордун коду</translation>
 <translation id="982713511914535780">Батареянын сарпталышын сыноо</translation>

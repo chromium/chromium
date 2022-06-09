@@ -1851,6 +1851,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si cette règle n'est pas configurée, la règle <ph name="ASK_GEOLOCATION_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="2922511125678964398">Autoriser l'authentification du portail captif à ignorer les paramètres proxy</translation>
+<translation id="2926813071464307947">Désactiver le bac à sable du conteneur d'appli de moteur de rendu</translation>
 <translation id="2931888116345994552">Active la mise à jour de tous les composants de <ph name="PRODUCT_NAME" /> si la règle n'est pas configurée ou qu'elle est activée.
 
       Si elle est désactivée, la mise à jour des composants l'est aussi. Toutefois, certains composants échappent à cette règle : les mises à jour des composants sans code exécutable et qui sont essentiels à la sécurité du navigateur ne seront pas désactivées.
@@ -2292,6 +2293,11 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
           Si cette règle est définie sur une chaîne non vide, cette chaîne devient le nom de la destination <ph name="PRODUCT_NAME" />. Sinon, le nom de la destination est le nom de l'appareil. Si cette règle n'est pas définie, le nom de la destination est celui de l'appareil, et le propriétaire de l'appareil (ou un utilisateur du domaine gérant l'appareil) peut le modifier. Le nom est limité à 24 caractères.</translation>
 <translation id="3329063005964041553">Bloquer l'API File Handling pour ces applis Web</translation>
 <translation id="3329401415394648069">Autoriser l'utilisation de l'API U2F Security Key.</translation>
+<translation id="3329976499753286262">Si cette règle est activée ou si elle n'est pas configurée, la configuration du conteneur d'appli de moteur de rendu est activée sur les plates-formes compatibles.
+
+      Si elle est désactivée, cela affaiblit le bac à sable que les processus de moteur de rendu utilisent et nuit à la sécurité et à la stabilité de <ph name="PRODUCT_NAME" />. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec des logiciels tiers devant s'exécuter dans les processus du moteur de rendu.
+
+      Remarque : Consultez https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus sur les règles d'atténuation des risques liés aux processus.</translation>
 <translation id="3339271789059866414">Configure la disponibilité du service proxy du système et les identifiants de proxy pour les services système.
       Si la règle n'est pas définie, le service proxy du système n'est pas disponible.</translation>
 <translation id="3348799281602260763">Si cette règle est activée, les connexions homologues WebRTC peuvent revenir à
@@ -3085,14 +3091,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Elle est ignorée et la notification est toujours affichée si l'appareil n'est pas géré ou s'il n'y a qu'un seul utilisateur.
 
       Si plusieurs comptes utilisateur sont configurés sur un appareil géré, la notification ne s'affiche que lorsque cette règle est activée.</translation>
-<translation id="4293593564662654474">Cette règle permet de désactiver la fonctionnalité d'ensembles propriétaires.
-
-                  Si elle n'est pas configurée, ou si elle est activée, la fonctionnalité d'ensembles propriétaires est activée.
-
-                  Si elle est désactivée, la fonctionnalité l'est également.
-
-                  L'état de la fonctionnalité d'ensembles propriétaires détermine si Chrome récupère ou non la liste des ensembles propriétaires.
-                  Cela détermine également si Chrome accepte ou non les fonctionnalités liées aux ensembles propriétaires (attribut de cookie SameParty, par exemple).</translation>
 <translation id="4311195029067684288">Complet</translation>
 <translation id="4313767483634435271">Adresse MAC de la station d'accueil désignée de l'appareil</translation>
 <translation id="4314538398999793073">Désactiver la recherche CNAME lors de l'authentification Kerberos</translation>
@@ -4195,6 +4193,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5625771176514429288">Les applis Chrome seront autorisées à s'exécuter sur ces plates-formes.</translation>
 <translation id="5630352020869108293">Restaurer la dernière session</translation>
 <translation id="5633871703004128675">Activer la fonctionnalité d'accessibilité de mise en surbrillance du curseur de saisie</translation>
+<translation id="5634032995857968056">Activer le bac à sable du conteneur d'appli de moteur de rendu</translation>
 <translation id="5639454129004500060">Si cette règle est activée, elle contient des infos permettant de télécharger le fichier du modèle de bureau.  Celui-ci contient le modèle de bureau à provisionner pour l'utilisateur actuel.
       Si cette règle n'est pas activée, aucun modèle de bureau préconfiguré ne sera inclus dans la liste des modèles.  Si la règle <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" />
       n'est pas définie sur "True", elle n'a aucune incidence.</translation>
@@ -7111,6 +7110,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8763716376920670835">WebSQL est activé par défaut depuis la version M101, mais peut être désactivé via un indicateur Chrome.
           Si cette règle est définie sur "false" ou "unset", WebSQL peut être désactivé.
           Si cette règle est définie sur "true", WebSQL ne peut pas être désactivé.</translation>
+<translation id="8766910236040529804">Activer le conteneur d'appli de moteur de rendu</translation>
 <translation id="8767743923206070405">Si cette règle est activée, le bouton d'accueil s'affiche sur la barre d'outils de <ph name="PRODUCT_NAME" />. Si elle est désactivée, le bouton d'accueil ne s'affiche pas.
 
       Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si elle n'est pas configurée, les utilisateurs peuvent choisir d'afficher ou non le bouton d'accueil.</translation>

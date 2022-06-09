@@ -214,7 +214,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" />초 내에 <ph name="RATE" /> 방전됨</translation>
 <translation id="291142119251986300">자격 없는 구성요소</translation>
 <translation id="2926057806159140518">사용자 이름과 비밀번호를 입력하거나 QR 코드를 스캔하세요.</translation>
-<translation id="2928420929544864228">설치가 완료되었습니다.</translation>
 <translation id="3008341117444806826">새로고침</translation>
 <translation id="3009958530611748826">저장 폴더 선택</translation>
 <translation id="3017079585324758401">배경</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">종료하기 전에 기기를 파워워시하세요. 기기에 커버가 있다면 파워워시가 끝난 다음에 커버를 닫으세요. 파워워시가 완료되려면 최대 1분 정도 걸립니다.</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3865414814144988605">해상도</translation>
+<translation id="3866249974567520381">설명</translation>
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
 <translation id="3885327323343477505">화면 보호기 변경</translation>
 <translation id="3923184630988645767">데이터 사용</translation>
@@ -430,6 +430,7 @@
 <translation id="4915052247106771211">기기가 기본 설정으로 재설정됩니다(파워워시).</translation>
 <translation id="4917385247580444890">강함</translation>
 <translation id="4917889632206600977">중지됨 - 용지 부족</translation>
+<translation id="491791267030419270">의견 작성 관련 도움말</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" />초 동안 <ph name="RATE" /> 충전했습니다.</translation>
 <translation id="4930320165497208503">연결을 설정하거나 업데이트하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="4932733599132424254">날짜</translation>
@@ -899,6 +900,7 @@
 <translation id="922179502584117429">현재 버전(<ph name="VERSION_NUMBER" />)은 최신 버전이 아닙니다.</translation>
 <translation id="932327136139879170">홈</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">의견 보내기</translation>
 <translation id="952992212772159698">활성화되지 않음</translation>
 <translation id="960719561871045870">운영자 코드</translation>
 <translation id="982713511914535780">방전 테스트 실행</translation>

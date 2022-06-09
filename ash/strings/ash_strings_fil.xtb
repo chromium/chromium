@@ -56,10 +56,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1247519845643687288">Mga kamakailang app</translation>
 <translation id="1252999807265626933">Nagcha-charge mula sa <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Ano'ng lagay ng panahon?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> hanggang 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Piliin para sa higit pang detalye sa Google Calendar.</translation>
 <translation id="1267032506238418139">Pagbabago ng shortcut</translation>
 <translation id="1269405891096105529">Hindi sinusuportahan ang peripheral sa Guest mode</translation>
 <translation id="1270290102613614947">Naka-disable ang on-screen na keyboard</translation>
@@ -125,6 +121,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1632985212731562677">Puwedeng i-disable ang Switch Access sa Mga Setting &gt; Accessibility.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> (na) device</translation>
+<translation id="1639239467298939599">Naglo-load</translation>
 <translation id="1654477262762802994">Magsimula ng query gamit ang boses</translation>
 <translation id="1668469839109562275">Built-in na VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> na lang ang natitira</translation>
@@ -1050,7 +1047,6 @@ Kaka-install lang</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Magre-revert sa lumang resolution sa loob ng <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">I-refresh</translation>
-<translation id="718361511487535372">Buksan sa Google calendar</translation>
 <translation id="7188494361780961876">Inilipat ang menu sa kaliwang sulok sa itaas ng screen.</translation>
 <translation id="7189412385142492784">Gaano kalayo ang Venus</translation>
 <translation id="7198435252016571249">Nag-snap ang camera sa kanang sulok sa ibaba. Pagsasalungat sa surface ng system.</translation>

@@ -214,7 +214,6 @@
 <translation id="2878387241690264070">በ<ph name="NUM_SECONDS" /> ሰከንዶች ውስጥ <ph name="RATE" /> ሞልቷል።</translation>
 <translation id="291142119251986300">ብቁ ያልሆኑ ክፍለ-አካላት</translation>
 <translation id="2926057806159140518">የእርስዎ የተጠቃሚ ስም እና የይለፍ ቃል ያስገቡ ወይም QR ኮድዎን ይቃኙ</translation>
-<translation id="2928420929544864228">ጭነት ተጠናቅቋል።</translation>
 <translation id="3008341117444806826">አድስ</translation>
 <translation id="3009958530611748826">የሚያስቀምጡበትን አቃፊ ይምረጡ</translation>
 <translation id="3017079585324758401">ጀርባ</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">ከመዘጋት በፊት መሣሪያዎን Powerwash ያድርጉት። መሣሪያዎ ክዳን ካለው ክዳኑን ከመዝጋትዎ በፊት Powerwash እስኪጠናቀቅ ይጠብቁ። Powerwash ለመጠናቀቅ አንድ ደቂቃ ያህል ሊወስድ ይችላል።</translation>
 <translation id="3858860766373142691">ስም</translation>
 <translation id="3865414814144988605">የምስል ጥራት</translation>
+<translation id="3866249974567520381">ማብራሪያ</translation>
 <translation id="387301095347517405">ባትሪዎ ሙሉ የኃይል መሙያ ዑደት ውስጥ ያለፈበት ጊዜ ብዛት</translation>
 <translation id="3885327323343477505">የማያ ገጽ አሳራፊን ቀይር</translation>
 <translation id="3923184630988645767">የውሂብ አጠቃቀም</translation>
@@ -899,6 +899,7 @@
 <translation id="922179502584117429">የአሁኑ ስሪት <ph name="VERSION_NUMBER" /> ጊዜው አልፎበታል</translation>
 <translation id="932327136139879170">መነሻ</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">ግብረመልስ ላክ</translation>
 <translation id="952992212772159698">አልገበረም</translation>
 <translation id="960719561871045870">የከዋኝ ኮድ</translation>
 <translation id="982713511914535780">የባትሪ ኃይል የመጨረስ ሙከራን አሂድ</translation>

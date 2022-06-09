@@ -587,6 +587,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="4227318652298512614">Pratite sve web-lokacije koje želite</translation>
 <translation id="4242533952199664413">Otvori postavke</translation>
 <translation id="4248098802131000011">Osigurajte svoje zaporke od povreda podataka i drugih sigurnosnih problema</translation>
+<translation id="424864128008805179">Želite li se odjaviti s Chromea?</translation>
 <translation id="4249955472157341256">Poredaj po najnovijem</translation>
 <translation id="4250229828105606438">Snimka zaslona</translation>
 <translation id="4256782883801055595">Licence otvorenog koda</translation>
@@ -654,7 +655,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4594952190837476234">Ova offline stranica nastala je <ph name="CREATION_TIME" /> i možda se razlikuje od online verzije.</translation>
 <translation id="4616150815774728855">Otvori <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potvrđivanje identiteta</translation>
-<translation id="4627165777145349100">Više o ovoj stranici</translation>
 <translation id="4634124774493850572">Upotrijebi zaporku</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Jedna ugrožena zaporka}one{# ugrožena zaporka}few{# ugrožene zaporke}other{# ugroženih zaporki}}</translation>
 <translation id="4650364565596261010">Zadana postavka sustava</translation>
@@ -793,7 +793,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5342314432463739672">Zahtjevi za dopuštenja</translation>
 <translation id="5355191726083956201">Uključena je Poboljšana zaštita</translation>
 <translation id="5368227114232678694">Da biste pregledavali u privatnosti na ovom uređaju, isprobajte anonimni način.</translation>
-<translation id="5371717687506906963">Upit za Privacy Sandbox</translation>
 <translation id="5375577065097716013">Pretraži sliku pomoću Google objektiva <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Reakcija je promijenjena</translation>
 <translation id="5401851137404501592">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> podijelit će vaše ime, e-adresu i profilnu sliku s ovom web-lokacijom.</translation>

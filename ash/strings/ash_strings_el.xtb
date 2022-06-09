@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">Ημερολόγιο</translation>
 <translation id="1153356358378277386">Συσκευές σε σύζευξη</translation>
 <translation id="1165712434476988950">Απαιτείται επανεκκίνηση της συσκευής για την εφαρμογή της ενημέρωσης.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Το καλώδιο USB-C που έχετε ενδέχεται να μην μπορεί να συνδεθεί σωστά σε οθόνες</translation>
 <translation id="1175572348579024023">Κύλιση</translation>
 <translation id="1178581264944972037">Παύση</translation>
@@ -55,10 +56,6 @@
 <translation id="1247519845643687288">Πρόσφατες εφαρμογές</translation>
 <translation id="1252999807265626933">Φόρτιση από <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Τι καιρό κάνει;</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> έως 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Επιλέξτε για περισσότερες λεπτομέρειες στο Ημερολόγιο Google.</translation>
 <translation id="1267032506238418139">Αλλαγή συντόμευσης</translation>
 <translation id="1269405891096105529">Το περιφερειακό δεν υποστηρίζεται στη λειτουργία επισκέπτη</translation>
 <translation id="1270290102613614947">Το πληκτρολόγιο οθόνης είναι απενεργοποιημένο</translation>
@@ -124,6 +121,7 @@
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1632985212731562677">Η πρόσβαση με διακόπτη μπορεί να απενεργοποιηθεί από τις Ρυθμίσεις &gt; Προσβασιμότητα.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> συσκευές</translation>
+<translation id="1639239467298939599">Γίνεται φόρτωση</translation>
 <translation id="1654477262762802994">Έναρξη φωνητικού ερωτήματος</translation>
 <translation id="1668469839109562275">Ενσωματωμένο VPN</translation>
 <translation id="1677472565718498478">Απομένουν <ph name="TIME" /></translation>
@@ -506,6 +504,7 @@
 <translation id="3901991538546252627">Σύνδεση με <ph name="NAME" /></translation>
 <translation id="3922427723338465344">{0,plural, =1{Αλλαγή της έκδοσης της συσκευής σε προηγούμενη εντός 1 λεπτού}other{Αλλαγή της έκδοσης της συσκευής σε προηγούμενη εντός # λεπτών}}</translation>
 <translation id="3923494859158167397">Δεν έχουν ρυθμιστεί δίκτυα κινητής τηλεφωνίας</translation>
+<translation id="3925540965556789199"><ph name="DATE" />, φόρτωση συμβάντων.</translation>
 <translation id="3932043219784172185">Δεν υπάρχει συνδεδεμένη συσκευή</translation>
 <translation id="3934456833412894880">Η προσαρμοστική φόρτιση είναι ενεργή. Η μπαταρία θα παραμένει στο 80% για την επέκταση της διάρκειας ζωής της και θα φορτίζει πλήρως όταν χρειάζεστε τη συσκευή.</translation>
 <translation id="3943857333388298514">Επικόλληση</translation>
@@ -1049,7 +1048,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Επαναφορά στην προηγούμενη ανάλυση σε <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
-<translation id="718361511487535372">Άνοιγμα στο Ημερολόγιο Google</translation>
 <translation id="7188494361780961876">Το μενού μεταφέρθηκε στην επάνω αριστερή γωνία της οθόνης.</translation>
 <translation id="7189412385142492784">Πόσο απέχει η Αφροδίτη</translation>
 <translation id="7198435252016571249">Η προεπισκόπηση κάμερας τοποθετήθηκε στην κάτω δεξιά γωνία. Διένεξη με επιφάνεια συστήματος.</translation>
@@ -1058,6 +1056,10 @@
 <translation id="7258828758145722155">Έγινε επεξεργασία χθες</translation>
 <translation id="726276584504105859">Σύρετε εδώ για να χρησιμοποιήσετε τον διαχωρισμό οθόνης</translation>
 <translation id="7262906531272962081">Δημιουργία υπενθύμισης</translation>
+<translation id="7297440678881127227"><ph name="START_TIME" /> έως
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />,
+        <ph name="EVENT_SUMMARY" />. Επιλέξτε για περισσότερες λεπτομέρειες στο Ημερολόγιο Google.</translation>
 <translation id="7302889331339392448">Οι Ζωντανοί υπότιτλοι είναι απενεργοποιημένοι.</translation>
 <translation id="7303365578352795231">Απάντηση σε άλλη συσκευή.</translation>
 <translation id="7305884605064981971">EDGE</translation>

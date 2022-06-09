@@ -65,6 +65,7 @@
 <translation id="1434356225517321998">Rheolir eich porwr. <ph name="BEGIN_LINK" />Manylion<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Cuddio'r Cyfrinair</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> eitem</translation>
+<translation id="1450170672351507823">Mae amddiffyniad safonol wedi'i droi ymlaen. Am fwy fyth o ddiogelwch, defnyddiwch Gwell amddiffyniad.</translation>
 <translation id="149095475893949513">Mae'r wefan hon yn ceisio lawrlwytho proffil ffurfweddiad.</translation>
 <translation id="1491277525950327607">Tapiwch ddwywaith i doglo'r gosodiad</translation>
 <translation id="1492417797159476138">Rydych eisoes wedi cadw'r enw defnyddiwr hwn ar gyfer y wefan hon.</translation>
@@ -162,6 +163,7 @@
 <translation id="236977714248711277">Gall gwefannau ddefnyddio cwcis i wella'ch profiad pori, er enghraifft, i'ch cadw bod wedi'ch mewngofnodi neu i gofio eitemau yn eich basged siopa.
 
 Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol wefannau, er enghraifft, i bersonoleiddio hysbysebion.</translation>
+<translation id="2375243552872247702">Gweld Cynnwys i Chi</translation>
 <translation id="2381405137052800939">Hanfodion</translation>
 <translation id="2386793615875593361">Mae 1 wedi'i ddewis</translation>
 <translation id="2421004566762153674">Rhwystro cwcis trydydd parti</translation>
@@ -601,6 +603,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6136914049981179737">Eiliad yn ôl</translation>
 <translation id="6144589619057374135">Agor ${url} yn y modd anhysbys</translation>
 <translation id="6149061208933997199">Defnyddio'r Cyfrinair</translation>
+<translation id="6152406514676263192">Cysonwch i gael y cynnwys mwyaf perthnasol yn seiliedig ar eich diddordebau.</translation>
 <translation id="6159839020698489198">dewisol</translation>
 <translation id="6177442314419606057">Chwilio yn Chrome</translation>
 <translation id="6184086493125982861">Dangos Tabiau</translation>
@@ -738,6 +741,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7099761977003084116">Tabiau Diweddar</translation>
 <translation id="7102005569666697658">Wrthi'n lawrlwytho… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Cuddio</translation>
+<translation id="7108762695052995889">Mynd i'r Wefan</translation>
 <translation id="7133798577887235672">Enw Llawn</translation>
 <translation id="7136892417564438900">Nid yw'r camera ar gael</translation>
 <translation id="7153999225810839758"><ph name="TIME" /> o funudau i'w darllen</translation>
@@ -748,6 +752,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7189598951263744875">Rhannu...</translation>
 <translation id="7192050974311852563">Dechrau Logio</translation>
 <translation id="7203585745079012652">Adrodd Atebion yn Ôl</translation>
+<translation id="7207023858769244910">Cysonwch i gael cynnwys yn seiliedig ar eich diddordebau.</translation>
 <translation id="7207383424303353046">Newydd: Agor gwefannau yn Chrome yn awtomatig drwy ei wneud yn eich Ap Pori Diofyn. <ph name="BEGIN_LINK" />Agor y Gosodiadau<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Llysenw Cerdyn Annilys</translation>
 <translation id="722454870747268814">Tab Anhysbys Newydd</translation>

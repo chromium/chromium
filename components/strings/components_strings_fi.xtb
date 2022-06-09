@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Apurahat, stipendit ja taloudellinen tuki</translation>
 <translation id="1048785276086539861">Kun muokkaat merkintöjä, tämä dokumentti palaa yhden sivun näkymään</translation>
 <translation id="1050038467049342496">Sulje muita sovelluksia.</translation>
+<translation id="1053959602163383901">Valitsit todennuslaitteella vahvistamisen verkkosivustoilla, jotka käyttävät <ph name="PROVIDER_ORIGIN" /> ‐palvelua. Tämä palveluntarjoaja on saattanut tallentaa maksutapaasi koskevia tietoja, joille voit <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">K&amp;umoa lisäys</translation>
 <translation id="1056663316309890343">Valokuvaohjelmistot</translation>
 <translation id="1056898198331236512">Varoitus</translation>
@@ -426,6 +427,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2053111141626950936">Kielellä <ph name="LANGUAGE" /> kirjoitettuja sivuja ei käännetä.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kun tämä asetus on päällä ja tila on aktiivinen, Chrome päättelee, minkä ihmisryhmän eli "kohortin" toimintaa viimeaikainen selaustoimintasi eniten muistuttaa. Mainostajat voivat valita ryhmälle mainoksia, ja selaustoimintasi pysyy yksityisenä laitteellasi. Ryhmäsi päivitetään päivittäin.}=1{Kun tämä asetus on päällä ja tila on aktiivinen, Chrome päättelee, minkä ihmisryhmän eli "kohortin" toimintaa viimeaikainen selaustoimintasi eniten muistuttaa. Mainostajat voivat valita ryhmälle mainoksia, ja selaustoimintasi pysyy yksityisenä laitteellasi. Ryhmäsi päivitetään päivittäin.}other{Kun tämä asetus on päällä ja tila on aktiivinen, Chrome päättelee, minkä ihmisryhmän eli "kohortin" toimintaa viimeaikainen selaustoimintasi eniten muistuttaa. Mainostajat voivat valita ryhmälle mainoksia, ja selaustoimintasi pysyy yksityisenä laitteellasi. Ryhmäsi päivitetään {NUM_DAYS} päivän välein.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ehdotus}other{# ehdotusta}}</translation>
+<translation id="2066915425250589881">tehdä poistopyynnön</translation>
 <translation id="2068528718802935086">Vauvat ja taaperot</translation>
 <translation id="2071156619270205202">Tälle kortille ei ole saatavilla virtuaalista korttinumeroa.</translation>
 <translation id="2071692954027939183">Ilmoitukset on estetty automaattisesti, koska et yleensä salli niitä</translation>
@@ -582,6 +584,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2512101340618156538">Ei sallittu (oletus)</translation>
 <translation id="2512413427717747692">Valitse Chrome oletusselaimeksi ‑painike, painamalla Enter voit valita Chromen järjestelmän oletusselaimeksi iOS-asetuksista</translation>
 <translation id="2515629240566999685">Tarkista alueesi mobiilisignaali.</translation>
+<translation id="2515761554693942801">Valitsit vahvistuksen Touch ID:llä verkkosivustoilla, joilla on käytössä <ph name="PROVIDER_ORIGIN" />. Tämä palveluntarjoaja on saattanut tallentaa maksutapaasi koskevia tietoja, joille voit <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Niitti oikeassa alareunassa</translation>
 <translation id="2521736961081452453">Luo lomake</translation>
 <translation id="2523886232349826891">Tallennetaan vain tälle laitteelle</translation>
@@ -703,7 +706,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2854764410992194509">Internetpalveluntarjoajat</translation>
 <translation id="2856444702002559011">Sivustolle <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> hyökännyt taho voi yrittää varastaa tietojasi (esimerkiksi salasanoja, viestejä tai luottokorttitietoja). <ph name="BEGIN_LEARN_MORE_LINK" />Lisätietoja<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Tällä sivustolla on häiritseviä tai harhaanjohtavia mainoksia.</translation>
-<translation id="286512204874376891">Virtuaalinen kortti salaa käyttämäsi kortin. Näin saat paremman suojauksen mahdollisia petoksia vastaan. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Ystävällinen</translation>
 <translation id="28761159517501904">Elokuvat</translation>
 <translation id="2876489322757410363">Poistutaan incognito-tilasta, jotta ulkoisessa sovelluksessa maksaminen onnistuu. Haluatko jatkaa?</translation>
@@ -1337,7 +1339,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4607603470419975064">Katso Chromen vinkkejä ‑painike, katso lisätietoja Chromen ominaisuuksista painamalla Enter</translation>
 <translation id="4607608436550361748">Katso Chromen vinkkejä</translation>
 <translation id="4617273035598175554">Grafiikka- ja animaatio-ohjelmistot</translation>
-<translation id="4627165777145349100">Lisätietoa tästä sivusta</translation>
 <translation id="4627675673814409125">Käytäntöä ei voi määrittää Chrome-profiilin tasolta, ja määritys ohitetaan.</translation>
 <translation id="4628948037717959914">Kuva</translation>
 <translation id="4631649115723685955">Hyvitystarjous linkitetty</translation>
@@ -1502,6 +1503,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5051305769747448211">Live-komedia</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Jos haluat lähettää tiedoston käyttämällä lähijakamista, vapauta tilaa (<ph name="DISK_SPACE_SIZE" />) laitteeltasi}other{Jos haluat lähettää tiedostot käyttämällä lähijakamista, vapauta tilaa (<ph name="DISK_SPACE_SIZE" />) laitteeltasi}}</translation>
 <translation id="5056549851600133418">Sinulle valitut artikkelit</translation>
+<translation id="5060483733937416656">Valitsit vahvistuksen Windows Hellolla verkkosivustoilla, joilla on käytössä <ph name="PROVIDER_ORIGIN" />. Tämä palveluntarjoaja on saattanut tallentaa maksutapaasi koskevia tietoja, joille voit <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Tarkoititko: <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Tulostushistoria</translation>
 <translation id="5068234115460527047">Hedgerahastot</translation>
@@ -1871,7 +1873,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6061154937977953833">Paini</translation>
 <translation id="6064217302520318294">Näytön lukitus</translation>
 <translation id="6064602040258638498">Kupongit ja alennukset</translation>
-<translation id="6078813287646374487">Näytä lisätietoa tästä sivusta</translation>
 <translation id="6080696365213338172">Käytät sisältöä järjestelmänvalvojan myöntämällä varmenteella. Järjestelmänvalvoja voi käyttää verkkotunnukselle <ph name="DOMAIN" /> lähettämiäsi tietoja.</translation>
 <translation id="6087312102907839798">Samankaltaiset haut</translation>
 <translation id="6094273045989040137">Tee merkintä</translation>
@@ -2796,6 +2797,7 @@ Lisätietoja:
 <translation id="8742371904523228557">Koodisi on <ph name="ONE_TIME_CODE" /> (<ph name="ORIGIN" />)</translation>
 <translation id="874918643257405732">Aseta tämä välilehti kirjanmerkiksi</translation>
 <translation id="8751426954251315517">Yritä seuraavalla kerralla uudelleen</translation>
+<translation id="8757526089434340176">Google Pay ‑tarjous saatavilla</translation>
 <translation id="8758885506338294482">Kilpailulliset videopelit</translation>
 <translation id="8759274551635299824">Tämä kortti on vanhentunut.</translation>
 <translation id="87601671197631245">Tämä sivusto käyttää vanhentunutta tietoturvamääritystä, joka voi paljastaa tietosi (esim. salasanat, viestit tai credit-kortit), kun ne lähetetään sivustolle.</translation>

@@ -55,10 +55,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1247519845643687288">Aplikacionet e fundit</translation>
 <translation id="1252999807265626933">Po karikohet nga <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Si është moti?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> deri në 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Zgjidh për më shumë detaje në "Kalendarin e Google".</translation>
 <translation id="1267032506238418139">Ndryshim në shkurtore</translation>
 <translation id="1269405891096105529">Pajisja periferike nuk mbështetet në modalitetin "vizitor"</translation>
 <translation id="1270290102613614947">Tastiera në ekran u çaktivizua</translation>
@@ -124,6 +120,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">"Qasja me çelës" mund të çaktivizohet te Cilësimet &gt; Qasshmëria.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> pajisje</translation>
+<translation id="1639239467298939599">Po ngarkohet...</translation>
 <translation id="1654477262762802994">Nis një pyetje me zë</translation>
 <translation id="1668469839109562275">VPN e integruar</translation>
 <translation id="1677472565718498478">Koha e mbetur <ph name="TIME" /></translation>
@@ -239,6 +236,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2367186422933365202">Nuk mund të identifikohesh në Chromebook-un tënd</translation>
 <translation id="2369165858548251131">"Përshëndetje" në kinezisht</translation>
+<translation id="2375445874393996153">Kërkimi i gjërave në ekranin tim me "Asistentin e Google" nuk mbështetet më.</translation>
 <translation id="2390318262976603432">Cilësimet rajonale</translation>
 <translation id="240006516586367791">Kontrollet e medias</translation>
 <translation id="2402411679569069051">Për të shkyçur Chromebook-un tënd, përdor gjurmën e gishtit ose shkyç telefonin</translation>
@@ -1048,7 +1046,6 @@ Instalim i ri</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Po rikthehet te rezolucioni i vjetër për <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Rifresko</translation>
-<translation id="718361511487535372">Hap në kalendarin e Google</translation>
 <translation id="7188494361780961876">Menyja u zhvendos në këndin lart majtas të ekranit.</translation>
 <translation id="7189412385142492784">Sa larg është Afërdita</translation>
 <translation id="7198435252016571249">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas. Në konflikt me sipërfaqen e sistemit.</translation>

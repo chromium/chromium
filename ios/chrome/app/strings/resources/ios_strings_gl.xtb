@@ -65,6 +65,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1434356225517321998">O teu navegador está xestionado. <ph name="BEGIN_LINK" />Detalles<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ocultar contrasinal</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementos</translation>
+<translation id="1450170672351507823">A protección estándar está activada. Se queres unha seguranza aínda maior, utiliza a protección mellorada.</translation>
 <translation id="149095475893949513">Este sitio web está tentando descargar un perfil de configuración.</translation>
 <translation id="1491277525950327607">Toca dúas veces para activar ou desactivar a configuración</translation>
 <translation id="1492417797159476138">Xa gardaches este nome de usuario para este sitio</translation>
@@ -738,6 +739,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7099761977003084116">Pestanas recentes</translation>
 <translation id="7102005569666697658">Descargando… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ocultar</translation>
+<translation id="7108762695052995889">Visitar sitio</translation>
 <translation id="7133798577887235672">Nome completo</translation>
 <translation id="7136892417564438900">A cámara non está dispoñible</translation>
 <translation id="7153999225810839758">Tempo de lectura: <ph name="TIME" /> min</translation>

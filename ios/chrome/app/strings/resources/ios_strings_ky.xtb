@@ -163,6 +163,7 @@
 <translation id="236977714248711277">Серептөөнү ыңгайлаштыруу, мисалы, аккаунттан чыгарбоо же арабадагы сатып алган нерселериңизди эстеп калуу үчүн сайттар cookie файлдарын колдоно алышат
 
 Сайттар жарнамаларды жекелештирүү үчүн башка сайттардагы серептөө аракеттериңизди көрүү үчүн cookie файлдарын колдоно алышпайт.</translation>
+<translation id="2375243552872247702">Сизге сунушталган контентти көрүңүз</translation>
 <translation id="2381405137052800939">Негизги параметрлер</translation>
 <translation id="2386793615875593361">1 тандалды</translation>
 <translation id="2421004566762153674">Үчүнчү тараптын cookie файлдарын бөгөттөө</translation>
@@ -405,6 +406,7 @@
 <translation id="4502566650163919158">Азыр текшерүү</translation>
 <translation id="4505980578794259603">Акыркы жолу качан текшерилген: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Кирүүгө үндөгөн жарнама жабылсын</translation>
+<translation id="4511669830082467224">Сүрөттү Google менен издөө</translation>
 <translation id="4526249700380860531">Сакталган сырсөздөрдү <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> дарегинен көрүп жана башкарыңыз</translation>
 <translation id="452750746583162491">Шайкештирилген маалыматты карап чыгуу</translation>
 <translation id="4536418791685807335">Кайра кирип көрүңүз.</translation>
@@ -602,6 +604,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6136914049981179737">Секнд мурн</translation>
 <translation id="6144589619057374135">${url} сайтын Жашыруун режимде ачуу</translation>
 <translation id="6149061208933997199">Сырсөз колдонуу</translation>
+<translation id="6152406514676263192">Контентти кызыккан нерселериңиздин негизинде шайкештириңиз.</translation>
 <translation id="6159839020698489198">кошумча</translation>
 <translation id="6177442314419606057">Chrome'до издөө</translation>
 <translation id="6184086493125982861">Өтмөктөрдү көрсөтүү</translation>
@@ -750,6 +753,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7189598951263744875">Бөлүшүү…</translation>
 <translation id="7192050974311852563">Таржымалын жыйнап баштоо</translation>
 <translation id="7203585745079012652">Жоопторду айтуу</translation>
+<translation id="7207023858769244910">Контентти кызыккан нерселериңиздин негизинде көрүү үчүн шайкештириңиз.</translation>
 <translation id="7207383424303353046">Жаңы: Chrome'ду демейки серепчиңиз кылып алып, андагы сайттарды автоматтык түрдө ачыңыз. <ph name="BEGIN_LINK" />Жөндөөлөрдү ачуу<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Картанын ылакап аты туура эмес</translation>
 <translation id="722454870747268814">Жаңы жашыруун өтмөк</translation>

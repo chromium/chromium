@@ -587,6 +587,7 @@
 <translation id="4227318652298512614">आफूले चाहेको कुनै पनि साइट फलो गर्नुहोस्</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="4248098802131000011">डेटा चोरी हुने तथा सुरक्षासम्बन्धी अन्य समस्याबाट आफ्ना पासवर्डहरू सुरक्षित राख्नुहोस्</translation>
+<translation id="424864128008805179">Chrome बाट साइन आउट गर्ने हो?</translation>
 <translation id="4249955472157341256">प्रकाशित समयअनुसार क्रमबद्ध गर्नुहोस्</translation>
 <translation id="4250229828105606438">स्क्रिसट</translation>
 <translation id="4256782883801055595">स्रोत इजाजतपत्रहरू खोल्नुहोस्</translation>
@@ -653,7 +654,6 @@
 <translation id="4594952190837476234">यो पृष्ठ <ph name="CREATION_TIME" /> मा सिर्जना गरिएको हुँदा अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> खोल्नुहोस्</translation>
 <translation id="4619564267100705184">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
-<translation id="4627165777145349100">यो पेजका बारेमा थप जानकारी</translation>
 <translation id="4634124774493850572">पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{अरूले देखेको १ पासवर्ड फेला पर्‍यो}other{अरूले देखेका # वटा पासवर्ड फेला परे}}</translation>
 <translation id="4650364565596261010">प्रणालीको डिफल्ट सेटिङ</translation>
@@ -792,7 +792,6 @@
 <translation id="5342314432463739672">अनुमतिसम्बन्धी अनुरोधहरू</translation>
 <translation id="5355191726083956201">'उन्नत सुरक्षा' सक्रिय छ</translation>
 <translation id="5368227114232678694">तपाईं यो डिभाइसमार्फत गोप्य रूपमा ब्राउज गर्न चाहनुहुन्छ भने इन्कोग्निटो मोड प्रयोग गरी हेर्नुहोस्</translation>
-<translation id="5371717687506906963">प्राइभेसी स्यान्डबक्ससम्बन्धी प्रोम्प्ट</translation>
 <translation id="5375577065097716013">Google लेन्समार्फत फोटो खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">प्रतिक्रिया परिवर्तन गरिएको छ</translation>
 <translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ।</translation>

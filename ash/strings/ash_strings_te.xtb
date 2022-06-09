@@ -56,10 +56,6 @@
 <translation id="1247519845643687288">ఇటీవలి యాప్‌లు</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> నుండి ఛార్జ్ అవుతోంది</translation>
 <translation id="1255033239764210633">వాతావరణం ఎలా ఉంది?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> నుండి 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. మరిన్ని వివరాల కోసం Google Calendarలో ఎంచుకోండి.</translation>
 <translation id="1267032506238418139">షార్ట్‌కట్ మార్పు</translation>
 <translation id="1269405891096105529">గెస్ట్ మోడ్‌లో పెరిఫెరల్ సపోర్ట్ చేయదు</translation>
 <translation id="1270290102613614947">స్క్రీన్‌పై కనిపించే కీబోర్డ్ నిలిపివేయబడింది</translation>
@@ -125,6 +121,7 @@
 <translation id="1620510694547887537">కెమెరా</translation>
 <translation id="1632985212731562677">సెట్టింగ్‌లు &gt; యాక్సెసిబిలిటీలో స్విచ్ యాక్సెస్‌ను డిజేబుల్ చేయవచ్చు.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> పరికరాలు</translation>
+<translation id="1639239467298939599">లోడ్ అవుతోంది</translation>
 <translation id="1654477262762802994">వాయిస్ ప్రశ్నను ప్రారంభించు</translation>
 <translation id="1668469839109562275">బిల్ట్-ఇన్ VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> మిగిలి ఉంది</translation>
@@ -1051,7 +1048,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />లో తిరిగి పాత రిజల్యూషన్‌కి మార్చబడుతుంది</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయి</translation>
-<translation id="718361511487535372">Google calendarలో తెరవండి</translation>
 <translation id="7188494361780961876">స్క్రీన్‌లో పైన ఎడమ వైపు మూలకు మెనూ తరలించబడింది.</translation>
 <translation id="7189412385142492784">శుక్రుడు ఎంత దూరంలో ఉన్నాడు</translation>
 <translation id="7198435252016571249">కెమెరా దిగువ కుడి మూలకు స్నాప్ చేయబడింది. సిస్టమ్ ప్లాట్‌ఫామ్‌కు విరుద్ధంగా.</translation>

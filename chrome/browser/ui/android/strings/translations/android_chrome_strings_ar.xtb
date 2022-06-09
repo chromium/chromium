@@ -587,6 +587,7 @@
 <translation id="4227318652298512614">تابِع المواقع الإلكترونية التي تريدها.</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="4248098802131000011">لحماية كلمة المرور من عمليات اختراق البيانات ومشاكل الأمان الأخرى</translation>
+<translation id="424864128008805179">‏هل تريد تسجيل الخروج من Chrome؟</translation>
 <translation id="4249955472157341256">الترتيب حسب الأحدث</translation>
 <translation id="4250229828105606438">لقطة شاشة</translation>
 <translation id="4256782883801055595">تراخيص البرامج المفتوحة المصدر</translation>
@@ -654,7 +655,6 @@
 <translation id="4594952190837476234">تم إنشاء هذه الصفحة المتوفّرة بلا اتصال بالإنترنت في <ph name="CREATION_TIME" />، وقد تختلف عن النسخة المتوفِّرة على الإنترنت.</translation>
 <translation id="4616150815774728855">فتح <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
-<translation id="4627165777145349100">مزيد من المعلومات حول هذه الصفحة</translation>
 <translation id="4634124774493850572">استخدام كلمة المرور</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{كلمة مرورٍ واحدة محتمَل تعرّضها للاختراق}zero{# كلمة مرور محتمَل تعرّضها للاختراق}two{كلمتا مرورٍ محتمَل تعرّضهما للاختراق}few{# كلمات مرورٍ محتمَل تعرّضها للاختراق}many{# كلمة مرورٍ محتمَل تعرّضها للاختراق}other{# كلمة مرورٍ محتمَل تعرّضها للاختراق}}</translation>
 <translation id="4650364565596261010">الإعداد التلقائي للنظام</translation>
@@ -793,7 +793,6 @@
 <translation id="5342314432463739672">طلبات الإذن</translation>
 <translation id="5355191726083956201">الحماية المُحسّنة مفعّلة.</translation>
 <translation id="5368227114232678694">للتصفّح بخصوصية تامّة على هذا الجهاز، يمكنك استخدام وضع التصفّح المتخفي.</translation>
-<translation id="5371717687506906963">إشعار "مبادرة حماية الخصوصية"</translation>
 <translation id="5375577065097716013">‏ابحث في الصور عبر "عدسة Google‏" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">تم تغيير الرمز التعبيري للتفاعل.</translation>
 <translation id="5401851137404501592">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وعنوان بريدك الإلكتروني وصورة ملفك الشخصي مع هذا الموقع الإلكتروني.</translation>

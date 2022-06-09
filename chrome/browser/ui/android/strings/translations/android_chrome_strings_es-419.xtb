@@ -110,6 +110,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="1513352483775369820">Favoritos e historial web</translation>
 <translation id="1513814250881909472">Utiliza la función de sincronización para acceder a tus pestañas desde otros dispositivos</translation>
 <translation id="1513858653616922153">Borrar contraseña</translation>
+<translation id="1514552811327923157">El mensaje de Privacy Sandbox está totalmente abierto</translation>
 <translation id="1518421282666914498">GIF de emoción <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Activo hoy</translation>
 <translation id="1538801903729528855">Obtén una mejor experiencia de voz en la Web</translation>
@@ -321,6 +322,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="2711073837061989559">Pruebas</translation>
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
 <translation id="2718846868787000099">Para poder mostrar contenido en tus idiomas preferidos, los sitios que visitas deberán acceder a tus preferencias</translation>
+<translation id="2722945394406572875">Se cerró el mensaje de Privacy Sandbox</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Obtén una mejor experiencia de búsqueda por voz</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="4227318652298512614">Sigue los sitios que quieras</translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
 <translation id="4248098802131000011">Mantén protegidas tus contraseñas ante violaciones de la seguridad de los datos y otros problemas de seguridad.</translation>
+<translation id="424864128008805179">¿Quieres salir de Chrome?</translation>
 <translation id="4249955472157341256">Ordenar por más recientes</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4256782883801055595">Licencias de código abierto</translation>
@@ -652,7 +655,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4594952190837476234">Esta página sin conexión se creó el <ph name="CREATION_TIME" /> y es posible que sea diferente con respecto a la versión en línea.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificar tu identidad</translation>
-<translation id="4627165777145349100">Más información sobre esta página</translation>
 <translation id="4634124774493850572">Usar contraseña</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contraseña hackeada}other{# contraseñas hackeadas}}</translation>
 <translation id="4650364565596261010">Predeterminado del sistema</translation>
@@ -894,6 +896,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5906513782029855931">Conocer las URLs de los sitios permite a Asistente de Google ayudarlo a completar las tareas. En la configuración de Chrome, puedes desactivar Asistente.</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5919204609460789179">Actualiza <ph name="PRODUCT_NAME" /> para iniciar la sincronización</translation>
+<translation id="593625682991400408">Durante las pruebas, Chrome explora maneras de limitar el spam, el fraude y el uso compartido entre sitios. Chrome también <ph name="BEGIN_LINK" />estima tus intereses<ph name="END_LINK" /> que pueden usar los sitios para mostrarte anuncios. Puedes administrar tus intereses en la Configuración.</translation>
 <translation id="5938820472109305350">Agregar <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Se usa Google para la búsqueda</translation>
 <translation id="5945035219773565305">Recomendación actual: <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no pueden usarse para 
 <translation id="9106148373857059373">El flujo para guardar favoritos está cerrado</translation>
 <translation id="9108312223223904744">Asistencia del teléfono como llave de seguridad</translation>
 <translation id="9108808586816295166">Es posible que el DNS seguro no esté disponible en todo momento</translation>
+<translation id="9128984223251192329">El mensaje de Privacy Sandbox está abierto a media altura</translation>
 <translation id="9133397713400217035">Explorar sin conexión</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9148126808321036104">Accede nuevamente</translation>

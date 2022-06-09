@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Beurzen, toelagen en financiële ondersteuning</translation>
 <translation id="1048785276086539861">Als je annotaties bewerkt, keert dit document terug naar een weergave op één pagina</translation>
 <translation id="1050038467049342496">Andere apps sluiten</translation>
+<translation id="1053959602163383901">Je hebt ervoor gekozen om te verifiëren met een authenticator-apparaat op websites die <ph name="PROVIDER_ORIGIN" /> gebruiken. Deze provider heeft misschien informatie over je betaalmethode opgeslagen. Hiervoor kun je <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Toevoegen ongedaan maken</translation>
 <translation id="1056663316309890343">Fotosoftware</translation>
 <translation id="1056898198331236512">Waarschuwing</translation>
@@ -423,6 +424,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2053111141626950936">Pagina's in het <ph name="LANGUAGE" /> worden niet vertaald.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Als dit bedieningselement aanstaat en de status actief is, bepaalt Chrome op welke grote groep mensen (ook wel een cohort genoemd) je recente browse-activiteit het meest lijkt. Adverteerders kunnen advertenties voor de groep selecteren en je browse-activiteit blijft privé op je apparaat. Je groep wordt elke dag geüpdatet.}=1{Als dit bedieningselement aanstaat en de status actief is, bepaalt Chrome op welke grote groep mensen (ook wel een cohort genoemd) je recente browse-activiteit het meest lijkt. Adverteerders kunnen advertenties voor de groep selecteren en je browse-activiteit blijft privé op je apparaat. Je groep wordt elke dag geüpdatet.}other{Als dit bedieningselement aanstaat en de status actief is, bepaalt Chrome op welke grote groep mensen (ook wel een cohort genoemd) je recente browse-activiteit het meest lijkt. Adverteerders kunnen advertenties voor de groep selecteren en je browse-activiteit blijft privé op je apparaat. Je groep wordt elke {NUM_DAYS} dagen geüpdatet.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestie}other{# suggesties}}</translation>
+<translation id="2066915425250589881">een verwijderingsverzoek indienen</translation>
 <translation id="2068528718802935086">Baby's en peuters</translation>
 <translation id="2071156619270205202">Deze kaart kan niet worden gebruikt als een virtueel kaartnummer.</translation>
 <translation id="2071692954027939183">Meldingen zijn automatisch geblokkeerd omdat je deze doorgaans niet toestaat</translation>
@@ -579,6 +581,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2512101340618156538">Niet toegestaan (standaard)</translation>
 <translation id="2512413427717747692">Knop Chrome instellen als standaardbrowser, druk op Enter om Chrome in te stellen als de standaardbrowser van het systeem in de iOS-instellingen</translation>
 <translation id="2515629240566999685">Check of je bereik hebt in je omgeving</translation>
+<translation id="2515761554693942801">Je hebt ervoor gekozen te verifiëren met Touch ID op websites die <ph name="PROVIDER_ORIGIN" /> gebruiken. Deze provider heeft misschien informatie over je betaalmethode opgeslagen. Hiervoor kun je <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Nietje rechtsonder</translation>
 <translation id="2521736961081452453">Formulier maken</translation>
 <translation id="2523886232349826891">Alleen opgeslagen op dit apparaat</translation>
@@ -700,7 +703,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2854764410992194509">Internetproviders</translation>
 <translation id="2856444702002559011">Cybercriminelen proberen mogelijk je gegevens van <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> te stelen (bijvoorbeeld wachtwoorden, berichten of creditcardgegevens). <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Site toont opdringerige of misleidende advertenties.</translation>
-<translation id="286512204874376891">Een virtuele kaart vermomt je werkelijke kaart om je te beschermen tegen potentiële fraude. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Vriendelijk</translation>
 <translation id="28761159517501904">Films</translation>
 <translation id="2876489322757410363">Je verlaat de incognitomodus om te betalen via een externe app. Doorgaan?</translation>
@@ -1328,7 +1330,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4607603470419975064">Knop Chrome-tips bekijken, druk op Enter voor meer informatie over Chrome-functies</translation>
 <translation id="4607608436550361748">Chrome-tips bekijken</translation>
 <translation id="4617273035598175554">Graphics- en animatiesoftware</translation>
-<translation id="4627165777145349100">Meer over deze pagina</translation>
 <translation id="4627675673814409125">Je kunt dit beleid niet instellen op Chrome-profielniveau. Het beleid wordt genegeerd.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Cashback gekoppeld</translation>
@@ -1493,6 +1494,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5051305769747448211">Stand-up comedy</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Als je dit bestand wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}other{Als je deze bestanden wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}}</translation>
 <translation id="5056549851600133418">Artikelen voor jou</translation>
+<translation id="5060483733937416656">Je hebt ervoor gekozen om te verifiëren met Windows Hello op websites die <ph name="PROVIDER_ORIGIN" /> gebruiken. Deze provider heeft misschien informatie over je betaalmethode opgeslagen. Hiervoor kun je <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Bedoelde je <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Afdrukgeschiedenis</translation>
 <translation id="5068234115460527047">Hedgefondsen</translation>
@@ -1862,7 +1864,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6061154937977953833">Worstelen</translation>
 <translation id="6064217302520318294">Schermvergrendeling</translation>
 <translation id="6064602040258638498">Kortingsbonnen en kortingsacties</translation>
-<translation id="6078813287646374487">Meer informatie over deze pagina tonen</translation>
 <translation id="6080696365213338172">Je hebt toegang tot content gekregen met behulp van een certificaat van je beheerder. Gegevens die je verstrekt aan <ph name="DOMAIN" />, kunnen door je beheerder worden onderschept.</translation>
 <translation id="6087312102907839798">Gerelateerde zoekopdrachten</translation>
 <translation id="6094273045989040137">Aantekeningen maken</translation>
@@ -2785,6 +2786,7 @@ Aanvullende informatie:
 <translation id="8742371904523228557">Je code voor <ph name="ORIGIN" /> is<ph name="ONE_TIME_CODE" />.</translation>
 <translation id="874918643257405732">Bookmark toevoegen voor dit tabblad</translation>
 <translation id="8751426954251315517">Probeer het de volgende keer opnieuw</translation>
+<translation id="8757526089434340176">Google Pay-aanbieding beschikbaar</translation>
 <translation id="8758885506338294482">Competitief videogamen</translation>
 <translation id="8759274551635299824">Deze pas is verlopen</translation>
 <translation id="87601671197631245">Deze site gebruikt een verouderde beveiligingsconfiguratie, waardoor je gegevens (zoals wachtwoorden, berichten of creditcardnummers) openbaar kunnen worden gemaakt als ze naar deze site worden gestuurd.</translation>
@@ -2985,6 +2987,7 @@ Aanvullende informatie:
 <translation id="988159990683914416">Ontwikkelaarsbuild</translation>
 <translation id="989988560359834682">Adres bewerken</translation>
 <translation id="991413375315957741">bewegings- of lichtsensoren</translation>
+<translation id="992110854164447044">Een virtuele kaart verbergt je werkelijke kaart om je te beschermen tegen potentiële fraude. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Roze</translation>
 <translation id="992432478773561401"><ph name="SOFTWARE_NAME" /> is niet correct geïnstalleerd op je computer of het netwerk:

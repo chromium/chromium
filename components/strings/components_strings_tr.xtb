@@ -700,7 +700,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2854764410992194509">İnternet servis sağlayıcılar (İSS'ler)</translation>
 <translation id="2856444702002559011">Saldırganlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> üzerinden bilgilerinizi çalmaya çalışıyor olabilir (örneğin, şifreler, mesajlar veya kredi kartları). <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Bu site, araya giren veya yanıltıcı reklamlar gösteriyor.</translation>
-<translation id="286512204874376891">Sanal kart gerçek kartınızı saklayarak olası sahtekarlıklardan korunmanıza yardımcı olur. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Dost Canlısı</translation>
 <translation id="28761159517501904">Filmler</translation>
 <translation id="2876489322757410363">Harici bir uygulama üzerinden ödeme gerçekleştirmek için Gizli moddan çıkılıyor. Devam etmek istiyor musunuz?</translation>
@@ -1329,7 +1328,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4607603470419975064">Chrome ipuçlarını göster düğmesi, Chrome özellikleri hakkında bilgi edinmek için Enter'a basın</translation>
 <translation id="4607608436550361748">Chrome ipuçlarını göster</translation>
 <translation id="4617273035598175554">Grafik ve animasyon yazılımı</translation>
-<translation id="4627165777145349100">Bu sayfa hakkında daha fazla bilgi</translation>
 <translation id="4627675673814409125">Bu politika, Chrome profili düzeyinde ayarlanamaz ve yoksayılır.</translation>
 <translation id="4628948037717959914">Fotoğraf</translation>
 <translation id="4631649115723685955">Nakit para üstü bağlantısı oluşturuldu</translation>
@@ -1863,7 +1861,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6061154937977953833">Güreş</translation>
 <translation id="6064217302520318294">Ekran kilidi</translation>
 <translation id="6064602040258638498">Kuponlar ve indirim teklifleri</translation>
-<translation id="6078813287646374487">Bu sayfayla ilgili daha fazla bilgi göster</translation>
 <translation id="6080696365213338172">Yönetici tarafından sağlanmış bir sertifika kullanan içeriğe eriştiniz. <ph name="DOMAIN" /> alan adına sağladığınız verileri yöneticiniz görebilir ve bunlara müdahale edebilir.</translation>
 <translation id="6087312102907839798">İlgili aramalar</translation>
 <translation id="6094273045989040137">Ek açıklama ekle</translation>
@@ -2788,6 +2785,7 @@ Ek ayrıntılar:
 <translation id="8742371904523228557"><ph name="ORIGIN" /> için kodunuz: <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Bu sekmeye yer işareti koy</translation>
 <translation id="8751426954251315517">Lütfen bir dahaki sefer tekrar deneyin</translation>
+<translation id="8757526089434340176">Google Pay teklifi mevcut</translation>
 <translation id="8758885506338294482">Rekabetçi video oyunları</translation>
 <translation id="8759274551635299824">Bu kartın kullanım süresi doldu</translation>
 <translation id="87601671197631245">Bu site, eski bir güvenlik yapılandırması kullanıyor. Bu siteye gönderildiğinde bilgileriniz (ör. şifreler, mesajlar veya kredi kartları) gösterilebilir.</translation>

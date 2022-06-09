@@ -56,10 +56,6 @@
 <translation id="1247519845643687288">अलीकडील अ‍ॅप्स</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> पासून चार्ज होत आहे</translation>
 <translation id="1255033239764210633">हवामान कसे आहे?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> ते 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Google Calendar मध्ये आणखी तपशिलांसाठी निवडा.</translation>
 <translation id="1267032506238418139">शॉर्टकट बदल</translation>
 <translation id="1269405891096105529">अतिथी मोडमध्ये पेरिफेरलला सपोर्ट नाही</translation>
 <translation id="1270290102613614947">ऑन-स्क्रीन कीबोर्ड अक्षम</translation>
@@ -125,6 +121,7 @@
 <translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="1632985212731562677">सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी मध्ये स्विच अ‍ॅक्सेस बंद केले जाऊ शकते.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> डिव्हाइस</translation>
+<translation id="1639239467298939599">लोड करीत आहे</translation>
 <translation id="1654477262762802994">व्हॉइस क्वेरी सुरू करा</translation>
 <translation id="1668469839109562275">बिल्ट-इन VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> शिल्लक</translation>
@@ -1050,7 +1047,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> मध्ये जुन्या रिझोल्युशनवर परत करत आहे</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
-<translation id="718361511487535372">Google Calendar मध्ये उघडा</translation>
 <translation id="7188494361780961876">मेनू स्क्रीनच्या वरच्या डाव्या कोपर्‍यात हलवला.</translation>
 <translation id="7189412385142492784">शुक्र किती दूर आहे</translation>
 <translation id="7198435252016571249">कॅमेरा सर्वात खालच्या उजव्या कोपऱ्यात स्नॅप केला आहे. सिस्टीम सर्फेसवरील इतर ॲपवर ओव्‍हरलॅप होत आहे.</translation>

@@ -706,7 +706,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2854764410992194509">Mga internet service provider (mga ISP)</translation>
 <translation id="2856444702002559011">Maaaring sinusubukang nakawin ng mga attacker ang iyong impormasyon mula sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (halimbawa, mga password, mensahe, o credit card). <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Nagpapakita ang site na ito ng mga nakakasagabal o nakakapanlinlang na ad.</translation>
-<translation id="286512204874376891">Itinatago ng virtual card ang iyong aktwal na card para makatulong na protektahan ka laban sa potensyal na panloloko. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Friendly</translation>
 <translation id="28761159517501904">Mga pelikula</translation>
 <translation id="2876489322757410363">Aalis sa Incognito mode upang magbayad sa pamamagitan ng external na application. Magpatuloy?</translation>
@@ -1339,7 +1338,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4607603470419975064">Button na Tingnan ang mga tip sa Chrome, pindutin ang Enter para matuto pa tungkol sa mga feature ng Chrome</translation>
 <translation id="4607608436550361748">Tingnan ang mga tip sa Chrome</translation>
 <translation id="4617273035598175554">Graphics at animation software</translation>
-<translation id="4627165777145349100">Higit pa tungkol sa page na ito</translation>
 <translation id="4627675673814409125">Hindi maitatakda ang patakarang ito sa antas ng profile ng Chrome at babalewalain ito.</translation>
 <translation id="4628948037717959914">Larawan</translation>
 <translation id="4631649115723685955">May naka-link na cashback</translation>
@@ -1874,7 +1872,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6061154937977953833">Wrestling</translation>
 <translation id="6064217302520318294">Lock ng screen</translation>
 <translation id="6064602040258638498">Mga coupon at alok ng diskwento</translation>
-<translation id="6078813287646374487">Magpakita sa akin ng higit pang impormasyon tungkol sa page na ito</translation>
 <translation id="6080696365213338172">Nag-access ka ng nilalaman gamit ang isang certificate na ibinigay ng administrator. Maaaring harangin ng iyong administrator ang data na ibibigay mo sa <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Mga kaugnay na paghahanap</translation>
 <translation id="6094273045989040137">I-annotate</translation>
@@ -2798,6 +2795,7 @@ Mga karagdagang detalye:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ang iyong code para sa <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">I-bookmark ang tab na ito</translation>
 <translation id="8751426954251315517">Pakisubukang muli sa susunod</translation>
+<translation id="8757526089434340176">Available ang alok ng Google Pay</translation>
 <translation id="8758885506338294482">Competitive na video gaming</translation>
 <translation id="8759274551635299824">Nag-expire na ang card na ito</translation>
 <translation id="87601671197631245">Gumagamit ang site na ito ng lumang configuration sa seguridad, na posibleng maglantad ng iyong impormasyon (halimbawa, mga password, mensahe, o credit card) kapag ipinadala ito sa site na ito.</translation>

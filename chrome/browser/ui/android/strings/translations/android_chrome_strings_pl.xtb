@@ -587,6 +587,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4227318652298512614">Obserwuj strony, które lubisz</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4248098802131000011">Chroń swoje hasła przed naruszeniem bezpieczeństwa danych i innymi zagrożeniami</translation>
+<translation id="424864128008805179">Wylogować z Chrome?</translation>
 <translation id="4249955472157341256">Sortuj od najnowszego</translation>
 <translation id="4250229828105606438">Zrzut ekranu</translation>
 <translation id="4256782883801055595">Licencje open source</translation>
@@ -654,7 +655,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4594952190837476234">Ta strona offline jest z <ph name="CREATION_TIME" /> i może różnić się od wersji online.</translation>
 <translation id="4616150815774728855">Otwórz <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
-<translation id="4627165777145349100">Więcej informacji o tej stronie</translation>
 <translation id="4634124774493850572">Użyj hasła</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 przejęte hasło}few{# przejęte hasła}many{# przejętych haseł}other{# przejętego hasła}}</translation>
 <translation id="4650364565596261010">Ustawienie domyślne</translation>
@@ -793,7 +793,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5342314432463739672">Prośby o uprawnienia</translation>
 <translation id="5355191726083956201">Włączona jest silniejsza ochrona</translation>
 <translation id="5368227114232678694">Wypróbuj tryb incognito do prywatnego przeglądania internetu na tym urządzeniu</translation>
-<translation id="5371717687506906963">Okno piaskownicy prywatności</translation>
 <translation id="5375577065097716013">Szukaj z Obiektywem Google <ph name="BEGIN_NEW" />Nowe<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Reakcja została zmieniona</translation>
 <translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe.</translation>

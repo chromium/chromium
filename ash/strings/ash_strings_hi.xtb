@@ -56,10 +56,6 @@
 <translation id="1247519845643687288">हाल ही में इस्तेमाल किए गए ऐप्लिकेशन</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> से चार्ज हो रहा है</translation>
 <translation id="1255033239764210633">मौसम कैसा है?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> से 
-        <ph name="END_TIME" /> तक, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. ज़्यादा जानकारी के लिए, Google Calendar में जाकर चुनें.</translation>
 <translation id="1267032506238418139">शॉर्टकट में बदलाव</translation>
 <translation id="1269405891096105529">मेहमान मोड चालू होने पर, सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) काम नहीं करते.</translation>
 <translation id="1270290102613614947">ऑन-स्‍क्रीन कीबोर्ड अक्षम है</translation>
@@ -125,6 +121,7 @@
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1632985212731562677">ऐक्सेस करने का तरीका बदलने की सुविधा को सेटिंग &gt; सुलभता में जाकर, बंद किया जा सकता है.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> डिवाइस</translation>
+<translation id="1639239467298939599">लोड हो रहा है</translation>
 <translation id="1654477262762802994">बोलकर खोजना शुरू करें</translation>
 <translation id="1668469839109562275">पहले से मौजूद वीपीएन</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> बाकी</translation>
@@ -240,6 +237,7 @@
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2367186422933365202">आपके Chromebook में साइन इन नहीं हो पाया</translation>
 <translation id="2369165858548251131">चाइनीज़ भाषा में "नमस्ते" कैसे बोलते हैं</translation>
+<translation id="2375445874393996153">Google Assistant की मदद से, स्क्रीन पर मौजूद कॉन्टेंट को अब खोजा नहीं जा सकता.</translation>
 <translation id="2390318262976603432">स्थान-भाषा की सेटिंग</translation>
 <translation id="240006516586367791">मीडिया कंट्रोल</translation>
 <translation id="2402411679569069051">Chromebook अनलॉक करने के लिए, अपना फ़िंगरप्रिंट इस्तेमाल करें या अपना फ़ोन अनलॉक करें</translation>
@@ -1050,7 +1048,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> में पुराने रिज़ॉल्यूशन में वापस लौट रहा है</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
-<translation id="718361511487535372">Google Calendar में खोलें</translation>
 <translation id="7188494361780961876">मेन्यू, स्क्रीन के सबसे ऊपर बाएं कोने में चला गया है.</translation>
 <translation id="7189412385142492784">धरती से शुक्र ग्रह कितना दूर है</translation>
 <translation id="7198435252016571249">कैमरा इनपुट की झलक, अब नीचे दाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>

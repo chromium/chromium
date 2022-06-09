@@ -703,7 +703,6 @@
 <translation id="2854764410992194509">Інтэрнэт-правайдары</translation>
 <translation id="2856444702002559011">Зламыснікі могуць спрабаваць украсці вашы даныя з сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (напрыклад, паролі, паведамленні або даныя крэдытных картак). <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Гэты сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман.</translation>
-<translation id="286512204874376891">Каб абараніць вас ад патэнцыяльнага махлярства, замест захаванай вамі карткі будзе паказвацца віртуальная. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Таварыскі</translation>
 <translation id="28761159517501904">Фільмы</translation>
 <translation id="2876489322757410363">Адбудзецца выхад з рэжыму інкогніта для плацяжу праз знешнюю праграму. Працягнуць?</translation>
@@ -1335,7 +1334,6 @@
 <translation id="4607603470419975064">Кнопка "Паказаць парады адносна Chrome". Каб азнаёміцца з функцыямі браўзера Chrome, націсніце Enter</translation>
 <translation id="4607608436550361748">Паказаць парады адносна Chrome</translation>
 <translation id="4617273035598175554">Праграмнае забеспячэнне для графікі і анімацыі</translation>
-<translation id="4627165777145349100">Падрабязней пра гэту старонку</translation>
 <translation id="4627675673814409125">Гэту палітыку нельга задаць на ўзроўні профілю Chrome, таму яна будзе ігнаравацца.</translation>
 <translation id="4628948037717959914">Фота</translation>
 <translation id="4631649115723685955">З вяртаннем грошай</translation>
@@ -1869,7 +1867,6 @@
 <translation id="6061154937977953833">Барацьба</translation>
 <translation id="6064217302520318294">Блакіроўка экрана</translation>
 <translation id="6064602040258638498">Купоны і прапановы са скідкай</translation>
-<translation id="6078813287646374487">Паказаць больш інфармацыі пра гэту старонку</translation>
 <translation id="6080696365213338172">Вы атрымалі доступ да змесціва, выкарыстоўваючы сертыфікат ад адміністратара. Адміністратар можа перахопліваць даныя, якія вы адпраўляеце на <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Падобныя пошукавыя запыты</translation>
 <translation id="6094273045989040137">Анатаваць</translation>
@@ -2794,6 +2791,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> – ваш код для <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Дадаць гэту ўкладку ў закладкі</translation>
 <translation id="8751426954251315517">Паўтарыце спробу пазней</translation>
+<translation id="8757526089434340176">Прапанова Google Pay даступная</translation>
 <translation id="8758885506338294482">Кіберспартыўныя спаборніцтвы</translation>
 <translation id="8759274551635299824">Тэрмін дзеяння гэтай карткі скончыўся</translation>
 <translation id="87601671197631245">Гэты сайт выкарыстоўвае ўстарэлую канфігурацыю бяспекі, таму звесткі пра вас (напрыклад, паролі, паведамленні або нумары крэдытных картак) пры іх адпраўцы на гэты сайт могуць быць раскрыты.</translation>

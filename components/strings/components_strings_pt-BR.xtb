@@ -702,7 +702,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2854764410992194509">Provedores de acesso à Internet (ISPs)</translation>
 <translation id="2856444702002559011">Invasores podem estar tentando roubar suas informações de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (por exemplo, senhas, mensagens ou cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Neste site, há exibição de anúncios invasivos ou enganosos</translation>
-<translation id="286512204874376891">O cartão virtual mascara o real para proteger você contra possíveis tentativas de fraude. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Amigável</translation>
 <translation id="28761159517501904">Filmes</translation>
 <translation id="2876489322757410363">Saindo do modo de navegação anônima para pagar usando um aplicativo externo. Continuar?</translation>
@@ -1330,7 +1329,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4607603470419975064">Botão para ver as dicas do Chrome. Pressione Enter para saber mais sobre os recursos do Chrome</translation>
 <translation id="4607608436550361748">Ver dicas do Chrome</translation>
 <translation id="4617273035598175554">Softwares de animação e gráficos</translation>
-<translation id="4627165777145349100">Mais sobre esta página</translation>
 <translation id="4627675673814409125">Não é possível definir essa política no nível de perfil do Chrome. Ela será ignorada.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Reembolso vinculado</translation>
@@ -1865,7 +1863,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6061154937977953833">Luta livre</translation>
 <translation id="6064217302520318294">Bloqueio de tela</translation>
 <translation id="6064602040258638498">Cupons e ofertas de descontos</translation>
-<translation id="6078813287646374487">Mostrar mais informações sobre esta página</translation>
 <translation id="6080696365213338172">Você acessou conteúdo usando um certificado fornecido pelo administrador. Os dados fornecidos a <ph name="DOMAIN" /> podem ser interceptados por seu administrador.</translation>
 <translation id="6087312102907839798">Pesquisas relacionadas</translation>
 <translation id="6094273045989040137">Anotar</translation>
@@ -2790,6 +2787,7 @@ Mais detalhes:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> é seu código para <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Adicionar esta guia aos favoritos</translation>
 <translation id="8751426954251315517">Tente novamente mais tarde</translation>
+<translation id="8757526089434340176">Oferta do Google Pay disponível</translation>
 <translation id="8758885506338294482">Competições de videogames</translation>
 <translation id="8759274551635299824">Este cartão expirou</translation>
 <translation id="87601671197631245">Este site usa uma configuração de segurança desatualizada que pode expor suas informações (como senhas, mensagens ou números de cartão de crédito) quando elas forem enviadas para o site.</translation>

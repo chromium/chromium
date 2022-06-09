@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Прамое падключэнне да інтэрнэту</translation>
 <translation id="1272293450992660632">PIN-коды не супадаюць.</translation>
+<translation id="127650757582748357">Сціснуты BZIP2-архіў</translation>
 <translation id="1280820357415527819">Ідзе пошук мабільных сетак</translation>
 <translation id="1291603679744561561">SIM-карта заблакіравана</translation>
 <translation id="1293556467332435079">Файлы</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2781645665747935084">Бельгійская</translation>
 <translation id="2782104745158847185">Памылка ўсталявання Linux-праграмы</translation>
+<translation id="2788520643285360081">7-ZIP-архіў</translation>
 <translation id="2803375539583399270">Увядзіце PIN-код</translation>
 <translation id="2820957248982571256">Ідзе пошук...</translation>
+<translation id="2822595620066756134">Сціснуты GZIP-архіў</translation>
 <translation id="2830077785865012357">Кітайская (чжуінь)</translation>
 <translation id="2843806747483486897">Змяніць стандартнае дзеянне...</translation>
 <translation id="2850124913210091882">Стварыць рэзервовую копію</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Літоўская</translation>
 <translation id="3587482841069643663">Усе</translation>
 <translation id="3592251141500063301">Не ўдалося зрабіць файл <ph name="FILE_NAME" /> даступным па-за сеткай</translation>
+<translation id="3593874215226880809">Сціснуты LZIP-архіў</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Французская (канадская)</translation>
 <translation id="3606220979431771195">Турэцкая-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">Скасаваць дзеянне "<ph name="ACTIVITY_DESCRIPTION" />".</translation>
 <translation id="3690128548376345212">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, адключана, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="3691184985318546178">Сінгальская</translation>
+<translation id="3703620396751288986">ZIP-архіў</translation>
 <translation id="3726463242007121105">Прыладу адкрыць не ўдалося: яе файлавая сістэма не падтрымліваецца.</translation>
 <translation id="3727148787322499904">Змена гэтай налады закране ўсе абагуленыя сеткі</translation>
 <translation id="3737576078404241332">Выдаліць з бакавой панэлі</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Чэшская з раскладкай Qwerty</translation>
 <translation id="4656777537938206294">Доступ да файлаў у пазасеткавым рэжыме</translation>
 <translation id="4658782175094886150">Чалавек у снезе</translation>
+<translation id="4661996069183330363">TAR-архіў</translation>
 <translation id="4669606053856530811">Удзельнікі дыска "<ph name="SOURCE_NAME" />" страцяць доступ да гэтых элементаў, калі гэтыя элементы не абагулены з імі.</translation>
 <translation id="467809019005607715">Прэзентацыі Google</translation>
 <translation id="4690246192099372265">Шведская</translation>
@@ -929,6 +935,7 @@
 <translation id="8903931173357132290">Выпускнік</translation>
 <translation id="8912078710089354287">Сабака віляе хвастом</translation>
 <translation id="8919081441417203123">Дацкая</translation>
+<translation id="8965273390142984105">Сціснуты LZOP-архіў</translation>
 <translation id="8965697826696209160">Недастаткова месца.</translation>
 <translation id="8997962250644902079">Кітайская (традыцыйная, піньінь)</translation>
 <translation id="9003940392834790328">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>

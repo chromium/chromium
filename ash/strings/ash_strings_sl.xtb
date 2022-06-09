@@ -31,6 +31,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1150989369772528668">Koledar</translation>
 <translation id="1153356358378277386">Seznanjene naprave</translation>
 <translation id="1165712434476988950">Če želite uveljaviti posodobitev, morate znova zagnati napravo.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Kabel USB-C se morda ne utegne ustrezno povezati z zasloni.</translation>
 <translation id="1175572348579024023">Drseče pomikanje</translation>
 <translation id="1178581264944972037">Prekini</translation>
@@ -55,10 +56,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1247519845643687288">Nedavne aplikacije</translation>
 <translation id="1252999807265626933">Polnjenje iz: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kakšno je vreme?</translation>
-<translation id="1262870540683925850">Od <ph name="START_TIME" /> do 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Izberite za več podrobnosti v Google Koledarju.</translation>
 <translation id="1267032506238418139">Sprememba bližnjice</translation>
 <translation id="1269405891096105529">Dodatna oprema v načinu za goste ni podprta.</translation>
 <translation id="1270290102613614947">Zaslonska tipkovnica onemogočena</translation>
@@ -124,6 +121,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Stikalni dostop lahko onemogočite v »Nastavitve &gt; Dostopnost«.</translation>
 <translation id="1637505162081889933">Št. naprav: <ph name="NUM_DEVICES" /></translation>
+<translation id="1639239467298939599">Nalaganje</translation>
 <translation id="1654477262762802994">Začetek glasovne poizvedbe</translation>
 <translation id="1668469839109562275">Vgrajeno omrežje VPN</translation>
 <translation id="1677472565718498478">Še <ph name="TIME" /></translation>
@@ -1049,7 +1047,6 @@ Nova namestitev</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Ponastavitev na prejšnjo ločljivost čez <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Osveži</translation>
-<translation id="718361511487535372">Odpri v Google Koledarju</translation>
 <translation id="7188494361780961876">Meni je bil premaknjen v zgornji levi kot zaslona.</translation>
 <translation id="7189412385142492784">Kako daleč je Venera</translation>
 <translation id="7198435252016571249">Fotoaparat je pripet v spodnji desni kot. To je v navzkrižju s sistemskim okoljem.</translation>

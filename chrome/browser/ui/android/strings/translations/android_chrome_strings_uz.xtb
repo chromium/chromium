@@ -110,6 +110,7 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="1513352483775369820">Xatcho‘plar va qidiruv tarixi</translation>
 <translation id="1513814250881909472">Boshqa qurilmalardan varaqlarni olish uchun sinxronlang</translation>
 <translation id="1513858653616922153">Parolni o‘chirish</translation>
+<translation id="1514552811327923157">Privacy Sandbox toʻliq hajmda ochildi.</translation>
 <translation id="1518421282666914498">Emoji GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Bugun onlayn edi</translation>
 <translation id="1538801903729528855">Internetdagi axborotlarni ovoz bilan oling</translation>
@@ -321,6 +322,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2711073837061989559">Sinovlar</translation>
 <translation id="2718352093833049315">Faqat Wi-Fi orqali</translation>
 <translation id="2718846868787000099">Kontent sizga mos tillarda chiqishi uchun siz ochadigan saytlar til sozlamalaringizni koʻra oladi</translation>
+<translation id="2722945394406572875">Privacy Sandbox bildirishnomasi yopildi</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Ovozli qidiruvni yaxshilash</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="4227318652298512614">Istalgan saytni kuzating</translation>
 <translation id="4242533952199664413">Sozlamalarni ochish</translation>
 <translation id="4248098802131000011">Axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalash uchun parolingizni himoyalang</translation>
+<translation id="424864128008805179">Chrome hisobidan chiqmoqchimisiz?</translation>
 <translation id="4249955472157341256">Oxirgilar asosida saralash</translation>
 <translation id="4250229828105606438">Skrinshot</translation>
 <translation id="4256782883801055595">Ochiq kodli DT litsenziyalari</translation>
@@ -652,7 +655,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4594952190837476234">Bu sahifa saytning <ph name="CREATION_TIME" /> kunidagi nusxasi va onlayn versiyasidan farq qilishi mumkin.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> veb-ilovasini ochish</translation>
 <translation id="4619564267100705184">Bu siz ekaningizni isbotlang</translation>
-<translation id="4627165777145349100">Bu sahifa haqida batafsil</translation>
 <translation id="4634124774493850572">Paroldan foydalanish</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ta parol oshkor etilgan}other{# ta parol oshkor etilgan}}</translation>
 <translation id="4650364565596261010">Tizim standarti</translation>
@@ -894,6 +896,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5906513782029855931">Google Assistent saytlarning URL manzillarini bilsa, vazifalarni osonroq bajaradi. Chrome sozlamalari ichidan Assistentni faolsizlantirishingiz mumkin.</translation>
 <translation id="5916664084637901428">Yoniq</translation>
 <translation id="5919204609460789179">Sinxronizatsiyani boshlash uchun <ph name="PRODUCT_NAME" /> yangilanishi kerak</translation>
+<translation id="593625682991400408">Sinov davrida Chrome spam, firibgarlik va saytlararo fayl almashinuviga qarshi kurash usullarini oʻrganadi. Chrome, shuningdek, saytlar sizga reklama koʻrsatishda foydalanishi mumkin boʻlgan <ph name="BEGIN_LINK" />qiziqishlaringizni ham hisobga oladi.<ph name="END_LINK" /> Qiziqishlarni sozlamalr orqali boshqarish mumkin.</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> kiritish</translation>
 <translation id="5942872142862698679">Asosiy qidiruv tizimi – Google</translation>
 <translation id="5945035219773565305">Joriy tavsiya:  <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="9106148373857059373">Oqimni saqlash uchun xatchoʻp yopiq</translation>
 <translation id="9108312223223904744">Telefonni elektron kalit sifatida ishlatish</translation>
 <translation id="9108808586816295166">Xavfsiz DNS xizmati har doim ham ishlamasligi mumkin</translation>
+<translation id="9128984223251192329">Privacy Sandbox yarim hajmda ochildi.</translation>
 <translation id="9133397713400217035">Oflayn kontent</translation>
 <translation id="9137013805542155359">Asl tilda ko‘rsatish</translation>
 <translation id="9148126808321036104">Qaytadan kiring</translation>

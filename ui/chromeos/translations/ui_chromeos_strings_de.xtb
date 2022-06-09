@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkte Internetverbindung</translation>
 <translation id="1272293450992660632">Die PIN-Werte stimmen nicht überein.</translation>
+<translation id="127650757582748357">BZIP2-komprimiertes Archiv</translation>
 <translation id="1280820357415527819">Nach Mobilfunknetzen wird gesucht</translation>
 <translation id="1291603679744561561">SIM-Karte gesperrt</translation>
 <translation id="1293556467332435079">Dateien</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Käse</translation>
 <translation id="2781645665747935084">Belgisch</translation>
 <translation id="2782104745158847185">Fehler beim Installieren der Linux-Anwendung</translation>
+<translation id="2788520643285360081">7-Zip-Archiv</translation>
 <translation id="2803375539583399270">PIN eingeben</translation>
 <translation id="2820957248982571256">Wird gescannt...</translation>
+<translation id="2822595620066756134">GZIP-komprimiertes Archiv</translation>
 <translation id="2830077785865012357">Chinesisch (Zhuyin)</translation>
 <translation id="2843806747483486897">Standardeinstellungen ändern...</translation>
 <translation id="2850124913210091882">Sichern</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Litauisch</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> konnte nicht offline verfügbar gemacht werden</translation>
+<translation id="3593874215226880809">LZIP-komprimiertes Archiv</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Kanadisches Französisch</translation>
 <translation id="3606220979431771195">Türkisch-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> abbrechen.</translation>
 <translation id="3690128548376345212">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nicht aktiviert, <ph name="CONNECTION_STATUS" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
 <translation id="3691184985318546178">Singhalesisch</translation>
+<translation id="3703620396751288986">ZIP-Archiv</translation>
 <translation id="3726463242007121105">Dieses Gerät kann nicht geöffnet werden, da das zugehörige Dateisystem nicht unterstützt wird.</translation>
 <translation id="3727148787322499904">Änderungen dieser Einstellung wirken sich auf alle freigegebenen Netzwerke aus</translation>
 <translation id="3737576078404241332">Aus der Seitenleiste entfernen</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Tschechisch mit Qwerty-Tastatur</translation>
 <translation id="4656777537938206294">Dateien offline verfügbar machen</translation>
 <translation id="4658782175094886150">Person im Schnee</translation>
+<translation id="4661996069183330363">TAR-Archiv</translation>
 <translation id="4669606053856530811">Mitglieder von "<ph name="SOURCE_NAME" />" verlieren den Zugriff, sofern du diese Dateien nicht mit ihnen teilst.</translation>
 <translation id="467809019005607715">Google Präsentationen</translation>
 <translation id="4690246192099372265">Schwedisch</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">Absolvent</translation>
 <translation id="8912078710089354287">Hund, der mit dem Schwanz wedelt</translation>
 <translation id="8919081441417203123">Dänisch</translation>
+<translation id="8965273390142984105">LZOP-komprimiertes Archiv</translation>
 <translation id="8965697826696209160">Nicht genügend Speicherplatz.</translation>
 <translation id="8997962250644902079">Chinesisch (traditionell) (Pinyin)</translation>
 <translation id="9003940392834790328">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Details</translation>

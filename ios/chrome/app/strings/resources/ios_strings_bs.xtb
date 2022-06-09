@@ -163,7 +163,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="236977714248711277">Web lokacije ne mogu koristiti kolačiće da poboljšaju vaše iskustvo pregledanja, naprimjer, da ostanete prijavljeni ili da stavke u kolicima za kupovinu ostanu sačuvane.
 
 Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na različitim web lokacijama, naprimjer, radi personaliziranja oglasa.</translation>
-<translation id="2375243552872247702">Pogledajte sadržaj za vas</translation>
+<translation id="2375243552872247702">Pogledajte sadržaj prilagođen vama</translation>
 <translation id="2381405137052800939">Osnove</translation>
 <translation id="2386793615875593361">1 odabrana</translation>
 <translation id="2421004566762153674">Blokiranje kolačića treće strane</translation>
@@ -406,6 +406,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="4502566650163919158">Provjeri sada</translation>
 <translation id="4505980578794259603">Posljednja provjera: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Zatvaranje promocije za prijavu</translation>
+<translation id="4511669830082467224">Pretražite sliku pomoću Googlea</translation>
 <translation id="4526249700380860531">Prikaz spremljenih zaporki i upravljanje njima na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Pregledajte sinhronizirane podatke</translation>
 <translation id="4536418791685807335">Pokušajte se ponovo prijaviti.</translation>
@@ -603,7 +604,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6136914049981179737">Prije nekoliko sekundi</translation>
 <translation id="6144589619057374135">Otvorite ${url} u anonimnom načinu rada</translation>
 <translation id="6149061208933997199">Upotrijebi zaporku</translation>
-<translation id="6152406514676263192">Omogućite sinkronizaciju da biste dobivali najrelevantniji sadržaj na temelju svojih interesa.</translation>
+<translation id="6152406514676263192">Sinhronizirajte da dobijete najrelevantniji sadržaj zasnovan na vašim interesovanjima.</translation>
 <translation id="6159839020698489198">nije obavezno</translation>
 <translation id="6177442314419606057">Pretražite u Chromeu</translation>
 <translation id="6184086493125982861">Prikaz kartica</translation>
@@ -752,7 +753,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7189598951263744875">Dijeli...</translation>
 <translation id="7192050974311852563">Pokreni zapisivanje</translation>
 <translation id="7203585745079012652">Izgovori odgovore</translation>
-<translation id="7207023858769244910">Omogućite sinkronizaciju da biste dobivali sadržaj na temelju svojih interesa.</translation>
+<translation id="7207023858769244910">Sinhronizirajte da dobijete sadržaj zasnovan na vašim interesovanjima.</translation>
 <translation id="7207383424303353046">Novo: Postavite Chrome kao zadanu aplikaciju preglednika i automatski u njemu otvarajte web lokacije. <ph name="BEGIN_LINK" />Otvori Postavke<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nevažeći nadimak kartice</translation>
 <translation id="722454870747268814">Nova anonimna kartica</translation>

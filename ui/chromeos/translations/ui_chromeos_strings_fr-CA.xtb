@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Connexion directe à Internet</translation>
 <translation id="1272293450992660632">Les NIP ne correspondent pas.</translation>
+<translation id="127650757582748357">Archive compressée BZIP2</translation>
 <translation id="1280820357415527819">Recherche de réseaux mobiles en cours…</translation>
 <translation id="1291603679744561561">Carte SIM verrouillée</translation>
 <translation id="1293556467332435079">Fichiers</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Fromage</translation>
 <translation id="2781645665747935084">Belge</translation>
 <translation id="2782104745158847185">Erreur lors de l'installation de l'application Linux</translation>
+<translation id="2788520643285360081">Archive 7-Zip</translation>
 <translation id="2803375539583399270">Entrer le NIP</translation>
 <translation id="2820957248982571256">Recherche en cours…</translation>
+<translation id="2822595620066756134">Archive compressée GZIP</translation>
 <translation id="2830077785865012357">Chinois (Zhuyin)</translation>
 <translation id="2843806747483486897">Changer l'action par défaut…</translation>
 <translation id="2850124913210091882">Sauvegarder</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Lituanien</translation>
 <translation id="3587482841069643663">Tous</translation>
 <translation id="3592251141500063301">Impossible de rendre <ph name="FILE_NAME" /> accessible en mode hors ligne</translation>
+<translation id="3593874215226880809">Archive compressée LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" />   <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Français canadien</translation>
 <translation id="3606220979431771195">Turc-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">Annuler <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, non activé, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, renseignements</translation>
 <translation id="3691184985318546178">Singhalais</translation>
+<translation id="3703620396751288986">Archive ZIP</translation>
 <translation id="3726463242007121105">Impossible d'ouvrir cet appareil, car son système de fichiers n'est pas compatible.</translation>
 <translation id="3727148787322499904">La modification de ce paramètre aura des conséquences sur tous les réseaux partagés</translation>
 <translation id="3737576078404241332">Retirer de la barre latérale</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Tchèque avec clavier QWERTY</translation>
 <translation id="4656777537938206294">Rendre les fichiers accessibles hors ligne</translation>
 <translation id="4658782175094886150">Personne dans la neige</translation>
+<translation id="4661996069183330363">Archive TAR</translation>
 <translation id="4669606053856530811">Les membres de « <ph name="SOURCE_NAME" /> » perdront l'accès à ces éléments à moins que ces derniers soient partagés avec eux.</translation>
 <translation id="467809019005607715">Google Présentations</translation>
 <translation id="4690246192099372265">Suédois</translation>
@@ -931,6 +937,7 @@
 <translation id="8903931173357132290">Diplômé</translation>
 <translation id="8912078710089354287">Chien remuant la queue</translation>
 <translation id="8919081441417203123">Danois</translation>
+<translation id="8965273390142984105">Archive compressée LZOP</translation>
 <translation id="8965697826696209160">Il n'y a pas suffisamment d'espace.</translation>
 <translation id="8997962250644902079">Chinois (traditionnel, Pinyin)</translation>
 <translation id="9003940392834790328">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>

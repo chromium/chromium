@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkt Internetanslutning</translation>
 <translation id="1272293450992660632">Pinkoderna matchar inte.</translation>
+<translation id="127650757582748357">BZIP2-komprimerat arkiv</translation>
 <translation id="1280820357415527819">Söker efter mobilnätverk</translation>
 <translation id="1291603679744561561">SIM-kortet är låst</translation>
 <translation id="1293556467332435079">Filer</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Ost</translation>
 <translation id="2781645665747935084">Belgiska</translation>
 <translation id="2782104745158847185">Ett fel uppstod när Linux-programmet skulle installeras</translation>
+<translation id="2788520643285360081">7-ZIP-arkiv</translation>
 <translation id="2803375539583399270">Ange pinkod</translation>
 <translation id="2820957248982571256">Söker …</translation>
+<translation id="2822595620066756134">GZIP-komprimerat arkiv</translation>
 <translation id="2830077785865012357">kinesiska (zhuyin)</translation>
 <translation id="2843806747483486897">Ändra standard ...</translation>
 <translation id="2850124913210091882">Säkerhetskopiera</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">litauiska</translation>
 <translation id="3587482841069643663">Alla</translation>
 <translation id="3592251141500063301">Det gick inte att göra <ph name="FILE_NAME" /> tillgänglig offline</translation>
+<translation id="3593874215226880809">LZIP-komprimerat arkiv</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Kanadensisk franska</translation>
 <translation id="3606220979431771195">Turkiska F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">Avbryt <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inaktiverat, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="3691184985318546178">singalesiska</translation>
+<translation id="3703620396751288986">ZIP-arkiv</translation>
 <translation id="3726463242007121105">Enheten kan inte öppnas eftersom dess filsystem inte stöds.</translation>
 <translation id="3727148787322499904">Om du ändrar denna inställning påverkas alla delade nätverk</translation>
 <translation id="3737576078404241332">Ta bort från sidofältet</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">tjeckiska med QWERTY-tangentbord</translation>
 <translation id="4656777537938206294">Gör filer tillgängliga offline</translation>
 <translation id="4658782175094886150">Person i snön</translation>
+<translation id="4661996069183330363">TAR-arkiv</translation>
 <translation id="4669606053856530811">De som använder <ph name="SOURCE_NAME" /> förlorar åtkomsten till objekten såvida de inte delas med dem.</translation>
 <translation id="467809019005607715">Google Presentationer</translation>
 <translation id="4690246192099372265">svenska</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">Kandidat</translation>
 <translation id="8912078710089354287">Hund som viftar på svansen</translation>
 <translation id="8919081441417203123">danska</translation>
+<translation id="8965273390142984105">LZOP-komprimerat arkiv</translation>
 <translation id="8965697826696209160">Det finns inte tillräckligt med ledigt utrymme.</translation>
 <translation id="8997962250644902079">traditionell kinesiska (pinyin)</translation>
 <translation id="9003940392834790328">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, information</translation>

@@ -214,7 +214,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 放電しました。</translation>
 <translation id="291142119251986300">資格を満たしていないコンポーネント</translation>
 <translation id="2926057806159140518">ユーザー名とパスワードを入力するか、QR コードをスキャンしてください</translation>
-<translation id="2928420929544864228">インストールが完了しました。</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">保存先のフォルダを選択</translation>
 <translation id="3017079585324758401">背景</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">シャットダウンする前に、デバイスで Powerwash を実行してください。折りたたみ式のデバイスの場合は、Powerwash が完了するまで待ってからカバーを閉じてください。Powerwash が完了するまでに 1 分ほどかかることがあります。</translation>
 <translation id="3858860766373142691">名前</translation>
 <translation id="3865414814144988605">解像度</translation>
+<translation id="3866249974567520381">説明</translation>
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
 <translation id="3885327323343477505">スクリーン セーバーを変更</translation>
 <translation id="3923184630988645767">データ使用</translation>
@@ -430,6 +430,7 @@
 <translation id="4915052247106771211">デバイスは出荷時の設定にリセットされます（Powerwash）。</translation>
 <translation id="4917385247580444890">強い</translation>
 <translation id="4917889632206600977">停止 - 用紙切れ</translation>
+<translation id="491791267030419270">フィードバックの作成に関するヒント</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 充電しました。</translation>
 <translation id="4930320165497208503">接続を設定または更新するには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] に移動します。</translation>
 <translation id="4932733599132424254">日付</translation>
@@ -899,6 +900,7 @@
 <translation id="922179502584117429">現在のバージョン <ph name="VERSION_NUMBER" /> は最新ではありません</translation>
 <translation id="932327136139879170">ホーム</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="952992212772159698">無効</translation>
 <translation id="960719561871045870">事業者コード</translation>
 <translation id="982713511914535780">放電テストを実行</translation>

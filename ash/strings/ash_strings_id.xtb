@@ -31,6 +31,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Perangkat dihubungkan</translation>
 <translation id="1165712434476988950">Perlu memulai ulang perangkat untuk menerapkan update.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Kabel USB-C mungkin tidak terhubung dengan benar ke layar</translation>
 <translation id="1175572348579024023">Scroll</translation>
 <translation id="1178581264944972037">Jeda</translation>
@@ -55,10 +56,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1247519845643687288">Aplikasi terbaru</translation>
 <translation id="1252999807265626933">Mengisi daya dari <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Gimana kondisi cuaca?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> sampai 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Pilih acara untuk mengetahui detail selengkapnya di Google Kalender.</translation>
 <translation id="1267032506238418139">Perubahan pintasan</translation>
 <translation id="1269405891096105529">Periferal tidak didukung dalam mode Tamu</translation>
 <translation id="1270290102613614947">Keyboard di layar dinonaktifkan</translation>
@@ -124,6 +121,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Tombol Akses dapat dinonaktifkan di Setelan &gt; Aksesibilitas.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> perangkat</translation>
+<translation id="1639239467298939599">Memuat</translation>
 <translation id="1654477262762802994">Mulai kueri suara</translation>
 <translation id="1668469839109562275">VPN bawaan</translation>
 <translation id="1677472565718498478">Sisa waktu <ph name="TIME" /></translation>
@@ -1049,7 +1047,6 @@ Baru diinstal</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Mengembalikan ke resolusi lama dalam <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Perbarui</translation>
-<translation id="718361511487535372">Buka di Google Kalender</translation>
 <translation id="7188494361780961876">Menu dipindahkan ke pojok kiri atas layar.</translation>
 <translation id="7189412385142492784">Seberapa jauh Venus</translation>
 <translation id="7198435252016571249">Kamera dipaskan ke pojok kanan bawah. Bertentangan dengan platform sistem.</translation>

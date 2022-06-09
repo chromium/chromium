@@ -214,7 +214,6 @@
 <translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="291142119251986300">المكونات غير المعتمَدة</translation>
 <translation id="2926057806159140518">أدخِل اسم المستخدم وكلمة المرور أو امسَح رمز الاستجابة السريعة ضوئيًا.</translation>
-<translation id="2928420929544864228">اكتمل التثبيت.</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3017079585324758401">الخلفية</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">‏قبل إطفاء الجهاز، عليك تنفيذ الإجراء Powerwash. إذا كان جهازك يحتوي على شاشة قابل للطي، عليك الانتظار إلى أن يكتمل الإجراء Powerwash قبل طي شاشة الجهاز. قد يستغرق اكتمال تنفيذ الإجراء Powerwash مدة تصل إلى دقيقة.</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3865414814144988605">درجة الدقة</translation>
+<translation id="3866249974567520381">الوصف</translation>
 <translation id="387301095347517405">عدد المرات التي تم فيها شحن بطاريتك بالكامل</translation>
 <translation id="3885327323343477505">تغيير شاشة الاستراحة</translation>
 <translation id="3923184630988645767">استخدام البيانات</translation>
@@ -899,6 +899,7 @@
 <translation id="922179502584117429">الإصدار الحالي رقم <ph name="VERSION_NUMBER" /> هو إصدار قديم.</translation>
 <translation id="932327136139879170">الصفحة الرئيسية</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">إرسال تعليقات</translation>
 <translation id="952992212772159698">غير نشطة</translation>
 <translation id="960719561871045870">رمز مشغل شبكة الجوال</translation>
 <translation id="982713511914535780">تشغيل اختبار تفريغ شحن البطارية</translation>

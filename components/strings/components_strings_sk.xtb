@@ -702,7 +702,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2854764410992194509">Poskytovatelia internetu</translation>
 <translation id="2856444702002559011">Útočníci sa môžu pokúsiť ukradnúť vaše informácie z webu <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (napríklad heslá, správy alebo kreditné karty). <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Tento web zobrazuje obťažujúce alebo zavádzajúce reklamy.</translation>
-<translation id="286512204874376891">Virtuálnou kartou sa zamaskuje vaša skutočná karta, čo vás lepšie ochráni pred potenciálnymi podvodmi. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Milé</translation>
 <translation id="28761159517501904">Filmy</translation>
 <translation id="2876489322757410363">Ak zaplatíte pomocou externej aplikácie, opustíte režim inkognito. Chcete pokračovať?</translation>
@@ -1326,7 +1325,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4607603470419975064">Tlačidlo na zobrazenie tipov Chromu, stlačením klávesa Enter získate informácie o funkciách Chromu</translation>
 <translation id="4607608436550361748">Zobraziť tipy Chromu</translation>
 <translation id="4617273035598175554">Grafický a animačný softvér</translation>
-<translation id="4627165777145349100">Viac o tejto stránke</translation>
 <translation id="4627675673814409125">Tieto pravidlá nie je možné nastaviť na úrovni profilu Chromu a budú ignorované.</translation>
 <translation id="4628948037717959914">Fotografia</translation>
 <translation id="4631649115723685955">Funkcia Cashback je prepojená</translation>
@@ -1861,7 +1859,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6061154937977953833">Zápasenie</translation>
 <translation id="6064217302520318294">Zámka obrazovky</translation>
 <translation id="6064602040258638498">Kupóny a zľavy</translation>
-<translation id="6078813287646374487">Zobraziť ďalšie informácie o tejto stránke</translation>
 <translation id="6080696365213338172">K obsahu ste pristúpili pomocou certifikátu, ktorý poskytol správca. Údaje, ktoré poskytnete doméne <ph name="DOMAIN" /> môžu byť zachytené správcom.</translation>
 <translation id="6087312102907839798">Súvisiace vyhľadávania</translation>
 <translation id="6094273045989040137">Pridať anotáciu</translation>
@@ -2785,6 +2782,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> je kód pre <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Pridať kartu medzi záložky</translation>
 <translation id="8751426954251315517">Skúste to neskôr</translation>
+<translation id="8757526089434340176">K dispozícii je ponuka Google Pay</translation>
 <translation id="8758885506338294482">Súťažné hranie videohier</translation>
 <translation id="8759274551635299824">Platnosť tejto karty vypršala</translation>
 <translation id="87601671197631245">Tento web používa zastaranú konfiguráciu zabezpečenia, ktorá môže odhaliť vaše informácie (napríklad heslá, správy alebo kreditné karty), keď ich naň odošlete.</translation>

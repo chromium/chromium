@@ -110,6 +110,7 @@
 <translation id="1513352483775369820">বুকমার্কগুলি এবং ওয়েব ইতিহাস</translation>
 <translation id="1513814250881909472">আপনার অন্যান্য ডিভাইস থেকে ট্যাব পেতে সিঙ্ক করুন</translation>
 <translation id="1513858653616922153">পাসওয়ার্ড মুছুন</translation>
+<translation id="1514552811327923157">প্রাইভেসি স্যান্ডবক্স প্রম্পট সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="1518421282666914498">আবেগ বোঝানোর জন্য GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">আজ ব্যবহার করা হয়েছে</translation>
 <translation id="1538801903729528855">ওয়েবে আরও ভাল ভয়েস সার্চ করার অভিজ্ঞতা পান</translation>
@@ -321,6 +322,7 @@
 <translation id="2711073837061989559">ট্রায়াল</translation>
 <translation id="2718352093833049315">শুধুমাত্র ওয়াই-ফাই এ</translation>
 <translation id="2718846868787000099">আপনার পছন্দের ভাষায় কন্টেন্ট দেখাতে, আপনি যেসব সাইট ভিজিট করেন সেগুলি আপনার ভাষার পছন্দ দেখতে পাবে</translation>
+<translation id="2722945394406572875">প্রাইভেসি স্যান্ডবক্স প্রম্পট বন্ধ করা হয়েছে</translation>
 <translation id="2723001399770238859">অডিও</translation>
 <translation id="2732063072010454421">একটি উন্নত ভয়েস অভিজ্ঞতা পান</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -587,6 +589,7 @@
 <translation id="4227318652298512614">আপনার যে সাইট পছন্দ সেটি ফলো করুন</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
 <translation id="4248098802131000011">ডেটার নিরাপত্তা লঙ্ঘনকরীদের ও অন্যান্য নিরাপত্তা সংক্রান্ত ইস্যুগুলি থেকে আপনার পাসওয়ার্ড নিরাপদে রাখুন</translation>
+<translation id="424864128008805179">Chrome থেকে সাইন-আউট করবেন?</translation>
 <translation id="4249955472157341256">লেটেস্ট অনুযায়ী সাজান</translation>
 <translation id="4250229828105606438">স্ক্রিনশট</translation>
 <translation id="4256782883801055595">ওপেন সোর্স লাইসেন্স</translation>
@@ -654,7 +657,6 @@
 <translation id="4594952190837476234">এই অফলাইন পৃষ্ঠাটি <ph name="CREATION_TIME" />-এ তৈরি করা হয়েছিল এবং এটি অনলাইন ভার্সনের থেকে আলাদা হতে পারে।</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> খুলুন</translation>
 <translation id="4619564267100705184">নিজের পরিচয় যাচাই করুন</translation>
-<translation id="4627165777145349100">এই পৃষ্ঠা সম্পর্কে আরও তথ্য</translation>
 <translation id="4634124774493850572">পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{১টি চুরি হয়ে যাওয়া পাসওয়ার্ড}one{#টি চুরি হয়ে যাওয়া পাসওয়ার্ড}other{#টি চুরি হয়ে যাওয়া পাসওয়ার্ড}}</translation>
 <translation id="4650364565596261010">সিস্টেম ডিফল্ট</translation>
@@ -896,6 +898,7 @@
 <translation id="5906513782029855931">সাইটের URL জেনে, Google Assistant আপনাকে কাজটি সম্পূর্ণ করতে সাহায্য করে। আপনি Chrome সেটিংস থেকে Assistant বন্ধ করে দিতে পারেন।</translation>
 <translation id="5916664084637901428">চালু</translation>
 <translation id="5919204609460789179">সিঙ্ক শুরু করতে <ph name="PRODUCT_NAME" /> আপডেট করুন</translation>
+<translation id="593625682991400408">ট্রায়াল চলাকালীন, স্প্যাম, জালিয়াতি ও দুটি সাইটের মধ্যে শেয়ার সীমিত করার বিভিন্ন উপায় Chrome এক্সপ্লোর করছে। এছাড়াও Chrome <ph name="BEGIN_LINK" />আপনার আগ্রহ অনুমান করতে পারে<ph name="END_LINK" /> যা ব্যবহার করে সাইট আপনাকে বিজ্ঞাপন দেখাতে পারে। সেটিংস থেকে আপনার আগ্রহের বিষয় ম্যানেজ করতে পারবেন।</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> যোগ করুন</translation>
 <translation id="5942872142862698679">সার্চের জন্য Google কে ব্যবহার করছে</translation>
 <translation id="5945035219773565305">বর্তমান সাজেশন:  <ph name="RECOMMENDATION" /></translation>
@@ -1514,6 +1517,7 @@
 <translation id="9106148373857059373">বুকমার্ক সেভ ফ্লো বন্ধ করা হয়েছে</translation>
 <translation id="9108312223223904744">নিরাপত্তা কী হিসেবে ফোনের ব্যবহার</translation>
 <translation id="9108808586816295166">নিরাপদ ডিএনএস সবসময় উপলভ্য নাও থাকতে পারে</translation>
+<translation id="9128984223251192329">প্রাইভেসি স্যান্ডবক্স প্রম্পট অর্ধেক স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="9133397713400217035">অফলাইন কন্টেন্ট দেখুন</translation>
 <translation id="9137013805542155359">প্রকৃত রূপ দেখান</translation>
 <translation id="9148126808321036104">আবার সাইন-ইন করুন</translation>

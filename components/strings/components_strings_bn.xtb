@@ -707,7 +707,6 @@
 <translation id="2854764410992194509">ইন্টারনেট সার্ভিস প্রোভাইডার (ISPs)</translation>
 <translation id="2856444702002559011">আক্রমণকারীরা হয়ত <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> থেকে আপনার তথ্য (যেমন পাসওয়ার্ড, মেসেজ বা ক্রেডিট কার্ড) চুরি করার চেষ্টা করছে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">এই সাইট ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন দেখায়।</translation>
-<translation id="286512204874376891">কোনও ভার্চুয়াল কার্ড আপনাকে সম্ভাব্য জালিয়াতির হাত থেকে রক্ষা করতে আপনার আসল কার্ডের ছদ্মবেশ নিতে পারে। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">বন্ধুত্বপূর্ণ</translation>
 <translation id="28761159517501904">সিনেমা</translation>
 <translation id="2876489322757410363">এক্সটার্নাল অ্যাপ্লিকেশনের মাধ্যমে পেমেন্ট করার জন্য ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসা হচ্ছে। চালিয়ে যেতে চান?</translation>
@@ -1340,7 +1339,6 @@
 <translation id="4607603470419975064">Chrome সম্পর্কিত পরামর্শ দেখুন বোতাম, Chrome-এর ফিচার সম্পর্কে জানতে Enter প্রেস করুন</translation>
 <translation id="4607608436550361748">Chrome-এর পরামর্শ দেখুন</translation>
 <translation id="4617273035598175554">গ্রাফিক্স ও অ্যানিমেশন সফ্টওয়্যার</translation>
-<translation id="4627165777145349100">এই পৃষ্ঠা সম্পর্কে আরও তথ্য</translation>
 <translation id="4627675673814409125">এই নীতিটি Chrome প্রোফাইল লেভেলে সেট করা যাবে না এবং এড়িয়ে যাওয়া হবে।</translation>
 <translation id="4628948037717959914">ফটো</translation>
 <translation id="4631649115723685955">ক্যাশব্যাক অফার লিঙ্ক করা হয়েছে</translation>
@@ -1875,7 +1873,6 @@
 <translation id="6061154937977953833">কুস্তি</translation>
 <translation id="6064217302520318294">স্ক্রিন লক</translation>
 <translation id="6064602040258638498">কুপন ও ডিসকাউন্ট অফার</translation>
-<translation id="6078813287646374487">এই পৃষ্ঠা সম্পর্কে আরও তথ্য দেখুন</translation>
 <translation id="6080696365213338172">অ্যাডমিনিস্ট্রেটরের দ্বারা সরবরাহ করা সার্টিফিকেট ব্যবহার করে আপনি কন্টেন্ট ব্যবহার করেছেন৷ <ph name="DOMAIN" />-কে আপনি যে ডেটা সরবরাহ করেন তাতে আপনার অ্যাডমিনিস্ট্রেটর বাধা দিতে পারে৷</translation>
 <translation id="6087312102907839798">সম্পর্কিত সার্চ</translation>
 <translation id="6094273045989040137">ব্যাখ্যা করুন</translation>
@@ -2798,6 +2795,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> হল আপনার <ph name="ORIGIN" />-এর কোড</translation>
 <translation id="874918643257405732">এই ট্যাব বুকমার্ক করুন</translation>
 <translation id="8751426954251315517">পরে আবার চেষ্টা করুন</translation>
+<translation id="8757526089434340176">Google Pay অফার উপলভ্য</translation>
 <translation id="8758885506338294482">প্রতিযোগিতামূলক ভিডিও গেমিং</translation>
 <translation id="8759274551635299824">এই কার্ডটির মেয়াদ শেষ হয়েছে</translation>
 <translation id="87601671197631245">এই সাইটটি পুরনো সিকিউরিটি কনফিগারেশন ব্যবহার করে তাই আপনার তথ্য (যেমন, পাসওয়ার্ড, মেসেজ বা ক্রেডিট কার্ডের নম্বর) এই সাইটে পাঠানোর সময় এইসব তথ্যের নিরাপত্তা বিঘ্নিত হতে পারে।</translation>

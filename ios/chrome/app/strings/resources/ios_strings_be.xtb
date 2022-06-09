@@ -65,6 +65,7 @@
 <translation id="1434356225517321998">Ваш браўзер знаходзіцца пад кіраваннем. <ph name="BEGIN_LINK" />Падрабязныя звесткі<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Схаваць пароль</translation>
 <translation id="145015347812617860">Элементаў: <ph name="COUNT" /></translation>
+<translation id="1450170672351507823">Стандартная абарона ўключана. Каб павысіць бяспеку, выкарыстоўвайце Палепшаную абарону.</translation>
 <translation id="149095475893949513">Гэты вэб-сайт спрабуе спампаваць профіль канфігурацыі.</translation>
 <translation id="1491277525950327607">Каб уключыць або выключыць наладу, двойчы дакраніцеся</translation>
 <translation id="1492417797159476138">Вы ўжо захавалі гэта імя карыстальніка для гэтага сайта</translation>
@@ -738,6 +739,7 @@
 <translation id="7099761977003084116">Нядаўнія ўкладкі</translation>
 <translation id="7102005569666697658">Ідзе спампоўванне… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Схаваць</translation>
+<translation id="7108762695052995889">Наведаць сайт</translation>
 <translation id="7133798577887235672">Поўнае імя</translation>
 <translation id="7136892417564438900">Камера недаступная</translation>
 <translation id="7153999225810839758">Час чытання: <ph name="TIME" /> хв</translation>

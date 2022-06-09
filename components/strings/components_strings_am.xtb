@@ -699,7 +699,6 @@
 <translation id="2854764410992194509">የበይነመረብ አገልግሎት አቅራቢዎች (አይኤስፒዎች)</translation>
 <translation id="2856444702002559011">አጥቂዎች የእርስዎን መረጃ (ለምሳሌ፦ የይለፍ ቃላትን፣ መልዕክቶችን፣ ወይም የክሬዲት ካርዶችን የመሳሰሉ) ከ<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ለመስረቅ እየሞከሩ ሊሆኑ ይችላሉ። <ph name="BEGIN_LEARN_MORE_LINK" />የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">ይህ ጣቢያ ረባሽ ወይም አሳሳች ማስታወቂያዎችን ያሳያል።</translation>
-<translation id="286512204874376891">ምናባዊ ካርድ እርስዎን ሊሆን ከሚችል ማጭበርበር ለመጠበቅ እንዲረዳዎት ትክክለኛውን ካርድዎን አስመስሎ ይደብቀዋል። <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">የወዳጅነት</translation>
 <translation id="28761159517501904">ፊልሞች</translation>
 <translation id="2876489322757410363">በውጫዊ ማከማቻ በኩል ለማጫወት ማንነት ከማያሳውቅ ሁነታ በመውጣት ላይ። ይቀጥል?</translation>
@@ -1328,7 +1327,6 @@
 <translation id="4607603470419975064">የChrome ጠቃሚ ምክሮች አዝራር የልከቱ፣ ስለChrome ባህሪዎች ለማወቅ አስገባን ይጫኑ</translation>
 <translation id="4607608436550361748">የChrome ጠቃሚ ምክሮችን ይመልከቱ</translation>
 <translation id="4617273035598175554">የግራፊክስ እና የእነማ ሶፍትዌር</translation>
-<translation id="4627165777145349100">ስለዚህ ገጽ ተጨማሪ</translation>
 <translation id="4627675673814409125">ይህ መመሪያ በChrome መገለጫ ደረጃ ላይ ሊዋቀር አይችልም፣ እንዲሁም ችላ ይባላል።</translation>
 <translation id="4628948037717959914">ፎቶ</translation>
 <translation id="4631649115723685955">ከተመላሽ ገንዘብ ጋር ተገናኝቷል</translation>
@@ -1862,7 +1860,6 @@
 <translation id="6061154937977953833">ነጻ ትግል</translation>
 <translation id="6064217302520318294">ማያ ገጽ መቆለፊያ</translation>
 <translation id="6064602040258638498">ኩፖኖች እና የዋጋ ቅናሾች</translation>
-<translation id="6078813287646374487">ስለዚህ ገጽ ተጨማሪ መረጃ አሳይ</translation>
 <translation id="6080696365213338172">በአስተዳዳሪ የቀረበ የእውቅና ማረጋገጫ በመጠቀም ይዘት ደርሰዋል። ለ<ph name="DOMAIN" /> የሚያቀርቡት ውሂብ በአስተዳዳሪዎ ሊያዝ ይችላል።</translation>
 <translation id="6087312102907839798">ተዛማጅ ፍለጋዎች</translation>
 <translation id="6094273045989040137">አብራራ</translation>
@@ -2787,6 +2784,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> የእርስዎ የ <ph name="ORIGIN" /> ኮድ ነው</translation>
 <translation id="874918643257405732">ይህን ትር ዕልባት ያድርጉት</translation>
 <translation id="8751426954251315517">እባክዎ በሚቀጥለው ጊዜ እንደገና ይሞክሩ</translation>
+<translation id="8757526089434340176">የGoogle Pay ቅናሽ ይገኛል</translation>
 <translation id="8758885506338294482">ተፎካካሪ የቪዲዮ ጨዋታ</translation>
 <translation id="8759274551635299824">ይህ ካርድ የአገልግሎት ጊዜው አብቅቷል</translation>
 <translation id="87601671197631245">ይህ ጣቢያ ጊዜ ያለፈበት የደህንነት ውቅረትን ይጠቀማል፣ ይህ ወደዚህ ጣቢያ ሲላክ መረጃዎን (ለምሳሌ፦ የይለፍ ቃላት፣ መልዕክቶች ወይም ክሬዲት ካርዶች) ሊያጋልጥ ይችላል።</translation>

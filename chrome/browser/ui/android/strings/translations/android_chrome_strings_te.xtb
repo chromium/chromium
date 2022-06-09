@@ -587,6 +587,7 @@
 <translation id="4227318652298512614">మీకు కావాల్సిన ఏ సైట్‌లను అయినా ఫాలో అవ్వండి</translation>
 <translation id="4242533952199664413">సెట్టింగ్‌లను తెరువు</translation>
 <translation id="4248098802131000011">డేటా ఉల్లంఘనలు, ఇతర సెక్యూరిటీ సమస్యల నుండి మీ పాస్‌వర్డ్‌లను సురక్షితంగా ఉంచుకోండి</translation>
+<translation id="424864128008805179">Chrome నుండి సైన్ అవుట్ చేయాలా?</translation>
 <translation id="4249955472157341256">ఇటీవలి లేబుల్ టెక్స్ట్ ఆధారంగా క్రమపద్ధతిలో అమర్చండి</translation>
 <translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
 <translation id="4256782883801055595">ఓపెన్ సోర్స్ లైసెన్స్‌లు</translation>
@@ -654,7 +655,6 @@
 <translation id="4594952190837476234">ఈ ఆఫ్‌లైన్ పేజీ <ph name="CREATION_TIME" />కి చెందినది మరియు ఆన్‌లైన్ వెర్షన్ వేరుగా ఉండవచ్చు.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ని తెరువు</translation>
 <translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
-<translation id="4627165777145349100">ఈ పేజీ గురించిన మరింత సమాచారం</translation>
 <translation id="4634124774493850572">పాస్‌వర్డ్‌ను ఉపయోగించు</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 చోరీకి గురైన పాస్‌వర్డ్}other{# చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="4650364565596261010">సిస్టమ్ డిఫాల్ట్</translation>
@@ -793,7 +793,6 @@
 <translation id="5342314432463739672">అనుమతి రిక్వెస్ట్‌లు</translation>
 <translation id="5355191726083956201">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
 <translation id="5368227114232678694">ఈ పరికరంలో ప్రైవేట్‌గా బ్రౌజ్ చేయడానికి, అజ్ఞాత మోడ్‌ను ట్రై చేయండి</translation>
-<translation id="5371717687506906963">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్ ప్రాంప్ట్</translation>
 <translation id="5375577065097716013">Google Lens ఇమేజ్ సెర్చ్ <ph name="BEGIN_NEW" />న్యూ<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">ప్రతిస్పందన మార్చబడింది</translation>
 <translation id="5401851137404501592">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది.</translation>

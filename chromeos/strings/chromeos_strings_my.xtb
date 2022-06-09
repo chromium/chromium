@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">ဤ <ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံသည်။</translation>
 <translation id="1175951029573070619">သာမန် (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
+<translation id="1190378975642195988">အရှိန်တိုင်းကိရိယာ အောက်ခံပြား</translation>
 <translation id="1195447618553298278">မှားရသည့်အကြောင်း မသိပါ။</translation>
 <translation id="1196959502276349371">ဗားရှင်း <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ဖွင့်ရန်/ခဏရပ်ရန်</translation>
@@ -214,7 +215,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားလျော့သွားသည်။</translation>
 <translation id="291142119251986300">သတ်မှတ်ချက်မပြည့်မီသော ပစ္စည်းများ</translation>
 <translation id="2926057806159140518">သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ထည့်ပါ (သို့) QR ကုဒ်ကို စကင်ဖတ်ပါ</translation>
-<translation id="2928420929544864228">ထည့်သွင်းပြီးပါပြီ။</translation>
 <translation id="3008341117444806826">ပြန်လည်စတင်ရန်</translation>
 <translation id="3009958530611748826">သိမ်းရန် ဖိုင်တွဲကို ရွေးပါ</translation>
 <translation id="3017079585324758401">နောက်ခံ</translation>
@@ -268,6 +268,7 @@
 <translation id="3484914941826596830">ဖားမ်ဝဲအပ်ဒိတ်လုပ်နေစဉ် ဤပြင်ပကိရိယာကို ပလတ်မဖြုတ်ပါနှင့် (သို့) သင်၏ကွန်ပျူတာကို အပြီးမပိတ်ပါနှင့်။ ဤဝင်းဒိုးကို ချုံ့နိုင်သည်။ ယခုအပ်ဒိတ်သည် မိနစ်အနည်းငယ်ကြာနိုင်ပြီး ဤအချိန်အတွင်း သင်၏ပြင်ပကိရိယာ အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="3486220673238053218">အဓိပ္ပါယ် ဖွင့်ဆိုချက်</translation>
 <translation id="3488065109653206955">တစ်စိတ်တစ်ဒေသ ဖွင့်သုံးနေ</translation>
+<translation id="3492982278147736083">ကိုင်းညွတ်မှုတိုင်း ကိရိယာအဖုံး</translation>
 <translation id="3517001332549868749">ChromeOS အပ်ဒိတ်</translation>
 <translation id="3527036260304016759">မအောင်မြင်ပါ - အမည်မသိ အမှား</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> မိနစ်ခန့် ကျန်သည်</translation>
@@ -301,9 +302,11 @@
 <translation id="3820172043799983114">ပင်နံပါတ် မမှန်ကန်ပါ။</translation>
 <translation id="3838338534323494292">စကားဝှက်အသစ်</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
+<translation id="3856304145690230735">ကိုင်းညွတ်မှုတိုင်း ကိရိယာ အောက်ခံပြား</translation>
 <translation id="385832974417157471">စက်မပိတ်ခင် Powerwash လုပ်ပါ။ သင့်စက်တွင် အဖုံးရှိပါက အဖုံးမပိတ်ခင် Powerwash ပြီးသည့်တိုင်အောင် စောင့်ပါ။ Powerwash ပြီးစီးရန် တစ်မိနစ်ခန့် ကြာနိုင်သည်။</translation>
 <translation id="3858860766373142691">အမည်</translation>
 <translation id="3865414814144988605">ပုံရိပ်ပြတ်သားကိန်း</translation>
+<translation id="3866249974567520381">ဖေါ်ပြချက်</translation>
 <translation id="387301095347517405">သင့်ဘက်ထရီကို အားအပြည့်သွင်းထားသည့် အကြိမ်အရေအတွက်</translation>
 <translation id="3885327323343477505">ဖန်သားပြင်နားချိန် ပြောင်းရန်</translation>
 <translation id="3923184630988645767">ဒေတာသုံးစွဲမှု</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">စကြရအောင်</translation>
 <translation id="4479639480957787382">အီတာနက်</translation>
 <translation id="4483049906298469269">မူရင်းမဟုတ်သည့် ကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
+<translation id="4500213108254186382">အရှိန်တိုင်းကိရိယာ အဖုံး</translation>
 <translation id="4503223151711056411">ဘယ်ညွှန်မြား</translation>
 <translation id="4511264077854731334">ပေါ်တယ်</translation>
 <translation id="4521826082652183069">အကြောင်းအရာ၏ အခြားအမည် ကိုက်ညီမှု</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">ဆင်းမ် လော့ခ်ဖွင့်ထားသည်</translation>
 <translation id="4562494484721939086">ဝန်ဆောင်မှု မရှိပါ</translation>
 <translation id="4568938274596692027">ထည့်သွင်းမှု ပြီးပါပြီ။ ပြန်စရန် ပြင်ဆင်နေသည်...</translation>
+<translation id="4576943788798178439">Stylus ပံ့ပိုးမှု</translation>
 <translation id="458794348635939462">ဆာဗာပင်ရင်းအားလုံးကို ဖြေရှင်း၍မရပါ</translation>
 <translation id="4593212453765072419">ပရောက်စီ အထောက်အထားစိစစ်ရန် လိုအပ်သည်</translation>
 <translation id="4609350030397390689">ကီးဘုတ်တောက်ပမှု လျှော့ရန်</translation>
@@ -536,6 +541,7 @@
 <translation id="5866840822086176774">အလွန်အားကောင်းပါသည်</translation>
 <translation id="588258955323874662">မျက်နှာပြင် အပြည့်</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
+<translation id="5898758006340607522">ဖွင့်ပိတ်ခလုတ်</translation>
 <translation id="5901630391730855834">အၐါရောင်</translation>
 <translation id="5903200662178656908">စက်ပစ္စည်းက ကီးဘုတ်နှင့်မောက်စ်အတွဲ ဖြစ်သည်။</translation>
 <translation id="5916084858004523819">တားမြစ်ထားသည်</translation>
@@ -858,6 +864,7 @@
 <translation id="8919792139048574232">ပြင်ဆင်ပြီးသည်များကို ကြည့်နိုင်သည်</translation>
 <translation id="8919837981463578619">မအောင်မြင်ပါ - ဗန်းမရှိပါ</translation>
 <translation id="8923267550422472772">တစ်လတာတွင် ပြင်ဆင်သတ်မှတ်မည့်နေ့</translation>
+<translation id="8925613211674558308">Vpd ကက်ရှ်ယူထားသည်</translation>
 <translation id="8928727111548978589">မအောင်မြင်ပါ - စာရွက်ကုန်နေသည်</translation>
 <translation id="8930521118335213258">အမျိုးအစားတူ</translation>
 <translation id="8930622219860340959">ကြိုးမဲ့</translation>
@@ -899,6 +906,7 @@
 <translation id="922179502584117429">လက်ရှိဗားရှင်း <ph name="VERSION_NUMBER" /> က ဟောင်းနေပါပြီ</translation>
 <translation id="932327136139879170">ပင်မ</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 <translation id="952992212772159698">ဖွင့်မသုံးရသေး</translation>
 <translation id="960719561871045870">မိုဘိုင်းဝန်ဆောင်မှုဌာန ကုဒ်</translation>
 <translation id="982713511914535780">အားသုံးစွဲမှု စစ်ဆေးရန်</translation>

@@ -703,7 +703,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2854764410992194509">Proveedores de Internet</translation>
 <translation id="2856444702002559011">Es posible que los atacantes estén intentando robar tu información de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (por ejemplo, contraseñas, mensajes o tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Este sitio web muestra anuncios invasivos o engañosos.</translation>
-<translation id="286512204874376891">Una tarjeta virtual oculta tu tarjeta real para protegerte frente a posibles fraudes. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Amistosa</translation>
 <translation id="28761159517501904">Películas</translation>
 <translation id="2876489322757410363">Saldrás del modo Incógnito para pagar en una aplicación externa. ¿Quieres continuar?</translation>
@@ -1336,7 +1335,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4607603470419975064">Botón de ver consejos de Chrome, pulsa Intro para ver información sobre las funciones de Chrome</translation>
 <translation id="4607608436550361748">Ver consejos de Chrome</translation>
 <translation id="4617273035598175554">Software de animación y gráficos</translation>
-<translation id="4627165777145349100">Más sobre esta página</translation>
 <translation id="4627675673814409125">Esta política no se puede establecer a nivel de perfil de Chrome, por lo que no tendrá ningún efecto.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Devolución de dinero asociada</translation>
@@ -1870,7 +1868,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6061154937977953833">Lucha libre</translation>
 <translation id="6064217302520318294">Bloqueo de pantalla</translation>
 <translation id="6064602040258638498">Cupones y descuentos</translation>
-<translation id="6078813287646374487">Mostrar más información sobre esta página</translation>
 <translation id="6080696365213338172">Has accedido al contenido mediante un certificado proporcionado por el administrador. Los datos que proporciones a <ph name="DOMAIN" /> pueden ser interceptados por tu administrador.</translation>
 <translation id="6087312102907839798">Búsquedas relacionadas</translation>
 <translation id="6094273045989040137">Anotar</translation>
@@ -2794,6 +2791,7 @@ Más información:
 <translation id="8742371904523228557">El código de <ph name="ORIGIN" /> es <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Añadir esta pestaña a marcadores</translation>
 <translation id="8751426954251315517">Vuelve a intentarlo más adelante</translation>
+<translation id="8757526089434340176">Oferta de Google Play disponible</translation>
 <translation id="8758885506338294482">Videojuegos de competición</translation>
 <translation id="8759274551635299824">La tarjeta ha caducado</translation>
 <translation id="87601671197631245">Este sitio web usa una configuración de seguridad obsoleta y puede que exponga tu información (por ejemplo, las contraseñas, los mensajes o las tarjetas de crédito) cuando se envíe a este sitio web.</translation>

@@ -56,10 +56,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1247519845643687288">Azken aplikazioak</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> gailutik kargatzen</translation>
 <translation id="1255033239764210633">Zer eguraldi dago?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> - 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Xehetasun gehiago lortzeko, hautatu gertaera bat Google Calendar-en.</translation>
 <translation id="1267032506238418139">Aldatu egin da lasterbidea</translation>
 <translation id="1269405891096105529">Gailu periferikoa ez da onartzen gonbidatu moduan</translation>
 <translation id="1270290102613614947">Pantailako teklatua desgaitu egin da</translation>
@@ -125,6 +121,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Ezarpenak &gt; Erabilerraztasuna atalean desgai dezakezu erabilerraztasun-osagarria.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> gailu</translation>
+<translation id="1639239467298939599">Kargatzen</translation>
 <translation id="1654477262762802994">Sortu ahozko kontsulta bat</translation>
 <translation id="1668469839109562275">VPN integratua</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> geratzen dira</translation>
@@ -240,6 +237,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2367186422933365202">Ezin da hasi saioa Chromebook-ean</translation>
 <translation id="2369165858548251131">Nola esaten da "Kaixo" txineraz</translation>
+<translation id="2375445874393996153">Google-ren Laguntzailea zerbitzuaren bidez pantailan gauzak bilatzeko eginbidea ez da jada bateragarria.</translation>
 <translation id="2390318262976603432">Lurraldeko ezarpenak</translation>
 <translation id="240006516586367791">Multimedia-edukia kontrolatzeko aukerak</translation>
 <translation id="2402411679569069051">Chromebook-a desblokeatzeko, erabili hatz-marka edo desblokeatu telefonoa</translation>
@@ -1050,7 +1048,6 @@ Berriki instalatu da</translation>
 <translation id="7165278925115064263">Alt + Maius + K</translation>
 <translation id="7168224885072002358">Aurreko bereizmenera leheneratuko da <ph name="TIMEOUT_SECONDS" /> ondoren</translation>
 <translation id="7180611975245234373">Freskatu</translation>
-<translation id="718361511487535372">Ireki Google Calendar-en</translation>
 <translation id="7188494361780961876">Pantailaren goiko ezkerreko izkinara eraman da menua.</translation>
 <translation id="7189412385142492784">Zer distantziatara dago Artizarra</translation>
 <translation id="7198435252016571249">Atxiki egin da kamera beheko eskuinaldeko izkinan, sistemaren beste gainazal batean gainjartzen zelako.</translation>

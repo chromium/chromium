@@ -95,6 +95,7 @@
 <translation id="1717874160321062422">Do <ph name="FIRST_MANAGER" /> và <ph name="SECOND_MANAGER" /> quản lý</translation>
 <translation id="1726100011689679555">Máy chủ định danh</translation>
 <translation id="1731082422893354635">Bàn di chuột Bluetooth</translation>
+<translation id="1745577949879301685">Không thể tải hình ảnh. Kiểm tra kết nối mạng của bạn hoặc thử tải lại hình ảnh.</translation>
 <translation id="1751249301761991853">Cá nhân</translation>
 <translation id="1753496554272155572">Thoát chế độ xem trước hình nền</translation>
 <translation id="175763766237925754">Tốt (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -213,7 +214,6 @@
 <translation id="2878387241690264070">Đã xả <ph name="RATE" /> pin sau <ph name="NUM_SECONDS" /> giây.</translation>
 <translation id="291142119251986300">Thành phần không đủ tiêu chuẩn</translation>
 <translation id="2926057806159140518">Nhập tên người dùng và mật khẩu hoặc quét mã QR</translation>
-<translation id="2928420929544864228">Đã cài đặt xong.</translation>
 <translation id="3008341117444806826">LÀM MỚI</translation>
 <translation id="3009958530611748826">Chọn một thư mục để lưu</translation>
 <translation id="3017079585324758401">Nền</translation>
@@ -303,6 +303,7 @@
 <translation id="385832974417157471">Trước khi tắt, hãy thực hiện chức năng Powerwash cho thiết bị. Nếu thiết bị có nắp, hãy đợi cho đến khi quá trình Powerwash hoàn tất trước khi đóng nắp. Quá trình Powerwash có thể mất tối đa một phút để hoàn tất.</translation>
 <translation id="3858860766373142691">Tên</translation>
 <translation id="3865414814144988605">Độ phân giải</translation>
+<translation id="3866249974567520381">Mô tả</translation>
 <translation id="387301095347517405">Số lần pin của bạn được sạc đầy</translation>
 <translation id="3885327323343477505">Thay đổi trình bảo vệ màn hình</translation>
 <translation id="3923184630988645767">Chế độ sử dụng dữ liệu</translation>
@@ -899,6 +900,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="922179502584117429">Phiên bản <ph name="VERSION_NUMBER" /> này đã lỗi thời</translation>
 <translation id="932327136139879170">Trang chủ</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="952992212772159698">Chưa được kích hoạt</translation>
 <translation id="960719561871045870">Mã của nhà mạng</translation>
 <translation id="982713511914535780">Chạy quá trình Kiểm tra mức xả pin</translation>

@@ -704,7 +704,6 @@
 <translation id="2854764410992194509">ಇಂಟರ್ನೆಟ್ ಸೇವಾ ಪೂರೈಕೆದಾರರು (ISPs)</translation>
 <translation id="2856444702002559011">ದಾಳಿಕೋರರು <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ನಿಂದ ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಕದಿಯಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು (ಉದಾಹರಣೆಗೆ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಸಂದೇಶಗಳು ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು). <ph name="BEGIN_LEARN_MORE_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">ಅತಿಕ್ರಮಣಕಾರಿಯಾಗಿರುವ ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಜಾಹೀರಾತುಗಳನ್ನು ಈ ಸೈಟ್ ತೋರಿಸುತ್ತದೆ.</translation>
-<translation id="286512204874376891">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಸಂಭಾವ್ಯ ವಂಚನೆಯಿಂದ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು ನಿಮ್ಮ ನಿಜವಾದ ಕಾರ್ಡ್‌ಗೆ ಮಾರುವೇಷ ತೊಡಿಸುತ್ತದೆ. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">ಸೌಹಾರ್ದ</translation>
 <translation id="28761159517501904">ಚಲನಚಿತ್ರಗಳು</translation>
 <translation id="2876489322757410363">ಬಾಹ್ಯ ಅಪ್ಲಿಕೇಶನ್‌‌ ಮೂಲಕ ಪಾವತಿಸಲು ಅಜ್ಞಾತ ಮೋಡ್‌‌ ತೊರೆಯಲಾಗುತ್ತಿದೆ. ಮುಂದುವರಿಸಬೇಕೆ?</translation>
@@ -1329,7 +1328,6 @@
 <translation id="4607603470419975064">Chrome ಸಲಹೆಗಳ ಬಟನ್ ನೋಡಿ, Chrome ಫೀಚರ್‌ಗಳ ಕುರಿತು ತಿಳಿಯಲು Enter ಒತ್ತಿ</translation>
 <translation id="4607608436550361748">Chrome ಸಲಹೆಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="4617273035598175554">ಗ್ರಾಫಿಕ್ಸ್ ಮತ್ತು ಆ್ಯನಿಮೇಶನ್ ಸಾಫ್ಟ್‌ವೇರ್</translation>
-<translation id="4627165777145349100">ಈ ಪುಟದ ಕುರಿತು ಇನ್ನಷ್ಟು</translation>
 <translation id="4627675673814409125">ಈ ನೀತಿಯನ್ನು Chrome ಪ್ರೊಫೈಲ್ ಮಟ್ಟದಲ್ಲಿ ಸೆಟ್ ಮಾಡುವುದಿಲ್ಲ ಹಾಗೂ ಅದನ್ನು ನಿರ್ಲಕ್ಷಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="4628948037717959914">ಫೋಟೋ</translation>
 <translation id="4631649115723685955">ಕ್ಯಾಶ್‌ಬ್ಯಾಕ್ ಲಿಂಕ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1864,7 +1862,6 @@
 <translation id="6061154937977953833">ಕುಸ್ತಿ</translation>
 <translation id="6064217302520318294">ಸ್ಕ್ರೀನ್ ಲಾಕ್</translation>
 <translation id="6064602040258638498">ಕೂಪನ್‌ಗಳು ಮತ್ತು ರಿಯಾಯಿತಿ ಆಫರ್‌ಗಳು</translation>
-<translation id="6078813287646374487">ಈ ಪುಟದ ಕುರಿತು ಇನ್ನಷ್ಟು ಮಾಹಿತಿ ತೋರಿಸಿ</translation>
 <translation id="6080696365213338172">ನಿರ್ವಾಹಕರು-ಒದಗಿಸಿದ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಬಳಸಿಕೊಂಡು ನೀವು ವಿಷಯವನ್ನು ಪ್ರವೇಶಿಸಿರುವಿರಿ. <ph name="DOMAIN" /> ಗೆ ನೀವು ಒದಗಿಸುವ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ತಡೆಹಿಡಿಯಬಹುದಾಗಿದೆ.</translation>
 <translation id="6087312102907839798">ಸಂಬಂಧಿತ ಹುಡುಕಾಟಗಳು</translation>
 <translation id="6094273045989040137">ಟಿಪ್ಪಣಿ</translation>
@@ -2787,6 +2784,7 @@
 <translation id="8742371904523228557"><ph name="ORIGIN" /> ಗಾಗಿ ನಿಮ್ಮ ಕೋಡ್ <ph name="ONE_TIME_CODE" /> ಆಗಿದೆ</translation>
 <translation id="874918643257405732">ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ</translation>
 <translation id="8751426954251315517">ಮುಂದಿನ ಬಾರಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="8757526089434340176">Google Pay ಆಫರ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="8758885506338294482">ಸ್ಪರ್ಧಾತ್ಮಕ ವೀಡಿಯೊ ಗೇಮಿಂಗ್</translation>
 <translation id="8759274551635299824">ಈ ಕಾರ್ಡ್‌ನ ಅವಧಿ ಮುಕ್ತಾಯವಾಗಿದೆ</translation>
 <translation id="87601671197631245">ಈ ಸೈಟ್ ಹಳೆಯ ಸುರಕ್ಷತಾ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಬಳಸುತ್ತದೆ, ಇದು ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಈ ಸೈಟ್‌ಗೆ ಕಳುಹಿಸಿದಾಗ ಅದನ್ನು (ಉದಾಹರಣೆಗೆ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಸಂದೇಶಗಳು ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು) ಬಹಿರಂಗಪಡಿಸಬಹುದು.</translation>

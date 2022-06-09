@@ -587,6 +587,7 @@
 <translation id="4227318652298512614">ຕິດຕາມເວັບໄຊໃດກໍໄດ້ທີ່ທ່ານຕ້ອງການ</translation>
 <translation id="4242533952199664413">ເປີດ​ການ​ຕັ້ງ​ຄ່າ</translation>
 <translation id="4248098802131000011">ຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນໆ</translation>
+<translation id="424864128008805179">ອອກຈາກລະບົບ Chrome ບໍ?</translation>
 <translation id="4249955472157341256">ຈັດຮຽງຕາມຫຼ້າສຸດ</translation>
 <translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
 <translation id="4256782883801055595">ໃບ​ອະ​ນຸ​ຍາດ Open source</translation>
@@ -654,7 +655,6 @@
 <translation id="4594952190837476234">ໜ້າອອບລາຍນີ້ມາຈາກ <ph name="CREATION_TIME" /> ແລະ ອາດຈະແຕກຕ່າງຈາກເວີຊັນອອນລາຍ.</translation>
 <translation id="4616150815774728855">ເປີດ <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">ຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
-<translation id="4627165777145349100">ເພີ່ມເຕີມກ່ຽວກັບໜ້ານີ້</translation>
 <translation id="4634124774493850572">ໃຊ້ລະຫັດຜ່ານ</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ 1 ລາຍການ}other{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ # ລາຍການ}}</translation>
 <translation id="4650364565596261010">ຄ່າເລີ່ມຕົ້ນຂອງລະບົບ</translation>
@@ -793,7 +793,6 @@
 <translation id="5342314432463739672">ຄຳຂໍການອະນຸຍາດ</translation>
 <translation id="5355191726083956201">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເປີດຢູ່</translation>
 <translation id="5368227114232678694">ເພື່ອທ່ອງເວັບແບບສ່ວນຕົວຢູ່ອຸປະກອນນີ້, ໃຫ້ລອງໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
-<translation id="5371717687506906963">ກ່ອງຂໍ້ຄວາມ Privacy Sandbox</translation>
 <translation id="5375577065097716013">ຊອກຫາຮູບພາບດ້ວຍ Google Lens <ph name="BEGIN_NEW" />ໃໝ່<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">ປ່ຽນຣີແອັກຊັນແລ້ວ</translation>
 <translation id="5401851137404501592">ເພື່ອສືບຕໍ່, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ຈະແບ່ງປັນຊື່, ທີ່ຢູ່ອີເມວ ແລະ ຮູບໂປຣໄຟລ໌ຂອງທ່ານໃຫ້ກັບເວັບໄຊນີ້.</translation>

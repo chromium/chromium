@@ -56,10 +56,6 @@
 <translation id="1247519845643687288">ბოლოდროინდელი აპები</translation>
 <translation id="1252999807265626933">იტენება წყაროდან: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">რა ამინდია?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> — 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. დეტალური ინფორმაციისთვის აირჩიეთ Google Calendar.</translation>
 <translation id="1267032506238418139">მალსახმობის ცვლილება</translation>
 <translation id="1269405891096105529">პერიფერიული მოწყობილობა მხარდაუჭერელია სტუმრის რეჟიმში</translation>
 <translation id="1270290102613614947">ეკრანული კლავიატურა გამორთულია</translation>
@@ -125,6 +121,7 @@
 <translation id="1620510694547887537">კამერა</translation>
 <translation id="1632985212731562677">გადამრთველით წვდომის გათიშვა შესაძლებელია აქ: პარამეტრები &gt; მარტივი წვდომა.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> მოწყობილობა</translation>
+<translation id="1639239467298939599">იტვირთება</translation>
 <translation id="1654477262762802994">ხმოვანი მოთხოვნის დაწყება</translation>
 <translation id="1668469839109562275">ჩაშენებული VPN</translation>
 <translation id="1677472565718498478">დარჩენილია <ph name="TIME" /></translation>
@@ -1050,7 +1047,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">დრო ძველ გარჩევადობაზე დაბრუნებამდე: <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">განახლება</translation>
-<translation id="718361511487535372">Google Calendar-ში გახსნა</translation>
 <translation id="7188494361780961876">მენიუ გადატანილია ეკრანის ზედა მარცხენა კუთხეში.</translation>
 <translation id="7189412385142492784">რა მანძილია ვენერამდე</translation>
 <translation id="7198435252016571249">კამერა მიზიდულია ქვედა მარჯვენა კუთხეში. ის კონფლიქტშია სისტემის ზედაპირთან.</translation>

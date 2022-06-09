@@ -703,7 +703,6 @@
 <translation id="2854764410992194509">Ինտերնետ պրովայդերներ (ԻԾՄ-ներ)</translation>
 <translation id="2856444702002559011">Հարձակվողները կարող են հափշտակել ձեր տեղեկությունները (օրինակ՝ գաղտնաբառերը, նամակները կամ վարկային քարտերը) <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքից։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Այս կայքը հոգնեցնող կամ մոլորեցնող գովազդ է ցուցադրում։</translation>
-<translation id="286512204874376891">Վիրտուալ քարտը թաքցնում է ձեր իրական քարտը՝ օգնելով պաշտպանել ձեզ հնարավոր խարդախությունից։ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Ընկերական</translation>
 <translation id="28761159517501904">Ֆիլմեր</translation>
 <translation id="2876489322757410363">Դուք դուրս կգաք ինկոգնիտո ռեժիմից՝ արտաքին հավելվածում վճարում կատարելու համար։ Շարունակե՞լ։</translation>
@@ -1336,7 +1335,6 @@
 <translation id="4607603470419975064">«Տեսնել Chrome-ին առնչվող խորհուրդներ» կոճակ։ Chrome-ի գործառույթների մասին տեղեկանալու համար սեղմեք Enter։</translation>
 <translation id="4607608436550361748">Տեսնել Chrome-ին առնչվող խորհուրդներ</translation>
 <translation id="4617273035598175554">Գրաֆիկական և անիմացիոն ծրագրեր</translation>
-<translation id="4627165777145349100">Իմանալ ավելին այս էջի մասին</translation>
 <translation id="4627675673814409125">Այս կանոնը չի կարող սահմանվել Chrome-ի պրոֆիլի մակարդակում, և այն կանտեսվի։</translation>
 <translation id="4628948037717959914">Լուսանկար</translation>
 <translation id="4631649115723685955">Քեշբեքով</translation>
@@ -1871,7 +1869,6 @@
 <translation id="6061154937977953833">Ըմբշամարտ</translation>
 <translation id="6064217302520318294">Էկրանի կողպում</translation>
 <translation id="6064602040258638498">Կուպոններ և զեղչային առաջարկներ</translation>
-<translation id="6078813287646374487">Տեսնել ավելի շատ տեղեկություններ այս էջի մասին</translation>
 <translation id="6080696365213338172">Դուք բովանդակությունն օգտագործում եք ադմինիստրատորի տրամադրած վկայագրի միջոցով: <ph name="DOMAIN" />-ին տրամադրած տվյալները կարող են միջամտվել ձեր ադմինիստրատորի կողմից:</translation>
 <translation id="6087312102907839798">Նմանատիպ որոնումներ</translation>
 <translation id="6094273045989040137">Ավելացնել ծանոթագրություն</translation>
@@ -2795,6 +2792,7 @@
 <translation id="8742371904523228557"><ph name="ORIGIN" /> կայքի ձեր կոդը՝ <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Էջանշել այս ներդիրը</translation>
 <translation id="8751426954251315517">Փորձեք ավելի ուշ</translation>
+<translation id="8757526089434340176">Հասանելի է Google Pay-ի առաջարկ</translation>
 <translation id="8758885506338294482">Մրցակցային տեսախաղեր</translation>
 <translation id="8759274551635299824">Քարտի ժամկետը սպառվել է</translation>
 <translation id="87601671197631245">Այս կայքն օգտագործում է անվտանգության հնացած կազմաձևում, ինչի հետևանքով ձեր տեղեկությունները (օր.` գաղտնաբառերը, հաղորդագրությունները կամ վարկային քարտի տվյալները) այս կայքում լրացնելիս կարող են բացահայտվել։</translation>

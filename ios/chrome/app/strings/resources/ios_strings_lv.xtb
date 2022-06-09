@@ -65,6 +65,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="1434356225517321998">Jūsu pārlūks tiek pārvaldīts. <ph name="BEGIN_LINK" />Informācija<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Slēpt paroli</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> vienumi</translation>
+<translation id="1450170672351507823">Ir ieslēgta standarta aizsardzība. Lai iegūtu lielāku drošību, izmantojiet uzlaboto aizsardzību.</translation>
 <translation id="149095475893949513">Šī vietne mēģina lejupielādēt konfigurācijas profilu.</translation>
 <translation id="1491277525950327607">Veiciet dubultskārienu, lai pārslēgtu iestatījumu.</translation>
 <translation id="1492417797159476138">Jūs jau saglabājāt šo lietotājvārdu šai vietnei</translation>
@@ -162,6 +163,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="236977714248711277">Vietnes nedrīkst izmantot sīkfailus, lai uzlabotu pārlūkošanas pieredzi, piemēram, lai nodrošinātu ilgstošu pierakstīšanos vai saglabātu iepirkumu grozā ievietotās preces.
 
 Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, reklāmu personalizēšanai.</translation>
+<translation id="2375243552872247702">Skatiet jums ieteikto saturu</translation>
 <translation id="2381405137052800939">Pamata</translation>
 <translation id="2386793615875593361">Atlasīts 1 fotoattēls</translation>
 <translation id="2421004566762153674">Trešo pušu sīkfaili tiek bloķēti</translation>
@@ -601,6 +603,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6136914049981179737">Pirms sek.</translation>
 <translation id="6144589619057374135">Atvērt vietni ${url} inkognito režīmā</translation>
 <translation id="6149061208933997199">Izmantot paroli</translation>
+<translation id="6152406514676263192">Ieslēdziet sinhronizāciju, lai atrastu savām interesēm atbilstošāko saturu.</translation>
 <translation id="6159839020698489198">neobligāts</translation>
 <translation id="6177442314419606057">Meklēšana pārlūkā Chrome</translation>
 <translation id="6184086493125982861">Rādīt cilnes</translation>
@@ -749,6 +752,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7189598951263744875">Kopīgot...</translation>
 <translation id="7192050974311852563">Sākt reģistrēšanu</translation>
 <translation id="7203585745079012652">Izrunāt atbildes skaļi</translation>
+<translation id="7207023858769244910">Ieslēdziet sinhronizāciju, lai atrastu savām interesēm pielāgotu saturu.</translation>
 <translation id="7207383424303353046">Jaunums: automātiski atveriet vietnes pārlūkā Chrome, iestatot to kā savu noklusējuma pārlūka lietotni. <ph name="BEGIN_LINK" />Atvērt iestatījumus<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nederīgs kredītkartes apzīmējums</translation>
 <translation id="722454870747268814">Jauna inkognito cilne</translation>

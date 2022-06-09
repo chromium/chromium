@@ -56,10 +56,6 @@
 <translation id="1247519845643687288">সাম্প্রতিক অ্যাপ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> থেকে চার্জ হচ্ছে</translation>
 <translation id="1255033239764210633">আবহাওয়া কি রকম?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> থেকে 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />। Google Calendar-এ আরও বিবরণ দেখতে বেছে নিন।</translation>
 <translation id="1267032506238418139">শর্টকাটে পরিবর্তন</translation>
 <translation id="1269405891096105529">গেস্ট মোডে পেরিফেরাল কাজ করে না</translation>
 <translation id="1270290102613614947">অন-স্ক্রিন কীবোর্ড অক্ষম করা রয়েছে</translation>
@@ -125,6 +121,7 @@
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1632985212731562677">সেটিংস &gt; অ্যাক্সেসিবিলিটি বিকল্পে গিয়ে 'অ্যাক্সেস পাল্টান' ফিচারটি বন্ধ করা করতে পারেন।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" />টি ডিভাইস</translation>
+<translation id="1639239467298939599">লোড হচ্ছে</translation>
 <translation id="1654477262762802994">ভয়েস কোয়েরি শুরু করুন</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> বাকি আছে</translation>
@@ -240,6 +237,7 @@
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2367186422933365202">Chromebook-এ সাইন-ইন করা যায়নি</translation>
 <translation id="2369165858548251131">চীনা ভাষায় "হ্যালো"</translation>
+<translation id="2375445874393996153">Google Assistant ব্যবহার করে আমার স্ক্রিনে কি আছে তা আর সার্চ করা যাবে না।</translation>
 <translation id="2390318262976603432">লোকেল সেটিংস</translation>
 <translation id="240006516586367791">মিডিয়া কন্ট্রোল</translation>
 <translation id="2402411679569069051">ফিঙ্গারপ্রিন্ট বা ফোনের সাহায্যে আপনার Chromebook আনলক করুন</translation>
@@ -1049,7 +1047,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> -এ পুরনো রেজোলিউশানে ফেরানো হচ্ছে</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
-<translation id="718361511487535372">Google calendar-এ খুলুন</translation>
 <translation id="7188494361780961876">স্ক্রিনের উপরে বাঁদিকের কোণায় মেনু সরে গেছে।</translation>
 <translation id="7189412385142492784">পৃথিবী থেকে শুক্র গ্রহের দুরত্ব কত</translation>
 <translation id="7198435252016571249">ক্যামেরাটি নিচে ডানদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>

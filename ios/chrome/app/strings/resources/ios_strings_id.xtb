@@ -163,6 +163,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="236977714248711277">Situs tidak dapat menggunakan cookie untuk menyempurnakan pengalaman penjelajahan Anda, misalnya untuk membuat Anda tetap login atau untuk mengingat item di keranjang belanja Anda.
 
 Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan.</translation>
+<translation id="2375243552872247702">Lihat Konten untuk Anda</translation>
 <translation id="2381405137052800939">Dasar</translation>
 <translation id="2386793615875593361">1 dipilih</translation>
 <translation id="2421004566762153674">Memblokir cookie pihak ketiga</translation>
@@ -602,6 +603,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6136914049981179737">Detik lalu</translation>
 <translation id="6144589619057374135">Buka ${url} dalam mode Samaran</translation>
 <translation id="6149061208933997199">Gunakan Sandi</translation>
+<translation id="6152406514676263192">Sinkronkan untuk melihat konten yang paling relevan berdasarkan minat Anda.</translation>
 <translation id="6159839020698489198">opsional</translation>
 <translation id="6177442314419606057">Penelusuran di Chrome</translation>
 <translation id="6184086493125982861">Tampilkan Tab</translation>
@@ -750,6 +752,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7189598951263744875">Bagikan...</translation>
 <translation id="7192050974311852563">Mulai Logging</translation>
 <translation id="7203585745079012652">Ucapkan Jawabannya</translation>
+<translation id="7207023858769244910">Sinkronkan untuk mendapatkan konten berdasarkan minat Anda.</translation>
 <translation id="7207383424303353046">Baru: Buka situs di Chrome secara otomatis dengan menjadikan Chrome sebagai Aplikasi Browser Default Anda. <ph name="BEGIN_LINK" />Buka Setelan<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nama Panggilan Kartu Tidak Valid</translation>
 <translation id="722454870747268814">Tab Samaran Baru</translation>

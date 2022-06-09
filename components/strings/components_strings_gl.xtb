@@ -702,7 +702,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2854764410992194509">Fornecedores de servizos de Internet (ISP)</translation>
 <translation id="2856444702002559011">É posible que os piratas informáticos tenten roubar a túa información de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (por exemplo, contrasinais, mensaxes ou tarxetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Este sitio mostra anuncios intrusivos ou enganosos.</translation>
-<translation id="286512204874376891">As tarxetas virtuais ocultan as tarxetas reais para protexerte de posibles fraudes. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Amigable</translation>
 <translation id="28761159517501904">Películas</translation>
 <translation id="2876489322757410363">Sairás do modo de incógnito para pagar a través dunha aplicación externa. Queres continuar?</translation>
@@ -1335,7 +1334,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4607603470419975064">Botón Ver consellos de Chrome. Preme Introducir para obter máis información sobre as funcións de Chrome</translation>
 <translation id="4607608436550361748">Ver consellos de Chrome</translation>
 <translation id="4617273035598175554">Software de animación e gráficos</translation>
-<translation id="4627165777145349100">Máis información sobre esta páxina</translation>
 <translation id="4627675673814409125">Esta política non se pode configurar no perfil de Chrome e, polo tanto, ignorarase.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Devolución de cartos vinculada</translation>
@@ -1869,7 +1867,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6061154937977953833">Loita</translation>
 <translation id="6064217302520318294">Bloqueo de pantalla</translation>
 <translation id="6064602040258638498">Cupóns e descontos</translation>
-<translation id="6078813287646374487">Mostrar máis información acerca desta páxina</translation>
 <translation id="6080696365213338172">Accediches a contido mediante un certificado fornecido por un administrador. O teu administrador pode interceptar os datos que fornezas a <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Buscas relacionadas</translation>
 <translation id="6094273045989040137">Anotar</translation>
@@ -2793,6 +2790,7 @@ Detalles adicionais:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> é o teu código para <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Engadir esta pestana aos marcadores</translation>
 <translation id="8751426954251315517">Téntao de novo a próxima vez</translation>
+<translation id="8757526089434340176">Hai unha oferta de Google Pay dispoñible</translation>
 <translation id="8758885506338294482">Deportes electrónicos</translation>
 <translation id="8759274551635299824">Esta tarxeta caducou</translation>
 <translation id="87601671197631245">Este sitio utiliza unha configuración de seguranza obsoleta que pode poñer en risco a túa información (por exemplo, contrasinais, mensaxes ou números de tarxetas de crédito) cando se lle envía.</translation>

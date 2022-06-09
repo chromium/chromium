@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Žánr</translation>
 <translation id="1254593899333212300">Přímé připojení k internetu</translation>
 <translation id="1272293450992660632">Hodnoty kódů PIN se neshodují.</translation>
+<translation id="127650757582748357">Komprimovaný archiv BZIP2</translation>
 <translation id="1280820357415527819">Vyhledávání mobilních sítí</translation>
 <translation id="1291603679744561561">SIM karta uzamknuta</translation>
 <translation id="1293556467332435079">Soubory</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Sýr</translation>
 <translation id="2781645665747935084">Belgická klávesnice</translation>
 <translation id="2782104745158847185">Při instalaci aplikace pro Linux došlo k chybě</translation>
+<translation id="2788520643285360081">Archiv 7-Zip</translation>
 <translation id="2803375539583399270">Zadejte kód PIN</translation>
 <translation id="2820957248982571256">Vyhledávání...</translation>
+<translation id="2822595620066756134">Komprimovaný archiv GZIP</translation>
 <translation id="2830077785865012357">čínský ču-jin</translation>
 <translation id="2843806747483486897">Změnit výchozí akci...</translation>
 <translation id="2850124913210091882">Zálohovat</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">litevština</translation>
 <translation id="3587482841069643663">Vše</translation>
 <translation id="3592251141500063301">Soubor <ph name="FILE_NAME" /> se nepodařilo zpřístupnit offline</translation>
+<translation id="3593874215226880809">Komprimovaný archiv LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Kanadská francouzská klávesnice</translation>
 <translation id="3606220979431771195">Turecká klávesnice – F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">Zrušit <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivováno, <ph name="CONNECTION_STATUS" />, síla signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3691184985318546178">sinhálština</translation>
+<translation id="3703620396751288986">Archiv ZIP</translation>
 <translation id="3726463242007121105">Toto zařízení nelze otevřít, protože jeho systém souborů není podporován.</translation>
 <translation id="3727148787322499904">Změna tohoto nastavení bude mít dopad na všechny sdílené sítě</translation>
 <translation id="3737576078404241332">Odstranit z postranního panelu</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">čeština s klávesnicí Qwerty</translation>
 <translation id="4656777537938206294">Dostupnost souborů v režimu offline</translation>
 <translation id="4658782175094886150">Člověk ve sněhu</translation>
+<translation id="4661996069183330363">Archiv TAR</translation>
 <translation id="4669606053856530811">Pokud s nimi tyto položky nejsou sdíleny, ztratí k nim členové týmu <ph name="SOURCE_NAME" /> přístup.</translation>
 <translation id="467809019005607715">Prezentace Google</translation>
 <translation id="4690246192099372265">švédština</translation>
@@ -929,6 +935,7 @@
 <translation id="8903931173357132290">Absolvent</translation>
 <translation id="8912078710089354287">Pes vrtící ocasem</translation>
 <translation id="8919081441417203123">dánština</translation>
+<translation id="8965273390142984105">Komprimovaný archiv LZOP</translation>
 <translation id="8965697826696209160">Nedostatek místa.</translation>
 <translation id="8997962250644902079">čínština (tradiční) – pchin-jin</translation>
 <translation id="9003940392834790328">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, spravováno administrátorem, podrobnosti</translation>

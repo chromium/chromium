@@ -56,7 +56,6 @@
 <translation id="1247519845643687288">แอปที่ใช้ล่าสุด</translation>
 <translation id="1252999807265626933">กำลังชาร์จจาก<ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">วันนี้อากาศเป็นยังไงบ้าง</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> ถึง <ph name="END_TIME" />, <ph name="TIME_ZONE" />, <ph name="EVENT_SUMMARY" /> เลือกกิจกรรมเพื่อดูรายละเอียดเพิ่มเติมใน Google ปฏิทิน</translation>
 <translation id="1267032506238418139">มีการเปลี่ยนแปลงทางลัด</translation>
 <translation id="1269405891096105529">ไม่รองรับอุปกรณ์ต่อพ่วงในโหมดผู้มาเยือน</translation>
 <translation id="1270290102613614947">ปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
@@ -122,6 +121,7 @@
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1632985212731562677">ปิดใช้ "การเข้าถึงด้วยสวิตช์" ได้ในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> อุปกรณ์</translation>
+<translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1654477262762802994">เริ่มการค้นหาด้วยเสียง</translation>
 <translation id="1668469839109562275">VPN ในตัว</translation>
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
@@ -1047,7 +1047,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">เปลี่ยนกลับไปเป็นความละเอียดเดิมภายใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
-<translation id="718361511487535372">เปิดใน Google ปฏิทิน</translation>
 <translation id="7188494361780961876">เมนูได้ย้ายไปอยู่ที่มุมซ้ายบนของหน้าจอ</translation>
 <translation id="7189412385142492784">ดาวศุกร์อยู่ไกลแค่ไหน</translation>
 <translation id="7198435252016571249">จัดกล้องพอดีกับมุมขวาล่างแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>

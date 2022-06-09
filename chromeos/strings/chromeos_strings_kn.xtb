@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">ಈ <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ಇಂದ ನಿರ್ವಹಿಸಲ್ಪಡುತ್ತದೆ.</translation>
 <translation id="1175951029573070619">ಸರಾಸರಿ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
+<translation id="1190378975642195988">ಮೂಲ ವೇಗೋತ್ಕರ್ಷಕ ಮಾಪಕ</translation>
 <translation id="1195447618553298278">ಅಪರಿಚಿತ ದೋಷ.</translation>
 <translation id="1196959502276349371">ಆವೃತ್ತಿ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ಪ್ಲೇ/ವಿರಾಮ</translation>
@@ -214,7 +215,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗಿದೆ.</translation>
 <translation id="291142119251986300">ಅನರ್ಹ ಘಟಕಗಳು</translation>
 <translation id="2926057806159140518">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ ಅಥವಾ ನಿಮ್ಮ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
-<translation id="2928420929544864228">ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
 <translation id="3008341117444806826">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="3009958530611748826">ಉಳಿಸಲು ಫೋಲ್ಡರ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="3017079585324758401">ಹಿನ್ನೆಲೆ</translation>
@@ -268,6 +268,7 @@
 <translation id="3484914941826596830">ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತಿರುವ ಸಮಯದಲ್ಲಿ, ಈ ಬಾಹ್ಯ ಸಾಧನವನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಬೇಡಿ ಅಥವಾ ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಸ್ಥಶಟ್ ಡೌನ್ ಮಾಡಬೇಡಿ. ನೀವು ಈ ವಿಂಡೋವನ್ನು ಕುಗ್ಗಿಸಬಹುದು. ಈ ಅಪ್‌ಡೇಟ್, ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು ಮತ್ತು ಈ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಬಾಹ್ಯ ಸಾಧನವು ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು.</translation>
 <translation id="3486220673238053218">ವಿವರಣೆ</translation>
 <translation id="3488065109653206955">ಭಾಗಶಃ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="3492982278147736083">ಲಿಡ್ ಗೈರೊಸ್ಕೋಪ್</translation>
 <translation id="3517001332549868749">ChromeOS ಅಪ್‌ಡೇಟ್</translation>
 <translation id="3527036260304016759">ವಿಫಲವಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
 <translation id="3532980081107202182">ಸುಮಾರು <ph name="MIN_REMAINING" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
@@ -301,9 +302,11 @@
 <translation id="3820172043799983114">ಅಮಾನ್ಯ ಪಿನ್.</translation>
 <translation id="3838338534323494292">ಹೊಸ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
+<translation id="3856304145690230735">ಮೂಲ ಗೈರೊಸ್ಕೋಪ್</translation>
 <translation id="385832974417157471">ಶಟ್ ಡೌನ್ ಮಾಡುವ ಮೊದಲು, ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪವರ್‌ವಾಶ್ ಮಾಡಿ. ಸಾಧನವು ಮುಚ್ಚಳವನ್ನು ಹೊಂದಿದ್ದರೆ, ಪವರ್‌ವಾಶ್ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ ಮುಚ್ಚಳವನ್ನು ಮುಚ್ಚಬೇಡಿ. ಪವರ್‌ವಾಶ್ ಪೂರ್ಣಗೊಳ್ಳಲು ಒಂದು ನಿಮಿಷ ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="3858860766373142691">ಹೆಸರು</translation>
 <translation id="3865414814144988605">ರೆಸಲ್ಯೂಶನ್</translation>
+<translation id="3866249974567520381">ವಿವರಣೆ</translation>
 <translation id="387301095347517405">ನಿಮ್ಮ ಬ್ಯಾಟರಿಯನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಮಾಡಿರುವ ಸಂಖ್ಯೆ</translation>
 <translation id="3885327323343477505">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಬದಲಾಯಿಸಿ</translation>
 <translation id="3923184630988645767">ಡೇಟಾ ಬಳಕೆ</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
 <translation id="4483049906298469269">ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="4500213108254186382">ಲಿಡ್ ವೇಗೋತ್ಕರ್ಷಕ ಮಾಪಕ</translation>
 <translation id="4503223151711056411">ಲೆಫ್ಟ್ ಆ್ಯರೋ</translation>
 <translation id="4511264077854731334">ಪೋರ್ಟಲ್</translation>
 <translation id="4521826082652183069">ವಿಷಯದ ಪರ್ಯಾಯ ಹೆಸರಿನ ಹೊಂದಾಣಿಕೆ</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">ಸಿಮ್ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ</translation>
 <translation id="4562494484721939086">ಸೇವೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="4568938274596692027">ಇನ್‌ಸ್ಟಾಲ್ ಪೂರ್ಣಗೊಂಡಿದೆ. ಮರುಪ್ರಾರಂಭಿಸಲು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="4576943788798178439">ಸ್ಟೈಲಸ್ ಬೆಂಬಲ</translation>
 <translation id="458794348635939462">ಎಲ್ಲಾ ಹೋಸ್ಟ್‌ಗಳನ್ನು ಪರಿಹರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4593212453765072419">ಪ್ರಾಕ್ಸಿ ದೃಢೀಕರಣ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="4609350030397390689">ಕೀಬೋರ್ಡ್ ಹೊಳಪನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
@@ -536,6 +541,7 @@
 <translation id="5866840822086176774">ತುಂಬಾ ಪ್ರಬಲವಾಗಿದೆ</translation>
 <translation id="588258955323874662">ಪೂರ್ಣಪರದೆ</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="5898758006340607522">ಪವರ್ ಬಟನ್</translation>
 <translation id="5901630391730855834">ಹಳದಿ</translation>
 <translation id="5903200662178656908">ಸಾಧನವು ಕೀಬೋರ್ಡ್ ಮತ್ತು ಮೌಸ್‌ನ ಕಾಂಬೋ ಆಗಿದೆ.</translation>
 <translation id="5916084858004523819">ನಿಷೇಧಿಸಲಾಗಿದೆ</translation>
@@ -858,6 +864,7 @@
 <translation id="8919792139048574232">ಏನು ಸರಿಪಡಿಸಲಾಗಿದೆ ಎಂಬುದನ್ನು ನೋಡಿ</translation>
 <translation id="8919837981463578619">ವಿಫಲವಾಗಿದೆ - ಟ್ರೇ ಕಾಣೆಯಾಗಿದೆ</translation>
 <translation id="8923267550422472772">ರೀಸೆಟ್ ಮಾಡಬೇಕಾಗಿರುವ ತಿಂಗಳಿನ ದಿನ</translation>
+<translation id="8925613211674558308">Vpd ಕ್ಯಾಷ್ ಮಾಡಿರುವುದು</translation>
 <translation id="8928727111548978589">ವಿಫಲವಾಗಿದೆ - ಕಾಗದ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="8930521118335213258">ಪೀಯರ್</translation>
 <translation id="8930622219860340959">ವೈರ್‌ಲೆಸ್</translation>
@@ -899,6 +906,7 @@
 <translation id="922179502584117429">ಪ್ರಸ್ತುತ ಆವೃತ್ತಿಯು <ph name="VERSION_NUMBER" /> ಹಳೆಯದಾಗಿದೆ</translation>
 <translation id="932327136139879170">ಹೋಮ್</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="952992212772159698">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="960719561871045870">ಆಪರೇಟರ್ ಕೋಡ್</translation>
 <translation id="982713511914535780">ಡಿಸ್‌ಚಾರ್ಜ್‌ ಪರೀಕ್ಷೆಯನ್ನು ರನ್‌ ಮಾಡಿ</translation>

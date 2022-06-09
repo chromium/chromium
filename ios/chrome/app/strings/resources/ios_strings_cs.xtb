@@ -65,6 +65,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1434356225517321998">Váš prohlížeč je spravován. <ph name="BEGIN_LINK" />Podrobnosti<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Skrýt heslo</translation>
 <translation id="145015347812617860">Počet položek: <ph name="COUNT" /></translation>
+<translation id="1450170672351507823">Je zapnutá standardní ochrana. Ještě vyšší zabezpečení poskytuje Pokročilá ochrana.</translation>
 <translation id="149095475893949513">Tento web se pokouší stáhnout profil konfigurace.</translation>
 <translation id="1491277525950327607">Nastavení můžete přepnout dvojitým klepnutím</translation>
 <translation id="1492417797159476138">Toto uživatelské jméno jste pro tento web už uložili</translation>
@@ -162,6 +163,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="236977714248711277">Weby nemohou používat soubory cookie ke zlepšování prostředí při prohlížení, například si pomocí nich nemohou pamatovat vaše přihlášení a položky v nákupním košíku.
 
 Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi různými weby, například kvůli personalizaci reklam.</translation>
+<translation id="2375243552872247702">Sledujte obsah pro vás</translation>
 <translation id="2381405137052800939">Základní nastavení</translation>
 <translation id="2386793615875593361">Vybrána 1 fotka</translation>
 <translation id="2421004566762153674">Blokování souborů cookie třetích stran</translation>
@@ -601,6 +603,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6136914049981179737">před chvílí</translation>
 <translation id="6144589619057374135">Otevřít ${url} v anonymním režimu</translation>
 <translation id="6149061208933997199">Použít heslo</translation>
+<translation id="6152406514676263192">Synchronizujte si nejrelevantnější obsah podle svých zájmů.</translation>
 <translation id="6159839020698489198">volitelné</translation>
 <translation id="6177442314419606057">Hledat v Chromu</translation>
 <translation id="6184086493125982861">Zobrazit karty</translation>
@@ -738,6 +741,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7099761977003084116">Nedávno použité karty</translation>
 <translation id="7102005569666697658">Stahování… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Skrýt</translation>
+<translation id="7108762695052995889">Navštívit web</translation>
 <translation id="7133798577887235672">Celé jméno</translation>
 <translation id="7136892417564438900">Kamera je nedostupná</translation>
 <translation id="7153999225810839758">Čtení na <ph name="TIME" /> min</translation>
@@ -748,6 +752,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7189598951263744875">Sdílet...</translation>
 <translation id="7192050974311852563">Začít protokolovat</translation>
 <translation id="7203585745079012652">Vyslovovat odpovědi</translation>
+<translation id="7207023858769244910">Proveďte synchronizaci a dostávejte obsah podle svých zájmů.</translation>
 <translation id="7207383424303353046">Novinka: Nastavte si Chrome jako výchozí prohlížeč a otevírejte weby automaticky v Chromu. <ph name="BEGIN_LINK" />Otevřít nastavení<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Neplatná přezdívka karty</translation>
 <translation id="722454870747268814">Nová anonymní karta</translation>

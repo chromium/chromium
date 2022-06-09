@@ -55,10 +55,6 @@
 <translation id="1247519845643687288">אפליקציות אחרונות</translation>
 <translation id="1252999807265626933">טעינה מ-<ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">מה מזג האוויר?</translation>
-<translation id="1262870540683925850">‏<ph name="START_TIME" /> עד 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. צריך לבחור אירוע כדי לראות פרטים נוספים ביומן Google.</translation>
 <translation id="1267032506238418139">שינוי מקש קיצור</translation>
 <translation id="1269405891096105529">אין תמיכה בציוד היקפי במצב אורח</translation>
 <translation id="1270290102613614947">המקלדת שמופיעה במסך מושבתת</translation>
@@ -124,6 +120,7 @@
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1632985212731562677">ניתן להשבית את התכונה 'גישה באמצעות מתג' דרך 'הגדרות' &gt; 'נגישות'.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> מכשירים</translation>
+<translation id="1639239467298939599">בטעינה</translation>
 <translation id="1654477262762802994">הפעלה של שאילתה קולית</translation>
 <translation id="1668469839109562275">‏רשתות VPN מובנות</translation>
 <translation id="1677472565718498478">זמן נותר - <ph name="TIME" /></translation>
@@ -239,6 +236,7 @@
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2367186422933365202">‏לא ניתן להיכנס אל ה-Chromebook</translation>
 <translation id="2369165858548251131">"שלום" בסינית</translation>
+<translation id="2375445874393996153">‏אין יותר תמיכה בחיפוש של מה שמוצג במסך באמצעות Google Assistant.</translation>
 <translation id="2390318262976603432">הגדרות שילוב של שפה ואזור</translation>
 <translation id="240006516586367791">פקדי מדיה</translation>
 <translation id="2402411679569069051">‏כדי לבטל את נעילת ה-Chromebook, עליך להשתמש בטביעת האצבע או לבטל את נעילת הטלפון שלך</translation>
@@ -1048,7 +1046,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">תבוצע חזרה לרזולוציה הקודמת בעוד <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">רענון</translation>
-<translation id="718361511487535372">‏פתיחה ביומן Google</translation>
 <translation id="7188494361780961876">התפריט הועבר לפינה הימנית העליונה של המסך.</translation>
 <translation id="7189412385142492784">מה המרחק בין כדור הארץ לנוגה</translation>
 <translation id="7198435252016571249">המצלמה מוצמדת לפינה השמאלית התחתונה. התנגשות עם תצוגת המערכת.</translation>

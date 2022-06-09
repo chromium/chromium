@@ -2936,14 +2936,6 @@
       デバイスが管理対象外またはユーザーが 1 人のみの場合、このポリシーは無視され、通知が常に表示されます。
 
       管理対象デバイスに複数のユーザー アカウントがある場合は、このポリシーを有効に設定しているときのみ通知が表示されます。</translation>
-<translation id="4293593564662654474">このポリシーでは、First-Party Sets 機能からオプトアウトするよう指定できます。
-
-                  このポリシーを未設定のままにした場合や有効に設定した場合、First-Party Sets 機能が有効になります。
-
-                  このポリシーを無効に設定した場合、First-Party Sets 機能は無効になります。
-
-                  この First-Party Sets 機能のステータスに基づいて、Chrome で First-Party Sets のリストを取得するかどうかが決まります。
-                  また、Chrome で First-Party Sets 関連の機能（「SameParty」の Cookie 属性など）をサポートするかどうかも決まります。</translation>
 <translation id="4311195029067684288">フル</translation>
 <translation id="4313767483634435271">デバイスで指定されたホルダーの MAC アドレス</translation>
 <translation id="4314538398999793073">Kerberos 認証時に CNAME 検索を無効にする</translation>

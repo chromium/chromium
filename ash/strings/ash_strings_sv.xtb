@@ -31,6 +31,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Kopplade enheter</translation>
 <translation id="1165712434476988950">Enheten måste startas om för att uppdateringen ska tillämpas.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Det kanske inte går att ansluta skärmar korrekt med den här USB-C-kabeln</translation>
 <translation id="1175572348579024023">Scrolla</translation>
 <translation id="1178581264944972037">Paus</translation>
@@ -55,10 +56,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1247519845643687288">Senaste apparna</translation>
 <translation id="1252999807265626933">Laddar från <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Vad är det för väder?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> till 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Välj för att visa fler uppgifter i Google Kalender.</translation>
 <translation id="1267032506238418139">Kortkommandot har ändrats</translation>
 <translation id="1269405891096105529">Kringutrustningen stöds inte i gästläget</translation>
 <translation id="1270290102613614947">Skärmen på tangentbordet har inaktiverats</translation>
@@ -124,6 +121,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
+<translation id="1639239467298939599">Läser in</translation>
 <translation id="1654477262762802994">Säg en sökfråga</translation>
 <translation id="1668469839109562275">Inbyggt VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> kvar</translation>
@@ -239,6 +237,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2367186422933365202">Det går inte att logga in på Chromebook</translation>
 <translation id="2369165858548251131">”Hej” på kinesiska</translation>
+<translation id="2375445874393996153">Det går inte längre att söka efter vad som visas på skärmen med Google Assistent.</translation>
 <translation id="2390318262976603432">Inställningar av språkkod</translation>
 <translation id="240006516586367791">Mediekontroller</translation>
 <translation id="2402411679569069051">Använd ditt fingeravtryck eller lås upp telefonen om du vill låsa upp Chromebook</translation>
@@ -1048,7 +1047,6 @@ Nyligen installerad</translation>
 <translation id="7165278925115064263">Alt + Skift + K</translation>
 <translation id="7168224885072002358">Återgår till den gamla upplösningen om <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Uppdatera</translation>
-<translation id="718361511487535372">Öppna i Google Kalender</translation>
 <translation id="7188494361780961876">Menyn har flyttats till skärmens övre vänstra hörn.</translation>
 <translation id="7189412385142492784">Hår långt är det till Venus</translation>
 <translation id="7198435252016571249">Kameran har fästs i det nedre högra hörnet. Konflikt med systemyta.</translation>

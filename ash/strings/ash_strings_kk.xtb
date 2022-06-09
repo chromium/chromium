@@ -55,10 +55,6 @@
 <translation id="1247519845643687288">Соңғы қолданбалар</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> арқылы зарядтау</translation>
 <translation id="1255033239764210633">Ауа райы қандай?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> бастап 
-        <ph name="END_TIME" /> дейін, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Google Calendar қызметінде іс-шара туралы толығырақ мәлімет алу үшін оны таңдаңыз.</translation>
 <translation id="1267032506238418139">Таңбаша өзгерісі</translation>
 <translation id="1269405891096105529">Қонақ режимінде перифериялық құрылғыға қолдау көрсетілмейді.</translation>
 <translation id="1270290102613614947">Экрандағы пернетақта өшірілді</translation>
@@ -124,6 +120,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Switch Access функциясын "Параметрлер &gt; Accessibility" бөлімінен өшіруге болады.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> құрылғы</translation>
+<translation id="1639239467298939599">Жүктелуде</translation>
 <translation id="1654477262762802994">Дауыстық сұрауды бастау</translation>
 <translation id="1668469839109562275">Ендірілген VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> қалды</translation>
@@ -239,6 +236,7 @@
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2367186422933365202">Chromebook құрылғысына кіру мүмкін емес.</translation>
 <translation id="2369165858548251131">Қытай тілінде "Сәлем" қалай болады?</translation>
+<translation id="2375445874393996153">Google Assistant арқылы экранда не тұрғанын іздеу бұдан былай қолжетімсіз.</translation>
 <translation id="2390318262976603432">Тіл параметрлері</translation>
 <translation id="240006516586367791">Мультимедианы басқару элементтері</translation>
 <translation id="2402411679569069051">Chromebook құлпын ашу үшін саусақ ізін пайдаланыңыз немесе телефон құлпын ашыңыз.</translation>
@@ -1048,7 +1046,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> уақыт ішінде ескі ажыратымдылыққа ауысады</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
-<translation id="718361511487535372">Google Calendar арқылы ашу</translation>
 <translation id="7188494361780961876">Мәзір экранның жоғарғы сол жақ бұрышына жылжытылды.</translation>
 <translation id="7189412385142492784">Шолпан қаншалықты алыс орналасқан?</translation>
 <translation id="7198435252016571249">Камера төменгі оң жақ бұрышқа ауыстырылды. Жүйе платформасына қатысты қарама-қайшылық туындады.</translation>

@@ -65,6 +65,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1434356225517321998">Votre navigateur est géré. <ph name="BEGIN_LINK" />Détails<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Masquer le mot de passe</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> éléments</translation>
+<translation id="1450170672351507823">La protection standard est activée. Pour un niveau de sécurité supérieur, activez la protection renforcée.</translation>
 <translation id="149095475893949513">Ce site Web essaie de télécharger un profil de configuration.</translation>
 <translation id="1491277525950327607">Appuyer deux fois pour activer/désactiver le paramètre</translation>
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
@@ -738,6 +739,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7099761977003084116">Onglets récents</translation>
 <translation id="7102005569666697658">Téléchargement… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Masquer</translation>
+<translation id="7108762695052995889">Visiter le site</translation>
 <translation id="7133798577887235672">Nom complet</translation>
 <translation id="7136892417564438900">Appareil photo non disponible</translation>
 <translation id="7153999225810839758">Temps de lecture : <ph name="TIME" /> min</translation>

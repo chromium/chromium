@@ -706,7 +706,6 @@
 <translation id="2854764410992194509">Интернэт үйлчилгээ нийлүүлэгч (ISP)</translation>
 <translation id="2856444702002559011">Халдагчид <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-с таны нууц үг, мессеж, кредит карт зэрэг мэдээллийг хулгайлахаар оролдож байж болзошгүй. <ph name="BEGIN_LEARN_MORE_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Энэ сайт төвөгтэй эсвэл хуурамч зар харуулдаг.</translation>
-<translation id="286512204874376891">Виртуал карт нь таныг болзошгүй залилангаас хамгаалахад туслахын тулд таны жинхэнэ картыг далдалдаг. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Нөхөрсөг</translation>
 <translation id="28761159517501904">Кино</translation>
 <translation id="2876489322757410363">Гадны аппликэйшнээр төлбөр төлөхийн тулд Нууцлалтай горимоос гарч байна. Үргэлжлүүлэх үү?</translation>
@@ -1340,7 +1339,6 @@
 <translation id="4607603470419975064">Chrome-н зөвлөгөө харах товчлуур, Chrome-н онцлогуудын талаар мэдэж авахын тулд Enter дээр дарна уу</translation>
 <translation id="4607608436550361748">Chrome-н зөвлөгөөг харах</translation>
 <translation id="4617273035598175554">График, анимацийн программ хангамж</translation>
-<translation id="4627165777145349100">Энэ хуудасны тухай дэлгэрэнгүй</translation>
 <translation id="4627675673814409125">Энэ бодлогыг Chrome-н профайлын түвшинд тохируулах боломжгүй бөгөөд үл хэрэгсэнэ.</translation>
 <translation id="4628948037717959914">Зураг</translation>
 <translation id="4631649115723685955">Бэлэн мөнгө олгох маягтыг холбосон</translation>
@@ -1875,7 +1873,6 @@
 <translation id="6061154937977953833">Бөх</translation>
 <translation id="6064217302520318294">Дэлгэцийн түгжээ</translation>
 <translation id="6064602040258638498">Купон, хөнгөлөлтийн санал</translation>
-<translation id="6078813287646374487">Энэ хуудасны талаар нэмэлт мэдээлэл харах</translation>
 <translation id="6080696365213338172">Та админ-аас өгсөн гэрчилгээг ашиглан контент руу нэвтэрсэн байна. Таны <ph name="DOMAIN" /> руу оруулсан өгөгдлийг админаас хориглож болно.</translation>
 <translation id="6087312102907839798">Холбоотой хайлтууд</translation>
 <translation id="6094273045989040137">Тэмдэглэгээ хийх</translation>
@@ -2798,6 +2795,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> бол <ph name="ORIGIN" />-д зориулсан таны код</translation>
 <translation id="874918643257405732">Энэ табыг тэмдэглэх</translation>
 <translation id="8751426954251315517">Дараагийн удаа дахин оролдоно уу</translation>
+<translation id="8757526089434340176">Google Pay-н санал боломжтой</translation>
 <translation id="8758885506338294482">Цахим спорт</translation>
 <translation id="8759274551635299824">Энэ картны хугацаа дууссан байна</translation>
 <translation id="87601671197631245">Энэ сайт аюулгүй байдлын хуучирсан тохируулга ашиглаж байгаа тул таны мэдээллийг (жишээлбэл нууц үг, мессеж эсвэл кредит карт) энэ сайт руу илгээх үед задруулж болзошгүй.</translation>

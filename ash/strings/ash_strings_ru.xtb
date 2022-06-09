@@ -55,10 +55,6 @@
 <translation id="1247519845643687288">Недавние приложения</translation>
 <translation id="1252999807265626933">Подключен источник питания: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какая сейчас погода?</translation>
-<translation id="1262870540683925850">С <ph name="START_TIME" /> до
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Выберите мероприятие, чтобы посмотреть сведения о нем в Google Календаре.</translation>
 <translation id="1267032506238418139">Изменение сочетания клавиш</translation>
 <translation id="1269405891096105529">Периферийные устройства в гостевом режиме не поддерживаются.</translation>
 <translation id="1270290102613614947">Экранная клавиатура отключена</translation>
@@ -124,6 +120,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="1637505162081889933">Устройств: <ph name="NUM_DEVICES" /></translation>
+<translation id="1639239467298939599">Загрузка</translation>
 <translation id="1654477262762802994">Произнесите запрос</translation>
 <translation id="1668469839109562275">Встроенная VPN</translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
@@ -1049,7 +1046,6 @@
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Возврат к предыдущему разрешению через <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Обновить</translation>
-<translation id="718361511487535372">Открыть в Google Календаре</translation>
 <translation id="7188494361780961876">Меню перемещено в левый верхний угол экрана.</translation>
 <translation id="7189412385142492784">Расстояние до Венеры</translation>
 <translation id="7198435252016571249">Окно предварительного просмотра камеры привязано к правому нижнему углу, так как перекрывало элементы системного интерфейса</translation>

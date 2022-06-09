@@ -706,7 +706,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2854764410992194509">Davatelji internetskih usluga (ISP-ovi)</translation>
 <translation id="2856444702002559011">Napadači možda pokušavaju ukrasti vaše podatke s web-lokacije <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (na primjer zaporke, poruke ili brojeve kreditnih kartica). <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Ova web-lokacija prikazuje ometajuće ili obmanjujuće oglase.</translation>
-<translation id="286512204874376891">Virtualna kartica skriva vašu stvarnu karticu kako bi vas bolje zaštitila od potencijalne prijevare. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Prijateljski</translation>
 <translation id="28761159517501904">Filmovi</translation>
 <translation id="2876489322757410363">Napuštate anonimni način rada da biste platili putem vanjske aplikacije. Želite li nastaviti?</translation>
@@ -1339,7 +1338,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4607603470419975064">Gumb Pogledajte Chromeove savjete, pritisnite Enter da biste saznali više o Chromeovim značajkama</translation>
 <translation id="4607608436550361748">Pogledajte Chromeove savjete</translation>
 <translation id="4617273035598175554">Softver za grafiku i animaciju</translation>
-<translation id="4627165777145349100">Više o ovoj stranici</translation>
 <translation id="4627675673814409125">To se pravilo ne može postaviti na razini profila u Chromeu i zanemarit će se.</translation>
 <translation id="4628948037717959914">Fotografija</translation>
 <translation id="4631649115723685955">Povezano s gotovinskim povratom</translation>
@@ -1874,7 +1872,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6061154937977953833">Hrvanje</translation>
 <translation id="6064217302520318294">Zaključavanje zaslona</translation>
 <translation id="6064602040258638498">Kuponi i posebne ponude</translation>
-<translation id="6078813287646374487">Prikaži više informacija o ovoj stranici</translation>
 <translation id="6080696365213338172">Pristupili ste sadržaju pomoću certifikata koji je izdao administrator. Administrator može presresti podatke koje dostavljate domeni <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Povezana pretraživanja</translation>
 <translation id="6094273045989040137">Dodaj bilješku</translation>
@@ -2799,6 +2796,7 @@ Dodatne pojedinosti:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> je vaš kôd za <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Označi ovu karticu</translation>
 <translation id="8751426954251315517">Pokušajte ponovo drugi put</translation>
+<translation id="8757526089434340176">Dostupna je ponuda Google Paya</translation>
 <translation id="8758885506338294482">Natjecateljske videoigre</translation>
 <translation id="8759274551635299824">Ta je kartica istekla</translation>
 <translation id="87601671197631245">Ova web-lokacija upotrebljava zastarjelu sigurnosnu konfiguraciju, pa bi vaši podaci (na primjer zaporke, poruke ili brojevi kreditnih kartica) mogli biti otkriveni kad se šalju na nju.</translation>

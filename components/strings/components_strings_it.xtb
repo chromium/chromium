@@ -703,7 +703,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2854764410992194509">Provider di servizi Internet (ISP)</translation>
 <translation id="2856444702002559011">Gli utenti malintenzionati potrebbero provare a carpire le tue informazioni da <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (ad esempio, password, messaggi o carte di credito). <ph name="BEGIN_LEARN_MORE_LINK" />Ulteriori informazioni<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Questo sito mostra annunci invasivi o fuorvianti.</translation>
-<translation id="286512204874376891">Una carta virtuale nasconde la tua carta effettiva per proteggerti meglio da potenziali attività fraudolente. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Amichevole</translation>
 <translation id="28761159517501904">Film</translation>
 <translation id="2876489322757410363">Per procedere al pagamento tramite un'applicazione esterna, uscirai dalla modalità di navigazione in incognito. Continuare?</translation>
@@ -1333,7 +1332,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4607603470419975064">Pulsante Leggi i suggerimenti di Chrome, premi Invio per scoprire di più sulle funzionalità di Chrome</translation>
 <translation id="4607608436550361748">Leggi i suggerimenti di Chrome</translation>
 <translation id="4617273035598175554">Software di grafica e animazione</translation>
-<translation id="4627165777145349100">Scopri di più su questa pagina</translation>
 <translation id="4627675673814409125">Questo criterio non può essere impostato a livello di profilo Chrome e verrà ignorato.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Rimborso collegato</translation>
@@ -1867,7 +1865,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6061154937977953833">Wrestling</translation>
 <translation id="6064217302520318294">Blocco schermo</translation>
 <translation id="6064602040258638498">Coupon e offerte di sconti</translation>
-<translation id="6078813287646374487">Mostra altre informazioni su questa pagina</translation>
 <translation id="6080696365213338172">Hai raggiunto i contenuti utilizzando un certificato fornito dall'amministratore. I dati che fornisci a <ph name="DOMAIN" /> possono essere intercettati dal tuo amministratore.</translation>
 <translation id="6087312102907839798">Ricerche correlate</translation>
 <translation id="6094273045989040137">Consente di inserire l'annotazione</translation>
@@ -2791,6 +2788,7 @@ Ulteriori dettagli:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> è il tuo codice per <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Aggiungi questa scheda ai preferiti</translation>
 <translation id="8751426954251315517">Riprova la prossima volta</translation>
+<translation id="8757526089434340176">Offerta Google Pay disponibile</translation>
 <translation id="8758885506338294482">Videogiochi competitivi</translation>
 <translation id="8759274551635299824">La carta è scaduta</translation>
 <translation id="87601671197631245">Le tue informazioni (ad esempio password, messaggi o numeri di carte di credito) inviate a questo sito potrebbero essere a rischio, poiché il sito utilizza una configurazione di sicurezza obsoleta.</translation>

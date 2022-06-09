@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Cysylltiad Rhyngrwyd uniongyrchol</translation>
 <translation id="1272293450992660632">Nid yw'r gwerthoedd PIN yn cyfateb.</translation>
+<translation id="127650757582748357">Archif gywasgedig BZIP2</translation>
 <translation id="1280820357415527819">Wrthi'n chwilio am rwydweithiau symudol</translation>
 <translation id="1291603679744561561">SIM wedi'i Gloi</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Caws</translation>
 <translation id="2781645665747935084">Belgaidd</translation>
 <translation id="2782104745158847185">Bu gwall wrth osod yr ap Linux</translation>
+<translation id="2788520643285360081">Archif 7-Zip</translation>
 <translation id="2803375539583399270">Rhowch y PIN</translation>
 <translation id="2820957248982571256">Wrthi'n sganio...</translation>
+<translation id="2822595620066756134">Archif gywasgedig GZIP</translation>
 <translation id="2830077785865012357">Zhuyin Tseinëeg</translation>
 <translation id="2843806747483486897">Newid y math ffeil diofyn…</translation>
 <translation id="2850124913210091882">Gwneud copi wrth gefn</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Lithwaneg</translation>
 <translation id="3587482841069643663">Pob eitem</translation>
 <translation id="3592251141500063301">Methu â gwneud <ph name="FILE_NAME" /> ar gael all-lein</translation>
+<translation id="3593874215226880809">Archif gywasgedig LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Ffrangeg Canada</translation>
 <translation id="3606220979431771195">Twrceg-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">Canslo <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Heb ei weithredu <ph name="CONNECTION_STATUS" />, Cryfer Signal <ph name="SIGNAL_STRENGTH" />%, Manylion</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3703620396751288986">Archif ZIP</translation>
 <translation id="3726463242007121105">Ni ellir agor y ddyfais hon oherwydd na chefnogir ei system ffeiliau.</translation>
 <translation id="3727148787322499904">Bydd newid y gosodiad hwn yn effeithio ar yr holl rwydweithiau cyffredin</translation>
 <translation id="3737576078404241332">Tynnu o'r bar ochr</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Tsieceg gyda bysellfwrdd Qwerty</translation>
 <translation id="4656777537938206294">Gwneud ffeiliau ar gael all-lein</translation>
 <translation id="4658782175094886150">Person yn yr eira</translation>
+<translation id="4661996069183330363">Archif TAR</translation>
 <translation id="4669606053856530811">Bydd aelodau '<ph name="SOURCE_NAME" />' yn colli mynediad oni bai bod yr eitemau hyn yn cael eu rhannu â nhw.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Swedeg</translation>
@@ -929,6 +935,7 @@
 <translation id="8903931173357132290">Graddedig</translation>
 <translation id="8912078710089354287">Ci yn siglo'i gynffon</translation>
 <translation id="8919081441417203123">Daneg</translation>
+<translation id="8965273390142984105">Archif gywasgedig LZOP</translation>
 <translation id="8965697826696209160">Nid oes digon o le.</translation>
 <translation id="8997962250644902079">Pinyin Tseinëeg (Traddodiadol)</translation>
 <translation id="9003940392834790328">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Rheolir gan eich Gweinyddwr, Manylion</translation>

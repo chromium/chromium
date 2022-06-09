@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">કૅલેન્ડર</translation>
 <translation id="1153356358378277386">જોડી કરેલા ઉપકરણો</translation>
 <translation id="1165712434476988950">અપડેટ લાગુ કરવા માટે ડિવાઇસને ફરી શરૂ કરવાની જરૂર છે.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">તમારો USB-C કેબલ ડિસ્પ્લે સાથે કદાચ યોગ્ય રીતે કનેક્ટ ન થાય</translation>
 <translation id="1175572348579024023">સ્ક્રોલ કરો</translation>
 <translation id="1178581264944972037">થોભો</translation>
@@ -55,10 +56,6 @@
 <translation id="1247519845643687288">તાજેતરની ઍપ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> પરથી ચાર્જ કરી રહ્યાં છે</translation>
 <translation id="1255033239764210633">હવામાન કેવું છે?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" />થી 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Google Calendarમાં વધુ વિગતો માટે પસંદ કરો.</translation>
 <translation id="1267032506238418139">શૉર્ટકટ ફેરફાર</translation>
 <translation id="1269405891096105529">અતિથિ મોડમાં પેરિફેરલને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="1270290102613614947">ઓન-સ્ક્રીન કીબોર્ડ અક્ષમ કર્યું</translation>
@@ -124,6 +121,7 @@
 <translation id="1620510694547887537">કૅમેરા</translation>
 <translation id="1632985212731562677">સ્વિચ ઍક્સેસને સેટિંગ &gt; ઍક્સેસિબિલિટીમાંથી બંધ કરી શકાય છે.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ડિવાઇસ</translation>
+<translation id="1639239467298939599">લોડ કરી રહ્યું છે</translation>
 <translation id="1654477262762802994">વૉઇસ ક્વેરી શરૂ કરો</translation>
 <translation id="1668469839109562275">બિલ્ટ-ઇન VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> બાકી</translation>
@@ -1049,7 +1047,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">જૂના રિઝોલ્યુશન પર પાછા ફરી રહ્યાં છે <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
-<translation id="718361511487535372">Google કૅલેન્ડરમાં ખોલો</translation>
 <translation id="7188494361780961876">મેનૂને સ્ક્રીનની ઉપરના ડાબા ખૂણામાં ખસેડ્યું.</translation>
 <translation id="7189412385142492784">શુક્રનો ગ્રહ પૃથ્વીથી કેટલી દૂરીએ?</translation>
 <translation id="7198435252016571249">કૅમેરાને નીચેના જમણા ખૂણામાં સ્નેપ કર્યો. સિસ્ટમની સપાટીને ઓવરલેપ કરે છે.</translation>

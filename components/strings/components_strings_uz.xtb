@@ -705,7 +705,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2854764410992194509">Internet provayderlar (ISP)</translation>
 <translation id="2856444702002559011">Firibgarlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytidan ma’lumotlaringizni (parol, xabar va kredit karta ma’lumotlari kabilarni) o‘g‘irlashga urinayotgan bo‘lishi mumkin. <ph name="BEGIN_LEARN_MORE_LINK" />Batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Bu saytda yoqimsiz yoki befoyda reklamalar chiqadi.</translation>
-<translation id="286512204874376891">Virtual karta haqiqiy kartani ehtimoliy firibgarlikdan himoya qiladi. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Doʻstona</translation>
 <translation id="28761159517501904">Filmlar</translation>
 <translation id="2876489322757410363">Tashqi ilova orqali toʻlash uchun inkognito rejimidan chiqib ketasiz. Davom etasizmi?</translation>
@@ -1334,7 +1333,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4607603470419975064">Chrome maslahatlari tugmasi, Chrome funksiyalari bilan tanishish uchun Enter tugmasini bosing</translation>
 <translation id="4607608436550361748">Chrome maslahatlarini ochish</translation>
 <translation id="4617273035598175554">Grafika va animatsiya dasturlari</translation>
-<translation id="4627165777145349100">Bu sahifa haqida batafsil</translation>
 <translation id="4627675673814409125">Bu qoidani Chrome profili darajasida tatbiq etib boʻlmaydi va eʼtiborsiz qoldiriladi.</translation>
 <translation id="4628948037717959914">Rasm</translation>
 <translation id="4631649115723685955">Keshbek ulandi</translation>
@@ -1869,7 +1867,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6061154937977953833">Kurash</translation>
 <translation id="6064217302520318294">Ekran qulfi</translation>
 <translation id="6064602040258638498">Kupon va chegirma takliflari</translation>
-<translation id="6078813287646374487">Bu sahifa haqida batafsil axborot chiqarish</translation>
 <translation id="6080696365213338172">Siz administrator bergan sertifikat bilan kontentga kirdingiz. <ph name="DOMAIN" /> domeniga uzatiladigan ma’lumotlarni administratoringiz tutishi mumkin.</translation>
 <translation id="6087312102907839798">Aloqador qidiruvlar</translation>
 <translation id="6094273045989040137">Izohlash</translation>
@@ -2792,6 +2789,7 @@ Batafsil axborot:
 <translation id="8742371904523228557"><ph name="ORIGIN" /> sayti uchun tasdiq kodingiz: <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Bu varaqni bukmarklash</translation>
 <translation id="8751426954251315517">Keyingi safar qayta urining</translation>
+<translation id="8757526089434340176">Google Pay taklifi mavjud</translation>
 <translation id="8758885506338294482">Raqobatbardosh video oʻyinlar</translation>
 <translation id="8759274551635299824">Kredit kartaning amal qilish muddati tugagan</translation>
 <translation id="87601671197631245">Bu sayt eskirgan xavfsizlik sozlamasidan foydalanadi. maʼlumotlaringiz (masalan, parollar, xabarlar va kredit kartalari) shu saytga yuborilganda ular xavf ostida qolishi mumkin.</translation>

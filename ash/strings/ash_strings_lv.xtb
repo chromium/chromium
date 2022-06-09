@@ -31,6 +31,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1150989369772528668">Kalendārs</translation>
 <translation id="1153356358378277386">Pārī savienotās ierīces</translation>
 <translation id="1165712434476988950">Lai lietotu atjauninājumu, ir jārestartē ierīce.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" /> — <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Iespējams, jūsu USB-C vads nevarēs nodrošināt pareizu savienojumu ar displejiem.</translation>
 <translation id="1175572348579024023">Ritināt</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
@@ -55,10 +56,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1247519845643687288">Pēdējās izmantotās lietotnes</translation>
 <translation id="1252999807265626933">Uzlādes avots: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kādi ir laikapstākļi?</translation>
-<translation id="1262870540683925850">No <ph name="START_TIME" /> līdz 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Atlasiet pasākumu, lai skatītu plašāku informāciju Google kalendārā.</translation>
 <translation id="1267032506238418139">Īsinājumtaustiņš mainīts</translation>
 <translation id="1269405891096105529">Perifērā ierīce netiek atbalstīta viesa režīmā.</translation>
 <translation id="1270290102613614947">Ekrāna tastatūra atspējota</translation>
@@ -124,6 +121,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Slēdžu piekļuvi var atspējot sadaļā Iestatījumi &gt; Pieejamība.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ierīces</translation>
+<translation id="1639239467298939599">Notiek ielāde</translation>
 <translation id="1654477262762802994">Sākt balss vaicājumu</translation>
 <translation id="1668469839109562275">Iebūvēts VPN</translation>
 <translation id="1677472565718498478">Atlikušais laiks: <ph name="TIME" /></translation>
@@ -1049,7 +1047,6 @@ Jauna instalācija</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Iepriekšējā izšķirtspēja tiks atgriezta pēc <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
-<translation id="718361511487535372">Atvērt Google kalendārā</translation>
 <translation id="7188494361780961876">Izvēlne pārvietota uz ekrāna augšējo kreiso malu.</translation>
 <translation id="7189412385142492784">Cik tālu atrodas Venera?</translation>
 <translation id="7198435252016571249">Kamera pārnesta uz labo apakšējo stūri. Konflikts ar sistēmas virsmu.</translation>

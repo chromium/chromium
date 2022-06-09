@@ -214,7 +214,6 @@
 <translation id="2878387241690264070">Испразнета <ph name="RATE" /> за <ph name="NUM_SECONDS" /> секунди.</translation>
 <translation id="291142119251986300">Неквалификувани компоненти</translation>
 <translation id="2926057806159140518">Внесете корисничко име и лозинка или скенирајте ваш QR-код</translation>
-<translation id="2928420929544864228">Инсталирањето заврши.</translation>
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
 <translation id="3009958530611748826">Изберете папка за зачувување</translation>
 <translation id="3017079585324758401">Заднина</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">Пред да го исклучите, фабрички ресетирајте го уредот. Ако вашиот уред има капак, почекајте да заврши фабричкото ресетирање пред да го затворите капакот. Може да биде потребна цела минута за да заврши фабричкото ресетирање.</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3865414814144988605">Резолуција</translation>
+<translation id="3866249974567520381">Опис</translation>
 <translation id="387301095347517405">Колку пати батеријата поминала низ целосен циклус на полнење</translation>
 <translation id="3885327323343477505">Променете го заштитникот на екранот</translation>
 <translation id="3923184630988645767">Интернет</translation>
@@ -900,6 +900,7 @@
 <translation id="922179502584117429">Тековната верзија <ph name="VERSION_NUMBER" /> не е ажурна</translation>
 <translation id="932327136139879170">Дома</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="952992212772159698">Не е активиран</translation>
 <translation id="960719561871045870">Код на оператор</translation>
 <translation id="982713511914535780">Изврши тест за празнење</translation>

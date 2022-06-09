@@ -55,10 +55,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1247519845643687288">Aplicaciones recientes</translation>
 <translation id="1252999807265626933">Cargando a través de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">¿Qué tiempo hace?</translation>
-<translation id="1262870540683925850">De <ph name="START_TIME" /> a 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Selecciónalo para ver más detalles en Google Calendar.</translation>
 <translation id="1267032506238418139">Cambio de la combinación de teclas</translation>
 <translation id="1269405891096105529">No se puede usar el periférico en el modo Invitado</translation>
 <translation id="1270290102613614947">Teclado en pantalla inhabilitado</translation>
@@ -124,6 +120,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1632985212731562677">La accesibilidad con interruptores se puede inhabilitar en Configuración &gt; Accesibilidad.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
+<translation id="1639239467298939599">Cargando</translation>
 <translation id="1654477262762802994">Iniciar una consulta por voz</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
 <translation id="1677472565718498478">Queda: <ph name="TIME" /></translation>
@@ -239,6 +236,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2367186422933365202">No se puede iniciar sesión en tu Chromebook</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
+<translation id="2375445874393996153">Ya no es posible buscar lo que hay en la pantalla con el Asistente de Google.</translation>
 <translation id="2390318262976603432">Configuración regional</translation>
 <translation id="240006516586367791">Controles multimedia</translation>
 <translation id="2402411679569069051">Para desbloquear tu Chromebook, usa tu huella digital o desbloquea tu teléfono</translation>
@@ -1049,7 +1047,6 @@ Nueva instalación</translation>
 <translation id="7165278925115064263">Alt + Mayús + K</translation>
 <translation id="7168224885072002358">Restableciendo la resolución anterior en <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualizar</translation>
-<translation id="718361511487535372">Abrir en Google Calendar</translation>
 <translation id="7188494361780961876">Se ha movido el menú a la esquina superior izquierda de la pantalla.</translation>
 <translation id="7189412385142492784">¿A qué distancia está Venus?</translation>
 <translation id="7198435252016571249">Cámara ajustada a la esquina inferior derecha. Conflicto con la superficie del sistema.</translation>

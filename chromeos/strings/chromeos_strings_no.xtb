@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" />-enheten administreres av <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gjennomsnittlig (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Fjern</translation>
+<translation id="1190378975642195988">Akselerometer</translation>
 <translation id="1195447618553298278">Ukjent feil.</translation>
 <translation id="1196959502276349371">Versjon <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Spill av / sett på pause</translation>
@@ -214,7 +215,6 @@
 <translation id="2878387241690264070">Ladet ut <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="291142119251986300">Ikke-kvalifiserte komponenter</translation>
 <translation id="2926057806159140518">Oppgi brukernavn og passord, eller skann QR-koden din</translation>
-<translation id="2928420929544864228">Installasjonen er fullført.</translation>
 <translation id="3008341117444806826">OPPDATER</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="3017079585324758401">Bakgrunn</translation>
@@ -268,6 +268,7 @@
 <translation id="3484914941826596830">Ikke koble fra denne eksterne enheten eller slå av datamaskinen mens fastvaren oppdateres. Du kan minimere dette vinduet. Denne oppdateringen kan ta noen minutter, og det kan hende den eksterne enheten ikke fungerer i dette tidsrommet.</translation>
 <translation id="3486220673238053218">definisjon</translation>
 <translation id="3488065109653206955">Delvis aktivert</translation>
+<translation id="3492982278147736083">Lokkgyroskop</translation>
 <translation id="3517001332549868749">ChromeOS-oppdatering</translation>
 <translation id="3527036260304016759">Mislykket – ukjent feil</translation>
 <translation id="3532980081107202182">Omtrent <ph name="MIN_REMAINING" /> minutter igjen</translation>
@@ -301,9 +302,11 @@
 <translation id="3820172043799983114">Ugyldig PIN-kode</translation>
 <translation id="3838338534323494292">Nytt passord</translation>
 <translation id="385051799172605136">Tilbake</translation>
+<translation id="3856304145690230735">Basegyroskop</translation>
 <translation id="385832974417157471">Utfør en powerwash på enheten før du slår den av. Hvis enheten har lokk, må du vente til powerwashen er fullført før du lukker lokket. Det kan ta opptil et minutt å fullføre powerwashen.</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3865414814144988605">Oppløsning</translation>
+<translation id="3866249974567520381">Beskrivelse</translation>
 <translation id="387301095347517405">Antall ganger batteriet har gjennomgått en fullstendig ladesyklus</translation>
 <translation id="3885327323343477505">Bytt skjermsparer</translation>
 <translation id="3923184630988645767">Databruk</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Kom i gang</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for ikke-standardnettverket</translation>
+<translation id="4500213108254186382">Lokkakselerometer</translation>
 <translation id="4503223151711056411">Venstrepil</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Samsvarende alternativt emnenavn</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM-kortet er låst opp</translation>
 <translation id="4562494484721939086">Ingen tjeneste</translation>
 <translation id="4568938274596692027">Installasjonen er fullført. Klargjør for omstart …</translation>
+<translation id="4576943788798178439">Støtte for pekepenn</translation>
 <translation id="458794348635939462">Kunne ikke finne tilknytning til alle vertene</translation>
 <translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
 <translation id="4609350030397390689">Tastaturlysstyrke ned</translation>
@@ -537,6 +542,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5866840822086176774">Veldig sterk</translation>
 <translation id="588258955323874662">Fullskjerm</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
+<translation id="5898758006340607522">Av/på-knapp</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5903200662178656908">Enheten er en kombinasjon av tastatur og mus.</translation>
 <translation id="5916084858004523819">Forbudt</translation>
@@ -859,6 +865,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8919792139048574232">Se hva som er rettet</translation>
 <translation id="8919837981463578619">Mislykket – en skuff mangler</translation>
 <translation id="8923267550422472772">Dag i måneden for tilbakestilling</translation>
+<translation id="8925613211674558308">VPD-bufret</translation>
 <translation id="8928727111548978589">Mislykket – tom for papir</translation>
 <translation id="8930521118335213258">Motpart</translation>
 <translation id="8930622219860340959">Trådløs</translation>
@@ -900,6 +907,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="922179502584117429">Den gjeldende versjonen, <ph name="VERSION_NUMBER" />, er utdatert</translation>
 <translation id="932327136139879170">Gå til startsiden</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="952992212772159698">Ikke aktivert</translation>
 <translation id="960719561871045870">Operatørkode</translation>
 <translation id="982713511914535780">Kjør utladingstest</translation>

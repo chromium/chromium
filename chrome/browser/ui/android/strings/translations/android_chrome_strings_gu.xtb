@@ -587,6 +587,7 @@
 <translation id="4227318652298512614">તમને જોઈતી કોઈપણ સાઇટ ફૉલો કરો</translation>
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>
 <translation id="4248098802131000011">ડેટા ઉલ્લંઘનો અને અન્ય સુરક્ષા સંબંધિત સમસ્યાઓથી તમારા પાસવર્ડને સલામત રાખો</translation>
+<translation id="424864128008805179">Chromeમાંથી સાઇન આઉટ કરીએ?</translation>
 <translation id="4249955472157341256">નવીનતમ મુજબ સૉર્ટ કરો</translation>
 <translation id="4250229828105606438">સ્ક્રીનશૉટ</translation>
 <translation id="4256782883801055595">ઓપન સોર્સ લાઇસન્સ</translation>
@@ -654,7 +655,6 @@
 <translation id="4594952190837476234">આ ઑફલાઇન પેજ <ph name="CREATION_TIME" /> ના રોજનું છે અને તે ઑનલાઇન વર્ઝનથી અલગ હોઈ શકે છે.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ખોલો</translation>
 <translation id="4619564267100705184">આ તમે જ છો તેની ચકાસણી કરો</translation>
-<translation id="4627165777145349100">આ પેજ વિશે વધુ</translation>
 <translation id="4634124774493850572">પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{ચેડાં કરાયેલો 1 પાસવર્ડ}one{ચેડાં કરાયેલો # પાસવર્ડ}other{ચેડાં કરાયેલા # પાસવર્ડ}}</translation>
 <translation id="4650364565596261010">સિસ્ટમ ડિફૉલ્ટ</translation>
@@ -793,7 +793,6 @@
 <translation id="5342314432463739672">પરવાનગીની વિનંતી કરી</translation>
 <translation id="5355191726083956201">વિગતવાર સુરક્ષા ચાલુ છે</translation>
 <translation id="5368227114232678694">આ ડિવાઇસ પર ખાનગી રીતે બ્રાઉઝ કરવા માટે, છૂપો મોડ અજમાવી જુઓ</translation>
-<translation id="5371717687506906963">પ્રાઇવસી સૅન્ડબૉક્સનો સંકેત</translation>
 <translation id="5375577065097716013">Google Lens વડે છબી શોધો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">પ્રતિક્રિયા બદલાઈ ગઈ</translation>
 <translation id="5401851137404501592">આગળ વધવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું નામ, ઇમેઇલ ઍડ્રેસ અને પ્રોફાઇલ ફોટો આ સાઇટ સાથે શેર કરશે.</translation>

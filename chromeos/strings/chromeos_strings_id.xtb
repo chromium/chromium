@@ -214,7 +214,6 @@
 <translation id="2878387241690264070">Daya terpakai <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="291142119251986300">Komponen yang tidak memenuhi syarat</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan sandi atau pindai kode QR</translation>
-<translation id="2928420929544864228">Penginstalan selesai.</translation>
 <translation id="3008341117444806826">PERBARUI</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">Sebelum dimatikan, powerwash perangkat. Jika perangkat Anda memiliki penutup, tunggu sampai powerwash selesai sebelum menutupnya. Powerwash mungkin perlu waktu hingga satu menit untuk menyelesaikan prosesnya.</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3865414814144988605">Resolusi</translation>
+<translation id="3866249974567520381">Deskripsi</translation>
 <translation id="387301095347517405">Frekuensi baterai melalui siklus pengisian daya penuh</translation>
 <translation id="3885327323343477505">Ubah screensaver</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
@@ -430,6 +430,7 @@
 <translation id="4915052247106771211">Memilih opsi ini akan mereset perangkat ke setelan pabrik (Powerwash).</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4917889632206600977">Dihentikan - Kertas habis</translation>
+<translation id="491791267030419270">Tips menulis masukan</translation>
 <translation id="4921665434385737356">Terisi <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="4930320165497208503">Untuk menyiapkan atau memperbarui koneksi, buka <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tanggal</translation>
@@ -822,7 +823,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8660881923941176839">pound</translation>
 <translation id="8662671328352114214">Bergabung dengan jaringan <ph name="TYPE" /></translation>
 <translation id="8671972493856476349">Update ke <ph name="VERSION_NUMBER" /> &amp; mulai ulang</translation>
-<translation id="8675354002693747642">Kunci yang dibagikan sebelumnya</translation>
+<translation id="8675354002693747642">Pre-shared key</translation>
 <translation id="8677859815076891398">Tidak ada album. Buat album di <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8680431479333800907">Perangkat akan digunakan oleh pengguna yang sama</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gunakan tombol Panah kiri atau kanan untuk mengelola fitur ini.</translation>
@@ -899,6 +900,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="922179502584117429">Versi <ph name="VERSION_NUMBER" /> saat ini perlu diupdate</translation>
 <translation id="932327136139879170">Beranda</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Kirim masukan</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>
 <translation id="960719561871045870">Kode operator</translation>
 <translation id="982713511914535780">Jalankan pengujian Pengosongan Daya Baterai</translation>

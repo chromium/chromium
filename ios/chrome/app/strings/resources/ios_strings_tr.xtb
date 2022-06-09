@@ -65,6 +65,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1434356225517321998">Tarayıcınız yönetilmektedir. <ph name="BEGIN_LINK" />Ayrıntılar<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Şifreyi Gizle</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> öğe</translation>
+<translation id="1450170672351507823">Standart koruma açık. Daha fazla güvenlik için gelişmiş korumayı kullanın.</translation>
 <translation id="149095475893949513">Bu web sitesi bir yapılandırma profili indirmeye çalışıyor.</translation>
 <translation id="1491277525950327607">Ayarı açıp kapatmak için iki kez dokunun</translation>
 <translation id="1492417797159476138">Bu site için bu kullanıcı adını zaten kaydettiniz</translation>
@@ -738,6 +739,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7099761977003084116">Son Sekmeler</translation>
 <translation id="7102005569666697658">İndiriliyor… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Gizle</translation>
+<translation id="7108762695052995889">Siteye Git</translation>
 <translation id="7133798577887235672">Tam Ad</translation>
 <translation id="7136892417564438900">Kamera kullanılamıyor</translation>
 <translation id="7153999225810839758">Okuma süresi <ph name="TIME" /> dakika</translation>

@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">カレンダー</translation>
 <translation id="1153356358378277386">ペア設定されたデバイス</translation>
 <translation id="1165712434476988950">アップデートを適用するにはデバイスの再起動が必要です。</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />、<ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">USB-C ケーブルがディスプレイに正しく接続されていない可能性があります</translation>
 <translation id="1175572348579024023">スクロール</translation>
 <translation id="1178581264944972037">一時停止</translation>
@@ -55,10 +56,6 @@
 <translation id="1247519845643687288">最近使ったアプリ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> から充電しています</translation>
 <translation id="1255033239764210633">今日の天気は？</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> から
-        <ph name="END_TIME" /> まで、
-        <ph name="TIME_ZONE" />、
-        <ph name="EVENT_SUMMARY" />。選択すると、Google カレンダーで詳細を確認できます。</translation>
 <translation id="1267032506238418139">ショートカットの変更</translation>
 <translation id="1269405891096105529">ゲストモードでは周辺機器を使用できません</translation>
 <translation id="1270290102613614947">画面キーボードは無効です</translation>
@@ -124,6 +121,7 @@
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1632985212731562677">スイッチ アクセスは [設定] &gt; [ユーザー補助機能] で無効にできます。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 台のデバイス</translation>
+<translation id="1639239467298939599">読み込み中</translation>
 <translation id="1654477262762802994">音声検索を開始</translation>
 <translation id="1668469839109562275">組み込みの VPN</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
@@ -1049,7 +1047,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> 秒後に元の解像度に戻ります</translation>
 <translation id="7180611975245234373">更新</translation>
-<translation id="718361511487535372">Google カレンダーで開く</translation>
 <translation id="7188494361780961876">メニューは画面左上に移動しました。</translation>
 <translation id="7189412385142492784">金星までの距離は</translation>
 <translation id="7198435252016571249">カメラは右下にスナップされています。システムのサーフェスと競合しています。</translation>

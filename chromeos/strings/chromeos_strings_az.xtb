@@ -214,7 +214,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> saniyədə <ph name="RATE" /> deşarj edilib.</translation>
 <translation id="291142119251986300">Uyğun olmayan komponentlər</translation>
 <translation id="2926057806159140518">İstifadəçi adınızı və parolunuzu daxil edin və ya QR kodunuzu skan edin</translation>
-<translation id="2928420929544864228">Quraşdırma tamamlandı.</translation>
 <translation id="3008341117444806826">YENİLƏYİN</translation>
 <translation id="3009958530611748826">Yadda saxlamaq üçün qovluq seçin</translation>
 <translation id="3017079585324758401">Arxa fon</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">Söndürməzdən əvvəl cihazınızı yenidən formaylayın. Cihazınızın qapağı varsa, qapağı bağlamazdan əvvəl yenidən formatlamanın tamamlanmasını gözləyin. Yenidən formatlamanın tamamlanması bir dəqiqə çəkə bilər.</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3865414814144988605">Dəqiqlik</translation>
+<translation id="3866249974567520381">Təsvir</translation>
 <translation id="387301095347517405">Batareyanızın tam şarj edilmə sayı</translation>
 <translation id="3885327323343477505">Ekran qoruyucunu dəyişdirin</translation>
 <translation id="3923184630988645767">Data istifadəsi</translation>
@@ -899,6 +899,7 @@
 <translation id="922179502584117429">Cari versiya <ph name="VERSION_NUMBER" /> köhnəlib</translation>
 <translation id="932327136139879170">Ev</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="952992212772159698">Aktiv edilməyib</translation>
 <translation id="960719561871045870">Operator kodu</translation>
 <translation id="982713511914535780">Deşarj testi icra edin</translation>

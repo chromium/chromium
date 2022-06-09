@@ -163,6 +163,7 @@
 <translation id="236977714248711277">サイトは、Cookie を使用してブラウジングの利便性を改善することができません。たとえばログイン状態の維持や、ショッピング カートの中身の保存ができなくなります。
 
 サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどが行えなくなります。</translation>
+<translation id="2375243552872247702">おすすめコンテンツを表示</translation>
 <translation id="2381405137052800939">基本設定</translation>
 <translation id="2386793615875593361">1 枚選択されています</translation>
 <translation id="2421004566762153674">サードパーティの Cookie をブロック</translation>
@@ -602,6 +603,7 @@
 <translation id="6136914049981179737">数秒前</translation>
 <translation id="6144589619057374135">${url} をシークレット モードで開く</translation>
 <translation id="6149061208933997199">パスワードを使用</translation>
+<translation id="6152406514676263192">同期すると、興味や関心と最も関連性の高いコンテンツが表示されます。</translation>
 <translation id="6159839020698489198">任意</translation>
 <translation id="6177442314419606057">Chrome で検索</translation>
 <translation id="6184086493125982861">タブを表示</translation>
@@ -750,6 +752,7 @@
 <translation id="7189598951263744875">共有...</translation>
 <translation id="7192050974311852563">ログ記録を開始</translation>
 <translation id="7203585745079012652">回答を音声で聞く</translation>
+<translation id="7207023858769244910">同期すると、興味や関心に基づくコンテンツを取得できます。</translation>
 <translation id="7207383424303353046">新機能: Chrome でサイトを自動的に開くよう、デフォルトのブラウザアプリに設定できます。<ph name="BEGIN_LINK" />設定を開く<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">無効なカード ニックネーム</translation>
 <translation id="722454870747268814">新しいシークレット タブ</translation>

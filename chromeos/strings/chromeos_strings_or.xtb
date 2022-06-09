@@ -95,6 +95,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> ଏବଂ <ph name="SECOND_MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="1726100011689679555">ନାମ ସର୍ଭର୍</translation>
 <translation id="1731082422893354635">ବ୍ଲୁଟୁଥ ଟଚପ୍ୟାଡ</translation>
+<translation id="1745577949879301685">ଇମେଜଗୁଡ଼ିକୁ ଲୋଡ କରାଯାଇପାରିଲା ନାହିଁ। ଆପଣଙ୍କ ନେଟୱାର୍କ କନେକ୍ସନ ଯାଞ୍ଚ କରନ୍ତୁ କିମ୍ବା ପୁଣି ଇମେଜଗୁଡ଼ିକୁ ଲୋଡ କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1751249301761991853">ବ୍ୟକ୍ତିଗତ</translation>
 <translation id="1753496554272155572">ୱାଲପେପର ପ୍ରିଭ୍ୟୁରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="175763766237925754">ଭଲ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -213,7 +214,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ <ph name="RATE" /> ଡିସଚାର୍ଜ ହୋଇଛି।</translation>
 <translation id="291142119251986300">ଅଯୋଗ୍ୟ କମ୍ପୋନେଣ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="2926057806159140518">ଆପଣଙ୍କ ଉପଯୋଗକର୍ତ୍ତା ନାମ ଏବଂ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର QR କୋଡ ସ୍କାନ କରନ୍ତୁ</translation>
-<translation id="2928420929544864228">ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
 <translation id="3008341117444806826">ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="3009958530611748826">ଏଥିରେ ସେଭ୍ କରିବାକୁ ଏକ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3017079585324758401">ପୃଷ୍ଠପଟ</translation>
@@ -303,6 +303,7 @@
 <translation id="385832974417157471">ବନ୍ଦ କରିବା ପୂର୍ବରୁ, ଆପଣଙ୍କ ଡିଭାଇସକୁ ପାୱାରୱାସ କରନ୍ତୁ। ଯଦି ଆପଣଙ୍କ ଡିଭାଇସରେ ଏକ ଲିଡ ଥାଏ, ତେବେ ଲିଡ ବନ୍ଦ କରିବା ପୂର୍ବରୁ ପାୱାରୱାସ ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପର୍ଯ୍ୟନ୍ତ ଅପେକ୍ଷା କରନ୍ତୁ। ପାୱାରୱାସ ସମ୍ପୂର୍ଣ୍ଣ ହେବାକୁ ଏକ ମିନିଟ ପର୍ଯ୍ୟନ୍ତ ସମୟ ନେଇପାରେ।</translation>
 <translation id="3858860766373142691">ନାମ</translation>
 <translation id="3865414814144988605">ରିଜୋଲ୍ୟୁଶନ୍</translation>
+<translation id="3866249974567520381">ବିବରଣୀ</translation>
 <translation id="387301095347517405">ଆପଣଙ୍କ ବ୍ୟାଟେରୀ ଯେତେ ଥର ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଚାର୍ଜ ହୋଇଛି</translation>
 <translation id="3885327323343477505">ସ୍କ୍ରିନ ସେଭର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="3923184630988645767">ଡାଟାର ବ୍ୟବହାର</translation>
@@ -429,6 +430,7 @@
 <translation id="4915052247106771211">ଏହା ଡିଭାଇସକୁ ଫ୍ୟାକ୍ଟୋରୀ ସେଟିଂସ (ପାୱାରୱାସ)ରେ ରିସେଟ କରିବ।</translation>
 <translation id="4917385247580444890">ଦୃଢ଼</translation>
 <translation id="4917889632206600977">ବନ୍ଦ ହୋଇଯାଇଛି - କାଗଜ ସରିଯାଇଛି</translation>
+<translation id="491791267030419270">ମତାମତ ଲେଖିବା ବିଷୟରେ ଟିପ୍ସ</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ <ph name="RATE" /> ଚାର୍ଜ ହୋଇଛି</translation>
 <translation id="4930320165497208503">ଏକ ସଂଯୋଗ ସେଟ ଅପ କିମ୍ବା ଅପଡେଟ କରିବାକୁ, <ph name="BEGIN_LINK" />ସେଟିଂସ<ph name="END_LINK" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="4932733599132424254">ତାରିଖ</translation>
@@ -898,6 +900,7 @@
 <translation id="922179502584117429">ବର୍ତ୍ତମାନର ସଂସ୍କରଣ <ph name="VERSION_NUMBER" /> ପୁରୁଣା ଅଟେ</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="952992212772159698">ସକ୍ରିୟ ହୋ‍ଇନାହିଁ</translation>
 <translation id="960719561871045870">ଅପରେଟର୍ କୋଡ୍</translation>
 <translation id="982713511914535780">ବ୍ୟାଟେରୀ ଡିସଚାର୍ଜ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>

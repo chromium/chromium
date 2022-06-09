@@ -110,6 +110,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="1513352483775369820">Kirjanmerkit ja verkkohistoria</translation>
 <translation id="1513814250881909472">Synkronoi välilehdet muilta laitteilta</translation>
 <translation id="1513858653616922153">Poista salasana</translation>
+<translation id="1514552811327923157">Privacy Sandbox ‐kehote kokonaan avattuna</translation>
 <translation id="1518421282666914498">Tunne-GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Aktiivinen tänään</translation>
 <translation id="1538801903729528855">Käytä verkkoa sujuvammin äänikomennoilla</translation>
@@ -321,6 +322,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2711073837061989559">Kokeilut</translation>
 <translation id="2718352093833049315">Vain Wi-Fillä</translation>
 <translation id="2718846868787000099">Avaamasi sivustot voivat nähdä asetuksesi, jotta ne voivat näyttää sisältöä haluamillasi kielillä</translation>
+<translation id="2722945394406572875">Privacy Sandbox ‐kehote suljettu</translation>
 <translation id="2723001399770238859">ääni</translation>
 <translation id="2732063072010454421">Parempi kokemus puhehaulla</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="4227318652298512614">Seuraa haluamiasi sivustoja</translation>
 <translation id="4242533952199664413">Avaa asetukset</translation>
 <translation id="4248098802131000011">Suojaa salasanasi tietosuojaloukkauksilta ja muilta tietoturvaongelmilta</translation>
+<translation id="424864128008805179">Kirjaudutaanko ulos Chromesta?</translation>
 <translation id="4249955472157341256">Lajittele viimeisimmät ensimmäisiksi</translation>
 <translation id="4250229828105606438">Kuvakaappaus</translation>
 <translation id="4256782883801055595">Avoimen lähdekoodin käyttöluvat</translation>
@@ -652,7 +655,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4594952190837476234">Offline-sivu vastaa tilannetta <ph name="CREATION_TIME" /> ja saattaa poiketa nykyisestä verkkoversiosta.</translation>
 <translation id="4616150815774728855">Avaa <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Todenna henkilöllisyytesi</translation>
-<translation id="4627165777145349100">Lisätietoa tästä sivusta</translation>
 <translation id="4634124774493850572">Käytä salasanaa</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 vaarantunut salasana}other{# vaarantunutta salasanaa}}</translation>
 <translation id="4650364565596261010">Järjestelmän oletusarvo</translation>
@@ -894,6 +896,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5906513782029855931">Sivustojen URL-osoitteiden avulla Google Assistantia voi auttaa sinua tekemään asioita. Voit poistaa Assistantin käytöstä Chromen asetuksissa.</translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5919204609460789179">Aloita synkronointi päivittämällä <ph name="PRODUCT_NAME" /></translation>
+<translation id="593625682991400408">Kokeilujen aikana Chrome tutkii tapoja rajoittaa roskasisältöä, petoksia ja sivustojen välistä jakamista. Chrome myös <ph name="BEGIN_LINK" />arvioi kiinnostuksen kohteitasi<ph name="END_LINK" />, joita sivustot voivat käyttää näyttääksesi sinulle mainoksia. Voit muuttaa kiinnostuksen kohteitasi asetuksista.</translation>
 <translation id="5938820472109305350">Lisää <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Hakukoneena käytetään Googlea.</translation>
 <translation id="5945035219773565305">Tämänhetkinen suositus:  <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@ Luottamusmerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnistaa ni
 <translation id="9106148373857059373">Kirjanmerkin tallennusvaiheet suljettu</translation>
 <translation id="9108312223223904744">Ohjeet puhelimen käyttöön suojausavaimena</translation>
 <translation id="9108808586816295166">Suojattu DNS ei välttämättä ole koko ajan käytettävissä</translation>
+<translation id="9128984223251192329">Privacy Sandbox ‐kehote puoliksi avattuna</translation>
 <translation id="9133397713400217035">Tutki offline-tilassa</translation>
 <translation id="9137013805542155359">Näytä alkuperäinen</translation>
 <translation id="9148126808321036104">Kirjaudu sisään uudelleen</translation>

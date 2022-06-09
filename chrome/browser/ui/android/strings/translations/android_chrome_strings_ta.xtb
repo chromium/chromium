@@ -587,6 +587,7 @@
 <translation id="4227318652298512614">நீங்கள் விரும்பும் தளங்களைப் பின்பற்றுங்கள்</translation>
 <translation id="4242533952199664413">அமைப்புகளைத் திற</translation>
 <translation id="4248098802131000011">தரவு மீறல்கள் மற்றும் பிற பாதுகாப்பு சிக்கல்களிலிருந்து உங்கள் கடவுச்சொற்களைப் பாதுகாத்திடுங்கள்</translation>
+<translation id="424864128008805179">Chrome இலிருந்து வெளியேறவா?</translation>
 <translation id="4249955472157341256">சமீபத்தியதன்படி வரிசைப்படுத்து</translation>
 <translation id="4250229828105606438">ஸ்கிரீன்ஷாட்</translation>
 <translation id="4256782883801055595">ஓப்பன் சோர்ஸ் உரிமங்கள்</translation>
@@ -654,7 +655,6 @@
 <translation id="4594952190837476234"><ph name="CREATION_TIME" /> அன்று இந்த ஆஃப்லைன் பக்கம் உருவாக்கப்பட்டது. இது ஆன்லைன் பதிப்பிலிருந்து வேறுபடலாம்.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ஐத் திற</translation>
 <translation id="4619564267100705184">இது நீங்கள்தான் என உறுதிசெய்யுங்கள்</translation>
-<translation id="4627165777145349100">இந்தப் பக்கத்தைப் பற்றிய கூடுதல் தகவல்களைக் காட்டு</translation>
 <translation id="4634124774493850572">கடவுச்சொல்லைப் பயன்படுத்து</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 களவாடப்பட்ட கடவுச்சொல்}other{# களவாடப்பட்ட கடவுச்சொற்கள்}}</translation>
 <translation id="4650364565596261010">சிஸ்டத்தின் இயல்புநிலை</translation>
@@ -793,7 +793,6 @@
 <translation id="5342314432463739672">அனுமதிக் கோரிக்கைகள்</translation>
 <translation id="5355191726083956201">மேம்படுத்தப்பட்ட பாதுகாப்பு இயக்கப்பட்டுள்ளது</translation>
 <translation id="5368227114232678694">இந்தச் சாதனத்தில் தனிப்பட்ட முறையில் உலாவ, மறைநிலைப் பயன்முறையைப் பயன்படுத்திப் பாருங்கள்</translation>
-<translation id="5371717687506906963">தனியுரிமை சாண்ட்பாக்ஸ் அறிவிப்பு</translation>
 <translation id="5375577065097716013">Google Lens மூலம் படத்தைத் தேடு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">உணர்வு வெளிப்பாடு மாற்றப்பட்டது</translation>
 <translation id="5401851137404501592">தொடர உங்கள் பெயர், மின்னஞ்சல் முகவரி, சுயவிவரப் படம் ஆகியவற்றை இந்தத் தளத்தில் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> பகிரும்.</translation>

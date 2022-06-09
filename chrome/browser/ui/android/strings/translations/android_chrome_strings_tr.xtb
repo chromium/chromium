@@ -110,6 +110,7 @@ Belirli bir siteye ait veya tüm tarama geçmişinizi sildiğinizde bununla ili�
 <translation id="1513352483775369820">Yer işaretleri ve web geçmişi</translation>
 <translation id="1513814250881909472">Diğer cihazlarınızdaki sekmelerinize ulaşmak için senkronize edin</translation>
 <translation id="1513858653616922153">Şifreyi sil</translation>
+<translation id="1514552811327923157">Özel Korumalı Alan istemi tam ekranda açıldı</translation>
 <translation id="1518421282666914498">İfade GIF'i <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Son etkin olduğu zaman:</translation>
 <translation id="1538801903729528855">Web'de daha iyi ses deneyimi elde edin</translation>
@@ -321,6 +322,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="2711073837061989559">Denemeler</translation>
 <translation id="2718352093833049315">Yaln. Kablosuzda</translation>
 <translation id="2718846868787000099">Siteler, tercih ettiğiniz dillerde içerik göstermek için tercihlerinizi görebilir</translation>
+<translation id="2722945394406572875">Özel Korumalı Alan istemi kapatıldı</translation>
 <translation id="2723001399770238859">ses</translation>
 <translation id="2732063072010454421">Daha iyi bir sesli deneyim elde edin</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="4227318652298512614">İstediğiniz siteleri takip edin</translation>
 <translation id="4242533952199664413">Ayarları aç</translation>
 <translation id="4248098802131000011">Şifrelerinizi veri ihlali ve diğer güvenlik sorunlarına karşı güvende tutun</translation>
+<translation id="424864128008805179">Chrome oturumu kapatılsın mı?</translation>
 <translation id="4249955472157341256">En güncel tarihe göre sırala</translation>
 <translation id="4250229828105606438">Ekran görüntüsü</translation>
 <translation id="4256782883801055595">Açık kaynak lisansları</translation>
@@ -652,7 +655,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4594952190837476234">Bu çevrimdışı sayfa <ph name="CREATION_TIME" /> tarihli olup web'deki sürümden farklı olabilir.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> APK'sını aç</translation>
 <translation id="4619564267100705184">Kimliğinizi doğrulayın</translation>
-<translation id="4627165777145349100">Bu sayfa hakkında daha fazla bilgi</translation>
 <translation id="4634124774493850572">Şifre kullan</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Güvenliği ihlal edilmiş 1 şifre}other{Güvenliği ihlal edilmiş # şifre}}</translation>
 <translation id="4650364565596261010">Sistem varsayılanı</translation>
@@ -894,6 +896,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5906513782029855931">Sitelerin URL'lerini bilmek, Google Asistan'ın görevleri tamamlamanıza yardımcı olmasını sağlar. Asistan'ı Chrome ayarlarından kapatabilirsiniz.</translation>
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5919204609460789179">Senkronizasyonu başlatmak için <ph name="PRODUCT_NAME" /> adlı uygulamayı güncelleyin</translation>
+<translation id="593625682991400408">Chrome, denemeler sırasında spam, sahtekarlık ve siteler arası paylaşımı kısıtlamanın yollarını arar. Chrome ayrıca sitelerin size reklam göstermek için kullanabileceği <ph name="BEGIN_LINK" />ilgi alanlarınızı tahmin eder<ph name="END_LINK" />. İlgi alanlarınızı ayarlardan yönetebilirsiniz.</translation>
 <translation id="5938820472109305350">Ekle: <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Arama için Google kullanılıyor</translation>
 <translation id="5945035219773565305">Geçerli öneri:  <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@ Güven jetonları, web'deki gizliliği artırır ve kim olduğunuzu bulmak için
 <translation id="9106148373857059373">Yer işareti kaydetme akışı kapatıldı</translation>
 <translation id="9108312223223904744">Güvenlik Anahtarı Desteği olarak telefon</translation>
 <translation id="9108808586816295166">Güvenli DNS her zaman kullanılamayabilir</translation>
+<translation id="9128984223251192329">Özel Korumalı Alan istemi ekranın yarısına kadar açıldı</translation>
 <translation id="9133397713400217035">Çevrimdışıyken Keşfet</translation>
 <translation id="9137013805542155359">Orijinali göster</translation>
 <translation id="9148126808321036104">Tekrar oturum açın</translation>

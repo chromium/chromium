@@ -18,6 +18,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> ద్వారా ఈ <ph name="DEVICE_TYPE" /> మేనేజ్ చేయబడుతోంది.</translation>
 <translation id="1175951029573070619">మోస్తరుగా ఉంది (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">తీసివేయి</translation>
+<translation id="1190378975642195988">బేస్ యాక్సిలెరోమీటర్</translation>
 <translation id="1195447618553298278">తెలియని ఎర్రర్.</translation>
 <translation id="1196959502276349371">వెర్షన్ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ప్లే చేయండి/పాజ్ చేయండి</translation>
@@ -214,7 +215,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
 <translation id="291142119251986300">అర్హత లేని భాగాలు</translation>
 <translation id="2926057806159140518">మీ యూజర్‌నేమ్, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి లేదా మీ QR కోడ్‌ను స్కాన్ చేయండి</translation>
-<translation id="2928420929544864228">ఇన్‌స్టాలేషన్ పూర్తయింది.</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయి</translation>
 <translation id="3009958530611748826">దీనిలో సేవ్ చేయడానికి ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="3017079585324758401">నేపథ్యం</translation>
@@ -268,6 +268,7 @@
 <translation id="3484914941826596830">ఫర్మ్‌వేర్ అప్‌డేట్ అవుతున్నప్పుడు, ఈ బాహ్య పరికరాన్ని అన్‌ప్లగ్ చేయవద్దు లేదా మీ కంప్యూటర్‌ను షట్ డౌన్ చేయవద్దు. మీరు ఈ విండోను చిన్నదిగా చేయవచ్చు. ఈ అప్‌డేట్‌కు కొన్ని నిమిషాల సమయం పట్టవచ్చు, ఇంకా ఈ సమయంలో మీ బాహ్య పరికరం పని చేయకపోవచ్చు.</translation>
 <translation id="3486220673238053218">నిర్వచనం</translation>
 <translation id="3488065109653206955">పాక్షికంగా సక్రియం చెయ్యబడింది</translation>
+<translation id="3492982278147736083">లిడ్ గైరోస్కోప్</translation>
 <translation id="3517001332549868749">ChromeOS అప్‌డేట్</translation>
 <translation id="3527036260304016759">విఫలమైంది - తెలియని ఎర్రర్</translation>
 <translation id="3532980081107202182">సుమారు <ph name="MIN_REMAINING" /> నిమిషాలు మిగిలి ఉన్నాయి</translation>
@@ -301,9 +302,11 @@
 <translation id="3820172043799983114">PIN చెల్లదు.</translation>
 <translation id="3838338534323494292">కొత్త పాస్‌వర్డ్</translation>
 <translation id="385051799172605136">వెనుకకు</translation>
+<translation id="3856304145690230735">బేస్ గైరోస్కోప్</translation>
 <translation id="385832974417157471">షట్ డౌన్ చేసే ముందు, మీ పరికరాన్ని పవర్‌వాష్ చేయండి. మీ పరికరానికి మూత ఉంటే, మూతను మూసివేసే ముందు పవర్‌వాష్ పూర్తయ్యే వరకు వేచి ఉండండి. పవర్‌వాష్ పూర్తి కావడానికి ఒక నిమిషం వరకు పట్టవచ్చు.</translation>
 <translation id="3858860766373142691">పేరు</translation>
 <translation id="3865414814144988605">రిజల్యూషన్</translation>
+<translation id="3866249974567520381">వివరణ</translation>
 <translation id="387301095347517405">మీ బ్యాటరీ పూర్తిగా ఛార్జ్ అయిన పర్యాయాల సంఖ్య</translation>
 <translation id="3885327323343477505">స్క్రీన్ సేవర్‌ను మార్చండి</translation>
 <translation id="3923184630988645767">డేటా వినియోగం</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">ప్రారంభించండి</translation>
 <translation id="4479639480957787382">ఈథర్నెట్</translation>
 <translation id="4483049906298469269">డిఫాల్ట్-యేతర నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
+<translation id="4500213108254186382">లిడ్ యాక్సిలెరోమీటర్</translation>
 <translation id="4503223151711056411">ఎడమ వైపు బాణం</translation>
 <translation id="4511264077854731334">పోర్టల్</translation>
 <translation id="4521826082652183069">సబ్జెక్ట్ ప్రత్యామ్నాయ పేరుకు సంబంధించిన మ్యాచ్</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM అన్‌లాక్ చేయబడింది</translation>
 <translation id="4562494484721939086">సేవ లేదు</translation>
 <translation id="4568938274596692027">ఇన్‌స్టాల్ చేయడం పూర్తయింది. రీస్టార్ట్ చేయడానికి సిద్ధం అవుతోంది...</translation>
+<translation id="4576943788798178439">స్టైలస్ సపోర్ట్</translation>
 <translation id="458794348635939462">హోస్ట్‌లను పరిష్కరించడంలో విఫలమైంది</translation>
 <translation id="4593212453765072419">ప్రాక్సీ ప్రామాణీకరణ అవసరం</translation>
 <translation id="4609350030397390689">కీబోర్డ్ బ్రైట్‌నెస్‌ను తగ్గించండి</translation>
@@ -536,6 +541,7 @@
 <translation id="5866840822086176774">చాలా బలంగా ఉంది</translation>
 <translation id="588258955323874662">పూర్తితెర</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించు</translation>
+<translation id="5898758006340607522">పవర్ బటన్</translation>
 <translation id="5901630391730855834">పసుపు</translation>
 <translation id="5903200662178656908">పరికరం అనేది కీబోర్డ్, మౌస్ కలయిక.</translation>
 <translation id="5916084858004523819">నిషేధించబడింది</translation>
@@ -858,6 +864,7 @@
 <translation id="8919792139048574232">దేనిని పరిష్కరించారో చూడండి</translation>
 <translation id="8919837981463578619">విఫలమైంది - ట్రే అందుబాటులో లేదు</translation>
 <translation id="8923267550422472772">రీసెట్ కోసం నెలలో రోజు</translation>
+<translation id="8925613211674558308">కాష్ చేయబడిన Vpd</translation>
 <translation id="8928727111548978589">విఫలమైంది - పేపర్ లేదు</translation>
 <translation id="8930521118335213258">బెంచ్‌మార్క్</translation>
 <translation id="8930622219860340959">వైర్‌లెస్</translation>
@@ -899,6 +906,7 @@
 <translation id="922179502584117429">ప్రస్తుత వెర్షన్ <ph name="VERSION_NUMBER" /> గడువు ముగిసింది</translation>
 <translation id="932327136139879170">హోమ్</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="952992212772159698">సక్రియం చెయ్యబడలేదు</translation>
 <translation id="960719561871045870">ఆపరేటర్ కోడ్</translation>
 <translation id="982713511914535780">డిస్‌ఛార్జ్ పరీక్షను రన్ చేయండి</translation>

@@ -215,7 +215,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэггүй болсон.</translation>
 <translation id="291142119251986300">Шаардлага хангаагүй бүрэлдэхүүн хэсэг</translation>
 <translation id="2926057806159140518">Хэрэглэгчийн нэр болон нууц үгээ оруулах эсвэл QR кодыг скан хийнэ үү</translation>
-<translation id="2928420929544864228">Суулгаж дууслаа.</translation>
 <translation id="3008341117444806826">ДАХИН ШИНЭЧЛЭХ</translation>
 <translation id="3009958530611748826">Хадгалах фолдероо сонгоно уу</translation>
 <translation id="3017079585324758401">Арын дэвсгэр</translation>
@@ -307,6 +306,7 @@
 <translation id="385832974417157471">Унтраахаасаа өмнө төхөөрөмжөө powerwash хийнэ үү. Хэрэв таны төхөөрөмж тагтай бол тагийг нь хаахаас өмнө powerwash хийж дуустал хүлээнэ үү. Powerwash хийж дуусахад хэдэн минут зарцуулж магадгүй.</translation>
 <translation id="3858860766373142691">Нэр</translation>
 <translation id="3865414814144988605">Нягтрал</translation>
+<translation id="3866249974567520381">Тодорхойлолт</translation>
 <translation id="387301095347517405">Таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо</translation>
 <translation id="3885327323343477505">Дэлгэц амраагчийг өөрчлөх</translation>
 <translation id="3923184630988645767">Дата ашиглалт</translation>
@@ -907,6 +907,7 @@
 <translation id="922179502584117429">Одоогийн <ph name="VERSION_NUMBER" /> хувилбар хуучирсан байна</translation>
 <translation id="932327136139879170">Нүүр хуудас</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="952992212772159698">Идэвхжээгүй байна</translation>
 <translation id="960719561871045870">Операторын код</translation>
 <translation id="982713511914535780">Цэнэггүй болгох туршилтыг ажиллуулах</translation>

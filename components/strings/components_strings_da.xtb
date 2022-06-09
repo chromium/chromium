@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Bevillinger, legater og finansiel bistand</translation>
 <translation id="1048785276086539861">Når du redigerer annoteringer, skifter dette dokument tilbage til enkeltsidevisning</translation>
 <translation id="1050038467049342496">Luk andre apps</translation>
+<translation id="1053959602163383901">Du har valgt at bekræfte med en authenticator-enhed på websites, der anvender <ph name="PROVIDER_ORIGIN" />. Denne udbyder har muligvis gemt oplysninger om din betalingsmetode. Du kan <ph name="LINK_TEXT" /> af disse oplysninger.</translation>
 <translation id="1055184225775184556">&amp;Fortryd tilføjelse</translation>
 <translation id="1056663316309890343">Fotosoftware</translation>
 <translation id="1056898198331236512">Advarsel</translation>
@@ -426,6 +427,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2053111141626950936">Sider på <ph name="LANGUAGE" /> oversættes ikke.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Når denne indstilling er aktiveret og angives som aktiv, fastslår Chrome, hvilken stor gruppe eller "kohorte" din seneste browseraktivitet minder mest om. Annoncører kan vælge annoncer til gruppen, og din browserhistorik forbliver privat på din enhed. Din gruppe opdateres hver dag.}=1{Når denne indstilling er aktiveret og angives som aktiv, fastslår Chrome, hvilken stor gruppe eller "kohorte" din seneste browseraktivitet minder mest om. Annoncører kan vælge annoncer til gruppen, og din browserhistorik forbliver privat på din enhed. Din gruppe opdateres hver dag.}one{Når denne indstilling er aktiveret og angives som aktiv, fastslår Chrome, hvilken stor gruppe eller "kohorte" din seneste browseraktivitet minder mest om. Annoncører kan vælge annoncer til gruppen, og din browserhistorik forbliver privat på din enhed. Din gruppe opdateres med {NUM_DAYS} dags mellemrum.}other{Når denne indstilling er aktiveret og angives som aktiv, fastslår Chrome, hvilken stor gruppe eller "kohorte" din seneste browseraktivitet minder mest om. Annoncører kan vælge annoncer til gruppen, og din browserhistorik forbliver privat på din enhed. Din gruppe opdateres med {NUM_DAYS} dages mellemrum.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 forslag}one{# forslag}other{# forslag}}</translation>
+<translation id="2066915425250589881">anmode om sletning</translation>
 <translation id="2068528718802935086">Babyer og småbørn</translation>
 <translation id="2071156619270205202">Dette kort er ikke kvalificeret til et virtuelt kortnummer</translation>
 <translation id="2071692954027939183">Der blev automatisk blokeret notifikationer, da du som regel ikke tillader notifikationer</translation>
@@ -582,6 +584,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2512101340618156538">Ikke tilladt (standard)</translation>
 <translation id="2512413427717747692">Knappen Angiv Chrome som standardbrowser, tryk på Enter for at angive Chrome som systemets standardbrowser i iOS-indstillingerne</translation>
 <translation id="2515629240566999685">Tjekke signalet i dit område</translation>
+<translation id="2515761554693942801">Du har valgt at bekræfte med Touch ID på websites, der anvender <ph name="PROVIDER_ORIGIN" />. Denne udbyder har muligvis gemt oplysninger om din betalingsmetode. Du kan <ph name="LINK_TEXT" /> af disse oplysninger.</translation>
 <translation id="2521385132275182522">Hæftning nederst til højre</translation>
 <translation id="2521736961081452453">Opret formular</translation>
 <translation id="2523886232349826891">Gemmes kun på denne enhed</translation>
@@ -703,7 +706,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2854764410992194509">Internetudbydere</translation>
 <translation id="2856444702002559011">Brugere med ondsindede hensigter kan forsøge at stjæle dine oplysninger fra <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (f.eks. adgangskoder, beskeder eller kreditkort). <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Dette website viser påtrængende eller vildledende annoncer.</translation>
-<translation id="286512204874376891">Et virtuelt kort skjuler dit faktiske kort og beskytter dig på den måde mod potentiel svindel. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Afslappet</translation>
 <translation id="28761159517501904">Film</translation>
 <translation id="2876489322757410363">Du forlader inkognitotilstand for at betale via en ekstern app. Vil du fortsætte?</translation>
@@ -1336,7 +1338,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4607603470419975064">Knappen Se tips til Chrome, tryk på Enter for at få flere oplysninger om Chrome-funktioner</translation>
 <translation id="4607608436550361748">Se tips til Chrome</translation>
 <translation id="4617273035598175554">Grafik og animationssoftware</translation>
-<translation id="4627165777145349100">Mere om denne side</translation>
 <translation id="4627675673814409125">Denne politik kan ikke angives på Chrome-profilniveauet og ignoreres.</translation>
 <translation id="4628948037717959914">Billede</translation>
 <translation id="4631649115723685955">Penge tilbage er tilknyttet</translation>
@@ -1501,6 +1502,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5051305769747448211">Livekomedier</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Hvis du vil sende denne fil ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}one{Hvis du vil sende denne fil ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}other{Hvis du vil sende disse filer ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}}</translation>
 <translation id="5056549851600133418">Artikler til dig</translation>
+<translation id="5060483733937416656">Du har valgt at bekræfte med Windows Hello på websites, der anvender <ph name="PROVIDER_ORIGIN" />. Denne udbyder har muligvis gemt oplysninger om din betalingsmetode. Du kan <ph name="LINK_TEXT" /> af disse oplysninger.</translation>
 <translation id="5061227663725596739">Mente du <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Udskrivningshistorik</translation>
 <translation id="5068234115460527047">Hedgefonde</translation>
@@ -1870,7 +1872,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6061154937977953833">Brydning</translation>
 <translation id="6064217302520318294">Skærmlås</translation>
 <translation id="6064602040258638498">Rabatter og kupontilbud</translation>
-<translation id="6078813287646374487">Vis flere oplysninger om denne side</translation>
 <translation id="6080696365213338172">Du har opnår adgang til indhold vha. et administratorcertifikat. De data, du angiver til <ph name="DOMAIN" />, kan indhentes af din administrator.</translation>
 <translation id="6087312102907839798">Relaterede søgninger</translation>
 <translation id="6094273045989040137">Annoter</translation>
@@ -2795,6 +2796,7 @@ Yderligere oplysninger:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> er din kode til <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Tilføj denne fane som bogmærke</translation>
 <translation id="8751426954251315517">Prøv igen næste gang</translation>
+<translation id="8757526089434340176">Der er et tilgængeligt Google Pay-tilbud</translation>
 <translation id="8758885506338294482">Videospilkonkurrencer (e-sport)</translation>
 <translation id="8759274551635299824">Kortet er udløbet</translation>
 <translation id="87601671197631245">Dette website benytter en forældet sikkerhedskonfiguration, der muligvis afslører dine oplysninger (f.eks. adgangskoder, meddelelser eller betalingskort), når de sendes til dette website.</translation>

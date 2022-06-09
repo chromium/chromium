@@ -56,10 +56,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1247519845643687288">Nylige apper</translation>
 <translation id="1252999807265626933">Lader fra <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvordan er været?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> til 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Velg for å se flere detaljer i Google Kalender.</translation>
 <translation id="1267032506238418139">Endring av hurtigtast</translation>
 <translation id="1269405891096105529">Den eksterne enheten støttes ikke i Gjestemodus</translation>
 <translation id="1270290102613614947">Skjermtastaturet er deaktivert</translation>
@@ -125,6 +121,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Brytertilgang kan slås av i Innstillinger &gt; Tilgjengelighet.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
+<translation id="1639239467298939599">Laster inn</translation>
 <translation id="1654477262762802994">Start et talesøk</translation>
 <translation id="1668469839109562275">Innebygd VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> igjen</translation>
@@ -1050,7 +1047,6 @@ Nylig installert</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Går tilbake til den gamle oppløsningen om <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
-<translation id="718361511487535372">Åpne i Google Kalender</translation>
 <translation id="7188494361780961876">Menyen ble flyttet til øvre venstre hjørne av skjermen.</translation>
 <translation id="7189412385142492784">Hvor langt unna er Venus?</translation>
 <translation id="7198435252016571249">Kameraet er festet til nedre høyre hjørne. Konflikt med systemoverflaten.</translation>

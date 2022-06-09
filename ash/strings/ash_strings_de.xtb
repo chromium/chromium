@@ -31,6 +31,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Gekoppelte Geräte</translation>
 <translation id="1165712434476988950">Das Gerät muss neu gestartet werden, um das Update zu installieren.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Dein USB-C-Kabel ist nicht zum Verbinden von Bildschirmen geeignet</translation>
 <translation id="1175572348579024023">Scrollen</translation>
 <translation id="1178581264944972037">Pause</translation>
@@ -55,7 +56,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1247519845643687288">Zuletzt verwendete Apps</translation>
 <translation id="1252999807265626933">Wird über ein <ph name="POWER_SOURCE" /> aufgeladen</translation>
 <translation id="1255033239764210633">Wie ist das Wetter?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> bis <ph name="END_TIME" />, <ph name="TIME_ZONE" />, <ph name="EVENT_SUMMARY" />. Für weitere Details Termin in Google Kalender auswählen.</translation>
 <translation id="1267032506238418139">Änderung der Tastenkombination</translation>
 <translation id="1269405891096105529">Peripheriegerät wird im Gastmodus nicht unterstützt</translation>
 <translation id="1270290102613614947">Bildschirmtastatur deaktiviert</translation>
@@ -121,6 +121,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Der Schalterzugriff kann unter "Einstellungen" &gt; "Bedienungshilfen" deaktiviert werden.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> Geräte</translation>
+<translation id="1639239467298939599">Wird geladen...</translation>
 <translation id="1654477262762802994">Gesprochene Anfrage starten</translation>
 <translation id="1668469839109562275">Integriertes VPN</translation>
 <translation id="1677472565718498478">Noch <ph name="TIME" /> h</translation>
@@ -236,6 +237,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2367186422933365202">Anmeldung auf dem Chromebook nicht möglich</translation>
 <translation id="2369165858548251131">"Hallo" auf Chinesisch</translation>
+<translation id="2375445874393996153">Die Anfrage „Was wird auf meinem Bildschirm angezeigt?“ wird von Google Assistant nicht mehr unterstützt.</translation>
 <translation id="2390318262976603432">Spracheinstellungen</translation>
 <translation id="240006516586367791">Mediensteuerelemente</translation>
 <translation id="2402411679569069051">Zum Entsperren des Chromebooks Fingerabdruck verwenden oder Smartphone entsperren</translation>
@@ -1045,7 +1047,6 @@ Neuinstallation</translation>
 <translation id="7165278925115064263">Alt + Umschalttaste + K</translation>
 <translation id="7168224885072002358">Alte Auflösung wird in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
-<translation id="718361511487535372">Im Google-Kalender öffnen</translation>
 <translation id="7188494361780961876">Menü wurde nach links oben auf dem Bildschirm verschoben.</translation>
 <translation id="7189412385142492784">Wie weit ist die Venus entfernt?</translation>
 <translation id="7198435252016571249">Kamera ist an der unteren rechten Ecke angepinnt. Konflikt mit der Systemoberfläche.</translation>

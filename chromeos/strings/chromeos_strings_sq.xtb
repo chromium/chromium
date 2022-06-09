@@ -95,6 +95,7 @@
 <translation id="1717874160321062422">Menaxhohet nga <ph name="FIRST_MANAGER" /> dhe <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Serverët e emrave</translation>
 <translation id="1731082422893354635">Blloku me prekje me Bluetooth</translation>
+<translation id="1745577949879301685">Imazhet nuk mund të ngarkoheshin. Kontrollo lidhjen e rrjetit ose provo t'i ngarkosh përsëri imazhet.</translation>
 <translation id="1751249301761991853">Personale</translation>
 <translation id="1753496554272155572">Dil nga pamja paraprake e imazhit të sfondit</translation>
 <translation id="175763766237925754">I mirë (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -213,7 +214,6 @@
 <translation id="2878387241690264070">U shkarkua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
 <translation id="291142119251986300">Komponentë të pakualifikuar</translation>
 <translation id="2926057806159140518">Fut emrin e përdoruesit dhe fjalëkalimin ose skano kodin tënd QR</translation>
-<translation id="2928420929544864228">Instalimi përfundoi.</translation>
 <translation id="3008341117444806826">RIFRESKO</translation>
 <translation id="3009958530611748826">Zgjidh një dosje për ruajtje</translation>
 <translation id="3017079585324758401">Sfondi</translation>
@@ -303,6 +303,7 @@
 <translation id="385832974417157471">Para se ta fikësh, rivendose pajisjen te cilësimet e fabrikës. Nëse pajisja jote ka një kapak, prit derisa të përfundojë rivendosja te cilësimet e fabrikës para se ta mbyllësh kapakun. Për përfundimin e rivendosjes te cilësimet e fabrikës mund të duhet deri në një minutë.</translation>
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3865414814144988605">Rezolucioni</translation>
+<translation id="3866249974567520381">Përshkrimi</translation>
 <translation id="387301095347517405">Numri i herëve që bateria ka kryer një cikël të plotë karikimi</translation>
 <translation id="3885327323343477505">Ndrysho mbrojtësin e ekranit</translation>
 <translation id="3923184630988645767">Përdorimi i të dhënave</translation>
@@ -897,6 +898,7 @@
 <translation id="922179502584117429">Versioni aktual; <ph name="VERSION_NUMBER" /> është i papërditësuar</translation>
 <translation id="932327136139879170">Faqja kryesore</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Dërgo komente</translation>
 <translation id="952992212772159698">Nuk është aktivizuar</translation>
 <translation id="960719561871045870">Kodi i operatorit</translation>
 <translation id="982713511914535780">Ekzekuto testin e shkarkimit</translation>

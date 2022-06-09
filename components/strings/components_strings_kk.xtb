@@ -703,7 +703,6 @@
 <translation id="2854764410992194509">Интернет провайдерлері</translation>
 <translation id="2856444702002559011"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар ақпаратыңызды (мысалы, құпия сөздер, хабарлар немесе несиелік карталар) ұрлауға әрекет етуі мүмкін.<ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Бұл сайтта мазалайтын немесе жалған ақпаратты жарнамалар көрсетіледі.</translation>
-<translation id="286512204874376891">Виртуалды карта қолданыстағы картаны алаяқтықтан қорғауға көмектеседі. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Ақ ниетті</translation>
 <translation id="28761159517501904">Фильмдер</translation>
 <translation id="2876489322757410363">Сыртқы қолданба арқылы төлеу үшін инкогнито режимінен шығасыз. Жалғастыру керек пе?</translation>
@@ -1335,7 +1334,6 @@
 <translation id="4607603470419975064">"Chrome кеңестерін көру" түймесі, Chrome функциялары туралы білу үшін Enter түймесін басыңыз.</translation>
 <translation id="4607608436550361748">Chrome кеңестерін көру</translation>
 <translation id="4617273035598175554">Графикаға және анимацияға арналған бағдарламалық құрал</translation>
-<translation id="4627165777145349100">Осы бет туралы толығырақ</translation>
 <translation id="4627675673814409125">Бұл саясатты Chrome профилі деңгейінде орнатуға болмайды және ол еленбейді.</translation>
 <translation id="4628948037717959914">Фотосурет</translation>
 <translation id="4631649115723685955">Байланыстырылған кешбэк</translation>
@@ -1869,7 +1867,6 @@
 <translation id="6061154937977953833">Күрес</translation>
 <translation id="6064217302520318294">Экран құлпы</translation>
 <translation id="6064602040258638498">Купондар мен жеңілдіктер</translation>
-<translation id="6078813287646374487">Осы бет туралы толығырақ ақпарат көрсету</translation>
 <translation id="6080696365213338172">Мазмұнды әкімші берген сертификат көмегімен көрдіңіз. Сіз <ph name="DOMAIN" /> доменіне беретін деректерді әкімші ұстап алуы мүмкін.</translation>
 <translation id="6087312102907839798">Ұқсас іздеу сұраулары</translation>
 <translation id="6094273045989040137">Аннотация қосу</translation>
@@ -2793,6 +2790,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> – <ph name="ORIGIN" /> сайтына арналған код</translation>
 <translation id="874918643257405732">Осы қойындыға бетбелгі қойыңыз</translation>
 <translation id="8751426954251315517">Келесі жолы қайталап көріңіз.</translation>
+<translation id="8757526089434340176">Google Pay ұсынысы қолжетімді</translation>
 <translation id="8758885506338294482">Сайысатын бейне ойындар</translation>
 <translation id="8759274551635299824">Картаның мерзімі біткен</translation>
 <translation id="87601671197631245">Бұл сайттың қауіпсіздік конфигурациясы ескірген. Бұл сайтқа жіберілетін жеке ақпаратыңыз (мысалы, құпия сөздер, хабарлар не несиелік карта нөмірлері) жария етілуі мүмкін.</translation>

@@ -587,6 +587,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="4227318652298512614">Theo dõi mọi trang web bạn muốn</translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
 <translation id="4248098802131000011">Bảo vệ mật khẩu của bạn trước việc bị rò rỉ dữ liệu và các vấn đề bảo mật khác</translation>
+<translation id="424864128008805179">Đăng xuất khỏi Chrome?</translation>
 <translation id="4249955472157341256">Sắp xếp theo Mới nhất</translation>
 <translation id="4250229828105606438">Ảnh chụp màn hình</translation>
 <translation id="4256782883801055595">Giấy phép nguồn mở</translation>
@@ -654,7 +655,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4594952190837476234">Trang ngoại tuyến này được tạo từ lúc <ph name="CREATION_TIME" /> và có thể khác với phiên bản trực tuyến.</translation>
 <translation id="4616150815774728855">Mở <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Xác minh danh tính của bạn</translation>
-<translation id="4627165777145349100">Xem thêm về trang này</translation>
 <translation id="4634124774493850572">Sử dụng mật khẩu</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mật khẩu bị lộ}other{# mật khẩu bị lộ}}</translation>
 <translation id="4650364565596261010">Tùy chọn mặc định của hệ thống</translation>
@@ -793,7 +793,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5342314432463739672">Yêu cầu cấp quyền</translation>
 <translation id="5355191726083956201">Tính năng Bảo vệ tăng cường đang bật</translation>
 <translation id="5368227114232678694">Để duyệt web riêng tư trên thiết bị này, hãy thử chế độ Ẩn danh</translation>
-<translation id="5371717687506906963">Lời nhắc Hộp cát về quyền riêng tư</translation>
 <translation id="5375577065097716013">Tìm hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Đã thay đổi phản ứng</translation>
 <translation id="5401851137404501592">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này.</translation>

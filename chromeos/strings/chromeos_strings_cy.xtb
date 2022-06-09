@@ -95,6 +95,7 @@
 <translation id="1717874160321062422">Rheolir gan <ph name="FIRST_MANAGER" /> a <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Gweinyddwyr enwau</translation>
 <translation id="1731082422893354635">Sgrîn gyffwrdd Bluetooth</translation>
+<translation id="1745577949879301685">Methu â llwytho lluniau. Gwiriwch eich cysylltiad rhwydwaith neu rhowch gynnig arall ar lwytho'r lluniau.</translation>
 <translation id="1751249301761991853">Personal</translation>
 <translation id="1753496554272155572">Gadael rhagolwg papur wal</translation>
 <translation id="175763766237925754">Da (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -213,7 +214,6 @@
 <translation id="2878387241690264070">Wedi dadwefru <ph name="RATE" /> mewn <ph name="NUM_SECONDS" /> eiliad.</translation>
 <translation id="291142119251986300">Cydrannau anghymwys</translation>
 <translation id="2926057806159140518">Rhowch eich enw defnyddiwr a'ch cyfrinair neu sganiwch eich Cod QR</translation>
-<translation id="2928420929544864228">Wedi gorffen gosod.</translation>
 <translation id="3008341117444806826">AIL-LWYTHO</translation>
 <translation id="3009958530611748826">Dewiswch ffolder i gadw iddi</translation>
 <translation id="3017079585324758401">Cefndir</translation>
@@ -303,6 +303,7 @@
 <translation id="385832974417157471">Cyn diffodd, defnyddiwch Powerwash ar eich dyfais. Os oes gan eich dyfais gaead, arhoswch nes bod Powerwash wedi'i gwblhau cyn cau'r caead. Gall gymryd hyd at funud i gwblhau Powerwash.</translation>
 <translation id="3858860766373142691">Enw</translation>
 <translation id="3865414814144988605">Cydraniad</translation>
+<translation id="3866249974567520381">Disgrifiad</translation>
 <translation id="387301095347517405">Nifer o weithiau y mae eich batri wedi mynd drwy gylch gwefru llawn</translation>
 <translation id="3885327323343477505">Newid arbedwr sgrîn</translation>
 <translation id="3923184630988645767">Defnydd data</translation>
@@ -429,6 +430,7 @@
 <translation id="4915052247106771211">Bydd hyn yn ailosod y ddyfais i'r gosodiadau ffatri (Powerwash).</translation>
 <translation id="4917385247580444890">Cryf</translation>
 <translation id="4917889632206600977">Wedi'i atal - Allan o bapur</translation>
+<translation id="491791267030419270">Awgrymiadau ar ysgrifennu adborth</translation>
 <translation id="4921665434385737356">Wedi gwefru <ph name="RATE" /> mewn <ph name="NUM_SECONDS" /> eiliad.</translation>
 <translation id="4930320165497208503">I osod neu ddiweddaru cysylltiad, ewch i'r <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Dyddiad</translation>
@@ -898,6 +900,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="922179502584117429">Mae'r fersiwn bresennol <ph name="VERSION_NUMBER" /> yn hen</translation>
 <translation id="932327136139879170">Cartref</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Danfon adborth</translation>
 <translation id="952992212772159698">Heb ei weithredu</translation>
 <translation id="960719561871045870">Cod gweithredwr</translation>
 <translation id="982713511914535780">Rhedeg prawf Dadwefru</translation>

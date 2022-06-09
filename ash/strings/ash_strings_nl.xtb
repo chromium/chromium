@@ -31,6 +31,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Gekoppelde apparaten</translation>
 <translation id="1165712434476988950">Start het apparaat opnieuw op om de update toe te passen.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Je USB-C-kabel sluit misschien niet goed aan op schermen</translation>
 <translation id="1175572348579024023">Scrollen</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
@@ -55,7 +56,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1247519845643687288">Recente apps</translation>
 <translation id="1252999807265626933">Opladen via <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Wat voor weer is het?</translation>
-<translation id="1262870540683925850">Van <ph name="START_TIME" /> tot <ph name="END_TIME" /> <ph name="TIME_ZONE" />, <ph name="EVENT_SUMMARY" />. Selecteer de afspraak voor meer informatie in Google Agenda.</translation>
 <translation id="1267032506238418139">Sneltoets gewijzigd</translation>
 <translation id="1269405891096105529">Randapparaat wordt niet ondersteund in de gastmodus</translation>
 <translation id="1270290102613614947">Schermtoetsenbord staat uit</translation>
@@ -121,6 +121,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1632985212731562677">Je kunt Toegang via schakelaar uitzetten via Instellingen &gt; Toegankelijkheid.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> apparaten</translation>
+<translation id="1639239467298939599">Laden</translation>
 <translation id="1654477262762802994">Een gesproken zoekopdracht starten</translation>
 <translation id="1668469839109562275">Ingebouwde VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> resterend</translation>
@@ -503,6 +504,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3901991538546252627">Verbinding maken met <ph name="NAME" /></translation>
 <translation id="3922427723338465344">{0,plural, =1{Zet het apparaat binnen 1 minuut terug naar een oudere versie}other{Zet het apparaat binnen # minuten terug naar een oudere versie}}</translation>
 <translation id="3923494859158167397">Geen mobiele netwerken ingesteld</translation>
+<translation id="3925540965556789199"><ph name="DATE" />, afspraken laden.</translation>
 <translation id="3932043219784172185">Geen apparaat aangesloten</translation>
 <translation id="3934456833412894880">Aangepast opladen staat aan. Je batterij blijft op 80% om de batterijduur te verlengen en wordt volledig opgeladen wanneer je dat nodig hebt.</translation>
 <translation id="3943857333388298514">Plak</translation>
@@ -1046,7 +1048,6 @@ Nieuwe installatie</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Terugzetten naar oude resolutie over <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
-<translation id="718361511487535372">Openen in Google Agenda</translation>
 <translation id="7188494361780961876">Menu verplaatst naar linksboven in het scherm.</translation>
 <translation id="7189412385142492784">Hoe ver weg is Venus</translation>
 <translation id="7198435252016571249">Camera uitgelijnd op de rechterbenedenhoek. Conflict met systeemoppervlak.</translation>
@@ -1055,6 +1056,7 @@ Nieuwe installatie</translation>
 <translation id="7258828758145722155">Gisteren bewerkt</translation>
 <translation id="726276584504105859">Sleep hier naartoe om het scherm te splitsen</translation>
 <translation id="7262906531272962081">Herinnering maken</translation>
+<translation id="7297440678881127227">Van <ph name="START_TIME" /> tot <ph name="END_TIME" /> <ph name="TIME_ZONE" />, <ph name="EVENT_SUMMARY" />. Selecteer de afspraak voor meer informatie in Google Agenda.</translation>
 <translation id="7302889331339392448">Live ondertiteling staat uit.</translation>
 <translation id="7303365578352795231">Je vraag wordt beantwoord op een ander apparaat.</translation>
 <translation id="7305884605064981971">EDGE</translation>

@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">Жылнаама</translation>
 <translation id="1153356358378277386">Жупташкан түзмөктөр</translation>
 <translation id="1165712434476988950">Жаңыртууну иштетүү үчүн түзмөктү өчүрүп күйгүзүү талап кылынат.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">USB-C кабели дисплейлерге туура туташпашы мүмкүн</translation>
 <translation id="1175572348579024023">Сыдыруу</translation>
 <translation id="1178581264944972037">Бир азга токтотуу</translation>
@@ -55,10 +56,6 @@
 <translation id="1247519845643687288">Акыркы колдонмолор</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> аркылуу кубатталууда</translation>
 <translation id="1255033239764210633">Аба ырайы кандай?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> – 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Google Жылнаамада толук маалыматты көрүү үчүн тандаңыз.</translation>
 <translation id="1267032506238418139">Кыска жол өзгөртүлдү</translation>
 <translation id="1269405891096105529">Сырткы түзмөктөр Конок режиминде колдоого алынбайт</translation>
 <translation id="1270290102613614947">Экрандагы баскычтоп өчүрүлдү</translation>
@@ -84,7 +81,7 @@
 <translation id="1341651618736211726">Кошумча</translation>
 <translation id="1346748346194534595">Оң</translation>
 <translation id="1351937230027495976">Менюну жыйыштыруу</translation>
-<translation id="1364382257761975320">Chromebook'тун кулпусун ачуу үчүн манжаңыздын изин колдонуңуз</translation>
+<translation id="1364382257761975320">Chromebook'тун кулпусун манжаңыздын изи менен ачыңыз</translation>
 <translation id="1372545819342940910">Иш тактаны кийинкиге сактоо</translation>
 <translation id="1383597849754832576">Кеп файлдары жүктөлүп алынган жок. Кийинчерээк кайталаңыз.</translation>
 <translation id="1383876407941801731">Издөө</translation>
@@ -124,6 +121,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Switch Access функциясын Жөндөөлөр &gt; Атайын мүмкүнчүлүктөр бөлүмүнөн өчүрүүгө болот.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> түзмөк</translation>
+<translation id="1639239467298939599">Жүктөлүүдө</translation>
 <translation id="1654477262762802994">Айтып издеп баштоо</translation>
 <translation id="1668469839109562275">Камтылган VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> калды</translation>
@@ -242,7 +240,7 @@
 <translation id="2375445874393996153">Google Жардамчы менен экрандагыны издөө мындан ары колдоого алынбайт.</translation>
 <translation id="2390318262976603432">Тил жөндөөлөрү</translation>
 <translation id="240006516586367791">Медианы башкаруу элементтери</translation>
-<translation id="2402411679569069051">Chromebook'тун кулпусун ачуу үчүн манжаңыздын изин колдонуңуз же телефонуңуздун кулпусун ачыңыз</translation>
+<translation id="2402411679569069051">Chromebook'тун кулпусун манжаңыздын изи менен ачыңыз же телефонуңуздун кулпусун ачыңыз</translation>
 <translation id="2405664212338326887">Туташкан жок</translation>
 <translation id="2408955596600435184">PIN кодуңузду киргизиңиз</translation>
 <translation id="2412593942846481727">Жаңы версия бар</translation>
@@ -1049,7 +1047,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> кийин эски чечилишине кайтарылат</translation>
 <translation id="7180611975245234373">Жаңылоо</translation>
-<translation id="718361511487535372">Google жылнаамада ачуу</translation>
 <translation id="7188494361780961876">Меню экрандын жогорку сол бурчуна жылдырылды.</translation>
 <translation id="7189412385142492784">Венера канчалык алыс жайгашкан?</translation>
 <translation id="7198435252016571249">Камера төмөнкү оң бурчка кадалды. Тутумдун платформасына туура келген жок.</translation>

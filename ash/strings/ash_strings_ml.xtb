@@ -56,10 +56,6 @@
 <translation id="1247519845643687288">അടുത്തിടെ ലോഞ്ച് ചെയ്ത ആപ്പുകൾ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> എന്നതിൽ നിന്നും ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="1255033239764210633">കാലാവസ്ഥ എങ്ങനെയുണ്ട്?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> മുതൽ 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" /> വരെ, 
-        <ph name="EVENT_SUMMARY" />. കൂടുതൽ വിശദാംശങ്ങൾക്ക് Google Calendar-ൽ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="1267032506238418139">കുറുക്കുവഴി മാറ്റം</translation>
 <translation id="1269405891096105529">അതിഥി മോഡിൽ പെരിഫറൽ പിന്തുണയ്‌ക്കുന്നില്ല</translation>
 <translation id="1270290102613614947">ഓൺ-സ്‌ക്രീൻ കീബോർഡ് പ്രവർത്തനരഹിതമാക്കി</translation>
@@ -125,6 +121,7 @@
 <translation id="1620510694547887537">ക്യാമറ</translation>
 <translation id="1632985212731562677">ക്രമീകരണം &gt; ഉപയോഗസഹായി എന്നതിൽ 'സ്വിച്ച് ആക്‌സസ്' പ്രവർത്തനരഹിതമാക്കാം.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ഉപകരണങ്ങൾ</translation>
+<translation id="1639239467298939599">ലോഡുചെയ്യുന്നു</translation>
 <translation id="1654477262762802994">ഒരു ശബ്‌ദ ചോദ്യം ആരംഭിക്കുക</translation>
 <translation id="1668469839109562275">ബിൽറ്റ് ഇൻ VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ശേഷിക്കുന്നു</translation>
@@ -1050,7 +1047,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />-ൽ പഴയ റെസല്യൂഷനിലേക്ക് മാറ്റുന്നു</translation>
 <translation id="7180611975245234373">റീഫ്രഷ് ചെയ്യുക</translation>
-<translation id="718361511487535372">Google Calendar-ൽ തുറക്കുക</translation>
 <translation id="7188494361780961876">സ്‌ക്രീനിന്റെ മുകളിൽ ഇടത് കോണിലേക്ക് മെനു നീക്കിയിരിക്കുന്നു.</translation>
 <translation id="7189412385142492784">ശുക്രനിലേക്ക് എത്ര ദൂരമുണ്ട്</translation>
 <translation id="7198435252016571249">താഴെ വലത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു. സിസ്റ്റം സർഫേസിനെ ഓവർലാപ്പ് ചെയ്യുന്നു.</translation>

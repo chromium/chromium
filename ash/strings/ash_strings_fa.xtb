@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">تقویم</translation>
 <translation id="1153356358378277386">دستگاه‌های مرتبط‌شده</translation>
 <translation id="1165712434476988950">دستگاه باید برای اعمال به‌روزرسانی بازراه‌اندازی شود.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />،<ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">‏کابل USB-C شما ممکن است نتواند درست به نمایشگرها وصل شود</translation>
 <translation id="1175572348579024023">پیمایش</translation>
 <translation id="1178581264944972037">مکث</translation>
@@ -55,10 +56,6 @@
 <translation id="1247519845643687288">برنامه‌های اخیر</translation>
 <translation id="1252999807265626933">در حال شارژ شدن از <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">‏?‎What's the weather (آب‌وهوا چطور است؟)</translation>
-<translation id="1262870540683925850">‏<ph name="START_TIME" /> تا 
-        <ph name="END_TIME" />، 
-        <ph name="TIME_ZONE" />، 
-        <ph name="EVENT_SUMMARY" />. برای جزئیات بیشتر در «تقویم Google» انتخاب کنید.</translation>
 <translation id="1267032506238418139">تغییر میان‌بر</translation>
 <translation id="1269405891096105529">دستگاه جانبی در «حالت مهمان» پشتیبانی نمی‌شود</translation>
 <translation id="1270290102613614947">صفحه‌کلید مجازی غیرفعال شد</translation>
@@ -124,6 +121,7 @@
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1632985212731562677">می‌توانید «دسترسی کلیدی» را در «تنظیمات &gt; دسترس‌پذیری» غیرفعال کنید.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> دستگاه</translation>
+<translation id="1639239467298939599">بارگیری</translation>
 <translation id="1654477262762802994">شروع پُرسمان صوتی</translation>
 <translation id="1668469839109562275">‏VPN داخلی</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی‌مانده</translation>
@@ -1049,7 +1047,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">برگرداندن به وضوح قدیمی در <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">بازخوانی</translation>
-<translation id="718361511487535372">‏باز کردن در «تقویم Google»</translation>
 <translation id="7188494361780961876">منو به گوشه راست بالای صفحه منتقل شد.</translation>
 <translation id="7189412385142492784">‏How far is Venus (فاصله سیاره ناهید از ما چقدر است)</translation>
 <translation id="7198435252016571249">دوربین به گوشه پایین سمت راست چسبید. تداخلی با سطح سیستم روی داد.</translation>

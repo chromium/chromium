@@ -65,6 +65,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="1434356225517321998">Jou blaaier word bestuur. <ph name="BEGIN_LINK" />Besonderhede<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Versteek wagwoord</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> items</translation>
+<translation id="1450170672351507823">Standaardbeskerming is aan. Gebruik verbeterde beskerming vir selfs nog meer sekuriteit.</translation>
 <translation id="149095475893949513">Hierdie webwerf probeer tans om 'n opstellingprofiel af te laai.</translation>
 <translation id="1491277525950327607">Dubbeltik om instelling te wissel</translation>
 <translation id="1492417797159476138">Jy het hierdie gebruikernaam reeds vir hierdie werf gestoor</translation>
@@ -162,6 +163,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="236977714248711277">Werwe kan nie webkoekies gebruik om jou blaai-ervaring beter te maak nie, byvoorbeeld, om jou aangemeld te hou of om items in jou inkopiemandjie te onthou nie.
 
 Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld om advertensies te personaliseer nie.</translation>
+<translation id="2375243552872247702">Sien inhoud vir jou</translation>
 <translation id="2381405137052800939">Basiese beginsels</translation>
 <translation id="2386793615875593361">1 gekies</translation>
 <translation id="2421004566762153674">Blokkeer tans derdeparty-webkoekies</translation>
@@ -601,6 +603,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6136914049981179737">Sekondes gelede</translation>
 <translation id="6144589619057374135">Maak ${url} in Incognitomodus oop</translation>
 <translation id="6149061208933997199">Gebruik wagwoord</translation>
+<translation id="6152406514676263192">Sinkroniseer vir die mees relevante inhoud gegrond op jou belangstellings.</translation>
 <translation id="6159839020698489198">opsioneel</translation>
 <translation id="6177442314419606057">Soek in Chrome</translation>
 <translation id="6184086493125982861">Wys oortjies</translation>
@@ -749,6 +752,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7189598951263744875">Deel …</translation>
 <translation id="7192050974311852563">Begin aanteken</translation>
 <translation id="7203585745079012652">Praat antwoorde terug</translation>
+<translation id="7207023858769244910">Sinkroniseer om inhoud gegrond op jou belangstellings te kry.</translation>
 <translation id="7207383424303353046">Nuut: Maak werwe outomaties in Chrome oop deur dit jou verstekblaaierprogram te maak. <ph name="BEGIN_LINK" />Maak instellings oop<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Ongeldige kaartbynaam</translation>
 <translation id="722454870747268814">Nuwe incognito-oortjie</translation>

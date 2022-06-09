@@ -110,6 +110,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="1513352483775369820">Favoritos e histórico da Web</translation>
 <translation id="1513814250881909472">Sincronizar para acessar suas guias de outros dispositivos</translation>
 <translation id="1513858653616922153">Excluir senha</translation>
+<translation id="1514552811327923157">Solicitação do Sandbox de privacidade aberta no tamanho máximo</translation>
 <translation id="1518421282666914498">GIF de emoticon <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Ativado hoje</translation>
 <translation id="1538801903729528855">Tenha uma experiência de voz melhor na Web</translation>
@@ -321,6 +322,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2711073837061989559">Testes</translation>
 <translation id="2718352093833049315">Apenas com Wi-Fi</translation>
 <translation id="2718846868787000099">Os sites que você visita podem ver suas preferências para exibir conteúdo nos seus idiomas preferidos</translation>
+<translation id="2722945394406572875">Solicitação do Sandbox de privacidade fechada</translation>
 <translation id="2723001399770238859">áudio</translation>
 <translation id="2732063072010454421">Tenha uma melhor experiência de pesquisa por voz</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="4227318652298512614">Siga os sites que quiser</translation>
 <translation id="4242533952199664413">Abrir configurações.</translation>
 <translation id="4248098802131000011">Manter suas senhas protegidas contra violações de dados e outros problemas de segurança</translation>
+<translation id="424864128008805179">Sair do Google Chrome?</translation>
 <translation id="4249955472157341256">Ordenar por mais recentes</translation>
 <translation id="4250229828105606438">Captura de tela</translation>
 <translation id="4256782883801055595">Licenças de código aberto</translation>
@@ -653,7 +656,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="4594952190837476234">Esta página off-line é de <ph name="CREATION_TIME" /> e pode ser diferente da versão on-line.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmar sua identidade</translation>
-<translation id="4627165777145349100">Mais sobre esta página</translation>
 <translation id="4634124774493850572">Usar senha</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 senha comprometida}one{# senha comprometida}other{# senhas comprometidas}}</translation>
 <translation id="4650364565596261010">Padrão do sistema</translation>
@@ -895,6 +897,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5906513782029855931">Ao saber os URLs de sites, o Google Assistente pode ajudar você a realizar tarefas. É possível desativar o Assistente nas configurações do Chrome.</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5919204609460789179">Atualize <ph name="PRODUCT_NAME" /> para iniciar a sincronização</translation>
+<translation id="593625682991400408">Durante os testes, o Chrome busca maneiras de limitar ocorrências de spam, fraude e compartilhamento entre sites. Além disso, ele faz uma <ph name="BEGIN_LINK" />estimativa dos seus interesses<ph name="END_LINK" />, que os sites podem usar para mostrar anúncios. Você pode gerenciar seus interesses nas configurações.</translation>
 <translation id="5938820472109305350">Adicionar <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Usando o Google para pesquisar</translation>
 <translation id="5945035219773565305">Recomendação atual:  <ph name="RECOMMENDATION" /></translation>
@@ -1513,6 +1516,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="9106148373857059373">Fluxo para adicionar aos favoritos fechado</translation>
 <translation id="9108312223223904744">Smartphone como um suporte de chave de segurança</translation>
 <translation id="9108808586816295166">DNS seguro pode não estar disponível o tempo todo</translation>
+<translation id="9128984223251192329">Solicitação do Sandbox de privacidade aberta na metade da altura</translation>
 <translation id="9133397713400217035">Navegar off-line</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9148126808321036104">Faça login novamente</translation>

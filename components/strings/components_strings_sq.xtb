@@ -702,7 +702,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2854764410992194509">Ofruesit e shërbimeve të internetit (ISP-të)</translation>
 <translation id="2856444702002559011">Sulmuesit mund të përpiqen të vjedhin informacionet e tua nga <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (për shembull, fjalëkalimet, mesazhet ose kartat e kreditit). <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Ky sajt shfaq reklama ndërhyrëse ose mashtruese.</translation>
-<translation id="286512204874376891">Një kartë virtuale fsheh kartën tënde reale për të të mbrojtur nga mashtrimi i mundshëm.<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Miqësor</translation>
 <translation id="28761159517501904">Filmat</translation>
 <translation id="2876489322757410363">Po del nga modaliteti "i fshehtë" për të paguar nëpërmjet një aplikacioni të jashtëm. Të vazhdohet?</translation>
@@ -1333,7 +1332,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4607603470419975064">Butoni "Shiko këshilla për Chrome", shtyp Enter për të mësuar për veçoritë e Chrome</translation>
 <translation id="4607608436550361748">Shiko këshillat për Chrome</translation>
 <translation id="4617273035598175554">Softuerët për grafika dhe animim</translation>
-<translation id="4627165777145349100">Më shumë rreth kësaj faqeje</translation>
 <translation id="4627675673814409125">Kjo politikë nuk mund të caktohet në nivelin e profilit të Chrome dhe do të shpërfillet.</translation>
 <translation id="4628948037717959914">Fotografia</translation>
 <translation id="4631649115723685955">Oferta e kthimit të parave është e lidhur</translation>
@@ -1867,7 +1865,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6061154937977953833">Mundja</translation>
 <translation id="6064217302520318294">Kyçja e ekranit</translation>
 <translation id="6064602040258638498">Kuponët dhe ofertat e zbritjeve</translation>
-<translation id="6078813287646374487">Shfaq më shumë informacione për këtë faqe</translation>
 <translation id="6080696365213338172">Je qasur në përmbajtje duke përdorur një certifikatë të dhënë nga administratori. Të dhënat që jep për <ph name="DOMAIN" /> mund të zbulohen nga administratori yt.</translation>
 <translation id="6087312102907839798">Kërkime të ngjashme</translation>
 <translation id="6094273045989040137">Shëno</translation>
@@ -2790,6 +2787,7 @@ Detaje shtesë:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> është kodi për <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Shtoje këtë skedë te faqeshënuesit</translation>
 <translation id="8751426954251315517">Provo përsëri herën tjetër</translation>
+<translation id="8757526089434340176">Disponohet ofertë e Google Pay</translation>
 <translation id="8758885506338294482">Videolojërat konkurruese</translation>
 <translation id="8759274551635299824">Kjo kartë ka skaduar</translation>
 <translation id="87601671197631245">Ky sajt përdor një konfigurim të vjetruar të sigurisë, i cili mund t'i ekspozojë informacionet e tua (p.sh. fjalëkalimet, mesazhet ose kartat e kreditit) kur dërgohen te ky sajt.</translation>

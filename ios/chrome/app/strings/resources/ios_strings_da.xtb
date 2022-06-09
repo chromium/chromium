@@ -65,6 +65,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1434356225517321998">Din browser administreres. <ph name="BEGIN_LINK" />Info<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Skjul adgangskode</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementer</translation>
+<translation id="1450170672351507823">Standardbeskyttelse er aktiveret. Du kan øge sikkerheden ved at bruge forbedret beskyttelse.</translation>
 <translation id="149095475893949513">Dette website forsøger at downloade en konfigurationsprofil.</translation>
 <translation id="1491277525950327607">Tryk to gange for at skifte indstilling</translation>
 <translation id="1492417797159476138">Du har allerede gemt dette brugernavn for dette website</translation>
@@ -162,6 +163,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="236977714248711277">Websites kan ikke anvende cookies til at forbedre din browseroplevelse ved f.eks. at sørge for, at du forbliver logget ind, eller ved at huske varerne i din kurv.
 
 Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige websites for f.eks. at tilpasse annoncer.</translation>
+<translation id="2375243552872247702">Få personligt tilpasset indhold</translation>
 <translation id="2381405137052800939">Grundlæggende</translation>
 <translation id="2386793615875593361">1 valgt</translation>
 <translation id="2421004566762153674">Blokering af cookies fra tredjeparter</translation>
@@ -601,6 +603,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6136914049981179737">Sek. siden</translation>
 <translation id="6144589619057374135">Åbn ${url} i inkognito</translation>
 <translation id="6149061208933997199">Brug adgangskoden</translation>
+<translation id="6152406514676263192">Synkroniser for at få det mest relevante indhold baseret på dine interesser.</translation>
 <translation id="6159839020698489198">valgfrit</translation>
 <translation id="6177442314419606057">Søg i Chrome</translation>
 <translation id="6184086493125982861">Vis faner</translation>
@@ -749,6 +752,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7189598951263744875">Del...</translation>
 <translation id="7192050974311852563">Start logføring</translation>
 <translation id="7203585745079012652">Giv talte svar</translation>
+<translation id="7207023858769244910">Synkroniser for at få indhold baseret på dine interesser.</translation>
 <translation id="7207383424303353046">Nyt! Åbn automatisk websites i Chrome ved at gøre den til din standardbrowser. <ph name="BEGIN_LINK" />Åbn indstillinger<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Kortets kaldenavn er ugyldigt</translation>
 <translation id="722454870747268814">Ny inkognitofane</translation>

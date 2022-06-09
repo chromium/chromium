@@ -702,7 +702,6 @@
 <translation id="2854764410992194509">ผู้ให้บริการอินเทอร์เน็ต (ISP)</translation>
 <translation id="2856444702002559011">ผู้โจมตีอาจพยายามขโมยข้อมูลจาก <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (ตัวอย่างเช่น รหัสผ่าน ข้อความ หรือบัตรเครดิต) <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">เว็บไซต์นี้แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
-<translation id="286512204874376891">บัตรเสมือนจะอำพรางบัตรจริงไว้เพื่อช่วยปกป้องคุณจากการฉ้อโกงที่อาจเกิดขึ้น <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">เป็นกันเอง</translation>
 <translation id="28761159517501904">ภาพยนตร์</translation>
 <translation id="2876489322757410363">กำลังออกจากโหมดไม่ระบุตัวตนเพื่อชำระเงินผ่านแอปพลิเคชันภายนอก ต้องการดำเนินการต่อไหม</translation>
@@ -1329,7 +1328,6 @@
 <translation id="4607603470419975064">ปุ่มดูเคล็ดลับในการใช้ Chrome กด Enter เพื่อดูข้อมูลเกี่ยวกับฟีเจอร์ต่างๆ ของ Chrome</translation>
 <translation id="4607608436550361748">ดูเคล็ดลับในการใช้ Chrome</translation>
 <translation id="4617273035598175554">ซอฟต์แวร์กราฟิกและแอนิเมชัน</translation>
-<translation id="4627165777145349100">ข้อมูลเพิ่มเติมเกี่ยวกับหน้านี้</translation>
 <translation id="4627675673814409125">ตั้งค่านโยบายนี้ในระดับโปรไฟล์ Chrome ไม่ได้ และระบบจะไม่สนใจ</translation>
 <translation id="4628948037717959914">รูปภาพ</translation>
 <translation id="4631649115723685955">บริการคืนเงินที่ลิงก์อยู่</translation>
@@ -1864,7 +1862,6 @@
 <translation id="6061154937977953833">มวยปล้ำ</translation>
 <translation id="6064217302520318294">ล็อกหน้าจอ</translation>
 <translation id="6064602040258638498">คูปองและข้อเสนอส่วนลด</translation>
-<translation id="6078813287646374487">แสดงข้อมูลเพิ่มเติมเกี่ยวกับหน้านี้</translation>
 <translation id="6080696365213338172">คุณเข้าถึงเนื้อหาโดยใช้ใบรับรองที่ผู้ดูแลระบบออกให้ ข้อมูลที่คุณให้กับ <ph name="DOMAIN" /> อาจถูกสกัดกั้นโดยผู้ดูแลระบบ</translation>
 <translation id="6087312102907839798">การค้นหาที่เกี่ยวข้อง</translation>
 <translation id="6094273045989040137">ใส่หมายเหตุ</translation>
@@ -2789,6 +2786,7 @@
 <translation id="8742371904523228557">รหัสสำหรับ <ph name="ORIGIN" /> คือ <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">บุ๊กมาร์กแท็บนี้</translation>
 <translation id="8751426954251315517">โปรดลองอีกครั้งในคราวหน้า</translation>
+<translation id="8757526089434340176">มีข้อเสนอจาก Google Pay</translation>
 <translation id="8758885506338294482">วิดีโอเกมแบบแข่งขัน</translation>
 <translation id="8759274551635299824">บัตรนี้หมดอายุแล้ว</translation>
 <translation id="87601671197631245">เว็บไซต์นี้ใช้การกำหนดค่าความปลอดภัยที่ล้าสมัย ซึ่งอาจเปิดเผยข้อมูลของคุณ (เช่น รหัสผ่าน ข้อความ หรือบัตรเครดิต) เมื่อมีการส่งไปยังเว็บไซต์นี้</translation>

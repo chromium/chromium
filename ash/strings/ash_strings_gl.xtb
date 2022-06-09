@@ -55,10 +55,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1247519845643687288">Aplicacións recentes</translation>
 <translation id="1252999807265626933">Cargando a través de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Que tempo fai?</translation>
-<translation id="1262870540683925850">De <ph name="START_TIME" /> a 
-<ph name="END_TIME" />, 
-<ph name="TIME_ZONE" />, 
-<ph name="EVENT_SUMMARY" />. Seleccionar para ver máis detalles en Google Calendar.</translation>
 <translation id="1267032506238418139">Cambio de atallos</translation>
 <translation id="1269405891096105529">O periférico non está dispoñible no modo de convidado</translation>
 <translation id="1270290102613614947">Teclado en pantalla desactivado</translation>
@@ -124,6 +120,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1632985212731562677">A función Acceso con interruptores pódese desactivar en Configuración &gt; Accesibilidade.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
+<translation id="1639239467298939599">Cargando</translation>
 <translation id="1654477262762802994">Iniciar unha consulta de voz</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
 <translation id="1677472565718498478">Tempo restante: <ph name="TIME" /></translation>
@@ -239,6 +236,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2367186422933365202">Non se puido iniciar sesión no Chromebook</translation>
 <translation id="2369165858548251131">"Ola" en chinés</translation>
+<translation id="2375445874393996153">A función de buscar co Asistente de Google o que aparece na pantalla xa non está dispoñible.</translation>
 <translation id="2390318262976603432">Opcións de configuración local</translation>
 <translation id="240006516586367791">Controis multimedia</translation>
 <translation id="2402411679569069051">Para desbloquear o Chromebook, utiliza a impresión dixital ou desbloquea o teléfono</translation>
@@ -1049,7 +1047,6 @@ Nova instalación</translation>
 <translation id="7165278925115064263">Alt+Maiús+K</translation>
 <translation id="7168224885072002358">Volvendo á resolución anterior dentro de <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualizar</translation>
-<translation id="718361511487535372">Abrir en Google Calendar</translation>
 <translation id="7188494361780961876">O menú moveuse á esquina superior esquerda da pantalla.</translation>
 <translation id="7189412385142492784">A que distancia está Venus?</translation>
 <translation id="7198435252016571249">Cámara axustada á esquina inferior dereita. Conflito coa plataforma do sistema.</translation>

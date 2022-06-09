@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Tür</translation>
 <translation id="1254593899333212300">Doğrudan İnternet bağlantısı</translation>
 <translation id="1272293450992660632">PIN değerleri eşleşmiyor.</translation>
+<translation id="127650757582748357">BZIP2 sıkıştırılmış arşivi</translation>
 <translation id="1280820357415527819">Mobil ağlar aranıyor</translation>
 <translation id="1291603679744561561">SIM Kilitlendi</translation>
 <translation id="1293556467332435079">Dosyalar</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Peynir</translation>
 <translation id="2781645665747935084">Belçika dili</translation>
 <translation id="2782104745158847185">Linux uygulaması yüklenirken hata oluştu</translation>
+<translation id="2788520643285360081">7-Zip arşivi</translation>
 <translation id="2803375539583399270">PIN girin</translation>
 <translation id="2820957248982571256">Taranıyor...</translation>
+<translation id="2822595620066756134">GZIP sıkıştırılmış arşivi</translation>
 <translation id="2830077785865012357">Çince Zhuyin</translation>
 <translation id="2843806747483486897">Varsayılanı değiştir...</translation>
 <translation id="2850124913210091882">Yedekle</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Litvanca</translation>
 <translation id="3587482841069643663">Tümü</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> dosyası, çevrimdışı kullanılabilir hale getirilemedi</translation>
+<translation id="3593874215226880809">LZIP sıkıştırılmış arşivi</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" />, <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Kanada Fransızcası</translation>
 <translation id="3606220979431771195">Türkçe-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> işlemi iptal edilecek.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> ağdan <ph name="NETWORK_INDEX" />., <ph name="NETWORK_NAME" />, Etkinleştirilmemiş, <ph name="CONNECTION_STATUS" />, Sinyal Gücü %<ph name="SIGNAL_STRENGTH" />, Ayrıntılar</translation>
 <translation id="3691184985318546178">Seylanca</translation>
+<translation id="3703620396751288986">ZIP arşivi</translation>
 <translation id="3726463242007121105">Bu cihaz, dosya sistemi desteklenmediğinden açılamıyor.</translation>
 <translation id="3727148787322499904">Bu ayarı değiştirmek tüm paylaşılan ağları etkiler</translation>
 <translation id="3737576078404241332">Kenar çubuğundan kaldır</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Çekçe Qwerty klavye</translation>
 <translation id="4656777537938206294">Dosyaları çevrimdışı kullanıma sunma</translation>
 <translation id="4658782175094886150">Karda bir kişi</translation>
+<translation id="4661996069183330363">TAR arşivi</translation>
 <translation id="4669606053856530811">"<ph name="SOURCE_NAME" />" kaynağının üyeleri, bu öğeler kendileriyle paylaşılmadığı sürece erişimi kaybedecektir.</translation>
 <translation id="467809019005607715">Google Slaytlar</translation>
 <translation id="4690246192099372265">İsveççe</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">Mezun</translation>
 <translation id="8912078710089354287">Kuyruğunu sallayan bir köpek</translation>
 <translation id="8919081441417203123">Danca</translation>
+<translation id="8965273390142984105">LZOP sıkıştırılmış arşivi</translation>
 <translation id="8965697826696209160">Yeterli alan yok.</translation>
 <translation id="8997962250644902079">Çince (Geleneksel) Pinyin</translation>
 <translation id="9003940392834790328">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor, Ayrıntılar</translation>

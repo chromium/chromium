@@ -348,6 +348,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2842985007712546952">Parent folder</translation>
 <translation id="2856503607207334158">Sign-in failed</translation>
 <translation id="2860954141821109167">Make sure that a phone app is enabled on this device</translation>
+<translation id="2861923151411510142">Some Chrome features won\u2019t be available anymore</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Preload pages</translation>
 <translation id="2888126860611144412">About Chrome</translation>
@@ -587,6 +588,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4227318652298512614">Follow any sites you want</translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="4248098802131000011">Keep your passwords safe from data breaches and other security issues</translation>
+<translation id="424864128008805179">Sign out of Chrome?</translation>
 <translation id="4249955472157341256">Sort by Latest</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Open-source licences</translation>
@@ -654,7 +656,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4594952190837476234">This offline page is from <ph name="CREATION_TIME" /> and may differ from the online version.</translation>
 <translation id="4616150815774728855">Open <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
-<translation id="4627165777145349100">More about this page</translation>
 <translation id="4634124774493850572">Use password</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 compromised password}other{# compromised passwords}}</translation>
 <translation id="4650364565596261010">System default</translation>
@@ -793,7 +794,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5342314432463739672">Permission requests</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
 <translation id="5368227114232678694">To browse privately on this device, try out Incognito</translation>
-<translation id="5371717687506906963">Privacy Sandbox prompt</translation>
 <translation id="5375577065097716013">Search image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Reaction changed</translation>
 <translation id="5401851137404501592">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site.</translation>
@@ -892,6 +892,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5869522115854928033">Saved passwords</translation>
 <translation id="5869789175361934029">Continue from another device</translation>
 <translation id="587735546353481577">To follow a site, go to the site, open the Chrome menu and tap Follow.</translation>
+<translation id="5879072387416556377">Get better suggestions</translation>
 <translation id="5880748256563468367">Go to feed</translation>
 <translation id="5884076754568147479">To help you complete tasks, Google will receive the URLs and contents of sites on which you use Assistant, as well as information that you submit through Assistant</translation>
 <translation id="5906513782029855931">Knowing the URLs of sites allows Google Assistant to help you complete tasks. You can turn off Assistant in Chrome settings.</translation>
@@ -1234,6 +1235,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="770741401784017797">Creating GIF</translation>
 <translation id="7707922173985738739">Use mobile data</translation>
 <translation id="7709094866268987903">Interests that you removed will appear here</translation>
+<translation id="7709918231054955894">Get all your tabs</translation>
 <translation id="7725024127233776428">Pages that you bookmark appear here</translation>
 <translation id="7757787379047923882">Text shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Select date and time</translation>
@@ -1429,6 +1431,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8656747343598256512">Sign in to this site and Chrome with your Google Account. You can turn on sync later.</translation>
 <translation id="8659579665266920523">How to search with Chrome</translation>
 <translation id="8662811608048051533">Signs you out of most sites.</translation>
+<translation id="8664215986015753476">Use Chrome your way</translation>
 <translation id="8664979001105139458">File name already exists</translation>
 <translation id="8666759526542103597">About browser-based ad personalisation</translation>
 <translation id="8667760277771450375">We’re exploring ways to restrict cross-site tracking while enabling sites to stop ad spam and fraud.</translation>

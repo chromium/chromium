@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Stipendijas un finansiāla palīdzība</translation>
 <translation id="1048785276086539861">Ja rediģēsiet piezīmes, dokuments atkal pāries vienas lapas skatā.</translation>
 <translation id="1050038467049342496">Aizveriet citas lietotnes</translation>
+<translation id="1053959602163383901">Jūs izvēlējāties veikt verifikāciju ar autentifikatora ierīci vietnēs, kas izmanto <ph name="PROVIDER_ORIGIN" /> pakalpojumus. Šis pakalpojumu sniedzējs, iespējams, ir saglabājis informāciju par jūsu maksājuma veidu, un jūs varat <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Pievienošanas atsaukšana</translation>
 <translation id="1056663316309890343">Fotoattēlu apstrādes programmatūra</translation>
 <translation id="1056898198331236512">Brīdinājums</translation>
@@ -426,6 +427,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2053111141626950936">Lapas netiks tulkotas no šīs valodas: <ph name="LANGUAGE" /></translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Ja šī vadīkla ir ieslēgta un statuss ir aktīvs, pārlūkā Chrome tiek noteikts, kurai lielai lietotāju grupai jeb kohortai jūsu nesenās pārlūkošanas darbības līdzinās visvairāk. Reklāmdevēji var atlasīt grupai atbilstošas reklāmas, bet jūsu pārlūkošanas darbības tiek privāti glabātas jūsu ierīcē. Jūsu grupas dati tiek atjaunināti katru dienu.}=1{Ja šī vadīkla ir ieslēgta un statuss ir aktīvs, pārlūkā Chrome tiek noteikts, kurai lielai lietotāju grupai jeb kohortai jūsu nesenās pārlūkošanas darbības līdzinās visvairāk. Reklāmdevēji var atlasīt grupai atbilstošas reklāmas, bet jūsu pārlūkošanas darbības tiek privāti glabātas jūsu ierīcē. Jūsu grupas dati tiek atjaunināti katru dienu.}zero{Ja šī vadīkla ir ieslēgta un statuss ir aktīvs, pārlūkā Chrome tiek noteikts, kurai lielai lietotāju grupai jeb kohortai jūsu nesenās pārlūkošanas darbības līdzinās visvairāk. Reklāmdevēji var atlasīt grupai atbilstošas reklāmas, bet jūsu pārlūkošanas darbības tiek privāti glabātas jūsu ierīcē. Jūsu grupas dati tiek atjaunināti ik pēc {NUM_DAYS} dienām.}one{Ja šī vadīkla ir ieslēgta un statuss ir aktīvs, pārlūkā Chrome tiek noteikts, kurai lielai lietotāju grupai jeb kohortai jūsu nesenās pārlūkošanas darbības līdzinās visvairāk. Reklāmdevēji var atlasīt grupai atbilstošas reklāmas, bet jūsu pārlūkošanas darbības tiek privāti glabātas jūsu ierīcē. Jūsu grupas dati tiek atjaunināti ik pēc {NUM_DAYS} dienām.}other{Ja šī vadīkla ir ieslēgta un statuss ir aktīvs, pārlūkā Chrome tiek noteikts, kurai lielai lietotāju grupai jeb kohortai jūsu nesenās pārlūkošanas darbības līdzinās visvairāk. Reklāmdevēji var atlasīt grupai atbilstošas reklāmas, bet jūsu pārlūkošanas darbības tiek privāti glabātas jūsu ierīcē. Jūsu grupas dati tiek atjaunināti ik pēc {NUM_DAYS} dienām.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ieteikums}zero{# ieteikumi}one{# ieteikums}other{# ieteikumi}}</translation>
+<translation id="2066915425250589881">pieprasīt tās dzēšanu</translation>
 <translation id="2068528718802935086">Zīdaiņi un mazi bērni</translation>
 <translation id="2071156619270205202">Šī karte neatbilst virtuālās kartes numuram.</translation>
 <translation id="2071692954027939183">Paziņojumi tika automātiski bloķēti, jo jūs tos parasti neatļaujat.</translation>
@@ -582,6 +584,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2512101340618156538">Atļauja nav piešķirta (noklusējums)</translation>
 <translation id="2512413427717747692">Poga “Iestatīt Chrome kā noklusējuma pārlūku”; nospiediet taustiņu Enter, lai iestatītu Chrome kā sistēmas noklusējuma pārlūku iOS iestatījumos.</translation>
 <translation id="2515629240566999685">Pārbaudiet signālu savā apkaimē.</translation>
+<translation id="2515761554693942801">Jūs izvēlējāties veikt verifikāciju ar Touch ID tīmekļa vietnēs, kas izmanto <ph name="PROVIDER_ORIGIN" /> pakalpojumus. Šis pakalpojumu sniedzējs, iespējams, ir saglabājis informāciju par jūsu maksājuma veidu, un jūs varat <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Skavojums apakšējā labajā malā</translation>
 <translation id="2521736961081452453">Izveidot veidlapu</translation>
 <translation id="2523886232349826891">Tiks saglabāta tikai šajā ierīcē</translation>
@@ -703,7 +706,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2854764410992194509">Interneta pakalpojumu sniedzēji</translation>
 <translation id="2856444702002559011">Iespējams, uzbrucēji mēģina nozagt jūsu informāciju no vietnes <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (piemēram, paroles, ziņojumus vai kredītkaršu datus). <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="2859806420264540918">Šajā vietnē tiek rādītas traucējošas vai maldinošas reklāmas.</translation>
-<translation id="286512204874376891">Virtuāla karte nomaskē jūsu patieso karti, lai efektīvāk aizsargātu jūs pret iespējamu krāpšanu. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Draudzīga</translation>
 <translation id="28761159517501904">Filmas</translation>
 <translation id="2876489322757410363">Ja maksāšanai tiks izmantota ārēja lietojumprogramma, tiks aizvērts inkognito režīms. Vai turpināt?</translation>
@@ -1335,7 +1337,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4607603470419975064">Chrome padomu skatīšanas poga. Lai uzzinātu vairāk par Chrome funkcijām, nospiediet taustiņu Enter.</translation>
 <translation id="4607608436550361748">Skatīt Chrome padomus</translation>
 <translation id="4617273035598175554">Grafikas un animācijas programmatūra</translation>
-<translation id="4627165777145349100">Vairāk par šo lapu</translation>
 <translation id="4627675673814409125">Šo politiku nevar iestatīt Chrome profila līmenī, un tā tiks ignorēta.</translation>
 <translation id="4628948037717959914">Fotoattēls</translation>
 <translation id="4631649115723685955">Saistīta skaidras naudas atmaksa</translation>
@@ -1500,6 +1501,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5051305769747448211">Komiķu uzstāšanās</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Lai nosūtītu šo failu, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}zero{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}one{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}other{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="5056549851600133418">Jums piemeklēti raksti</translation>
+<translation id="5060483733937416656">Jūs izvēlējāties veikt verifikāciju ar Windows Hello tīmekļa vietnēs, kas izmanto <ph name="PROVIDER_ORIGIN" /> pakalpojumus. Šis pakalpojumu sniedzējs, iespējams, ir saglabājis informāciju par jūsu maksājuma veidu, un jūs varat <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Vai domājāt <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Drukāšanas vēsture</translation>
 <translation id="5068234115460527047">Riska ieguldījumu fondi</translation>
@@ -1869,7 +1871,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6061154937977953833">Cīņas sports</translation>
 <translation id="6064217302520318294">Ekrāna bloķēšana</translation>
 <translation id="6064602040258638498">Kuponi un atlaižu piedāvājumi</translation>
-<translation id="6078813287646374487">Rādīt plašāku informāciju par šo lapu</translation>
 <translation id="6080696365213338172">Jūs esat piekļuvis saturam, izmantojot administratora izsniegtu sertifikātu. Datus, kurus sniedzat domēnā <ph name="DOMAIN" />, var pārtvert jūsu administrators.</translation>
 <translation id="6087312102907839798">Saistītie meklēšanas vaicājumi</translation>
 <translation id="6094273045989040137">Pievienot piezīmi</translation>
@@ -2794,6 +2795,7 @@ Papildu informācija:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ir jūsu kods vietnei <ph name="ORIGIN" />.</translation>
 <translation id="874918643257405732">Saglabāt šo cilni kā grāmatzīmi</translation>
 <translation id="8751426954251315517">Mēģiniet vēlreiz nākamajā reizē</translation>
+<translation id="8757526089434340176">Pieejams Google Pay piedāvājums</translation>
 <translation id="8758885506338294482">Videospēļu sacensības</translation>
 <translation id="8759274551635299824">Kartes derīguma termiņš ir beidzies</translation>
 <translation id="87601671197631245">Šajā vietnē tiek izmantota novecojusi drošības konfigurācija, tādēļ var tikt atklāta jūsu informācija (piemēram, paroles, ziņojumi vai kredītkaršu dati), kad tā tiek nosūtīta uz šo vietni.</translation>

@@ -214,7 +214,6 @@
 <translation id="2878387241690264070">Nag-discharge nang <ph name="RATE" /> sa loob ng <ph name="NUM_SECONDS" /> (na) segundo.</translation>
 <translation id="291142119251986300">Mga hindi kwalipikadong bahagi</translation>
 <translation id="2926057806159140518">Ilagay ang iyong username at password o i-scan ang iyong QR code</translation>
-<translation id="2928420929544864228">Tapos na ang pag-install.</translation>
 <translation id="3008341117444806826">I-REFRESH</translation>
 <translation id="3009958530611748826">Pumili ng folder kung saan magse-save</translation>
 <translation id="3017079585324758401">Background</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">Bago mag-shut down, i-powerwash ang iyong device. Kung may takip ang device mo, hintaying makumpleto ang powerwash bago isara ang takip. Posibleng umabot ng hanggang isang minuto para makumpleto ang powerwash.</translation>
 <translation id="3858860766373142691">Pangalan</translation>
 <translation id="3865414814144988605">Resolution</translation>
+<translation id="3866249974567520381">Paglalarawan</translation>
 <translation id="387301095347517405">Ang dami ng beses na na-full charge ang iyong baterya</translation>
 <translation id="3885327323343477505">Palitan ang screen saver</translation>
 <translation id="3923184630988645767">Paggamit ng data</translation>
@@ -900,6 +900,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="922179502584117429">Luma na ang kasalukuyang bersyong <ph name="VERSION_NUMBER" /></translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="952992212772159698">Hindi na-activate</translation>
 <translation id="960719561871045870">Operator code</translation>
 <translation id="982713511914535780">Patakbuhin ang pagsusuri sa Discharge</translation>

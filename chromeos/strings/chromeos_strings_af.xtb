@@ -95,6 +95,7 @@
 <translation id="1717874160321062422">Bestuur deur <ph name="FIRST_MANAGER" /> en <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Naambedieners</translation>
 <translation id="1731082422893354635">Bluetooth-raakpaneel</translation>
+<translation id="1745577949879301685">Kon nie prente laai nie. Gaan jou netwerkverbinding na of probeer weer om die prente te laai.</translation>
 <translation id="1751249301761991853">Persoonlik</translation>
 <translation id="1753496554272155572">Verlaat muurpapiervoorskou</translation>
 <translation id="175763766237925754">Goed (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -213,7 +214,6 @@
 <translation id="2878387241690264070">Het <ph name="RATE" /> ontlaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="291142119251986300">Ongekwalifiseerde komponente</translation>
 <translation id="2926057806159140518">Voer jou gebruikernaam en wagwoord in of skandeer jou QR-kode</translation>
-<translation id="2928420929544864228">Installering is voltooi.</translation>
 <translation id="3008341117444806826">HERLAAI</translation>
 <translation id="3009958530611748826">Kies 'n vouer om in te stoor</translation>
 <translation id="3017079585324758401">Agtergrond</translation>
@@ -303,6 +303,7 @@
 <translation id="385832974417157471">Powerwash jou toestel voordat jy afskakel. As jou toestel ’n deksel het, moet jy wag totdat Powerwash klaar is voordat jy die deksel toemaak. Powerwash kan tot ’n minuut neem om klaar te maak.</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3865414814144988605">Resolusie</translation>
+<translation id="3866249974567520381">Beskrywing</translation>
 <translation id="387301095347517405">Die aantal keer wat jou battery deur 'n volledige laaisiklus gegaan het</translation>
 <translation id="3885327323343477505">Verander sluimerskerm</translation>
 <translation id="3923184630988645767">Datagebruik</translation>
@@ -429,6 +430,7 @@
 <translation id="4915052247106771211">Dit sal die toestel na fabriekinstellings terugstel (Powerwash).</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4917889632206600977">Gestop – papier is op</translation>
+<translation id="491791267030419270">Wenke oor hoe om terugvoer te skryf</translation>
 <translation id="4921665434385737356">Het <ph name="RATE" /> gelaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="4930320165497208503">Gaan na <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> om 'n verbinding op te stel of op te dateer.</translation>
 <translation id="4932733599132424254">Datum</translation>
@@ -898,6 +900,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="922179502584117429">Huidige weergawe <ph name="VERSION_NUMBER" /> is verouderd</translation>
 <translation id="932327136139879170">Tuis</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Stuur terugvoer</translation>
 <translation id="952992212772159698">Nie geaktiveer nie</translation>
 <translation id="960719561871045870">Diensverskafferkode</translation>
 <translation id="982713511914535780">Laat loop ontlaaitoets</translation>

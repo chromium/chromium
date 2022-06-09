@@ -163,6 +163,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="236977714248711277">Sivustot eivät voi käyttää evästeitä selauskokemuksesi parantamiseen, esimerkiksi pitää sinua kirjautuneena tai muistaa ostoskorisi sisältöä.
 
 Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. personoidakseen mainoksia.</translation>
+<translation id="2375243552872247702">Katso sinulle tarkoitettua sisältöä</translation>
 <translation id="2381405137052800939">Perusasetukset</translation>
 <translation id="2386793615875593361">1 valittu</translation>
 <translation id="2421004566762153674">Kolmannen osapuolen evästeet estetään</translation>
@@ -602,6 +603,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6136914049981179737">Hetki sitten</translation>
 <translation id="6144589619057374135">Avaa ${url} incognito-tilassa</translation>
 <translation id="6149061208933997199">Käytä salasanaa</translation>
+<translation id="6152406514676263192">Synkronoi osuvin sisältö kiinnostuksen kohteidesi mukaan.</translation>
 <translation id="6159839020698489198">valinnainen</translation>
 <translation id="6177442314419606057">Hae Chromesta</translation>
 <translation id="6184086493125982861">Näytä välilehdet</translation>
@@ -739,6 +741,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7099761977003084116">Viimeaikaiset välilehdet</translation>
 <translation id="7102005569666697658">Ladataan… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Piilota</translation>
+<translation id="7108762695052995889">Siirry sivustolle</translation>
 <translation id="7133798577887235672">Koko nimi</translation>
 <translation id="7136892417564438900">Kamera ei ole käytettävissä</translation>
 <translation id="7153999225810839758">Lukuaika: <ph name="TIME" /> minuutti</translation>
@@ -749,6 +752,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7189598951263744875">Jaa...</translation>
 <translation id="7192050974311852563">Aloita kirjaus</translation>
 <translation id="7203585745079012652">Puhu vastaukset</translation>
+<translation id="7207023858769244910">Synkronoimalla näet kiinnostuksen kohteidesi mukaista sisältöä.</translation>
 <translation id="7207383424303353046">Uutta: Avaa sivustot Chromessa automaattisesti tekemällä siitä oletusselainsovelluksesi. <ph name="BEGIN_LINK" />Avaa Asetukset<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Virheellinen kortin lyhytnimi</translation>
 <translation id="722454870747268814">Uusi incognito-välilehti</translation>

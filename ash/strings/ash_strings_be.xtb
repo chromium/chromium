@@ -55,10 +55,6 @@
 <translation id="1247519845643687288">Нядаўнія праграмы</translation>
 <translation id="1252999807265626933">Зараджаецца ад крыніцы сілкавання <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Якое надвор'е?</translation>
-<translation id="1262870540683925850">З <ph name="START_TIME" /> да 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Выберыце падзею, каб азнаёміцца з падрабязнымі звесткамі пра яе ў Календары Google.</translation>
 <translation id="1267032506238418139">Змяненне спалучэння клавіш</translation>
 <translation id="1269405891096105529">Перыферыйная прылада не падтрымліваецца ў гасцявым рэжыме</translation>
 <translation id="1270290102613614947">Экранная клавіятура выключана</translation>
@@ -124,6 +120,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Доступ праз пераключальнікі можна выключыць у раздзеле "Налады &gt; Спецыяльныя магчымасці".</translation>
 <translation id="1637505162081889933">Прылад: <ph name="NUM_DEVICES" /></translation>
+<translation id="1639239467298939599">Ідзе загрузка</translation>
 <translation id="1654477262762802994">Пачаць галасавы запыт</translation>
 <translation id="1668469839109562275">Убудаваная сетка VPN</translation>
 <translation id="1677472565718498478">Засталося <ph name="TIME" /></translation>
@@ -239,6 +236,7 @@
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2367186422933365202">Не ўдаецца выканаць уваход на прыладзе Chromebook</translation>
 <translation id="2369165858548251131">"Вітаю" па-кітайску</translation>
+<translation id="2375445874393996153">Пошук размешчаных на экране аб'ектаў з дапамогай Памочніка Google больш не падтрымліваецца.</translation>
 <translation id="2390318262976603432">Рэгіянальныя налады</translation>
 <translation id="240006516586367791">Элементы кіравання мультымедыя</translation>
 <translation id="2402411679569069051">Каб разблакіраваць Chromebook, выкарыстайце функцыю разблакіравання адбіткам пальца або разблакіруйце тэлефон</translation>
@@ -1048,7 +1046,6 @@
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Вяртанне да старой раздзяляльнасці праз <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Абнавіць</translation>
-<translation id="718361511487535372">Адкрыць у Календары Google</translation>
 <translation id="7188494361780961876">Меню перамешчана ў левы верхні вугал экрана.</translation>
 <translation id="7189412385142492784">Якая адлегласць да Венеры</translation>
 <translation id="7198435252016571249">Акно перадпрагляду камеры прывязана да правага ніжняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>

@@ -214,7 +214,6 @@
 <translation id="2878387241690264070">S'ha descarregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="291142119251986300">Components no qualificats</translation>
 <translation id="2926057806159140518">Introdueix el nom d'usuari i la contrasenya o bé escaneja el codi QR</translation>
-<translation id="2928420929544864228">La instal·lació s'ha completat.</translation>
 <translation id="3008341117444806826">ACTUALITZA</translation>
 <translation id="3009958530611748826">Selecciona en quina carpeta vols que es desi</translation>
 <translation id="3017079585324758401">Fons</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">Abans d'apagar el dispositiu, fes-hi un Powerwash. Si el dispositiu té tapa, espera fins que el Powerwash es completi per tancar-la. Pot tardar fins a un minut a completar-se.</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3865414814144988605">Resolució</translation>
+<translation id="3866249974567520381">Descripció</translation>
 <translation id="387301095347517405">El nombre de vegades que la bateria s'ha carregat completament</translation>
 <translation id="3885327323343477505">Canvia l'estalvi de pantalla</translation>
 <translation id="3923184630988645767">Ús de dades</translation>
@@ -598,7 +598,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6388847657025262518">L'alimentador de documents de l'escàner està encallat. Comprova l'alimentador i torna-ho a provar.</translation>
 <translation id="6410257289063177456">Fitxers d'imatge </translation>
 <translation id="641081527798843608">Coincidència d'assumpte</translation>
-<translation id="6423239382391657905">VPN oberta</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Feble (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ves a la configuració del compte</translation>
 <translation id="6456394469623773452">Bona</translation>
@@ -899,6 +899,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="922179502584117429">La versió actual, <ph name="VERSION_NUMBER" />, no està actualitzada</translation>
 <translation id="932327136139879170">Inici</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="952992212772159698">No activat</translation>
 <translation id="960719561871045870">Codi d'operador</translation>
 <translation id="982713511914535780">Executa la prova de descàrrega</translation>

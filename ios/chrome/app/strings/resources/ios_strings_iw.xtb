@@ -65,6 +65,7 @@
 <translation id="1434356225517321998">הדפדפן שלך מנוהל. <ph name="BEGIN_LINK" />פרטים<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">הסתרת סיסמה</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> פריטים</translation>
+<translation id="1450170672351507823">מופעלת הגנה רגילה. כדי להוסיף שכבת אבטחה, ניתן להשתמש בהגנה המשופרת.</translation>
 <translation id="149095475893949513">האתר הזה מנסה להוריד פרופיל של הגדרות אישיות.</translation>
 <translation id="1491277525950327607">יש ללחוץ פעמיים כדי להחליף את מצב ההגדרה</translation>
 <translation id="1492417797159476138">שם המשתמש הזה כבר נשמר לאתר זה</translation>
@@ -738,6 +739,7 @@
 <translation id="7099761977003084116">כרטיסיות אחרונות</translation>
 <translation id="7102005569666697658">ההורדה מתבצעת… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">הסתרה</translation>
+<translation id="7108762695052995889">כניסה לאתר</translation>
 <translation id="7133798577887235672">שם מלא</translation>
 <translation id="7136892417564438900">המצלמה לא זמינה</translation>
 <translation id="7153999225810839758">זמן הקריאה: <ph name="TIME" /> דקות</translation>

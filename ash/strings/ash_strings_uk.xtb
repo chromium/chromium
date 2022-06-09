@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Підключені пристрої</translation>
 <translation id="1165712434476988950">Щоб застосувати оновлення, потрібно перезапустити пристрій.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Ваш кабель USB-C може не підключатися до екранів належним чином</translation>
 <translation id="1175572348579024023">Прокрутити</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -55,10 +56,6 @@
 <translation id="1247519845643687288">Нещодавні додатки</translation>
 <translation id="1252999807265626933">Джерело заряджання: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Який прогноз погоди?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" />–
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Виберіть подію, щоб переглянути відомості про неї в Google Календарі.</translation>
 <translation id="1267032506238418139">Зміна комбінацій клавіш</translation>
 <translation id="1269405891096105529">Периферійні пристрої не підтримуються в режимі гостя</translation>
 <translation id="1270290102613614947">Екранну клавіатуру вимкнено</translation>
@@ -124,6 +121,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Щоб вимкнути кнопковий доступ, відкрийте "Налаштування" &gt; "Спеціальні можливості".</translation>
 <translation id="1637505162081889933">Пристроїв: <ph name="NUM_DEVICES" /></translation>
+<translation id="1639239467298939599">Завантаження</translation>
 <translation id="1654477262762802994">Ввести голосовий запит</translation>
 <translation id="1668469839109562275">Вбудована мережа VPN</translation>
 <translation id="1677472565718498478">Залишилося <ph name="TIME" /></translation>
@@ -239,6 +237,7 @@
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2367186422933365202">Не вдається ввійти в обліковий запис на Chromebook</translation>
 <translation id="2369165858548251131">Як сказати "привіт" китайською</translation>
+<translation id="2375445874393996153">Пошук вмісту екрана за допомогою Google Асистента більше не підтримується.</translation>
 <translation id="2390318262976603432">Налаштування мовного коду</translation>
 <translation id="240006516586367791">Елементи керування медіа</translation>
 <translation id="2402411679569069051">Щоб розблокувати Chromebook, скористайтеся відбитком пальця або розблокуйте телефон</translation>
@@ -1048,7 +1047,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Попередня роздільна здатність повернеться через <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Оновити</translation>
-<translation id="718361511487535372">Відкрити в Google Календарі</translation>
 <translation id="7188494361780961876">Меню переміщено у верхній лівий кут екрана.</translation>
 <translation id="7189412385142492784">Яка відстань від Землі до Венери</translation>
 <translation id="7198435252016571249">Зображення з камери закріплено в нижньому правому куті, що конфліктує із системною платформою.</translation>

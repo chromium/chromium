@@ -56,10 +56,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1247519845643687288">Nedavne aplikacije</translation>
 <translation id="1252999807265626933">Izvor punjenja: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kakvo je vrijeme?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> do 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Odaberite za više pojedinosti u Google kalendaru.</translation>
 <translation id="1267032506238418139">Promjena prečaca</translation>
 <translation id="1269405891096105529">Periferni uređaj nije podržan u načinu rada za goste</translation>
 <translation id="1270290102613614947">Tipkovnica na zaslonu onemogućena je</translation>
@@ -125,6 +121,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="1632985212731562677">Prekidač za pristup možete onemogućiti tako da otvorite Postavke &gt; Pristupačnost.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> uređaj/a</translation>
+<translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1654477262762802994">Pokrenite glasovni upit</translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
 <translation id="1677472565718498478">Još <ph name="TIME" /></translation>
@@ -1050,7 +1047,6 @@ Novo instaliranje</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Vraćanje na staru razlučivost za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Osvježi</translation>
-<translation id="718361511487535372">Otvori u Google kalendaru</translation>
 <translation id="7188494361780961876">Izbornik je premješten u gornji lijevi kut zaslona.</translation>
 <translation id="7189412385142492784">Kolika je udaljenost do Venere</translation>
 <translation id="7198435252016571249">Kamera je poravnata s donjim desnim kutom. Došlo je do sukoba s površinom sustava.</translation>

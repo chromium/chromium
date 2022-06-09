@@ -55,7 +55,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1247519845643687288">App recenti</translation>
 <translation id="1252999807265626933">In carica da: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Che tempo fa?</translation>
-<translation id="1262870540683925850">Dalle ore <ph name="START_TIME" /> alle ore <ph name="END_TIME" />, <ph name="TIME_ZONE" />, <ph name="EVENT_SUMMARY" />. Seleziona per avere maggiori dettagli in Google Calendar.</translation>
 <translation id="1267032506238418139">Modifica alla scorciatoia</translation>
 <translation id="1269405891096105529">Periferica non supportata in modalità Ospite</translation>
 <translation id="1270290102613614947">Tastiera sullo schermo disattivata</translation>
@@ -121,6 +120,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1632985212731562677">È possibile disattivare Switch Access in Impostazioni &gt; Accessibilità.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivi</translation>
+<translation id="1639239467298939599">Caricamento</translation>
 <translation id="1654477262762802994">Avvia una query vocale</translation>
 <translation id="1668469839109562275">VPN integrata</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> rimanenti</translation>
@@ -236,6 +236,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2367186422933365202">Impossibile accedere a Chromebook</translation>
 <translation id="2369165858548251131">"Ciao" in cinese</translation>
+<translation id="2375445874393996153">Non c'è più la possibilità di eseguire ricerche sullo schermo con l'Assistente Google.</translation>
 <translation id="2390318262976603432">Impostazioni internazionali</translation>
 <translation id="240006516586367791">Controlli multimediali</translation>
 <translation id="2402411679569069051">Per sbloccare Chromebook, utilizza la tua impronta o sblocca il telefono</translation>
@@ -1046,7 +1047,6 @@ Nuova installazione</translation>
 <translation id="7165278925115064263">ALT + MAIUSC + K</translation>
 <translation id="7168224885072002358">Ripristino della risoluzione precedente tra <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Aggiorna</translation>
-<translation id="718361511487535372">Apri in Google Calendar</translation>
 <translation id="7188494361780961876">Menu spostato nell'angolo in alto a sinistra dello schermo.</translation>
 <translation id="7189412385142492784">Quanto è distante Venere</translation>
 <translation id="7198435252016571249">Fotocamera allineata all'angolo in basso a destra. Conflitto con la piattaforma di sistema.</translation>

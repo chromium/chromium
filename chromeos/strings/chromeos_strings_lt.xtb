@@ -214,7 +214,6 @@
 <translation id="2878387241690264070">Išsikrovė: <ph name="RATE" /> per <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="291142119251986300">Netinkami komponentai</translation>
 <translation id="2926057806159140518">Įveskite naudotojo vardą ir slaptažodį arba nuskaitykite QR kodą</translation>
-<translation id="2928420929544864228">Diegimas baigtas.</translation>
 <translation id="3008341117444806826">ATNAUJINTI</translation>
 <translation id="3009958530611748826">Pasirinkite aplanką, kuriame pageidaujate išsaugoti</translation>
 <translation id="3017079585324758401">Fonas</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">Prieš išjungdami naudokite įrenginio funkciją „Powerwash“. Jei jūsų įrenginys su dangteliu, palaukite, kol bus baigtas „Powerwash“ procesas, prieš uždarydami dangtelį. „Powerwash“ procesas gali užtrukti iki minutės.</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
 <translation id="3865414814144988605">Skyra</translation>
+<translation id="3866249974567520381">Aprašas</translation>
 <translation id="387301095347517405">Kartų, kai akumuliatorius buvo įkraunamas visą ciklą, skaičius</translation>
 <translation id="3885327323343477505">Keisti ekrano užsklandą</translation>
 <translation id="3923184630988645767">Duomenų naudojimas</translation>
@@ -900,6 +900,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="922179502584117429">Dabartinė versija <ph name="VERSION_NUMBER" /> pasenusi</translation>
 <translation id="932327136139879170">Kontaktinė namų informacija</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="952992212772159698">Nesuaktyvinta</translation>
 <translation id="960719561871045870">Operacijos ženklo kodas</translation>
 <translation id="982713511914535780">Vykdyti iškrovimo bandymą</translation>

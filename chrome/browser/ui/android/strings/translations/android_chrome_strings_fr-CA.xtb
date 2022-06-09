@@ -110,6 +110,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="1513352483775369820">Favoris et historique Web</translation>
 <translation id="1513814250881909472">Synchronisez vos données pour ajouter vos onglets de vos autres appareils</translation>
 <translation id="1513858653616922153">Supprimer le mot de passe</translation>
+<translation id="1514552811327923157">Invite du Bac à sable de confidentialité ouverte à pleine hauteur</translation>
 <translation id="1518421282666914498">GIF d'émotion <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Actif aujourd'hui</translation>
 <translation id="1538801903729528855">Une meilleure expérience vocale sur le Web</translation>
@@ -321,6 +322,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2711073837061989559">Essais</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
 <translation id="2718846868787000099">Permet d'afficher le contenu dans vos langues favorites; les sites que vous visitez peuvent voir vos préférences</translation>
+<translation id="2722945394406572875">Invite du Bac à sable de confidentialité fermée</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Obtenir une meilleure expérience vocale</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="4227318652298512614">Suivez les sites que vous voulez</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4248098802131000011">Protégez vos mots de passe contre les violations de données et d'autres problèmes de sécurité</translation>
+<translation id="424864128008805179">Se déconnecter de Chrome?</translation>
 <translation id="4249955472157341256">Trier par Plus récents</translation>
 <translation id="4250229828105606438">Saisie d'écran</translation>
 <translation id="4256782883801055595">Licences de logiciels libres</translation>
@@ -652,7 +655,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4594952190837476234">Cette page hors connexion a été créée le <ph name="CREATION_TIME" /> et peut différer de la version en ligne.</translation>
 <translation id="4616150815774728855">Ouvrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmer que c'est bien vous</translation>
-<translation id="4627165777145349100">En savoir plus sur cette page</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mot de passe compromis}one{# mot de passe compromis}other{# mots de passe compromis}}</translation>
 <translation id="4650364565596261010">Paramètres par défaut</translation>
@@ -894,6 +896,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5906513782029855931">Le fait de connaître les URL des sites permet à l'Assistant Google de vous aider à effectuer des tâches. Vous pouvez désactiver l'Assistant dans les paramètres de Chrome.</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5919204609460789179">Mettez à jour <ph name="PRODUCT_NAME" /> pour commencer la synchronisation</translation>
+<translation id="593625682991400408">Lors des essais, Chrome explore différents moyens de limiter les pourriels, la fraude et le partage entre les sites. En outre, Chrome <ph name="BEGIN_LINK" />estime vos centres d'intérêt<ph name="END_LINK" /> que d'autres sites peuvent utiliser pour vous montrer des annonces. Vous pouvez gérer vos centres d'intérêt dans les paramètres.</translation>
 <translation id="5938820472109305350">Ajoutez <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Google est utilisé pour la recherche</translation>
 <translation id="5945035219773565305">Recommandation actuelle :  <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="9106148373857059373">Flux d'enregistrement des favoris fermé</translation>
 <translation id="9108312223223904744">Assistance pour l'utilisation du téléphone comme clé de sécurité</translation>
 <translation id="9108808586816295166">Le DNS sécurisé pourrait ne pas être accessible en tout temps</translation>
+<translation id="9128984223251192329">Invite du Bac à sable de confidentialité ouverte à mi-hauteur</translation>
 <translation id="9133397713400217035">Explorer hors ligne</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>
 <translation id="9148126808321036104">Connectez-vous de nouveau</translation>

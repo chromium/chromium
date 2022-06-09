@@ -56,10 +56,6 @@
 <translation id="1247519845643687288">حالیہ ایپس</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> سے چارج ہو رہا ہے</translation>
 <translation id="1255033239764210633">موسم کیسا ہے؟</translation>
-<translation id="1262870540683925850">‏<ph name="START_TIME" /> سے 
-        <ph name="END_TIME" />، 
-        <ph name="TIME_ZONE" />، 
-        <ph name="EVENT_SUMMARY" />۔ Google کیلنڈر میں مزید تفصیلات کے لیے منتخب کریں۔</translation>
 <translation id="1267032506238418139">شارکٹ میں تبدیلی</translation>
 <translation id="1269405891096105529">پیریفرل مہمان وضع میں تعاون یافتہ نہیں ہے</translation>
 <translation id="1270290102613614947">آن اسکرین کی بورڈ غیر فعال کر دیا گیا</translation>
@@ -125,6 +121,7 @@
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1632985212731562677">سوئچ رسائی کو ترتیبات &gt; ایکسیسبیلٹی میں غیر فعال کیا جا سکتا ہے۔</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> آلات</translation>
+<translation id="1639239467298939599">لوڈ ہو رہی ہے</translation>
 <translation id="1654477262762802994">صوتی استفسار شروع کریں</translation>
 <translation id="1668469839109562275">‏پہلے سے موجود VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی</translation>
@@ -1049,7 +1046,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> میں پرانی ریزولیوشن پر لوٹایا جا رہا ہے</translation>
 <translation id="7180611975245234373">ریفریش کریں</translation>
-<translation id="718361511487535372">‏Google کیلنڈر میں کھولیں</translation>
 <translation id="7188494361780961876">مینو کو اسکرین کے اوپر بائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="7189412385142492784">‏Venus کتنا دور ہے</translation>
 <translation id="7198435252016571249">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>

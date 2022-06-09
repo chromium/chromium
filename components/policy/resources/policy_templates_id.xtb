@@ -3116,14 +3116,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Kebijakan ini akan diabaikan dan notifikasi akan selalu ditampilkan jika perangkat tidak dikelola atau hanya terdapat satu pengguna.
 
       Jika terdapat beberapa akun pengguna di perangkat terkelola, notifikasi hanya akan ditampilkan saat kebijakan ini diaktifkan.</translation>
-<translation id="4293593564662654474">Kebijakan ini disediakan sebagai cara untuk memblokir fitur Set Pihak Pertama.
-
-                  Jika kebijakan ini tidak disetel atau disetel ke Aktif, fitur Set Pihak Pertama akan diaktifkan.
-
-                  Jika kebijakan ini disetel ke Nonaktif, fitur Set Pihak Pertama akan dinonaktifkan.
-
-                  Status fitur Set Pihak Pertama menentukan apakah Chrome akan mengambil daftar Set Pihak Pertama.
-                  Status tersebut juga mengontrol apakah Chrome akan mendukung fitur terkait Set Pihak Pertama (misalnya, atribut cookie SameParty).</translation>
 <translation id="4311195029067684288">Penuh</translation>
 <translation id="4313767483634435271">Alamat MAC dok yang ditetapkan untuk perangkat</translation>
 <translation id="4314538398999793073">Nonaktifkan pencarian CNAME selama autentikasi Kerberos</translation>

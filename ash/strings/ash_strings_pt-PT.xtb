@@ -56,10 +56,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1247519845643687288">Apps recentes</translation>
 <translation id="1252999807265626933">A carregar a partir de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Como está o tempo?</translation>
-<translation id="1262870540683925850">Da(s) <ph name="START_TIME" /> à(s) 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Selecione para obter mais detalhes no Calendário Google.</translation>
 <translation id="1267032506238418139">Alteração do atalho</translation>
 <translation id="1269405891096105529">Periférico não suportado no Modo convidado</translation>
 <translation id="1270290102613614947">Teclado no ecrã desativado</translation>
@@ -125,6 +121,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1632985212731562677">O acesso por comutador pode ser desativado em Definições &gt; Acessibilidade.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
+<translation id="1639239467298939599">A carregar</translation>
 <translation id="1654477262762802994">Iniciar uma consulta de voz</translation>
 <translation id="1668469839109562275">VPN incorporada</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
@@ -1050,7 +1047,6 @@ Nova instalação</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">A reverter para a resolução antiga dentro de <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Atualizar</translation>
-<translation id="718361511487535372">Abrir no Calendário Google</translation>
 <translation id="7188494361780961876">O menu foi movido para o canto superior esquerdo do ecrã.</translation>
 <translation id="7189412385142492784">Qual é a distância para Vénus?</translation>
 <translation id="7198435252016571249">Câmara ajustada ao canto inferior direito. Há um conflito com a superfície do sistema.</translation>

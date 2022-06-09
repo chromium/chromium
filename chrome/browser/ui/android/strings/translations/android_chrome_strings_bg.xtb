@@ -110,6 +110,7 @@
 <translation id="1513352483775369820">Отметки и посетени сайтове</translation>
 <translation id="1513814250881909472">Включете синхронизирането, за да получите разделите от другите си устройства</translation>
 <translation id="1513858653616922153">Изтриване на паролата</translation>
+<translation id="1514552811327923157">Подканата за Privacy Sandbox е отворена на пълната височина</translation>
 <translation id="1518421282666914498">Емоция чрез GIF: <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Активно днес</translation>
 <translation id="1538801903729528855">Подобряване на работата с глас в мрежата</translation>
@@ -321,6 +322,7 @@
 <translation id="2711073837061989559">Експерименти</translation>
 <translation id="2718352093833049315">Само при Wi-Fi</translation>
 <translation id="2718846868787000099">Сайтовете, които посещавате, могат да виждат предпочитанията ви, за да ви показват съдържание на предпочитаните от вас езици</translation>
+<translation id="2722945394406572875">Подканата за Privacy Sandbox е затворена</translation>
 <translation id="2723001399770238859">звук</translation>
 <translation id="2732063072010454421">Получете по-добра практическа работа с глас</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@
 <translation id="4227318652298512614">Следете желаните от вас сайтове</translation>
 <translation id="4242533952199664413">Отваряне на настройките</translation>
 <translation id="4248098802131000011">Защитете паролите си от нарушения на сигурността на данните и други подобни проблеми</translation>
+<translation id="424864128008805179">Искате ли да излезете от Chrome?</translation>
 <translation id="4249955472157341256">Сортиране по актуалност</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
 <translation id="4256782883801055595">Лицензи за отворен код</translation>
@@ -652,7 +655,6 @@
 <translation id="4594952190837476234">Тази офлайн страница е от <ph name="CREATION_TIME" /> и може да се различава от онлайн версията.</translation>
 <translation id="4616150815774728855">Отваряне на <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Потвърдете, че сте вие</translation>
-<translation id="4627165777145349100">Още за тази страница</translation>
 <translation id="4634124774493850572">Използване на паролата</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 компрометирана парола}other{# компрометирани пароли}}</translation>
 <translation id="4650364565596261010">Стандартно за системата</translation>
@@ -894,6 +896,7 @@
 <translation id="5906513782029855931">Когато URL адресите на сайтовете са известни, Google Асистент може да ви помага за изпълняването на задачи. Имате възможност да изключите Асистент от настройките на Chrome.</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5919204609460789179">Актуализирайте <ph name="PRODUCT_NAME" />, за да стартира синхронизирането</translation>
+<translation id="593625682991400408">По време на експериментите Chrome проучва начини да ограничи спама, измамите и споделянето между сайтовете. Също така браузърът <ph name="BEGIN_LINK" />прогнозира интересите ви<ph name="END_LINK" />, които сайтовете могат да използват, за да ви показват реклами. Имате възможност да управлявате интересите си от настройките.</translation>
 <translation id="5938820472109305350">Добавяне на <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">За търсене ще се използва Google</translation>
 <translation id="5945035219773565305">Текуща препоръка: <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@
 <translation id="9106148373857059373">Потокът за запазване на отметка бе затворен</translation>
 <translation id="9108312223223904744">Поддръжка за използване на телефона като ключ за сигурност</translation>
 <translation id="9108808586816295166">Сигурният DNS може да не е налице по всяко време</translation>
+<translation id="9128984223251192329">Подканата за Privacy Sandbox е отворена на половината височина</translation>
 <translation id="9133397713400217035">Разглеждане в офлайн режим</translation>
 <translation id="9137013805542155359">Показване на оригинала</translation>
 <translation id="9148126808321036104">Влезте отново</translation>

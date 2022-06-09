@@ -587,6 +587,7 @@
 <translation id="4227318652298512614">तुम्हाला हव्या असलेल्या कोणत्याही साइट फॉलो करा</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
 <translation id="4248098802131000011">डेटा भंग आणि इतर सुरक्षितता समस्यांपासून तुमचे पासवर्ड सुरक्षित ठेवा</translation>
+<translation id="424864128008805179">Chrome मधून साइन आउट करायचे?</translation>
 <translation id="4249955472157341256">नवीनतम यानुसार क्रमाने लावा</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4256782883801055595">मुक्त स्रोत परवाने</translation>
@@ -654,7 +655,6 @@
 <translation id="4594952190837476234">हे <ph name="CREATION_TIME" /> पासूनचे ऑफलाइन पेज आहे आणि ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> उघडा</translation>
 <translation id="4619564267100705184">हे तुम्हीच असल्याची पडताळणी करा</translation>
-<translation id="4627165777145349100">या पेजबद्दल अधिक माहिती</translation>
 <translation id="4634124774493850572">पासवर्ड वापरा</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{एक धोक्यात असलेला पासवर्ड}other{# धोक्यात असलेले पासवर्ड}}</translation>
 <translation id="4650364565596261010">सिस्टम डीफॉल्ट</translation>
@@ -793,7 +793,6 @@
 <translation id="5342314432463739672">परवानगीच्या विनंत्या</translation>
 <translation id="5355191726083956201">सुधारित संरक्षण सुरू आहे</translation>
 <translation id="5368227114232678694">या डिव्हाइसवर खाजगीरीत्या ब्राउझ करण्यासाठी, गुप्त मोड वापरून पहा</translation>
-<translation id="5371717687506906963">प्रायव्हसी सॅंडबाॅक्स सूचना</translation>
 <translation id="5375577065097716013">Google Lens सह इमेज शोधा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">प्रतिक्रिया बदलली</translation>
 <translation id="5401851137404501592">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल अ‍ॅड्रेस आणि प्रोफाइल फोटो या साइटसह शेअर करेल.</translation>

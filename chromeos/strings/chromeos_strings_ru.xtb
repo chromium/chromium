@@ -214,7 +214,6 @@
 <translation id="2878387241690264070">Батарея разрядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="291142119251986300">Некачественные комплектующие</translation>
 <translation id="2926057806159140518">Введите имя пользователя и пароль или отсканируйте QR-код.</translation>
-<translation id="2928420929544864228">Установка завершена.</translation>
 <translation id="3008341117444806826">ОБНОВИТЬ</translation>
 <translation id="3009958530611748826">Выберите папку для сохранения</translation>
 <translation id="3017079585324758401">Фон</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">Прежде чем выключить устройство, воспользуйтесь на нем функцией Powerwash. Если на устройстве есть крышка, не закрывайте ее до завершения работы Powerwash. Этот процесс может занять около минуты.</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3865414814144988605">Разрешение</translation>
+<translation id="3866249974567520381">Описание</translation>
 <translation id="387301095347517405">Количество полных циклов зарядки батареи</translation>
 <translation id="3885327323343477505">Изменить заставку</translation>
 <translation id="3923184630988645767">Передача данных</translation>
@@ -899,6 +899,7 @@
 <translation id="922179502584117429">Текущая версия <ph name="VERSION_NUMBER" /> устарела</translation>
 <translation id="932327136139879170">Главная страница</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Отправить отзыв</translation>
 <translation id="952992212772159698">Не активировано</translation>
 <translation id="960719561871045870">Код оператора</translation>
 <translation id="982713511914535780">Запустить проверку расхода заряда</translation>

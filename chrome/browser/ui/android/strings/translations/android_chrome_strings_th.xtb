@@ -587,6 +587,7 @@
 <translation id="4227318652298512614">ติดตามเว็บไซต์ที่คุณต้องการ</translation>
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
 <translation id="4248098802131000011">รักษารหัสผ่านให้ปลอดภัยจากการละเมิดข้อมูลและปัญหาด้านความปลอดภัยอื่นๆ</translation>
+<translation id="424864128008805179">ต้องการออกจากระบบ Chrome ไหม</translation>
 <translation id="4249955472157341256">จัดเรียงตามล่าสุด</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="4256782883801055595">ใบอนุญาตโอเพนซอร์ส</translation>
@@ -654,7 +655,6 @@
 <translation id="4594952190837476234">หน้าเว็บออฟไลน์นี้สร้างเมื่อวันที่ <ph name="CREATION_TIME" /> และอาจแตกต่างไปจากเวอร์ชันออนไลน์</translation>
 <translation id="4616150815774728855">เปิด <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">ยืนยันว่าเป็นคุณ</translation>
-<translation id="4627165777145349100">ข้อมูลเพิ่มเติมเกี่ยวกับหน้านี้</translation>
 <translation id="4634124774493850572">ใช้รหัสผ่าน</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{มีรหัสผ่านที่ถูกละเมิด 1 รายการ}other{มีรหัสผ่านที่ถูกละเมิด # รายการ}}</translation>
 <translation id="4650364565596261010">ค่าเริ่มต้นของระบบ</translation>
@@ -793,7 +793,6 @@
 <translation id="5342314432463739672">คำขอสิทธิ์</translation>
 <translation id="5355191726083956201">การปกป้องที่ปรับปรุงแล้วเปิดอยู่</translation>
 <translation id="5368227114232678694">ลองใช้โหมดไม่ระบุตัวตนเพื่อท่องเว็บอย่างเป็นส่วนตัวในอุปกรณ์นี้</translation>
-<translation id="5371717687506906963">ข้อความแจ้งเกี่ยวกับ Privacy Sandbox</translation>
 <translation id="5375577065097716013">ค้นหาภาพด้วย Google Lens <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">เปลี่ยนความรู้สึกแล้ว</translation>
 <translation id="5401851137404501592">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้</translation>

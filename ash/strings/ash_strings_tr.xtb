@@ -55,10 +55,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1247519845643687288">Son uygulamalar</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> güç kaynağından şarj ediliyor</translation>
 <translation id="1255033239764210633">Hava nasıl?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> - 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Google Takvim'de ayrıntılarını görmek için etkinliği seçin.</translation>
 <translation id="1267032506238418139">Kısayol değişikliği</translation>
 <translation id="1269405891096105529">Çevre birimi, Misafir modunda desteklenmiyor</translation>
 <translation id="1270290102613614947">Dokunmatik klavye devre dışı</translation>
@@ -124,6 +120,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Anahtar Erişimi, Ayarlar &gt; Erişilebilirlik'te devre dışı bırakılabilir.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> cihaz</translation>
+<translation id="1639239467298939599">Yükleniyor</translation>
 <translation id="1654477262762802994">Sesli sorgu başlat</translation>
 <translation id="1668469839109562275">Yerleşik VPN</translation>
 <translation id="1677472565718498478">Kalan süre: <ph name="TIME" /></translation>
@@ -239,6 +236,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2367186422933365202">Chromebook'unuzda oturum açılamıyor</translation>
 <translation id="2369165858548251131">Çince "Merhaba"</translation>
+<translation id="2375445874393996153">Google Asistan'ı kullanarak ekranda ne olduğunu arama özelliği artık desteklenmiyor.</translation>
 <translation id="2390318262976603432">Yerel Ayarlar</translation>
 <translation id="240006516586367791">Medya denetimleri</translation>
 <translation id="2402411679569069051">Chromebook'unuzun kilidini açmak için parmak izinizi kullanın veya telefonunuzun kilidini açın</translation>
@@ -1048,7 +1046,6 @@ Yeni yüklenmiş</translation>
 <translation id="7165278925115064263">Alt+Üst Karakter+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> saniye içinde eski çözünürlüğe dönülüyor</translation>
 <translation id="7180611975245234373">Yenile</translation>
-<translation id="718361511487535372">Google Takvim'de aç</translation>
 <translation id="7188494361780961876">Menü, ekranın sol üst köşesine taşındı.</translation>
 <translation id="7189412385142492784">Venüs ne kadar uzak</translation>
 <translation id="7198435252016571249">Kamera sağ alt köşeye tutturuldu. Sistem yüzeyi ile çakışıyor.</translation>

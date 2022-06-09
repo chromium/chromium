@@ -95,6 +95,7 @@
 <translation id="1717874160321062422">Géré par <ph name="FIRST_MANAGER" /> et <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Serveurs de noms</translation>
 <translation id="1731082422893354635">Pavé tactile Bluetooth</translation>
+<translation id="1745577949879301685">Impossible de charger les images. Vérifiez votre connexion réseau ou réessayez de charger les images.</translation>
 <translation id="1751249301761991853">Personnalisés</translation>
 <translation id="1753496554272155572">Quitter l'aperçu du fond d'écran</translation>
 <translation id="175763766237925754">Bonne (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -213,7 +214,6 @@
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="291142119251986300">Composants non qualifiés</translation>
 <translation id="2926057806159140518">Saisissez votre nom d'utilisateur et votre mot de passe ou scannez votre code QR</translation>
-<translation id="2928420929544864228">Installation terminée.</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionner un dossier de destination</translation>
 <translation id="3017079585324758401">Arrière-plan</translation>
@@ -303,6 +303,7 @@
 <translation id="385832974417157471">Réinitialisez votre appareil avec Powerwash avant de l'éteindre. Si l'appareil est équipé d'un capot, attendez la fin du Powerwash avant de le refermer. Le Powerwash peut prendre jusqu'à une minute.</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3865414814144988605">Résolution</translation>
+<translation id="3866249974567520381">Description</translation>
 <translation id="387301095347517405">Nombre de cycles de charge complets effectués sur votre batterie</translation>
 <translation id="3885327323343477505">Modifier l'économiseur d'écran</translation>
 <translation id="3923184630988645767">Consommation des données</translation>
@@ -898,6 +899,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="922179502584117429">La version <ph name="VERSION_NUMBER" /> actuellement installée est obsolète</translation>
 <translation id="932327136139879170">Accueil</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="952992212772159698">Désactivé</translation>
 <translation id="960719561871045870">Code de l'opérateur</translation>
 <translation id="982713511914535780">Lancer le test de décharge</translation>

@@ -214,7 +214,6 @@
 <translation id="2878387241690264070">Tyhjentynyt <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekunnissa.</translation>
 <translation id="291142119251986300">Sopimattomat osat</translation>
 <translation id="2926057806159140518">Lisää käyttäjätunnus ja salasana tai skannaa QR-koodi</translation>
-<translation id="2928420929544864228">Asennus valmis</translation>
 <translation id="3008341117444806826">PÄIVITÄ</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
 <translation id="3017079585324758401">Tausta</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">Käytä powerwashia laitteellasi ennen sen sulkemista. Jos laitteessa on kansi, odota että powerwash on valmis, ennen kuin suljet kannen. Powerwash voi kestää minuutin.</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3865414814144988605">Resoluutio</translation>
+<translation id="3866249974567520381">Kuvaus</translation>
 <translation id="387301095347517405">Kuinka monta kertaa akku on ollut täynnä ja sitten tyhjentynyt</translation>
 <translation id="3885327323343477505">Vaihda näytönsäästäjä</translation>
 <translation id="3923184630988645767">Datan käyttö</translation>
@@ -430,6 +430,7 @@
 <translation id="4915052247106771211">Tämä palauttaa laitteen tehdasasetukset (Powerwash).</translation>
 <translation id="4917385247580444890">Vahva</translation>
 <translation id="4917889632206600977">Pysähtynyt – Paperi loppu</translation>
+<translation id="491791267030419270">Vinkkejä palautteen kirjoittamiseen</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> ladattiin <ph name="NUM_SECONDS" /> sekunnissa.</translation>
 <translation id="4930320165497208503">Määritä tai päivitä yhteys avaamalla <ph name="BEGIN_LINK" />Asetukset<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Päiväys</translation>
@@ -899,6 +900,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="922179502584117429">Nykyinen versio (<ph name="VERSION_NUMBER" />) on vanhentunut</translation>
 <translation id="932327136139879170">Etusivu</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="952992212772159698">Ei aktivoitu</translation>
 <translation id="960719561871045870">Operaattorikoodi</translation>
 <translation id="982713511914535780">Suorita purkautumistesti</translation>

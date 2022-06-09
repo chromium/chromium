@@ -587,6 +587,7 @@
 <translation id="4227318652298512614">Следете ги сајтовите што ги сакате</translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
 <translation id="4248098802131000011">Заштитете ги лозинките од упади во податоци и други безбедносни проблеми</translation>
+<translation id="424864128008805179">Ќе се одјавите од Chrome?</translation>
 <translation id="4249955472157341256">Подредете според последни</translation>
 <translation id="4250229828105606438">Слика од екран</translation>
 <translation id="4256782883801055595">Лиценци за отворен код</translation>
@@ -654,7 +655,6 @@
 <translation id="4594952190837476234">Офлајн страницава е од <ph name="CREATION_TIME" /> и може да се разликува од онлајн верзијата.</translation>
 <translation id="4616150815774728855">Отвори <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Потврдете дека сте вие</translation>
-<translation id="4627165777145349100">Повеќе за страницава</translation>
 <translation id="4634124774493850572">Употреби ја лозинката</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 компромитирана лозинка}one{# компромитирана лозинка}other{# компромитирани лозинки}}</translation>
 <translation id="4650364565596261010">Стандардна поставка за системот</translation>
@@ -793,7 +793,6 @@
 <translation id="5342314432463739672">Барања за дозвола</translation>
 <translation id="5355191726083956201">Вклучена е „Подобрената заштита“</translation>
 <translation id="5368227114232678694">За приватно пребарување на уредов, испробајте го „Инкогнито“</translation>
-<translation id="5371717687506906963">Потсетник за Privacy Sandbox</translation>
 <translation id="5375577065097716013">Пребарај слика со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Реакцијата се промени</translation>
 <translation id="5401851137404501592">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето име, адресата на е-пошта и профилната слика со сајтов.</translation>

@@ -706,7 +706,6 @@
 <translation id="2854764410992194509">इंटरनेट सेवा पुरवठादार (ISPs)</translation>
 <translation id="2856444702002559011">हल्लेखोर कदाचित तुमची माहिती (उदाहरणार्थ पासवर्ड, संदेश किंवा क्रेडिट कार्ड) <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> मधून चोरण्याचा प्रयत्न करत असतील. <ph name="BEGIN_LEARN_MORE_LINK" />आणखी जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">ही साइट अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवते.</translation>
-<translation id="286512204874376891">संभाव्य घोटाळ्यापासून तुमचे संरक्षण करण्यात मदत करण्यासाठी, व्हर्च्युअल कार्ड तुमच्या मूळ कार्डची ओळख लपवते.<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">मैत्रीपूर्ण</translation>
 <translation id="28761159517501904">चित्रपट</translation>
 <translation id="2876489322757410363">बाह्य ॲप्लिकेशनमार्फत पेमेंट करण्यासाठी गुप्त मोडमधून बाहेर पडत आहे. पुढे सुरू ठेवायचे आहे का?</translation>
@@ -1338,7 +1337,6 @@
 <translation id="4607603470419975064">Chrome शी संबंधित टिपा पहा बटण, Chrome च्या वैशिष्‍ट्यांविषयी जाणून घेण्यासाठी एंटर दाबा</translation>
 <translation id="4607608436550361748">Chrome शी संबंधित टिपा पहा</translation>
 <translation id="4617273035598175554">ग्राफिक आणि अ‍ॅनिमेशन सॉफ्टवेअर</translation>
-<translation id="4627165777145349100">या पेजबद्दल अधिक माहिती</translation>
 <translation id="4627675673814409125">हे धोरण Chrome प्रोफाइल स्तरावर सेट केले जाऊ शकत नाही आणि ते दुर्लक्षित केले जाईल.</translation>
 <translation id="4628948037717959914">फोटो</translation>
 <translation id="4631649115723685955">कॅशबॅक लिंक केला</translation>
@@ -1873,7 +1871,6 @@
 <translation id="6061154937977953833">कुस्ती</translation>
 <translation id="6064217302520318294">स्क्रीन लॉक</translation>
 <translation id="6064602040258638498">कूपन आणि सवलतीशी संबंधित ऑफर</translation>
-<translation id="6078813287646374487">या पेजविषयी आणखी माहिती दाखवा</translation>
 <translation id="6080696365213338172">तुम्ही ॲडमिनिस्ट्रेटरने-दिलेले प्रमाणपत्र वापरून आशय ॲक्सेस केला. तुम्ही <ph name="DOMAIN" /> वर प्रदान करता तो डेटा तुमच्या ॲडमिनिस्ट्रेटरद्वारे अंतःखंडित केला जाऊ शकतो.</translation>
 <translation id="6087312102907839798">संबंधित शोध</translation>
 <translation id="6094273045989040137">भाष्य करा</translation>
@@ -2798,6 +2795,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> हा तुमचा <ph name="ORIGIN" />साठीचा कोड आहे</translation>
 <translation id="874918643257405732">हा टॅब बुकमार्क करा</translation>
 <translation id="8751426954251315517">कृपया पुढील वेळेस पुन्हा प्रयत्न करा</translation>
+<translation id="8757526089434340176">Google Pay ऑफर उपलब्ध</translation>
 <translation id="8758885506338294482">स्पर्धात्मक व्हिडिओ गेमिंग</translation>
 <translation id="8759274551635299824">या कार्डची मुदत संपली आहे</translation>
 <translation id="87601671197631245">ही साइट कालबाह्य झालेली सुरक्षितता कॉंफिगरेशन वापरत आहे ज्यामुळे कदाचित तुमची माहिती (उदाहरणार्थ, पासवर्ड, मेसेज किंवा क्रेडिट कार्डे) या साइटला पाठवल्यानंतर ती उघड होऊ शकते.</translation>

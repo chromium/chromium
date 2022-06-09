@@ -56,10 +56,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1247519845643687288">Oxirgi ilovalar</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> orqali quvvat olmoqda</translation>
 <translation id="1255033239764210633">Ob-havo qanday?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> – 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Google Taqvimda tafsilotlarini koʻrish uchun tadbirni tanlang.</translation>
 <translation id="1267032506238418139">Tugmalar birikmasini o‘zgartirish</translation>
 <translation id="1269405891096105529">Mehmon rejimida tashqi qurilmalar ishlamaydi</translation>
 <translation id="1270290102613614947">Ekran klaviaturasi o‘chirib qo‘yilgan</translation>
@@ -125,6 +121,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Switch Access funksiyasini Sozlamalar &gt; Maxsus imkoniyatlar orqali faolsizlantirish mumkin.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ta qurilma</translation>
+<translation id="1639239467298939599">Yuklanmoqda</translation>
 <translation id="1654477262762802994">Ovozli qidiruvni boshlash</translation>
 <translation id="1668469839109562275">Ichki oʻrnatilgan VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qoldi</translation>
@@ -240,6 +237,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2367186422933365202">Chromebook hisobiga kirilmadi</translation>
 <translation id="2369165858548251131">Xitoy tilida “Salom”</translation>
+<translation id="2375445874393996153">Endi Google Assistent yordamida ekrandagi narsalar qidirilmaydi.</translation>
 <translation id="2390318262976603432">Mahalliy sozlamalar</translation>
 <translation id="240006516586367791">Media boshqaruvi</translation>
 <translation id="2402411679569069051">Chromebook qulfini ochish uchun barmoq izi yoki telefondan foydalaning</translation>
@@ -1049,7 +1047,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Avvalgi ekran hajmiga qaytishga <ph name="TIMEOUT_SECONDS" /> qoldi.</translation>
 <translation id="7180611975245234373">Yangilash</translation>
-<translation id="718361511487535372">Google Taqvim orqali ochish</translation>
 <translation id="7188494361780961876">Menyu ekranning yuqori chap burchagiga surildi.</translation>
 <translation id="7189412385142492784">Venera qanchalik uzoq</translation>
 <translation id="7198435252016571249">Kamera pastki oʻng burchakka joylandi. Tizim platfromasi bilan muammo chiqdi.</translation>

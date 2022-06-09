@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Medie (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Elimină</translation>
+<translation id="1190378975642195988">Accelerometrul bazei</translation>
 <translation id="1195447618553298278">Eroare necunoscută.</translation>
 <translation id="1196959502276349371">Versiunea <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Redă / Întrerupe</translation>
@@ -214,7 +215,6 @@
 <translation id="2878387241690264070">S-a descărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
 <translation id="291142119251986300">Componente neautorizate</translation>
 <translation id="2926057806159140518">Introdu numele de utilizator și parola sau scanează codul QR</translation>
-<translation id="2928420929544864228">Instalare finalizată.</translation>
 <translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
 <translation id="3009958530611748826">Selectează un dosar în care să salvezi</translation>
 <translation id="3017079585324758401">Fundal</translation>
@@ -268,6 +268,7 @@
 <translation id="3484914941826596830">Nu deconecta dispozitivul extern și nu închide computerul în timpul actualizării firmware-ului. Poți să minimizezi fereastra. Actualizarea poate să dureze câteva minute și este posibil ca dispozitivul extern să nu funcționeze în această perioadă.</translation>
 <translation id="3486220673238053218">definiție</translation>
 <translation id="3488065109653206955">Activat parțial</translation>
+<translation id="3492982278147736083">Giroscopul capacului</translation>
 <translation id="3517001332549868749">Actualizare SO Chrome</translation>
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
 <translation id="3532980081107202182">Au mai rămas aproximativ <ph name="MIN_REMAINING" /> minute</translation>
@@ -301,9 +302,11 @@
 <translation id="3820172043799983114">PIN nevalid.</translation>
 <translation id="3838338534323494292">Parolă nouă</translation>
 <translation id="385051799172605136">Înapoi</translation>
+<translation id="3856304145690230735">Giroscopul bazei</translation>
 <translation id="385832974417157471">Înainte de închidere, rulează funcția Powerwash pe dispozitiv. Dacă dispozitivul are capac, așteaptă să se finalizeze funcția Powerwash înainte de a închide capacul. Finalizarea funcției Powerwash poate dura maximum un minut.</translation>
 <translation id="3858860766373142691">Nume</translation>
 <translation id="3865414814144988605">Rezoluție</translation>
+<translation id="3866249974567520381">Descriere</translation>
 <translation id="387301095347517405">Numărul de cicluri complete de încărcare a bateriei</translation>
 <translation id="3885327323343477505">Schimbă screensaverul</translation>
 <translation id="3923184630988645767">Utilizarea datelor</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Începeți</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
+<translation id="4500213108254186382">Accelerometrul capacului</translation>
 <translation id="4503223151711056411">Săgeată spre stânga</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Potrivire a numelui alternativ al subiectului</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">Card SIM deblocat</translation>
 <translation id="4562494484721939086">Fără semnal</translation>
 <translation id="4568938274596692027">Instalarea s-a finalizat. Se pregătește repornirea…</translation>
+<translation id="4576943788798178439">Asistență pentru creion</translation>
 <translation id="458794348635939462">Nu s-au putut rezolva toate gazdele</translation>
 <translation id="4593212453765072419">Este necesară autentificarea la serverul proxy</translation>
 <translation id="4609350030397390689">Reducerea luminozității tastaturii</translation>
@@ -537,6 +542,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5866840822086176774">Foarte puternic</translation>
 <translation id="588258955323874662">Ecran complet</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
+<translation id="5898758006340607522">Butonul de pornire</translation>
 <translation id="5901630391730855834">Galben</translation>
 <translation id="5903200662178656908">Dispozitivul este o combinație de tastatură și mouse.</translation>
 <translation id="5916084858004523819">Interzis</translation>
@@ -859,6 +865,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8919792139048574232">Vezi erorile remediate</translation>
 <translation id="8919837981463578619">Nereușită – Tavă lipsă</translation>
 <translation id="8923267550422472772">Ziua din lună pentru resetare</translation>
+<translation id="8925613211674558308">Vpd în memoria cache</translation>
 <translation id="8928727111548978589">Nereușită – Hârtie epuizată</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>
@@ -900,6 +907,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="922179502584117429">Versiunea actuală, <ph name="VERSION_NUMBER" />, este învechită</translation>
 <translation id="932327136139879170">Pagina de pornire</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Trimite feedback</translation>
 <translation id="952992212772159698">Neactivat</translation>
 <translation id="960719561871045870">Cod operator</translation>
 <translation id="982713511914535780">Rulează testul Descărcare</translation>

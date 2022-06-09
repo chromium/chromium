@@ -18,6 +18,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem.</translation>
 <translation id="1175951029573070619">Prosečan (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ukloni</translation>
+<translation id="1190378975642195988">Akcelerometar za osnovu</translation>
 <translation id="1195447618553298278">Nepoznata greška.</translation>
 <translation id="1196959502276349371">Verzija <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Pustite/pauzirajte</translation>
@@ -214,7 +215,6 @@
 <translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="291142119251986300">Nekvalifikovane komponente</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i lozinku ili skenirajte QR kôd</translation>
-<translation id="2928420929544864228">Instalacija je dovršena.</translation>
 <translation id="3008341117444806826">OSVEŽI</translation>
 <translation id="3009958530611748826">Izaberite folder za čuvanje</translation>
 <translation id="3017079585324758401">Pozadina</translation>
@@ -268,6 +268,7 @@
 <translation id="3484914941826596830">Ne isključujte spoljni uređaj ni računar dok se firmver ažurira. Možete da umanjite ovaj prozor. Ovo ažuriranje može da potraje nekoliko minuta, a spoljni uređaj možda neće raditi tokom tog perioda.</translation>
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3488065109653206955">Delimično aktivirano</translation>
+<translation id="3492982278147736083">Žiroskop za poklopac</translation>
 <translation id="3517001332549868749">Ažuriranje Chrome OS-a</translation>
 <translation id="3527036260304016759">Nije uspelo – nepoznata greška</translation>
 <translation id="3532980081107202182">Preostalo je još oko <ph name="MIN_REMAINING" /> minuta</translation>
@@ -301,9 +302,11 @@
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
 <translation id="3838338534323494292">Nova lozinka</translation>
 <translation id="385051799172605136">Nazad</translation>
+<translation id="3856304145690230735">Žiroskop za osnovu</translation>
 <translation id="385832974417157471">Pre isključivanja obavite Powerwash na uređaju. Ako uređaj ima poklopac, sačekajte da se Powerwash završi pre nego što zatvorite poklopac. Powerwash može da traje i do minut.</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3865414814144988605">Rezolucija</translation>
+<translation id="3866249974567520381">Opis</translation>
 <translation id="387301095347517405">Broj puta kada se baterija napunila do kraja</translation>
 <translation id="3885327323343477505">Promenite čuvar ekrana</translation>
 <translation id="3923184630988645767">Potrošnja podataka</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Započnimo</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Pingovanje mrežnog prolaza koji nije podrazumevan nije uspelo</translation>
+<translation id="4500213108254186382">Akcelerometar za poklopac</translation>
 <translation id="4503223151711056411">Strelica nalevo</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Podudaranje alternativnog naziva subjekta</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM je otključan</translation>
 <translation id="4562494484721939086">Mobilna mreža nije dostupna</translation>
 <translation id="4568938274596692027">Instaliranje je završeno. Priprema se restartovanje…</translation>
+<translation id="4576943788798178439">Podrška za pisaljku</translation>
 <translation id="458794348635939462">Razrešenje svih hostova nije uspelo</translation>
 <translation id="4593212453765072419">Potrebna je potvrda autentičnosti proksija</translation>
 <translation id="4609350030397390689">Smanjite osvetljenost tastature</translation>
@@ -430,6 +435,7 @@
 <translation id="4915052247106771211">Time će se uređaj resetovati na fabrička podešavanja (Powerwash).</translation>
 <translation id="4917385247580444890">Jak</translation>
 <translation id="4917889632206600977">Zaustavljeno – nema više papira</translation>
+<translation id="491791267030419270">Saveti za pisanje povratnih informacija</translation>
 <translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="4930320165497208503">Da biste podesili ili ažurirali vezu, idite u <ph name="BEGIN_LINK" />Podešavanja<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
@@ -536,6 +542,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5866840822086176774">Veoma jak</translation>
 <translation id="588258955323874662">Ceo ekran</translation>
 <translation id="5895138241574237353">Pokreni ponovo</translation>
+<translation id="5898758006340607522">Dugme za uključivanje</translation>
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5903200662178656908">Uređaj je kombinacija tastature i miša.</translation>
 <translation id="5916084858004523819">Zabranjeno</translation>
@@ -858,6 +865,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8919792139048574232">Pogledajte šta je popravljeno</translation>
 <translation id="8919837981463578619">Nije uspelo – nedostaje fioka</translation>
 <translation id="8923267550422472772">Dan u mesecu za resetovanje</translation>
+<translation id="8925613211674558308">Keširani VPD</translation>
 <translation id="8928727111548978589">Nije uspelo – nema više papira</translation>
 <translation id="8930521118335213258">Relevantna aplikacija</translation>
 <translation id="8930622219860340959">Bežično</translation>
@@ -899,6 +907,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="922179502584117429">Aktuelna verzija <ph name="VERSION_NUMBER" /> je zastarela</translation>
 <translation id="932327136139879170">Početna</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Pošalji povratne informacije</translation>
 <translation id="952992212772159698">Nije aktivirano</translation>
 <translation id="960719561871045870">Kôd mobilnog operatera</translation>
 <translation id="982713511914535780">Pokreni test pražnjenja</translation>

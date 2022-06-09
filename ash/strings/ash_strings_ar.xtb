@@ -55,10 +55,6 @@
 <translation id="1247519845643687288">التطبيقات المستخدمة مؤخرًا</translation>
 <translation id="1252999807265626933">جارٍ الشحن من <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">ما حالة الطقس؟</translation>
-<translation id="1262870540683925850">‏من <ph name="START_TIME" /> إلى 
-        <ph name="END_TIME" />، 
-         بتوقيت <ph name="TIME_ZONE" />، 
-        <ph name="EVENT_SUMMARY" />. اختَر حدثًا لعرض مزيد من التفاصيل في "تقويم Google".</translation>
 <translation id="1267032506238418139">تغيير الاختصار</translation>
 <translation id="1269405891096105529">الأجهزة الملحقة غير متاحة للاستخدام في وضع الضيف.</translation>
 <translation id="1270290102613614947">تم إيقاف لوحة المفاتيح على الشاشة</translation>
@@ -125,6 +121,7 @@
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1632985212731562677">يمكن إيقاف ميزة "الوصول عبر مفتاح التحويل" في "الإعدادات" &gt; "أدوات تمكين الوصول".</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> جهاز</translation>
+<translation id="1639239467298939599">جارٍ التحميل.</translation>
 <translation id="1654477262762802994">بدء طلب بحث صوتي</translation>
 <translation id="1668469839109562275">الشبكة الافتراضية الخاصة المُدمجة</translation>
 <translation id="1677472565718498478">الوقت المتبقي <ph name="TIME" /></translation>
@@ -1050,7 +1047,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">سيتم الرجوع إلى درجة الدقة القديمة في غضون <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
-<translation id="718361511487535372">‏فتح في "تقويم Google"</translation>
 <translation id="7188494361780961876">تم نقل القائمة إلى أعلى يمين الشاشة.</translation>
 <translation id="7189412385142492784">كم يبعد كوكب الزهرة؟</translation>
 <translation id="7198435252016571249">تم توجيه الكاميرا إلى الزاوية السفلية اليمنى. هناك تعارض مع مساحة عرض نظام آخر.</translation>

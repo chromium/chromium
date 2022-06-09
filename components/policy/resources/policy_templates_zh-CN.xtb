@@ -1813,6 +1813,7 @@
 
       如果此政策未设置，则意味着 <ph name="ASK_GEOLOCATION_POLICY_NAME" /> 政策适用，但用户可以更改此设置。</translation>
 <translation id="2922511125678964398">允许强制门户身份验证忽略代理设置</translation>
+<translation id="2926813071464307947">停用渲染程序应用容器沙盒</translation>
 <translation id="2931888116345994552">如果此政策未设置或已启用，即意味着允许更新 <ph name="PRODUCT_NAME" /> 中的所有组件。
 
       如果此政策已停用，则无法更新组件。不过，某些组件不受此政策限制：只要相应组件不含可执行的代码，并且对浏览器的安全性至关重要，系统就不会禁止更新该组件。
@@ -2252,6 +2253,11 @@
           如果此政策设为非空字符串，该字符串将被用作 <ph name="PRODUCT_NAME" /> 目标名称。否则，目标名称便是设备名称。如果此政策未设置，则目标名称将是设备名称，且设备所有者（或者该设备的托管网域内的用户）将能更改该名称。该名称的长度不得超过 24 个字符。</translation>
 <translation id="3329063005964041553">禁止在这些 Web 应用上使用 File Handling API</translation>
 <translation id="3329401415394648069">允许使用 U2F Security Key API。</translation>
+<translation id="3329976499753286262">如果此政策已启用或未设置，系统将会在支持的平台上启用渲染程序应用容器配置。
+
+      停用此政策会对 <ph name="PRODUCT_NAME" /> 的安全性和稳定性产生不利影响，因为这会弱化渲染程序进程使用的沙盒。仅当那些必须在渲染程序进程中运行的第三方软件遇到兼容性问题时，才应停用此政策。
+
+      注意：不妨详细了解一下进程缓解政策 ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies )。</translation>
 <translation id="3339271789059866414">配置系统代理服务的可用情况以及系统服务的代理凭据。
       如果此政策未设置，系统代理服务将不可用。</translation>
 <translation id="3348799281602260763">如果此政策已启用，WebRTC 对等连接可以降级至已过时的 TLS/DTLS（DTLS 1.0、TLS 1.0 和 TLS 1.1）协议版本。
@@ -3041,14 +3047,6 @@
       如果相应设备不受管理或只有 1 个用户，此政策会被忽略，并且系统始终都会显示通知。
 
       如果受管理的设备上有多个用户帐号，仅当此政策已启用时，系统才会显示通知。</translation>
-<translation id="4293593564662654474">此政策提供了一种停用 First-Party Sets 功能的方式。
-
-                  如果此政策未设置或被设置为“启用”，系统会启用 First-Party Sets 功能。
-
-                  如果此政策被设置为“停用”，系统会停用 First-Party Sets 功能。
-
-                  First-Party Sets 功能的状态会决定 Chrome 是否会检索 First-Party Sets 列表。
-                  它还会控制 Chrome 是否支持 First-Party Sets 相关功能（例如 SameParty cookie 属性）。</translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">设备的指定基座 MAC 地址</translation>
 <translation id="4314538398999793073">在 Kerberos 身份验证期间停用 CNAME 查找功能</translation>
@@ -4149,6 +4147,7 @@
 <translation id="5625771176514429288">Chrome 应用可以在这些平台上运行。</translation>
 <translation id="5630352020869108293">恢复上次的会话</translation>
 <translation id="5633871703004128675">启用“插入符号突出显示”无障碍功能</translation>
+<translation id="5634032995857968056">启用渲染程序应用容器沙盒</translation>
 <translation id="5639454129004500060">如果此政策已设置，它会包含用于下载桌面模板文件的信息。这个文件包含要为当前用户配置的桌面模板。
       如果此政策未设置，桌面模板列表中将不包含任何预配置的桌面模板。此政策在以下情况下将不起任何作用：<ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" /> 政策未设为 true。</translation>
 <translation id="5641279111657132737">此政策已被弃用，请改用“<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />”政策。
@@ -7036,6 +7035,7 @@
 <translation id="8763716376920670835">自 M101 起，WebSQL 默认处于开启状态，但可通过 Chrome flag 停用。
           如果此政策设为 false 或未设置，则 WebSQL 可停用。
           如果此政策设为 true，则 WebSQL 无法停用。</translation>
+<translation id="8766910236040529804">启用渲染程序应用容器</translation>
 <translation id="8767743923206070405">如果此政策已启用，系统会在 <ph name="PRODUCT_NAME" /> 的工具栏中显示“主页”按钮。如果此政策已停用，系统不会显示“主页”按钮。
 
       如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，用户便可自行选择是否显示“主页”按钮。</translation>

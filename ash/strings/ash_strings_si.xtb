@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">දින දර්ශනය</translation>
 <translation id="1153356358378277386">යුගලිත උපාංග</translation>
 <translation id="1165712434476988950">යාවත්කාලීනය යෙදීම සඳහා උපාංග නැවත ආරම්භ කිරීම අවශ්‍ය වේ.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">ඔබගේ USB-C කේබලය සංදර්ශකවලට නිසි ලෙස සම්බන්ධ නොවිය හැකිය</translation>
 <translation id="1175572348579024023">අනුචලන කරන්න</translation>
 <translation id="1178581264944972037">විරාමය</translation>
@@ -55,10 +56,6 @@
 <translation id="1247519845643687288">මෑත යෙදුම්</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> වෙතින් ආරෝපණය වෙමින්</translation>
 <translation id="1255033239764210633">කාලගුණය කෙසේද?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> සිට 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Google දින දර්ශනය තුළ වැඩි විස්තර සඳහා තෝරන්න.</translation>
 <translation id="1267032506238418139">කෙටිමඟ වෙනස් කිරීම</translation>
 <translation id="1269405891096105529">උපාංගය ආගන්තුක ප්‍රකාරය තුළ සහාය නොදක්වයි</translation>
 <translation id="1270290102613614947">තිරය මත යතුරු පුවරුව අබල කර ඇත</translation>
@@ -124,6 +121,7 @@
 <translation id="1620510694547887537">කැමරාව</translation>
 <translation id="1632985212731562677">ප්‍රවේශය මාරු කිරීම සැකසීම් &gt; ප්‍රවේශ්‍යතාව තුළ අබල කළ හැක.</translation>
 <translation id="1637505162081889933">උපාංග <ph name="NUM_DEVICES" />ක්</translation>
+<translation id="1639239467298939599">පැටවෙමින්</translation>
 <translation id="1654477262762802994">හඬ විමසුමක් අරඹන්න</translation>
 <translation id="1668469839109562275">තිළැලි VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ඉතිරිය</translation>
@@ -1049,7 +1047,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> තුළ පැරණි විභේදනයට හරවනු ඇත</translation>
 <translation id="7180611975245234373">නැවුම් කරන්න</translation>
-<translation id="718361511487535372">Google දින දර්ශනය තුළ විවෘත කරන්න</translation>
 <translation id="7188494361780961876">මෙනුව තිරයේ ඉහළ වම් කොණට ගෙන ගියා.</translation>
 <translation id="7189412385142492784">සිකුරු කොතරම් දුරද?</translation>
 <translation id="7198435252016571249">කැමරාව පහළ දකුණු කෙළවරට සවි කර ඇත. පද්ධති මතුපිට සමග ගැටුම.</translation>

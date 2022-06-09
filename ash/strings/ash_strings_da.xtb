@@ -31,6 +31,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Parrede enheder</translation>
 <translation id="1165712434476988950">Enheden skal genstartes, før opdateringen anvendes.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" /> <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Dit USB-C-kabel kan muligvis ikke sluttes korrekt til skærmene</translation>
 <translation id="1175572348579024023">Rul</translation>
 <translation id="1178581264944972037">Pause</translation>
@@ -55,10 +56,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1247519845643687288">Seneste apps</translation>
 <translation id="1252999807265626933">Oplader fra <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvordan er vejret?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> til 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Vælg for at få flere oplysninger i Google Kalender.</translation>
 <translation id="1267032506238418139">Ændring af genvej</translation>
 <translation id="1269405891096105529">Eksternt tilbehør understøttes ikke i gæstetilstand</translation>
 <translation id="1270290102613614947">Skærmtastaturet er deaktiveret</translation>
@@ -124,6 +121,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Kontaktadgang kan deaktiveres under Indstillinger &gt; Hjælpefunktioner.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheder</translation>
+<translation id="1639239467298939599">Indlæser...</translation>
 <translation id="1654477262762802994">Start en stemmeforespørgsel</translation>
 <translation id="1668469839109562275">Indbygget VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> tilbage</translation>
@@ -1049,7 +1047,6 @@ Installeret for nylig</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Fortryder og vender tilbage til den gamle opløsning om <ph name="TIMEOUT_SECONDS" /> sekunder.</translation>
 <translation id="7180611975245234373">Opdater</translation>
-<translation id="718361511487535372">Åbn i Google Kalender</translation>
 <translation id="7188494361780961876">Menuen blev flyttet til øverste venstre hjørne af skærmen.</translation>
 <translation id="7189412385142492784">Hvor langt væk er Venus?</translation>
 <translation id="7198435252016571249">Kameraet er fastgjort til hjørnet nederst til højre. Dette er i strid med systemfladen.</translation>

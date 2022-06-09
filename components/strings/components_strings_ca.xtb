@@ -699,7 +699,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2854764410992194509">Proveïdors d'Internet</translation>
 <translation id="2856444702002559011">Pot ser que els atacants provin de robar la teva informació del lloc web <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (per exemple, contrasenyes, missatges o targetes de crèdit). <ph name="BEGIN_LEARN_MORE_LINK" />Més informació<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Aquest lloc web mostra anuncis intrusius o enganyosos.</translation>
-<translation id="286512204874376891">Una targeta virtual oculta la teva targeta real per contribuir a protegir-te de possibles fraus. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Amistosa</translation>
 <translation id="28761159517501904">Pel·lícules</translation>
 <translation id="2876489322757410363">Per pagar amb una aplicació externa, sortiràs del mode d'incògnit. Vols continuar?</translation>
@@ -1327,7 +1326,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4607603470419975064">Botó Mostra consells per a Chrome: prem Retorn per obtenir informació sobre les funcions de Chrome</translation>
 <translation id="4607608436550361748">Mostra consells per a Chrome</translation>
 <translation id="4617273035598175554">Programari d'animació i gràfics</translation>
-<translation id="4627165777145349100">Més informació sobre aquesta pàgina</translation>
 <translation id="4627675673814409125">Aquesta política no es pot establir a nivell del perfil de Chrome i s'ignorarà.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Devolució de diners associada</translation>
@@ -1861,7 +1859,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6061154937977953833">Lluita</translation>
 <translation id="6064217302520318294">Bloqueig de pantalla</translation>
 <translation id="6064602040258638498">Cupons i ofertes de descompte</translation>
-<translation id="6078813287646374487">Mostra més informació sobre aquesta pàgina</translation>
 <translation id="6080696365213338172">Has accedit a contingut mitjançant un certificat proporcionat per l'administrador. Per tant, l'administrador por interceptar les dades que proporcioneu a <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Cerques relacionades</translation>
 <translation id="6094273045989040137">Anota</translation>
@@ -2785,6 +2782,7 @@ Detalls addicionals:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> és el teu codi per a <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Afegeix aquesta pestanya a les adreces d'interès</translation>
 <translation id="8751426954251315517">Torna-ho a provar la propera vegada</translation>
+<translation id="8757526089434340176">Hi ha una oferta de Google Pay disponible</translation>
 <translation id="8758885506338294482">Videojocs competitius</translation>
 <translation id="8759274551635299824">Aquesta targeta ha caducat</translation>
 <translation id="87601671197631245">Aquest lloc web utilitza una configuració de seguretat obsoleta i, per tant, la informació que hi enviïs podria quedar exposada (per exemple, les contrasenyes, els missatges o les targetes de crèdit).</translation>

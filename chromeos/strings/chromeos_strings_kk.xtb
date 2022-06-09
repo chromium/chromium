@@ -214,7 +214,6 @@
 <translation id="2878387241690264070">Заряд <ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> азайды.</translation>
 <translation id="291142119251986300">Расталмаған компоненттер</translation>
 <translation id="2926057806159140518">Пайдаланушы аты мен құпия сөзді енгізіңіз немесе QR кодын сканерлеңіз.</translation>
-<translation id="2928420929544864228">Орнату аяқталды.</translation>
 <translation id="3008341117444806826">ЖАҢАРТУ</translation>
 <translation id="3009958530611748826">Сканерленген мазмұн сақталатын қалтаны таңдаңыз</translation>
 <translation id="3017079585324758401">Фон</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">Өшіріп қосу алдында құрылғыңызды зауыттық параметрлерге қайтарыңыз. Егер құрылғыңыздың қақпақ болса, зауыттық параметрлерге қайтару аяқталғанша қақпақты жаппаңыз. Зауыттық параметрлерге қайтару бірнеше минут алуы мүмкін.</translation>
 <translation id="3858860766373142691">Аты</translation>
 <translation id="3865414814144988605">Ажыратымдылық</translation>
+<translation id="3866249974567520381">Сипаттама</translation>
 <translation id="387301095347517405">Батареяңыздың толық зарядтау циклінен өту саны</translation>
 <translation id="3885327323343477505">Скринсейверді өзгерту</translation>
 <translation id="3923184630988645767">Деректер трафигі</translation>
@@ -898,6 +898,7 @@
 <translation id="922179502584117429">Қазіргі <ph name="VERSION_NUMBER" /> нұсқасы ескірген.</translation>
 <translation id="932327136139879170">Негізгі бет</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Пікір жіберу</translation>
 <translation id="952992212772159698">Белсендірілмеген</translation>
 <translation id="960719561871045870">Оператор коды</translation>
 <translation id="982713511914535780">Зарядтың азаюы тексерісін іске қосу</translation>

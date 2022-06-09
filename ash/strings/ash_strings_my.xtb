@@ -56,10 +56,6 @@
 <translation id="1247519845643687288">လတ်တလောသုံး အက်ပ်များ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />မှ အားသွင်းနေပါသည်</translation>
 <translation id="1255033239764210633">မိုးလေဝသအခြေအနေ ဘယ်လိုရှိလဲ။</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> မှ 
-        <ph name="END_TIME" /> အထိ၊ 
-        <ph name="TIME_ZONE" />၊ 
-        <ph name="EVENT_SUMMARY" />။ နောက်ထပ်အသေးစိတ်များအတွက် Google Calendar တွင်ရွေးပါ။</translation>
 <translation id="1267032506238418139">ဖြတ်လမ်းလင့်ခ် ပြောင်းလဲခြင်း</translation>
 <translation id="1269405891096105529">‘ဧည့်သည်မုဒ်’ တွင် ချိတ်ဆက်ပစ္စည်းကို မပံ့ပိုးပါ</translation>
 <translation id="1270290102613614947">မျက်နှာပြင် ပေါ်က ကီးဘုတ် ပိတ်ထား</translation>
@@ -125,6 +121,7 @@
 <translation id="1620510694547887537">ကင်မရာ</translation>
 <translation id="1632985212731562677">'ဆက်တင်များ' &gt; 'အများသုံးစွဲနိုင်မှု' တွင် 'ခလုတ်သုံးခြင်း' ကို ပိတ်နိုင်သည်။</translation>
 <translation id="1637505162081889933">စက် <ph name="NUM_DEVICES" /> ခု</translation>
+<translation id="1639239467298939599">တင်ပေးနေ</translation>
 <translation id="1654477262762802994">အသံဖြင့် စတင် စုံစမ်းမေးမြန်းရန်</translation>
 <translation id="1668469839109562275">အသင့်ပါသော VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ကျန်ပါသည်</translation>
@@ -1050,7 +1047,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">စက္ကန့် <ph name="TIMEOUT_SECONDS" /> အတွင်းမှာ ပြတ်သားမှု အဟောင်းဆီကို ပြန်ပြောင်းမည်</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
-<translation id="718361511487535372">Google Calendar တွင် ဖွင့်ရန်</translation>
 <translation id="7188494361780961876">မီနူးကို ဖန်သားပြင်၏ ဘယ်ဘက်ထိပ်ထောင့်သို့ ရွှေ့လိုက်သည်။</translation>
 <translation id="7189412385142492784">သောကြာဂြိုဟ်က ဘယ်လောက်ဝေးလဲ</translation>
 <translation id="7198435252016571249">ကင်မရာကို အောက်ညာဘက်ထောင့်သို့ ကပ်ထားသည်။ စနစ်မျက်နှာပြင်နှင့် ငြိနေသည်။</translation>

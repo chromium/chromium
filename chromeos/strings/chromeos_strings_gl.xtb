@@ -95,6 +95,7 @@
 <translation id="1717874160321062422">Dispositivo xestionado por <ph name="FIRST_MANAGER" /> e por <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
 <translation id="1731082422893354635">Panel táctil con conexión por Bluetooth</translation>
+<translation id="1745577949879301685">Non se puideron cargar as imaxes. Comproba a túa conexión de rede ou tenta cargalas de novo.</translation>
 <translation id="1751249301761991853">Personalizar</translation>
 <translation id="1753496554272155572">Saír da vista previa do fondo de pantalla</translation>
 <translation id="175763766237925754">Boa (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -213,7 +214,6 @@
 <translation id="2878387241690264070">Descargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="291142119251986300">Compoñentes non compatibles</translation>
 <translation id="2926057806159140518">Escribe o teu nome de usuario e contrasinal ou escanea o código QR</translation>
-<translation id="2928420929544864228">Completouse a instalación.</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar un cartafol para gardar os ficheiros</translation>
 <translation id="3017079585324758401">Fondo</translation>
@@ -303,6 +303,7 @@
 <translation id="385832974417157471">Antes de apagar o dispositivo, utiliza a función Powerwash. Se o dispositivo ten tapa, agarda a que conclúa esta función para pechala. Powerwash pode tardar ata un minuto en rematar.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3865414814144988605">Resolución</translation>
+<translation id="3866249974567520381">Descrición</translation>
 <translation id="387301095347517405">Número de veces que a batería se someteu a un ciclo de carga completo</translation>
 <translation id="3885327323343477505">Cambiar protector de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
@@ -898,6 +899,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="922179502584117429">A versión actual (<ph name="VERSION_NUMBER" />) está desactualizada</translation>
 <translation id="932327136139879170">Inicio</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="952992212772159698">Non activado</translation>
 <translation id="960719561871045870">Código do operador</translation>
 <translation id="982713511914535780">Realizar proba de descarga</translation>

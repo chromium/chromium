@@ -587,6 +587,7 @@
 <translation id="4227318652298512614">원하는 사이트 팔로우</translation>
 <translation id="4242533952199664413">설정 열기</translation>
 <translation id="4248098802131000011">정보 유출 및 다른 보안 문제로부터 비밀번호를 안전하게 보호하세요.</translation>
+<translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="4249955472157341256">최신순 정렬</translation>
 <translation id="4250229828105606438">스크린샷</translation>
 <translation id="4256782883801055595">오픈소스 라이선스</translation>
@@ -654,7 +655,6 @@
 <translation id="4594952190837476234">이 오프라인 페이지는 <ph name="CREATION_TIME" />에 생성되었으며 온라인 버전과 다를 수 있습니다.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> 열기</translation>
 <translation id="4619564267100705184">본인 인증</translation>
-<translation id="4627165777145349100">이 페이지 자세히 알아보기</translation>
 <translation id="4634124774493850572">비밀번호 사용</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{유출된 비밀번호 1개}other{유출된 비밀번호 #개}}</translation>
 <translation id="4650364565596261010">시스템 기본값</translation>
@@ -793,7 +793,6 @@
 <translation id="5342314432463739672">권한 요청</translation>
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
 <translation id="5368227114232678694">이 기기에서 비공개로 인터넷을 사용하려면 시크릿 모드를 사용하세요.</translation>
-<translation id="5371717687506906963">개인 정보 보호 샌드박스 메시지</translation>
 <translation id="5375577065097716013">Google 렌즈로 이미지 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">반응 변경됨</translation>
 <translation id="5401851137404501592">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다.</translation>

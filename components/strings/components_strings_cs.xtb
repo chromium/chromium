@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Granty, stipendia a finanční pomoc</translation>
 <translation id="1048785276086539861">Když poznámky upravíte, tento dokument se vrátí do zobrazení jedné stránky</translation>
 <translation id="1050038467049342496">Zavřete ostatní aplikace</translation>
+<translation id="1053959602163383901">Rozhodli jste se provést ověření pomocí ověřovací aplikace na webech, které používají <ph name="PROVIDER_ORIGIN" />. Tento poskytovatel může mít uložené údaje o vaší platební metodě – můžete <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Vrátit přidání zpět</translation>
 <translation id="1056663316309890343">Fotografický software</translation>
 <translation id="1056898198331236512">Upozornění</translation>
@@ -422,6 +423,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2053111141626950936">Stránky v jazyce <ph name="LANGUAGE" /> se nebudou překládat.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každý den aktualizuje.}=1{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každý den aktualizuje.}few{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každé {NUM_DAYS} dny aktualizuje.}many{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každých {NUM_DAYS} dne aktualizuje.}other{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každých {NUM_DAYS} dní aktualizuje.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 návrh}few{# návrhy}many{# návrhu}other{# návrhů}}</translation>
+<translation id="2066915425250589881">požádat o jejich smazání</translation>
 <translation id="2068528718802935086">Děti a batolata</translation>
 <translation id="2071156619270205202">Tato karta není pro číslo virtuální karty vhodná.</translation>
 <translation id="2071692954027939183">Oznámení byla automaticky zablokována, protože je obvykle nepovolujete</translation>
@@ -578,6 +580,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2512101340618156538">Nepovoleno (výchozí)</translation>
 <translation id="2512413427717747692">Tlačítko nastavení Chromu jako výchozího prohlížeče: Stisknutím klávesy Enter nastavíte Chrome jako výchozí prohlížeč v nastavení iOS</translation>
 <translation id="2515629240566999685">Zkontrolovat, zda máte dostatečně silný signál</translation>
+<translation id="2515761554693942801">Rozhodli jste se provést ověření pomocí Touch ID na webech, které používají <ph name="PROVIDER_ORIGIN" />. Tento poskytovatel může mít uložené údaje o vaší platební metodě – můžete <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Sponka vpravo dole</translation>
 <translation id="2521736961081452453">Vytvořit formulář</translation>
 <translation id="2523886232349826891">Uloženo pouze do tohoto zařízení</translation>
@@ -699,7 +702,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2854764410992194509">Poskytovatelé internetových služeb</translation>
 <translation id="2856444702002559011">Útočníci se mohou pokusit odcizit vaše údaje na webu <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (například hesla, zprávy nebo informace o platebních kartách). <ph name="BEGIN_LEARN_MORE_LINK" />Další informace<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Tento web zobrazuje rušivé nebo zavádějící reklamy.</translation>
-<translation id="286512204874376891">Virtuální karta maskuje vaši skutečnou kartu a chrání vás před případným podvodem. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Přátelské</translation>
 <translation id="28761159517501904">Filmy</translation>
 <translation id="2876489322757410363">Chystáte se opustit anonymní režim, abyste mohli zaplatit v externí aplikaci. Pokračovat?</translation>
@@ -1323,7 +1325,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4607603470419975064">Tlačítko Zobrazit tipy k Chromu, stisknutím klávesy Enter zobrazíte další informace o funkcích Chromu</translation>
 <translation id="4607608436550361748">Zobrazit tipy k Chromu</translation>
 <translation id="4617273035598175554">Grafika a animační software</translation>
-<translation id="4627165777145349100">Další informace o této stránce</translation>
 <translation id="4627675673814409125">Tuto zásadu nelze nastavit na úrovni profilu Chrome, bude proto ignorována.</translation>
 <translation id="4628948037717959914">Fotka</translation>
 <translation id="4631649115723685955">Cashback je propojen</translation>
@@ -1488,6 +1489,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5051305769747448211">Živé komedie</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pokud tento soubor chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}few{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}many{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}other{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="5056549851600133418">Články pro vás</translation>
+<translation id="5060483733937416656">Rozhodli jste se provést ověření pomocí Windows Hello na webech, které používají <ph name="PROVIDER_ORIGIN" />. Tento poskytovatel může mít uložené údaje o vaší platební metodě – můžete <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Měli jste na mysli <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historie tisku</translation>
 <translation id="5068234115460527047">Zajišťovací fondy</translation>
@@ -1857,7 +1859,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6061154937977953833">Wrestling</translation>
 <translation id="6064217302520318294">Zámek obrazovky</translation>
 <translation id="6064602040258638498">Kupony a slevové nabídky</translation>
-<translation id="6078813287646374487">Zobrazit další informace o této stránce</translation>
 <translation id="6080696365213338172">Získali jste přístup k obsahu pomocí certifikátu poskytnutého správcem. Údaje poskytovaná doméně <ph name="DOMAIN" /> bude správce moci zachytit.</translation>
 <translation id="6087312102907839798">Související vyhledávání</translation>
 <translation id="6094273045989040137">Přidat značky a poznámky</translation>
@@ -2780,6 +2781,7 @@ Další podrobnosti:
 <translation id="8742371904523228557">Váš kód pro <ph name="ORIGIN" /> je <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Přidat tuto kartu do záložek</translation>
 <translation id="8751426954251315517">Zkuste to znovu později</translation>
+<translation id="8757526089434340176">K dispozici je nabídka Google Pay</translation>
 <translation id="8758885506338294482">Soutěžní hraní videoher</translation>
 <translation id="8759274551635299824">Platnost této karty vypršela</translation>
 <translation id="87601671197631245">Tento web používá zastaralou konfiguraci zabezpečení, která vaše informace odesílané na tento web (například hesla, zprávy nebo kreditní karty) vystavuje riziku odhalení.</translation>

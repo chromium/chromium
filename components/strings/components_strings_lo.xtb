@@ -703,7 +703,6 @@
 <translation id="2854764410992194509">ຜູ້ໃຫ້ບໍລິການອິນເຕີເນັດ (ISP)</translation>
 <translation id="2856444702002559011">ຜູ້ໂຈມຕີອາດຈະກຳລັງພະຍາຍາມລັກເອົາຂໍ້ມູນຂອງທ່ານຈາກ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (ຕົວຢ່າງ: ລະຫັດຜ່ານ, ຂໍ້ຄວາມ ຫຼື ບັດເຄຣດິດ). <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">ເວັບໄຊນີ້ສະແດງໂຄສະນາທີ່ລົບກວນ ຫຼື ຫຼອກລວງ.</translation>
-<translation id="286512204874376891">ບັດສະເໝືອນຈະປອມແປງບັດແທ້ຂອງທ່ານເພື່ອຊ່ວຍປົກປ້ອງທ່ານຈາກຄວາມສ່ຽງໃນການສໍ້ໂກງ. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">ເປັນມິດ</translation>
 <translation id="28761159517501904">ໜັງ</translation>
 <translation id="2876489322757410363">ກຳລັງອອກຈາກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນເພື່ອຈ່າຍຜ່ານແອັບພລິເຄຊັນພາຍນອກ ສືບຕໍ່ບໍ?</translation>
@@ -1336,7 +1335,6 @@
 <translation id="4607603470419975064">ປຸ່ມເບິ່ງເຄັດລັບ Chrome, ກົດ Enter ເພື່ອສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຸນສົມບັດ Chrome</translation>
 <translation id="4607608436550361748">ເບິ່ງເຄັດລັບ Chrome</translation>
 <translation id="4617273035598175554">ຊອບແວກຣາບຟິກ ແລະ ອະນິເມຊັນ</translation>
-<translation id="4627165777145349100">ເພີ່ມເຕີມກ່ຽວກັບໜ້ານີ້</translation>
 <translation id="4627675673814409125">ບໍ່ສາມາດຕັ້ງນະໂຍບາຍນີ້ຢູ່ລະດັບໂປຣໄຟລ໌ Chrome ໄດ້ ແລະ ລະບົບຈະບໍ່ສົນໃຈ.</translation>
 <translation id="4628948037717959914">ຮູບຖ່າຍ</translation>
 <translation id="4631649115723685955">ເຊື່ອມໂຍງເງິນຄືນແລ້ວ</translation>
@@ -1870,7 +1868,6 @@
 <translation id="6061154937977953833">ມວຍປ້ຳ</translation>
 <translation id="6064217302520318294">ການລັອກໜ້າຈໍ</translation>
 <translation id="6064602040258638498">ຄູປອງ ແລະ ຂໍ້ສະເໜີສ່ວນຫຼຸດ</translation>
-<translation id="6078813287646374487">ສະແດງຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບໜ້ານີ້</translation>
 <translation id="6080696365213338172">ທ່ານໄດ້ເຂົ້າ​ຫາເນື້ອໃນທີ່ໃຊ້ໃບຢັ້ງຢືນຜູ້ຄວບຄຸມຈັດໃຫ້ແລ້ວ. ຂໍ້ມູນທີ່ທ່ານໃຫ້ກັບ <ph name="DOMAIN" /> ແມ່ນຜູ້ຄວບຄຸມຂອງທ່ານສາມາດດັກເອົາໄດ້.</translation>
 <translation id="6087312102907839798">ການຊອກຫາທີ່ກ່ຽວຂ້ອງ</translation>
 <translation id="6094273045989040137">ຂຽນອະທິບາຍຄວາມເຫັນ</translation>
@@ -2794,6 +2791,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ແມ່ນລະຫັດສຳລັບ <ph name="ORIGIN" /> ຂອງທ່ານ</translation>
 <translation id="874918643257405732">ບຸກມາກແຖບນີ້</translation>
 <translation id="8751426954251315517">ກະລຸນາລອງໃໝ່ໃນເທື່ອໜ້າ</translation>
+<translation id="8757526089434340176">ມີຂໍ້ສະເໜີ Google Pay</translation>
 <translation id="8758885506338294482">ວິດີໂອເກມແບບແຂ່ງຂັນ</translation>
 <translation id="8759274551635299824">ບັດນີ້ໝົດອາຍຸແລ້ວ</translation>
 <translation id="87601671197631245">ເວັບໄຊນີ້ໃຊ້ການຕັ້ງຄ່າຄວາມປອດໄພທີ່ເກົ່າແລ້ວ, ເຊິ່ງອາດຈະເຮັດໃຫ້ຂໍ້ມູນຂອງທ່ານມີຄວາມສ່ຽງ (ຕົວຢ່າງ: ລະຫັດຜ່ານ, ຂໍ້ຄວາມ ຫຼື ບັດເຄຣດິດ) ເມື່ອມັນຖືກສົ່ງໃຫ້ເວັບໄຊນີ້.</translation>

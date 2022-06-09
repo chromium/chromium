@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ.</translation>
 <translation id="1175951029573070619">საშუალო (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ამოშლა</translation>
+<translation id="1190378975642195988">საბაზისო აქსელერომეტრი</translation>
 <translation id="1195447618553298278">უცნობი შეცდომა.</translation>
 <translation id="1196959502276349371">ვერსია <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">დაკვრა/პაუზა</translation>
@@ -214,7 +215,6 @@
 <translation id="2878387241690264070"><ph name="RATE" /> განიმუხტა <ph name="NUM_SECONDS" /> წამში.</translation>
 <translation id="291142119251986300">დაუდასტურებელი კომპონენტები</translation>
 <translation id="2926057806159140518">შეიყვანეთ თქვენი მომხმარებლის სახელი და პაროლი ან დაასკანირეთ თქვენი QR კოდი</translation>
-<translation id="2928420929544864228">ინსტალაცია დასრულდა.</translation>
 <translation id="3008341117444806826">განახლება</translation>
 <translation id="3009958530611748826">აირჩიეთ საქაღალდე, რომელშიც უნდა შეინახოს</translation>
 <translation id="3017079585324758401">ფონი</translation>
@@ -268,6 +268,7 @@
 <translation id="3484914941826596830">ჩაშენებული პროგრამული უზრუნველყოფის განახლების პროცესში არ გამოაერთოთ ეს გარე მოწყობილობა ან არ გამორთოთ კომპიუტერი. შეგიძლიათ ამ ფანჯრის ჩაკეცვა. ამ განახლებას შეიძლება დასჭირდეს რამდენიმე წუთი და გარე მოწყობილობამ შეიძლება ამ დროს არ იმუშაოს.</translation>
 <translation id="3486220673238053218">განსაზღვრება</translation>
 <translation id="3488065109653206955">ნაწილობრივ გააქტიურებული</translation>
+<translation id="3492982278147736083">თავსახურის გიროსკოპი</translation>
 <translation id="3517001332549868749">ChromeOS განახლება</translation>
 <translation id="3527036260304016759">ვერ მოხერხდა — უცნობი შეცდომა</translation>
 <translation id="3532980081107202182">დარჩენილია დაახლოებით <ph name="MIN_REMAINING" /> წუთი</translation>
@@ -301,9 +302,11 @@
 <translation id="3820172043799983114">PIN-კოდი არასწორია.</translation>
 <translation id="3838338534323494292">ახალი პაროლი</translation>
 <translation id="385051799172605136">უკან</translation>
+<translation id="3856304145690230735">საბაზისო გიროსკოპი</translation>
 <translation id="385832974417157471">გამორთვამდე შეასრულეთ თქვენი მოწყობილობის powerwash. თუ თქვენს მოწყობილობას თავსახური აქვს, სანამ მას დაახურავთ, დაელოდეთ powerwash-ის დასრულებას. Powerwash-ის დასრულებას დაახლოებით ერთი წუთი დასჭირდება.</translation>
 <translation id="3858860766373142691">სახელი</translation>
 <translation id="3865414814144988605">გარჩევადობა</translation>
+<translation id="3866249974567520381">აღწერა</translation>
 <translation id="387301095347517405">ბატარეის დატენის სრული ციკლების რაოდენობა</translation>
 <translation id="3885327323343477505">ეკრანმზოგის შეცვლა</translation>
 <translation id="3923184630988645767">მონაცემთა მოხმარება</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">დაწყება</translation>
 <translation id="4479639480957787382">ეთერნეთი</translation>
 <translation id="4483049906298469269">არანაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
+<translation id="4500213108254186382">თავსახურის აქსელერომეტრი</translation>
 <translation id="4503223151711056411">ისარი მარცხნივ</translation>
 <translation id="4511264077854731334">პორტალი</translation>
 <translation id="4521826082652183069">სუბიექტის ალტერნატიული სახელის დამთხვევა</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM-ბარათი განბლოკილია</translation>
 <translation id="4562494484721939086">მომსახურება არ არის</translation>
 <translation id="4568938274596692027">ინსტალაცია დასრულდა. მიმდინარეობს გადატვირთვისთვის მომზადება...</translation>
+<translation id="4576943788798178439">სტილუსის მხარდაჭერა</translation>
 <translation id="458794348635939462">ჰოსტების გარდაქმნა ვერ მოხერხდა</translation>
 <translation id="4593212453765072419">საჭიროა პროქსი-სერვერის ავტორიზაცია</translation>
 <translation id="4609350030397390689">კლავიატურის სიკაშკაშის დაკლება</translation>
@@ -537,6 +542,7 @@
 <translation id="5866840822086176774">ძალიან ძლიერი</translation>
 <translation id="588258955323874662">სრული ეკრანი</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
+<translation id="5898758006340607522">ელკვების ღილაკი</translation>
 <translation id="5901630391730855834">ყვითელი</translation>
 <translation id="5903200662178656908">მოწყობილობა კლავიატურისა და მაუსის კომბინაციაა.</translation>
 <translation id="5916084858004523819">აკრძალული</translation>
@@ -859,6 +865,7 @@
 <translation id="8919792139048574232">შეიტყვეთ, რა შესწორდა</translation>
 <translation id="8919837981463578619">ვერ მოხერხდა — პრინტერს კალათა აკლია</translation>
 <translation id="8923267550422472772">თვის კონკრეტული დღე გადაყენებისთვის</translation>
+<translation id="8925613211674558308">VPD (ქეშირებული)</translation>
 <translation id="8928727111548978589">ვერ მოხერხდა — ქაღალდი გაუთავდა</translation>
 <translation id="8930521118335213258">მსგავსი</translation>
 <translation id="8930622219860340959">უსადენო</translation>
@@ -900,6 +907,7 @@
 <translation id="922179502584117429">ამჟამინდელი ვერსია (<ph name="VERSION_NUMBER" />) მოძველებულია</translation>
 <translation id="932327136139879170">საწყისი გვერდი</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">შეფასების გაგზავნა</translation>
 <translation id="952992212772159698">არ არის გააქტიურებული</translation>
 <translation id="960719561871045870">ოპერატორის კოდი</translation>
 <translation id="982713511914535780">განმუხტვის ტესტის გაშვება</translation>

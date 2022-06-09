@@ -56,10 +56,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1247519845643687288">Ứng dụng gần đây</translation>
 <translation id="1252999807265626933">Đang sạc từ <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Tình hình thời tiết thế nào?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> đến 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Chọn để xem thêm thông tin chi tiết trong Lịch Google.</translation>
 <translation id="1267032506238418139">Thay đổi phím tắt</translation>
 <translation id="1269405891096105529">Chế độ khách không hỗ trợ thiết bị ngoại vi</translation>
 <translation id="1270290102613614947">Đã tắt bàn phím ảo</translation>
@@ -125,6 +121,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1620510694547887537">Máy ảnh</translation>
 <translation id="1632985212731562677">Bạn có thể tắt tính năng Tiếp cận bằng công tắc trong phần Cài đặt &gt; Hỗ trợ tiếp cận.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> thiết bị</translation>
+<translation id="1639239467298939599">Đang tải</translation>
 <translation id="1654477262762802994">Bắt đầu đặt câu hỏi bằng giọng nói</translation>
 <translation id="1668469839109562275">VPN tích hợp sẵn</translation>
 <translation id="1677472565718498478">Còn <ph name="TIME" /></translation>
@@ -1050,7 +1047,6 @@ Mới cài đặt</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Sẽ hoàn nguyên về độ phân giải cũ sau <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Làm mới</translation>
-<translation id="718361511487535372">Mở trong Lịch Google</translation>
 <translation id="7188494361780961876">Đã di chuyển trình đơn vào góc trên cùng bên trái màn hình.</translation>
 <translation id="7189412385142492784">Sao Kim cách đây bao xa</translation>
 <translation id="7198435252016571249">Máy ảnh đang bám theo góc dưới bên phải. Xung đột với khu vực hệ thống.</translation>

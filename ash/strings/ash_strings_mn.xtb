@@ -56,10 +56,6 @@
 <translation id="1247519845643687288">Саяхны аппууд</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />-с цэнэглэж байна</translation>
 <translation id="1255033239764210633">Цаг агаар ямар байна вэ?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" />-с 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Дэлгэрэнгүй мэдээллийг Google Календариас сонгоно уу.</translation>
 <translation id="1267032506238418139">Товчлолыг өөрчлөх</translation>
 <translation id="1269405891096105529">Зочны горимд нэмэлтийг дэмждэггүй</translation>
 <translation id="1270290102613614947">Дэлгэцэн дээрх гарыг идэвхгүй болгосон байна</translation>
@@ -125,6 +121,7 @@
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1632985212731562677">Сэлгүүрийг Тохиргоо &gt; Хандалт хэсэгт идэвхгүй болгох боломжтой.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> төхөөрөмж</translation>
+<translation id="1639239467298939599">Ачаалж байна</translation>
 <translation id="1654477262762802994">Дуут асуулга эхлүүлэх</translation>
 <translation id="1668469839109562275">Бүрэлдэхүүн VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
@@ -1051,7 +1048,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />-д хуучин хэмэжээнд нь буцааж оруулах</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
-<translation id="718361511487535372">Google Календарьт нээх</translation>
 <translation id="7188494361780961876">Цэсийг дэлгэцийн зүүн дээд булан руу зөөсөн.</translation>
 <translation id="7189412385142492784">Сугар гараг хэр хол вэ?</translation>
 <translation id="7198435252016571249">Камерыг баруун доод булан руу зэрэгцүүлсэн. Системийн гадаргуутай зөрчилдсөн.</translation>

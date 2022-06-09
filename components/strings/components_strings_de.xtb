@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Ausbildungsförderung, Stipendien und Finanzhilfen</translation>
 <translation id="1048785276086539861">Wenn du Anmerkungen bearbeitest, wechselt das Dokument zur Einzelseitenansicht zurück</translation>
 <translation id="1050038467049342496">Andere Apps schließen</translation>
+<translation id="1053959602163383901">Du hast festgelegt, dass die Bestätigung auf Websites, die <ph name="PROVIDER_ORIGIN" /> verwenden, mit einem Authentifizierungsgerät durchgeführt werden soll. Dieser Anbieter hat möglicherweise Informationen zu deiner Zahlungsmethode gespeichert. Du kannst deren <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Hinzufügen rückgängig machen</translation>
 <translation id="1056663316309890343">Fotosoftware</translation>
 <translation id="1056898198331236512">Warnung</translation>
@@ -422,6 +423,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2053111141626950936">Seiten auf <ph name="LANGUAGE" /> werden nicht übersetzt.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ deine aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und deine Browseraktivitäten werden sicher auf deinem Gerät gespeichert. Deine Gruppe wird täglich aktualisiert.}=1{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ deine aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und deine Browseraktivitäten werden sicher auf deinem Gerät gespeichert. Deine Gruppe wird täglich aktualisiert.}other{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ deine aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und deine Browseraktivitäten werden sicher auf deinem Gerät gespeichert. Deine Gruppe wird alle {NUM_DAYS} Tage aktualisiert.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 Vorschlag}other{# Vorschläge}}</translation>
+<translation id="2066915425250589881">Löschung beantragen</translation>
 <translation id="2068528718802935086">Babys und Kleinkinder</translation>
 <translation id="2071156619270205202">Für diese Karte ist keine virtuelle Kartennummer verfügbar.</translation>
 <translation id="2071692954027939183">Benachrichtigungen wurden automatisch blockiert, da du sie normalerweise nicht zulässt</translation>
@@ -578,6 +580,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2512101340618156538">Nicht zugelassen (Standardeinstellung)</translation>
 <translation id="2512413427717747692">Schaltfläche „Google Chrome als Standardbrowser festlegen“ – Drück die Eingabetaste, um Chrome in den iOS-Einstellungen als Standardbrowser für das System festzulegen</translation>
 <translation id="2515629240566999685">Signal an deinem Standort prüfen</translation>
+<translation id="2515761554693942801">Du hast festgelegt, dass die Bestätigung auf Websites, die <ph name="PROVIDER_ORIGIN" /> verwenden, mit Touch ID durchgeführt werden soll. Dieser Anbieter hat möglicherweise Informationen zu deiner Zahlungsmethode gespeichert. Du kannst deren <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Heftklammer unten rechts</translation>
 <translation id="2521736961081452453">Formular erstellen</translation>
 <translation id="2523886232349826891">Nur auf diesem Gerät gespeichert</translation>
@@ -699,7 +702,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2854764410992194509">Internetanbieter (ISPs)</translation>
 <translation id="2856444702002559011">Hacker könnten versuchen, deine Daten von <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> zu stehlen, zum Beispiel Passwörter, Nachrichten oder Kreditkartendaten. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Diese Website zeigt aufdringliche oder irreführende Werbung an.</translation>
-<translation id="286512204874376891">Wenn du eine virtuelle Karte verwendest, werden deine tatsächlichen Kartendetails nicht preisgegeben – dadurch bist du besser vor Betrugsversuchen geschützt. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Freundlich</translation>
 <translation id="28761159517501904">Filme</translation>
 <translation id="2876489322757410363">Der Inkognitomodus wird deaktiviert, um über eine externe Anwendung zu zahlen. Möchtest du fortfahren?</translation>
@@ -1325,7 +1327,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4607603470419975064">Schaltfläche „Chrome-Tipps aufrufen“ – drücke die Eingabetaste, um mehr über die Funktionen von Chrome zu erfahren</translation>
 <translation id="4607608436550361748">Chrome-Tipps aufrufen</translation>
 <translation id="4617273035598175554">Grafik- und Animationssoftware</translation>
-<translation id="4627165777145349100">Mehr über diese Seite</translation>
 <translation id="4627675673814409125">Diese Richtlinie kann nicht auf der Chrome-Profilebene festgelegt werden und wird ignoriert.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Cashback zugeordnet</translation>
@@ -1490,6 +1491,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5051305769747448211">Live-Comedy</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Damit du diese Datei mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}other{Damit du diese Dateien mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}}</translation>
 <translation id="5056549851600133418">Artikel für mich</translation>
+<translation id="5060483733937416656">Du hast festgelegt, dass die Bestätigung auf Websites, die <ph name="PROVIDER_ORIGIN" /> verwenden, mit Windows Hello durchgeführt werden soll. Dieser Anbieter hat möglicherweise Informationen zu deiner Zahlungsmethode gespeichert. Du kannst deren <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Meintest du <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Druckverlauf</translation>
 <translation id="5068234115460527047">Hedgefonds</translation>
@@ -1859,7 +1861,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6061154937977953833">Ringen</translation>
 <translation id="6064217302520318294">Displaysperre</translation>
 <translation id="6064602040258638498">Gutscheine und Rabatte</translation>
-<translation id="6078813287646374487">Weitere Informationen zu dieser Seite anzeigen lassen</translation>
 <translation id="6080696365213338172">Du hast über ein vom Administrator bereitgestelltes Zertifikat auf Inhalte zugegriffen. Die Daten, die du innerhalb von <ph name="DOMAIN" /> bereitstellst, können von deinem Administrator abgefangen werden.</translation>
 <translation id="6087312102907839798">Ähnliche Suchanfragen</translation>
 <translation id="6094273045989040137">Anmerkung hinzufügen</translation>
@@ -2784,6 +2785,7 @@ Weitere Details:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ist dein Code für <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Lesezeichen für diesen Tab erstellen</translation>
 <translation id="8751426954251315517">Bitte versuche es später noch einmal</translation>
+<translation id="8757526089434340176">Google Pay-Angebot verfügbar</translation>
 <translation id="8758885506338294482">E-Sport</translation>
 <translation id="8759274551635299824">Diese Karte ist abgelaufen</translation>
 <translation id="87601671197631245">Diese Website nutzt eine veraltete Sicherheitskonfiguration. Hierdurch können Informationen wie etwa Passwörter, Nachrichten oder Kreditkartendaten, die an diese Website gesendet werden, in die Hände Unbefugter gelangen.</translation>

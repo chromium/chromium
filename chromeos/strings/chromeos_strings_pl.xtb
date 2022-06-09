@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Przeciętna (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Usuń</translation>
+<translation id="1190378975642195988">Akcelerometr podstawy</translation>
 <translation id="1195447618553298278">Nieznany błąd.</translation>
 <translation id="1196959502276349371">Wersja <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Odtwórz/wstrzymaj</translation>
@@ -214,7 +215,6 @@
 <translation id="2878387241690264070">Rozładowano <ph name="RATE" /> w ciągu <ph name="NUM_SECONDS" /> sekund.</translation>
 <translation id="291142119251986300">Niezgodne komponenty</translation>
 <translation id="2926057806159140518">Wpisz nazwę użytkownika i hasło lub zeskanuj kod QR</translation>
-<translation id="2928420929544864228">Instalacja ukończona.</translation>
 <translation id="3008341117444806826">ODŚWIEŻ</translation>
 <translation id="3009958530611748826">Wybierz folder zapisu</translation>
 <translation id="3017079585324758401">Tło</translation>
@@ -268,6 +268,7 @@
 <translation id="3484914941826596830">Podczas aktualizowania oprogramowania układowego nie odłączaj tego urządzenia zewnętrznego ani nie wyłączaj komputera. To okno możesz zminimalizować. Aktualizowanie może potrwać kilka minut i w tym czasie urządzenie zewnętrzne może nie działać.</translation>
 <translation id="3486220673238053218">definicja</translation>
 <translation id="3488065109653206955">Częściowo aktywowane</translation>
+<translation id="3492982278147736083">Żyroskop pokrywy</translation>
 <translation id="3517001332549868749">Aktualizacja Chrome OS</translation>
 <translation id="3527036260304016759">Niepowodzenie – nieznany błąd</translation>
 <translation id="3532980081107202182">Pozostało około <ph name="MIN_REMAINING" /> min</translation>
@@ -301,9 +302,11 @@
 <translation id="3820172043799983114">Nieprawidłowy kod PIN.</translation>
 <translation id="3838338534323494292">Nowe hasło</translation>
 <translation id="385051799172605136">Wstecz</translation>
+<translation id="3856304145690230735">Żyroskop podstawy</translation>
 <translation id="385832974417157471">Zanim wyłączysz urządzenie, wykonaj Powerwash. Jeśli urządzenie ma pokrywę, nie zamykaj jej, dopóki proces nie dobiegnie końca. Powerwash zajmuje nie więcej niż minutę.</translation>
 <translation id="3858860766373142691">Nazwa</translation>
 <translation id="3865414814144988605">Rozdzielczość</translation>
+<translation id="3866249974567520381">Opis</translation>
 <translation id="387301095347517405">Liczba wykonanych pełnych cykli ładowania baterii</translation>
 <translation id="3885327323343477505">Zmień wygaszacz ekranu</translation>
 <translation id="3923184630988645767">Transmisja danych</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Rozpocznij</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
+<translation id="4500213108254186382">Akcelerometr pokrywy</translation>
 <translation id="4503223151711056411">Strzałka w lewo</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Dopasowanie alternatywnej nazwy podmiotu</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">Karta SIM odblokowana</translation>
 <translation id="4562494484721939086">Brak usługi</translation>
 <translation id="4568938274596692027">Instalacja została zakończona. Przygotowuję się do ponownego uruchomienia…</translation>
+<translation id="4576943788798178439">Uchwyt rysika</translation>
 <translation id="458794348635939462">Nie udało się znaleźć wszystkich hostów</translation>
 <translation id="4593212453765072419">Wymagane uwierzytelnienie na serwerze proxy</translation>
 <translation id="4609350030397390689">Zmniejsz jasność klawiatury</translation>
@@ -536,6 +541,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5866840822086176774">Bardzo silny</translation>
 <translation id="588258955323874662">Pełny ekran</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
+<translation id="5898758006340607522">Przycisk zasilania</translation>
 <translation id="5901630391730855834">Żółty</translation>
 <translation id="5903200662178656908">Urządzenie to zestaw klawiatury i myszy.</translation>
 <translation id="5916084858004523819">Niedozwolone</translation>
@@ -858,6 +864,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8919792139048574232">Zobacz, co zostało naprawione</translation>
 <translation id="8919837981463578619">Niepowodzenie – nie znaleziono tacy</translation>
 <translation id="8923267550422472772">Dzień miesiąca, w którym ma być przeprowadzane resetowanie</translation>
+<translation id="8925613211674558308">Ważne dane urządzenia w pamięci podręcznej</translation>
 <translation id="8928727111548978589">Niepowodzenie – brak papieru</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Sieć bezprzewodowa</translation>
@@ -899,6 +906,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="922179502584117429">Zainstalowana wersja <ph name="VERSION_NUMBER" /> jest nieaktualna</translation>
 <translation id="932327136139879170">Strona główna</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="952992212772159698">Nie aktywowano</translation>
 <translation id="960719561871045870">Kod operatora</translation>
 <translation id="982713511914535780">Przeprowadź test rozładowywania</translation>

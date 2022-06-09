@@ -110,6 +110,7 @@
 <translation id="1513352483775369820">ਬੁੱਕਮਾਰਕ ਅਤੇ ਵੈੱਬ ਇਤਿਹਾਸ</translation>
 <translation id="1513814250881909472">ਆਪਣੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਆਪਣੀਆਂ ਟੈਬਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="1513858653616922153">ਪਾਸਵਰਡ ਮਿਟਾਓ</translation>
+<translation id="1514552811327923157">ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ ਉਤਪ੍ਰੇਰਕ ਨੂੰ ਪੂਰੀ ਸ੍ਰਕੀਨ 'ਤੇ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
 <translation id="1518421282666914498">ਭਾਵਨਾਵਾਂ ਵਾਲਾ GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">ਅੱਜ ਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="1538801903729528855">ਵੈੱਬ 'ਤੇ ਬਿਹਤਰ ਅਵਾਜ਼ੀ ਅਨੁਭਵ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
@@ -321,6 +322,7 @@
 <translation id="2711073837061989559">ਪਰਖਾਂ</translation>
 <translation id="2718352093833049315">ਕੇਵਲ ਵਾਈ-ਫਾਈ 'ਤੇ</translation>
 <translation id="2718846868787000099">ਤੁਹਾਡੀਆਂ ਤਰਜੀਹੀ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਸਮੱਗਰੀ ਦਿਖਾਉਣ ਲਈ, ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਸਾਈਟਾਂ ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਨੂੰ ਦੇਖ ਸਕਦੀਆਂ ਹਨ</translation>
+<translation id="2722945394406572875">ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ ਉਤਪ੍ਰੇਰਕ ਬੰਦ ਹੈ</translation>
 <translation id="2723001399770238859">ਆਡੀਓ</translation>
 <translation id="2732063072010454421">ਬਿਹਤਰ ਅਵਾਜ਼ੀ ਅਨੁਭਵ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@
 <translation id="4227318652298512614">ਆਪਣੀ ਕਿਸੇ ਵੀ ਮਨਚਾਹੀ ਸਾਈਟ ਦਾ ਅਨੁਸਰਣ ਕਰੋ</translation>
 <translation id="4242533952199664413">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="4248098802131000011">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਡਾਟਾ ਉਲੰਘਣਾਵਾਂ ਅਤੇ ਹੋਰ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਸਮੱਸਿਆਵਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰੱਖੋ</translation>
+<translation id="424864128008805179">ਕੀ Chrome ਤੋਂ ਸਾਈਨ-ਆਊਟ ਹੋਣਾ ਹੈ?</translation>
 <translation id="4249955472157341256">ਨਵੀਨਤਮ ਮੁਤਾਬਲ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
 <translation id="4250229828105606438">ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
 <translation id="4256782883801055595">ਖੁੱਲ੍ਹਾ ਸਰੋਤ ਲਾਇਸੰਸ</translation>
@@ -652,7 +655,6 @@
 <translation id="4594952190837476234">ਇਹ ਆਫ਼ਲਾਈਨ ਪੰਨਾ <ph name="CREATION_TIME" /> ਦਾ ਹੈ ਅਤੇ ਆਨਲਾਈਨ ਵਰਜਨ ਤੋਂ ਵੱਖਰਾ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ਖੋਲ੍ਹੋ</translation>
 <translation id="4619564267100705184">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
-<translation id="4627165777145349100">ਇਸ ਪੰਨੇ ਬਾਰੇ ਹੋਰ ਜਾਣਕਾਰੀ</translation>
 <translation id="4634124774493850572">ਪਾਸਵਰਡ ਵਰਤੋ</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}one{# ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}other{# ਪਾਸਵਰਡਾਂ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}}</translation>
 <translation id="4650364565596261010">ਸਿਸਟਮ ਪੂਰਵ-ਨਿਰਧਾਰਤ</translation>
@@ -894,6 +896,7 @@
 <translation id="5906513782029855931">ਸਾਈਟਾਂ ਦੇ URL ਬਾਰੇ ਜਾਣਕਾਰੀ ਹੋਣ 'ਤੇ, ਕਾਰਜਾਂ ਨੂੰ ਪੂਰਾ ਕਰਨ ਵਿੱਚ Google Assistant ਤੁਹਾਡੀ ਮਦਦ ਕਰਦੀ ਹੈ। ਤੁਸੀਂ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ Assistant ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5916664084637901428">ਚਾਲੂ</translation>
 <translation id="5919204609460789179">ਸਿੰਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ <ph name="PRODUCT_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
+<translation id="593625682991400408">ਪਰਖ ਦੌਰਾਨ, Chrome ਸਪੈਮ, ਧੋਖਾਧੜੀ, ਅਤੇ ਸਾਈਟਾਂ ਵਿਚਕਾਰ ਸਾਂਝਾਕਰਨ ਨੂੰ ਸੀਮਤ ਕਰਨ ਦੇ ਤਰੀਕਿਆਂ ਦੀ ਪੜਚੋਲ ਕਰ ਰਿਹਾ ਹੈ। Chrome <ph name="BEGIN_LINK" />ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਦਾ ਅੰਦਾਜ਼ਾ<ph name="END_LINK" /> ਵੀ ਲਗਾਉਂਦਾ ਹੈ, ਜਿਸ ਨੂੰ ਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ ਵਰਤ ਸਕਦੀਆਂ ਹਨ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਆਪਣੀਆਂ ਦਿਲਚਸਪੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5942872142862698679">ਖੋਜ ਲਈ Google ਦੀ ਵਰਤੋਂ ਹੋ ਰਹੀ ਹੈ</translation>
 <translation id="5945035219773565305">ਮੌਜੂਦਾ ਸਿਫ਼ਾਰਸ਼:  <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@
 <translation id="9106148373857059373">ਬੁੱਕਮਾਰਕ ਰੱਖਿਅਤ ਕਰਨ ਸੰਬੰਧੀ ਪ੍ਰਵਾਹ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="9108312223223904744">ਫ਼ੋਨ ਇੱਕ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਸਹਾਇਤਾ ਦੇ ਰੂਪ ਵਿੱਚ</translation>
 <translation id="9108808586816295166">ਸੁਰੱਖਿਅਤ DNS ਸ਼ਾਇਦ ਹਰ ਵੇਲੇ ਉਪਲਬਧ ਨਾ ਹੋਵੇ</translation>
+<translation id="9128984223251192329">ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ ਉਤਪ੍ਰੇਰਕ ਨੂੰ ਅੱਧੀ ਸ੍ਰਕੀਨ 'ਤੇ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
 <translation id="9133397713400217035">ਆਫ਼ਲਾਈਨ ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="9137013805542155359">ਅਸਲ ਦਿਖਾਓ</translation>
 <translation id="9148126808321036104">ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>

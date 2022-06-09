@@ -110,6 +110,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="1513352483775369820">Järjehoidjad ja veebiajalugu</translation>
 <translation id="1513814250881909472">Oma muudest seadmetest vahelehtede hankimiseks sünkroonige</translation>
 <translation id="1513858653616922153">Kustuta parool</translation>
+<translation id="1514552811327923157">Privaatsuse liivakasti viip on avatud täiskõrgusel</translation>
 <translation id="1518421282666914498">Emotsiooni GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Aktiivne täna</translation>
 <translation id="1538801903729528855">Parem häälotsingu kasutuskogemus veebis</translation>
@@ -321,6 +322,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2711073837061989559">Prooviversioonid</translation>
 <translation id="2718352093833049315">Ainult WiFi-ga</translation>
 <translation id="2718846868787000099">Sisu kuvamiseks teie eelistatud keeltes näevad teie külastatavad saidid teie eelistusi</translation>
+<translation id="2722945394406572875">Privaatsuse liivakasti viip suleti</translation>
 <translation id="2723001399770238859">heli</translation>
 <translation id="2732063072010454421">Hankige parem häälotsingu kasutuskogemus</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="4227318652298512614">Jälgige kõiki soovitud saite</translation>
 <translation id="4242533952199664413">Ava seaded</translation>
 <translation id="4248098802131000011">Tagage oma paroolide turvalisus, et vältida andmetega seotud rikkumisi ja muid turvaprobleeme</translation>
+<translation id="424864128008805179">Kas logida Chrome'ist välja?</translation>
 <translation id="4249955472157341256">Sordi uusimate järgi</translation>
 <translation id="4250229828105606438">Ekraanipilt</translation>
 <translation id="4256782883801055595">Avatud lähtekoodi litsentsid</translation>
@@ -652,7 +655,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4594952190837476234">Võrguühenduseta leht loodi <ph name="CREATION_TIME" /> ja see võib veebiversioonist erineda.</translation>
 <translation id="4616150815774728855">Ava <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Kinnitage, et see olete teie</translation>
-<translation id="4627165777145349100">Lisateave selle lehe kohta</translation>
 <translation id="4634124774493850572">Kasuta parooli</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 parool on ohus}other{# parooli on ohus}}</translation>
 <translation id="4650364565596261010">Süsteemi vaikeseade</translation>
@@ -894,6 +896,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5906513782029855931">Kui teate saitide URL-e, saab Google'i assistent aidata teil ülesandeid täita. Assistendi saab Chrome'i seadetes välja lülitada.</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5919204609460789179">Sünkroonimise alustamiseks värskendage teenust <ph name="PRODUCT_NAME" /></translation>
+<translation id="593625682991400408">Prooviperioodil otsib Chrome võimalusi, kuidas rämpsposti, pettusi ja saitide vahelist jagamist piirata. Samuti <ph name="BEGIN_LINK" />prognoosib Chrome teie huvisid<ph name="END_LINK" />, mida saidid saavad kasutada teile reklaamide kuvamiseks. Saate oma huvisid seadetes hallata.</translation>
 <translation id="5938820472109305350">Lisa <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Otsimiseks kasutatakse Google'it</translation>
 <translation id="5945035219773565305">Praegune soovitus: <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@ Usaldusmärgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku
 <translation id="9106148373857059373">Järjehoidja salvestamise voog on suletud</translation>
 <translation id="9108312223223904744">Tugi telefoni kasutamiseks turvavõtmena</translation>
 <translation id="9108808586816295166">Turvaline DNS ei pruugi alati saadaval olla</translation>
+<translation id="9128984223251192329">Privaatsuse liivakasti viip on avatud poolel kõrgusel</translation>
 <translation id="9133397713400217035">Uurige võrguühenduseta</translation>
 <translation id="9137013805542155359">Kuva originaal</translation>
 <translation id="9148126808321036104">Logige uuesti sisse</translation>

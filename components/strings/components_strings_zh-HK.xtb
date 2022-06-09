@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">補助金、獎學金和財務資助</translation>
 <translation id="1048785276086539861">在您編輯註解時，此文件將會返回單頁檢視模式</translation>
 <translation id="1050038467049342496">關閉其他應用程式</translation>
+<translation id="1053959602163383901">你已選擇使用驗證器裝置在使用 <ph name="PROVIDER_ORIGIN" /> 的網站進行驗證。這個供應商可能已儲存你的付款方式相關資訊，你可以 <ph name="LINK_TEXT" />。</translation>
 <translation id="1055184225775184556">復原新增(&amp;U)</translation>
 <translation id="1056663316309890343">相片軟件</translation>
 <translation id="1056898198331236512">警告</translation>
@@ -422,6 +423,7 @@
 <translation id="2053111141626950936">系統將不會翻譯<ph name="LANGUAGE" />網頁。</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每日更新您所屬的群組。}=1{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每日更新您所屬的群組。}other{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每隔 {NUM_DAYS} 日更新您所屬的群組。}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 個建議}other{# 個建議}}</translation>
+<translation id="2066915425250589881">要求刪除已儲存的資料</translation>
 <translation id="2068528718802935086">嬰幼兒</translation>
 <translation id="2071156619270205202">此卡不能建立虛擬卡號。</translation>
 <translation id="2071692954027939183">由於您通常不允許通知，因此系統已自動封鎖通知</translation>
@@ -578,6 +580,7 @@
 <translation id="2512101340618156538">不允許 (預設)</translation>
 <translation id="2512413427717747692">將 Chrome 設定做預設瀏覽器按鈕，㩒 Enter 鍵就可以喺 iOS 設定度將 Chrome 設定做系統嘅預設瀏覽器</translation>
 <translation id="2515629240566999685">檢查您所在地區的網絡訊號</translation>
+<translation id="2515761554693942801">你已選擇使用 Touch ID 在使用 <ph name="PROVIDER_ORIGIN" /> 的網站上進行驗證。這個供應商可能已儲存你的付款方式相關資訊，你可以 <ph name="LINK_TEXT" />。</translation>
 <translation id="2521385132275182522">釘裝 (右下方)</translation>
 <translation id="2521736961081452453">建立表格</translation>
 <translation id="2523886232349826891">只會儲存至此裝置</translation>
@@ -699,7 +702,6 @@
 <translation id="2854764410992194509">互聯網服務供應商 (ISP)</translation>
 <translation id="2856444702002559011">攻擊者可能會試圖透過 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 竊取您的資料 (例如密碼、訊息或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">此網站顯示滋擾性或誤導廣告。</translation>
-<translation id="286512204874376891">虛擬卡會隱藏您的實體卡，保護您免受潛在欺詐行為的威脅。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">友善</translation>
 <translation id="28761159517501904">電影</translation>
 <translation id="2876489322757410363">即將退出無痕模式，改用外部應用程式付款。要繼續嗎？</translation>
@@ -1326,7 +1328,6 @@
 <translation id="4607603470419975064">查看 Google 提示掣，㩒一下 Enter 鍵就可以了解 Chrome 嘅功能</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
 <translation id="4617273035598175554">平面設計和動畫軟件</translation>
-<translation id="4627165777145349100">進一步瞭解此頁面</translation>
 <translation id="4627675673814409125">此政策無法設定於 Chrome 設定檔層級，因此會被忽略。</translation>
 <translation id="4628948037717959914">相片</translation>
 <translation id="4631649115723685955">已連結現金回贈</translation>
@@ -1491,6 +1492,7 @@
 <translation id="5051305769747448211">實況喜劇</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{如要使用「咫尺共享」傳送此檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用「咫尺共享」傳送這些檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="5056549851600133418">為您推薦的文章</translation>
+<translation id="5060483733937416656">你已選擇使用 Windows Hello 在使用 <ph name="PROVIDER_ORIGIN" /> 的網站上進行驗證。這個供應商可能已儲存你的付款方式相關資訊，你可以 <ph name="LINK_TEXT" />。</translation>
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
 <translation id="5066056036849835175">列印記錄</translation>
 <translation id="5068234115460527047">對沖基金</translation>
@@ -1860,7 +1862,6 @@
 <translation id="6061154937977953833">摔角</translation>
 <translation id="6064217302520318294">螢幕鎖定</translation>
 <translation id="6064602040258638498">優惠券和折扣</translation>
-<translation id="6078813287646374487">顯示更多關於此頁面的資料</translation>
 <translation id="6080696365213338172">您使用了管理員提供的憑證存取內容，因此管理員可攔截您傳送至「<ph name="DOMAIN" />」的數據。</translation>
 <translation id="6087312102907839798">相關搜尋</translation>
 <translation id="6094273045989040137">加入註釋</translation>
@@ -2784,6 +2785,7 @@
 <translation id="8742371904523228557">您的 <ph name="ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">將此分頁加入書籤</translation>
 <translation id="8751426954251315517">請稍候再試</translation>
+<translation id="8757526089434340176">提供 Google Pay 優惠</translation>
 <translation id="8758885506338294482">電子競技</translation>
 <translation id="8759274551635299824">此信用卡已過期</translation>
 <translation id="87601671197631245">此網站的安全性設定過舊，因此您傳送給此網站的資料 (例如密碼、訊息或信用卡資料) 可能會外洩。</translation>

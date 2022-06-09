@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von <ph name="MANAGER" /> verwaltet.</translation>
 <translation id="1175951029573070619">Durchschnittlich (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Entfernen</translation>
+<translation id="1190378975642195988">Beschleunigungsmesser im Unterbau</translation>
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
 <translation id="1196959502276349371">Version <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Wiedergabe/Pause</translation>
@@ -214,7 +215,6 @@
 <translation id="2878387241690264070"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden entladen.</translation>
 <translation id="291142119251986300">Nicht qualifizierte Komponenten</translation>
 <translation id="2926057806159140518">Gib Nutzernamen und Passwort ein oder scanne deinen QR-Code</translation>
-<translation id="2928420929544864228">Installation abgeschlossen.</translation>
 <translation id="3008341117444806826">AKTUALISIEREN</translation>
 <translation id="3009958530611748826">Ordner als Speicherort auswählen</translation>
 <translation id="3017079585324758401">Hintergrund</translation>
@@ -268,6 +268,7 @@
 <translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und dein externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
 <translation id="3486220673238053218">Definition</translation>
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
+<translation id="3492982278147736083">Gyroskop im Deckel</translation>
 <translation id="3517001332549868749">Chrome OS-Update</translation>
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
 <translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
@@ -301,9 +302,11 @@
 <translation id="3820172043799983114">Ungültige PIN.</translation>
 <translation id="3838338534323494292">Neues Passwort</translation>
 <translation id="385051799172605136">Zurück</translation>
+<translation id="3856304145690230735">Gyroskop im Unterbau</translation>
 <translation id="385832974417157471">Führe vor dem Herunterfahren einen Powerwash deines Geräts durch. Bei Geräten mit Klappmechanismus: Warte, bis der Powerwash abgeschlossen ist, bevor du das Gerät zuklappst. Ein Powerwash kann bis zu einer Minute lang dauern.</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3865414814144988605">Auflösung</translation>
+<translation id="3866249974567520381">Beschreibung</translation>
 <translation id="387301095347517405">Wie oft der Akku vollständig aufgeladen wurde</translation>
 <translation id="3885327323343477505">Bildschirmschoner ändern</translation>
 <translation id="3923184630988645767">Datennutzung</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Jetzt starten</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Das nicht standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
+<translation id="4500213108254186382">Beschleunigungsmesser im Deckel</translation>
 <translation id="4503223151711056411">Linkspfeil</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Alternativer Name für Betreff stimmt überein</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM-Karte entsperrt</translation>
 <translation id="4562494484721939086">Dienst nicht verfügbar</translation>
 <translation id="4568938274596692027">Installation abgeschlossen. Neustart wird vorbereitet…</translation>
+<translation id="4576943788798178439">Eingabestift-Unterstützung</translation>
 <translation id="458794348635939462">Es konnten nicht alle Hosts aufgelöst werden</translation>
 <translation id="4593212453765072419">Proxy-Authentifizierung erforderlich</translation>
 <translation id="4609350030397390689">Tastaturhelligkeit verringern</translation>
@@ -430,6 +435,7 @@
 <translation id="4915052247106771211">Dadurch wird das Gerät auf die Werkseinstellungen zurückgesetzt (Powerwash).</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4917889632206600977">Angehalten – Kein Papier</translation>
+<translation id="491791267030419270">Tipps zum Schreiben von Feedback</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden aufgeladen.</translation>
 <translation id="4930320165497208503">Gehe zum Einrichten oder Aktualisieren einer Verbindung zu den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
@@ -536,6 +542,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5866840822086176774">Sehr stark</translation>
 <translation id="588258955323874662">Vollbild</translation>
 <translation id="5895138241574237353">Neu starten</translation>
+<translation id="5898758006340607522">Ein-/Aus-Taste</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5903200662178656908">Das Gerät ist eine Kombination aus Maus und Tastatur.</translation>
 <translation id="5916084858004523819">Unzulässig</translation>
@@ -858,6 +865,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8919792139048574232">Ansehen, was korrigiert wurde</translation>
 <translation id="8919837981463578619">Fehlgeschlagen – Fach fehlt</translation>
 <translation id="8923267550422472772">Tag des Monats zum Zurücksetzen</translation>
+<translation id="8925613211674558308">Im VPD-Cache gespeichert</translation>
 <translation id="8928727111548978589">Fehlgeschlagen – Kein Papier</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Drahtlos</translation>
@@ -899,6 +907,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="922179502584117429">Die installierte Version (<ph name="VERSION_NUMBER" />) ist veraltet</translation>
 <translation id="932327136139879170">Startseite</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Feedback geben</translation>
 <translation id="952992212772159698">Nicht aktiviert</translation>
 <translation id="960719561871045870">Betreibercode</translation>
 <translation id="982713511914535780">Entladetest ausführen</translation>

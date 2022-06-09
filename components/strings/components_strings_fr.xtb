@@ -703,7 +703,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2854764410992194509">Fournisseurs d'accès Internet (FAI)</translation>
 <translation id="2856444702002559011">Des individus malveillants tentent peut-être de subtiliser vos informations personnelles sur le site <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (mots de passe, messages ou numéros de carte de crédit, par exemple). <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Ce site affiche des annonces intrusives ou trompeuses.</translation>
-<translation id="286512204874376891">Une carte virtuelle masque votre carte réelle pour vous protéger des fraudes potentielles. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Amical</translation>
 <translation id="28761159517501904">Films</translation>
 <translation id="2876489322757410363">En payant via une appli externe, vous allez quitter le mode navigation privée. Voulez-vous continuer ?</translation>
@@ -1336,7 +1335,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4607603470419975064">Bouton "Voir les astuces Chrome", appuyez sur Entrée pour en savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="4607608436550361748">Voir les astuces Chrome</translation>
 <translation id="4617273035598175554">Logiciels de graphisme et d'animation</translation>
-<translation id="4627165777145349100">En savoir plus sur cette page</translation>
 <translation id="4627675673814409125">Cette règle sera ignorée, car elle ne peut pas être définie au niveau du profil Chrome.</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4631649115723685955">Avec cashback</translation>
@@ -1870,7 +1868,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6061154937977953833">Lutte</translation>
 <translation id="6064217302520318294">Verrouillage de l'écran</translation>
 <translation id="6064602040258638498">Réductions et remises</translation>
-<translation id="6078813287646374487">Afficher plus d'informations concernant cette page</translation>
 <translation id="6080696365213338172">Vous avez accédé à du contenu à l'aide d'un certificat fourni par l'administrateur. Les données que vous fournissez à <ph name="DOMAIN" /> peuvent être interceptées par votre administrateur.</translation>
 <translation id="6087312102907839798">Recherches associées</translation>
 <translation id="6094273045989040137">Annoter</translation>
@@ -2795,6 +2792,7 @@ Informations supplémentaires :
 <translation id="8742371904523228557">Votre code pour <ph name="ORIGIN" /> est <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Ajouter cet onglet aux favoris</translation>
 <translation id="8751426954251315517">Veuillez réessayer plus tard</translation>
+<translation id="8757526089434340176">Offre Google Pay disponible</translation>
 <translation id="8758885506338294482">Compétitions de jeux vidéo</translation>
 <translation id="8759274551635299824">Carte arrivée à expiration</translation>
 <translation id="87601671197631245">La configuration de sécurité obsolète de ce site peut exposer vos informations, comme vos mots de passe, vos messages ou vos cartes de crédit, lorsqu'elles lui sont transmises.</translation>

@@ -110,6 +110,7 @@
 <translation id="1513352483775369820">סימניות והיסטוריית אתרים</translation>
 <translation id="1513814250881909472">אפשר לבצע סנכרון כדי להציג את הכרטיסיות מהמכשירים האחרים שלך</translation>
 <translation id="1513858653616922153">מחיקת סיסמה</translation>
+<translation id="1514552811327923157">ההודעה לגבי ארגז החול לפרטיות נפתחה בגובה מלא</translation>
 <translation id="1518421282666914498">‏GIF של רגש <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">סנכרון אחרון: היום</translation>
 <translation id="1538801903729528855">חוויה קולית טובה יותר באינטרנט</translation>
@@ -321,6 +322,7 @@
 <translation id="2711073837061989559">תקופות ניסיון</translation>
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
 <translation id="2718846868787000099">כדי שנוכל להציג תוכן בשפות המועדפות עליך, ההעדפות שלך גלויות לאתרים שביקרת בהם</translation>
+<translation id="2722945394406572875">ההודעה לגבי ארגז החול לפרטיות נסגרה</translation>
 <translation id="2723001399770238859">אודיו</translation>
 <translation id="2732063072010454421">אפשר ליהנות מחוויה טובה יותר בחיפוש קולי</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@
 <translation id="4227318652298512614">עוקבים אחר כל אתר שרוצים</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
 <translation id="4248098802131000011">הגנה על הסיסמאות שלך מפני פרצות באבטחת המידע ובעיות אבטחה אחרות</translation>
+<translation id="424864128008805179">‏האם לצאת מ-Chrome?</translation>
 <translation id="4249955472157341256">מיון לפי 'האחרון'</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4256782883801055595">רישיונות קוד פתוח</translation>
@@ -652,7 +655,6 @@
 <translation id="4594952190837476234">הדף האופליין הזה נוצר ב-<ph name="CREATION_TIME" /> ויכול להיות שהגרסה המקוונת שלו שונה.</translation>
 <translation id="4616150815774728855">פתיחה של <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
-<translation id="4627165777145349100">מידע נוסף על הדף הזה</translation>
 <translation id="4634124774493850572">שימוש בסיסמה</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{סיסמה אחת שנחשפה}two{# סיסמאות שנחשפו}many{# סיסמאות שנחשפו}other{# סיסמאות שנחשפו}}</translation>
 <translation id="4650364565596261010">ברירת מחדל של המערכת</translation>
@@ -894,6 +896,7 @@
 <translation id="5906513782029855931">‏אם מכירים כתובות של אתרים, Google Assistant יכולה לעזור להשלים משימות. ניתן להשבית את Assistant דרך ההגדרות של Chrome.</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5919204609460789179">יש לעדכן את <ph name="PRODUCT_NAME" /> כדי להתחיל סנכרון</translation>
+<translation id="593625682991400408">‏במהלך תקופת הניסיון, מערכת Chrome מחפשת דרכים שמאפשרות להגביל ספאם, הונאות ושיתוף בין אתרים. מערכת Chrome גם <ph name="BEGIN_LINK" />מעריכה מהם תחומי העניין שלך<ph name="END_LINK" />, ואתרים יוכלו להשתמש במידע הזה כדי להציג לך מודעות. אפשר לנהל את תחומי העניין בהגדרות.</translation>
 <translation id="5938820472109305350">הוספה של תחום העניין '<ph name="INTEREST" />'</translation>
 <translation id="5942872142862698679">‏שימוש ב-Google לחיפוש</translation>
 <translation id="5945035219773565305">המלצה נוכחית:  <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@
 <translation id="9106148373857059373">תהליך שמירת הסימנייה נסגר</translation>
 <translation id="9108312223223904744">תמיכה בטלפון כמפתח אבטחה</translation>
 <translation id="9108808586816295166">‏ה-DNS המאובטח לא יהיה בהכרח זמין תמיד</translation>
+<translation id="9128984223251192329">ההודעה לגבי ארגז החול לפרטיות נפתחה בחצי הגובה</translation>
 <translation id="9133397713400217035">הצעות לתוכן במצב אופליין</translation>
 <translation id="9137013805542155359">הצגת מקור</translation>
 <translation id="9148126808321036104">כניסה חוזרת</translation>

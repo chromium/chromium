@@ -3118,14 +3118,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si el dispositivo no está gestionado o solo hay un usuario, esta política se ignorará y siempre se mostrará la notificación.
 
       Si hay varias cuentas de usuario en un dispositivo gestionado, la notificación solo se mostrará si esta política está habilitada.</translation>
-<translation id="4293593564662654474">Esta política se proporciona como método para inhabilitar la función Conjuntos propios.
-
-                  Si esta política se habilita o no se define, se habilitará la función Conjuntos propios.
-
-                  Si esta política se inhabilita, se inhabilitará la función Conjuntos propios.
-
-                  El estado de la función Conjuntos propios determina si Chrome recupera la lista de Conjuntos propios.
-                  También controla si Chrome admite funciones relacionadas con Conjuntos propios (por ejemplo, el atributo de cookies SameParty).</translation>
 <translation id="4311195029067684288">Llena</translation>
 <translation id="4313767483634435271">Dirección MAC designada de la base del dispositivo</translation>
 <translation id="4314538398999793073">Inhabilitar la búsqueda de CNAME durante la autenticación Kerberos</translation>

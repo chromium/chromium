@@ -18,6 +18,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ।</translation>
 <translation id="1175951029573070619">औसत (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
+<translation id="1190378975642195988">बेस एक्सेलेरोमिटर</translation>
 <translation id="1195447618553298278">अज्ञात त्रुटि:</translation>
 <translation id="1196959502276349371">संस्करण <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">प्ले/पज</translation>
@@ -214,7 +215,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> घट्यो।</translation>
 <translation id="291142119251986300">अयोग्य कम्पोनेन्टहरू</translation>
 <translation id="2926057806159140518">आफ्नो युजरनेम र पासवर्ड हाल्नुहोस् वा आफ्नो QR कोड स्क्यान गर्नुहोस्</translation>
-<translation id="2928420929544864228">इन्स्टल गरियो।</translation>
 <translation id="3008341117444806826">पुनः ताजा गर्नुहोस्</translation>
 <translation id="3009958530611748826">सुरक्षित गर्न कुनै फोल्डर चयन गर्नुहोस्</translation>
 <translation id="3017079585324758401">पृष्ठभूमि</translation>
@@ -268,6 +268,7 @@
 <translation id="3484914941826596830">फर्मवेयर अपडेट भइरहेका बेला यो बाह्य डिभाइस अनप्लग गर्ने वा कम्प्युटर सट डाउन गर्ने काम नगर्नुहोस्। तपाईं यो विन्डो मिनिमाइज गर्न सक्नुहुन्छ। फर्मवेयर अपडेट गर्न केही मिनेट लाग्न सक्छ र अपडेट भइरहेका बेला तपाईंको बाह्य डिभाइसले काम नगर्न सक्छ।</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3488065109653206955">आंशिक रूपमा सक्रिय बनाइएको</translation>
+<translation id="3492982278147736083">लिड जाइरोस्कप</translation>
 <translation id="3517001332549868749">ChromeOS को अपडेट</translation>
 <translation id="3527036260304016759">प्रिन्ट गर्न सकिएन - अज्ञात त्रुटि भयो</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> मिनेट जति बाँकी छ</translation>
@@ -301,9 +302,11 @@
 <translation id="3820172043799983114">अमान्य PIN।</translation>
 <translation id="3838338534323494292">नयाँ पासवर्ड</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
+<translation id="3856304145690230735">बेस जाइरोस्कप</translation>
 <translation id="385832974417157471">आफ्नो डिभाइस सट डाउन गर्नुअघि सो डिभाइस पावरवास गर्नुहोस्। तपाईंको डिभाइसको कभर छ भने पावरवास गर्ने कार्य पूरा भएपछि मात्र उक्त कभर लगाउनुहोस्। पावरवास गर्ने कार्य पूरा हुन एक मिनेटसम्म लाग्न सक्छ।</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3865414814144988605">रिजोलुसन</translation>
+<translation id="3866249974567520381">विवरण</translation>
 <translation id="387301095347517405">तपाईंको डिभाइसको ब्याट्री पूर्ण रूपमा चार्ज गरिएको सङ्ख्या</translation>
 <translation id="3885327323343477505">स्क्रिन सेभर बदल्नुहोस्</translation>
 <translation id="3923184630988645767">डेटा प्रयोग</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">सुरु गर्नुहोस्</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">नेटवर्कको डिफल्ट गेटवेका रूपमा सेट नगरिएको यस गेटवेलाई पिङ गर्न सकिएन</translation>
+<translation id="4500213108254186382">लिड एक्सेलेरोमिटर</translation>
 <translation id="4503223151711056411">लेफ्ट एरो</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
 <translation id="4521826082652183069">विषयको वैकल्पिक नामसँग मिल्दोजुल्दो</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM अनलक गरिएको छ</translation>
 <translation id="4562494484721939086">कुनै पनि सेवा छैन</translation>
 <translation id="4568938274596692027">इन्स्टल गर्ने कार्य पूरा भयो। रिस्टार्ट गर्ने तयारी गरिँदै छ...</translation>
+<translation id="4576943788798178439">स्टाइलस सपोर्ट</translation>
 <translation id="458794348635939462">सबै होस्टहरूको समस्या समाधान गर्न सकिएन</translation>
 <translation id="4593212453765072419">प्रोक्सी प्रमाणित गर्नु पर्ने हुन्छ</translation>
 <translation id="4609350030397390689">किबोर्डको चमक घटाउने की</translation>
@@ -430,6 +435,7 @@
 <translation id="4915052247106771211">तपाईंले यो विकल्प रोज्नुभयो भने डिभाइस रिसेट गरी पूर्वनिर्धारित सेटिङ लागू गरिने छ (पावरवास)।</translation>
 <translation id="4917385247580444890">बलियो</translation>
 <translation id="4917889632206600977">रोकियो - प्रिन्टरमा कागज सकियो</translation>
+<translation id="491791267030419270">प्रतिक्रिया लेख्नेसम्बन्धी सुझावहरू</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> चार्ज भयो।</translation>
 <translation id="4930320165497208503">तपाईं नयाँ कनेक्सन सेटअप गर्न वा सेटअप गरिएको कनेक्सनसम्बन्धी सेटिङ बदल्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="4932733599132424254">मिति</translation>
@@ -535,6 +541,7 @@
 <translation id="5866840822086176774">अत्यन्त बलियो</translation>
 <translation id="588258955323874662">पूर्णस्क्रिन</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
+<translation id="5898758006340607522">पावर बटन</translation>
 <translation id="5901630391730855834">पहेँलो</translation>
 <translation id="5903200662178656908">यो डिभाइस किबोर्ड र माउसको कम्बो हो।</translation>
 <translation id="5916084858004523819">प्रतिबन्धित</translation>
@@ -857,6 +864,7 @@
 <translation id="8919792139048574232">कुन समस्या समाधान गरिएको छ भन्ने कुरा हेर्नुहोस्</translation>
 <translation id="8919837981463578619">प्रिन्ट गर्न सकिएन - ट्रे छैन</translation>
 <translation id="8923267550422472772">डेटा प्रयोग रिसेट गर्ने दिन</translation>
+<translation id="8925613211674558308">क्यास गरिएको Vpd</translation>
 <translation id="8928727111548978589">प्रिन्ट गर्न सकिएन - कागज सकियो</translation>
 <translation id="8930521118335213258">पियर</translation>
 <translation id="8930622219860340959">वायरलेस</translation>
@@ -898,6 +906,7 @@
 <translation id="922179502584117429">हालको संस्करण <ph name="VERSION_NUMBER" /> पुरानो भइसकेको छ</translation>
 <translation id="932327136139879170">गृहपृष्ठ</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="952992212772159698">सक्रिय छैन</translation>
 <translation id="960719561871045870">अपरेटरको कोड</translation>
 <translation id="982713511914535780">ब्याट्रीको डिस्चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>

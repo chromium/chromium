@@ -1851,6 +1851,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se a política não for definida, a <ph name="ASK_GEOLOCATION_POLICY_NAME" /> será aplicada, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="2922511125678964398">Permitir que a autenticação do portal cativo ignore as configurações de proxy</translation>
+<translation id="2926813071464307947">Desativar o sandbox do contêiner do app Renderer</translation>
 <translation id="2931888116345994552">Se a política for ativada ou deixada sem definição, as atualizações para todos os componentes no <ph name="PRODUCT_NAME" /> serão ativadas.
 
       Se a política for desativada, as atualizações dos componentes também serão desativadas. No entanto, alguns componentes estarão isentos desta política: as atualizações de componentes que não contenham código executável e sejam essenciais para a segurança do navegador não serão desativadas.
@@ -2292,6 +2293,11 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
           Se essa política for definida como uma string não vazia, essa string será usada como o nome do destino do <ph name="PRODUCT_NAME" />. Caso contrário, o nome do destino será o nome do dispositivo. Se essa política não for definida, o nome do destino será o nome do dispositivo, e o proprietário do dispositivo (ou um usuário do domínio que está gerenciando o dispositivo) poderá alterá-lo. O nome é limitado a 24 caracteres.</translation>
 <translation id="3329063005964041553">Bloquear a API File Handling nesses apps da Web</translation>
 <translation id="3329401415394648069">Permitir o uso da API U2F Security Key descontinuada.</translation>
+<translation id="3329976499753286262">Se a política for ativada ou deixada sem definição, a configuração do contêiner do app Renderer será ativada em plataformas com suporte.
+
+      Se ela for desativada, a segurança e a estabilidade do <ph name="PRODUCT_NAME" /> serão prejudicadas, porque ela vai enfraquecer o sandbox usado pelos processos do renderizador. Só desative a política se softwares de terceiros que precisam ser executados nos processos do renderizador apresentarem problemas de compatibilidade.
+
+      Observação: leia mais sobre as políticas de mitigação de processos em https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="3339271789059866414">Configura a disponibilidade do serviço de proxy do sistema e as credenciais de proxy para os serviços do sistema.
       Se a política não for definida, o serviço de proxy do sistema não estará disponível.</translation>
 <translation id="3348799281602260763">Se ativadas, as conexões de ponto WebRTC podem fazer downgrade para versões
@@ -3096,14 +3102,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Esta política é ignorada e a notificação é sempre mostrada se o dispositivo não é gerenciado ou se há apenas um usuário.
 
       Se houver várias contas de usuário em um dispositivo gerenciado, a notificação será exibida apenas quando a política estiver definida como "Ativada".</translation>
-<translation id="4293593564662654474">Esta política é fornecida como uma forma de desativar o recurso First-Party Sets.
-
-                  Quando ela é deixada sem definição ou é ativada, o recurso First-Party Sets fica ativado.
-
-                  Quando ela é desativada, o recurso fica desativado.
-
-                  O estado do recurso determina se o Chrome recupera a lista de First-Party Sets.
-                  Ele também controla se o Chrome oferece suporte para recursos relacionados ao First-Party Sets (como o atributo de cookies SameParty).</translation>
 <translation id="4311195029067684288">Completa</translation>
 <translation id="4313767483634435271">Endereço MAC designado da base para o dispositivo</translation>
 <translation id="4314538398999793073">Desativar a consulta CNAME ao negociar a autenticação do Kerberos</translation>
@@ -4049,7 +4047,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se ela for definida como falsa, o <ph name="PRODUCT_NAME" /> não poderá mostrar informações do produto como conteúdo em guia cheia.
 
-      Esta política controla a apresentação das informações promocionais em uma guia inteira. Isso inclui conteúdo como as páginas de boas-vindas que ajudam os usuários a fazer login em <ph name="PRODUCT_NAME" />, definir <ph name="PRODUCT_NAME" /> como navegador padrão ou descobrir os recursos do produto.</translation>
+      Esta política controla a apresentação das informações promocionais em uma guia inteira. Isso inclui conteúdo como as páginas de recepção que ajudam os usuários a fazer login em <ph name="PRODUCT_NAME" />, definir <ph name="PRODUCT_NAME" /> como navegador padrão ou descobrir os recursos do produto.</translation>
 <translation id="544654037134815017">Esta política controla a visibilidade de cards na página Nova guia. Os cards exibem pontos de entrada para inicializar jornadas de usuário comuns com base no comportamento de navegação do usuário.
 
       Se a política for definida como "Ativada", a página Nova guia exibirá os cards caso haja conteúdo disponível.
@@ -4205,6 +4203,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5625771176514429288">A execução de apps do Chrome será permitida nestas plataformas.</translation>
 <translation id="5630352020869108293">Restaurar a última sessão</translation>
 <translation id="5633871703004128675">Ativar o recurso de acessibilidade que destaca o cursor</translation>
+<translation id="5634032995857968056">Ativar o sandbox do contêiner do app Renderer</translation>
 <translation id="5639454129004500060">Se definida, esta política contém informações para download de um arquivo de modelo de espaço de trabalho.  O arquivo contém um modelo de espaço de trabalho a ser fornecido para o usuário atual.
       Se a política não for definida, nenhum modelo de espaço de trabalho pré-configurado será incluído na lista.  Se a política <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" />
       não for definida como verdadeira, esta política não terá efeito.</translation>
@@ -7139,6 +7138,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8763716376920670835">O WebSQL é ativado por padrão desde a versão M101, mas pode ser desativado por uma sinalização do Chrome.
           Se a política é definida como "false" ou deixada sem definição, o WebSQL pode ser desativado.
           Se a política é definida como "true", o WebSQL não pode ser desativado.</translation>
+<translation id="8766910236040529804">Ativar contêiner do app Renderer</translation>
 <translation id="8767743923206070405">Se a política for definida como "Ativada", o botão "Início" será exibido na barra de ferramentas do <ph name="PRODUCT_NAME" />. Se a política for definida como "Desativada", o botão "Início" não será exibido.
 
       Se você definir a política, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />. Se não defini-la, os usuários poderão decidir se o botão "Início" será exibido.</translation>

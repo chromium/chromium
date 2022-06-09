@@ -31,6 +31,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1150989369772528668">Kalenda</translation>
 <translation id="1153356358378277386">Vifaa vilivyooanishwa</translation>
 <translation id="1165712434476988950">Unahitaji kuzima kisha uwashe kifaa ili utekeleze sasisho.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Huenda kebo yako ya USB-C isiunganike vizuri na skrini</translation>
 <translation id="1175572348579024023">Sogeza</translation>
 <translation id="1178581264944972037">Sitisha</translation>
@@ -55,10 +56,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1247519845643687288">Programu ulizotumia hivi karibuni</translation>
 <translation id="1252999807265626933">Inachaji kwenye <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hali ya hewa ikoje?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> hadi 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Chagua ili uone maelezo zaidi katika Kalenda ya Google.</translation>
 <translation id="1267032506238418139">Mabadiliko kwenye njia ya mkato</translation>
 <translation id="1269405891096105529">Kifaa ulichounganisha kwenye kompyuta hakiwezi kutumika katika hali ya Wageni</translation>
 <translation id="1270290102613614947">Kibodi ya skrini imezimwa</translation>
@@ -124,6 +121,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Unaweza kuzima Kipengele cha Kufikia Kupitia Swichi katika Mipangilio &gt; Ufikivu.</translation>
 <translation id="1637505162081889933">Vifaa <ph name="NUM_DEVICES" /></translation>
+<translation id="1639239467298939599">Inapakia</translation>
 <translation id="1654477262762802994">Anza kutamka hoja ya utafutaji</translation>
 <translation id="1668469839109562275">VPN iliyojumuishwa ndani</translation>
 <translation id="1677472565718498478">Zimesalia <ph name="TIME" /></translation>
@@ -239,6 +237,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2367186422933365202">Imeshindwa kuingia katika akaunti kwenye Chromebook yako</translation>
 <translation id="2369165858548251131">"Hujambo" kwa Kichina</translation>
+<translation id="2375445874393996153">Utafutaji wa kilicho kwenye skrini yangu kwa kutumia Mratibu wa Google hautumiki tena.</translation>
 <translation id="2390318262976603432">Mipangilio ya Lugha</translation>
 <translation id="240006516586367791">Vidhibiti vya maudhui</translation>
 <translation id="2402411679569069051">Ili ufungue Chromebook yako, tumia alama yako ya kidole au ufungue simu yako</translation>
@@ -1048,7 +1047,6 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Inarejesha katika ubora wa zamani baada ya <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Onyesha upya</translation>
-<translation id="718361511487535372">Fungua katika Kalenda ya Google</translation>
 <translation id="7188494361780961876">Menyu imehamishiwa kwenye kona ya juu kushoto mwa skrini.</translation>
 <translation id="7189412385142492784">Sayari ya Zuhura iko umbali gani</translation>
 <translation id="7198435252016571249">Onyesho la kukagua kamera limelinganishwa kwenye kona ya chini kulia. Linakinzana na mfumo wa kiolesura uliopo.</translation>

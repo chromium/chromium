@@ -703,7 +703,6 @@
 <translation id="2854764410992194509">‏ספקי אינטרנט (ISP)</translation>
 <translation id="2856444702002559011">ייתכן שתוקפים מנסים לגנוב את הפרטים שלך מהאתר <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (לדוגמה, סיסמאות, הודעות או כרטיסי אשראי). <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">באתר הזה מוצגות מודעות מפריעות או מטעות.</translation>
-<translation id="286512204874376891">כרטיס וירטואלי מסווה את הכרטיס בפועל כדי לעזור להגן עליך מפני תרמיות פוטנציאליות. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">ידידותי</translation>
 <translation id="28761159517501904">סרטים</translation>
 <translation id="2876489322757410363">בחרת לצאת מהמצב האנונימי כדי לשלם באמצעות אפליקציה חיצונית. להמשיך?</translation>
@@ -1334,7 +1333,6 @@
 <translation id="4607603470419975064">‏לחצן להצגת טיפים של Chrome, מקישים על Enter כדי לקבל מידע על התכונות של Chrome</translation>
 <translation id="4607608436550361748">‏הצגת טיפים לשימוש ב-Chrome</translation>
 <translation id="4617273035598175554">תוכנות גרפיקה ואנימציה</translation>
-<translation id="4627165777145349100">מידע נוסף על הדף הזה</translation>
 <translation id="4627675673814409125">‏לא ניתן להגדיר את המדיניות הזאת ברמה של פרופיל Chrome. המערכת תתעלם מהמדיניות.</translation>
 <translation id="4628948037717959914">תמונה</translation>
 <translation id="4631649115723685955">הקאשבק מקושר</translation>
@@ -1873,7 +1871,6 @@ Del</translation>
 <translation id="6061154937977953833">היאבקות</translation>
 <translation id="6064217302520318294">נעילת מסך</translation>
 <translation id="6064602040258638498">שוברים והנחות</translation>
-<translation id="6078813287646374487">הצגת מידע נוסף על הדף הזה</translation>
 <translation id="6080696365213338172">ניגשת לתוכן באמצעות אישור שהוענק על ידי מנהל מערכת. מנהל המערכת שלך עשוי ליירט נתונים שיסופקו ל-<ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">חיפושים קשורים</translation>
 <translation id="6094273045989040137">הוספת הערה</translation>
@@ -2797,6 +2794,7 @@ Del</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> הוא הקוד שלך בשביל <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">הוספת הכרטיסייה לסימניות</translation>
 <translation id="8751426954251315517">אפשר לנסות שוב מאוחר יותר.</translation>
+<translation id="8757526089434340176">‏יש הטבה של Google Pay</translation>
 <translation id="8758885506338294482">משחקי וידאו תחרותיים</translation>
 <translation id="8759274551635299824">פג תוקפו של הכרטיס</translation>
 <translation id="87601671197631245">באתר הזה נעשה שימוש בתצורת הגנה מיושנת, כך שמידע נשלח אליו עשוי להיחשף (למשל סיסמאות, הודעות או כרטיסי אשראי).</translation>

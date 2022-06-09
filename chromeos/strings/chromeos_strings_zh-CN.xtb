@@ -214,7 +214,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒内释放了 <ph name="RATE" /> 的电量。</translation>
 <translation id="291142119251986300">不支持的组件</translation>
 <translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
-<translation id="2928420929544864228">安装完毕。</translation>
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="3017079585324758401">背景</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">请先对您的设备执行 Powerwash 操作，然后再关机。如果您的设备配有盖子，请等到 Powerwash 完成后再合上盖子。Powerwash 最多可能需要 1 分钟才能完成。</translation>
 <translation id="3858860766373142691">名称</translation>
 <translation id="3865414814144988605">分辨率</translation>
+<translation id="3866249974567520381">说明</translation>
 <translation id="387301095347517405">您的电池已经历的完整充电循环次数</translation>
 <translation id="3885327323343477505">更换屏保</translation>
 <translation id="3923184630988645767">流量使用</translation>
@@ -899,6 +899,7 @@
 <translation id="922179502584117429">当前版本 (<ph name="VERSION_NUMBER" />) 已过期</translation>
 <translation id="932327136139879170">首页</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">发送反馈</translation>
 <translation id="952992212772159698">未激活</translation>
 <translation id="960719561871045870">运营商代码</translation>
 <translation id="982713511914535780">运行放电测试</translation>

@@ -214,7 +214,6 @@
 <translation id="2878387241690264070">Iyekiswe ukushaja ngokungu-<ph name="RATE" /> kumasekhondi angu-<ph name="NUM_SECONDS" />.</translation>
 <translation id="291142119251986300">Izingxenye ezingafanelekile</translation>
 <translation id="2926057806159140518">Faka igama lomsebenzisi nephasiwedi yakho noma uskene ikhodi yakho ye-QR</translation>
-<translation id="2928420929544864228">Ukufaka kuqedile.</translation>
 <translation id="3008341117444806826">VUSELELA</translation>
 <translation id="3009958530611748826">Khetha ifolda ozolondoloza kuyo</translation>
 <translation id="3017079585324758401">Ingemuva</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">Ngaphambi kokucisha, sebenzisa i-powerwash kudivayisi yakho. Uma idivayisi yakho inesivalo linda kuze kube yilapho i-powerwash isiqedile ngaphambi kokuvala isivalo. I-powerwash ingase ithathe umzuzu ngaphambi kokuthi iqede.</translation>
 <translation id="3858860766373142691">Igama</translation>
 <translation id="3865414814144988605">Isixazululo</translation>
+<translation id="3866249974567520381">Incazelo</translation>
 <translation id="387301095347517405">Inani lezikhathi ibhethri yakho ebe nomjikelezo wokushaja ogcwele ngayo</translation>
 <translation id="3885327323343477505">Shintsha isigcini sesikrini</translation>
 <translation id="3923184630988645767">Ukusetshenziswa kwedatha</translation>
@@ -900,6 +900,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="922179502584117429">Uhlobo lwamanje le-<ph name="VERSION_NUMBER" /> liphelelwe yisikhathi</translation>
 <translation id="932327136139879170">Ikhaya</translation>
 <translation id="939519157834106403">I-SSID</translation>
+<translation id="945522503751344254">Thumela impendulo</translation>
 <translation id="952992212772159698">Ayenziwanga yasebenza</translation>
 <translation id="960719561871045870">Ikhodi ye-opharetha</translation>
 <translation id="982713511914535780">Qalisa ukuhlolwa kokukhipha ukushaja</translation>

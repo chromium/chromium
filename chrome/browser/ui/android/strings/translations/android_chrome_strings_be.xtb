@@ -110,6 +110,7 @@
 <translation id="1513352483775369820">Закладкі і гісторыя вэб-пошуку</translation>
 <translation id="1513814250881909472">Каб укладкі з іншых прылад сталі даступнымі, уключыце сінхранізацыю</translation>
 <translation id="1513858653616922153">Выдаліць пароль</translation>
+<translation id="1514552811327923157">Запыт Privacy Sandbox разгорнуты на ўвесь экран</translation>
 <translation id="1518421282666914498">Файл GIF з эмоцыяй <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Апошнія дзеянні адбываліся сёння</translation>
 <translation id="1538801903729528855">Зрабіце галасавы пошук у інтэрнэце яшчэ зручнейшым</translation>
@@ -321,6 +322,7 @@
 <translation id="2711073837061989559">Пробныя версіі функцый</translation>
 <translation id="2718352093833049315">Толькі па Wi-Fi</translation>
 <translation id="2718846868787000099">Каб паказваць змесціва на выбраных вамі мовах, сайты, якія вы наведваеце, могуць праглядаць зададзеныя вамі параметры</translation>
+<translation id="2722945394406572875">Запыт Privacy Sandbox закрыты</translation>
 <translation id="2723001399770238859">аўдыя</translation>
 <translation id="2732063072010454421">Зрабіце галасавы пошук яшчэ зручнейшым</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@
 <translation id="4227318652298512614">Падпісвайцеся на любыя сайты</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
 <translation id="4248098802131000011">Захоўвайце паролі ў бяспечным месцы, каб прадухіліць іх раскрыццё ў выпадку ўцечкі даных або іншых праблем з бяспекай</translation>
+<translation id="424864128008805179">Выйсці з Chrome?</translation>
 <translation id="4249955472157341256">Сартаваць па апошняй даце</translation>
 <translation id="4250229828105606438">Здымак экрана</translation>
 <translation id="4256782883801055595">Ліцэнзіі на ПЗ з адкрытым зыходным кодам</translation>
@@ -652,7 +655,6 @@
 <translation id="4594952190837476234">Гэта пазасеткавая старонка створана <ph name="CREATION_TIME" /> і можа адрознівацца ад сваёй інтэрнэт-версіі.</translation>
 <translation id="4616150815774728855">Адкрыць <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Пацвердзіць маю асобу</translation>
-<translation id="4627165777145349100">Падрабязней пра гэту старонку</translation>
 <translation id="4634124774493850572">Выкарыстаць пароль</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Адзін раскрыты пароль}one{# раскрыты пароль}few{# раскрытыя паролі}many{# раскрытых пароляў}other{# раскрытага пароля}}</translation>
 <translation id="4650364565596261010">Стандартная сістэмная</translation>
@@ -894,6 +896,7 @@
 <translation id="5906513782029855931">Маючы URL-адрасы сайтаў, Памочнік Google можа дапамагаць вам выконваць задачы. Выключыць Памочніка можна ў наладах Chrome.</translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5919204609460789179">Каб запусціць сінхранізацыю, абнавіце <ph name="PRODUCT_NAME" /></translation>
+<translation id="593625682991400408">Пры тэсціраванні пробных функцый Chrome шукае спосабы абмежавання спама, махлярства і абмену данымі паміж сайтамі. Chrome таксама <ph name="BEGIN_LINK" />прыблізна вызначае вашы інтарэсы<ph name="END_LINK" />, якія могуць выкарыстоўвацца іншымі сайтамі для паказу рэкламы. Кіраваць данымі пра свае інтарэсы можна ў наладах.</translation>
 <translation id="5938820472109305350">Дадаць: <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Выкарыстоўваецца пошукавая сістэма Google</translation>
 <translation id="5945035219773565305">Бягучая рэкамендацыя:  <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@
 <translation id="9106148373857059373">Укладка захоўвання закладкі закрыта</translation>
 <translation id="9108312223223904744">Падтрымка функцыі "Тэлефон як ключ бяспекі"</translation>
 <translation id="9108808586816295166">Абароненая DNS можа не быць даступнай пастаянна</translation>
+<translation id="9128984223251192329">Запыт Privacy Sandbox разгорнуты на палову экрана</translation>
 <translation id="9133397713400217035">Агляд па-за сеткай</translation>
 <translation id="9137013805542155359">Паказаць арыгінал</translation>
 <translation id="9148126808321036104">Увайсці зноў</translation>

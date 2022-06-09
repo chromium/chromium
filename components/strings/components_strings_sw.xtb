@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Ruzuku, ufadhili wa masomo na msaada wa kifedha</translation>
 <translation id="1048785276086539861">Ukibadilisha vidokezo, hati hii itarejea kwenye mwonekano wa ukurasa mmoja</translation>
 <translation id="1050038467049342496">Funga programu nyingine</translation>
+<translation id="1053959602163383901">Ulichagua kuthibitisha kwa kutumia kifaa cha uthibitishaji kwenye tovuti zinazotumia <ph name="PROVIDER_ORIGIN" />. Huenda mtoa huduma huyu amehifadhi maelezo ya njia yako ya kulipa ambayo unaweza <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">Tendua Kuongeza</translation>
 <translation id="1056663316309890343">Programu ya kuhariri picha</translation>
 <translation id="1056898198331236512">Ilani</translation>
@@ -425,6 +426,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2053111141626950936">Haitatafsiri kurasa za <ph name="LANGUAGE" />.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Wakati kidhibiti hiki kimewashwa na teknolojia hii inatumika, Chrome hubaini kikundi kikubwa cha watu, au “kundi”, ambalo shughuli zako za kuvinjari za hivi majuzi zinafanana nalo kwa ukaribu zaidi. Watangazaji wanaweza kuchagua matangazo kwa ajili ya kikundi hicho na shughuli zako za kuvinjari huwekwa kwa faragha kwenye kifaa chako. Kikundi chako husasishwa kila siku.}=1{Wakati kidhibiti hiki kimewashwa na teknolojia hii inatumika, Chrome hubaini kikundi kikubwa cha watu, au “kundi”, ambalo shughuli zako za kuvinjari za hivi majuzi zinafanana nalo kwa ukaribu zaidi. Watangazaji wanaweza kuchagua matangazo kwa ajili ya kikundi hicho na shughuli zako za kuvinjari huwekwa kwa faragha kwenye kifaa chako. Kikundi chako husasishwa kila siku.}other{Wakati kidhibiti hiki kimewashwa na teknolojia hii inatumika, Chrome hubaini kikundi kikubwa cha watu, au “kundi”, ambalo shughuli zako za kuvinjari za hivi majuzi zinafanana nalo kwa ukaribu zaidi. Watangazaji wanaweza kuchagua matangazo kwa ajili ya kikundi hicho na shughuli zako za kuvinjari huwekwa kwa faragha kwenye kifaa chako. Kikundi chako husasishwa kila baada ya siku {NUM_DAYS}.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Pendekezo 1}other{Mapendekezo #}}</translation>
+<translation id="2066915425250589881">kuomba yafutwe</translation>
 <translation id="2068528718802935086">Watoto wachanga na watoto wenye umri wa miaka mitatu hadi mitano</translation>
 <translation id="2071156619270205202">Huwezi kupata nambari ya kadi pepe kwa kutumia kadi hii.</translation>
 <translation id="2071692954027939183">Arifa zimezuiwa kiotomatiki kwa sababu kwa kawaida huziruhusu</translation>
@@ -581,6 +583,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2512101340618156538">Hairuhusiwi (chaguomsingi)</translation>
 <translation id="2512413427717747692">Kitufe cha kufanya Chrome iwe kivinjari chaguomsingi, bonyeza Enter ili uifanye Chrome iwe kivinjari chaguomsingi cha mfumo kwenye mipangilio ya iOS</translation>
 <translation id="2515629240566999685">Kuangalia uthabiti wa mawimbi katika eneo lako</translation>
+<translation id="2515761554693942801">Ulichagua kuthibitisha kwa kutumia Touch ID kwenye tovuti zinazotumia <ph name="PROVIDER_ORIGIN" />. Huenda mtoa huduma huyu amehifadhi maelezo ya njia yako ya kulipa ambayo unaweza <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Bana chini kulia</translation>
 <translation id="2521736961081452453">Unda fomu</translation>
 <translation id="2523886232349826891">Imehifadhiwa kwenye kifaa hiki pekee</translation>
@@ -702,7 +705,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2854764410992194509">Watoa huduma za intaneti</translation>
 <translation id="2856444702002559011">Huenda wavamizi wanajaribu kuiba maelezo yako kutoka <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (kwa mfano, manenosiri, ujumbe au kadi za mikopo).<ph name="BEGIN_LEARN_MORE_LINK" />Pata maelezo zaidi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Tovuti inaonyesha matangazo yanayopotosha au yanayokatiza huduma.</translation>
-<translation id="286512204874376891">Kadi pepe huficha kadi yako halisi ili kusaidia kukulinda dhidi ya ulaghai unaoweza kutokea. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Friendly</translation>
 <translation id="28761159517501904">Filamu</translation>
 <translation id="2876489322757410363">Inafunga hali fiche ili kulipa kupitia programu ya nje. Ungependa kuendelea?</translation>
@@ -1335,7 +1337,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4607603470419975064">Kitufe cha kuona vidokezo vya Chrome, bonyeza 'Enter' ili upate maelezo kuhusu vipengele vya Chrome</translation>
 <translation id="4607608436550361748">Angalia vidokezo vya Chrome</translation>
 <translation id="4617273035598175554">Programu ya michoro na uhuishaji</translation>
-<translation id="4627165777145349100">Maelezo zaidi kuhusu ukurasa huu</translation>
 <translation id="4627675673814409125">Sera hii haiwezi kuwekwa katika kiwango cha wasifu wa Chrome na itapuuzwa.</translation>
 <translation id="4628948037717959914">Picha</translation>
 <translation id="4631649115723685955">Inajumuisha tuzo ya pesa</translation>
@@ -1500,6 +1501,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5051305769747448211">Vichekesho vya moja kwa moja</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Ili utume faili hii kwa kutumia kipengele cha Uhamishaji wa Karibu, futa baadhi ya faili kwenye kifaa chako ili upate nafasi (<ph name="DISK_SPACE_SIZE" />)}other{Ili utume faili hizi kwa kutumia kipengele cha Uhamishaji wa Karibu, futa baadhi ya faili kwenye kifaa chako ili upate nafasi (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="5056549851600133418">Makala kwa ajili yako</translation>
+<translation id="5060483733937416656">Ulichagua kuthibitisha kwa kutumia Windows Hello kwenye tovuti zinazotumia <ph name="PROVIDER_ORIGIN" />. Huenda mtoa huduma huyu amehifadhi maelezo ya njia yako ya kulipa ambayo unaweza <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Je, ulimaanisha <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historia ya kuchapisha</translation>
 <translation id="5068234115460527047">Fedha za uwekezaji kwa tahadhari kubwa</translation>
@@ -1869,7 +1871,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6061154937977953833">Mieleka</translation>
 <translation id="6064217302520318294">Kufunga skrini</translation>
 <translation id="6064602040258638498">Kuponi na ofa za punguzo</translation>
-<translation id="6078813287646374487">Onyesha maelezo zaidi kuhusu ukurasa huu</translation>
 <translation id="6080696365213338172">Umefikia maudhui kwa kutumia cheti kilichotolewa cha msimamizi. Data unayotoa katika <ph name="DOMAIN" /> inaweza kuzuiliwa na msimamizi wako.</translation>
 <translation id="6087312102907839798">Utafutaji unaohusiana</translation>
 <translation id="6094273045989040137">Weka vidokezo</translation>
@@ -2790,6 +2791,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ni nambari yako ya <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Alamisha kichupo hiki</translation>
 <translation id="8751426954251315517">Tafadhali jaribu tena baadaye</translation>
+<translation id="8757526089434340176">Ofa ya Google Pay inapatikana</translation>
 <translation id="8758885506338294482">Michezo ya video yenye ushindani</translation>
 <translation id="8759274551635299824">Muda wa matumizi wa kadi hii umekwisha</translation>
 <translation id="87601671197631245">Tovuti hii inatumia mipangilio ya usalama iliyopitwa na wakati, hali ambayo inaweza kuonyesha taarifa zako (kwa mfano, manenosiri, ujumbe au kadi za mikopo) zikitumwa kwenye tovuti hii.</translation>

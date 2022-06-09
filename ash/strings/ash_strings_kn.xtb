@@ -56,10 +56,6 @@
 <translation id="1247519845643687288">ಇತ್ತೀಚಿನ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> ನಿಂದ ಚಾರ್ಜ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1255033239764210633">ಹವಾಮಾನ ಹೇಗಿದೆ?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> ಈ ಸಮಯಕ್ಕೆ 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Google Calendar ನಲ್ಲಿನ ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="1267032506238418139">ಶಾರ್ಟ್‌ಕಟ್‌ ಬದಲಾವಣೆ</translation>
 <translation id="1269405891096105529">ಅತಿಥಿ ಮೋಡ್‌ನಲ್ಲಿ ಪೆರಿಫೆರಲ್ ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="1270290102613614947">ಆನ್ ಸ್ಕ್ರೀನ್ ಕೀಬೋರ್ಡ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -125,6 +121,7 @@
 <translation id="1620510694547887537">ಕ್ಯಾಮರಾ</translation>
 <translation id="1632985212731562677">ಪ್ರವೇಶ ಬದಲಾಯಿಸಿ ಅನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿಯಲ್ಲಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬಹುದು.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ಸಾಧನಗಳು</translation>
+<translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1654477262762802994">ಧ್ವನಿ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಲು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="1668469839109562275">ಬಿಲ್ಟ್-ಇನ್ VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
@@ -1051,7 +1048,6 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> ನಲ್ಲಿ ಹಳೆಯ ರೆಸಲ್ಯೂಷನ್‌ಗೆ ಹಿಂತಿರುಗಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7180611975245234373">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
-<translation id="718361511487535372">Google Calendar ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="7188494361780961876">ಮೆನುವನ್ನು ಪರದೆಯ ಮೇಲ್ಭಾಗದ ಎಡತುದಿಗೆ ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="7189412385142492784">ಶುಕ್ರ ಗ್ರಹ ಎಷ್ಟು ದೂರದಲ್ಲಿದೆ</translation>
 <translation id="7198435252016571249">ಕ್ಯಾಮರಾವನ್ನು ಕೆಳಗಿನ ಬಲ ಮೂಲೆಯಲ್ಲಿ ಸ್ನ್ಯಾಪ್ ಮಾಡಲಾಗಿದೆ. ಸಿಸ್ಟಮ್ ಮೇಲ್ಮೈ ಜೊತೆಗೆ ಸಂಘರ್ಷ.</translation>

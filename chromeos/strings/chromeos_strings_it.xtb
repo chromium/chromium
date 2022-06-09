@@ -214,7 +214,6 @@
 <translation id="2878387241690264070">Riduzione della carica: <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="291142119251986300">Componenti non idonei</translation>
 <translation id="2926057806159140518">Inserisci il tuo nome utente e la password o scansiona il codice QR</translation>
-<translation id="2928420929544864228">Installazione completata.</translation>
 <translation id="3008341117444806826">AGGIORNA</translation>
 <translation id="3009958530611748826">Seleziona una cartella in cui salvare i file</translation>
 <translation id="3017079585324758401">Sfondo</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">Prima di procedere con l'arresto, esegui il Powerwash del dispositivo. Se il dispositivo ha un coperchio, attendi il completamento del Powerwash prima di chiuderlo. Potrebbe essere necessario fino a un minuto prima che il Powerwash venga completato.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3865414814144988605">Risoluzione</translation>
+<translation id="3866249974567520381">Descrizione</translation>
 <translation id="387301095347517405">Il numero di cicli di ricarica completi della batteria</translation>
 <translation id="3885327323343477505">Cambia salvaschermo</translation>
 <translation id="3923184630988645767">Utilizzo dei dati</translation>
@@ -899,6 +899,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="922179502584117429">La versione corrente (<ph name="VERSION_NUMBER" />) è obsoleta</translation>
 <translation id="932327136139879170">Home page</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Invia feedback</translation>
 <translation id="952992212772159698">Non attivo</translation>
 <translation id="960719561871045870">Codice operatore</translation>
 <translation id="982713511914535780">Esegui test esaurimento batteria</translation>

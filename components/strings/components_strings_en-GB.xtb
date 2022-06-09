@@ -705,7 +705,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2854764410992194509">Internet Service Providers (ISPs)</translation>
 <translation id="2856444702002559011">Attackers might be trying to steal your information from <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (for example, passwords, messages or credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">This site shows intrusive or misleading ads.</translation>
-<translation id="286512204874376891">A virtual card disguises your actual card to help protect you from potential fraud. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Friendly</translation>
 <translation id="28761159517501904">Films</translation>
 <translation id="2876489322757410363">Leaving Incognito mode to pay via an external application. Continue?</translation>
@@ -1338,7 +1337,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4607603470419975064">See Chrome tips button: press Enter to learn about Chrome features</translation>
 <translation id="4607608436550361748">See Chrome tips</translation>
 <translation id="4617273035598175554">Graphics and animation software</translation>
-<translation id="4627165777145349100">More about this page</translation>
 <translation id="4627675673814409125">This policy cannot be set at the Chrome profile level and will be ignored.</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4631649115723685955">Cashback linked</translation>
@@ -1873,7 +1871,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6061154937977953833">Wrestling</translation>
 <translation id="6064217302520318294">Screen lock</translation>
 <translation id="6064602040258638498">Coupons and discount offers</translation>
-<translation id="6078813287646374487">Show more information about this page</translation>
 <translation id="6080696365213338172">You have accessed content using an administrator-provided certificate. Data you provide to <ph name="DOMAIN" /> can be intercepted by your administrator.</translation>
 <translation id="6087312102907839798">Related searches</translation>
 <translation id="6094273045989040137">Annotate</translation>
@@ -2797,6 +2794,7 @@ Additional details:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> is your code for <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Bookmark this tab</translation>
 <translation id="8751426954251315517">Please try again next time</translation>
+<translation id="8757526089434340176">Google Pay offer available</translation>
 <translation id="8758885506338294482">Competitive video gaming</translation>
 <translation id="8759274551635299824">This card has expired</translation>
 <translation id="87601671197631245">This site uses an outdated security configuration, which may expose your information (for example, passwords, messages or credit cards) when it is sent to this site.</translation>
@@ -2997,6 +2995,7 @@ Additional details:
 <translation id="988159990683914416">Developer Build</translation>
 <translation id="989988560359834682">Edit Address</translation>
 <translation id="991413375315957741">motion or light sensors</translation>
+<translation id="992110854164447044">A virtual card hides your actual card to help protect you from potential fraud. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Pink</translation>
 <translation id="992432478773561401">'<ph name="SOFTWARE_NAME" />' wasn’t installed properly on your computer or the network:

@@ -1831,6 +1831,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Wenn die Richtlinie nicht konfiguriert ist, wird die Richtlinie <ph name="ASK_GEOLOCATION_POLICY_NAME" /> angewandt, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="2922511125678964398">Erlauben, dass die Captive-Portal-Authentifizierung Proxy-Einstellungen ignoriert</translation>
+<translation id="2926813071464307947">Renderer-App-Container-Sandbox deaktivieren</translation>
 <translation id="2931888116345994552">Mit der Richtlinie werden Komponentenupdates für alle Komponenten in <ph name="PRODUCT_NAME" /> aktiviert, sofern sie nicht festgelegt oder auf „Aktiviert“ gesetzt ist.
 
       Wenn sie auf „Deaktiviert“ gesetzt ist, werden die Komponenten nicht aktualisiert. Für einige Komponenten gelten jedoch Ausnahmen: Updates von Komponenten, die keinen ausführbaren Code enthalten und wesentlich für die Sicherheit des Browsers sind, werden nicht deaktiviert.
@@ -2275,6 +2276,11 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
           Wird für diese Richtlinie ein nicht-leerer String definiert, dann wird dieser als Name für das <ph name="PRODUCT_NAME" />-Ziel verwendet. Andernfalls wird der Gerätename als Zielname verwendet. Ist diese Richtlinie nicht definiert, wird der Gerätename als Zielname verwendet und der Geräteeigentümer oder ein Nutzer der Domain, von der das Gerät verwaltet wird, hat die Möglichkeit, den Namen zu ändern. Der Name darf maximal 24 Zeichen enthalten.</translation>
 <translation id="3329063005964041553">File Handling API bei diesen Webanwendungen blockieren</translation>
 <translation id="3329401415394648069">Verwendung der U2F Security Key API zulassen.</translation>
+<translation id="3329976499753286262">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die Konfiguration des Renderer-App-Containers auf unterstützten Plattformen aktiviert.
+
+      Wird die Richtlinie deaktiviert, hat dies negative Auswirkungen auf die Sicherheit und Stabilität von <ph name="PRODUCT_NAME" />, da dies die von Rendererprozessen verwendete Sandbox beeinträchtigt. Die Richtlinie sollte nur deaktiviert werden, wenn Kompatibilitätsprobleme mit Drittanbieter-Software auftreten, die innerhalb der Rendererprozesse ausgeführt werden muss.
+
+      Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="3339271789059866414">Konfiguriert die Verfügbarkeit des System-Proxy-Dienstes und die Proxy-Anmeldedaten für Systemdienste.
       Ist diese Richtlinie nicht konfiguriert, ist der System-Proxy-Dienst nicht verfügbar.</translation>
 <translation id="3348799281602260763">Wenn die Richtlinie aktiviert ist, können WebRTC-Peer-Verbindungen ein Downgrade auf veraltete
@@ -3068,14 +3074,6 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
       Diese Richtlinie wird ignoriert und die Benachrichtigung wird immer angezeigt, wenn das Gerät nicht verwaltet wird oder es nur einen Nutzer gibt.
 
       Gibt es auf einem verwalteten Gerät mehrere Nutzerkonten, wird die Benachrichtigung nur angezeigt, wenn diese Richtlinie aktiviert ist.</translation>
-<translation id="4293593564662654474">Über diese Richtlinie kann die Funktion „First-Party-Sets“ deaktiviert werden.
-
-                  Ist diese Richtlinie nicht konfiguriert oder aktiviert, ist die Funktion „First-Party-Sets“ aktiviert.
-
-                  Wenn diese Richtlinie deaktiviert ist, ist die Funktion „First-Party-Sets“ deaktiviert.
-
-                  Vom Status der Funktion „First-Party-Sets“ hängt ab, ob Chrome die entsprechende Liste abruft
-                  und ob zugehörige Funktionen in Chrome unterstützt werden, z. B. das Cookie-Attribut „SameParty“.</translation>
 <translation id="4311195029067684288">Vollständig</translation>
 <translation id="4313767483634435271">Eingetragene Dock-MAC-Adresse des Geräts</translation>
 <translation id="4314538398999793073">CNAME-Suche bei der Kerberos-Authentifizierung deaktivieren</translation>
@@ -4177,6 +4175,7 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 <translation id="5625771176514429288">Chrome-Apps dürfen zukünftig auf diesen Plattformen ausgeführt werden.</translation>
 <translation id="5630352020869108293">Letzte Sitzung wiederherstellen</translation>
 <translation id="5633871703004128675">Bedienungshilfe "Textcursor hervorheben" aktivieren</translation>
+<translation id="5634032995857968056">Renderer-App-Container-Sandbox aktivieren</translation>
 <translation id="5639454129004500060">Wenn diese Richtlinie aktiviert ist, enthält sie Informationen zum Herunterladen einer Desktopvorlagendatei.  Die Datei enthält eine Desktopvorlage, die für den aktuellen Nutzer bereitgestellt wird.
       Wenn die Richtlinie nicht aktiviert ist, wird keine vorkonfigurierte Desktopvorlage in die Liste der Desktopvorlagen aufgenommen.  Diese Richtlinie ist nur wirksam, wenn die Richtlinie „<ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" />“ auf „true“ festgelegt ist.</translation>
 <translation id="5641279111657132737">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />.
@@ -7086,6 +7085,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8763716376920670835">WebSQL ist ab M101 standardmäßig aktiviert, kann jedoch per Chrome-Flag deaktiviert werden.
           Wenn diese Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, kann WebSQL deaktiviert werden.
           Ist sie auf „true“ festgelegt, ist es nicht möglich, WebSQL zu deaktivieren.</translation>
+<translation id="8766910236040529804">Renderer-App-Container aktivieren</translation>
 <translation id="8767743923206070405">Wenn die Richtlinie aktiviert ist, wird die Startbildschirmtaste in der Symbolleiste von <ph name="PRODUCT_NAME" /> angezeigt. Ist die Richtlinie deaktiviert, erscheint die Startbildschirmtaste nicht.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer selbst entscheiden, ob die Startbildschirmtaste angezeigt werden soll.</translation>

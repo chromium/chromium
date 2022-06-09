@@ -707,7 +707,6 @@
 <translation id="2854764410992194509">इंटरनेट सेवा देने वाली कंपनियां (आईएसपी)</translation>
 <translation id="2856444702002559011">हो सकता है कि हमलावर <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> से आपकी जानकारी (जैसे- पासवर्ड, मैसेज या क्रेडिट कार्ड वगैरह) चुराने की कोशिश कर रहे हों. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">इस साइट में तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई देते हैं.</translation>
-<translation id="286512204874376891">वर्चुअल कार्ड आपके असली कार्ड की पहचान ज़ाहिर नहीं होने देता है. इससे, आपको धोखाधड़ी से बचने में मदद मिलती है. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">दोस्ताना</translation>
 <translation id="28761159517501904">फ़िल्में</translation>
 <translation id="2876489322757410363">किसी बाहरी ऐप्लिकेशन के ज़रिए पैसे चुकाने के लिए गुप्त मोड छोड़ रहे हैं. क्या आप यह मोड बंद करना चाहते हैं?</translation>
@@ -1339,7 +1338,6 @@
 <translation id="4607603470419975064">Chrome की सलाह देखने के लिए बटन, Chrome की सुविधाओं के बारे में जानने के लिए Enter दबाएं</translation>
 <translation id="4607608436550361748">Chrome की सलाह देखें</translation>
 <translation id="4617273035598175554">ग्राफ़िक और ऐनिमेशन के लिए सॉफ़्टवेयर</translation>
-<translation id="4627165777145349100">इस पेज के बारे में ज़्यादा जानकारी</translation>
 <translation id="4627675673814409125">इस नीति को Chrome के प्रोफ़ाइल लेवल पर सेट नहीं किया जा सकता और इसे नज़रअंदाज़ कर दिया जाएगा.</translation>
 <translation id="4628948037717959914">फ़ोटो</translation>
 <translation id="4631649115723685955">पैसे चुकाने पर कैशबैक मिलेगा</translation>
@@ -1874,7 +1872,6 @@
 <translation id="6061154937977953833">कुश्ती</translation>
 <translation id="6064217302520318294">स्क्रीन लॉक</translation>
 <translation id="6064602040258638498">कूपन और छूट वाले ऑफ़र</translation>
-<translation id="6078813287646374487">इस पेज के बारे में ज़्यादा जानकारी देखें</translation>
 <translation id="6080696365213338172">आपने व्यवस्थापक द्वारा दिए गए प्रमाणपत्र के उपयोग से सामग्री ऐक्सेस की है.   <ph name="DOMAIN" /> को दिया गया डेटा आपके व्यवस्थापक द्वारा बीच में रोका जा सकता है.</translation>
 <translation id="6087312102907839798">मिलती-जुलती खोजें</translation>
 <translation id="6094273045989040137">एनोटेट करें</translation>
@@ -2799,6 +2796,7 @@
 <translation id="8742371904523228557"><ph name="ORIGIN" /> के लिए आपका कोड <ph name="ONE_TIME_CODE" /> है</translation>
 <translation id="874918643257405732">इस टैब को बुकमार्क करें</translation>
 <translation id="8751426954251315517">कृपया बाद में कोशिश करें</translation>
+<translation id="8757526089434340176">Google Pay ऑफ़र उपलब्ध है</translation>
 <translation id="8758885506338294482">मुकाबले वाले वीडियो गेम</translation>
 <translation id="8759274551635299824">इस कार्ड की अवधि खत्म हो चुकी है</translation>
 <translation id="87601671197631245">यह साइट एक पुराने सुरक्षा कॉन्फ़िगरेशन का इस्तेमाल करती है. इस वजह से, साइट पर भेजी जाने वाली आपकी जानकारी (उदाहरण के लिए, पासवर्ड, मैसेज या क्रेडिट कार्ड) को कोई और देख सकता है.</translation>

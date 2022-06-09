@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Xénero</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
 <translation id="1272293450992660632">Os valores dos PIN non coinciden.</translation>
+<translation id="127650757582748357">Arquivo comprimido BZIP2</translation>
 <translation id="1280820357415527819">Buscando redes de telefonía móbil</translation>
 <translation id="1291603679744561561">SIM bloqueada</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">Queixo</translation>
 <translation id="2781645665747935084">Belga</translation>
 <translation id="2782104745158847185">Produciuse un erro ao instalar a aplicación Linux</translation>
+<translation id="2788520643285360081">Arquivo 7-Zip</translation>
 <translation id="2803375539583399270">Introduce o PIN</translation>
 <translation id="2820957248982571256">Buscando…</translation>
+<translation id="2822595620066756134">Arquivo comprimido GZIP</translation>
 <translation id="2830077785865012357">Chinés (zhuyin)</translation>
 <translation id="2843806747483486897">Cambiar acción predeterminada...</translation>
 <translation id="2850124913210091882">Copia de seguranza</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Lituano</translation>
 <translation id="3587482841069643663">Todos</translation>
 <translation id="3592251141500063301">Non se puido facer que <ph name="FILE_NAME" /> estivese dispoñible sen conexión</translation>
+<translation id="3593874215226880809">Arquivo comprimido LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Francés canadense</translation>
 <translation id="3606220979431771195">Turco F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">Cancelar esta actividade: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="3691184985318546178">Cingalés</translation>
+<translation id="3703620396751288986">Arquivo ZIP</translation>
 <translation id="3726463242007121105">Este dispositivo non se pode abrir debido a que o seu sistema de ficheiros non é compatible.</translation>
 <translation id="3727148787322499904">Ao cambiar esta opción de configuración, veranse afectadas todas as redes compartidas</translation>
 <translation id="3737576078404241332">Quitar da barra lateral</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">Checo con teclado QWERTY</translation>
 <translation id="4656777537938206294">Activa o acceso sen conexión a estes ficheiros</translation>
 <translation id="4658782175094886150">Persoa na neve</translation>
+<translation id="4661996069183330363">Arquivo TAR</translation>
 <translation id="4669606053856530811">Os membros de "<ph name="SOURCE_NAME" />" perderán o acceso a menos que estes elementos se compartan con eles.</translation>
 <translation id="467809019005607715">Presentacións de Google</translation>
 <translation id="4690246192099372265">Sueco</translation>
@@ -929,6 +935,7 @@
 <translation id="8903931173357132290">Persoa graduada</translation>
 <translation id="8912078710089354287">Can movendo o rabo</translation>
 <translation id="8919081441417203123">Danés</translation>
+<translation id="8965273390142984105">Arquivo comprimido LZOP</translation>
 <translation id="8965697826696209160">Non hai espazo suficiente.</translation>
 <translation id="8997962250644902079">Chinés tradicional (Pinyin)</translation>
 <translation id="9003940392834790328">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, detalles</translation>

@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">ਸ਼ੈਲੀ</translation>
 <translation id="1254593899333212300">ਸਿੱਧਾ ਇੰਟਰਨੈਟ ਕਨੈਕਸ਼ਨ</translation>
 <translation id="1272293450992660632">ਪਿੰਨ ਮੁੱਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ।</translation>
+<translation id="127650757582748357">BZIP2 ਨਪੀੜਿਆ ਪੁਰਾਲੇਖ</translation>
 <translation id="1280820357415527819">ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਦੀ ਖੋਜ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="1291603679744561561">ਸਿਮ ਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">ਪਨੀਰ</translation>
 <translation id="2781645665747935084">ਬੈਲਜ਼ੀਅਨ</translation>
 <translation id="2782104745158847185">Linux ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋ ਗਈ</translation>
+<translation id="2788520643285360081">7-ਜ਼ਿਪ ਫ਼ਾਈਲ</translation>
 <translation id="2803375539583399270">PIN ਦਾਖਲ ਕਰੋ</translation>
 <translation id="2820957248982571256">ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="2822595620066756134">GZIP ਨਪੀੜਿਆ ਪੁਰਾਲੇਖ</translation>
 <translation id="2830077785865012357">ਚੀਨੀ ਜ਼ੂਯਿਨ</translation>
 <translation id="2843806747483486897">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬਦਲੋ...</translation>
 <translation id="2850124913210091882">ਬੈਕਅੱਪ ਲਓ</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">Lithuanian</translation>
 <translation id="3587482841069643663">ਸਾਰੇ</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> ਨੂੰ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਨਹੀਂ ਕਰਵਾਇਆ ਜਾ ਸਕਿਆ</translation>
+<translation id="3593874215226880809">LZIP ਨਪੀੜਿਆ ਪੁਰਾਲੇਖ</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">ਕੈਨੇਡੀਅਨ ਫ੍ਰੈਂਚ</translation>
 <translation id="3606220979431771195">ਤੁਰਕੀ-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ਨੂੰ ਰੱਦ ਕਰੋ।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" /> ਨੈੱਟਵਰਕ, <ph name="NETWORK_NAME" />, ਅਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਵੇਰਵੇ</translation>
 <translation id="3691184985318546178">ਸਿਨਹਾਲਾ</translation>
+<translation id="3703620396751288986">ਜ਼ਿਪ ਫ਼ਾਈਲ</translation>
 <translation id="3726463242007121105">ਇਹ ਡੀਵਾਈਸ ਖੋਲ੍ਹੀ ਨਹੀਂ ਜਾ ਸਕਦੀ ਕਿਉਂਕਿ ਇਸਦਾ ਫਾਈਲਸਿਸਟਮ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="3727148787322499904">ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣ ਨਾਲ ਸਭ ਸਾਂਝੇ ਕੀਤੇ ਨੈੱਟਵਰਕ ਪ੍ਰਭਾਵਿਤ ਹੋਣਗੇ</translation>
 <translation id="3737576078404241332">ਸਾਈਡਬਾਰ ਵਿੱਚੋਂ ਹਟਾਓ</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">QWERTY ਕੀ-ਬੋਰਡ ਨਾਲ ਚੈੱਕ</translation>
 <translation id="4656777537938206294">ਫ਼ਾਈਲਾਂ ਨੂੰ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਕਰਵਾਓ</translation>
 <translation id="4658782175094886150">ਬਰਫ਼ੀਲੀ ਥਾਂ 'ਤੇ ਵਿਅਕਤੀ</translation>
+<translation id="4661996069183330363">TAR ਪੁਰਾਲੇਖ</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' ਦੇ ਮੈਂਬਰ ਪਹੁੰਚ ਗੁਆ ਦੇਣਗੇ ਜੇਕਰ ਇਹਨਾਂ ਆਈਟਮਾਂ ਨੂੰ ਉਹਨਾਂ ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ।</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ਸਵੈਡਿਸ਼</translation>
@@ -929,6 +935,7 @@
 <translation id="8903931173357132290">ਗ੍ਰੈਜੂਏਟ</translation>
 <translation id="8912078710089354287">ਪੂਛ ਹਿਲਾਉਂਦਾ ਹੋਇਆ ਕੁੱਤਾ</translation>
 <translation id="8919081441417203123">ਡੈਨਿਸ਼</translation>
+<translation id="8965273390142984105">LZOP ਨਪੀੜਿਆ ਪੁਰਾਲੇਖ</translation>
 <translation id="8965697826696209160">ਕਾਫ਼ੀ ਸਪੇਸ ਨਹੀਂ ਹੈ।</translation>
 <translation id="8997962250644902079">ਚੀਨੀ (ਰਵਾਇਤੀ) ਪਿਨਯਿਨ</translation>
 <translation id="9003940392834790328">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਵੇਰਵੇ</translation>

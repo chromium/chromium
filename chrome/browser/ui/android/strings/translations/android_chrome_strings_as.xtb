@@ -587,6 +587,7 @@
 <translation id="4227318652298512614">আপুনি বিচৰা যিকোনো ছাইট অনুসৰণ কৰক</translation>
 <translation id="4242533952199664413">ছেটিংসমূহ খোলক</translation>
 <translation id="4248098802131000011">আপোনাৰ পাছৱর্ডসমূহক ডেটা উলংঘন আৰু অন্য সুৰক্ষা সম্পর্কীয় সমস্যাসমূহৰ পৰা নিৰাপদে ৰাখক</translation>
+<translation id="424864128008805179">Chromeৰ পৰা ছাইন আউট কৰিবনে?</translation>
 <translation id="4249955472157341256">শেহতীয়া অনুসৰি সজাওক</translation>
 <translation id="4250229828105606438">স্ক্রীণশ্বট</translation>
 <translation id="4256782883801055595">মুক্ত উত্‍সৰ অনুজ্ঞাপত্ৰ</translation>
@@ -654,7 +655,6 @@
 <translation id="4594952190837476234">এই অফলাইন পৃষ্ঠাটো <ph name="CREATION_TIME" />ৰ আৰু এই পৃষ্ঠাটো অনলাইন সংস্কৰণতকৈ বেলেগ হ’ব পাৰে।</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> খোলক</translation>
 <translation id="4619564267100705184">এয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
-<translation id="4627165777145349100">এই পৃষ্ঠাখনৰ বিষয়ে অধিক</translation>
 <translation id="4634124774493850572">পাছৱৰ্ড দিয়ক</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{১ টা হেক হোৱা পাছৱৰ্ড}one{# টা হেক হোৱা পাছৱৰ্ড}other{# টা হেক হোৱা পাছৱৰ্ড}}</translation>
 <translation id="4650364565596261010">ছিষ্টেম ডিফ’ল্ট</translation>
@@ -793,7 +793,6 @@
 <translation id="5342314432463739672">অনুমতিৰ অনুৰোধবোৰ</translation>
 <translation id="5355191726083956201">বৰ্ধিত সুৰক্ষা অন আছে</translation>
 <translation id="5368227114232678694">এই ব্ৰাউজাৰটোত ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবলৈ, ইনক’গনিট’ টেবটো ব্যৱহাৰ কৰি চাওক</translation>
-<translation id="5371717687506906963">গোপনীয়তা বিষয়ক ছেণ্ডবক্সৰ প্ৰম্প্‌ট</translation>
 <translation id="5375577065097716013">Google Lensৰে প্ৰতিচ্ছবি সন্ধান কৰক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">প্ৰতিক্ৰিয়া সলনি কৰা হৈছে</translation>
 <translation id="5401851137404501592">অব্যাহত ৰাখিবলৈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />এ আপোনাৰ নাম, ইমেইল, ঠিকনা আৰু প্ৰ’ফাইল চিত্ৰ এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰিব।</translation>

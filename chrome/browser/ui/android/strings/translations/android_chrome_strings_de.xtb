@@ -110,6 +110,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="1513352483775369820">Lesezeichen und Webprotokoll</translation>
 <translation id="1513814250881909472">Synchronisieren, um deine Tabs von anderen Geräten abzurufen</translation>
 <translation id="1513858653616922153">Passwort löschen</translation>
+<translation id="1514552811327923157">Privacy Sandbox-Aufforderung vollständig geöffnet</translation>
 <translation id="1518421282666914498">Emotion-GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Heute aktiv</translation>
 <translation id="1538801903729528855">Spracheingabe im Web besser nutzen</translation>
@@ -321,6 +322,7 @@ Berühre und halte ein Wort, um eine Suche damit zu starten. Du kannst deine Suc
 <translation id="2711073837061989559">Tests</translation>
 <translation id="2718352093833049315">Nur bei WLAN</translation>
 <translation id="2718846868787000099">Zum Anzeigen von Inhalten in deinen bevorzugten Sprachen müssen Websites, die du besuchst, deine Einstellungen abrufen können</translation>
+<translation id="2722945394406572875">Privacy Sandbox-Aufforderung geschlossen</translation>
 <translation id="2723001399770238859">Audio</translation>
 <translation id="2732063072010454421">Sprachsuche optimal nutzen</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@ Berühre und halte ein Wort, um eine Suche damit zu starten. Du kannst deine Suc
 <translation id="4227318652298512614">Folge Websites deiner Wahl</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
 <translation id="4248098802131000011">Schütze deine Passwörter vor Datenpannen und anderen Sicherheitsproblemen</translation>
+<translation id="424864128008805179">Von Chrome abmelden?</translation>
 <translation id="4249955472157341256">Neueste zuerst</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Open Source-Lizenzen</translation>
@@ -652,7 +655,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4594952190837476234">Diese Offlineseite ist vom <ph name="CREATION_TIME" /> und unterscheidet sich gegebenenfalls von der Onlineversion.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> öffnen</translation>
 <translation id="4619564267100705184">Identität bestätigen</translation>
-<translation id="4627165777145349100">Mehr über diese Seite</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 gehacktes Passwort}other{# gehackte Passwörter}}</translation>
 <translation id="4650364565596261010">Systemstandard</translation>
@@ -887,13 +889,14 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5864419784173784555">Warten auf weiteren Download…</translation>
 <translation id="5865733239029070421">Nutzungsstatistiken und Absturzberichte automatisch an Google senden</translation>
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
-<translation id="5869789175361934029">Tabs von einem anderen Gerät fortsetzen</translation>
+<translation id="5869789175361934029">Tabs auf einem anderen Gerät sehen</translation>
 <translation id="587735546353481577">Wenn du einer Website folgen möchtest, rufe die Website auf, öffne das Chrome-Menü und tippe auf „Folgen“.</translation>
 <translation id="5880748256563468367">Zum Feed</translation>
 <translation id="5884076754568147479">Wenn du in Chrome mit Assistant Aufgaben erledigst, werden die URLs und Inhalte der Websites, auf denen du Assistant verwendest, sowie die Daten, die du über Assistant weitergibst, an Google gesendet</translation>
 <translation id="5906513782029855931">Wenn Google Assistant die URLs von Websites kennt, kannst du Aufgaben leichter erledigen. Du kannst Assistant in den Einstellungen von Chrome deaktivieren.</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5919204609460789179">Zur Synchronisierung musst du <ph name="PRODUCT_NAME" /> aktualisieren</translation>
+<translation id="593625682991400408">Während Tests sucht Chrome nach Möglichkeiten, Spam, Betrug und die Datenweitergabe zwischen Websites einzuschränken. Chrome <ph name="BEGIN_LINK" />schätzt außerdem deine Interessen ein<ph name="END_LINK" />, die von anderen Websites dazu verwendet werden können, dir Werbung zu zeigen. Du kannst deine Interessen in den Einstellungen verwalten.</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> hinzufügen</translation>
 <translation id="5942872142862698679">Suche erfolgt mit Google</translation>
 <translation id="5945035219773565305">Aktuelle Empfehlung: <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@ Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet 
 <translation id="9106148373857059373">Ablauf zum Speichern von Lesezeichen beendet</translation>
 <translation id="9108312223223904744">Unterstützung für die Funktion "Smartphone als Sicherheitsschlüssel"</translation>
 <translation id="9108808586816295166">Sicheres DNS ist möglicherweise nicht immer verfügbar</translation>
+<translation id="9128984223251192329">Privacy Sandbox-Aufforderung halb geöffnet</translation>
 <translation id="9133397713400217035">Offline entdecken</translation>
 <translation id="9137013805542155359">Original anzeigen</translation>
 <translation id="9148126808321036104">Erneut anmelden</translation>

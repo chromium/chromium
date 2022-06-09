@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">शैली</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इंटरनेट कनेक्‍शन</translation>
 <translation id="1272293450992660632">पिन के मान मेल नहीं खाते.</translation>
+<translation id="127650757582748357">BZIP2 फ़ॉर्मैट में कंप्रेस किया गया संग्रह</translation>
 <translation id="1280820357415527819">मोबाइल नेटवर्क खोजे जा रहे हैं</translation>
 <translation id="1291603679744561561">सिम लॉक किया गया है</translation>
 <translation id="1293556467332435079">फ़ाइल</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">पनीर</translation>
 <translation id="2781645665747935084">बेल्जियाई</translation>
 <translation id="2782104745158847185">Linux ऐप्लिकेशन इंस्टॉल करते समय गड़बड़ी</translation>
+<translation id="2788520643285360081">7-Zip फ़ॉर्मैट वाला संग्रह</translation>
 <translation id="2803375539583399270">पिन डालें</translation>
 <translation id="2820957248982571256">स्कैन हो रहा है...</translation>
+<translation id="2822595620066756134">GZIP फ़ॉर्मैट में कंप्रेस किया गया संग्रह</translation>
 <translation id="2830077785865012357">चाइनीज़ ज़ूयिन</translation>
 <translation id="2843806747483486897">डिफ़ॉल्ट बदलें...</translation>
 <translation id="2850124913210091882">बैक अप लें</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">लिथुआनियाई</translation>
 <translation id="3587482841069643663">सभी</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> को ऑफ़लाइन मोड में इस्तेमाल करने के लिए डाउनलोड नहीं किया जा सका</translation>
+<translation id="3593874215226880809">LZIP फ़ॉर्मैट में कंप्रेस किया गया संग्रह</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">कनाडाई फ़्रेंच</translation>
 <translation id="3606220979431771195">तुर्की-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द करें.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> का नेटवर्क <ph name="NETWORK_INDEX" />, चालू नहीं किया गया, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="3691184985318546178">सिंहला</translation>
+<translation id="3703620396751288986">ZIP फ़ॉर्मैट वाला संग्रह</translation>
 <translation id="3726463242007121105">यह डिवाइस नहीं खोला जा सकता क्‍योंकि इसका फ़ाइल सिस्‍टम समर्थित नहीं है.</translation>
 <translation id="3727148787322499904">यह सेटिंग बदलने से सभी शेयर नेटवर्क प्रभावित होंगे</translation>
 <translation id="3737576078404241332">साइडबार से हटाएं</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">क्वर्टी कीबोर्ड के साथ चेक</translation>
 <translation id="4656777537938206294">फ़ाइलों को ऑफ़लाइन उपलब्ध कराएं</translation>
 <translation id="4658782175094886150">गिरती हुई बर्फ़ में खड़ा व्यक्ति</translation>
+<translation id="4661996069183330363">TAR फ़ॉर्मैट वाला संग्रह</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' के सदस्यों को तब तक एक्सेस नहीं मिलेगा जब तक कि ये आइटम उनके साथ शेयर नहीं किए जाते.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">स्वीडिश</translation>
@@ -930,6 +936,7 @@
 <translation id="8903931173357132290">ग्रैजुएट</translation>
 <translation id="8912078710089354287">पूंछ हिलाता हुआ कुत्ता</translation>
 <translation id="8919081441417203123">डैनिश</translation>
+<translation id="8965273390142984105">LZOP फ़ॉर्मैट में कंप्रेस किया गया संग्रह</translation>
 <translation id="8965697826696209160">काफ़ी स्थान नहीं है.</translation>
 <translation id="8997962250644902079">चाइनीज़ (परंपरागत) पिनयिन</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, आपका एडमिन प्रबंधित करता है, जानकारी</translation>

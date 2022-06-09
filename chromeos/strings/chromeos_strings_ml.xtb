@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">ഈ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്.</translation>
 <translation id="1175951029573070619">ശരാശരി (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
+<translation id="1190378975642195988">ബേസ് ആക്‌സിലറോമീറ്റർ</translation>
 <translation id="1195447618553298278">അജ്ഞാത പിശക്.</translation>
 <translation id="1196959502276349371">പതിപ്പ് <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">പ്ലേ ചെയ്യുക/താൽക്കാലികമായി നിർത്തുക</translation>
@@ -214,7 +215,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> സെക്കൻഡിൽ <ph name="RATE" /> ഡിസ്ചാർജ് ചെയ്തു.</translation>
 <translation id="291142119251986300">യോഗ്യതയില്ലാത്ത ഘടകങ്ങൾ</translation>
 <translation id="2926057806159140518">നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും നൽകുക അല്ലെങ്കിൽ നിങ്ങളുടെ QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
-<translation id="2928420929544864228">ഇൻസ്റ്റാൾ ചെയ്യൽ പൂർത്തിയായി.</translation>
 <translation id="3008341117444806826">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="3009958530611748826">സംരക്ഷിക്കാൻ ഒരു ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3017079585324758401">പശ്ചാത്തലം</translation>
@@ -268,6 +268,7 @@
 <translation id="3484914941826596830">ഫേംവെയർ അപ്ഡേറ്റ് ചെയ്തുകൊണ്ടിരിക്കുമ്പോൾ ഈ എക്സ്റ്റേണൽ ഉപകരണം അൺപ്ലഗ് ചെയ്യാനോ നിങ്ങളുടെ കമ്പ്യൂട്ടർ ഷട്ട് ഡൗൺ ചെയ്യാനോ പാടില്ല. നിങ്ങൾക്ക് ഈ വിൻഡോ ചെറുതാക്കാം. ഈ അപ്ഡേറ്റ് പൂർത്തിയാകാൻ ഏതാനും മിനിറ്റുകൾ എടുത്തേക്കാം, അതുവരെ നിങ്ങളുടെ എക്സ്റ്റേണൽ ഉപകരണം പ്രവർത്തിക്കില്ല.</translation>
 <translation id="3486220673238053218">നിർവചനം</translation>
 <translation id="3488065109653206955">ഭാഗികമായി പ്രവര്‍ത്തനക്ഷമമാക്കി</translation>
+<translation id="3492982278147736083">ലിഡ് ജൈറോസ്‌കോപ്പ്</translation>
 <translation id="3517001332549868749">ChromeOS അപ്ഡേറ്റ്</translation>
 <translation id="3527036260304016759">പ്രിന്റ് ചെയ്യാനായില്ല - അജ്ഞാതമായ പിശക്</translation>
 <translation id="3532980081107202182">ഏകദേശം <ph name="MIN_REMAINING" /> മിനിറ്റ് ശേഷിക്കുന്നു</translation>
@@ -301,9 +302,11 @@
 <translation id="3820172043799983114">പിൻ നമ്പർ തെറ്റാണ്.</translation>
 <translation id="3838338534323494292">പുതിയ പാസ്‌വേഡ്</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
+<translation id="3856304145690230735">ബേസ് ജൈറോസ്‌കോപ്പ്</translation>
 <translation id="385832974417157471">നിങ്ങളുടെ ഉപകരണം ഷട്ട് ഡൗൺ ചെയ്യും മുമ്പ് Powerwash വാഷ് ചെയ്യുക. ലിഡ് ഉള്ള ഉപകരണമാണെങ്കിൽ, Powerwash പൂർത്തിയാകുന്നത് വരെ ലിഡ് അടയ്ക്കാതെ വയ്ക്കുക. Powerwash പൂർത്തിയാകാൻ ഒരു മിനിറ്റ് എടുത്തേക്കാം.</translation>
 <translation id="3858860766373142691">പേര്</translation>
 <translation id="3865414814144988605">റെസല്യൂഷൻ</translation>
+<translation id="3866249974567520381">വിവരണം</translation>
 <translation id="387301095347517405">നിങ്ങളുടെ ബാറ്ററി പൂർണ്ണമായി ചാർജ് ചെയ്തതിന്റെ എണ്ണം</translation>
 <translation id="3885327323343477505">സ്ക്രീൻ സേവർ മാറ്റുക</translation>
 <translation id="3923184630988645767">ഡാറ്റ ഉപയോഗം</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">ആരംഭിക്കാം</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4483049906298469269">നോൺ-ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
+<translation id="4500213108254186382">ലിഡ് ആക്‌സിലറോമീറ്റർ</translation>
 <translation id="4503223151711056411">ഇടത്തേയ്‌ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4511264077854731334">പോർട്ടൽ</translation>
 <translation id="4521826082652183069">സബ്ജക്റ്റ് ഓൾട്ടർനേറ്റീവ് നെയിം പൊരുത്തം</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">സിം അൺലോക്ക് ചെയ്തു</translation>
 <translation id="4562494484721939086">സേവനമില്ല</translation>
 <translation id="4568938274596692027">ഇൻസ്റ്റാൾ ചെയ്യൽ പൂർത്തിയായി. റീസ്റ്റാർട്ട് ചെയ്യാൻ തയ്യാറെടുക്കുന്നു...</translation>
+<translation id="4576943788798178439">സ്റ്റൈലസ് പിന്തുണ</translation>
 <translation id="458794348635939462">എല്ലാ ഹോസ്‌റ്റുകളും പരിഹരിക്കാനായില്ല</translation>
 <translation id="4593212453765072419">പ്രോക്‌സി പ്രാമാണീകരണം ആവശ്യമാണ്</translation>
 <translation id="4609350030397390689">കീബോർഡ് തെളിച്ചം കുറയ്‌ക്കുക</translation>
@@ -536,6 +541,7 @@
 <translation id="5866840822086176774">വളരെ ദൃഢമാണ്</translation>
 <translation id="588258955323874662">പൂര്‍‌ണ്ണസ്‌ക്രീന്‍</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
+<translation id="5898758006340607522">പവർ ബട്ടൺ</translation>
 <translation id="5901630391730855834">മഞ്ഞ</translation>
 <translation id="5903200662178656908">കീബോർഡിന്റെയും മൗസിന്റെയും കോമ്പോ ആണ് ഉപകരണം.</translation>
 <translation id="5916084858004523819">നിരോധിച്ചിരിക്കുന്നു</translation>
@@ -858,6 +864,7 @@
 <translation id="8919792139048574232">എന്താണ് പരിഹരിച്ചതെന്ന് കാണുക</translation>
 <translation id="8919837981463578619">പ്രിന്റ് ചെയ്യാനായില്ല - ട്രേ കാണുന്നില്ല</translation>
 <translation id="8923267550422472772">റീസെറ്റ് ചെയ്യുന്നതിനുള്ള, മാസത്തിലെ ദിവസം</translation>
+<translation id="8925613211674558308">കാഷെ ചെയ്‌ത Vpd</translation>
 <translation id="8928727111548978589">പ്രിന്റ് ചെയ്യാനായില്ല - പേപ്പറില്ല</translation>
 <translation id="8930521118335213258">പിയർ</translation>
 <translation id="8930622219860340959">വയര്‍‌ലെസ്സ്</translation>
@@ -899,6 +906,7 @@
 <translation id="922179502584117429">നിലവിലെ പതിപ്പ് <ph name="VERSION_NUMBER" /> കാലഹരണപ്പെട്ടതാണ്</translation>
 <translation id="932327136139879170">ഹോം</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="952992212772159698">സജീവമാക്കിയില്ല</translation>
 <translation id="960719561871045870">ഓപ്പറേറ്റർ കോഡ്</translation>
 <translation id="982713511914535780">ഡിസ്‌ചാർജ്ജ് ടെസ്‌റ്റ് റൺ ചെയ്യുക</translation>

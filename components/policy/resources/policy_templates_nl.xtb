@@ -3052,14 +3052,6 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
       Dit beleid wordt genegeerd en de melding wordt altijd getoond als het apparaat onbeheerd is of er slechts één gebruiker is.
 
       Als er meerdere gebruikersaccounts zijn op een beheerd apparaat, wordt de melding alleen getoond als dit beleid is toegepast.</translation>
-<translation id="4293593564662654474">Dit beleid wordt aangeboden als een manier om je af te melden voor de functie First-Party Sets.
-
-                  Als je dit beleid niet instelt of aanzet, staat de functie First-Party Sets aan.
-
-                  Als je dit beleid uitzet, staat de functie First-Party Sets uit.
-
-                  De status van de functie First-Party Sets bepaalt of Chrome de lijst met First-Party Sets ophaalt.
-                  Het beleid bepaalt ook of Chrome aan First-Party Sets gerelateerde functies ondersteunt (bijvoorbeeld het SameParty-cookiekenmerk).</translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">Toegewezen MAC-adres van dock van apparaat</translation>
 <translation id="4314538398999793073">CNAME-lookup tijdens Kerberos-verificatie uitzetten</translation>

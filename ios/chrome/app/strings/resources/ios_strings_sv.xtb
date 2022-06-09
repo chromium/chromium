@@ -65,6 +65,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1434356225517321998">Din webbläsare hanteras. <ph name="BEGIN_LINK" />Detaljer<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Dölj lösenord</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> objekt</translation>
+<translation id="1450170672351507823">Standardskydd är aktiverat. Använd förbättrat skydd för ännu bättre säkerhet.</translation>
 <translation id="149095475893949513">Den här webbplatsen försöker ladda ned en konfigurationsprofil.</translation>
 <translation id="1491277525950327607">Aktivera eller inaktivera inställningen genom att trycka snabbt två gånger</translation>
 <translation id="1492417797159476138">Du har redan sparat användarnamnet för den här webbplatsen</translation>
@@ -162,6 +163,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="236977714248711277">Webbplatser får inte förbättra surfupplevelsen med hjälp av cookies, till exempel genom att låta dig förbli inloggad eller spara vad du har lagt till i kundvagnen.
 
 Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av cookies och till exempel anpassa annonser.</translation>
+<translation id="2375243552872247702">Se innehåll för dig</translation>
 <translation id="2381405137052800939">Grunderna</translation>
 <translation id="2386793615875593361">1 markerat foto</translation>
 <translation id="2421004566762153674">Cookies från tredje part blockeras</translation>
@@ -601,6 +603,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6136914049981179737">Nyss</translation>
 <translation id="6144589619057374135">Öppna ${url} i inkognitoläget</translation>
 <translation id="6149061208933997199">Använd lösenordet</translation>
+<translation id="6152406514676263192">Synkronisera för att se det mest relevanta innehållet baserat på dina intressen.</translation>
 <translation id="6159839020698489198">valfritt</translation>
 <translation id="6177442314419606057">Sök i Chrome</translation>
 <translation id="6184086493125982861">Visa flikar</translation>
@@ -738,6 +741,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7099761977003084116">Senaste flikarna</translation>
 <translation id="7102005569666697658">Laddar ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Dölj</translation>
+<translation id="7108762695052995889">Besök webbplats</translation>
 <translation id="7133798577887235672">Fullständigt namn</translation>
 <translation id="7136892417564438900">Kameran är inte tillgänglig</translation>
 <translation id="7153999225810839758">Läs på <ph name="TIME" /> minuter</translation>
@@ -748,6 +752,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7189598951263744875">Dela ...</translation>
 <translation id="7192050974311852563">Starta loggning</translation>
 <translation id="7203585745079012652">Läs upp svaren</translation>
+<translation id="7207023858769244910">Synkronisera för att få innehåll utifrån dina intressen.</translation>
 <translation id="7207383424303353046">Nyhet! Öppna automatiskt webbplatser i Chrome genom att ställa in Chrome som standardwebbläsarapp. <ph name="BEGIN_LINK" />Öppna inställningarna<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Ogiltigt kortnamn</translation>
 <translation id="722454870747268814">Ny inkognitoflik</translation>

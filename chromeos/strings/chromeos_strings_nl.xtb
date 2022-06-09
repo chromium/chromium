@@ -214,7 +214,6 @@
 <translation id="2878387241690264070"><ph name="RATE" /> ontladen in <ph name="NUM_SECONDS" /> seconden.</translation>
 <translation id="291142119251986300">Niet-gekwalificeerde componenten</translation>
 <translation id="2926057806159140518">Geef je gebruikersnaam en wachtwoord op of scan je QR-code</translation>
-<translation id="2928420929544864228">Installatie afgerond.</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
 <translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
 <translation id="3017079585324758401">Achtergrond</translation>
@@ -287,6 +286,7 @@
 <translation id="3621202678540785336">Ingang</translation>
 <translation id="3632579075709132555">Privacyscherm schakelen</translation>
 <translation id="3643810137582748570">Kalibratie overslaan</translation>
+<translation id="3651050199673793219">Een temperatuureenheid selecteren</translation>
 <translation id="3678765385266369662">Selecteer hoe je Write Protect wilt uitzetten</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Bezig met laden...</translation>
@@ -303,7 +303,9 @@
 <translation id="385051799172605136">Terug</translation>
 <translation id="385832974417157471">Voordat je het apparaat uitzet, voer je een Powerwash uit. Als je apparaat een klep heeft, wacht je totdat de Powerwash klaar is voordat je de klep sluit. Het kan een minuut duren voordat de Powerwash klaar is.</translation>
 <translation id="3858860766373142691">Naam</translation>
+<translation id="3862598938296403232">Beschrijving is vereist</translation>
 <translation id="3865414814144988605">Resolutie</translation>
+<translation id="3866249974567520381">Beschrijving</translation>
 <translation id="387301095347517405">Het aantal keren dat de batterij een volledige oplaadcyclus heeft doorlopen</translation>
 <translation id="3885327323343477505">Screensaver wijzigen</translation>
 <translation id="3923184630988645767">Datagebruik</translation>
@@ -430,6 +432,7 @@
 <translation id="4915052247106771211">Hierdoor wordt het apparaat teruggezet naar de fabrieksinstellingen (Powerwash).</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4917889632206600977">Gestopt: geen papier meer</translation>
+<translation id="491791267030419270">Tips voor het schrijven van feedback</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> opgeladen in <ph name="NUM_SECONDS" /> seconden.</translation>
 <translation id="4930320165497208503">Ga naar <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /> als je een verbinding wilt instellen of updaten.</translation>
 <translation id="4932733599132424254">Datum</translation>
@@ -671,6 +674,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
 <translation id="714876143603641390">LAN-connectiviteit</translation>
+<translation id="7154020516215182599">Deel je feedback of beschrijf je probleem. Voeg waar mogelijk stappen toe om het probleem te reproduceren.</translation>
 <translation id="7155171745945906037">Bestaande foto van camera of uit bestand</translation>
 <translation id="7162487448488904999">Galerij</translation>
 <translation id="7170236477717446850">Profielfoto</translation>
@@ -899,6 +903,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="922179502584117429">Huidige versie <ph name="VERSION_NUMBER" /> is verouderd</translation>
 <translation id="932327136139879170">Homepage</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Feedback sturen</translation>
 <translation id="952992212772159698">Niet geactiveerd</translation>
 <translation id="960719561871045870">Operatorcode</translation>
 <translation id="982713511914535780">Ontlaadtest uitvoeren</translation>

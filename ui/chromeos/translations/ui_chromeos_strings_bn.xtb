@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">প্রকার</translation>
 <translation id="1254593899333212300">সরাসরি ইন্টারনেট সংযোগ</translation>
 <translation id="1272293450992660632">আপনার পিনের মানগুলি মিলছে না।</translation>
+<translation id="127650757582748357">BZIP2 কম্প্রেস করা ফাইল</translation>
 <translation id="1280820357415527819">মোবাইল নেটওয়ার্কের জন্য সার্চ করা হচ্ছে</translation>
 <translation id="1291603679744561561">সিম লক করা হয়েছে</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">চিজ</translation>
 <translation id="2781645665747935084">বেলজিয়ান</translation>
 <translation id="2782104745158847185">Linux অ্যাপ ইনস্টল করার সময় সমস্যা</translation>
+<translation id="2788520643285360081">7-Zip ফাইল</translation>
 <translation id="2803375539583399270">পিন নম্বর দিন</translation>
 <translation id="2820957248982571256">স্ক্যান করা হচ্ছে…</translation>
+<translation id="2822595620066756134">GZIP কম্প্রেস করা ফাইল</translation>
 <translation id="2830077785865012357">চিনা ঝুইন</translation>
 <translation id="2843806747483486897">ডিফল্ট পরিবর্তন করুন ...</translation>
 <translation id="2850124913210091882">ব্যাকআপ নিন</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">লিথুয়ানিয়ান</translation>
 <translation id="3587482841069643663">সকল</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> ফাইলটি অফলাইনে উপলভ্য করা যায়নি</translation>
+<translation id="3593874215226880809">LZIP কম্প্রেস করা ফাইল</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">কানাডীয় ফরাসি</translation>
 <translation id="3606220979431771195">তুর্কি-এফ</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> বাতিল করুন।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, চালু করা হয়নি, <ph name="CONNECTION_STATUS" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
 <translation id="3691184985318546178">সিংহলি</translation>
+<translation id="3703620396751288986">ZIP ফাইল</translation>
 <translation id="3726463242007121105">এই ডিভাইসটি ফাইল সিস্টেমটি সমর্থিত না হওয়ার কারণে খুলতে পারা যায়না৷</translation>
 <translation id="3727148787322499904">এই সেটিং পরিবর্তন করা হলে শেয়ার করা সব নেটওয়ার্ক প্রভাবিত হবে</translation>
 <translation id="3737576078404241332">সাইডবার থেকে সরিয়ে দিন</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">চেক ভাষায় কোয়ের্টি কীবোর্ড</translation>
 <translation id="4656777537938206294">ফাইল অফলাইনে উপলভ্য করুন</translation>
 <translation id="4658782175094886150">বরফের মধ্যে ব্যক্তির ছবি</translation>
+<translation id="4661996069183330363">TAR ফাইল</translation>
 <translation id="4669606053856530811">এই আইটেমগুলি '<ph name="SOURCE_NAME" />' এর সদস্যদের সাথে শেয়ার না করলে তারা সেগুলি অ্যাক্সেস করতে পারবে না।</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">সুইডিশ</translation>
@@ -929,6 +935,7 @@
 <translation id="8903931173357132290">স্নাতক</translation>
 <translation id="8912078710089354287">কুকুরের লেজ নাড়ানোর ছবি</translation>
 <translation id="8919081441417203123">ডেনিশ</translation>
+<translation id="8965273390142984105">LZOP কম্প্রেস করা ফাইল</translation>
 <translation id="8965697826696209160">সেখানে যথেষ্ট স্থান নেই৷</translation>
 <translation id="8997962250644902079">চীনা (ঐতিহ্যবাহী) পিনইন</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, বিবরণ</translation>

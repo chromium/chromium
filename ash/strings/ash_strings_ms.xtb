@@ -56,10 +56,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1247519845643687288">Apl terbaharu</translation>
 <translation id="1252999807265626933">Mengecas daripada <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Bagaimanakah keadaan cuaca?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> hingga 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Pilih untuk mendapatkan butiran lanjut dalam Google Calendar.</translation>
 <translation id="1267032506238418139">Perubahan pintasan</translation>
 <translation id="1269405891096105529">Peranti persisian tidak disokong dalam mod Tetamu</translation>
 <translation id="1270290102613614947">Papan kekunci pada skrin dilumpuhkan</translation>
@@ -125,6 +121,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Akses Suis boleh dilumpuhkan dalam Tetapan &gt; Kebolehaksesan.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> peranti</translation>
+<translation id="1639239467298939599">Memuatkan</translation>
 <translation id="1654477262762802994">Mulakan pertanyaan suara</translation>
 <translation id="1668469839109562275">VPN terbina dalam</translation>
 <translation id="1677472565718498478">Berbaki <ph name="TIME" /></translation>
@@ -1051,7 +1048,6 @@ Pemasangan baharu</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Kembali kepada peleraian lama dalam <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Muat semula</translation>
-<translation id="718361511487535372">Buka dalam Google Calendar</translation>
 <translation id="7188494361780961876">Menu dialihkan ke sudut atas sebelah kiri skrin.</translation>
 <translation id="7189412385142492784">Berapa jauhkah Venus</translation>
 <translation id="7198435252016571249">Kamera diautojajar ke penjuru kanan sebelah bawah. Bercanggah dengan permukaan sistem.</translation>

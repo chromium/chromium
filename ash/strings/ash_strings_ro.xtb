@@ -56,10 +56,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1247519845643687288">Aplicații recente</translation>
 <translation id="1252999807265626933">Se încarcă de la <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Cum este vremea?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> – 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Selectează pentru mai multe detalii în Google Calendar.</translation>
 <translation id="1267032506238418139">Modificarea comenzii rapide</translation>
 <translation id="1269405891096105529">Dispozitivul periferic nu este acceptat în modul pentru invitați</translation>
 <translation id="1270290102613614947">Tastatură pe ecran dezactivată</translation>
@@ -125,6 +121,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1632985212731562677">Accesul prin comutare poate fi dezactivat din Setări &gt; Accesibilitate.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispozitive</translation>
+<translation id="1639239467298939599">Se încarcă</translation>
 <translation id="1654477262762802994">Începe o interogare vocală</translation>
 <translation id="1668469839109562275">Rețea VPN încorporată</translation>
 <translation id="1677472565718498478">Timp rămas: <ph name="TIME" /></translation>
@@ -1050,7 +1047,6 @@ Instalare nouă</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Se revine la rezoluția anterioară în <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualizați</translation>
-<translation id="718361511487535372">Deschide în Google Calendar</translation>
 <translation id="7188494361780961876">Meniul a fost mutat în colțul din stânga sus al ecranului.</translation>
 <translation id="7189412385142492784">Cât de departe este Venus</translation>
 <translation id="7198435252016571249">Camera foto este aliniată cu colțul din dreapta jos. Conflict cu platforma de sistem.</translation>

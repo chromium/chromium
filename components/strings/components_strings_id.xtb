@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Hibah, beasiswa &amp; bantuan keuangan</translation>
 <translation id="1048785276086539861">Jika Anda mengedit anotasi, dokumen ini akan kembali ke tampilan satu halaman</translation>
 <translation id="1050038467049342496">Tutup aplikasi lain</translation>
+<translation id="1053959602163383901">Anda memilih untuk memverifikasi dengan perangkat pengautentikasi di situs yang menggunakan <ph name="PROVIDER_ORIGIN" />. Penyedia ini mungkin telah menyimpan informasi tentang metode pembayaran Anda, yang dapat Anda <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Urungkan Penambahan</translation>
 <translation id="1056663316309890343">Software foto</translation>
 <translation id="1056898198331236512">Peringatan</translation>
@@ -422,6 +423,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2053111141626950936">Halaman dalam bahasa <ph name="LANGUAGE" /> tidak akan diterjemahkan.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Jika kontrol ini aktif dan statusnya masih berlaku, Chrome akan menentukan grup besar, atau "kohor", yang paling mirip dengan aktivitas penjelajahan terbaru Anda. Pengiklan dapat memilih iklan untuk grup tersebut dan aktivitas penjelajahan Anda tetap bersifat pribadi di perangkat Anda. Grup Anda diperbarui setiap hari.}=1{Jika kontrol ini aktif dan statusnya masih berlaku, Chrome akan menentukan grup besar, atau "kohor", yang paling mirip dengan aktivitas penjelajahan terbaru Anda. Pengiklan dapat memilih iklan untuk grup tersebut dan aktivitas penjelajahan Anda tetap bersifat pribadi di perangkat Anda. Grup Anda diperbarui setiap hari.}other{Jika kontrol ini aktif dan statusnya masih berlaku, Chrome akan menentukan grup besar, atau "kohor", yang paling mirip dengan aktivitas penjelajahan terbaru Anda. Pengiklan dapat memilih iklan untuk grup tersebut dan aktivitas penjelajahan Anda tetap bersifat pribadi di perangkat Anda. Grup Anda diperbarui setiap {NUM_DAYS} hari.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 saran}other{# saran}}</translation>
+<translation id="2066915425250589881">minta untuk dihapus</translation>
 <translation id="2068528718802935086">Bayi &amp; balita</translation>
 <translation id="2071156619270205202">Kartu ini tidak memenuhi syarat untuk nomor kartu virtual.</translation>
 <translation id="2071692954027939183">Notifikasi otomatis diblokir karena Anda biasanya tidak mengizinkannya</translation>
@@ -578,6 +580,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2512101340618156538">Tidak diizinkan (default)</translation>
 <translation id="2512413427717747692">Tombol Setel Chrome sebagai browser default, tekan Enter untuk menyetel Chrome sebagai browser default sistem di setelan iOS</translation>
 <translation id="2515629240566999685">Periksa sinyal di area Anda</translation>
+<translation id="2515761554693942801">Anda memilih untuk memverifikasi dengan Touch ID di situs yang menggunakan <ph name="PROVIDER_ORIGIN" />. Penyedia ini mungkin telah menyimpan informasi tentang metode pembayaran Anda, yang dapat Anda <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Jepretan di kanan bawah</translation>
 <translation id="2521736961081452453">Buat formulir</translation>
 <translation id="2523886232349826891">Hanya disimpan di perangkat ini</translation>
@@ -699,7 +702,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2854764410992194509">Internet service provider (ISP)</translation>
 <translation id="2856444702002559011">Penyerang mungkin berusaha mencuri informasi Anda dari <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (misalnya, sandi, pesan, atau kartu kredit). <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Situs ini menampilkan iklan yang mengganggu atau menyesatkan.</translation>
-<translation id="286512204874376891">Kartu virtual menyamarkan kartu Anda yang sebenarnya untuk membantu melindungi Anda dari kemungkinan penipuan. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Bersahabat</translation>
 <translation id="28761159517501904">Film</translation>
 <translation id="2876489322757410363">Keluar dari mode Samaran untuk membayar melalui aplikasi eksternal. Lanjutkan?</translation>
@@ -1326,7 +1328,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4607603470419975064">Tombol Lihat tips Chrome, tekan Enter untuk mempelajari fitur-fitur Chrome</translation>
 <translation id="4607608436550361748">Lihat tips Chrome</translation>
 <translation id="4617273035598175554">Software grafis &amp; animasi</translation>
-<translation id="4627165777145349100">Selengkapnya tentang halaman ini</translation>
 <translation id="4627675673814409125">Kebijakan ini tidak dapat disetel di tingkat profil Chrome dan akan diabaikan.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Disertai cashback</translation>
@@ -1491,6 +1492,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5051305769747448211">Komedi live</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Untuk mengirim file ini menggunakan Berbagi Langsung, kosongkan ruang penyimpanan (<ph name="DISK_SPACE_SIZE" />) di perangkat Anda}other{Untuk mengirim file ini menggunakan Berbagi Langsung, kosongkan ruang penyimpanan (<ph name="DISK_SPACE_SIZE" />) di perangkat Anda}}</translation>
 <translation id="5056549851600133418">Artikel untuk Anda</translation>
+<translation id="5060483733937416656">Anda memilih untuk memverifikasi dengan Windows Hello di situs yang menggunakan <ph name="PROVIDER_ORIGIN" />. Penyedia ini mungkin telah menyimpan informasi tentang metode pembayaran Anda, yang dapat Anda <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Mungkin maksud Anda <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Histori pencetakan</translation>
 <translation id="5068234115460527047">Dana lindung nilai</translation>
@@ -1860,7 +1862,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6061154937977953833">Gulat</translation>
 <translation id="6064217302520318294">Kunci layar</translation>
 <translation id="6064602040258638498">Penawaran kupon &amp; diskon</translation>
-<translation id="6078813287646374487">Tampilkan informasi halaman ini selengkapnya</translation>
 <translation id="6080696365213338172">Anda telah mengakses konten menggunakan sertifikat yang diberikan oleh administrator. Data yang diberikan ke <ph name="DOMAIN" /> dapat dicegat oleh administrator Anda.</translation>
 <translation id="6087312102907839798">Penelusuran terkait</translation>
 <translation id="6094273045989040137">Anotasi</translation>
@@ -2780,6 +2781,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> adalah kode Anda untuk <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Bookmark tab ini</translation>
 <translation id="8751426954251315517">Coba lagi lain waktu</translation>
+<translation id="8757526089434340176">Penawaran Google Pay tersedia</translation>
 <translation id="8758885506338294482">Kompetisi video game</translation>
 <translation id="8759274551635299824">Kartu sudah tidak aktif</translation>
 <translation id="87601671197631245">Situs ini menggunakan konfigurasi keamanan yang telah habis masa berlakunya, yang dapat mengekspos informasi Anda (misalnya, sandi, pesan, atau kartu kredit) saat dikirimkan ke situs ini.</translation>

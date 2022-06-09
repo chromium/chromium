@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Сдвоени устройства</translation>
 <translation id="1165712434476988950">Устройството трябва да се рестартира, за да се приложи актуализацията.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">USB-C кабелът ви може да не се свързва правилно с дисплеи</translation>
 <translation id="1175572348579024023">Превъртане</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -55,10 +56,6 @@
 <translation id="1247519845643687288">Скорошни приложения</translation>
 <translation id="1252999807265626933">Зарежда се от <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">„What's the weather?“ („Какво е времето?“)</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> до 
-        <ph name="END_TIME" />,
-        <ph name="TIME_ZONE" />,
-        <ph name="EVENT_SUMMARY" />. За още подробности в Google Календар изберете събитието.</translation>
 <translation id="1267032506238418139">Промяна на клавишната комбинация</translation>
 <translation id="1269405891096105529">Периферното устройство не се поддържа в режим на гост</translation>
 <translation id="1270290102613614947">Екранната клавиатура е деактивирана</translation>
@@ -124,6 +121,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Функцията „Достъп с превключване“ може да бъде деактивирана в „Настройки &gt; Достъпност“.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> устройства</translation>
+<translation id="1639239467298939599">Зарежда се</translation>
 <translation id="1654477262762802994">Стартиране на гласова заявка</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
 <translation id="1677472565718498478">Оставащо време: <ph name="TIME" /></translation>
@@ -239,6 +237,7 @@
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2367186422933365202">Не можете да влезете в своя Chromebook</translation>
 <translation id="2369165858548251131">„Hello“ in Chinese</translation>
+<translation id="2375445874393996153">Функцията за търсене в съдържанието на екрана посредством Google Асистент вече не се поддържа.</translation>
 <translation id="2390318262976603432">Настройки на локала</translation>
 <translation id="240006516586367791">Контроли за мултимедия</translation>
 <translation id="2402411679569069051">За да отключите своя Chromebook, използвайте отпечатъка си или отключете телефона си</translation>
@@ -1048,7 +1047,6 @@
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Старата разделителна способност ще се възстанови след <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Опресняване</translation>
-<translation id="718361511487535372">Отваряне в Google Календар</translation>
 <translation id="7188494361780961876">Менюто е преместено в горния ляв ъгъл на екрана.</translation>
 <translation id="7189412385142492784">How far is Venus</translation>
 <translation id="7198435252016571249">Картината от камерата е прилепена към долния десен ъгъл. Възникна конфликт с интерфейса на системата.</translation>

@@ -163,6 +163,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="236977714248711277">Saidid ei saa kasutada küpsisefaile teie sirvimiskogemuse täiustamiseks, näiteks selleks, et hoida teid sisselogituna või jätta meelde teie ostukorvis olevad esemed.
 
 Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (näiteks reklaamide isikupärastamiseks).</translation>
+<translation id="2375243552872247702">Vaadake teile mõeldud sisu</translation>
 <translation id="2381405137052800939">Põhiteave</translation>
 <translation id="2386793615875593361">1 on valitud</translation>
 <translation id="2421004566762153674">Kolmanda osapoole küpsisefailide blokeerimine</translation>
@@ -602,6 +603,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6136914049981179737">Sek. eest</translation>
 <translation id="6144589619057374135">Ava ${url} inkognito aknas</translation>
 <translation id="6149061208933997199">Kasuta parooli</translation>
+<translation id="6152406514676263192">Lubage sünkroonimine, et näha kõige asjakohasemat sisu, mis põhineb teie huvidel.</translation>
 <translation id="6159839020698489198">valikuline</translation>
 <translation id="6177442314419606057">Otsing Chrome'ist</translation>
 <translation id="6184086493125982861">Kuva vahelehed</translation>
@@ -739,6 +741,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7099761977003084116">Hiljutised vahelehed</translation>
 <translation id="7102005569666697658">Allalaadimine … <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Peida</translation>
+<translation id="7108762695052995889">Külasta saiti</translation>
 <translation id="7133798577887235672">Täisnimi</translation>
 <translation id="7136892417564438900">Kaamera pole saadaval</translation>
 <translation id="7153999225810839758">Lugemiseks kulub <ph name="TIME" /> minut(it)</translation>
@@ -749,6 +752,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7189598951263744875">Jaga ...</translation>
 <translation id="7192050974311852563">Alusta logimist</translation>
 <translation id="7203585745079012652">Vastuste esitamine</translation>
+<translation id="7207023858769244910">Sünkroonige, et saada oma huvidel põhinevat sisu.</translation>
 <translation id="7207383424303353046">Uus: avage saidid automaatselt Chrome'is, määrates selle vaikebrauseriks. <ph name="BEGIN_LINK" />Ava seaded<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Kaardi sobimatu hüüdnimi</translation>
 <translation id="722454870747268814">Uus inkognito vaheleht</translation>

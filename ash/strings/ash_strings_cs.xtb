@@ -31,6 +31,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1150989369772528668">Kalendář</translation>
 <translation id="1153356358378277386">Spárovaná zařízení</translation>
 <translation id="1165712434476988950">K použití aktualizace je potřeba restartovat zařízení.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Váš kabel USB-C se možná nedokáže správně připojit k displejům</translation>
 <translation id="1175572348579024023">Posunout</translation>
 <translation id="1178581264944972037">Pozastavit</translation>
@@ -55,10 +56,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1247519845643687288">Poslední aplikace</translation>
 <translation id="1252999807265626933">Zdroj nabíjení: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Jaké je počasí?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> až 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Výběrem zobrazíte další podrobnosti v Kalendáři Google.</translation>
 <translation id="1267032506238418139">Změna klávesové zkratky</translation>
 <translation id="1269405891096105529">Periferní zařízení není v režimu hosta podporováno</translation>
 <translation id="1270290102613614947">Softwarová klávesnice je deaktivována</translation>
@@ -124,6 +121,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Přístup pomocí přepínačů lze vypnout v Nastavení &gt; Přístupnost.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> zařízení</translation>
+<translation id="1639239467298939599">Načítání</translation>
 <translation id="1654477262762802994">Zahájit hlasový dotaz</translation>
 <translation id="1668469839109562275">Vestavěná VPN</translation>
 <translation id="1677472565718498478">zbývající čas: <ph name="TIME" /></translation>
@@ -239,6 +237,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2367186422933365202">Přihlášení do Chromebooku se nezdařilo</translation>
 <translation id="2369165858548251131">„Ahoj“ čínsky</translation>
+<translation id="2375445874393996153">Vyhledávání obsahu na obrazovce pomocí Asistenta Google už není podporováno.</translation>
 <translation id="2390318262976603432">Nastavení národního prostředí</translation>
 <translation id="240006516586367791">Ovládání médií</translation>
 <translation id="2402411679569069051">Pokud chcete Chromebook odemknout, odemkněte telefon pomocí otisku prstu</translation>
@@ -1048,7 +1047,6 @@ Nová instalace</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Původní rozlišení bude obnoveno za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Obnovit</translation>
-<translation id="718361511487535372">Otevřít v Kalendáři Google</translation>
 <translation id="7188494361780961876">Nabídka byla přesunuta do levého horního rohu obrazovky.</translation>
 <translation id="7189412385142492784">Jak daleko je Venuše</translation>
 <translation id="7198435252016571249">Kamera byla připnuta do pravého dolního rohu. Konflikt s platformou systému.</translation>

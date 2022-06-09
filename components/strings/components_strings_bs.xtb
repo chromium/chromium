@@ -27,7 +27,7 @@
 <translation id="1043382569739532657">Grantovi, stipendije i finansijska pomoć</translation>
 <translation id="1048785276086539861">Kada uredite bilješke, ovaj dokument će se vratiti na prikaz na jednoj stranici</translation>
 <translation id="1050038467049342496">Zatvorite druge aplikacije</translation>
-<translation id="1053959602163383901">Odabrali ste potvrdu pomoću uređaja za autentifikaciju na web-lokacijama koje koriste <ph name="PROVIDER_ORIGIN" />. Taj je davatelj usluga možda pohranio podatke o vašem načinu plaćanja za koje možete <ph name="LINK_TEXT" />.</translation>
+<translation id="1053959602163383901">Možete odabrati potvrdu pomoću uređaja za autentifikaciju na web lokacijama koje koriste pružatelja usluga <ph name="PROVIDER_ORIGIN" />. Ovaj pružalac usluga je možda pohranio informacije o vašem načinu plaćanja, za koji možete <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Poništi dodavanje</translation>
 <translation id="1056663316309890343">Softver za fotografije</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
@@ -427,7 +427,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2053111141626950936">Stranice čiji jezik je <ph name="LANGUAGE" />, neće se prevoditi.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kada je ova kontrola uključena i status aktivan, Chrome određuje kojoj je velikoj grupi ljudi, ili "kohorti", vaša nedavna aktivnost pregledanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledanja ostaje privatna na vašem uređaju. Vaša grupa se ažurira svaki dan.}=1{Kada je ova kontrola uključena i status aktivan, Chrome određuje kojoj je velikoj grupi ljudi, ili "kohorti", vaša nedavna aktivnost pregledanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledanja ostaje privatna na vašem uređaju. Vaša grupa se ažurira svaki dan.}one{Kada je ova kontrola uključena i status aktivan, Chrome određuje kojoj je velikoj grupi ljudi, ili "kohorti", vaša nedavna aktivnost pregledanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledanja ostaje privatna na vašem uređaju. Vaša grupa se ažurira svakih {NUM_DAYS} dan.}few{Kada je ova kontrola uključena i status aktivan, Chrome određuje kojoj je velikoj grupi ljudi, ili "kohorti", vaša nedavna aktivnost pregledanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledanja ostaje privatna na vašem uređaju. Vaša grupa se ažurira svaka {NUM_DAYS} dana.}other{Kada je ova kontrola uključena i status aktivan, Chrome određuje kojoj je velikoj grupi ljudi, ili "kohorti", vaša nedavna aktivnost pregledanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledanja ostaje privatna na vašem uređaju. Vaša grupa se ažurira svakih {NUM_DAYS} dana.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Jedan prijedlog}one{# prijedlog}few{# prijedloga}other{# prijedloga}}</translation>
-<translation id="2066915425250589881">zatražiti da se izbrišu</translation>
+<translation id="2066915425250589881">zatražiti da se izbriše</translation>
 <translation id="2068528718802935086">Bebe i mala djeca</translation>
 <translation id="2071156619270205202">Ova kartica ne ispunjava uslove za broj virtuelne kartice.</translation>
 <translation id="2071692954027939183">Obavještenja su automatski blokirana jer ih obično ne dozvoljavate</translation>
@@ -584,7 +584,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2512101340618156538">Nije dozvoljeno (zadano)</translation>
 <translation id="2512413427717747692">Dugme za postavljanje Chromea kao zadanog preglednika, pritisnite Enter da postavite Chrome kao zadani preglednik sistema u postavkama iOS-a</translation>
 <translation id="2515629240566999685">Provjeriti signal u svojoj oblasti</translation>
-<translation id="2515761554693942801">Odabrali ste potvrdu pomoću Touch ID-ja na web-lokacijama koje koriste <ph name="PROVIDER_ORIGIN" />. Taj je davatelj usluga možda pohranio podatke o vašem načinu plaćanja za koje možete <ph name="LINK_TEXT" />.</translation>
+<translation id="2515761554693942801">Možete odabrati potvrdu pomoću Touch ID-a na web lokacijama koje koriste pružatelja usluga <ph name="PROVIDER_ORIGIN" />. Ovaj pružalac usluga je možda pohranio informacije o vašem načinu plaćanja, za koji možete <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Spajanje u donjem desnom uglu</translation>
 <translation id="2521736961081452453">Kreiraj obrazac</translation>
 <translation id="2523886232349826891">Sačuvano isključivo na ovom uređaju</translation>
@@ -706,7 +706,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2854764410992194509">Pružaoci internet usluga (ISP)</translation>
 <translation id="2856444702002559011">Moguće je da napadači pokušavaju ukrasti vaše podatke s web lokacije <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (naprimjer, lozinke, poruke ili kreditne kartice). <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Ova web lokacija prikazuje nametljive ili obmanjujuće oglase.</translation>
-<translation id="286512204874376891">Virtuelna kartica kamuflira vašu stvarnu karticu radi zaštite od potencijalne prevare. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Prijateljski</translation>
 <translation id="28761159517501904">Filmovi</translation>
 <translation id="2876489322757410363">Napuštate anonimni način rada radi plaćanja putem vanjske aplikacije. Nastaviti?</translation>
@@ -1339,7 +1338,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4607603470419975064">Dugme Prikaži savjete za Chrome, pritisnite Enter da saznate više o funkcijama Chromea</translation>
 <translation id="4607608436550361748">Prikaži savjete za Chrome</translation>
 <translation id="4617273035598175554">Softver za grafiku i animaciju</translation>
-<translation id="4627165777145349100">Više o ovoj stranici</translation>
 <translation id="4627675673814409125">Nije moguće postaviti ovo pravilo na nivou Chrome profila i bit će zanemareno.</translation>
 <translation id="4628948037717959914">Fotografija</translation>
 <translation id="4631649115723685955">Usluga povrata novca je povezana</translation>
@@ -1504,7 +1502,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5051305769747448211">Komedija uživo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Da pošaljete ovaj fajl pomoću Dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da pošaljete ove fajlove pomoću Dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da pošaljete ove fajlove pomoću Dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da pošaljete ove fajlove pomoću Dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
 <translation id="5056549851600133418">Članci za vas</translation>
-<translation id="5060483733937416656">Odabrali ste potvrdu putem značajke Windows Hello na web-lokacijama koje koriste <ph name="PROVIDER_ORIGIN" />. Taj je davatelj usluga možda pohranio podatke o vašem načinu plaćanja za koje možete <ph name="LINK_TEXT" />.</translation>
+<translation id="5060483733937416656">Odabrali ste potvrdu pomoću funkcije Windows Hello na web lokacijama koje koriste pružaoca usluga <ph name="PROVIDER_ORIGIN" />. Ovaj pružalac usluga je možda pohranio informacije o vašem načinu plaćanja, za koji možete <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Jeste li mislili <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historija štampanja</translation>
 <translation id="5068234115460527047">Hedž fondovi</translation>
@@ -1874,7 +1872,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6061154937977953833">Hrvanje</translation>
 <translation id="6064217302520318294">Zaključavanje ekrana</translation>
 <translation id="6064602040258638498">Kuponi i popusti</translation>
-<translation id="6078813287646374487">Prikažite više informacija o ovoj stranici</translation>
 <translation id="6080696365213338172">Pristupili ste sadržaju putem potvrde koju je pružio administrator. Administrator može presresti podatke koje pružite domeni <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Srodna pretraživanja</translation>
 <translation id="6094273045989040137">Dodajte bilješku</translation>
@@ -2798,6 +2795,7 @@ Dodatni detalji:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> je vaš kôd za <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Označite ovu karticu</translation>
 <translation id="8751426954251315517">Pokušajte ponovo kasnije</translation>
+<translation id="8757526089434340176">Dostupna je ponuda Google Paya</translation>
 <translation id="8758885506338294482">Takmičarsko igranje video igara</translation>
 <translation id="8759274551635299824">Ova kartica je istekla</translation>
 <translation id="87601671197631245">Ova web lokacija koristi zastarjelu konfiguraciju sigurnosti, zbog čega može doći do otkrivanja vaših informacija (naprimjer lozinki, poruka ili kreditnih kartica) kada se šalju na ovu web lokaciju.</translation>

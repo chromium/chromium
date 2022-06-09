@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1153356358378277386">配對裝置</translation>
 <translation id="1165712434476988950">必須重新啟動裝置才能套用更新。</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />，<ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">你的 USB-C 連接線可能未妥善連接螢幕</translation>
 <translation id="1175572348579024023">捲動</translation>
 <translation id="1178581264944972037">暫停</translation>
@@ -55,7 +56,6 @@
 <translation id="1247519845643687288">最近使用的應用程式</translation>
 <translation id="1252999807265626933">正在使用「<ph name="POWER_SOURCE" />」充電</translation>
 <translation id="1255033239764210633">天氣如何？</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> 至<ph name="END_TIME" /> (<ph name="TIME_ZONE" />)，<ph name="EVENT_SUMMARY" />。選取活動即可在 Google 日曆中查看詳情。</translation>
 <translation id="1267032506238418139">快速鍵異動</translation>
 <translation id="1269405891096105529">訪客模式不支援周邊裝置</translation>
 <translation id="1270290102613614947">螢幕小鍵盤已停用</translation>
@@ -121,6 +121,7 @@
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1632985212731562677">你可以依序點選 [設定] &gt; [無障礙設定] 來停用切換控制功能。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部裝置</translation>
+<translation id="1639239467298939599">載入中</translation>
 <translation id="1654477262762802994">啟動語音查詢</translation>
 <translation id="1668469839109562275">內建 VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 後用盡</translation>
@@ -1045,7 +1046,6 @@
 <translation id="7165278925115064263">Alt + Shift + K 鍵</translation>
 <translation id="7168224885072002358">系統將在 <ph name="TIMEOUT_SECONDS" /> 秒後還原成原來的解析度</translation>
 <translation id="7180611975245234373">重新整理</translation>
-<translation id="718361511487535372">在 Google 日曆中開啟</translation>
 <translation id="7188494361780961876">已將選單移至畫面左上角。</translation>
 <translation id="7189412385142492784">金星有多遠</translation>
 <translation id="7198435252016571249">攝影機已對齊右下角，與系統平台發生衝突。</translation>

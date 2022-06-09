@@ -95,6 +95,7 @@
 <translation id="1717874160321062422">Administreres af <ph name="FIRST_MANAGER" /> og <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Navneservere</translation>
 <translation id="1731082422893354635">Bluetooth-touchplade</translation>
+<translation id="1745577949879301685">Billederne kunne ikke indlæses. Tjek din netværksforbindelse, eller prøv at indlæse billederne igen.</translation>
 <translation id="1751249301761991853">Personlig</translation>
 <translation id="1753496554272155572">Forlad forhåndsvisning af baggrund</translation>
 <translation id="175763766237925754">Godt (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -213,7 +214,6 @@
 <translation id="2878387241690264070">Batteriet blev afladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="291142119251986300">Ukvalificerede komponenter</translation>
 <translation id="2926057806159140518">Angiv dit brugernavn og din adgangskode, eller scan din QR-kode</translation>
-<translation id="2928420929544864228">Installationen er fuldført.</translation>
 <translation id="3008341117444806826">OPDATER</translation>
 <translation id="3009958530611748826">Vælg en mappe, du vil gemme i</translation>
 <translation id="3017079585324758401">Baggrund</translation>
@@ -303,6 +303,7 @@
 <translation id="385832974417157471">Udfør en powerwash på din enhed, inden du lukker ned. Hvis din enhed har et låg, skal du først lukke låget, når din powerwash er gennemført. Det kan tage op til et minut at gennemføre en powerwash.</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3865414814144988605">Opløsning</translation>
+<translation id="3866249974567520381">Beskrivelse</translation>
 <translation id="387301095347517405">Antal gange dit batteri har gennemgået en fuld opladningscyklus</translation>
 <translation id="3885327323343477505">Skift pauseskærm</translation>
 <translation id="3923184630988645767">Dataforbrug</translation>
@@ -429,6 +430,7 @@
 <translation id="4915052247106771211">Denne handling vil gendanne fabriksindstillingerne på enheden (Powerwash).</translation>
 <translation id="4917385247580444890">Stærk</translation>
 <translation id="4917889632206600977">Stoppet – Papirbakken er tom</translation>
+<translation id="491791267030419270">Tips til at skrive feedback</translation>
 <translation id="4921665434385737356">Opladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4930320165497208503">Gå til <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> for at konfigurere eller opdatere en forbindelse.</translation>
 <translation id="4932733599132424254">Dato</translation>
@@ -897,6 +899,7 @@
 <translation id="922179502584117429">Den aktuelle version, <ph name="VERSION_NUMBER" />, er forældet</translation>
 <translation id="932327136139879170">Start</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Send feedback</translation>
 <translation id="952992212772159698">Ikke aktiveret</translation>
 <translation id="960719561871045870">Operatørkode</translation>
 <translation id="982713511914535780">Kør afladningstest</translation>

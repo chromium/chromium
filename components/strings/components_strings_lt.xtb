@@ -706,7 +706,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2854764410992194509">Interneto paslaugų teikėjai (IPT)</translation>
 <translation id="2856444702002559011">Užpuolikai gali bandyti pavogti jūsų informaciją iš <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (pvz., slaptažodžius, pranešimus ar kredito kortelių duomenis). <ph name="BEGIN_LEARN_MORE_LINK" />Sužinokite daugiau<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Šioje svetainėje rodomi nepageidaujami arba klaidinantys skelbimai.</translation>
-<translation id="286512204874376891">Virtuali kortelė maskuoja tikrąją kortelę, kad padėtų apsaugoti jus nuo galimų apgaulių. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Draugiška</translation>
 <translation id="28761159517501904">Filmai</translation>
 <translation id="2876489322757410363">Išjungiate inkognito režimą, kad galėtumėte sumokėti naudodami išorinę programą. Tęsti?</translation>
@@ -1340,7 +1339,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4607603470419975064">Mygtukas „Žr. „Chrome“ patarimus“ – paspauskite klavišą „Enter“, jei norite sužinoti apie „Chrome“ funkcijas</translation>
 <translation id="4607608436550361748">Žr. „Chrome“ patarimus</translation>
 <translation id="4617273035598175554">Grafikos ir animacijos programinė įranga</translation>
-<translation id="4627165777145349100">Daugiau apie šį puslapį</translation>
 <translation id="4627675673814409125">Šios politikos negalima nustatyti „Chrome“ profilio lygiu ir jos bus nepaisoma.</translation>
 <translation id="4628948037717959914">Nuotrauka</translation>
 <translation id="4631649115723685955">Grynųjų grąžinimas susietas</translation>
@@ -1875,7 +1873,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6061154937977953833">Imtynės</translation>
 <translation id="6064217302520318294">Ekrano užraktas</translation>
 <translation id="6064602040258638498">Kuponai ir nuolaidų pasiūlymai</translation>
-<translation id="6078813287646374487">Rodyti daugiau informacijos apie šį puslapį</translation>
 <translation id="6080696365213338172">Pasiekėte turinį naudodami administratoriaus pateiktą sertifikatą. Duomenys, kuriuos pateikiate <ph name="DOMAIN" />, gali būti perimti administratoriaus.</translation>
 <translation id="6087312102907839798">Susijusios paieškos</translation>
 <translation id="6094273045989040137">Komentuoti</translation>
@@ -2800,6 +2797,7 @@ Papildoma išsami informacija:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> yra kodas, skirtas svetainei <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Žymėti šį skirtuką</translation>
 <translation id="8751426954251315517">Vėliau bandykite dar kartą</translation>
+<translation id="8757526089434340176">Pasiekiamas „Google Pay“ pasiūlymas</translation>
 <translation id="8758885506338294482">Konkurenciniai vaizdo žaidimai</translation>
 <translation id="8759274551635299824">Ši kortelė nebegalioja</translation>
 <translation id="87601671197631245">Šioje svetainėje naudojama pasenusi saugos konfigūracija, todėl gali būti atskleista į šią svetainę siunčiama informacija (pvz., slaptažodžiai, pranešimai ar kredito kortelių duomenys).</translation>

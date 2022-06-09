@@ -214,7 +214,6 @@
 <translation id="2878387241690264070">已在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
 <translation id="291142119251986300">不兼容的組件</translation>
 <translation id="2926057806159140518">輸入使用者名稱和密碼，或掃瞄 QR 碼</translation>
-<translation id="2928420929544864228">安裝完成。</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取儲存的資料夾</translation>
 <translation id="3017079585324758401">背景</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">關機前請先在裝置上執行 Powerwash。如果裝置有蓋，請等待 Powerwash 完成，然後才關上蓋。Powerwash 需要最多一分鐘才能完成。</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3865414814144988605">解像度</translation>
+<translation id="3866249974567520381">描述</translation>
 <translation id="387301095347517405">電池經過完整充電循環的次數</translation>
 <translation id="3885327323343477505">改螢幕保護程式</translation>
 <translation id="3923184630988645767">數據用量</translation>
@@ -430,6 +430,7 @@
 <translation id="4915052247106771211">此操作會將裝置回復原廠設定 (Powerwash)。</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4917889632206600977">已停止 - 紙張已用完</translation>
+<translation id="491791267030419270">撰寫意見回饋的提示</translation>
 <translation id="4921665434385737356">已在 <ph name="NUM_SECONDS" /> 秒內充電 <ph name="RATE" />。</translation>
 <translation id="4930320165497208503">如要設定或更新連線，請前往「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」頁面。</translation>
 <translation id="4932733599132424254">日期</translation>
@@ -899,6 +900,7 @@
 <translation id="922179502584117429">目前的版本 <ph name="VERSION_NUMBER" /> 過舊</translation>
 <translation id="932327136139879170">首頁</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">提供意見反映</translation>
 <translation id="952992212772159698">未啟用</translation>
 <translation id="960719561871045870">流動網絡供應商代碼</translation>
 <translation id="982713511914535780">執行放電測試</translation>

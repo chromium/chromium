@@ -214,7 +214,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> સેકન્ડમાં <ph name="RATE" /> ડિસ્ચાર્જ.</translation>
 <translation id="291142119251986300">યોગ્યતા વિનાના ઘટકો</translation>
 <translation id="2926057806159140518">તમારું વપરાશકર્તા નામ અને પાસવર્ડ દાખલ કરો અથવા તમારો QR કોડ સ્કૅન કરો</translation>
-<translation id="2928420929544864228">ઇન્સ્ટૉલેશનની પ્રક્રિયા પૂર્ણ થઈ.</translation>
 <translation id="3008341117444806826">રિફ્રેશ કરો</translation>
 <translation id="3009958530611748826">સ્કૅન જેમાં સાચવવાના છે તે ફોલ્ડર પસંદ કરો</translation>
 <translation id="3017079585324758401">બૅકગ્રાઉન્ડ</translation>
@@ -304,6 +303,7 @@
 <translation id="385832974417157471">શટ ડાઉન કરતા પહેલાં, તમારા ડિવાઇસને પાવરવોશ કરો. જો તમારું ડિવાઇસ ઢાંકણ ધરાવતું હોય, તો ઢાંકણ બંધ કરતા પહેલાં પાવરવોશ પૂર્ણ થાય ત્યાં સુધી રાહ જુઓ. પાવરવોશ પૂર્ણ થવામાં એક મિનિટ જેટલો સમય લાગી શકે છે.</translation>
 <translation id="3858860766373142691">નામ</translation>
 <translation id="3865414814144988605">રિઝોલ્યુશન</translation>
+<translation id="3866249974567520381">વર્ણન</translation>
 <translation id="387301095347517405">તમારી બૅટરી પૂર્ણ ચાર્જિંગ સાયકલમાંથી પસાર થયાની સંખ્યા</translation>
 <translation id="3885327323343477505">સ્ક્રીન સેવર બદલો</translation>
 <translation id="3923184630988645767">ડેટા વપરાશ</translation>
@@ -430,6 +430,7 @@
 <translation id="4915052247106771211">આને કારણે ડિવાઇસને ફેક્ટરી સેટિંગ (પાવરવોશ) પર રીસેટ કરવામાં આવશે.</translation>
 <translation id="4917385247580444890">સશક્ત</translation>
 <translation id="4917889632206600977">બંધ - કાગળ ખલાસ થઈ ગયા</translation>
+<translation id="491791267030419270">પ્રતિસાદ લખવા માટેની ટિપ</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> સેકન્ડમાં <ph name="RATE" /> ચાર્જ કરી.</translation>
 <translation id="4930320165497208503">કનેક્શનનું સેટઅપ કરવા અથવા તેને અપડેટ કરવા માટે, <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જાઓ.</translation>
 <translation id="4932733599132424254">તારીખ</translation>
@@ -898,6 +899,7 @@
 <translation id="922179502584117429">હાલનું વર્ઝન <ph name="VERSION_NUMBER" /> જૂનું છે</translation>
 <translation id="932327136139879170">હોમ</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="952992212772159698">સક્રિય કરેલું નથી</translation>
 <translation id="960719561871045870">ઑપરેટર કોડ</translation>
 <translation id="982713511914535780">બૅટરી ડિસ્ચાર્જ થવાનું પરીક્ષણ ચાલુ કરો</translation>

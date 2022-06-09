@@ -706,7 +706,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2854764410992194509">Internettleverandører (ISP-er)</translation>
 <translation id="2856444702002559011">Det kan hende at angripere prøver å stjele informasjonen din fra <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (for eksempel passord, meldinger og kredittkortinformasjon). <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Dette nettstedet viser forstyrrende eller villedende annonser.</translation>
-<translation id="286512204874376891">Et virtuelt kort skjuler det faktiske kortet ditt for å beskytte deg mot potensiell svindel. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Vennskapelig</translation>
 <translation id="28761159517501904">Filmer</translation>
 <translation id="2876489322757410363">Går ut av Inkognitomodus for å betale via en ekstern app. Vil du fortsette?</translation>
@@ -1339,7 +1338,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4607603470419975064">Knappen «Se Chrome-tips» – trykk på Enter for å lære om Chrome-funksjoner</translation>
 <translation id="4607608436550361748">Se Chrome-tips</translation>
 <translation id="4617273035598175554">Programvare for tegning og animasjon</translation>
-<translation id="4627165777145349100">Mer om denne siden</translation>
 <translation id="4627675673814409125">Denne regelen kan ikke konfigureres på Chrome-profilnivå og blir derfor ignorert.</translation>
 <translation id="4628948037717959914">Bilde</translation>
 <translation id="4631649115723685955">Penger tilbake er tilknyttet</translation>
@@ -1874,7 +1872,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6061154937977953833">Bryting</translation>
 <translation id="6064217302520318294">Skjermlås</translation>
 <translation id="6064602040258638498">Rabattkuponger og tilbud</translation>
-<translation id="6078813287646374487">Vis mer informasjon om denne siden</translation>
 <translation id="6080696365213338172">Du har åpnet innhold via et administratorlevert sertifikat. Data du sender til <ph name="DOMAIN" /> kan stoppes av administratoren din.</translation>
 <translation id="6087312102907839798">Relaterte søk</translation>
 <translation id="6094273045989040137">Annoter</translation>
@@ -2797,6 +2794,7 @@ Mer informasjon:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> er koden din for <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Bokmerk denne fanen</translation>
 <translation id="8751426954251315517">Prøv på nytt neste gang</translation>
+<translation id="8757526089434340176">Google Pay-tilbud er tilgjengelig</translation>
 <translation id="8758885506338294482">Videospillkonkurranser</translation>
 <translation id="8759274551635299824">Dette kortet er utløpt</translation>
 <translation id="87601671197631245">Dette nettstedet bruker en utdatert sikkerhetskonfigurasjon, som betyr at informasjonen din (for eksempel passord, meldinger eller kredittkort) kan bli avslørt når den sendes til dette nettstedet.</translation>

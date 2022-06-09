@@ -110,6 +110,7 @@ Unapofuta historia yako ya kuvinjari — yote au kwa tovuti mahususi — unafuta
 <translation id="1513352483775369820">Alamisho na historia ya wavuti</translation>
 <translation id="1513814250881909472">Sawazisha ili upate vichupo vyako kutoka kwenye vifaa vyako vingine</translation>
 <translation id="1513858653616922153">Futa nenosiri</translation>
+<translation id="1514552811327923157">Kidokezo cha Mazingira ya faragha kimefunguliwa katika skrini nzima</translation>
 <translation id="1518421282666914498">GIF ya hisia <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Ameitumia leo</translation>
 <translation id="1538801903729528855">Furahia hali bora zaidi ya kutumia sauti kwenye wavuti</translation>
@@ -321,6 +322,7 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="2711073837061989559">Majaribio</translation>
 <translation id="2718352093833049315">Kwenye Wi-Fi pekee</translation>
 <translation id="2718846868787000099">Tovuti unazotembelea zinaweza kuona mapendeleo yako ili zikuonyeshe maudhui katika lugha unazopendelea</translation>
+<translation id="2722945394406572875">Kidokezo cha Mazingira ya faragha kimefungwa</translation>
 <translation id="2723001399770238859">sauti</translation>
 <translation id="2732063072010454421">Pata hali bora zaidi ya kutumia sauti</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="4227318652298512614">Fuatilia tovuti zozote unazotaka</translation>
 <translation id="4242533952199664413">Fungua mipangilio</translation>
 <translation id="4248098802131000011">Zuia manenosiri yako dhidi ya ufichuzi haramu wa data na matatizo mengine ya usalama</translation>
+<translation id="424864128008805179">Ungependa kuondoka kwenye Chrome?</translation>
 <translation id="4249955472157341256">Panga kulingana na zilizoingia hivi karibuni</translation>
 <translation id="4250229828105606438">Picha ya skrini</translation>
 <translation id="4256782883801055595">Leseni za programu huria</translation>
@@ -652,7 +655,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4594952190837476234">Ukurasa huu wa nje ya mtandao umetoka <ph name="CREATION_TIME" /> na huenda ukatofautiana na toleo lililo mtandaoni.</translation>
 <translation id="4616150815774728855">Fungua <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Thibitisha kwamba ni wewe</translation>
-<translation id="4627165777145349100">Maelezo zaidi kuhusu ukurasa huu</translation>
 <translation id="4634124774493850572">Tumia nenosiri</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Nenosiri moja limeathiriwa}other{Manenosiri # yameathiriwa}}</translation>
 <translation id="4650364565596261010">Mipangilio chaguomsingi ya mfumo</translation>
@@ -894,6 +896,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5906513782029855931">Kujua URL za tovuti huwezesha Mratibu wa Google kukusaidia kukamilisha majukumu. Unaweza kuzima programu ya Mratibu katika mipangilio ya Chrome.</translation>
 <translation id="5916664084637901428">Imewashwa</translation>
 <translation id="5919204609460789179">Sasisha <ph name="PRODUCT_NAME" /> ili uanze kusawazisha</translation>
+<translation id="593625682991400408">Wakati wa vipindi vya kujaribu, Chrome inagundua njia za kuzuia taka, ulaghai na kushiriki miongoni mwa tovuti. Pia, Chrome <ph name="BEGIN_LINK" />hukadiria mambo yanayokuvutia<ph name="END_LINK" /> ambayo tovuti zinaweza kuyatumia ili kukuonyesha matangazo. Unaweza kudhibiti mambo yanayokuvutia kwenye mipangilio.</translation>
 <translation id="5938820472109305350">Weka <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Unatumia Google kutafuta</translation>
 <translation id="5945035219773565305">Pendekezo la sasa:  <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="9106148373857059373">Utaratibu wa kuhifadhi alamisho umefungwa</translation>
 <translation id="9108312223223904744">Kuweka Simu Itumike kama Ufunguo wa Usalama</translation>
 <translation id="9108808586816295166">Huenda DNS Salama isipatikane kila wakati</translation>
+<translation id="9128984223251192329">Kidokezo cha Mazingira ya faragha kimefunguliwa katika hali ya nusu skrini</translation>
 <translation id="9133397713400217035">Pitia Ukiwa Nje ya Mtandao</translation>
 <translation id="9137013805542155359">Onyesha asili</translation>
 <translation id="9148126808321036104">Ingia tena</translation>

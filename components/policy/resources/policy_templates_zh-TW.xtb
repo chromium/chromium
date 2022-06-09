@@ -3050,14 +3050,6 @@
       如果裝置未受管理或是只有一位使用者，系統會忽略這項政策，並一律顯示通知。
 
       如果受管理的裝置上有多個使用者帳戶，只有當這項政策啟用時，系統才會顯示通知。</translation>
-<translation id="4293593564662654474">這項政策提供了另一種停用 First-Party Sets 功能的方式。
-
-                  如果將這項政策設為啟用或不予設定，系統會啟用 First-Party Sets 功能。
-
-                  如果將這項政策設為停用，則系統會停用 First-Party Sets 功能。
-
-                  First-Party Sets 功能的狀態會控管 Chrome 是否要擷取 First-Party Sets 清單，
-                  以及 Chrome 是否支援 First-Party Sets 相關功能 (例如 SameParty Cookie 屬性)。</translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">裝置的指定座架 MAC 位址</translation>
 <translation id="4314538398999793073">在 Kerberos 驗證期間停用 CNAME 查詢</translation>

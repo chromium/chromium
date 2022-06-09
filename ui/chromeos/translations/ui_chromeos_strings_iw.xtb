@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">ז'אנר</translation>
 <translation id="1254593899333212300">חיבור אינטרנט ישיר</translation>
 <translation id="1272293450992660632">ערכי קוד האימות לא תואמים.</translation>
+<translation id="127650757582748357">‏ארכיון BZIP2 דחוס</translation>
 <translation id="1280820357415527819">בחיפוש אחר רשתות סלולריות</translation>
 <translation id="1291603679744561561">‏כרטיס ה-SIM נעול</translation>
 <translation id="1293556467332435079">קבצים</translation>
@@ -207,8 +208,10 @@
 <translation id="2771816809568414714">גבינה</translation>
 <translation id="2781645665747935084">בלגית</translation>
 <translation id="2782104745158847185">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux</translation>
+<translation id="2788520643285360081">‏ארכיון ‎7-Zip</translation>
 <translation id="2803375539583399270">הזנת קוד אימות</translation>
 <translation id="2820957248982571256">מתבצעת סריקה…</translation>
+<translation id="2822595620066756134">‏ארכיון GZIP דחוס</translation>
 <translation id="2830077785865012357">‏סינית Zhuyin</translation>
 <translation id="2843806747483486897">שינוי ברירת המחדל...</translation>
 <translation id="2850124913210091882">גיבוי</translation>
@@ -300,6 +303,7 @@
 <translation id="357479282490346887">ליטאית</translation>
 <translation id="3587482841069643663">הכול</translation>
 <translation id="3592251141500063301">לא ניתן היה להגדיר את הקובץ <ph name="FILE_NAME" /> כזמין אופליין</translation>
+<translation id="3593874215226880809">‏ארכיון LZIP דחוס</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">צרפתית קנדית</translation>
 <translation id="3606220979431771195">‏טורקית-F</translation>
@@ -312,6 +316,7 @@
 <translation id="3689865792480713551">ביטול <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, לא פעילה, <ph name="CONNECTION_STATUS" />, חוזק האות <ph name="SIGNAL_STRENGTH" />%, פרטים</translation>
 <translation id="3691184985318546178">סינהאלה</translation>
+<translation id="3703620396751288986">‏ארכיון ZIP</translation>
 <translation id="3726463242007121105">לא ניתן לפתוח מכשיר זה מאחר שמערכת הקבצים שלו אינה נתמכת.</translation>
 <translation id="3727148787322499904">שינוי של הגדרה זו ישפיע על כל הרשתות המשותפות</translation>
 <translation id="3737576078404241332">הסרה מסרגל הצד</translation>
@@ -413,6 +418,7 @@
 <translation id="4646813851450205600">‏צ'כית עם מקלדת Qwerty</translation>
 <translation id="4656777537938206294">הגדרת גישה אופליין לקבצים</translation>
 <translation id="4658782175094886150">אדם בשלג</translation>
+<translation id="4661996069183330363">‏ארכיון TAR</translation>
 <translation id="4669606053856530811">אם הפריטים האלה לא ישותפו עם החברים באחסון השיתופי '<ph name="SOURCE_NAME" />', הם יאבדו את הגישה אליהם.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">שוודית</translation>
@@ -931,6 +937,7 @@
 <translation id="8903931173357132290">בוגר/ת אוניברסיטה</translation>
 <translation id="8912078710089354287">כלב מקשקש בזנב</translation>
 <translation id="8919081441417203123">דנית</translation>
+<translation id="8965273390142984105">‏ארכיון LZOP דחוס</translation>
 <translation id="8965697826696209160">אין מספיק שטח.</translation>
 <translation id="8997962250644902079">‏סינית (מסורתית) Pinyin</translation>
 <translation id="9003940392834790328">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, פרטים</translation>

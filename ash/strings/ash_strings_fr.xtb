@@ -55,10 +55,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1247519845643687288">Applis récentes</translation>
 <translation id="1252999807265626933">Charge à partir de la source "<ph name="POWER_SOURCE" />"</translation>
 <translation id="1255033239764210633">Quel temps fait-il ?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> à 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Sélectionnez pour plus de détails dans Google Agenda.</translation>
 <translation id="1267032506238418139">Modification du raccourci</translation>
 <translation id="1269405891096105529">Périphérique non accepté en mode Invité</translation>
 <translation id="1270290102613614947">Clavier à l'écran désactivé</translation>
@@ -124,6 +120,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1632985212731562677">Vous pouvez désactiver Switch Access en sélectionnant Paramètres &gt; Accessibilité.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> appareils</translation>
+<translation id="1639239467298939599">Chargement en cours</translation>
 <translation id="1654477262762802994">Soumettre une requête vocale</translation>
 <translation id="1668469839109562275">VPN intégré</translation>
 <translation id="1677472565718498478">Temps restant : <ph name="TIME" /></translation>
@@ -239,6 +236,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2367186422933365202">Impossible de se connecter au Chromebook</translation>
 <translation id="2369165858548251131">"Bonjour" en chinois</translation>
+<translation id="2375445874393996153">La recherche de contenus à l'écran avec l'Assistant Google n'est plus possible.</translation>
 <translation id="2390318262976603432">Options des paramètres régionaux</translation>
 <translation id="240006516586367791">Commandes multimédias</translation>
 <translation id="2402411679569069051">Pour déverrouiller votre Chromebook, utilisez votre empreinte ou déverrouillez votre téléphone</translation>
@@ -1048,7 +1046,6 @@ Nouvelle installation</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7168224885072002358">Rétablissement de la résolution précédente dans <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualiser</translation>
-<translation id="718361511487535372">Ouvrir dans Google Agenda</translation>
 <translation id="7188494361780961876">Le menu a été déplacé dans l'angle supérieur gauche de l'écran.</translation>
 <translation id="7189412385142492784">À quelle distance se trouve Vénus</translation>
 <translation id="7198435252016571249">Appareil photo aligné sur l'angle inférieur droit. Conflit avec la surface du système.</translation>

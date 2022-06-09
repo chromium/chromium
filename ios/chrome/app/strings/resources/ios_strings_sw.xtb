@@ -65,6 +65,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="1434356225517321998">Kivinjari chako kinadhibitiwa. <ph name="BEGIN_LINK" />Maelezo<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ficha Nenosiri</translation>
 <translation id="145015347812617860">Vipengee <ph name="COUNT" /></translation>
+<translation id="1450170672351507823">Kipengele cha ulinzi wa kawaida kimewashwa. Kwa usalama zaidi, tumia kipengele cha usalama Ulioboreshwa.</translation>
 <translation id="149095475893949513">Tovuti hii inajaribu kupakua wasifu wa mipangilio.</translation>
 <translation id="1491277525950327607">Gusa mara mbili ili ugeuze mipangilio</translation>
 <translation id="1492417797159476138">Tayari umehifadhi jina hili la mtumiaji kwa ajili ya tovuti hii</translation>
@@ -162,6 +163,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="236977714248711277">Tovuti haziwezi kutumia vidakuzi ili kuboresha hali yako ya kuvinjari, kwa mfano, ili kufanya ubaki ukiwa umeingia katika akaunti au kukumbuka bidhaa zilizo kwenye kikapu chako cha ununuzi.
 
 Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti mbalimbali, kwa mfano, kukuonyesha matangazo yanayokufaa zaidi.</translation>
+<translation id="2375243552872247702">Angalia Maudhui Yanayokufaa</translation>
 <translation id="2381405137052800939">Mambo ya Msingi</translation>
 <translation id="2386793615875593361">1 iliyochaguliwa</translation>
 <translation id="2421004566762153674">Kuzuia vidakuzi vya tovuti nyingine</translation>
@@ -601,6 +603,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6136914049981179737">Sekunde chache</translation>
 <translation id="6144589619057374135">Fungua ${url} katika Hali Fiche</translation>
 <translation id="6149061208933997199">Tumia Nenosiri</translation>
+<translation id="6152406514676263192">Sawazisha ili uone maudhui yanayokufaa zaidi kulingana na mambo yanayokuvutia.</translation>
 <translation id="6159839020698489198">si lazima</translation>
 <translation id="6177442314419606057">Tafuta katika Chrome</translation>
 <translation id="6184086493125982861">Onyesha Vichupo</translation>
@@ -738,6 +741,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7099761977003084116">Vichupo vya Hivi Punde</translation>
 <translation id="7102005569666697658">Inapakua… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ficha</translation>
+<translation id="7108762695052995889">Tembelea Tovuti</translation>
 <translation id="7133798577887235672">Jina Kamili</translation>
 <translation id="7136892417564438900">Kamera haipatikani</translation>
 <translation id="7153999225810839758">Itachukua dakika <ph name="TIME" /> kusoma</translation>
@@ -748,6 +752,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7189598951263744875">Shiriki...</translation>
 <translation id="7192050974311852563">Anza Kuleta Kumbukumbu</translation>
 <translation id="7203585745079012652">Tamka Majibu</translation>
+<translation id="7207023858769244910">Sawazisha ili upate maudhui kulingana na mambo yanayokuvutia.</translation>
 <translation id="7207383424303353046">Mpya: Fungua tovuti kiotomatiki katika Chrome kwa kuiweka iwe Programu Chaguomsingi ya Kuvinjari. <ph name="BEGIN_LINK" />Fungua Mipangilio<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Jina la Kuwakilisha Kadi si Sahihi</translation>
 <translation id="722454870747268814">Kichupo Fiche Kipya</translation>

@@ -587,6 +587,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="4227318652298512614">Følg de nettstedene du vil</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
 <translation id="4248098802131000011">Beskytt passordene dine mot databrudd og andre sikkerhetsproblemer</translation>
+<translation id="424864128008805179">Vil du logge av Chrome?</translation>
 <translation id="4249955472157341256">Sorter etter nyeste</translation>
 <translation id="4250229828105606438">Skjermdump</translation>
 <translation id="4256782883801055595">Lisenser for åpen kildekode</translation>
@@ -654,7 +655,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4594952190837476234">Denne siden uten nett er fra <ph name="CREATION_TIME" /> og kan avvike fra nettversjonen.</translation>
 <translation id="4616150815774728855">Åpne <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Bekreft at det er deg</translation>
-<translation id="4627165777145349100">Mer om denne siden</translation>
 <translation id="4634124774493850572">Bruk passord</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 passord er utsatt for sikkerhetsbrudd}other{# passord er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="4650364565596261010">Systemstandard</translation>
@@ -793,7 +793,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5342314432463739672">Tillatelsesforespørsler</translation>
 <translation id="5355191726083956201">Økt beskyttelse er på</translation>
 <translation id="5368227114232678694">For å surfe privat på denne enheten, prøv Inkognito</translation>
-<translation id="5371717687506906963">Privacy Sandbox-forespørsel</translation>
 <translation id="5375577065097716013">Søk etter bildet med Google Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Reaksjonen er endret</translation>
 <translation id="5401851137404501592">For at du skal kunne fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele navnet ditt, e-postadressen din og profilbildet ditt med dette nettstedet.</translation>

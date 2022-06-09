@@ -110,6 +110,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="1513352483775369820">Nodau tudalen a hanes gwe</translation>
 <translation id="1513814250881909472">Cysonwch i gael eich tabiau o'ch dyfeisiau eraill</translation>
 <translation id="1513858653616922153">Dileu'r cyfrinair</translation>
+<translation id="1514552811327923157">Anogwr Privacy Sandbox wedi'i agor ar uchder llawn</translation>
 <translation id="1518421282666914498">GIF emosiwn <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Yma heddiw</translation>
 <translation id="1538801903729528855">Cael gwell profiad llais ar y we</translation>
@@ -321,6 +322,7 @@ Cyffyrddwch a daliwch unrhyw air i chwilio. I fireinio'ch chwiliad, dewiswch fwy
 <translation id="2711073837061989559">Profion</translation>
 <translation id="2718352093833049315">Dim ond ar Wi-Fi</translation>
 <translation id="2718846868787000099">I ddangos cynnwys yn eich ieithoedd a ffefrir, gall y gwefannau rydych yn ymweld â nhw weld eich dewisiadau</translation>
+<translation id="2722945394406572875">Anogwr Privacy Sandbox wedi'i gau</translation>
 <translation id="2723001399770238859">sain</translation>
 <translation id="2732063072010454421">Cael profiad llais gwell</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@ Cyffyrddwch a daliwch unrhyw air i chwilio. I fireinio'ch chwiliad, dewiswch fwy
 <translation id="4227318652298512614">Dilyn unrhyw wefannau y dymunwch</translation>
 <translation id="4242533952199664413">Agor y gosodiadau</translation>
 <translation id="4248098802131000011">Cadwch eich cyfrineiriau'n ddiogel rhag toriadau data a phroblemau diogelwch eraill</translation>
+<translation id="424864128008805179">Allgofnodi o Chrome?</translation>
 <translation id="4249955472157341256">Trefnu yn ôl Diweddaraf</translation>
 <translation id="4250229828105606438">Sgrinlun</translation>
 <translation id="4256782883801055595">Trwyddedau ffynhonnell agored</translation>
@@ -652,7 +655,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4594952190837476234">Daw'r dudalen all-lein hon o <ph name="CREATION_TIME" /> a gall fod yn wahanol i'r fersiwn ar-lein.</translation>
 <translation id="4616150815774728855">Agor <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Cadarnhewch mai chi sydd yno</translation>
-<translation id="4627165777145349100">Rhagor am y dudalen hon</translation>
 <translation id="4634124774493850572">Defnyddio cyfrinair</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 cyfrinair sydd wedi'i ddarganfod}zero{# cyfrinair sydd wedi'u darganfod}two{# gyfrinair sydd wedi'u darganfod}few{# chyfrinair sydd wedi'u darganfod}many{# chyfrinair mewn perygl}other{# cyfrinair sydd wedi'u darganfod}}</translation>
 <translation id="4650364565596261010">System ddiofyn</translation>
@@ -894,6 +896,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5906513782029855931">Mae gwybod cyfeiriadau URL gwefannau yn caniatáu i Google Assistant eich helpu i gwblhau tasgau. Gallwch ddiffodd Assistant yn y gosodiadau Chrome.</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5919204609460789179">Diweddarwch <ph name="PRODUCT_NAME" /> i ddechrau cysoni</translation>
+<translation id="593625682991400408">Yn ystod treialon, mae Chrome yn archwilio ffyrdd i gyfyngu ar sothach, twyll a rhannu rhwng gwefannau. Mae Chrome hefyd yn <ph name="BEGIN_LINK" />amcangyfrif eich diddordebau<ph name="END_LINK" /> y gall gwefannau eu defnyddio i ddangos hysbysebion i chi. Gallwch reoli'ch diddordebau yn y gosodiadau.</translation>
 <translation id="5938820472109305350">Ychwanegu <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Yn defnyddio Google i chwilio</translation>
 <translation id="5945035219773565305">Argymhelliad presennol:  <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="9106148373857059373">Llif cadw nodau tudalen ar gau</translation>
 <translation id="9108312223223904744">Cymorth Defnyddio Ffôn fel Allwedd Ddiogelwch</translation>
 <translation id="9108808586816295166">Mae'n bosib na fydd y DNS diogel ar gael o hyd</translation>
+<translation id="9128984223251192329">Anogwr Privacy Sandbox wedi'i agor ar hanner uchder</translation>
 <translation id="9133397713400217035">Archwilio All-lein</translation>
 <translation id="9137013805542155359">Dangos y gwreiddiol</translation>
 <translation id="9148126808321036104">Mewngofnodwch eto</translation>

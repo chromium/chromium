@@ -587,6 +587,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4227318652298512614">Segueix tots els llocs web que vulguis</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4248098802131000011">Protegeix les contrasenyes contra les violacions de les dades i contra altres problemes de seguretat</translation>
+<translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
 <translation id="4249955472157341256">Ordena per Més recents</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4256782883801055595">Llicències de programari lliure</translation>
@@ -654,7 +655,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4594952190837476234">Aquesta pàgina sense connexió és del dia <ph name="CREATION_TIME" /> i pot ser diferent de la versió en línia.</translation>
 <translation id="4616150815774728855">Obre <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifica la teva identitat</translation>
-<translation id="4627165777145349100">Més informació sobre aquesta pàgina</translation>
 <translation id="4634124774493850572">Fes servir la contrasenya</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contrasenya en perill}other{# contrasenyes en perill}}</translation>
 <translation id="4650364565596261010">Opció predeterminada del sistema</translation>
@@ -793,7 +793,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5342314432463739672">Sol·licituds de permís</translation>
 <translation id="5355191726083956201">Està activada la protecció millorada</translation>
 <translation id="5368227114232678694">Per navegar de manera privada en aquest dispositiu, prova el mode d'incògnit</translation>
-<translation id="5371717687506906963">Sol·licitud de Privacy Sandbox</translation>
 <translation id="5375577065097716013">Cerca la imatge amb Lens <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">La reacció s'ha canviat</translation>
 <translation id="5401851137404501592">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web.</translation>

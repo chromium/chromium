@@ -55,10 +55,6 @@
 <translation id="1247519845643687288">ແອັບຫຼ້າສຸດ</translation>
 <translation id="1252999807265626933">ກຳລັງສາກຈາກ <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">ສະພາບອາກາດເປັນແນວໃດ?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> ຫາ 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. ເລືອກສຳລັບລາຍລະອຽດເພີ່ມເຕີມໃນ Google ປະຕິທິນ.</translation>
 <translation id="1267032506238418139">ການປ່ຽນແປງທາງລັດ</translation>
 <translation id="1269405891096105529">ບໍ່ຮອງຮັບອຸປະກອນຕໍ່ພ່ວງໃນໂໝດແຂກ</translation>
 <translation id="1270290102613614947">ແປ້ນພິມ​ເທິງ​ໜ້າ​ຈໍ​ປິດ​ໃຊ້​ງານ​ແລ້ວ</translation>
@@ -124,6 +120,7 @@
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="1632985212731562677">ປິດການນຳໃຊ້ການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດໄດ້ໃນການຕັ້ງຄ່າ &gt; ການຊ່ວຍເຂົ້າເຖິງ.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ອຸປະກອນ</translation>
+<translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
 <translation id="1654477262762802994">ເລີ່ມຄຳຊອກຫາດ້ວຍສຽງ</translation>
 <translation id="1668469839109562275">VPN ໃນຕົວ</translation>
 <translation id="1677472565718498478">ຍັງເຫຼືອ <ph name="TIME" /></translation>
@@ -1049,7 +1046,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">ການກັບໄປຫາຄວາມລະອຽດເກົ່າໃນ <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
-<translation id="718361511487535372">ເປີດໃນ Google ປະຕິທິນ</translation>
 <translation id="7188494361780961876">ຍ້າຍເມນູໄປແຈເທິງສຸດເບື້ອງຊ້າຍຂອງໜ້າຈໍ.</translation>
 <translation id="7189412385142492784">ດາວສຸກຢູ່ໄກເທົ່າໃດ</translation>
 <translation id="7198435252016571249">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຂວາລຸ່ມແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>

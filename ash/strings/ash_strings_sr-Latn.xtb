@@ -31,6 +31,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1153356358378277386">Upareni uređaji</translation>
 <translation id="1165712434476988950">Restartujte uređaj da biste primenili ažuriranje.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">USB-C kabl se ne povezuje pravilno sa ekranima</translation>
 <translation id="1175572348579024023">Pomeraj</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
@@ -55,10 +56,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1247519845643687288">Nedavne aplikacije</translation>
 <translation id="1252999807265626933">Punjenje iz uređaja <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kakvo je vreme?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" />–
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Izaberite da biste videli više detalja u Google kalendaru.</translation>
 <translation id="1267032506238418139">Promena prečice</translation>
 <translation id="1269405891096105529">Periferni uređaj nije podržan u režimu gosta</translation>
 <translation id="1270290102613614947">Tastatura na ekranu je onemogućena</translation>
@@ -124,6 +121,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Pristup pomoću prekidača može da se onemogući u odeljku Podešavanja &gt; Pristupačnost.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> uređaja</translation>
+<translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1654477262762802994">Započnite glasovnu pretragu</translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> je preostalo</translation>
@@ -1049,7 +1047,6 @@ Novo instaliranje</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Vraćanje na staru rezoluciju za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Osveži</translation>
-<translation id="718361511487535372">Otvori u Google kalendaru</translation>
 <translation id="7188494361780961876">Meni je premešten u gornji levi ugao ekrana.</translation>
 <translation id="7189412385142492784">Koliko daleko je Venera</translation>
 <translation id="7198435252016571249">Kamera je uklopljena u donji desni ugao. Neusaglašenost sa površinom sistema.</translation>

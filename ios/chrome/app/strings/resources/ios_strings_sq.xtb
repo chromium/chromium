@@ -65,6 +65,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1434356225517321998">Shfletuesi yt është i menaxhuar. <ph name="BEGIN_LINK" />Detajet<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Fshih fjalëkalimin</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> artikuj</translation>
+<translation id="1450170672351507823">"Mbrojtja standarde" është aktive. Për akoma më shumë mbrojtje, përdor "Mbrojtjen e përparuar".</translation>
 <translation id="149095475893949513">Ky sajt uebi po përpiqet të shkarkojë një profil konfigurimi.</translation>
 <translation id="1491277525950327607">Trokit dy herë për të ndryshuar cilësimin</translation>
 <translation id="1492417797159476138">E ke ruajtur tashmë këtë emër përdoruesi për këtë sajt</translation>
@@ -738,6 +739,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7099761977003084116">Skedat e fundit</translation>
 <translation id="7102005569666697658">Po shkarkon… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Fshih</translation>
+<translation id="7108762695052995889">Vizito sajtin</translation>
 <translation id="7133798577887235672">Emri i plotë</translation>
 <translation id="7136892417564438900">Kamera nuk ofrohet</translation>
 <translation id="7153999225810839758">Koha e leximit: <ph name="TIME" /> min.</translation>

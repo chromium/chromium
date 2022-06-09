@@ -706,7 +706,6 @@
 <translation id="2854764410992194509">Интернет-оператори (ISP)</translation>
 <translation id="2856444702002559011">Напаѓачите можеби се обидуваат да ги украдат вашите информации од <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (на пример, лозинки, пораки или кредитни картички). <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Сајтов прикажува нападни или лажни реклами.</translation>
-<translation id="286512204874376891">Виртуелната картичка ја маскира вашата актуелна картичка за да ја заштити од потенцијална измама. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Пријателски</translation>
 <translation id="28761159517501904">Филмови</translation>
 <translation id="2876489322757410363">Ќе излезете од режимот „Инкогнито“ за да платите преку надворешна апликација. Дали сакате да продолжите?</translation>
@@ -1339,7 +1338,6 @@
 <translation id="4607603470419975064">Копче за гледање совети за Chrome, притиснете го копчето Enter за да дознаете за функциите на Chrome</translation>
 <translation id="4607608436550361748">Видете ги советите за Chrome</translation>
 <translation id="4617273035598175554">Графички и анимациски софтвер</translation>
-<translation id="4627165777145349100">Повеќе за страницава</translation>
 <translation id="4627675673814409125">Правилово не може да се постави на ниво на профил на Chrome и ќе се игнорира.</translation>
 <translation id="4628948037717959914">Фотографија</translation>
 <translation id="4631649115723685955">Со поврат на готовина</translation>
@@ -1874,7 +1872,6 @@
 <translation id="6061154937977953833">Борење</translation>
 <translation id="6064217302520318294">Заклучување екран</translation>
 <translation id="6064602040258638498">Купони и попусти</translation>
-<translation id="6078813287646374487">Прикажи повеќе информации за страницава</translation>
 <translation id="6080696365213338172">Пристапивте до содржина со помош на сертификат обезбеден за администратор. Податоците што ќе ги дадете на <ph name="DOMAIN" /> може да ги пресретне администраторот.</translation>
 <translation id="6087312102907839798">Слични пребарувања</translation>
 <translation id="6094273045989040137">Стави прибелешка</translation>
@@ -2798,6 +2795,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> е вашиот код за <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Обележете ја картичкава</translation>
 <translation id="8751426954251315517">Обидете се повторно следниот пат</translation>
+<translation id="8757526089434340176">Достапна е понуда на Google Pay</translation>
 <translation id="8758885506338294482">Конкурентно играње видеоигри</translation>
 <translation id="8759274551635299824">Картичкава е истечена</translation>
 <translation id="87601671197631245">Сајтов користи застарена конфигурација за безбедност, што може да ги изложи вашите податоци (на пример, лозинките, пораките или кредитните картички) кога се испраќаат на овој сајт.</translation>

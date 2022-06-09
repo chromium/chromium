@@ -587,6 +587,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="4227318652298512614">Urmărește orice site-uri dorești</translation>
 <translation id="4242533952199664413">Deschide setările</translation>
 <translation id="4248098802131000011">Protejează-ți parolele împotriva încălcării securității datelor și a altor probleme de securitate</translation>
+<translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
 <translation id="4249955472157341256">Sortează după cele mai recente</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="4256782883801055595">Licențe open source</translation>
@@ -654,7 +655,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4594952190837476234">Această pagină offline este din data de <ph name="CREATION_TIME" /> și poate fi diferită de versiunea online.</translation>
 <translation id="4616150815774728855">Deschide <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmă-ți identitatea</translation>
-<translation id="4627165777145349100">Mai multe despre această pagină</translation>
 <translation id="4634124774493850572">Folosește parola</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{O parolă compromisă}few{# parole compromise}other{# de parole compromise}}</translation>
 <translation id="4650364565596261010">Setare prestabilită a sistemului</translation>
@@ -793,7 +793,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5342314432463739672">Solicitări de permisiuni</translation>
 <translation id="5355191726083956201">Protecția îmbunătățită este activată</translation>
 <translation id="5368227114232678694">Ca să navighezi în privat pe acest dispozitiv, încearcă Incognito</translation>
-<translation id="5371717687506906963">Solicitare privind Privacy Sandbox</translation>
 <translation id="5375577065097716013">Caută imaginea cu Google Lens <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Reacția a fost modificată</translation>
 <translation id="5401851137404501592">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil.</translation>

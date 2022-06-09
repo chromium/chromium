@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">କ୍ୟାଲେଣ୍ଡର୍</translation>
 <translation id="1153356358378277386">ପେୟାର୍ ହୋଇଥିବା ଡିଭାଇସ୍</translation>
 <translation id="1165712434476988950">ଅପଡେଟ୍ ଲାଗୁ କରିବା ପାଇଁ ଡିଭାଇସ୍ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ।</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">ଆପଣଙ୍କ USB-C କେବୁଲ ଡିସପ୍ଲେଗୁଡ଼ିକ ସହ ସଠିକ୍ ଭାବରେ ସଂଯୋଗ ହୋଇନପାରେ</translation>
 <translation id="1175572348579024023">ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="1178581264944972037">ବିରତି</translation>
@@ -55,10 +56,6 @@
 <translation id="1247519845643687288">ବର୍ତ୍ତମାନର ଆପଗୁଡ଼ିକ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />ରୁ ଚାର୍ଜ ହେଉଛି</translation>
 <translation id="1255033239764210633">ପାଣିପାଗ କିପରି ଅଛି?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" />ରୁ 
-<ph name="END_TIME" />, 
-<ph name="TIME_ZONE" />, 
-<ph name="EVENT_SUMMARY" />। Google Calendarରେ ଅଧିକ ବିବରଣୀ ପାଇଁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="1267032506238418139">ସର୍ଟକଟ୍‍ ପରିବର୍ତ୍ତନ</translation>
 <translation id="1269405891096105529">ଅତିଥି ମୋଡରେ ପେରିଫେରାଲ୍ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="1270290102613614947">ଅନ୍-ସ୍କ୍ରିନ୍ କୀ'ବୋର୍ଡକୁ ଅକ୍ଷମ କରାଯାଇଛି</translation>
@@ -124,6 +121,7 @@
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
 <translation id="1632985212731562677">ସେଟିଂସ୍ &gt; ଆକ୍ସେସିବିଲିଟୀରେ 'ସ୍ୱିଚ୍ ଆକ୍ସେସ୍' ସୁବିଧା ଅକ୍ଷମ କରାଯାଇପାରିବ।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" />ଟି ଡିଭାଇସ୍</translation>
+<translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="1654477262762802994">ଏକ ଭିଡିଓ କ୍ବେରୀ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="1668469839109562275">ବିଲ୍ଟ-ଇନ VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ବାକି ଅଛି</translation>
@@ -1048,7 +1046,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> ମଧ୍ୟରେ ପୁରୁଣା ରିଜୋଲ୍ୟୁଶନ୍‌କୁ ଫେରୁଛି</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
-<translation id="718361511487535372">Google Calendarରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="7188494361780961876">ସ୍କ୍ରିନର ଶୀର୍ଷ-ବାମ କୋଣକୁ ମେନୁ ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="7189412385142492784">ଶୁକ୍ର ଗ୍ରହ କେତେ ଦୂରରେ ଅବସ୍ଥିତ</translation>
 <translation id="7198435252016571249">କ୍ୟାମେରାକୁ ନିମ୍ନ ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି। ସିଷ୍ଟମ ସର୍ଫେସ ସହ ବିବାଦ।</translation>

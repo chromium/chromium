@@ -56,10 +56,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1247519845643687288">Son tətbiqlər</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> mənbəsindən qidalanır</translation>
 <translation id="1255033239764210633">Hava necədir?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> - 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Google Calendar'da ətraflı məlumat üçün seçin.</translation>
 <translation id="1267032506238418139">Qısayol dəyişikliyi</translation>
 <translation id="1269405891096105529">Əlavə cihaz Qonaq rejimində dəstəklənmir</translation>
 <translation id="1270290102613614947">Ekranüstü klaviatura deaktiv edildi</translation>
@@ -125,6 +121,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Dəyişdirici Girişini Ayarlar &gt; Əlçatımlıq bölməsində deaktiv edə bilərsiniz.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> cihaz</translation>
+<translation id="1639239467298939599">Yüklənir</translation>
 <translation id="1654477262762802994">Səsli sorğuya başlayın</translation>
 <translation id="1668469839109562275">Daxili VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qaldı</translation>
@@ -1050,7 +1047,6 @@ Yeni quraşdırma</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> daxilində köhnə həllə qayıtma</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
-<translation id="718361511487535372">Google Calendar'da açın</translation>
 <translation id="7188494361780961876">Menyu ekranın yuxarı sol küncünə köçürülüb.</translation>
 <translation id="7189412385142492784">Venera nə qədər uzaqdadır</translation>
 <translation id="7198435252016571249">Kamera aşağı sağ küncə çəkildi. Sistem səthi ilə ziddiyyət yarandı.</translation>

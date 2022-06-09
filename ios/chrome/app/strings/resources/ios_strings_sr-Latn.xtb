@@ -163,6 +163,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="236977714248711277">Sajtovi ne mogu da koriste kolačiće za poboljšanje doživljaja pregledanja, na primer, da biste ostali prijavljeni ili da bi stavke u vašoj korpi za kupovinu ostale sačuvane.
 
 Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa.</translation>
+<translation id="2375243552872247702">Pogledajte sadržaj za sebe</translation>
 <translation id="2381405137052800939">Osnove</translation>
 <translation id="2386793615875593361">Izabrana je 1 slika</translation>
 <translation id="2421004566762153674">Blokira kolačiće treće strane</translation>
@@ -405,6 +406,7 @@ Pratite korake u nastavku:</translation>
 <translation id="4502566650163919158">Proveri</translation>
 <translation id="4505980578794259603">Poslednja provera: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Zatvori promociju za prijavljivanje</translation>
+<translation id="4511669830082467224">Pretraži sliku pomoću Google-a</translation>
 <translation id="4526249700380860531">Pregledajte sačuvane lozinke i upravljajte njima na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Pregledajte sinhronizovane podatke</translation>
 <translation id="4536418791685807335">Probajte ponovo da se prijavite.</translation>
@@ -602,6 +604,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6136914049981179737">Malopre</translation>
 <translation id="6144589619057374135">Otvori ${url} u režimu bez arhiviranja</translation>
 <translation id="6149061208933997199">Koristi lozinku</translation>
+<translation id="6152406514676263192">Sinhronizujte sa najrelevantnijim sadržajem na osnovu interesovanja.</translation>
 <translation id="6159839020698489198">opcionalno</translation>
 <translation id="6177442314419606057">Pretražite u Chrome-u</translation>
 <translation id="6184086493125982861">Prikaži kartice</translation>
@@ -750,6 +753,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7189598951263744875">Deli...</translation>
 <translation id="7192050974311852563">Pokreni evidentiranje</translation>
 <translation id="7203585745079012652">Izgovaraj odgovore</translation>
+<translation id="7207023858769244910">Sinhronizujte da biste dobijali sadržaj na osnovu interesovanja.</translation>
 <translation id="7207383424303353046">Novo: Otvarajte sajtove u Chrome-u automatski tako što ćete ga podesiti kao podrazumevanu aplikaciju za pregledač. <ph name="BEGIN_LINK" />Otvorite Podešavanja<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nevažeći nadimak kartice</translation>
 <translation id="722454870747268814">Nova kartica bez arhiviranja</translation>

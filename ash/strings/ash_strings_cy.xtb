@@ -31,6 +31,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">Dyfeisiau sydd wedi'u paru</translation>
 <translation id="1165712434476988950">Mae angen ailgychwyn y ddyfais i gymhwyso'r diweddariad.</translation>
+<translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Mae'n bosib na fydd eich cebl USB-C yn cysylltu â sgriniau'n iawn</translation>
 <translation id="1175572348579024023">Sgrolio</translation>
 <translation id="1178581264944972037">Seibio</translation>
@@ -55,10 +56,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1247519845643687288">Apiau diweddar</translation>
 <translation id="1252999807265626933">Wrthi'n newid o <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Beth yw'r tywydd?</translation>
-<translation id="1262870540683925850"><ph name="START_TIME" /> i 
-        <ph name="END_TIME" />, 
-        <ph name="TIME_ZONE" />, 
-        <ph name="EVENT_SUMMARY" />. Dewiswch i weld rhagor o fanylion yn Google Calendar.</translation>
 <translation id="1267032506238418139">Newid llwybr byr</translation>
 <translation id="1269405891096105529">Ni chefnogir y perifferol yn y modd Gwestai</translation>
 <translation id="1270290102613614947">Analluogwyd y bysellfwrdd ar y sgrîn</translation>
@@ -124,6 +121,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1632985212731562677">Gellir analluogi Switsh Mynediad yn y Gosodiadau &gt; Hygyrchedd.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> o ddyfeisiau</translation>
+<translation id="1639239467298939599">Wrthi'n llwytho</translation>
 <translation id="1654477262762802994">Dechrau ymholiad llais</translation>
 <translation id="1668469839109562275">VPN integredig</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ar ôl</translation>
@@ -239,6 +237,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2367186422933365202">Methu â mewngofnodi i'ch Chromebook</translation>
 <translation id="2369165858548251131">"Helo" yn Tsieinëeg</translation>
+<translation id="2375445874393996153">Nid yw chwilio beth sydd ar fy sgrîn gyda Google Assistant yn cael ei gefnogi mwyach.</translation>
 <translation id="2390318262976603432">Gosodiadau Lle</translation>
 <translation id="240006516586367791">Rheolaethau cyfryngau</translation>
 <translation id="2402411679569069051">I ddatgloi eich Chromebook, defnyddiwch eich olion bysedd neu datglowch eich ffôn</translation>
@@ -1048,7 +1047,6 @@ Gosodiad newydd</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Wrthi'n dychwelyd i'r hen gyfraniad yn <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
-<translation id="718361511487535372">Agor yn Google Calendar</translation>
 <translation id="7188494361780961876">Cafodd y ddewislen ei symud i gornel chwith uchaf y sgrîn.</translation>
 <translation id="7189412385142492784">Pa mor bell yw'r blaned Gwener</translation>
 <translation id="7198435252016571249">Mae'r camera wedi'i snapio i'r gornel dde isaf. Gwrthdaro ag arwyneb y system.</translation>

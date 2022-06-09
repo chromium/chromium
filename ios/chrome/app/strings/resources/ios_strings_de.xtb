@@ -163,6 +163,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="236977714248711277">Websites können keine Cookies verwenden, um dir das Surfen zu erleichtern; zum Beispiel, damit du angemeldet bleibst oder Artikel in deinem Einkaufswagen gespeichert bleiben.
 
 Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
+<translation id="2375243552872247702">Für dich ausgewählte Inhalte sehen</translation>
 <translation id="2381405137052800939">Grundeinstellungen</translation>
 <translation id="2386793615875593361">1 ausgewählt</translation>
 <translation id="2421004566762153674">Drittanbieter-Cookies werden blockiert</translation>
@@ -405,6 +406,7 @@ Gehe so vor:</translation>
 <translation id="4502566650163919158">Jetzt prüfen</translation>
 <translation id="4505980578794259603">Letzte Überprüfung: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Anmeldeangebot schließen</translation>
+<translation id="4511669830082467224">Bild mit Google suchen</translation>
 <translation id="4526249700380860531">Unter <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> gespeicherte Passwörter aufrufen und verwalten</translation>
 <translation id="452750746583162491">Synchronisierte Daten prüfen</translation>
 <translation id="4536418791685807335">Melde dich noch einmal an.</translation>
@@ -602,6 +604,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6136914049981179737">Gerade eben</translation>
 <translation id="6144589619057374135">${url} im Inkognitomodus öffnen</translation>
 <translation id="6149061208933997199">Passwort verwenden</translation>
+<translation id="6152406514676263192">Aktiviere die Synchronisierung, um die relevantesten Inhalte zu erhalten, die deinen Interessen entsprechen.</translation>
 <translation id="6159839020698489198">optional</translation>
 <translation id="6177442314419606057">Suche in Chrome</translation>
 <translation id="6184086493125982861">Tabs anzeigen</translation>
@@ -739,6 +742,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7099761977003084116">Letzte Tabs</translation>
 <translation id="7102005569666697658">Wird heruntergeladen… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ausblenden</translation>
+<translation id="7108762695052995889">Zur Website</translation>
 <translation id="7133798577887235672">Voller Name</translation>
 <translation id="7136892417564438900">Kamera ist nicht verfügbar</translation>
 <translation id="7153999225810839758">Lesezeit: <ph name="TIME" /> Minute(n)</translation>
@@ -749,6 +753,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7189598951263744875">Teilen...</translation>
 <translation id="7192050974311852563">Protokollierung starten</translation>
 <translation id="7203585745079012652">Gesprochene Antworten</translation>
+<translation id="7207023858769244910">Aktiviere die Synchronisierung, um Inhalte zu erhalten, die deinen Interessen entsprechen.</translation>
 <translation id="7207383424303353046">Neu: Websites werden automatisch in Chrome geöffnet, wenn du es als Standard-Browser-App festlegst. <ph name="BEGIN_LINK" />Zu den Einstellungen<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Ungültiger Kartenalias</translation>
 <translation id="722454870747268814">Neuer Inkognitotab</translation>

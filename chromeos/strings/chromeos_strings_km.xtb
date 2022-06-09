@@ -18,6 +18,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" />។</translation>
 <translation id="1175951029573070619">មធ្យម (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ដកចេញ</translation>
+<translation id="1190378975642195988">ឧបករណ៍វាស់​បំរែបំរួលល្បឿន​តួ​ឧបករណ៍</translation>
 <translation id="1195447618553298278">កំហុសឆ្គងមិនស្គាល់។</translation>
 <translation id="1196959502276349371">កំណែ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ចាក់/ផ្អាក</translation>
@@ -214,7 +215,6 @@
 <translation id="2878387241690264070">បានឈប់សាកថ្ម <ph name="RATE" /> ក្នុងរយៈពេល <ph name="NUM_SECONDS" /> វិនាទី។</translation>
 <translation id="291142119251986300">សមាសភាគដែលគ្មានការទទួលស្គាល់</translation>
 <translation id="2926057806159140518">បញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ និងពាក្យ​សម្ងាត់របស់អ្នក ឬស្កេនកូដ QR របស់អ្នក</translation>
-<translation id="2928420929544864228">ការដំឡើង​បានបញ្ចប់ហើយ។</translation>
 <translation id="3008341117444806826">ផ្ទុក​ឡើង​វិញ</translation>
 <translation id="3009958530611748826">ជ្រើសរើសថត ដើម្បីរក្សាទុកឯកសារស្កេន</translation>
 <translation id="3017079585324758401">ផ្ទៃខាងក្រោយ</translation>
@@ -268,6 +268,7 @@
 <translation id="3484914941826596830">សូមកុំដកឧបករណ៍ខាងក្រៅនេះ ឬបិទកុំព្យូទ័ររបស់អ្នក ពេលកំពុងដំឡើងកំណែកម្មវិធី​បង្កប់។ អ្នកអាចបង្រួមវិនដូនេះបាន។ ការដំឡើងកំណែនេះអាចចំណាយពេលពីរបីនាទី ហើយឧបករណ៍ខាងក្រៅរបស់អ្នកអាចមិនដំណើរការនៅអំឡុងពេលនេះទេ។</translation>
 <translation id="3486220673238053218">និយមន័យ</translation>
 <translation id="3488065109653206955">បានធ្វើសកម្មភាពតាមផ្នែក</translation>
+<translation id="3492982278147736083">ហ្គីរ៉ូទស្សន៍​ផ្នែក​គម្រប</translation>
 <translation id="3517001332549868749">កំណែថ្មី ChromeOS</translation>
 <translation id="3527036260304016759">មិនបានសម្រេច - មានបញ្ហា​ដែលមិនស្គាល់</translation>
 <translation id="3532980081107202182">នៅសល់ប្រហែល <ph name="MIN_REMAINING" /> នាទីទៀត</translation>
@@ -301,9 +302,11 @@
 <translation id="3820172043799983114">លេខ​កូដ PIN ​មិន​ត្រឹមត្រូវ។</translation>
 <translation id="3838338534323494292">ពាក្យសម្ងាត់ថ្មី</translation>
 <translation id="385051799172605136">ថយក្រោយ</translation>
+<translation id="3856304145690230735">ហ្គីរ៉ូទស្សន៍​តួ​ឧបករណ៍</translation>
 <translation id="385832974417157471">មុនពេលបិទ សូម powerwash ឧបករណ៍របស់អ្នក។ ប្រសិនបើឧបករណ៍របស់អ្នកមានគម្រប សូមរង់ចាំរហូតទាល់តែ powerwash ចប់សិន មុនពេលបិទគម្រប។ Powerwash អាចចំណាយពេលរហូតដល់មួយនាទីទើបដំណើរការចប់។</translation>
 <translation id="3858860766373142691">ឈ្មោះ</translation>
 <translation id="3865414814144988605">គុណភាពបង្ហាញ</translation>
+<translation id="3866249974567520381">ការពិពណ៌នា</translation>
 <translation id="387301095347517405">ចំនួនដង​ដែលថ្មរបស់អ្នក​បានសាកពេញ</translation>
 <translation id="3885327323343477505">ប្ដូរធាតុរក្សាអេក្រង់</translation>
 <translation id="3923184630988645767">ការប្រើទិន្នន័យ</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">ចាប់ផ្ដើម</translation>
 <translation id="4479639480957787382">ខ្សែអ៊ីនធឺណិត</translation>
 <translation id="4483049906298469269">មិនអាចភីងច្រកបណ្ដាញមិនមែនលំនាំដើមបានទេ</translation>
+<translation id="4500213108254186382">ឧបករណ៍វាស់​បំរែបំរួលល្បឿន​ផ្នែក​គម្រប</translation>
 <translation id="4503223151711056411">ព្រួញទៅឆ្វេង</translation>
 <translation id="4511264077854731334">ច្រក</translation>
 <translation id="4521826082652183069">ភាពត្រូវគ្នានៃ​ឈ្មោះ​ជំនួសនៃប្រធានបទ</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">បានដោះសោ​ស៊ីម</translation>
 <translation id="4562494484721939086">គ្មានសេវាទេ</translation>
 <translation id="4568938274596692027">ការដំឡើងចប់​ហើយ។ កំពុងរៀបចំចាប់ផ្ដើម​ឡើងវិញ...</translation>
+<translation id="4576943788798178439">ការស្គាល់​ប៊ិក</translation>
 <translation id="458794348635939462">មិនអាចដោះស្រាយម៉ាស៊ីនទាំងអស់បានទេ</translation>
 <translation id="4593212453765072419">តម្រូវ​ឱ្យ​មាន​ការផ្ទៀងផ្ទាត់​ប្រូកស៊ី</translation>
 <translation id="4609350030397390689">គ្រាប់ចុចព្រួញចុះក្រោមសម្រាប់បន្ថយពន្លឺក្ដារចុច</translation>
@@ -536,6 +541,7 @@
 <translation id="5866840822086176774">ខ្លាំងណាស់</translation>
 <translation id="588258955323874662">ពេញអេក្រង់</translation>
 <translation id="5895138241574237353">ចាប់ផ្តើមឡើងវិញ</translation>
+<translation id="5898758006340607522">ប៊ូតុង​ថាមពល</translation>
 <translation id="5901630391730855834">លឿង</translation>
 <translation id="5903200662178656908">ឧបករណ៍គឺជាការរួមបញ្ចូលគ្នារវាងក្ដារចុច និងកណ្ដុរ។</translation>
 <translation id="5916084858004523819">ត្រូវបាន​ហាមឃាត់</translation>
@@ -858,6 +864,7 @@
 <translation id="8919792139048574232">មើលអ្វីដែលត្រូវបានជួសជុល</translation>
 <translation id="8919837981463578619">មិនបានសម្រេច - ​​បាត់ថាសដាក់ក្រដាស</translation>
 <translation id="8923267550422472772">ថ្ងៃនៃខែសម្រា់បការកំណត់ឡើងវិញ</translation>
+<translation id="8925613211674558308">បានទុកក្នុងឃ្លាំងបម្រុង Vpd</translation>
 <translation id="8928727111548978589">មិនបានសម្រេច - ​​អស់ក្រដាស</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">ឥត​ខ្សែ</translation>
@@ -899,6 +906,7 @@
 <translation id="922179502584117429">កំណែបច្ចុប្បន្ន <ph name="VERSION_NUMBER" /> ហួសសម័យហើយ</translation>
 <translation id="932327136139879170">ទំព័រដើម</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">ផ្ញើមតិ</translation>
 <translation id="952992212772159698">មិនត្រូវបានធ្វើសកម្មភាពទេ</translation>
 <translation id="960719561871045870">លេខកូដប្រតិបត្តិករ</translation>
 <translation id="982713511914535780">ដំណើរការតេស្តនៃការបញ្ចេញថាមពល</translation>

@@ -706,7 +706,6 @@
 <translation id="2854764410992194509">Furnizori de servicii de internet (ISP)</translation>
 <translation id="2856444702002559011">Atacatorii pot încerca să îți fure informațiile de pe <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (de exemplu, parole, mesaje sau date despre cardurile de credit). <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Acest site afișează anunțuri deranjante sau înșelătoare.</translation>
-<translation id="286512204874376891">Cardul virtual îți maschează cardul fizic pentru a te proteja împotriva fraudelor. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Amical</translation>
 <translation id="28761159517501904">Filme</translation>
 <translation id="2876489322757410363">Vei părăsi modul incognito pentru a plăti folosind o aplicație externă. Continui?</translation>
@@ -1339,7 +1338,6 @@
 <translation id="4607603470419975064">Butonul Vezi sfaturile privind Chrome, apasă pe Enter pentru a afla despre funcțiile Chrome</translation>
 <translation id="4607608436550361748">Vezi sfaturile privind Chrome</translation>
 <translation id="4617273035598175554">Software pentru elemente grafice și animație</translation>
-<translation id="4627165777145349100">Mai multe despre această pagină</translation>
 <translation id="4627675673814409125">Această politică nu se poate seta la nivelul profilului Chrome și va fi ignorată.</translation>
 <translation id="4628948037717959914">Fotografie</translation>
 <translation id="4631649115723685955">Ofertă cu returnare de bani</translation>
@@ -1874,7 +1872,6 @@
 <translation id="6061154937977953833">Wrestling</translation>
 <translation id="6064217302520318294">Blocarea ecranului</translation>
 <translation id="6064602040258638498">Cupoane și oferte de reduceri</translation>
-<translation id="6078813287646374487">Afișează mai multe informații despre această pagină</translation>
 <translation id="6080696365213338172">Ați accesat conținut utilizând un certificat oferit de administrator. Datele pe care le transmiteți către <ph name="DOMAIN" /> pot fi interceptate de administratorul dvs.</translation>
 <translation id="6087312102907839798">Căutări similare</translation>
 <translation id="6094273045989040137">Adnotează</translation>
@@ -2799,6 +2796,7 @@ Detalii suplimentare:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> este codul tău pentru <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Marchează această filă</translation>
 <translation id="8751426954251315517">Încearcă mai târziu</translation>
+<translation id="8757526089434340176">Ofertă Google Pay disponibilă</translation>
 <translation id="8758885506338294482">Competiții de jocuri video</translation>
 <translation id="8759274551635299824">Acest card este expirat</translation>
 <translation id="87601671197631245">Site-ul folosește o configurație de securitate învechită, care îți poate expune informațiile (de exemplu, parolele, mesajele sau cardurile de credit) când sunt trimise la acest site.</translation>

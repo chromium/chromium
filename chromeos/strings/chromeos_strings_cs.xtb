@@ -95,6 +95,7 @@
 <translation id="1717874160321062422">Spravuje <ph name="FIRST_MANAGER" /> a <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Jmenné servery</translation>
 <translation id="1731082422893354635">Touchpad Bluetooth</translation>
+<translation id="1745577949879301685">Obrázky se nepodařilo načíst. Zkontrolujte připojení k síti a zkuste je načíst znovu.</translation>
 <translation id="1751249301761991853">Osobní</translation>
 <translation id="1753496554272155572">Zavřít náhled tapety</translation>
 <translation id="175763766237925754">Dobrý (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -213,7 +214,6 @@
 <translation id="2878387241690264070">Vybilo se <ph name="RATE" /> kapacity během <ph name="NUM_SECONDS" /> sekund.</translation>
 <translation id="291142119251986300">Nekvalifikované komponenty</translation>
 <translation id="2926057806159140518">Zadejte uživatelské jméno nebo heslo nebo naskenujte svůj QR kód</translation>
-<translation id="2928420929544864228">Instalace byla dokončena.</translation>
 <translation id="3008341117444806826">OBNOVIT</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
 <translation id="3017079585324758401">Pozadí</translation>
@@ -303,6 +303,7 @@
 <translation id="385832974417157471">Před vypnutím obnovte zařízení pomocí funkce Powerwash. Pokud má zařízení víko, zavřete ho až po dokončení procesu Powerwash. Dokončení může trvat až jednu minutu.</translation>
 <translation id="3858860766373142691">Název</translation>
 <translation id="3865414814144988605">Rozlišení</translation>
+<translation id="3866249974567520381">Popis</translation>
 <translation id="387301095347517405">Údaj, kolikrát baterie prošla celým cyklem nabíjení</translation>
 <translation id="3885327323343477505">Změnit spořič obrazovky</translation>
 <translation id="3923184630988645767">Využití dat</translation>
@@ -429,6 +430,7 @@
 <translation id="4915052247106771211">Zařízení se resetuje do továrního nastavení (Powerwash).</translation>
 <translation id="4917385247580444890">Silný</translation>
 <translation id="4917889632206600977">Zastaveno – došel papír</translation>
+<translation id="491791267030419270">Tipy k psaní zpětné vazby</translation>
 <translation id="4921665434385737356">Nabito na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Pokud chcete nastavit nebo aktualizovat připojení, přejděte do sekce <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
@@ -898,6 +900,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="922179502584117429">Aktuální verze <ph name="VERSION_NUMBER" /> je zastaralá</translation>
 <translation id="932327136139879170">Domovská stránka</translation>
 <translation id="939519157834106403">Identifikátor SSID</translation>
+<translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="952992212772159698">Není aktivováno</translation>
 <translation id="960719561871045870">Kód operátora</translation>
 <translation id="982713511914535780">Spustit test vybíjení</translation>

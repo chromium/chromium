@@ -703,7 +703,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2854764410992194509">Internetszolgáltatók</translation>
 <translation id="2856444702002559011">A támadók megpróbálhatják ellopni a(z) <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> webhelyen lévő adatait (például jelszavait, üzeneteit és hitelkártyaadatait). <ph name="BEGIN_LEARN_MORE_LINK" />További információ<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="2859806420264540918">Ez a webhely tolakodó vagy félrevezető hirdetéseket jelenít meg.</translation>
-<translation id="286512204874376891">A virtuális kártya álcázza a tényleges kártyáját, így segíthet az esetleges csalások elleni védekezésben. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Barátságos</translation>
 <translation id="28761159517501904">Filmek</translation>
 <translation id="2876489322757410363">Az inkognitó mód elhagyása külső alkalmazással történő fizetéshez. Folytatja?</translation>
@@ -1334,7 +1333,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4607603470419975064">Chrome-tippek megjelenítése gomb, nyomja meg az Enter billentyűt a Chrome funkcióival kapcsolatos további információkért</translation>
 <translation id="4607608436550361748">Chrome-tippek megjelenítése</translation>
 <translation id="4617273035598175554">Grafikai és animációs szoftverek</translation>
-<translation id="4627165777145349100">További információ az oldalról</translation>
 <translation id="4627675673814409125">Ez az irányelv nem állítható be a Chrome-profil szintjén, ezért figyelmen kívül hagyja a rendszer.</translation>
 <translation id="4628948037717959914">Fénykép</translation>
 <translation id="4631649115723685955">Pénzvisszatérítéssel összekapcsolva</translation>
@@ -1868,7 +1866,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6061154937977953833">Birkózás</translation>
 <translation id="6064217302520318294">Képernyőzárolás</translation>
 <translation id="6064602040258638498">Kuponok és kedvezményes ajánlatok</translation>
-<translation id="6078813287646374487">További információ megjelenítése az oldallal kapcsolatban</translation>
 <translation id="6080696365213338172">A tartalmat egy rendszergazda által biztosított tanúsítványon keresztül érte el. A(z) <ph name="DOMAIN" /> számára megadott adatok a rendszergazda számára is elérhetők.</translation>
 <translation id="6087312102907839798">Kapcsolódó keresések</translation>
 <translation id="6094273045989040137">Jegyzetelés</translation>
@@ -2793,6 +2790,7 @@ További részletek:
 <translation id="8742371904523228557">A(z) <ph name="ORIGIN" /> webhelyhez tartozó kód a következő: <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Lap hozzáadása a könyvjelzőkhöz</translation>
 <translation id="8751426954251315517">Próbálja újra később</translation>
+<translation id="8757526089434340176">Van ajánlat a Google Paytől</translation>
 <translation id="8758885506338294482">Videójáték-versenyzés</translation>
 <translation id="8759274551635299824">A kártya lejárt</translation>
 <translation id="87601671197631245">Ez a webhely elavult biztonsági konfigurációt használ, ezért előfordulhat, hogy mások látják az Ön adatait (például jelszavait, üzeneteit vagy hitelkártyaszámait), amikor elküldi őket a webhelynek.</translation>

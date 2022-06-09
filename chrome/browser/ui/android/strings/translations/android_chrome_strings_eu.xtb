@@ -110,6 +110,7 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="1513352483775369820">Laster-markak eta web-historia</translation>
 <translation id="1513814250881909472">Sinkronizatu datuak darabiltzazun beste gailuetako fitxak eskuratzeko</translation>
 <translation id="1513858653616922153">Ezabatu pasahitza</translation>
+<translation id="1514552811327923157">Privacy Sandbox-aren mezua altuera osoan irekita dago</translation>
 <translation id="1518421282666914498">Aldarte GIFa <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Aktibo gaur</translation>
 <translation id="1538801903729528855">Lortu ahots-esperientzia hobea sarean</translation>
@@ -321,6 +322,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2711073837061989559">Probak</translation>
 <translation id="2718352093833049315">Wifi bidez soilik</translation>
 <translation id="2718846868787000099">Edukia hizkuntza hobetsietan erakusteko, bisitatzen dituzun webguneek zure hobespenak ikus ditzakete</translation>
+<translation id="2722945394406572875">Privacy Sandbox-aren mezua itxita dago</translation>
 <translation id="2723001399770238859">audioa</translation>
 <translation id="2732063072010454421">Lortu ahots-esperientzia hobea</translation>
 <translation id="2739256783402597439">2G</translation>
@@ -585,6 +587,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="4227318652298512614">Jarrai iezaiezu gustuko webguneei</translation>
 <translation id="4242533952199664413">Ireki ezarpenak</translation>
 <translation id="4248098802131000011">Babestu pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazo batzuen aurka</translation>
+<translation id="424864128008805179">Chrome-ko saioa amaitu nahi duzu?</translation>
 <translation id="4249955472157341256">Ordenatu berrienetatik zaharrenetara</translation>
 <translation id="4250229828105606438">Pantaila-argazkia</translation>
 <translation id="4256782883801055595">Kode irekiko lizentziak</translation>
@@ -652,7 +655,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4594952190837476234">Konexiorik gabe erabiltzeko orri hau <ph name="CREATION_TIME" /> datan sortu zen. Ondorioz, baliteke sareko bertsioarekin bat ez etortzea.</translation>
 <translation id="4616150815774728855">Ireki <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Egiaztatu zeu zarela</translation>
-<translation id="4627165777145349100">Orri honi buruzko informazio gehiago</translation>
 <translation id="4634124774493850572">Erabili pasahitza</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 pasahitz dago arriskuan}other{# pasahitz daude arriskuan}}</translation>
 <translation id="4650364565596261010">Sistemaren balio lehenetsia</translation>
@@ -894,6 +896,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5906513782029855931">Webguneen URLak jakinda, Google-ren Laguntzaileak zereginak osatzen lagun diezazuke. Laguntzailea desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5919204609460789179">Sinkronizatzen hasteko, eguneratu <ph name="PRODUCT_NAME" /></translation>
+<translation id="593625682991400408">Probak abian diren bitartean, spama, iruzurrak eta webguneen artean partekatzeko aukera mugatzeko moduak arakatzen ari da Chrome. Halaber, webguneek iragarkiak erakusteko erabil ditzaketen <ph name="BEGIN_LINK" />interesak igartzen ditu<ph name="END_LINK" /> Chrome-k. Zure interesak kudeatzeko, joan ezarpenetara.</translation>
 <translation id="5938820472109305350">Gehitu <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Google erabiliko da bilatzaile gisa</translation>
 <translation id="5945035219773565305">Oraingo gomendioa: <ph name="RECOMMENDATION" /></translation>
@@ -1512,6 +1515,7 @@ Fidagarritasun-tokenek sareko pribatutasuna hobetzen dute eta ezin dira erabili 
 <translation id="9106148373857059373">Laster-marka gordetzeko fluxua itxita dago</translation>
 <translation id="9108312223223904744">Telefonoa segurtasun-giltza gisa erabiltzeko aukera</translation>
 <translation id="9108808586816295166">Baliteke DNS segurua beti erabilgarri ez egotea</translation>
+<translation id="9128984223251192329">Privacy Sandbox-aren mezua altuera erdian irekita dago</translation>
 <translation id="9133397713400217035">Arakatu konexiorik gabeko edukia</translation>
 <translation id="9137013805542155359">Ikusi jatorrizkoa</translation>
 <translation id="9148126808321036104">Hasi saioa berriro</translation>

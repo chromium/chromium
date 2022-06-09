@@ -65,6 +65,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1434356225517321998">Tu navegador está administrado. <ph name="BEGIN_LINK" />Detalles<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ocultar contraseña</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementos</translation>
+<translation id="1450170672351507823">Se activó la protección estándar. Para obtener más seguridad, usa la Protección mejorada.</translation>
 <translation id="149095475893949513">Este sitio web intenta descargar un perfil de configuración.</translation>
 <translation id="1491277525950327607">Presiona dos veces para activar o desactivar la configuración</translation>
 <translation id="1492417797159476138">Ya guardaste este nombre de usuario en este sitio</translation>
@@ -738,6 +739,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7099761977003084116">Pestañas recientes</translation>
 <translation id="7102005569666697658">Descargando… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ocultar</translation>
+<translation id="7108762695052995889">Visitar sitio</translation>
 <translation id="7133798577887235672">Nombre completo</translation>
 <translation id="7136892417564438900">La cámara no está disponible</translation>
 <translation id="7153999225810839758">Tiempo de lectura: <ph name="TIME" /> minuto(s)</translation>
