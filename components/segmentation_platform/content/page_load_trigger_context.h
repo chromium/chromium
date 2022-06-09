@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_CONTENT_PAGE_LOAD_TRIGGER_CONTEXT_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_CONTENT_PAGE_LOAD_TRIGGER_CONTEXT_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/public/trigger_context.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -28,7 +28,8 @@ struct PageLoadTriggerContext : public TriggerContext {
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const override;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  raw_ptr<content::WebContents> web_contents;
+ private:
+  base::WeakPtr<content::WebContents> web_contents_;
 };
 
 }  // namespace segmentation_platform

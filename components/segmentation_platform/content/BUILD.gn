@@ -50,6 +50,7 @@ if (is_android) {
       "//build/android:build_java",
       "//components/segmentation_platform/public:public_java",
       "//content/public/android:content_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

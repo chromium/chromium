@@ -15,7 +15,7 @@ namespace segmentation_platform {
 
 PageLoadTriggerContext::PageLoadTriggerContext(
     content::WebContents* web_contents)
-    : web_contents(web_contents) {}
+    : web_contents_(web_contents->GetWeakPtr()) {}
 
 PageLoadTriggerContext::~PageLoadTriggerContext() = default;
 
@@ -23,8 +23,11 @@ PageLoadTriggerContext::~PageLoadTriggerContext() = default;
 base::android::ScopedJavaLocalRef<jobject>
 PageLoadTriggerContext::CreateJavaObject() const {
   JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> j_web_contents;
+  if (web_contents_ && !web_contents_->IsBeingDestroyed())
+    j_web_contents = web_contents_->GetJavaWebContents();
   return Java_PageLoadTriggerContext_createPageLoadTriggerContext(
-      env, web_contents->GetJavaWebContents());
+      env, j_web_contents);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
