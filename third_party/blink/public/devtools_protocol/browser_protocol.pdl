@@ -758,6 +758,7 @@ experimental domain Audits
       GeolocationInsecureOriginDeprecatedNotRemoved
       GetUserMediaInsecureOrigin
       HostCandidateAttributeGetter
+      IdentityInCanMakePaymentEvent
       InsecurePrivateNetworkSubresourceRequest
       LegacyConstraintGoogIPv6
       LocalCSSFileExtensionRejected

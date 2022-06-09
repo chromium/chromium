@@ -232,6 +232,9 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kXRSupportsSession:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kXRSupportsSession);
+    case WebFeature::kIdentityInCanMakePaymentEvent:
+      return DeprecationInfo::WithTranslation(
+          feature, DeprecationIssueType::kIdentityInCanMakePaymentEvent);
     default:
       return DeprecationInfo::NotDeprecated(feature);
   }

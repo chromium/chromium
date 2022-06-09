@@ -1,0 +1,18 @@
+Tests that deprecation issues are reported for "canmakepayment" identity fields
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                sourceCodeLocation : {
+                    columnNumber : 35
+                    lineNumber : 9
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/canmakepayment-identity.js
+                }
+                type : IdentityInCanMakePaymentEvent
+            }
+        }
+    }
+}
+

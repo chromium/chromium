@@ -3580,6 +3580,7 @@ enum WebFeature {
   kDeferredShapingWorked = 4259,
   kDeferredShapingReshapedByForceLayout = 4260,
   kMediaSourceGetHandle = 4261,
+  kIdentityInCanMakePaymentEvent = 4262,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

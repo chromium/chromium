@@ -40302,6 +40302,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4259" label="DeferredShapingWorked"/>
   <int value="4260" label="DeferredShapingReshapedByForceLayout"/>
   <int value="4261" label="MediaSourceGetHandle"/>
+  <int value="4262" label="IdentityInCanMakePaymentEvent"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

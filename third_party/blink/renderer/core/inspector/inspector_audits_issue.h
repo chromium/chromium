@@ -55,6 +55,7 @@ enum class DeprecationIssueType {
   kGeolocationInsecureOriginDeprecatedNotRemoved,
   kGetUserMediaInsecureOrigin,
   kHostCandidateAttributeGetter,
+  kIdentityInCanMakePaymentEvent,
   kInsecurePrivateNetworkSubresourceRequest,
   kLegacyConstraintGoogIPv6,
   kLocalCSSFileExtensionRejected,

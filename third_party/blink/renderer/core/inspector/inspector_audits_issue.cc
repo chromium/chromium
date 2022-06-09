@@ -611,6 +611,10 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
     case DeprecationIssueType::kXRSupportsSession:
       type = protocol::Audits::DeprecationIssueTypeEnum::XRSupportsSession;
       break;
+    case DeprecationIssueType::kIdentityInCanMakePaymentEvent:
+      type = protocol::Audits::DeprecationIssueTypeEnum::
+          IdentityInCanMakePaymentEvent;
+      break;
   }
 
   auto source_location = SourceLocation::Capture(execution_context);
