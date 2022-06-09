@@ -68,11 +68,11 @@ chrome.test.runTests([
         top: 2.25,
         dark_light_top: 2.25,
         left: -106.5,
-        dark_light_left: -105,
+        dark_light_left: -105.75,
         right: 718.5,
-        dark_light_right: 717,
+        dark_light_right: 717.75,
         bottom: -412.5,
-        dark_light_bottom: -411
+        dark_light_bottom: -411.75
       },
       {
         top: 2.25,
@@ -80,9 +80,9 @@ chrome.test.runTests([
         left: -3.75,
         dark_light_left: -3.75,
         right: 408.75,
-        dark_light_right: 407.25,
+        dark_light_right: 408,
         bottom: -205.125,
-        dark_light_bottom: -204.375
+        dark_light_bottom: -204.75
       },
       {
         top: -35.25,
@@ -90,9 +90,9 @@ chrome.test.runTests([
         left: 33.75,
         dark_light_left: 33.75,
         right: 446.25,
-        dark_light_right: 444.75,
+        dark_light_right: 445.5,
         bottom: -242.625,
-        dark_light_bottom: -241.875
+        dark_light_bottom: -242.25
       },
     ];
 

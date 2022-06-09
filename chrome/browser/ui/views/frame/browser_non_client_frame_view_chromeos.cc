@@ -135,11 +135,11 @@ BrowserNonClientFrameViewChromeOS::BrowserNonClientFrameViewChromeOS(
   if (chromeos::features::IsDarkLightModeEnabled()) {
     // To differentiate browser windows in dark/light mode, set a highlight
     // border to the non client frame view. To avoid the border being covered by
-    // the client view, we should use a full insets border.
+    // the client view, we should use a half insets border.
     SetBorder(std::make_unique<views::HighlightBorder>(
         0, views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false,
-        views::HighlightBorder::InsetsType::kFullInsets));
+        views::HighlightBorder::InsetsType::kHalfInsets));
     // Since highlight border has an inner border with opacity, we need to set a
     // background underneath with frame color.
     SetBackground(views::CreateSolidBackground(chromeos::kDefaultFrameColor));
