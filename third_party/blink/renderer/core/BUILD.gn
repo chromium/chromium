@@ -1273,12 +1273,6 @@ source_set("unit_tests") {
     "editing/finder/text_finder_test.cc",
     "editing/keyboard_test.cc",
     "editing/link_selection_test.cc",
-    "events/message_event_test.cc",
-    "events/mouse_event_test.cc",
-    "events/pointer_event_factory_test.cc",
-    "events/pointer_event_util_test.cc",
-    "events/touch_event_test.cc",
-    "events/web_input_event_conversion_test.cc",
     "execution_context/execution_context_lifecycle_state_observer_test.cc",
     "exported/web_document_subresource_filter_test.cc",
     "exported/web_document_test.cc",
@@ -1309,25 +1303,6 @@ source_set("unit_tests") {
     "fullscreen/scoped_allow_fullscreen_test.cc",
     "geometry/dom_matrix_test.cc",
     "imagebitmap/image_bitmap_test.cc",
-    "input/event_handler_test.cc",
-    "input/ime_on_focus_test.cc",
-    "input/mouse_event_manager_test.cc",
-    "input/overscroll_behavior_test.cc",
-    "input/pointer_event_manager_test.cc",
-    "input/scroll_snap_test.cc",
-    "input/touch_action_test.cc",
-    "input/touch_event_manager_test.cc",
-    "inspector/agent_registry_test.cc",
-    "inspector/inspector_contrast_test.cc",
-    "inspector/inspector_emulation_agent_test.cc",
-    "inspector/inspector_highlight_test.cc",
-    "inspector/inspector_history_test.cc",
-    "inspector/inspector_media_context_impl_unittest.cc",
-    "inspector/inspector_session_state_test.cc",
-    "inspector/inspector_style_resolver_test.cc",
-    "inspector/main_thread_debugger_test.cc",
-    "inspector/protocol_parser_test.cc",
-    "inspector/protocol_unittest.cc",
     "intersection_observer/intersection_observer_test.cc",
     "messaging/blink_transferable_message_mojom_traits_test.cc",
     "messaging/message_port_descriptor_mojom_traits_test.cc",
@@ -1391,10 +1366,13 @@ source_set("unit_tests") {
   sources += rebase_path(blink_core_tests_css, "", "css")
   sources += rebase_path(blink_core_tests_dom, "", "dom")
   sources += rebase_path(blink_core_tests_editing, "", "editing")
+  sources += rebase_path(blink_core_tests_events, "", "events")
   sources += rebase_path(blink_core_tests_fetch, "", "fetch")
   sources += rebase_path(blink_core_tests_fileapi, "", "fileapi")
   sources += rebase_path(blink_core_tests_frame, "", "frame")
   sources += rebase_path(blink_core_tests_html, "", "html")
+  sources += rebase_path(blink_core_tests_input, "", "input")
+  sources += rebase_path(blink_core_tests_inspector, "", "inspector")
   sources += rebase_path(blink_core_tests_layout, "", "layout")
   sources += rebase_path(blink_core_tests_loader, "", "loader")
   sources += rebase_path(blink_core_tests_page, "", "page")
