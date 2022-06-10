@@ -225,7 +225,6 @@ void DocumentTransition::NotifyCaptureFinished(uint32_t sequence_id) {
   StartDeferringCommits();
   if (!capture_resolved_callback_) {
     state_ = State::kCaptured;
-    start_script_state_ = nullptr;
     NotifyPostCaptureCallbackResolved(/*success=*/true);
     return;
   }
@@ -249,7 +248,6 @@ void DocumentTransition::NotifyCaptureFinished(uint32_t sequence_id) {
                                            post_capture_reject_callable_));
 
   capture_resolved_callback_ = nullptr;
-  start_script_state_ = nullptr;
   state_ = State::kCaptured;
 }
 
@@ -266,6 +264,7 @@ void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
   DCHECK(start_promise_resolver_);
   start_promise_resolver_->Resolve();
   start_promise_resolver_ = nullptr;
+  start_script_state_ = nullptr;
 
   // Resolve the promise to notify script when animations finish but don't
   // remove the pseudo element tree.
@@ -491,7 +490,6 @@ void DocumentTransition::ResetTransitionState(bool abort_style_tracker) {
 
 void DocumentTransition::ResetScriptState(const char* abort_message) {
   capture_resolved_callback_ = nullptr;
-  start_script_state_ = nullptr;
 
   if (post_capture_success_callable_) {
     DCHECK(post_capture_reject_callable_);
@@ -503,7 +501,8 @@ void DocumentTransition::ResetScriptState(const char* abort_message) {
     post_capture_reject_callable_ = nullptr;
   }
 
-  if (start_promise_resolver_) {
+  if (start_promise_resolver_ && start_script_state_->ContextIsValid()) {
+    ScriptState::Scope scope(start_script_state_);
     if (abort_message) {
       start_promise_resolver_->Reject(V8ThrowDOMException::CreateOrDie(
           start_promise_resolver_->GetScriptState()->GetIsolate(),
@@ -511,8 +510,9 @@ void DocumentTransition::ResetScriptState(const char* abort_message) {
     } else {
       start_promise_resolver_->Detach();
     }
-    start_promise_resolver_ = nullptr;
   }
+  start_promise_resolver_ = nullptr;
+  start_script_state_ = nullptr;
 }
 
 }  // namespace blink
