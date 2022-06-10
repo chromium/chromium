@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/core/animation/interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
-#include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_base.h"
@@ -690,15 +689,33 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
         // play state based on animation-play-state differs from the current
         // play state and that the change is not blocked by a sticky state.
         bool toggle_pause_state = false;
+        bool will_be_playing = false;
+        const Animation::AnimationPlayState play_state =
+            animation->CalculateAnimationPlayState();
         if (is_paused != was_paused && !animation->getIgnoreCSSPlayState()) {
-          if (animation->Paused() && !is_paused)
-            toggle_pause_state = true;
-          else if (animation->Playing() && is_paused)
-            toggle_pause_state = true;
-        }
+          switch (play_state) {
+            case Animation::kIdle:
+              break;
 
-        bool will_be_playing =
-            toggle_pause_state ? animation->Paused() : animation->Playing();
+            case Animation::kPaused:
+              toggle_pause_state = !is_paused;
+              will_be_playing = !is_paused;
+              break;
+
+            case Animation::kRunning:
+            case Animation::kFinished:
+              toggle_pause_state = is_paused;
+              will_be_playing = !is_paused;
+              break;
+
+            default:
+              // kUnset and kPending.
+              NOTREACHED();
+          }
+        } else {
+          will_be_playing = (play_state == Animation::kRunning) ||
+                            (play_state == Animation::kFinished);
+        }
 
         AnimationTimeline* timeline = existing_animation->Timeline();
         if (!is_animation_style_change && !animation->GetIgnoreCSSTimeline())
