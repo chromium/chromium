@@ -32,6 +32,24 @@ bool IsExplicitSetting(const ContentSettingPatternSource& setting) {
          !setting.secondary_pattern.MatchesAllHosts();
 }
 
+const ContentSettingPatternSource* FindMatchingSetting(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    const ContentSettingsForOneType& settings) {
+  // We assume `settings` is sorted in order of precedence, so we use the first
+  // matching rule we find.
+  const auto& entry = base::ranges::find_if(
+      settings, [&](const ContentSettingPatternSource& entry) {
+        // The primary pattern is for the request URL; the secondary pattern
+        // is for the first-party URL (which is the top-frame origin [if
+        // available] or the site-for-cookies).
+        return !entry.IsExpired() &&
+               entry.primary_pattern.Matches(primary_url) &&
+               entry.secondary_pattern.Matches(secondary_url);
+      });
+  return entry == settings.end() ? nullptr : &*entry;
+}
+
 }  // namespace
 
 CookieSettings::CookieSettings() = default;
@@ -186,68 +204,38 @@ CookieSettings::GetCookieSettingWithMetadata(
     blocked_by_third_party_setting = CookieSettings::
         ThirdPartyCookieBlockingSetting::kThirdPartyStateDisallowed;
   }
-  {
-    // `content_settings_` is sorted in order of precedence, so we use the first
-    // matching rule we find.
-    const auto& entry = base::ranges::find_if(
-        content_settings_, [&](const ContentSettingPatternSource& entry) {
-          // The primary pattern is for the request URL; the secondary pattern
-          // is for the first-party URL (which is the top-frame origin [if
-          // available] or the site-for-cookies).
-          return entry.primary_pattern.Matches(url) &&
-                 entry.secondary_pattern.Matches(first_party_url);
-        });
-    if (entry != content_settings_.end()) {
-      cookie_setting = entry->GetContentSetting();
-      // Site-specific settings and global blocks override the "block
-      // third-party cookies" setting.
-      // Note: global settings are implemented as a catch-all (*, *) pattern.
-      if (IsExplicitSetting(*entry) || cookie_setting == CONTENT_SETTING_BLOCK)
-        // TODO(dylancutler): Consider adding an enum variant for this case.
-        blocked_by_third_party_setting = CookieSettings::
-            ThirdPartyCookieBlockingSetting::kThirdPartyStateAllowed;
+
+  if (const ContentSettingPatternSource* match =
+          FindMatchingSetting(url, first_party_url, content_settings_);
+      match) {
+    cookie_setting = match->GetContentSetting();
+    if (cookie_setting == CONTENT_SETTING_BLOCK || IsExplicitSetting(*match)) {
+      blocked_by_third_party_setting = CookieSettings::
+          ThirdPartyCookieBlockingSetting::kThirdPartyStateAllowed;
     }
   }
 
   if (blocked_by_third_party_setting ==
       CookieSettings::ThirdPartyCookieBlockingSetting::
           kThirdPartyStateDisallowed) {
-    // If a valid entry exists that matches both our first party and request url
-    // this indicates a Storage Access API grant that may unblock storage access
-    // despite third party cookies being blocked.
-    // ContentSettingsType::STORAGE_ACCESS stores grants in the following
-    // manner:
-    // Primary Pattern:   Embedded site requiring third party storage access
-    // Secondary Pattern: Top-Level site hosting embedded content
-    // Value:             CONTENT_SETTING_[ALLOW/BLOCK] indicating grant
-    //                    status
-    const auto& entry = base::ranges::find_if(
-        storage_access_grants_, [&](const ContentSettingPatternSource& entry) {
-          return !entry.IsExpired() && entry.primary_pattern.Matches(url) &&
-                 entry.secondary_pattern.Matches(first_party_url);
-        });
-    if (entry != storage_access_grants_.end()) {
-      // We'll only utilize the SAA grant if our value is set to
-      // CONTENT_SETTING_ALLOW as other values would indicate the user
-      // rejected a prompt to allow access.
-      if (entry->GetContentSetting() == CONTENT_SETTING_ALLOW) {
+    if (const ContentSettingPatternSource* match =
+            FindMatchingSetting(url, first_party_url, storage_access_grants_);
+        match) {
+      if (match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
         blocked_by_third_party_setting = CookieSettings::
             ThirdPartyCookieBlockingSetting::kThirdPartyStateAllowed;
         FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
                                        ACCESS_ALLOWED_STORAGE_ACCESS_GRANT);
       }
     } else {
-      // If the third-party cookie blocking setting is enabled, we check if the
-      // user has any content settings for the first-party URL as the primary
-      // pattern. If cookies are allowed for the first-party URL then we allow
-      // partitioned cross-site cookies.
-      const auto& first_party_entry = base::ranges::find_if(
-          content_settings_, [&](const ContentSettingPatternSource& entry) {
-            return entry.primary_pattern.Matches(first_party_url) &&
-                   entry.secondary_pattern.Matches(first_party_url);
-          });
-      if (first_party_entry == content_settings_.end() ||
-          first_party_entry->GetContentSetting() == CONTENT_SETTING_ALLOW) {
+      // If the third-party cookie blocking setting is enabled and there's no
+      // relevant storage access grant, we check if the user has any content
+      // settings for the first-party URL as the primary pattern. If cookies are
+      // allowed for the first-party URL then we allow partitioned cross-site
+      // cookies.
+      if (const ContentSettingPatternSource* match = FindMatchingSetting(
+              first_party_url, first_party_url, content_settings_);
+          !match || match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
         blocked_by_third_party_setting =
             CookieSettings::ThirdPartyCookieBlockingSetting::
                 kPartitionedThirdPartyStateAllowedOnly;
