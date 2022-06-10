@@ -159,11 +159,18 @@ class HTMLToken {
   // better-informed inline capacity.
   using DataVector = UCharLiteralBuffer<256>;
 
-  HTMLToken() { Clear(); }
+  HTMLToken() {
+    range_.Clear();
+    range_.start = 0;
+  }
+
   HTMLToken(const HTMLToken&) = delete;
   HTMLToken& operator=(const HTMLToken&) = delete;
 
   void Clear() {
+    if (type_ == kUninitialized)
+      return;
+
     type_ = kUninitialized;
     range_.Clear();
     range_.start = 0;
@@ -194,7 +201,7 @@ class HTMLToken {
     return data_;
   }
 
-  bool IsAll8BitData() const { return data_.Is8Bit(); }
+  ALWAYS_INLINE bool IsAll8BitData() const { return data_.Is8Bit(); }
 
   const DataVector& GetName() const {
     DCHECK(type_ == kStartTag || type_ == kEndTag || type_ == DOCTYPE);
@@ -423,9 +430,9 @@ class HTMLToken {
   }
 
  private:
-  TokenType type_;
+  TokenType type_ = kUninitialized;
   Attribute::Range range_;  // Always starts at zero.
-  int base_offset_;
+  int base_offset_ = 0;
   DataVector data_;
 
   // For StartTag and EndTag

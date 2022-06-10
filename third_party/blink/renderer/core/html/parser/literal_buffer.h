@@ -216,28 +216,28 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
     if (this->data() == other.data())
       return *this;
     this->Copy(other);
-    or_all_data_ = other.or_all_data_;
+    is_8bit_ = other.is_8bit_;
     return *this;
   }
 
   UCharLiteralBuffer& operator=(UCharLiteralBuffer&& other) {
     if (this == &other)
       return *this;
-    const UChar other_or_all_data = other.or_all_data_;
+    const bool other_is_8bit = other.is_8bit_;
     this->Move(std::move(other));
-    or_all_data_ = other_or_all_data;
+    is_8bit_ = other_is_8bit;
     return *this;
   }
 
   // Clear without freeing any storage.
   ALWAYS_INLINE void clear() {
     this->ClearImpl();
-    or_all_data_ = 0;
+    is_8bit_ = true;
   }
 
   ALWAYS_INLINE void AddChar(UChar val) {
     this->AddCharImpl(val);
-    or_all_data_ |= val;
+    is_8bit_ &= (val <= 0xFF);
   }
 
   template <wtf_size_t kOtherSize>
@@ -263,15 +263,14 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
                                  : WTF::AtomicStringUCharEncoding::kIs16Bit);
   }
 
-  ALWAYS_INLINE bool Is8Bit() const { return or_all_data_ <= 0xFF; }
+  ALWAYS_INLINE bool Is8Bit() const { return is_8bit_; }
 
  private:
   // Needed for operator=.
   template <wtf_size_t kOtherInlineSize>
   friend class UCharLiteralBuffer;
 
-  // Bitwise-or of data added. Used to determine if contains only 8-bit values.
-  UChar or_all_data_ = 0;
+  bool is_8bit_ = true;
 };
 
 #undef BUFFER_INLINE_CAPACITY
