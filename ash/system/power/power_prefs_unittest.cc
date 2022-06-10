@@ -661,16 +661,16 @@ TEST_F(PowerPrefsTest, QuickDimMetrics) {
 }
 
 TEST_F(PowerPrefsTest, SetAdaptiveChargingParams) {
-  // Should be disabled by default.
-  EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
-
-  // Should be enabled after setting the prefs to true.
-  SetAdaptiveChargingPreference(true);
+  // Should be enabled by default.
   EXPECT_TRUE(power_manager_client()->policy().adaptive_charging_enabled());
 
   // Should be disabled after changing the prefs to false.
   SetAdaptiveChargingPreference(false);
   EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
+
+  // Should be enabled after setting the prefs to true.
+  SetAdaptiveChargingPreference(true);
+  EXPECT_TRUE(power_manager_client()->policy().adaptive_charging_enabled());
 }
 
 }  // namespace ash

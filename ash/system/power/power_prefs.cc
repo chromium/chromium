@@ -81,7 +81,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kPowerAcIdleWarningDelayMs, 0);
   registry->RegisterIntegerPref(prefs::kPowerAcIdleDelayMs, 510000);
   registry->RegisterBooleanPref(
-      prefs::kPowerAdaptiveChargingEnabled, false,
+      prefs::kPowerAdaptiveChargingEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kPowerAdaptiveChargingNudgeShown, false,
