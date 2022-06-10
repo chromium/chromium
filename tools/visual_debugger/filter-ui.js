@@ -70,8 +70,8 @@ class FilterUI extends HTMLElement {
       <div class='section'>
         <div>
           <form id="actionform">
-            <input type='radio' name='dowhat' value='drawfilter'/>Override
-            <input type='color' name='drawcolor' value='#000000'/>
+            <input type='radio' id='drawfilter' name='dowhat' value='drawfilter'/>Override
+            <input type='color' id='drawcolor' name='drawcolor' value='#000000'/>
             opacity <input type='range' name='fillalpha' min='0' max='100'
              step='10' value='50' list='alphastep'/>
             <datalist id='alphastep'>
@@ -95,6 +95,12 @@ class FilterUI extends HTMLElement {
 <div>
 `;
     this.setUpButtons_();
+
+    // Event listener to check if custom color selected
+    // to automatically select override button
+    document.getElementById('drawcolor').addEventListener("change",function(){
+      document.getElementById('drawfilter').checked = true;
+    });
   }
 
   setUpButtons_() {
@@ -225,7 +231,7 @@ function showCreateFilterPopup(anchor) {
   filterUi.style.position = 'absolute';
   filterUi.style.top = (anchor.offsetTop + anchor.offsetHeight) + 'px';
   filterUi.style.left = (anchor.offsetLeft + 20) + 'px';
-
+  
   showModal(filterUi);
 }
 
