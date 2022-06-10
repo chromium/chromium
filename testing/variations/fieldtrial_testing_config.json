@@ -4657,6 +4657,21 @@
             ]
         }
     ],
+    "IOSSmartSortingNewOverflowMenu": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "kSmartSortingNewOverflowMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSStaticResourceServing": [
         {
             "platforms": [
