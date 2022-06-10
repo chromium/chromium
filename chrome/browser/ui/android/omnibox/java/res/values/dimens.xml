@@ -16,6 +16,7 @@
     <!-- Bottom Toolbar -->
     <dimen name="split_toolbar_button_height">56dp</dimen>
     <dimen name="split_toolbar_button_width">@dimen/split_toolbar_button_height</dimen>
+    <dimen name="bottom_toolbar_button_wrapper_width">56dp</dimen>
 
     <dimen name="toolbar_edge_padding">8dp</dimen>
     <dimen name="location_bar_vertical_margin">8dp</dimen>
