@@ -136,22 +136,8 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
     MainThreadTaskQueue* queue,
     const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
-  // Don't log the metrics to evaluate impact of CPU reduction.
-  // This code is deemed not useful anymore (crbug.com/1181870).
-  // TODO(crbug.com/1295441: Fully remove the code once the experiment is over.
-  if (base::IsRunningCpuReductionExperiment()) {
-    return;
-  }
-
   if (ShouldDiscardTask(task, task_timing))
     return;
-
-  MetricsHelper::RecordCommonTaskMetrics(task, task_timing);
-
-  total_task_time_reporter_.RecordAdditionalDuration(
-      task_timing.wall_duration());
-
-  base::TimeDelta duration = task_timing.wall_duration();
 
   // Discard anomalously long idle periods.
   if (last_reported_task_ &&
@@ -173,12 +159,26 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
                                                       task_timing.end_time());
   background_main_thread_load_tracker_.RecordTaskTime(task_timing.start_time(),
                                                       task_timing.end_time());
+
+  // Don't log the metrics to evaluate impact of CPU reduction.
+  // This code is deemed not useful anymore (crbug.com/1181870).
+  // TODO(crbug.com/1295441: Fully remove the code once the experiment is over.
+  if (base::IsRunningCpuReductionExperiment()) {
+    return;
+  }
+
+  MetricsHelper::RecordCommonTaskMetrics(task, task_timing);
+
+  total_task_time_reporter_.RecordAdditionalDuration(
+      task_timing.wall_duration());
+
   // WARNING: All code below must be compatible with down-sampling.
   constexpr double kSamplingProbabily = .01;
   bool should_sample = random_generator_.RandDouble() < kSamplingProbabily;
   if (!should_sample)
     return;
 
+  base::TimeDelta duration = task_timing.wall_duration();
   UMA_HISTOGRAM_CUSTOM_COUNTS("RendererScheduler.TaskTime2",
                               base::saturated_cast<base::HistogramBase::Sample>(
                                   duration.InMicroseconds()),
