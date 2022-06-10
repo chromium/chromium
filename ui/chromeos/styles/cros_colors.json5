@@ -50,7 +50,7 @@
       generate_inverted: true,
     },
     color_warning: {
-      light: "$google_yellow_600",
+      light: "$google_yellow_900",
       dark: "$google_yellow_300",
       generate_per_mode: true,
       generate_inverted: true,
