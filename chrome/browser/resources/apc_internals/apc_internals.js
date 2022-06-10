@@ -9,7 +9,11 @@ function createTableRow(...args) {
   const row = document.createElement('tr');
   for (const content of args) {
     const col = document.createElement('td');
-    col.appendChild(document.createTextNode(content));
+    if (typeof content === 'object') {
+      col.appendChild(content);
+    } else {
+      col.appendChild(document.createTextNode(content));
+    }
     row.appendChild(col);
   }
   return row;
@@ -72,6 +76,10 @@ function setAutofillAssistantUrl() {
   chrome.send('set-autofill-assistant-url', [autofillAssistantUrl]);
 }
 
+function launchScript(origin) {
+  chrome.send('launch-script', [origin]);
+}
+
 function onScriptCacheReceived(scriptsCacheInfo) {
   const element = $('script-cache-content');
   if (!scriptsCacheInfo.length) {
@@ -83,7 +91,18 @@ function onScriptCacheReceived(scriptsCacheInfo) {
   for (const cacheEntry of scriptsCacheInfo) {
     const columns = [cacheEntry['url']];
     if ('has_script' in cacheEntry) {
-      columns.push(cacheEntry['has_script'] ? 'Available' : 'Not available');
+      if (cacheEntry['has_script']) {
+        columns.push('Available');
+        const startButton = document.createElement('button');
+        startButton.innerText = 'Start';
+        startButton.addEventListener('click', function() {
+          launchScript(cacheEntry['url']);
+        });
+        columns.push(startButton);
+      } else {
+        columns.push('Not available');
+        columns.push('');
+      }
     }
 
     const row = createTableRow(...columns);

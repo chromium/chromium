@@ -7,18 +7,28 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/autofill_assistant/password_change/apc_client.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/variations/service/variations_service.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "url/origin.h"
 
 using password_manager::PasswordScriptsFetcher;
 
@@ -38,9 +48,16 @@ std::string GetCountryCode() {
 
 }  // namespace
 
+APCInternalsHandler::APCInternalsHandler() = default;
+
 APCInternalsHandler::~APCInternalsHandler() = default;
 
 void APCInternalsHandler::RegisterMessages() {
+  password_manager::PasswordManagerClient* password_manager_client =
+      ChromePasswordManagerClient::FromWebContents(web_ui()->GetWebContents());
+  profile_password_store_ = password_manager_client->GetProfilePasswordStore();
+  account_password_store_ = password_manager_client->GetAccountPasswordStore();
+
   web_ui()->RegisterMessageCallback(
       "loaded", base::BindRepeating(&APCInternalsHandler::OnLoaded,
                                     base::Unretained(this)));
@@ -57,6 +74,11 @@ void APCInternalsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "set-autofill-assistant-url",
       base::BindRepeating(&APCInternalsHandler::OnSetAutofillAssistantUrl,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "launch-script",
+      base::BindRepeating(&APCInternalsHandler::GetLoginsAndTryLaunchScript,
                           base::Unretained(this)));
 }
 
@@ -191,4 +213,61 @@ base::Value::Dict APCInternalsHandler::GetAutofillAssistantInformation() const {
     }
   }
   return result;
+}
+
+void APCInternalsHandler::GetLoginsAndTryLaunchScript(
+    const base::Value::List& args) {
+  if (!profile_password_store_)
+    return;
+
+  if (args.size() == 1 && args.front().is_string()) {
+    GURL url = GURL(args.front().GetString());
+    url::Origin origin = url::Origin::Create(url);
+    password_manager::PasswordFormDigest digest(
+        password_manager::PasswordForm::Scheme::kHtml, origin.GetURL().spec(),
+        GURL());
+
+    pending_logins_requests_.emplace_back(
+        std::make_unique<APCInternalsLoginsRequest>(
+            base::BindOnce(&APCInternalsHandler::LaunchScript,
+                           base::Unretained(this)),
+            base::BindOnce(&APCInternalsHandler::OnLoginsRequestFinished,
+                           base::Unretained(this))));
+
+    pending_logins_requests_.back()->IncreaseWaitCounter();
+    if (account_password_store_)
+      pending_logins_requests_.back()->IncreaseWaitCounter();
+
+    profile_password_store_->GetLogins(
+        digest, pending_logins_requests_.back()->GetWeakPtr());
+
+    if (account_password_store_)
+      account_password_store_->GetLogins(
+          digest, pending_logins_requests_.back()->GetWeakPtr());
+  }
+}
+
+void APCInternalsHandler::OnLoginsRequestFinished(
+    APCInternalsLoginsRequest* finished_request) {
+  base::EraseIf(pending_logins_requests_,
+                base::MatchesUniquePtr(finished_request));
+}
+
+void APCInternalsHandler::LaunchScript(const GURL& url,
+                                       const std::string& username) {
+#if !BUILDFLAG(IS_ANDROID)
+  NavigateParams params(Profile::FromBrowserContext(
+                            web_ui()->GetWebContents()->GetBrowserContext()),
+                        url, ui::PageTransition::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      Navigate(&params);
+
+  if (navigation_handle) {
+    ApcClient* apc_client = ApcClient::GetOrCreateForWebContents(
+        navigation_handle.get()->GetWebContents());
+    apc_client->Start(url, username,
+                      /*skip_login=*/false);
+  }
+#endif  // !IS_ANDROID
 }
