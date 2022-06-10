@@ -4,11 +4,19 @@
 
 package org.chromium.chrome.test.util.browser.signin;
 
+import static org.hamcrest.Matchers.is;
+
 import androidx.annotation.Nullable;
 
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * This test rule mocks AccountManagerFacade and manages sign-in/sign-out.
@@ -21,44 +29,69 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
  * AccountManagerFacade mock.
  */
 public class SigninTestRule extends AccountManagerTestRule {
+    private boolean mIsSignedIn;
+
+    /**
+     * Signs out if user is signed in.
+     */
+    @Override
+    public void tearDownRule() {
+        if (mIsSignedIn && getPrimaryAccount(ConsentLevel.SIGNIN) != null) {
+            // For android_browsertests that sign out during the test body, like
+            // UkmBrowserTest.SingleSyncSignoutCheck, we should sign out during tear-down test stage
+            // only if an account is signed in. Otherwise, tearDownRule() ultimately results a crash
+            // in SignoutManager::signOut(). This is because sign out is attempted when a sign-out
+            // operation is already in progress. See crbug/1102746 for more details.
+            //
+            // We call the force sign out version to make it easier for test writers to write tests
+            // which cleanly tear down (eg. for supervised users who otherwise are not allowed to
+            // sign out).
+            forceSignOut();
+        }
+        super.tearDownRule();
+    }
+
     /**
      * Waits for the AccountTrackerService to seed system accounts.
      */
-    @Override
     public void waitForSeeding() {
-        super.waitForSeeding();
+        SigninTestUtil.seedAccounts();
     }
 
     /**
      * Adds an account and seed it in native code.
      */
-    @Override
     public CoreAccountInfo addAccountAndWaitForSeeding(String accountName) {
-        return super.addAccountAndWaitForSeeding(accountName);
+        final CoreAccountInfo coreAccountInfo = addAccount(accountName);
+        waitForSeeding();
+        return coreAccountInfo;
     }
 
     /**
      * Removes an account and seed it in native code.
      */
-    @Override
     public void removeAccountAndWaitForSeeding(String accountEmail) {
-        super.removeAccountAndWaitForSeeding(accountEmail);
+        removeAccount(accountEmail);
+        waitForSeeding();
     }
 
     /**
      * Adds and signs in an account with the default name without sync consent.
      */
-    @Override
     public CoreAccountInfo addTestAccountThenSignin() {
-        return super.addTestAccountThenSignin();
+        assert !mIsSignedIn : "An account is already signed in!";
+        CoreAccountInfo coreAccountInfo = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
+        SigninTestUtil.signin(coreAccountInfo);
+        mIsSignedIn = true;
+        return coreAccountInfo;
     }
 
     /**
      * Adds and signs in an account with the default name and enables sync.
      */
-    @Override
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
-        return super.addTestAccountThenSigninAndEnableSync();
+        return addTestAccountThenSigninAndEnableSync(
+                TestThreadUtils.runOnUiThreadBlockingNoException(SyncService::get));
     }
 
     /**
@@ -67,18 +100,34 @@ public class SigninTestRule extends AccountManagerTestRule {
      * @param syncService SyncService object to set up sync, if null, sync won't
      *         start.
      */
-    @Override
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
             @Nullable SyncService syncService) {
-        return super.addTestAccountThenSigninAndEnableSync(syncService);
+        assert !mIsSignedIn : "An account is already signed in!";
+        CoreAccountInfo coreAccountInfo = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
+        SigninTestUtil.signinAndEnableSync(coreAccountInfo, syncService);
+        mIsSignedIn = true;
+        return coreAccountInfo;
     }
 
     /**
      * Adds a child account, and waits for auto-signin to complete.
      */
-    @Override
     public CoreAccountInfo addChildTestAccountThenWaitForSignin() {
-        return super.addChildTestAccountThenWaitForSignin();
+        assert !mIsSignedIn : "An account is already signed in!";
+        CoreAccountInfo coreAccountInfo =
+                addAccountAndWaitForSeeding(generateChildEmail(TEST_ACCOUNT_EMAIL));
+
+        // The child will be force signed in (by SigninChecker).  Wait for this to complete before
+        // enabling sync.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(IdentityServicesProvider.get()
+                                       .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                       .getPrimaryAccountInfo(ConsentLevel.SIGNIN),
+                    is(coreAccountInfo));
+        });
+        mIsSignedIn = true;
+
+        return coreAccountInfo;
     }
 
     /**
@@ -87,9 +136,31 @@ public class SigninTestRule extends AccountManagerTestRule {
      * @param syncService SyncService object to set up sync, if null, sync won't
      *         start.
      */
-    @Override
     public CoreAccountInfo addChildTestAccountThenEnableSync(@Nullable SyncService syncService) {
-        return super.addChildTestAccountThenEnableSync(syncService);
+        CoreAccountInfo coreAccountInfo = addChildTestAccountThenWaitForSignin();
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
+            // The auto sign-in should leave the user in signed-in, non-syncing state - check this
+            // and enable sync.
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                assert IdentityServicesProvider.get()
+                                .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                .getPrimaryAccountInfo(ConsentLevel.SYNC)
+                        == null : "Sync should not be enabled";
+            });
+            SigninTestUtil.signinAndEnableSync(coreAccountInfo, syncService);
+        } else {
+            // The auto sign-in should also enable sync.
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                assert IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .getPrimaryAccountInfo(ConsentLevel.SYNC)
+                        .equals(coreAccountInfo)
+                    : "Sync should be enabled";
+            });
+        }
+
+        return coreAccountInfo;
     }
 
     /**
@@ -99,34 +170,33 @@ public class SigninTestRule extends AccountManagerTestRule {
      *         start.
      * @param isChild Whether this is a supervised child account.
      */
-    @Override
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
             @Nullable SyncService syncService, boolean isChild) {
-        return super.addTestAccountThenSigninAndEnableSync(syncService, isChild);
+        return isChild ? addChildTestAccountThenEnableSync(syncService)
+                       : addTestAccountThenSigninAndEnableSync(syncService);
     }
 
     /**
      * @return The primary account of the requested {@link ConsentLevel}.
      */
-    @Override
     public CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
-        return super.getPrimaryAccount(consentLevel);
+        return SigninTestUtil.getPrimaryAccount(consentLevel);
     }
 
     /**
      * Sign out from the current account.
      */
-    @Override
     public void signOut() {
-        super.signOut();
+        SigninTestUtil.signOut();
+        mIsSignedIn = false;
     }
 
     /**
      * Sign out from the current account, ignoring usual checks (suitable for eg. test teardown, but
      * not feature testing).
      */
-    @Override
     public void forceSignOut() {
-        super.forceSignOut();
+        SigninTestUtil.forceSignOut();
+        mIsSignedIn = false;
     }
 }
