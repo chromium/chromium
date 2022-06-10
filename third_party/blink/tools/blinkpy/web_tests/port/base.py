@@ -148,7 +148,6 @@ class Port(object):
         ('mac11-arm64', 'arm64'),
         ('mac12', 'x86_64'),
         ('mac12-arm64', 'arm64'),
-        ('win7', 'x86'),
         ('win10.20h2', 'x86'),
         ('win11', 'x64'),
         ('trusty', 'x86_64'),
@@ -160,7 +159,7 @@ class Port(object):
             'mac10.13', 'mac10.14', 'mac10.15', 'mac11', 'mac11-arm64',
             'mac12', 'mac12-arm64'
         ],
-        'win': ['win7', 'win10.20h2', 'win11'],
+        'win': ['win10.20h2', 'win11'],
         'linux': ['trusty'],
         'fuchsia': ['fuchsia'],
     }
@@ -1717,11 +1716,11 @@ class Port(object):
         """Ports may provide a way to abbreviate configuration specifiers to conveniently
         refer to them as one term or alias specific values to more generic ones. For example:
 
-        (vista, win7) -> win # Abbreviate all Windows versions into one namesake.
+        (win10, win11) -> win # Abbreviate all Windows versions into one namesake.
         (precise, trusty) -> linux  # Change specific name of Linux distro to a more generic term.
 
         Returns a dictionary, each key representing a macro term ('win', for example),
-        and value being a list of valid configuration specifiers (such as ['vista', 'win7']).
+        and value being a list of valid configuration specifiers (such as ['win10', 'win11']).
         """
         return self.CONFIGURATION_SPECIFIER_MACROS
 

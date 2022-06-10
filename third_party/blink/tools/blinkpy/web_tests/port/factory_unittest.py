@@ -76,10 +76,10 @@ class FactoryTest(unittest.TestCase):
         self.assert_port(port_name='android', cls=android.AndroidPort)
 
     def test_win(self):
-        self.assert_port(port_name='win-win7', cls=win.WinPort)
         self.assert_port(port_name='win-win10.20h2', cls=win.WinPort)
+        self.assert_port(port_name='win-win11', cls=win.WinPort)
         self.assert_port(
-            port_name='win', os_name='win', os_version='win7', cls=win.WinPort)
+            port_name='win', os_name='win', os_version='win11', cls=win.WinPort)
 
     def test_unknown_specified(self):
         with self.assertRaises(NotImplementedError):

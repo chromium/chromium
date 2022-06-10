@@ -508,9 +508,9 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         then an entry should be added for that port using a build that is
         available.
 
-        For example, if there's no entry for the port "win-win7", but there
-        is an entry for the "win-win10" port, then an entry might be added
-        for "win-win7" using the results from "win-win10".
+        For example, if there's no entry for the port "win-win10", but there
+        is an entry for the "win-win11" port, then an entry might be added
+        for "win-win10" using the results from "win-win11".
         """
         all_ports = {
             self._tool.builders.port_name_for_builder_name(b)
@@ -537,7 +537,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         """
 
         # A full port name should normally always be of the form <os>-<version>;
-        # for example "win-win7", or "linux-trusty". For the test port used in
+        # for example "win-win11", or "linux-trusty". For the test port used in
         # unit tests, though, the full port name may be "test-<os>-<version>".
         def os_name(port):
             if '-' not in port:

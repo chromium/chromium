@@ -1,5 +1,3 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.13 Mac11 Mac12 Win Win7 Win10 Win11 ]
-# tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
 # These expectations are used when LayoutNG is disabled. We test this
@@ -1805,12 +1803,12 @@ external/wpt/html/interaction/focus/focusgroup/tentative/grid-navigation/simple-
 external/wpt/html/interaction/focus/focusgroup/tentative/grid-navigation/simple-case-with-non-focusable-cell-in-the-center.html [ Failure ]
 external/wpt/html/interaction/focus/focusgroup/tentative/grid-navigation/wraps-in-both-axes.html [ Failure ]
 
-crbug.com/1047358 [ Linux ] paint/pagination/composited-paginated-outlined-box.html [ Failure ]
+crbug.com/1047358 paint/pagination/composited-paginated-outlined-box.html [ Failure ]
 
-crbug.com/829028 [ Linux ] compositing/gestures/gesture-tapHighlight-lines-and-float-in-multicol.html [ Failure ]
+crbug.com/829028 compositing/gestures/gesture-tapHighlight-lines-and-float-in-multicol.html [ Failure ]
 
-crbug.com/591099 [ Linux ] fast/backgrounds/quirks-mode-line-box-backgrounds.html [ Failure ]
-crbug.com/591099 [ Linux ] fast/css3-text/css3-text-decoration/text-underline-position/text-underline-position-under.html [ Failure ]
-crbug.com/591099 [ Linux ] editing/selection/paint-hyphen.html [ Failure Pass ]
+crbug.com/591099 fast/backgrounds/quirks-mode-line-box-backgrounds.html [ Failure ]
+crbug.com/591099 fast/css3-text/css3-text-decoration/text-underline-position/text-underline-position-under.html [ Failure ]
+crbug.com/591099 editing/selection/paint-hyphen.html [ Failure Pass ]
 
-crbug.com/1012289 [ Linux ] external/wpt/css/css-lists/list-style-type-string-005b.html [ Failure ]
+crbug.com/1012289 external/wpt/css/css-lists/list-style-type-string-005b.html [ Failure ]

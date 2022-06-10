@@ -1,5 +1,3 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.13 Mac11 Mac12 Win Win7 Win10.20h2 Win11 ]
-# tags: [ Release Debug ]
 # results: [ Skip ]
 
 # This file controls which subdirectories of the w3c test repos we import.

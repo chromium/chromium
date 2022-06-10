@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.13 Mac10.14 Mac10.15 Mac11 Mac11-arm64 Mac12 Mac12-arm64 Win Win7 Win10.20h2 Win11 ]
+# tags: [ Android Fuchsia Linux Mac Mac10.13 Mac10.14 Mac10.15 Mac11 Mac11-arm64 Mac12 Mac12-arm64 Win Win10.20h2 Win11 ]
 # tags: [ Release Debug ]
 # results: [ Skip Pass ]
 
@@ -124,7 +124,6 @@ fast/harness/results.html [ Skip ]
 # Windows 10 specific font fallback test.
 crbug.com/1018375 [ Linux ] inspector-protocol/layout-fonts/fallback-dingbats.js [ Skip ]
 crbug.com/1018375 [ Mac ] inspector-protocol/layout-fonts/fallback-dingbats.js [ Skip ]
-crbug.com/1018375 [ Win7 ] inspector-protocol/layout-fonts/fallback-dingbats.js [ Skip ]
 
 # Mac only test for case-insensitive font-matching.
 [ Linux ] inspector-protocol/layout-fonts/mac-case-insensitive-matching.js [ Skip ]
@@ -266,12 +265,6 @@ crbug.com/665014 virtual/gpu-rasterization/images/cross-fade-svg-size.html [ Ski
 
 # Debug rendering difference only on Win Debug
 crbug.com/484370 [ Debug Win ] svg/custom/gradient-userSpaceOnUse-with-percentage.svg [ Skip ]
-crbug.com/552433 [ Debug Win7 ] svg/W3C-SVG-1.1/coords-units-02-b.svg [ Skip ]
-crbug.com/606302 [ Debug Win7 ] compositing/perpendicular-layer-sorting.html [ Skip ]
-crbug.com/606302 [ Debug Win7 ] transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html [ Skip ]
-crbug.com/606302 [ Debug Win7 ] transforms/3d/point-mapping/3d-point-mapping-deep.html [ Skip ]
-crbug.com/702176 [ Debug Win7 ] fast/table/border-collapsing/001-vertical.html [ Skip ]
-crbug.com/702176 [ Debug Win7 ] fast/table/border-collapsing/001.html [ Skip ]
 
 # Only Windows supports Symbol CMAP encoded fonts.
 crbug.com/627953 [ Linux ] virtual/text-antialias/symbol-cmap.html [ Skip ]
@@ -1051,9 +1044,6 @@ virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream
 # run_web_tests.py; see https://crbug.com/359838.
 http/tests/ManualTests/* [ Skip ]
 
-# These test produce invisible different pixels on Win7 Debug.
-[ Debug Win7 ] fast/table/backgr_border-table-column-group-collapsed-border.html [ Skip ]
-
 # Fails in debug mode, because in debug mode we recompute visual rects after
 # changes to subpixel offsets of composited layers to detect under-invalidation
 # in testing, whereas otherwise we do not do so if the composited layer has a
@@ -1699,44 +1689,6 @@ external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Skip ]
 virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Skip ]
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Pass ]
 # ==== Tests incompatible with the default WPT Origin Isolation end here ==^^
-
-# Tests using testRunner.useUnfortunateSynchronousResizeMode occasionally fail on Win7,
-crbug.com/946022 [ Win7 ] animations/responsive/viewport-unit-translate-responsive-expected.html [ Skip ]
-crbug.com/946022 [ Win7 ] animations/responsive/viewport-unit-transform-responsive-expected.html [ Skip ]
-crbug.com/946022 [ Win7 ] animations/responsive/viewport-unit-transform-responsive.html [ Skip ]
-crbug.com/946022 [ Win7 ] animations/responsive/viewport-unit-translate-responsive.html [ Skip ]
-crbug.com/946022 [ Win7 ] css3/viewport-percentage-lengths/viewport-percentage-lengths-resize.html [ Skip ]
-crbug.com/946022 [ Win7 ] compositing/transitions/transform-on-large-layer.html [ Skip ]
-crbug.com/946022 [ Win7 ] compositing/transitions/transform-on-large-layer-expected.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/autoresize/turn-off-autoresize.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/autoresize/basic.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/dom/viewport/resize-event-fired-window-resized.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/dom/Window/window-resize-contents.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/dom/rtl-scroll-to-leftmost-and-resize.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/dynamic/window-resize-scrollbars-test.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/events/resize-events-count.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/css-grid-layout/flex-content-sized-columns-resize.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/css-grid-layout/flex-content-sized-columns-resize-expected.html [ Skip ]
-crbug.com/946022 [ Win7 ] virtual/text-antialias/line-break-between-text-nodes-with-inline-blocks.html [ Skip ]
-crbug.com/946022 [ Win7 ] images/image-click-scale-restore-zoomed-image.html [ Skip ]
-crbug.com/946022 [ Win7 ] images/image-zoom-to-25.html [ Skip ]
-crbug.com/946022 [ Win7 ] images/image-zoom-to-500.html [ Skip ]
-crbug.com/946022 [ Win7 ] media/controls/overflow-menu-hide-on-resize.html [ Skip ]
-crbug.com/946022 [ Win7 ] paint/invalidation/resize-iframe-text.html [ Skip ]
-crbug.com/946022 [ Win7 ] paint/invalidation/scroll/scrollbar-damage-and-full-viewport-repaint.html [ Skip ]
-crbug.com/946022 [ Win7 ] paint/invalidation/window-resize/* [ Skip ]
-
-# These text-antialias tests are flaky on Win7. Won't fix as we have test coverage on Win10.
-crbug.com/657646 [ Win7 ] virtual/text-antialias/font-weight.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/textIteratorNilRenderer.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/font-stretch.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/sub-pixel/text-scaling-pixel.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/international/bidi-listbox-atsui.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/international/bidi-listbox.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/international/lang-glyph-cache-separation.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/font-stretch-variant.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/drawBidiText.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/font-features/caps-native-synthesis.html [ Skip ]
 
 external/wpt/html/semantics/forms/the-input-element/event-select-manual.html [ Skip ]
 external/wpt/html/editing/dnd/the-datatransferitem-interface/getAsString-manual.html [ Skip ]

@@ -63,9 +63,6 @@ class WebTestBuilders(builders.Builders):
                 'WebKit Linux layout_ng_disabled Builder': {
                     'linux_layout_tests_layout_ng_disabled',
                 },
-                'win7-blink-rel-dummy': {
-                    'win7-blink-rel',
-                },
                 'win10.20h2-blink-rel-dummy': {
                     'win10.20h2-blink-rel',
                 },

@@ -1,9 +1,7 @@
 # Pending Beacon API: Tests should all pass with
 #   --enable-blink-features=PendingBeaconAPI
 #
-# tags: [ Android Fuchsia Linux Mac Win Win7 Win10 ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
-# tags: [ Release Debug ]
 
 crbug.com/1293679 pending_beacon/pending_beacon-basic.html [ Pass ]
 crbug.com/1293679 pending_beacon/pending_beacon-deactivate.html [ Pass ]
