@@ -29,6 +29,8 @@ class DeviceManagementResponse;
 
 namespace policy {
 
+class AutoEnrollmentStateMessageProcessor;
+
 // Interacts with the device management service and determines whether this
 // machine should automatically enter the Enterprise Enrollment screen during
 // OOBE.
@@ -40,11 +42,6 @@ class AutoEnrollmentClientImpl
   // server-backed state key is used. It will set the identifier for the
   // DeviceAutoEnrollmentRequest.
   class DeviceIdentifierProviderFRE;
-
-  // Subclasses of this class generate the request to download the device state
-  // (after determining that there is server-side device state) and parse the
-  // response.
-  class StateDownloadMessageProcessor;
 
   class FactoryImpl : public Factory {
    public:
@@ -106,7 +103,7 @@ class AutoEnrollmentClientImpl
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<DeviceIdentifierProviderFRE>
           device_identifier_provider_fre,
-      std::unique_ptr<StateDownloadMessageProcessor>
+      std::unique_ptr<AutoEnrollmentStateMessageProcessor>
           state_download_message_processor,
       int power_initial,
       int power_limit,
@@ -243,7 +240,7 @@ class AutoEnrollmentClientImpl
   std::unique_ptr<DeviceIdentifierProviderFRE> device_identifier_provider_fre_;
 
   // Fills and parses state retrieval request / response.
-  std::unique_ptr<StateDownloadMessageProcessor>
+  std::unique_ptr<AutoEnrollmentStateMessageProcessor>
       state_download_message_processor_;
 
   // Obtains the device state using PSM protocol. Handles all communications
