@@ -3493,7 +3493,7 @@
 <translation id="4348766275249686434">एरर संकलित करा</translation>
 <translation id="4349828822184870497">उपयुक्त</translation>
 <translation id="4350230709416545141">तुमचे स्थान अ‍ॅक्सेस करण्यापासून <ph name="HOST" /> ला नेहमी ब्लॉक करा</translation>
-<translation id="4350782034419308508">Hey Google</translation>
+<translation id="4350782034419308508">Ok Google</translation>
 <translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />सर्वोत्तम अनुभव पुरवण्यासाठी, <ph name="DEVICE_OS" /> हे डिव्हाइसबद्दल हार्डवेअर डेटा गोळा करते आणि कोणती अपडेट डिलिव्हर केली पाहिजे हे निर्धारित करण्यासाठी तो Google सोबत शेअर करते. याव्यतिरिक्त, तुम्ही <ph name="DEVICE_OS" /> मधील अनुभव आणि सेवा यांच्याशी संबंधित सपोर्ट आणि सुधारणा यांसारख्या अतिरिक्त उद्देशांसाठी Google ला हा डेटा वापरण्याची अनुमती देऊ शकता.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />फिल्टर करण्याचे पर्याय अपडेट करण्यासाठी Google ला पाठवलेला डेटा तसेच असे कोणतेही प्रसंग ज्यात तुम्ही Google सोबत डेटा शेअर करण्याचे निवडले होते हे पाहण्याकरिता तुम्ही या डिव्हाइसवर लॉग इन करू शकता आणि chrome://system मधील CHROMEOSFLEX_HARDWARE_INFO विभागाला भेट देऊ शकता.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> हे Google सोबत कदाचित शेअर करेल असा डेटा आणि तो कसा वापरला जातो याविषयीच्या अधिक तपशिलांसाठी g.co/flex/HWDataCollection ला भेट द्या.<ph name="END_PARAGRAPH3" /></translation>
