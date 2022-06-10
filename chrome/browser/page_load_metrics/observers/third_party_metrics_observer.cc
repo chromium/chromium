@@ -44,12 +44,18 @@ ThirdPartyMetricsObserver::ThirdPartyInfo::ThirdPartyInfo() = default;
 ThirdPartyMetricsObserver::ThirdPartyInfo::ThirdPartyInfo(
     const ThirdPartyInfo&) = default;
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+const char* ThirdPartyMetricsObserver::GetObserverName() const {
+  static const char kName[] = "ThirdPartyMetricsObserver";
+  return kName;
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ThirdPartyMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  return STOP_OBSERVING;
+  // FrameReceivedUserActivation, OnLoadedResource, OnCookies{Read|Change}, and
+  // OnStorageAccessed need the observer-side forwarding.
+  return FORWARD_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
