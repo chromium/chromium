@@ -391,20 +391,6 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
       base::FeatureList::IsEnabled(features::kV8VirtualMemoryCage)) {
     v8_sandbox_is_initialized = v8::V8::InitializeSandbox();
     CHECK(!must_initialize_sandbox || v8_sandbox_is_initialized);
-
-    // Record the size of the sandbox, in GB. The size will always be a power
-    // of two, so we use a sparse histogram to capture it. If the
-    // initialization failed, this API will return zero. The main reason for
-    // capturing this histogram here instead of having V8 do it is that there
-    // are no Isolates available yet, which are required for recording
-    // histograms in V8.
-    size_t size = v8::V8::GetSandboxSizeInBytes();
-    int sizeInGB = size >> 30;
-    DCHECK(base::bits::IsPowerOfTwo(size));
-    DCHECK(size == 0 || sizeInGB > 0);
-    // This uses the term "cage" instead of "sandbox" for historical reasons.
-    // TODO(1218005) remove this once the finch trial has ended.
-    base::UmaHistogramSparse("V8.VirtualMemoryCageSizeGB", sizeInGB);
   }
 #endif  // V8_ENABLE_SANDBOX
 
@@ -422,20 +408,33 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
 
 #if defined(V8_ENABLE_SANDBOX)
   if (v8_sandbox_is_initialized) {
+    // Record some sandbox statistics into UMA.
+    // The main reason for capturing these histograms here instead of having V8
+    // do it is that there are no Isolates available yet, which are required
+    // for recording histograms in V8.
+
+    // Record the mode of the sandbox.
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused. This should match enum
-    // V8VirtualMemoryCageMode in \tools\metrics\histograms\enums.xml
-    // This uses the term "cage" instead of "sandbox" for historical reasons.
-    // TODO(1218005) remove this once the finch trial has ended.
-    enum class VirtualMemoryCageMode {
+    // V8SandboxMode in tools/metrics/histograms/enums.xml.
+    enum class V8SandboxMode {
       kSecure = 0,
       kInsecure = 1,
       kMaxValue = kInsecure,
     };
-    base::UmaHistogramEnumeration("V8.VirtualMemoryCageMode",
+    base::UmaHistogramEnumeration("V8.SandboxMode",
                                   v8::V8::IsSandboxConfiguredSecurely()
-                                      ? VirtualMemoryCageMode::kSecure
-                                      : VirtualMemoryCageMode::kInsecure);
+                                      ? V8SandboxMode::kSecure
+                                      : V8SandboxMode::kInsecure);
+
+    // Record the size of the address space reservation backing the sandbox.
+    // The size will always be one of a handful of values, so use a sparse
+    // histogram to capture it.
+    size_t size = v8::V8::GetSandboxReservationSizeInBytes();
+    DCHECK_GT(size, 0U);
+    size_t sizeInGB = size >> 30;
+    DCHECK_EQ(sizeInGB << 30, size);
+    base::UmaHistogramSparse("V8.SandboxReservationSizeGB", sizeInGB);
 
     // When the sandbox is enabled, ArrayBuffers must be allocated inside of
     // it. To achieve that, PA's ConfigurablePool is created inside the sandbox

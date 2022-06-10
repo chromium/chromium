@@ -1443,6 +1443,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.SandboxMode" enum="V8SandboxMode"
+    expires_after="2022-12-04">
+  <owner>saelo@chromium.org</owner>
+  <owner>ishell@chromium.org</owner>
+  <summary>
+    Mode of operation of V8's sandbox.
+
+    By default, the V8 sandbox is fully backed by a large virtual address space
+    reservation, ensuring that only V8-related objects are located inside the
+    sandbox. In that case, the sandbox is configured securely. However, when it
+    is not possible to reserve a sufficient amount of virtual address space
+    during initialization (e.g. due to memory or virtual address space
+    constraints), the sandbox will instead use a fallback mode where only a part
+    of the sandbox's address space is actually reserved. In that case, unrelated
+    memory mappings may end up inside the sandbox though, where they could be
+    corrupted by an attacker. As such, this mode is considered insecure.
+
+    Recorded as enum value during initialization of V8.
+  </summary>
+</histogram>
+
+<histogram name="V8.SandboxReservationSizeGB" units="GB"
+    expires_after="2022-12-04">
+  <owner>saelo@chromium.org</owner>
+  <owner>ishell@chromium.org</owner>
+  <summary>
+    Size of the virtual address space reservation backing the V8 sandbox, in GB.
+
+    This value is typically larger than the size of the sandbox as it includes
+    the surrounding guard regions. However, in the case of a partially-reserved
+    (i.e. insecure) sandbox, this value will be smaller than the sandbox size.
+
+    Recorded during initialization of V8.
+  </summary>
+</histogram>
+
 <histogram name="V8.SharedArrayAllocationSizes" units="MB"
     expires_after="2020-12-02">
   <owner>gdeepti@chromium.org</owner>
@@ -1612,40 +1648,6 @@ chromium-metrics-reviews@google.com.
     on each regular optimization of a function.
 
     This histogram only records metrics on machines with high-resolution clocks.
-  </summary>
-</histogram>
-
-<histogram name="V8.VirtualMemoryCageMode" enum="V8VirtualMemoryCageMode"
-    expires_after="2022-12-04">
-  <owner>saelo@chromium.org</owner>
-  <owner>ishell@chromium.org</owner>
-  <summary>
-    Mode of operation of V8's virtual memory cage.
-
-    V8's virtual memory cage can operate in two different modes: the normal,
-    secure mode, and an insecure fallback mode, used if a normal cage can, for
-    whatever reason, not be created. The insecure mode does not have the desired
-    security properties but allows V8 to otherwise operate normally. The mode of
-    the cage is recorded as enum value during the initialization of V8, after
-    the virtual memory cage has been initialized.
-  </summary>
-</histogram>
-
-<histogram name="V8.VirtualMemoryCageSizeGB" units="GB"
-    expires_after="2022-12-04">
-  <owner>saelo@chromium.org</owner>
-  <owner>ishell@chromium.org</owner>
-  <summary>
-    Size of the virtual memory cage, in GB.
-
-    Recorded during initialization of V8, after the virtual memory cage has been
-    created. If the initial reservation attempt fails, the size of the cage is
-    reduced until either the reservation succeeds or a minimum size is reached.
-    A value of zero indicates that even the minimum size could not be reserved,
-    implying that the cage initialization failed.
-
-    This value excludes the size of any guard regions placed around the cage and
-    so represents only the usable size of the cage.
   </summary>
 </histogram>
 
