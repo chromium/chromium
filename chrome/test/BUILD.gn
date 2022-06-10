@@ -4623,6 +4623,7 @@ if (is_chromeos_lacros) {
       "../browser/ui/startup/lacros_first_run_service_browsertest.cc",
       "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
       "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
+      "../browser/ui/web_applications/lacros_web_app_browsertest.cc",
       "../browser/ui/web_applications/share_to_target_browsertest.cc",
       "../browser/web_applications/app_service/lacros_web_apps_controller_lacros_browsertest.cc",
     ]
