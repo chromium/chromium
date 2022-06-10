@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.clipboard.ClipboardSugges
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.ExploreIconProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.MostVisitedTilesProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionProcessor;
@@ -58,19 +57,16 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable ImageFetcher mImageFetcher;
     private @Nullable LargeIconBridge mIconBridge;
     private @NonNull BookmarkState mBookmarkState;
-    private @NonNull ExploreIconProvider mExploreIconProvider;
     @Px
     private int mDropdownHeight;
     private boolean mBuiltListHasFullyConcealedElements;
 
     DropdownItemViewInfoListBuilder(@NonNull Supplier<Tab> tabSupplier, BookmarkState bookmarkState,
-            @NonNull ExploreIconProvider exploreIconProvider,
             @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mDropdownHeight = DROPDOWN_HEIGHT_UNKNOWN;
         mActivityTabSupplier = tabSupplier;
         mBookmarkState = bookmarkState;
-        mExploreIconProvider = exploreIconProvider;
         mOmniboxPedalDelegate = omniboxPedalDelegate;
     }
 
@@ -101,8 +97,8 @@ class DropdownItemViewInfoListBuilder {
         registerSuggestionProcessor(
                 new EntitySuggestionProcessor(context, host, imageFetcherSupplier));
         registerSuggestionProcessor(new TailSuggestionProcessor(context, host));
-        registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, iconBridgeSupplier,
-                mExploreIconProvider, GlobalDiscardableReferencePool.getReferencePool()));
+        registerSuggestionProcessor(
+                new MostVisitedTilesProcessor(context, host, iconBridgeSupplier));
         registerSuggestionProcessor(new PedalSuggestionProcessor(context, host, textProvider,
                 iconBridgeSupplier, mBookmarkState, mOmniboxPedalDelegate, delegate));
         registerSuggestionProcessor(new BasicSuggestionProcessor(

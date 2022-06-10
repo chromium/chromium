@@ -84,7 +84,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         when(mMockHeaderProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.HEADER);
 
         mBuilder = new DropdownItemViewInfoListBuilder(
-                () -> null, (url) -> false, (pixelSize, callback) -> {}, mMockOmniboxPedalDelegate);
+                () -> null, (url) -> false, mMockOmniboxPedalDelegate);
         mBuilder.registerSuggestionProcessor(mMockSuggestionProcessor);
         mBuilder.setHeaderProcessorForTest(mMockHeaderProcessor);
     }

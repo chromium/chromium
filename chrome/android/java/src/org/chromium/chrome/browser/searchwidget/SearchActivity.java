@@ -199,7 +199,6 @@ public class SearchActivity extends AsyncInitializationActivity
                 /*saveOfflineButtonState=*/(tab) -> false, /*omniboxUma*/(url, transition) -> {},
                 TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false,
                 VoiceToolbarButtonController::isToolbarMicEnabled, new DummyJankTracker(),
-                /*ExploreIconState*/(pixelSize, callback) ->{},
                 /*merchantTrustSignalsCoordinatorSupplier=*/null,
                 new OmniboxPedalDelegateImpl(this, new OneshotSupplierImpl<>(),
                         getModalDialogManagerSupplier()), null,

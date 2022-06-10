@@ -424,7 +424,7 @@ public class VoiceRecognitionHandlerTest {
             super(parent, delegate, dropdownEmbedder, urlBarEditingTextProvider,
                     () -> mModalDialogManager, null, null, mDataProvider,
                     mProfileSupplier, (tab) -> {}, null, (url) -> false, new DummyJankTracker(),
-                    (pixelSize, callback) -> {}, mPedalDelegate);
+                    mPedalDelegate);
             // clang-format on
         }
 

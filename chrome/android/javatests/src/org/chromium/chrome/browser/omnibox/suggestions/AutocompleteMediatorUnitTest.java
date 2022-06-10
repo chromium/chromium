@@ -236,8 +236,8 @@ public class AutocompleteMediatorUnitTest {
             mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
                     mAutocompleteDelegate, mTextStateProvider, mListModel,
                     mHandler, () -> mModalDialogManager, null, null,
-                    mLocationBarDataProvider, tab -> {}, mTabWindowManagerSupplier, url -> false, new DummyJankTracker(),
-                    (pixelSize, callback) -> {}, mPedalDelegate);
+                    mLocationBarDataProvider, tab -> {}, mTabWindowManagerSupplier, url -> false,
+                    new DummyJankTracker(), mPedalDelegate);
             mMediator.setAutocompleteProfile(mProfile);
         });
         // clang-format on
