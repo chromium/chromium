@@ -15,24 +15,23 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 class FileSystemContext;
 class SpecialStoragePolicy;
 }
 
-class GURL;
-
 namespace content {
 
 // Clear the plugin private filesystem data in |filesystem_context| for
-// |storage_origin| if any file has a last modified time between |begin|
-// and |end|. If |storage_origin| is not specified, then all available
+// |storage_key| if any file has a last modified time between |begin|
+// and |end|. If |storage_key| is not specified, then all available
 // origins are checked. |callback| is called when the operation is complete.
 // This must be called on the file task runner.
 void ClearPluginPrivateDataOnFileTaskRunner(
     scoped_refptr<storage::FileSystemContext> filesystem_context,
-    const GURL& storage_origin,
+    const blink::StorageKey& storage_key,
     StoragePartition::OriginMatcherFunction origin_matcher,
     const scoped_refptr<storage::SpecialStoragePolicy>& special_storage_policy,
     const base::Time begin,

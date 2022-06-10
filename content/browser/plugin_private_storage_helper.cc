@@ -416,7 +416,7 @@ void PluginPrivateDataDeletionHelper::DecrementTaskCount(
 
 void ClearPluginPrivateDataOnFileTaskRunner(
     scoped_refptr<storage::FileSystemContext> filesystem_context,
-    const GURL& storage_origin_url,
+    const blink::StorageKey& storage_key,
     StoragePartition::OriginMatcherFunction origin_matcher,
     const scoped_refptr<storage::SpecialStoragePolicy>& special_storage_policy,
     const base::Time begin,
@@ -424,7 +424,7 @@ void ClearPluginPrivateDataOnFileTaskRunner(
     base::OnceClosure callback) {
   DCHECK(filesystem_context->default_file_task_runner()
              ->RunsTasksInCurrentSequence());
-  DVLOG(3) << "Clearing plugin data for origin: " << storage_origin_url;
+  DVLOG(3) << "Clearing plugin data for storage key: " << storage_key;
 
   storage::FileSystemBackend* backend =
       filesystem_context->GetFileSystemBackend(
@@ -442,13 +442,12 @@ void ClearPluginPrivateDataOnFileTaskRunner(
     return;
   }
 
-  // If a specific origin parameter is provided, then check that it is in the
-  // list returned and remove all the other StorageKeys.
-  if (!storage_origin_url.is_empty()) {
-    DCHECK(!origin_matcher) << "Only 1 of |storage_origin_url| and "
-                               "|origin_matcher| should be specified.";
-    const blink::StorageKey storage_key =
-        blink::StorageKey(url::Origin::Create(storage_origin_url));
+  // If a specific storage key parameter is provided, then check that it is in
+  // the list returned and remove all the other StorageKeys.
+  const bool storage_key_empty = storage_key.origin().opaque();
+  if (!storage_key_empty) {
+    DCHECK(!origin_matcher)
+        << "Only 1 of |storage_key| and |origin_matcher| should be specified.";
     if (!base::Contains(storage_keys, storage_key)) {
       // Nothing matches, so nothing to do.
       std::move(callback).Run();
@@ -462,15 +461,15 @@ void ClearPluginPrivateDataOnFileTaskRunner(
 
   // If a filter is provided, determine which StorageKeys match.
   if (origin_matcher) {
-    DCHECK(storage_origin_url.is_empty())
-        << "Only 1 of |storage_origin_url| and |origin_matcher| should be "
+    DCHECK(storage_key_empty)
+        << "Only 1 of |storage_key| and |origin_matcher| should be "
            "specified.";
     std::vector<blink::StorageKey> storage_keys_to_check;
     storage_keys_to_check.swap(storage_keys);
-    for (auto& storage_key : storage_keys_to_check) {
-      if (origin_matcher.Run(storage_key.origin(),
+    for (auto& candidate_storage_key : storage_keys_to_check) {
+      if (origin_matcher.Run(candidate_storage_key.origin(),
                              special_storage_policy.get()))
-        storage_keys.push_back(std::move(storage_key));
+        storage_keys.push_back(std::move(candidate_storage_key));
     }
 
     // If no StorageKeys matched, there is nothing to do.

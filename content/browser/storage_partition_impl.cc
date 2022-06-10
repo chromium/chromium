@@ -2531,7 +2531,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
         FROM_HERE,
         base::BindOnce(
             &ClearPluginPrivateDataOnFileTaskRunner,
-            base::WrapRefCounted(filesystem_context), storage_origin,
+            base::WrapRefCounted(filesystem_context),
+            blink::StorageKey(url::Origin::Create(storage_origin)),
             origin_matcher, storage_policy_ref, begin, end,
             CreateTaskCompletionClosure(TracingDataType::kPluginPrivate)));
   }
