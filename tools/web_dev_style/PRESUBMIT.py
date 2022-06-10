@@ -16,4 +16,7 @@ def CheckChangeOnCommit(*args):
 def _CommonChecks(input_api, output_api):
   tests = ['test_suite.py']
 
-  return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
+  return input_api.canned_checks.RunUnitTests(input_api,
+                                              output_api,
+                                              tests,
+                                              run_on_python2=False)
