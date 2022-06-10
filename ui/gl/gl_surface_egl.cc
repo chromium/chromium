@@ -507,7 +507,7 @@ EGLDisplay GetDisplayFromType(
       extra_display_attribs.push_back(
           EGL_PLATFORM_ANGLE_DEVICE_TYPE_SWIFTSHADER_ANGLE);
 #if defined(USE_OZONE)
-#if BUILDFLAG(OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(OZONE_PLATFORM_X11)
       extra_display_attribs.push_back(EGL_PLATFORM_ANGLE_NATIVE_PLATFORM_TYPE_ANGLE);
       extra_display_attribs.push_back(EGL_PLATFORM_VULKAN_DISPLAY_MODE_HEADLESS_ANGLE);
 #endif  // BUILDFLAG(OZONE_PLATFORM_X11)
