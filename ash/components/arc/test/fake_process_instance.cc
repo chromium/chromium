@@ -55,6 +55,7 @@ void FakeProcessInstance::ApplyHostMemoryPressure(
 
 void FakeProcessInstance::RequestLowMemoryKillCounts(
     RequestLowMemoryKillCountsCallback callback) {
+  DCHECK(!request_low_memory_kill_counts_callback_);
   request_low_memory_kill_counts_callback_ = std::move(callback);
 }
 

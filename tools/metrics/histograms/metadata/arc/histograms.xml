@@ -31,6 +31,36 @@ chromium-metrics-reviews@google.com.
   <variant name="TalkBack"/>
 </variants>
 
+<variants name="ArcAppKillType">
+  <variant name="LinuxOOM" summary="ARCVM's Linux OOM Killer"/>
+  <variant name="LMKD.Cached"
+      summary="LMKD with oom_score_adj &gt;= CACHED_APP_MIN_ADJ"/>
+  <variant name="LMKD.Foreground"
+      summary="LMKD with oom_score_adj &lt;= FOREGROUND_APP_ADJ"/>
+  <variant name="LMKD.Perceptible"
+      summary="LMKD with FOREGROUND_APP_ADJ &lt; oom_score_adj &lt;
+               CACHED_APP_MIN_ADJ"/>
+  <variant name="Pressure.Cached"
+      summary="ApplyHostMemoryPressure with ProcessState &gt;=
+               PROCESS_STATE_CACHED_ACTIVITY"/>
+  <variant name="Pressure.Foreground"
+      summary="ApplyHostMemoryPressue with ProcessState &lt;
+               PROCESS_STATE_TOP or ProcessState == PROCESS_STATE_TOP and
+               focused"/>
+  <variant name="Pressure.Perceptible"
+      summary="ApplyHostMemoryPressure with PROCESS_STATE_TOP &lt;=
+               ProcessState &lt; PROCESS_STATE_CACHED_ACTIVITY and not
+               focused"/>
+</variants>
+
+<variants name="ArcBackgroundVms">
+  <variant name="Crostini" summary="Crostini is also running"/>
+  <variant name="OnlyArc" summary="no other VMs are running"/>
+  <variant name="PluginVm" summary="a plugin VM is also running"/>
+  <variant name="Steam" summary="Steam is also running"/>
+  <variant name="UnknownVm" summary="an unknown type of VM is also running"/>
+</variants>
+
 <variants name="ArcBootTypes">
   <variant name="FirstBoot" summary="For the very first boot, aka opt-in."/>
   <variant name="FirstBootAfterUpdate"
@@ -229,77 +259,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Arc.App.LowMemoryKills.LinuxOOMCount10Minutes" units="Apps"
-    expires_after="2022-12-04">
+<histogram name="Arc.App.LowMemoryKills.{ArcAppKillType}Count10Minutes"
+    units="Apps" expires_after="2022-10-04">
   <owner>cwd@google.com</owner>
   <owner>cros-platform-kernel-core@google.com</owner>
   <summary>
-    Number of ARC Apps killed by the Linux OOM Killer in each interval of 10
+    Number of ARC Apps killed by {ArcAppKillType} in each interval of 10
     minutes.
   </summary>
 </histogram>
 
-<histogram name="Arc.App.LowMemoryKills.LMKD.CachedCount10Minutes" units="Apps"
-    expires_after="2022-12-04">
+<histogram
+    name="Arc.App.LowMemoryKills.{ArcBackgroundVms}.{ArcAppKillType}Count10Minutes"
+    units="Apps" expires_after="2022-10-04">
   <owner>cwd@google.com</owner>
   <owner>cros-platform-kernel-core@google.com</owner>
   <summary>
-    Number of &quot;cached&quot; ARC Apps killed in each interval of 10 minutes
-    by LMKD with oom_score_adj &gt;= CACHED_APP_MIN_ADJ.
-  </summary>
-</histogram>
-
-<histogram name="Arc.App.LowMemoryKills.LMKD.ForegroundCount10Minutes"
-    units="Apps" expires_after="2022-12-04">
-  <owner>cwd@google.com</owner>
-  <owner>cros-platform-kernel-core@google.com</owner>
-  <summary>
-    Number of &quot;foreground&quot; ARC Apps killed in each interval of 10
-    minutes by LMKD with oom_score_adj &lt;= FOREGROUND_APP_ADJ.
-  </summary>
-</histogram>
-
-<histogram name="Arc.App.LowMemoryKills.LMKD.PerceptibleCount10Minutes"
-    units="Apps" expires_after="2022-12-04">
-  <owner>cwd@google.com</owner>
-  <owner>cros-platform-kernel-core@google.com</owner>
-  <summary>
-    Number of &quot;perceptible&quot; ARC Apps killed in each interval of 10
-    minutes by LMKD with FOREGROUND_APP_ADJ &lt; oom_score_adj &lt;
-    CACHED_APP_MIN_ADJ.
-  </summary>
-</histogram>
-
-<histogram name="Arc.App.LowMemoryKills.Pressure.CachedCount10Minutes"
-    units="Apps" expires_after="2022-12-04">
-  <owner>cwd@google.com</owner>
-  <owner>cros-platform-kernel-core@google.com</owner>
-  <summary>
-    Number of &quot;cached&quot; ARC Apps killed in each interval of 10 minutes
-    by ApplyHostMemoryPressure with ProcessState &gt;=
-    PROCESS_STATE_CACHED_ACTIVITY.
-  </summary>
-</histogram>
-
-<histogram name="Arc.App.LowMemoryKills.Pressure.ForegroundCount10Minutes"
-    units="Apps" expires_after="2022-12-04">
-  <owner>cwd@google.com</owner>
-  <owner>cros-platform-kernel-core@google.com</owner>
-  <summary>
-    Number of &quot;foreground&quot; ARC Apps killed in each interval of 10
-    minutes by ApplyHostMemoryPressure with ProcessState &lt; PROCESS_STATE_TOP
-    or ProcessState == PROCESS_STATE_TOP and focused.
-  </summary>
-</histogram>
-
-<histogram name="Arc.App.LowMemoryKills.Pressure.PerceptibleCount10Minutes"
-    units="Apps" expires_after="2022-12-04">
-  <owner>cwd@google.com</owner>
-  <owner>cros-platform-kernel-core@google.com</owner>
-  <summary>
-    Number of &quot;perceptible&quot; ARC Apps killed in each interval of 10
-    minutes by ApplyHostMemoryPressure with PROCESS_STATE_TOP &lt;= ProcessState
-    &lt; PROCESS_STATE_CACHED_ACTIVITY and not focused.
+    Number of ARC Apps killed by {ArcAppKillType} in each interval of 10 minutes
+    when {ArcBackgroundVms}.
   </summary>
 </histogram>
 
