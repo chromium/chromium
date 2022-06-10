@@ -115,6 +115,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Assistant.Libassistant.DlcInstallResult"
+    enum="Assistant.LibassistantDlcInstallResult" expires_after="2023-06-30">
+  <owner>wutao@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    The result of an attempt to install the libassistant DLC package. Emitted
+    when the Assistant service installs the DLC.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.Libassistant.DlcLoadStatus"
+    enum="Assistant.LibassistantDlcLoadStatus" expires_after="2023-06-30">
+  <owner>wutao@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records if the libassistant DLC is loaded successfully. Emitted when the
+    libassistant service initializes.
+  </summary>
+</histogram>
+
 <histogram name="Assistant.OptInFlow.GetSettingsRequestTime" units="ms"
     expires_after="2022-11-06">
   <owner>updowndota@chromium.org</owner>

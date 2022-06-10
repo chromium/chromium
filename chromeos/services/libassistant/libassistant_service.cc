@@ -12,8 +12,10 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_native_library.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
+#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/libassistant/libassistant_factory.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 
@@ -22,11 +24,20 @@ namespace libassistant {
 
 namespace {
 
+using LoadStatus = chromeos::assistant::LibassistantDlcLoadStatus;
+
 inline constexpr char kLibassistantPath[] =
     "opt/google/chrome/libassistant.so";
 
+inline constexpr char kDlcLoadStatusHistogram[] =
+    "Assistant.Libassistant.DlcLoadStatus";
+
 base::FilePath GetLibassisantPath(const std::string& dlc_path) {
   return base::FilePath(dlc_path).Append(kLibassistantPath);
+}
+
+void RecordLibassistantDlcLoadStatus(const LoadStatus& status) {
+  base::UmaHistogramEnumeration(kDlcLoadStatusHistogram, status);
 }
 
 class LibassistantFactoryImpl : public LibassistantFactory {
@@ -88,9 +99,11 @@ class LibassistantFactoryImpl : public LibassistantFactory {
     dlc_library_ = base::ScopedNativeLibrary(path);
     if (IsDlcLibraryValid()) {
       DVLOG(3) << "Loaded libassistant shared library from: " << path;
+      RecordLibassistantDlcLoadStatus(LoadStatus::kLoaded);
     } else {
       DVLOG(1) << "Failed to load libassistant shared library from: " << path
                << ", error: " << dlc_library_.GetError()->ToString();
+      RecordLibassistantDlcLoadStatus(LoadStatus::kNotLoaded);
     }
   }
 

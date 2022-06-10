@@ -34,6 +34,7 @@ component("libassistant") {
   deps = [
     ":internal",
     "//chromeos/assistant/internal:libassistant_shared_headers",
+    "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/libassistant/public/mojom",
   ]
 

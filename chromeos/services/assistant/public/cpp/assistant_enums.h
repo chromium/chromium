@@ -104,6 +104,35 @@ enum class AssistantExitPoint {
   kMaxValue = kOverviewMode,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// If any value is added, please update enums.xml
+// Assistant.LibassistantDlcInstallResult.
+// Enumeration of the result to install libassistant DLC.
+enum class LibassistantDlcInstallResult {
+  kSuccess = 0,
+  kErrorInternal = 1,
+  kErrorBusy = 2,
+  kErrorNeedReboot = 3,
+  kErrorInvalidDlc = 4,
+  kErrorAllocation = 5,
+  kErrorNoImageFound = 6,
+
+  kMaxValue = kErrorNoImageFound,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// If any value is added, please update enums.xml
+// Assistant.LibassistantDlcLoadStatus.
+// Enumeration of the status to load libassistant DLC.
+enum class LibassistantDlcLoadStatus {
+  kNotLoaded = 0,
+  kLoaded = 1,
+
+  kMaxValue = kLoaded,
+};
+
 }  // namespace assistant
 }  // namespace chromeos
 
