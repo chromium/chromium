@@ -27,8 +27,8 @@ import tempfile
 
 from update import (CDS_URL, CHROMIUM_DIR, CLANG_REVISION, LLVM_BUILD_DIR,
                     FORCE_HEAD_REVISION_FILE, PACKAGE_VERSION, RELEASE_VERSION,
-                    STAMP_FILE, DownloadUrl, DownloadAndUnpack, EnsureDirExists,
-                    ReadStampFile, RmTree, WriteStampFile)
+                    STAMP_FILE, THIS_DIR, DownloadUrl, DownloadAndUnpack,
+                    EnsureDirExists, ReadStampFile, RmTree, WriteStampFile)
 
 # Path constants. (All of these should be absolute paths.)
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
@@ -670,6 +670,16 @@ def main():
       # Build libclang.a as well as libclang.so
       '-DLIBCLANG_BUILD_STATIC=ON',
   ]
+
+  # See https://crbug.com/1302636#c49 - #c56 -- intercepting crypt_r() does not
+  # work with the sysroot for not fully understood reasons. Disable it.
+  sanitizers_override = [
+    '-DSANITIZER_OVERRIDE_INTERCEPTORS',
+    '-I' + os.path.join(THIS_DIR, 'sanitizers'),
+  ]
+  cflags += sanitizers_override
+  cxxflags += sanitizers_override
+
   if args.host_cc or args.host_cxx:
     assert args.host_cc and args.host_cxx, \
            "--host-cc and --host-cxx need to be used together"
@@ -698,21 +708,7 @@ def main():
 
     if sys.platform.startswith('linux'):
       MaybeDownloadHostGcc(args)
-      # Use the libraries in the specified gcc installation for building.
-      cflags.append('--gcc-toolchain=' + args.gcc_toolchain)
-      cxxflags.append('--gcc-toolchain=' + args.gcc_toolchain)
-      base_cmake_args += [
-          '-DLLVM_STATIC_LINK_CXX_STDLIB=ON',
-          # Force compiler-rt tests to use our gcc toolchain
-          # because the one on the host may be too old.
-          # Even with -static-libstdc++ the compiler-rt tests add -lstdc++
-          # which adds a DT_NEEDED to libstdc++.so so we need to add RPATHs
-          # to the gcc toolchain.
-          '-DCOMPILER_RT_TEST_COMPILER_CFLAGS=--gcc-toolchain=' +
-          args.gcc_toolchain + ' -Wl,-rpath,' +
-          os.path.join(args.gcc_toolchain, 'lib64') + ' -Wl,-rpath,' +
-          os.path.join(args.gcc_toolchain, 'lib32')
-      ]
+      base_cmake_args += [ '-DLLVM_STATIC_LINK_CXX_STDLIB=ON' ]
 
   if sys.platform == 'darwin':
     # For libc++, we only want the headers.
@@ -722,6 +718,36 @@ def main():
         '-DLIBCXX_INCLUDE_TESTS=OFF',
         '-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF',
     ])
+
+  if sys.platform.startswith('linux'):
+    # Download sysroots. This uses basically Chromium's sysroots, but with
+    # minor changes:
+    # - glibc version bumped to 2.18 to make __cxa_thread_atexit_impl
+    #   work (clang can require 2.18; chromium currently doesn't)
+    # - libcrypt.so.1 reversioned so that crypt() is picked up from glibc
+    # The sysroot was built at
+    # https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1
+    # and the hashes here are from sysroots.json in that CL.
+    toolchain_bucket = 'https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain/'
+
+    # amd64
+    # hash from https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1/build/linux/sysroot_scripts/sysroots.json#3
+    toolchain_hash = '2028cdaf24259d23adcff95393b8cc4f0eef714b'
+    toolchain_name = 'debian_bullseye_amd64_sysroot'
+    U = toolchain_bucket + toolchain_hash + '/' + toolchain_name + '.tar.xz'
+    sysroot = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
+    DownloadAndUnpack(U, sysroot)
+
+    # amd64 is the default toolchain, add it to base_cmake_args.
+    base_cmake_args.append('-DCMAKE_SYSROOT=' + sysroot)
+
+    # i386
+    # hash from https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1/build/linux/sysroot_scripts/sysroots.json#23
+    toolchain_hash = 'a033618b5e092c86e96d62d3c43f7363df6cebe7'
+    toolchain_name = 'debian_bullseye_i386_sysroot'
+    U = toolchain_bucket + toolchain_hash + '/' + toolchain_name + '.tar.xz'
+    sysroot_i386 = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
+    DownloadAndUnpack(U, sysroot_i386)
 
   if sys.platform == 'win32':
     base_cmake_args.append('-DLLVM_USE_CRT_RELEASE=MT')
@@ -1054,47 +1080,68 @@ def main():
   if not os.path.exists(rt_lib_dst_dir):
     os.makedirs(rt_lib_dst_dir)
 
-  # Do an out-of-tree build of compiler-rt for 32-bit Win clang_rt.profile.lib.
-  if sys.platform == 'win32':
+  # Do an out-of-tree build of compiler-rt for 32-bit Win clang_rt.profile.lib and
+  # 32-bit Linux crt/builtins/profile/sanitizer libs.
+  if sys.platform == 'win32' or sys.platform.startswith('linux'):
     compiler_rt_build_dir = os.path.join(LLVM_BUILD_DIR, 'compiler-rt')
     if os.path.isdir(compiler_rt_build_dir):
       RmTree(compiler_rt_build_dir)
     os.makedirs(compiler_rt_build_dir)
     os.chdir(compiler_rt_build_dir)
-    if 'clang-cl' in cc:
+    cflags_i386 = cflags
+    cxxflags_i386 = cxxflags
+    if 'clang' in cc:
       # clang-cl produces 64-bit binaries by default.
-      cflags += ['-m32']
-      cxxflags += ['-m32']
+      cflags_i386 += ['-m32']
+      cxxflags_i386 += ['-m32']
 
+    on_linux = 'ON' if sys.platform.startswith('linux') else 'OFF'
     compiler_rt_args = base_cmake_args + [
-        '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
-        '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
+        '-DCMAKE_C_FLAGS=' + ' '.join(cflags_i386),
+        '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags_i386),
         '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
         '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
         '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
-        '-DCOMPILER_RT_BUILD_BUILTINS=OFF',
-        '-DCOMPILER_RT_BUILD_CRT=OFF',
+        '-DCOMPILER_RT_BUILD_BUILTINS=' + on_linux,
+        '-DCOMPILER_RT_BUILD_CRT=' + on_linux,
         '-DCOMPILER_RT_BUILD_LIBFUZZER=OFF',
         '-DCOMPILER_RT_BUILD_MEMPROF=OFF',
         '-DCOMPILER_RT_BUILD_ORC=OFF',
         '-DCOMPILER_RT_BUILD_PROFILE=ON',
-        '-DCOMPILER_RT_BUILD_SANITIZERS=OFF',
+        '-DCOMPILER_RT_BUILD_SANITIZERS=' + on_linux,
         '-DCOMPILER_RT_BUILD_XRAY=OFF',
 
         # The libxml2 we built above is 64-bit. Since it's only needed by
         # lld-link and not compiler-rt, just turn it off down here.
         '-DLLVM_ENABLE_LIBXML2=OFF',
     ]
+
+    if sys.platform.startswith('linux'):
+      compiler_rt_args.append('-DCMAKE_SYSROOT=' + sysroot_i386)
+      compiler_rt_args.append('-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON')
     RunCommand(['cmake'] + compiler_rt_args +
                [os.path.join(LLVM_DIR, 'llvm')],
                msvc_arch='x86', env=deployment_env)
     RunCommand(['ninja', 'compiler-rt'], msvc_arch='x86')
 
     # Copy select output to the main tree.
-    rt_lib_src_dir = os.path.join(compiler_rt_build_dir, 'lib', 'clang',
-                                  RELEASE_VERSION, 'lib', rt_platform)
+    if sys.platform.startswith('linux'):
+      # LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON layout.
+      src_dir = os.path.join(compiler_rt_build_dir, 'lib', 'clang',
+                             RELEASE_VERSION, 'lib', 'i386-unknown-linux-gnu')
+      # lib/clang/15.0.0/lib/i386-unknown-linux-gnu/libclang_rt.asan.a
+      dst_dir = os.path.join(LLVM_BUILD_DIR, 'lib', 'clang', RELEASE_VERSION,
+                            'lib', 'i386-unknown-linux-gnu')
+      if not os.path.exists(dst_dir):
+        os.makedirs(dst_dir)
+    else:
+      # LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF layout.
+      src_dir = os.path.join(compiler_rt_build_dir, 'lib', 'clang',
+                             RELEASE_VERSION, 'lib', rt_platform)
+      dst_dir = rt_lib_dst_dir
+
     # Static and dynamic libraries:
-    CopyDirectoryContents(rt_lib_src_dir, rt_lib_dst_dir)
+    CopyDirectoryContents(src_dir, dst_dir)
 
   if args.with_android:
     # TODO(thakis): Now that the NDK uses clang, try to build all archs in
@@ -1323,7 +1370,14 @@ def main():
     if sys.platform == 'darwin':
       # TODO(thakis): Run check-all on Darwin too, https://crbug.com/959361
       test_targets = [ 'check-llvm', 'check-clang', 'check-lld' ]
-    RunCommand(['ninja', '-C', LLVM_BUILD_DIR] + test_targets, msvc_arch='x64')
+    env = None
+    if sys.platform.startswith('linux'):
+      env = os.environ.copy()
+      # See SANITIZER_OVERRIDE_INTERCEPTORS above: We disable crypt_r()
+      # interception, so its tests can't pass.
+      env['LIT_FILTER_OUT'] = ('^SanitizerCommon-(a|l|m|ub|t)san-x86_64-Linux ' +
+                               ':: Linux/crypt_r.cpp$')
+    RunCommand(['ninja', '-C', LLVM_BUILD_DIR] + test_targets, env=env, msvc_arch='x64')
 
   WriteStampFile(PACKAGE_VERSION, STAMP_FILE)
   WriteStampFile(PACKAGE_VERSION, FORCE_HEAD_REVISION_FILE)
