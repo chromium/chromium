@@ -38,6 +38,7 @@ chromium-metrics-reviews@google.com.
   <variant name="AdaptiveToolbar"/>
   <variant name="ChromeLowUserEngagement"/>
   <variant name="ChromeStartAndroid"/>
+  <variant name="ContextualPageActions"/>
   <variant name="DummyFeature"/>
   <variant name="FeedUserSegment"/>
   <variant name="QueryTiles"/>
@@ -46,7 +47,9 @@ chromium-metrics-reviews@google.com.
 <variants name="SegmentationModel">
   <variant name="ChromeLowUserEngagement"/>
   <variant name="ChromeStartAndroid"/>
+  <variant name="ContextualPageActionPriceTracking"/>
   <variant name="Dummy"/>
+  <variant name="FeedUserSegment"/>
   <variant name="NewTab"/>
   <variant name="QueryTiles"/>
   <variant name="Share"/>

@@ -28,7 +28,7 @@ enum class AdaptiveToolbarButtonVariant {
 
 // This is the segmentation subset of
 // proto::SegmentId.
-// Keep in sync with SegmentationPlatformSegmenationModel in
+// Keep in sync with SegmentationPlatformSegmentationModel in
 // //tools/metrics/histograms/enums.xml.
 // See also SegmentationModel variant in
 // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
@@ -42,7 +42,8 @@ enum class SegmentationModel {
   kQueryTiles = 12,
   kChromeLowUserEngagement = 16,
   kFeedUserSegment = 17,
-  kMaxValue = kFeedUserSegment,
+  kContextualPageActionPriceTracking = 18,
+  kMaxValue = kContextualPageActionPriceTracking,
 };
 
 AdaptiveToolbarButtonVariant OptimizationTargetToAdaptiveToolbarButtonVariant(
@@ -57,6 +58,7 @@ AdaptiveToolbarButtonVariant OptimizationTargetToAdaptiveToolbarButtonVariant(
     case SegmentId::OPTIMIZATION_TARGET_UNKNOWN:
       return AdaptiveToolbarButtonVariant::kNone;
     default:
+      NOTREACHED();
       return AdaptiveToolbarButtonVariant::kUnknown;
   }
 }
@@ -162,6 +164,8 @@ SegmentationModel OptimizationTargetToSegmentationModel(SegmentId segment_id) {
       return SegmentationModel::kChromeLowUserEngagement;
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
       return SegmentationModel::kFeedUserSegment;
+    case SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING:
+      return SegmentationModel::kContextualPageActionPriceTracking;
     default:
       return SegmentationModel::kUnknown;
   }
@@ -241,6 +245,8 @@ std::string OptimizationTargetToHistogramVariant(SegmentId segment_id) {
       return "ChromeLowUserEngagement";
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
       return "FeedUserSegment";
+    case SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING:
+      return "ContextualPageActionPriceTracking";
     default:
       return "Other";
   }
@@ -263,6 +269,8 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
     return "ChromeLowUserEngagement";
   } else if (segmentation_key == kFeedUserSegmentationKey) {
     return "FeedUserSegment";
+  } else if (segmentation_key == kContextualPageActionsKey) {
+    return "ContextualPageActions";
   } else if (base::StartsWith(segmentation_key, "test_key")) {
     return "TestKey";
   }
@@ -295,6 +303,7 @@ void RecordModelScore(SegmentId segment_id, float score) {
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES:
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT:
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
+    case SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING:
       // Assumes all models return score between 0 and 1. This is true for all
       // the models we have currently.
       base::UmaHistogramPercentage(
