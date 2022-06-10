@@ -2,6 +2,8 @@
   :host {
     --white-100: rgba(255, 255, 255, 0);
     --white-80: rgba(255, 255, 255, .8);
+    --leaf-icon: var(--cr-tree-item-leaf-icon,
+                     url(chrome://theme/IDR_FOLDER_CLOSED));
   }
 
   :host .tree-row {
@@ -106,8 +108,7 @@
   }
 
   :host(:not([may-have-children])) .tree-row > .tree-label-icon {
-    background-image: var(--cr-tree-item-leaf-icon,
-                          url(chrome://theme/IDR_FOLDER_ClOSED));
+    background-image: var(--leaf-icon);
   }
 
   <if expr="is_macosx or is_ios">
@@ -118,8 +119,7 @@
     }
 
     :host(:not([may-have-children])) .tree-row > .tree-label-icon {
-      background-image: var(--cr-tree-item-leaf-icon,
-                            url(chrome://theme/IDR_FOLDER_ClOSED_WHITE));
+      background-image: var(--leaf-icon);
     }
   }
   </if>
