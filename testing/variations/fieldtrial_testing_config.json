@@ -4414,6 +4414,24 @@
             ]
         }
     ],
+    "IOSBookmarkString": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "AddToBookmarks",
+                    "params": {
+                        "PopupMenuBookmarkStringParamName": "PopupMenuBookmarkStringParamAddToBookmarks"
+                    },
+                    "enable_features": [
+                        "BookmarkString"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSCrashReportBreadcrumbs": [
         {
             "platforms": [
