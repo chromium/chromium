@@ -471,9 +471,7 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
   // surface has no visual effect in ozone/wayland backend. Actual window
   // re-positioning during dragging session is done through the drag icon.
   if (dragged_window_) {
-    gfx::Point new_location = event->location() - drag_offset_;
-    gfx::Size size = dragged_window_->GetBoundsInDIP().size();
-    dragged_window_->SetBoundsInDIP({new_location, size});
+    dragged_window_->SetOrigin(event->location() - drag_offset_);
   }
 
   should_process_drag_event_ = false;
