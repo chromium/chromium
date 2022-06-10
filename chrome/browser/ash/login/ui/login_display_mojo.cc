@@ -139,12 +139,6 @@ void LoginDisplayMojo::SetUIEnabled(bool is_enabled) {
   }
 }
 
-void LoginDisplayMojo::Login(const UserContext& user_context,
-                             const SigninSpecifics& specifics) {
-  if (delegate_)
-    delegate_->Login(user_context, specifics);
-}
-
 bool LoginDisplayMojo::IsSigninInProgress() const {
   if (delegate_)
     return delegate_->IsSigninInProgress();

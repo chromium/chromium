@@ -29,9 +29,6 @@ class LoginDisplayWebUI : public LoginDisplay,
   void Init(const user_manager::UserList& users, bool show_guest) override;
   void SetUIEnabled(bool is_enabled) override;
 
-  // SigninScreenHandlerDelegate implementation:
-  void Login(const UserContext& user_context,
-             const SigninSpecifics& specifics) override;
   bool IsSigninInProgress() const override;
   bool IsUserSigninCompleted() const override;
 

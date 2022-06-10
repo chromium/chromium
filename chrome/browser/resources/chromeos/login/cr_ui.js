@@ -169,14 +169,6 @@ cr.define('cr.ui', function() {
     }  // loginForTesting
 
     /**
-     * Guest login for telemetry.
-     */
-    static guestLoginForTesting() {
-      this.skipToLoginForTesting();
-      chrome.send('launchIncognito');
-    }
-
-    /**
      * Gaia login screen for telemetry.
      */
     static addUserForTesting() {

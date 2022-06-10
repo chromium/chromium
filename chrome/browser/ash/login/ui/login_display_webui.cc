@@ -60,13 +60,6 @@ void LoginDisplayWebUI::SetUIEnabled(bool is_enabled) {
     host->GetWebUILoginView()->SetUIEnabled(is_enabled);
 }
 
-void LoginDisplayWebUI::Login(const UserContext& user_context,
-                              const SigninSpecifics& specifics) {
-  DCHECK(delegate_);
-  if (delegate_)
-    delegate_->Login(user_context, specifics);
-}
-
 bool LoginDisplayWebUI::IsSigninInProgress() const {
   return delegate_->IsSigninInProgress();
 }

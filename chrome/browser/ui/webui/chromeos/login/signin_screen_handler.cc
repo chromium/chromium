@@ -207,7 +207,6 @@ void SigninScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
 void SigninScreenHandler::RegisterMessages() {
-  AddCallback("launchIncognito", &SigninScreenHandler::HandleLaunchIncognito);
   AddCallback("offlineLogin", &SigninScreenHandler::HandleOfflineLogin);
 
   AddCallback("showLoadingTimeoutError",
@@ -439,12 +438,6 @@ void SigninScreenHandler::Observe(int type,
 
 void SigninScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth() {
   network_state_ignored_until_proxy_auth_ = false;
-}
-
-void SigninScreenHandler::HandleLaunchIncognito() {
-  UserContext context(user_manager::USER_TYPE_GUEST, EmptyAccountId());
-  if (delegate_)
-    delegate_->Login(context, SigninSpecifics());
 }
 
 void SigninScreenHandler::HandleOfflineLogin() {

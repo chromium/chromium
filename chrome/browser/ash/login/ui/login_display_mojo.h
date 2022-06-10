@@ -36,9 +36,6 @@ class LoginDisplayMojo : public LoginDisplay,
             bool show_guest) override;
   void SetUIEnabled(bool is_enabled) override;
 
-  // SigninScreenHandlerDelegate:
-  void Login(const UserContext& user_context,
-             const SigninSpecifics& specifics) override;
   bool IsSigninInProgress() const override;
   bool IsUserSigninCompleted() const override;
 

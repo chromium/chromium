@@ -33,7 +33,6 @@
 
 namespace ash {
 class LoginDisplayHostMojo;
-class UserContext;
 
 namespace mojom {
 enum class TrayActionState;
@@ -48,11 +47,6 @@ class GaiaScreenHandler;
 class SigninScreenHandlerDelegate {
  public:
   // --------------- Sign in/out methods.
-  // Sign in using username and password specified as a part of `user_context`.
-  // Used for both known and new users.
-  virtual void Login(const UserContext& user_context,
-                     const SigninSpecifics& specifics) = 0;
-
   // Returns true if sign in is in progress.
   virtual bool IsSigninInProgress() const = 0;
 
@@ -128,7 +122,6 @@ class SigninScreenHandler
                const content::NotificationDetails& details) override;
 
   // WebUI message handlers.
-  void HandleLaunchIncognito();
   void HandleOfflineLogin();
 
   void HandleShowLoadingTimeoutError();
