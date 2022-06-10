@@ -1431,7 +1431,7 @@ const base::Feature kOptimizeViewportConstrainedPaintInvalidation{
     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kReduceUserAgentMinorVersion{
-    "ReduceUserAgentMinorVersion", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ReduceUserAgentMinorVersion", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::FeatureParam<std::string> kUserAgentFrozenBuildVersion{
     &kReduceUserAgentMinorVersion, "build_version", "0"};
 
