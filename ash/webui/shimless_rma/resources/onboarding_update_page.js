@@ -181,17 +181,35 @@ export class OnboardingUpdatePageElement extends
     });
   }
 
-  /** @protected */
-  onUpdateButtonClicked_() {
-    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
-      return;
-    }
+  /** @private */
+  updateOs_() {
     this.updateInProgress_ = true;
     this.shimlessRmaService_.updateOs().then((res) => {
       if (!res.updateStarted) {
         this.updateInProgress_ = false;
       }
     });
+  }
+
+  /** @protected */
+  onUpdateButtonClicked_() {
+    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
+      return;
+    }
+
+    this.updateOs_();
+  }
+
+  /** @protected */
+  onRetryUpdateButtonClicked_() {
+    if (!loadTimeData.getBoolean('osUpdateEnabled')) {
+      return;
+    }
+
+    assert(this.osUpdateEncounteredError_);
+    this.osUpdateEncounteredError_ = false;
+
+    this.updateOs_();
   }
 
   /** @return {!Promise<{stateResult: !StateResult}>} */

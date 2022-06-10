@@ -7,6 +7,10 @@
     padding-inline-start: 8px;
   }
 
+  #retryIcon {
+    padding-inline-end: 8px;
+  }
+
   #updateIcon {
     color: var(--cros-icon-color-secondary);
   }
@@ -50,6 +54,14 @@
         </iron-icon>
         <span class="instructions">[[i18n('updatingOsErrorMessage')]]</span>
       </div>
+      <cr-button id="retryUpdateButton" disabled="[[allButtonsDisabled]]"
+          on-click="onRetryUpdateButtonClicked_">
+          <!-- TODO(swifton): Replace this with the real retry icon when it's ready. -->
+          <iron-icon id="retryIcon" icon="shimless-icon:update"
+            class="small-icon-base">
+          </iron-icon>
+          [[i18n('retryButtonLabel')]]
+      </cr-button>
     </div>
   </div>
   <div slot="right-pane">

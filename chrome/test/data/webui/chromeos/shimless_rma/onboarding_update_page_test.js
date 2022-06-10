@@ -200,6 +200,43 @@ export function onboardingUpdatePageTest() {
     assertFalse(updateErrorDiv.hidden);
   });
 
+  test('UpdatePageAllowsRetryAfterError', async () => {
+    const version = '90.1.2.3';
+    await initializeUpdatePage(version);
+
+    // First, we need to get to the error screen.
+    const updateInstructionsDiv =
+        component.shadowRoot.querySelector('#updateInstructionsDiv');
+    assertFalse(updateInstructionsDiv.hidden);
+    const updateStatusDiv =
+        component.shadowRoot.querySelector('#updateStatusDiv');
+    assertTrue(updateStatusDiv.hidden);
+    const updateErrorDiv =
+        component.shadowRoot.querySelector('#updateErrorDiv');
+    assertTrue(updateErrorDiv.hidden);
+    await clickPerformUpdateButton();
+
+    service.triggerOsUpdateObserver(
+        OsUpdateOperation.kReportingErrorEvent, 0.5,
+        UpdateErrorCode.kDownloadError, 0);
+    await flushTasks();
+
+    assertTrue(updateInstructionsDiv.hidden);
+    assertTrue(updateStatusDiv.hidden);
+    assertFalse(updateErrorDiv.hidden);
+
+    // Next, click the Retry button.
+    const retryUpdateButton =
+        component.shadowRoot.querySelector('#retryUpdateButton');
+    retryUpdateButton.click();
+    await flushTasks();
+
+    // This should send us back to the update progress screen.
+    assertTrue(updateInstructionsDiv.hidden);
+    assertFalse(updateStatusDiv.hidden);
+    assertTrue(updateErrorDiv.hidden);
+  });
+
   test('UpdatePageUpdateFailedToStartButtonsEnabled', () => {
     const version = '90.1.2.3';
 
