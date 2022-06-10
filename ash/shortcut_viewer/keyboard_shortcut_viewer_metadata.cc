@@ -20,7 +20,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
-#include "ui/events/keycodes/dom/dom_codes.h"
+#include "ui/events/keycodes/dom/dom_codes_array.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -207,7 +207,7 @@ std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code,
     }
   }
 
-  for (const auto& dom_code : ui::dom_codes) {
+  for (const auto& dom_code : ui::kDomCodesArray) {
     if (!layout_engine->Lookup(dom_code, /*flags=*/ui::EF_NONE, &dom_key,
                                &key_code_to_compare)) {
       continue;

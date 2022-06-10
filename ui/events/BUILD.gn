@@ -19,7 +19,7 @@ if (is_ios) {
 static_library("dom_keycode_converter") {
   public = [
     "keycodes/dom/dom_code.h",
-    "keycodes/dom/dom_codes.h",
+    "keycodes/dom/dom_codes_array.h",
     "keycodes/dom/dom_key.h",
     "keycodes/dom/keycode_converter.h",
   ]

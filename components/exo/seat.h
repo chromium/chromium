@@ -21,7 +21,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/events/event_handler.h"
-#include "ui/events/keycodes/dom/dom_codes.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/platform/platform_event_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -30,7 +30,6 @@
 #endif
 
 namespace ui {
-enum class DomCode;
 class KeyEvent;
 }  // namespace ui
 

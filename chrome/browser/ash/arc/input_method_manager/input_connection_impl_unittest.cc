@@ -14,7 +14,7 @@
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/mock_input_method.h"
-#include "ui/events/keycodes/dom/dom_codes.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace arc {
 

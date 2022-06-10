@@ -50,7 +50,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/events/keycodes/dom/dom_codes.h"
+#include "ui/events/keycodes/dom/dom_codes_array.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
@@ -790,7 +790,7 @@ AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction::Run() {
     }
   }
 
-  for (const auto& dom_code : ui::dom_codes) {
+  for (const auto& dom_code : ui::kDomCodesArray) {
     if (!layout_engine->Lookup(dom_code, /*flags=*/ui::EF_NONE, &dom_key,
                                &key_code_to_compare)) {
       continue;
