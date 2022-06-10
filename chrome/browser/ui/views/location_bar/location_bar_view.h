@@ -177,6 +177,12 @@ class LocationBarView : public LocationBar,
 
   PermissionChip* chip() { return chip_; }
 
+  // Returns true if the permission chip exists, fully initialized and visible.
+  bool IsChipActive();
+
+  // Adds chip into the LocationBarView in the first position.
+  void CreateChip();
+
   // Creates and displays an instance of PermissionRequestChip.
   // If `should_bubble_start_open` is true, a permission prompt bubble will be
   // displayed automatically after PermissionRequestChip is created.
@@ -279,9 +285,6 @@ class LocationBarView : public LocationBar,
                           device::GeolocationManager::PermissionObserver>
       geolocation_permission_observation_{this};
 #endif
-
-  // Adds `chip` as the first child view.
-  PermissionChip* AddChip(std::unique_ptr<PermissionChip> chip);
 
   // Returns the amount of space required to the left of the omnibox text.
   int GetMinimumLeadingWidth() const;

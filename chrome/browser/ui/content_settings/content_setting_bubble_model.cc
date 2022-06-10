@@ -1745,12 +1745,6 @@ void ContentSettingQuietRequestBubbleModel::OnCancelButtonClicked() {
   }
 }
 
-void ContentSettingQuietRequestBubbleModel::OnBubbleDismissedByUser() {
-  if (on_bubble_dismissed_by_user_callback_) {
-    std::move(on_bubble_dismissed_by_user_callback_).Run();
-  }
-}
-
 // ContentSettingBubbleModel ---------------------------------------------------
 
 // This class must be placed last because it needs the definition of the other

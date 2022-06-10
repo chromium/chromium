@@ -212,6 +212,8 @@ void LocationBarView::Init() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
+  CreateChip();
+
   const gfx::FontList& font_list = views::style::GetFont(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
 
@@ -817,26 +819,50 @@ bool LocationBarView::ActivateFirstInactiveBubbleForAccessibility() {
       ->ActivateFirstInactiveBubbleForAccessibility();
 }
 
+bool LocationBarView::IsChipActive() {
+  return chip_ && chip_->IsActive();
+}
+
+void LocationBarView::CreateChip() {
+  DCHECK(!chip_);
+
+  if (!browser_)
+    return;
+
+  if (web_app::AppBrowserController::IsWebApp(browser_))
+    return;
+
+  chip_ = AddChildViewAt(std::make_unique<PermissionChip>(), 0);
+}
+
 PermissionChip* LocationBarView::DisplayChip(
     permissions::PermissionPrompt::Delegate* delegate,
     bool should_bubble_start_open) {
   DCHECK(delegate);
-  return AddChip(std::make_unique<PermissionRequestChip>(
+  DCHECK(chip_);
+
+  chip_->SetupChip(std::make_unique<PermissionRequestChip>(
       browser(), delegate, should_bubble_start_open));
+
+  return chip_;
 }
 
 PermissionChip* LocationBarView::DisplayQuietChip(
     permissions::PermissionPrompt::Delegate* delegate,
     bool should_expand) {
   DCHECK(delegate);
-  return AddChip(std::make_unique<PermissionQuietChip>(browser(), delegate,
-                                                       should_expand));
+  DCHECK(chip_);
+
+  chip_->SetupChip(std::make_unique<PermissionQuietChip>(browser(), delegate,
+                                                         should_expand));
+
+  return chip_;
 }
 
 void LocationBarView::FinalizeChip() {
   DCHECK(chip_);
-  RemoveChildViewT(chip_.get());
-  chip_ = nullptr;
+  chip_->Finalize();
+  InvalidateLayout();
 }
 
 void LocationBarView::UpdateWithoutTabRestore() {
@@ -926,13 +952,6 @@ int LocationBarView::GetAvailableDecorationTextHeight() {
       GetLayoutConstant(LOCATION_BAR_BUBBLE_FONT_VERTICAL_PADDING);
   return std::max(
       0, LocationBarView::GetAvailableTextHeight() - (bubble_padding * 2));
-}
-
-PermissionChip* LocationBarView::AddChip(std::unique_ptr<PermissionChip> chip) {
-  DCHECK(!chip_);
-  // `chip_` must come first so it's in the correct place in the focus order.
-  chip_ = AddChildViewAt(std::move(chip), 0);
-  return chip_;
 }
 
 int LocationBarView::GetMinimumLeadingWidth() const {
@@ -1423,14 +1442,14 @@ ui::ImageModel LocationBarView::GetLocationIcon(
 }
 
 void LocationBarView::UpdateChipVisibility() {
-  if (!chip_) {
+  if (!IsChipActive()) {
     return;
   }
 
   if (IsEditingOrEmpty()) {
-    chip_->Hide();
-  } else {
-    chip_->Reshow();
+    // If a user starts typing, a permission request should be ignored and the
+    // chip finalized.
+    chip_->Finalize();
   }
 }
 

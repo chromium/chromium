@@ -28,18 +28,11 @@ constexpr int kExtraRightPadding = 4;
 
 }  // namespace
 
-OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
-                                     const gfx::VectorIcon& icon_on,
-                                     const gfx::VectorIcon& icon_off,
-                                     std::u16string message,
-                                     bool is_prominent)
+OmniboxChipButton::OmniboxChipButton(PressedCallback callback)
     : MdTextButton(std::move(callback),
                    std::u16string(),
-                   views::style::CONTEXT_BUTTON_MD),
-      icon_on_(icon_on),
-      icon_off_(icon_off) {
+                   views::style::CONTEXT_BUTTON_MD) {
   views::InstallPillHighlightPathGenerator(this);
-  SetText(message);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
@@ -97,7 +90,7 @@ void OmniboxChipButton::OnThemeChanged() {
 }
 
 void OmniboxChipButton::UpdateBackgroundColor() {
-  if (theme_ == Theme::kIconStyle) {
+  if (theme_ == OmniboxChipTheme::kIconStyle) {
     SetBackground(nullptr);
   } else {
     SetBackground(
@@ -120,15 +113,28 @@ void OmniboxChipButton::AnimationProgressed(const gfx::Animation* animation) {
     PreferredSizeChanged();
 }
 
-void OmniboxChipButton::SetTheme(Theme theme) {
+void OmniboxChipButton::SetTheme(OmniboxChipTheme theme) {
   theme_ = theme;
   UpdateIconAndColors();
 }
 
+void OmniboxChipButton::SetMessage(std::u16string message) {
+  SetText(message);
+  UpdateIconAndColors();
+}
+
 ui::ImageModel OmniboxChipButton::GetIconImageModel() const {
-  return ui::ImageModel::FromVectorIcon(
-      show_blocked_icon_ ? icon_off_ : icon_on_, GetTextAndIconColor(),
-      GetIconSize(), nullptr);
+  return ui::ImageModel::FromVectorIcon(GetIcon(), GetTextAndIconColor(),
+                                        GetIconSize(), nullptr);
+}
+
+const gfx::VectorIcon& OmniboxChipButton::GetIcon() const {
+  if (permission_chip_delegate_.has_value()) {
+    return show_blocked_icon_ ? permission_chip_delegate_.value()->GetIconOff()
+                              : permission_chip_delegate_.value()->GetIconOn();
+  }
+
+  return gfx::kNoneIcon;
 }
 
 int OmniboxChipButton::GetIconSize() const {
@@ -143,7 +149,7 @@ void OmniboxChipButton::UpdateIconAndColors() {
 }
 
 SkColor OmniboxChipButton::GetTextAndIconColor() const {
-  if (theme_ == Theme::kIconStyle) {
+  if (theme_ == OmniboxChipTheme::kIconStyle) {
     // Use ThemeProvider rather than ColorProvider to correctly match the color
     // used for page action icons.
     return GetThemeProvider()->GetColor(
@@ -151,15 +157,15 @@ SkColor OmniboxChipButton::GetTextAndIconColor() const {
   }
 
   return GetColorProvider()->GetColor(
-      theme_ == Theme::kLowVisibility
+      theme_ == OmniboxChipTheme::kLowVisibility
           ? kColorOmniboxChipForegroundLowVisibility
           : kColorOmniboxChipForegroundNormalVisibility);
 }
 
 SkColor OmniboxChipButton::GetBackgroundColor() const {
-  DCHECK(theme_ != Theme::kIconStyle);
+  DCHECK(theme_ != OmniboxChipTheme::kIconStyle);
   return GetColorProvider()->GetColor(
-      theme_ == Theme::kLowVisibility
+      theme_ == OmniboxChipTheme::kLowVisibility
           ? kColorOmniboxChipBackgroundLowVisibility
           : kColorOmniboxChipBackgroundNormalVisibility);
 }
@@ -172,10 +178,26 @@ void OmniboxChipButton::SetForceExpandedForTesting(
 void OmniboxChipButton::SetShowBlockedIcon(bool show_blocked_icon) {
   if (show_blocked_icon_ != show_blocked_icon) {
     show_blocked_icon_ = show_blocked_icon;
-    theme_ =
-        show_blocked_icon ? Theme::kLowVisibility : Theme::kNormalVisibility;
+    theme_ = show_blocked_icon ? OmniboxChipTheme::kLowVisibility
+                               : OmniboxChipTheme::kNormalVisibility;
     UpdateIconAndColors();
   }
+}
+
+void OmniboxChipButton::SetPermissionChipDelegate(
+    PermissionChipDelegate* permission_chip_delegate) {
+  DCHECK(permission_chip_delegate);
+  permission_chip_delegate_ = permission_chip_delegate;
+
+  UpdateIconAndColors();
+}
+
+void OmniboxChipButton::Finalize() {
+  permission_chip_delegate_.reset();
+  show_blocked_icon_ = false;
+  // It is possible that a chip gets finalized while the animation was in
+  // progress.
+  animation_->Stop();
 }
 
 BEGIN_METADATA(OmniboxChipButton, views::MdTextButton)
