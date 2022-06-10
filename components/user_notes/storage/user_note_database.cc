@@ -81,10 +81,80 @@ UserNoteMetadataSnapshot UserNoteDatabase::GetNoteMetadataForUrls(
 std::vector<std::unique_ptr<UserNote>> UserNoteDatabase::GetNotesById(
     std::vector<base::UnguessableToken> ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<std::unique_ptr<UserNote>> user_notes;
 
-  // TODO(gayane): Implement.
+  if (!EnsureDBInit())
+    return user_notes;
 
-  return std::vector<std::unique_ptr<UserNote>>();
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin())
+    return user_notes;
+
+  for (const base::UnguessableToken& id : ids) {
+    auto user_note = GetNoteById(id);
+    if (!user_note)
+      continue;
+
+    user_notes.emplace_back(std::move(user_note));
+  }
+
+  transaction.Commit();
+
+  return user_notes;
+}
+
+std::unique_ptr<UserNote> UserNoteDatabase::GetNoteById(
+    const base::UnguessableToken& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Get creation_date, modification_date, url and type from notes.
+  sql::Statement statement_notes(
+      db_.GetCachedStatement(SQL_FROM_HERE,
+                             "SELECT creation_date, modification_date, url, "
+                             "type FROM notes WHERE id = ?"));
+  if (!statement_notes.is_valid())
+    return nullptr;
+  statement_notes.BindString(0, id.ToString());
+  if (statement_notes.Step())
+    return nullptr;
+  DCHECK_EQ(4, statement_notes.ColumnCount());
+  base::Time creation_date = statement_notes.ColumnTime(0);
+  base::Time modification_date = statement_notes.ColumnTime(1);
+  std::string url = statement_notes.ColumnString(2);
+  int type = statement_notes.ColumnInt(3);
+  auto metadata = std::make_unique<UserNoteMetadata>(
+      creation_date, modification_date, /*min_note_version=*/1);
+
+  // Get plain_text from notes_body.
+  sql::Statement statement_notes_body(db_.GetCachedStatement(
+      SQL_FROM_HERE, "SELECT plain_text FROM notes_body WHERE note_id = ?"));
+  if (!statement_notes_body.is_valid())
+    return nullptr;
+  statement_notes_body.BindString(0, id.ToString());
+  if (!statement_notes_body.Step())
+    return nullptr;
+  DCHECK_EQ(1, statement_notes_body.ColumnCount());
+  auto body =
+      std::make_unique<UserNoteBody>(statement_notes_body.ColumnString(0));
+
+  // Get original_text and selector from notes_text_target.
+  sql::Statement statement_notes_text_target(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT original_text, selector FROM notes_text_target WHERE id = ?"));
+  if (!statement_notes_text_target.is_valid())
+    return nullptr;
+  statement_notes_text_target.BindString(0, id.ToString());
+  if (!statement_notes_text_target.Step())
+    return nullptr;
+  DCHECK_EQ(2, statement_notes_text_target.ColumnCount());
+  std::string original_text = statement_notes_text_target.ColumnString(0);
+  std::string selector = statement_notes_text_target.ColumnString(1);
+  auto target = std::make_unique<UserNoteTarget>(
+      static_cast<UserNoteTarget::TargetType>(type), original_text, GURL(url),
+      selector);
+
+  return std::make_unique<UserNote>(id, std::move(metadata), std::move(body),
+                                    std::move(target));
 }
 
 void UserNoteDatabase::CreateNote(const UserNote* model,

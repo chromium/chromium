@@ -194,4 +194,42 @@ TEST_F(UserNoteDatabaseTest, DeleteNote) {
   delete user_note;
 }
 
+TEST_F(UserNoteDatabaseTest, GetNotesById) {
+  UserNoteDatabase user_note_db(db_dir());
+  EXPECT_TRUE(user_note_db.Init());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_note_db.sequence_checker_);
+
+  std::vector<base::UnguessableToken> ids;
+  for (int i = 0; i < 3; i++) {
+    base::UnguessableToken note_id = base::UnguessableToken::Create();
+    ids.emplace_back(note_id);
+    std::string original_text = "original text " + base::NumberToString(i);
+    std::string selector = "selector " + base::NumberToString(i);
+    std::string body = "new test note " + base::NumberToString(i);
+    GURL url = GURL("https://www.test.com");
+    auto test_target = std::make_unique<UserNoteTarget>(
+        UserNoteTarget::TargetType::kPage, original_text, url, selector);
+    UserNote* user_note =
+        new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
+                     std::move(test_target));
+    user_note_db.UpdateNote(user_note, body, /*is_creation=*/true);
+    delete user_note;
+  }
+
+  std::vector<std::unique_ptr<UserNote>> notes = user_note_db.GetNotesById(ids);
+
+  int i = 0;
+  for (std::unique_ptr<UserNote>& note : notes) {
+    EXPECT_EQ(ids[i].ToString(), note->id().ToString());
+    EXPECT_EQ("https://www.test.com", note->target().target_page().spec());
+    EXPECT_EQ("original text " + base::NumberToString(i),
+              note->target().original_text());
+    EXPECT_EQ("selector " + base::NumberToString(i), note->target().selector());
+    EXPECT_EQ("new test note " + base::NumberToString(i),
+              note->body().plain_text_value());
+    EXPECT_EQ(UserNoteTarget::TargetType::kPage, note->target().type());
+    i++;
+  }
+}
+
 }  // namespace user_notes

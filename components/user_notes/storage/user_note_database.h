@@ -53,6 +53,7 @@ class UserNoteDatabase {
   FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, UpdateNote);
   FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, CreateNote);
   FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, DeleteNote);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, GetNotesById);
 
   // Initialises internal database if needed.
   bool EnsureDBInit();
@@ -67,6 +68,8 @@ class UserNoteDatabase {
   void CreateNote(const UserNote* model, std::string note_body_text);
 
   bool CreateSchema();
+
+  std::unique_ptr<UserNote> GetNoteById(const base::UnguessableToken& id);
 
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
 
