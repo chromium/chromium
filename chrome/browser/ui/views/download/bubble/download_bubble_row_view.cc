@@ -116,7 +116,10 @@ void DownloadBubbleRowView::OnDeviceScaleFactorChanged(
   LoadIcon();
 }
 
-void DownloadBubbleRowView::SetIconFromImageModel(ui::ImageModel icon) {
+void DownloadBubbleRowView::SetIconFromImageModel(bool use_over_last_override,
+                                                  ui::ImageModel icon) {
+  if (last_overriden_icon_ && !use_over_last_override)
+    return;
   if (icon.IsEmpty()) {
     icon_->SetImage(GetDefaultIcon());
   } else {
@@ -124,8 +127,10 @@ void DownloadBubbleRowView::SetIconFromImageModel(ui::ImageModel icon) {
   }
 }
 
-void DownloadBubbleRowView::SetIconFromImage(gfx::Image icon) {
-  SetIconFromImageModel(ui::ImageModel::FromImage(icon));
+void DownloadBubbleRowView::SetIconFromImage(bool use_over_last_override,
+                                             gfx::Image icon) {
+  SetIconFromImageModel(use_over_last_override,
+                        ui::ImageModel::FromImage(icon));
 }
 
 void DownloadBubbleRowView::LoadIcon() {
@@ -137,11 +142,15 @@ void DownloadBubbleRowView::LoadIcon() {
     if (last_overriden_icon_ == ui_info_.icon_model_override)
       return;
     last_overriden_icon_ = ui_info_.icon_model_override;
-    SetIconFromImageModel(ui::ImageModel::FromVectorIcon(
-        *ui_info_.icon_model_override, ui_info_.secondary_color,
-        GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+    SetIconFromImageModel(
+        /*use_over_last_override=*/true,
+        ui::ImageModel::FromVectorIcon(*ui_info_.icon_model_override,
+                                       ui_info_.secondary_color,
+                                       GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
     return;
   }
+
+  last_overriden_icon_ = nullptr;
 
   base::FilePath file_path = model_->GetTargetFilePath();
   // Use a default icon (drive file outline icon) in case we have an empty
@@ -151,7 +160,7 @@ void DownloadBubbleRowView::LoadIcon() {
     if (already_set_default_icon_)
       return;
     already_set_default_icon_ = true;
-    SetIconFromImageModel(GetDefaultIcon());
+    SetIconFromImageModel(/*use_over_last_override=*/true, GetDefaultIcon());
     return;
   }
 
@@ -160,11 +169,12 @@ void DownloadBubbleRowView::LoadIcon() {
       im->LookupIconFromFilepath(file_path, IconLoader::SMALL, current_scale_);
 
   if (file_icon_image) {
-    SetIconFromImage(*file_icon_image);
+    SetIconFromImage(/*use_over_last_override=*/true, *file_icon_image);
   } else {
     im->LoadIcon(file_path, IconLoader::SMALL, current_scale_,
                  base::BindOnce(&DownloadBubbleRowView::SetIconFromImage,
-                                weak_factory_.GetWeakPtr()),
+                                weak_factory_.GetWeakPtr(),
+                                /*use_over_last_override=*/false),
                  &cancelable_task_tracker_);
   }
 }

@@ -84,8 +84,10 @@ class DownloadBubbleRowView : public views::View,
   void LoadIcon();
 
   // Called when icon has been loaded by IconManager::LoadIcon.
-  void SetIconFromImage(gfx::Image icon);
-  void SetIconFromImageModel(ui::ImageModel icon);
+  // |use_over_last_override| controls whether icon should be set if
+  // the current icon is an override_icon.
+  void SetIconFromImage(bool use_over_last_override, gfx::Image icon);
+  void SetIconFromImageModel(bool use_over_last_override, ui::ImageModel icon);
 
   void OnCancelButtonPressed();
   void OnDiscardButtonPressed();
