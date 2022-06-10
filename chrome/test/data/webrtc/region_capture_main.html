@@ -12,6 +12,8 @@
       let track;
       let trackClone;
 
+      let otherCaptureTrack;
+
       function startCaptureFromEmbeddedFrame() {
         document
           .getElementById("embedded_frame")
@@ -19,12 +21,12 @@
         // window.domAutomationController.send() called by embedded page.
       }
 
-      async function cropToByIndex(cropTargetIndex, targetTrack) {
+      async function cropToByIndex(cropTargetIndex, targetFrame, targetTrack) {
         const cropTarget =
           (cropTargetIndex == "undefined"
               ? undefined
               : getCropTarget(cropTargetIndex));
-        cropTo(cropTarget, targetTrack);
+        cropTo(cropTarget, targetFrame, targetTrack);
       }
 
       // Clones |track| into |trackClone|.

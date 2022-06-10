@@ -887,6 +887,9 @@ VideoCaptureController* VideoCaptureManager::GetOrCreateController(
       LookupControllerByMediaTypeAndDeviceId(device_info.type, device_info.id);
   if (existing_device) {
     DCHECK_EQ(device_info.type, existing_device->stream_type());
+    if (existing_device->was_crop_ever_called()) {
+      return nullptr;
+    }
     return existing_device;
   }
 

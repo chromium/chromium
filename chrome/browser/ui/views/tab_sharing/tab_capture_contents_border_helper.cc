@@ -110,8 +110,7 @@ void TabCaptureContentsBorderHelper::OnCapturerRemoved(
 
   // TODO(crbug.com/1294187): Destroy widget when the size of
   // `session_to_bounds_` hits 0. Same for `this`.
-  const size_t erased_count = session_to_bounds_.erase(capture_session_id);
-  DCHECK_EQ(erased_count, 1u);
+  session_to_bounds_.erase(capture_session_id);
 
   Update();
 }
