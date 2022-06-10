@@ -230,11 +230,9 @@ void MaybeRegisterChromeFeaturePromos(
       FeaturePromoSpecification::AcceleratorInfo(IDC_RESTORE_TAB)));
 
   // kIPHSideSearchFeature:
-  registry.RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForLegacyPromo(
-                    &feature_engagement::kIPHSideSearchFeature,
-                    kSideSearchButtonElementId, IDS_SIDE_SEARCH_PROMO)
-                    .SetBubbleArrow(HelpBubbleArrow::kTopLeft)));
+  registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
+      &feature_engagement::kIPHSideSearchFeature, kSideSearchButtonElementId,
+      IDS_SIDE_SEARCH_PROMO));
 
   // kIPHTabSearchFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
