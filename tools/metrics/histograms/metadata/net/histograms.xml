@@ -1553,28 +1553,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Fetch.UploadStreamingProtocolAllowH1"
-    enum="HttpProtocolScheme" expires_after="2021-10-19">
-  <owner>yoichio@chromium.org</owner>
-  <owner>ricea@chromium.org</owner>
-  <owner>yhirano@chromium.org</owner>
-  <summary>
-    Protocol used to fetch upload streaming with allowHTTP1ForStreamingUpload:
-    true property. This is recorded per fetch attempt regardless of result.
-  </summary>
-</histogram>
-
-<histogram name="Net.Fetch.UploadStreamingProtocolNotAllowH1"
-    enum="HttpProtocolScheme" expires_after="2021-10-19">
-  <owner>yoichio@chromium.org</owner>
-  <owner>ricea@chromium.org</owner>
-  <owner>yhirano@chromium.org</owner>
-  <summary>
-    Protocol used to fetch upload streaming with allowHTTP1ForStreamingUpload:
-    false property. This is recorded per fetch attempt regardless of result.
-  </summary>
-</histogram>
-
 <histogram name="Net.HasBrokenNEON" enum="BooleanBroken"
     expires_after="2022-10-09">
   <owner>davidben@chromium.org</owner>

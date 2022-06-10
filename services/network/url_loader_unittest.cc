@@ -3194,13 +3194,6 @@ TEST_F(URLLoaderTest, UploadReadOnceStream) {
       data_pipe_getter.GetDataPipeGetterRemote(),
       ResourceRequestBody::ReadOnlyOnce(true));
 
-  base::HistogramTester tester;
-  std::string histogram_allowh1("Net.Fetch.UploadStreamingProtocolAllowH1");
-  std::string histogram_notallowh1(
-      "Net.Fetch.UploadStreamingProtocolNotAllowH1");
-  tester.ExpectTotalCount(histogram_allowh1, 0);
-  tester.ExpectTotalCount(histogram_notallowh1, 0);
-
   base::RunLoop delete_run_loop;
   mojo::Remote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader;
@@ -3229,12 +3222,6 @@ TEST_F(URLLoaderTest, UploadReadOnceStream) {
 
   EXPECT_EQ(kRequestBody, ReadBody());
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
-
-  tester.ExpectTotalCount(histogram_allowh1, 1);
-  // From ReportFetchUploadStreamingUMA()
-  constexpr int kHTTP1_1 = 0;
-  tester.ExpectBucketCount(histogram_allowh1, kHTTP1_1, 1);
-  tester.ExpectTotalCount(histogram_notallowh1, 0);
 }
 
 // Tests that SSLInfo is not attached to OnComplete messages or the

@@ -301,39 +301,6 @@ const struct {
     {"Via", ConcerningHeaderId::kVia},
 };
 
-void ReportFetchUploadStreamingUMA(const net::URLRequest* request,
-                                   bool allow_http1_for_streaming_upload) {
-  // Same as tools/metrics/histograms/enums.xml's.
-  enum class HttpProtocolScheme {
-    kHTTP1_1 = 0,
-    kHTTP2 = 1,
-    kQUIC = 2,
-    kMaxValue = kQUIC
-  } protocol;
-  const auto connection_info = request->response_info().connection_info;
-  switch (net::HttpResponseInfo::ConnectionInfoToCoarse(connection_info)) {
-    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_HTTP1:
-      protocol = HttpProtocolScheme::kHTTP1_1;
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_HTTP2:
-      protocol = HttpProtocolScheme::kHTTP2;
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_QUIC:
-      protocol = HttpProtocolScheme::kQUIC;
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_OTHER:
-      protocol = HttpProtocolScheme::kHTTP1_1;
-      break;
-  }
-  if (allow_http1_for_streaming_upload) {
-    base::UmaHistogramEnumeration("Net.Fetch.UploadStreamingProtocolAllowH1",
-                                  protocol);
-  } else {
-    base::UmaHistogramEnumeration("Net.Fetch.UploadStreamingProtocolNotAllowH1",
-                                  protocol);
-  }
-}
-
 // Parses AcceptCHFrame and removes client hints already in the headers.
 std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
     const std::string& accept_ch_frame,
@@ -1555,10 +1522,6 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   has_received_response_ = true;
 
   ReportFlaggedResponseCookies();
-  if (has_fetch_streaming_upload_body_) {
-    ReportFetchUploadStreamingUMA(url_request_.get(),
-                                  allow_http1_for_streaming_upload_);
-  }
 
   if (net_error != net::OK) {
     NotifyCompleted(net_error);

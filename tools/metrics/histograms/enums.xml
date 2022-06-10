@@ -48366,6 +48366,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="Http 1.1"/>
   <int value="1" label="Http2"/>
   <int value="2" label="QUIC"/>
+  <int value="3" label="Other"/>
 </enum>
 
 <enum name="HttpResponseCode">
