@@ -7,6 +7,7 @@
 #include <string>
 
 #include "chrome/app/chrome_command_ids.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -66,6 +67,7 @@ AutofillContextMenuManager::AutofillContextMenuManager(
 
 AutofillContextMenuManager::~AutofillContextMenuManager() {
   cached_menu_models_.clear();
+  command_id_to_menu_item_value_mapper_.clear();
 }
 
 void AutofillContextMenuManager::AppendItems() {
@@ -77,8 +79,17 @@ void AutofillContextMenuManager::AppendItems() {
   DCHECK(personal_data_manager_);
   DCHECK(menu_model_);
 
-  AppendAddressItems();
-  AppendCreditCardItems();
+  // Stores all the profile values added to the content menu alongwith the
+  // command id of the row.
+  std::vector<std::pair<CommandId, ContextMenuItemValue>>
+      detail_items_added_to_context_menu;
+
+  AppendAddressItems(detail_items_added_to_context_menu);
+  AppendCreditCardItems(detail_items_added_to_context_menu);
+
+  command_id_to_menu_item_value_mapper_ =
+      base::flat_map<CommandId, ContextMenuItemValue>(
+          std::move(detail_items_added_to_context_menu));
 }
 
 bool AutofillContextMenuManager::IsCommandIdChecked(
@@ -98,12 +109,23 @@ bool AutofillContextMenuManager::IsCommandIdEnabled(
 
 void AutofillContextMenuManager::ExecuteCommand(
     CommandId command_id,
-    content::WebContents* web_contents,
     content::RenderFrameHost* render_frame_host) {
-  // TODO(crbug.com/1325811): Implement.
+  auto it = command_id_to_menu_item_value_mapper_.find(command_id);
+  if (it == command_id_to_menu_item_value_mapper_.end())
+    return;
+
+  ContentAutofillDriver* driver =
+      ContentAutofillDriver::GetForRenderFrameHost(render_frame_host);
+  if (!driver)
+    return;
+
+  // TODO(crbug.com/1325811): Send the field's renderer id and value to fill to
+  // `driver` for filling.
 }
 
-void AutofillContextMenuManager::AppendAddressItems() {
+void AutofillContextMenuManager::AppendAddressItems(
+    std::vector<std::pair<CommandId, ContextMenuItemValue>>&
+        detail_items_added_to_context_menu) {
   std::vector<AutofillProfile*> address_profiles =
       personal_data_manager_->GetProfiles();
   if (address_profiles.empty()) {
@@ -127,7 +149,8 @@ void AutofillContextMenuManager::AppendAddressItems() {
 
     // Create a submenu for each address profile with their details.
     CreateSubMenuWithData(profile, kAddressFieldTypesToShow,
-                          address_details_submenu);
+                          address_details_submenu,
+                          detail_items_added_to_context_menu);
 
     // Add a menu item showing address profile description. Hovering over it
     // opens a submenu with the address details.
@@ -153,7 +176,9 @@ void AutofillContextMenuManager::AppendAddressItems() {
   }
 }
 
-void AutofillContextMenuManager::AppendCreditCardItems() {
+void AutofillContextMenuManager::AppendCreditCardItems(
+    std::vector<std::pair<CommandId, ContextMenuItemValue>>&
+        detail_items_added_to_context_menu) {
   std::vector<CreditCard*> cards = personal_data_manager_->GetCreditCards();
   if (cards.empty()) {
     return;
@@ -175,7 +200,8 @@ void AutofillContextMenuManager::AppendCreditCardItems() {
     cached_menu_models_.push_back(base::WrapUnique(card_details_submenu));
 
     // Create a submenu for each credit card with their details.
-    CreateSubMenuWithData(card, kCardFieldTypesToShow, card_details_submenu);
+    CreateSubMenuWithData(card, kCardFieldTypesToShow, card_details_submenu,
+                          detail_items_added_to_context_menu);
 
     // Add a menu item showing credit card  description. Hovering over it
     // opens a submenu with the credit card details.
@@ -204,7 +230,9 @@ void AutofillContextMenuManager::CreateSubMenuWithData(
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
     base::span<const ServerFieldType> field_types_to_show,
-    ui::SimpleMenuModel* menu_model) {
+    ui::SimpleMenuModel* menu_model,
+    std::vector<std::pair<CommandId, ContextMenuItemValue>>&
+        detail_items_added_to_context_menu) {
   // True when an item is added to the context menu which is not a separator.
   bool is_separator_required = false;
 
@@ -235,6 +263,8 @@ void AutofillContextMenuManager::CreateSubMenuWithData(
         // Create a menu item with the address/credit card details and attach
         // to the model.
         menu_model->AddItem(value_menu_id->value(), value);
+        detail_items_added_to_context_menu.emplace_back(
+            *value_menu_id, ContextMenuItemValue(value));
         was_prev_unknown = false;
         is_separator_required = true;
       }

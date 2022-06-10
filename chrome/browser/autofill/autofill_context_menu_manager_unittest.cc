@@ -67,6 +67,8 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
 TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
   autofill_context_menu_manager()->AppendItems();
 
+  std::vector<std::u16string> all_added_strings;
+
   // Check for top level menu with autofill options.
   ASSERT_EQ(2, menu_model()->GetItemCount());
   ASSERT_EQ(u"Fill Address Info", menu_model()->GetLabelAt(0));
@@ -84,12 +86,14 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
   // Check for submenu with address details.
   auto* address_details_submenu = address_menu_model->GetSubmenuModelAt(0);
   ASSERT_EQ(address_details_submenu->GetItemCount(), 6);
-  ASSERT_EQ(u"666 Erebus St.\nApt 8", address_details_submenu->GetLabelAt(0));
-  ASSERT_EQ(u"Elysium", address_details_submenu->GetLabelAt(1));
-  ASSERT_EQ(u"91111", address_details_submenu->GetLabelAt(2));
-  ASSERT_EQ(u"", address_details_submenu->GetLabelAt(3));
-  ASSERT_EQ(u"16502111111", address_details_submenu->GetLabelAt(4));
-  ASSERT_EQ(u"johndoe@hades.com", address_details_submenu->GetLabelAt(5));
+  static constexpr std::array expected_address_values = {
+      u"666 Erebus St.\nApt 8", u"Elysium",          u"91111", u"",
+      u"16502111111",           u"johndoe@hades.com"};
+  for (size_t i = 0; i < expected_address_values.size(); i++) {
+    ASSERT_EQ(address_details_submenu->GetLabelAt(i),
+              expected_address_values[i]);
+    all_added_strings.push_back(expected_address_values[i]);
+  }
 
   // Check for submenu with credit card descriptions.
   auto* card_menu_model = menu_model()->GetSubmenuModelAt(1);
@@ -106,13 +110,27 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
   // Check for submenu with credit card details.
   auto* card_details_submenu = card_menu_model->GetSubmenuModelAt(0);
   ASSERT_EQ(card_details_submenu->GetItemCount(), 5);
-  ASSERT_EQ(u"Test User", card_details_submenu->GetLabelAt(0));
-  ASSERT_EQ(u"4111111111111111", card_details_submenu->GetLabelAt(1));
-  ASSERT_EQ(u"", card_details_submenu->GetLabelAt(2));
-  ASSERT_EQ(card_details_submenu->GetLabelAt(3),
-            base::ASCIIToUTF16(test::NextMonth().c_str()));
-  ASSERT_EQ(card_details_submenu->GetLabelAt(4),
-            base::ASCIIToUTF16(test::NextYear().c_str()).substr(2));
+  static constexpr std::array expected_credit_card_values = {
+      u"Test User", u"4111111111111111", u""};
+  for (size_t i = 0; i < expected_credit_card_values.size(); i++) {
+    ASSERT_EQ(card_details_submenu->GetLabelAt(i),
+              expected_credit_card_values[i]);
+    all_added_strings.push_back(expected_credit_card_values[i]);
+  }
+  all_added_strings.push_back(base::ASCIIToUTF16(test::NextMonth().c_str()));
+  ASSERT_EQ(card_details_submenu->GetLabelAt(3), all_added_strings.back());
+  all_added_strings.push_back(
+      base::ASCIIToUTF16(test::NextYear().c_str()).substr(2));
+  ASSERT_EQ(card_details_submenu->GetLabelAt(4), all_added_strings.back());
+
+  // Test all strings added to the command_id_to_menu_item_value_mapper were
+  // added to the context menu.
+  auto mapper = autofill_context_menu_manager()
+                    ->command_id_to_menu_item_value_mapper_for_testing();
+  base::ranges::sort(all_added_strings);
+  EXPECT_TRUE(base::ranges::all_of(mapper, [&](const auto& p) {
+    return base::Contains(all_added_strings, p.second.value());
+  }));
 }
 
 }  // namespace autofill
