@@ -1669,11 +1669,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/ub-uiautomator/lib': {
-      'url': Var('chromium_git') + '/chromium/third_party/ub-uiautomator.git' + '@' + '00270549ce3161ae72ceb24712618ea28b4f9434',
-      'condition': 'checkout_android',
-  },
-
   'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@12989fc8d7d273b5b95ef988d37469738eb9c39b',
 
   'src/third_party/vulkan_memory_allocator':
