@@ -121,16 +121,16 @@ void SavedTabGroupButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void SavedTabGroupButton::OnPaintBackground(gfx::Canvas* canvas) {
-  const ui::ThemeProvider* const tp = GetThemeProvider();
+  const ui::ColorProvider* const cp = GetColorProvider();
   gfx::PointF center_point_f = gfx::PointF(width() / 2, height() / 2);
   gfx::RectF rect_f = gfx::RectF(width(), height());
   rect_f.Inset(1.0f);
 
   // Relies on logic in theme_helper.cc to determine dark/light palette.
   SkColor background_color =
-      tp->GetColor(GetTabGroupBookmarkColorId(tab_group_color_id_));
+      cp->GetColor(GetTabGroupBookmarkColorId(tab_group_color_id_));
   SkColor text_and_outline_color =
-      tp->GetColor(GetTabGroupDialogColorId(tab_group_color_id_));
+      cp->GetColor(GetTabGroupDialogColorId(tab_group_color_id_));
   SetEnabledTextColors(text_and_outline_color);
 
   // Draw background.
@@ -176,11 +176,11 @@ void SavedTabGroupButton::OnThemeChanged() {
 
   // We don't always have a theme provider (ui tests, for example).
   SkColor text_color = gfx::kPlaceholderColor;
-  const ui::ThemeProvider* const tp = GetThemeProvider();
-  if (tp) {
+  const ui::ColorProvider* const cp = GetColorProvider();
+  if (cp) {
     SkColor background_color =
-        tp->GetColor(GetTabGroupBookmarkColorId(tab_group_color_id_));
-    text_color = tp->GetColor(GetTabGroupDialogColorId(tab_group_color_id_));
+        cp->GetColor(GetTabGroupBookmarkColorId(tab_group_color_id_));
+    text_color = cp->GetColor(GetTabGroupDialogColorId(tab_group_color_id_));
     text_color = color_utils::PickGoogleColor(
         text_color, background_color,
         color_utils::kMinimumReadableContrastRatio);

@@ -27,7 +27,6 @@ static constexpr const auto kColorTolerances = base::MakeFixedFlatMap<int, int>(
      {ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY_SELECTED, 1},
      {ThemeProperties::COLOR_STATUS_BUBBLE_INACTIVE, 1},
      {ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE, 1},
-     {ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_ORANGE, 1},
      {ThemeProperties::COLOR_TAB_STROKE_FRAME_INACTIVE, 1},
      {ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE, 1},
      {ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE, 1}});

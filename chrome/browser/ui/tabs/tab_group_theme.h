@@ -8,23 +8,21 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/color/color_id.h"
 
-int GetTabGroupTabStripColorId(tab_groups::TabGroupColorId group_color_id,
-                               bool active_frame);
+ui::ColorId GetTabGroupTabStripColorId(
+    tab_groups::TabGroupColorId group_color_id,
+    bool active_frame);
 
 ui::ColorId GetThumbnailTabStripTabGroupColorId(
     tab_groups::TabGroupColorId group_color_id,
     bool active_frame);
 
-int GetTabGroupDialogColorId(tab_groups::TabGroupColorId group_color_id);
+ui::ColorId GetTabGroupDialogColorId(
+    tab_groups::TabGroupColorId group_color_id);
 
 ui::ColorId GetTabGroupContextMenuColorId(
     tab_groups::TabGroupColorId group_color_id);
 
-// TODO(crbug.com/1292029): Remove this function which returns color id for
-// ThemeService, not for ColorProvider.
-int GetTabGroupContextMenuColorIdDeprecated(
+ui::ColorId GetTabGroupBookmarkColorId(
     tab_groups::TabGroupColorId group_color_id);
-
-int GetTabGroupBookmarkColorId(tab_groups::TabGroupColorId group_color_id);
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_GROUP_THEME_H_

@@ -57,7 +57,6 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
-#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -113,6 +112,8 @@
 #include "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/native_theme/native_theme_mac.h"
+#include "ui/native_theme/native_theme_observer.h"
 #include "url/gurl.h"
 
 namespace {
@@ -554,6 +555,25 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   AppController* const app_controller_;  // Weak; owns us.
 };
 
+class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
+ public:
+  AppControllerNativeThemeObserver(AppController* app_controller)
+      : app_controller_(app_controller) {
+    native_theme_observation_.Observe(
+        ui::NativeThemeMac::GetInstanceForNativeUi());
+  }
+
+  // NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override {
+    [app_controller_ nativeThemeDidChange];
+  }
+
+ private:
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      native_theme_observation_{this};
+  AppController* const app_controller_;  // Weak; owns us.
+};
+
 @implementation AppController
 
 @synthesize startupComplete = _startupComplete;
@@ -803,6 +823,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     profile = profile->GetOriginalProfile();
   }
   [self setLastProfile:profile];
+  _lastActiveColorProvider = browser->window()->GetColorProvider();
 }
 
 - (void)activeSpaceDidChange:(NSNotification*)notify {
@@ -924,6 +945,10 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
       std::make_unique<AppControllerProfileObserver>(
           g_browser_process->profile_manager(), self);
 
+  // Observe native theme change (e.g. light and dark mode).
+  _nativeThemeObserver =
+      std::make_unique<AppControllerNativeThemeObserver>(self);
+
   // Record the path to the (browser) app bundle; this is used by the app mode
   // shim.
   if (base::mac::AmIBundled()) {
@@ -944,8 +969,11 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
   Browser* browser = chrome::FindLastActive();
   content::WebContents* activeWebContents = nullptr;
-  if (browser)
+  _lastActiveColorProvider = nullptr;
+  if (browser) {
     activeWebContents = browser->tab_strip_model()->GetActiveWebContents();
+    _lastActiveColorProvider = browser->window()->GetColorProvider();
+  }
   [self updateHandoffManager:activeWebContents];
   [self openStartupUrls];
 
@@ -1776,14 +1804,18 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
                           _menuState.get(), _lastProfile));
 }
 
-- (const ui::ThemeProvider&)lastActiveThemeProvider {
-  // Themes are only available while a profile is available.
-  DCHECK(_lastProfile);
+- (const ui::ColorProvider&)lastActiveColorProvider {
+  DCHECK(_lastActiveColorProvider);
+  return *_lastActiveColorProvider;
+}
 
-  // AppController is conceptually a root for Chromium Mac. As a result, it is
-  // allowed to refer to the profile to get a theme provider. Non-root UI
-  // concepts should rely on well known roots to obtain a ThemeProvider.
-  return ThemeService::GetThemeProviderForProfile(_lastProfile);
+- (void)nativeThemeDidChange {
+  // Some tests manually notify native theme change without setting
+  // a profile for app controller, so `_lastProfile` will be nullptr.
+  if (_lastProfile) {
+    Browser* browser = chrome::FindBrowserWithProfile(_lastProfile);
+    _lastActiveColorProvider = browser->window()->GetColorProvider();
+  }
 }
 
 - (BOOL)windowHasBrowserTabs:(NSWindow*)window {
@@ -1949,6 +1981,8 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
 - (void)setLastProfileForTesting:(Profile*)profile {
   _lastProfile = profile;
+  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  _lastActiveColorProvider = browser->window()->GetColorProvider();
 }
 
 @end  // @implementation AppController
