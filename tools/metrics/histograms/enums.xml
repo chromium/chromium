@@ -40265,9 +40265,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4217" label="CookieHasNotBeenRefreshedIn301To350Days"/>
   <int value="4218" label="CookieHasNotBeenRefreshedIn351To400Days"/>
   <int value="4219" label="AnonymousIframe"/>
-  <int value="4220" label="GestureScrollStart"/>
-  <int value="4221" label="GestureScrollUpdate"/>
-  <int value="4222" label="GestureScrollEnd"/>
+  <int value="4220" label="OBSOLETE_GestureScrollStart"/>
+  <int value="4221" label="OBSOLETE_GestureScrollUpdate"/>
+  <int value="4222" label="OBSOLETE_GestureScrollEnd"/>
   <int value="4223" label="ArrayBufferTooBigForWebAPI"/>
   <int value="4224" label="FedCmRevoke"/>
   <int value="4225" label="FedCmLogout"/>

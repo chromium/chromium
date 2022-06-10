@@ -1077,19 +1077,6 @@ WebInputEventResult ScrollManager::HandleGestureScrollEvent(
   if (event_target) {
     if (HandleScrollGestureOnResizer(event_target, gesture_event))
       return WebInputEventResult::kHandledSuppressed;
-
-    GestureEvent* gesture_dom_event = GestureEvent::Create(
-        event_target->GetDocument().domWindow(), gesture_event);
-    if (gesture_dom_event) {
-      DispatchEventResult gesture_dom_event_result =
-          event_target->DispatchEvent(*gesture_dom_event);
-      if (gesture_dom_event_result != DispatchEventResult::kNotCanceled) {
-        DCHECK(gesture_dom_event_result !=
-               DispatchEventResult::kCanceledByEventHandler);
-        return event_handling_util::ToWebInputEventResult(
-            gesture_dom_event_result);
-      }
-    }
   }
 
   if (snap_fling_controller_) {
