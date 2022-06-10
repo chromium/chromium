@@ -303,4 +303,11 @@ public class NtpFeedSurfaceLifecycleManagerTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
         verify(mCoordinator).onActivityPaused();
     }
+
+    @Test
+    @SmallTest
+    public void testLogPageLoadStarted() {
+        mNtpStreamLifecycleManager.getTabObserverForTesting().onPageLoadStarted(null, null);
+        verify(mFeedReliabilityLogger, times(1)).onPageLoadStarted();
+    }
 }
