@@ -42,4 +42,28 @@ async_test(function(t) {
     t.done();
   });
 }, "AccessibleNode.onaccessiblecontextmenu");
+
+promise_test(function(t) {
+  assert_true(internals.runtimeFlags.synthesizedKeyboardEventsForAccessibilityActionsEnabled);
+
+  return new Promise(resolve => {
+    const target = document.getElementById("context_menu_target");
+    const axTarget = accessibilityController.accessibleElementById("context_menu_target");
+
+    window.addEventListener('keydown', resolve);
+    axTarget.showMenu();
+  }).then(event => {
+    assert_equals(event.type, "keydown");
+    assert_equals(event.keyCode, 93); // 93 = context menu key
+    assert_equals(event.target, document.getElementById("context_menu_target"));
+
+    return new Promise(resolve => {
+      window.addEventListener('keyup', resolve);
+    });
+  }).then(event => {
+    assert_equals(event.type, "keyup");
+    assert_equals(event.keyCode, 93); // 93 = context menu key
+    assert_equals(event.target, document.getElementById("context_menu_target"));
+  });
+}, "Test for synthesized keydown/up events in context menu accessible action");
 </script>

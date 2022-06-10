@@ -5237,6 +5237,11 @@ std::vector<ax::mojom::Action> AXPlatformNodeAuraLinux::GetSupportedActions()
   if (HasDefaultActionVerb())
     supported_actions.push_back(ax::mojom::Action::kDoDefault);
 
+  // Users expect to be able to bring a context menu on any object via e.g.
+  // right click, so we make the context menu action available to any object
+  // unconditionally.
+  supported_actions.push_back(ax::mojom::Action::kShowContextMenu);
+
   for (const auto& item : *kActionsThatCanBeExposedViaAtkAction) {
     if (HasAction(item))
       supported_actions.push_back(item);
