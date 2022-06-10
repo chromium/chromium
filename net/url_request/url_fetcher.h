@@ -89,7 +89,7 @@ class URLRequestContextGetter;
 // interception is explicitly enabled in tests.
 class NET_EXPORT URLFetcher {
  public:
-  // Imposible http response code. Used to signal that no http response code
+  // Impossible http response code. Used to signal that no http response code
   // was received.
   enum ResponseCode {
     RESPONSE_CODE_INVALID = -1
