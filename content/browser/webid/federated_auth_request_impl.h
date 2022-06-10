@@ -163,7 +163,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // information and then we can remove the console error messages.
   void AddConsoleErrorMessage(blink::mojom::FederatedAuthRequestResult result);
 
-  bool ShouldCompleteRequestImmediatelyOnError();
+  bool ShouldCompleteRequestImmediately();
 
   const raw_ptr<RenderFrameHostImpl> render_frame_host_ = nullptr;
 

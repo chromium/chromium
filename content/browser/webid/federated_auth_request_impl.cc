@@ -299,7 +299,7 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
   nonce_ = nonce;
   prefer_auto_sign_in_ = prefer_auto_sign_in && IsFedCmAutoSigninEnabled();
   start_time_ = base::TimeTicks::Now();
-  if (!ShouldCompleteRequestImmediatelyOnError())
+  if (!ShouldCompleteRequestImmediately())
     delay_timer_.Reset();
 
   if (!GetApiPermissionContext()) {
@@ -387,7 +387,7 @@ void FederatedAuthRequestImpl::Revoke(const GURL& provider,
   provider_ = provider;
   client_id_ = client_id;
   hint_ = hint;
-  if (!ShouldCompleteRequestImmediatelyOnError())
+  if (!ShouldCompleteRequestImmediately())
     delay_timer_.Reset();
   revoke_callback_ = std::move(callback);
 
@@ -918,7 +918,7 @@ void FederatedAuthRequestImpl::CompleteRevokeRequest(
   manifest_list_checked_ = false;
   idp_metadata_.reset();
 
-  if (should_call_callback || ShouldCompleteRequestImmediatelyOnError())
+  if (should_call_callback || ShouldCompleteRequestImmediately())
     std::move(revoke_callback_).Run(status);
 }
 
@@ -1092,7 +1092,8 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   // |id_token_request_delay_| seconds for better UX.
   id_token_response_time_ = base::TimeTicks::Now();
   base::TimeDelta fetch_time = id_token_response_time_ - select_account_time_;
-  if (fetch_time >= id_token_request_delay_) {
+  if (ShouldCompleteRequestImmediately() ||
+      fetch_time >= id_token_request_delay_) {
     CompleteIdTokenRequest(status, id_token);
     return;
   }
@@ -1243,7 +1244,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
   CleanUp();
 
-  if (should_call_callback || ShouldCompleteRequestImmediatelyOnError()) {
+  if (should_call_callback || ShouldCompleteRequestImmediately()) {
     errors_logged_to_console_ = false;
 
     RequestIdTokenStatus status =
@@ -1287,9 +1288,9 @@ void FederatedAuthRequestImpl::AddConsoleErrorMessage(
       blink::mojom::ConsoleMessageLevel::kError, message);
 }
 
-bool FederatedAuthRequestImpl::ShouldCompleteRequestImmediatelyOnError() {
+bool FederatedAuthRequestImpl::ShouldCompleteRequestImmediately() {
   return GetApiPermissionContext() &&
-         GetApiPermissionContext()->ShouldCompleteRequestImmediatelyOnError();
+         GetApiPermissionContext()->ShouldCompleteRequestImmediately();
 }
 
 void FederatedAuthRequestImpl::CompleteLogoutRequest(

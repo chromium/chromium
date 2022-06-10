@@ -7,7 +7,7 @@
 namespace content {
 
 bool FederatedIdentityApiPermissionContextDelegate::
-    ShouldCompleteRequestImmediatelyOnError() const {
+    ShouldCompleteRequestImmediately() const {
   return false;
 }
 

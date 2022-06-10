@@ -57,7 +57,7 @@ class ShellFederatedPermissionContext
                            const url::Origin& identity_provider,
                            const std::string& account_identifier) override;
 
-  bool ShouldCompleteRequestImmediatelyOnError() const override;
+  bool ShouldCompleteRequestImmediately() const override;
 
  private:
   // Pairs of <RP, IDP>

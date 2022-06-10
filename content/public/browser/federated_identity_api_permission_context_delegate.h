@@ -44,7 +44,7 @@ class CONTENT_EXPORT FederatedIdentityApiPermissionContextDelegate {
   // This function is so we can avoid the delay in tests. It does not really
   // belong on this delegate but we don't have a better one and it seems
   // wasteful to add one just for this one testing function.
-  virtual bool ShouldCompleteRequestImmediatelyOnError() const;
+  virtual bool ShouldCompleteRequestImmediately() const;
 };
 
 }  // namespace content

@@ -93,8 +93,7 @@ void ShellFederatedPermissionContext::RevokeActiveSession(
                                     account_identifier));
 }
 
-bool ShellFederatedPermissionContext::ShouldCompleteRequestImmediatelyOnError()
-    const {
+bool ShellFederatedPermissionContext::ShouldCompleteRequestImmediately() const {
   return switches::IsRunWebTestsSwitchPresent();
 }
 
