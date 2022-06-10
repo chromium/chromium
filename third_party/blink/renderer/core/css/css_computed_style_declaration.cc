@@ -182,9 +182,10 @@ Node* CSSComputedStyleDeclaration::StyledNode() const {
     return nullptr;
 
   if (auto* node_element = DynamicTo<Element>(node_.Get())) {
-    if (PseudoElement* element =
-            node_element->GetPseudoElement(pseudo_element_specifier_))
+    if (PseudoElement* element = node_element->GetNestedPseudoElement(
+            pseudo_element_specifier_, pseudo_argument_)) {
       return element;
+    }
   }
   return node_.Get();
 }

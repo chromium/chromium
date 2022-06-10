@@ -1803,6 +1803,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
   const CachedMatchedProperties* cached_matched_properties =
       key.IsValid() ? matched_properties_cache_.Find(key, state) : nullptr;
 
+  AtomicString pseudo_argument = state.Style()->PseudoArgument();
   if (cached_matched_properties && MatchedPropertiesCache::IsCacheable(state)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_hit, 1);
@@ -1855,6 +1856,11 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     }
     UpdateFont(state);
   }
+  // This is needed because pseudo_argument is copied to the state.Style() as
+  // part of a raredata field when copying non-inherited values from the cached
+  // result. The argument isn't a style property per se, it represents the
+  // argument to the matching element which should remain unchanged.
+  state.Style()->SetPseudoArgument(pseudo_argument);
 
   return CacheSuccess(is_inherited_cache_hit, is_non_inherited_cache_hit, key,
                       cached_matched_properties);

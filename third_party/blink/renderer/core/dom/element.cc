@@ -6240,8 +6240,10 @@ const ComputedStyle* Element::EnsureComputedStyle(
   StyleEngine::InEnsureComputedStyleScope ensure_scope(
       GetDocument().GetStyleEngine());
 
-  if (PseudoElement* element = GetPseudoElement(pseudo_element_specifier))
+  if (PseudoElement* element =
+          GetNestedPseudoElement(pseudo_element_specifier, pseudo_argument)) {
     return element->EnsureComputedStyle();
+  }
 
   if (!InActiveDocument())
     return nullptr;
