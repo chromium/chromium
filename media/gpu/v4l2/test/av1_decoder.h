@@ -27,6 +27,15 @@
 // base/logging.h for ChromeOS.
 #define ANALYZER_ALLOW_UNUSED(var) static_cast<void>(var);
 
+// TODO(stevecho): RESTORATION_TILESIZE_MAX in the spec is not available in the
+// AV1 uAPI. It was recommended to be added in the userspace code. If the uAPI
+// stays as it is for upstreaming, then #ifndef can be removed. If the uAPI ends
+// up adding this constant, then we can remove this define at that time.
+// https://patchwork.linuxtv.org/project/linux-media/patch/20210810220552.298140-2-daniel.almeida@collabora.com/
+#ifndef V4L2_AV1_RESTORATION_TILESIZE_MAX
+#define V4L2_AV1_RESTORATION_TILESIZE_MAX 256
+#endif
+
 namespace media {
 namespace v4l2_test {
 
