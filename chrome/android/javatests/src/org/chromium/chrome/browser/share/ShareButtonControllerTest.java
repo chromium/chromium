@@ -141,10 +141,8 @@ public final class ShareButtonControllerTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mActivityTestRule.getActivity()
-                                   .getStartSurface()
-                                   .getController()
-                                   .setStartSurfaceState(StartSurfaceState.SHOWING_START));
+                        -> mActivityTestRule.getActivity().getStartSurface().setStartSurfaceState(
+                                StartSurfaceState.SHOWING_START));
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
 

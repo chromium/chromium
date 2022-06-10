@@ -551,7 +551,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     private boolean isShowingStartSurfaceHomepage() {
         return mStartSurfaceSupplier.get() != null
-                && mStartSurfaceSupplier.get().getController().getStartSurfaceState()
+                && mStartSurfaceSupplier.get().getStartSurfaceState()
                 == StartSurfaceState.SHOWN_HOMEPAGE;
     }
 

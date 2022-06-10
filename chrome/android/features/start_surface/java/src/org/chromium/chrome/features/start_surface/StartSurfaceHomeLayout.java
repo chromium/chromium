@@ -101,7 +101,7 @@ public class StartSurfaceHomeLayout extends Layout {
 
     @Override
     public boolean onBackPressed() {
-        return mStartSurface.getController().onBackPressed();
+        return mStartSurface.onBackPressed();
     }
 
     @Override

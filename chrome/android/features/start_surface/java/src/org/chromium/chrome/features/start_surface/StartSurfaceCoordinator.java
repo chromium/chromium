@@ -437,9 +437,74 @@ public class StartSurfaceCoordinator implements StartSurface {
         }
     }
 
-    @Override
-    public Controller getController() {
+    @VisibleForTesting
+    public StartSurfaceMediator getMediatorForTesting() {
         return mStartSurfaceMediator;
+    }
+
+    @Override
+    public void addTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
+        mStartSurfaceMediator.addTabSwitcherViewObserver(observer);
+    }
+
+    @Override
+    public void removeTabSwitcherViewObserver(TabSwitcherViewObserver listener) {
+        mStartSurfaceMediator.removeTabSwitcherViewObserver(listener);
+    }
+
+    @Override
+    public void hideTabSwitcherView(boolean animate) {
+        mStartSurfaceMediator.hideTabSwitcherView(animate);
+    }
+
+    @Override
+    public void showOverview(boolean animate) {
+        mStartSurfaceMediator.showOverview(animate);
+    }
+
+    @Override
+    public void setStartSurfaceState(int state, int launchOrigin) {
+        mStartSurfaceMediator.setStartSurfaceState(state, launchOrigin);
+    }
+
+    @Override
+    public void setStartSurfaceState(int state) {
+        mStartSurfaceMediator.setStartSurfaceState(state);
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return mStartSurfaceMediator.onBackPressed();
+    }
+
+    @Override
+    public void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs) {
+        mStartSurfaceMediator.enableRecordingFirstMeaningfulPaint(activityCreateTimeMs);
+    }
+
+    @Override
+    public int getStartSurfaceState() {
+        return mStartSurfaceMediator.getStartSurfaceState();
+    }
+
+    @Override
+    public int getPreviousStartSurfaceState() {
+        return mStartSurfaceMediator.getPreviousStartSurfaceState();
+    }
+
+    @Override
+    public ViewGroup getTabSwitcherContainer() {
+        return mStartSurfaceMediator.getTabSwitcherContainer();
+    }
+
+    @Override
+    public void setSnackbarParentView(ViewGroup parentView) {
+        mStartSurfaceMediator.setSnackbarParentView(parentView);
+    }
+
+    @Override
+    public boolean isShowingStartSurfaceHomepage() {
+        return mStartSurfaceMediator.isShowingStartSurfaceHomepage();
     }
 
     @Override

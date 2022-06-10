@@ -2256,8 +2256,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                 LayoutType.TAB_SWITCHER));
 
         StartSurface startSurface = mTabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { startSurface.getController().onBackPressed(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { startSurface.onBackPressed(); });
         // TODO(wychen): using default timeout or even converting to
         //  OverviewModeBehaviorWatcher shouldn't increase flakiness.
         LayoutTestUtils.waitForLayout(

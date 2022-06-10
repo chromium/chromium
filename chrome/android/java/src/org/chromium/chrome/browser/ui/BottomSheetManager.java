@@ -211,7 +211,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         updateSuppressionForTabSwitcher(tab,
                 mStartSurfaceSupplier.get() == null
                         ? null
-                        : mStartSurfaceSupplier.get().getController().getStartSurfaceState());
+                        : mStartSurfaceSupplier.get().getStartSurfaceState());
 
         if (tab == null) return;
 
@@ -278,7 +278,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                     int startSurfaceState, boolean shouldShowTabSwitcherToolbar) {
                 if (mStartSurfaceState == startSurfaceState) return;
 
-                assert startSurfaceState == startSurface.getController().getStartSurfaceState();
+                assert startSurfaceState == startSurface.getStartSurfaceState();
                 mStartSurfaceState = startSurfaceState;
                 updateSuppressionForTabSwitcher(mTabProvider.get(), startSurfaceState);
 

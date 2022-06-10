@@ -87,8 +87,7 @@ public class TabSwitcherBackPressHandler
         }
         StartSurface startSurface = mStartSurfaceSupplier.get();
         boolean isStartSurfaceShownTabSwitcher = startSurface == null
-                || startSurface.getController().getStartSurfaceState()
-                        == StartSurfaceState.SHOWN_TABSWITCHER;
+                || startSurface.getStartSurfaceState() == StartSurfaceState.SHOWN_TABSWITCHER;
         mBackPressChangedSupplier.set(isStartSurfaceShownTabSwitcher);
     }
 }

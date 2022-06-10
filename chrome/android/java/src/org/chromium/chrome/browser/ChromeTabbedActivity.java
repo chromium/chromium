@@ -915,7 +915,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (ReturnToChromeUtil.isStartSurfaceEnabled(this) && getCurrentTabModel().getCount() > 0
                 && !isTablet() && !shouldShowOverviewPageOnStart() && !isInOverviewMode()
                 && mStartSurfaceSupplier.get() != null) {
-            mStartSurfaceSupplier.get().getController().setStartSurfaceState(
+            mStartSurfaceSupplier.get().setStartSurfaceState(
                     StartSurfaceState.NOT_SHOWN, NewTabPageLaunchOrigin.UNKNOWN);
         }
     }
@@ -1154,8 +1154,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 RecordHistogram.recordCount1MHistogram(
                         TAB_COUNT_ON_RETURN, getCurrentTabModel().getCount());
             }
+
             if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(this)) {
-                mStartSurfaceSupplier.get().getController().enableRecordingFirstMeaningfulPaint(
+                mStartSurfaceSupplier.get().enableRecordingFirstMeaningfulPaint(
                         getOnCreateTimestampMs());
             }
             mOverviewShownOnStart = true;
@@ -1384,7 +1385,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
              * enabled.
              */
             if (mStartSurfaceSupplier.get() == null
-                    || mStartSurfaceSupplier.get().getController().getStartSurfaceState()
+                    || mStartSurfaceSupplier.get().getStartSurfaceState()
                             != StartSurfaceState.SHOWN_HOMEPAGE
                     || !ReturnToChromeUtil.shouldShowStartSurfaceHomeAsNTP(
                             this, getCurrentTabModel().isIncognito(), isTablet())) {
@@ -2199,7 +2200,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // then leave tab switcher mode on back.
         if (isInOverviewMode() && !isTablet()
                 && (mStartSurfaceSupplier.get() == null
-                        || mStartSurfaceSupplier.get().getController().getStartSurfaceState()
+                        || mStartSurfaceSupplier.get().getStartSurfaceState()
                                 == StartSurfaceState.SHOWN_TABSWITCHER)) {
             mLayoutManager.showLayout(LayoutType.BROWSING, true);
             BackPressManager.record(BackPressHandler.Type.TAB_SWITCHER_TO_BROWSING);
@@ -2463,7 +2464,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     || !HomepageManager.isHomepageEnabled()) {
                 state = StartSurfaceState.SHOWING_TABSWITCHER;
             }
-            mStartSurfaceSupplier.get().getController().setStartSurfaceState(state, launchOrigin);
+            mStartSurfaceSupplier.get().setStartSurfaceState(state, launchOrigin);
         }
 
         if (mLayoutManager == null) return;

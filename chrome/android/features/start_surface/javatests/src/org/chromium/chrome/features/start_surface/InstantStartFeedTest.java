@@ -109,8 +109,8 @@ public class InstantStartFeedTest {
         StartSurfaceCoordinator startSurfaceCoordinator =
                 StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(((StartSurfaceMediator) startSurfaceCoordinator.getController())
-                                       .shouldShowFeedPlaceholder());
+            Assert.assertFalse(
+                    startSurfaceCoordinator.getMediatorForTesting().shouldShowFeedPlaceholder());
         });
 
         // TODO(spdonghao): Add a test for Feed placeholder from warm start. It's tested in

@@ -82,9 +82,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 
 /** The mediator implements the logic to interact with the surfaces and caller. */
-class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSwitcherViewObserver,
-                                      View.OnClickListener, StartSurface.OnTabSelectingListener,
-                                      BackPressHandler {
+class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.OnClickListener,
+                                      StartSurface.OnTabSelectingListener, BackPressHandler {
     /** Interface to initialize a secondary tasks surface for more tabs. */
     interface SecondaryTasksSurfaceInitializer {
         /**
@@ -422,8 +421,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
     // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
     // two different things, audit the wording usage and see if we can rename this method to
     // setStartSurfaceState.
-    @Override
-    public void setStartSurfaceState(
+    void setStartSurfaceState(
             @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin) {
         // TODO(crbug.com/1039691): Refactor into state and trigger to separate SHOWING and SHOWN
         // states.
@@ -483,8 +481,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
         }
     }
 
-    @Override
-    public void setStartSurfaceState(@StartSurfaceState int state) {
+    void setStartSurfaceState(@StartSurfaceState int state) {
         setStartSurfaceState(state, mLaunchOrigin);
     }
 
@@ -569,45 +566,37 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
         }
     }
 
-    @Override
     @StartSurfaceState
-    public int getStartSurfaceState() {
+    int getStartSurfaceState() {
         return mStartSurfaceState;
     }
 
-    @Override
-    public int getPreviousStartSurfaceState() {
+    int getPreviousStartSurfaceState() {
         return mPreviousStartSurfaceState;
     }
 
-    @Override
-    public ViewGroup getTabSwitcherContainer() {
+    ViewGroup getTabSwitcherContainer() {
         return mTabSwitcherContainer;
     }
 
-    @Override
-    public void setSnackbarParentView(ViewGroup parentView) {
+    void setSnackbarParentView(ViewGroup parentView) {
         if (mSnackbarManager == null) return;
         mSnackbarManager.setParentView(parentView);
     }
 
-    @Override
-    public void addTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
+    void addTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
         mObservers.addObserver(observer);
     }
 
-    @Override
-    public void removeTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
+    void removeTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
         mObservers.removeObserver(observer);
     }
 
-    @Override
-    public void hideTabSwitcherView(boolean animate) {
+    void hideTabSwitcherView(boolean animate) {
         mController.hideTabSwitcherView(animate);
     }
 
-    @Override
-    public void showOverview(boolean animate) {
+    void showOverview(boolean animate) {
         // TODO(crbug.com/982018): Animate the bottom bar together with the Tab Grid view.
         if (mPropertyModel != null) {
             RecordUserAction.record("StartSurface.Shown");
@@ -651,8 +640,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
         mController.showTabSwitcherView(animate);
     }
 
-    @Override
-    public boolean onBackPressed() {
+    boolean onBackPressed() {
         boolean ret = onBackPressedInternal();
         if (ret) {
             BackPressManager.record(BackPressHandler.Type.START_SURFACE_MEDIATOR);
@@ -710,8 +698,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
         return mBackPressChangedSupplier;
     }
 
-    @Override
-    public void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs) {
+    void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs) {
         mController.enableRecordingFirstMeaningfulPaint(activityCreateTimeMs);
     }
 
@@ -733,14 +720,12 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
         }
     }
 
-    @Override
-    public boolean inShowState() {
+    boolean inShowState() {
         return mStartSurfaceState != StartSurfaceState.NOT_SHOWN
                 && mStartSurfaceState != StartSurfaceState.DISABLED;
     }
 
-    @Override
-    public boolean isShowingStartSurfaceHomepage() {
+    boolean isShowingStartSurfaceHomepage() {
         // When state is SHOWN_HOMEPAGE or SHOWING_HOMEPAGE or SHOWING_START, state surface homepage
         // is showing. When state is StartSurfaceState.SHOWING_PREVIOUS and the previous state is
         // SHOWN_HOMEPAGE or NOT_SHOWN, homepage is showing.
