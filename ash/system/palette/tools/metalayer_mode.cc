@@ -5,7 +5,7 @@
 #include "ash/system/palette/tools/metalayer_mode.h"
 
 #include "ash/assistant/assistant_controller_impl.h"
-#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"

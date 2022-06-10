@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/components/account_manager/account_manager_factory.h"
-#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "base/bind.h"

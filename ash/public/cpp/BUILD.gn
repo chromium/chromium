@@ -299,7 +299,6 @@ component("cpp") {
     "stylus_utils.h",
     "system/power/power_button_controller_base.cc",
     "system/power/power_button_controller_base.h",
-    "system/toast_catalog.h",
     "system/toast_data.cc",
     "system/toast_data.h",
     "system/toast_manager.cc",

@@ -10,6 +10,8 @@ namespace ash {
 // A living catalog that registers notifications.
 // These values are persisted to metrics. Entries should not be renumbered and
 // numeric values should never be reused.
+// If a notification was deprecated, keep the CatalogName but add the
+// 'DEPRECATED_' prefix to the entry.
 enum class NotificationCatalogName {
   kNone = 0,
   kTestCatalogName = 1,
@@ -150,6 +152,52 @@ enum class NotificationCatalogName {
   kDownloadNotification = 136,
   kAdaptiveCharging = 137,
   kManagedSimLock = 138,
+};
+
+// A living catalog that registers Toast notifiers.
+// These values are persisted to metrics. Entries should not be renumbered and
+// numeric values should never be reused.
+// If a toast was deprecated, keep the CatalogName but add the
+// 'DEPRECATED_' prefix to the entry.
+enum class ToastCatalogName {
+  kVirtualDesksLimitMax = 0,
+  kVirtualDesksLimitMin = 1,
+  kAssistantError = 2,
+  kDebugCommand = 3,
+  kAssistantUnboundService = 4,
+  kStylusPrompt = 5,
+  kAppResizable = 6,
+  kKioskAppError = 7,
+  kBluetoothDevicePaired = 8,
+  kBluetoothDeviceDisconnected = 9,
+  kBluetoothDeviceConnected = 10,
+  kBluetoothAdapterDiscoverable = 11,
+  kEncourageUnlock = 12,
+  kNetworkAutoConnect = 13,
+  kAssistantLoading = 14,
+  kToastManagerUnittest = 15,
+  kMaximumDeskLaunchTemplate = 16,
+  kEnterOverviewGesture = 17,
+  kExitOverviewGesture = 18,
+  kNextDeskGesture = 19,
+  kPreviousDeskGesture = 20,
+  kMoveVisibleOnAllDesksWindow = 21,
+  kAppCannotSnap = 22,
+  kCrostiniUnsupportedVirtualKeyboard = 23,
+  kCrostiniUnsupportedIME = 24,
+  kCopyToClipboardShareAction = 25,
+  kClipboardBlockedAction = 26,
+  kClipboardWarnOnPaste = 27,
+  kAppNotAvailable = 28,
+  kCameraPrivacySwitchOff = 29,
+  kCameraPrivacySwitchOn = 30,
+  kExtensionInstallSuccess = 31,
+  kAccountRemoved = 32,
+  kDeskTemplateTooLarge = 33,
+  kUndoCloseAll = 34,
+  kEcheAppToast = 35,
+  kDeprecateAssistantStylus = 36,
+  kMaxValue = kDeprecateAssistantStylus,
 };
 
 }  // namespace ash

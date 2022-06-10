@@ -4,9 +4,9 @@
 
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
-#include "ash/public/cpp/system/toast_catalog.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
