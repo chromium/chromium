@@ -927,7 +927,8 @@ std::string ProfileImpl::GetProfileUserName() const {
   const signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(this);
   if (identity_manager) {
-    return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+    return identity_manager
+        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
         .email;
   }
 
