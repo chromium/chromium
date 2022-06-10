@@ -437,24 +437,6 @@ public class FeedSurfaceCoordinatorTest {
                 .logUiStarting(SURFACE_TYPE, SURFACE_CREATION_TIME_NS);
     }
 
-    @Test
-    public void testLogSwitchTabs() {
-        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
-        mTabModel.selectTab();
-        verify(mLaunchReliabilityLogger, times(1))
-                .logLaunchFinished(
-                        anyLong(), eq(DiscoverLaunchResult.NAVIGATED_TO_ANOTHER_TAB.getNumber()));
-    }
-
-    @Test
-    public void testLogSwitchTabsIncognito() {
-        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
-        mTabModelIncognito.selectTab();
-        verify(mLaunchReliabilityLogger, times(1))
-                .logLaunchFinished(
-                        anyLong(), eq(DiscoverLaunchResult.NAVIGATED_TO_ANOTHER_TAB.getNumber()));
-    }
-
     private boolean hasStreamBound() {
         if (mCoordinator.getMediatorForTesting().getCurrentStreamForTesting() == null) {
             return false;

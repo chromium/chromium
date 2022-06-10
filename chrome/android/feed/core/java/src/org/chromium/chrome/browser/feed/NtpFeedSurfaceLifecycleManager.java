@@ -81,13 +81,6 @@ public class NtpFeedSurfaceLifecycleManager extends FeedSurfaceLifecycleManager 
                              "NtpFeedSurfaceLifecycleManager.saveInstanceState")) {
                     saveInstanceState();
                 }
-                FeedReliabilityLogger logger = coordinator.getReliabilityLogger();
-                if (logger != null) {
-                    try (TraceEvent e = TraceEvent.scoped(
-                                 "NtpFeedSurfaceLifecycleManager logger.onPageLoadStarted")) {
-                        logger.onPageLoadStarted();
-                    }
-                }
             }
         };
         mTab.addObserver(mTabObserver);
