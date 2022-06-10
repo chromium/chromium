@@ -249,18 +249,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-chromeos-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    goma_jobs = goma.jobs.J150,
-)
-
-try_.builder(
-    name = "linux-lacros-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    goma_jobs = goma.jobs.J150,
-)
-
-try_.builder(
     name = "linux-cfm-rel",
     mirrors = [
         "ci/linux-cfm-rel",

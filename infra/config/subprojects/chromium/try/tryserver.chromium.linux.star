@@ -141,18 +141,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-clang-tidy-dbg",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    goma_jobs = goma.jobs.J150,
-)
-
-try_.builder(
-    name = "linux-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    goma_jobs = goma.jobs.J150,
-)
-
-try_.builder(
     name = "linux-dcheck-off-rel",
     mirrors = builder_config.copy_from("linux-rel"),
 )

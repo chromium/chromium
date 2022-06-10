@@ -79,12 +79,6 @@ try_.builder(
     builderless = False,
 )
 
-try_.builder(
-    name = "mac-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    goma_jobs = goma.jobs.J150,
-)
-
 try_.orchestrator_builder(
     name = "mac-rel",
     compilator = "mac-rel-compilator",
@@ -261,12 +255,6 @@ ios_builder(
     mirrors = [
         "ci/ios-device",
     ],
-)
-
-ios_builder(
-    name = "ios-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    goma_jobs = goma.jobs.J150,
 )
 
 ios_builder(

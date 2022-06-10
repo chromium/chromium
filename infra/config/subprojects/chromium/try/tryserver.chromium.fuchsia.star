@@ -66,12 +66,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "fuchsia-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    goma_jobs = goma.jobs.J150,
-)
-
-try_.builder(
     name = "fuchsia-compile-x64-dbg",
     tryjob = try_.job(
         location_regexp = [
