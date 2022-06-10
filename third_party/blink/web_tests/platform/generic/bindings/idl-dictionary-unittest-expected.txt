@@ -213,7 +213,7 @@ PASS derived.requiredBooleanMember is false
 
 Test for passing invalid values as derived dictionary
 PASS dictionaryTest.setDerived({objectMember: 42, requiredBooleanMember: false }) threw exception TypeError: Failed to execute 'setDerived' on 'DictionaryTest': Failed to read the 'objectMember' property from 'InternalDictionary': Failed to convert value to 'object'..
-PASS dictionaryTest.setDerived({}) threw exception TypeError: Failed to execute 'setDerived' on 'DictionaryTest': Failed to read the 'requiredBooleanMember' property from 'InternalDictionaryDerived': Failed to read the 'requiredBooleanMember' property from 'InternalDictionaryDerived': Required member is undefined..
+PASS dictionaryTest.setDerived({}) threw exception TypeError: Failed to execute 'setDerived' on 'DictionaryTest': Failed to read the 'requiredBooleanMember' property from 'InternalDictionaryDerived': Required member is undefined..
 PASS successfullyParsed is true
 
 TEST COMPLETE
