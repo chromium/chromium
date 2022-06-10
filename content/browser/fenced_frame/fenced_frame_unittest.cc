@@ -6,6 +6,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
+#include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 
 namespace content {
 
@@ -58,6 +59,32 @@ TEST_F(FencedFrameTest, CredentialedSubresourceRequestsAreBlocked) {
                                                             fenced_frame_root);
   navigation_simulator->Commit();
   EXPECT_TRUE(navigation_simulator->HasFailed());
+}
+
+TEST_F(FencedFrameTest, EnsureForcedSandboxFlagsSet) {
+  NavigateAndCommit(GURL("https://test.org"));
+
+  content::RenderFrameHost* fenced_frame_root =
+      content::RenderFrameHostTester::For(main_test_rfh())->AppendFencedFrame();
+
+  // Ensure it has the forced sandbox flags.
+  EXPECT_TRUE(
+      fenced_frame_root->IsSandboxed(blink::kFencedFrameForcedSandboxFlags));
+
+  // Navigate fenced frame.
+  GURL fenced_frame_url = GURL("https://fencedframe.com");
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                            fenced_frame_root);
+  navigation_simulator->Commit();
+  fenced_frame_root = static_cast<RenderFrameHostImpl*>(
+      navigation_simulator->GetFinalRenderFrameHost());
+  EXPECT_TRUE(fenced_frame_root->IsFencedFrameRoot());
+  EXPECT_EQ(fenced_frame_root->GetLastCommittedURL(), fenced_frame_url);
+
+  // Ensure it still has the forced sandbox flags.
+  EXPECT_TRUE(
+      fenced_frame_root->IsSandboxed(blink::kFencedFrameForcedSandboxFlags));
 }
 
 }  // namespace content
