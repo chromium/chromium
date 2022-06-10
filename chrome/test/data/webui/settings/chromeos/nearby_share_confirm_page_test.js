@@ -30,9 +30,10 @@ suite('NearbyShare', function() {
         'transferStatus', nearbyShare.mojom.TransferStatus['kConnecting']);
     await flushAsync();
 
-    const isAnimationHidden = !!nearbyShareConfirmPage.$$('cr-lottie[style]');
+    const isAnimationHidden =
+        !!nearbyShareConfirmPage.shadowRoot.querySelector('cr-lottie[style]');
 
-    if (nearbyShareConfirmPage.$$('#errorTitle')) {
+    if (nearbyShareConfirmPage.shadowRoot.querySelector('#errorTitle')) {
       assertTrue(isAnimationHidden);
     } else {
       assertFalse(isAnimationHidden);
@@ -44,9 +45,10 @@ suite('NearbyShare', function() {
         'transferStatus', nearbyShare.mojom.TransferStatus['kRejected']);
     await flushAsync();
 
-    const isAnimationHidden = !!nearbyShareConfirmPage.$$('cr-lottie[style]');
+    const isAnimationHidden =
+        !!nearbyShareConfirmPage.shadowRoot.querySelector('cr-lottie[style]');
 
-    if (nearbyShareConfirmPage.$$('#errorTitle')) {
+    if (nearbyShareConfirmPage.shadowRoot.querySelector('#errorTitle')) {
       assertTrue(isAnimationHidden);
     } else {
       assertFalse(isAnimationHidden);
@@ -75,13 +77,16 @@ suite('NearbyShare', function() {
         nearbyShareConfirmPage.set(
             'transferStatus', nearbyShare.mojom.TransferStatus[key]);
         await flushAsync();
-        assertTrue(!!nearbyShareConfirmPage.$$('#errorTitle').textContent);
+        assertTrue(
+            !!nearbyShareConfirmPage.shadowRoot.querySelector('#errorTitle')
+                  .textContent);
 
         // Set back to a good state
         nearbyShareConfirmPage.set(
             'transferStatus', nearbyShare.mojom.TransferStatus['kConnecting']);
         await flushAsync();
-        assertFalse(!!nearbyShareConfirmPage.$$('#errorTitle'));
+        assertFalse(
+            !!nearbyShareConfirmPage.shadowRoot.querySelector('#errorTitle'));
       }
     }
   });

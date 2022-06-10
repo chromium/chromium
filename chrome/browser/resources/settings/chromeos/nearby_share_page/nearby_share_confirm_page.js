@@ -8,14 +8,14 @@
  * reject the request
  */
 
-import '//resources/cr_elements/cr_lottie/cr_lottie.m.js';
+import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
 import '../../shared/nearby_page_template.js';
 import '../../shared/nearby_device.js';
 import '../../shared/nearby_preview.js';
 import '../../shared/nearby_progress.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * The progress bar asset URL for light mode.
@@ -29,63 +29,77 @@ const PROGRESS_BAR_URL_LIGHT = 'nearby_share_progress_bar_light.json';
  */
 const PROGRESS_BAR_URL_DARK = 'nearby_share_progress_bar_dark.json';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'nearby-share-confirm-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NearbyShareConfirmPageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
+  static get is() {
+    return 'nearby-share-confirm-page';
+  }
 
-  properties: {
-    /** @type {?nearbyShare.mojom.ShareTarget} */
-    shareTarget: {
-      type: Object,
-      value: null,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {?string} */
-    connectionToken: {
-      type: String,
-      value: null,
-    },
+  static get properties() {
+    return {
+      /** @type {?nearbyShare.mojom.ShareTarget} */
+      shareTarget: {
+        type: Object,
+        value: null,
+      },
 
-    /**
-     * @type {?nearbyShare.mojom.TransferStatus}
-     */
-    transferStatus: {
-      type: nearbyShare.mojom.TransferStatus,
-      value: null,
-      observer: 'onTransferStatusChanged_',
-    },
+      /** @type {?string} */
+      connectionToken: {
+        type: String,
+        value: null,
+      },
 
-    /**
-     * Header text for error. Controls error display on the confirm page.
-     * The error section is not displayed if this is falsey.
-     * @private {?string}
-     */
-    errorTitle_: {
-      type: String,
-      value: null,
-    },
+      /**
+       * @type {?nearbyShare.mojom.TransferStatus}
+       */
+      transferStatus: {
+        type: nearbyShare.mojom.TransferStatus,
+        value: null,
+        observer: 'onTransferStatusChanged_',
+      },
 
-    /**
-     * Description text for error display on confirm page, displayed under the
-     * error title.
-     * @private {?string}
-     */
-    errorDescription_: {
-      type: String,
-      value: null,
-    },
+      /**
+       * Header text for error. Controls error display on the confirm page.
+       * The error section is not displayed if this is falsey.
+       * @private {?string}
+       */
+      errorTitle_: {
+        type: String,
+        value: null,
+      },
 
-    /**
-     * Whether the confirm page is being rendered in dark mode.
-     * @private {boolean}
-     */
-    isDarkModeActive_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * Description text for error display on confirm page, displayed under the
+       * error title.
+       * @private {?string}
+       */
+      errorDescription_: {
+        type: String,
+        value: null,
+      },
+
+      /**
+       * Whether the confirm page is being rendered in dark mode.
+       * @private {boolean}
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /**
    * Update the |errorTitle_| and the |errorDescription_| when the transfer
@@ -134,7 +148,7 @@ Polymer({
         this.errorTitle_ = null;
         this.errorDescription_ = null;
     }
-  },
+  }
 
   /**
    * @return {string}
@@ -145,7 +159,7 @@ Polymer({
         this.i18n(
             'nearbyShareReceiveConfirmPageConnectionId', this.connectionToken) :
         '';
-  },
+  }
 
   /**
    * Returns the URL for the asset that defines a file transfer's animated
@@ -156,5 +170,8 @@ Polymer({
   getAnimationUrl_() {
     return this.isDarkModeActive_ ? PROGRESS_BAR_URL_DARK :
                                     PROGRESS_BAR_URL_LIGHT;
-  },
-});
+  }
+}
+
+customElements.define(
+    NearbyShareConfirmPageElement.is, NearbyShareConfirmPageElement);

@@ -67,15 +67,15 @@ suite('NearbyShare', function() {
    * @param {*} button button selector (i.e. #actionButton)
    */
   function getButton(page, button) {
-    return dialog.$$(page)
-        .$$('nearby-page-template')
+    return dialog.shadowRoot.querySelector(page)
+        .shadowRoot.querySelector('nearby-page-template')
         .shadowRoot.querySelector(button);
   }
 
   function selectAllContacts() {
-    dialog.$$('nearby-visibility-page')
-        .$$('nearby-contact-visibility')
-        .$$('#allContacts')
+    dialog.shadowRoot.querySelector('nearby-visibility-page')
+        .shadowRoot.querySelector('nearby-contact-visibility')
+        .shadowRoot.querySelector('#allContacts')
         .click();
   }
 
@@ -98,7 +98,8 @@ suite('NearbyShare', function() {
       // If a share target comes in, we show it.
       const target =
           fakeReceiveManager.simulateShareTargetArrival('testName', '1234');
-      const confirmPage = dialog.$$('nearby-share-confirm-page');
+      const confirmPage =
+          dialog.shadowRoot.querySelector('nearby-share-confirm-page');
       flush();
 
       const progressIcon =
@@ -124,7 +125,8 @@ suite('NearbyShare', function() {
       // If a share target comes in, we show it.
       const target =
           fakeReceiveManager.simulateShareTargetArrival('testName', '1234');
-      const confirmPage = dialog.$$('nearby-share-confirm-page');
+      const confirmPage =
+          dialog.shadowRoot.querySelector('nearby-share-confirm-page');
       flush();
 
       const progressIcon =
@@ -176,13 +178,15 @@ suite('NearbyShare', function() {
     test('onStartAdvertisingFailure shows an error', async function() {
       await waitAfterNextRender(dialog);
       assertTrue(isVisible('nearby-share-high-visibility-page'));
-      const highVisibilityPage = dialog.$$('nearby-share-high-visibility-page');
-      assertFalse(!!highVisibilityPage.$$('#errorTitle'));
+      const highVisibilityPage =
+          dialog.shadowRoot.querySelector('nearby-share-high-visibility-page');
+      assertFalse(!!highVisibilityPage.shadowRoot.querySelector('#errorTitle'));
 
       dialog.onStartAdvertisingFailure();
       await waitAfterNextRender(dialog);
 
-      const errorTitle = highVisibilityPage.$$('#errorTitle');
+      const errorTitle =
+          highVisibilityPage.shadowRoot.querySelector('#errorTitle');
       assertTrue(!!errorTitle && errorTitle.textContent.length > 0);
     });
   });
@@ -203,7 +207,9 @@ suite('NearbyShare', function() {
       if (loadTimeData.getValue('isOnePageOnboardingEnabled')) {
         assertTrue(isVisible('nearby-onboarding-one-page'));
         // Select visibility button and advance to the next page.
-        dialog.$$('nearby-onboarding-one-page').$$('#visibilityButton').click();
+        dialog.shadowRoot.querySelector('nearby-onboarding-one-page')
+            .shadowRoot.querySelector('#visibilityButton')
+            .click();
       } else {
         assertTrue(isVisible('nearby-onboarding-page'));
         // Advance to the next page.
@@ -231,7 +237,9 @@ suite('NearbyShare', function() {
       if (loadTimeData.getValue('isOnePageOnboardingEnabled')) {
         assertTrue(isVisible('nearby-onboarding-one-page'));
         // Select visibility button and advance to the next page.
-        dialog.$$('nearby-onboarding-one-page').$$('#visibilityButton').click();
+        dialog.shadowRoot.querySelector('nearby-onboarding-one-page')
+            .shadowRoot.querySelector('#visibilityButton')
+            .click();
       } else {
         assertTrue(isVisible('nearby-onboarding-page'));
         // Advance to the next page.
@@ -250,7 +258,7 @@ suite('NearbyShare', function() {
 
       await waitAfterNextRender(dialog);
 
-      assertFalse(dialog.$$('#dialog').open);
+      assertFalse(dialog.shadowRoot.querySelector('#dialog').open);
     });
 
     test('when disabled, one-page onboarding is shown first', async function() {
@@ -282,16 +290,18 @@ suite('NearbyShare', function() {
 
       assertTrue(isVisible('nearby-onboarding-one-page'));
       // Select visibility button and advance to the next page.
-      dialog.$$('nearby-onboarding-one-page').$$('#visibilityButton').click();
+      dialog.shadowRoot.querySelector('nearby-onboarding-one-page')
+          .shadowRoot.querySelector('#visibilityButton')
+          .click();
 
       await waitAfterNextRender(dialog);
 
       assertTrue(isVisible('nearby-visibility-page'));
       // All contacts should be selected and confirm should close the dialog.
       fakeContactManager.completeDownload();
-      assertTrue(dialog.$$('nearby-visibility-page')
-                     .$$('nearby-contact-visibility')
-                     .$$('#allContacts')
+      assertTrue(dialog.shadowRoot.querySelector('nearby-visibility-page')
+                     .shadowRoot.querySelector('nearby-contact-visibility')
+                     .shadowRoot.querySelector('#allContacts')
                      .checked);
       getButton('nearby-visibility-page', '#actionButton').click();
 
@@ -299,7 +309,7 @@ suite('NearbyShare', function() {
 
       await waitAfterNextRender(dialog);
 
-      assertFalse(dialog.$$('#dialog').open);
+      assertFalse(dialog.shadowRoot.querySelector('#dialog').open);
     });
   });
 });
