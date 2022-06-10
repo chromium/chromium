@@ -116,12 +116,11 @@ public class AccountSelectionIntegrationTest {
     @Before
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
-        mAccountSelection = new AccountSelectionCoordinator();
         mActivityTestRule.startMainActivityOnBlankPage();
         runOnUiThreadBlocking(() -> {
             mBottomSheetController = BottomSheetControllerProvider.from(
                     mActivityTestRule.getActivity().getWindowAndroid());
-            mAccountSelection.initialize(
+            mAccountSelection = new AccountSelectionCoordinator(
                     mActivityTestRule.getActivity(), mBottomSheetController, mMockBridge);
         });
 

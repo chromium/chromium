@@ -32,8 +32,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     private AccountSelectionBridge(long nativeView, WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController) {
         mNativeView = nativeView;
-        mAccountSelectionComponent = new AccountSelectionCoordinator();
-        mAccountSelectionComponent.initialize(
+        mAccountSelectionComponent = new AccountSelectionCoordinator(
                 windowAndroid.getContext().get(), bottomSheetController, this);
     }
 
