@@ -6053,7 +6053,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6923633482430812883">공유를 마운트하는 중 오류가 발생했습니다. 연결하려는 파일 서버가 SMBv2 이상을 지원하는지 확인하세요.</translation>
 <translation id="6925127338315966709">브라우저에 관리되는 프로필을 추가하려고 합니다. 관리자가 프로필을 제어하고 프로필 데이터에 액세스할 수 있습니다. 북마크, 방문 기록, 비밀번호 및 기타 설정이 계정에 동기화되고 이를 관리자가 관리할 수 있습니다.</translation>
 <translation id="6929126689972602640">학교 계정에서는 자녀 보호 기능이 지원되지 않습니다. 집에서 학교 과제를 위해 Google 클래스룸 및 다른 웹사이트에 액세스할 수 있는 학교 계정을 추가하려면 먼저 자녀의 개인 계정으로 로그인하세요. 설정에서 학교 계정을 나중에 추가할 수 있습니다.</translation>
-<translation id="6929760895658557216">Ok Google</translation>
+<translation id="6929760895658557216">Hey Google</translation>
 <translation id="6930036377490597025">외장 보안 키 또는 내장 센서</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{확장 프로그램 1개 거부됨}other{확장 프로그램 #개 거부됨}}</translation>
 <translation id="6931690462168617033">클릭 강도</translation>

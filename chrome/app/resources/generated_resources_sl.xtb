@@ -3486,7 +3486,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4348766275249686434">Zbiranje napak</translation>
 <translation id="4349828822184870497">Uporabno</translation>
 <translation id="4350230709416545141">Gostitelju <ph name="HOST" /> vedno prepreči dostop do lokacije</translation>
-<translation id="4350782034419308508">Hey Google</translation>
+<translation id="4350782034419308508">OK Google</translation>
 <translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Zaradi omogočanja najboljše izkušnje operacijski sistem <ph name="DEVICE_OS" /> zbira podatke o strojni opremi naprav in jih deli z Googlom zaradi določanja, katere posodobitve naj vam zagotovi. Izbirno lahko dovolite Googlu, da te podatke uporablja za dodatne namene, kot so podpora in izboljšanje izkušnje sistema <ph name="DEVICE_OS" /> ter njegovih storitev.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Prijavite se lahko v to napravo in obiščete razdelek CHROMEOSFLEX_HARDWARE_INFO na chrome://system, kjer si ogledate podatke, poslane Googlu zaradi filtriranja posodobitev, in druge primere, v katerih ste izbrali deljenje podatkov z Googlom.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Če želite več podrobnosti o podatkih, ki jih <ph name="DEVICE_OS" /> morda deli z Googlom in kako se ti uporabljajo, obiščite g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
@@ -6818,7 +6818,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7690853182226561458">Dodaj &amp;mapo...</translation>
 <translation id="7691073721729883399">Funkcije »cryptohome« za aplikacijo za kiosk ni bilo mogoče vpeti.</translation>
 <translation id="7691077781194517083">Tega varnostnega ključa ni mogoče ponastaviti. Napaka <ph name="ERROR_CODE" />.</translation>
-<translation id="7691163173018300413">»Hey Google«</translation>
+<translation id="7691163173018300413">»OK Google«</translation>
 <translation id="7691698019618282776">Nadgradnja Crostinija</translation>
 <translation id="7694246789328885917">Orodje označevalnika</translation>
 <translation id="7696063401938172191">V telefonu »<ph name="PHONE_NAME" />«:</translation>

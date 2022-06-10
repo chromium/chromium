@@ -176,7 +176,7 @@
 <translation id="1163931534039071049">&amp;הצגת מקור המסגרת</translation>
 <translation id="1164891049599601209">הוזנה באתר מטעה</translation>
 <translation id="1165039591588034296">שגיאה</translation>
-<translation id="1166212789817575481">סגירת הכרטיסיות משמאל</translation>
+<translation id="1166212789817575481">סגירת הכרטיסיות מימין</translation>
 <translation id="1166583374608765787">בדיקת עדכון השם</translation>
 <translation id="1166596238782048887">הכרטיסייה <ph name="TAB_TITLE" /> שייכת לשולחן העבודה הווירטואלי <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">הפתיחה תתבצע בעוד <ph name="TIME_REMAINING" />...</translation>
@@ -1177,7 +1177,7 @@
 <translation id="2105809836724866556">ההסתרה של <ph name="MODULE_TITLE" /> בוצעה</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{מספר טלפון}two{# מספרי טלפון}many{# מספרי טלפון}other{# מספרי טלפון}}</translation>
 <translation id="211144231511833662">ניקוי הסוגים</translation>
-<translation id="2111670510994270194">כרטיסייה חדשה מצד שמאל</translation>
+<translation id="2111670510994270194">כרטיסייה חדשה מצד ימין</translation>
 <translation id="2112554630428445878">שלום, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">הצמדת כרטיסייה</translation>
 <translation id="2113479184312716848">פתיחת &amp;קובץ...</translation>
@@ -1556,7 +1556,7 @@
 <translation id="244231003699905658">כתובת לא חוקית. יש לבדוק את הכתובת ולנסות שוב.</translation>
 <translation id="2442916515643169563">צללית טקסט</translation>
 <translation id="2443487764245141020">ייתכן שגם באתרים יהיה צורך לזהות את המכשיר שלך באמצעות מזהה</translation>
-<translation id="244475495405467108">סגירת הכרטיסיות מימין</translation>
+<translation id="244475495405467108">סגירת הכרטיסיות משמאל</translation>
 <translation id="2445081178310039857">ספריית הבסיס של ההרחבה נחוצה.</translation>
 <translation id="2445484935443597917">יצירת פרופיל חדש</translation>
 <translation id="244641233057214044">קשור לחיפוש שלך</translation>
@@ -3177,7 +3177,7 @@
 <translation id="4021279097213088397">‏–</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">‏העתקת פרטי build</translation>
-<translation id="4021941025609472374">סגירת הכרטיסיות מימין</translation>
+<translation id="4021941025609472374">סגירת הכרטיסיות משמאל</translation>
 <translation id="4022426551683927403">&amp;הוספה למילון</translation>
 <translation id="4023146161712577481">קביעת התצורה של המכשיר.</translation>
 <translation id="4025039777635956441">השתקת האתרים שנבחרו</translation>
@@ -4986,7 +4986,7 @@
 <translation id="5870155679953074650">שגיאות חמורות</translation>
 <translation id="5875534259258494936">שיתוף המסך הסתיים</translation>
 <translation id="5876576639916258720">התכונה פעילה…</translation>
-<translation id="5876851302954717356">כרטיסייה חדשה מצד שמאל</translation>
+<translation id="5876851302954717356">כרטיסייה חדשה מצד ימין</translation>
 <translation id="5877064549588274448">הערוץ שונה. יש להפעיל מחדש את המכשיר להחלת השינויים.</translation>
 <translation id="5877584842898320529">המדפסת שבחרת אינה זמינה או שאינה מותקנת כראוי. <ph name="BR" /> יש לבדוק את המדפסת או לנסות לבחור מדפסת אחרת.</translation>
 <translation id="5882919346125742463">רשתות מוכרות</translation>
@@ -5802,7 +5802,7 @@
 <translation id="6683087162435654533">ש&amp;חזור כל הכרטיסיות</translation>
 <translation id="6684827949542560880">המערכת מורידה את העדכון האחרון</translation>
 <translation id="668599234725812620">‏פתיחת Google Play</translation>
-<translation id="6686490380836145850">סגירת הכרטיסיות משמאל</translation>
+<translation id="6686490380836145850">סגירת הכרטיסיות מימין</translation>
 <translation id="6686665106869989887">הכרטיסייה הועברה שמאלה</translation>
 <translation id="6686817083349815241">שמירת הסיסמה שלך</translation>
 <translation id="6687079240787935001">הסתרה של <ph name="MODULE_TITLE" /></translation>
@@ -6730,7 +6730,7 @@
 <translation id="7622966771025050155">לכרטיסייה המוקלטת</translation>
 <translation id="7624337243375417909">‏caps lock מושבת</translation>
 <translation id="7625568159987162309">הצגת הרשאות ונתונים המאוחסנים באתרים שונים</translation>
-<translation id="7625823789272218216">כרטיסייה חדשה מצד ימין</translation>
+<translation id="7625823789272218216">כרטיסייה חדשה מצד שמאל</translation>
 <translation id="7626032353295482388">‏ברוך בואך אל Chrome</translation>
 <translation id="7628201176665550262">קצב רענון</translation>
 <translation id="7629827748548208700">כרטיסייה: <ph name="TAB_NAME" /></translation>

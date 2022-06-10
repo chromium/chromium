@@ -4060,7 +4060,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se ela for definida como falsa, o <ph name="PRODUCT_NAME" /> não poderá mostrar informações do produto como conteúdo em guia cheia.
 
-      Esta política controla a apresentação das informações promocionais em uma guia inteira. Isso inclui conteúdo como as páginas de boas-vindas que ajudam os usuários a fazer login em <ph name="PRODUCT_NAME" />, definir <ph name="PRODUCT_NAME" /> como navegador padrão ou descobrir os recursos do produto.</translation>
+      Esta política controla a apresentação das informações promocionais em uma guia inteira. Isso inclui conteúdo como as páginas de recepção que ajudam os usuários a fazer login em <ph name="PRODUCT_NAME" />, definir <ph name="PRODUCT_NAME" /> como navegador padrão ou descobrir os recursos do produto.</translation>
 <translation id="544654037134815017">Esta política controla a visibilidade de cards na página Nova guia. Os cards exibem pontos de entrada para inicializar jornadas de usuário comuns com base no comportamento de navegação do usuário.
 
       Se a política for definida como "Ativada", a página Nova guia exibirá os cards caso haja conteúdo disponível.

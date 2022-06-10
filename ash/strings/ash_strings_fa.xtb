@@ -329,7 +329,7 @@
 <translation id="2977598380246111477">عدد بعدی</translation>
 <translation id="2981684127883932071">نمایش پیشنهادها</translation>
 <translation id="2992327365391326550">دکمه میکروفون دستگاه خاموش است.</translation>
-<translation id="2995447421581609334">نمایش دستگاه‌های ارسال محتوا.</translation>
+<translation id="2995447421581609334">نمایش دستگاه‌های پخش محتوا.</translation>
 <translation id="2996462380875591307">‏«ذره‌بین متصل» فعال شد. برای خاموش کردن آن، Ctrl+Search+D را دوباره فشار دهید.</translation>
 <translation id="3000461861112256445">صدای مونو</translation>
 <translation id="3009178788565917040">خروجی</translation>
@@ -570,7 +570,7 @@
 <translation id="4338109981321384717">ذره‌بین</translation>
 <translation id="4351433414020964307">دستیار درحال بار کردن است...</translation>
 <translation id="4356930093361201197">حالت تضاد بالا</translation>
-<translation id="4371348193907997655">تنظیمات ارسال محتوا</translation>
+<translation id="4371348193907997655">تنظیمات پخش محتوا</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /> درصد</translation>
 <translation id="4378551569595875038">در حال اتصال..</translation>
 <translation id="4379531060876907730">این‌ها ابزارهای قلم شما هستند</translation>
@@ -616,7 +616,7 @@
 <translation id="4578196883126898996">میکروفون شما خاموش است، دکمه میکروفون دستگاهتان را روشن کنید.</translation>
 <translation id="4578906031062871102">منوی تنظیمات باز شد</translation>
 <translation id="4581047786858252841">میکروفون روشن است</translation>
-<translation id="4585337515783392668">توقف ارسال محتوا به گیرنده ناشناس</translation>
+<translation id="4585337515783392668">توقف پخش محتوا به گیرنده ناشناس</translation>
 <translation id="4586483766170476230">توقف دوربین خودگرفت</translation>
 <translation id="4587299710837179226">میکروفون خاموش است</translation>
 <translation id="4596144739579517758">زمینه تیره خاموش است</translation>
@@ -911,7 +911,7 @@
 <translation id="65320610082834431">اموجی‌ها</translation>
 <translation id="6537924328260219877">قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، باتری تلفن <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">بارگیری <ph name="FILENAME" /> درحال اسکن</translation>
-<translation id="6542521951477560771">ارسال محتوا به <ph name="RECEIVER_NAME" /></translation>
+<translation id="6542521951477560771">پخش محتوا به <ph name="RECEIVER_NAME" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 نصب جدید</translation>
 <translation id="6559976592393364813">سؤال از سرپرست</translation>
@@ -1344,7 +1344,7 @@
 <translation id="9178475906033259337">نمایش ۱ نتیجه برای <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">این ویژگی امکان می‌دهد بدون نیاز به گذرواژه، به هر کاربری که به سیستم واردشده به‌سرعت دسترسی داشته باشید. تنها برای حساب‌های مورد اعتمادتان از این ویژگی استفاده کنید.</translation>
 <translation id="9183456764293710005">ذره‌بین تمام‌صفحه</translation>
-<translation id="9193626018745640770">درحال ارسال محتوا به گیرنده ناشناس</translation>
+<translation id="9193626018745640770">درحال پخش محتوا به گیرنده ناشناس</translation>
 <translation id="9194617393863864469">ورود به سیستم حسابی دیگر...</translation>
 <translation id="9198992156681343238">وضوح <ph name="DISPLAY_NAME" /> به <ph name="RESOLUTION" /> تغییر کرد. برای حفظ تغییرات، روی تأیید کلیک کنید. تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
 <translation id="9201044636667689546">‏<ph name="NAME" /> را به این Chromebook متصل کنید</translation>

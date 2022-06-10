@@ -1131,7 +1131,7 @@
 <translation id="2082187087049518845">إضافة علامة التبويب إلى مجموعة جديدة</translation>
 <translation id="2082510809738716738">اختيار لون المظهر</translation>
 <translation id="208586643495776849">يُرجى إعادة المحاولة</translation>
-<translation id="208634871997892083">‏الشبكة الافتراضية الخاصة (VPN) قيد التشغيل دائمًا</translation>
+<translation id="208634871997892083">‏شبكة افتراضية خاصة (VPN) قيد التشغيل دائمًا</translation>
 <translation id="2087822576218954668">الطباعة: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">لن يُتاح التسجيل إلا بعد تثبيت نظام التشغيل <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">للوصول إلى الشاشة الرئيسية في أي وقت، مرّر سريعًا بإصبعك من أسفل الشاشة إلى أعلاها.</translation>
@@ -1169,7 +1169,7 @@
 <translation id="2105809836724866556">تم إخفاء <ph name="MODULE_TITLE" />.</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{رقم هاتف واحد}zero{# رقم هاتف}two{رقما هاتف}few{# أرقام هاتف}many{# رقم هاتف}other{# رقم هاتف}}</translation>
 <translation id="211144231511833662">محو الأنواع</translation>
-<translation id="2111670510994270194">إضافة علامة تبويب جديدة يمينًا</translation>
+<translation id="2111670510994270194">إضافة علامة تبويب جديدة على اليمين</translation>
 <translation id="2112554630428445878">مرحبًا، <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">تثبيت علامة التبويب</translation>
 <translation id="2113479184312716848">فتح &amp;ملف...</translation>
@@ -1545,7 +1545,7 @@
 <translation id="244231003699905658">العنوان غير صالح يُرجى التحقّق من العنوان وإعادة المحاولة.</translation>
 <translation id="2442916515643169563">ظل النص</translation>
 <translation id="2443487764245141020">قد تحتاج المواقع الإلكترونية أيضًا إلى التعرُّف على جهازك باستخدام أحد المعرّفات.</translation>
-<translation id="244475495405467108">إغلاق علامات التبويب على اليمين</translation>
+<translation id="244475495405467108">إغلاق علامات التبويب على اليسار</translation>
 <translation id="2445081178310039857">دليل الجذر للإضافة مطلوب.</translation>
 <translation id="2445484935443597917">إنشاء ملف شخصي جديد</translation>
 <translation id="244641233057214044">ذو صلة بعملية البحث</translation>
@@ -2301,7 +2301,7 @@
 <translation id="3164329792803560526">مشاركة علامة التبويب هذه مع <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">قد يحظر بعض مشغلي شبكات الجوّال هذه الميزة.</translation>
 <translation id="3170072451822350649">يمكنك أيضًا تخطي تسجيل الدخول و<ph name="LINK_START" />التصفح كضيف<ph name="LINK_END" />.</translation>
-<translation id="31774765611822736">إضافة علامة تبويب جديدة على اليمين</translation>
+<translation id="31774765611822736">إضافة علامة تبويب جديدة على اليسار</translation>
 <translation id="3177909033752230686">لغة الصفحة:</translation>
 <translation id="3179982752812949580">خط النص</translation>
 <translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
@@ -3164,7 +3164,7 @@
 <translation id="4021279097213088397">–</translation>
 <translation id="402184264550408568">‏بروتوكول (TCP)</translation>
 <translation id="4021909830315618592">نسخ تفاصيل الإصدار</translation>
-<translation id="4021941025609472374">إغلاق علامات التبويب على اليمين</translation>
+<translation id="4021941025609472374">إغلاق علامات التبويب على اليسار</translation>
 <translation id="4022426551683927403">إ&amp;ضافة إلى القاموس</translation>
 <translation id="4023146161712577481">جارٍ تحديد تكوين الجهاز.</translation>
 <translation id="4025039777635956441">كتم صوت الموقع الإلكتروني المحدد</translation>
@@ -3868,7 +3868,7 @@
 <translation id="4742970037960872810">إزالة التمييز</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />التعرّف على كيفية تحديث التطبيقات<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{إعادة صوت موقع إلكتروني واحد}zero{إعادة صوت المواقع الإلكترونية}two{إعادة صوت موقعيِّ الويب}few{إعادة صوت المواقع الإلكترونية}many{إعادة صوت المواقع الإلكترونية}other{إعادة صوت المواقع الإلكترونية}}</translation>
-<translation id="474609389162964566">‏الوصول إلى "مساعد Google" من خلال قول الكلمة المفتاح Ok Google</translation>
+<translation id="474609389162964566">‏الوصول إلى "مساعد Google" من خلال قول Ok Google</translation>
 <translation id="4746351372139058112">الرسائل</translation>
 <translation id="4748783296226936791">‏تتّصل المواقع الإلكترونية عادةً بأجهزة HID لتتيح الميزات التي تستخدم لوحات المفاتيح غير العادية ووحدات التحكّم في الألعاب وغيرها من الأجهزة.</translation>
 <translation id="4750185073185658673">‏عليك الانتقال إلى هاتفك لمراجعة بعض الأذونات الإضافية. تأكَّد من تفعيل البلوتوث وWi-Fi على هاتفك.</translation>
@@ -4972,7 +4972,7 @@
 <translation id="5870155679953074650">الأخطاء الجسيمة</translation>
 <translation id="5875534259258494936">تم إنهاء مشاركة الشاشة</translation>
 <translation id="5876576639916258720">يتم الآن التنفيذ...</translation>
-<translation id="5876851302954717356">إضافة علامة تبويب جديدة يمينًا</translation>
+<translation id="5876851302954717356">إضافة علامة تبويب جديدة على اليمين</translation>
 <translation id="5877064549588274448">تم تغيير القناة. يمكنك إعادة تشغيل الجهاز لتدخل التغييرات حيز التنفيذ.</translation>
 <translation id="5877584842898320529">الطابعة المُختارة غير متاحة أو لم يتم تثبيتها بشكلٍ صحيح. <ph name="BR" /> يُرجى التحقُّق من الطابعة أو تجربة اختيار طابعة أخرى.</translation>
 <translation id="5882919346125742463">الشبكات المعروفة</translation>
@@ -6717,7 +6717,7 @@
 <translation id="7622966771025050155">التبديل إلى علامة التبويب التي يتم تسجيلها</translation>
 <translation id="7624337243375417909">‏مفتاح caps lock متوقف</translation>
 <translation id="7625568159987162309">عرض الأذونات والبيانات المُخزَّنة على المواقع</translation>
-<translation id="7625823789272218216">إضافة علامة تبويب جديدة على اليمين</translation>
+<translation id="7625823789272218216">إضافة علامة تبويب جديدة على اليسار</translation>
 <translation id="7626032353295482388">‏مرحبًا بك في Chrome‏</translation>
 <translation id="7628201176665550262">معدّل إعادة التحميل</translation>
 <translation id="7629827748548208700">علامة التبويب: <ph name="TAB_NAME" /></translation>
