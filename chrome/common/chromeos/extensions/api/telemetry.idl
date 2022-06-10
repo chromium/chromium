@@ -80,6 +80,15 @@ namespace os.telemetry {
 
   callback OemDataCallback = void (OemData oemData);
 
+  dictionary OsVersionInfo {
+    DOMString? releaseMilestone;
+    DOMString? buildNumber;
+    DOMString? patchNumber;
+    DOMString? releaseChannel;
+  };
+
+  callback OsVersionInfoCallback = void (OsVersionInfo osVersionInfo);
+
   dictionary VpdInfo {
     // Device activate date. Format: YYYY-WW.
     DOMString? activateDate;
@@ -113,6 +122,8 @@ namespace os.telemetry {
 
     // Retrieves OEM data.
     [supportsPromises] static void getOemData(OemDataCallback callback);
+
+    [supportsPromises] static void getOsVersionInfo(OsVersionInfoCallback callback);
 
     // Retrieves VPD info.
     [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);

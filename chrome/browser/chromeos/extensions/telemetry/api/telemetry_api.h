@@ -106,6 +106,26 @@ class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
   void OnResult(ash::health::mojom::OemDataPtr ptr);
 };
 
+class OsTelemetryGetOsVersionInfoFunction : public TelemetryApiFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getOsVersionInfo",
+                             OS_TELEMETRY_GETOSVERSIONINFO)
+
+  OsTelemetryGetOsVersionInfoFunction();
+  OsTelemetryGetOsVersionInfoFunction(
+      const OsTelemetryGetOsVersionInfoFunction&) = delete;
+  OsTelemetryGetOsVersionInfoFunction& operator=(
+      const OsTelemetryGetOsVersionInfoFunction&) = delete;
+
+ private:
+  ~OsTelemetryGetOsVersionInfoFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
+};
+
 class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
  public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getVpdInfo", OS_TELEMETRY_GETVPDINFO)

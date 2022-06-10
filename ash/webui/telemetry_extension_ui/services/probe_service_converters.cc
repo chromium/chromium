@@ -321,7 +321,16 @@ health::mojom::BluetoothResultPtr UncheckedConvertPtr(
 
 health::mojom::OsInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::OsInfoPtr input) {
-  return health::mojom::OsInfo::New(std::move(input->oem_name));
+  return health::mojom::OsInfo::New(
+      std::move(input->oem_name),
+      ConvertProbePtr(std::move(input->os_version)));
+}
+
+health::mojom::OsVersionPtr UncheckedConvertPtr(
+    cros_healthd::mojom::OsVersionPtr input) {
+  return health::mojom::OsVersion::New(
+      std::move(input->release_milestone), std::move(input->build_number),
+      std::move(input->patch_number), std::move(input->release_channel));
 }
 
 health::mojom::SystemInfoPtr UncheckedConvertPtr(

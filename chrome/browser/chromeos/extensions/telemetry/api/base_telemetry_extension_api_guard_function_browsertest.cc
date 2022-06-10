@@ -61,6 +61,15 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function getOsVersionInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getOsVersionInfo(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.telemetry.getOsVersionInfo. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function getStatefulPartitionInfo() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getStatefulPartitionInfo(),

@@ -232,6 +232,29 @@ TEST(TelemetryApiConverters, BatteryInfo) {
   EXPECT_EQ(kTemperature, static_cast<uint64_t>(*result.temperature));
 }
 
+TEST(TelemetryApiConverters, OsVersion) {
+  constexpr char kReleaseMilestone[] = "87";
+  constexpr char kBuildNumber[] = "13544";
+  constexpr char kPatchNumber[] = "59.0";
+  constexpr char kReleaseChannel[] = "stable-channel";
+
+  auto input = telemetry_service::OsVersion::New(
+      kReleaseMilestone, kBuildNumber, kPatchNumber, kReleaseChannel);
+
+  auto result = ConvertPtr<telemetry_api::OsVersionInfo>(std::move(input));
+  ASSERT_TRUE(result.release_milestone);
+  EXPECT_EQ(*result.release_milestone, kReleaseMilestone);
+
+  ASSERT_TRUE(result.build_number);
+  EXPECT_EQ(*result.build_number, kBuildNumber);
+
+  ASSERT_TRUE(result.patch_number);
+  EXPECT_EQ(*result.patch_number, kPatchNumber);
+
+  ASSERT_TRUE(result.release_channel);
+  EXPECT_EQ(*result.release_channel, kReleaseChannel);
+}
+
 TEST(TelemetryApiConverters, StatefulPartitionInfo) {
   constexpr uint64_t kAvailableSpace = 3000000000000000;
   constexpr uint64_t kTotalSpace = 9000000000000000;

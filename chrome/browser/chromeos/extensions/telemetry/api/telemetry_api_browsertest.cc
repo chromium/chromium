@@ -334,6 +334,66 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetOsVersionInfo_Error) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getOsVersionInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getOsVersionInfo(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetOsVersionInfo_Success) {
+  // Configure fake cros_healthd response.
+  {
+    auto telemetry_info = chromeos::cros_healthd::mojom::TelemetryInfo::New();
+    {
+      auto os_version_info = cros_healthd::mojom::OsVersion::New();
+      os_version_info->release_milestone = "87";
+      os_version_info->build_number = "13544";
+      os_version_info->patch_number = "59.0";
+      os_version_info->release_channel = "stable-channel";
+
+      auto os_info = cros_healthd::mojom::OsInfo::New();
+      os_info->os_version = std::move(os_version_info);
+
+      auto system_info_v2 = cros_healthd::mojom::SystemInfoV2::New();
+      system_info_v2->os_info = std::move(os_info);
+
+      telemetry_info->system_result_v2 =
+          chromeos::cros_healthd::mojom::SystemResultV2::NewSystemInfoV2(
+              std::move(system_info_v2));
+    }
+
+    ASSERT_TRUE(cros_healthd::FakeCrosHealthd::Get());
+    cros_healthd::FakeCrosHealthd::Get()
+        ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getOsVersionInfo() {
+        const result = await chrome.os.telemetry.getOsVersionInfo();
+        chrome.test.assertEq(
+          {
+            releaseMilestone: "87",
+            buildNumber: "13544",
+            patchNumber: "59.0",
+            releaseChannel: "stable-channel"
+          }, result);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoError) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([

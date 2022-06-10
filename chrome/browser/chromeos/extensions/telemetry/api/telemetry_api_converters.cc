@@ -129,6 +129,33 @@ telemetry_api::BatteryInfo UncheckedConvertPtr(
   return result;
 }
 
+telemetry_api::OsVersionInfo UncheckedConvertPtr(
+    telemetry_service::OsVersionPtr input) {
+  telemetry_api::OsVersionInfo result;
+
+  if (input->release_milestone) {
+    result.release_milestone =
+        std::make_unique<std::string>(input->release_milestone.value());
+  }
+
+  if (input->build_number) {
+    result.build_number =
+        std::make_unique<std::string>(input->build_number.value());
+  }
+
+  if (input->patch_number) {
+    result.patch_number =
+        std::make_unique<std::string>(input->patch_number.value());
+  }
+
+  if (input->release_channel) {
+    result.release_channel =
+        std::make_unique<std::string>(input->release_channel.value());
+  }
+
+  return result;
+}
+
 telemetry_api::StatefulPartitionInfo UncheckedConvertPtr(
     telemetry_service::StatefulPartitionInfoPtr input) {
   telemetry_api::StatefulPartitionInfo result;

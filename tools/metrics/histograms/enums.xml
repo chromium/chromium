@@ -34663,6 +34663,7 @@ Called by update_extension_histograms.py.-->
   <int value="1665" label="AUTOTESTPRIVATE_FORCEAUTOTHEMEMODE"/>
   <int value="1666" label="OS_TELEMETRY_GETSTATEFULPARTITIONINFO"/>
   <int value="1667" label="OS_DIAGNOSTICS_RUNACPOWERROUTINE"/>
+  <int value="1668" label="OS_TELEMETRY_GETOSVERSIONINFO"/>
 </enum>
 
 <enum name="ExtensionIconState">

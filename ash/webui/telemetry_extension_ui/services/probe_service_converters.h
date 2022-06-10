@@ -10,6 +10,7 @@
 
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom-forward.h"
 #include "base/check.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 
 namespace ash {
@@ -111,6 +112,9 @@ health::mojom::BluetoothResultPtr UncheckedConvertPtr(
 
 health::mojom::OsInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::OsInfoPtr input);
+
+health::mojom::OsVersionPtr UncheckedConvertPtr(
+    cros_healthd::mojom::OsVersionPtr);
 
 health::mojom::SystemInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::SystemInfoV2Ptr input);
