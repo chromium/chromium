@@ -7,9 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 declare_args() {
   # Whether the browser provides a speech recognition service
   # (//media/mojo/mojom/speech_recognition_service.mojom) to the renderer.
-  # TODO(b:223493879): Add support for speech to LaCrOS via go/crosapi and
-  #                    change `is_chromeos_ash` to `is_chromeos` below.
-  enable_speech_service = is_chromeos_ash || is_linux || is_mac || is_win
+  enable_speech_service = is_chromeos || is_linux || is_mac || is_win
 
   # Whether the speech service is implemented in the browser as a hosted service
   # possibly running in a utility process.
