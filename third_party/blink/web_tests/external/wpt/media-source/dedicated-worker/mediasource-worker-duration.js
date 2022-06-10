@@ -16,9 +16,9 @@ const testPhase = {
   // main thread.
   kInitial: "Initial",
 
-  // Main thread receives MediaSourceHandle, re-verifies that the media element
+  // Main thread receives object URL, re-verifies that the media element
   // duration is still NaN and readyState is still HAVE_NOTHING, and then sets
-  // the handle as the srcObject of the media element, eventually causing worker
+  // the URL as the src of the media element, eventually causing worker
   // mediaSource 'onsourceopen' event dispatch.
   kAttaching: "Awaiting sourceopen event that signals attachment is setup",
 
@@ -58,6 +58,7 @@ let phase = testPhase.kInitial;
 
 // Setup handler for receipt of attachment completion.
 util.mediaSource.addEventListener("sourceopen", () => {
+  URL.revokeObjectURL(util.mediaSourceObjectUrl);
   assert(phase === testPhase.kAttaching, "Unexpected sourceopen received by Worker mediaSource.");
   phase = testPhase.kRequestNaNDurationCheck;
   processPhase();
@@ -180,7 +181,7 @@ function processPhase(isResponseToAck = false) {
     case testPhase.kInitial:
       assert(Number.isNaN(util.mediaSource.duration), "Initial unattached MediaSource duration must be NaN, but instead is " + util.mediaSource.duration);
       phase = testPhase.kAttaching;
-      postMessage({ subject: messageSubject.HANDLE, info: util.mediaSource.getHandle() });
+      postMessage({ subject: messageSubject.OBJECT_URL, info: util.mediaSourceObjectUrl });
       break;
 
     case testPhase.kAttaching:

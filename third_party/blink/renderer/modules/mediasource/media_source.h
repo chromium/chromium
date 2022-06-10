@@ -46,10 +46,9 @@ class WebSourceBuffer;
 // HTMLMediaElement's instance to use the MSE API (also known as "attaching MSE
 // to a media element") by using a Media Source object URL as the media
 // element's src attribute or the src attribute of a <source> inside the media
-// element, or by using a MediaSourceHandle for a worker-owned MediaSource as
-// the srcObject of the media element. A MediaSourceAttachmentSupplement
-// encapsulates the linkage of that object URL or handle to a MediaSource
-// instance, and allows communication between the media element and the MSE API.
+// element. A MediaSourceAttachmentSupplement encapsulates the linkage of that
+// object URL to a MediaSource instance, and allows communication between the
+// media element and the MSE API.
 class MediaSource final : public EventTargetWithInlineData,
                           public ActiveScriptWrappable<MediaSource>,
                           public ExecutionContextLifecycleObserver {

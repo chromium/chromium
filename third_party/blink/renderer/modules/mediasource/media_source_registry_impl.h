@@ -20,9 +20,6 @@ class KURL;
 // This singleton lives on the main thread. It allows registration and
 // deregistration of MediaSource objectUrls from both main and dedicated worker
 // threads, internally locking to access or update |media_sources_| coherently.
-// TODO(crbug.com/878133): Completely remove the ability to use this from
-// dedicated worker threads once MediaSourceInWorkersUsingHandle has shipped
-// stable.
 class MediaSourceRegistryImpl final : public MediaSourceRegistry {
  public:
   // Creates the singleton instance. Must be run on the main thread (expected to

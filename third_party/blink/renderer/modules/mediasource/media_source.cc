@@ -1437,16 +1437,16 @@ void MediaSource::OpenIfInEndedState() {
 bool MediaSource::HasPendingActivity() const {
   // Note that an unrevoked MediaSource objectUrl for an otherwise inactive,
   // unreferenced HTMLME with MSE still attached will prevent GC of the whole
-  // group of objects. This is yet further motivation for apps to properly
-  // revokeObjectUrl and for the MSE spec, implementations and API users to
-  // transition to using HTMLME srcObject for MSE attachment instead of
-  // objectUrl. For at least SameThreadMediaSourceAttachments, the
-  // RevokeMediaSourceObjectURLOnAttach feature assists in automating this case.
-  // But for CrossThreadMediaSourceAttachments, the attachment holds strong
-  // references to each side until explicitly detached (or contexts destroyed).
-  // The latter applies similarly when using MediaSourceHandle for srcObject
-  // attachment of a worker MediaSource: the handle object has a scoped_refptr
-  // to the underlying attachment until the handle is GC'ed.
+  // group of objects. This is unfortunate, because it's conceivable that the
+  // app may actually still have a "reference" to the underlying MediaSource if
+  // it has the objectUrl in a string somewhere, for example. This is yet
+  // further motivation for apps to properly revokeObjectUrl and for the MSE
+  // spec, implementations and API users to transition to using HTMLME srcObject
+  // for MSE attachment instead of objectUrl. For at least
+  // SameThreadMediaSourceAttachments, the RevokeMediaSourceObjectURLOnAttach
+  // feature assists in automating this case. But for
+  // CrossThreadMediaSourceAttachments, the attachment holds strong references
+  // to each side until explicitly detached (or contexts destroyed).
   return async_event_queue_->HasPendingEvents();
 }
 
