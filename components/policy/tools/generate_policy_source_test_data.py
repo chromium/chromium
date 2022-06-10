@@ -79,7 +79,7 @@ message ExampleBoolPolicyProto {
 //
 // ExampleBoolMergeMetapolicy desc
 //
-// Supported on: android, chrome_os, fuchsia, ios, linux, mac, win
+// Supported on: chrome_os
 message ExampleBoolMergeMetapolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ExampleBoolMergeMetapolicy = 2;
@@ -89,7 +89,7 @@ message ExampleBoolMergeMetapolicyProto {
 //
 // ExampleBoolPrecedenceMetapolicy desc
 //
-// Supported on: android, chrome_os, fuchsia, ios, linux, mac, win
+// Supported on: chrome_os
 message ExampleBoolPrecedenceMetapolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ExampleBoolPrecedenceMetapolicy = 2;
@@ -165,16 +165,6 @@ message ChunkTwoLastFieldStringPolicyProto {
   optional string ChunkTwoLastFieldStringPolicy = 2;
 }
 
-// UnsupportedPolicy caption
-//
-// UnsupportedPolicy desc
-//
-// Supported on:
-message UnsupportedPolicyProto {
-  optional PolicyOptions policy_options = 1;
-  optional string UnsupportedPolicy = 2;
-}
-
 // --------------------------------------------------
 // PBs for policies with ID > 1015.
 
@@ -186,10 +176,6 @@ message ChromeSettingsSubProto1 {
 message ChromeSettingsSubProto2 {
   optional ChunkTwoFirstFieldStringPolicyProto ChunkTwoFirstFieldStringPolicy = 1;
   optional ChunkTwoLastFieldStringPolicyProto ChunkTwoLastFieldStringPolicy = 800;
-}
-
-message ChromeSettingsSubProto3 {
-  optional UnsupportedPolicyProto UnsupportedPolicy = 1;
 }
 
 // --------------------------------------------------
@@ -205,7 +191,6 @@ message ChromeSettingsProto {
   optional ChunkZeroLastFieldBooleanPolicyProto ChunkZeroLastFieldBooleanPolicy = 1017;
   optional ChromeSettingsSubProto1 subProto1 = 1018;
   optional ChromeSettingsSubProto2 subProto2 = 1019;
-  optional ChromeSettingsSubProto3 subProto3 = 1020;
 }
 """
 

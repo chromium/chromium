@@ -29,7 +29,8 @@ namespace policy {
 namespace {
 
 // List of policies where variables like ${MACHINE_NAME} should be expanded.
-constexpr const char* kPoliciesToExpand[] = {key::kPrinters};
+constexpr const char* kPoliciesToExpand[] = {key::kNativePrinters,
+                                             key::kPrinters};
 
 // Fetch policy every 90 minutes which matches the Windows default:
 // https://technet.microsoft.com/en-us/library/cc940895.aspx

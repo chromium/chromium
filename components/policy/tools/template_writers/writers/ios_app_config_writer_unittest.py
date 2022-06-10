@@ -229,11 +229,8 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         'desc':
         'string-enum-list description',
         'schema': {
-            'type': 'array',
-            'items': {
-                'type': 'string',
-                'enum': ['0', '1'],
-            },
+          'type': 'string',
+          'enum': ['0', '1'],
         },
         'items': [{
             'name': 'item0',
