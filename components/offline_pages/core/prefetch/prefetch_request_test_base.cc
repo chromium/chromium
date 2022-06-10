@@ -13,7 +13,6 @@
 #include "base/test/task_environment.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/prefetch/prefetch_server_urls.h"
-#include "net/url_request/url_fetcher_delegate.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_utils.h"
 
