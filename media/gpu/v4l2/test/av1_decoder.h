@@ -7,6 +7,10 @@
 
 #include "media/gpu/v4l2/test/video_decoder.h"
 
+// TODO(b/234019411): Move this include to v4l2_stateless_decoder.cc
+// once the bug is fixed.
+#include <linux/media/av1-ctrls.h>
+
 #include <set>
 
 #include "base/files/memory_mapped_file.h"
