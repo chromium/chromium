@@ -248,9 +248,11 @@ class BrowserProcessImpl : public BrowserProcess,
   const raw_ptr<StartupData> startup_data_;
 
   // Must be destroyed after |local_state_|.
+  // Must be destroyed after |profile_manager_|.
   std::unique_ptr<policy::ChromeBrowserPolicyConnector>
       browser_policy_connector_;
 
+  // Must be destroyed before |browser_policy_connector_|.
   bool created_profile_manager_ = false;
   std::unique_ptr<ProfileManager> profile_manager_;
 
