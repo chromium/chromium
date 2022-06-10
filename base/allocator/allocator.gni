@@ -112,7 +112,10 @@ declare_args() {
   # Finch.
   use_fake_binary_experiment = false
 
-  use_asan_backup_ref_ptr = false
+  # The supported platforms are supposed to match `_is_brp_supported`, but we
+  # enable the feature on Linux early because it's most widely used for security
+  # research
+  use_asan_backup_ref_ptr = is_asan && (is_win || is_android || is_linux)
 }
 
 # Prevent using BackupRefPtr when PartitionAlloc-Everywhere isn't used.

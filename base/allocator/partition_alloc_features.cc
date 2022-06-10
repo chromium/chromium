@@ -55,7 +55,8 @@ const BASE_EXPORT Feature kPartitionAllocLargeEmptySlotSpanRing{
 
 const Feature kPartitionAllocBackupRefPtr {
   "PartitionAllocBackupRefPtr",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || \
+    (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
       FEATURE_ENABLED_BY_DEFAULT
 #else
       FEATURE_DISABLED_BY_DEFAULT
