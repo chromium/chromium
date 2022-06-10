@@ -69,7 +69,7 @@ android_library("javatests") {
     "//chrome/browser/flags:java",
     "//chrome/browser/password_entry_edit/android:java",
     "//chrome/browser/settings:test_support_java",
-    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_test_runner_java",

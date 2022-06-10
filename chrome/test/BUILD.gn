@@ -9576,7 +9576,7 @@ if (is_android) {
       "//base:jni_java",
       "//chrome/android:chrome_all_java",
       "//chrome/browser/profiles/android:java",
-      "//chrome/test/android:chrome_java_integration_test_support",
+      "//chrome/test/android:chrome_java_test_support",
       "//components/signin/public/android:java",
       "//components/sync/android:sync_java",
       "//content/public/test/android:content_java_test_support",

@@ -50,7 +50,7 @@ java_library("junit_tests") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
-    "//chrome/test/android:chrome_java_unit_test_support",
+    "//chrome/test/android:chrome_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
