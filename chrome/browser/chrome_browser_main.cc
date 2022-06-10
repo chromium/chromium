@@ -1849,7 +1849,7 @@ void ChromeBrowserMainParts::OnFirstIdle() {
 #if BUILDFLAG(IS_CHROMEOS)
   // If OneGroupPerRenderer feature is enabled, post a task to clean any left
   // over cgroups due to any unclean exits.
-  if (base::Process::OneGroupPerRendererEnabled()) {
+  if (base::FeatureList::IsEnabled(base::kOneGroupPerRenderer)) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&base::Process::CleanUpStaleProcessStates));

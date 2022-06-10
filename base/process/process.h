@@ -229,10 +229,8 @@ class BASE_EXPORT Process {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Returns true if the 'OneGroupPerRenderer' feature is enabled. The feature
-  // is enabled if the kOneGroupPerRenderer feature flag is enabled and the
-  // system supports the chrome cgroups.
-  static bool OneGroupPerRendererEnabled();
+  // Exposes OneGroupPerRendererEnabled() to unit tests.
+  static bool OneGroupPerRendererEnabledForTesting();
 
   // If OneGroupPerRenderer is enabled, runs at process startup to clean up
   // any stale cgroups that were left behind from any unclean exits of the

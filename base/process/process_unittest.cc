@@ -475,7 +475,7 @@ TEST_F(ProcessTest, InitializePriorityEmptyProcess) {
   // TODO(b/172213843): base::Process is used by base::TestSuite::Initialize
   // before we can use ScopedFeatureList here. Update the test to allow the
   // use of ScopedFeatureList before base::TestSuite::Initialize runs.
-  if (!Process::OneGroupPerRendererEnabled())
+  if (!Process::OneGroupPerRendererEnabledForTesting())
     return;
 
   Process process;
@@ -485,7 +485,7 @@ TEST_F(ProcessTest, InitializePriorityEmptyProcess) {
 }
 
 TEST_F(ProcessTest, SetProcessBackgroundedOneCgroupPerRender) {
-  if (!Process::OneGroupPerRendererEnabled())
+  if (!Process::OneGroupPerRendererEnabledForTesting())
     return;
 
   base::test::TaskEnvironment task_env;
@@ -513,7 +513,7 @@ TEST_F(ProcessTest, SetProcessBackgroundedOneCgroupPerRender) {
 }
 
 TEST_F(ProcessTest, CleanUpBusyProcess) {
-  if (!Process::OneGroupPerRendererEnabled())
+  if (!Process::OneGroupPerRendererEnabledForTesting())
     return;
 
   base::test::TaskEnvironment task_env;
@@ -556,7 +556,7 @@ TEST_F(ProcessTest, CleanUpBusyProcess) {
 }
 
 TEST_F(ProcessTest, SetProcessBackgroundedEmptyToken) {
-  if (!Process::OneGroupPerRendererEnabled())
+  if (!Process::OneGroupPerRendererEnabledForTesting())
     return;
 
   Process process(SpawnChild("SimpleChildProcess"));
@@ -572,7 +572,7 @@ TEST_F(ProcessTest, SetProcessBackgroundedEmptyToken) {
 }
 
 TEST_F(ProcessTest, CleansUpStaleGroups) {
-  if (!Process::OneGroupPerRendererEnabled())
+  if (!Process::OneGroupPerRendererEnabledForTesting())
     return;
 
   base::test::TaskEnvironment task_env;
@@ -616,7 +616,7 @@ TEST_F(ProcessTest, CleansUpStaleGroups) {
 }
 
 TEST_F(ProcessTest, OneCgroupDoesNotCleanUpGroupsWithWrongPrefix) {
-  if (!Process::OneGroupPerRendererEnabled())
+  if (!Process::OneGroupPerRendererEnabledForTesting())
     return;
 
   base::test::TaskEnvironment task_env;

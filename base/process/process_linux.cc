@@ -148,6 +148,13 @@ struct CGroups {
   }
 };
 
+// Returns true if the 'OneGroupPerRenderer' feature is enabled. The feature
+// is enabled if the kOneGroupPerRenderer feature flag is enabled and the
+// system supports the chrome cgroups. Will block if this is the first call
+// that will read the cgroup configs.
+bool OneGroupPerRendererEnabled() {
+  return FeatureList::IsEnabled(kOneGroupPerRenderer) && CGroups::Get().enabled;
+}
 #else
 const int kBackgroundPriority = 5;
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -288,8 +295,8 @@ ProcessId Process::GetPidInNamespace() const {
 
 #if BUILDFLAG(IS_CHROMEOS)
 // static
-bool Process::OneGroupPerRendererEnabled() {
-  return CGroups::Get().enabled && FeatureList::IsEnabled(kOneGroupPerRenderer);
+bool Process::OneGroupPerRendererEnabledForTesting() {
+  return OneGroupPerRendererEnabled();
 }
 
 // On Chrome OS, each renderer runs in its own cgroup when running in the
@@ -341,7 +348,7 @@ void Process::CleanUpProcessScheduled(Process process, int remaining_retries) {
 }
 
 void Process::CleanUpProcessAsync() const {
-  if (!OneGroupPerRendererEnabled() || unique_token_.empty()) {
+  if (!FeatureList::IsEnabled(kOneGroupPerRenderer) || unique_token_.empty()) {
     return;
   }
 
