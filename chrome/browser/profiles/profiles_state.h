@@ -117,8 +117,13 @@ bool ArePublicSessionRestrictionsEnabled();
 // Returns whether a kiosk session is being run currently.
 bool IsKioskSession();
 
-// Returns true if the current session is a Chrome App Kiosk session
+// Returns true if the current session is a Chrome App Kiosk session.
 bool IsChromeAppKioskSession();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Returns true if the current session is a Web Kiosk session.
+bool IsWebKioskSession();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns whether it's a regular session (with gaia account)

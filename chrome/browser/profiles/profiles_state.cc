@@ -320,6 +320,14 @@ bool IsChromeAppKioskSession() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool IsWebKioskSession() {
+  crosapi::mojom::SessionType session_type =
+      chromeos::BrowserInitParams::Get()->session_type;
+  return session_type == crosapi::mojom::SessionType::kWebKioskSession;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Implemented to have the same logic as user_manager::User::HasGaiaAccount()
 bool SessionHasGaiaAccount() {
   crosapi::mojom::SessionType session_type =
