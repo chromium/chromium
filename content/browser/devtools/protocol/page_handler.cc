@@ -1540,7 +1540,7 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     case PrerenderHost::FinalStatus::kSslCertificateError:
       return Page::PrerenderFinalStatusEnum::SslCertificateError;
     case PrerenderHost::FinalStatus::kStop:
-      return Page::PrerenderFinalStatusEnum::CancelAllHostsForTesting;
+      return Page::PrerenderFinalStatusEnum::Stop;
     case PrerenderHost::FinalStatus::kTriggerBackgrounded:
       return Page::PrerenderFinalStatusEnum::TriggerBackgrounded;
     case PrerenderHost::FinalStatus::kTriggerDestroyed:
