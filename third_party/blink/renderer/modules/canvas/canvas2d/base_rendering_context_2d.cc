@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -1131,11 +1132,11 @@ static void StrokeRectOnCanvas(const gfx::RectF& rect,
   DCHECK_EQ(flags->getStyle(), cc::PaintFlags::kStroke_Style);
   if ((rect.width() > 0) != (rect.height() > 0)) {
     // When stroking, we must skip the zero-dimension segments
-    SkPath path;
+    SkPathBuilder path;
     path.moveTo(rect.x(), rect.y());
     path.lineTo(rect.right(), rect.bottom());
     path.close();
-    canvas->drawPath(path, *flags);
+    canvas->drawPath(path.detach(), *flags);
     return;
   }
   canvas->drawRect(gfx::RectFToSkRect(rect), *flags);
