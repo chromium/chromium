@@ -6340,9 +6340,21 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled2",
+                    "name": "enabled3_doublekey",
                     "enable_features": [
                         "ForceIsolationInfoFrameOriginToTopLevelFrame",
+                        "PartitionConnectionsByNetworkIsolationKey",
+                        "PartitionDomainReliabilityByNetworkIsolationKey",
+                        "PartitionExpectCTStateByNetworkIsolationKey",
+                        "PartitionHttpServerPropertiesByNetworkIsolationKey",
+                        "PartitionNelAndReportingByNetworkIsolationKey",
+                        "PartitionSSLSessionsByNetworkIsolationKey",
+                        "SplitHostCacheByNetworkIsolationKey"
+                    ]
+                },
+                {
+                    "name": "enabled3_triplekey",
+                    "enable_features": [
                         "PartitionConnectionsByNetworkIsolationKey",
                         "PartitionDomainReliabilityByNetworkIsolationKey",
                         "PartitionExpectCTStateByNetworkIsolationKey",
