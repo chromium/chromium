@@ -1385,11 +1385,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "download-shelf-webui",
-    "owners": [ "robliao", "chrome-webui-for-features@google.com" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "draw-predicted-ink-point",
     "owners": [ "joalmei@microsoft.com" ],
     "expiry_milestone": 98
