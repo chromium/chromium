@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "mojo/core/dispatcher.h"
@@ -92,11 +91,11 @@ class WatcherDispatcher : public Dispatcher {
   // ensure consistent round-robin behavior in the event that multiple Watches
   // remain ready over the span of several Arm() attempts.
   //
-  // NOTE: This pointer is only used to index |ready_watches_| and may point to
-  // an invalid object. It must therefore never be dereferenced. Use void*
-  // instead of Watch* to enforce the intention to not dereference it. Don't use
-  // raw_ptr<> as it could trip dangling pointer checks.
-  raw_ptr<const void> last_watch_to_block_arming_ = nullptr;
+  // NOTE: This can point toward a deleted Watch, so it must never be
+  // dereferenced. This is only used to do arithmetical comparisons in the
+  // |ready_watches_| set, so it is represented by a uintptr_t. Using a raw_ptr
+  // would force the allocator to quarantine the allocation and delay its reuse.
+  uintptr_t last_watch_to_block_arming_ = 0;
 };
 
 }  // namespace core
