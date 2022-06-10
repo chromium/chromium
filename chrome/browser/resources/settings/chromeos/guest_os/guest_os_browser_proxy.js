@@ -58,7 +58,7 @@ export class GuestOsBrowserProxyImpl {
   }
 
   /** @param {!GuestOsBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

@@ -81,7 +81,7 @@ suite('TextToSpeechSubpageTests', function() {
 
   setup(function() {
     browserProxy = new TestTtsSubpageBrowserProxy();
-    TtsSubpageBrowserProxyImpl.setInstance(browserProxy);
+    TtsSubpageBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
     ttsPage = document.createElement('settings-tts-subpage');

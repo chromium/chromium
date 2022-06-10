@@ -33,7 +33,7 @@ export class PluginVmBrowserProxyImpl {
   }
 
   /** @param {!PluginVmBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

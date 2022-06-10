@@ -54,7 +54,7 @@ export class MetricsConsentBrowserProxyImpl {
   }
 
   /** @param {!MetricsConsentBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

@@ -23,7 +23,7 @@ export class AppManagementStore extends Store {
   }
 
   /** @param {!AppManagementStore} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

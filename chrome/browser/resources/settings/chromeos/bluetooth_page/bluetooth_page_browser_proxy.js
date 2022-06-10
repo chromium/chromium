@@ -23,7 +23,7 @@ export class BluetoothPageBrowserProxyImpl {
   }
 
   /** @param {!BluetoothPageBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

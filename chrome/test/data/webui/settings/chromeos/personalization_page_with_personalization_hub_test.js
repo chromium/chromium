@@ -33,7 +33,7 @@ suite('PersonalizationHandler', function() {
 
   setup(function() {
     PersonalizationHubBrowserProxy = new TestPersonalizationHubBrowserProxy();
-    PersonalizationHubBrowserProxyImpl.setInstance(
+    PersonalizationHubBrowserProxyImpl.setInstanceForTesting(
         PersonalizationHubBrowserProxy);
     createPersonalizationPage();
   });

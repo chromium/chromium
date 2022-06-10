@@ -29,7 +29,7 @@ export class OsA11yPageBrowserProxyImpl {
   }
 
   /** @param {!OsA11yPageBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

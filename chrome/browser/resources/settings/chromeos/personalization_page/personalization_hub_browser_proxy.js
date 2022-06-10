@@ -20,7 +20,7 @@ export class PersonalizationHubBrowserProxyImpl {
   }
 
   /** @param {!PersonalizationHubBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

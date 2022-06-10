@@ -33,7 +33,7 @@ export class WallpaperBrowserProxyImpl {
   }
 
   /** @param {!WallpaperBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

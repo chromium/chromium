@@ -54,7 +54,7 @@ suite('GoogleAssistantHandler', function() {
 
   setup(function() {
     browserProxy = new TestGoogleAssistantBrowserProxy();
-    GoogleAssistantBrowserProxyImpl.setInstance(browserProxy);
+    GoogleAssistantBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
 
@@ -305,7 +305,7 @@ suite('GoogleAssistantHandlerWithNoDspHotword', function() {
 
   setup(function() {
     browserProxy = new TestGoogleAssistantBrowserProxy();
-    GoogleAssistantBrowserProxyImpl.setInstance(browserProxy);
+    GoogleAssistantBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
 

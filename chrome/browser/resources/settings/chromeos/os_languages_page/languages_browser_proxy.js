@@ -41,7 +41,7 @@ export class LanguagesBrowserProxyImpl {
   }
 
   /** @param {!LanguagesBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

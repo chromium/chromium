@@ -74,7 +74,7 @@ export class ChangePictureBrowserProxyImpl {
   }
 
   /** @param {!ChangePictureBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

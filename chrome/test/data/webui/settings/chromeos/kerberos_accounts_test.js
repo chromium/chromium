@@ -42,14 +42,14 @@ suite('KerberosAccountsTests', function() {
     Router.resetInstanceForTesting(new Router(routes));
 
     browserProxy = new TestKerberosAccountsBrowserProxy();
-    KerberosAccountsBrowserProxyImpl.setInstance(browserProxy);
+    KerberosAccountsBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
     createDialog();
   });
 
   teardown(function() {
     kerberosAccounts.remove();
-    KerberosAccountsBrowserProxyImpl.setInstance(undefined);
+    KerberosAccountsBrowserProxyImpl.setInstanceForTesting(undefined);
   });
 
   function createDialog() {
@@ -364,14 +364,14 @@ suite('KerberosAddAccountTests', function() {
 
   setup(function() {
     browserProxy = new TestKerberosAccountsBrowserProxy();
-    KerberosAccountsBrowserProxyImpl.setInstance(browserProxy);
+    KerberosAccountsBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
     createDialog(null);
   });
 
   teardown(function() {
     dialog.remove();
-    KerberosAccountsBrowserProxyImpl.setInstance(undefined);
+    KerberosAccountsBrowserProxyImpl.setInstanceForTesting(undefined);
   });
 
   function createDialog(presetAccount) {

@@ -259,7 +259,7 @@ export class AboutPageBrowserProxyImpl {
   }
 
   /** @param {!AboutPageBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

@@ -28,7 +28,7 @@ export class OsResetBrowserProxyImpl {
   }
 
   /** @param {!OsResetBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

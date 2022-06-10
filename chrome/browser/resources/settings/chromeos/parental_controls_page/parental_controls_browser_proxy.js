@@ -33,7 +33,7 @@ export class ParentalControlsBrowserProxyImpl {
   }
 
   /** @param {!ParentalControlsBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

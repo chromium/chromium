@@ -68,7 +68,7 @@ suite('CrostiniPageTests', function() {
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
     CrostiniBrowserProxyImpl.instance_ = crostiniBrowserProxy;
     guestOsBrowserProxy = new TestGuestOsBrowserProxy();
-    GuestOsBrowserProxyImpl.setInstance(guestOsBrowserProxy);
+    GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
     PolymerTest.clearBody();
     crostiniPage = document.createElement('settings-crostini-page');
     crostiniPage.showCrostini = true;

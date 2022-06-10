@@ -41,7 +41,7 @@ class TypescriptPreparationCheckerTest(unittest.TestCase):
                 'static getInstance() {',
                 '  return instance || (instance = new ExampleBrowserProxyImpl());',
                 '}',
-                'static setInstance(obj) {',
+                'static setInstanceForTesting(obj) {',
                 '  instance = obj;',
                 '}',
             ]),

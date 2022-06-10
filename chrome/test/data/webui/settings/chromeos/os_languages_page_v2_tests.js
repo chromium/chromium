@@ -53,14 +53,14 @@ suite('languages page', () => {
     await CrSettingsPrefs.initialized;
     // Sets up test browser proxy.
     browserProxy = new TestLanguagesBrowserProxy();
-    LanguagesBrowserProxyImpl.setInstance(browserProxy);
+    LanguagesBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     lifetimeProxy = new TestLifetimeBrowserProxy();
     LifetimeBrowserProxyImpl.setInstance(lifetimeProxy);
 
     // Sets up test metrics proxy.
     metricsProxy = new TestLanguagesMetricsProxy();
-    LanguagesMetricsProxyImpl.setInstance(metricsProxy);
+    LanguagesMetricsProxyImpl.setInstanceForTesting(metricsProxy);
 
     // Sets up fake languageSettingsPrivate API.
     const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();

@@ -55,7 +55,7 @@ suite('SharedPaths', function() {
 
   setup(function() {
     guestOsBrowserProxy = new TestGuestOsBrowserProxy();
-    GuestOsBrowserProxyImpl.setInstance(guestOsBrowserProxy);
+    GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
     PolymerTest.clearBody();
     page = document.createElement('settings-guest-os-shared-paths');
     page.guestOsType = 'pluginVm';

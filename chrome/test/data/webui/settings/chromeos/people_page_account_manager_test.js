@@ -161,7 +161,7 @@ suite('AccountManagerTests', function() {
 
   setup(function() {
     browserProxy = new TestAccountManagerBrowserProxy();
-    AccountManagerBrowserProxyImpl.setInstance(browserProxy);
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
 
     accountManager = document.createElement('settings-account-manager');
@@ -337,7 +337,7 @@ suite('AccountManagerUnmanagedAccountTests', function() {
 
   setup(function() {
     browserProxy = new TestAccountManagerBrowserProxyForUnmanagedAccounts();
-    AccountManagerBrowserProxyImpl.setInstance(browserProxy);
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
 
     accountManager = document.createElement('settings-account-manager');
@@ -375,7 +375,7 @@ suite('AccountManagerAccountAdditionDisabledTests', function() {
 
   setup(function() {
     browserProxy = new TestAccountManagerBrowserProxy();
-    AccountManagerBrowserProxyImpl.setInstance(browserProxy);
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
 
     accountManager = document.createElement('settings-account-manager');
@@ -420,7 +420,7 @@ suite('AccountManagerAccountAdditionDisabledChildAccountTests', function() {
 
   setup(function() {
     browserProxy = new TestAccountManagerBrowserProxy();
-    AccountManagerBrowserProxyImpl.setInstance(browserProxy);
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
 
     accountManager = document.createElement('settings-account-manager');
@@ -456,7 +456,8 @@ suite('AccountManagerAccountChildAccountTests', function() {
 
   setup(function() {
     parentalControlsBrowserProxy = new TestParentalControlsBrowserProxy();
-    ParentalControlsBrowserProxyImpl.setInstance(parentalControlsBrowserProxy);
+    ParentalControlsBrowserProxyImpl.setInstanceForTesting(
+        parentalControlsBrowserProxy);
     PolymerTest.clearBody();
 
     accountManager = document.createElement('settings-account-manager');

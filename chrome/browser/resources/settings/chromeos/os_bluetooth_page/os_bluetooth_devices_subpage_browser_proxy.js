@@ -25,7 +25,7 @@ export class OsBluetoothDevicesSubpageBrowserProxyImpl {
   }
 
   /** @param {!OsBluetoothDevicesSubpageBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

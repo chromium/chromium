@@ -57,7 +57,7 @@ suite('AmbientModeHandler', function() {
 
   setup(function() {
     browserProxy = new TestAmbientModeBrowserProxy();
-    AmbientModeBrowserProxyImpl.setInstance(browserProxy);
+    AmbientModeBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
 

@@ -43,7 +43,7 @@ export class AndroidAppsBrowserProxyImpl {
   }
 
   /** @param {!AndroidAppsBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

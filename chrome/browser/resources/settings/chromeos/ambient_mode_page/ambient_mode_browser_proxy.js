@@ -50,7 +50,7 @@ export class AmbientModeBrowserProxyImpl {
   }
 
   /** @param {!AmbientModeBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

@@ -124,7 +124,7 @@ suite('settings-fingerprint-list', function() {
 
   setup(function() {
     browserProxy = new TestFingerprintBrowserProxy();
-    FingerprintBrowserProxyImpl.setInstance(browserProxy);
+    FingerprintBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
     fingerprintList = document.createElement('settings-fingerprint-list');

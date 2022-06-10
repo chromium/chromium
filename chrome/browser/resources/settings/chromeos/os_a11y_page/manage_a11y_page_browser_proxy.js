@@ -51,7 +51,7 @@ export class ManageA11yPageBrowserProxyImpl {
   }
 
   /** @param {!ManageA11yPageBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

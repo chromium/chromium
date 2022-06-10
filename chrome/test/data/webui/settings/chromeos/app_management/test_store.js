@@ -16,6 +16,6 @@ export class TestAppManagementStore extends TestStore {
    * @override
    */
   replaceSingleton() {
-    AppManagementStore.setInstance(this);
+    AppManagementStore.setInstanceForTesting(this);
   }
 }

@@ -101,7 +101,7 @@ suite('ManageAccessibilityPageTests', function() {
 
   setup(function() {
     browserProxy = new TestSwitchAccessSubpageBrowserProxy();
-    SwitchAccessSubpageBrowserProxyImpl.setInstance(browserProxy);
+    SwitchAccessSubpageBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
   });

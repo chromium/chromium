@@ -64,7 +64,7 @@ suite('SharedUsbDevices', function() {
         promptBeforeSharing: true
       },
     ];
-    GuestOsBrowserProxyImpl.setInstance(guestOsBrowserProxy);
+    GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
     PolymerTest.clearBody();
     page = document.createElement('settings-guest-os-shared-usb-devices');
     page.guestOsType = 'pluginVm';

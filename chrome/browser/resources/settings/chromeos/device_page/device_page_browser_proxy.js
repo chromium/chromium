@@ -249,7 +249,7 @@ export class DevicePageBrowserProxyImpl {
   }
 
   /** @param {!DevicePageBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

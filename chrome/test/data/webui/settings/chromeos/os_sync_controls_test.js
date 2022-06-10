@@ -85,7 +85,7 @@ suite('OsSyncControlsTest', function() {
 
   setup(function() {
     browserProxy = new TestOsSyncBrowserProxy();
-    OsSyncBrowserProxyImpl.setInstance(browserProxy);
+    OsSyncBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
     syncControls = document.createElement('os-sync-controls');
@@ -188,7 +188,7 @@ suite('OsSyncControlsTest', function() {
 suite('OsSyncControlsNavigationTest', function() {
   test('DidNavigateEvents', async function() {
     const browserProxy = new TestOsSyncBrowserProxy();
-    OsSyncBrowserProxyImpl.setInstance(browserProxy);
+    OsSyncBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     Router.getInstance().navigateTo(routes.OS_SYNC);
     await browserProxy.methodCalled('didNavigateToOsSyncPage');

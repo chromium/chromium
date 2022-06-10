@@ -49,7 +49,7 @@ export class TtsSubpageBrowserProxyImpl {
   }
 
   /** @param {!TtsSubpageBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

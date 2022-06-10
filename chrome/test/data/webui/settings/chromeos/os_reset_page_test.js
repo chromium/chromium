@@ -41,7 +41,7 @@ suite('DialogTests', function() {
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
     resetPageBrowserProxy = new TestOsResetBrowserProxy();
-    OsResetBrowserProxyImpl.setInstance(resetPageBrowserProxy);
+    OsResetBrowserProxyImpl.setInstanceForTesting(resetPageBrowserProxy);
 
     eSimManagerRemote = new FakeESimManagerRemote();
     setESimManagerRemoteForTesting(eSimManagerRemote);

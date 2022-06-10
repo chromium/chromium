@@ -110,7 +110,7 @@ export class FingerprintBrowserProxyImpl {
   }
 
   /** @param {!FingerprintBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

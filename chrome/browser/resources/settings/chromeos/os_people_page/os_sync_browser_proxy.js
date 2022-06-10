@@ -62,7 +62,7 @@ export class OsSyncBrowserProxyImpl {
   }
 
   /** @param {!OsSyncBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

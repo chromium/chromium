@@ -32,7 +32,7 @@ export class TimeZoneBrowserProxyImpl {
   }
 
   /** @param {!TimeZoneBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

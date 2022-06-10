@@ -33,7 +33,7 @@ suite('AboutPageTest', function() {
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
     aboutBrowserProxy = new TestAboutPageBrowserProxyChromeOS();
-    AboutPageBrowserProxyImpl.setInstance(aboutBrowserProxy);
+    AboutPageBrowserProxyImpl.setInstanceForTesting(aboutBrowserProxy);
     return initNewPage();
   });
 
@@ -812,8 +812,8 @@ suite('DetailedBuildInfoTest', function() {
   setup(function() {
     browserProxy = new TestAboutPageBrowserProxyChromeOS();
     deviceNameBrowserProxy = new TestDeviceNameBrowserProxy();
-    AboutPageBrowserProxyImpl.setInstance(browserProxy);
-    DeviceNameBrowserProxyImpl.setInstance(deviceNameBrowserProxy);
+    AboutPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
+    DeviceNameBrowserProxyImpl.setInstanceForTesting(deviceNameBrowserProxy);
     PolymerTest.clearBody();
   });
 
@@ -1123,7 +1123,7 @@ suite('EditHostnameDialogTest', function() {
 
   setup(function() {
     deviceNameBrowserProxy = new TestDeviceNameBrowserProxy();
-    DeviceNameBrowserProxyImpl.setInstance(deviceNameBrowserProxy);
+    DeviceNameBrowserProxyImpl.setInstanceForTesting(deviceNameBrowserProxy);
     PolymerTest.clearBody();
   });
 
@@ -1324,7 +1324,7 @@ suite('ChannelSwitcherDialogTest', function() {
     currentChannel = BrowserChannel.BETA;
     browserProxy = new TestAboutPageBrowserProxyChromeOS();
     browserProxy.setChannels(currentChannel, currentChannel);
-    AboutPageBrowserProxyImpl.setInstance(browserProxy);
+    AboutPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
     dialog = document.createElement('settings-channel-switcher-dialog');
     document.body.appendChild(dialog);
@@ -1414,7 +1414,7 @@ suite('Consumer auto update dialog popup', function() {
   setup(function() {
     events = [];
     browserProxy = new TestAboutPageBrowserProxyChromeOS();
-    AboutPageBrowserProxyImpl.setInstance(browserProxy);
+    AboutPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
     dialog =
         document.createElement('settings-consumer-auto-update-toggle-dialog');
@@ -1459,7 +1459,7 @@ suite('AboutPageTest_OfficialBuild', function() {
 
   setup(function() {
     browserProxy = new TestAboutPageBrowserProxyChromeOS();
-    AboutPageBrowserProxyImpl.setInstance(browserProxy);
+    AboutPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
     page = document.createElement('os-settings-about-page');
     document.body.appendChild(page);

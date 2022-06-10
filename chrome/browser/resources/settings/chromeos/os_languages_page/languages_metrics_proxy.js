@@ -98,7 +98,7 @@ export class LanguagesMetricsProxyImpl {
   }
 
   /** @param {!LanguagesMetricsProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

@@ -142,7 +142,7 @@ export class KerberosAccountsBrowserProxyImpl {
   }
 
   /** @param {!KerberosAccountsBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

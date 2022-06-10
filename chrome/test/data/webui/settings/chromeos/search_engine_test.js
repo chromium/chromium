@@ -131,7 +131,7 @@ suite('SearchEngine', function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
     searchEngineInfo = generateSearchEngineInfo();
     browserProxy.setSearchEnginesInfo(searchEngineInfo);
-    SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
+    SearchEnginesBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
     page = document.createElement('settings-search-engine');
     page.prefs = {

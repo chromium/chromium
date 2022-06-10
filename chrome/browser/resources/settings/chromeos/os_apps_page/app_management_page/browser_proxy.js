@@ -28,7 +28,7 @@ export class BrowserProxy {
   }
 
   /** @param {!BrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

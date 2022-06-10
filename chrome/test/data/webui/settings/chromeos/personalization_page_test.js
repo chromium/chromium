@@ -52,7 +52,7 @@ suite('PersonalizationHandler', function() {
 
   setup(function() {
     WallpaperBrowserProxy = new TestWallpaperBrowserProxy();
-    WallpaperBrowserProxyImpl.setInstance(WallpaperBrowserProxy);
+    WallpaperBrowserProxyImpl.setInstanceForTesting(WallpaperBrowserProxy);
     createPersonalizationPage();
   });
 

@@ -43,7 +43,7 @@ export class PeripheralDataAccessBrowserProxyImpl {
   }
 
   /** @param {!PeripheralDataAccessBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

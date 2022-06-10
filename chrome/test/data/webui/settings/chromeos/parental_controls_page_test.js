@@ -46,7 +46,8 @@ suite('Chrome OS parental controls page setup item tests', function() {
 
   setup(function() {
     parentalControlsBrowserProxy = new TestParentalControlsBrowserProxy();
-    ParentalControlsBrowserProxyImpl.setInstance(parentalControlsBrowserProxy);
+    ParentalControlsBrowserProxyImpl.setInstanceForTesting(
+        parentalControlsBrowserProxy);
 
     PolymerTest.clearBody();
     parentalControlsPage =
@@ -124,7 +125,8 @@ suite('Chrome OS parental controls page child account tests', function() {
 
   setup(async function() {
     parentalControlsBrowserProxy = new TestParentalControlsBrowserProxy();
-    ParentalControlsBrowserProxyImpl.setInstance(parentalControlsBrowserProxy);
+    ParentalControlsBrowserProxyImpl.setInstanceForTesting(
+        parentalControlsBrowserProxy);
 
     PolymerTest.clearBody();
     parentalControlsPage =

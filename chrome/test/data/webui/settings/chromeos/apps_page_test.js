@@ -226,7 +226,7 @@ suite('AppsPageTests', function() {
   setup(async () => {
     loadTimeData.overrideValues({showOsSettingsAppNotificationsRow: true});
     androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
-    AndroidAppsBrowserProxyImpl.setInstance(androidAppsBrowserProxy);
+    AndroidAppsBrowserProxyImpl.setInstanceForTesting(androidAppsBrowserProxy);
     PolymerTest.clearBody();
     mojoApi_ = new FakeAppNotificationHandler();
     setAppNotificationProviderForTesting(mojoApi_);
@@ -415,7 +415,8 @@ suite('AppsPageTests', function() {
 
     setup(function() {
       androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
-      AndroidAppsBrowserProxyImpl.setInstance(androidAppsBrowserProxy);
+      AndroidAppsBrowserProxyImpl.setInstanceForTesting(
+          androidAppsBrowserProxy);
       PolymerTest.clearBody();
       subpage = document.createElement('settings-android-apps-subpage');
       document.body.appendChild(subpage);

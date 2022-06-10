@@ -86,7 +86,7 @@ suite('ManageAccessibilityPageTests', function() {
 
   setup(function() {
     deviceBrowserProxy = new TestDevicePageBrowserProxy();
-    DevicePageBrowserProxyImpl.setInstance(deviceBrowserProxy);
+    DevicePageBrowserProxyImpl.setInstanceForTesting(deviceBrowserProxy);
 
     PolymerTest.clearBody();
   });

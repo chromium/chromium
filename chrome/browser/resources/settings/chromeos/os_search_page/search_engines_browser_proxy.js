@@ -63,7 +63,7 @@ export class SearchEnginesBrowserProxyImpl {
   }
 
   /** @param {!SearchEnginesBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

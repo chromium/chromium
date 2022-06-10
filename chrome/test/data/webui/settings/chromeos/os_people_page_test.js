@@ -98,7 +98,8 @@ suite('PeoplePageTests', function() {
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
-    AccountManagerBrowserProxyImpl.setInstance(accountManagerBrowserProxy);
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(
+        accountManagerBrowserProxy);
 
     PolymerTest.clearBody();
   });

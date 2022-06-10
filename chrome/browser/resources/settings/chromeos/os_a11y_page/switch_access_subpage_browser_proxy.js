@@ -40,7 +40,7 @@ export class SwitchAccessSubpageBrowserProxyImpl {
   }
 
   /** @param {!SwitchAccessSubpageBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

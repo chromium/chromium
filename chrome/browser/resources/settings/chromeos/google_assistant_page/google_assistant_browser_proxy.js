@@ -30,7 +30,7 @@ export class GoogleAssistantBrowserProxyImpl {
   }
 
   /** @param {!GoogleAssistantBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

@@ -71,7 +71,7 @@ suite('edit dictionary page', () => {
     languageSettingsPrivate = new FakeLanguageSettingsPrivate();
     languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
     const browserProxy = new TestLanguagesBrowserProxy();
-    LanguagesBrowserProxyImpl.setInstance(browserProxy);
+    LanguagesBrowserProxyImpl.setInstanceForTesting(browserProxy);
     browserProxy.setLanguageSettingsPrivate(languageSettingsPrivate);
 
     editDictPage = document.createElement('os-settings-edit-dictionary-page');

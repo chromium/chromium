@@ -119,7 +119,7 @@ suite('PrivacyPageTests', function() {
 
   setup(async () => {
     browserProxy = new TestPeripheralDataAccessBrowserProxy();
-    PeripheralDataAccessBrowserProxyImpl.setInstance(browserProxy);
+    PeripheralDataAccessBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
     privacyPage = document.createElement('os-settings-privacy-page');
     document.body.appendChild(privacyPage);
@@ -415,10 +415,11 @@ suite('PrivacePageTest_OfficialBuild', async () => {
 
   setup(async () => {
     browserProxy = new TestPeripheralDataAccessBrowserProxy();
-    PeripheralDataAccessBrowserProxyImpl.setInstance(browserProxy);
+    PeripheralDataAccessBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     metricsConsentBrowserProxy = new TestMetricsConsentBrowserProxy();
-    MetricsConsentBrowserProxyImpl.setInstance(metricsConsentBrowserProxy);
+    MetricsConsentBrowserProxyImpl.setInstanceForTesting(
+        metricsConsentBrowserProxy);
 
     privacyPage = document.createElement('os-settings-privacy-page');
     PolymerTest.clearBody();
@@ -540,7 +541,7 @@ suite('PeripheralDataAccessTest', function() {
 
   setup(async () => {
     browserProxy = new TestPeripheralDataAccessBrowserProxy();
-    PeripheralDataAccessBrowserProxyImpl.setInstance(browserProxy);
+    PeripheralDataAccessBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
   });
 

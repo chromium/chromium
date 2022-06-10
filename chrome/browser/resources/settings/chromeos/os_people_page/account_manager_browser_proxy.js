@@ -76,7 +76,7 @@ export class AccountManagerBrowserProxyImpl {
   }
 
   /** @param {!AccountManagerBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
 

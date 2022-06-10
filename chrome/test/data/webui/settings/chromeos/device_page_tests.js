@@ -468,7 +468,8 @@ suite('SettingsDevicePage', function() {
     PolymerTest.clearBody();
     Router.getInstance().navigateTo(routes.BASIC);
 
-    DevicePageBrowserProxyImpl.setInstance(new TestDevicePageBrowserProxy());
+    DevicePageBrowserProxyImpl.setInstanceForTesting(
+        new TestDevicePageBrowserProxy());
     devicePage = document.createElement('settings-device-page');
     devicePage.prefs = getFakePrefs();
 
