@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 start_surface_test_java_sources = [
+  "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/BottomBarViewBinderTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/ExploreSurfaceViewBinderTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/InstantStartFeedTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/InstantStartNewTabFromLauncherTest.java",
