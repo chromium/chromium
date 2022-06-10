@@ -43,7 +43,7 @@ namespace {
 // given `scope`.
 void UninstallOtherVersions(UpdaterScope scope) {
   const absl::optional<base::FilePath> updater_folder_path =
-      GetUpdaterFolderPath(scope);
+      GetBaseInstallDirectory(scope);
   if (!updater_folder_path) {
     LOG(ERROR) << "Failed to get updater folder path.";
     return;
@@ -52,7 +52,7 @@ void UninstallOtherVersions(UpdaterScope scope) {
                                        base::FileEnumerator::DIRECTORIES);
   for (base::FilePath version_folder_path = file_enumerator.Next();
        !version_folder_path.empty() &&
-       version_folder_path != GetVersionedUpdaterFolderPath(scope);
+       version_folder_path != GetVersionedInstallDirectory(scope);
        version_folder_path = file_enumerator.Next()) {
     const base::FilePath version_executable_path =
         version_folder_path.Append(GetExecutableRelativePath());

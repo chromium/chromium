@@ -152,7 +152,7 @@ scoped_refptr<ExternalConstantsOverrider>
 ExternalConstantsOverrider::FromDefaultJSONFile(
     scoped_refptr<ExternalConstants> next_provider) {
   const absl::optional<base::FilePath> data_dir_path =
-      GetBaseDirectory(GetUpdaterScope());
+      GetBaseDataDirectory(GetUpdaterScope());
   if (!data_dir_path) {
     LOG(ERROR) << "Cannot find app data path.";
     return nullptr;

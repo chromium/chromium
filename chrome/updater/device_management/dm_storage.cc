@@ -205,7 +205,7 @@ DMStorage::GetOmahaPolicySettings() const {
 
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
   const absl::optional<base::FilePath> updater_versioned_path =
-      GetVersionedDirectory(GetUpdaterScope());
+      GetVersionedDataDirectory(GetUpdaterScope());
   if (!updater_versioned_path)
     return nullptr;
 

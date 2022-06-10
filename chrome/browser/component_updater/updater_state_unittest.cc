@@ -37,8 +37,8 @@ namespace {
 // Returns the path to the global prefs.json file of the Chromium updater.
 absl::optional<base::FilePath> GetUpdaterGlobalPrefsPath(bool is_machine) {
   const absl::optional<base::FilePath> global_prefs_dir =
-      updater::GetBaseDirectory(is_machine ? updater::UpdaterScope::kSystem
-                                           : updater::UpdaterScope::kUser);
+      updater::GetBaseDataDirectory(is_machine ? updater::UpdaterScope::kSystem
+                                               : updater::UpdaterScope::kUser);
   return global_prefs_dir
              ? absl::make_optional(global_prefs_dir->AppendASCII("prefs.json"))
              : absl::nullopt;
