@@ -7973,6 +7973,25 @@
             ]
         }
     ],
+    "TabSearchMetricsReporter": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "TabSearchMetricsReporter",
+                    "enable_features": [
+                        "TabSearchUseMetricsReporter"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabStripImprovements": [
         {
             "platforms": [
