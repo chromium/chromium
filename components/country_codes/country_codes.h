@@ -12,11 +12,8 @@
 
 #include <string>
 
+class PrefRegistrySimple;
 class PrefService;
-
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
 
 namespace country_codes {
 
@@ -35,7 +32,7 @@ constexpr int CountryCharsToCountryID(char c1, char c2) {
   return c1 << 8 | c2;
 }
 
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns the identifier for the user current country.
 int GetCurrentCountryID();
