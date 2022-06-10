@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_bootstrap_controller_impl.h"
+#include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
+
+#include <memory>
 
 #include "base/callback.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -11,33 +13,14 @@
 
 namespace ash::quick_start {
 
-// static
-std::unique_ptr<TargetDeviceBootstrapController>
-TargetDeviceBootstrapControllerImpl::Factory::Create() {
-  if (test_factory_) {
-    return test_factory_->CreateInstance();
-  }
-
-  return std::make_unique<TargetDeviceBootstrapControllerImpl>();
-}
-
-// static
-void TargetDeviceBootstrapControllerImpl::Factory::SetFactoryForTesting(
-    Factory* test_factory) {
-  test_factory_ = test_factory;
-}
-
-TargetDeviceBootstrapControllerImpl::Factory*
-    TargetDeviceBootstrapControllerImpl::Factory::test_factory_ = nullptr;
-
-TargetDeviceBootstrapControllerImpl::TargetDeviceBootstrapControllerImpl() {
+TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl() {
   GetBluetoothAdapter();
 }
 
-TargetDeviceBootstrapControllerImpl::~TargetDeviceBootstrapControllerImpl() {}
+TargetDeviceConnectionBrokerImpl::~TargetDeviceConnectionBrokerImpl() {}
 
-TargetDeviceBootstrapControllerImpl::FeatureSupportStatus
-TargetDeviceBootstrapControllerImpl::GetFeatureSupportStatus() const {
+TargetDeviceConnectionBrokerImpl::FeatureSupportStatus
+TargetDeviceConnectionBrokerImpl::GetFeatureSupportStatus() const {
   // TODO(b/234848503) Add unit test coverage for the kUndetermined case.
   if (!bluetooth_adapter_)
     return FeatureSupportStatus::kUndetermined;
@@ -48,7 +31,7 @@ TargetDeviceBootstrapControllerImpl::GetFeatureSupportStatus() const {
   return FeatureSupportStatus::kNotSupported;
 }
 
-void TargetDeviceBootstrapControllerImpl::GetBluetoothAdapter() {
+void TargetDeviceConnectionBrokerImpl::GetBluetoothAdapter() {
   auto* adapter_factory = device::BluetoothAdapterFactory::Get();
 
   // Bluetooth is always supported on the ChromeOS platform.
@@ -63,13 +46,26 @@ void TargetDeviceBootstrapControllerImpl::GetBluetoothAdapter() {
           &device::BluetoothAdapterFactory::GetAdapter,
           base::Unretained(adapter_factory),
           base::BindOnce(
-              &TargetDeviceBootstrapControllerImpl::OnGetBluetoothAdapter,
+              &TargetDeviceConnectionBrokerImpl::OnGetBluetoothAdapter,
               weak_ptr_factory_.GetWeakPtr())));
 }
 
-void TargetDeviceBootstrapControllerImpl::OnGetBluetoothAdapter(
+void TargetDeviceConnectionBrokerImpl::OnGetBluetoothAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   bluetooth_adapter_ = adapter;
+}
+
+void TargetDeviceConnectionBrokerImpl::StartAdvertising(
+    ConnectionLifecycleListener* listener,
+    ResultCallback on_start_advertising_callback) {
+  // TODO(b/234655072): Implement StartAdvertising
+  std::move(on_start_advertising_callback).Run(true);
+}
+
+void TargetDeviceConnectionBrokerImpl::StopAdvertising(
+    ResultCallback on_stop_advertising_callback) {
+  // TODO(b/234655072): Implement StopAdvertising
+  std::move(on_stop_advertising_callback).Run(true);
 }
 
 }  // namespace ash::quick_start
