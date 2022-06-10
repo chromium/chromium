@@ -651,13 +651,17 @@ WaylandWindow* WaylandWindow::GetRootParentWindow() {
 }
 
 void WaylandWindow::OnEnteredOutput() {
-  delegate()->OnMovedToAnotherDisplay();
-
   // Wayland does weird things for menus so instead of tracking outputs that
   // we entered or left, we take that from the parent window and ignore this
   // event.
   if (AsWaylandPopup())
     return;
+
+  // Notify normal window's delegate only as updating the pixel bounds
+  // may close the popup, and popup will not usually enter new display.
+  // TODO(crbug.com/1306688): Revisit this when wayland implementation
+  // is switced to dip based.
+  delegate()->OnMovedToAnotherDisplay();
 
   UpdateWindowScale(true);
 }
