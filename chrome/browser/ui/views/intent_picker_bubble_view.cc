@@ -30,6 +30,8 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -136,10 +138,17 @@ class IntentPickerAppGridButton : public views::Button {
   void SetSelected(bool selected) {
     selected_ = selected;
     UpdateBackground();
+    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
   }
 
   // views::Button:
   void StateChanged(ButtonState old_state) override { UpdateBackground(); }
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    Button::GetAccessibleNodeData(node_data);
+    node_data->role = ax::mojom::Role::kRadioButton;
+    node_data->SetCheckedState(selected_ ? ax::mojom::CheckedState::kTrue
+                                         : ax::mojom::CheckedState::kFalse);
+  }
 
  private:
   void UpdateBackground() {
