@@ -4191,6 +4191,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kStrictSiteIsolationDescription, kOsAndroid,
      SINGLE_VALUE_TYPE(switches::kSitePerProcess)},
 #endif
+    {"enable-isolated-web-apps", flag_descriptions::kEnableIsolatedWebAppsName,
+     flag_descriptions::kEnableIsolatedWebAppsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kIsolatedWebApps)},
     {"install-isolated-apps-at-startup",
      flag_descriptions::kInstallIssolatedAppsAtStartup,
      flag_descriptions::kInstallIssolatedAppsAtStartupDescription, kOsAll,

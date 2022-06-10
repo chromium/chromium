@@ -1016,6 +1016,11 @@ const char kEnableIphDescription[] =
     "Enables the ability to show IPH. When disabled, IPHs are disabled system "
     "wide.";
 
+const char kEnableIsolatedWebAppsName[] = "Enable Isolated Web Apps";
+const char kEnableIsolatedWebAppsDescription[] =
+    "Enables experimental support for isolated web apps. "
+    "See https://github.com/reillyeon/isolated-web-apps for more information.";
+
 const char kEnablePrivatePrefetchProxyName[] =
     "Enables prefetching using the prefetch proxy";
 const char kEnablePrivatePrefetchProxyDescription[] =

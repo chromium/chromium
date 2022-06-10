@@ -2299,6 +2299,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "enable-isolated-web-apps",
+    "owners": [ "cmfcmf", "reillyg", "rmcelrath", "peletskyi@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-javascript-harmony",
     "owners": [ "adamk", "hablich" ],
     // This flag is used by web developers to test upcoming javascript features.

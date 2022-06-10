@@ -445,6 +445,13 @@ const base::Feature kInstalledAppProvider{"InstalledAppProvider",
 const base::Feature kInstalledAppsInCbd{"InstalledAppsInCbd",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable support for isolated web apps. This will guard features like serving
+// isolated web apps via the isolated-app:// scheme, and other advanced isolated
+// app functionality. See https://github.com/reillyeon/isolated-web-apps for a
+// general overview.
+const base::Feature kIsolatedWebApps{"IsolatedWebApps",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Alternative to switches::kIsolateOrigins, for turning on origin isolation.
 // List of origins to isolate has to be specified via
 // kIsolateOriginsFieldTrialParamName.

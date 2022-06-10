@@ -58307,6 +58307,7 @@ from previous Chrome versions.
   <int value="220654375" label="SearchResultInlineIcon:disabled"/>
   <int value="221212638" label="StartSurfaceAndroid:enabled"/>
   <int value="221363150" label="ForceEnableFaceAe:disabled"/>
+  <int value="221647839" label="IsolatedWebApps:enabled"/>
   <int value="221707633" label="AutofillFixOfferInIncognito:disabled"/>
   <int value="222055978" label="OsFeedback:disabled"/>
   <int value="222184258"
@@ -60244,6 +60245,7 @@ from previous Chrome versions.
   <int value="1486092162"
       label="AutofillEnableOffersInClankKeyboardAccessory:enabled"/>
   <int value="1486171015" label="disable-fill-on-account-select"/>
+  <int value="1486347614" label="IsolatedWebApps:disabled"/>
   <int value="1486784197" label="MouseSubframeNoImplicitCapture:disabled"/>
   <int value="1487341558" label="MacViewsAutofillPopup:enabled"/>
   <int value="1488193175" label="ChromeOSAssistant:enabled"/>
