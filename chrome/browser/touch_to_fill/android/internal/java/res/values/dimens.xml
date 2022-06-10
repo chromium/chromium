@@ -10,45 +10,10 @@
     <dimen name="touch_to_fill_sheet_margin_modern">24dp</dimen>
     <dimen name="touch_to_fill_sheet_items_spacing">1dp</dimen>
 
-    <!-- Below are the different Half-state peeking heights. The height is the
-         sum of all components. It varies depending on the suggestion count. The
-         base height is 298dp:
-         Bottom sheet shadows and padding (18dp)
-         + Handlebar (16dp)
-         + Header size (112 dp)
-         + Title size and margin (48+16dp)
-         + First suggestion (72dp) -->
-    <dimen name="touch_to_fill_sheet_height_single_credential">282dp</dimen>
-    <!-- The height of all the components for the modern design is the following:
-         Handlebar (16dp)
-         + Header size (32+8dp)
-         + Title size and margin (50+19+15dp)
-         + First suggestion (72dp) -->
-    <dimen name="touch_to_fill_sheet_height_single_credential_modern">230dp</dimen>
-
-    <!-- Top padding between RecyclerView elements (8 dp)
-         + Extra suggestion height (72 dp). -->
-    <dimen name="touch_to_fill_sheet_height_second_credential">80dp</dimen>
-    <!-- For UPM, top padding between RecyclerView elements (1 dp)
-         + Extra suggestion height (72 dp). -->
-    <dimen name="touch_to_fill_sheet_height_second_credential_modern">73dp</dimen>
-
-    <!-- Top padding between RecyclerView elements (8 dp)
-         + Top margin (2 dp)
-         + button height (48 dp)
-         + Bottom margin (2 dp) -->
-    <dimen name="touch_to_fill_sheet_height_button">60dp</dimen>
-    <!-- For the modern design: top padding between RecyclerView elements (1 dp)
-         + Top margin (15 dp)
-         + button height (48 dp)-->
-    <dimen name="touch_to_fill_sheet_height_button_modern">64dp</dimen>
-
     <!-- Depending on the experiments that are active we might show a call to
          action button or branding message to the users, at which point we need
          different bottom paddings. They are exposed here, so that they can be
          added dynamically, depending on the state of the experiments. -->
-    <dimen name="touch_to_fill_sheet_bottom_padding_credentials">16dp</dimen>
     <dimen name="touch_to_fill_sheet_bottom_padding_button">8dp</dimen>
-    <dimen name="touch_to_fill_sheet_bottom_padding_credentials_modern">24dp</dimen>
     <dimen name="touch_to_fill_sheet_bottom_padding_button_modern">16dp</dimen>
 </resources>
