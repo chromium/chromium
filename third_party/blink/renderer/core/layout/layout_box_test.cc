@@ -815,6 +815,30 @@ TEST_P(LayoutBoxTest, OverflowRectsOverflowHidden) {
             container->OverflowClipRect(PhysicalOffset()));
 }
 
+TEST_P(LayoutBoxTest, SetTextFieldIntrinsicInlineSize) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+   <style>
+     input { font: 10px Ahem; }
+     #a::-webkit-inner-spin-button{ width: 50%; appearance: none; }
+     #b::-webkit-inner-spin-button{ width: 50px; appearance: none; }
+     #c::-webkit-inner-spin-button{ width: 100%; appearance: none; }
+   </style>
+   <input id='a' type='number' min='100' max='100' step='1'/>
+   <input id='b' type='number' min='100' max='100' step='1'/>
+   <input id='c' type='number' min='100' max='100' step='1'/>
+  )HTML");
+
+  LayoutBox* a = GetLayoutBoxByElementId("a");
+  EXPECT_EQ(LayoutUnit(60), a->DefaultIntrinsicContentInlineSize());
+
+  LayoutBox* b = GetLayoutBoxByElementId("b");
+  EXPECT_EQ(LayoutUnit(80), b->DefaultIntrinsicContentInlineSize());
+
+  LayoutBox* c = GetLayoutBoxByElementId("c");
+  EXPECT_EQ(LayoutUnit(30), c->DefaultIntrinsicContentInlineSize());
+}
+
 class AnimatedImage : public StubImage {
  public:
   bool MaybeAnimated() override { return true; }

@@ -178,7 +178,7 @@ LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
     max_char_width = font.PrimaryFont()->MaxCharWidth();
 
   // For text inputs, IE adds some extra width.
-  if (max_char_width > 0.f)
+  if (max_char_width > char_width)
     float_result += max_char_width - char_width;
 
   LayoutUnit result(ceilf(float_result));
@@ -188,14 +188,21 @@ LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
             shadow_element_names::kIdSpinButton));
     if (LayoutBox* spin_box =
             spin_button ? spin_button->GetLayoutBox() : nullptr) {
+      const Length& logical_width = spin_box->StyleRef().LogicalWidth();
       result += spin_box->BorderAndPaddingLogicalWidth();
       // Since the width of spin_box is not calculated yet,
       // spin_box->LogicalWidth() returns 0. Use the computed logical
       // width instead.
-      result += spin_box->StyleRef().LogicalWidth().Value();
+      if (logical_width.IsPercent()) {
+        if (logical_width.Value() != 100.f) {
+          result +=
+              result * logical_width.Value() / (100 - logical_width.Value());
+        }
+      } else {
+        result += logical_width.Value();
+      }
     }
   }
-
   return result;
 }
 
