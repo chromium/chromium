@@ -666,6 +666,16 @@
       "use_goma": true
     }
   },
+  "fuchsia-fyi-cfv2-script": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "target_os": "fuchsia",
+      "use_cfv2_script": true,
+      "use_goma": true
+    }
+  },
   "fuchsia-fyi-x64-rel": {
     "gn_args": {
       "dcheck_always_on": false,

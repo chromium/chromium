@@ -3081,6 +3081,23 @@
           'linux-focal',
         ],
       },
+      'fuchsia-fyi-cfv2-script': {
+        'browser_config': 'web-engine-shell',
+        'os_type': 'fuchsia',
+        'mixins': [
+          'linux-bionic',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'kvm': '1',
+            },
+          ],
+        },
+        'test_suites': {
+          'gtest_tests': 'fuchsia_gtests',
+        },
+      },
       'fuchsia-fyi-x64-rel': {
         'additional_compile_targets': [
           'all',
