@@ -474,16 +474,16 @@
   },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
+      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
       '--test-runner-outdir',
       '.',
       '--client-outdir',
       '.',
-      '--test-expectations',
-      '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
       '--implementation-outdir',
       '../../weblayer_instrumentation_test_M103/out/Release',
-      '--impl-version=103'
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=103',
     ],
     'identifier': 'with_impl_from_103',
     'swarming': {
@@ -491,10 +491,10 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M103',
-          'revision': 'version:103.0.5060.45'
+          'revision': 'version:103.0.5060.46',
         }
-      ]
-    }
+      ],
+    },
   },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
     'args': [
@@ -618,16 +618,16 @@
   },
   'WEBLAYER_IMPL_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
+      '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
       '.',
       '--client-outdir',
       '.',
-      '--test-expectations',
-      '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--webview-apk-path=apks/SystemWebView.apk',
       '--implementation-outdir',
       '../../weblayer_instrumentation_test_M103/out/Release',
-      '--impl-version=103'
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=103',
     ],
     'identifier': 'with_impl_from_103',
     'swarming': {
@@ -635,10 +635,10 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M103',
-          'revision': 'version:103.0.5060.45'
+          'revision': 'version:103.0.5060.46',
         }
-      ]
-    }
+      ],
+    },
   },
   'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
     'args': [
@@ -762,16 +762,16 @@
   },
   'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
+      '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
       '.',
+      '--client-outdir',
+      '../../weblayer_instrumentation_test_M103/out/Release',
       '--implementation-outdir',
       '.',
       '--test-expectations',
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--webview-apk-path=apks/SystemWebView.apk',
-      '--client-outdir',
-      '../../weblayer_instrumentation_test_M103/out/Release',
-      '--client-version=103'
+      '--client-version=103',
     ],
     'identifier': 'with_client_from_103',
     'swarming': {
@@ -779,10 +779,10 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M103',
-          'revision': 'version:103.0.5060.45'
+          'revision': 'version:103.0.5060.46',
         }
-      ]
-    }
+      ],
+    },
   },
   'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
     'args': [
