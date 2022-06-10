@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
@@ -804,8 +805,7 @@ SkColor ToolbarView::GetDefaultColorForSeverity(
   ui::ColorId color_id;
   switch (severity) {
     case AppMenuIconController::Severity::NONE:
-      return GetThemeProvider()->GetColor(
-          ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
+      return GetColorProvider()->GetColor(kColorToolbarButtonIcon);
     case AppMenuIconController::Severity::LOW:
       color_id = ui::kColorAlertLowSeverity;
       break;

@@ -116,8 +116,7 @@ class ToolbarIconContainerView : public views::View,
   // hierarchy.
   raw_ptr<views::View> main_item_ = nullptr;
 
-  // Override for the icon color. If not set, |COLOR_TOOLBAR_BUTTON_ICON| is
-  // used.
+  // Override for the icon color. If not set, |kColorToolbarButtonIcon| is used.
   absl::optional<SkColor> icon_color_;
 
   // Points to the child buttons that we know are currently highlighted.

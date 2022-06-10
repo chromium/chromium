@@ -847,10 +847,10 @@ void GM2TabStyle::PaintTabBackground(gfx::Canvas* canvas,
 
   const auto* widget = tab_->GetWidget();
   DCHECK(widget);
-  const SkColor tab_stroke_color = widget->GetThemeProvider()->GetColor(
+  const SkColor tab_stroke_color = widget->GetColorProvider()->GetColor(
       tab_->controller()->ShouldPaintAsActiveFrame()
-          ? ThemeProperties::COLOR_TAB_STROKE_FRAME_ACTIVE
-          : ThemeProperties::COLOR_TAB_STROKE_FRAME_INACTIVE);
+          ? kColorTabStrokeFrameActive
+          : kColorTabStrokeFrameInactive);
 
   PaintBackgroundStroke(canvas, active, group_color.value_or(tab_stroke_color));
   PaintSeparators(canvas);

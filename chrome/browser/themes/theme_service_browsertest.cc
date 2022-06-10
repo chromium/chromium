@@ -12,11 +12,13 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/buildflags.h"
+#include "ui/color/color_provider.h"
 
 #if BUILDFLAG(USE_GTK)
 #include "ui/views/linux_ui/linux_ui.h"
@@ -167,9 +169,9 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, GetColorForToolbarButton) {
 #endif  // BUILDFLAG(USE_GTK)
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 
-  const ui::ThemeProvider* provider = browser()->window()->GetThemeProvider();
   SkColor default_toolbar_button_color =
-      provider->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
+      browser()->window()->GetColorProvider()->GetColor(
+          kColorToolbarButtonIcon);
 
   ThemeService* theme_service =
       ThemeServiceFactory::GetForProfile(browser()->profile());
@@ -182,7 +184,8 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, GetColorForToolbarButton) {
 
   // Should get a new color after installing a theme.
   SkColor toolbar_button_explicit_color =
-      provider->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
+      browser()->window()->GetColorProvider()->GetColor(
+          kColorToolbarButtonIcon);
   EXPECT_NE(toolbar_button_explicit_color, default_toolbar_button_color);
 
   {
@@ -194,7 +197,8 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, GetColorForToolbarButton) {
 
   // Should get the color based on a tint.
   SkColor toolbar_button_tinted_color =
-      provider->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
+      browser()->window()->GetColorProvider()->GetColor(
+          kColorToolbarButtonIcon);
   EXPECT_NE(toolbar_button_tinted_color, default_toolbar_button_color);
   EXPECT_NE(toolbar_button_tinted_color, toolbar_button_explicit_color);
 }

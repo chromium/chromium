@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -178,7 +179,7 @@ void ToolbarIconContainerView::SetIconColor(SkColor color) {
 
 SkColor ToolbarIconContainerView::GetIconColor() const {
   return icon_color_.value_or(
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON));
+      GetColorProvider()->GetColor(kColorToolbarButtonIcon));
 }
 
 bool ToolbarIconContainerView::GetHighlighted() const {
