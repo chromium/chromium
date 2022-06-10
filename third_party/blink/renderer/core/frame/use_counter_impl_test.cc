@@ -560,4 +560,33 @@ TEST_F(UseCounterImplTest, CSSMarkerPseudoElementAuthor) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
+TEST_F(UseCounterImplTest, H1UserAgentFontSizeInSectionApplied) {
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
+  Document& document = dummy_page_holder->GetDocument();
+  WebFeature feature = WebFeature::kH1UserAgentFontSizeInSectionApplied;
+
+  EXPECT_FALSE(document.IsUseCounted(feature));
+
+  document.documentElement()->setInnerHTML("<h1></h1>");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_FALSE(document.IsUseCounted(feature))
+      << "Not inside sectioning element";
+
+  document.documentElement()->setInnerHTML(R"HTML(
+      <article><h1 style="font-size: 10px"></h1></article>
+  )HTML");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_FALSE(document.IsUseCounted(feature))
+      << "Inside sectioning element with author font-size";
+
+  document.documentElement()->setInnerHTML(R"HTML(
+      <article><h1></h1></article>
+  )HTML");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_TRUE(document.IsUseCounted(feature))
+      << "Inside sectioning element with UA font-size";
+}
+
 }  // namespace blink

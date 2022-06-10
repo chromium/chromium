@@ -3590,6 +3590,7 @@ enum WebFeature {
   kSharedStorageAPI_SelectURL_Method = 4269,
   kSharedStorageAPI_Run_Method = 4270,
   kViewTimelineConstructor = 4271,
+  kH1UserAgentFontSizeInSectionApplied = 4272,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

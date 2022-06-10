@@ -252,6 +252,27 @@ void StyleCascade::Apply(CascadeFilter filter) {
     state_.SetCanAffectAnimations();
   if (resolver.RejectedFlags() & CSSProperty::kLegacyOverlapping)
     state_.SetRejectedLegacyOverlapping();
+
+  // TOOD(crbug.com/1334570):
+  //
+  // Count applied H1 font-size from html.css UA stylesheet where H1 is inside
+  // a sectioning element matching selectors like:
+  //
+  // :-webkit-any(article,aside,nav,section) h1 { ... }
+  //
+  if (!state_.GetElement().HasTagName(html_names::kH1Tag))
+    return;
+  if (CascadePriority* priority =
+          map_.Find(GetCSSPropertyFontSize().GetCSSPropertyName())) {
+    if (priority->GetOrigin() != CascadeOrigin::kUserAgent)
+      return;
+    const CSSValue* value = ValueAt(match_result_, priority->GetPosition());
+    if (const auto* numeric = DynamicTo<CSSNumericLiteralValue>(value)) {
+      DCHECK(numeric->GetType() == CSSNumericLiteralValue::UnitType::kEms);
+      if (numeric->DoubleValue() != 2.0)
+        CountUse(WebFeature::kH1UserAgentFontSizeInSectionApplied);
+    }
+  }
 }
 
 std::unique_ptr<CSSBitset> StyleCascade::GetImportantSet() {
