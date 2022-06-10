@@ -239,4 +239,14 @@ using l10n_util::GetNSString;
   }
 }
 
+#pragma mark - NSObject
+
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:
+          @"<%@: %p, syncSettingsCoordinator: %p, signinStateForCancel: %lu>",
+          self.class.description, self, self.syncSettingsCoordinator,
+          self.signinStateForCancel];
+}
+
 @end

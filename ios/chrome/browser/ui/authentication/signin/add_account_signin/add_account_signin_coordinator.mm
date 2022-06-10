@@ -266,4 +266,16 @@ using signin_metrics::PromoAction;
   [self.userSigninCoordinator start];
 }
 
+#pragma mark - NSObject
+
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:@"<%@: %p, signinIntent: %lu, accessPoint: %d, "
+                       @"userSigninCoordinator: %p, addAccountSigninManager: "
+                       @"%p, alertCoordinator: %p>",
+                       self.class.description, self, self.signinIntent,
+                       self.accessPoint, self.userSigninCoordinator,
+                       self.addAccountSigninManager, self.alertCoordinator];
+}
+
 @end

@@ -201,4 +201,14 @@
                }];
 }
 
+#pragma mark - NSObject
+
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:@"<%@: %p, screenProvider: %p, childCoordinator: %p, "
+                       @"navigationController %p>",
+                       self.class.description, self, self.screenProvider,
+                       self.childCoordinator, self.navigationController];
+}
+
 @end

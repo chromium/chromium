@@ -1316,9 +1316,9 @@ bool IsSigninForcedByPolicy() {
     return;
   }
   self.sceneState.appState.signinUpgradePromoPresentedOnce = YES;
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   Browser* browser = self.mainInterface.browser;
   self.signinCoordinator = [SigninCoordinator
       upgradeSigninPromoCoordinatorWithBaseViewController:self.mainInterface
@@ -1469,9 +1469,9 @@ bool IsSigninForcedByPolicy() {
 // TODO(crbug.com/779791) : Remove showing settings from MainController.
 - (void)showAutofillSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   if (self.settingsNavigationController)
     return;
 
@@ -1503,9 +1503,8 @@ bool IsSigninForcedByPolicy() {
   // disappear before taking a screenshot.
   dispatch_async(dispatch_get_main_queue(), ^{
     DCHECK(!self.signinCoordinator)
-        << "self.signinCoordinator class: "
-        << base::SysNSStringToUTF8(
-               NSStringFromClass(self.signinCoordinator.class));
+        << "self.signinCoordinator: "
+        << base::SysNSStringToUTF8([self.signinCoordinator description]);
     if (self.settingsNavigationController)
       return;
     Browser* browser = self.mainInterface.browser;
@@ -1554,9 +1553,9 @@ bool IsSigninForcedByPolicy() {
 // TODO(crbug.com/779791) : Do not pass |baseViewController| through dispatcher.
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   Browser* mainBrowser = self.mainInterface.browser;
 
   switch (command.operation) {
@@ -1599,9 +1598,9 @@ bool IsSigninForcedByPolicy() {
 
 - (void)showAdvancedSigninSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   Browser* mainBrowser = self.mainInterface.browser;
   // If the account is in the decoupled FRE then the user has already signed-in
   // before opening advanced settings, otherwise they are signed out.
@@ -1713,9 +1712,9 @@ bool IsSigninForcedByPolicy() {
     baseViewController = self.currentInterface.viewController;
   }
 
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   if (self.settingsNavigationController)
     return;
   [[DeferredInitializationRunner sharedInstance]
@@ -1760,9 +1759,9 @@ bool IsSigninForcedByPolicy() {
 // TODO(crbug.com/779791) : Remove show settings from MainController.
 - (void)showAccountsSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   if (!baseViewController) {
     DCHECK_EQ(self.currentInterface.viewController,
               self.mainCoordinator.activeViewController);
@@ -1791,9 +1790,9 @@ bool IsSigninForcedByPolicy() {
 // TODO(crbug.com/779791) : Remove Google services settings from MainController.
 - (void)showGoogleServicesSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   if (!baseViewController) {
     DCHECK_EQ(self.currentInterface.viewController,
               self.mainCoordinator.activeViewController);
@@ -1821,9 +1820,9 @@ bool IsSigninForcedByPolicy() {
 // TODO(crbug.com/779791) : Remove show settings commands from MainController.
 - (void)showSyncSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showSyncSettingsFromViewController:baseViewController];
@@ -1842,9 +1841,9 @@ bool IsSigninForcedByPolicy() {
 // TODO(crbug.com/779791) : Remove show settings commands from MainController.
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showSyncPassphraseSettingsFromViewController:baseViewController];
@@ -1869,9 +1868,9 @@ bool IsSigninForcedByPolicy() {
     // dispatched command.
     baseViewController = self.currentInterface.viewController;
   }
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showSavedPasswordsSettingsFromViewController:baseViewController
@@ -1891,9 +1890,9 @@ bool IsSigninForcedByPolicy() {
 
 - (void)showSavedPasswordsSettingsAndStartPasswordCheckFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   [self dismissModalDialogs];
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
@@ -1915,9 +1914,9 @@ bool IsSigninForcedByPolicy() {
 // TODO(crbug.com/779791) : Remove show settings commands from MainController.
 - (void)showProfileSettingsFromViewController:
     (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showProfileSettingsFromViewController:baseViewController];
@@ -1935,9 +1934,9 @@ bool IsSigninForcedByPolicy() {
 
 // TODO(crbug.com/779791) : Remove show settings commands from MainController.
 - (void)showCreditCardSettings {
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   if (self.settingsNavigationController) {
     [self.settingsNavigationController showCreditCardSettings];
     return;
@@ -2481,9 +2480,8 @@ bool IsSigninForcedByPolicy() {
     DCHECK(self.currentInterface.viewController);
     DCHECK(!self.mainCoordinator.isTabGridActive);
     DCHECK(!self.signinCoordinator)
-        << "self.signinCoordinator class: "
-        << base::SysNSStringToUTF8(
-               NSStringFromClass(self.signinCoordinator.class));
+        << "self.signinCoordinator: "
+        << base::SysNSStringToUTF8([self.signinCoordinator description]);
     // This will dismiss the SSO view controller.
     [self.interfaceProvider.currentInterface
         clearPresentedStateWithCompletion:completion
@@ -2494,9 +2492,8 @@ bool IsSigninForcedByPolicy() {
     // active.
     DCHECK(self.mainCoordinator.isTabGridActive);
     DCHECK(!self.signinCoordinator)
-        << "self.signinCoordinator class: "
-        << base::SysNSStringToUTF8(
-               NSStringFromClass(self.signinCoordinator.class));
+        << "self.signinCoordinator: "
+        << base::SysNSStringToUTF8([self.signinCoordinator description]);
     // History coordinator can be started on top of the tab grid.
     // This is not true of the other tab switchers.
     DCHECK(self.mainCoordinator);
@@ -2799,9 +2796,9 @@ bool IsSigninForcedByPolicy() {
                                          (syncer::
                                               TrustedVaultUserActionTriggerForUMA)
                                              trigger {
-  DCHECK(!self.signinCoordinator) << "self.signinCoordinator class: "
-                                  << base::SysNSStringToUTF8(NSStringFromClass(
-                                         self.signinCoordinator.class));
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
   Browser* mainBrowser = self.mainInterface.browser;
   self.signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:

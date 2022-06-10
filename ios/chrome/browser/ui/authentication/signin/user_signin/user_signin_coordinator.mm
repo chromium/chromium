@@ -688,6 +688,18 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   }
 }
 
+#pragma mark - NSObject
+
+- (NSString*)description {
+  return [NSString stringWithFormat:@"<%@: %p, addAccountSigninCoordinator: "
+                                    @"%p, advancedSettingsSigninCoordinator: "
+                                    @"%p, signinIntent: %lu, accessPoint %d>",
+                                    self.class.description, self,
+                                    self.addAccountSigninCoordinator,
+                                    self.advancedSettingsSigninCoordinator,
+                                    self.signinIntent, self.logger.accessPoint];
+}
+
 #pragma mark - Methods for unittests
 
 // Returns a UserSigninViewController instance. This method is overriden for
