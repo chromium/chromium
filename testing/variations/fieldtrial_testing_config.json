@@ -4379,21 +4379,6 @@
             ]
         }
     ],
-    "IOSAppFlows": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220419",
-                    "enable_features": [
-                        "EnableDiscoverFeedAppFlows"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSBookmarkString": [
         {
             "platforms": [
