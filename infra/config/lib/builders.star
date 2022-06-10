@@ -558,7 +558,7 @@ def builder(
 
     # We don't have any need of an explicit dimensions dict,
     # instead we have individual arguments for dimensions
-    if "dimensions" in "kwargs":
+    if "dimensions" in kwargs:
         fail("Explicit dimensions are not supported: " +
              "use builderless, cores, cpu, os or ssd instead")
 
