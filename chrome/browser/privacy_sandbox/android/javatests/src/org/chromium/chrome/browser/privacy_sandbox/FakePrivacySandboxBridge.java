@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import org.chromium.base.Callback;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +22,8 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private final Set<Topic> mBlockedTopics = new HashSet<>();
     private @PromptType int mPromptType = PromptType.NONE;
     private Integer mLastPromptAction;
+    private Set<String> mAllowedFledge = new HashSet<>();
+    private Set<String> mBlockedFledge = new HashSet<>();
 
     public FakePrivacySandboxBridge() {
         setCurrentTopTopics("Foo", "Bar");
@@ -142,6 +146,27 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
         } else {
             mCurrentTopTopics.remove(topic);
             mBlockedTopics.add(topic);
+        }
+    }
+
+    @Override
+    public void getFledgeJoiningEtldPlusOneForDisplay(Callback<String[]> callback) {
+        callback.onResult(mAllowedFledge.toArray(new String[0]));
+    }
+
+    @Override
+    public String[] getBlockedFledgeJoiningTopFramesForDisplay() {
+        return mBlockedFledge.toArray(new String[0]);
+    }
+
+    @Override
+    public void setFledgeJoiningAllowed(String topFrameEtldPlus1, boolean allowed) {
+        if (allowed) {
+            mAllowedFledge.add(topFrameEtldPlus1);
+            mBlockedFledge.remove(topFrameEtldPlus1);
+        } else {
+            mAllowedFledge.remove(topFrameEtldPlus1);
+            mBlockedFledge.add(topFrameEtldPlus1);
         }
     }
 

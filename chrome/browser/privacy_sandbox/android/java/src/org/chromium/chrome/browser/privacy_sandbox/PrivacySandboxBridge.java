@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 
@@ -88,6 +89,21 @@ public class PrivacySandboxBridge {
         return topics;
     }
 
+    public static void getFledgeJoiningEtldPlusOneForDisplay(Callback<List<String>> callback) {
+        Callback<String[]> arrayCallback =
+                (String[] domains) -> callback.onResult(Arrays.asList(domains));
+        PrivacySandboxBridgeJni.get().getFledgeJoiningEtldPlusOneForDisplay(arrayCallback);
+    }
+
+    public static List<String> getBlockedFledgeJoiningTopFramesForDisplay() {
+        return Arrays.asList(
+                PrivacySandboxBridgeJni.get().getBlockedFledgeJoiningTopFramesForDisplay());
+    }
+
+    public static void setFledgeJoiningAllowed(String topFrameEtldPlus1, boolean allowed) {
+        PrivacySandboxBridgeJni.get().setFledgeJoiningAllowed(topFrameEtldPlus1, allowed);
+    }
+
     public static @PromptType int getRequiredPromptType() {
         return PrivacySandboxBridgeJni.get().getRequiredPromptType();
     }
@@ -114,6 +130,9 @@ public class PrivacySandboxBridge {
         Topic[] getCurrentTopTopics();
         Topic[] getBlockedTopics();
         void setTopicAllowed(int topicId, int taxonomyVersion, boolean allowed);
+        void getFledgeJoiningEtldPlusOneForDisplay(Callback<String[]> callback);
+        String[] getBlockedFledgeJoiningTopFramesForDisplay();
+        void setFledgeJoiningAllowed(String topFrameEtldPlus1, boolean allowed);
         int getRequiredPromptType();
         void promptActionOccurred(int action);
     }
