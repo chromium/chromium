@@ -41,6 +41,8 @@ enum QuickActionCategory {
 // surrounding text.
 struct ResolvedSearchTerm {
  public:
+  static constexpr int kResponseCodeUninitialized = -1;
+
   explicit ResolvedSearchTerm(int response_code);
   ResolvedSearchTerm(bool is_invalid,
                      int response_code,

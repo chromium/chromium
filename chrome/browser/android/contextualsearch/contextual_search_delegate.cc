@@ -84,8 +84,6 @@ const char kXssiEscape[] = ")]}'\n";
 const char kDiscourseContextHeaderName[] = "X-Additional-Discourse-Context";
 const char kDoPreventPreloadValue[] = "1";
 
-const int kResponseCodeUninitialized = -1;
-
 }  // namespace
 
 // Handles tasks for the ContextualSearchManager in a separable, testable way.
@@ -216,13 +214,13 @@ void ContextualSearchDelegate::OnUrlLoadComplete(
   if (!context_)
     return;
 
-  int response_code = kResponseCodeUninitialized;
+  int response_code = ResolvedSearchTerm::kResponseCodeUninitialized;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
 
-  std::unique_ptr<ResolvedSearchTerm> resolved_search_term(
-      new ResolvedSearchTerm(response_code));
+  std::unique_ptr<ResolvedSearchTerm> resolved_search_term =
+      std::make_unique<ResolvedSearchTerm>(response_code);
   if (response_body && response_code == net::HTTP_OK) {
     resolved_search_term =
         GetResolvedSearchTermFromJson(response_code, *response_body);
@@ -276,7 +274,8 @@ ContextualSearchDelegate::GetResolvedSearchTermFromJson(
       end_adjust = mention_end - context_->GetEndOffset();
     }
   }
-  bool is_invalid = response_code == kResponseCodeUninitialized;
+  bool is_invalid =
+      response_code == ResolvedSearchTerm::kResponseCodeUninitialized;
   return std::make_unique<ResolvedSearchTerm>(
       is_invalid, response_code, search_term, display_text, alternate_term, mid,
       prevent_preload == kDoPreventPreloadValue, start_adjust, end_adjust,

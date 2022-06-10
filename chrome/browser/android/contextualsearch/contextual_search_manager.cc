@@ -24,7 +24,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "net/url_request/url_fetcher_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using base::android::JavaParamRef;

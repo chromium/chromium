@@ -4,10 +4,8 @@
 
 #include "chrome/browser/android/contextualsearch/resolved_search_term.h"
 
-#include "net/url_request/url_fetcher.h"
-
 ResolvedSearchTerm::ResolvedSearchTerm(int response_code)
-    : is_invalid(response_code == net::URLFetcher::RESPONSE_CODE_INVALID),
+    : is_invalid(response_code == kResponseCodeUninitialized),
       response_code(response_code),
       search_term(""),
       display_text(""),
