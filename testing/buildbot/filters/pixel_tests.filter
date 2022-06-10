@@ -13,6 +13,7 @@
 AccuracyTipBubbleViewDialogBrowserTest.*
 AppInfoDialogBrowserTest.*
 AskGoogleForSuggestionsDialogTest.*
+AssistantOnboardingViewBrowserTest.InvokeUi_*
 BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
 ChromeLabsUiTest.*

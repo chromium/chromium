@@ -7,8 +7,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_onboarding_controller.h"
 #include "chrome/browser/ui/browser.h"
@@ -48,8 +50,6 @@ AssistantOnboardingInformation CreateTestModel() {
 // Simple test fixture for testing `AssistantOnboardingView` that checks
 // whether accepting/cancelling the dialog works and whether the labels
 // contains the text specified in the `AssistantOnboardingInformation` model.
-//
-// TODO(crbug.com/1322387): Add pixel test once UI is finalized.
 class AssistantOnboardingViewBrowserTest : public DialogBrowserTest {
  public:
   AssistantOnboardingViewBrowserTest() = default;
@@ -59,14 +59,51 @@ class AssistantOnboardingViewBrowserTest : public DialogBrowserTest {
   // UI.
   void UseTestModel() { model_ = CreateTestModel(); }
 
+  // Creates a model with the same data that is used for the automated password
+  // change onboarding dialog.
+  void UseApcModel() {
+    model_ = ApcOnboardingCoordinator::CreateOnboardingInformation();
+  }
+
   // Creates controller and view and calls their `Show()` method.
   void ShowUi(const std::string& name) override {
+    // Pick the correct model for the dialog.
+    if (name == "Apc") {
+      UseApcModel();
+    } else if (name == "custom") {
+      UseTestModel();
+    } else {
+      NOTREACHED();
+    }
+
     controller_ = AssistantOnboardingController::Create(
         model_, browser()->tab_strip_model()->GetActiveWebContents());
     // We do not use the factory function here to test `AssistantOnboardingView`
     // directly.
     view_ = new AssistantOnboardingView(controller()->GetWeakPtr());
     controller()->Show(prompt(), callback().Get());
+  }
+
+  // Verifies that the UI is working correctly.
+  bool VerifyUi() override {
+    if (!DialogBrowserTest::VerifyUi())
+      return false;
+
+    if (GetTextFromLabel(AssistantOnboardingView::DialogViewID::TITLE) !=
+        model()->title)
+      return false;
+
+    if (GetTextFromLabel(AssistantOnboardingView::DialogViewID::DESCRIPTION) !=
+        model()->description)
+      return false;
+
+    if (GetTextFromStyledLabel(
+            AssistantOnboardingView::DialogViewID::CONSENT_TEXT) !=
+        base::ReplaceStringPlaceholders(model()->consent_text,
+                                        model()->learn_more_title, nullptr))
+      return false;
+
+    return true;
   }
 
   // Returns the text from a label with element ID `view_id`. The element
@@ -109,9 +146,7 @@ class AssistantOnboardingViewBrowserTest : public DialogBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AssistantOnboardingViewBrowserTest, CancelDialog) {
-  UseTestModel();
-
-  ShowUi(std::string());
+  ShowUi("custom");
 
   // We expect the controller to signal back that the dialog was cancelled.
   EXPECT_CALL(callback(), Run(false));
@@ -119,28 +154,13 @@ IN_PROC_BROWSER_TEST_F(AssistantOnboardingViewBrowserTest, CancelDialog) {
 }
 
 IN_PROC_BROWSER_TEST_F(AssistantOnboardingViewBrowserTest, AcceptDialog) {
-  UseTestModel();
-
-  ShowUi(std::string());
+  ShowUi("custom");
 
   // We expect the controller to signal back that the dialog was accepted.
   EXPECT_CALL(callback(), Run(true));
   view()->AcceptDialog();
 }
 
-IN_PROC_BROWSER_TEST_F(AssistantOnboardingViewBrowserTest, DialogMatchesModel) {
-  UseTestModel();
-
-  ShowUi(std::string());
-
-  // We expect the labels to match the strings of the model.
-  EXPECT_EQ(GetTextFromLabel(AssistantOnboardingView::DialogViewID::TITLE),
-            model()->title);
-  EXPECT_EQ(
-      GetTextFromLabel(AssistantOnboardingView::DialogViewID::DESCRIPTION),
-      model()->description);
-  EXPECT_EQ(GetTextFromStyledLabel(
-                AssistantOnboardingView::DialogViewID::CONSENT_TEXT),
-            base::ReplaceStringPlaceholders(
-                model()->consent_text, model()->learn_more_title, nullptr));
+IN_PROC_BROWSER_TEST_F(AssistantOnboardingViewBrowserTest, InvokeUi_Apc) {
+  ShowAndVerifyUi();
 }
