@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_FEDERATED_PUBLIC_CPP_SERVICE_CONNECTION_H_
-#define CHROMEOS_SERVICES_FEDERATED_PUBLIC_CPP_SERVICE_CONNECTION_H_
+#ifndef CHROMEOS_ASH_SERVICES_FEDERATED_PUBLIC_CPP_SERVICE_CONNECTION_H_
+#define CHROMEOS_ASH_SERVICES_FEDERATED_PUBLIC_CPP_SERVICE_CONNECTION_H_
 
-#include "chromeos/services/federated/public/mojom/federated_service.mojom.h"
+#include "chromeos/ash/services/federated/public/mojom/federated_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace chromeos {
@@ -56,4 +56,4 @@ class ScopedFakeServiceConnectionForTest {
 }  // namespace federated
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_FEDERATED_PUBLIC_CPP_SERVICE_CONNECTION_H_
+#endif  // CHROMEOS_ASH_SERVICES_FEDERATED_PUBLIC_CPP_SERVICE_CONNECTION_H_

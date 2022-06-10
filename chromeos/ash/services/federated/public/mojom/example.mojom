@@ -8,7 +8,7 @@
 // /tensorflow/core/example/example.proto in the TensorFlow code.
 
 // NOTE: This mojom should exist in two places and must be kept in sync:
-//       Chromium:  src/chromeos/services/federated/public/mojom/
+//       Chromium:  src/chromeos/ash/services/federated/public/mojom/
 //       Chrome OS: src/platform2/federated/mojom/
 //       Note: Other repos downstream of Chromium might also use this mojom.
 // Example: A backwards-compatible mojom change (and corresponding

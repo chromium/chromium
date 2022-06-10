@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/federated/public/cpp/fake_service_connection.h"
+#include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
 
 namespace chromeos {
 namespace federated {

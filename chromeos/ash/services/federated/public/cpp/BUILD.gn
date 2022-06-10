@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 source_set("cpp") {
   sources = [
@@ -13,8 +15,8 @@ source_set("cpp") {
   ]
   deps = [
     "//base",
+    "//chromeos/ash/services/federated/public/mojom",
     "//chromeos/dbus/federated",
-    "//chromeos/services/federated/public/mojom",
   ]
 }
 
@@ -27,7 +29,7 @@ source_set("test_support") {
   deps = [
     ":cpp",
     "//base",
-    "//chromeos/services/federated/public/mojom",
+    "//chromeos/ash/services/federated/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
 }
@@ -39,8 +41,8 @@ source_set("unit_tests") {
     ":cpp",
     ":test_support",
     "//base/test:test_support",
+    "//chromeos/ash/services/federated/public/mojom",
     "//chromeos/dbus/federated",
-    "//chromeos/services/federated/public/mojom",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",

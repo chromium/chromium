@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/federated/public/cpp/service_connection.h"
+#include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "chromeos/ash/services/federated/public/mojom/federated_service.mojom.h"
 #include "chromeos/dbus/federated/federated_client.h"
-#include "chromeos/services/federated/public/mojom/federated_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"

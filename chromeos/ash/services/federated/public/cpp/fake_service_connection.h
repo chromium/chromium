@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_FEDERATED_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
-#define CHROMEOS_SERVICES_FEDERATED_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
+#ifndef CHROMEOS_ASH_SERVICES_FEDERATED_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
+#define CHROMEOS_ASH_SERVICES_FEDERATED_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
 
 #include <string>
 
-#include "chromeos/services/federated/public/cpp/service_connection.h"
-#include "chromeos/services/federated/public/mojom/example.mojom.h"
-#include "chromeos/services/federated/public/mojom/federated_service.mojom.h"
+#include "chromeos/ash/services/federated/public/cpp/service_connection.h"
+#include "chromeos/ash/services/federated/public/mojom/example.mojom.h"
+#include "chromeos/ash/services/federated/public/mojom/federated_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -44,4 +44,4 @@ class FakeServiceConnectionImpl : public ServiceConnection,
 }  // namespace federated
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_FEDERATED_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
+#endif  // CHROMEOS_ASH_SERVICES_FEDERATED_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_

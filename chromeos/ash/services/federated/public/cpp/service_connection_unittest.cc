@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/federated/public/cpp/service_connection.h"
+#include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 
 #include <vector>
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
+#include "chromeos/ash/services/federated/public/cpp/federated_example_util.h"
+#include "chromeos/ash/services/federated/public/mojom/example.mojom.h"
 #include "chromeos/dbus/federated/federated_client.h"
-#include "chromeos/services/federated/public/cpp/fake_service_connection.h"
-#include "chromeos/services/federated/public/cpp/federated_example_util.h"
-#include "chromeos/services/federated/public/mojom/example.mojom.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
