@@ -98,6 +98,20 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   // data.
   bool UsesAndroidBackendAsMainBackend();
 
+  // Retries to add/update login into |built_in_backend| in case of an
+  // unrecoverable error inside |android_backend|. |form| and
+  // |original_callback| are the original parameters passed to
+  // Add/UpdateLoginAsync.
+  void MaybeRetryToAddLoginOnFail(const PasswordForm& form,
+                                  PasswordChangesOrErrorReply original_callback,
+                                  bool was_using_android_backend,
+                                  PasswordChangesOrError result);
+  void MaybeRetryToUpdateLoginOnFail(
+      const PasswordForm& form,
+      PasswordChangesOrErrorReply original_callback,
+      bool was_using_android_backend,
+      const PasswordChangesOrError& result);
+
   PasswordStoreBackend* main_backend();
   PasswordStoreBackend* shadow_backend();
 
