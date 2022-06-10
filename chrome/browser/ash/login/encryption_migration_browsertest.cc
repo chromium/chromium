@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -340,7 +339,9 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
                    .has_account_id());
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithInsuficientSpace) {
+// TODO(crbug.com/1325374): Flaky.
+IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
+                       DISABLED_MigrateWithInsuficientSpace) {
   set_free_space(5 * 1000 * 1000);
   MarkUserHasEnterprisePolicy();
 
@@ -358,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithInsuficientSpace) {
   test::OobeJS().ExpectVisiblePath(kInsufficientSpaceRestartButton);
   test::OobeJS().ExpectHiddenPath(kInsufficientSpaceSkipButton);
 
-  test::TapOnPathAndWaitForOobeToBeDestroyed(kInsufficientSpaceRestartButton);
+  test::OobeJS().TapOnPath(kInsufficientSpaceRestartButton);
 
   EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_FALSE(FakeUserDataAuthClient::Get()
@@ -366,7 +367,9 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithInsuficientSpace) {
                    .has_account_id());
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsufficientSpaceOnResume) {
+// TODO(crbug.com/1324733): Re-enable this test
+IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
+                       DISABLED_InsufficientSpaceOnResume) {
   set_free_space(5 * 1000 * 1000);
   MarkUserHasEnterprisePolicy();
 
@@ -384,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsufficientSpaceOnResume) {
   test::OobeJS().ExpectVisiblePath(kInsufficientSpaceRestartButton);
   test::OobeJS().ExpectHiddenPath(kInsufficientSpaceSkipButton);
 
-  test::TapOnPathAndWaitForOobeToBeDestroyed(kInsufficientSpaceRestartButton);
+  test::OobeJS().TapOnPath(kInsufficientSpaceRestartButton);
 
   EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_FALSE(FakeUserDataAuthClient::Get()
@@ -392,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsufficientSpaceOnResume) {
                    .has_account_id());
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrationFailure) {
+// TODO(crbug.com/1324694): Re-enable this test
+IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, DISABLED_MigrationFailure) {
   MarkUserHasEnterprisePolicy();
 
   OobeScreenWaiter encryption_migration_screen_waiter(
@@ -420,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrationFailure) {
   test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
 
   test::OobeJS().ExpectVisiblePath(kRestartButton);
-  test::TapOnPathAndWaitForOobeToBeDestroyed(kRestartButton);
+  test::OobeJS().TapOnPath(kRestartButton);
 
   EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
 }
