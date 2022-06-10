@@ -136,6 +136,9 @@ class ASH_EXPORT CalendarMonthView : public views::View,
   // Disable each cell's focus behavior.
   void DisableFocus();
 
+  // Updates is_fetched_ for each date cell and schedules repaint.
+  void UpdateIsFetchedAndRepaint(bool updated_is_fetched);
+
   // Gets the cells of each row that should be first focused on.
   std::vector<CalendarDateCellView*> focused_cells() { return focused_cells_; }
 
@@ -144,9 +147,6 @@ class ASH_EXPORT CalendarMonthView : public views::View,
 
   // Returns the index of this month view's last row.
   int last_row_index() const { return last_row_index_; }
-
-  // Updates is_fetched_ for each date cell and schedules repaint.
-  void UpdateIsFetchedAndRepaint(bool updated_is_fetched);
 
  private:
   // For unit tests.
