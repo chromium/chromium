@@ -117,7 +117,12 @@ void StableVideoDecoderService::Decode(
 
 void StableVideoDecoderService::Reset(ResetCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
+  if (!video_decoder_client_receiver_.is_bound()) {
+    DVLOG(2) << __func__ << " Construct() must be called first";
+    std::move(callback).Run();
+    return;
+  }
+  dst_video_decoder_remote_->Reset(std::move(callback));
 }
 
 void StableVideoDecoderService::ReleaseVideoFrame(
