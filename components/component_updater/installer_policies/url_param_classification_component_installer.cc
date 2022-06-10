@@ -151,8 +151,6 @@ bool UrlParamClassificationComponentInstallerPolicy::VerifyInstallation(
     return false;
   }
 
-  std::vector<url_param_filter::FilterClassification> source_classifications,
-      destination_classifications;
   for (const url_param_filter::FilterClassification& fc :
        classification_list.classifications()) {
     if (!fc.has_site()) {
@@ -165,16 +163,6 @@ bool UrlParamClassificationComponentInstallerPolicy::VerifyInstallation(
       WriteMetrics(
           ClassificationListValidationResult::kClassificationMissingSiteRole);
       return false;
-    }
-
-    if (fc.site_role() ==
-        url_param_filter::FilterClassification_SiteRole_SOURCE) {
-      source_classifications.push_back(fc);
-    }
-
-    if (fc.site_role() ==
-        url_param_filter::FilterClassification_SiteRole_DESTINATION) {
-      destination_classifications.push_back(fc);
     }
   }
 
