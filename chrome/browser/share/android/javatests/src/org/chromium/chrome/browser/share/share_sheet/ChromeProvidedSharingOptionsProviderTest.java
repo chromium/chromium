@@ -33,6 +33,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -117,9 +118,11 @@ public class ChromeProvidedSharingOptionsProviderTest {
     private Activity mActivity;
     private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
     private UserActionTester mActionTester;
+    private ObservableSupplierImpl<Profile> mProfileSupplier;
 
     @Before
     public void setUp() {
+        Looper.prepare();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         mJniMocker.mock(
@@ -135,6 +138,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
         Mockito.doNothing().when(mBottomSheetController).hideContent(any(), anyBoolean());
 
         TrackerFactory.setTrackerForTests(mTracker);
+        mProfileSupplier = new ObservableSupplierImpl<>();
+        mProfileSupplier.set(mProfile);
         mActivityTestRule.launchActivity(null);
         ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
         mActivity = mActivityTestRule.getActivity();
@@ -479,7 +484,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 /*imageEditorModuleProvider*/ null, mTracker, URL, linkGenerationStatus,
                 new LinkToggleMetricsDetails(
                         LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED),
-                mProfile);
+                mProfileSupplier);
     }
 
     private boolean propertyModelsContain(List<PropertyModel> propertyModels, int labelId) {

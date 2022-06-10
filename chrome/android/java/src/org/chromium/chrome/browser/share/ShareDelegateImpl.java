@@ -276,7 +276,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                                 ContextUtils.getApplicationContext().getPackageManager(), profile),
                         printCallback, new LargeIconBridge(profile), isIncognito,
                         AppHooks.get().getImageEditorModuleProvider(),
-                        TrackerFactory.getTrackerForProfile(profile), profile);
+                        TrackerFactory.getTrackerForProfile(profile), profileSupplier);
                 coordinator.showInitialShareSheet(params, chromeShareExtras, shareStartTime);
             } else {
                 RecordHistogram.recordEnumeratedHistogram(
