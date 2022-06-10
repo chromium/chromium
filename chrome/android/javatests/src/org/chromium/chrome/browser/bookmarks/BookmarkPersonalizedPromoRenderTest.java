@@ -39,6 +39,9 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiDisableIf;
 
+// TODO(crbug.com/1334912): This class should be removed, since we have a similar tests in
+// SigninPromoControllerRenderTest.
+
 /**
  * Tests for the personalized signin promo on the Bookmarks page.
  */
@@ -63,7 +66,7 @@ public class BookmarkPersonalizedPromoRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(3)
+                    .setRevision(4)
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SIGN_IN)
                     .build();
 
