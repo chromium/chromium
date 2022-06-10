@@ -464,6 +464,8 @@ void MultiDeviceSection::AddLoadTimeData(
       {"multidevicePhoneHubCameraRollNotificationsAndAppsItemSummary",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_NOTIFICATIONS_AND_APPS_SUMMARY},
       {"multideviceLearnMoreWithoutURL", IDS_SETTINGS_LEARN_MORE},
+      {"multidevicePhoneHubLearnMoreAriaLabel",
+       IDS_SETTINGS_PHONE_HUB_LEARN_MORE_ARIA_LABEL},
       {"multidevicePermissionsSetupCameraRollSummary",
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_ITEM_SUMMARY},
       {"multidevicePermissionsSetupNotificationsSummary",

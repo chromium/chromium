@@ -226,6 +226,12 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @private */
+    learnMoreButtonAriaLabel_: {
+      type: String,
+      computed: 'getLearnMoreButtonAriaLabel_()',
+    },
   },
 
   listeners: {
@@ -625,4 +631,12 @@ Polymer({
         this.isPhoneScreenLockEnabled && !this.isChromeosScreenLockEnabled &&
         this.showAppStreaming;
   },
+
+  /**
+   * @return {string} A aria label about learn more button.
+   * @private
+   */
+  getLearnMoreButtonAriaLabel_() {
+    return this.i18n('multidevicePhoneHubLearnMoreAriaLabel');
+  }
 });

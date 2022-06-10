@@ -3259,6 +3259,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that dismiss notifications on the Chromebook will also dismiss them on the phone.">
     Keep in mind, dismissing notifications on your Chromebook will also dismiss them on your phone
   </message>
+  <message name="IDS_SETTINGS_PHONE_HUB_LEARN_MORE_ARIA_LABEL" desc="The aria label (used by screen readers, not shown in UI) for the phone permissions opt-in flow.">
+    Learn more about Phone Hub
+  </message>
 
   <!-- Lock Screen Page (OS settings) -->
   <message name="IDS_ASH_SETTINGS_LOCK_SCREEN_NOTIFICATION_TITLE" desc="The title of options to change the behavior of notifications on the lock screen.">

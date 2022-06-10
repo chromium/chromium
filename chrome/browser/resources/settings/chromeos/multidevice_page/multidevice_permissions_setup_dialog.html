@@ -290,7 +290,8 @@
   <div id="buttonContainer" slot="button-container">
     <div id="half-container">
       <template is="dom-if" if="[[shouldShowLearnMoreButton_]]" restamp>
-        <cr-button id="learnMore" on-click="onLearnMoreClicked_">
+        <cr-button id="learnMore" on-click="onLearnMoreClicked_"
+            aria-label$="[[learnMoreButtonAriaLabel_]]">
           $i18n{multideviceLearnMoreWithoutURL}
         </cr-button>
       </template>
