@@ -384,7 +384,6 @@ bool TouchInjector::LocatedEventOnMenuEntry(const ui::Event& event,
   if (!event.IsLocatedEvent())
     return false;
 
-  auto event_location = event.AsLocatedEvent()->root_location();
   auto menu_anchor_bounds =
       display_overlay_controller_->GetOverlayMenuEntryBounds();
   if (!menu_anchor_bounds) {
@@ -392,6 +391,9 @@ bool TouchInjector::LocatedEventOnMenuEntry(const ui::Event& event,
            display_mode_ != DisplayMode::kPreMenu);
     return false;
   }
+
+  auto event_location = gfx::Point(event.AsLocatedEvent()->root_location());
+  target_window_->GetHost()->ConvertPixelsToDIP(&event_location);
 
   if (!press_required)
     return menu_anchor_bounds->Contains(event_location);
