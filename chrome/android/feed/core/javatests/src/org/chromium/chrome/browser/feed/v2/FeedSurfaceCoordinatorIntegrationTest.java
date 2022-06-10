@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
@@ -52,7 +52,7 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Before
     public void setUp() {
@@ -70,7 +70,7 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
     @MediumTest
     public void launchNTP_disableAndEnableViaGearMenu() throws IOException, InterruptedException {
         // The web feed requires login to enable, so we must log in first.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         // Load the NTP.
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
 
