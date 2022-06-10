@@ -2652,10 +2652,7 @@ if (!is_android) {
         data_deps += [ "//chrome/test/data/webui:browser_tests_js_webui" ]
 
         if (!is_official_build) {
-          deps += [
-            "//ash/webui/demo_mode_app_ui:browser_tests_js",
-            "//ash/webui/sample_system_web_app_ui:browser_tests_js",
-          ]
+          deps += [ "//ash/webui/sample_system_web_app_ui:browser_tests_js" ]
         }
       }
     }
