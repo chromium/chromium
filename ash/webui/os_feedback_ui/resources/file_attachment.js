@@ -9,7 +9,8 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AttachedFile} from './feedback_types.js';
 
@@ -18,7 +19,19 @@ import {AttachedFile} from './feedback_types.js';
  * 'file-attachment' allows users to select a file as an attachment to the
  *  report.
  */
-export class FileAttachmentElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const FileAttachmentElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/**
+ * @polymer
+ */
+export class FileAttachmentElement extends FileAttachmentElementBase {
   static get is() {
     return 'file-attachment';
   }
