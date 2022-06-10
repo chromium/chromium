@@ -39,6 +39,7 @@ pfeldman@chromium.org
 # structural changes, please get a review from a reviewer in this file.
 per-file BUILD.gn=*
 
+per-file content_resources.grd=file://ui/webui/PLATFORM_OWNERS
 per-file dev_ui_content_resources.grd=file://ui/webui/PLATFORM_OWNERS
 
 # The remaining rules are for platform-specific implementation changes.
