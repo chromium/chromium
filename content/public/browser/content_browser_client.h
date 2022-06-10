@@ -2272,6 +2272,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::RenderFrameHost* render_frame_host,
       content::BrowserContext* browser_context,
       int32_t error_code);
+
+  // Handle a new-window/-tab request using an external implementation-defined
+  // handler, if appropriate. Returns true iff the request was handled.
+  virtual bool OpenExternally(RenderFrameHost* opener,
+                              const GURL& url,
+                              WindowOpenDisposition disposition);
 };
 
 }  // namespace content
