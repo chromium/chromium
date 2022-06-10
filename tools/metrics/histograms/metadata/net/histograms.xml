@@ -51,6 +51,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.AddTransactionToEntry" units="ms"
+    expires_after="2022-11-25">
+  <owner>bashi@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The time taken an HttpCache::Transaction to be added to ActiveEntry. It
+    roughly captures time to acquire a write lock for an disk cache. Recorded
+    every time a transaction (re)starts. Not recorded if the cache is
+    memory-backed.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.BeforeSend" units="ms" expires_after="2022-11-13">
   <owner>morlovich@chromium.org</owner>
   <owner>yhirano@chromium.org</owner>

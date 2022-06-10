@@ -1426,9 +1426,12 @@ int HttpCache::Transaction::DoAddToEntryComplete(int result) {
                          "result", result);
   net_log_.EndEventWithNetErrorCode(NetLogEventType::HTTP_CACHE_ADD_TO_ENTRY,
                                     result);
-  const base::TimeDelta entry_lock_wait =
-      TimeTicks::Now() - entry_lock_waiting_since_;
-  UMA_HISTOGRAM_TIMES("HttpCache.EntryLockWait", entry_lock_wait);
+  if (cache_ && cache_->GetCurrentBackend() &&
+      cache_->GetCurrentBackend()->GetCacheType() != MEMORY_CACHE) {
+    const base::TimeDelta entry_lock_wait =
+        TimeTicks::Now() - entry_lock_waiting_since_;
+    base::UmaHistogramTimes("HttpCache.AddTransactionToEntry", entry_lock_wait);
+  }
 
   entry_lock_waiting_since_ = TimeTicks();
   DCHECK(new_entry_);
