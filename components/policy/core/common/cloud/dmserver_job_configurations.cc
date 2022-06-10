@@ -183,11 +183,22 @@ DMServerJobConfiguration::MapNetErrorAndResponseToDMStatus(
       return DM_STATUS_TEMPORARY_UNAVAILABLE;
     case DeviceManagementService::kDeviceNotFound: {
 #if !BUILDFLAG(IS_CHROMEOS)
+      if (!base::FeatureList::IsEnabled(features::kDmTokenDeletion))
+        return DM_STATUS_SERVICE_DEVICE_NOT_FOUND;
+
+      // If the DMToken deletion feature is enabled and forced, the DM status
+      // corresponding to DMToken deletion will be returned regardless of
+      // whether DMServer signals for deletion or invalidation. This is a
+      // temporary feature intended for testing purposes only.
+      if (base::GetFieldTrialParamByFeatureAsBool(features::kDmTokenDeletion,
+                                                  /*param_name=*/"forced",
+                                                  /*default_value=*/false))
+        return DM_STATUS_SERVICE_DEVICE_NEEDS_RESET;
+
       // The `kDeviceNotFound` response code can correspond to different DM
       // statuses depending on the contents of the response body.
       em::DeviceManagementResponse response;
-      if (base::FeatureList::IsEnabled(features::kDmTokenDeletion) &&
-          response.ParseFromString(response_body) &&
+      if (response.ParseFromString(response_body) &&
           std::find(response.error_detail().begin(),
                     response.error_detail().end(),
                     em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN) !=

@@ -2582,7 +2582,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationAfterDMTokenDeletion) {
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
 
-TEST_F(CloudPolicyClientTest, PolicyFetchDMTokenDeletion_FeatureDisabled) {
+TEST_F(CloudPolicyClientTest, PolicyFetchDMTokenDeletion_Disabled) {
   RegisterClient();
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->requires_reregistration());
@@ -2604,6 +2604,32 @@ TEST_F(CloudPolicyClientTest, PolicyFetchDMTokenDeletion_FeatureDisabled) {
   // Because the feature is disabled by default, the presence of the token
   // deletion error detail still results in the "not found" DM status.
   EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, client_->status());
+}
+
+TEST_F(CloudPolicyClientTest, PolicyFetchDMTokenDeletion_Forced) {
+  // Enable the forced DMToken deletion feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(features::kDmTokenDeletion,
+                                                  {{"forced", "true"}});
+
+  RegisterClient();
+  EXPECT_TRUE(client_->is_registered());
+  EXPECT_FALSE(client_->requires_reregistration());
+
+  DeviceManagementService::JobConfiguration::JobType upload_type;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(service_.CaptureJobType(&upload_type),
+                      service_.SendJobResponseAsync(
+                          net::OK, DeviceManagementService::kDeviceNotFound)));
+  EXPECT_CALL(observer_, OnRegistrationStateChanged);
+  EXPECT_CALL(observer_, OnClientError);
+
+  client_->FetchPolicy();
+  base::RunLoop().RunUntilIdle();
+
+  // The final DM status signals for DMToken deletion even though the
+  // corresponding error detail was never added to the response.
+  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NEEDS_RESET, client_->status());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

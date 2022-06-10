@@ -392,6 +392,11 @@ const FeatureEntry::FeatureVariation kPopupMenuBookmarkStringVarations[] = {
     {"(Bookmark This Page)", kPopupMenuBookmarkStringBookmarkThisPage,
      std::size(kPopupMenuBookmarkStringBookmarkThisPage), nullptr}};
 
+const FeatureEntry::FeatureParam kDmTokenDeletionParam[] = {{"forced", "true"}};
+const FeatureEntry::FeatureVariation kDmTokenDeletionVariation[] = {
+    {"(Forced)", kDmTokenDeletionParam, std::size(kDmTokenDeletionParam),
+     nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -972,7 +977,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
                                     "BookmarkString")},
     {"dm-token-deletion", flag_descriptions::kDmTokenDeletionName,
      flag_descriptions::kDmTokenDeletionDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(policy::features::kDmTokenDeletion)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(policy::features::kDmTokenDeletion,
+                                    kDmTokenDeletionVariation,
+                                    "DmTokenDeletion")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
