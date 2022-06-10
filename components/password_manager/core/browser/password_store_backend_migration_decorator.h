@@ -110,21 +110,21 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
       bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
   void AddLoginAsync(const PasswordForm& form,
-                     PasswordStoreChangeListReply callback) override;
+                     PasswordChangesOrErrorReply callback) override;
   void UpdateLoginAsync(const PasswordForm& form,
-                        PasswordStoreChangeListReply callback) override;
+                        PasswordChangesOrErrorReply callback) override;
   void RemoveLoginAsync(const PasswordForm& form,
-                        PasswordStoreChangeListReply callback) override;
+                        PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsByURLAndTimeAsync(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion,
-      PasswordStoreChangeListReply callback) override;
+      PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsCreatedBetweenAsync(
       base::Time delete_begin,
       base::Time delete_end,
-      PasswordStoreChangeListReply callback) override;
+      PasswordChangesOrErrorReply callback) override;
   void DisableAutoSignInForOriginsAsync(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;

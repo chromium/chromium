@@ -1022,7 +1022,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfRemovalProvidesChanges) {
   // reply with a `PasswordStoreChangeList`.
   EXPECT_CALL(*mock_backend, RemoveLoginAsync(Eq(kTestForm), _))
       .WillOnce(
-          WithArg<1>(Invoke([&](PasswordStoreChangeListReply reply) -> void {
+          WithArg<1>(Invoke([&](PasswordChangesOrErrorReply reply) -> void {
             std::move(reply).Run(
                 CreateChangeList(PasswordStoreChange::REMOVE, kTestForm));
           })));
@@ -1048,7 +1048,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfAdditionProvidesChanges) {
   // reply with a `PasswordStoreChangeList`.
   EXPECT_CALL(*mock_backend, AddLoginAsync(Eq(kTestForm), _))
       .WillOnce(
-          WithArg<1>(Invoke([&](PasswordStoreChangeListReply reply) -> void {
+          WithArg<1>(Invoke([&](PasswordChangesOrErrorReply reply) -> void {
             std::move(reply).Run(
                 CreateChangeList(PasswordStoreChange::ADD, kTestForm));
           })));
@@ -1073,7 +1073,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfUpdateProvidesChanges) {
   // reply with a `PasswordStoreChangeList`.
   EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
       .WillOnce(
-          WithArg<1>(Invoke([&](PasswordStoreChangeListReply reply) -> void {
+          WithArg<1>(Invoke([&](PasswordChangesOrErrorReply reply) -> void {
             std::move(reply).Run(
                 CreateChangeList(PasswordStoreChange::UPDATE, kTestForm));
           })));
@@ -1108,7 +1108,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsRetainedIfUpdateProvidesNoChanges) {
   // reply with a nullopt.
   EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
       .WillOnce(
-          WithArg<1>(Invoke([](PasswordStoreChangeListReply reply) -> void {
+          WithArg<1>(Invoke([](PasswordChangesOrErrorReply reply) -> void {
             std::move(reply).Run(absl::nullopt);
           })));
   EXPECT_CALL(*mock_backend, GetAllLoginsAsync(_))
@@ -1145,7 +1145,7 @@ TEST_F(PasswordStoreTest, RecordsPotentialOnLoginsRetainedInvokations) {
   // GMS backend was active — therefore record the potential call.
   EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
       .WillOnce(
-          WithArg<1>(Invoke([](PasswordStoreChangeListReply reply) -> void {
+          WithArg<1>(Invoke([](PasswordChangesOrErrorReply reply) -> void {
             std::move(reply).Run(PasswordStoreChangeList());
           })));
   EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);

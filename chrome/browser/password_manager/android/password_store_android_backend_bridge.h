@@ -11,6 +11,7 @@
 #include "chrome/browser/password_manager/android/password_store_operation_target.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 
 namespace password_manager {
@@ -45,11 +46,9 @@ class PasswordStoreAndroidBackendBridge {
 
     // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendBridge`, and with the
-    // PasswordStoreChangeList.
+    // PasswordChanges.
     // Used in response to 'AddLogin', 'UpdateLogin' and `RemoveLogin`.
-    virtual void OnLoginsChanged(
-        JobId job_id,
-        absl::optional<PasswordStoreChangeList> changes) = 0;
+    virtual void OnLoginsChanged(JobId job_id, PasswordChanges changes) = 0;
 
     // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendBridge`.

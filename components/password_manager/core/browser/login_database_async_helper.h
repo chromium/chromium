@@ -24,9 +24,6 @@ class UnsyncedCredentialsDeletionNotifier;
 struct FieldInfo;
 struct InteractionsStats;
 
-using PasswordChangesOrError =
-    absl::variant<PasswordStoreChangeList, PasswordStoreBackendError>;
-
 // Class which interacts directly with LoginDatabase. It is also responsible to
 // sync passwords. Works only on background sequence.
 class LoginDatabaseAsyncHelper : private PasswordStoreSync {
@@ -49,7 +46,7 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
   LoginsResultOrError FillMatchingLogins(
       const std::vector<PasswordFormDigest>& forms,
       bool include_psl);
-  // absl::nullopt is returned when operation has failed.
+
   PasswordChangesOrError AddLogin(const PasswordForm& form);
   PasswordChangesOrError UpdateLogin(const PasswordForm& form);
   PasswordChangesOrError RemoveLogin(const PasswordForm& form);

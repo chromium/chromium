@@ -38,8 +38,12 @@ enum class PasswordStoreBackendError {
 
 using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
 using LoginsReply = base::OnceCallback<void(LoginsResult)>;
-using PasswordStoreChangeListReply =
-    base::OnceCallback<void(absl::optional<PasswordStoreChangeList>)>;
+
+using PasswordChanges = absl::optional<PasswordStoreChangeList>;
+using PasswordChangesOrError =
+    absl::variant<PasswordChanges, PasswordStoreBackendError>;
+using PasswordChangesOrErrorReply =
+    base::OnceCallback<void(PasswordChangesOrError)>;
 
 using LoginsResultOrError =
     absl::variant<LoginsResult, PasswordStoreBackendError>;
@@ -125,29 +129,28 @@ class PasswordStoreBackend {
   // TODO(crbug.com/1217071): Delete corresponding Impl method from
   //  PasswordStore and the async method on backend_ instead.
 
-  // The completion callback in each of the write operations below receive an
-  // optional PasswordStoreChangeList. In case of success that the changelist
-  // will be populated with the executed changes. An empty changelist indicates
-  // that some error has occurred during the execution. The absence of the
-  // changelist indicates that the used backend (e.g. on Android) cannot
-  // confirm of the execution and a re-fetch is required to know the current
-  // state of the backend.
+  // The completion callback in each of the write operations below receive a
+  // variant of optional PasswordStoreChangeList or PasswordStoreBackendError.
+  // In case of success that the changelist will be populated with the executed
+  // changes. The absence of the changelist indicates that the used backend
+  // (e.g. on Android) cannot confirm of the execution and a re-fetch is
+  // required to know the current state of the backend.
   virtual void AddLoginAsync(const PasswordForm& form,
-                             PasswordStoreChangeListReply callback) = 0;
+                             PasswordChangesOrErrorReply callback) = 0;
   virtual void UpdateLoginAsync(const PasswordForm& form,
-                                PasswordStoreChangeListReply callback) = 0;
+                                PasswordChangesOrErrorReply callback) = 0;
   virtual void RemoveLoginAsync(const PasswordForm& form,
-                                PasswordStoreChangeListReply callback) = 0;
+                                PasswordChangesOrErrorReply callback) = 0;
   virtual void RemoveLoginsByURLAndTimeAsync(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion,
-      PasswordStoreChangeListReply callback) = 0;
+      PasswordChangesOrErrorReply callback) = 0;
   virtual void RemoveLoginsCreatedBetweenAsync(
       base::Time delete_begin,
       base::Time delete_end,
-      PasswordStoreChangeListReply callback) = 0;
+      PasswordChangesOrErrorReply callback) = 0;
   virtual void DisableAutoSignInForOriginsAsync(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) = 0;

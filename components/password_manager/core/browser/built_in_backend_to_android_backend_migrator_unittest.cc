@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/mock_password_store_backend.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry.h"
@@ -672,14 +673,14 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
   built_in_backend().AddLoginAsync(CreateTestPasswordForm(/*index=*/2),
                                    base::DoNothing());
 
-  // Simulate an Android backend that fails to write by returning an empty
-  // changelist.
+  // Simulate an Android backend that fails to write.
   ON_CALL(android_backend_, UpdateLoginAsync)
       .WillByDefault(
-          WithArg<1>(Invoke([](PasswordStoreChangeListReply callback) -> void {
+          WithArg<1>(Invoke([](PasswordChangesOrErrorReply callback) -> void {
             base::SequencedTaskRunnerHandle::Get()->PostTask(
                 FROM_HERE,
-                base::BindOnce(std::move(callback), PasswordStoreChangeList()));
+                base::BindOnce(std::move(callback),
+                               PasswordStoreBackendError::kUnspecified));
           })));
 
   // Once one UpdateLoginAsync() call fails, all consecutive ones will not be
@@ -719,14 +720,14 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
             FROM_HERE, base::BindOnce(std::move(reply), LoginsResult()));
       })));
 
-  // Simulate an Android backend that fails to write by returning an empty
-  // changelist.
+  // Simulate an Android backend that fails to write.
   ON_CALL(android_backend_, AddLoginAsync)
       .WillByDefault(
-          WithArg<1>(Invoke([](PasswordStoreChangeListReply callback) -> void {
+          WithArg<1>(Invoke([](PasswordChangesOrErrorReply callback) -> void {
             base::SequencedTaskRunnerHandle::Get()->PostTask(
                 FROM_HERE,
-                base::BindOnce(std::move(callback), PasswordStoreChangeList()));
+                base::BindOnce(std::move(callback),
+                               PasswordStoreBackendError::kUnspecified));
           })));
 
   // Once one AddLoginAsync() call fails, all consecutive ones will not be

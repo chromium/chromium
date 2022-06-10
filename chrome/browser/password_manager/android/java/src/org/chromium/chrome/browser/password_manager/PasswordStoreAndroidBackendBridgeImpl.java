@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.accounts.Account;
 
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.common.base.Optional;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -113,10 +112,6 @@ class PasswordStoreAndroidBackendBridgeImpl {
         int error = PasswordManagerAndroidBackendUtil.getBackendError(exception);
         int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
 
-        if (exception instanceof ResolvableApiException) {
-            PasswordManagerAndroidBackendUtil.handleResolvableApiException(
-                    (ResolvableApiException) exception);
-        }
         PasswordStoreAndroidBackendBridgeImplJni.get().onError(
                 mNativeBackendBridge, jobId, error, apiErrorCode);
     }
