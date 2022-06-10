@@ -18,6 +18,10 @@
 
 class Profile;
 
+namespace ash {
+class SystemWebAppManager;
+}
+
 namespace content {
 class WebContents;
 }
@@ -144,6 +148,10 @@ class WebAppProvider : public KeyedService {
   }
 
  protected:
+  // TODO(crbug.com/1321984): Delete system_web_app_manager_.
+  friend class ash::SystemWebAppManager;
+  friend class WebAppProviderFactory;
+
   virtual void StartImpl();
 
   void CreateSubsystems(Profile* profile);
@@ -171,6 +179,9 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<ManifestUpdateManager> manifest_update_manager_;
   std::unique_ptr<ExternallyManagedAppManager> externally_managed_app_manager_;
+  // TODO(crbug.com/1321984): Extract system web app manager as
+  // chrome/browser/ash/ keyed service.
+  std::unique_ptr<ash::SystemWebAppManager> system_web_app_manager_;
   std::unique_ptr<WebAppAudioFocusIdMap> audio_focus_id_map_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;

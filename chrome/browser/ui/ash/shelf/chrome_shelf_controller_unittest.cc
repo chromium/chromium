@@ -532,15 +532,13 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
   virtual bool StartWebAppProviderForMainProfile() const { return true; }
 
   void StartWebAppProvider(Profile* profile) {
+    auto system_web_app_manager =
+        std::make_unique<web_app::TestSystemWebAppManager>(profile);
+
     auto* provider = web_app::FakeWebAppProvider::Get(profile);
-
-    auto* system_web_app_manager =
-        web_app::TestSystemWebAppManager::Get(profile);
-
+    provider->SetSystemWebAppManager(std::move(system_web_app_manager));
     provider->SetRunSubsystemStartupTasks(true);
     provider->Start();
-
-    system_web_app_manager->ScheduleStart();
   }
 
   ui::BaseWindow* GetLastActiveWindowForItemController(
