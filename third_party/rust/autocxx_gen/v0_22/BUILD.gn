@@ -12,7 +12,7 @@ cargo_crate("autocxx_gen") {
   crate_root = "crate/src/main.rs"
   sources = [ "crate/src/main.rs" ]
   edition = "2018"
-  cargo_pkg_version = "0.22.0"
+  cargo_pkg_version = "0.22.2"
   cargo_pkg_authors = "Adrian Taylor <adetaylor@chromium.org>"
   deps = [
     "//third_party/rust/autocxx_engine/v0_22:lib",

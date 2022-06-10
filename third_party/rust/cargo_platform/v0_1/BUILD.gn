@@ -8,13 +8,24 @@ cargo_crate("lib") {
   crate_name = "cargo_platform"
   epoch = "0.1"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
 
   # Unit tests skipped. Generate with --with-tests to include them.
+  build_native_rust_unit_tests = false
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2018"
+  cargo_pkg_version = "0.1.2"
+  cargo_pkg_authors = "The Cargo Project Developers"
+  cargo_pkg_name = "cargo-platform"
+  cargo_pkg_description = "Cargo's representation of a target platform."
+  deps = [ "//third_party/rust/serde/v1:lib" ]
+}
+cargo_crate("test_support") {
+  crate_name = "cargo_platform"
+  epoch = "0.1"
+  crate_type = "rlib"
+  testonly = "true"
+  crate_root = "crate/src/lib.rs"
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"

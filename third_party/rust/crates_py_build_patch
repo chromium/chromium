@@ -1,7 +1,7 @@
-diff --git b/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn a/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
-index 8378d5836505f..ea5ef3bad54ef 100644
---- b/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
-+++ a/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
+diff --git a/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn b/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
+index 921f25e254ce5..c583713f7792b 100644
+--- a/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
++++ b/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
 @@ -41,7 +41,8 @@ cargo_crate("lib") {
      "env_logger",
      "log",
@@ -12,10 +12,10 @@ index 8378d5836505f..ea5ef3bad54ef 100644
      "static",
      "which",
      "which-rustfmt",
-diff --git b/third_party/rust/autocxx_gen/v0_22/BUILD.gn a/third_party/rust/autocxx_gen/v0_22/BUILD.gn
-index 1f0f2a58c2674..3ed7e65eae83e 100644
---- b/third_party/rust/autocxx_gen/v0_22/BUILD.gn
-+++ a/third_party/rust/autocxx_gen/v0_22/BUILD.gn
+diff --git a/third_party/rust/autocxx_gen/v0_22/BUILD.gn b/third_party/rust/autocxx_gen/v0_22/BUILD.gn
+index 1f0f2a58c2674..425bd8bbce132 100644
+--- a/third_party/rust/autocxx_gen/v0_22/BUILD.gn
++++ b/third_party/rust/autocxx_gen/v0_22/BUILD.gn
 @@ -3,3 +3,25 @@
  # found in the LICENSE file.
  
@@ -29,7 +29,7 @@ index 1f0f2a58c2674..3ed7e65eae83e 100644
 +  crate_root = "crate/src/main.rs"
 +  sources = [ "crate/src/main.rs" ]
 +  edition = "2018"
-+  cargo_pkg_version = "0.22.0"
++  cargo_pkg_version = "0.22.2"
 +  cargo_pkg_authors = "Adrian Taylor <adetaylor@chromium.org>"
 +  deps = [
 +    "//third_party/rust/autocxx_engine/v0_22:lib",
@@ -42,10 +42,10 @@ index 1f0f2a58c2674..3ed7e65eae83e 100644
 +    "//third_party/rust/quote/v1:lib",
 +  ]
 +}
-diff --git b/third_party/rust/bindgen/v0_59/BUILD.gn a/third_party/rust/bindgen/v0_59/BUILD.gn
+diff --git a/third_party/rust/bindgen/v0_59/BUILD.gn b/third_party/rust/bindgen/v0_59/BUILD.gn
 index f3e62a1b4f857..bf4d94452f9ef 100644
---- b/third_party/rust/bindgen/v0_59/BUILD.gn
-+++ a/third_party/rust/bindgen/v0_59/BUILD.gn
+--- a/third_party/rust/bindgen/v0_59/BUILD.gn
++++ b/third_party/rust/bindgen/v0_59/BUILD.gn
 @@ -15,6 +15,8 @@ cargo_crate("bindgen") {
    cargo_pkg_description =
        "Automatically generates Rust FFI bindings to C and C++ libraries."
@@ -75,10 +75,10 @@ index f3e62a1b4f857..bf4d94452f9ef 100644
      "static",
      "which",
      "which-rustfmt",
-diff --git b/third_party/rust/clang_sys/v1/BUILD.gn a/third_party/rust/clang_sys/v1/BUILD.gn
+diff --git a/third_party/rust/clang_sys/v1/BUILD.gn b/third_party/rust/clang_sys/v1/BUILD.gn
 index 360223ce1374e..efe59a44606c1 100644
---- b/third_party/rust/clang_sys/v1/BUILD.gn
-+++ a/third_party/rust/clang_sys/v1/BUILD.gn
+--- a/third_party/rust/clang_sys/v1/BUILD.gn
++++ b/third_party/rust/clang_sys/v1/BUILD.gn
 @@ -38,9 +38,14 @@ cargo_crate("lib") {
      "clang_5_0",
      "clang_6_0",
