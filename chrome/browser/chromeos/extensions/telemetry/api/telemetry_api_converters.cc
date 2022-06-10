@@ -129,6 +129,20 @@ telemetry_api::BatteryInfo UncheckedConvertPtr(
   return result;
 }
 
+telemetry_api::StatefulPartitionInfo UncheckedConvertPtr(
+    telemetry_service::StatefulPartitionInfoPtr input) {
+  telemetry_api::StatefulPartitionInfo result;
+  if (input->available_space) {
+    result.available_space =
+        std::make_unique<double_t>(input->available_space->value);
+  }
+  if (input->total_space) {
+    result.total_space = std::make_unique<double_t>(input->total_space->value);
+  }
+
+  return result;
+}
+
 }  // namespace unchecked
 
 telemetry_api::CpuArchitectureEnum Convert(

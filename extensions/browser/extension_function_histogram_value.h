@@ -1726,6 +1726,7 @@ enum HistogramValue {
   FILEMANAGERPRIVATEINTERNAL_GETFILESRESTRICTEDBYDLP = 1663,
   WMDESKSPRIVATE_GETALLDESKS = 1664,
   AUTOTESTPRIVATE_FORCEAUTOTHEMEMODE = 1665,
+  OS_TELEMETRY_GETSTATEFULPARTITIONINFO = 1666,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

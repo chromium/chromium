@@ -124,6 +124,27 @@ class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
   void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
 };
 
+class OsTelemetryGetStatefulPartitionInfoFunction
+    : public TelemetryApiFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getStatefulPartitionInfo",
+                             OS_TELEMETRY_GETSTATEFULPARTITIONINFO)
+
+  OsTelemetryGetStatefulPartitionInfoFunction();
+  OsTelemetryGetStatefulPartitionInfoFunction(
+      const OsTelemetryGetStatefulPartitionInfoFunction&) = delete;
+  OsTelemetryGetStatefulPartitionInfoFunction& operator=(
+      const OsTelemetryGetStatefulPartitionInfoFunction&) = delete;
+
+ private:
+  ~OsTelemetryGetStatefulPartitionInfoFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
+};
+
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_TELEMETRY_API_H_

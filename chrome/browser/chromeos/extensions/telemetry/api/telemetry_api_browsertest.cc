@@ -389,6 +389,64 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetStatefulPartitionInfo_Error) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getStatefulPartitionInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getStatefulPartitionInfo(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetStatefulPartitionInfo_Success) {
+  // Configure fake cros_healthd response.
+  {
+    auto telemetry_info = chromeos::cros_healthd::mojom::TelemetryInfo::New();
+    {
+      auto stateful_part_info =
+          chromeos::cros_healthd::mojom::StatefulPartitionInfo::New();
+      stateful_part_info->available_space = 3000000000000000;
+      stateful_part_info->total_space = 9000000000000000;
+
+      telemetry_info->stateful_partition_result =
+          chromeos::cros_healthd::mojom::StatefulPartitionResult::
+              NewPartitionInfo(std::move(stateful_part_info));
+    }
+
+    ASSERT_TRUE(cros_healthd::FakeCrosHealthd::Get());
+    cros_healthd::FakeCrosHealthd::Get()
+        ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getStatefulPartitionInfo() {
+        const result = await chrome.os.telemetry.getStatefulPartitionInfo();
+
+        // The available space is rounded down to the next 50MB.
+        const k100 = 100 * 1024 * 1024;
+        const availableSpace = Math.floor(3000000000000000 / k100) * k100;
+
+        chrome.test.assertEq(
+          // The dictionary members are ordered lexicographically by the Unicode
+          // codepoints that comprise their identifiers.
+          {
+            availableSpace: availableSpace,
+            totalSpace: 9000000000000000,
+          }, result);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
     : public TelemetryExtensionTelemetryApiBrowserTest {
  public:

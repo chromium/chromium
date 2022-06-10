@@ -4,11 +4,13 @@
 
 #include <inttypes.h>
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom-forward.h"
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
@@ -228,6 +230,36 @@ TEST(TelemetryApiConverters, BatteryInfo) {
 
   ASSERT_TRUE(result.temperature);
   EXPECT_EQ(kTemperature, static_cast<uint64_t>(*result.temperature));
+}
+
+TEST(TelemetryApiConverters, StatefulPartitionInfo) {
+  constexpr uint64_t kAvailableSpace = 3000000000000000;
+  constexpr uint64_t kTotalSpace = 9000000000000000;
+
+  telemetry_service::StatefulPartitionInfoPtr input =
+      telemetry_service::StatefulPartitionInfo::New(
+          telemetry_service::UInt64Value::New(kAvailableSpace),
+          telemetry_service::UInt64Value::New(kTotalSpace));
+
+  auto result =
+      ConvertPtr<telemetry_api::StatefulPartitionInfo>(std::move(input));
+  ASSERT_TRUE(result.available_space);
+  EXPECT_EQ(kAvailableSpace, *result.available_space);
+
+  ASSERT_TRUE(result.total_space);
+  EXPECT_EQ(kTotalSpace, *result.total_space);
+}
+
+TEST(TelemetryApiConverters, StatefulPartitionInfoNullFields) {
+  telemetry_service::StatefulPartitionInfoPtr input =
+      telemetry_service::StatefulPartitionInfo::New<
+          telemetry_service::UInt64ValuePtr, telemetry_service::UInt64ValuePtr>(
+          nullptr, nullptr);
+
+  auto result =
+      ConvertPtr<telemetry_api::StatefulPartitionInfo>(std::move(input));
+  ASSERT_FALSE(result.available_space);
+  ASSERT_FALSE(result.total_space);
 }
 
 }  // namespace converters

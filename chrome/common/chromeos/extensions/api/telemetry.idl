@@ -96,6 +96,13 @@ namespace os.telemetry {
 
   callback VpdInfoCallback = void (VpdInfo vpdInfo);
 
+  dictionary StatefulPartitionInfo {
+    double? availableSpace;
+    double? totalSpace;
+  };
+
+  callback StatefulPartitionInfoCallback = void (StatefulPartitionInfo statefulPartitionInfo);
+
   interface Functions {
     // Retrieves battery info.
     [supportsPromises] static void getBatteryInfo(BatteryInfoCallback callback);
@@ -109,5 +116,7 @@ namespace os.telemetry {
 
     // Retrieves VPD info.
     [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
+
+    [supportsPromises] static void getStatefulPartitionInfo(StatefulPartitionInfoCallback callback);
   };
 };
