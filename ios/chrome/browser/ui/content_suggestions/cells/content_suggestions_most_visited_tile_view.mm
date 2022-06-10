@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -51,16 +52,21 @@
     (ContentSuggestionsMostVisitedItem*)config {
   self = [self initWithFrame:CGRectZero];
   if (self) {
-    self.titleLabel.text = config.title;
-    self.accessibilityLabel = config.title;
-    _incognitoAvailable = config.incognitoAvailable;
-    [_faviconView configureWithAttributes:config.attributes];
-    _commandHandler = config.commandHandler;
-    self.isAccessibilityElement = YES;
-    self.accessibilityCustomActions = [self customActions];
-    _config = config;
-    [self addInteraction:[[UIContextMenuInteraction alloc]
-                             initWithDelegate:self]];
+    if (!config) {
+      // If there is no config, then this is a placeholder tile.
+      self.titleLabel.backgroundColor = [UIColor colorNamed:kGrey100Color];
+    } else {
+      _config = config;
+      self.titleLabel.text = config.title;
+      self.accessibilityLabel = config.title;
+      _incognitoAvailable = config.incognitoAvailable;
+      [_faviconView configureWithAttributes:config.attributes];
+      _commandHandler = config.commandHandler;
+      self.isAccessibilityElement = YES;
+      self.accessibilityCustomActions = [self customActions];
+      [self addInteraction:[[UIContextMenuInteraction alloc]
+                               initWithDelegate:self]];
+    }
   }
   return self;
 }
