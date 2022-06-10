@@ -309,7 +309,7 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeConfiguresWaylandWindow) {
   uint32_t serial = 0;
   auto state = InitializeWlArrayWithActivatedState();
 
-  window_->set_update_visual_size_immediately(false);
+  window_->set_update_visual_size_immediately_for_testing(false);
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
 
@@ -339,8 +339,8 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeConfiguresWaylandWindow) {
 // WaylandSurface state changes are sent to wayland compositor when
 // ApplyPendingState() is called.
 TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
-  window_->set_update_visual_size_immediately(false);
-  window_->set_apply_pending_state_on_update_visual_size(false);
+  window_->set_update_visual_size_immediately_for_testing(false);
+  window_->set_apply_pending_state_on_update_visual_size_for_testing(false);
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
@@ -465,7 +465,7 @@ TEST_P(WaylandWindowTest, DisregardUnpassedWindowConfigure) {
   const auto kNormalBounds3 = gfx::Rect{0, 0, 700, 400};
   uint32_t serial = 1;
 
-  window_->set_update_visual_size_immediately(false);
+  window_->set_update_visual_size_immediately_for_testing(false);
 
   // Send 3 configures, and call UpdateVisualSize out of order. The out-of-order
   // UpdateVisualSize(kNormalBounds2) should disregarded b/c kNormalBounds2
@@ -504,7 +504,7 @@ TEST_P(WaylandWindowTest, MismatchUpdateVisualSize) {
   const auto kNormalBounds3 = gfx::Rect{0, 0, 700, 400};
   uint32_t serial = 1;
 
-  window_->set_update_visual_size_immediately(false);
+  window_->set_update_visual_size_immediately_for_testing(false);
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
 
@@ -536,7 +536,7 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeClearsPreviousUnackedConfigures) {
   uint32_t serial = 1;
   auto state = InitializeWlArrayWithActivatedState();
 
-  window_->set_update_visual_size_immediately(false);
+  window_->set_update_visual_size_immediately_for_testing(false);
 
   // Send 3 configures. Calling UpdateVisualSize(kNormalBounds3) will cause the
   // kNormalBounds3 to be passed onto UI compositor. Hence, kNormalBounds1/2/3
@@ -3484,7 +3484,8 @@ TEST_P(WaylandWindowTest, StartWithMinimized) {
   // The window geometry has to be set to the current bounds of the window for
   // minimized state.
   gfx::Rect bounds = window_->GetBoundsInPixels();
-  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, bounds.width(), bounds.height()));
+  EXPECT_CALL(*xdg_surface_,
+              SetWindowGeometry(0, 0, bounds.width(), bounds.height()));
   // Send one additional empty configuration event for minimized state.
   // (which means the surface is not maximized, fullscreen or activated)
   states = ScopedWlArray();
@@ -3504,9 +3505,8 @@ class BlockableWaylandToplevelWindow : public WaylandToplevelWindow {
       MockWaylandPlatformWindowDelegate* delegate) {
     auto window =
         std::make_unique<BlockableWaylandToplevelWindow>(delegate, connection);
-    window->set_update_visual_size_immediately(/*update_immediately=*/true);
-    window->set_apply_pending_state_on_update_visual_size(
-        /*apply_immediately=*/true);
+    window->set_update_visual_size_immediately_for_testing(true);
+    window->set_apply_pending_state_on_update_visual_size_for_testing(true);
 
     PlatformWindowInitProperties properties;
     properties.bounds = bounds;

@@ -118,8 +118,8 @@ class WaylandBufferManagerTest : public WaylandTest {
                                     false,
                                     kAugmentedSurfaceNotSupportedVersion);
 
-    window_->set_update_visual_size_immediately(false);
-    window_->set_apply_pending_state_on_update_visual_size(false);
+    window_->set_update_visual_size_immediately_for_testing(false);
+    window_->set_apply_pending_state_on_update_visual_size_for_testing(false);
   }
 
  protected:
@@ -147,22 +147,23 @@ class WaylandBufferManagerTest : public WaylandTest {
     } else {
       EXPECT_CALL(*callback, Run(_))
           .Times(1)
-          .WillRepeatedly(::testing::Invoke([this, callback](
-                                                std::string error_string) {
-            channel_destroyed_error_message_ = error_string;
+          .WillRepeatedly(
+              ::testing::Invoke([this, callback](std::string error_string) {
+                channel_destroyed_error_message_ = error_string;
 
-            manager_host_->OnChannelDestroyed();
+                manager_host_->OnChannelDestroyed();
 
-            manager_host_->SetTerminateGpuCallback(callback->Get());
+                manager_host_->SetTerminateGpuCallback(callback->Get());
 
-            auto interface_ptr = manager_host_->BindInterface();
-            // Recreate the gpu side manager (the production code does the
-            // same).
-            buffer_manager_gpu_ = std::make_unique<WaylandBufferManagerGpu>();
-            buffer_manager_gpu_->Initialize(
-                std::move(interface_ptr), {}, false, true, false,
-                kAugmentedSurfaceNotSupportedVersion);
-          }));
+                auto interface_ptr = manager_host_->BindInterface();
+                // Recreate the gpu side manager (the production code does the
+                // same).
+                buffer_manager_gpu_ =
+                    std::make_unique<WaylandBufferManagerGpu>();
+                buffer_manager_gpu_->Initialize(
+                    std::move(interface_ptr), {}, false, true, false,
+                    kAugmentedSurfaceNotSupportedVersion);
+              }));
     }
   }
 

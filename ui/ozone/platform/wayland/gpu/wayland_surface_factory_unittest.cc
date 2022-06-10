@@ -180,8 +180,8 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
 
     WaylandTest::SetUp();
 
-    window_->set_update_visual_size_immediately(false);
-    window_->set_apply_pending_state_on_update_visual_size(false);
+    window_->set_update_visual_size_immediately_for_testing(false);
+    window_->set_apply_pending_state_on_update_visual_size_for_testing(false);
 
     auto manager_ptr = connection_->buffer_manager_host()->BindInterface();
     buffer_manager_gpu_->Initialize(

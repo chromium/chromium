@@ -149,14 +149,6 @@ class WaylandWindow : public PlatformWindow,
 
   bool can_submit_frames() const { return can_submit_frames_; }
 
-  // These are never intended to be used except in unit tests.
-  void set_update_visual_size_immediately(bool update_immediately) {
-    update_visual_size_immediately_ = update_immediately;
-  }
-  void set_apply_pending_state_on_update_visual_size(bool apply_immediately) {
-    apply_pending_state_on_update_visual_size_ = apply_immediately;
-  }
-
   // Remove WaylandOutput associated with WaylandSurface of this window.
   void RemoveEnteredOutput(uint32_t output_id);
 
@@ -317,6 +309,15 @@ class WaylandWindow : public PlatformWindow,
   // Clears the state of the |frame_manager_| when the GPU channel is destroyed.
   void OnChannelDestroyed();
 
+  // These are never intended to be used except in unit tests.
+  void set_update_visual_size_immediately_for_testing(bool update) {
+    update_visual_size_immediately_for_testing_ = update;
+  }
+
+  void set_apply_pending_state_on_update_visual_size_for_testing(bool apply) {
+    apply_pending_state_on_update_visual_size_for_testing_ = apply;
+  }
+
  protected:
   WaylandWindow(PlatformWindowDelegate* delegate,
                 WaylandConnection* connection);
@@ -466,13 +467,13 @@ class WaylandWindow : public PlatformWindow,
   // visible in |visual_size_px_|, but in some unit tests there will never be
   // any frame updates. This flag causes UpdateVisualSize() to be invoked during
   // SetBounds() in unit tests.
-  bool update_visual_size_immediately_ = false;
+  bool update_visual_size_immediately_for_testing_ = false;
 
   // In a non-test environment, root_surface_->ApplyPendingBounds() is called to
   // send Wayland protocol requests, but in some unit tests there will never be
   // any frame updates. This flag causes root_surface_->ApplyPendingBounds() to
   // be invoked during UpdateVisualSize() in unit tests.
-  bool apply_pending_state_on_update_visual_size_ = false;
+  bool apply_pending_state_on_update_visual_size_for_testing_ = false;
 
   // These bounds attributes below have suffixes that indicate units used.
   // Wayland operates in DIP but the platform operates in physical pixels so

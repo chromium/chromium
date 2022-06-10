@@ -295,7 +295,7 @@ void WaylandWindow::SetBoundsInPixels(const gfx::Rect& bounds_px) {
     return;
   bounds_px_ = adjusted_bounds_px;
 
-  if (update_visual_size_immediately_)
+  if (update_visual_size_immediately_for_testing_)
     UpdateVisualSize(bounds_px.size(), window_scale());
   delegate_->OnBoundsChanged(bounds_px_);
 }
@@ -530,7 +530,7 @@ void WaylandWindow::UpdateVisualSize(const gfx::Size& size_px,
   visual_size_px_ = size_px;
   UpdateWindowMask();
 
-  if (apply_pending_state_on_update_visual_size_) {
+  if (apply_pending_state_on_update_visual_size_for_testing_) {
     root_surface_->ApplyPendingState();
     connection_->ScheduleFlush();
   }
@@ -607,8 +607,10 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 
   // Update visual size in tests immediately if the test config is set.
   // Otherwise, such tests as interactive_ui_tests fail.
-  if (!update_visual_size_immediately_)
-    set_update_visual_size_immediately(UseTestConfigForPlatformWindows());
+  if (!update_visual_size_immediately_for_testing_) {
+    set_update_visual_size_immediately_for_testing(
+        UseTestConfigForPlatformWindows());
+  }
 
   // Properties contain DIP bounds but the buffer scale is initially 1 so it's
   // OK to assign.  The bounds will be recalculated when the buffer scale
