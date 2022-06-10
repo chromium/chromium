@@ -139,8 +139,8 @@ inline internal::UnretainedWrapper<T> Unretained(T* o) {
   return internal::UnretainedWrapper<T>(o);
 }
 
-template <typename T>
-inline internal::UnretainedWrapper<T> Unretained(const raw_ptr<T>& o) {
+template <typename T, typename O>
+inline internal::UnretainedWrapper<T> Unretained(const raw_ptr<T, O>& o) {
   return internal::UnretainedWrapper<T>(o);
 }
 
