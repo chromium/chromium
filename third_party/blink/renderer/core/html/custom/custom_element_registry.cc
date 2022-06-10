@@ -217,7 +217,7 @@ CustomElementDefinition* CustomElementRegistry::DefineInternal(
   // 16: when-defined promise processing
   const auto& entry = when_defined_promise_map_.find(name);
   if (entry != when_defined_promise_map_.end()) {
-    entry->value->Resolve();
+    entry->value->Resolve(definition->GetConstructorForScript());
     when_defined_promise_map_.erase(entry);
   }
 
@@ -299,8 +299,10 @@ ScriptPromise CustomElementRegistry::whenDefined(
   if (ThrowIfInvalidName(name, false, exception_state))
     return ScriptPromise();
   CustomElementDefinition* definition = DefinitionForName(name);
-  if (definition)
-    return ScriptPromise::CastUndefined(script_state);
+  if (definition) {
+    return ScriptPromise::Cast(script_state,
+                               definition->GetConstructorForScript());
+  }
   const auto it = when_defined_promise_map_.find(name);
   if (it != when_defined_promise_map_.end())
     return it->value->Promise();
