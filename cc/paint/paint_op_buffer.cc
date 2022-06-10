@@ -2737,7 +2737,7 @@ int DrawPathOp::CountSlowPaths() const {
 }
 
 int DrawRecordOp::CountSlowPaths() const {
-  return record->num_slow_paths();
+  return record->num_slow_paths_up_to_min_for_MSAA();
 }
 
 bool DrawRecordOp::HasNonAAPaint() const {
@@ -2929,7 +2929,7 @@ PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
   used_ = other.used_;
   reserved_ = other.reserved_;
   op_count_ = other.op_count_;
-  num_slow_paths_ = other.num_slow_paths_;
+  num_slow_paths_up_to_min_for_MSAA_ = other.num_slow_paths_up_to_min_for_MSAA_;
   subrecord_bytes_used_ = other.subrecord_bytes_used_;
   subrecord_op_count_ = other.subrecord_op_count_;
   has_non_aa_paint_ = other.has_non_aa_paint_;
@@ -2960,7 +2960,7 @@ void PaintOpBuffer::Reset() {
   // that if called.
   used_ = 0;
   op_count_ = 0;
-  num_slow_paths_ = 0;
+  num_slow_paths_up_to_min_for_MSAA_ = 0;
   has_non_aa_paint_ = false;
   subrecord_bytes_used_ = 0;
   subrecord_op_count_ = 0;
@@ -3285,7 +3285,8 @@ void PaintOpBuffer::ShrinkToFit() {
 bool PaintOpBuffer::operator==(const PaintOpBuffer& other) const {
   if (op_count_ != other.op_count_)
     return false;
-  if (num_slow_paths_ != other.num_slow_paths_)
+  if (num_slow_paths_up_to_min_for_MSAA_ !=
+      other.num_slow_paths_up_to_min_for_MSAA_)
     return false;
   if (subrecord_bytes_used_ != other.subrecord_bytes_used_)
     return false;

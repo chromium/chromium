@@ -1349,11 +1349,14 @@ chromium-metrics-reviews@google.com.
   <summary>Number of paint ops in a raster task.</summary>
 </histogram>
 
-<histogram name="Gpu.Rasterization.Raster.NumSlowPaths" units="count"
-    expires_after="2022-11-20">
+<histogram name="Gpu.Rasterization.Raster.NumSlowPathsUpToMinForMSAA"
+    units="count" expires_after="2022-11-20">
   <owner>penghuang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
-  <summary>Number of slow paths in a raster task.</summary>
+  <summary>
+    Number of slow paths in a raster task. (Only counts up to the minimum
+    required for MSAA)
+  </summary>
 </histogram>
 
 <histogram name="GPU.RenderableFormat.{FORMAT_TYPE}" enum="Boolean"
