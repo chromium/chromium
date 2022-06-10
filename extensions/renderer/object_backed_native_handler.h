@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "extensions/renderer/native_handler.h"
 #include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
 #include "v8/include/v8-util.h"
 
 namespace extensions {
@@ -124,8 +125,8 @@ class ObjectBackedNativeHandler : public NativeHandler {
   //
   // So, we use v8::Objects here to hold that data, effectively refcounting
   // the data. When |this| is destroyed we remove the base::Bound function from
-  // the object to indicate that it shoudn't be called.
-  typedef v8::PersistentValueVector<v8::Object> RouterData;
+  // the object to indicate that it shouldn't be called.
+  using RouterData = std::vector<v8::Global<v8::Object>>;
   RouterData router_data_;
 
   ScriptContext* context_;

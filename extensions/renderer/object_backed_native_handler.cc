@@ -34,11 +34,9 @@ const char kFeatureName[] = "feature_name";
 }  // namespace
 
 ObjectBackedNativeHandler::ObjectBackedNativeHandler(ScriptContext* context)
-    : router_data_(context->isolate()),
-      context_(context),
+    : context_(context),
       object_template_(context->isolate(),
-                       v8::ObjectTemplate::New(context->isolate())) {
-}
+                       v8::ObjectTemplate::New(context->isolate())) {}
 
 ObjectBackedNativeHandler::~ObjectBackedNativeHandler() {
 }
@@ -156,7 +154,7 @@ void ObjectBackedNativeHandler::RouteHandlerFunction(
       v8::ConstructorBehavior::kThrow);
   v8::Local<v8::ObjectTemplate>::New(isolate, object_template_)
       ->Set(isolate, name.c_str(), function_template);
-  router_data_.Append(data);
+  router_data_.emplace_back(isolate, data);
 }
 
 v8::Isolate* ObjectBackedNativeHandler::GetIsolate() const {
@@ -168,16 +166,16 @@ void ObjectBackedNativeHandler::Invalidate() {
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(context_->v8_context());
 
-  for (size_t i = 0; i < router_data_.Size(); i++) {
-    v8::Local<v8::Object> data = router_data_.Get(i);
+  for (auto& data : router_data_) {
+    v8::Local<v8::Object> local_data = data.Get(isolate);
     v8::Local<v8::Value> handler_function_value;
-    CHECK(GetPrivate(data, kHandlerFunction, &handler_function_value));
+    CHECK(GetPrivate(local_data, kHandlerFunction, &handler_function_value));
     delete static_cast<HandlerFunction*>(
         handler_function_value.As<v8::External>()->Value());
-    DeletePrivate(data, kHandlerFunction);
+    DeletePrivate(local_data, kHandlerFunction);
   }
 
-  router_data_.Clear();
+  router_data_.clear();
   object_template_.Reset();
 
   NativeHandler::Invalidate();
