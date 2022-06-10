@@ -150,9 +150,13 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
     sk_sp<SkColorSpace> target_color_space,
     float sdr_max_luminance_nits,
     float dst_max_luminance_relative,
+    bool enable_tone_mapping,
     GrDirectContext* context) {
   sk_sp<SkColorSpace> image_sk_color_space = image->refColorSpace();
   if (!image_sk_color_space)
+    return image->makeColorSpace(target_color_space, context);
+
+  if (!enable_tone_mapping)
     return image->makeColorSpace(target_color_space, context);
 
   gfx::ColorSpace image_color_space(*image_sk_color_space);

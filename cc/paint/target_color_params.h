@@ -33,6 +33,9 @@ struct CC_PAINT_EXPORT TargetColorParams {
   // luminance (a non-HDR-capable display will have a value of 1).
   float hdr_max_luminance_relative = 1.f;
 
+  // Whether or not tone mapping should be applied.
+  bool enable_tone_mapping = true;
+
   bool operator==(const TargetColorParams& other) const {
     return color_space == other.color_space &&
            sdr_max_luminance_nits == other.sdr_max_luminance_nits &&

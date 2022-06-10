@@ -1115,6 +1115,7 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
 
   cc::TargetColorParams target_color_params;
   target_color_params.color_space = target_color_space;
+  target_color_params.enable_tone_mapping = false;
   playback_image_provider_n32_.emplace(cache_n32, target_color_params,
                                        std::move(settings));
   // If the image provider may require to decode to half float instead of

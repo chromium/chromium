@@ -209,6 +209,8 @@ size_t TargetColorParamsSize(
     // Floats for the SDR and HDR maximum luminance.
     target_color_params_size += sizeof(float);
     target_color_params_size += sizeof(float);
+    // uint32_t for tone mapping enabled or disabled.
+    target_color_params_size += sizeof(uint32_t);
   }
   return target_color_params_size;
 }
@@ -222,6 +224,7 @@ void WriteTargetColorParams(
     writer.Write(target_color_params->color_space.ToSkColorSpace().get());
     writer.Write(target_color_params->sdr_max_luminance_nits);
     writer.Write(target_color_params->hdr_max_luminance_relative);
+    writer.Write(target_color_params->enable_tone_mapping);
   }
 }
 
@@ -244,6 +247,7 @@ bool ReadTargetColorParams(
   target_color_params->color_space = gfx::ColorSpace(*target_color_space);
   reader.Read(&target_color_params->sdr_max_luminance_nits);
   reader.Read(&target_color_params->hdr_max_luminance_relative);
+  reader.Read(&target_color_params->enable_tone_mapping);
   return true;
 }
 
@@ -586,6 +590,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
         image_, target_color_params->color_space.ToSkColorSpace(),
         target_color_params->sdr_max_luminance_nits,
         target_color_params->hdr_max_luminance_relative,
+        target_color_params->enable_tone_mapping,
         fits_on_gpu_ ? context_ : nullptr);
     if (!image_) {
       DLOG(ERROR) << "Failed image color conversion";

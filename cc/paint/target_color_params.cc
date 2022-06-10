@@ -15,16 +15,19 @@ size_t TargetColorParams::GetHash() const {
       reinterpret_cast<const uint32_t*>(&hdr_max_luminance_relative);
   const uint32_t* sdr_max_luminance_nits_int =
       reinterpret_cast<const uint32_t*>(&sdr_max_luminance_nits);
-  return base::HashInts(color_space.GetHash(),
-                        base::HashInts(*hdr_max_luminance_relative_int,
-                                       *sdr_max_luminance_nits_int));
+  size_t hash = color_space.GetHash();
+  hash = base::HashInts(hash, *hdr_max_luminance_relative_int);
+  hash = base::HashInts(hash, *sdr_max_luminance_nits_int);
+  hash = base::HashInts(hash, enable_tone_mapping);
+  return hash;
 }
 
 std::string TargetColorParams::ToString() const {
   std::ostringstream str;
   str << "color_space: " << color_space.ToString()
       << "sdr_max_luminance_nits: " << sdr_max_luminance_nits
-      << "hdr_max_luminance_relative: " << hdr_max_luminance_relative;
+      << "hdr_max_luminance_relative: " << hdr_max_luminance_relative
+      << "enable_tone_mapping: " << enable_tone_mapping;
   return str.str();
 }
 
