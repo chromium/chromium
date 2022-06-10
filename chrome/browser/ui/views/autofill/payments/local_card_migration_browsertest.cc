@@ -76,7 +76,6 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/url_request/test_url_fetcher_factory.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -523,7 +522,6 @@ class LocalCardMigrationBrowserTest
 
  private:
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
-  std::unique_ptr<net::FakeURLFetcherFactory> url_fetcher_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
