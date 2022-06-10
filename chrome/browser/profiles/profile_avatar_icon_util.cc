@@ -581,25 +581,23 @@ bool IsDefaultAvatarIconUrl(const std::string& url, size_t* icon_index) {
   return false;
 }
 
-base::flat_map<std::string, base::Value> GetAvatarIconAndLabelDict(
-    const std::string& url,
-    const std::u16string& label,
-    size_t index,
-    bool selected,
-    bool is_gaia_avatar) {
-  base::flat_map<std::string, base::Value> avatar_info;
-  avatar_info.emplace("url", url);
-  avatar_info.emplace("label", label);
-  avatar_info.emplace("index", static_cast<int>(index));
-  avatar_info.emplace("selected", selected);
-  avatar_info.emplace("isGaiaAvatar", is_gaia_avatar);
+base::Value::Dict GetAvatarIconAndLabelDict(const std::string& url,
+                                            const std::u16string& label,
+                                            size_t index,
+                                            bool selected,
+                                            bool is_gaia_avatar) {
+  base::Value::Dict avatar_info;
+  avatar_info.Set("url", url);
+  avatar_info.Set("label", label);
+  avatar_info.Set("index", static_cast<int>(index));
+  avatar_info.Set("selected", selected);
+  avatar_info.Set("isGaiaAvatar", is_gaia_avatar);
   return avatar_info;
 }
 
-base::flat_map<std::string, base::Value> GetDefaultProfileAvatarIconAndLabel(
-    SkColor fill_color,
-    SkColor stroke_color,
-    bool selected) {
+base::Value::Dict GetDefaultProfileAvatarIconAndLabel(SkColor fill_color,
+                                                      SkColor stroke_color,
+                                                      bool selected) {
   gfx::Image icon = profiles::GetPlaceholderAvatarIconWithColors(
       fill_color, stroke_color, kAvatarIconSize);
   size_t index = profiles::GetPlaceholderAvatarIndex();
@@ -610,13 +608,13 @@ base::flat_map<std::string, base::Value> GetDefaultProfileAvatarIconAndLabel(
       index, selected, /*is_gaia_avatar=*/false);
 }
 
-std::vector<base::Value> GetCustomProfileAvatarIconsAndLabels(
+base::Value::List GetCustomProfileAvatarIconsAndLabels(
     size_t selected_avatar_idx) {
-  std::vector<base::Value> avatars;
+  base::Value::List avatars;
 
   for (size_t i = GetModernAvatarIconStartIndex();
        i < GetDefaultAvatarIconCount(); ++i) {
-    avatars.emplace_back(GetAvatarIconAndLabelDict(
+    avatars.Append(GetAvatarIconAndLabelDict(
         profiles::GetDefaultAvatarIconUrl(i),
         l10n_util::GetStringUTF16(
             profiles::GetDefaultAvatarLabelResourceIDAtIndex(i)),
