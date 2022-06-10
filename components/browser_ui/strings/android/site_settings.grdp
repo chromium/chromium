@@ -368,6 +368,12 @@
   </message>
 
   <!-- Federated Identity -->
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_FEDERATED_IDENTITY_ALLOW" desc="The description for the allow third-party sign-in for website dialog.">
+    Allow third-party sign-in for a specific site.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_FEDERATED_IDENTITY_BLOCK" desc="The description for the block third-party sign-in for website dialog.">
+    Block third-party sign-in for a specific site.
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_FEDERATED_IDENTITY_ALLOWED" desc="The description for the option to allow sites to use the browser Third-Party Sign In API.">
     Sites can show sign-in prompts from identity services.
   </message>

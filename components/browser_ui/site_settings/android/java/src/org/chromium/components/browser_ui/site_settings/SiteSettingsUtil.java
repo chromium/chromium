@@ -36,6 +36,7 @@ public class SiteSettingsUtil {
             ContentSettingsType.VR,
             ContentSettingsType.AR,
             ContentSettingsType.IDLE_DETECTION,
+            ContentSettingsType.FEDERATED_IDENTITY_API,
             ContentSettingsType.SENSORS,
             ContentSettingsType.AUTO_DARK_WEB_CONTENT,
             ContentSettingsType.REQUEST_DESKTOP_SITE,

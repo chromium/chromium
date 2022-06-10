@@ -527,6 +527,9 @@ public class WebsitePermissionsFetcherTest {
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(ContentSettingsType.REQUEST_DESKTOP_SITE, googleOrigin,
                         ContentSettingValues.DEFAULT, preferenceSource));
+        websitePreferenceBridge.addContentSettingException(
+                new ContentSettingException(ContentSettingsType.FEDERATED_IDENTITY_API,
+                        googleOrigin, ContentSettingValues.DEFAULT, preferenceSource));
 
         // Add storage info.
         int storageSize = 256;
@@ -593,6 +596,9 @@ public class WebsitePermissionsFetcherTest {
             Assert.assertEquals(Integer.valueOf(ContentSettingValues.DEFAULT),
                     site.getContentSetting(UNUSED_BROWSER_CONTEXT_HANDLE,
                             ContentSettingsType.REQUEST_DESKTOP_SITE));
+            Assert.assertEquals(Integer.valueOf(ContentSettingValues.DEFAULT),
+                    site.getContentSetting(UNUSED_BROWSER_CONTEXT_HANDLE,
+                            ContentSettingsType.FEDERATED_IDENTITY_API));
 
             // Check storage info.
             ArrayList<StorageInfo> storageInfos = new ArrayList<>(site.getStorageInfo());
@@ -749,8 +755,9 @@ public class WebsitePermissionsFetcherTest {
         ArrayList<Integer> contentSettingExceptionTypes = new ArrayList<>(
                 Arrays.asList(ContentSettingsType.ADS, ContentSettingsType.AUTOMATIC_DOWNLOADS,
                         ContentSettingsType.BACKGROUND_SYNC, ContentSettingsType.BLUETOOTH_SCANNING,
-                        ContentSettingsType.COOKIES, ContentSettingsType.JAVASCRIPT,
-                        ContentSettingsType.POPUPS, ContentSettingsType.SOUND));
+                        ContentSettingsType.COOKIES, ContentSettingsType.FEDERATED_IDENTITY_API,
+                        ContentSettingsType.JAVASCRIPT, ContentSettingsType.POPUPS,
+                        ContentSettingsType.SOUND));
 
         for (@ContentSettingsType int type : contentSettingExceptionTypes) {
             {

@@ -153,6 +153,10 @@ void PageInfoControllerAndroid::SetPermissionInfo(
     permissions_to_display.push_back(ContentSettingsType::BLUETOOTH_SCANNING);
   permissions_to_display.push_back(ContentSettingsType::VR);
   permissions_to_display.push_back(ContentSettingsType::AR);
+  if (base::FeatureList::IsEnabled(features::kFedCm)) {
+    permissions_to_display.push_back(
+        ContentSettingsType::FEDERATED_IDENTITY_API);
+  }
 
   std::map<ContentSettingsType, ContentSetting>
       user_specified_settings_to_display;
