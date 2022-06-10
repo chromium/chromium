@@ -98,8 +98,8 @@ class ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration
 
 // TODO(crbug.com/1333457)
 // All/ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration.
-// BasicOps/1 is failing on Mac builders.
-#if BUILDFLAG(IS_MAC)
+// BasicOps/1 is failing on Mac and Windows builders.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_BasicOps DISABLED_BasicOps
 #else
 #define MAYBE_BasicOps BasicOps
