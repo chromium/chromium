@@ -69,8 +69,6 @@ DOMPlugin* DOMPluginArray::item(unsigned index) {
 
 DOMPlugin* DOMPluginArray::namedItem(const AtomicString& property_name) {
   if (should_return_fixed_plugin_data_) {
-    // I don't know why namedItem() and NamedPropertyEnumerator go directly to
-    // the plugin data, rather than using dom_plugins_.
     for (const auto& plugin : dom_plugins_) {
       if (plugin->name() == property_name)
         return plugin;

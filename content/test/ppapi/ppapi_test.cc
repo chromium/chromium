@@ -71,6 +71,10 @@ void PPAPITestBase::SetUpCommandLine(base::CommandLine* command_line) {
   // TestMessageHandler::TestExceptions, fileSystem-related tests) and given
   // PPAPI deprecation it doesn't seem worth fixing the tests now.
   command_line->AppendSwitch(switches::kAllowFileAccessFromFiles);
+
+  // TODO(https://crbug.com/1172495): Remove once NaCl code can be deleted.
+  command_line->AppendSwitchASCII(blink::switches::kBlinkSettings,
+                                  "allowNonEmptyNavigatorPlugins=true");
 }
 
 GURL PPAPITestBase::GetTestFileUrl(const std::string& test_case) {

@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/modules/plugins/dom_mime_type_array.h"
 
+#include "base/containers/contains.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -63,8 +64,6 @@ DOMMimeType* DOMMimeTypeArray::item(unsigned index) {
 
 DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
   if (should_return_fixed_plugin_data_) {
-    // I don't know why namedItem() and NamedPropertyEnumerator go directly to
-    // the plugin data, rather than using dom_mime_types_.
     for (const auto& mimetype : dom_mime_types_) {
       if (mimetype->type() == property_name)
         return mimetype;
@@ -103,6 +102,9 @@ void DOMMimeTypeArray::NamedPropertyEnumerator(Vector<String>& property_names,
 
 bool DOMMimeTypeArray::NamedPropertyQuery(const AtomicString& property_name,
                                           ExceptionState&) const {
+  if (should_return_fixed_plugin_data_) {
+    return base::Contains(dom_mime_types_, property_name, &DOMMimeType::type);
+  }
   PluginData* data = GetPluginData();
   if (!data)
     return false;
