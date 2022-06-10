@@ -350,7 +350,17 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   // changes.
   void OnShelfTrayBubbleVisibilityChanged(bool bubble_shown);
 
+  void UpdateWorkAreaInsetsAndNotifyObservers(
+      const gfx::Rect& shelf_bounds_for_workarea_calculation,
+      const gfx::Insets& shelf_insets,
+      const gfx::Insets& in_session_shelf_insets);
+
  private:
+  void UpdateWorkAreaInsetsAndNotifyObserversInternal(
+      const gfx::Rect& shelf_bounds_for_workarea_calculation,
+      const gfx::Insets& shelf_insets,
+      const gfx::Insets& in_session_shelf_insets);
+
   class UpdateShelfObserver;
   friend class DimShelfLayoutManagerTestBase;
   friend class PanelLayoutManagerTest;
@@ -378,6 +388,10 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
     // Returns whether shelf is currently visible.
     bool IsShelfVisible() const;
 
+    // Returns whether shelf is in auto-hide mode in session and suupposed to be
+    // hidden.
+    bool IsShelfAutoHiddenInSession() const;
+
     // Returns true if the two states are considered equal. As
     // |auto_hide_state| only matters if |visibility_state| is
     // |SHELF_AUTO_HIDE|, Equals() ignores the |auto_hide_state| as
@@ -387,6 +401,10 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
     ShelfVisibilityState visibility_state = SHELF_VISIBLE;
     ShelfAutoHideState auto_hide_state = SHELF_AUTO_HIDE_HIDDEN;
     WorkspaceWindowState window_state = WorkspaceWindowState::kDefault;
+
+    // In session state.
+    ShelfVisibilityState in_session_visibility_state = SHELF_VISIBLE;
+    ShelfAutoHideState in_session_auto_hide_state = SHELF_AUTO_HIDE_HIDDEN;
 
     // True when the system is in the cancelable, pre-lock screen animation.
     bool pre_lock_screen_animation_active = false;
@@ -427,8 +445,9 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   // Calculates shelf target bounds assuming visibility of
   // |state.visibilty_state| and |hotseat_target_state|. Returns the desired
   // shelf insets.
-  gfx::Insets CalculateTargetBounds(const State& state,
-                                    HotseatState hotseat_target_state);
+  gfx::Insets UpdateTargetBoundsAndCalculateShelfInsets(
+      const State& state,
+      HotseatState hotseat_target_state);
 
   // Calculates the target bounds using |state_| and updates the
   // |user_work_area_bounds_|.

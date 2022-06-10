@@ -498,8 +498,8 @@ void Shelf::SetAlignment(ShelfAlignment alignment) {
   }
 }
 
-bool Shelf::IsHorizontalAlignment() const {
-  switch (alignment_) {
+bool IsHorizontalAlignment(ShelfAlignment alignment) {
+  switch (alignment) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
       return true;
@@ -509,6 +509,10 @@ bool Shelf::IsHorizontalAlignment() const {
   }
   NOTREACHED();
   return true;
+}
+
+bool Shelf::IsHorizontalAlignment() const {
+  return ash::IsHorizontalAlignment(alignment_);
 }
 
 void Shelf::SetAutoHideBehavior(ShelfAutoHideBehavior auto_hide_behavior) {

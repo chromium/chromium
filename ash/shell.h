@@ -313,7 +313,10 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<views::NonClientFrameView> CreateDefaultNonClientFrameView(
       views::Widget* widget);
 
+  // Please note: this is deprecated. Please use
+  // `WorkAreaInsets::UpdateWorkAreaInsetsForTest()` for test purpose.
   // Sets work area insets of the display containing |window|, pings observers.
+  // TODO(yongshun): Get rid of this API and update existing test cases.
   void SetDisplayWorkAreaInsets(aura::Window* window,
                                 const gfx::Insets& insets);
 

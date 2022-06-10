@@ -19,6 +19,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/aura/client/aura_constants.h"
@@ -32,6 +33,8 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -547,8 +550,8 @@ TEST_F(WorkspaceControllerTest, DontMoveOnSwitch) {
 // Verifies that windows that are completely offscreen move when switching
 // workspaces.
 TEST_F(WorkspaceControllerTest, MoveOnSwitch) {
-  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
-                                     gfx::Point());
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  ui::test::EventGenerator generator(root, gfx::Point());
   generator.MoveMouseTo(0, 0);
 
   std::unique_ptr<Window> w1(CreateTestWindow());
@@ -569,10 +572,11 @@ TEST_F(WorkspaceControllerTest, MoveOnSwitch) {
 
   // Increase the size of the WorkAreaInsets. This would make |w1| fall
   // completely out of the display work area.
-  gfx::Insets insets =
-      display::Screen::GetScreen()->GetPrimaryDisplay().GetWorkAreaInsets();
+  WorkAreaInsets* work_area_insets = WorkAreaInsets::ForWindow(root);
+  gfx::Insets insets = work_area_insets->in_session_user_work_area_insets();
   insets = gfx::Insets::TLBR(0, 0, insets.bottom() + 30, 0);
-  Shell::Get()->SetDisplayWorkAreaInsets(w1.get(), insets);
+  work_area_insets->UpdateWorkAreaInsetsForTest(root, gfx::Rect(), insets,
+                                                insets);
 
   // Switch to w1. The window should have moved.
   wm::ActivateWindow(w1.get());

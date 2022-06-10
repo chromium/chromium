@@ -4658,8 +4658,8 @@ TEST_F(NoSessionShelfLayoutManagerTest, UpdateShelfVisibilityAfterLogin) {
   GetSessionControllerClient()->SetUserPrefService(kUserAccount,
                                                    std::move(pref_service));
 
-  // Create a window that covers the full height of the display.
-  constexpr int kExpectedWindowHeight = 800;
+  // Create a window that covers the full height of the in-session work area.
+  const int kExpectedWindowHeight = 800 - ShelfConfig::Get()->shelf_size();
   auto window = CreateTestWindow(gfx::Rect(400, kExpectedWindowHeight));
 
   // Simulate login.

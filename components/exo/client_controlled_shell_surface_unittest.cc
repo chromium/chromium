@@ -29,6 +29,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -70,6 +71,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_targeter.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
@@ -2795,9 +2797,9 @@ TEST_F(ClientControlledShellSurfaceTest, SnappedClientBounds) {
 
   // Clear insets so that it won't affects the bounds.
   shell_surface->SetSystemUiVisibility(true);
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  ash::Shell::Get()->display_manager()->UpdateWorkAreaOfDisplay(display_id,
-                                                                gfx::Insets());
+  aura::Window* root = ash::Shell::GetPrimaryRootWindow();
+  ash::WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
+      root, gfx::Rect(), gfx::Insets(), gfx::Insets());
 
   auto* delegate =
       TestClientControlledShellSurfaceDelegate::SetUp(shell_surface.get());

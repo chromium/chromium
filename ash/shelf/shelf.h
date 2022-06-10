@@ -47,6 +47,37 @@ class ShelfObserver;
 class WorkAreaInsets;
 class ShelfTooltipManager;
 
+// TODO(oshima) : move to .cc
+
+// Returns a value based on shelf alignment.
+template <typename T>
+T SelectValueByShelfAlignment(ShelfAlignment alignment,
+                              T bottom,
+                              T left,
+                              T right) {
+  switch (alignment) {
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+      return bottom;
+    case ShelfAlignment::kLeft:
+      return left;
+    case ShelfAlignment::kRight:
+      return right;
+  }
+  NOTREACHED();
+  return bottom;
+}
+
+bool IsHorizontalAlignment(ShelfAlignment alignment);
+
+// Returns |horizontal| if shelf is horizontal, otherwise |vertical|.
+template <typename T>
+T PrimaryAxisValueByShelfAlignment(ShelfAlignment alignment,
+                                   T horizontal,
+                                   T vertical) {
+  return IsHorizontalAlignment(alignment) ? horizontal : vertical;
+}
+
 // Controller for the shelf state. One per display, because each display might
 // have different shelf alignment, autohide, etc. Exists for the lifetime of the
 // root window controller.
@@ -123,17 +154,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // Returns a value based on shelf alignment.
   template <typename T>
   T SelectValueForShelfAlignment(T bottom, T left, T right) const {
-    switch (alignment_) {
-      case ShelfAlignment::kBottom:
-      case ShelfAlignment::kBottomLocked:
-        return bottom;
-      case ShelfAlignment::kLeft:
-        return left;
-      case ShelfAlignment::kRight:
-        return right;
-    }
-    NOTREACHED();
-    return bottom;
+    return SelectValueByShelfAlignment(alignment_, bottom, left, right);
   }
 
   // Returns |horizontal| if shelf is horizontal, otherwise |vertical|.
@@ -224,6 +245,10 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   ShelfAlignment alignment() const { return alignment_; }
   ShelfAutoHideBehavior auto_hide_behavior() const {
     return auto_hide_behavior_;
+  }
+
+  ShelfAlignment stored_alignment() const {
+    return shelf_locking_manager_.stored_alignment();
   }
 
   ShelfFocusCycler* shelf_focus_cycler() { return shelf_focus_cycler_.get(); }
