@@ -76,10 +76,6 @@
         {
           "builder": "linux-lacros-rel",
           "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "linux-lacros-rel-code-coverage",
-          "group": "tryserver.chromium.chromiumos"
         }
       ]
     }
@@ -94,6 +90,6 @@
   "builder_group": "chromium.chromiumos",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

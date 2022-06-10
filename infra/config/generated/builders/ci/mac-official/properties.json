@@ -59,6 +59,6 @@
   "builder_group": "chromium",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

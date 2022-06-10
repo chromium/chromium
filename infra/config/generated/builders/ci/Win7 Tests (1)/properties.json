@@ -69,10 +69,6 @@
         {
           "builder": "win7-rel",
           "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win_chromium_compile_rel_ng",
-          "group": "tryserver.chromium.win"
         }
       ]
     }
@@ -93,6 +89,6 @@
   "builder_group": "chromium.win",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }
