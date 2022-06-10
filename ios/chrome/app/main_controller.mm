@@ -25,6 +25,7 @@
 #include "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #import "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
+#include "components/component_updater/installer_policies/url_param_classification_component_installer.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -214,6 +215,7 @@ void RegisterComponentsForUpdate() {
   RegisterAutofillStatesComponent(cus,
                                   GetApplicationContext()->GetLocalState());
   RegisterOptimizationHintsComponent(cus);
+  RegisterUrlParamClassificationComponent(cus);
 }
 
 // The delay, in seconds, for cleaning external files.

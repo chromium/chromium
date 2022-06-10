@@ -10,6 +10,8 @@
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_filter_test_helper.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -80,6 +82,35 @@ const char kInitialPageHtml[] =
 const char kInitialPageDestinationLinkId[] = "link";
 // The text of the link to the destination page.
 const char kInitialPageDestinationLinkText[] = "link";
+
+// URL to a page with a link to the destination page.
+const char kDecoratedLinkSourcePageUrl[] = "/scenarioContextMenuDecoratedLink";
+// HTML content of a page with a link to the destination page.
+const char kDecoratedLinkSourcePageHtml[] =
+    "<html><head><meta name='viewport' content='width=device-width, "
+    "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' /></head><body><a "
+    "style='margin-left:150px' href='/destination?clid=123&nice_param=456' "
+    "id='link'>"
+    "decorated link</a></body></html>";
+// Destination link with decorated parameters.
+const char kDecoratedDestinationLink[] = "/destination?clid=123&nice_param=456";
+// HTML content of a page that is navigated to via link with decoration.
+const char kDecoratedDestinationPageHtml[] =
+    "<html><head><meta name='viewport' content='width=device-width, "
+    "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' "
+    "/></head><body><script>document.title='new doc'</script>"
+    "<center><span id=\"message\">Decorated destination!</span></center>"
+    "</body></html>";
+// Destination link with decorated parameters removed.
+const char kFilteredDestinationLink[] = "/destination?nice_param=456";
+// HTML content of a page that is navigated to via link with decoration
+// filtered.
+const char kFilteredDestinationPageHtml[] =
+    "<html><head><meta name='viewport' content='width=device-width, "
+    "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' "
+    "/></head><body><script>document.title='new doc'</script>"
+    "<center><span id=\"message\">Filtered destination!</span></center>"
+    "</body></html>";
 
 // URL to a page with a link with a javascript: scheme.
 const char kJavaScriptPageUrl[] = "/scenarionContextMenuJavaScript";
@@ -200,6 +231,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                    kInitialPageDestinationLinkId,
                                    kShortImgTitle, kLogoPageChromiumImageId];
     http_response->set_content(base::SysNSStringToUTF8(content));
+  } else if (request.relative_url == kDecoratedLinkSourcePageUrl) {
+    http_response->set_content(kDecoratedLinkSourcePageHtml);
+  } else if (request.relative_url == kDecoratedDestinationLink) {
+    http_response->set_content(kDecoratedDestinationPageHtml);
+  } else if (request.relative_url == kFilteredDestinationLink) {
+    http_response->set_content(kFilteredDestinationPageHtml);
   } else {
     return nullptr;
   }
@@ -619,6 +656,124 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_COPY_LINK_ACTION_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+@end
+
+// Context menu tests for Chrome.
+@interface FilterWhenEnteringIncognitoDisabled : ChromeTestCase {
+  std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
+}
+
+@end
+
+@implementation FilterWhenEnteringIncognitoDisabled
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  config.features_disabled.push_back(
+      url_param_filter::features::kIncognitoParamFilterEnabled);
+  return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  _blockPopupsPref =
+      std::make_unique<ScopedBlockPopupsPref>(CONTENT_SETTING_ALLOW);
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+}
+
+// Checks that a decorated link isn't filtered when "Open in Incognito" is
+// pressed and the kIncognitoParamFilterEnabled feature is disabled.
+- (void)testOpenIncognitoLinkDoesntFilterUrlTestCase {
+  // Loads url in first window.
+  const GURL initialURL = self.testServer->GetURL(kDecoratedLinkSourcePageUrl);
+  [ChromeEarlGrey loadURL:initialURL inWindowWithNumber:0];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kInitialPageDestinationLinkText
+                             inWindowWithNumber:0];
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+  // Display the context menu.
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  // Open link in Incognito.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::OpenLinkInIncognitoButton()]
+      performAction:grey_tap()];
+
+  // Assert that "clid" was not filtered from the loaded URL.
+  [ChromeEarlGrey waitForWebStateContainingText:"Decorated destination!"
+                             inWindowWithNumber:0];
+  GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL],
+                  self.testServer->GetURL(kDecoratedDestinationLink),
+                  @"URL was filtered when it shouldn't have been");
+}
+
+@end
+
+// Context menu tests for Chrome.
+@interface FilterWhenEnteringIncognitoEnabled : ChromeTestCase {
+  std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
+}
+
+@end
+
+@implementation FilterWhenEnteringIncognitoEnabled
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  // Make create a  127.0.0.1,clid (site,param) source classification
+  std::string classification =
+      url_param_filter::CreateBase64EncodedFilterParamClassificationForTesting(
+          {{"127.0.0.1", {"clid"}}}, {});
+  config.additional_args.push_back(
+      "--enable-features=" +
+      std::string(
+          url_param_filter::features::kIncognitoParamFilterEnabled.name) +
+      ":should_filter/true/classifications/" + classification);
+
+  return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  _blockPopupsPref =
+      std::make_unique<ScopedBlockPopupsPref>(CONTENT_SETTING_ALLOW);
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+}
+
+// Checks that a decorated link is filtered when "Open in Incognito" is pressed
+// and the kIncognitoParamFilterEnabled feature is enabled.
+- (void)testOpenIncognitoLinkDoesFilterUrlTestCase {
+  // Loads url in first window.
+  const GURL initialURL = self.testServer->GetURL(kDecoratedLinkSourcePageUrl);
+  [ChromeEarlGrey loadURL:initialURL inWindowWithNumber:0];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kInitialPageDestinationLinkText
+                             inWindowWithNumber:0];
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+  // Display the context menu.
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  // Open link in new window.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::OpenLinkInIncognitoButton()]
+      performAction:grey_tap()];
+
+  // Assert that "clid" was filtered from the loaded URL.
+  [ChromeEarlGrey waitForWebStateContainingText:"Filtered destination!"
+                             inWindowWithNumber:0];
+  GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL],
+                  self.testServer->GetURL(kFilteredDestinationLink),
+                  @"URL wasn't filtered when it should've been");
 }
 
 @end

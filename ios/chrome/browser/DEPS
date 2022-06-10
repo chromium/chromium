@@ -51,6 +51,7 @@ include_rules = [
   "+components/lookalikes/core",
   "+components/metrics",
   "+components/user_prefs",
+  "+components/url_param_filter/ios",
   "+components/metrics_services_manager",
   "+components/navigation_metrics",
   "+components/net_log",

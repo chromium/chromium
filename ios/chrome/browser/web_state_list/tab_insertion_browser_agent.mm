@@ -31,7 +31,8 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
     int index,
     bool in_background,
     bool inherit_opener,
-    bool should_show_start_surface) {
+    bool should_show_start_surface,
+    int filtered_param_count) {
   DCHECK(index == TabInsertion::kPositionAutomatically ||
          (index >= 0 && index <= web_state_list_->count()));
 
@@ -68,7 +69,8 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
 
   if (base::FeatureList::IsEnabled(
           url_param_filter::features::kIncognitoParamFilterEnabled) &&
-      web_state->GetBrowserState()->IsOffTheRecord() && !parent) {
+      web_state->GetBrowserState()->IsOffTheRecord() && !parent &&
+      filtered_param_count > 0) {
     // Only attach the CrossOtrTabHelper to OTR web_state if parent is null,
     // as this indicates that it's the result of a "Open In Incognito" press.
     url_param_filter::CrossOtrTabHelper::CreateForWebState(web_state.get());
