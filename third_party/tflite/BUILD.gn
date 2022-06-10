@@ -460,6 +460,8 @@ static_library("tflite") {
     "src/tensorflow/lite/profiling/memory_info.h",
     "src/tensorflow/lite/profiling/platform_profiler.cc",
     "src/tensorflow/lite/profiling/platform_profiler.h",
+    "src/tensorflow/lite/profiling/root_profiler.cc",
+    "src/tensorflow/lite/profiling/root_profiler.h",
     "src/tensorflow/lite/profiling/time.cc",
     "src/tensorflow/lite/profiling/time.h",
     "src/tensorflow/lite/schema/schema_utils.cc",
