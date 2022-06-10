@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_manager.h"
 
 #include "ash/shell.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "chrome/browser/ash/arc/input_overlay/test/arc_test_window.h"
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 #include "components/exo/test/exo_test_base.h"
@@ -176,6 +177,33 @@ TEST_F(ArcInputOverlayManagerTest, TestWindowFocusChange) {
   EXPECT_TRUE(GetDisplayOverlayController());
   WindowFocus(arc_window_no_data->GetWindow(), arc_window->GetWindow());
   EXPECT_TRUE(!GetRegisteredWindow() && !GetDisplayOverlayController());
+}
+
+TEST_F(ArcInputOverlayManagerTest, TestTabletMode) {
+  // Launch app in tablet mode and switch to desktop mode.
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  auto arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
+      kEnabledPackageName);
+  // I/O takes time here.
+  task_environment()->FastForwardBy(kIORead);
+  EXPECT_TRUE(IsInputOverlayEnabled(arc_window->GetWindow()));
+  EXPECT_FALSE(GetRegisteredWindow());
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
+  EXPECT_TRUE(GetRegisteredWindow());
+  arc_window.reset();
+
+  // Launch app in desktop mode and switch to tablet mode.
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
+  arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
+      kEnabledPackageName);
+  // I/O takes time here.
+  task_environment()->FastForwardBy(kIORead);
+  EXPECT_TRUE(IsInputOverlayEnabled(arc_window->GetWindow()));
+  EXPECT_TRUE(GetRegisteredWindow());
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  EXPECT_FALSE(GetRegisteredWindow());
 }
 
 TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {

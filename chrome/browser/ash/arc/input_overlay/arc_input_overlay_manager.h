@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_MANAGER_H_
 
 #include "ash/components/arc/ime/arc_ime_bridge.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -37,7 +39,8 @@ class ArcBridgeService;
 class ArcInputOverlayManager : public KeyedService,
                                public aura::EnvObserver,
                                public aura::WindowObserver,
-                               public aura::client::FocusChangeObserver {
+                               public aura::client::FocusChangeObserver,
+                               public ash::TabletModeObserver {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -72,6 +75,10 @@ class ArcInputOverlayManager : public KeyedService,
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;
 
+  // ash::TabletModeObserver:
+  void OnTabletModeStarting() override;
+  void OnTabletModeEnded() override;
+
  private:
   friend class ArcInputOverlayManagerTest;
 
@@ -79,6 +86,8 @@ class ArcInputOverlayManager : public KeyedService,
 
   // TODO(djacobo|cuicuiruan): Sort this, functions first, members last.
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
+  base::ScopedObservation<ash::TabletModeController, ash::TabletModeObserver>
+      tablet_observation_{this};
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
   base::flat_map<aura::Window*, std::unique_ptr<input_overlay::TouchInjector>>
@@ -122,7 +131,7 @@ class ArcInputOverlayManager : public KeyedService,
   // Only top level window will be registered/unregistered successfully.
   void RegisterWindow(aura::Window* window);
   void UnRegisterWindow(aura::Window* window);
-  void RegisterWindowIfFocused(aura::Window* window);
+  void RegisterFocusedWindow();
   // Add display overlay controller related to |touch_injector|.
   void AddDisplayOverlayController(
       input_overlay::TouchInjector* touch_injector);

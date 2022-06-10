@@ -82,6 +82,8 @@ ArcInputOverlayManager::ArcInputOverlayManager(
     : input_method_observer_(std::make_unique<InputMethodObserver>(this)) {
   if (aura::Env::HasInstance())
     env_observation_.Observe(aura::Env::GetInstance());
+  if (ash::Shell::Get() && ash::Shell::Get()->tablet_mode_controller())
+    tablet_observation_.Observe(ash::Shell::Get()->tablet_mode_controller());
   if (ash::Shell::HasInstance() && ash::Shell::GetPrimaryRootWindow()) {
     aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
         ->AddObserver(this);
@@ -177,7 +179,7 @@ void ArcInputOverlayManager::OnProtoDataAvailable(
 
   touch_injector->set_data_reading_finished(true);
   touch_injector->RecordMenuStateOnLaunch();
-  RegisterWindowIfFocused(touch_injector->target_window());
+  RegisterFocusedWindow();
 }
 
 void ArcInputOverlayManager::OnSaveProtoFile(
@@ -229,7 +231,7 @@ void ArcInputOverlayManager::RegisterWindow(aura::Window* window) {
     return;
   DCHECK(!registered_top_level_window_);
   // Don't register window if the data reading is not finished. It still will be
-  // registered after data reading finished by |RegisterWindowIfFocused|.
+  // registered after data reading finished by |RegisterFocusedWindow|.
   if (!it->second->data_reading_finished())
     return;
 
@@ -262,9 +264,14 @@ void ArcInputOverlayManager::UnRegisterWindow(aura::Window* window) {
   registered_top_level_window_ = nullptr;
 }
 
-void ArcInputOverlayManager::RegisterWindowIfFocused(aura::Window* window) {
-  if (ash::window_util::GetFocusedWindow() == window)
-    RegisterWindow(window);
+void ArcInputOverlayManager::RegisterFocusedWindow() {
+  // Don't register window if it is in tablet mode.
+  if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode() ||
+      !ash::window_util::GetFocusedWindow()) {
+    return;
+  }
+
+  RegisterWindow(ash::window_util::GetFocusedWindow()->GetToplevelWindow());
 }
 
 void ArcInputOverlayManager::AddDisplayOverlayController(
@@ -347,6 +354,8 @@ void ArcInputOverlayManager::OnWindowBoundsChanged(
 void ArcInputOverlayManager::Shutdown() {
   UnRegisterWindow(registered_top_level_window_);
   window_observations_.RemoveAllObservations();
+  if (ash::Shell::Get() && ash::Shell::Get()->tablet_mode_controller())
+    tablet_observation_.Reset();
   env_observation_.Reset();
   if (ash::Shell::HasInstance() && ash::Shell::GetPrimaryRootWindow()) {
     aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
@@ -356,6 +365,9 @@ void ArcInputOverlayManager::Shutdown() {
 
 void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
                                              aura::Window* lost_focus) {
+  if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode())
+    return;
+
   aura::Window* lost_focus_top_level_window = nullptr;
   aura::Window* gained_focus_top_level_window = nullptr;
 
@@ -370,6 +382,14 @@ void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
 
   UnRegisterWindow(lost_focus_top_level_window);
   RegisterWindow(gained_focus_top_level_window);
+}
+
+void ArcInputOverlayManager::OnTabletModeStarting() {
+  UnRegisterWindow(registered_top_level_window_);
+}
+
+void ArcInputOverlayManager::OnTabletModeEnded() {
+  RegisterFocusedWindow();
 }
 
 }  // namespace arc
