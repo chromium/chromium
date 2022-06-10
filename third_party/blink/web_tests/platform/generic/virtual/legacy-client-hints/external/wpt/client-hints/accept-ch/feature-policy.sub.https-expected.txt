@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Accept-CH header test assert_false: dpr-deprecated-received expected false got true
-FAIL Cross-Origin Accept-CH header test assert_false: dpr-deprecated-received expected false got true
-Harness: the test ran to completion.
-

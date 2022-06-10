@@ -144,8 +144,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   if (RuntimeEnabledFeatures::UserAgentClientHintEnabled() && ua) {
     // ShouldSendClientHint is called to make sure UA is controlled by
     // Permissions Policy.
-    if (ShouldSendClientHint(ClientHintsMode::kStandard, policy,
-                             resource_origin, is_1p_origin,
+    if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,
                              network::mojom::blink::WebClientHintsType::kUA,
                              hints_preferences)) {
       request.SetHttpHeaderField(
@@ -160,7 +159,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     // ShouldSendClientHint is called to make sure it's controlled by
     // PermissionsPolicy.
     if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kUAMobile,
             hints_preferences)) {
       request.SetHttpHeaderField(
@@ -178,7 +177,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   // The next 4 hints should be enabled if we're allowing legacy hints to third
   // parties, or if PermissionsPolicy delegation says they are allowed.
   if (ShouldSendClientHint(
-          ClientHintsMode::kLegacy, policy, resource_origin, is_1p_origin,
+          policy, resource_origin, is_1p_origin,
           network::mojom::blink::WebClientHintsType::kDeviceMemory_DEPRECATED,
           hints_preferences)) {
     request.SetHttpHeaderField(
@@ -191,7 +190,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   }
 
   if (ShouldSendClientHint(
-          ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+          policy, resource_origin, is_1p_origin,
           network::mojom::blink::WebClientHintsType::kDeviceMemory,
           hints_preferences)) {
     request.SetHttpHeaderField(
@@ -205,7 +204,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   // These hints only make sense if the image info is available
   if (image_info) {
     if (ShouldSendClientHint(
-            ClientHintsMode::kLegacy, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kDpr_DEPRECATED,
             hints_preferences)) {
       request.SetHttpHeaderField(
@@ -215,8 +214,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
           AtomicString(String::Number(image_info->dpr)));
     }
 
-    if (ShouldSendClientHint(ClientHintsMode::kStandard, policy,
-                             resource_origin, is_1p_origin,
+    if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,
                              network::mojom::blink::WebClientHintsType::kDpr,
                              hints_preferences)) {
       request.SetHttpHeaderField(
@@ -226,8 +224,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
           AtomicString(String::Number(image_info->dpr)));
     }
 
-    if (ShouldSendClientHint(ClientHintsMode::kLegacy, policy, resource_origin,
-                             is_1p_origin,
+    if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,
                              network::mojom::blink::WebClientHintsType::
                                  kViewportWidth_DEPRECATED,
                              hints_preferences) &&
@@ -241,7 +238,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kViewportWidth,
             hints_preferences) &&
         image_info->viewport_width) {
@@ -253,7 +250,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kViewportHeight,
             hints_preferences) &&
         image_info->viewport_height) {
@@ -264,8 +261,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
           AtomicString(String::Number(image_info->viewport_height.value())));
     }
 
-    if (ShouldSendClientHint(ClientHintsMode::kLegacy, policy, resource_origin,
-                             is_1p_origin,
+    if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,
                              network::mojom::blink::WebClientHintsType::
                                  kResourceWidth_DEPRECATED,
                              hints_preferences)) {
@@ -282,7 +278,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kResourceWidth,
             hints_preferences)) {
       if (image_info->resource_width.is_set) {
@@ -298,7 +294,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   }
 
   if (ShouldSendClientHint(
-          ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+          policy, resource_origin, is_1p_origin,
           network::mojom::blink::WebClientHintsType::kRtt_DEPRECATED,
           hints_preferences)) {
     absl::optional<base::TimeDelta> http_rtt =
@@ -317,7 +313,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   }
 
   if (ShouldSendClientHint(
-          ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+          policy, resource_origin, is_1p_origin,
           network::mojom::blink::WebClientHintsType::kDownlink_DEPRECATED,
           hints_preferences)) {
     absl::optional<double> throughput_mbps =
@@ -336,7 +332,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   }
 
   if (ShouldSendClientHint(
-          ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+          policy, resource_origin, is_1p_origin,
           network::mojom::blink::WebClientHintsType::kEct_DEPRECATED,
           hints_preferences)) {
     absl::optional<WebEffectiveConnectionType> holdback_ect =
@@ -354,8 +350,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
 
   // Only send User Agent hints if the info is available
   if (RuntimeEnabledFeatures::UserAgentClientHintEnabled() && ua) {
-    if (ShouldSendClientHint(ClientHintsMode::kStandard, policy,
-                             resource_origin, is_1p_origin,
+    if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,
                              network::mojom::blink::WebClientHintsType::kUAArch,
                              hints_preferences)) {
       request.SetHttpHeaderField(
@@ -366,7 +361,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kUAPlatform,
             hints_preferences)) {
       request.SetHttpHeaderField(
@@ -377,7 +372,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kUAPlatformVersion,
             hints_preferences)) {
       request.SetHttpHeaderField(
@@ -388,7 +383,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kUAModel,
             hints_preferences)) {
       request.SetHttpHeaderField(
@@ -399,7 +394,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kUAFullVersion,
             hints_preferences)) {
       request.SetHttpHeaderField(
@@ -410,7 +405,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kUAFullVersionList,
             hints_preferences)) {
       request.SetHttpHeaderField(
@@ -421,7 +416,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kUABitness,
             hints_preferences)) {
       request.SetHttpHeaderField(
@@ -432,7 +427,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kUAWoW64,
             hints_preferences)) {
       request.SetHttpHeaderField(
@@ -443,7 +438,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kUAReduced,
             hints_preferences)) {
       // If the UA-Reduced client hint should be sent according to the hints
@@ -457,7 +452,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kFullUserAgent,
             hints_preferences)) {
       request.SetHttpHeaderField(
@@ -469,7 +464,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   }
 
   if (ShouldSendClientHint(
-          ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+          policy, resource_origin, is_1p_origin,
           network::mojom::blink::WebClientHintsType::kPrefersColorScheme,
           hints_preferences) &&
       prefers_color_scheme) {
@@ -480,8 +475,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
         prefers_color_scheme.value());
   }
 
-  if (ShouldSendClientHint(ClientHintsMode::kStandard, policy, resource_origin,
-                           is_1p_origin,
+  if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,
                            network::mojom::blink::WebClientHintsType::kSaveData,
                            hints_preferences)) {
     if (GetNetworkStateNotifier().SaveDataEnabled()) {
@@ -685,31 +679,21 @@ BaseFetchContext::CanRequestInternal(
 }
 
 bool BaseFetchContext::ShouldSendClientHint(
-    ClientHintsMode mode,
     const PermissionsPolicy* policy,
     const url::Origin& resource_origin,
     bool is_1p_origin,
     network::mojom::blink::WebClientHintsType type,
     const ClientHintsPreferences& hints_preferences) const {
-  bool origin_ok;
-
-  if (mode == ClientHintsMode::kLegacy &&
-      base::FeatureList::IsEnabled(features::kAllowClientHintsToThirdParty)) {
-    origin_ok = true;
-  } else {
-    // For subresource requests, if the parent frame has Sec-CH-UA-Reduced or
-    // Sec-CH-UA-Full then send the hint in the fetch request, regardless of the
-    // permissions policy.
-    origin_ok =
-        type == network::mojom::blink::WebClientHintsType::kUAReduced ||
-        type == network::mojom::blink::WebClientHintsType::kFullUserAgent ||
-        (policy &&
-         policy->IsFeatureEnabledForOrigin(
-             GetClientHintToPolicyFeatureMap().at(type), resource_origin));
-  }
-
-  if (!origin_ok)
+  // For subresource requests, if the parent frame has Sec-CH-UA-Reduced,
+  // Sec-CH-UA-Full, or Sec-CH-Partitioned-Cookies, then send the hint in the
+  // fetch request, regardless of the permissions policy.
+  if (type != network::mojom::blink::WebClientHintsType::kUAReduced &&
+      type != network::mojom::blink::WebClientHintsType::kFullUserAgent &&
+      (!policy ||
+       !policy->IsFeatureEnabledForOrigin(
+           GetClientHintToPolicyFeatureMap().at(type), resource_origin))) {
     return false;
+  }
 
   return IsClientHintSentByDefault(type) || hints_preferences.ShouldSend(type);
 }

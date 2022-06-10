@@ -304,11 +304,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kInputTargetClientHighPriority;
 // feature param.
 BLINK_COMMON_EXPORT extern const base::Feature kResamplingScrollEvents;
 
-// Enables the device-memory, resource-width, viewport-width and DPR client
-// hints to be sent to third-party origins if the first-party has opted in to
-// receiving client hints, regardless of Permissions Policy.
-BLINK_COMMON_EXPORT extern const base::Feature kAllowClientHintsToThirdParty;
-
 // Enables filtering of predicted scroll events on compositor thread.
 // Uses the kFilterName* values in ui_base_features.h as the 'filter' feature
 // param.

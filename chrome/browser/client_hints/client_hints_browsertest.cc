@@ -1195,21 +1195,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
 // headers.
 INSTANTIATE_TEST_SUITE_P(All, ClientHintsBrowserTest, testing::Bool());
 
-class ClientHintsAllowThirdPartyBrowserTest : public ClientHintsBrowserTest {
-  std::unique_ptr<base::FeatureList> EnabledFeatures() override {
-    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine(
-        "AllowClientHintsToThirdParty,UserAgentClientHint,"
-        "PrefersColorSchemeClientHintHeader,ViewportHeightClientHintHeader",
-        "");
-    return feature_list;
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClientHintsAllowThirdPartyBrowserTest,
-                         testing::Bool());
-
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, CorsChecks) {
   for (const auto& elem : network::GetClientHintToNameMap()) {
     const auto& header = elem.second;
@@ -1950,73 +1935,8 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, OffTheRecordIndependent2) {
                           browser());
 }
 
-// Test that client hints are attached to third party subresources if
-// AllowClientHintsToThirdParty feature is enabled.
-IN_PROC_BROWSER_TEST_P(ClientHintsAllowThirdPartyBrowserTest,
-                       ClientHintsThirdPartyAllowed_HttpEquiv) {
-  GURL gurl;
-  unsigned update_event_count = 0;
-  if (GetParam()) {
-    gurl = http_equiv_accept_ch_img_localhost();
-  } else {
-    gurl = accept_ch_img_localhost();
-    update_event_count = 1;
-  }
-
-  base::HistogramTester histogram_tester;
-
-  SetClientHintExpectationsOnMainFrame(false);
-  SetClientHintExpectationsOnSubresources(true);
-
-  // Add client hints for the embedded test server.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  histogram_tester.ExpectTotalCount("ClientHints.UpdateEventCount",
-                                    update_event_count);
-
-  EXPECT_EQ(expected_client_hints_number, count_client_hints_headers_seen());
-
-  // Requests to third party servers should not have client hints attached.
-  EXPECT_EQ(1u, third_party_request_count_seen());
-
-  // Device memory, viewport width, DRP, and UA client hints should be sent to
-  // the third-party when feature "AllowClientHintsToThirdParty" is enabled.
-  EXPECT_EQ(6u, third_party_client_hints_count_seen());
-}
-IN_PROC_BROWSER_TEST_P(ClientHintsAllowThirdPartyBrowserTest,
-                       ClientHintsThirdPartyAllowed_MetaName) {
-  GURL gurl;
-  unsigned update_event_count = 0;
-  if (GetParam()) {
-    gurl = meta_name_accept_ch_img_localhost();
-  } else {
-    gurl = accept_ch_img_localhost();
-    update_event_count = 1;
-  }
-
-  base::HistogramTester histogram_tester;
-
-  SetClientHintExpectationsOnMainFrame(false);
-  SetClientHintExpectationsOnSubresources(true);
-
-  // Add client hints for the embedded test server.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  histogram_tester.ExpectTotalCount("ClientHints.UpdateEventCount",
-                                    update_event_count);
-
-  EXPECT_EQ(expected_client_hints_number, count_client_hints_headers_seen());
-
-  // Requests to third party servers should not have client hints attached.
-  EXPECT_EQ(1u, third_party_request_count_seen());
-
-  // Device memory, viewport width, DRP, and UA client hints should be sent to
-  // the third-party when feature "AllowClientHintsToThirdParty" is enabled.
-  EXPECT_EQ(6u, third_party_client_hints_count_seen());
-}
-
-// Test that client hints are not attached to third party subresources if
-// AllowClientHintsToThirdParty feature is not enabled.
-IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
-                       ClientHintsThirdPartyNotAllowed_HttpEquiv) {
+// Only default client hints should be delegated to third party subresources.
+IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest, Default_HttpEquiv) {
   GURL gurl;
   unsigned update_event_count = 0;
   if (GetParam()) {
@@ -2045,13 +1965,11 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
   // Requests to third party servers should not have client hints attached.
   EXPECT_EQ(1u, third_party_request_count_seen());
 
-  // Client hints should not be sent to the third-party when feature
-  // "AllowClientHintsToThirdParty" is not enabled, with the exception of the
-  // `Sec-CH-UA` hint, which is sent with every request.
+  // Client hints should not be sent to the third-party with the exception of
+  // the `Sec-CH-UA/-Platform/-Mobile))` hints sent every request.
   EXPECT_EQ(3u, third_party_client_hints_count_seen());
 }
-IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
-                       ClientHintsThirdPartyNotAllowed_MetaName) {
+IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest, Default_MetaName) {
   GURL gurl;
   unsigned update_event_count = 0;
   if (GetParam()) {
@@ -2080,9 +1998,8 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
   // Requests to third party servers should not have client hints attached.
   EXPECT_EQ(1u, third_party_request_count_seen());
 
-  // Client hints should not be sent to the third-party when feature
-  // "AllowClientHintsToThirdParty" is not enabled, with the exception of the
-  // `Sec-CH-UA` hint, which is sent with every request.
+  // Client hints should not be sent to the third-party with the exception of
+  // the `Sec-CH-UA/-Platform/-Mobile))` hints sent every request.
   EXPECT_EQ(3u, third_party_client_hints_count_seen());
 }
 

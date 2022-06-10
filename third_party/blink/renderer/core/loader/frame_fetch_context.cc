@@ -120,19 +120,6 @@ namespace blink {
 
 namespace {
 
-// Requested client hints are always sent for first-party subresources, but
-// third party subresources receive hints based on (1) the state of the flag
-// `kAllowClientHintsToThirdParty` and (2) whether they are a legacy client
-// hint (device-memory, resource-width, viewport-width and dpr).
-// TODO(crbug.com/1227043): Remove both of the above mechanisms.
-//
-// If `kAllowClientHintsToThirdParty` is enabled AND the requested client hint
-// is a legacy client hint, then the hint is shared to third parties regardless
-// of permissions policy. This flag is only enabled by default on Android.
-//
-// If `kAllowClientHintsToThirdParty` is disabled OR the requested client hint
-// isn't a legacy client hint, then the hint is shared only to third parties
-// specifically enabled by the permissions policy.
 mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
   if (!frame)
     return mojom::FetchCacheMode::kDefault;

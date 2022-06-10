@@ -732,12 +732,6 @@
              "--enable-features=ClipboardCustomFormats"]
   },
   {
-    "prefix": "legacy-client-hints",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/client-hints", "wpt_internal/client-hints"],
-    "args": ["--enable-features=AllowClientHintsToThirdParty"]
-  },
-  {
     "prefix": "disable-ua-client-hint",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/client-hints", "wpt_internal/client-hints"],

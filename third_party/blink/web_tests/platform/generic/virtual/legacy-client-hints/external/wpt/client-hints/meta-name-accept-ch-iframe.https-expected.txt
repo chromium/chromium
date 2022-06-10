@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Client hints loaded on same-origin iframe include hints with a default permissions policy of self and *.
-PASS Client hints loaded on cross-origin iframe only include hints with a default permissions policy of *.
-Harness: the test ran to completion.
-
