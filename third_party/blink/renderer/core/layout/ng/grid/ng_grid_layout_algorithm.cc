@@ -633,6 +633,7 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
 
   const auto& container_style = Style();
   const auto& constraint_space = ConstraintSpace();
+  const auto& border_scrollbar_padding = BorderScrollbarPadding();
 
   DCHECK_NE(grid_available_size_.inline_size, kIndefiniteSize);
   layout_data->columns =
@@ -643,8 +644,9 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
   std::unique_ptr<NGGridBlockTrackCollection> row_builder_collection;
 
   if (const auto* subgridded_rows = constraint_space.SubgriddedRows()) {
-    layout_data->rows =
-        std::make_unique<NGGridLayoutTrackCollection>(*subgridded_rows);
+    layout_data->rows = std::make_unique<NGGridLayoutTrackCollection>(
+        *subgridded_rows, border_scrollbar_padding,
+        ComputeMarginsForSelf(constraint_space, container_style));
   } else {
     row_builder_collection = std::make_unique<NGGridBlockTrackCollection>(
         container_style, placement_data, kForRows);
@@ -703,8 +705,6 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
   };
 
   ComputeGrid();
-
-  const auto& border_scrollbar_padding = BorderScrollbarPadding();
 
   if (contain_intrinsic_block_size_) {
     *intrinsic_block_size = *contain_intrinsic_block_size_;
@@ -1220,16 +1220,21 @@ NGGridLayoutAlgorithm::LayoutTrackCollection(
     const NGGridPlacementData& placement_data,
     const GridTrackSizingDirection track_direction,
     GridItems* grid_items) const {
+  const auto& container_style = Style();
+  const auto& constraint_space = ConstraintSpace();
+
   const auto is_for_columns = track_direction == kForColumns;
-
   const auto* subgridded_tracks = is_for_columns
-                                      ? ConstraintSpace().SubgriddedColumns()
-                                      : ConstraintSpace().SubgriddedRows();
-  if (subgridded_tracks)
-    return std::make_unique<NGGridLayoutTrackCollection>(*subgridded_tracks);
+                                      ? constraint_space.SubgriddedColumns()
+                                      : constraint_space.SubgriddedRows();
+  if (subgridded_tracks) {
+    return std::make_unique<NGGridLayoutTrackCollection>(
+        *subgridded_tracks, BorderScrollbarPadding(),
+        ComputeMarginsForSelf(constraint_space, container_style));
+  }
 
-  NGGridBlockTrackCollection track_builder_collection(Style(), placement_data,
-                                                      track_direction);
+  NGGridBlockTrackCollection track_builder_collection(
+      container_style, placement_data, track_direction);
   BuildBlockTrackCollection(grid_items, &track_builder_collection);
 
   const bool is_available_size_indefinite =
