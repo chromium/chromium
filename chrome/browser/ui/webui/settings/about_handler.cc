@@ -492,7 +492,7 @@ void AboutHandler::HandleOpenOsHelpPage(const base::Value::List& args) {
 }
 
 void AboutHandler::HandleSetChannel(const base::Value::List& args) {
-  DCHECK(args.size() == 2);
+  DCHECK_EQ(2U, args.size());
 
   if (!CanChangeChannel(profile_)) {
     LOG(WARNING) << "Non-owner tried to change release track.";
