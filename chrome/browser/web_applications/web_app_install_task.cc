@@ -591,7 +591,6 @@ void WebAppInstallTask::InstallWebAppOnManifestValidated(
     const GURL& manifest_url,
     WebAppInstallFlow flow,
     absl::optional<WebAppInstallParams> install_params) {
-  DCHECK(AreWebAppsUserInstallable(profile_));
   CheckInstallPreconditions();
 
   flow_ = flow;
@@ -602,6 +601,10 @@ void WebAppInstallTask::InstallWebAppOnManifestValidated(
   if (dialog_callback_.is_null()) {
     background_installation_ = true;
     log_entry_.set_background_installation(true);
+  } else {
+    // TODO(https://crbug.com/1298130): Move the DCHECK to the beginning of
+    // install commands when all install flows are denormalized.
+    DCHECK(AreWebAppsUserInstallable(profile_));
   }
   install_callback_ = std::move(install_callback);
 
