@@ -31,6 +31,7 @@ import static org.junit.Assert.assertTrue;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
@@ -51,6 +52,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -65,6 +67,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /** Tests {@link PrivacySandboxSettingsFragment}. */
@@ -163,6 +166,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     @Feature({"RenderTest"})
     public void testRenderAdPersonalizationView() throws IOException {
         mFakePrivacySandboxBridge.setCurrentTopTopics("Generated sample data", "More made up data");
+        mFakePrivacySandboxBridge.setCurrentFledgeSites("a.com", "b.com");
         openPrivacySandboxSettings();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
         mRenderTestRule.render(getRootView(R.string.privacy_sandbox_topic_interests_subtitle),
@@ -241,7 +245,6 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     @Test
     @SmallTest
     public void testAdPersonalizationView() throws IOException {
-        mUserActionTester = new UserActionTester();
         openPrivacySandboxSettings();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
         onView(withText(R.string.privacy_sandbox_remove_interest_title))
@@ -249,6 +252,15 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         onView(withText(R.string.privacy_sandbox_ad_personalization_description_trials_on))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.privacy_sandbox_topic_empty_state)).check(doesNotExist());
+        onView(withText(R.string.privacy_sandbox_fledge_empty_state)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    public void testAdPersonalizationTopics() throws IOException {
+        openPrivacySandboxSettings();
+        mUserActionTester = new UserActionTester();
+        onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
 
         clickImageButtonNextToText("Foo");
         assertThat(PrivacySandboxBridge.getCurrentTopTopics(), not(hasItem(withTopic("Foo"))));
@@ -264,18 +276,52 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         onView(withText(R.string.privacy_sandbox_topic_empty_state)).check(matches(isDisplayed()));
     }
 
+    @Nullable
+    private List<String> getFledgeJoiningEtlds() {
+        PayloadCallbackHelper<List<String>> callbackHelper = new PayloadCallbackHelper<>();
+        PrivacySandboxBridge.getFledgeJoiningEtldPlusOneForDisplay(callbackHelper::notifyCalled);
+        return callbackHelper.getOnlyPayloadBlocking();
+    }
+
+    @Test
+    @SmallTest
+    public void testAdPersonalizationFledge() throws IOException {
+        openPrivacySandboxSettings();
+        mUserActionTester = new UserActionTester();
+        onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
+
+        scrollToSetting(withText("example2.com"));
+        clickImageButtonNextToText("example.com");
+        assertThat(getFledgeJoiningEtlds(), not(hasItem("example.com")));
+        assertThat(PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
+                hasItem("example.com"));
+        onView(withText(R.string.privacy_sandbox_remove_site_snackbar))
+                .check(matches(isDisplayed()));
+        assertThat(mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.AdPersonalization.Opened",
+                        "Settings.PrivacySandbox.AdPersonalization.SiteRemoved"));
+        onView(withText(R.string.privacy_sandbox_fledge_empty_state)).check(doesNotExist());
+
+        clickImageButtonNextToText("example2.com");
+        onView(withText(R.string.privacy_sandbox_fledge_empty_state)).check(matches(isDisplayed()));
+    }
+
     @Test
     @SmallTest
     public void testAdPersonalizationEmptyView() throws IOException {
         // Set no current or blocked topics.
         mFakePrivacySandboxBridge.setCurrentTopTopics();
         mFakePrivacySandboxBridge.setBlockedTopics();
+        mFakePrivacySandboxBridge.setCurrentFledgeSites();
+        mFakePrivacySandboxBridge.setBlockedFledgeSites();
         openPrivacySandboxSettings();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
         onView(withText(R.string.privacy_sandbox_ad_personalization_description_no_items))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.privacy_sandbox_remove_interest_title)).check(doesNotExist());
+        onView(withText(R.string.privacy_sandbox_remove_sites_title)).check(doesNotExist());
         onView(withText(R.string.privacy_sandbox_topic_empty_state)).check(matches(isDisplayed()));
+        onView(withText(R.string.privacy_sandbox_fledge_empty_state)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -330,8 +376,8 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     @Test
     @SmallTest
     public void testRemovedInterestsView() throws IOException {
-        mUserActionTester = new UserActionTester();
         openPrivacySandboxSettings();
+        mUserActionTester = new UserActionTester();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
         onView(withText(R.string.privacy_sandbox_remove_interest_title)).perform(click());
 

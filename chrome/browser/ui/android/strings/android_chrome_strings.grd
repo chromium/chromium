@@ -989,11 +989,20 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
       <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_BUTTON_DESCRIPTION" desc="Content description for button that removes an ad interest for the Topics API of the Privacy Sandbox.">
         Remove <ph name="INTEREST">%1$s<ex>Acting and Theater</ex></ph>
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_REMOVE_SITE_BUTTON_DESCRIPTION" desc="Content description for button that removes an ad interest for the FLEDGE API of the Privacy Sandbox.">
+        Remove <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>
+      </message>
       <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was removed from the Topics API of the Privacy Sandbox.">
         Interest removed
       </message>
        <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_TITLE" desc="Title of the settings page to configure interests that were removed from ad personalization in the Privacy Sandbox.">
         Interests you removed
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_REMOVE_SITE_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was removed from the FLEDGE API of the Privacy Sandbox.">
+        Site removed
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_REMOVE_SITES_TITLE" desc="Title of the settings page to configure sites that were removed from ad personalization in the Privacy Sandbox.">
+        Sites you removed
       </message>
       <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_DESCRIPTION" desc="A paragraph beneath the card title. The page title explains why things appear on this page. This string explains why the user might want to “un-remove” or “re-allow” an item from the list. If a user does choose “Allow” for an item, there won’t be any immediate change in the interface because the item simply becomes eligible again. So, for example, the user previously blocked the interest “Horror movies.” Today, they “allow” “Horror movies” because they’ve decided that as about horror movies are actually OK to see. It might take another week or longer, based on the user’s browsing history, for “Horror movies” to appear in the list of interests again as an active interest within the last 3 weeks. * “Allow”: This aligns with the button label titled “allow”. It wouldn’t make much sense if the user couldn’t see the Allow button on the card.">
         Allow an interest or site if you think ads related to the item would be useful to you
@@ -1001,7 +1010,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
        <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_SUBTITLE" desc="Subtitle of page where the user controls thier Browser-based ad personalization settings.">
         Browser-based ad personalization
       </message>
-       <message name="IDS_PRIVACY_SANDBOX_TOPIC_INTERESTS_SUBTITLE" desc="TOPICS API A sub title that describes the first of 2 ways a site can get info from Chrome in order to target ads to the user. Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. * “Your”: we need to convey a sense of ownership, even if the user didn’t explicitly choose the interests we’re talking about. Without the “your”, it could sound like Chrome is simply building a generic library of interests. * “estimated”: It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). * “by Chrome”: This is new behavior for a browser (Chrome) to take an active role in processing user data for the purposes of showing ads. It’s important to convey “chrome”, the actor in this case.">
+      <message name="IDS_PRIVACY_SANDBOX_TOPIC_INTERESTS_SUBTITLE" desc="TOPICS API A sub title that describes the first of 2 ways a site can get info from Chrome in order to target ads to the user. Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. * “Your”: we need to convey a sense of ownership, even if the user didn’t explicitly choose the interests we’re talking about. Without the “your”, it could sound like Chrome is simply building a generic library of interests. * “estimated”: It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). * “by Chrome”: This is new behavior for a browser (Chrome) to take an active role in processing user data for the purposes of showing ads. It’s important to convey “chrome”, the actor in this case.">
         Your interests as estimated by Chrome
       </message>
       <message name="IDS_PRIVACY_SANDBOX_TOPIC_EMPTY_STATE" desc="Summary shown when no interests for ad personlization are available for the Topics API of the Privacy Sandbox.">
@@ -1009,6 +1018,12 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
       </message>
       <message name="IDS_PRIVACY_SANDBOX_REMOVED_TOPICS_EMPTY_STATE" desc="Summary shown when no interests for ad personlization were removed from the Topics API of the Privacy Sandbox.">
         Interests you removed will appear here
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_FLEDGE_SUBTITLE" desc="FLEDGE API A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
+        Sites you visit that define your interests
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_FLEDGE_EMPTY_STATE" desc="Summary shown when no interests for ad personlization are available for the FLEDGE API of the Privacy Sandbox.">
+        A list of sites will appear here as you browse the web
       </message>
 
       <!-- Privacy Sandbox dialog. -->

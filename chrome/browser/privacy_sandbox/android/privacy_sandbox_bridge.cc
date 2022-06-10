@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/privacy_sandbox/android/jni_headers/PrivacySandboxBridge_jni.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "content/public/browser/browser_thread.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ScopedJavaLocalRef;
@@ -139,6 +141,7 @@ static void JNI_PrivacySandboxBridge_GetFledgeJoiningEtldPlusOneForDisplay(
       base::BindOnce(
           [](const base::android::JavaRef<jobject>& j_callback,
              std::vector<std::string> strings) {
+            DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
             JNIEnv* env = base::android::AttachCurrentThread();
             base::android::RunObjectCallbackAndroid(
                 j_callback, base::android::ToJavaArrayOfStrings(env, strings));
