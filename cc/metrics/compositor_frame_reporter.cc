@@ -92,6 +92,7 @@ constexpr int kMaxEventLatencyHistogramIndex =
 constexpr base::TimeDelta kEventLatencyHistogramMin = base::Microseconds(1);
 constexpr base::TimeDelta kEventLatencyHistogramMax = base::Seconds(5);
 constexpr int kEventLatencyHistogramBucketCount = 100;
+constexpr base::TimeDelta kHighLatencyMin = base::Milliseconds(75);
 
 std::string GetCompositorLatencyHistogramName(
     FrameReportType report_type,
@@ -1075,6 +1076,8 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
           has_smooth_input_main |= event_metrics->HasSmoothInputEvent();
         }
         reporter->set_has_smooth_input_main(has_smooth_input_main);
+        reporter->set_has_high_latency(
+            (frame_termination_time_ - args_.frame_time) > kHighLatencyMin);
 
         // TODO(crbug.com/1086974): Set 'drop reason' if applicable.
       });
