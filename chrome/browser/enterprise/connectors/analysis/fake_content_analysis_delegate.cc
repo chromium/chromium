@@ -6,9 +6,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
+#include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "content/public/browser/browser_thread.h"
@@ -38,11 +39,7 @@ FakeContentAnalysisDelegate::FakeContentAnalysisDelegate(
                               safe_browsing::DeepScanAccessPoint::UPLOAD),
       delete_closure_(delete_closure),
       status_callback_(status_callback),
-      dm_token_(std::move(dm_token)) {
-  FilesRequestHandler::SetFakeUploadCallbackForTesting(base::BindRepeating(
-      &FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning,
-      weakptr_factory_.GetWeakPtr()));
-}
+      dm_token_(std::move(dm_token)) {}
 
 FakeContentAnalysisDelegate::~FakeContentAnalysisDelegate() {
   if (!delete_closure_.is_null())
@@ -66,6 +63,11 @@ std::unique_ptr<ContentAnalysisDelegate> FakeContentAnalysisDelegate::Create(
   auto ret = std::make_unique<FakeContentAnalysisDelegate>(
       delete_closure, status_callback, std::move(dm_token), web_contents,
       std::move(data), std::move(callback));
+  FilesRequestHandler::SetFactoryForTesting(base::BindRepeating(
+      &FakeFilesRequestHandler::Create,
+      base::BindRepeating(
+          &FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning,
+          base::Unretained(ret.get()))));
   return ret;
 }
 

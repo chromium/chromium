@@ -14,8 +14,10 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 
 namespace safe_browsing {
+
 class FileAnalysisRequest;
 class FileOpeningJob;
+
 }  // namespace safe_browsing
 
 namespace enterprise_connectors {
@@ -43,13 +45,50 @@ class FilesRequestHandler : public RequestHandlerBase {
     std::string mime_type;
   };
 
-  using FakeFileUploadCallback = base::RepeatingCallback<void(
-      safe_browsing::BinaryUploadService::Result,
-      const base::FilePath&,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request>)>;
-
+  // Callback that informs caller of scanning verdicts for each file.
   using CompletionCallback =
       base::OnceCallback<void(std::vector<RequestHandlerResult>)>;
+
+  // A factory function used in tests to create fake FilesRequestHandler
+  // instances.
+  using Factory = base::RepeatingCallback<std::unique_ptr<FilesRequestHandler>(
+      safe_browsing::BinaryUploadService* upload_service,
+      Profile* profile,
+      const enterprise_connectors::AnalysisSettings& analysis_settings,
+      GURL url,
+      safe_browsing::DeepScanAccessPoint access_point,
+      const std::vector<base::FilePath>& paths,
+      CompletionCallback callback)>;
+
+  // Create an instance of FilesRequestHandler. If a factory is set, it will be
+  // used instead.
+  // Note that `analysis_settings` is saved as const reference and not copied.
+  // The calling side is responsible that `analysis_settings` is not destroyed
+  // before scanning is completed.
+  static std::unique_ptr<FilesRequestHandler> Create(
+      safe_browsing::BinaryUploadService* upload_service,
+      Profile* profile,
+      const enterprise_connectors::AnalysisSettings& analysis_settings,
+      GURL url,
+      safe_browsing::DeepScanAccessPoint access_point,
+      const std::vector<base::FilePath>& paths,
+      CompletionCallback callback);
+
+  // In tests, sets a factory function for creating fake FilesRequestHandlers.
+  static void SetFactoryForTesting(Factory factory);
+  static void ResetFactoryForTesting();
+
+  ~FilesRequestHandler() override;
+
+  void ReportWarningBypass(
+      absl::optional<std::u16string> user_justification) override;
+
+  void FileRequestCallbackForTesting(
+      base::FilePath path,
+      safe_browsing::BinaryUploadService::Result result,
+      enterprise_connectors::ContentAnalysisResponse response);
+
+ protected:
   FilesRequestHandler(
       safe_browsing::BinaryUploadService* upload_service,
       Profile* profile,
@@ -59,20 +98,6 @@ class FilesRequestHandler : public RequestHandlerBase {
       const std::vector<base::FilePath>& paths,
       CompletionCallback callback);
 
-  ~FilesRequestHandler() override;
-
-  void ReportWarningBypass(
-      absl::optional<std::u16string> user_justification) override;
-
-  static void SetFakeUploadCallbackForTesting(
-      FakeFileUploadCallback fake_file_upload_callback);
-
-  void FileRequestCallbackForTesting(
-      base::FilePath path,
-      safe_browsing::BinaryUploadService::Result result,
-      enterprise_connectors::ContentAnalysisResponse response);
-
- protected:
   bool UploadDataImpl() override;
 
  private:
@@ -92,7 +117,7 @@ class FilesRequestHandler : public RequestHandlerBase {
   // These methods exist so they can be overridden in tests as needed.
   // The `result` argument exists as an optimization to finish the request early
   // when the result is known in advance to avoid using the upload service.
-  void UploadFileForDeepScanning(
+  virtual void UploadFileForDeepScanning(
       safe_browsing::BinaryUploadService::Result result,
       const base::FilePath& path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);

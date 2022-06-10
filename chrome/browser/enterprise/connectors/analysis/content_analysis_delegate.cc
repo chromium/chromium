@@ -443,12 +443,11 @@ bool ContentAnalysisDelegate::UploadData() {
   if (!data_.paths.empty()) {
     // Passing the settings using a reference is safe here, because
     // MultiFileRequestHandler is owned by this class.
-    files_request_handler_ = std::make_unique<FilesRequestHandler>(
+    files_request_handler_ = FilesRequestHandler::Create(
         GetBinaryUploadService(), profile_, data_.settings, url_, access_point_,
         data_.paths,
         base::BindOnce(&ContentAnalysisDelegate::FilesRequestCallback,
                        GetWeakPtr()));
-
     files_request_complete_ = !files_request_handler_->UploadData();
   } else {
     // If no files should be uploaded, the file request is complete.

@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -13,12 +14,16 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
 
 namespace enterprise_connectors {
+
 namespace {
-FilesRequestHandler::FakeFileUploadCallback* FakeFileUploadCallbackStorage() {
-  static base::NoDestructor<FilesRequestHandler::FakeFileUploadCallback>
-      fake_file_upload_callback;
-  return fake_file_upload_callback.get();
+
+// Global pointer of factory function (RepeatingCallback) used to create
+// instances of ContentAnalysisDelegate in tests.  !is_null() only in tests.
+FilesRequestHandler::Factory* GetFactoryStorage() {
+  static base::NoDestructor<FilesRequestHandler::Factory> factory;
+  return factory.get();
 }
+
 }  // namespace
 
 FilesRequestHandler::FileInfo::FileInfo() = default;
@@ -44,6 +49,38 @@ FilesRequestHandler::FilesRequestHandler(
   file_info_.resize(paths_.size());
 }
 
+// static
+std::unique_ptr<FilesRequestHandler> FilesRequestHandler::Create(
+    safe_browsing::BinaryUploadService* upload_service,
+    Profile* profile,
+    const enterprise_connectors::AnalysisSettings& analysis_settings,
+    GURL url,
+    safe_browsing::DeepScanAccessPoint access_point,
+    const std::vector<base::FilePath>& paths,
+    CompletionCallback callback) {
+  if (GetFactoryStorage()->is_null()) {
+    return base::WrapUnique(
+        new FilesRequestHandler(upload_service, profile, analysis_settings, url,
+                                access_point, paths, std::move(callback)));
+  } else {
+    // Use the factory to create a fake FilesRequestHandler.
+    return GetFactoryStorage()->Run(upload_service, profile, analysis_settings,
+                                    url, access_point, paths,
+                                    std::move(callback));
+  }
+}
+
+// static
+void FilesRequestHandler::SetFactoryForTesting(Factory factory) {
+  *GetFactoryStorage() = factory;
+}
+
+// static
+void FilesRequestHandler::ResetFactoryForTesting() {
+  if (GetFactoryStorage())
+    GetFactoryStorage()->Reset();
+}
+
 FilesRequestHandler::~FilesRequestHandler() = default;
 
 void FilesRequestHandler::ReportWarningBypass(
@@ -59,12 +96,6 @@ void FilesRequestHandler::ReportWarningBypass(
         access_point_, file_info_[index].size, warning.second,
         user_justification);
   }
-}
-
-// static
-void FilesRequestHandler::SetFakeUploadCallbackForTesting(
-    FakeFileUploadCallback fake_file_upload_callback) {
-  *FakeFileUploadCallbackStorage() = fake_file_upload_callback;
 }
 
 void FilesRequestHandler::FileRequestCallbackForTesting(
@@ -94,6 +125,10 @@ bool FilesRequestHandler::UploadDataImpl() {
         std::make_unique<safe_browsing::FileOpeningJob>(std::move(tasks));
     return true;
   }
+
+  // If zero files were passed to the FilesRequestHandler, we call the callback
+  // directly.
+  MaybeCompleteScanRequest();
   return false;
 }
 
@@ -152,10 +187,6 @@ void FilesRequestHandler::UploadFileForDeepScanning(
     safe_browsing::BinaryUploadService::Result result,
     const base::FilePath& path,
     std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
-  if (!FakeFileUploadCallbackStorage()->is_null()) {
-    FakeFileUploadCallbackStorage()->Run(result, path, std::move(request));
-    return;
-  }
   safe_browsing::BinaryUploadService* upload_service = GetBinaryUploadService();
   if (upload_service)
     upload_service->MaybeUploadForDeepScanning(std::move(request));
@@ -200,6 +231,7 @@ void FilesRequestHandler::FileRequestCallback(
 
   safe_browsing::DecrementCrashKey(
       safe_browsing::ScanningCrashKey::PENDING_FILE_UPLOADS);
+
   MaybeCompleteScanRequest();
 }
 
