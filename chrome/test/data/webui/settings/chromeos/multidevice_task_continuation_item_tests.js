@@ -44,10 +44,10 @@ suite('Multidevice', function() {
     webUIListenerCallback('sync-prefs-changed', prefs);
     flush();
 
-    assertTrue(!!taskContinuationItem.$$(
+    assertTrue(!!taskContinuationItem.shadowRoot.querySelector(
         'settings-multidevice-task-continuation-disabled-link'));
 
-    const toggle = taskContinuationItem.$$('cr-toggle');
+    const toggle = taskContinuationItem.shadowRoot.querySelector('cr-toggle');
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
   });
@@ -58,7 +58,7 @@ suite('Multidevice', function() {
     webUIListenerCallback('sync-prefs-changed', prefs);
     flush();
 
-    assertFalse(!!taskContinuationItem.$$(
+    assertFalse(!!taskContinuationItem.shadowRoot.querySelector(
         'settings-multidevice-task-continuation-disabled-link'));
   });
 });

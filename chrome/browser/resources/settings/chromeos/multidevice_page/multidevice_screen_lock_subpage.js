@@ -2,99 +2,114 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/shared_vars_css.m.js';
-import '../os_people_page/lock_screen_password_prompt_dialog.js';
-import '../os_people_page/setup_pin_dialog.js';
-
-import {assert} from '//resources/js/assert.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {LockScreenUnlockType, LockStateBehavior} from '../os_people_page/lock_state_behavior.js';
-
 /**
  * @fileoverview
  * Subpage of settings-multidevice-notification-access-setup-dialog for setting
  * up screen lock.
  */
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-multidevice-screen-lock-subpage',
 
-  behaviors: [
-    I18nBehavior,
-    LockStateBehavior,
-  ],
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import '../os_people_page/lock_screen_password_prompt_dialog.js';
+import '../os_people_page/setup_pin_dialog.js';
 
-  properties: {
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    /**
-     * setModes_ is a partially applied function of
-     * {@link chrome.quickUnlockPrivate.setModes} that stores the current auth
-     * token. It's defined only when the user has entered a valid password.
-     * @type {Object|undefined}
-     * @private
-     */
-    setModes_: {
-      type: Object,
-    },
+import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorInterface} from '../os_people_page/lock_state_behavior.js';
 
-    /**
-     * Authentication token.
-     * @private {!chrome.quickUnlockPrivate.TokenInfo|undefined}
-     */
-    authToken_: {
-      type: Object,
-      observer: 'onAuthTokenChanged_',
-    },
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {LockStateBehaviorInterface}
+ */
+const SettingsMultideviceScreenLockSubpageElementBase =
+    mixinBehaviors([I18nBehavior, LockStateBehavior], PolymerElement);
 
-    /**
-     * True if quick unlock settings are disabled by policy.
-     * @private
-     */
-    quickUnlockDisabledByPolicy_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('quickUnlockDisabledByPolicy');
+/** @polymer */
+class SettingsMultideviceScreenLockSubpageElement extends
+    SettingsMultideviceScreenLockSubpageElementBase {
+  static get is() {
+    return 'settings-multidevice-screen-lock-subpage';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * setModes_ is a partially applied function of
+       * {@link chrome.quickUnlockPrivate.setModes} that stores the current auth
+       * token. It's defined only when the user has entered a valid password.
+       * @type {Object|undefined}
+       * @private
+       */
+      setModes_: {
+        type: Object,
       },
-      readOnly: true,
-    },
 
-    /** @private {boolean} */
-    shouldPromptPasswordDialog_: Boolean,
+      /**
+       * Authentication token.
+       * @private {!chrome.quickUnlockPrivate.TokenInfo|undefined}
+       */
+      authToken_: {
+        type: Object,
+        observer: 'onAuthTokenChanged_',
+      },
 
-    /** Reflects whether the screen lock is enabled. */
-    isScreenLockEnabled: {
-      type: Boolean,
-      value: false,
-      notify: true,
-    },
+      /**
+       * True if quick unlock settings are disabled by policy.
+       * @private
+       */
+      quickUnlockDisabledByPolicy_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('quickUnlockDisabledByPolicy');
+        },
+        readOnly: true,
+      },
 
-    /** Reflects the password sub-dialog property. */
-    isPasswordDialogShowing: {
-      type: Boolean,
-      value: false,
-      notify: true,
-    },
+      /** @private {boolean} */
+      shouldPromptPasswordDialog_: Boolean,
 
-    /** Reflects whether the pin dialog should show. */
-    showSetupPinDialog: {
-      type: Boolean,
-      value: false,
-      notify: true,
-    },
-  },
+      /** Reflects whether the screen lock is enabled. */
+      isScreenLockEnabled: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
 
-  /** @override */
-  created() {
+      /** Reflects the password sub-dialog property. */
+      isPasswordDialogShowing: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
+
+      /** Reflects whether the pin dialog should show. */
+      showSetupPinDialog: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
+    };
+  }
+
+  static get observers() {
+    return ['selectedUnlockTypeChanged_(selectedUnlockType)'];
+  }
+
+  constructor() {
+    super();
+
     if (this.authToken_ === undefined) {
       this.shouldPromptPasswordDialog_ = true;
     }
-  },
-
-  /** selectedUnlockType is defined in LockStateBehavior. */
-  observers: ['selectedUnlockTypeChanged_(selectedUnlockType)'],
+  }
 
   /**
    * Called when the unlock type has changed.
@@ -129,7 +144,7 @@ Polymer({
         assert(result, 'Failed to clear quick unlock modes');
       });
     }
-  },
+  }
 
   /** @private */
   onAuthTokenChanged_() {
@@ -149,12 +164,12 @@ Polymer({
             });
       };
     }
-  },
+  }
 
   /** @private */
   onPasswordPromptDialogClose_() {
     this.shouldPromptPasswordDialog_ = false;
-  },
+  }
 
   /**
    * @param {!CustomEvent<!chrome.quickUnlockPrivate.TokenInfo>} e
@@ -166,7 +181,7 @@ Polymer({
     this.isScreenLockEnabled = true;
     // Avoid dialog.close() of password_prompt_dialog.ts to close main dialog
     this.isPasswordDialogShowing = true;
-  },
+  }
 
   /**
    * Returns true if the setup pin section should be shown.
@@ -176,11 +191,14 @@ Polymer({
    */
   showConfigurePinButton_(selectedUnlockType) {
     return selectedUnlockType === LockScreenUnlockType.PIN_PASSWORD;
-  },
+  }
 
   /** @private */
   onSetupPinDialogClose_() {
     this.showSetupPinDialog = false;
-  },
+  }
+}
 
-});
+customElements.define(
+    SettingsMultideviceScreenLockSubpageElement.is,
+    SettingsMultideviceScreenLockSubpageElement);

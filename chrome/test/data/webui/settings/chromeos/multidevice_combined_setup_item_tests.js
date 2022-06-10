@@ -30,7 +30,8 @@ suite('Multidevice', function() {
   });
 
   test('Setup button is disabled when PhoneHub is disabled.', async () => {
-    let button = combinedSetupItem.$$('cr-button[slot=feature-controller]');
+    let button = combinedSetupItem.shadowRoot.querySelector(
+        'cr-button[slot=feature-controller]');
     assertTrue(!!button);
     assertFalse(button.disabled);
 
@@ -39,7 +40,8 @@ suite('Multidevice', function() {
         {phoneHubState: MultiDeviceFeatureState.DISABLED_BY_USER});
     flush();
 
-    button = combinedSetupItem.$$('cr-button[slot=feature-controller]');
+    button = combinedSetupItem.shadowRoot.querySelector(
+        'cr-button[slot=feature-controller]');
     assertTrue(!!button);
     assertTrue(button.disabled);
   });

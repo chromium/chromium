@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from '//resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 /**
  * Location where Smart Lock was toggled on/off.
@@ -28,7 +28,6 @@ const SmartLockToggle = {
   DISABLED_ON_LOCK_SCREEN_SETTINGS: 3,
   MAX: 4,
 };
-
 
 const SmartLockToggleHistogramName = 'SmartLock.Toggle';
 

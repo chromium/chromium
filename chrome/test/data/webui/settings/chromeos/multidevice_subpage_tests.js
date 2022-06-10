@@ -110,7 +110,7 @@ suite('Multidevice', function() {
 
   setup(function() {
     browserProxy = new TestMultideviceBrowserProxy();
-    MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+    MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
     multideviceSubpage = document.createElement('settings-multidevice-subpage');
@@ -131,31 +131,35 @@ suite('Multidevice', function() {
     for (const mode of HOST_SET_MODES) {
       setMode(mode);
       assertEquals(
-          !!multideviceSubpage.$$('#smartLockItem'),
+          !!multideviceSubpage.shadowRoot.querySelector('#smartLockItem'),
           mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED);
       assertEquals(
-          !!multideviceSubpage.$$('#instantTetheringItem'),
+          !!multideviceSubpage.shadowRoot.querySelector(
+              '#instantTetheringItem'),
           mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED);
       assertEquals(
-          !!multideviceSubpage.$$('#messagesItem'),
+          !!multideviceSubpage.shadowRoot.querySelector('#messagesItem'),
           mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED);
       assertEquals(
-          !!multideviceSubpage.$$('#phoneHubItem'),
+          !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'),
           mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED);
       assertEquals(
-          !!multideviceSubpage.$$('#phoneHubNotificationsItem'),
+          !!multideviceSubpage.shadowRoot.querySelector(
+              '#phoneHubNotificationsItem'),
           mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED);
       assertEquals(
-          !!multideviceSubpage.$$('#phoneHubTaskContinuationItem'),
+          !!multideviceSubpage.shadowRoot.querySelector(
+              '#phoneHubTaskContinuationItem'),
           mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED);
       assertEquals(
-          !!multideviceSubpage.$$('#wifiSyncItem'),
+          !!multideviceSubpage.shadowRoot.querySelector('#wifiSyncItem'),
           mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED);
       assertEquals(
-          !!multideviceSubpage.$$('#phoneHubAppsItem'),
+          !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'),
           mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED);
       assertEquals(
-          !!multideviceSubpage.$$('#phoneHubCameraRollItem'),
+          !!multideviceSubpage.shadowRoot.querySelector(
+              '#phoneHubCameraRollItem'),
           mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED);
     }
   });
@@ -163,15 +167,24 @@ suite('Multidevice', function() {
   test(
       'individual features are attached only if they are supported',
       function() {
-        assertTrue(!!multideviceSubpage.$$('#smartLockItem'));
-        assertTrue(!!multideviceSubpage.$$('#instantTetheringItem'));
-        assertTrue(!!multideviceSubpage.$$('#messagesItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
-        assertTrue(!!multideviceSubpage.$$('#wifiSyncItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#smartLockItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#instantTetheringItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#messagesItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubTaskContinuationItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#wifiSyncItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
 
         setSupportedFeatures([
           MultiDeviceFeature.SMART_LOCK,
@@ -183,37 +196,64 @@ suite('Multidevice', function() {
           MultiDeviceFeature.ECHE,
           MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL,
         ]);
-        assertTrue(!!multideviceSubpage.$$('#smartLockItem'));
-        assertFalse(!!multideviceSubpage.$$('#instantTetheringItem'));
-        assertTrue(!!multideviceSubpage.$$('#messagesItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
-        assertTrue(!!multideviceSubpage.$$('#wifiSyncItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#smartLockItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#instantTetheringItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#messagesItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubTaskContinuationItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#wifiSyncItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
 
         setSupportedFeatures([MultiDeviceFeature.INSTANT_TETHERING]);
-        assertFalse(!!multideviceSubpage.$$('#smartLockItem'));
-        assertTrue(!!multideviceSubpage.$$('#instantTetheringItem'));
-        assertFalse(!!multideviceSubpage.$$('#messagesItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
-        assertFalse(!!multideviceSubpage.$$('#wifiSyncItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#smartLockItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#instantTetheringItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#messagesItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubTaskContinuationItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#wifiSyncItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
 
         setSupportedFeatures([]);
-        assertFalse(!!multideviceSubpage.$$('#smartLockItem'));
-        assertFalse(!!multideviceSubpage.$$('#instantTetheringItem'));
-        assertFalse(!!multideviceSubpage.$$('#messagesItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
-        assertFalse(!!multideviceSubpage.$$('#wifiSyncItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#smartLockItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#instantTetheringItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#messagesItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubTaskContinuationItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#wifiSyncItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
       });
 
   test(
@@ -222,7 +262,7 @@ suite('Multidevice', function() {
         multideviceSubpage.remove();
         loadTimeData.overrideValues({'isSmartLockSignInRemoved': false});
         browserProxy = new TestMultideviceBrowserProxy();
-        MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+        MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
         PolymerTest.clearBody();
         multideviceSubpage =
@@ -234,7 +274,9 @@ suite('Multidevice', function() {
         document.body.appendChild(multideviceSubpage);
         flush();
 
-        multideviceSubpage.$$('#smartLockItem').$$('.link-wrapper').click();
+        multideviceSubpage.shadowRoot.querySelector('#smartLockItem')
+            .shadowRoot.querySelector('.link-wrapper')
+            .click();
         assertEquals(Router.getInstance().getCurrentRoute(), routes.SMART_LOCK);
       });
 
@@ -244,7 +286,7 @@ suite('Multidevice', function() {
         multideviceSubpage.remove();
         loadTimeData.overrideValues({'isSmartLockSignInRemoved': true});
         browserProxy = new TestMultideviceBrowserProxy();
-        MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+        MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
         PolymerTest.clearBody();
         multideviceSubpage =
@@ -257,9 +299,13 @@ suite('Multidevice', function() {
         flush();
 
         assertEquals(
-            undefined, multideviceSubpage.$$('#smartLockItem').subpageRoute);
+            undefined,
+            multideviceSubpage.shadowRoot.querySelector('#smartLockItem')
+                .subpageRoute);
         const routeBefore = Router.getInstance().getCurrentRoute();
-        multideviceSubpage.$$('#smartLockItem').$$('.link-wrapper').click();
+        multideviceSubpage.shadowRoot.querySelector('#smartLockItem')
+            .shadowRoot.querySelector('.link-wrapper')
+            .click();
         assertEquals(Router.getInstance().getCurrentRoute(), routeBefore);
 
         loadTimeData.overrideValues({'isSmartLockSignInRemoved': false});
@@ -270,14 +316,16 @@ suite('Multidevice', function() {
     flush();
 
     const controllerSelector = '#messagesItem > [slot=feature-controller]';
-    assertTrue(!!multideviceSubpage.$$(controllerSelector));
     assertTrue(
-        multideviceSubpage.$$(controllerSelector).tagName.includes('BUTTON'));
+        !!multideviceSubpage.shadowRoot.querySelector(controllerSelector));
+    assertTrue(multideviceSubpage.shadowRoot.querySelector(controllerSelector)
+                   .tagName.includes('BUTTON'));
 
     setAndroidSmsPairingComplete(true);
     flush();
 
-    assertFalse(!!multideviceSubpage.$$(controllerSelector));
+    assertFalse(
+        !!multideviceSubpage.shadowRoot.querySelector(controllerSelector));
   });
 
   test(
@@ -285,8 +333,8 @@ suite('Multidevice', function() {
         setAndroidSmsPairingComplete(false);
         flush();
 
-        const setUpButton =
-            multideviceSubpage.$$('#messagesItem > [slot=feature-controller]');
+        const setUpButton = multideviceSubpage.shadowRoot.querySelector(
+            '#messagesItem > [slot=feature-controller]');
         assertTrue(!!setUpButton);
 
         setUpButton.click();
@@ -305,14 +353,14 @@ suite('Multidevice', function() {
             });
         flush();
 
-        let setUpButton =
-            multideviceSubpage.$$('#messagesItem > [slot=feature-controller]');
+        let setUpButton = multideviceSubpage.shadowRoot.querySelector(
+            '#messagesItem > [slot=feature-controller]');
         assertFalse(!!setUpButton);
 
         // Verify that setup button is not disabled when feature is enabled.
         setAndroidSmsPairingComplete(false);
-        setUpButton =
-            multideviceSubpage.$$('#messagesItem > [slot=feature-controller]');
+        setUpButton = multideviceSubpage.shadowRoot.querySelector(
+            '#messagesItem > [slot=feature-controller]');
         assertTrue(!!setUpButton);
         assertTrue(setUpButton.tagName.includes('BUTTON'));
         assertFalse(setUpButton.disabled);
@@ -328,8 +376,8 @@ suite('Multidevice', function() {
 
     flush();
 
-    const deepLinkElement =
-        multideviceSubpage.$$('#messagesItem > [slot=feature-controller]');
+    const deepLinkElement = multideviceSubpage.shadowRoot.querySelector(
+        '#messagesItem > [slot=feature-controller]');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -346,9 +394,10 @@ suite('Multidevice', function() {
 
     flush();
 
-    const deepLinkElement = multideviceSubpage.$$('#messagesItem')
-                                .$$('settings-multidevice-feature-toggle')
-                                .$$('cr-toggle');
+    const deepLinkElement =
+        multideviceSubpage.shadowRoot.querySelector('#messagesItem')
+            .shadowRoot.querySelector('settings-multidevice-feature-toggle')
+            .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -362,9 +411,10 @@ suite('Multidevice', function() {
 
     flush();
 
-    const deepLinkElement = multideviceSubpage.$$('#phoneHubItem')
-                                .$$('settings-multidevice-feature-toggle')
-                                .$$('cr-toggle');
+    const deepLinkElement =
+        multideviceSubpage.shadowRoot.querySelector('#phoneHubItem')
+            .shadowRoot.querySelector('settings-multidevice-feature-toggle')
+            .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -381,9 +431,10 @@ suite('Multidevice', function() {
 
     flush();
 
-    const deepLinkElement = multideviceSubpage.$$('#phoneHubAppsItem')
-                                .$$('settings-multidevice-feature-toggle')
-                                .$$('cr-toggle');
+    const deepLinkElement =
+        multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem')
+            .shadowRoot.querySelector('settings-multidevice-feature-toggle')
+            .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -409,11 +460,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -426,11 +482,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -444,11 +505,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -462,11 +528,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         setSupportedFeatures([
           MultiDeviceFeature.PHONE_HUB,
@@ -486,11 +557,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -504,11 +580,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -523,11 +604,16 @@ suite('Multidevice', function() {
             });
 
         flush();
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -542,11 +628,16 @@ suite('Multidevice', function() {
             });
 
         flush();
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -562,15 +653,21 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
         const controllerSelector =
             '#phoneHubAppsItem > [slot=feature-controller]';
-        assertTrue(!!multideviceSubpage.$$(controllerSelector));
-        assertTrue(multideviceSubpage.$$(controllerSelector)
-                       .tagName.includes('BUTTON'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector(controllerSelector));
+        assertTrue(
+            multideviceSubpage.shadowRoot.querySelector(controllerSelector)
+                .tagName.includes('BUTTON'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -586,11 +683,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         setSupportedFeatures([
           MultiDeviceFeature.PHONE_HUB,
@@ -611,11 +713,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -630,11 +737,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -649,11 +761,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -668,11 +785,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         setSupportedFeatures([
           MultiDeviceFeature.PHONE_HUB,
@@ -696,11 +818,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -717,11 +844,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -738,11 +870,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -760,11 +897,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -782,11 +924,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -804,11 +951,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -825,11 +977,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         multideviceSubpage.pageContentData =
             Object.assign({}, multideviceSubpage.pageContentData, {
@@ -847,11 +1004,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
       });
 
   test(
@@ -884,11 +1046,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         // Notifications, CameraRoll and Apps features are not grant, but
         // cameraRoll is prohibited. Should show cameraRoll and combined
@@ -911,11 +1078,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         // Notifications, CameraRoll and Apps features are not grant, but Apps
         // is prohibited. Should show Apps and combined settings.
@@ -936,11 +1108,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         // Notifications, CameraRoll and Apps features are not grant, but
         // Notifications and CameraRoll are prohibited. Should show
@@ -963,11 +1140,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         // Notifications, CameraRoll and Apps features are not grant, but Phone
         // Hub (top feature) is prohibited. Should show Notifications,
@@ -991,11 +1173,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         // Test Phone's enterprise policy:
         // Notifications, CameraRoll and Apps features are not grant, but
@@ -1018,11 +1205,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertFalse(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         // Notifications, CameraRoll and Apps features are not grant, but
         // phone's apps streaming policy is disabled. Should show Apps and
@@ -1044,11 +1236,16 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
 
         // Notifications, CameraRoll and Apps features are not grant, but
         // phone's notification and apps streaming policy are disabled. Should
@@ -1069,10 +1266,15 @@ suite('Multidevice', function() {
 
         flush();
 
-        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubNotificationsItem'));
+        assertTrue(
+            !!multideviceSubpage.shadowRoot.querySelector('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.shadowRoot.querySelector(
+            '#phoneHubCombinedSetupItem'));
       });
 });

@@ -37,8 +37,8 @@ suite('Multidevice', function() {
   }
 
   function getSmartLockFeatureToggle() {
-    const smartLockFeatureToggle =
-        smartLockSubPage.$$('settings-multidevice-feature-toggle');
+    const smartLockFeatureToggle = smartLockSubPage.shadowRoot.querySelector(
+        'settings-multidevice-feature-toggle');
     assertTrue(!!smartLockFeatureToggle);
     return smartLockFeatureToggle;
   }
@@ -51,13 +51,15 @@ suite('Multidevice', function() {
   }
 
   function getScreenLockOptionsContent() {
-    const optionsContent = smartLockSubPage.$$('iron-collapse');
+    const optionsContent =
+        smartLockSubPage.shadowRoot.querySelector('iron-collapse');
     assertTrue(!!optionsContent);
     return optionsContent;
   }
 
   function getSmartLockSignInRadio() {
-    const smartLockSignInRadio = smartLockSubPage.$$('cr-radio-group');
+    const smartLockSignInRadio =
+        smartLockSubPage.shadowRoot.querySelector('cr-radio-group');
     assertTrue(!!smartLockSignInRadio);
     return smartLockSignInRadio;
   }
@@ -66,7 +68,7 @@ suite('Multidevice', function() {
     PolymerTest.clearBody();
 
     browserProxy = new TestMultideviceBrowserProxy();
-    MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+    MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     // Each test must create a settings-multidevice-smartlock-subpage element.
     smartLockSubPage = null;
@@ -248,18 +250,20 @@ suite('Multidevice', function() {
         SmartLockSignInEnabledState.DISABLED, smartLockSignInRadio.selected);
 
     // The password dialog is not visible.
-    let passwordDialog = smartLockSubPage.$$('settings-password-prompt-dialog');
+    let passwordDialog = smartLockSubPage.shadowRoot.querySelector(
+        'settings-password-prompt-dialog');
     assertTrue(!passwordDialog);
 
     // Click the 'Enable sign in' radio.
-    const enableSmartLockControl =
-        smartLockSubPage.$$('multidevice-radio-button[name="enabled"]');
+    const enableSmartLockControl = smartLockSubPage.shadowRoot.querySelector(
+        'multidevice-radio-button[name="enabled"]');
     assertTrue(!!enableSmartLockControl);
     enableSmartLockControl.click();
     flush();
 
     // The password dialog is now visible.
-    passwordDialog = smartLockSubPage.$$('settings-password-prompt-dialog');
+    passwordDialog = smartLockSubPage.shadowRoot.querySelector(
+        'settings-password-prompt-dialog');
     assertTrue(!!passwordDialog);
 
     // Sign in radio is still disabled because the user has not authenticated
@@ -286,18 +290,20 @@ suite('Multidevice', function() {
         SmartLockSignInEnabledState.DISABLED, smartLockSignInRadio.selected);
 
     // The password dialog is not visible.
-    let passwordDialog = smartLockSubPage.$$('settings-password-prompt-dialog');
+    let passwordDialog = smartLockSubPage.shadowRoot.querySelector(
+        'settings-password-prompt-dialog');
     assertTrue(!passwordDialog);
 
     // Click the 'Enable sign in' radio.
-    const enableSmartLockControl =
-        smartLockSubPage.$$('multidevice-radio-button[name="enabled"]');
+    const enableSmartLockControl = smartLockSubPage.shadowRoot.querySelector(
+        'multidevice-radio-button[name="enabled"]');
     assertTrue(!!enableSmartLockControl);
     enableSmartLockControl.click();
     flush();
 
     // The password dialog is now visible.
-    passwordDialog = smartLockSubPage.$$('settings-password-prompt-dialog');
+    passwordDialog = smartLockSubPage.shadowRoot.querySelector(
+        'settings-password-prompt-dialog');
     assertTrue(!!passwordDialog);
 
     // Sign in radio is still disabled because the user has not authenticated
@@ -310,7 +316,8 @@ suite('Multidevice', function() {
     flush();
 
     // Verify the password dialog is closed.
-    passwordDialog = smartLockSubPage.$$('settings-password-prompt-dialog');
+    passwordDialog = smartLockSubPage.shadowRoot.querySelector(
+        'settings-password-prompt-dialog');
     assert(!passwordDialog);
 
     // The password dialog is closed and unauthenticated, so sign in is still
@@ -331,18 +338,20 @@ suite('Multidevice', function() {
         SmartLockSignInEnabledState.ENABLED, smartLockSignInRadio.selected);
 
     // The password dialog is not visible.
-    let passwordDialog = smartLockSubPage.$$('settings-password-prompt-dialog');
+    let passwordDialog = smartLockSubPage.shadowRoot.querySelector(
+        'settings-password-prompt-dialog');
     assertTrue(!passwordDialog);
 
     // Click the 'Disable sign in' radio.
-    const disableSmartLockControl =
-        smartLockSubPage.$$('multidevice-radio-button[name="disabled"]');
+    const disableSmartLockControl = smartLockSubPage.shadowRoot.querySelector(
+        'multidevice-radio-button[name="disabled"]');
     assertTrue(!!disableSmartLockControl);
     disableSmartLockControl.click();
     flush();
 
     // The password dialog is not shown.
-    passwordDialog = smartLockSubPage.$$('settings-password-prompt-dialog');
+    passwordDialog = smartLockSubPage.shadowRoot.querySelector(
+        'settings-password-prompt-dialog');
     assertTrue(!passwordDialog);
 
     // Sign in radio is now disabled.

@@ -57,10 +57,10 @@ suite('Multidevice_WifiSyncItem_CategorizationDisabled', function() {
     webUIListenerCallback('sync-prefs-changed', prefs);
     flush();
 
-    assertTrue(
-        !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
+    assertTrue(!!wifiSyncItem.shadowRoot.querySelector(
+        'settings-multidevice-wifi-sync-disabled-link'));
 
-    const toggle = wifiSyncItem.$$('cr-toggle');
+    const toggle = wifiSyncItem.shadowRoot.querySelector('cr-toggle');
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
     assertFalse(toggle.checked);
@@ -72,8 +72,8 @@ suite('Multidevice_WifiSyncItem_CategorizationDisabled', function() {
     webUIListenerCallback('sync-prefs-changed', prefs);
     flush();
 
-    assertFalse(
-        !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
+    assertFalse(!!wifiSyncItem.shadowRoot.querySelector(
+        'settings-multidevice-wifi-sync-disabled-link'));
   });
 });
 
@@ -118,10 +118,10 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
     webUIListenerCallback('os-sync-prefs-changed', prefs);
     flush();
 
-    assertTrue(
-        !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
+    assertTrue(!!wifiSyncItem.shadowRoot.querySelector(
+        'settings-multidevice-wifi-sync-disabled-link'));
 
-    const toggle = wifiSyncItem.$$('cr-toggle');
+    const toggle = wifiSyncItem.shadowRoot.querySelector('cr-toggle');
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
     assertFalse(toggle.checked);
@@ -133,7 +133,7 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
     webUIListenerCallback('os-sync-prefs-changed', prefs);
     flush();
 
-    assertFalse(
-        !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
+    assertFalse(!!wifiSyncItem.shadowRoot.querySelector(
+        'settings-multidevice-wifi-sync-disabled-link'));
   });
 });

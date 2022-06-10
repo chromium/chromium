@@ -2,24 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../settings_shared_css.js';
-import '//resources/cr_components/localized_link/localized_link.js';
-import './multidevice_feature_toggle.js';
-
-import {assert} from '//resources/js/assert.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {Route, Router} from '../../router.js';
-import {routes} from '../os_route.js';
-import {RouteOriginBehavior} from '../route_origin_behavior.js';
-
-import {MultiDeviceFeature} from './multidevice_constants.js';
-import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
-import {recordSmartLockToggleMetric, SmartLockToggleLocation} from './multidevice_metrics_logger.js';
-
 /**
  * @fileoverview
  * Item for an individual multidevice feature. These features appear in the
@@ -28,77 +10,120 @@ import {recordSmartLockToggleMetric, SmartLockToggleLocation} from './multidevic
  * information relevant to the individual feature, such as a route to the
  * feature's autonomous page if there is one.
  */
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-multidevice-feature-item',
 
-  behaviors: [MultiDeviceFeatureBehavior, RouteOriginBehavior],
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../settings_shared_css.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
-  properties: {
-    /** @type {!MultiDeviceFeature} */
-    feature: Number,
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    /**
-     * If it is truthy, the item should be actionable and clicking on it should
-     * navigate to the provided route. Otherwise, the item does not have a
-     * subpage to navigate to.
-     * @type {!Route|undefined}
-     */
-    subpageRoute: Object,
+import {Route, Router} from '../../router.js';
+import {routes} from '../os_route.js';
+import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 
-    /**
-     * A tooltip to show over a help icon. If unset, no help icon is shown.
-     */
-    iconTooltip: String,
+import {MultiDeviceFeature} from './multidevice_constants.js';
+import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
+import {SettingsMultideviceFeatureToggleElement} from './multidevice_feature_toggle.js';
+import {recordSmartLockToggleMetric, SmartLockToggleLocation} from './multidevice_metrics_logger.js';
 
-    /**
-     * A Chrome icon asset to use as a help icon. The icon is not shown if
-     * iconTooltip is unset. Defaults to cr:info-outline.
-     */
-    icon: {
-      type: String,
-      value: 'cr:info-outline',
-    },
 
-    /**
-     * URLSearchParams for subpage route. No param is provided if it is
-     * undefined.
-     * @type {URLSearchParams|undefined}
-     */
-    subpageRouteUrlSearchParams: Object,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {MultiDeviceFeatureBehaviorInterface}
+ * @implements {RouteOriginBehaviorInterface}
+ */
+const SettingsMultideviceFeatureItemElementBase = mixinBehaviors(
+    [MultiDeviceFeatureBehavior, RouteOriginBehavior], PolymerElement);
 
-    /** Whether if the feature is a sub-feature */
-    isSubFeature: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
+/** @polymer */
+class SettingsMultideviceFeatureItemElement extends
+    SettingsMultideviceFeatureItemElementBase {
+  static get is() {
+    return 'settings-multidevice-feature-item';
+  }
 
-    /** Whether feature icon is present next to text in row */
-    isFeatureIconHidden: {
-      type: Boolean,
-      value: false,
-    }
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  listeners: {'feature-toggle-clicked': 'onFeatureToggleClicked_'},
+  static get properties() {
+    return {
+      /** @type {!MultiDeviceFeature} */
+      feature: Number,
 
-  /** RouteOriginBehavior override */
-  route_: routes.MULTIDEVICE_FEATURES,
+      /**
+       * If it is truthy, the item should be actionable and clicking on it
+       * should navigate to the provided route. Otherwise, the item does not
+       * have a subpage to navigate to.
+       * @type {!Route|undefined}
+       */
+      subpageRoute: Object,
+
+      /**
+       * A tooltip to show over a help icon. If unset, no help icon is shown.
+       */
+      iconTooltip: String,
+
+      /**
+       * A Chrome icon asset to use as a help icon. The icon is not shown if
+       * iconTooltip is unset. Defaults to cr:info-outline.
+       */
+      icon: {
+        type: String,
+        value: 'cr:info-outline',
+      },
+
+      /**
+       * URLSearchParams for subpage route. No param is provided if it is
+       * undefined.
+       * @type {URLSearchParams|undefined}
+       */
+      subpageRouteUrlSearchParams: Object,
+
+      /** Whether if the feature is a sub-feature */
+      isSubFeature: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /** Whether feature icon is present next to text in row */
+      isFeatureIconHidden: {
+        type: Boolean,
+        value: false,
+      }
+    };
+  }
+
+  constructor() {
+    super();
+
+    this.route_ = routes.MULTIDEVICE_FEATURES;
+  }
 
   ready() {
+    super.ready();
+
+    this.addEventListener(
+        'feature-toggle-clicked', this.onFeatureToggleClicked_);
+
     this.addFocusConfig(this.subpageRoute, '#subpageButton');
-  },
+  }
 
   /** @override */
   focus() {
-    const slot = this.$$('slot[name="feature-controller"]');
+    const slot =
+        this.shadowRoot.querySelector('slot[name="feature-controller"]');
     const elems = slot.assignedElements({flatten: true});
     assert(elems.length > 0);
     // Elems contains any elements that override the feature controller. If none
     // exist, contains the default toggle elem.
     elems[0].focus();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -107,7 +132,7 @@ Polymer({
   isRowClickable_() {
     return this.hasSubpageClickHandler_() ||
         this.isFeatureStateEditable(this.feature);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -115,7 +140,7 @@ Polymer({
    */
   hasSubpageClickHandler_() {
     return !!this.subpageRoute && this.isFeatureAllowedByPolicy(this.feature);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -123,7 +148,7 @@ Polymer({
    */
   shouldShowSeparator_() {
     return this.hasSubpageClickHandler_() || !!this.iconTooltip;
-  },
+  }
 
   /** @private */
   handleItemClick_(event) {
@@ -138,7 +163,7 @@ Polymer({
         // Toggle the editable feature if the feature is editable and does not
         // link to a subpage.
         const toggleButton =
-            /** @type{SettingsMultideviceFeatureToggleElement} */
+            /** @type {SettingsMultideviceFeatureToggleElement} */
             (this.shadowRoot.querySelector(
                 'settings-multidevice-feature-toggle'));
         toggleButton.toggleFeature();
@@ -152,7 +177,7 @@ Polymer({
     Router.getInstance().navigateTo(
         /** @type {!Route} */ (this.subpageRoute),
         this.subpageRouteUrlSearchParams, true /* opt_removeSearch */);
-  },
+  }
 
 
   /**
@@ -165,7 +190,7 @@ Polymer({
    */
   getItemTextContainerClassName_(isFeatureIconHidden) {
     return isFeatureIconHidden ? 'start' : 'middle';
-  },
+  }
 
   /**
    * Intercept (but do not stop propagation of) the feature-toggle-clicked event
@@ -184,5 +209,9 @@ Polymer({
 
       recordSmartLockToggleMetric(toggleLocation, enabled);
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsMultideviceFeatureItemElement.is,
+    SettingsMultideviceFeatureItemElement);

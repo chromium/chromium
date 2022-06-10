@@ -61,14 +61,16 @@ suite('Multidevice', () => {
   setup(() => {
     PolymerTest.clearBody();
     browserProxy = new TestMultideviceBrowserProxy();
-    MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+    MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     permissionsSetupDialog =
         document.createElement('settings-multidevice-permissions-setup-dialog');
     document.body.appendChild(permissionsSetupDialog);
     flush();
-    dialogBody = assert(permissionsSetupDialog.$$('#dialogBody'));
-    buttonContainer = assert(permissionsSetupDialog.$$('#buttonContainer'));
+    dialogBody =
+        assert(permissionsSetupDialog.shadowRoot.querySelector('#dialogBody'));
+    buttonContainer = assert(
+        permissionsSetupDialog.shadowRoot.querySelector('#buttonContainer'));
   });
 
   test('Test notification setup success flow', async () => {
@@ -133,9 +135,10 @@ suite('Multidevice', () => {
     // PermissionsSetupStatus.COMPLETED_SUCCESSFULLY.
     assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 1);
 
-    assertTrue(permissionsSetupDialog.$$('#dialog').open);
+    assertTrue(permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
     buttonContainer.querySelector('#doneButton').click();
-    assertFalse(permissionsSetupDialog.$$('#dialog').open);
+    assertFalse(
+        permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 
   test('Test notification setup cancel during connecting flow', async () => {
@@ -166,7 +169,8 @@ suite('Multidevice', () => {
     buttonContainer.querySelector('#cancelButton').click();
     assertEquals(browserProxy.getCallCount('cancelNotificationSetup'), 1);
 
-    assertFalse(permissionsSetupDialog.$$('#dialog').open);
+    assertFalse(
+        permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 
   test('Test notification setup failure during connecting flow', async () => {
@@ -216,7 +220,8 @@ suite('Multidevice', () => {
     buttonContainer.querySelector('#cancelButton').click();
     assertEquals(browserProxy.getCallCount('cancelNotificationSetup'), 1);
 
-    assertFalse(permissionsSetupDialog.$$('#dialog').open);
+    assertFalse(
+        permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 
   test('Test notification access prohibited', async () => {
@@ -249,7 +254,8 @@ suite('Multidevice', () => {
 
     buttonContainer.querySelector('#closeButton').click();
 
-    assertFalse(permissionsSetupDialog.$$('#dialog').open);
+    assertFalse(
+        permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 
   test('Test apps setup success flow', async () => {
@@ -311,9 +317,10 @@ suite('Multidevice', () => {
     // PermissionsSetupStatus.COMPLETED_SUCCESSFULLY.
     assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 1);
 
-    assertTrue(permissionsSetupDialog.$$('#dialog').open);
+    assertTrue(permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
     buttonContainer.querySelector('#doneButton').click();
-    assertFalse(permissionsSetupDialog.$$('#dialog').open);
+    assertFalse(
+        permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 
   test('Test apps setup cancel during connecting flow', async () => {
@@ -343,7 +350,8 @@ suite('Multidevice', () => {
     buttonContainer.querySelector('#cancelButton').click();
     assertEquals(browserProxy.getCallCount('cancelAppsSetup'), 1);
 
-    assertFalse(permissionsSetupDialog.$$('#dialog').open);
+    assertFalse(
+        permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 
   test('Test apps setup failure during connecting flow', async () => {
@@ -390,7 +398,8 @@ suite('Multidevice', () => {
     buttonContainer.querySelector('#cancelButton').click();
     assertEquals(browserProxy.getCallCount('cancelAppsSetup'), 1);
 
-    assertFalse(permissionsSetupDialog.$$('#dialog').open);
+    assertFalse(
+        permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 
   test('Test notification and apps setup success flow', async () => {
@@ -452,9 +461,10 @@ suite('Multidevice', () => {
     // becomes PermissionsSetupStatus.COMPLETED_SUCCESSFULLY.
     assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 2);
 
-    assertTrue(permissionsSetupDialog.$$('#dialog').open);
+    assertTrue(permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
     buttonContainer.querySelector('#doneButton').click();
-    assertFalse(permissionsSetupDialog.$$('#dialog').open);
+    assertFalse(
+        permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 
   test('Test phone enabled but ChromeOS disabled screen lock', async () => {
@@ -517,8 +527,8 @@ suite('Multidevice', () => {
     });
     flush();
 
-    const screenLockSubpage =
-        permissionsSetupDialog.$$('settings-multidevice-screen-lock-subpage');
+    const screenLockSubpage = permissionsSetupDialog.shadowRoot.querySelector(
+        'settings-multidevice-screen-lock-subpage');
     screenLockSubpage.dispatchEvent(new CustomEvent(
         'pin-number-selected', {detail: {isPinNumberSelected: true}}));
     loadTimeData.overrideValues({isEcheAppEnabled: true});
@@ -704,9 +714,10 @@ suite('Multidevice', () => {
     // PermissionsSetupStatus.COMPLETED_SUCCESSFULLY.
     assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 1);
 
-    assertTrue(permissionsSetupDialog.$$('#dialog').open);
+    assertTrue(permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
     buttonContainer.querySelector('#doneButton').click();
-    assertFalse(permissionsSetupDialog.$$('#dialog').open);
+    assertFalse(
+        permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
   });
 
   test(
@@ -778,8 +789,10 @@ suite('Multidevice', () => {
         // PermissionsSetupStatus.COMPLETED_SUCCESSFULLY.
         assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 2);
 
-        assertTrue(permissionsSetupDialog.$$('#dialog').open);
+        assertTrue(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
         buttonContainer.querySelector('#doneButton').click();
-        assertFalse(permissionsSetupDialog.$$('#dialog').open);
+        assertFalse(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
       });
 });

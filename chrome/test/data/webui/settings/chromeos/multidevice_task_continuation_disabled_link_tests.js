@@ -25,10 +25,12 @@ suite('Multidevice', function() {
   });
 
   test('Contains 2 links with aria-labels', async () => {
-    const chromeSyncLink = localizedLink.$$('#chromeSyncLink');
+    const chromeSyncLink =
+        localizedLink.shadowRoot.querySelector('#chromeSyncLink');
     assertTrue(!!chromeSyncLink);
     assertTrue(chromeSyncLink.hasAttribute('aria-label'));
-    const learnMoreLink = localizedLink.$$('#learnMoreLink');
+    const learnMoreLink =
+        localizedLink.shadowRoot.querySelector('#learnMoreLink');
     assertTrue(!!learnMoreLink);
     assertTrue(learnMoreLink.hasAttribute('aria-label'));
   });
@@ -41,7 +43,8 @@ suite('Multidevice', function() {
   });
 
   test('ChromeSyncLink navigates to appropriate route', async () => {
-    const chromeSyncLink = localizedLink.$$('#chromeSyncLink');
+    const chromeSyncLink =
+        localizedLink.shadowRoot.querySelector('#chromeSyncLink');
     if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
       const advancedSyncOpenedPromise = eventToPromise(
           'opened-browser-advanced-sync-settings', localizedLink);

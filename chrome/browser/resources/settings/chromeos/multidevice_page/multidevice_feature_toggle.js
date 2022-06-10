@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
-
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {MultiDeviceFeature, MultiDeviceFeatureState} from './multidevice_constants.js';
-import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
-
 /**
  * @fileoverview
  * A toggle button specially suited for the MultiDevice Settings UI use-case.
@@ -17,35 +10,61 @@ import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
  * for the user. It also receives real time updates on feature states and
  * reflects them in the toggle status.
  */
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-multidevice-feature-toggle',
 
-  behaviors: [MultiDeviceFeatureBehavior],
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 
-  properties: {
-    /** @type {!MultiDeviceFeature} */
-    feature: Number,
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    toggleAriaLabel: String,
+import {MultiDeviceFeature, MultiDeviceFeatureState} from './multidevice_constants.js';
+import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
 
-    /** @private {boolean} */
-    checked_: Boolean,
-  },
 
-  listeners: {
-    'click': 'onDisabledInnerToggleClick_',
-  },
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {MultiDeviceFeatureBehaviorInterface}
+ */
+const SettingsMultideviceFeatureToggleElementBase =
+    mixinBehaviors([MultiDeviceFeatureBehavior], PolymerElement);
 
-  // Note that, although this.feature does not change throughout the element's
-  // lifecycle, it must be listed as an observer dependency to ensure that
-  // this.feature is defined by the time of the observer's first call.
-  observers: ['resetChecked_(feature, pageContentData)'],
+/** @polymer */
+export class SettingsMultideviceFeatureToggleElement extends
+    SettingsMultideviceFeatureToggleElementBase {
+  static get is() {
+    return 'settings-multidevice-feature-toggle';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /** @type {!MultiDeviceFeature} */
+      feature: Number,
+
+      toggleAriaLabel: String,
+
+      /** @private {boolean} */
+      checked_: Boolean,
+    };
+  }
+
+  static get observers() {
+    return ['resetChecked_(feature, pageContentData)'];
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    this.addEventListener('click', this.onDisabledInnerToggleClick_);
+  }
 
   /** @override */
   focus() {
     this.$.toggle.focus();
-  },
+  }
 
   /**
    * Callback for clicking on the toggle itself, or a row containing a toggle
@@ -57,10 +76,14 @@ Polymer({
 
     // Pass the negation of |this.checked_|: this indicates that if the toggle
     // is checked, the intent is for it to be unchecked, and vice versa.
-    this.fire(
-        'feature-toggle-clicked',
-        {feature: this.feature, enabled: !this.checked_});
-  },
+    const featureToggleClickedEvent =
+        new CustomEvent('feature-toggle-clicked', {
+          bubbles: true,
+          composed: true,
+          detail: {feature: this.feature, enabled: !this.checked_}
+        });
+    this.dispatchEvent(featureToggleClickedEvent);
+  }
 
   /**
    * Because MultiDevice prefs are only meant to be controlled via the
@@ -86,7 +109,7 @@ Polymer({
 
     this.checked_ = this.getFeatureState(this.feature) ===
         MultiDeviceFeatureState.ENABLED_BY_USER;
-  },
+  }
 
   /**
    * This handles the edge case in which the inner toggle (i.e., the cr-toggle)
@@ -101,7 +124,7 @@ Polymer({
    */
   onDisabledInnerToggleClick_(event) {
     event.stopPropagation();
-  },
+  }
 
   /**
    * Returns the A11y label for the toggle.
@@ -110,4 +133,8 @@ Polymer({
   getToggleA11yLabel_() {
     return this.toggleAriaLabel || this.getFeatureName(this.feature);
   }
-});
+}
+
+customElements.define(
+    SettingsMultideviceFeatureToggleElement.is,
+    SettingsMultideviceFeatureToggleElement);

@@ -39,7 +39,7 @@ suite('CellularNetworksList', function() {
     setESimManagerRemoteForTesting(eSimManagerRemote);
 
     browserProxy = new TestMultideviceBrowserProxy();
-    MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+    MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
   });
 
   teardown(function() {
