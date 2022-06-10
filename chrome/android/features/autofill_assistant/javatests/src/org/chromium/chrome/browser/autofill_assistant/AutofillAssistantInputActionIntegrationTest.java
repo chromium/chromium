@@ -335,9 +335,9 @@ public class AutofillAssistantInputActionIntegrationTest {
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
 
-        checkElementExists(mTestRule.getWebContents(), "touch_area_one");
-        checkElementExists(mTestRule.getWebContents(), "touch_area_five");
-        checkElementExists(mTestRule.getWebContents(), "touch_area_six");
+        assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_one"), is(true));
+        assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_five"), is(true));
+        assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_six"), is(true));
 
         runScript(script);
 
@@ -358,8 +358,8 @@ public class AutofillAssistantInputActionIntegrationTest {
     @Test
     @MediumTest
     public void clickOnButtonCoveredByOverlay() throws Exception {
-        checkElementExists(mTestRule.getWebContents(), "button");
-        checkElementExists(mTestRule.getWebContents(), "overlay");
+        assertThat(checkElementExists(mTestRule.getWebContents(), "button"), is(true));
+        assertThat(checkElementExists(mTestRule.getWebContents(), "overlay"), is(true));
         showOverlay();
 
         // This script attempts to click 2 times on #button:
