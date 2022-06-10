@@ -176,15 +176,13 @@ void SetUpSyncInTransportMode(Profile* profile) {
 class PasswordManagerPresenterTest : public testing::Test {
  protected:
   explicit PasswordManagerPresenterTest(bool with_account_store = false) {
-    store_ = CreateAndUseTestPasswordStore(&profile_);
-
     // The account store setup is done here and not in
     // PasswordManagerPresenterTestWithAccountStore to initialize the feature
     // list and testing factories as soon as possible.
     if (with_account_store) {
       feature_list_.InitAndEnableFeature(
           password_manager::features::kEnablePasswordsAccountStorage);
-      account_store_ = CreateAndUseTestAccountPasswordStore(&profile_);
+      account_profile_store_ = CreateAndUseTestAccountPasswordStore(&profile_);
 
       SetUpSyncInTransportMode(&profile_);
     }
@@ -195,9 +193,9 @@ class PasswordManagerPresenterTest : public testing::Test {
       delete;
 
   ~PasswordManagerPresenterTest() override {
-    store_->ShutdownOnUIThread();
-    if (account_store_) {
-      account_store_->ShutdownOnUIThread();
+    profile_store_->ShutdownOnUIThread();
+    if (account_profile_store_) {
+      account_profile_store_->ShutdownOnUIThread();
     }
     task_environment_.RunUntilIdle();
   }
@@ -206,7 +204,7 @@ class PasswordManagerPresenterTest : public testing::Test {
   password_manager::PasswordForm AddPasswordEntry(const GURL& url,
                                                   base::StringPiece username,
                                                   base::StringPiece password) {
-    return AddPasswordToStore(store_.get(), url, username, password);
+    return AddPasswordToStore(profile_store_.get(), url, username, password);
   }
 
   // TODO(victorvianna): Move to anonymous namespace taking store as argument.
@@ -214,7 +212,7 @@ class PasswordManagerPresenterTest : public testing::Test {
     password_manager::PasswordForm form;
     form.url = url;
     form.blocked_by_user = true;
-    store_->AddLogin(form);
+    profile_store_->AddLogin(form);
     return form;
   }
 
@@ -228,22 +226,24 @@ class PasswordManagerPresenterTest : public testing::Test {
   // TODO(victorvianna): Inline this.
   std::vector<password_manager::PasswordForm> GetStoredPasswordsForRealm(
       base::StringPiece signon_realm) {
-    return GetPasswordsInStoreForRealm(*store_, signon_realm);
+    return GetPasswordsInStoreForRealm(*profile_store_, signon_realm);
   }
 
-  password_manager::TestPasswordStore* profile_store() { return store_.get(); }
+  password_manager::TestPasswordStore* profile_store() {
+    return profile_store_.get();
+  }
   password_manager::TestPasswordStore* account_store() {
-    return account_store_.get();
+    return account_profile_store_.get();
   }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+  scoped_refptr<password_manager::TestPasswordStore> profile_store_ =
+      CreateAndUseTestPasswordStore(&profile_);
   NiceMock<MockPasswordUIView> mock_controller_{&profile_};
-  // TODO(victorvianna): Rename to profile_store_.
-  scoped_refptr<password_manager::TestPasswordStore> store_;
   base::test::ScopedFeatureList feature_list_;
-  scoped_refptr<password_manager::TestPasswordStore> account_store_;
+  scoped_refptr<password_manager::TestPasswordStore> account_profile_store_;
 };
 
 namespace {
@@ -511,8 +511,8 @@ TEST_F(PasswordManagerPresenterTestWithAccountStore,
       {password_manager::CreateSortKey(password),
        password_manager::CreateSortKey(password2)},
       client());
-  PasswordStoreWaiter profile_store_waiter(profile_store());
-  PasswordStoreWaiter account_store_waiter(account_store());
+  PasswordStoreWaiter profile_profile_store_waiter(profile_store());
+  PasswordStoreWaiter account_profile_store_waiter(account_store());
 
   // All passwords should have moved.
   EXPECT_CALL(GetUIController(), SetPasswordList).Times(2);

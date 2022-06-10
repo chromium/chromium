@@ -28,6 +28,7 @@
 namespace password_manager {
 class PasswordManagerClient;
 struct PasswordForm;
+class PasswordUndoHelper;
 }  // namespace password_manager
 
 class PasswordUIView;
@@ -123,14 +124,6 @@ class PasswordManagerPresenter
       base::OnceCallback<void(absl::optional<std::u16string>)> callback) const;
 #endif
 
-  // Wrapper around |PasswordStore::AddLogin| that adds the corresponding undo
-  // action to |undo_manager_|.
-  void AddLogin(const password_manager::PasswordForm& form);
-
-  // Wrapper around |PasswordStore::RemoveLogin| that adds the corresponding
-  // undo action to |undo_manager_|.
-  void RemoveLogin(const password_manager::PasswordForm& form);
-
  private:
   // Convenience typedef for a map containing PasswordForms grouped into
   // equivalence classes. Each equivalence class corresponds to one entry shown
@@ -173,13 +166,14 @@ class PasswordManagerPresenter
   PasswordFormMap password_map_;
   PasswordFormMap exception_map_;
 
-  UndoManager undo_manager_;
-
   // Whether to show stored passwords or not.
   BooleanPrefMember show_passwords_;
 
   // UI view that owns this presenter.
   raw_ptr<PasswordUIView> password_view_;
+
+  // Helper for password undo operations.
+  std::unique_ptr<password_manager::PasswordUndoHelper> undo_helper_;
 
   base::WeakPtrFactory<PasswordManagerPresenter> weak_ptr_factory_{this};
 };

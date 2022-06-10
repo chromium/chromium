@@ -43,11 +43,11 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/ui/password_undo_helper.h"
 #include "components/password_manager/core/browser/ui/plaintext_reason.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
-#include "components/undo/undo_operation.h"
 #include "content/public/browser/browser_thread.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -121,89 +121,15 @@ ConvertPlaintextReason(password_manager::PlaintextReason reason) {
 }
 #endif
 
-class RemovePasswordOperation : public UndoOperation {
- public:
-  RemovePasswordOperation(PasswordManagerPresenter* page,
-                          const password_manager::PasswordForm& form);
-
-  RemovePasswordOperation(const RemovePasswordOperation&) = delete;
-  RemovePasswordOperation& operator=(const RemovePasswordOperation&) = delete;
-
-  ~RemovePasswordOperation() override;
-
-  // UndoOperation:
-  void Undo() override;
-  int GetUndoLabelId() const override;
-  int GetRedoLabelId() const override;
-
- private:
-  raw_ptr<PasswordManagerPresenter> page_;
-  password_manager::PasswordForm form_;
-};
-
-RemovePasswordOperation::RemovePasswordOperation(
-    PasswordManagerPresenter* page,
-    const password_manager::PasswordForm& form)
-    : page_(page), form_(form) {}
-
-RemovePasswordOperation::~RemovePasswordOperation() = default;
-
-void RemovePasswordOperation::Undo() {
-  page_->AddLogin(form_);
-}
-
-int RemovePasswordOperation::GetUndoLabelId() const {
-  return 0;
-}
-
-int RemovePasswordOperation::GetRedoLabelId() const {
-  return 0;
-}
-
-class AddPasswordOperation : public UndoOperation {
- public:
-  AddPasswordOperation(PasswordManagerPresenter* page,
-                       const password_manager::PasswordForm& password_form);
-
-  AddPasswordOperation(const AddPasswordOperation&) = delete;
-  AddPasswordOperation& operator=(const AddPasswordOperation&) = delete;
-
-  ~AddPasswordOperation() override;
-
-  // UndoOperation:
-  void Undo() override;
-  int GetUndoLabelId() const override;
-  int GetRedoLabelId() const override;
-
- private:
-  raw_ptr<PasswordManagerPresenter> page_;
-  password_manager::PasswordForm form_;
-};
-
-AddPasswordOperation::AddPasswordOperation(
-    PasswordManagerPresenter* page,
-    const password_manager::PasswordForm& form)
-    : page_(page), form_(form) {}
-
-AddPasswordOperation::~AddPasswordOperation() = default;
-
-void AddPasswordOperation::Undo() {
-  page_->RemoveLogin(form_);
-}
-
-int AddPasswordOperation::GetUndoLabelId() const {
-  return 0;
-}
-
-int AddPasswordOperation::GetRedoLabelId() const {
-  return 0;
-}
-
 }  // namespace
 
 PasswordManagerPresenter::PasswordManagerPresenter(
     PasswordUIView* password_view)
-    : password_view_(password_view) {
+    : password_view_(password_view),
+      undo_helper_(std::make_unique<password_manager::PasswordUndoHelper>(
+          GetPasswordStore(password_view_->GetProfile(), false),
+          GetPasswordStore(password_view_->GetProfile(), true))) {
+  DCHECK(GetPasswordStore(password_view_->GetProfile(), false));
   DCHECK(password_view_);
 }
 
@@ -318,14 +244,14 @@ void PasswordManagerPresenter::RemoveSavedPassword(size_t index) {
 
 void PasswordManagerPresenter::RemoveSavedPasswords(
     const std::vector<std::string>& sort_keys) {
-  undo_manager_.StartGroupingActions();
+  undo_helper_->StartGroupingActions();
   for (const std::string& sort_key : sort_keys) {
     if (TryRemovePasswordEntries(&password_map_, sort_key)) {
       base::RecordAction(
           base::UserMetricsAction("PasswordManager_RemoveSavedPassword"));
     }
   }
-  undo_manager_.EndGroupingActions();
+  undo_helper_->EndGroupingActions();
 }
 
 void PasswordManagerPresenter::RemovePasswordException(size_t index) {
@@ -337,18 +263,18 @@ void PasswordManagerPresenter::RemovePasswordException(size_t index) {
 
 void PasswordManagerPresenter::RemovePasswordExceptions(
     const std::vector<std::string>& sort_keys) {
-  undo_manager_.StartGroupingActions();
+  undo_helper_->StartGroupingActions();
   for (const std::string& sort_key : sort_keys) {
     if (TryRemovePasswordEntries(&exception_map_, sort_key)) {
       base::RecordAction(
           base::UserMetricsAction("PasswordManager_RemovePasswordException"));
     }
   }
-  undo_manager_.EndGroupingActions();
+  undo_helper_->EndGroupingActions();
 }
 
 void PasswordManagerPresenter::UndoRemoveSavedPasswordOrException() {
-  undo_manager_.Undo();
+  undo_helper_->Undo();
 }
 
 void PasswordManagerPresenter::MovePasswordsToAccountStore(
@@ -412,30 +338,6 @@ void PasswordManagerPresenter::RequestPlaintextPassword(
 }
 #endif
 
-void PasswordManagerPresenter::AddLogin(
-    const password_manager::PasswordForm& form) {
-  PasswordStoreInterface* store = GetPasswordStore(password_view_->GetProfile(),
-                                                   form.IsUsingAccountStore());
-  if (!store)
-    return;
-
-  undo_manager_.AddUndoOperation(
-      std::make_unique<AddPasswordOperation>(this, form));
-  store->AddLogin(form);
-}
-
-void PasswordManagerPresenter::RemoveLogin(
-    const password_manager::PasswordForm& form) {
-  PasswordStoreInterface* store = GetPasswordStore(password_view_->GetProfile(),
-                                                   form.IsUsingAccountStore());
-  if (!store)
-    return;
-
-  undo_manager_.AddUndoOperation(
-      std::make_unique<RemovePasswordOperation>(this, form));
-  store->RemoveLogin(form);
-}
-
 bool PasswordManagerPresenter::TryRemovePasswordEntries(
     PasswordFormMap* form_map,
     size_t index) {
@@ -480,8 +382,7 @@ bool PasswordManagerPresenter::TryRemovePasswordEntries(
   // to the user.
   // This also means that restoring |forms[0]| is enough here, as all other
   // forms would have the same origin, username and password anyway.
-  undo_manager_.AddUndoOperation(
-      std::make_unique<RemovePasswordOperation>(this, *forms[0]));
+  undo_helper_->PasswordRemoved(*forms[0]);
   for (const auto& form : forms) {
     // PasswordFormMap is indexed by sort key, which includes the store
     // (profile / account), so all forms here must come from the same store.

@@ -20,6 +20,7 @@ namespace password_manager {
 
 struct PasswordForm;
 struct CredentialUIEntry;
+class PasswordUndoHelper;
 
 // This interface provides a way for clients to obtain a list of all saved
 // passwords and register themselves as observers for changes. In contrast to
@@ -70,6 +71,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // TODO(crbug.com/1330906): Remove in favor of EditSavedCredentials.
   void RemovePassword(const PasswordForm& form);
   bool RemoveCredential(const CredentialUIEntry& credential);
+
+  // Cancels the last removal operation.
+  void UndoLastRemoval();
 
   // Adds the credential to the store specified in the |form|. Returns true
   // if the password was added, false if |form|'s data is not valid (invalid
@@ -162,6 +166,8 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // The password stores containing the saved passwords.
   scoped_refptr<PasswordStoreInterface> profile_store_;
   scoped_refptr<PasswordStoreInterface> account_store_;
+
+  std::unique_ptr<PasswordUndoHelper> undo_helper_;
 
   // Cache of the most recently obtained saved passwords. Profile store
   // passwords are always stored first, and then account store passwords if any.

@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/password_manager/core/browser/ui/password_undo_helper.h"
 #include "url/gurl.h"
 
 namespace {
@@ -83,7 +84,9 @@ SavedPasswordsPresenter::SavedPasswordsPresenter(
     scoped_refptr<PasswordStoreInterface> profile_store,
     scoped_refptr<PasswordStoreInterface> account_store)
     : profile_store_(std::move(profile_store)),
-      account_store_(std::move(account_store)) {
+      account_store_(std::move(account_store)),
+      undo_helper_(std::make_unique<PasswordUndoHelper>(profile_store_.get(),
+                                                        account_store_.get())) {
   DCHECK(profile_store_);
   profile_store_->AddObserver(this);
   if (account_store_)
@@ -113,8 +116,8 @@ bool SavedPasswordsPresenter::RemoveCredential(
     const CredentialUIEntry& credential) {
   const auto range =
       sort_key_to_password_forms_.equal_range(credential.key().value());
-
   bool removed = false;
+  undo_helper_->StartGroupingActions();
   std::for_each(range.first, range.second, [&](const auto& pair) {
     const auto& current_form = pair.second;
     // Make sure |form| and |current_form| share the same store.
@@ -123,10 +126,16 @@ bool SavedPasswordsPresenter::RemoveCredential(
       // 'OnGetPasswordStoreResultsFrom'. So it can be present only in one store
       // at a time..
       GetStoreFor(current_form).RemoveLogin(current_form);
+      undo_helper_->PasswordRemoved(current_form);
       removed = true;
     }
   });
+  undo_helper_->EndGroupingActions();
   return removed;
+}
+
+void SavedPasswordsPresenter::UndoLastRemoval() {
+  undo_helper_->Undo();
 }
 
 bool SavedPasswordsPresenter::AddPassword(const PasswordForm& form) {

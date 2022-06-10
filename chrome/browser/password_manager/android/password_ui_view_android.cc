@@ -107,7 +107,7 @@ void PasswordUIViewAndroid::InsertPasswordEntryForTesting(
   form.username_value = ConvertJavaStringToUTF16(env, username);
   form.password_value = ConvertJavaStringToUTF16(env, password);
 
-  password_manager_presenter_.AddLogin(form);
+  password_store_->AddLogin(form);
 }
 
 void PasswordUIViewAndroid::UpdatePasswordLists(JNIEnv* env,

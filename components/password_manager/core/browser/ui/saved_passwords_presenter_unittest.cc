@@ -731,6 +731,25 @@ TEST_F(SavedPasswordsPresenterTest,
                                    CredentialUIEntry(federated_form)));
 }
 
+TEST_F(SavedPasswordsPresenterTest, UndoRemoval) {
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  CredentialUIEntry credential = CredentialUIEntry(form);
+
+  ASSERT_THAT(presenter().GetSavedCredentials(), ElementsAre(credential));
+
+  presenter().RemoveCredential(credential);
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(), IsEmpty());
+
+  presenter().UndoLastRemoval();
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(), ElementsAre(credential));
+}
+
 namespace {
 
 class SavedPasswordsPresenterWithTwoStoresTest : public ::testing::Test {
@@ -1269,6 +1288,30 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditPasswordBothStores) {
   EXPECT_THAT(account_store().stored_passwords(),
               ElementsAre(Pair(account_store_form.signon_realm,
                                ElementsAre(expected_account_store_form))));
+}
+
+TEST_F(SavedPasswordsPresenterWithTwoStoresTest, UndoRemoval) {
+  PasswordForm profile_store_form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+
+  PasswordForm account_store_form = profile_store_form;
+  account_store_form.in_store = PasswordForm::Store::kAccountStore;
+
+  profile_store().AddLogin(profile_store_form);
+  account_store().AddLogin(account_store_form);
+  RunUntilIdle();
+
+  ASSERT_EQ(1u, presenter().GetSavedCredentials().size());
+  CredentialUIEntry credential = presenter().GetSavedCredentials()[0];
+  ASSERT_EQ(2u, credential.stored_in.size());
+  presenter().RemoveCredential(credential);
+  RunUntilIdle();
+
+  EXPECT_THAT(presenter().GetSavedCredentials(), IsEmpty());
+
+  presenter().UndoLastRemoval();
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(), ElementsAre(credential));
 }
 
 }  // namespace password_manager

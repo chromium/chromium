@@ -17,6 +17,7 @@ include_rules = [
   "+components/sync/test",
   "+components/sync_preferences",
   "+components/ukm",
+  "+components/undo",
   "+components/url_formatter",
   "+components/variations",
   "+components/webdata/common",
