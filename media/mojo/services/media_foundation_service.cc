@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,6 +25,7 @@
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/key_systems.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
 #include "media/cdm/win/media_foundation_cdm_module.h"
@@ -301,6 +303,14 @@ absl::optional<CdmCapability> GetCdmCapability(
 
   // Query video codecs.
   for (const auto video_codec : kAllVideoCodecs) {
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    // Only query HEVC when the feature is enabled.
+    if (video_codec == VideoCodec::kHEVC &&
+        !base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
+      continue;
+    }
+#endif
+
     auto type = GetTypeString(video_codec, /*audio_codec=*/absl::nullopt,
                               {{kRobustnessQueryName, robustness}});
 
