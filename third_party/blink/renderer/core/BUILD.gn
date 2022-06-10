@@ -1268,6 +1268,7 @@ source_set("unit_tests") {
     "css/mock_css_paint_image_generator.h",
     "display_lock/display_lock_context_test.cc",
     "display_lock/display_lock_utilities_test.cc",
+    "document_transition/document_transition_origin_trial_test.cc",
     "document_transition/document_transition_test.cc",
     "editing/caret_display_item_client_test.cc",
     "editing/finder/text_finder_test.cc",
