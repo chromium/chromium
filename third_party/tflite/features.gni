@@ -7,5 +7,8 @@ import("//build/config/chrome_build.gni")
 declare_args() {
   # This enables building TFLite with XNNPACK. Currently only available for
   # Linux x64.
-  build_tflite_with_xnnpack = is_linux && target_cpu == "x64"
+  build_tflite_with_xnnpack = is_linux && current_cpu == "x64"
+
+  # Turns on TFLITE_WITH_RUY, using ruy as the gemm backend instead of gemmlowp.
+  build_tflite_with_ruy = true
 }

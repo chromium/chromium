@@ -154,6 +154,11 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
     case __NR_fstatat64:
     case __NR_fstatfs64:
 #endif
+#if defined(__arm__) || defined(__aarch64__)
+    // getcpu() is allowed on ARM chips because it is used in
+    // //third_party/cpuinfo/ on those chips.
+    case __NR_getcpu:
+#endif
 #if defined(__i386__) || defined(__arm__) || defined(__mips__)
     case __NR_getdents:
 #endif
