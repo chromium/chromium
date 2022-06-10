@@ -107,12 +107,14 @@
     popup.popup='';
     assert_equals(popup.getAttribute('popup'),'','IDL setter propagates exactly');
     assert_equals(popup.popup,'auto','Empty should map to auto in IDL');
+    popup.popup='auto';
     popup.popup=null;
-    assert_equals(popup.getAttribute('popup'),'null','Attribute for "null" should still get set');
-    assert_equals(popup.popup,null,'Invalid values should map to null in IDL');
+    assert_equals(popup.getAttribute('popup'),null,'Setting null for the IDL property should remove the content attribute');
+    assert_equals(popup.popup,null,'Null returns null');
+    popup.popup='auto';
     popup.popup=undefined;
-    assert_equals(popup.getAttribute('popup'),'undefined','Attribute for "undefined" should still get set');
-    assert_equals(popup.popup,null,'undefined should map to null in IDL');
+    assert_equals(popup.getAttribute('popup'),null,'Setting undefined for the IDL property should remove the content attribute');
+    assert_equals(popup.popup,null,'undefined returns null');
   },'IDL attribute reflection');
 
   test((t) => {
