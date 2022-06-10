@@ -105,11 +105,21 @@
     background-image: url(chrome://theme/IDR_FOLDER_CLOSED);
   }
 
+  :host(:not([may-have-children])) .tree-row > .tree-label-icon {
+    background-image: var(--cr-tree-item-leaf-icon,
+                          url(chrome://theme/IDR_FOLDER_ClOSED));
+  }
+
   <if expr="is_macosx or is_ios">
   @media (prefers-color-scheme: dark) {
     .tree-label-icon,
     :host([may-have-children]) .tree-row > .tree-label-icon {
       background-image: url(chrome://theme/IDR_FOLDER_CLOSED_WHITE);
+    }
+
+    :host(:not([may-have-children])) .tree-row > .tree-label-icon {
+      background-image: var(--cr-tree-item-leaf-icon,
+                            url(chrome://theme/IDR_FOLDER_ClOSED_WHITE));
     }
   }
   </if>

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
+import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
+
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
 import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
-import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
 import {getAllNodes} from './chrome_sync.js';
@@ -59,7 +61,7 @@ function nodeComparator(nodeA, nodeB) {
 function updateNodeDetailView(node) {
   const nodeDetailsView = $('node-details');
   nodeDetailsView.hidden = false;
-  jstProcess(new JsEvalContext(node.entry_), nodeDetailsView);
+  jstProcess(new JsEvalContext(node.detail.payload), nodeDetailsView);
 }
 
 /**
@@ -69,97 +71,6 @@ function updateNodeDetailView(node) {
 function setLastRefreshTime(str) {
   $('node-browser-refresh-time').textContent = str;
 }
-
-/**
- * Creates a new sync node tree item.
- *
- * @constructor
- * @param {!Object} node The nodeDetails object for the node as returned by
- *     getAllNodes().
- * @extends {TreeItem}
- */
-function SyncNodeTreeItem(node) {
-  const treeItem = new TreeItem();
-  treeItem.__proto__ = SyncNodeTreeItem.prototype;
-
-  treeItem.entry_ = node;
-  treeItem.label = node.NON_UNIQUE_NAME;
-  if (node.IS_DIR) {
-    treeItem.mayHaveChildren_ = true;
-
-    // Load children on expand.
-    treeItem.expanded_ = false;
-    treeItem.addEventListener('expand', treeItem.handleExpand_.bind(treeItem));
-  } else {
-    treeItem.classList.add('leaf');
-  }
-  return treeItem;
-}
-
-SyncNodeTreeItem.prototype = {
-  __proto__: TreeItem.prototype,
-
-  /**
-   * Finds the children of this node and appends them to the tree.
-   */
-  handleExpand_(event) {
-    const treeItem = this;
-
-    if (treeItem.expanded_) {
-      return;
-    }
-    treeItem.expanded_ = true;
-
-    const children = treeItem.tree.allNodes.filter(
-        isChildOf.bind(undefined, treeItem.entry_));
-    children.sort(nodeComparator);
-
-    children.forEach(function(node) {
-      treeItem.add(new SyncNodeTreeItem(node));
-    });
-  },
-};
-
-/**
- * Creates a new sync node tree.  Technically, it's a forest since it each
- * type has its own root node for its own tree, but it still looks and acts
- * mostly like a tree.
- *
- * @param {Object=} opt_propertyBag Optional properties.
- * @constructor
- * @extends {Tree}
- */
-const SyncNodeTree = crUiDefine('tree');
-
-SyncNodeTree.prototype = {
-  __proto__: Tree.prototype,
-
-  decorate() {
-    Tree.prototype.decorate.call(this);
-    this.addEventListener('change', this.handleChange_.bind(this));
-    this.allNodes = [];
-  },
-
-  populate(nodes) {
-    const tree = this;
-
-    // We store the full set of nodes in the SyncNodeTree object.
-    tree.allNodes = nodes;
-
-    const roots = tree.allNodes.filter(isTypeRootNode);
-    roots.sort(nodeComparator);
-
-    roots.forEach(function(typeRoot) {
-      tree.add(new SyncNodeTreeItem(typeRoot));
-    });
-  },
-
-  handleChange_(event) {
-    if (this.selectedItem) {
-      updateNodeDetailView(this.selectedItem);
-    }
-  }
-};
 
 /**
  * Clears any existing UI state.  Useful prior to a refresh.
@@ -172,6 +83,37 @@ function clear() {
 
   const nodeDetailsView = $('node-details');
   nodeDetailsView.hidden = true;
+}
+
+function setNode(treeItem, node) {
+  treeItem.detail.payload = node;
+  treeItem.label = node.NON_UNIQUE_NAME;
+  if (node.IS_DIR) {
+    treeItem.toggleAttribute('may-have-children', true);
+
+    // Load children on expand.
+    treeItem.toggleAttribute('expanded', false);
+    treeItem.addEventListener('cr-tree-item-expand', handleExpand(treeItem));
+  } else {
+    treeItem.classList.add('leaf');
+  }
+}
+
+function handleExpand(treeItem) {
+  if (treeItem.hasChildren) {
+    return;
+  }
+
+  const treeItemData = treeItem.detail.payload;
+  const treeData = treeItem.tree.detail.payload;
+  const children = treeData.filter(node => isChildOf(treeItemData, node));
+  children.sort(nodeComparator);
+
+  children.forEach(function(node) {
+    const item = document.createElement('cr-tree-item');
+    treeItem.add(item);
+    setNode(item, node);
+  });
 }
 
 /**
@@ -191,13 +133,23 @@ function refresh() {
     }
 
     const treeContainer = $('sync-node-tree-container');
-    const tree = document.createElement('tree');
-    tree.setAttribute('id', 'sync-node-tree');
-    tree.setAttribute('icon-visibility', 'parent');
+    const tree = document.createElement('cr-tree');
+    tree.id = 'sync-node-tree';
+    tree.addEventListener('cr-tree-change', () => {
+      if (tree.selectedItem) {
+        updateNodeDetailView(tree.selectedItem);
+      }
+    });
     treeContainer.appendChild(tree);
 
-    decorate(tree, SyncNodeTree);
-    tree.populate(nodes);
+    tree.detail = {payload: nodes, children: {}};
+    const roots = nodes.filter(isTypeRootNode);
+    roots.sort(nodeComparator);
+    roots.forEach(typeRoot => {
+      const child = document.createElement('cr-tree-item');
+      tree.add(child);
+      setNode(child, typeRoot);
+    });
 
     setLastRefreshTime((new Date()).toLocaleString());
     $('node-browser-refresh-button').disabled = false;

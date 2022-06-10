@@ -344,8 +344,8 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
 
   // Check the type root and expand it.
   const typeRoot = tree.items[0];
-  assertFalse(typeRoot.expanded);
-  typeRoot.expanded = true;
+  assertFalse(typeRoot.hasAttribute('expanded'));
+  typeRoot.toggleAttribute('expanded', true);
   assertEquals(1, typeRoot.items.length);
 
   // An actual sync node.  The child of the type root.
@@ -353,7 +353,8 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
 
   // Verify that selecting it affects the details view.
   assertTrue(document.querySelector('#node-details').hasAttribute('hidden'));
-  leaf.selected = true;
+  tree.selectedItem = leaf;
+  assertTrue(leaf.hasAttribute('selected'));
   assertFalse(document.querySelector('#node-details').hasAttribute('hidden'));
 });
 

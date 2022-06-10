@@ -117,10 +117,7 @@ js_library("sync_log") {
 }
 
 js_library("sync_node_browser") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:tree",
-  ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("sync_search") {
