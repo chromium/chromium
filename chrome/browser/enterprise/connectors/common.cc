@@ -26,9 +26,96 @@
 namespace enterprise_connectors {
 
 namespace {
+
 constexpr char kDlpTag[] = "dlp";
 constexpr char kMalwareTag[] = "malware";
+
+bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
+  switch (action) {
+    case TriggeredRule::ACTION_UNSPECIFIED:
+    case TriggeredRule::REPORT_ONLY:
+      return true;
+    case TriggeredRule::WARN:
+    case TriggeredRule::BLOCK:
+      return false;
+  }
+}
+
 }  // namespace
+
+bool ResultShouldAllowDataUse(
+    const AnalysisSettings& settings,
+    safe_browsing::BinaryUploadService::Result upload_result) {
+  using safe_browsing::BinaryUploadService;
+  // Keep this implemented as a switch instead of a simpler if statement so that
+  // new values added to BinaryUploadService::Result cause a compiler error.
+  switch (upload_result) {
+    case BinaryUploadService::Result::SUCCESS:
+    case BinaryUploadService::Result::UPLOAD_FAILURE:
+    case BinaryUploadService::Result::TIMEOUT:
+    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
+    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
+    // UNAUTHORIZED allows data usage since it's a result only obtained if the
+    // browser is not authorized to perform deep scanning. It does not make
+    // sense to block data in this situation since no actual scanning of the
+    // data was performed, so it's allowed.
+    case BinaryUploadService::Result::UNAUTHORIZED:
+    case BinaryUploadService::Result::UNKNOWN:
+      return true;
+
+    case BinaryUploadService::Result::FILE_TOO_LARGE:
+      return !settings.block_large_files;
+
+    case BinaryUploadService::Result::FILE_ENCRYPTED:
+      return !settings.block_password_protected_files;
+
+    case BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
+      return !settings.block_unsupported_file_types;
+  }
+}
+
+RequestHandlerResult CalculateRequestHandlerResult(
+    const AnalysisSettings& settings,
+    safe_browsing::BinaryUploadService::Result upload_result,
+    ContentAnalysisResponse response) {
+  std::string tag;
+  auto action = GetHighestPrecedenceAction(response, &tag);
+
+  bool file_complies = ResultShouldAllowDataUse(settings, upload_result) &&
+                       ContentAnalysisActionAllowsDataUse(action);
+
+  RequestHandlerResult result;
+  result.complies = file_complies;
+  result.tag = tag;
+  if (!file_complies) {
+    if (upload_result ==
+        safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE) {
+      result.final_result = FinalContentAnalysisResult::LARGE_FILES;
+    } else if (upload_result ==
+               safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED) {
+      result.final_result = FinalContentAnalysisResult::ENCRYPTED_FILES;
+    } else if (action == TriggeredRule::WARN) {
+      result.final_result = FinalContentAnalysisResult::WARNING;
+    } else {
+      result.final_result = FinalContentAnalysisResult::FAILURE;
+    }
+  } else {
+    result.final_result = FinalContentAnalysisResult::SUCCESS;
+  }
+  return result;
+}
+
+safe_browsing::EventResult CalculateEventResult(
+    const AnalysisSettings& settings,
+    bool allowed_by_scan_result,
+    bool should_warn) {
+  bool wait_for_verdict =
+      settings.block_until_verdict == BlockUntilVerdict::BLOCK;
+  return (allowed_by_scan_result || !wait_for_verdict)
+             ? safe_browsing::EventResult::ALLOWED
+             : (should_warn ? safe_browsing::EventResult::WARNED
+                            : safe_browsing::EventResult::BLOCKED);
+}
 
 AnalysisSettings::AnalysisSettings() = default;
 AnalysisSettings::AnalysisSettings(AnalysisSettings&&) = default;

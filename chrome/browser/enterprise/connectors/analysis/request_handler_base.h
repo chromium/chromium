@@ -56,19 +56,6 @@ class RequestHandlerBase {
   void PrepareRequest(enterprise_connectors::AnalysisConnector connector,
                       safe_browsing::BinaryUploadService::Request* request);
 
-  // Determines if a request result should be used to allow a data use or to
-  // block it.
-  bool ResultShouldAllowDataUse(
-      safe_browsing::BinaryUploadService::Result result);
-
-  // Determines the event result.
-  safe_browsing::EventResult CalculateEventResult(bool allowed_by_scan_result,
-                                                  bool should_warn);
-
-  // Determines whether the action allows the use of the data.
-  bool ContentAnalysisActionAllowsDataUse(
-      enterprise_connectors::TriggeredRule::Action action);
-
   // Returns the BinaryUploadService used to upload content for deep scanning.
   safe_browsing::BinaryUploadService* GetBinaryUploadService();
 

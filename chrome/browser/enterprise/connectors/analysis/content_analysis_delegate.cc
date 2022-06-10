@@ -112,34 +112,9 @@ void StringAnalysisRequest::GetRequestData(DataCallback callback) {
   std::move(callback).Run(result_, std::move(data_));
 }
 
-// TODO(crbug.com/1324892): Remove once page and text requests are migrated.
-bool ContentAnalysisActionAllowsDataUse(
-    enterprise_connectors::TriggeredRule::Action action) {
-  switch (action) {
-    case enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED:
-    case enterprise_connectors::TriggeredRule::REPORT_ONLY:
-      return true;
-    case enterprise_connectors::TriggeredRule::WARN:
-    case enterprise_connectors::TriggeredRule::BLOCK:
-      return false;
-  }
-}
-
 bool* UIEnabledStorage() {
   static bool enabled = true;
   return &enabled;
-}
-
-safe_browsing::EventResult CalculateEventResult(
-    const enterprise_connectors::AnalysisSettings& settings,
-    bool allowed_by_scan_result,
-    bool should_warn) {
-  bool wait_for_verdict = settings.block_until_verdict ==
-                          enterprise_connectors::BlockUntilVerdict::BLOCK;
-  return (allowed_by_scan_result || !wait_for_verdict)
-             ? safe_browsing::EventResult::ALLOWED
-             : (should_warn ? safe_browsing::EventResult::WARNED
-                            : safe_browsing::EventResult::BLOCKED);
 }
 
 }  // namespace
@@ -251,38 +226,6 @@ std::u16string ContentAnalysisDelegate::GetBypassJustificationLabel() const {
 absl::optional<std::u16string>
 ContentAnalysisDelegate::OverrideCancelButtonText() const {
   return absl::nullopt;
-}
-
-// TODO(crbug.com/1324892): Remove once page and text requests are migrated.
-// static
-bool ContentAnalysisDelegate::ResultShouldAllowDataUse(
-    BinaryUploadService::Result result,
-    const enterprise_connectors::AnalysisSettings& settings) {
-  // Keep this implemented as a switch instead of a simpler if statement so that
-  // new values added to BinaryUploadService::Result cause a compiler error.
-  switch (result) {
-    case BinaryUploadService::Result::SUCCESS:
-    case BinaryUploadService::Result::UPLOAD_FAILURE:
-    case BinaryUploadService::Result::TIMEOUT:
-    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
-    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
-    // UNAUTHORIZED allows data usage since it's a result only obtained if the
-    // browser is not authorized to perform deep scanning. It does not make
-    // sense to block data in this situation since no actual scanning of the
-    // data was performed, so it's allowed.
-    case BinaryUploadService::Result::UNAUTHORIZED:
-    case BinaryUploadService::Result::UNKNOWN:
-      return true;
-
-    case BinaryUploadService::Result::FILE_TOO_LARGE:
-      return !settings.block_large_files;
-
-    case BinaryUploadService::Result::FILE_ENCRYPTED:
-      return !settings.block_password_protected_files;
-
-    case BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
-      return !settings.block_unsupported_file_types;
-  }
 }
 
 // static
@@ -406,13 +349,13 @@ void ContentAnalysisDelegate::StringRequestCallback(
                         content_size, result, response);
 
   text_request_complete_ = true;
-  std::string tag;
-  auto action =
-      enterprise_connectors::GetHighestPrecedenceAction(response, &tag);
-  bool text_complies = ResultShouldAllowDataUse(result, data_.settings) &&
-                       ContentAnalysisActionAllowsDataUse(action);
-  bool should_warn = action == enterprise_connectors::ContentAnalysisResponse::
-                                   Result::TriggeredRule::WARN;
+
+  RequestHandlerResult request_handler_result =
+      CalculateRequestHandlerResult(data_.settings, result, response);
+
+  bool text_complies = request_handler_result.complies;
+  bool should_warn = request_handler_result.final_result ==
+                     FinalContentAnalysisResult::WARNING;
 
   std::fill(result_.text_results.begin(), result_.text_results.end(),
             text_complies);
@@ -423,21 +366,19 @@ void ContentAnalysisDelegate::StringRequestCallback(
       access_point_, content_size, result, response,
       CalculateEventResult(data_.settings, text_complies, should_warn));
 
-  if (!text_complies) {
-    if (should_warn) {
-      text_warning_ = true;
-      text_response_ = std::move(response);
-      UpdateFinalResult(FinalContentAnalysisResult::WARNING, tag);
-    } else {
-      UpdateFinalResult(FinalContentAnalysisResult::FAILURE, tag);
-    }
+  UpdateFinalResult(request_handler_result.final_result,
+                    request_handler_result.tag);
+
+  if (should_warn) {
+    text_warning_ = true;
+    text_response_ = std::move(response);
   }
 
   MaybeCompleteScanRequest();
 }
 
 void ContentAnalysisDelegate::FilesRequestCallback(
-    std::vector<FilesRequestHandler::Result> results) {
+    std::vector<RequestHandlerResult> results) {
   // No reporting here, because the MultiFileRequestHandler does that.
   DCHECK_EQ(results.size(), result_.paths_results.size());
   for (size_t index = 0; index < results.size(); ++index) {
@@ -466,13 +407,13 @@ void ContentAnalysisDelegate::PageRequestCallback(
                         page_size_bytes_, result, response);
 
   page_request_complete_ = true;
-  std::string tag;
-  auto action =
-      enterprise_connectors::GetHighestPrecedenceAction(response, &tag);
-  result_.page_result = ResultShouldAllowDataUse(result, data_.settings) &&
-                        ContentAnalysisActionAllowsDataUse(action);
-  bool should_warn = action == enterprise_connectors::ContentAnalysisResponse::
-                                   Result::TriggeredRule::WARN;
+
+  RequestHandlerResult request_handler_result =
+      CalculateRequestHandlerResult(data_.settings, result, response);
+
+  result_.page_result = request_handler_result.complies;
+  bool should_warn = request_handler_result.final_result ==
+                     FinalContentAnalysisResult::WARNING;
 
   MaybeReportDeepScanningVerdict(
       profile_, url_, "Printed page", /*sha256*/ std::string(),
@@ -481,16 +422,12 @@ void ContentAnalysisDelegate::PageRequestCallback(
       access_point_, /*content_size*/ -1, result, response,
       CalculateEventResult(data_.settings, result_.page_result, should_warn));
 
-  if (!result_.page_result) {
-    if (result == BinaryUploadService::Result::FILE_TOO_LARGE) {
-      UpdateFinalResult(FinalContentAnalysisResult::LARGE_FILES, tag);
-    } else if (should_warn) {
-      page_warning_ = true;
-      page_response_ = std::move(response);
-      UpdateFinalResult(FinalContentAnalysisResult::WARNING, tag);
-    } else {
-      UpdateFinalResult(FinalContentAnalysisResult::FAILURE, tag);
-    }
+  UpdateFinalResult(request_handler_result.final_result,
+                    request_handler_result.tag);
+
+  if (should_warn) {
+    page_warning_ = true;
+    page_response_ = std::move(response);
   }
 
   MaybeCompleteScanRequest();

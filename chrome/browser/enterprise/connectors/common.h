@@ -13,6 +13,8 @@
 #include "base/callback_forward.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "content/public/browser/download_manager_delegate.h"
@@ -229,6 +231,34 @@ enum class FinalContentAnalysisResult {
   // Show that no issue was found and that the user may proceed.
   SUCCESS = 4,
 };
+
+// Result for a single request of the RequestHandler classes.
+struct RequestHandlerResult {
+  bool complies;
+  FinalContentAnalysisResult final_result;
+  std::string tag;
+};
+
+// Calculates the result for the request handler based on the upload result and
+// the analysis response.
+RequestHandlerResult CalculateRequestHandlerResult(
+    const AnalysisSettings& settings,
+    safe_browsing::BinaryUploadService::Result upload_result,
+    ContentAnalysisResponse response);
+
+// Determines if a request result should be used to allow a data use or to
+// block it.
+bool ResultShouldAllowDataUse(
+    const AnalysisSettings& settings,
+    safe_browsing::BinaryUploadService::Result upload_result);
+
+// Calculates the event result that is experienced by the user.
+// If data is allowed to be accessed immediately, the result will indicate that
+// the user was allowed to use the data independent of the scanning result.
+safe_browsing::EventResult CalculateEventResult(
+    const AnalysisSettings& settings,
+    bool allowed_by_scan_result,
+    bool should_warn);
 
 // User data to persist a save package's final callback allowing/denying
 // completion. This is used since the callback can be called either when

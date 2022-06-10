@@ -62,7 +62,7 @@ void FilesRequestHandler::ReportWarningBypass(
 }
 
 // static
-void FilesRequestHandler::SetFakeUploadCallback(
+void FilesRequestHandler::SetFakeUploadCallbackForTesting(
     FakeFileUploadCallback fake_file_upload_callback) {
   *FakeFileUploadCallbackStorage() = fake_file_upload_callback;
 }
@@ -163,10 +163,13 @@ void FilesRequestHandler::UploadFileForDeepScanning(
 
 void FilesRequestHandler::FileRequestCallback(
     size_t index,
-    safe_browsing::BinaryUploadService::Result result,
+    safe_browsing::BinaryUploadService::Result upload_result,
     enterprise_connectors::ContentAnalysisResponse response) {
-  if (result == safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS)
+  DCHECK_EQ(results_.size(), paths_.size());
+  if (upload_result ==
+      safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS) {
     throttled_ = true;
+  }
 
   // Find the path in the set of files that are being scanned.
   DCHECK_LT(index, paths_.size());
@@ -174,44 +177,26 @@ void FilesRequestHandler::FileRequestCallback(
 
   RecordDeepScanMetrics(access_point_,
                         base::TimeTicks::Now() - upload_start_time_,
-                        file_info_[index].size, result, response);
-  std::string tag;
-  auto action = GetHighestPrecedenceAction(response, &tag);
+                        file_info_[index].size, upload_result, response);
 
-  bool file_complies = ResultShouldAllowDataUse(result) &&
-                       ContentAnalysisActionAllowsDataUse(action);
+  RequestHandlerResult request_handler_result = CalculateRequestHandlerResult(
+      analysis_settings_, upload_result, response);
+  results_[index] = request_handler_result;
+  ++file_result_count_;
 
-  bool should_warn = action == enterprise_connectors::TriggeredRule::WARN;
+  bool result_is_warning = request_handler_result.final_result ==
+                           FinalContentAnalysisResult::WARNING;
+  if (result_is_warning) {
+    file_warnings_[index] = response;
+  }
 
   MaybeReportDeepScanningVerdict(
       profile_, url_, path.AsUTF8Unsafe(), file_info_[index].sha256,
       file_info_[index].mime_type,
       extensions::SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
-      access_point_, file_info_[index].size, result, response,
-      CalculateEventResult(file_complies, should_warn));
-
-  ++file_result_count_;
-
-  DCHECK_EQ(results_.size(), paths_.size());
-  Result file_result;
-  file_result.complies = file_complies;
-  file_result.tag = tag;
-  if (!file_complies) {
-    if (result == safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE) {
-      file_result.final_result = FinalContentAnalysisResult::LARGE_FILES;
-    } else if (result ==
-               safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED) {
-      file_result.final_result = FinalContentAnalysisResult::ENCRYPTED_FILES;
-    } else if (should_warn) {
-      file_warnings_[index] = std::move(response);
-      file_result.final_result = FinalContentAnalysisResult::WARNING;
-    } else {
-      file_result.final_result = FinalContentAnalysisResult::FAILURE;
-    }
-  } else {
-    file_result.final_result = FinalContentAnalysisResult::SUCCESS;
-  }
-  results_[index] = file_result;
+      access_point_, file_info_[index].size, upload_result, response,
+      CalculateEventResult(analysis_settings_, request_handler_result.complies,
+                           result_is_warning));
 
   safe_browsing::DecrementCrashKey(
       safe_browsing::ScanningCrashKey::PENDING_FILE_UPLOADS);

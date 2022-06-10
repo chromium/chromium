@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
-#include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -36,6 +35,7 @@ class Profile;
 namespace enterprise_connectors {
 
 class ContentAnalysisDialog;
+class FilesRequestHandler;
 
 // A class that performs deep scans of data (for example malicious or sensitive
 // content checks) before allowing a page to access it.
@@ -189,19 +189,13 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Showing the UI is not possible in unit tests, call this to disable it.
   static void DisableUIForTesting();
 
-  // Determines if a request result should be used to allow a data use or to
-  // block it.
-  static bool ResultShouldAllowDataUse(
-      safe_browsing::BinaryUploadService::Result result,
-      const enterprise_connectors::AnalysisSettings& settings);
-
  protected:
   ContentAnalysisDelegate(content::WebContents* web_contents,
                           Data data,
                           CompletionCallback callback,
                           safe_browsing::DeepScanAccessPoint access_point);
 
-  // Callbacks from uploading data.  Protected so they can be called from
+  // Callbacks from uploading data. Protected so they can be called from
   // testing derived classes.
   // TODO(crbug.com/1324892): Adapt once TextRequestHandler and
   // PageRequestHandler are created and move reporting to the RequestHandlers.
@@ -213,7 +207,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
       enterprise_connectors::ContentAnalysisResponse response);
 
   // Callback called after all files are scanned by the FilesRequestHandler.
-  void FilesRequestCallback(std::vector<FilesRequestHandler::Result> results);
+  void FilesRequestCallback(std::vector<RequestHandlerResult> results);
 
   base::WeakPtr<ContentAnalysisDelegate> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

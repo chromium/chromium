@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 
@@ -49,14 +48,8 @@ class FilesRequestHandler : public RequestHandlerBase {
       const base::FilePath&,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request>)>;
 
-  // Result for a single file.
-  struct Result {
-    bool complies;
-    FinalContentAnalysisResult final_result;
-    std::string tag;
-  };
-
-  using CompletionCallback = base::OnceCallback<void(std::vector<Result>)>;
+  using CompletionCallback =
+      base::OnceCallback<void(std::vector<RequestHandlerResult>)>;
   FilesRequestHandler(
       safe_browsing::BinaryUploadService* upload_service,
       Profile* profile,
@@ -71,7 +64,7 @@ class FilesRequestHandler : public RequestHandlerBase {
   void ReportWarningBypass(
       absl::optional<std::u16string> user_justification) override;
 
-  static void SetFakeUploadCallback(
+  static void SetFakeUploadCallbackForTesting(
       FakeFileUploadCallback fake_file_upload_callback);
 
   void FileRequestCallbackForTesting(
@@ -123,7 +116,7 @@ class FilesRequestHandler : public RequestHandlerBase {
   // separate requests.
   size_t file_result_count_ = 0;
 
-  std::vector<Result> results_;
+  std::vector<RequestHandlerResult> results_;
 
   // Scanning responses of files that got DLP warning verdicts.
   std::map<size_t, enterprise_connectors::ContentAnalysisResponse>

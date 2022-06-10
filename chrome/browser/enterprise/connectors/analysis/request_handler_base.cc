@@ -42,59 +42,6 @@ void RequestHandlerBase::PrepareRequest(
     request->set_client_metadata(*analysis_settings_.client_metadata);
 }
 
-bool RequestHandlerBase::ResultShouldAllowDataUse(
-    safe_browsing::BinaryUploadService::Result result) {
-  using safe_browsing::BinaryUploadService;
-  // Keep this implemented as a switch instead of a simpler if statement so that
-  // new values added to BinaryUploadService::Result cause a compiler error.
-  switch (result) {
-    case BinaryUploadService::Result::SUCCESS:
-    case BinaryUploadService::Result::UPLOAD_FAILURE:
-    case BinaryUploadService::Result::TIMEOUT:
-    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
-    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
-    // UNAUTHORIZED allows data usage since it's a result only obtained if the
-    // browser is not authorized to perform deep scanning. It does not make
-    // sense to block data in this situation since no actual scanning of the
-    // data was performed, so it's allowed.
-    case BinaryUploadService::Result::UNAUTHORIZED:
-    case BinaryUploadService::Result::UNKNOWN:
-      return true;
-
-    case BinaryUploadService::Result::FILE_TOO_LARGE:
-      return !analysis_settings_.block_large_files;
-
-    case BinaryUploadService::Result::FILE_ENCRYPTED:
-      return !analysis_settings_.block_password_protected_files;
-
-    case BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
-      return !analysis_settings_.block_unsupported_file_types;
-  }
-}
-
-safe_browsing::EventResult RequestHandlerBase::CalculateEventResult(
-    bool allowed_by_scan_result,
-    bool should_warn) {
-  bool wait_for_verdict = analysis_settings_.block_until_verdict ==
-                          enterprise_connectors::BlockUntilVerdict::BLOCK;
-  return (allowed_by_scan_result || !wait_for_verdict)
-             ? safe_browsing::EventResult::ALLOWED
-             : (should_warn ? safe_browsing::EventResult::WARNED
-                            : safe_browsing::EventResult::BLOCKED);
-}
-
-bool RequestHandlerBase::ContentAnalysisActionAllowsDataUse(
-    enterprise_connectors::TriggeredRule::Action action) {
-  switch (action) {
-    case enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED:
-    case enterprise_connectors::TriggeredRule::REPORT_ONLY:
-      return true;
-    case enterprise_connectors::TriggeredRule::WARN:
-    case enterprise_connectors::TriggeredRule::BLOCK:
-      return false;
-  }
-}
-
 safe_browsing::BinaryUploadService*
 RequestHandlerBase::GetBinaryUploadService() {
   return upload_service_;
