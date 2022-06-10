@@ -457,6 +457,8 @@ bool Buffer::ProduceTransferableResource(
   resource->format = viz::RGBA_8888;
   resource->filter = GL_LINEAR;
   resource->size = gpu_memory_buffer_->GetSize();
+  resource->synchronization_type =
+      viz::TransferableResource::SynchronizationType::kReleaseFence;
 
   // Create a new image texture for |gpu_memory_buffer_| with |texture_target_|
   // if one doesn't already exist. The contents of this buffer are copied to
