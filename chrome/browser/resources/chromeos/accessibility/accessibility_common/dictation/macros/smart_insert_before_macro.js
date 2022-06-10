@@ -6,36 +6,38 @@ import {Macro} from '/accessibility_common/dictation/macros/macro.js';
 import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
 
 /**
- * Implements a macro that replaces a word or phrase with another word or
+ * Implements a macro that inserts a word or phrase before another word or
  * phrase
  */
-export class SmartReplacePhraseMacro extends Macro {
+export class SmartInsertBeforeMacro extends Macro {
   /**
    * @param {!InputController} inputController
-   * @param {string} deletePhrase
    * @param {string} insertPhrase
+   * @param {string} beforePhrase
    */
-  constructor(inputController, deletePhrase, insertPhrase) {
-    super(MacroName.SMART_REPLACE_PHRASE);
+  constructor(inputController, insertPhrase, beforePhrase) {
+    super(MacroName.SMART_INSERT_BEFORE);
     /** @private {!InputController} */
     this.inputController_ = inputController;
     /** @private {string} */
-    this.deletePhrase_ = deletePhrase;
-    /** @private {string} */
     this.insertPhrase_ = insertPhrase;
+    /** @private {string} */
+    this.beforePhrase_ = beforePhrase;
   }
+
   /** @override */
   checkContext() {
     return this.createSuccessCheckContextResult_(
         /*willImmediatelyDisambiguate=*/ false);
   }
+
   /** @override */
   runMacro() {
     if (!this.inputController_.isActive()) {
       return this.createRunMacroResult_(
           /*isSuccess=*/ false, MacroError.FAILED_ACTUATION);
     }
-    this.inputController_.replacePhrase(this.deletePhrase_, this.insertPhrase_);
+    this.inputController_.insertBefore(this.insertPhrase_, this.beforePhrase_);
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
 }

@@ -31,7 +31,7 @@ export class SmartDeletePhraseMacro extends Macro {
       return this.createRunMacroResult_(
           /*isSuccess=*/ false, MacroError.FAILED_ACTUATION);
     }
-    this.inputController_.smartDeletePhrase(this.phrase_);
+    this.inputController_.deletePhrase(this.phrase_);
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
 }

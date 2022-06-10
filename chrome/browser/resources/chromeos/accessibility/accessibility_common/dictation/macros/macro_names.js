@@ -88,5 +88,8 @@ export const MacroName = {
   // Replaces a provided word or phrase.
   SMART_REPLACE_PHRASE: 22,
 
+  // Inserts a provided word or phrase.
+  SMART_INSERT_BEFORE: 23,
+
   // Any new actions should match with Voice Access's semantic tags.
 };

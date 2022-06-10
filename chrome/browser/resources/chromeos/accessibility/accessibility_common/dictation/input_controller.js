@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EditingUtil} from '/accessibility_common/dictation/editing_util.js';
+
 const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
 
 /**
@@ -233,8 +235,8 @@ export class InputController {
    * `phrase` are present, it deletes the one closest to the text caret.
    * @param {string} phrase The phrase to be deleted.
    */
-  smartDeletePhrase(phrase) {
-    this.smartReplacePhrase(phrase, '');
+  deletePhrase(phrase) {
+    this.replacePhrase(phrase, '');
   }
 
   /**
@@ -244,7 +246,7 @@ export class InputController {
    * @param {string} deletePhrase The phrase to be deleted.
    * @param {string} insertPhrase The phrase to be inserted.
    */
-  smartReplacePhrase(deletePhrase, insertPhrase) {
+  replacePhrase(deletePhrase, insertPhrase) {
     const editableNode = this.focusHandler_.getEditableNode();
     if (!editableNode || !editableNode.value ||
         editableNode.textSelStart !== editableNode.textSelEnd) {
@@ -253,31 +255,30 @@ export class InputController {
 
     const value = editableNode.value;
     const caretIndex = editableNode.textSelStart;
-    const leftOfCaret = value.substring(0, caretIndex);
-    const rightOfCaret = value.substring(caretIndex);
-    const performingDelete = insertPhrase === '';
-    deletePhrase = deletePhrase.trim();
-    insertPhrase = insertPhrase.trim();
+    const newValue = EditingUtil.replacePhrase(
+        value, caretIndex, deletePhrase, insertPhrase);
+    editableNode.setValue(newValue);
+  }
 
-    // Find the right-most occurrence of `deletePhrase`. Require `deletePhrase`
-    // to be separated by word boundaries. If we're deleting text, prefer
-    // the RegExps that include a leading/trailing space to preserve spacing.
-    const re = new RegExp(`(\\b${deletePhrase}\\b)(?!.*\\b\\1\\b)`, 'i');
-    const reWithLeadingSpace =
-        new RegExp(`(\\b ${deletePhrase}\\b)(?!.*\\b\\1\\b)`, 'i');
-    const reWithTrailingSpace =
-        new RegExp(`(\\b${deletePhrase} \\b)(?!.*\\b\\1\\b)`, 'i');
-
-    let newLeft;
-    if (performingDelete && reWithLeadingSpace.test(leftOfCaret)) {
-      newLeft = leftOfCaret.replace(reWithLeadingSpace, insertPhrase);
-    } else if (performingDelete && reWithTrailingSpace.test(leftOfCaret)) {
-      newLeft = leftOfCaret.replace(reWithTrailingSpace, insertPhrase);
-    } else {
-      newLeft = leftOfCaret.replace(re, insertPhrase);
+  /**
+   * Inserts `insertPhrase` directly before `beforePhrase` (and separates them
+   * with a space). This function operates on the text to the left of the caret.
+   * If multiple instances of `beforePhrase` are present, this function will
+   * use the one closest to the text caret.
+   * @param {string} insertPhrase
+   * @param {string} beforePhrase
+   */
+  insertBefore(insertPhrase, beforePhrase) {
+    const editableNode = this.focusHandler_.getEditableNode();
+    if (!editableNode || !editableNode.value ||
+        editableNode.textSelStart !== editableNode.textSelEnd) {
+      return;
     }
 
-    const newValue = newLeft + rightOfCaret;
+    const value = editableNode.value;
+    const caretIndex = editableNode.textSelStart;
+    const newValue =
+        EditingUtil.insertBefore(value, caretIndex, insertPhrase, beforePhrase);
     editableNode.setValue(newValue);
   }
 }

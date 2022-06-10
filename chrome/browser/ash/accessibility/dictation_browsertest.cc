@@ -1400,6 +1400,15 @@ IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, SmartReplacePhrase) {
   WaitForTextAreaValue("This isn't a simple test.");
 }
 
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, SmartInsertBefore) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("This is a test.", "This is a test.");
+  RunHiddenMacroWithTwoStringArgs(/* SMART_INSERT_BEFORE */ 23, "simple",
+                                  "test");
+  WaitForTextAreaValue("This is a simple test.");
+}
+
 // Tests behavior of Dictation and installation of Pumpkin.
 class DictationPumpkinInstallTest : public DictationTest {
  protected:

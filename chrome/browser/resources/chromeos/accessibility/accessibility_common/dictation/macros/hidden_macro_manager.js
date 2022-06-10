@@ -6,6 +6,7 @@ import {DeletePrevSentMacro} from '/accessibility_common/dictation/macros/delete
 import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
 import {DeletePrevWordMacro, NavNextWordMacro, NavPrevWordMacro} from '/accessibility_common/dictation/macros/repeatable_key_press_macro.js';
 import {SmartDeletePhraseMacro} from '/accessibility_common/dictation/macros/smart_delete_phrase_macro.js';
+import {SmartInsertBeforeMacro} from '/accessibility_common/dictation/macros/smart_insert_before_macro.js';
 import {SmartReplacePhraseMacro} from '/accessibility_common/dictation/macros/smart_replace_phrase_macro.js';
 import {StopListeningMacro} from '/accessibility_common/dictation/macros/stop_listening_macro.js';
 
@@ -80,6 +81,10 @@ export class HiddenMacroManager {
         new SmartReplacePhraseMacro(this.inputController_, arg1, arg2)
             .runMacro();
         break;
+      case MacroName.SMART_INSERT_BEFORE:
+        new SmartInsertBeforeMacro(this.inputController_, arg1, arg2)
+            .runMacro();
+        break;
       default:
         throw new Error(`Cannot run macro: ${name} with string arg1: ${
             arg1} and arg2: ${arg2} for testing`);
@@ -108,4 +113,5 @@ HiddenMacroManager.HIDDEN_MACROS_ = [
   MacroName.NAV_PREV_WORD,
   MacroName.SMART_DELETE_PHRASE,
   MacroName.SMART_REPLACE_PHRASE,
+  MacroName.SMART_INSERT_BEFORE,
 ];
