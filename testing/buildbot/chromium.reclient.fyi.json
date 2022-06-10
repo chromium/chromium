@@ -25,5 +25,15 @@
     "additional_compile_targets": [
       "chromiumos_preflight"
     ]
+  },
+  "ios-simulator reclient staging": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "ios-simulator reclient test": {
+    "additional_compile_targets": [
+      "all"
+    ]
   }
 }
