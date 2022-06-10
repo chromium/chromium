@@ -50,10 +50,6 @@ bool ShouldUseOptimizationGuidePredictions();
 // even if local predictions are available for preconnect predictions.
 bool ShouldAlwaysRetrieveOptimizationGuidePredictions();
 
-// Returns the maximum number of preresolves that can be inflight at any given
-// time.
-size_t GetMaxInflightPreresolves();
-
 // Returns the maximum number of prefetches that can be inflight at any given
 // time.
 size_t GetMaxInflightPrefetches();

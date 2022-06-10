@@ -92,12 +92,6 @@ bool ShouldAlwaysRetrieveOptimizationGuidePredictions() {
       false);
 }
 
-size_t GetMaxInflightPreresolves() {
-  return static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
-      kLoadingPredictorInflightPredictiveActions, "max_inflight_preresolves",
-      3));
-}
-
 size_t GetMaxInflightPrefetches() {
   return static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
       kLoadingPredictorInflightPredictiveActions, "max_inflight_prefetches",
