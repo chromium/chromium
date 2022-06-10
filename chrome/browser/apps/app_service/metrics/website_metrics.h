@@ -57,17 +57,28 @@ class WebsiteMetrics : public BrowserListObserver,
       history::HistoryService* history_service) override;
 
  private:
+  class ActiveTabWebContentsObserver;
+
   void OnTabStripModelChangeInsert(TabStripModel* tab_strip_model,
                                    const TabStripModelChange::Insert& insert,
                                    const TabStripSelectionChange& selection);
   void OnTabStripModelChangeRemove(TabStripModel* tab_strip_model,
                                    const TabStripModelChange::Remove& remove,
                                    const TabStripSelectionChange& selection);
+  void OnActiveTabChanged(content::WebContents* old_contents,
+                          content::WebContents* new_contents);
+
+  // Called by |WebsiteMetrics::ActiveTabWebContentsObserver|.
+  void OnWebContentsUpdated(content::WebContents* contents);
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
   // The map from the window to the active tab contents.
   base::flat_map<aura::Window*, content::WebContents*> window_to_web_contents_;
+
+  base::flat_map<content::WebContents*,
+                 std::unique_ptr<ActiveTabWebContentsObserver>>
+      webcontents_to_observer_map_;
 
   // A set of observed activation clients for all browser's windows.
   base::ScopedMultiSourceObservation<wm::ActivationClient,

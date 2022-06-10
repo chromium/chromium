@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/aura/window.h"
 
 namespace {
@@ -54,6 +56,30 @@ wm::ActivationClient* GetActivationClientWithTabStripModel(
 
 namespace apps {
 
+// This class monitors the WebContent of the all tab and notifies a navigation
+// to the WebsiteMetrics.
+class WebsiteMetrics::ActiveTabWebContentsObserver
+    : public content::WebContentsObserver {
+ public:
+  ActiveTabWebContentsObserver(content::WebContents* contents,
+                               WebsiteMetrics* owner)
+      : content::WebContentsObserver(contents), owner_(owner) {}
+
+  ActiveTabWebContentsObserver(const ActiveTabWebContentsObserver&) = delete;
+  ActiveTabWebContentsObserver& operator=(const ActiveTabWebContentsObserver&) =
+      delete;
+
+  ~ActiveTabWebContentsObserver() override {}
+
+  // content::WebContentsObserver
+  void PrimaryPageChanged(content::Page& page) override {
+    owner_->OnWebContentsUpdated(web_contents());
+  }
+
+ private:
+  WebsiteMetrics* owner_;
+};
+
 WebsiteMetrics::WebsiteMetrics(Profile* profile)
     : browser_tab_strip_tracker_(this, nullptr) {
   BrowserList::GetInstance()->AddObserver(this);
@@ -91,6 +117,13 @@ void WebsiteMetrics::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
+  DCHECK(tab_strip_model);
+  auto* window = GetWindowWithTabStripModel(tab_strip_model);
+  if (!base::Contains(window_to_web_contents_, window)) {
+    // Skip the app browser window.
+    return;
+  }
+
   switch (change.type()) {
     case TabStripModelChange::kInserted:
       OnTabStripModelChangeInsert(tab_strip_model, *change.GetInsert(),
@@ -104,6 +137,14 @@ void WebsiteMetrics::OnTabStripModelChanged(
     case TabStripModelChange::kMoved:
     case TabStripModelChange::kSelectionOnly:
       break;
+  }
+
+  if (tab_strip_model->empty()) {
+    return;
+  }
+
+  if (selection.active_tab_changed()) {
+    OnActiveTabChanged(selection.old_contents, selection.new_contents);
   }
 }
 
@@ -159,6 +200,27 @@ void WebsiteMetrics::OnTabStripModelChangeRemove(
       activation_client_observations_.RemoveObservation(activation_client);
     }
   }
+}
+
+void WebsiteMetrics::OnActiveTabChanged(content::WebContents* old_contents,
+                                        content::WebContents* new_contents) {
+  if (new_contents &&
+      !base::Contains(webcontents_to_observer_map_, new_contents)) {
+    webcontents_to_observer_map_[new_contents] =
+        std::make_unique<WebsiteMetrics::ActiveTabWebContentsObserver>(
+            new_contents, this);
+  }
+
+  if (old_contents) {
+    webcontents_to_observer_map_.erase(old_contents);
+  }
+
+  // TODO(crbug.com/1334173): Calculate the usage time for the activated tab
+  // url.
+}
+
+void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* contents) {
+  // TODO(crbug.com/1334173): Update for the activated url.
 }
 
 }  // namespace apps
