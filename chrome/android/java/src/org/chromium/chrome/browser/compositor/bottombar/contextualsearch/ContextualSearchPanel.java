@@ -527,18 +527,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     }
 
     /**
-     * Called after the panel has navigated to prefetched Search Results.
-     * If the user has the panel open then they will see the prefetched result starting to load.
-     * Currently this just logs the time between the start of the search until the results start to
-     * render in the Panel.
-     * @param didResolve Whether the search required the Search Term to be resolved.
-     */
-    @Override
-    public void onPanelNavigatedToPrefetchedSearch(boolean didResolve) {
-        mPanelMetrics.onPanelNavigatedToPrefetchedSearch(didResolve);
-    }
-
-    /**
      * Maximizes the Contextual Search Panel.
      * @param reason The {@code StateChangeReason} behind the maximization.
      */
@@ -738,7 +726,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                 relatedSearchesInBar, showDefaultSearchInBar, defaultQueryInBarTextMaxWidthPx);
         getRelatedSearchesInContentControl().setRelatedSearchesSuggestions(relatedSearchesInContent,
                 showDefaultSearchInContent, defaultQueryInContentTextMaxWidthPx);
-        mPanelMetrics.onSearchTermResolved();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)) {
             if (getRelatedSearchesInBarControl().hasReleatedSearchesToShow()
                     != hadInBarSuggestions) {

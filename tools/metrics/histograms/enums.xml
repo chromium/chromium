@@ -12845,6 +12845,9 @@ Called by update_bad_message_reasons.py.-->
 </enum>
 
 <enum name="BooleanShown">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <int value="0" label="Not Shown"/>
   <int value="1" label="Shown"/>
 </enum>
@@ -18608,6 +18611,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextualSearchFirstRunPanelSeen">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <int value="0" label="Seen"/>
   <int value="1" label="Unseen"/>
 </enum>
@@ -18697,6 +18703,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextualSearchSearchRequestStatus">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <int value="0" label="Not Failed"/>
   <int value="1" label="Failed"/>
 </enum>
@@ -18709,6 +18718,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextualSearchSelectionValid">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <int value="0" label="Valid"/>
   <int value="1" label="Invalid"/>
 </enum>
@@ -18722,6 +18734,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextualSearchSuppressionResultsSeen">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <int value="0" label="Seen, heuristic satisfied"/>
   <int value="1" label="Not seen, heuristic satisfied"/>
   <int value="2" label="Seen, heuristic not satisfied"/>

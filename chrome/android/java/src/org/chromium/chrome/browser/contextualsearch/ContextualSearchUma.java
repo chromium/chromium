@@ -58,24 +58,6 @@ public class ContextualSearchUma {
         int NUM_ENTRIES = 2;
     }
 
-    // Constants used to log UMA "enum" histograms about whether the selection is valid.
-    @IntDef({Selection.VALID, Selection.INVALID})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface Selection {
-        int VALID = 0;
-        int INVALID = 1;
-        int NUM_ENTRIES = 2;
-    }
-
-    // Constants used to log UMA "enum" histograms about a request's outcome.
-    @IntDef({Request.NOT_FAILED, Request.FAILED})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface Request {
-        int NOT_FAILED = 0;
-        int FAILED = 1;
-        int NUM_ENTRIES = 2;
-    }
-
     // Constants used to log UMA "enum" histograms with details about whether search results
     // were seen, and what the original triggering gesture was.
     @IntDef({ResultsByGesture.SEEN_FROM_TAP, ResultsByGesture.NOT_SEEN_FROM_TAP,
@@ -86,21 +68,6 @@ public class ContextualSearchUma {
         int NOT_SEEN_FROM_TAP = 1;
         int SEEN_FROM_LONG_PRESS = 2;
         int NOT_SEEN_FROM_LONG_PRESS = 3;
-        int NUM_ENTRIES = 4;
-    }
-
-    // Constants used to log UMA "enum" histograms with details about whether search results
-    // were seen, and whether any existing tap suppression heuristics were satisfied.
-    @IntDef({ResultsBySuppression.SEEN_SUPPRESSION_HEURSTIC_SATISFIED,
-            ResultsBySuppression.NOT_SEEN_SUPPRESSION_HEURSTIC_SATISFIED,
-            ResultsBySuppression.SEEN_SUPPRESSION_HEURSTIC_NOT_SATISFIED,
-            ResultsBySuppression.NOT_SEEN_SUPPRESSION_HEURSTIC_NOT_SATISFIED})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface ResultsBySuppression {
-        int SEEN_SUPPRESSION_HEURSTIC_SATISFIED = 0;
-        int NOT_SEEN_SUPPRESSION_HEURSTIC_SATISFIED = 1;
-        int SEEN_SUPPRESSION_HEURSTIC_NOT_SATISFIED = 2;
-        int NOT_SEEN_SUPPRESSION_HEURSTIC_NOT_SATISFIED = 3;
         int NUM_ENTRIES = 4;
     }
 
@@ -219,45 +186,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Logs the duration of a Contextual Search panel being viewed by the user.
-     * @param wereResultsSeen Whether search results were seen.
-     * @param isChained Whether the Contextual Search ended with the start of another.
-     * @param durationMs The duration of the contextual search in milliseconds.
-     */
-    public static void logDuration(boolean wereResultsSeen, boolean isChained, long durationMs) {
-        if (wereResultsSeen) {
-            RecordHistogram.recordTimesHistogram("Search.ContextualSearchDurationSeen", durationMs);
-        } else if (isChained) {
-            RecordHistogram.recordTimesHistogram(
-                    "Search.ContextualSearchDurationUnseenChained", durationMs);
-        } else {
-            RecordHistogram.recordTimesHistogram(
-                    "Search.ContextualSearchDurationUnseen", durationMs);
-        }
-    }
-
-    /**
-     * Logs the duration from starting a search until the Search Term is resolved.
-     * @param durationMs The duration to record.
-     */
-    public static void logSearchTermResolutionDuration(long durationMs) {
-        RecordHistogram.recordMediumTimesHistogram(
-                "Search.ContextualSearchResolutionDuration", durationMs);
-    }
-
-    /**
-     * Logs the duration from starting a prefetched search until the panel navigates to the results
-     * and they start becoming viewable. Should be called only for searches that are prefetched.
-     * @param durationMs The duration to record.
-     * @param didResolve Whether a Search Term resolution was required as part of the loading.
-     */
-    public static void logPrefetchedSearchNavigatedDuration(long durationMs, boolean didResolve) {
-        String histogramName = didResolve ? "Search.ContextualSearchResolvedSearchDuration"
-                                          : "Search.ContextualSearchLiteralSearchDuration";
-        RecordHistogram.recordMediumTimesHistogram(histogramName, durationMs);
-    }
-
-    /**
      * Logs the duration from opening the panel beyond peek until the panel is closed.
      * @param durationMs The duration to record.
      */
@@ -290,8 +218,6 @@ public class ContextualSearchUma {
      * @param wasTap Whether the gesture that originally caused the panel to show was a Tap.
      */
     public static void logPromoSeen(boolean wasPanelSeen, boolean wasTap) {
-        RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchFirstRunPanelSeen",
-                wasPanelSeen ? Results.SEEN : Results.NOT_SEEN, Results.NUM_ENTRIES);
         logHistogramByGesture(wasPanelSeen, wasTap, "Search.ContextualSearchPromoSeenByGesture");
     }
 
@@ -406,103 +332,6 @@ public class ContextualSearchUma {
             RecordUserAction.record("RelatedSearches.SerpResultClicked");
         } else {
             RecordUserAction.record("ContextualSearch.SerpResultClicked");
-        }
-    }
-
-    /**
-     * Logs the length of the selection in two histograms, one when results were seen and one when
-     * results were not seen.
-     * @param wasPanelSeen Whether the panel was seen.
-     * @param selectionLength The length of the triggering selection.
-     */
-    public static void logSelectionLengthResultsSeen(boolean wasPanelSeen, int selectionLength) {
-        if (wasPanelSeen) {
-            RecordHistogram.recordSparseHistogram(
-                    "Search.ContextualSearchSelectionLengthSeen", selectionLength);
-        } else {
-            RecordHistogram.recordSparseHistogram(
-                    "Search.ContextualSearchSelectionLengthNotSeen", selectionLength);
-        }
-    }
-
-    /**
-     * Logs whether results were seen and whether any tap suppression heuristics were satisfied.
-     * @param wasSearchContentViewSeen If the panel was opened.
-     * @param wasAnySuppressionHeuristicSatisfied Whether any of the implemented suppression
-     *                                            heuristics were satisfied.
-     */
-    public static void logAnyTapSuppressionHeuristicSatisfied(boolean wasSearchContentViewSeen,
-            boolean wasAnySuppressionHeuristicSatisfied) {
-        int code;
-        if (wasAnySuppressionHeuristicSatisfied) {
-            code = wasSearchContentViewSeen
-                    ? ResultsBySuppression.SEEN_SUPPRESSION_HEURSTIC_SATISFIED
-                    : ResultsBySuppression.NOT_SEEN_SUPPRESSION_HEURSTIC_SATISFIED;
-        } else {
-            code = wasSearchContentViewSeen
-                    ? ResultsBySuppression.SEEN_SUPPRESSION_HEURSTIC_NOT_SATISFIED
-                    : ResultsBySuppression.NOT_SEEN_SUPPRESSION_HEURSTIC_NOT_SATISFIED;
-        }
-
-        RecordHistogram.recordEnumeratedHistogram(
-                "Search.ContextualSearchTapSuppressionSeen.AnyHeuristicSatisfied", code,
-                ResultsBySuppression.NUM_ENTRIES);
-    }
-
-    /**
-     * Logs whether a selection is valid.
-     * @param isSelectionValid Whether the selection is valid.
-     */
-    public static void logSelectionIsValid(boolean isSelectionValid) {
-        RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchSelectionValid",
-                isSelectionValid ? Selection.VALID : Selection.INVALID, Selection.NUM_ENTRIES);
-    }
-
-    /**
-     * Logs whether a normal priority search request failed.
-     * @param isFailure Whether the request failed.
-     */
-    public static void logNormalPrioritySearchRequestOutcome(boolean isFailure) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Search.ContextualSearchNormalPrioritySearchRequestStatus",
-                isFailure ? Request.FAILED : Request.NOT_FAILED, Request.NUM_ENTRIES);
-    }
-
-    /**
-     * Logs whether a low priority search request failed.
-     * @param isFailure Whether the request failed.
-     */
-    public static void logLowPrioritySearchRequestOutcome(boolean isFailure) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Search.ContextualSearchLowPrioritySearchRequestStatus",
-                isFailure ? Request.FAILED : Request.NOT_FAILED, Request.NUM_ENTRIES);
-    }
-
-    /**
-     * Logs whether a fallback search request failed.
-     * @param isFailure Whether the request failed.
-     */
-    public static void logFallbackSearchRequestOutcome(boolean isFailure) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Search.ContextualSearchFallbackSearchRequestStatus",
-                isFailure ? Request.FAILED : Request.NOT_FAILED, Request.NUM_ENTRIES);
-    }
-
-    /**
-     * Logs the duration between the panel being triggered due to a tap and the panel being
-     * dismissed due to a scroll.
-     * @param durationSincePanelTriggerMs The amount of time between the panel getting triggered and
-     *                                    the panel being dismissed due to a scroll.
-     * @param wasSearchContentViewSeen If the panel was opened.
-     */
-    public static void logDurationBetweenTriggerAndScroll(
-            long durationSincePanelTriggerMs, boolean wasSearchContentViewSeen) {
-        String histogram = wasSearchContentViewSeen
-                ? "Search.ContextualSearchDurationBetweenTriggerAndScrollSeen"
-                : "Search.ContextualSearchDurationBetweenTriggerAndScrollNotSeen";
-        if (durationSincePanelTriggerMs < 2000) {
-            RecordHistogram.recordCustomCountHistogram(
-                    histogram, (int) durationSincePanelTriggerMs, 1, 2000, 200);
         }
     }
 
@@ -666,8 +495,6 @@ public class ContextualSearchUma {
      * @param quickActionCategory The {@link QuickActionCategory} for the quick action.
      */
     public static void logQuickActionShown(boolean quickActionShown, int quickActionCategory) {
-        RecordHistogram.recordBooleanHistogram(
-                "Search.ContextualSearchQuickActions.Shown", quickActionShown);
         if (quickActionShown) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Search.ContextualSearchQuickActions.Category", quickActionCategory,

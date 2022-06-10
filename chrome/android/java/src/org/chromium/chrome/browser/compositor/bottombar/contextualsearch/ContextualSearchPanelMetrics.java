@@ -92,14 +92,6 @@ public class ContextualSearchPanelMetrics {
                 toState == PanelState.MAXIMIZED || toState == PanelState.EXPANDED;
         boolean isExitingPanelOpenedBeyondPeeked = mWasPanelOpenedBeyondPeek && !isContentVisible;
 
-        if (toState == PanelState.CLOSED && mPanelTriggerTimeFromTapNs != 0
-                && reason == StateChangeReason.BASE_PAGE_SCROLL) {
-            long durationMs = (System.nanoTime() - mPanelTriggerTimeFromTapNs)
-                    / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-            ContextualSearchUma.logDurationBetweenTriggerAndScroll(
-                    durationMs, mWasSearchContentViewSeen);
-        }
-
         if (isExitingPanelOpenedBeyondPeeked) {
             assert mPanelOpenedBeyondPeekTimeNs != 0;
             mPanelOpenedBeyondPeekDurationMs = (System.nanoTime() - mPanelOpenedBeyondPeekTimeNs)
@@ -113,11 +105,6 @@ public class ContextualSearchPanelMetrics {
             long panelViewDurationMs =
                     (System.nanoTime() - mFirstPeekTimeNs) / TimeUtils.NANOSECONDS_PER_MILLISECOND;
             ContextualSearchUma.logPanelViewDurationAction(panelViewDurationMs);
-            if (!mDidSearchInvolvePromo) {
-                // Measure duration only when the promo is not involved.
-                ContextualSearchUma.logDuration(
-                        mWasSearchContentViewSeen, isChained, panelViewDurationMs);
-            }
             if (mIsPromoActive) {
                 // The user is exiting still in the promo, without choosing an option.
                 ContextualSearchUma.logPromoSeen(mWasSearchContentViewSeen, mWasActivatedByTap);
@@ -141,11 +128,6 @@ public class ContextualSearchPanelMetrics {
             mPanelOpenedBeyondPeekDurationMs = 0;
 
             if (mWasActivatedByTap) {
-                boolean wasAnySuppressionHeuristicSatisfied = mWasAnyHeuristicSatisfiedOnPanelShow;
-                ContextualSearchUma.logAnyTapSuppressionHeuristicSatisfied(
-                        mWasSearchContentViewSeen, wasAnySuppressionHeuristicSatisfied);
-                ContextualSearchUma.logSelectionLengthResultsSeen(
-                        mWasSearchContentViewSeen, mSelectionLength);
                 ContextualSearchUma.logTapResultsSeen(mWasSearchContentViewSeen);
             }
             ContextualSearchUma.logAllResultsSeen(mWasSearchContentViewSeen);
@@ -280,25 +262,6 @@ public class ContextualSearchPanelMetrics {
      */
     public void onSearchRequestStarted() {
         mSearchRequestStartTimeNs = System.nanoTime();
-    }
-
-    /**
-     * Called when a Search Term has been resolved.
-     */
-    public void onSearchTermResolved() {
-        long durationMs = (System.nanoTime() - mSearchRequestStartTimeNs)
-                / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-        ContextualSearchUma.logSearchTermResolutionDuration(durationMs);
-    }
-
-    /**
-     * Called after the panel has navigated to prefetched Search Results.
-     * This is the point where the search result starts to render in the panel.
-     */
-    public void onPanelNavigatedToPrefetchedSearch(boolean didResolve) {
-        long durationMs = (System.nanoTime() - mSearchRequestStartTimeNs)
-                / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-        ContextualSearchUma.logPrefetchedSearchNavigatedDuration(durationMs, didResolve);
     }
 
     /**

@@ -428,7 +428,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchDurationBetweenTriggerAndScrollNotSeen"
-    units="ms" expires_after="M72">
+    units="ms" expires_after="M105">
+  <obsolete>
+    Removed 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -440,7 +443,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchDurationBetweenTriggerAndScrollSeen"
-    units="ms" expires_after="M72">
+    units="ms" expires_after="M105">
+  <obsolete>
+    Removed 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -452,7 +458,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchDurationSeen" units="ms"
-    expires_after="M72">
+    expires_after="M105">
+  <obsolete>
+    Removed 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -462,7 +471,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchDurationUnseen" units="ms"
-    expires_after="M72">
+    expires_after="M105">
+  <obsolete>
+    Removed 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -473,7 +485,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchDurationUnseenChained" units="ms"
-    expires_after="M72">
+    expires_after="M105">
+  <obsolete>
+    Removed 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -602,7 +617,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchFallbackSearchRequestStatus"
-    enum="ContextualSearchSearchRequestStatus" expires_after="M85">
+    enum="ContextualSearchSearchRequestStatus" expires_after="M105">
+  <obsolete>
+    Removed 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -612,7 +630,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchFirstRunPanelSeen"
-    enum="ContextualSearchFirstRunPanelSeen" expires_after="M72">
+    enum="ContextualSearchFirstRunPanelSeen" expires_after="M105">
+  <obsolete>
+    Removed 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -635,7 +656,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchLiteralSearchDuration" units="ms"
-    expires_after="M72">
+    expires_after="M105">
+  <obsolete>
+    Removed 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -646,7 +670,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchLowPrioritySearchRequestStatus"
-    enum="ContextualSearchSearchRequestStatus" expires_after="M72">
+    enum="ContextualSearchSearchRequestStatus" expires_after="M105">
+  <obsolete>
+    Removed 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -656,7 +683,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchNormalPrioritySearchRequestStatus"
-    enum="ContextualSearchSearchRequestStatus" expires_after="M77">
+    enum="ContextualSearchSearchRequestStatus" expires_after="M105">
+  <obsolete>
+    Removed 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -855,7 +885,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchQuickActions.Shown" enum="BooleanShown"
-    expires_after="M72">
+    expires_after="M105">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -891,7 +924,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchResolutionDuration" units="ms"
-    expires_after="M72">
+    expires_after="M105">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -901,7 +937,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchResolvedSearchDuration" units="ms"
-    expires_after="M72">
+    expires_after="M105">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -962,7 +1001,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchSelectionLengthNotSeen" units="chars"
-    expires_after="M72">
+    expires_after="M105">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -973,7 +1015,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchSelectionLengthSeen" units="chars"
-    expires_after="M72">
+    expires_after="M105">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -997,7 +1042,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchSelectionValid"
-    enum="ContextualSearchSelectionValid" expires_after="M72">
+    enum="ContextualSearchSelectionValid" expires_after="M105">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1099,7 +1147,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Search.ContextualSearchTapSuppressionSeen.AnyHeuristicSatisfied"
-    enum="ContextualSearchSuppressionResultsSeen" expires_after="M72">
+    enum="ContextualSearchSuppressionResultsSeen" expires_after="M105">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1110,7 +1161,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchTimeToSearch" units="ms"
-    expires_after="M72">
+    expires_after="M105">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

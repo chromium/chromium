@@ -192,9 +192,6 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     public void onContextualSearchPrefChanged(boolean isEnabled) {}
 
     @Override
-    public void onPanelNavigatedToPrefetchedSearch(boolean didResolve) {}
-
-    @Override
     public void setWasSearchContentViewSeen() {}
 
     @Override

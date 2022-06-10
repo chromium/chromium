@@ -1078,7 +1078,6 @@ public class ContextualSearchManager
                 // Record metrics for when the prefetched results became viewable.
                 if (mSearchRequest != null && mSearchRequest.wasPrefetch()) {
                     boolean didResolve = mPolicy.shouldPreviousGestureResolve();
-                    mSearchPanel.onPanelNavigatedToPrefetchedSearch(didResolve);
                 }
             }
         }
@@ -1185,15 +1184,6 @@ public class ContextualSearchManager
      */
     private void onContextualSearchRequestNavigation(boolean isFailure) {
         if (mSearchRequest == null) return;
-
-        if (mSearchRequest.isUsingLowPriority()) {
-            ContextualSearchUma.logLowPrioritySearchRequestOutcome(isFailure);
-        } else {
-            ContextualSearchUma.logNormalPrioritySearchRequestOutcome(isFailure);
-            if (mSearchRequest.getHasFailed()) {
-                ContextualSearchUma.logFallbackSearchRequestOutcome(isFailure);
-            }
-        }
 
         if (isFailure && mSearchRequest.isUsingLowPriority()) {
             // We're navigating to an error page, so we want to stop and retry.
@@ -1546,8 +1536,6 @@ public class ContextualSearchManager
         if (isSuppressed()) return;
 
         if (!selection.isEmpty()) {
-            ContextualSearchUma.logSelectionIsValid(selectionValid);
-
             if (selectionValid && mSearchPanel != null) {
                 mSearchPanel.updateBasePageSelectionYPx(y);
                 if (!mSearchPanel.isShowing()) {
