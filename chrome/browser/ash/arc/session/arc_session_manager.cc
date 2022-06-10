@@ -1812,10 +1812,7 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
   std::deque<JobDesc> jobs = {
       JobDesc{kArcPrepareHostGeneratedDirJobName,
               UpstartOperation::JOB_START,
-              {std::string("IS_ARCVM=") + (is_arcvm ? "1" : "0"),
-               // TODO(b/233107740) Remove this once crrev.com/c/3656121 has
-               // landed.
-               std::string("ADD_NATIVE_BRIDGE_64BIT_SUPPORT=0")}},
+              {std::string("IS_ARCVM=") + (is_arcvm ? "1" : "0")}},
   };
   ConfigureUpstartJobs(std::move(jobs),
                        base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,
