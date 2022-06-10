@@ -58,7 +58,7 @@ android_library("javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_library_java",

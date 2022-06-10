@@ -19,7 +19,7 @@ android_library("test_java") {
     "//chrome/android:chrome_test_java",
     "//chrome/android:chrome_test_util_java",
     "//chrome/browser/flags:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/autofill_assistant/guided_browsing/android:java",
     "//components/autofill_assistant/guided_browsing/android:java_resources",
     "//content/public/test/android:content_java_test_support",

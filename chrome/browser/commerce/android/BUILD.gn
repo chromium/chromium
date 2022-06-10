@@ -33,7 +33,7 @@ android_library("javatests") {
   deps = [
     ":java",
     "//base:base_java_test_support",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/payments/content/android:java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",

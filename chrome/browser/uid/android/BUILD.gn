@@ -31,7 +31,7 @@ android_library("javatests") {
     "//base/test:test_support_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/util:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
