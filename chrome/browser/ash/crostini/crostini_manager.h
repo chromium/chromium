@@ -180,7 +180,7 @@ class CrostiniManager : public KeyedService,
     virtual void OnStageStarted(mojom::InstallerState stage) {}
     virtual void OnComponentLoaded(CrostiniResult result) {}
     virtual void OnDiskImageCreated(bool success,
-                                    vm_tools::concierge::DiskImageStatus status,
+                                    CrostiniResult result,
                                     int64_t disk_size_bytes) {}
     virtual void OnVmStarted(bool success) {}
     virtual void OnLxdStarted(CrostiniResult result) {}
@@ -245,8 +245,7 @@ class CrostiniManager : public KeyedService,
   // |callback| is called if the arguments are bad, or after the method call
   // finishes.
   using CreateDiskImageCallback =
-      base::OnceCallback<void(bool success,
-                              vm_tools::concierge::DiskImageStatus,
+      base::OnceCallback<void(CrostiniResult result,
                               const base::FilePath& disk_path)>;
   void CreateDiskImage(
       // The path to the disk image, including the name of

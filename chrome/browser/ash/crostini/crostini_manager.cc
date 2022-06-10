@@ -282,8 +282,7 @@ class CrostiniManager::CrostiniRestarter
   void ContinueRestart();
   void LoadComponentFinished(CrostiniResult result);
   void CreateDiskImageFinished(int64_t disk_size_bytes,
-                               bool success,
-                               vm_tools::concierge::DiskImageStatus status,
+                               CrostiniResult result,
                                const base::FilePath& result_path);
   // chromeos::SchedulerConfigurationManagerBase::Observer:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
@@ -696,19 +695,30 @@ void CrostiniManager::CrostiniRestarter::LoadComponentFinished(
 
 void CrostiniManager::CrostiniRestarter::CreateDiskImageFinished(
     int64_t disk_size_bytes,
-    bool success,
-    vm_tools::concierge::DiskImageStatus status,
+    CrostiniResult result,
     const base::FilePath& result_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (result == CrostiniResult::CREATE_DISK_IMAGE_ALREADY_EXISTS &&
+      is_initial_install_) {
+    LOG(WARNING) << "Disk already existed for initial Crostini install. "
+                    "Perhaps the VM was created via vmc?";
+  } else if (result == CrostiniResult::SUCCESS && !is_initial_install_) {
+    LOG(ERROR) << "Disk was created for a restart not tagged as an initial "
+                  "Crostini installation.";
+  }
+
+  bool success = result == CrostiniResult::SUCCESS ||
+                 result == CrostiniResult::CREATE_DISK_IMAGE_ALREADY_EXISTS;
   for (auto& observer : observer_list_) {
-    observer.OnDiskImageCreated(success, status, disk_size_bytes);
+    observer.OnDiskImageCreated(success, result, disk_size_bytes);
   }
   if (ReturnEarlyIfNeeded()) {
     return;
   }
   EmitMetricIfInIncorrectState(mojom::InstallerState::kCreateDiskImage);
   if (!success) {
-    FinishRestart(CrostiniResult::CREATE_DISK_IMAGE_FAILED);
+    FinishRestart(result);
     return;
   }
   crostini_manager_->EmitVmDiskTypeMetric(container_id_.vm_name);
@@ -1394,10 +1404,7 @@ void CrostiniManager::CreateDiskImage(
     CreateDiskImageCallback callback) {
   if (vm_name.empty()) {
     LOG(ERROR) << "VM name must not be empty";
-    std::move(callback).Run(
-        /*success=*/false,
-        vm_tools::concierge::DiskImageStatus::DISK_STATUS_UNKNOWN,
-        base::FilePath());
+    std::move(callback).Run(CrostiniResult::CLIENT_ERROR, base::FilePath());
     return;
   }
 
@@ -1410,10 +1417,7 @@ void CrostiniManager::CreateDiskImage(
   if (storage_location != vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT) {
     LOG(ERROR) << "'" << storage_location
                << "' is not a valid storage location";
-    std::move(callback).Run(
-        /*success=*/false,
-        vm_tools::concierge::DiskImageStatus::DISK_STATUS_UNKNOWN,
-        base::FilePath());
+    std::move(callback).Run(CrostiniResult::CLIENT_ERROR, base::FilePath());
     return;
   }
   request.set_storage_location(storage_location);
@@ -2481,24 +2485,26 @@ void CrostiniManager::RemoveVmStartingObserver(
 void CrostiniManager::OnCreateDiskImage(
     CreateDiskImageCallback callback,
     absl::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
+  CrostiniResult result;
+  base::FilePath path;
+
   if (!response) {
     LOG(ERROR) << "Failed to create disk image. Empty response.";
-    std::move(callback).Run(/*success=*/false,
-                            vm_tools::concierge::DISK_STATUS_UNKNOWN,
-                            base::FilePath());
-    return;
+    result = CrostiniResult::CREATE_DISK_IMAGE_NO_RESPONSE;
+  } else if (response->status() == vm_tools::concierge::DISK_STATUS_CREATED) {
+    result = CrostiniResult::SUCCESS;
+    path = base::FilePath(response->disk_path());
+  } else if (response->status() == vm_tools::concierge::DISK_STATUS_EXISTS) {
+    result = CrostiniResult::CREATE_DISK_IMAGE_ALREADY_EXISTS;
+    path = base::FilePath(response->disk_path());
+  } else {
+    LOG(ERROR) << "Failed to create disk image. Error: "
+               << static_cast<int>(response->status())
+               << ", reason: " << response->failure_reason();
+    result = CrostiniResult::CREATE_DISK_IMAGE_FAILED;
   }
 
-  if (response->status() != vm_tools::concierge::DISK_STATUS_EXISTS &&
-      response->status() != vm_tools::concierge::DISK_STATUS_CREATED) {
-    LOG(ERROR) << "Failed to create disk image: " << response->failure_reason();
-    std::move(callback).Run(/*success=*/false, response->status(),
-                            base::FilePath());
-    return;
-  }
-
-  std::move(callback).Run(/*success=*/true, response->status(),
-                          base::FilePath(response->disk_path()));
+  std::move(callback).Run(result, path);
 }
 
 void CrostiniManager::OnDestroyDiskImage(

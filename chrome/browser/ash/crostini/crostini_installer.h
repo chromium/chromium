@@ -98,7 +98,7 @@ class CrostiniInstaller : public KeyedService,
   void OnStageStarted(crostini::mojom::InstallerState stage) override;
   void OnComponentLoaded(crostini::CrostiniResult result) override;
   void OnDiskImageCreated(bool success,
-                          vm_tools::concierge::DiskImageStatus status,
+                          CrostiniResult result,
                           int64_t disk_size_available) override;
   void OnVmStarted(bool success) override;
   void OnLxdStarted(CrostiniResult result) override;

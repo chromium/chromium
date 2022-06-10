@@ -127,25 +127,19 @@ class CrostiniManagerTest : public testing::Test {
     crostini_manager_->OnVmStopped(signal);
   }
 
-  void CreateDiskImageFailureCallback(
-      base::OnceClosure closure,
-      bool success,
-      vm_tools::concierge::DiskImageStatus status,
-      const base::FilePath& file_path) {
+  void CreateDiskImageFailureCallback(base::OnceClosure closure,
+                                      CrostiniResult result,
+                                      const base::FilePath& file_path) {
     EXPECT_EQ(fake_concierge_client_->create_disk_image_call_count(), 0);
-    EXPECT_FALSE(success);
-    EXPECT_EQ(status,
-              vm_tools::concierge::DiskImageStatus::DISK_STATUS_UNKNOWN);
+    EXPECT_EQ(result, CrostiniResult::CLIENT_ERROR);
     std::move(closure).Run();
   }
 
-  void CreateDiskImageSuccessCallback(
-      base::OnceClosure closure,
-      bool success,
-      vm_tools::concierge::DiskImageStatus status,
-      const base::FilePath& file_path) {
+  void CreateDiskImageSuccessCallback(base::OnceClosure closure,
+                                      CrostiniResult result,
+                                      const base::FilePath& file_path) {
     EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-    EXPECT_TRUE(success);
+    EXPECT_EQ(result, CrostiniResult::SUCCESS);
     std::move(closure).Run();
   }
 
@@ -746,6 +740,14 @@ TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerExists) {
 class CrostiniManagerRestartTest : public CrostiniManagerTest,
                                    public CrostiniManager::RestartObserver {
  public:
+  void SetUp() override {
+    CrostiniManagerTest::SetUp();
+
+    // Most tests are for a non-initial install, so return by default that a
+    // disk already exists to avoid extra error logs.
+    SetCreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_EXISTS);
+  }
+
   void RestartCrostiniCallback(base::OnceClosure closure,
                                CrostiniResult result) {
     restart_crostini_callback_count_++;
@@ -771,7 +773,7 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
   }
 
   void OnDiskImageCreated(bool success,
-                          vm_tools::concierge::DiskImageStatus status,
+                          CrostiniResult result,
                           int64_t disk_size_available) override {
     if (cancel_on_disk_image_created_) {
       Cancel();
@@ -839,6 +841,13 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
     histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", count);
     histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", count);
     histogram_tester_.ExpectTotalCount("Crostini.Installer.Started", 0);
+  }
+
+  void SetCreateDiskImageResponse(vm_tools::concierge::DiskImageStatus status) {
+    vm_tools::concierge::CreateDiskImageResponse response;
+    response.set_status(status);
+    response.set_disk_path("foo");
+    fake_concierge_client_->set_create_disk_image_response(response);
   }
 
   CrostiniManager::RestartId restart_id_ =
@@ -1450,6 +1459,8 @@ TEST_F(CrostiniManagerRestartTest, InstallHistogramEntries) {
   // When the first request is tagged as RestartSource::kInstaller, we should
   // log a single result to Crostini.RestarterResult.Installer and no results
   // to Crostini.RestartResult even if there were additional requests.
+
+  SetCreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_CREATED);
 
   vm_tools::concierge::StartVmResponse response;
   response.set_status(vm_tools::concierge::VmStatus::VM_STATUS_FAILURE);

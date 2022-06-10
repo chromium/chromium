@@ -327,16 +327,15 @@ void CrostiniInstaller::OnComponentLoaded(CrostiniResult result) {
   UpdateInstallingState(InstallerState::kCreateDiskImage);
 }
 
-void CrostiniInstaller::OnDiskImageCreated(
-    bool success,
-    vm_tools::concierge::DiskImageStatus status,
-    int64_t disk_size_available) {
+void CrostiniInstaller::OnDiskImageCreated(bool success,
+                                           CrostiniResult result,
+                                           int64_t disk_size_available) {
   DCHECK_EQ(installing_state_, InstallerState::kCreateDiskImage);
   if (!success) {
     HandleError(InstallerError::kErrorCreatingDiskImage);
     return;
   }
-  if (status == vm_tools::concierge::DiskImageStatus::DISK_STATUS_EXISTS) {
+  if (result == CrostiniResult::CREATE_DISK_IMAGE_ALREADY_EXISTS) {
     require_cleanup_ = false;
   }
   UpdateInstallingState(InstallerState::kStartTerminaVm);

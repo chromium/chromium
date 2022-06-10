@@ -103,7 +103,9 @@ enum class CrostiniResult {
   CONFIGURE_CONTAINER_TIMED_OUT = 69,
   // Prior to M104, RESTART_ABORTED was used for this.
   RESTART_REQUEST_CANCELLED = 70,
-  kMaxValue = RESTART_REQUEST_CANCELLED,
+  CREATE_DISK_IMAGE_NO_RESPONSE = 71,
+  CREATE_DISK_IMAGE_ALREADY_EXISTS = 72,
+  kMaxValue = CREATE_DISK_IMAGE_ALREADY_EXISTS,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };
