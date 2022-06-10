@@ -8,34 +8,28 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
-import org.chromium.components.browser_ui.widget.tile.TileView;
-import org.chromium.components.browser_ui.widget.tile.TileViewBinder;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -43,7 +37,6 @@ import java.util.List;
 
 /**
  * SuggestionProcessor for Most Visited URL tiles.
- * TODO(crbug.com/1106109): Write unit tests.
  */
 public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final @NonNull Context mContext;
@@ -51,8 +44,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final @NonNull Supplier<LargeIconBridge> mIconBridgeSupplier;
     private final int mMinCarouselItemViewHeight;
     private final int mDesiredFaviconWidthPx;
-    private final RoundedIconGenerator mIconGenerator;
-    private static final int DEFAULT_TILE_TYPE = 0;
+    private @NonNull RoundedIconGenerator mIconGenerator;
 
     /**
      * Constructor.
@@ -125,17 +117,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                         suggestion, title, matchIndex, elementIndexForDeletion);
                 return true;
             });
-            tileModel.set(TileViewProperties.CONTENT_DESCRIPTION,
-                    mContext.getString(R.string.accessibility_omnibox_most_visited_tile, title,
-                            url.getHost()));
-
-            // TODO(https://crbug.com/1106109): Cache the generated bitmaps.
-            // This is not needed for the experimentation purposes (this block is currently
-            // used very infrequently - only to offer zero-prefix URL suggestions on URL visit).
-            // This must be addressed before MV Carousel can be offered in more contexts.
-            // Consider unifying cache with LargeIconBridge if possible.
-            Bitmap fallbackIcon = mIconGenerator.generateIconForUrl(url);
-            tileModel.set(TileViewProperties.ICON, new BitmapDrawable(fallbackIcon));
 
             if (tiles.get(elementIndex).isSearch) {
                 Drawable drawable = TintedDrawable.constructTintedDrawable(
@@ -147,16 +128,36 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                 drawable.setTintList(
                         ChromeColors.getSecondaryIconTint(mContext, /* isIncognito= */ false));
                 tileModel.set(TileViewProperties.ICON, drawable);
-            } else if (iconBridge != null) {
-                iconBridge.getLargeIconForUrl(tiles.get(elementIndex).url, mDesiredFaviconWidthPx,
-                        (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
-                                int iconType) -> {
-                            if (icon == null) return;
-                            setIcon(tileModel, icon, false);
-                        });
+                tileModel.set(TileViewProperties.CONTENT_DESCRIPTION,
+                        mContext.getString(
+                                R.string.accessibility_omnibox_most_visited_tile_search, title));
+            } else {
+                tileModel.set(TileViewProperties.CONTENT_DESCRIPTION,
+                        mContext.getString(
+                                R.string.accessibility_omnibox_most_visited_tile_navigate, title,
+                                url.getHost()));
+
+                if (iconBridge != null) {
+                    // TODO(https://crbug.com/1335507): Cache the generated bitmaps.
+                    // This is not needed for the experimentation purposes (this block is currently
+                    // used very infrequently - only to offer zero-prefix URL suggestions on URL
+                    // visit). This must be addressed before MV Carousel can be offered in more
+                    // contexts. Consider unifying cache with LargeIconBridge if possible.
+                    Bitmap fallbackIcon = mIconGenerator.generateIconForUrl(url);
+                    tileModel.set(TileViewProperties.ICON, new BitmapDrawable(fallbackIcon));
+
+                    iconBridge.getLargeIconForUrl(tiles.get(elementIndex).url,
+                            mDesiredFaviconWidthPx,
+                            (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
+                                    int iconType) -> {
+                                if (icon == null) return;
+                                setIcon(tileModel, icon);
+                            });
+                }
             }
 
-            tileList.add(new ListItem(DEFAULT_TILE_TYPE, tileModel));
+            tileList.add(new ListItem(
+                    BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileModel));
         }
 
         model.set(BaseCarouselSuggestionViewProperties.TILES, tileList);
@@ -168,11 +169,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
      *
      * @param tileModel The model for the specific tile view to be modified.
      * @param icon The icon to apply.
-     * @param showLargeIcon Whether to show a large icon.
      */
-    private void setIcon(
-            @NonNull PropertyModel tileModel, @NonNull Bitmap icon, boolean showLargeIcon) {
-        tileModel.set(TileViewProperties.SHOW_LARGE_ICON, showLargeIcon);
+    private void setIcon(@NonNull PropertyModel tileModel, @NonNull Bitmap icon) {
         tileModel.set(TileViewProperties.SMALL_ICON_ROUNDING_RADIUS,
                 mContext.getResources().getDimensionPixelSize(
                         R.dimen.omnibox_carousel_icon_rounding_radius));
@@ -180,33 +178,11 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     /**
-     * Create Carousel Suggestion View presenting the Most Visited URL tiles.
-     *
-     * @param parent ViewGroup that will host the Carousel view.
-     * @return BaseCarouselSuggestionView for the Most Visited URL suggestions.
+     * Overrides RoundedIconGenerator for testing.
+     * @param RoundedIconGenerator Generator to use.
      */
-    public static BaseCarouselSuggestionView createView(ViewGroup parent) {
-        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(new ModelList());
-        adapter.registerType(
-                DEFAULT_TILE_TYPE, MostVisitedTilesProcessor::buildTile, TileViewBinder::bind);
-        return new BaseCarouselSuggestionView(parent.getContext(), adapter);
-    }
-
-    /**
-     * Create a Tile element for the Most Visited URL suggestions.
-     *
-     * @param parent ViewGroup that will host the Tile.
-     * @return A TileView element for the individual URL suggestion.
-     */
-    private static TileView buildTile(ViewGroup parent) {
-        TileView tile = (TileView) LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.suggestions_tile_view, parent, false);
-        tile.setClickable(true);
-
-        Drawable background =
-                OmniboxResourceProvider.resolveAttributeToDrawable(parent.getContext(),
-                        BrandedColorScheme.LIGHT_BRANDED_THEME, R.attr.selectableItemBackground);
-        tile.setBackgroundDrawable(background);
-        return tile;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void setRoundedIconGeneratorForTesting(@NonNull RoundedIconGenerator generator) {
+        mIconGenerator = generator;
     }
 }

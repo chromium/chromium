@@ -17,7 +17,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Binder for the Carousel suggestions.
@@ -26,8 +26,7 @@ public final class BaseCarouselSuggestionViewBinder {
     /** @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object) */
     public static void bind(PropertyModel model, BaseCarouselSuggestionView view, PropertyKey key) {
         if (key == BaseCarouselSuggestionViewProperties.TILES) {
-            final Collection<ListItem> items =
-                    model.get(BaseCarouselSuggestionViewProperties.TILES);
+            final List<ListItem> items = model.get(BaseCarouselSuggestionViewProperties.TILES);
             final SimpleRecyclerViewAdapter adapter = view.getAdapter();
             if (items != null) {
                 adapter.getModelList().set(items);
