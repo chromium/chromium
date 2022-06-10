@@ -22,15 +22,12 @@ export function onboardingNetworkPageTest() {
   /** @type {?FakeNetworkConfig} */
   let networkConfigService = null;
 
-  suiteSetup(() => {
+  setup(() => {
+    document.body.innerHTML = '';
     shimlessRmaService = new FakeShimlessRmaService();
     setShimlessRmaServiceForTesting(shimlessRmaService);
     networkConfigService = new FakeNetworkConfig();
     setNetworkConfigServiceForTesting(networkConfigService);
-  });
-
-  setup(() => {
-    document.body.innerHTML = '';
   });
 
   teardown(() => {
