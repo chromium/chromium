@@ -253,13 +253,9 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
       DesksController::Get()->GetCombineDesksTargetName(desk_));
 
   // Only show the combine desks context menu option if there are app windows in
-  // the desk, or if the desk is active and there are windows that should be
-  // visible on all desks.
+  // the desk, or if there are windows that should be visible on all desks.
   context_menu_->SetCombineDesksMenuItemVisibility(ContainsAppWindows(desk_));
 
-  // Only show the combine desks context menu option if there are app windows in
-  // the desk.
-  context_menu_->SetCombineDesksMenuItemVisibility(desk_->ContainsAppWindows());
   context_menu_->ShowContextMenuForView(
       this,
       base::i18n::IsRTL() ? desk_preview_->GetBoundsInScreen().bottom_right()
