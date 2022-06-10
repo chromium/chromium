@@ -477,26 +477,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 06/2021.
-const char kDataReductionProxy[] = "auth.spdyproxy.origin";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 06/2021.
-const char kQuickAnswersConsented[] = "settings.quick_answers.user_consented";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 06/2021.
-const char kWasPhishedCredentialsUploadedToSync[] =
-    "profile.was_phished_credentials_uploaded_to_sync";
-const char kHintsFetcherTopHostBlocklist[] =
-    "optimization_guide.hintsfetcher.top_host_blacklist";
-const char kHintsFetcherTopHostBlocklistState[] =
-    "optimization_guide.hintsfetcher.top_host_blacklist_state";
-const char kTimeHintsFetcherTopHostBlocklistLastInitialized[] =
-    "optimization_guide.hintsfetcher.time_blacklist_last_initialized";
-const char kHintsFetcherTopHostBlocklistMinimumEngagementScore[] =
-    "optimization_guide.hintsfetcher.top_host_blacklist_min_engagement_score";
-
 // Deprecated 07/2021.
 #if BUILDFLAG(IS_MAC)
 const char kPasswordRecovery[] = "password_manager.password_recovery";
@@ -849,24 +829,6 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterListPref(
       prefs::kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated);
 #endif
-
-  registry->RegisterStringPref(kDataReductionProxy, std::string());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterBooleanPref(kQuickAnswersConsented, false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  registry->RegisterBooleanPref(kWasPhishedCredentialsUploadedToSync, true);
-
-  registry->RegisterDictionaryPref(kHintsFetcherTopHostBlocklist,
-                                   PrefRegistry::LOSSY_PREF);
-  registry->RegisterIntegerPref(kHintsFetcherTopHostBlocklistState, 0,
-                                PrefRegistry::LOSSY_PREF);
-  registry->RegisterDoublePref(kTimeHintsFetcherTopHostBlocklistLastInitialized,
-                               0, PrefRegistry::LOSSY_PREF);
-  registry->RegisterDoublePref(
-      kHintsFetcherTopHostBlocklistMinimumEngagementScore, 0,
-      PrefRegistry::LOSSY_PREF);
 
 #if BUILDFLAG(IS_MAC)
   registry->RegisterTimePref(kPasswordRecovery, base::Time());
@@ -1723,26 +1685,13 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
 
-  // Added 06/2021
-  profile_prefs->ClearPref(kDataReductionProxy);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 06/2021
-  profile_prefs->ClearPref(kQuickAnswersConsented);
-
   // Added 06/2021.
   ash::HelpAppNotificationController::MigrateObsoleteNotificationPrefs(
       profile_prefs);
   ash::HelpAppNotificationController::ClearObsoleteNotificationPrefs(
       profile_prefs);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 06/2021
-  profile_prefs->ClearPref(kWasPhishedCredentialsUploadedToSync);
-  profile_prefs->ClearPref(kHintsFetcherTopHostBlocklist);
-  profile_prefs->ClearPref(kHintsFetcherTopHostBlocklistState);
-  profile_prefs->ClearPref(kHintsFetcherTopHostBlocklistMinimumEngagementScore);
-  profile_prefs->ClearPref(kTimeHintsFetcherTopHostBlocklistLastInitialized);
 
 #if BUILDFLAG(IS_ANDROID)
   // Added 06/2021
