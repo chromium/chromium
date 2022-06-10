@@ -17,21 +17,21 @@ void QuickStartScreenHandler::Show() {
   ShowInWebUI();
 }
 
-std::vector<base::Value> ToValue(const ash::quick_start::ShapeList& list) {
-  std::vector<base::Value> result;
+base::Value ToValue(const ash::quick_start::ShapeList& list) {
+  base::Value::List result;
   for (const ash::quick_start::ShapeHolder& shape_holder : list) {
-    base::flat_map<std::string, base::Value> val;
-    val["shape"] = base::Value(static_cast<int>(shape_holder.shape));
-    val["color"] = base::Value(static_cast<int>(shape_holder.color));
-    val["digit"] = base::Value(static_cast<int>(shape_holder.digit));
-    result.emplace_back(std::move(val));
+    base::Value::Dict val;
+    val.Set("shape", static_cast<int>(shape_holder.shape));
+    val.Set("color", static_cast<int>(shape_holder.color));
+    val.Set("digit", static_cast<int>(shape_holder.digit));
+    result.Append(std::move(val));
   }
-  return result;
+  return base::Value(std::move(result));
 }
 
 void QuickStartScreenHandler::SetShapes(
     const ash::quick_start::ShapeList& shape_list) {
-  CallExternalAPI("setFigures", base::Value(ToValue(shape_list)));
+  CallExternalAPI("setFigures", ToValue(shape_list));
 }
 
 void QuickStartScreenHandler::DeclareLocalizedValues(
