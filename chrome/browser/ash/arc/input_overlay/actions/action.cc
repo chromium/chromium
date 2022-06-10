@@ -344,22 +344,33 @@ bool Action::IsRepeatedKeyEvent(const ui::KeyEvent& key_event) {
   return false;
 }
 
-void Action::OnTouchReleased() {
-  DCHECK(touch_id_);
-  TouchIdManager::GetInstance()->ReleaseTouchID(*touch_id_);
-  touch_id_ = absl::nullopt;
-  if (locations_.empty())
-    return;
-  current_position_index_ = (current_position_index_ + 1) % locations_.size();
+bool Action::VerifyOnKeyRelease(ui::DomCode code) {
+  if (!touch_id_) {
+    LOG(ERROR) << "There should be a touch ID for the release {"
+               << ui::KeycodeConverter::DomCodeToCodeString(code) << "}.";
+    DCHECK_EQ(keys_pressed_.size(), 0);
+    return false;
+  }
+
+  DCHECK_NE(keys_pressed_.size(), 0);
+  if (keys_pressed_.size() == 0 || !keys_pressed_.contains(code))
+    return false;
+
+  return true;
 }
 
-void Action::OnTouchCancelled() {
+void Action::OnTouchReleased() {
   DCHECK(touch_id_);
   TouchIdManager::GetInstance()->ReleaseTouchID(*touch_id_);
   touch_id_ = absl::nullopt;
   keys_pressed_.clear();
   if (locations_.empty())
     return;
+  current_position_index_ = (current_position_index_ + 1) % locations_.size();
+}
+
+void Action::OnTouchCancelled() {
+  OnTouchReleased();
   current_position_index_ = 0;
 }
 

@@ -242,7 +242,7 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
   // Rewrite for key event.
   if (IsKeyboardBound(*current_binding())) {
     auto* key_event = origin.AsKeyEvent();
-    bool rewritten = RewriteKeyEvent(key_event, touch_events, content_bounds,
+    bool rewritten = RewriteKeyEvent(key_event, content_bounds, touch_events,
                                      keep_original_event);
     LogTouchEvents(touch_events);
     return rewritten;
@@ -281,8 +281,8 @@ void ActionTap::Unbind(const InputElement& input_element) {
 }
 
 bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
-                                std::list<ui::TouchEvent>& rewritten_events,
                                 const gfx::RectF& content_bounds,
+                                std::list<ui::TouchEvent>& rewritten_events,
                                 bool& keep_original_event) {
   DCHECK(key_event);
   if (!IsSameDomCode(key_event->code(), current_binding_->keys()[0]))
@@ -331,12 +331,8 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
       OnTouchReleased();
     }
   } else {
-    if (!touch_id_) {
-      LOG(ERROR) << "There should be a touch ID for the release {"
-                 << ui::KeycodeConverter::DomCodeToCodeString(key_event->code())
-                 << "}.";
-      return false;
-    }
+    if (!VerifyOnKeyRelease(key_event->code()))
+      return true;
 
     rewritten_events.emplace_back(ui::TouchEvent(
         ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,

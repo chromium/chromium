@@ -69,8 +69,8 @@ class ActionTap : public Action {
   // }
   bool ParseJsonFromMouse(const base::Value& value);
   bool RewriteKeyEvent(const ui::KeyEvent* key_event,
-                       std::list<ui::TouchEvent>& rewritten_events,
                        const gfx::RectF& content_bounds,
+                       std::list<ui::TouchEvent>& rewritten_events,
                        bool& keep_original_event);
   bool RewriteMouseEvent(const ui::MouseEvent* mouse_event,
                          std::list<ui::TouchEvent>& rewritten_events,

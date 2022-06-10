@@ -137,6 +137,9 @@ class Action {
   absl::optional<gfx::PointF> CalculateTouchPosition(
       const gfx::RectF& content_bounds);
   bool IsRepeatedKeyEvent(const ui::KeyEvent& key_event);
+  // Verify the key release event. If it is verified, it continues to simulate
+  // the touch event. Otherwise, consider it as discard.
+  bool VerifyOnKeyRelease(ui::DomCode code);
   void OnTouchReleased();
   void OnTouchCancelled();
   // Process after unbinding the input mapping.

@@ -448,6 +448,8 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
           .set_target(target_window_);
     }
     DCHECK(touch_id_);
+    if (!touch_id_)
+      return false;
 
     // Generate touch move.
     CalculateMoveVector(*pos, index, /* key_press */ true, content_bounds);
@@ -459,6 +461,9 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
         .set_target(target_window_);
     keys_pressed_.emplace(key_event->code());
   } else {
+    if (!VerifyOnKeyRelease(key_event->code()))
+      return true;
+
     if (keys_pressed_.size() > 1) {
       // Generate new move.
       CalculateMoveVector(*pos, index, /* key_press */ false, content_bounds);
