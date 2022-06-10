@@ -34,6 +34,7 @@
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/protocol_translator.h"
+#include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
@@ -574,6 +575,8 @@ void FeedStream::ManualRefresh(const StreamType& stream_type,
                             base::BindOnce(&FeedStream::StreamLoadComplete,
                                            base::Unretained(this))));
   }
+
+  last_refresh_scheduled_on_interaction_time_ = base::TimeTicks();
 }
 
 void FeedStream::ExecuteOperations(
@@ -1256,6 +1259,7 @@ void FeedStream::ReportOpenAction(const GURL& url,
     privacy_notice_card_tracker_.OnOpenAction(
         stream.model->FindContentId(ToContentRevision(slice_id)));
   }
+  ScheduleFeedCloseRefreshOnInteraction(stream_type);
 }
 void FeedStream::ReportOpenVisitComplete(base::TimeDelta visit_time) {
   metrics_reporter_->OpenVisitComplete(visit_time);
@@ -1277,6 +1281,7 @@ void FeedStream::ReportOpenInNewTabAction(const GURL& url,
     privacy_notice_card_tracker_.OnOpenAction(
         stream.model->FindContentId(ToContentRevision(slice_id)));
   }
+  ScheduleFeedCloseRefreshOnInteraction(stream_type);
 }
 
 void FeedStream::ReportSliceViewed(SurfaceId surface_id,
@@ -1319,8 +1324,9 @@ void FeedStream::ReportFeedViewed(const StreamType& stream_type,
   metrics_reporter_->FeedViewed(surface_id);
 
   Stream& stream = GetStream(stream_type);
+  if (!stream.surfaces.HasSurfaceShowingContent())
+    ScheduleFeedCloseRefreshOnFirstView(stream_type);
   stream.surfaces.FeedViewed(surface_id);
-
   MaybeNotifyHasUnreadContent(stream_type);
 }
 
@@ -1330,6 +1336,8 @@ void FeedStream::ReportPageLoaded() {
 void FeedStream::ReportStreamScrolled(const StreamType& stream_type,
                                       int distance_dp) {
   metrics_reporter_->StreamScrolled(stream_type, distance_dp);
+  if (GetStream(stream_type).surfaces.HasSurfaceShowingContent())
+    ScheduleFeedCloseRefreshOnInteraction(stream_type);
 }
 void FeedStream::ReportStreamScrollStart() {
   metrics_reporter_->StreamScrollStart();
@@ -1418,6 +1426,36 @@ ContentOrder FeedStream::GetContentOrderFromPrefs(
     return ContentOrder::kUnspecified;
   }
   return prefs::GetWebFeedContentOrder(*profile_prefs_);
+}
+
+void FeedStream::ScheduleFeedCloseRefreshOnInteraction(const StreamType& type) {
+  if (!base::FeatureList::IsEnabled(kFeedCloseRefresh))
+    return;
+  ScheduleFeedCloseRefresh(type);
+}
+
+void FeedStream::ScheduleFeedCloseRefreshOnFirstView(const StreamType& type) {
+  if (!base::FeatureList::IsEnabled(kFeedCloseRefresh) ||
+      kFeedCloseRefreshRequireInteraction.Get()) {
+    return;
+  }
+  ScheduleFeedCloseRefresh(type);
+}
+
+void FeedStream::ScheduleFeedCloseRefresh(const StreamType& type) {
+  // To avoid causing jank, only schedule the refresh once every several
+  // minutes.
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (now - last_refresh_scheduled_on_interaction_time_ < base::Minutes(5))
+    return;
+
+  last_refresh_scheduled_on_interaction_time_ = now;
+
+  base::TimeDelta delay = base::Minutes(kFeedCloseRefreshDelayMinutes.Get());
+  RequestSchedule schedule;
+  schedule.anchor_time = base::Time::Now();
+  schedule.refresh_offsets = {delay, delay * 2, delay * 3};
+  SetRequestSchedule(type, std::move(schedule));
 }
 
 }  // namespace feed
