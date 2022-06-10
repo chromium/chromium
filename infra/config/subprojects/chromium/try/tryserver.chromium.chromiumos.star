@@ -218,23 +218,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-lacros-rel-code-coverage",
-    mirrors = [
-        "ci/linux-lacros-builder-rel",
-        "ci/linux-lacros-tester-rel",
-    ],
-    cores = 16,
-    ssd = True,
-    goma_jobs = goma.jobs.J300,
-    main_list_view = "try",
-    use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(
-        experiment_percentage = 3,
-    ),
-)
-
-try_.builder(
     name = "linux-chromeos-dbg",
     mirrors = [
         "ci/linux-chromeos-dbg",
