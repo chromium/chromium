@@ -654,8 +654,6 @@ source_set("ash") {
     "bruschetta/bruschetta_util.h",
     "bruschetta/fake_bruschetta_features.cc",
     "bruschetta/fake_bruschetta_features.h",
-    "camera_detector.cc",
-    "camera_detector.h",
     "camera_mic/vm_camera_mic_manager.cc",
     "camera_mic/vm_camera_mic_manager.h",
     "camera_presence_notifier.cc",

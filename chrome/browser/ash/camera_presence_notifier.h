@@ -6,13 +6,22 @@
 #define CHROME_BROWSER_ASH_CAMERA_PRESENCE_NOTIFIER_H_
 
 #include "base/memory/singleton.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 
 namespace ash {
 
 // Camera presence status dispatcher.
+// To use the dispatcher, make an observer of CameraPresenceNotifier.
+//
+// Usage:
+// base::ScopedObservation<ash::CameraPresenceNotifier,
+//                         ash::CameraPresenceNotifier::Observer>
+//     camera_observer_{this};
+// camera_observer_.Observe(ash::CameraPresenceNotifier::GetInstance());
+
 class CameraPresenceNotifier {
  public:
   class Observer {
@@ -33,13 +42,22 @@ class CameraPresenceNotifier {
  private:
   friend struct base::DefaultSingletonTraits<CameraPresenceNotifier>;
   CameraPresenceNotifier();
+
+  void VideoSourceProviderDisconnectHandler();
+
   ~CameraPresenceNotifier();
 
+  // Checks asynchronously for camera device presence.
   void CheckCameraPresence();
 
-  // Sends out a camera presence status notification.
-  void OnCameraPresenceCheckDone();
+  // Gets Video sources and checks camera presence.
+  void CheckPresenceOnUIThread();
 
+  // Checks for camera presence after getting video source information.
+  void OnGotSourceInfos(
+      const std::vector<media::VideoCaptureDeviceInfo>& devices);
+
+  // Result of the last presence check.
   bool camera_present_on_last_check_;
 
   // Timer for camera check cycle.
@@ -47,7 +65,8 @@ class CameraPresenceNotifier {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::WeakPtrFactory<CameraPresenceNotifier> weak_factory_{this};
+  mojo::Remote<video_capture::mojom::VideoSourceProvider>
+      video_source_provider_remote_;
 };
 
 }  // namespace ash
