@@ -6,6 +6,13 @@
 
 namespace device_signals {
 
+WmiAvProductsResponse::WmiAvProductsResponse() = default;
+
+WmiAvProductsResponse::WmiAvProductsResponse(
+    const WmiAvProductsResponse& other) = default;
+
+WmiAvProductsResponse::~WmiAvProductsResponse() = default;
+
 WmiHotfixesResponse::WmiHotfixesResponse() = default;
 
 WmiHotfixesResponse::WmiHotfixesResponse(const WmiHotfixesResponse& other) =

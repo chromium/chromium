@@ -15,6 +15,7 @@ class MockWmiClient : public WmiClient {
   MockWmiClient();
   ~MockWmiClient() override;
 
+  MOCK_METHOD(WmiAvProductsResponse, GetAntiVirusProducts, (), (override));
   MOCK_METHOD(WmiHotfixesResponse, GetInstalledHotfixes, (), (override));
 };
 
