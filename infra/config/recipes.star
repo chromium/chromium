@@ -225,6 +225,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:tricium_clang_tidy_orchestrator",
+)
+
+build_recipe(
     name = "recipe:tricium_metrics",
 )
 

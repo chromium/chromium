@@ -141,6 +141,7 @@ exec("./try/tryserver.chromium.linux.star")
 exec("./try/tryserver.chromium.mac.star")
 exec("./try/tryserver.chromium.packager.star")
 exec("./try/tryserver.chromium.rust.star")
+exec("./try/tryserver.chromium.tricium.star")
 exec("./try/tryserver.chromium.updater.star")
 exec("./try/tryserver.chromium.win.star")
 

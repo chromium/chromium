@@ -306,6 +306,11 @@ HEADER = headers.header(
                     alt = "SWANGLE",
                 ),
                 headers.link(
+                    text = "tricium",
+                    url = "/p/{}/g/tryserver.chromium.tricium/builders".format(settings.project),
+                    alt = "Tricium",
+                ),
+                headers.link(
                     text = "win",
                     branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/tryserver.chromium.win/builders".format(settings.project),
