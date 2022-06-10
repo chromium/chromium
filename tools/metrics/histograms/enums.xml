@@ -34662,6 +34662,7 @@ Called by update_extension_histograms.py.-->
   <int value="1664" label="WMDESKSPRIVATE_GETALLDESKS"/>
   <int value="1665" label="AUTOTESTPRIVATE_FORCEAUTOTHEMEMODE"/>
   <int value="1666" label="OS_TELEMETRY_GETSTATEFULPARTITIONINFO"/>
+  <int value="1667" label="OS_DIAGNOSTICS_RUNACPOWERROUTINE"/>
 </enum>
 
 <enum name="ExtensionIconState">

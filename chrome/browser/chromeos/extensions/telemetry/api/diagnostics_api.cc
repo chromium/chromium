@@ -136,6 +136,36 @@ void DiagnosticsApiRunRoutineFunctionBase::OnResult(
   Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
 }
 
+// OsDiagnosticsRunAcPowerRoutineFunction ------------------------------
+
+OsDiagnosticsRunAcPowerRoutineFunction::
+    OsDiagnosticsRunAcPowerRoutineFunction() = default;
+OsDiagnosticsRunAcPowerRoutineFunction::
+    ~OsDiagnosticsRunAcPowerRoutineFunction() = default;
+
+void OsDiagnosticsRunAcPowerRoutineFunction::RunIfAllowed() {
+  std::unique_ptr<api::os_diagnostics::RunAcPowerRoutine::Params> params(
+      api::os_diagnostics::RunAcPowerRoutine::Params::Create(args()));
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
+
+  absl::optional<std::string> expected_power_type = absl::nullopt;
+  if (params->request.expected_power_type) {
+    expected_power_type = *params->request.expected_power_type.get();
+  }
+
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunAcPowerRoutine(
+      converters::ConvertAcPowerStatusRoutineType(
+          params->request.expected_status),
+      expected_power_type, std::move(cb));
+}
+
 // OsDiagnosticsRunBatteryCapacityRoutineFunction ------------------------------
 
 OsDiagnosticsRunBatteryCapacityRoutineFunction::

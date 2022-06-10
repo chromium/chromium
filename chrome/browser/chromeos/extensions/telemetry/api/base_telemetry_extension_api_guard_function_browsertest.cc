@@ -103,6 +103,20 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function runAcPowerRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runAcPowerRoutine(
+              {
+                expected_status: "connected",
+                expected_power_type: "ac_power"
+              }
+            ),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runAcPowerRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function runBatteryCapacityRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runBatteryCapacityRoutine(),

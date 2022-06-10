@@ -91,6 +91,25 @@ class DiagnosticsApiRunRoutineFunctionBase : public DiagnosticsApiFunctionBase {
   ~DiagnosticsApiRunRoutineFunctionBase() override;
 };
 
+class OsDiagnosticsRunAcPowerRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runAcPowerRoutine",
+                             OS_DIAGNOSTICS_RUNACPOWERROUTINE)
+
+  OsDiagnosticsRunAcPowerRoutineFunction();
+  OsDiagnosticsRunAcPowerRoutineFunction(
+      const OsDiagnosticsRunAcPowerRoutineFunction&) = delete;
+  OsDiagnosticsRunAcPowerRoutineFunction& operator=(
+      const OsDiagnosticsRunAcPowerRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunAcPowerRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunBatteryCapacityRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:

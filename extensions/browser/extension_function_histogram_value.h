@@ -1727,6 +1727,7 @@ enum HistogramValue {
   WMDESKSPRIVATE_GETALLDESKS = 1664,
   AUTOTESTPRIVATE_FORCEAUTOTHEMEMODE = 1665,
   OS_TELEMETRY_GETSTATEFULPARTITIONINFO = 1666,
+  OS_DIAGNOSTICS_RUNACPOWERROUTINE = 1667,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
