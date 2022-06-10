@@ -644,6 +644,8 @@ source_set("ash") {
     "browser_context_keyed_service_factories.h",
     "bruschetta/bruschetta_features.cc",
     "bruschetta/bruschetta_features.h",
+    "bruschetta/bruschetta_launcher.cc",
+    "bruschetta/bruschetta_launcher.h",
     "bruschetta/bruschetta_service.cc",
     "bruschetta/bruschetta_service.h",
     "bruschetta/bruschetta_service_factory.cc",
