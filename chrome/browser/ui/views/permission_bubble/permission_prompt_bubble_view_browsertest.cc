@@ -282,8 +282,13 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
 // Test bubbles showing when tabs move between windows. Simulates a situation
 // that could result in permission bubbles not being dismissed, and a problem
 // referencing a temporary drag window. See http://crbug.com/754552.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SwitchBrowserWindow DISABLED_SwitchBrowserWindow
+#else
+#define MAYBE_SwitchBrowserWindow SwitchBrowserWindow
+#endif
 IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
-                       SwitchBrowserWindow) {
+                       MAYBE_SwitchBrowserWindow) {
   ShowUi("geolocation");
   TabStripModel* strip = browser()->tab_strip_model();
 
