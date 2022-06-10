@@ -32,6 +32,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -268,9 +269,9 @@ void ToolbarButton::UpdateColorsAndInsets() {
     label()->SetBackgroundColor(*background_color);
   } else {
     SetBackground(nullptr);
-    const auto* tp = GetThemeProvider();
-    if (tp)
-      label()->SetBackgroundColor(tp->GetColor(ThemeProperties::COLOR_TOOLBAR));
+    const auto* cp = GetColorProvider();
+    if (cp)
+      label()->SetBackgroundColor(cp->GetColor(kColorToolbar));
   }
 
   // Apply new border with target insets.
