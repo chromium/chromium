@@ -288,8 +288,10 @@ TEST_F(ThreadPoolDelayedTaskManagerTest,
   // Send tasks to the DelayedTaskManager.
   delayed_task_manager_.AddDelayedTask(std::move(task_a),
                                        BindOnce(&PostTaskNow), nullptr);
+  EXPECT_FALSE(delayed_task_manager_.HasPendingHighResolutionTasksForTesting());
   delayed_task_manager_.AddDelayedTask(std::move(task_b),
                                        BindOnce(&PostTaskNow), nullptr);
+  EXPECT_TRUE(delayed_task_manager_.HasPendingHighResolutionTasksForTesting());
 
   // The task doesn't run before the delay has completed.
   service_thread_task_runner_->FastForwardBy(Milliseconds(10) -
