@@ -12,8 +12,10 @@
 
 #include "base/bits.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
@@ -72,6 +74,7 @@ VAEncMiscParam& AllocateMiscParameterBuffer(
 }
 
 void CreateVAEncRateControlParams(uint32_t bps,
+                                  uint32_t target_percentage,
                                   uint32_t window_size,
                                   uint32_t initial_qp,
                                   uint32_t min_qp,
@@ -83,6 +86,7 @@ void CreateVAEncRateControlParams(uint32_t bps,
       AllocateMiscParameterBuffer<VAEncMiscParameterRateControl>(
           misc_buffers[0], VAEncMiscParameterTypeRateControl);
   rate_control_param.bits_per_second = bps;
+  rate_control_param.target_percentage = target_percentage;
   rate_control_param.window_size = window_size;
   rate_control_param.initial_qp = initial_qp;
   rate_control_param.min_qp = min_qp;
@@ -306,6 +310,11 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   UpdateSPS();
   UpdatePPS();
 
+  // If we don't set the stored BitrateAllocation to the right type, UpdateRates
+  // will mistakenly reject the bitrate when the requested type in the config is
+  // not the default (constant bitrate).
+  curr_params_.bitrate_allocation =
+      VideoBitrateAllocation(config.bitrate.mode());
   return UpdateRates(AllocateBitrateForDefaultEncoding(config),
                      initial_framerate);
 }
@@ -419,6 +428,15 @@ bool H264VaapiVideoEncoderDelegate::UpdateRates(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (bitrate_allocation.GetMode() !=
+      curr_params_.bitrate_allocation.GetMode()) {
+    DVLOGF(1) << "Unexpected bitrate mode, requested rate "
+              << bitrate_allocation.GetSumBitrate().ToString()
+              << ", expected mode to match "
+              << curr_params_.bitrate_allocation.GetSumBitrate().ToString();
+    return false;
+  }
 
   uint32_t bitrate = bitrate_allocation.GetSumBps();
   if (bitrate == 0 || framerate == 0)
@@ -551,7 +569,14 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
       (curr_params_.cpb_size_bits >>
        (kCPBSizeScale + H264SPS::kCPBSizeScaleConstantTerm)) -
       1;
-  current_sps_.cbr_flag[0] = true;
+  switch (curr_params_.bitrate_allocation.GetMode()) {
+    case (Bitrate::Mode::kConstant):
+      current_sps_.cbr_flag[0] = true;
+      break;
+    case (Bitrate::Mode::kVariable):
+      current_sps_.cbr_flag[0] = false;
+      break;
+  }
   current_sps_.initial_cpb_removal_delay_length_minus_1 =
       H264SPS::kDefaultInitialCPBRemovalDelayLength - 1;
   current_sps_.cpb_removal_delay_length_minus1 =
@@ -854,6 +879,27 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     const absl::optional<size_t>& ref_frame_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  const Bitrate bitrate = encode_params.bitrate_allocation.GetSumBitrate();
+  uint32_t bitrate_bps = bitrate.target_bps();
+  uint32_t target_percentage = 100u;
+  if (bitrate.mode() == Bitrate::Mode::kVariable) {
+    // In VA-API, the sequence parameter's bits_per_second represents the
+    // maximum bitrate. Above, we use the target_bps for |bitrate_bps|; this is
+    // because 1) for constant bitrates, peak and target are equal, and 2)
+    // |Bitrate| class does not store a peak_bps for constant bitrates. Here,
+    // we use the peak, because it exists for variable bitrates.
+    bitrate_bps = bitrate.peak_bps();
+    DCHECK_NE(bitrate.peak_bps(), 0u);
+    base::CheckedNumeric<uint32_t> checked_percentage =
+        base::CheckDiv(base::CheckMul<uint32_t>(bitrate.target_bps(), 100u),
+                       bitrate.peak_bps());
+    if (!checked_percentage.AssignIfValid(&target_percentage)) {
+      DVLOGF(1)
+          << "Integer overflow while computing target percentage for bitrate.";
+      return false;
+    }
+    target_percentage = checked_percentage.ValueOrDefault(100u);
+  }
   VAEncSequenceParameterBufferH264 seq_param = {};
 
 #define SPS_TO_SP(a) seq_param.a = sps.a;
@@ -863,7 +909,7 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
   seq_param.intra_period = kIPeriod;
   seq_param.intra_idr_period = kIDRPeriod;
   seq_param.ip_period = kIPPeriod;
-  seq_param.bits_per_second = encode_params.bitrate_allocation.GetSumBps();
+  seq_param.bits_per_second = bitrate_bps;
 
   SPS_TO_SP(max_num_ref_frames);
   absl::optional<gfx::Size> coded_size = sps.GetCodedSize();
@@ -972,8 +1018,7 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
 
   std::vector<uint8_t> misc_buffers[3];
   CreateVAEncRateControlParams(
-      encode_params.bitrate_allocation.GetSumBps(),
-      encode_params.cpb_window_size_ms,
+      bitrate_bps, target_percentage, encode_params.cpb_window_size_ms,
       base::strict_cast<uint32_t>(pic_param.pic_init_qp),
       base::strict_cast<uint32_t>(encode_params.min_qp),
       base::strict_cast<uint32_t>(encode_params.max_qp),

@@ -185,6 +185,11 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
     return false;
   }
 
+  if (config.bitrate.mode() == Bitrate::Mode::kVariable) {
+    DVLOGF(1) << "Invalid configuraiton. VBR is not supported for VP9.";
+    return false;
+  }
+
   visible_size_ = config.input_visible_size;
   coded_size_ = gfx::Size(base::bits::AlignUp(visible_size_.width(), 16),
                           base::bits::AlignUp(visible_size_.height(), 16));
@@ -386,6 +391,11 @@ bool VP9VaapiVideoEncoderDelegate::UpdateRates(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (bitrate_allocation.GetMode() != Bitrate::Mode::kConstant) {
+    DLOG(ERROR) << "VBR is not supported for VP9 but was requested.";
+    return false;
+  }
 
   if (bitrate_allocation.GetSumBps() == 0u || framerate == 0)
     return false;

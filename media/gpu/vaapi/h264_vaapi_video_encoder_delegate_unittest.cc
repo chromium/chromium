@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -306,6 +307,30 @@ TEST_F(H264VaapiVideoEncoderDelegateTest, Initialize) {
   vea_config.input_visible_size.SetSize(3840, 2160);
   EXPECT_TRUE(encoder_->Initialize(vea_config, vea_delegate_config));
   ExpectLevel(H264SPS::kLevelIDC5p1);
+}
+
+TEST_F(H264VaapiVideoEncoderDelegateTest, ChangeBitrateModeFails) {
+  auto vea_config = kDefaultVEAConfig;
+  const auto vea_delegate_config = kDefaultVEADelegateConfig;
+  EXPECT_TRUE(encoder_->Initialize(vea_config, vea_delegate_config));
+
+  const uint32_t new_bitrate_bps = kDefaultVEAConfig.bitrate.target_bps();
+  VideoBitrateAllocation new_allocation =
+      VideoBitrateAllocation(Bitrate::Mode::kVariable);
+  new_allocation.SetBitrate(0, 0, new_bitrate_bps);
+  EXPECT_TRUE(new_allocation.SetPeakBps(2u * new_bitrate_bps));
+
+  ASSERT_FALSE(encoder_->UpdateRates(
+      new_allocation, VideoEncodeAccelerator::kDefaultFramerate));
+}
+
+TEST_F(H264VaapiVideoEncoderDelegateTest, VariableBitrate_Initialize) {
+  auto vea_config = kDefaultVEAConfig;
+  const uint32_t bitrate_bps = vea_config.bitrate.target_bps();
+  vea_config.bitrate = Bitrate::VariableBitrate(bitrate_bps, 2u * bitrate_bps);
+  const auto vea_delegate_config = kDefaultVEADelegateConfig;
+
+  ASSERT_TRUE(encoder_->Initialize(vea_config, vea_delegate_config));
 }
 
 TEST_P(H264VaapiVideoEncoderDelegateTest, EncodeTemporalLayerRequest) {

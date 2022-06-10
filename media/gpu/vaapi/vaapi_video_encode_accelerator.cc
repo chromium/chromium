@@ -249,6 +249,17 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     return false;
   }
 
+  if (codec != VideoCodec::kH264) {
+    switch (config.bitrate.mode()) {
+      case Bitrate::Mode::kConstant:
+        break;
+      case Bitrate::Mode::kVariable:
+        MEDIA_LOG(ERROR, media_log.get())
+            << "Variable bitrate is only supported with H264 encoding.";
+        return false;
+    }
+  }
+
   switch (config.input_format) {
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_NV12:
@@ -974,13 +985,6 @@ void VaapiVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
 void VaapiVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
     uint32_t framerate) {
-  // If this is changed to use variable bitrate encoding, change the mode check
-  // to check that the mode matches the current mode.
-  if (bitrate.mode() != Bitrate::Mode::kConstant) {
-    VLOGF(1) << "Failed to update rates due to invalid bitrate mode.";
-    return;
-  }
-
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
 
   VideoBitrateAllocation allocation;

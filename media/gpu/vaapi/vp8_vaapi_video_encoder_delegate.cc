@@ -274,6 +274,11 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
     return false;
   }
 
+  if (config.bitrate.mode() == Bitrate::Mode::kVariable) {
+    DVLOGF(1) << "Invalid configuraiton. VBR is not supported for VP8.";
+    return false;
+  }
+
   if (config.HasSpatialLayer()) {
     DVLOGF(1) << "Invalid configuration. Spatial layers not supported in VP8";
     return false;
@@ -413,6 +418,11 @@ bool VP8VaapiVideoEncoderDelegate::UpdateRates(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (bitrate_allocation.GetMode() != Bitrate::Mode::kConstant) {
+    DLOG(ERROR) << "VBR is not supported for VP8 but was requested.";
+    return false;
+  }
 
   uint32_t bitrate = bitrate_allocation.GetSumBps();
   if (bitrate == 0 || framerate == 0)

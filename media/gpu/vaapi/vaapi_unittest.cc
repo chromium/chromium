@@ -264,7 +264,7 @@ std::map<VAProfile, std::vector<VAEntrypoint>> ParseVainfo(
   return info;
 }
 
-std::map<VAProfile, std::vector<VAEntrypoint>> RetrieveVAInfoOutput() {
+std::string GetVaInfo(std::vector<std::string> argv) {
   int fds[2];
   PCHECK(pipe(fds) == 0);
   base::File read_pipe(fds[0]);
@@ -272,16 +272,99 @@ std::map<VAProfile, std::vector<VAEntrypoint>> RetrieveVAInfoOutput() {
 
   base::LaunchOptions options;
   options.fds_to_remap.emplace_back(write_pipe_fd.get(), STDOUT_FILENO);
-  std::vector<std::string> argv = {"vainfo"};
   EXPECT_TRUE(LaunchProcess(argv, options).IsValid());
   write_pipe_fd.reset();
 
-  char buf[4096] = {};
+  char buf[262144] = {};
   int n = read_pipe.ReadAtCurrentPos(buf, sizeof(buf));
   PCHECK(n >= 0);
-  EXPECT_LT(n, 4096);
+  EXPECT_LT(n, 262144);
   std::string output(buf, n);
   DVLOG(4) << output;
+  return output;
+}
+
+int PictureBoundToInt(std::string picture_bound) {
+  const std::vector<std::string> split_bound = base::SplitString(
+      picture_bound, ":", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_ALL);
+  if (split_bound.size() != 2) {
+    LOG(ERROR) << "Unexpected picture bound line: " << picture_bound;
+    return -1;
+  }
+  const std::string bound = split_bound[1];
+  return atoi(bound.c_str());
+}
+
+bool isIntelDriver() {
+  const auto implementation = VaapiWrapper::GetImplementationType();
+  return implementation == VAImplementation::kIntelI965 ||
+         implementation == VAImplementation::kIntelIHD;
+}
+
+// Returns a map of strings of the form "VAProfileInfo/VAEntrypoint" to a map,
+// which itself maps Bitrate::Mode to the gfx::Size resolution supported for
+// that mode.
+std::map<std::string, std::map<Bitrate::Mode, gfx::Size>> ParseVerboseVainfo(
+    const std::string& output) {
+  const std::vector<std::string> lines =
+      base::SplitString(output, "\n", base::WhitespaceHandling::TRIM_WHITESPACE,
+                        base::SplitResult::SPLIT_WANT_ALL);
+  std::map<std::string, std::map<Bitrate::Mode, gfx::Size>> info;
+  std::string current_profile = "";
+  std::vector<Bitrate::Mode> supported_modes;
+  gfx::Size resolution;
+  bool current_attrib_rate_control = false;
+  for (const std::string& line : lines) {
+    if (base::StartsWith(line, "VAProfile",
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      current_profile = line;
+      // Reset tracking.
+      supported_modes = {};
+      resolution = gfx::Size();
+      current_attrib_rate_control = false;
+      continue;
+    }
+
+    if (base::StartsWith(line, "VAConfigAttrib")) {
+      if (base::StartsWith(line, "VAConfigAttribRateControl"))
+        current_attrib_rate_control = true;
+      else
+        current_attrib_rate_control = false;
+    }
+
+    if (current_attrib_rate_control) {
+      const std::vector<std::string> split_line =
+          base::SplitString(line, base::kWhitespaceASCII,
+                            base::WhitespaceHandling::TRIM_WHITESPACE,
+                            base::SplitResult::SPLIT_WANT_ALL);
+      for (const std::string& part : split_line) {
+        if (part == "VA_RC_CBR")
+          supported_modes.push_back(Bitrate::Mode::kConstant);
+        else if (part == "VA_RC_VBR")
+          supported_modes.push_back(Bitrate::Mode::kVariable);
+      }
+    }
+
+    // TODO(https://github.com/intel/libva/issues/603): Also check minimum
+    // resolution.
+    if (base::StartsWith(line, "VAConfigAttribMaxPicture")) {
+      if (base::StartsWith(line, "VAConfigAttribMaxPictureWidth"))
+        resolution.set_width(PictureBoundToInt(line));
+      if (base::StartsWith(line, "VAConfigAttribMaxPictureHeight"))
+        resolution.set_height(PictureBoundToInt(line));
+
+      for (auto const& mode : supported_modes) {
+        info[current_profile][mode] = resolution;
+      }
+    }
+  }
+  return info;
+}
+
+std::map<VAProfile, std::vector<VAEntrypoint>> RetrieveVAInfoOutput() {
+  std::vector<std::string> argv = {"vainfo"};
+  std::string output = GetVaInfo(argv);
   return ParseVainfo(output);
 }
 
@@ -332,6 +415,33 @@ TEST_F(VaapiTest, GetSupportedEncodeProfiles) {
                 base::Contains(va_info.at(*va_profile), VAEntrypointEncSliceLP))
         << " profile: " << GetProfileName(profile.profile)
         << ", va profile: " << vaProfileStr(*va_profile);
+  }
+}
+
+// Verifies that the resolutions of profiles for VBR and CBR are the same as
+// reported by vainfo.
+TEST_F(VaapiTest, VbrAndCbrResolutionsMatch) {
+  // TODO(crbug.com/1334880): make a test that works on all platforms
+  if (!isIntelDriver()) {
+    GTEST_SKIP()
+        << "Non-Intel drivers do not output resolution in vainfo -a; skipping";
+  }
+
+  std::vector<std::string> argv = {"vainfo", "-a"};
+  std::string output = GetVaInfo(argv);
+
+  const auto resolution_map = ParseVerboseVainfo(output);
+
+  for (const auto& resolution_info : resolution_map) {
+    const std::string profile_and_entrypoint = resolution_info.first;
+    const std::map<Bitrate::Mode, gfx::Size>& mode_and_resolution =
+        resolution_info.second;
+    if (mode_and_resolution.count(Bitrate::Mode::kConstant) == 1 &&
+        mode_and_resolution.count(Bitrate::Mode::kVariable) == 1) {
+      EXPECT_EQ(mode_and_resolution.at(Bitrate::Mode::kConstant),
+                mode_and_resolution.at(Bitrate::Mode::kVariable))
+          << "Resolution mismatch for " << profile_and_entrypoint;
+    }
   }
 }
 

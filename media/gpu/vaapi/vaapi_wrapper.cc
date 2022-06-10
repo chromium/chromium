@@ -42,6 +42,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
@@ -476,6 +477,17 @@ bool IsVAProfileSupported(VAProfile va_profile) {
                       [va_profile](const auto& entry) {
                         return entry.second == va_profile;
                       }) != profiles.end();
+}
+
+bool IsImplementedVbr(VideoCodecProfile codec_profile) {
+  switch (codec_profile) {
+    case H264PROFILE_BASELINE:
+    case H264PROFILE_MAIN:
+    case H264PROFILE_HIGH:
+      return true;
+    default:
+      return false;
+  }
 }
 
 bool IsBlockedDriver(VaapiWrapper::CodecMode mode, VAProfile va_profile) {
@@ -1550,8 +1562,15 @@ VaapiWrapper::GetSupportedEncodeProfiles() {
     constexpr int kMaxEncoderFramerate = 30;
     profile.max_framerate_numerator = kMaxEncoderFramerate;
     profile.max_framerate_denominator = 1;
-    // TODO(b/193680666): remove hard-coding when VBR is supported
     profile.rate_control_modes = media::VideoEncodeAccelerator::kConstantMode;
+    // This code assumes that the resolutions are the same between CBR and VBR.
+    // This is checked in a test in vaapi_unittest.cc: VbrAndCbrResolutionsMatch
+    if (IsImplementedVbr(media_profile) &&
+        VASupportedProfiles::Get().IsProfileSupported(kEncodeVariableBitrate,
+                                                      va_profile)) {
+      profile.rate_control_modes |=
+          media::VideoEncodeAccelerator::kVariableMode;
+    }
     profile.scalability_modes =
         GetSupportedScalabilityModes(media_profile, va_profile);
     profiles.push_back(profile);
