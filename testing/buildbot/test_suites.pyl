@@ -4559,6 +4559,11 @@
           'has_native_resultdb_integration',
         ],
       },
+      'unexpected_passes_common_pytype': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
     },
 
     'rust_gtests': {

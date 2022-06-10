@@ -12,6 +12,7 @@ import collections
 import logging
 import sys
 import tempfile
+import typing
 
 import six
 
@@ -164,14 +165,92 @@ SECTION_UNUSED = ('Unused Expectations (Indicative Of The Configuration No '
 MAX_BUGS_PER_LINE = 5
 MAX_CHARACTERS_PER_CL_LINE = 72
 
+ElementType = typing.Union[typing.Dict[str, typing.Any], typing.List[str], str]
+# Sample:
+# {
+#   expectation_file: {
+#     test_name: {
+#       expectation_summary: {
+#         builder_name: {
+#           'Fully passed in the following': [
+#             step1,
+#           ],
+#           'Partially passed in the following': {
+#             step2: [
+#               failure_link,
+#             ],
+#           },
+#           'Never passed in the following': [
+#             step3,
+#           ],
+#         }
+#       }
+#     }
+#   }
+# }
+FullOrNeverPassValue = typing.List[str]
+PartialPassValue = typing.Dict[str, typing.List[str]]
+PassValue = typing.Union[FullOrNeverPassValue, PartialPassValue]
+BuilderToPassMap = typing.Dict[str, typing.Dict[str, PassValue]]
+ExpectationToBuilderMap = typing.Dict[str, BuilderToPassMap]
+TestToExpectationMap = typing.Dict[str, ExpectationToBuilderMap]
+ExpectationFileStringDict = typing.Dict[str, TestToExpectationMap]
+# Sample:
+# {
+#   test_name: {
+#     builder_name: {
+#       step_name: [
+#         individual_result_string_1,
+#         individual_result_string_2,
+#         ...
+#       ],
+#       ...
+#     },
+#     ...
+#   },
+#   ...
+# }
+StepToResultsMap = typing.Dict[str, typing.List[str]]
+BuilderToStepMap = typing.Dict[str, StepToResultsMap]
+TestToBuilderStringDict = typing.Dict[str, BuilderToStepMap]
+# Sample:
+# {
+#   result_output.FULL_PASS: {
+#     builder_name: [
+#       step_name (total passes / total builds)
+#     ],
+#   },
+#   result_output.NEVER_PASS: {
+#     builder_name: [
+#       step_name (total passes / total builds)
+#     ],
+#   },
+#   result_output.PARTIAL_PASS: {
+#     builder_name: {
+#       step_name (total passes / total builds): [
+#         failure links,
+#       ],
+#     },
+#   },
+# }
+FullOrNeverPassStepValue = typing.List[str]
+PartialPassStepValue = typing.Dict[str, typing.List[str]]
+PassStepValue = typing.Union[FullOrNeverPassStepValue, PartialPassStepValue]
+OrderedPassStringDict = typing.OrderedDict[str, typing.Dict[str, PassStepValue]]
 
-def OutputResults(stale_dict,
-                  semi_stale_dict,
-                  active_dict,
-                  unmatched_results,
-                  unused_expectations,
-                  output_format,
-                  file_handle=None):
+UnmatchedResultsType = typing.Dict[str, data_types.ResultListType]
+UnusedExpectation = typing.Dict[str, typing.List[data_types.Expectation]]
+
+RemovedUrlsType = typing.Union[typing.List[str], typing.Set[str]]
+
+
+def OutputResults(stale_dict: data_types.TestExpectationMap,
+                  semi_stale_dict: data_types.TestExpectationMap,
+                  active_dict: data_types.TestExpectationMap,
+                  unmatched_results: UnmatchedResultsType,
+                  unused_expectations: UnusedExpectation,
+                  output_format: str,
+                  file_handle: typing.Optional[typing.IO] = None) -> None:
   """Outputs script results to |file_handle|.
 
   Args:
@@ -256,7 +335,8 @@ def OutputResults(stale_dict,
     raise RuntimeError('Unsupported output format %s' % output_format)
 
 
-def RecursivePrintToFile(element, depth, file_handle):
+def RecursivePrintToFile(element: ElementType, depth: int,
+                         file_handle: typing.IO) -> None:
   """Recursively prints |element| as text to |file_handle|.
 
   Args:
@@ -279,7 +359,7 @@ def RecursivePrintToFile(element, depth, file_handle):
     raise RuntimeError('Given unhandled type %s' % type(element))
 
 
-def _RecursiveHtmlToFile(element, file_handle):
+def _RecursiveHtmlToFile(element: ElementType, file_handle: typing.IO) -> None:
   """Recursively outputs |element| as HTMl to |file_handle|.
 
   Iterables will be output as a collapsible section containing any of the
@@ -313,7 +393,7 @@ def _RecursiveHtmlToFile(element, file_handle):
     raise RuntimeError('Given unhandled type %s' % type(element))
 
 
-def _LinkifyString(s):
+def _LinkifyString(s: str) -> str:
   """Turns instances of links into anchor tags.
 
   Args:
@@ -330,7 +410,9 @@ def _LinkifyString(s):
   return s
 
 
-def _ConvertTestExpectationMapToStringDict(test_expectation_map):
+def _ConvertTestExpectationMapToStringDict(
+    test_expectation_map: data_types.TestExpectationMap
+) -> ExpectationFileStringDict:
   """Converts |test_expectation_map| to a dict of strings for reporting.
 
   Args:
@@ -407,7 +489,8 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
   return output_dict
 
 
-def _ConvertUnmatchedResultsToStringDict(unmatched_results):
+def _ConvertUnmatchedResultsToStringDict(unmatched_results: UnmatchedResultsType
+                                         ) -> TestToBuilderStringDict:
   """Converts |unmatched_results| to a dict of strings for reporting.
 
   Args:
@@ -444,7 +527,9 @@ def _ConvertUnmatchedResultsToStringDict(unmatched_results):
   return output_dict
 
 
-def _ConvertUnusedExpectationsToStringDict(unused_expectations):
+def _ConvertUnusedExpectationsToStringDict(
+    unused_expectations: UnusedExpectation
+) -> typing.Dict[str, typing.List[str]]:
   """Converts |unused_expectations| to a dict of strings for reporting.
 
   Args:
@@ -474,16 +559,18 @@ def _ConvertUnusedExpectationsToStringDict(unused_expectations):
   return output_dict
 
 
-def _FormatExpectation(expectation):
+def _FormatExpectation(expectation: data_types.Expectation) -> str:
   return '"%s" expectation on "%s"' % (' '.join(
       expectation.expected_results), ' '.join(expectation.tags))
 
 
-def AddStatsToStr(s, stats):
+def AddStatsToStr(s: str, stats: data_types.BuildStats) -> str:
   return '%s %s' % (s, stats.GetStatsAsString())
 
 
-def OutputAffectedUrls(removed_urls, orphaned_urls=None):
+def OutputAffectedUrls(removed_urls: RemovedUrlsType,
+                       orphaned_urls: typing.Optional[RemovedUrlsType] = None
+                       ) -> None:
   """Outputs URLs of affected expectations for easier consumption by the user.
 
   Outputs the following:
@@ -509,7 +596,9 @@ def OutputAffectedUrls(removed_urls, orphaned_urls=None):
   _OutputUrlsForClDescription(removed_urls, orphaned_urls)
 
 
-def _OutputAffectedUrls(affected_urls, orphaned_urls, file_handle=None):
+def _OutputAffectedUrls(affected_urls: typing.List[str],
+                        orphaned_urls: typing.List[str],
+                        file_handle: typing.Optional[typing.IO] = None) -> None:
   """Outputs |urls| for opening in a browser as affected bugs.
 
   Args:
@@ -522,7 +611,10 @@ def _OutputAffectedUrls(affected_urls, orphaned_urls, file_handle=None):
     _OutputUrlsForCommandLine(orphaned_urls, "Closable bugs", file_handle)
 
 
-def _OutputUrlsForCommandLine(urls, description, file_handle=None):
+def _OutputUrlsForCommandLine(urls: typing.List[str],
+                              description: str,
+                              file_handle: typing.Optional[typing.IO] = None
+                              ) -> None:
   """Outputs |urls| for opening in a browser.
 
   The output string is meant to be passed to a browser via the command line in
@@ -537,14 +629,17 @@ def _OutputUrlsForCommandLine(urls, description, file_handle=None):
   """
   file_handle = file_handle or sys.stdout
 
-  def _StartsWithHttp(url):
+  def _StartsWithHttp(url: str) -> bool:
     return url.startswith('https://') or url.startswith('http://')
 
   urls = [u if _StartsWithHttp(u) else 'https://%s' % u for u in urls]
   file_handle.write('%s: %s\n' % (description, ' '.join(urls)))
 
 
-def _OutputUrlsForClDescription(affected_urls, orphaned_urls, file_handle=None):
+def _OutputUrlsForClDescription(affected_urls: typing.List[str],
+                                orphaned_urls: typing.List[str],
+                                file_handle: typing.Optional[typing.IO] = None
+                                ) -> None:
   """Outputs |urls| for use in a CL description.
 
   Output adheres to the line length recommendation and max number of bugs per
@@ -602,7 +697,8 @@ def _OutputUrlsForClDescription(affected_urls, orphaned_urls, file_handle=None):
   file_handle.write('Affected bugs for CL description:\n%s' % output_str)
 
 
-def ConvertBuilderMapToPassOrderedStringDict(builder_map):
+def ConvertBuilderMapToPassOrderedStringDict(
+    builder_map: data_types.BuilderStepMap) -> OrderedPassStringDict:
   """Converts |builder_map| into an ordered dict split by pass type.
 
   Args:
@@ -622,11 +718,11 @@ def ConvertBuilderMapToPassOrderedStringDict(builder_map):
         ],
       },
       result_output.PARTIAL_PASS: {
-        builder_name: [
+        builder_name: {
           step_name (total passes / total builds): [
             failure links,
           ],
-        ],
+        },
       },
     }
 

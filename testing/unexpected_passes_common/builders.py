@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import subprocess
+import typing
 
 import six
 
@@ -28,34 +29,38 @@ _registered_instance = None
 # pylint: disable=useless-object-inheritance
 
 
-def GetInstance():
+def GetInstance() -> 'Builders':
   return _registered_instance
 
 
-def RegisterInstance(instance):
+def RegisterInstance(instance: 'Builders') -> None:
   global _registered_instance
   assert _registered_instance is None
   assert isinstance(instance, Builders)
   _registered_instance = instance
 
 
-def ClearInstance():
+def ClearInstance() -> None:
   global _registered_instance
   _registered_instance = None
 
 
 class Builders(object):
-  def __init__(self, suite, include_internal_builders):
+  def __init__(self, suite: str, include_internal_builders: bool):
     """
     Args:
       suite: A string containing particular suite of interest if applicable,
           such as for Telemetry-based tests. Can be None if not applicable.
+      include_internal_builders: A boolean indicating whether data from
+          internal builders should be used in addition to external ones.
     """
     self._authenticated = False
     self._suite = suite
     self._include_internal_builders = include_internal_builders
 
-  def _ProcessJsonFiles(self, files, are_internal_files, builder_type):
+  def _ProcessJsonFiles(self, files: typing.List[str], are_internal_files: bool,
+                        builder_type: str
+                        ) -> typing.Set[data_types.BuilderEntry]:
     builders = set()
     for filepath in files:
       if not filepath.endswith('.json'):
@@ -83,7 +88,7 @@ class Builders(object):
             data_types.BuilderEntry(builder, builder_type, are_internal_files))
     return builders
 
-  def GetCiBuilders(self):
+  def GetCiBuilders(self) -> typing.Set[data_types.BuilderEntry]:
     """Gets the set of CI builders to query.
 
     Returns:
@@ -107,7 +112,8 @@ class Builders(object):
                   ', '.join([b.name for b in ci_builders]))
     return ci_builders
 
-  def _BuilderRunsTestOfInterest(self, test_map):
+  def _BuilderRunsTestOfInterest(self, test_map: typing.Dict[str, typing.Any]
+                                 ) -> bool:
     """Determines if a builder runs a test of interest.
 
     Args:
@@ -121,7 +127,8 @@ class Builders(object):
     """
     raise NotImplementedError()
 
-  def GetTryBuilders(self, ci_builders):
+  def GetTryBuilders(self, ci_builders: typing.Iterable[data_types.BuilderEntry]
+                     ) -> typing.Set[data_types.BuilderEntry]:
     """Gets the set of try builders to query.
 
     A try builder is of interest if it mirrors a builder in |ci_builders| or is
@@ -166,7 +173,9 @@ class Builders(object):
                   mirrored_builders)
     return dedicated_try_builders | mirrored_builders
 
-  def _GetMirroredBuildersForCiBuilder(self, ci_builder):
+  def _GetMirroredBuildersForCiBuilder(
+      self, ci_builder: data_types.BuilderEntry
+  ) -> typing.Tuple[typing.Set[data_types.BuilderEntry], bool]:
     """Gets the set of try builders that mirror a CI builder.
 
     Args:
@@ -215,7 +224,9 @@ class Builders(object):
                                   ci_builder.is_internal_builder))
     return mirrored_builders, True
 
-  def _GetBuildbucketOutputForCiBuilder(self, ci_builder):
+  def _GetBuildbucketOutputForCiBuilder(self,
+                                        ci_builder: data_types.BuilderEntry
+                                        ) -> str:
     # Ensure the user is logged in to bb.
     if not self._authenticated:
       try:
@@ -247,10 +258,11 @@ class Builders(object):
         '-A',
         '-json',
     ],
-                                        stdin=p.stdout)
+                                        stdin=p.stdout,
+                                        text=True)
     return bb_output
 
-  def GetIsolateNames(self):
+  def GetIsolateNames(self) -> typing.Set[str]:
     """Gets the isolate names that are relevant to this implementation.
 
     Returns:
@@ -258,17 +270,18 @@ class Builders(object):
     """
     raise NotImplementedError()
 
-  def GetFakeCiBuilders(self):
+  def GetFakeCiBuilders(self) -> typing.Dict[data_types.BuilderEntry, typing.
+                                             Set[data_types.BuilderEntry]]:
     """Gets a mapping of fake CI builders to their mirrored trybots.
 
     Returns:
-      A dict of string -> set(string). Each key is a CI builder that doesn't
-      actually exist and each value is a set of try builders that mirror the CI
-      builder but do exist.
+      A dict of data_types.BuilderEntry -> set(data_types.BuilderEntry). Each
+      key is a CI builder that doesn't actually exist and each value is a set of
+      try builders that mirror the CI builder but do exist.
     """
     raise NotImplementedError()
 
-  def GetNonChromiumBuilders(self):
+  def GetNonChromiumBuilders(self) -> typing.Set[data_types.BuilderEntry]:
     """Gets the builders that are not actual Chromium builders.
 
     These are listed in the Chromium //testing/buildbot files, but aren't under
@@ -276,6 +289,7 @@ class Builders(object):
     Chromium builders, and thus don't have the list of trybot mirrors.
 
     Returns:
-      A set of strings, each element being the name of a non-Chromium builder.
+      A set of data_types.BuilderEntry, each element being a non-Chromium
+      builder.
     """
     raise NotImplementedError()

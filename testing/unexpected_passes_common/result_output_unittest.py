@@ -9,6 +9,7 @@ import collections
 import itertools
 import sys
 import tempfile
+import typing
 import unittest
 
 import six
@@ -20,7 +21,8 @@ from unexpected_passes_common import result_output
 from unexpected_passes_common import unittest_utils as uu
 
 
-def CreateTextOutputPermutations(text, inputs):
+def CreateTextOutputPermutations(text: str, inputs: typing.Iterable[str]
+                                 ) -> typing.Set[str]:
   """Creates permutations of |text| filled with the contents of |inputs|.
 
   Some output ordering is not guaranteed, so this acts as a way to generate
@@ -42,21 +44,21 @@ def CreateTextOutputPermutations(text, inputs):
 
 
 class ConvertUnmatchedResultsToStringDictUnittest(unittest.TestCase):
-  def testEmptyResults(self):
+  def testEmptyResults(self) -> None:
     """Tests that providing empty results is a no-op."""
     self.assertEqual(result_output._ConvertUnmatchedResultsToStringDict({}), {})
 
-  def testMinimalData(self):
+  def testMinimalData(self) -> None:
     """Tests that everything functions when minimal data is provided."""
     unmatched_results = {
         'builder': [
-            data_types.Result('foo', [], 'Failure', None, 'build_id'),
+            data_types.Result('foo', [], 'Failure', 'step', 'build_id'),
         ],
     }
     expected_output = {
         'foo': {
             'builder': {
-                None: [
+                'step': [
                     'Got "Failure" on http://ci.chromium.org/b/build_id with '
                     'tags []',
                 ],
@@ -67,7 +69,7 @@ class ConvertUnmatchedResultsToStringDictUnittest(unittest.TestCase):
         unmatched_results)
     self.assertEqual(output, expected_output)
 
-  def testRegularData(self):
+  def testRegularData(self) -> None:
     """Tests that everything functions when regular data is provided."""
     unmatched_results = {
         'builder': [
@@ -93,13 +95,13 @@ class ConvertUnmatchedResultsToStringDictUnittest(unittest.TestCase):
 
 
 class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
-  def testEmptyMap(self):
+  def testEmptyMap(self) -> None:
     """Tests that providing an empty map is a no-op."""
     self.assertEqual(
         result_output._ConvertTestExpectationMapToStringDict(
             data_types.TestExpectationMap()), {})
 
-  def testSemiStaleMap(self):
+  def testSemiStaleMap(self) -> None:
     """Tests that everything functions when regular data is provided."""
     expectation_map = data_types.TestExpectationMap({
         'expectation_file':
@@ -227,12 +229,12 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
 
 
 class ConvertUnusedExpectationsToStringDictUnittest(unittest.TestCase):
-  def testEmptyDict(self):
+  def testEmptyDict(self) -> None:
     """Tests that nothing blows up when given an empty dict."""
     self.assertEqual(result_output._ConvertUnusedExpectationsToStringDict({}),
                      {})
 
-  def testBasic(self):
+  def testBasic(self) -> None:
     """Basic functionality test."""
     unused = {
         'foo_file': [
@@ -275,12 +277,12 @@ class ConvertUnusedExpectationsToStringDictUnittest(unittest.TestCase):
 
 
 class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self.setUpPyfakefs()
     self._file_handle = tempfile.NamedTemporaryFile(delete=False, mode='w')
     self._filepath = self._file_handle.name
 
-  def testLinkifyString(self):
+  def testLinkifyString(self) -> None:
     """Test for _LinkifyString()."""
     self._file_handle.close()
     s = 'a'
@@ -292,7 +294,7 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
     self.assertEqual(result_output._LinkifyString(s),
                      'link to <a href="http://a">http://a</a>, click it')
 
-  def testRecursiveHtmlToFileExpectationMap(self):
+  def testRecursiveHtmlToFileExpectationMap(self) -> None:
     """Tests _RecursiveHtmlToFile() with an expectation map as input."""
     expectation_map = {
         'foo': {
@@ -377,7 +379,7 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
     with open(self._filepath) as f:
       self.assertEqual(f.read(), expected_output)
 
-  def testRecursiveHtmlToFileUnmatchedResults(self):
+  def testRecursiveHtmlToFileUnmatchedResults(self) -> None:
     """Tests _RecursiveHtmlToFile() with unmatched results as input."""
     unmatched_results = {
         'foo': {
@@ -429,12 +431,12 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
 
 
 class PrintToFileUnittest(fake_filesystem_unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self.setUpPyfakefs()
     self._file_handle = tempfile.NamedTemporaryFile(delete=False, mode='w')
     self._filepath = self._file_handle.name
 
-  def testRecursivePrintToFileExpectationMap(self):
+  def testRecursivePrintToFileExpectationMap(self) -> None:
     """Tests RecursivePrintToFile() with an expectation map as input."""
     expectation_map = {
         'foo': {
@@ -489,7 +491,7 @@ foo
     with open(self._filepath) as f:
       self.assertEqual(f.read(), expected_output)
 
-  def testRecursivePrintToFileUnmatchedResults(self):
+  def testRecursivePrintToFileUnmatchedResults(self) -> None:
     """Tests RecursivePrintToFile() with unmatched results as input."""
     unmatched_results = {
         'foo': {
@@ -531,12 +533,12 @@ foo
 
 
 class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self.setUpPyfakefs()
     self._file_handle = tempfile.NamedTemporaryFile(delete=False, mode='w')
     self._filepath = self._file_handle.name
 
-  def testOutputResultsUnsupportedFormat(self):
+  def testOutputResultsUnsupportedFormat(self) -> None:
     """Tests that passing in an unsupported format is an error."""
     with self.assertRaises(RuntimeError):
       result_output.OutputResults(data_types.TestExpectationMap(),
@@ -544,7 +546,7 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
                                   data_types.TestExpectationMap(), {}, {},
                                   'asdf')
 
-  def testOutputResultsSmoketest(self):
+  def testOutputResultsSmoketest(self) -> None:
     """Test that nothing blows up when outputting."""
     expectation_map = data_types.TestExpectationMap({
         'foo':
@@ -617,12 +619,12 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
 
 
 class OutputAffectedUrlsUnittest(fake_filesystem_unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self.setUpPyfakefs()
     self._file_handle = tempfile.NamedTemporaryFile(delete=False, mode='w')
     self._filepath = self._file_handle.name
 
-  def testOutput(self):
+  def testOutput(self) -> None:
     """Tests that the output is correct."""
     urls = [
         'https://crbug.com/1234',
@@ -645,12 +647,12 @@ class OutputAffectedUrlsUnittest(fake_filesystem_unittest.TestCase):
 
 
 class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self.setUpPyfakefs()
     self._file_handle = tempfile.NamedTemporaryFile(delete=False, mode='w')
     self._filepath = self._file_handle.name
 
-  def testSingleLine(self):
+  def testSingleLine(self) -> None:
     """Tests when all bugs can fit on a single line."""
     urls = [
         'crbug.com/1234',
@@ -662,7 +664,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
       self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Bug: 1234, angleproject:2345\n'))
 
-  def testBugLimit(self):
+  def testBugLimit(self) -> None:
     """Tests that only a certain number of bugs are allowed per line."""
     urls = [
         'crbug.com/1',
@@ -679,7 +681,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
                                   'Bug: 1, 2, 3, 4, 5\n'
                                   'Bug: 6\n'))
 
-  def testLengthLimit(self):
+  def testLengthLimit(self) -> None:
     """Tests that only a certain number of characters are allowed per line."""
     urls = [
         'crbug.com/averylongprojectthatwillgooverthelinelength/1',
@@ -716,7 +718,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
       self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Bug: 2\nBug: %s:1\n' % project_name))
 
-  def testSingleBugOverLineLimit(self):
+  def testSingleBugOverLineLimit(self) -> None:
     """Tests the behavior when a single bug by itself is over the line limit."""
     project_name = result_output.MAX_CHARACTERS_PER_CL_LINE * 'a'
     urls = [
@@ -730,7 +732,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
                                   'Bug: 2\n'
                                   'Bug: %s:1\n' % project_name))
 
-  def testOrphanedBugs(self):
+  def testOrphanedBugs(self) -> None:
     """Tests that orphaned bugs are output properly alongside affected ones."""
     urls = [
         'crbug.com/1',
@@ -746,7 +748,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
                                   'Bug: 1, 3\n'
                                   'Fixed: 2\n'))
 
-  def testOnlyOrphanedBugs(self):
+  def testOnlyOrphanedBugs(self) -> None:
     """Tests output when all affected bugs are orphaned bugs."""
     urls = [
         'crbug.com/1',
@@ -765,7 +767,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
 
 
 class ConvertBuilderMapToPassOrderedStringDictUnittest(unittest.TestCase):
-  def testEmptyInput(self):
+  def testEmptyInput(self) -> None:
     """Tests that an empty input doesn't cause breakage."""
     output = result_output.ConvertBuilderMapToPassOrderedStringDict(
         data_types.BuilderStepMap())
@@ -775,7 +777,7 @@ class ConvertBuilderMapToPassOrderedStringDictUnittest(unittest.TestCase):
     expected_output[result_output.PARTIAL_PASS] = {}
     self.assertEqual(output, expected_output)
 
-  def testBasic(self):
+  def testBasic(self) -> None:
     """Tests that a map is properly converted."""
     builder_map = data_types.BuilderStepMap({
         'fully pass':
@@ -831,7 +833,7 @@ class ConvertBuilderMapToPassOrderedStringDictUnittest(unittest.TestCase):
     self.assertEqual(output, expected_output)
 
 
-def _Dedent(s):
+def _Dedent(s: str) -> str:
   output = ''
   for line in s.splitlines(True):
     output += line.lstrip()

@@ -2928,6 +2928,11 @@
       },
     },
   },
+  'unexpected_passes_common_pytype': {
+    'remove_from': [
+      'linux-code-coverage',
+    ],
+  },
   'unit_tests': {
     'remove_from': [
       'android-pie-arm64-rel',  # https://crbug.com/1010211

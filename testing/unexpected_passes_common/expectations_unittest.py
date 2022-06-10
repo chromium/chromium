@@ -55,7 +55,7 @@ crbug.com/3456 [ linux ] some/bad/test [ Skip ]
 
 
 class CreateTestExpectationMapUnittest(unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self.instance = expectations.Expectations()
 
     self._expectation_content = {}
@@ -69,14 +69,14 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
 
     self._content_mock.side_effect = SideEffect
 
-  def testExclusiveOr(self):
+  def testExclusiveOr(self) -> None:
     """Tests that only one input can be specified."""
     with self.assertRaises(AssertionError):
       self.instance.CreateTestExpectationMap(None, None, 0)
     with self.assertRaises(AssertionError):
       self.instance.CreateTestExpectationMap('foo', ['bar'], 0)
 
-  def testExpectationFile(self):
+  def testExpectationFile(self) -> None:
     """Tests reading expectations from an expectation file."""
     filename = '/tmp/foo'
     self._expectation_content[filename] = FAKE_EXPECTATION_FILE_CONTENTS
@@ -100,7 +100,7 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
     self.assertEqual(expectation_map, expected_expectation_map)
     self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
 
-  def testMultipleExpectationFiles(self):
+  def testMultipleExpectationFiles(self) -> None:
     """Tests reading expectations from multiple files."""
     filename1 = '/tmp/foo'
     filename2 = '/tmp/bar'
@@ -132,7 +132,7 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
     self.assertEqual(expectation_map, expected_expectation_map)
     self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
 
-  def testIndividualTests(self):
+  def testIndividualTests(self) -> None:
     """Tests reading expectations from a list of tests."""
     expectation_map = self.instance.CreateTestExpectationMap(
         None, ['foo/test', 'bar/*'], 0)
@@ -147,14 +147,14 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
 
 
 class GetNonRecentExpectationContentUnittest(unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self.instance = uu.CreateGenericExpectations()
     self._output_patcher = mock.patch(
         'unexpected_passes_common.expectations.subprocess.check_output')
     self._output_mock = self._output_patcher.start()
     self.addCleanup(self._output_patcher.stop)
 
-  def testBasic(self):
+  def testBasic(self) -> None:
     """Tests that only expectations that are old enough are kept."""
     today_date = datetime.date.today()
     yesterday_date = today_date - datetime.timedelta(days=1)
@@ -186,7 +186,7 @@ class GetNonRecentExpectationContentUnittest(unittest.TestCase):
     self.assertEqual(self.instance._GetNonRecentExpectationContent('', 1),
                      expected_content)
 
-  def testNegativeGracePeriod(self):
+  def testNegativeGracePeriod(self) -> None:
     """Tests that setting a negative grace period disables filtering."""
     today_date = datetime.date.today()
     yesterday_date = today_date - datetime.timedelta(days=1)
@@ -222,14 +222,14 @@ crbug.com/1234 [ tag1 ] testname [ Failure ]
 
 
 class RemoveExpectationsFromFileUnittest(fake_filesystem_unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self.instance = uu.CreateGenericExpectations()
     self.header = self.instance._GetExpectationFileTagHeader(None)
     self.setUpPyfakefs()
     with tempfile.NamedTemporaryFile(delete=False) as f:
       self.filename = f.name
 
-  def testExpectationRemoval(self):
+  def testExpectationRemoval(self) -> None:
     """Tests that expectations are properly removed from a file."""
     contents = self.header + """
 
@@ -266,7 +266,7 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
-  def testRemovalWithMultipleBugs(self):
+  def testRemovalWithMultipleBugs(self) -> None:
     """Tests removal of expectations with multiple associated bugs."""
     contents = self.header + """
 
@@ -303,7 +303,7 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
-  def testNestedBlockComments(self):
+  def testNestedBlockComments(self) -> None:
     """Tests that nested disable block comments throw exceptions."""
     contents = self.header + """
 # finder:disable-general
@@ -341,7 +341,7 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
       self.instance.RemoveExpectationsFromFile([], self.filename,
                                                expectations.RemovalType.STALE)
 
-  def testGeneralBlockComments(self):
+  def testGeneralBlockComments(self) -> None:
     """Tests that expectations in a disable block comment are not removed."""
     contents = self.header + """
 crbug.com/1234 [ win ] foo/test [ Failure ]
@@ -377,7 +377,7 @@ crbug.com/3456 [ win ] foo/test [ Failure ]
       with open(self.filename) as f:
         self.assertEqual(f.read(), expected_contents)
 
-  def testStaleBlockComments(self):
+  def testStaleBlockComments(self) -> None:
     """Tests that stale expectations in a stale disable block are not removed"""
     contents = self.header + """
 crbug.com/1234 [ win ] not_stale [ Failure ]
@@ -409,7 +409,7 @@ crbug.com/2345 [ win ] in_block [ Failure ]
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
-  def testUnusedBlockComments(self):
+  def testUnusedBlockComments(self) -> None:
     """Tests that stale expectations in unused disable blocks are not removed"""
     contents = self.header + """
 crbug.com/1234 [ win ] not_unused [ Failure ]
@@ -441,7 +441,7 @@ crbug.com/2345 [ win ] in_block [ Failure ]
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
-  def testMismatchedBlockComments(self):
+  def testMismatchedBlockComments(self) -> None:
     """Tests that block comments for the wrong removal type do nothing."""
     contents = self.header + """
 crbug.com/1234 [ win ] do_not_remove [ Failure ]
@@ -494,7 +494,7 @@ crbug.com/4567 [ win ] also_do_not_remove [ Failure ]
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
-  def testInlineGeneralComments(self):
+  def testInlineGeneralComments(self) -> None:
     """Tests that expectations with inline disable comments are not removed."""
     contents = self.header + """
 crbug.com/1234 [ win ] foo/test [ Failure ]
@@ -522,7 +522,7 @@ crbug.com/2345 [ win ] foo/test [ Failure ]  # finder:disable-general
       with open(self.filename) as f:
         self.assertEqual(f.read(), expected_contents)
 
-  def testInlineStaleComments(self):
+  def testInlineStaleComments(self) -> None:
     """Tests that expectations with inline stale disable comments not removed"""
     contents = self.header + """
 crbug.com/1234 [ win ] not_disabled [ Failure ]
@@ -548,7 +548,7 @@ crbug.com/2345 [ win ] stale_disabled [ Failure ]  # finder:disable-stale
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
-  def testInlineUnusedComments(self):
+  def testInlineUnusedComments(self) -> None:
     """Tests that expectations with inline unused comments not removed"""
     contents = self.header + """
 crbug.com/1234 [ win ] not_disabled [ Failure ]
@@ -586,29 +586,29 @@ crbug.com/3456 [ win ] unused_disabled [ Failure ]  # finder:disable-unused
 
 
 class GetExpectationLineUnittest(unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self.instance = uu.CreateGenericExpectations()
 
-  def testNoMatchingExpectation(self):
+  def testNoMatchingExpectation(self) -> None:
     """Tests that the case of no matching expectation is handled."""
     expectation = data_types.Expectation('foo', ['win'], 'Failure')
     line, line_number = self.instance._GetExpectationLine(
-        expectation, FAKE_EXPECTATION_FILE_CONTENTS, None)
+        expectation, FAKE_EXPECTATION_FILE_CONTENTS, 'expectation_file')
     self.assertIsNone(line)
     self.assertIsNone(line_number)
 
-  def testMatchingExpectation(self):
+  def testMatchingExpectation(self) -> None:
     """Tests that matching expectations are found."""
     expectation = data_types.Expectation('foo/test', ['win'], 'Failure',
                                          'crbug.com/1234')
     line, line_number = self.instance._GetExpectationLine(
-        expectation, FAKE_EXPECTATION_FILE_CONTENTS, None)
+        expectation, FAKE_EXPECTATION_FILE_CONTENTS, 'expectation_file')
     self.assertEqual(line, 'crbug.com/1234 [ win ] foo/test [ Failure ]')
     self.assertEqual(line_number, 3)
 
 
 class ModifySemiStaleExpectationsUnittest(fake_filesystem_unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self.setUpPyfakefs()
     self.instance = uu.CreateGenericExpectations()
 
@@ -624,7 +624,7 @@ class ModifySemiStaleExpectationsUnittest(fake_filesystem_unittest.TestCase):
       f.write(SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS)
       self.secondary_filename = f.name
 
-  def testEmptyExpectationMap(self):
+  def testEmptyExpectationMap(self) -> None:
     """Tests that an empty expectation map results in a no-op."""
     modified_urls = self.instance.ModifySemiStaleExpectations(
         data_types.TestExpectationMap())
@@ -633,7 +633,7 @@ class ModifySemiStaleExpectationsUnittest(fake_filesystem_unittest.TestCase):
     with open(self.filename) as f:
       self.assertEqual(f.read(), FAKE_EXPECTATION_FILE_CONTENTS)
 
-  def testRemoveExpectation(self):
+  def testRemoveExpectation(self) -> None:
     """Tests that specifying to remove an expectation does so."""
     self._input_mock.return_value = 'r'
     # yapf: disable
@@ -676,7 +676,7 @@ crbug.com/4567 [ linux ] some/good/test [ Pass ]
     with open(self.secondary_filename) as f:
       self.assertEqual(f.read(), expected_file_contents)
 
-  def testModifyExpectation(self):
+  def testModifyExpectation(self) -> None:
     """Tests that specifying to modify an expectation does not remove it."""
     self._input_mock.return_value = 'm'
     # yapf: disable
@@ -703,7 +703,7 @@ crbug.com/4567 [ linux ] some/good/test [ Pass ]
     with open(self.secondary_filename) as f:
       self.assertEqual(f.read(), SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS)
 
-  def testModifyExpectationMultipleBugs(self):
+  def testModifyExpectationMultipleBugs(self) -> None:
     """Tests that modifying an expectation with multiple bugs works properly."""
     self._input_mock.return_value = 'm'
     # yapf: disable
@@ -725,7 +725,7 @@ crbug.com/4567 [ linux ] some/good/test [ Pass ]
     with open(self.secondary_filename) as f:
       self.assertEqual(f.read(), SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS)
 
-  def testIgnoreExpectation(self):
+  def testIgnoreExpectation(self) -> None:
     """Tests that specifying to ignore an expectation does nothing."""
     self._input_mock.return_value = 'i'
     # yapf: disable
@@ -752,15 +752,15 @@ crbug.com/4567 [ linux ] some/good/test [ Pass ]
     with open(self.secondary_filename) as f:
       self.assertEqual(f.read(), SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS)
 
-  def testParserErrorCorrection(self):
+  def testParserErrorCorrection(self) -> None:
     """Tests that parser errors are caught and users can fix them."""
 
-    def TypoSideEffect():
+    def TypoSideEffect() -> str:
       with open(self.filename, 'w') as outfile:
         outfile.write(FAKE_EXPECTATION_FILE_CONTENTS_WITH_TYPO)
       return 'm'
 
-    def CorrectionSideEffect():
+    def CorrectionSideEffect() -> None:
       with open(self.filename, 'w') as outfile:
         outfile.write(FAKE_EXPECTATION_FILE_CONTENTS)
 
@@ -785,7 +785,7 @@ crbug.com/4567 [ linux ] some/good/test [ Pass ]
 
 
 class FindOrphanedBugsUnittest(fake_filesystem_unittest.TestCase):
-  def CreateFile(self, *args, **kwargs):
+  def CreateFile(self, *args, **kwargs) -> None:
     # TODO(crbug.com/1156806): Remove this and just use fs.create_file() when
     # Catapult is updated to a newer version of pyfakefs that is compatible with
     # Chromium's version.
@@ -794,7 +794,7 @@ class FindOrphanedBugsUnittest(fake_filesystem_unittest.TestCase):
     else:
       self.fs.CreateFile(*args, **kwargs)
 
-  def setUp(self):
+  def setUp(self) -> None:
     expectations_dir = os.path.join(os.path.dirname(__file__), 'expectations')
     self.setUpPyfakefs()
     self.instance = expectations.Expectations()
@@ -812,11 +812,11 @@ class FindOrphanedBugsUnittest(fake_filesystem_unittest.TestCase):
     self.CreateFile(os.path.join(expectations_dir, 'fake.txt'),
                     contents=skipped_contents)
 
-  def testNoOrphanedBugs(self):
+  def testNoOrphanedBugs(self) -> None:
     bugs = ['crbug.com/1', 'crbug.com/2']
     self.assertEqual(self.instance.FindOrphanedBugs(bugs), set())
 
-  def testOrphanedBugs(self):
+  def testOrphanedBugs(self) -> None:
     bugs = ['crbug.com/1', 'crbug.com/3', 'crbug.com/4']
     self.assertEqual(self.instance.FindOrphanedBugs(bugs),
                      set(['crbug.com/3', 'crbug.com/4']))

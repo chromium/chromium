@@ -4,10 +4,12 @@
 
 from __future__ import print_function
 
+import typing
+
 from pathos import pools
 
 
-def GetProcessPool(nodes=None):
+def GetProcessPool(nodes: typing.Optional[int] = None) -> pools.ProcessPool:
   """Returns a pathos.pools.ProcessPool instance.
 
   Split out for ease of unittesting since pathos can still run into pickling

@@ -3074,10 +3074,8 @@ group("gpu_pytype") {
     "//content/test/gpu/run_pytype.py",
     "//content/test/gpu/validate_tag_consistency.py",
 
-    "//build/util/lib/results/",
     "//content/test/gpu/gold_inexact_matching/",
     "//content/test/gpu/flake_suppressor/",
-    "//testing/pytype_common/",
     "//testing/unexpected_passes_common/",
   ]
 
@@ -3086,5 +3084,6 @@ group("gpu_pytype") {
     # don't accidentally omit Python files that the real tests would be using.
     ":telemetry_gpu_integration_test_scripts_only",
     ":telemetry_gpu_integration_test_support",
+    "//testing:pytype_dependencies",
   ]
 }

@@ -7,6 +7,7 @@ import copy
 import json
 import subprocess
 import sys
+import typing
 import unittest
 
 if sys.version_info[0] == 2:
@@ -25,50 +26,50 @@ queries.QUERY_DELAY = 0
 
 
 class HelperMethodUnittest(unittest.TestCase):
-  def testStripPrefixFromBuildIdValidId(self):
+  def testStripPrefixFromBuildIdValidId(self) -> None:
     self.assertEqual(queries._StripPrefixFromBuildId('build-1'), '1')
 
-  def testStripPrefixFromBuildIdInvalidId(self):
+  def testStripPrefixFromBuildIdInvalidId(self) -> None:
     with self.assertRaises(AssertionError):
       queries._StripPrefixFromBuildId('build1')
     with self.assertRaises(AssertionError):
       queries._StripPrefixFromBuildId('build-1-2')
 
-  def testConvertActualResultToExpectationFileFormatAbort(self):
+  def testConvertActualResultToExpectationFileFormatAbort(self) -> None:
     self.assertEqual(
         queries._ConvertActualResultToExpectationFileFormat('ABORT'), 'Timeout')
 
 
 class QueryGeneratorUnittest(unittest.TestCase):
-  def testSplitQueryGeneratorInitialSplit(self):
+  def setUp(self):
+    self._builder = data_types.BuilderEntry('ci', constants.BuilderTypes.CI,
+                                            False)
+
+  def testSplitQueryGeneratorInitialSplit(self) -> None:
     """Tests that initial query splitting works as expected."""
-    test_filter = queries.SplitQueryGenerator(constants.BuilderTypes.CI,
-                                              ['1', '2', '3'], 2)
+    test_filter = queries.SplitQueryGenerator(self._builder, ['1', '2', '3'], 2)
     self.assertEqual(test_filter._test_id_lists, [['1', '2'], ['3']])
     self.assertEqual(len(test_filter.GetClauses()), 2)
-    test_filter = queries.SplitQueryGenerator(constants.BuilderTypes.CI,
-                                              ['1', '2', '3'], 3)
+    test_filter = queries.SplitQueryGenerator(self._builder, ['1', '2', '3'], 3)
     self.assertEqual(test_filter._test_id_lists, [['1', '2', '3']])
     self.assertEqual(len(test_filter.GetClauses()), 1)
 
-  def testSplitQueryGeneratorSplitQuery(self):
+  def testSplitQueryGeneratorSplitQuery(self) -> None:
     """Tests that SplitQueryGenerator's query splitting works."""
-    test_filter = queries.SplitQueryGenerator(constants.BuilderTypes.CI,
-                                              ['1', '2'], 10)
+    test_filter = queries.SplitQueryGenerator(self._builder, ['1', '2'], 10)
     self.assertEqual(len(test_filter.GetClauses()), 1)
     test_filter.SplitQuery()
     self.assertEqual(len(test_filter.GetClauses()), 2)
 
-  def testSplitQueryGeneratorSplitQueryCannotSplitFurther(self):
+  def testSplitQueryGeneratorSplitQueryCannotSplitFurther(self) -> None:
     """Tests that SplitQueryGenerator's failure mode."""
-    test_filter = queries.SplitQueryGenerator(constants.BuilderTypes.CI, ['1'],
-                                              1)
+    test_filter = queries.SplitQueryGenerator(self._builder, ['1'], 1)
     with self.assertRaises(queries.QuerySplitError):
       test_filter.SplitQuery()
 
 
 class QueryBuilderUnittest(unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self._patcher = mock.patch.object(subprocess, 'Popen')
     self._popen_mock = self._patcher.start()
     self.addCleanup(self._patcher.stop)
@@ -84,19 +85,22 @@ class QueryBuilderUnittest(unittest.TestCase):
     self._relevant_file_mock = self._relevant_file_patcher.start()
     self.addCleanup(self._relevant_file_patcher.stop)
 
-  def testQueryFailureRaised(self):
+    self._builder = data_types.BuilderEntry('builder',
+                                            constants.BuilderTypes.CI, False)
+
+  def testQueryFailureRaised(self) -> None:
     """Tests that a query failure is properly surfaced."""
     self._popen_mock.return_value = unittest_utils.FakeProcess(returncode=1)
     with self.assertRaises(RuntimeError):
       self._querier.QueryBuilder(
           data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False))
 
-  def testInvalidNumSamples(self):
+  def testInvalidNumSamples(self) -> None:
     """Tests that the number of samples is validated."""
     with self.assertRaises(AssertionError):
       unittest_utils.CreateGenericQuerier(num_samples=-1)
 
-  def testNoResults(self):
+  def testNoResults(self) -> None:
     """Tests functionality if the query returns no results."""
     self._popen_mock.return_value = unittest_utils.FakeProcess(stdout='[]')
     results, expectation_files = self._querier.QueryBuilder(
@@ -104,7 +108,7 @@ class QueryBuilderUnittest(unittest.TestCase):
     self.assertEqual(results, [])
     self.assertIsNone(expectation_files, None)
 
-  def testValidResults(self):
+  def testValidResults(self) -> None:
     """Tests functionality when valid results are returned."""
     self._relevant_file_mock.return_value = ['foo_expectations']
     query_results = [
@@ -138,7 +142,7 @@ class QueryBuilderUnittest(unittest.TestCase):
                           '1234'))
     self.assertEqual(expectation_files, ['foo_expectations'])
 
-  def testValidResultsNoneExpectations(self):
+  def testValidResultsNoneExpectations(self) -> None:
     """Tests when an implementation uses None for expectation files."""
     query_results = [
         {
@@ -195,10 +199,10 @@ class QueryBuilderUnittest(unittest.TestCase):
       self.assertIsNone(expectation_files)
       ef_mock.assert_called_once()
 
-  def testValidResultsMultipleSteps(self):
+  def testValidResultsMultipleSteps(self) -> None:
     """Tests functionality when results from multiple steps are present."""
 
-    def SideEffect(result):
+    def SideEffect(result: queries.QueryResult) -> typing.List[str]:
       if result['step_name'] == 'a step name':
         return ['foo_expectations']
       if result['step_name'] == 'another step name':
@@ -249,36 +253,35 @@ class QueryBuilderUnittest(unittest.TestCase):
     self.assertEqual(set(expectation_files),
                      set(['foo_expectations', 'bar_expectations']))
 
-  def testFilterInsertion(self):
+  def testFilterInsertion(self) -> None:
     """Tests that test filters are properly inserted into the query."""
     with mock.patch.object(
         self._querier,
         '_GetQueryGeneratorForBuilder',
         return_value=unittest_utils.SimpleFixedQueryGenerator(
-            constants.BuilderTypes.CI, 'a real filter')), mock.patch.object(
+            self._builder, 'a real filter')), mock.patch.object(
                 self._querier,
                 '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      self._querier.QueryBuilder(
-          data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False))
+      self._querier.QueryBuilder(self._builder)
       query_mock.assert_called_once()
       query = query_mock.call_args[0][0][0]
       self.assertIn('a real filter', query)
 
-  def testEarlyReturnOnNoFilter(self):
+  def testEarlyReturnOnNoFilter(self) -> None:
     """Tests that the absence of a test filter results in an early return."""
     with mock.patch.object(
         self._querier, '_GetQueryGeneratorForBuilder',
         return_value=None), mock.patch.object(
             self._querier, '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      results, expectation_files = self._querier.QueryBuilder('builder')
+      results, expectation_files = self._querier.QueryBuilder(self._builder)
       query_mock.assert_not_called()
       self.assertEqual(results, [])
       self.assertEqual(expectation_files, None)
 
-  def testRetryOnMemoryLimit(self):
+  def testRetryOnMemoryLimit(self) -> None:
     """Tests that queries are split and retried if the memory limit is hit."""
 
-    def SideEffect(*_, **__):
+    def SideEffect(*_, **__) -> list:
       SideEffect.call_count += 1
       if SideEffect.call_count == 1:
         raise queries.MemoryLimitError()
@@ -290,13 +293,11 @@ class QueryBuilderUnittest(unittest.TestCase):
         self._querier,
         '_GetQueryGeneratorForBuilder',
         return_value=unittest_utils.SimpleSplitQueryGenerator(
-            constants.BuilderTypes.CI,
-            ['filter_a', 'filter_b'], 10)), mock.patch.object(
+            self._builder, ['filter_a', 'filter_b'], 10)), mock.patch.object(
                 self._querier,
                 '_RunBigQueryCommandsForJsonOutput') as query_mock:
       query_mock.side_effect = SideEffect
-      self._querier.QueryBuilder(
-          data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False))
+      self._querier.QueryBuilder(self._builder)
       self.assertEqual(query_mock.call_count, 2)
 
       args, _ = unittest_utils.GetArgsForMockCall(query_mock.call_args_list, 0)
@@ -315,7 +316,7 @@ class QueryBuilderUnittest(unittest.TestCase):
 
 
 class FillExpectationMapForBuildersUnittest(unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self._querier = unittest_utils.CreateGenericQuerier()
 
     self._query_patcher = mock.patch.object(self._querier, 'QueryBuilder')
@@ -332,7 +333,7 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
     self._filter_mock.side_effect = lambda b, _: b
     self.addCleanup(self._filter_patcher.stop)
 
-  def testErrorOnMixedBuilders(self):
+  def testErrorOnMixedBuilders(self) -> None:
     """Tests that providing builders of mixed type is an error."""
     builders_to_fill = [
         data_types.BuilderEntry('ci_builder', constants.BuilderTypes.CI, False),
@@ -343,10 +344,11 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
       self._querier.FillExpectationMapForBuilders(
           data_types.TestExpectationMap({}), builders_to_fill)
 
-  def testValidResults(self):
+  def testValidResults(self) -> None:
     """Tests functionality when valid results are returned by the query."""
 
-    def SideEffect(builder, *args):
+    def SideEffect(builder: data_types.BuilderEntry,
+                   *args) -> typing.Tuple[data_types.ResultListType, None]:
       del args
       if builder.name == 'matched_builder':
         return ([
@@ -413,7 +415,7 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
             ],
         })
 
-  def testQueryFailureIsSurfaced(self):
+  def testQueryFailureIsSurfaced(self) -> None:
     """Tests that a query failure is properly surfaced despite being async."""
     self._query_mock.side_effect = IndexError('failure')
     with self.assertRaises(IndexError):
@@ -425,7 +427,7 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
 
 
 class FilterOutInactiveBuildersUnittest(unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self._subprocess_patcher = mock.patch(
         'unexpected_passes_common.queries.subprocess.Popen')
     self._subprocess_mock = self._subprocess_patcher.start()
@@ -433,7 +435,7 @@ class FilterOutInactiveBuildersUnittest(unittest.TestCase):
 
     self._querier = unittest_utils.CreateGenericQuerier()
 
-  def testAllActiveBuilders(self):
+  def testAllActiveBuilders(self) -> None:
     """Tests that no builders are removed if no inactive builders are found."""
     results = [{
         'builder_name': 'foo_builder',
@@ -453,7 +455,7 @@ class FilterOutInactiveBuildersUnittest(unittest.TestCase):
         initial_builders, constants.BuilderTypes.CI)
     self.assertEqual(filtered_builders, expected_builders)
 
-  def testInactiveBuilders(self):
+  def testInactiveBuilders(self) -> None:
     """Tests that inactive builders are removed."""
     results = [{
         'builder_name': 'foo_builder',
@@ -473,13 +475,12 @@ class FilterOutInactiveBuildersUnittest(unittest.TestCase):
         initial_builders, constants.BuilderTypes.CI)
     self.assertEqual(filtered_builders, expected_builders)
 
-  def testByteConversion(self):
+  def testByteConversion(self) -> None:
     """Tests that bytes are properly handled if returned."""
     results = [{
         'builder_name': 'foo_builder',
     }]
-    fake_process = unittest_utils.FakeProcess(
-        stdout=json.dumps(results).encode('utf-8'))
+    fake_process = unittest_utils.FakeProcess(stdout=json.dumps(results))
     self._subprocess_mock.return_value = fake_process
     initial_builders = [
         data_types.BuilderEntry('foo_builder', constants.BuilderTypes.CI,
@@ -496,26 +497,26 @@ class FilterOutInactiveBuildersUnittest(unittest.TestCase):
 
 
 class RunBigQueryCommandsForJsonOutputUnittest(unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self._popen_patcher = mock.patch.object(subprocess, 'Popen')
     self._popen_mock = self._popen_patcher.start()
     self.addCleanup(self._popen_patcher.stop)
 
     self._querier = unittest_utils.CreateGenericQuerier()
 
-  def testJsonReturned(self):
+  def testJsonReturned(self) -> None:
     """Tests that valid JSON parsed from stdout is returned."""
     query_output = [{'foo': 'bar'}]
     self._popen_mock.return_value = unittest_utils.FakeProcess(
         stdout=json.dumps(query_output))
-    result = self._querier._RunBigQueryCommandsForJsonOutput('', {})
+    result = self._querier._RunBigQueryCommandsForJsonOutput([''], {})
     self.assertEqual(result, query_output)
     self._popen_mock.assert_called_once()
 
-  def testJsonReturnedSplitQuery(self):
+  def testJsonReturnedSplitQuery(self) -> None:
     """Tests that valid JSON is returned when a split query is used."""
 
-    def SideEffect(*_, **__):
+    def SideEffect(*_, **__) -> unittest_utils.FakeProcess:
       SideEffect.call_count += 1
       if SideEffect.call_count == 1:
         return unittest_utils.FakeProcess(stdout=json.dumps([{'foo': 'bar'}]))
@@ -530,16 +531,16 @@ class RunBigQueryCommandsForJsonOutputUnittest(unittest.TestCase):
     self.assertIn({'foo': 'bar'}, result)
     self.assertIn({'bar': 'baz'}, result)
 
-  def testExceptionRaisedOnFailure(self):
+  def testExceptionRaisedOnFailure(self) -> None:
     """Tests that an exception is raised if the query fails."""
     self._popen_mock.return_value = unittest_utils.FakeProcess(returncode=1)
     with self.assertRaises(RuntimeError):
-      self._querier._RunBigQueryCommandsForJsonOutput('', {})
+      self._querier._RunBigQueryCommandsForJsonOutput([''], {})
 
-  def testRateLimitRetrySuccess(self):
+  def testRateLimitRetrySuccess(self) -> None:
     """Tests that rate limit errors result in retries."""
 
-    def SideEffect(*_, **__):
+    def SideEffect(*_, **__) -> unittest_utils.FakeProcess:
       SideEffect.call_count += 1
       if SideEffect.call_count == 1:
         return unittest_utils.FakeProcess(
@@ -549,26 +550,26 @@ class RunBigQueryCommandsForJsonOutputUnittest(unittest.TestCase):
     SideEffect.call_count = 0
 
     self._popen_mock.side_effect = SideEffect
-    self._querier._RunBigQueryCommandsForJsonOutput('', {})
+    self._querier._RunBigQueryCommandsForJsonOutput([''], {})
     self.assertEqual(self._popen_mock.call_count, 2)
 
-  def testRateLimitRetryFailure(self):
+  def testRateLimitRetryFailure(self) -> None:
     """Tests that rate limit errors stop retrying after enough iterations."""
     self._popen_mock.return_value = unittest_utils.FakeProcess(
         returncode=1, stdout='Exceeded rate limits for foo.')
     with self.assertRaises(RuntimeError):
-      self._querier._RunBigQueryCommandsForJsonOutput('', {})
+      self._querier._RunBigQueryCommandsForJsonOutput([''], {})
     self.assertEqual(self._popen_mock.call_count, queries.MAX_QUERY_TRIES)
 
 
 class GenerateBigQueryCommandUnittest(unittest.TestCase):
-  def testNoParametersSpecified(self):
+  def testNoParametersSpecified(self) -> None:
     """Tests that no parameters are added if none are specified."""
     cmd = queries.GenerateBigQueryCommand('project', {})
     for element in cmd:
       self.assertFalse(element.startswith('--parameter'))
 
-  def testParameterAddition(self):
+  def testParameterAddition(self) -> None:
     """Tests that specified parameters are added appropriately."""
     cmd = queries.GenerateBigQueryCommand('project', {
         '': {
@@ -581,7 +582,7 @@ class GenerateBigQueryCommandUnittest(unittest.TestCase):
     self.assertIn('--parameter=string::string_value', cmd)
     self.assertIn('--parameter=int:INT64:1', cmd)
 
-  def testBatchMode(self):
+  def testBatchMode(self) -> None:
     """Tests that batch mode adds the necessary arg."""
     cmd = queries.GenerateBigQueryCommand('project', {}, batch=True)
     self.assertIn('--batch', cmd)

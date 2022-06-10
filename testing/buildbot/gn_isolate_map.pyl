@@ -1864,6 +1864,11 @@
     "label": "//ui/touch_selection:ui_touch_selection_unittests",
     "type": "windowed_test_launcher",
   },
+  "unexpected_passes_common_pytype": {
+    "label": "//testing:unexpected_passes_common_pytype",
+    "script": "//testing/run_pytype.py",
+    "type": "script",
+  },
   "unit_tests": {
     "label": "//chrome/test:unit_tests",
     "type": "windowed_test_launcher",

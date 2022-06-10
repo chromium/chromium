@@ -8,6 +8,7 @@ from __future__ import print_function
 import json
 import os
 import sys
+import typing
 import unittest
 
 if sys.version_info[0] == 2:
@@ -36,7 +37,7 @@ class FakeFilesystemTestCaseWithFileCreation(fake_filesystem_unittest.TestCase):
 
 
 class GetCiBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
-  def setUp(self):
+  def setUp(self) -> None:
     self._builders_instance = unittest_utils.GenericBuilders(
         suite='webgl_conformance')
     self._isolate_patcher = mock.patch.object(
@@ -46,7 +47,7 @@ class GetCiBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
     self._isolate_mock = self._isolate_patcher.start()
     self.addCleanup(self._isolate_patcher.stop)
 
-  def testJsonContentLoaded(self):
+  def testJsonContentLoaded(self) -> None:
     """Tests that the correct JSON data is loaded in."""
     self.setUpPyfakefs()
     gpu_json = {
@@ -128,10 +129,10 @@ class GetCiBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
                                     constants.BuilderTypes.CI, False),
         ]))
 
-  def testFilterBySuite(self):
+  def testFilterBySuite(self) -> None:
     """Tests that only builders that run the given suite are returned."""
 
-    def SideEffect(tm):
+    def SideEffect(tm: typing.Dict[str, typing.Any]) -> bool:
       tests = tm.get('isolated_scripts', [])
       for t in tests:
         if t.get('isolate_name') == 'foo_integration_test':
@@ -189,7 +190,7 @@ class GetCiBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
                                     False)
         ]))
 
-  def testRealContentCanBeLoaded(self):
+  def testRealContentCanBeLoaded(self) -> None:
     """Tests that *something* from the real JSON files can be loaded."""
     # This directory is not available on swarming, so if it doesn't exist, just
     # skip the test.
@@ -199,8 +200,8 @@ class GetCiBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
 
 
 class GetMirroredBuildersForCiBuilderUnittest(unittest.TestCase):
-  def setUp(self):
-    self._builders_instance = builders.Builders(None, False)
+  def setUp(self) -> None:
+    self._builders_instance = builders.Builders('suite', False)
     self._bb_patcher = mock.patch.object(self._builders_instance,
                                          '_GetBuildbucketOutputForCiBuilder')
     self._bb_mock = self._bb_patcher.start()
@@ -217,7 +218,7 @@ class GetMirroredBuildersForCiBuilderUnittest(unittest.TestCase):
     self._non_chromium_mock = self._non_chromium_patcher.start()
     self.addCleanup(self._non_chromium_patcher.stop)
 
-  def testFakeCiBuilder(self):
+  def testFakeCiBuilder(self) -> None:
     """Tests that a fake CI builder gets properly mapped."""
     self._fake_ci_mock.return_value = {
         data_types.BuilderEntry('foo_ci', constants.BuilderTypes.CI, False):
@@ -236,7 +237,7 @@ class GetMirroredBuildersForCiBuilderUnittest(unittest.TestCase):
         ]))
     self._bb_mock.assert_not_called()
 
-  def testNoBuildbucketOutput(self):
+  def testNoBuildbucketOutput(self) -> None:
     """Tests that a failure to get Buildbucket output is surfaced."""
     self._bb_mock.return_value = ''
     builder_entry = data_types.BuilderEntry('nonexistent',
@@ -272,7 +273,7 @@ class GetMirroredBuildersForCiBuilderUnittest(unittest.TestCase):
                                     False)
         ]))
 
-  def testBuildbucketOutputInternal(self):
+  def testBuildbucketOutputInternal(self) -> None:
     """Tests that internal Buildbucket output is parsed correctly."""
     self._bb_mock.return_value = json.dumps({
         'output': {
@@ -298,8 +299,8 @@ class GetMirroredBuildersForCiBuilderUnittest(unittest.TestCase):
 
 
 class GetTryBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
-  def setUp(self):
-    self._builders_instance = builders.Builders(None, False)
+  def setUp(self) -> None:
+    self._builders_instance = builders.Builders('suite', False)
     self._get_patcher = mock.patch.object(self._builders_instance,
                                           '_GetMirroredBuildersForCiBuilder')
     self._get_mock = self._get_patcher.start()
@@ -319,36 +320,51 @@ class GetTryBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
     self.CreateFile(
         os.path.join(builders.TESTING_BUILDBOT_DIR, 'placeholder.txt'))
 
-  def testMirrorNoOutputCausesFailure(self):
+  def testMirrorNoOutputCausesFailure(self) -> None:
     """Tests that a failure to get Buildbot output raises an exception."""
-    self._get_mock.return_value = (set(
-        [data_types.BuilderEntry('foo_ci', constants.BuilderTypes.CI,
-                                 False)]), False)
+    builder = data_types.BuilderEntry('foo_ci', constants.BuilderTypes.CI,
+                                      False)
+    self._get_mock.return_value = (set([builder]), False)
     self._runs_test_mock.return_value = True
     with self.assertRaises(RuntimeError):
-      self._builders_instance.GetTryBuilders(['foo_ci'])
+      self._builders_instance.GetTryBuilders([builder])
 
-  def testMirrorOutputReturned(self):
+  def testMirrorOutputReturned(self) -> None:
     """Tests that parsed, mirrored builders get returned on success."""
 
-    def SideEffect(ci_builder):
+    def SideEffect(ci_builder: data_types.BuilderEntry
+                   ) -> typing.Tuple[typing.Set[data_types.BuilderEntry], bool]:
       b = [
-          ci_builder.replace('ci', 'try'),
-          ci_builder.replace('ci', 'try2'),
+          data_types.BuilderEntry(ci_builder.name.replace('ci', 'try'),
+                                  constants.BuilderTypes.TRY, False),
+          data_types.BuilderEntry(ci_builder.name.replace('ci', 'try2'),
+                                  constants.BuilderTypes.TRY, False),
       ]
       return set(b), True
 
     self._get_mock.side_effect = SideEffect
     self._runs_test_mock.return_value = False
-    mirrored_builders = self._builders_instance.GetTryBuilders(
-        ['foo_ci', 'bar_ci'])
-    self.assertEqual(mirrored_builders,
-                     set(['foo_try', 'foo_try2', 'bar_try', 'bar_try2']))
+    mirrored_builders = self._builders_instance.GetTryBuilders([
+        data_types.BuilderEntry('foo_ci', constants.BuilderTypes.CI, False),
+        data_types.BuilderEntry('bar_ci', constants.BuilderTypes.CI, False),
+    ])
+    self.assertEqual(
+        mirrored_builders,
+        set([
+            data_types.BuilderEntry('foo_try', constants.BuilderTypes.TRY,
+                                    False),
+            data_types.BuilderEntry('foo_try2', constants.BuilderTypes.TRY,
+                                    False),
+            data_types.BuilderEntry('bar_try', constants.BuilderTypes.TRY,
+                                    False),
+            data_types.BuilderEntry('bar_try2', constants.BuilderTypes.TRY,
+                                    False),
+        ]))
 
-  def testDedicatedJsonContentLoaded(self):
+  def testDedicatedJsonContentLoaded(self) -> None:
     """Tests that tryserver JSON content is loaded."""
 
-    def SideEffect(test_spec):
+    def SideEffect(test_spec: typing.Dict[str, typing.Any]) -> bool:
       # Treat non-empty test specs as valid.
       return bool(test_spec)
 
@@ -428,10 +444,10 @@ class GetTryBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
                                     False),
         ]))
 
-  def testDedicatedFilterBySuite(self):
+  def testDedicatedFilterBySuite(self) -> None:
     """Tests that only builders that run the given suite are returned."""
 
-    def SideEffect(tm):
+    def SideEffect(tm: typing.Dict[str, typing.Any]) -> bool:
       tests = tm.get('isolated_scripts', [])
       for t in tests:
         if t.get('isolate_name') == 'foo_integration_test':
@@ -486,10 +502,11 @@ class GetTryBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
                                     constants.BuilderTypes.TRY, False)
         ]))
 
-  def testDedicatedAndMirroredCombined(self):
+  def testDedicatedAndMirroredCombined(self) -> None:
     """Tests that both dedicated and mirrored trybots are returned."""
 
-    def SideEffect(_):
+    def SideEffect(_: typing.Any
+                   ) -> typing.Tuple[typing.Set[data_types.BuilderEntry], bool]:
       return set({
           data_types.BuilderEntry('mirrored_trybot', constants.BuilderTypes.TRY,
                                   False)
