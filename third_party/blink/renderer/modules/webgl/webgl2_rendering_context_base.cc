@@ -3663,17 +3663,11 @@ void WebGL2RenderingContextBase::drawArraysInstanced(GLenum mode,
   if (!ValidateDrawArrays("drawArraysInstanced"))
     return;
 
-  if (!bound_vertex_array_object_->IsAllEnabledAttribBufferBound()) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "drawArraysInstanced",
-                      "no buffer is bound to enabled attribute");
-    return;
-  }
-
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
-                                                   drawing_buffer_.get());
-  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawArrays);
-  ContextGL()->DrawArraysInstancedANGLE(mode, first, count, instance_count);
-  RecordUKMCanvasDrawnToAtFirstDrawCall();
+  DrawWrapper("drawArraysInstanced",
+              CanvasPerformanceMonitor::DrawType::kDrawArrays, [&]() {
+                ContextGL()->DrawArraysInstancedANGLE(mode, first, count,
+                                                      instance_count);
+              });
 }
 
 void WebGL2RenderingContextBase::drawElementsInstanced(GLenum mode,
@@ -3684,19 +3678,13 @@ void WebGL2RenderingContextBase::drawElementsInstanced(GLenum mode,
   if (!ValidateDrawElements("drawElementsInstanced", type, offset))
     return;
 
-  if (!bound_vertex_array_object_->IsAllEnabledAttribBufferBound()) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "drawElementsInstanced",
-                      "no buffer is bound to enabled attribute");
-    return;
-  }
-
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
-                                                   drawing_buffer_.get());
-  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawElements);
-  ContextGL()->DrawElementsInstancedANGLE(
-      mode, count, type, reinterpret_cast<void*>(static_cast<intptr_t>(offset)),
-      instance_count);
-  RecordUKMCanvasDrawnToAtFirstDrawCall();
+  DrawWrapper("drawElementsInstanced",
+              CanvasPerformanceMonitor::DrawType::kDrawElements, [&]() {
+                ContextGL()->DrawElementsInstancedANGLE(
+                    mode, count, type,
+                    reinterpret_cast<void*>(static_cast<intptr_t>(offset)),
+                    instance_count);
+              });
 }
 
 void WebGL2RenderingContextBase::drawRangeElements(GLenum mode,
@@ -3708,27 +3696,18 @@ void WebGL2RenderingContextBase::drawRangeElements(GLenum mode,
   if (!ValidateDrawElements("drawRangeElements", type, offset))
     return;
 
-  if (!bound_vertex_array_object_->IsAllEnabledAttribBufferBound()) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "drawRangeElements",
-                      "no buffer is bound to enabled attribute");
-    return;
-  }
-
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
-                                                   drawing_buffer_.get());
-  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawElements);
-  ContextGL()->DrawRangeElements(
-      mode, start, end, count, type,
-      reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
-  RecordUKMCanvasDrawnToAtFirstDrawCall();
+  DrawWrapper("drawRangeElements",
+              CanvasPerformanceMonitor::DrawType::kDrawElements, [&]() {
+                ContextGL()->DrawRangeElements(
+                    mode, start, end, count, type,
+                    reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
+              });
 }
 
 void WebGL2RenderingContextBase::drawBuffers(const Vector<GLenum>& buffers) {
   if (isContextLost())
     return;
 
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
-                                                   drawing_buffer_.get());
   GLsizei n = buffers.size();
   const GLenum* bufs = buffers.data();
   for (GLsizei i = 0; i < n; ++i) {

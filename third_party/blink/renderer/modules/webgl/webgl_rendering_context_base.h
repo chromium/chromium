@@ -749,6 +749,26 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool DrawingBufferClientUserAllocatedMultisampledRenderbuffers() override;
   void DrawingBufferClientForceLostContextWithAutoRecovery() override;
 
+  // All draw calls should go through this wrapper so that various
+  // bookkeeping related to compositing and preserveDrawingBuffer
+  // can happen.
+  template <typename Func>
+  void DrawWrapper(const char* func_name,
+                   CanvasPerformanceMonitor::DrawType draw_type,
+                   Func draw_func) {
+    if (!bound_vertex_array_object_->IsAllEnabledAttribBufferBound()) {
+      SynthesizeGLError(GL_INVALID_OPERATION, func_name,
+                        "no buffer is bound to enabled attribute");
+      return;
+    }
+
+    ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
+                                                     drawing_buffer_.get());
+    OnBeforeDrawCall(draw_type);
+    draw_func();
+    RecordUKMCanvasDrawnToAtFirstDrawCall();
+  }
+
   virtual void DestroyContext();
   void MarkContextChanged(ContentChangeType,
                           CanvasPerformanceMonitor::DrawType);

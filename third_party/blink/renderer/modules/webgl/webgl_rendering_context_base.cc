@@ -2825,17 +2825,8 @@ void WebGLRenderingContextBase::drawArrays(GLenum mode,
   if (!ValidateDrawArrays("drawArrays"))
     return;
 
-  if (!bound_vertex_array_object_->IsAllEnabledAttribBufferBound()) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "drawArrays",
-                      "no buffer is bound to enabled attribute");
-    return;
-  }
-
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
-                                                   drawing_buffer_.get());
-  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawArrays);
-  ContextGL()->DrawArrays(mode, first, count);
-  RecordUKMCanvasDrawnToAtFirstDrawCall();
+  DrawWrapper("drawArrays", CanvasPerformanceMonitor::DrawType::kDrawArrays,
+              [&]() { ContextGL()->DrawArrays(mode, first, count); });
 }
 
 void WebGLRenderingContextBase::drawElements(GLenum mode,
@@ -2845,19 +2836,12 @@ void WebGLRenderingContextBase::drawElements(GLenum mode,
   if (!ValidateDrawElements("drawElements", type, offset))
     return;
 
-  if (!bound_vertex_array_object_->IsAllEnabledAttribBufferBound()) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "drawElements",
-                      "no buffer is bound to enabled attribute");
-    return;
-  }
-
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
-                                                   drawing_buffer_.get());
-  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawElements);
-  ContextGL()->DrawElements(
-      mode, count, type,
-      reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
-  RecordUKMCanvasDrawnToAtFirstDrawCall();
+  DrawWrapper("drawElements", CanvasPerformanceMonitor::DrawType::kDrawElements,
+              [&]() {
+                ContextGL()->DrawElements(
+                    mode, count, type,
+                    reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
+              });
 }
 
 void WebGLRenderingContextBase::DrawArraysInstancedANGLE(GLenum mode,
@@ -2867,17 +2851,11 @@ void WebGLRenderingContextBase::DrawArraysInstancedANGLE(GLenum mode,
   if (!ValidateDrawArrays("drawArraysInstancedANGLE"))
     return;
 
-  if (!bound_vertex_array_object_->IsAllEnabledAttribBufferBound()) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "drawArraysInstancedANGLE",
-                      "no buffer is bound to enabled attribute");
-    return;
-  }
-
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
-                                                   drawing_buffer_.get());
-  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawArrays);
-  ContextGL()->DrawArraysInstancedANGLE(mode, first, count, primcount);
-  RecordUKMCanvasDrawnToAtFirstDrawCall();
+  DrawWrapper("drawArraysInstancedANGLE",
+              CanvasPerformanceMonitor::DrawType::kDrawArrays, [&]() {
+                ContextGL()->DrawArraysInstancedANGLE(mode, first, count,
+                                                      primcount);
+              });
 }
 
 void WebGLRenderingContextBase::DrawElementsInstancedANGLE(GLenum mode,
@@ -2888,19 +2866,13 @@ void WebGLRenderingContextBase::DrawElementsInstancedANGLE(GLenum mode,
   if (!ValidateDrawElements("drawElementsInstancedANGLE", type, offset))
     return;
 
-  if (!bound_vertex_array_object_->IsAllEnabledAttribBufferBound()) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "drawElementsInstancedANGLE",
-                      "no buffer is bound to enabled attribute");
-    return;
-  }
-
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
-                                                   drawing_buffer_.get());
-  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawElements);
-  ContextGL()->DrawElementsInstancedANGLE(
-      mode, count, type, reinterpret_cast<void*>(static_cast<intptr_t>(offset)),
-      primcount);
-  RecordUKMCanvasDrawnToAtFirstDrawCall();
+  DrawWrapper("drawElementsInstancedANGLE",
+              CanvasPerformanceMonitor::DrawType::kDrawElements, [&]() {
+                ContextGL()->DrawElementsInstancedANGLE(
+                    mode, count, type,
+                    reinterpret_cast<void*>(static_cast<intptr_t>(offset)),
+                    primcount);
+              });
 }
 
 void WebGLRenderingContextBase::enable(GLenum cap) {
