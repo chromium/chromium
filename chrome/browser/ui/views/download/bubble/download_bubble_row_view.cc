@@ -395,6 +395,11 @@ void DownloadBubbleRowView::UpdateLabels() {
 
   hover_button_->SetAccessibleName(base::JoinString(
       {primary_label_->GetText(), secondary_label_->GetText()}, u" "));
+  // TODO(crbug.com/1326181): Below is a workaround for single line labels.
+  // Remove the tooltip text once `primary_label_` and `secondary_label_` can
+  // display multiline text.
+  hover_button_->SetTooltipText(base::JoinString(
+      {primary_label_->GetText(), secondary_label_->GetText()}, u"\n"));
 
   if (GetWidget()) {
     secondary_label_->SetEnabledColor(
