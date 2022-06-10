@@ -131,7 +131,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         @Override
         public void onUpOrCancel() {
             if (mModelSelectorButton.onUpOrCancel() && mTabModelSelector != null) {
-                getActiveStripLayoutHelper().finishAnimation();
+                getActiveStripLayoutHelper().finishAnimationsAndPushTabUpdates();
                 if (!mModelSelectorButton.isVisible()) return;
                 mTabModelSelector.selectModel(!mTabModelSelector.isIncognitoSelected());
                 return;
@@ -334,7 +334,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     private void handleModelSelectorButtonClick() {
         if (mTabModelSelector == null) return;
-        getActiveStripLayoutHelper().finishAnimation();
+        getActiveStripLayoutHelper().finishAnimationsAndPushTabUpdates();
         if (!mModelSelectorButton.isVisible()) return;
         mTabModelSelector.selectModel(!mTabModelSelector.isIncognitoSelected());
     }
@@ -709,7 +709,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     @Override
     public boolean updateOverlay(long time, long dt) {
-        getInactiveStripLayoutHelper().finishAnimation();
+        getInactiveStripLayoutHelper().finishAnimationsAndPushTabUpdates();
         return getActiveStripLayoutHelper().updateLayout(time);
     }
 

@@ -586,7 +586,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Strip Improvements")
-    public void testTabSelected_AfterSelectedTabClose_DoesNotSkipAutoScroll() {
+    public void testTabSelected_AfterSelectedTabClose_SkipsAutoScroll() {
         initializeTest(false, true, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
         mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
@@ -596,8 +596,8 @@ public class StripLayoutHelperTest {
         // Act: close the selected tab.
         mStripLayoutHelper.handleCloseButtonClick(tabs[3], TIMESTAMP);
 
-        // Assert: scroller position is modified.
-        assertNotEquals(1000, mStripLayoutHelper.getScroller().getFinalX());
+        // Assert: scroller position is not modified.
+        assertEquals(1000, mStripLayoutHelper.getScroller().getFinalX());
     }
 
     @Test

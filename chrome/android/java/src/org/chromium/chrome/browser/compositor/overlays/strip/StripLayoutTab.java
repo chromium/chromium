@@ -113,6 +113,20 @@ public class StripLayoutTab implements VirtualView {
                 }
             };
 
+    /** A property for animations to use for changing the drawX of the tab. */
+    public static final FloatProperty<StripLayoutTab> DRAW_X =
+            new FloatProperty<StripLayoutTab>("drawX") {
+                @Override
+                public void setValue(StripLayoutTab object, float value) {
+                    object.setDrawX(value);
+                }
+
+                @Override
+                public Float get(StripLayoutTab object) {
+                    return object.getDrawX();
+                }
+            };
+
     // Behavior Constants
     private static final float VISIBILITY_FADE_CLOSE_BUTTON_PERCENTAGE = 0.99f;
 

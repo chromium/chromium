@@ -17,10 +17,21 @@ public class ScrollingStripStacker extends StripStacker {
     @Override
     public void setTabOffsets(int selectedIndex, StripLayoutTab[] indexOrderedTabs,
             float tabStackWidth, int maxTabsToStack, float tabOverlapWidth, float stripLeftMargin,
-            float stripRightMargin, float stripWidth, boolean inReorderMode) {
+            float stripRightMargin, float stripWidth, boolean inReorderMode, boolean tabClosing,
+            float cachedTabWidth) {
+        boolean tabStripImpEnabled =
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
         for (int i = 0; i < indexOrderedTabs.length; i++) {
             StripLayoutTab tab = indexOrderedTabs[i];
-            tab.setDrawX(tab.getIdealX());
+            if (tabStripImpEnabled) {
+                // When a tab is closed, drawX and width update will be animated so skip this.
+                if (!tabClosing) {
+                    tab.setDrawX(tab.getIdealX());
+                    tab.setWidth(cachedTabWidth);
+                }
+            } else {
+                tab.setDrawX(tab.getIdealX());
+            }
             tab.setDrawY(tab.getOffsetY());
             tab.setVisiblePercentage(1.f);
             tab.setContentOffsetX(0.f);
@@ -30,10 +41,11 @@ public class ScrollingStripStacker extends StripStacker {
     @Override
     public float computeNewTabButtonOffset(StripLayoutTab[] indexOrderedTabs, float tabOverlapWidth,
             float stripLeftMargin, float stripRightMargin, float stripWidth, float buttonWidth,
-            float touchTargetOffset) {
+            float touchTargetOffset, float cachedTabWidth, boolean animate) {
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)) {
             return super.computeNewTabButtonOffset(indexOrderedTabs, tabOverlapWidth,
-                    stripLeftMargin, stripRightMargin, stripWidth, buttonWidth, touchTargetOffset);
+                    stripLeftMargin, stripRightMargin, stripWidth, buttonWidth, touchTargetOffset,
+                    cachedTabWidth, animate);
         }
         return LocalizationUtils.isLayoutRtl()
                 ? computeNewTabButtonOffsetRtl(indexOrderedTabs, tabOverlapWidth, stripRightMargin,
