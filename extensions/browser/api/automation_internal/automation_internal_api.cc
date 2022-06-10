@@ -402,7 +402,7 @@ absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
 
   // Only call this if this is the root of a frame tree, to avoid resetting
   // the accessibility state multiple times.
-  if (!rfh->GetParent())
+  if (rfh->IsInPrimaryMainFrame())
     contents->EnableWebContentsOnlyAccessibilityMode();
 
   return absl::nullopt;
