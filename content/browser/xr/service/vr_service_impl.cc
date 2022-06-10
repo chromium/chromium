@@ -490,6 +490,19 @@ void VRServiceImpl::RequestSession(
     return;
   }
 
+  const bool has_user_activation =
+      render_frame_host_->HasTransientUserActivation();
+  if (!has_user_activation) {
+    // User activation is verified blink-side, so this should never fail
+    // (everything that happens up to this point should not take enough time for
+    // the user activation to expire). Treat lack of user activation as unknown
+    // failure:
+    std::move(callback).Run(
+        device::mojom::RequestSessionResult::NewFailureReason(
+            device::mojom::RequestSessionError::UNKNOWN_FAILURE));
+    return;
+  }
+
   // The consent flow cannot differentiate between optional and required
   // features, but we don't need to block creation if an optional feature is
   // not supported. Remove all unsupported optional features from the
@@ -542,6 +555,15 @@ void VRServiceImpl::OnPermissionResults(
     const std::vector<blink::mojom::PermissionStatus>& permission_statuses) {
   DVLOG(2) << __func__ << ": permissions.size()=" << permissions.size();
   DCHECK_EQ(permissions.size(), permission_statuses.size());
+
+  // Prolong the user activation since the user may have taken long enough to
+  // answer the permission prompts that the transient user activation expired.
+  // This is fine to do here, since we enforce that the activation existed prior
+  // to requesting permissions.
+  DVLOG(3) << __func__ << ": prolonging user activation, current status="
+           << render_frame_host_->HasTransientUserActivation();
+  render_frame_host_->NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kInteraction);
 
   const XrPermissionResults permission_results(permissions,
                                                permission_statuses);
@@ -635,6 +657,15 @@ void VRServiceImpl::OnInstallResult(SessionRequestData request,
             device::mojom::RequestSessionError::RUNTIME_INSTALL_FAILURE));
     return;
   }
+
+  // Prolong the user activation since the user may have taken long enough to
+  // install the runtime that the transient user activation expired. This is
+  // fine to do here, since we enforce that the activation existed prior to
+  // kicking off installation.
+  DVLOG(3) << __func__ << ": prolonging user activation, current status="
+           << render_frame_host_->HasTransientUserActivation();
+  render_frame_host_->NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kInteraction);
 
   DoRequestSession(std::move(request));
 }
