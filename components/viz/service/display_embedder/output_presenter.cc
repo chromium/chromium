@@ -117,9 +117,4 @@ std::unique_ptr<OutputPresenter::Image> OutputPresenter::AllocateSingleImage(
   return nullptr;
 }
 
-void OutputPresenter::ScheduleOneOverlay(const OverlayCandidate& overlay,
-                                         ScopedOverlayAccess* access) {
-  NOTREACHED();
-}
-
 }  // namespace viz

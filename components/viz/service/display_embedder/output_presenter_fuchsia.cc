@@ -321,37 +321,41 @@ void OutputPresenterFuchsia::SchedulePrimaryPlane(
   DCHECK(!next_frame_->release_fences.empty());
 }
 
-void OutputPresenterFuchsia::ScheduleOverlays(
-    SkiaOutputSurface::OverlayList overlays,
-    std::vector<ScopedOverlayAccess*> accesses) {
-  DCHECK_EQ(overlays.size(), accesses.size());
+void OutputPresenterFuchsia::ScheduleOverlayPlane(
+    const OutputPresenter::OverlayPlaneCandidate& overlay_plane_candidate,
+    ScopedOverlayAccess* access,
+    std::unique_ptr<gfx::GpuFence> acquire_fence) {
+  // TODO(msisov): this acquire fence is only valid when tiles are rastered for
+  // scanout usage, which are used for DelegatedCompositing in LaCros. It's not
+  // expected to have this fence created for fuchsia. As soon as a better place
+  // for this fence is found, this will be removed. For now, add a dcheck that
+  // verifies the fence is null.
+  DCHECK(!acquire_fence);
 
   if (!next_frame_)
     next_frame_.emplace();
   DCHECK(next_frame_->overlays.empty());
 
-  for (size_t i = 0; i < overlays.size(); ++i) {
-    auto& candidate = overlays[i];
-    auto* scoped_access = accesses[i];
+  DCHECK(overlay_plane_candidate.mailbox.IsSharedImage());
+  auto pixmap = access->GetNativePixmap();
 
-    DCHECK(candidate.mailbox.IsSharedImage());
-
-    auto pixmap = scoped_access->GetNativePixmap();
-    if (!pixmap) {
-      DLOG(ERROR) << "Cannot access SysmemNativePixmap";
-      continue;
-    }
-
-    next_frame_->overlays.emplace_back();
-    auto& overlay = next_frame_->overlays.back();
-    overlay.pixmap = std::move(pixmap);
-    overlay.overlay_plane_data = gfx::OverlayPlaneData(
-        candidate.plane_z_order, candidate.transform, candidate.display_rect,
-        candidate.uv_rect, !candidate.is_opaque,
-        gfx::ToRoundedRect(candidate.damage_rect), candidate.opacity,
-        candidate.priority_hint, candidate.rounded_corners,
-        candidate.color_space, candidate.hdr_metadata);
+  if (!pixmap) {
+    DLOG(ERROR) << "Cannot access SysmemNativePixmap";
+    return;
   }
+
+  next_frame_->overlays.emplace_back();
+  auto& overlay = next_frame_->overlays.back();
+  overlay.pixmap = std::move(pixmap);
+  overlay.overlay_plane_data = gfx::OverlayPlaneData(
+      overlay_plane_candidate.plane_z_order, overlay_plane_candidate.transform,
+      overlay_plane_candidate.display_rect, overlay_plane_candidate.uv_rect,
+      !overlay_plane_candidate.is_opaque,
+      gfx::ToRoundedRect(overlay_plane_candidate.damage_rect),
+      overlay_plane_candidate.opacity, overlay_plane_candidate.priority_hint,
+      overlay_plane_candidate.rounded_corners,
+      overlay_plane_candidate.color_space,
+      overlay_plane_candidate.hdr_metadata);
 }
 
 void OutputPresenterFuchsia::PresentNextFrame() {
