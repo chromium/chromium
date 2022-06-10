@@ -243,6 +243,11 @@ void SaveCardMessageControllerAndroid::OnSaveCardConfirmed(JNIEnv* env) {
 
 // --- Dialog Dismissed ---
 
+void SaveCardMessageControllerAndroid::OnUserDismiss(JNIEnv* env) {
+  OnPromptCompleted(SaveCreditCardPromptResult::kDenied,
+                    /*user_provided_details=*/{});
+}
+
 void SaveCardMessageControllerAndroid::DialogDismissed(JNIEnv* env) {
   if (reprompt_required_) {
     return;

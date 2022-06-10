@@ -191,6 +191,12 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase implem
 
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
+        // Do not call onUserDismiss if dialog was dismissed either because the user
+        // accepted to save the card or was dismissed by native code.
+        if (dismissalCause == DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
+            mDelegate.onUserDismiss();
+        }
+        // Call whenever the dialog is dismissed.
         mDelegate.onPromptDismissed();
     }
 }

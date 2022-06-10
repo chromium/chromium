@@ -29,6 +29,8 @@ class SaveCardMessageConfirmDelegate {
 
   virtual void DialogDismissed(JNIEnv* env) = 0;
 
+  virtual void OnUserDismiss(JNIEnv* env) = 0;
+
   virtual void OnLinkClicked(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& url) = 0;

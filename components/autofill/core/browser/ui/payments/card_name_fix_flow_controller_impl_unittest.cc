@@ -46,6 +46,8 @@ class CardNameFixFlowControllerImplGenericTest {
 
   void AcceptWithEditedName() { controller_->OnNameAccepted(u"Edited Name"); }
 
+  void OnDialogClosed() { controller_->OnConfirmNameDialogClosed(); }
+
  protected:
   std::unique_ptr<TestCardNameFixFlowView> test_card_name_fix_flow_view_;
   std::unique_ptr<CardNameFixFlowControllerImpl> controller_;
@@ -136,6 +138,26 @@ TEST_F(CardNameFixFlowControllerImplTest, LogUserAcceptedEditedName) {
 
   histogram_tester.ExpectBucketCount("Autofill.SaveCardCardholderNameWasEdited",
                                      true, 1);
+}
+
+TEST_F(CardNameFixFlowControllerImplTest, LogIgnored) {
+  base::HistogramTester histogram_tester;
+  ShowPromptWithInferredName();
+  ShowPromptWithInferredName();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.CardholderNameFixFlowPrompt.Events",
+      AutofillMetrics::
+          CARDHOLDER_NAME_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION,
+      1);
+
+  OnDialogClosed();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.CardholderNameFixFlowPrompt.Events",
+      AutofillMetrics::
+          CARDHOLDER_NAME_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION,
+      2);
 }
 
 TEST_F(CardNameFixFlowControllerImplTest, LogDismissed) {
