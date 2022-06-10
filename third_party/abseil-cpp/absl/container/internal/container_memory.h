@@ -402,6 +402,15 @@ struct map_slot_policy {
     }
   }
 
+  // Construct this slot by copying from another slot.
+  template <class Allocator>
+  static void construct(Allocator* alloc, slot_type* slot,
+                        const slot_type* other) {
+    emplace(slot);
+    absl::allocator_traits<Allocator>::construct(*alloc, &slot->value,
+                                                 other->value);
+  }
+
   template <class Allocator>
   static void destroy(Allocator* alloc, slot_type* slot) {
     if (kMutableKeys::value) {

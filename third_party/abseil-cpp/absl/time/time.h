@@ -750,23 +750,24 @@ constexpr Time UnixEpoch() { return Time(); }
 constexpr Time UniversalEpoch() {
   // 719162 is the number of days from 0001-01-01 to 1970-01-01,
   // assuming the Gregorian calendar.
-  return Time(time_internal::MakeDuration(-24 * 719162 * int64_t{3600}, 0U));
+  return Time(
+      time_internal::MakeDuration(-24 * 719162 * int64_t{3600}, uint32_t{0}));
 }
 
 // InfiniteFuture()
 //
 // Returns an `absl::Time` that is infinitely far in the future.
 constexpr Time InfiniteFuture() {
-  return Time(
-      time_internal::MakeDuration((std::numeric_limits<int64_t>::max)(), ~0U));
+  return Time(time_internal::MakeDuration((std::numeric_limits<int64_t>::max)(),
+                                          ~uint32_t{0}));
 }
 
 // InfinitePast()
 //
 // Returns an `absl::Time` that is infinitely far in the past.
 constexpr Time InfinitePast() {
-  return Time(
-      time_internal::MakeDuration((std::numeric_limits<int64_t>::min)(), ~0U));
+  return Time(time_internal::MakeDuration((std::numeric_limits<int64_t>::min)(),
+                                          ~uint32_t{0}));
 }
 
 // FromUnixNanos()
@@ -1422,14 +1423,17 @@ constexpr int64_t GetRepHi(Duration d) { return d.rep_hi_; }
 constexpr uint32_t GetRepLo(Duration d) { return d.rep_lo_; }
 
 // Returns true iff d is positive or negative infinity.
-constexpr bool IsInfiniteDuration(Duration d) { return GetRepLo(d) == ~0U; }
+constexpr bool IsInfiniteDuration(Duration d) {
+  return GetRepLo(d) == ~uint32_t{0};
+}
 
 // Returns an infinite Duration with the opposite sign.
 // REQUIRES: IsInfiniteDuration(d)
 constexpr Duration OppositeInfinity(Duration d) {
   return GetRepHi(d) < 0
-             ? MakeDuration((std::numeric_limits<int64_t>::max)(), ~0U)
-             : MakeDuration((std::numeric_limits<int64_t>::min)(), ~0U);
+             ? MakeDuration((std::numeric_limits<int64_t>::max)(), ~uint32_t{0})
+             : MakeDuration((std::numeric_limits<int64_t>::min)(),
+                            ~uint32_t{0});
 }
 
 // Returns (-n)-1 (equivalently -(n+1)) without avoidable overflow.
@@ -1568,7 +1572,7 @@ constexpr Duration operator-(Duration d) {
 
 constexpr Duration InfiniteDuration() {
   return time_internal::MakeDuration((std::numeric_limits<int64_t>::max)(),
-                                     ~0U);
+                                     ~uint32_t{0});
 }
 
 constexpr Duration FromChrono(const std::chrono::nanoseconds& d) {

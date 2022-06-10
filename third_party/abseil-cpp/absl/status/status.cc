@@ -599,5 +599,17 @@ Status ErrnoToStatus(int error_number, absl::string_view message) {
                 MessageForErrnoToStatus(error_number, message));
 }
 
+namespace status_internal {
+
+std::string* MakeCheckFailString(const absl::Status& status,
+                                 const char* prefix) {
+  if (status.ok()) { return nullptr; }
+  return new std::string(
+      absl::StrCat(prefix, " (",
+                   status.ToString(StatusToStringMode::kWithEverything), ")"));
+}
+
+}  // namespace status_internal
+
 ABSL_NAMESPACE_END
 }  // namespace absl

@@ -211,6 +211,10 @@
 #include "absl/numeric/bits.h"
 #include "absl/utility/utility.h"
 
+#ifdef ABSL_INTERNAL_HAVE_ARM_ACLE
+#include <arm_acle.h>
+#endif
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace container_internal {
@@ -627,8 +631,40 @@ struct GroupPortableImpl {
   uint64_t ctrl;
 };
 
+#ifdef ABSL_INTERNAL_HAVE_ARM_ACLE
+struct GroupAArch64Impl : public GroupPortableImpl {
+  static constexpr size_t kWidth = GroupPortableImpl::kWidth;
+
+  using GroupPortableImpl::GroupPortableImpl;
+
+  uint32_t CountLeadingEmptyOrDeleted() const {
+    assert(IsEmptyOrDeleted(static_cast<ctrl_t>(ctrl & 0xff)));
+    constexpr uint64_t gaps = 0x00FEFEFEFEFEFEFEULL;
+    // cls: Count leading sign bits.
+    // clsll(1ull << 63) -> 0
+    // clsll((1ull << 63) | (1ull << 62)) -> 1
+    // clsll((1ull << 63) | (1ull << 61)) -> 0
+    // clsll(~0ull) -> 63
+    // clsll(1) -> 62
+    // clsll(3) -> 61
+    // clsll(5) -> 60
+    // Note that CountLeadingEmptyOrDeleted is called when first control block
+    // is kDeleted or kEmpty. The implementation is similar to GroupPortableImpl
+    // but avoids +1 and __clsll returns result not including the high bit. Thus
+    // saves one cycle.
+    // kEmpty = -128,   // 0b10000000
+    // kDeleted = -2,   // 0b11111110
+    // ~ctrl & (ctrl >> 7) will have the lowest bit set to 1. After rbit,
+    // it will the highest one.
+    return (__clsll(__rbitll((~ctrl & (ctrl >> 7)) | gaps)) + 8) >> 3;
+  }
+};
+#endif
+
 #ifdef ABSL_INTERNAL_HAVE_SSE2
 using Group = GroupSse2Impl;
+#elif defined(ABSL_INTERNAL_HAVE_ARM_ACLE)
+using Group = GroupAArch64Impl;
 #else
 using Group = GroupPortableImpl;
 #endif

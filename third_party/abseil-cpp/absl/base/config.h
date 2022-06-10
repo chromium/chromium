@@ -212,11 +212,12 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #endif
 
 // ABSL_HAVE_TLS is defined to 1 when __thread should be supported.
-// We assume __thread is supported on Linux when compiled with Clang or compiled
-// against libstdc++ with _GLIBCXX_HAVE_TLS defined.
+// We assume __thread is supported on Linux or Asylo when compiled with Clang or
+// compiled against libstdc++ with _GLIBCXX_HAVE_TLS defined.
 #ifdef ABSL_HAVE_TLS
 #error ABSL_HAVE_TLS cannot be directly set
-#elif defined(__linux__) && (defined(__clang__) || defined(_GLIBCXX_HAVE_TLS))
+#elif (defined(__linux__) || defined(__ASYLO__)) && \
+    (defined(__clang__) || defined(_GLIBCXX_HAVE_TLS))
 #define ABSL_HAVE_TLS 1
 #endif
 
@@ -880,6 +881,21 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #error ABSL_INTERNAL_HAVE_SSSE3 cannot be directly set
 #elif defined(__SSSE3__)
 #define ABSL_INTERNAL_HAVE_SSSE3 1
+#endif
+
+// ABSL_INTERNAL_HAVE_ARM_ACLE is used for compile-time detection of ACLE (ARM
+// C language extensions).
+#ifdef ABSL_INTERNAL_HAVE_ARM_ACLE
+#error ABSL_INTERNAL_HAVE_ARM_ACLE cannot be directly set
+// __cls, __rbit were added quite late in clang. They are not supported
+// by GCC as well. __cls can be replaced with __builtin_clrsb but clang does
+// not recognize cls instruction in latest versions.
+// TODO(b/233604649): Relax to __builtin_clrsb and __builtin_bitreverse64 (note
+// that the latter is not supported by GCC).
+#elif defined(__ARM_ACLE) && defined(__clang__) && \
+    ABSL_HAVE_BUILTIN(__builtin_arm_cls64) &&      \
+    ABSL_HAVE_BUILTIN(__builtin_arm_rbit64)
+#define ABSL_INTERNAL_HAVE_ARM_ACLE 1
 #endif
 
 #endif  // ABSL_BASE_CONFIG_H_

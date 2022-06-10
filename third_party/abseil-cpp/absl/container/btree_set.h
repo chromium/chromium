@@ -752,6 +752,11 @@ struct set_slot_policy {
   }
 
   template <typename Alloc>
+  static void construct(Alloc *alloc, slot_type *slot, const slot_type *other) {
+    absl::allocator_traits<Alloc>::construct(*alloc, slot, *other);
+  }
+
+  template <typename Alloc>
   static void destroy(Alloc *alloc, slot_type *slot) {
     absl::allocator_traits<Alloc>::destroy(*alloc, slot);
   }

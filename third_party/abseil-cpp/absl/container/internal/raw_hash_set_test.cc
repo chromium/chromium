@@ -262,16 +262,20 @@ TEST(Group, CountLeadingEmptyOrDeleted) {
 
   for (ctrl_t empty : empty_examples) {
     std::vector<ctrl_t> e(Group::kWidth, empty);
+    EXPECT_TRUE(IsEmptyOrDeleted(e[0]));
     EXPECT_EQ(Group::kWidth, Group{e.data()}.CountLeadingEmptyOrDeleted());
     for (ctrl_t full : full_examples) {
-      for (size_t i = 0; i != Group::kWidth; ++i) {
+      // First is always kEmpty or kDeleted.
+      for (size_t i = 1; i != Group::kWidth; ++i) {
         std::vector<ctrl_t> f(Group::kWidth, empty);
         f[i] = full;
+        EXPECT_TRUE(IsEmptyOrDeleted(f[0]));
         EXPECT_EQ(i, Group{f.data()}.CountLeadingEmptyOrDeleted());
       }
       std::vector<ctrl_t> f(Group::kWidth, empty);
       f[Group::kWidth * 2 / 3] = full;
       f[Group::kWidth / 2] = full;
+      EXPECT_TRUE(IsEmptyOrDeleted(f[0]));
       EXPECT_EQ(
           Group::kWidth / 2, Group{f.data()}.CountLeadingEmptyOrDeleted());
     }

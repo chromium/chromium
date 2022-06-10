@@ -289,7 +289,7 @@ class Cord {
   // Cord::EstimatedMemoryUsage()
   //
   // Returns the *approximate* number of bytes held by this cord.
-  // See CordMemoryAccounting for more information on accounting method used.
+  // See CordMemoryAccounting for more information on the accounting method.
   size_t EstimatedMemoryUsage(CordMemoryAccounting accounting_method =
                                   CordMemoryAccounting::kTotal) const;
 
@@ -341,7 +341,7 @@ class Cord {
   //----------------------------------------------------------------------------
   //
   // A `Cord::ChunkIterator` allows iteration over the constituent chunks of its
-  // Cord. Such iteration allows you to perform non-const operatons on the data
+  // Cord. Such iteration allows you to perform non-const operations on the data
   // of a Cord without modifying it.
   //
   // Generally, you do not instantiate a `Cord::ChunkIterator` directly;
@@ -462,7 +462,7 @@ class Cord {
   class ChunkRange {
    public:
     // Fulfill minimum c++ container requirements [container.requirements]
-    // Theses (partial) container type definitions allow ChunkRange to be used
+    // These (partial) container type definitions allow ChunkRange to be used
     // in various utilities expecting a subset of [container.requirements].
     // For example, the below enables using `::testing::ElementsAre(...)`
     using value_type = absl::string_view;
@@ -596,7 +596,7 @@ class Cord {
   // producing an iterator which can be used within a range-based for loop.
   // Construction of a `CharRange` will return an iterator pointing to the first
   // character of the Cord. Generally, do not construct a `CharRange` directly;
-  // instead, prefer to use the `Cord::Chars()` method show below.
+  // instead, prefer to use the `Cord::Chars()` method shown below.
   //
   // Implementation note: `CharRange` is simply a convenience wrapper over
   // `Cord::char_begin()` and `Cord::char_end()`.
@@ -1500,7 +1500,7 @@ inline void Cord::ForEachChunk(
   }
 }
 
-// Nonmember Cord-to-Cord relational operarators.
+// Nonmember Cord-to-Cord relational operators.
 inline bool operator==(const Cord& lhs, const Cord& rhs) {
   if (lhs.contents_.IsSame(rhs.contents_)) return true;
   size_t rhs_size = rhs.size();

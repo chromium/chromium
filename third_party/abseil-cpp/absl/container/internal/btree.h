@@ -504,8 +504,8 @@ struct SearchResult {
 template <typename V>
 struct SearchResult<V, false> {
   SearchResult() {}
-  explicit SearchResult(V value) : value(value) {}
-  SearchResult(V value, MatchKind /*match*/) : value(value) {}
+  explicit SearchResult(V v) : value(v) {}
+  SearchResult(V v, MatchKind /*match*/) : value(v) {}
 
   V value;
 
@@ -1196,7 +1196,9 @@ class btree_iterator {
   }
 
   const key_type &key() const { return node_->key(position_); }
-  slot_type *slot() { return node_->slot(position_); }
+  decltype(std::declval<Node *>()->slot(0)) slot() {
+    return node_->slot(position_);
+  }
 
   void assert_valid_generation() const {
 #ifdef ABSL_BTREE_ENABLE_GENERATIONS
@@ -1225,7 +1227,6 @@ template <typename Params>
 class btree {
   using node_type = btree_node<Params>;
   using is_key_compare_to = typename Params::is_key_compare_to;
-  using init_type = typename Params::init_type;
   using field_type = typename node_type::field_type;
 
   // We use a static empty node for the root/leftmost/rightmost of empty btrees
@@ -1309,14 +1310,6 @@ class btree {
   using slot_type = typename Params::slot_type;
 
  private:
-  // For use in copy_or_move_values_in_order.
-  const value_type &maybe_move_from_iterator(const_iterator it) { return *it; }
-  value_type &&maybe_move_from_iterator(iterator it) {
-    // This is a destructive operation on the other container so it's safe for
-    // us to const_cast and move from the keys here even if it's a set.
-    return std::move(const_cast<value_type &>(*it));
-  }
-
   // Copies or moves (depending on the template parameter) the values in
   // other into this btree in their order in other. This btree must be empty
   // before this method is called. This method is used in copy construction,
@@ -2063,12 +2056,12 @@ void btree<P>::copy_or_move_values_in_order(Btree &other) {
   // values is the same order we'll store them in.
   auto iter = other.begin();
   if (iter == other.end()) return;
-  insert_multi(maybe_move_from_iterator(iter));
+  insert_multi(iter.slot());
   ++iter;
   for (; iter != other.end(); ++iter) {
     // If the btree is not empty, we can just insert the new value at the end
     // of the tree.
-    internal_emplace(end(), maybe_move_from_iterator(iter));
+    internal_emplace(end(), iter.slot());
   }
 }
 
@@ -2205,8 +2198,11 @@ template <typename P>
 template <typename InputIterator>
 void btree<P>::insert_iterator_unique(InputIterator b, InputIterator e, char) {
   for (; b != e; ++b) {
-    init_type value(*b);
-    insert_hint_unique(end(), params_type::key(value), std::move(value));
+    // Use a node handle to manage a temp slot.
+    auto node_handle =
+        CommonAccess::Construct<node_handle_type>(get_allocator(), *b);
+    slot_type *slot = CommonAccess::GetSlot(node_handle);
+    insert_hint_unique(end(), params_type::key(slot), slot);
   }
 }
 

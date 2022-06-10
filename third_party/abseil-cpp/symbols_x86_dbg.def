@@ -1913,6 +1913,7 @@ EXPORTS
     ?LowLevelHash@hash_internal@absl@@YA_KPBXI_KQB_K@Z
     ?LowLevelHashImpl@MixingHashState@hash_internal@absl@@CA_KPBEI@Z
     ?LowestBitSet@?$BitMask@I$0BA@$0A@@container_internal@absl@@QBEIXZ
+    ?MakeCheckFailString@status_internal@absl@@YAPAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@ABVStatus@2@PBD@Z
     ?MakeDuration@time_internal@absl@@YA?AVDuration@2@_J0@Z
     ?MakeDuration@time_internal@absl@@YA?AVDuration@2@_JI@Z
     ?MakeFlatWithExtraCapacity@InlineRep@Cord@absl@@QAEPAUCordRepFlat@cord_internal@3@I@Z

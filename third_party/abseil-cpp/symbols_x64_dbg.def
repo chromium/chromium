@@ -1918,6 +1918,7 @@ EXPORTS
     ?LowLevelHash@hash_internal@absl@@YA_KPEBX_K1QEB_K@Z
     ?LowLevelHashImpl@MixingHashState@hash_internal@absl@@CA_KPEBE_K@Z
     ?LowestBitSet@?$BitMask@I$0BA@$0A@@container_internal@absl@@QEBAIXZ
+    ?MakeCheckFailString@status_internal@absl@@YAPEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@AEBVStatus@2@PEBD@Z
     ?MakeDuration@time_internal@absl@@YA?AVDuration@2@_J0@Z
     ?MakeDuration@time_internal@absl@@YA?AVDuration@2@_JI@Z
     ?MakeFlatWithExtraCapacity@InlineRep@Cord@absl@@QEAAPEAUCordRepFlat@cord_internal@3@_K@Z

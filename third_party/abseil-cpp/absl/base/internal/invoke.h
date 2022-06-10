@@ -49,6 +49,7 @@ namespace base_internal {
 
 using std::invoke;
 using std::invoke_result_t;
+using std::is_invocable_r;
 
 }  // namespace base_internal
 ABSL_NAMESPACE_END
@@ -201,6 +202,26 @@ invoke_result_t<F, Args...> invoke(F&& f, Args&&... args) {
   return Invoker<F, Args...>::type::Invoke(std::forward<F>(f),
                                            std::forward<Args>(args)...);
 }
+
+template <typename AlwaysVoid, typename, typename, typename...>
+struct IsInvocableRImpl : std::false_type {};
+
+template <typename R, typename F, typename... Args>
+struct IsInvocableRImpl<
+    absl::void_t<absl::base_internal::invoke_result_t<F, Args...> >, R, F,
+    Args...>
+    : std::integral_constant<
+          bool,
+          std::is_convertible<absl::base_internal::invoke_result_t<F, Args...>,
+                              R>::value ||
+              std::is_void<R>::value> {};
+
+// Type trait whose member `value` is true if invoking `F` with `Args` is valid,
+// and either the return type is convertible to `R`, or `R` is void.
+// C++11-compatible version of `std::is_invocable_r`.
+template <typename R, typename F, typename... Args>
+using is_invocable_r = IsInvocableRImpl<void, R, F, Args...>;
+
 }  // namespace base_internal
 ABSL_NAMESPACE_END
 }  // namespace absl
