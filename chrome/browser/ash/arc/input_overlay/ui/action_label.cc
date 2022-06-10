@@ -7,10 +7,13 @@
 #include <set>
 
 #include "ash/style/style_util.h"
+#include "base/strings/string_piece.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -47,13 +50,8 @@ constexpr float kHaloInset = -6;
 constexpr float kHaloThickness = 4;
 
 // UI strings.
-// TODO(cuicuiruan): move the strings to chrome/app/generated_resources.grd
-// after UX/UI strings are confirmed.
+// TODO(cuicuiruan): remove this string.
 constexpr base::StringPiece kEditErrorSameKey("Same key");
-constexpr base::StringPiece kEditInfoMessage(
-    "Click on any key, then press a keyboard key to customize");
-constexpr base::StringPiece kEditErrorUnbound(
-    "Key is missing. Press a keyboard key to customize.");
 
 // Arrow symbols for arrow keys.
 constexpr char kLeftArrow[] = "←";
@@ -270,9 +268,15 @@ void ActionLabel::OnFocus() {
   SetToEditFocus();
   LabelButton::OnFocus();
   if (IsUnbound()) {
-    static_cast<ActionView*>(parent())->ShowErrorMsg(kEditErrorUnbound, this);
+    static_cast<ActionView*>(parent())->ShowErrorMsg(
+        base::StringPiece(
+            l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING)),
+        this);
   } else {
-    static_cast<ActionView*>(parent())->ShowInfoMsg(kEditInfoMessage, this);
+    static_cast<ActionView*>(parent())->ShowInfoMsg(
+        base::StringPiece(
+            l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_FOCUSED_KEY)),
+        this);
   }
 }
 

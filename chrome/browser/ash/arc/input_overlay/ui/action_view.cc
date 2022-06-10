@@ -5,6 +5,9 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 
 #include "base/bind.h"
+#include "base/strings/string_piece.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace arc {
 namespace input_overlay {
@@ -12,9 +15,7 @@ namespace {
 constexpr int kMenuEntryOffset = 4;
 
 // UI strings.
-// TODO(cuicuiruan): move the strings to chrome/app/generated_resources.grd
-// after UX/UI strings are confirmed.
-constexpr base::StringPiece kEditErrorUnsupportedKey("Unsupported key");
+// TODO(cuicuiruan): Remove string and related code.
 constexpr base::StringPiece kEditErrorDuplicatedKey(
     "Duplicated key in the same action");
 
@@ -177,7 +178,9 @@ bool ActionView::ShouldShowErrorMsg(ui::DomCode code,
   if ((!action_->support_modifier_key() &&
        ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
       IsReservedDomCode(code)) {
-    ShowErrorMsg(kEditErrorUnsupportedKey, editing_label);
+    ShowErrorMsg(base::StringPiece(l10n_util::GetStringUTF8(
+                     IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS)),
+                 editing_label);
     return true;
   }
 

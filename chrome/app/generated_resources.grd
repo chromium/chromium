@@ -13125,6 +13125,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_INPUT_OVERLAY_CLOSE_MENU" desc="Accessibility name tied to the close button.">
         Close menu
       </message>
+      <message name="IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS" desc="Text presented via a toltip so the user knows how to interact and edit key-bindigs.">
+        Click on any key with your mouse, then press a keyboard key to customize
+      </message>
+      <message name="IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING" desc="Text presented via a toltip so the user is aware of an incomplete key-binding.">
+        Key is missing. Press a keyboard key to customize
+      </message>
+      <message name="IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS" desc="Text informing the user about keys not available for binding.">
+        The following keys aren’t supported: Tab, Shift, Control, Escape, Caps lock, Volume
+      </message>
+      <message name="IDS_INPUT_OVERLAY_EDIT_FOCUSED_KEY" desc="Text informing the user on how to proceed while having a focused key.">
+        Press a keyboard key to customize
+      </message>
     </if>
 
     <!-- Privacy Sandbox Dialog strings -->
