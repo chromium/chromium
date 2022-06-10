@@ -4988,9 +4988,9 @@
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
       },
-      'Mac11 Tests (dbg)': {
+      'Mac12 Tests (dbg)': {
         'mixins': [
-            'mac_11_or_12_x64',
+            'mac_12_x64',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',

@@ -29,10 +29,10 @@
         "port_name": "mac-mac10.15",
         "specifiers": ["Mac10.15", "Release"]
     },
-    "Mac11 Tests (dbg)": {
+    "Mac12 Tests (dbg)": {
         "main": "chromium.mac",
-        "port_name": "mac-mac11",
-        "specifiers": ["Mac11", "Debug"]
+        "port_name": "mac-mac12",
+        "specifiers": ["Mac12", "Debug"]
     },
     "Mac11 Tests": {
         "main": "chromium.fyi",

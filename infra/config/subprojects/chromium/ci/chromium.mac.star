@@ -300,7 +300,7 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Mac11 Tests (dbg)",
+    name = "Mac12 Tests (dbg)",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -320,7 +320,7 @@ ci.thin_tester(
     ),
     console_view_entry = consoles.console_view_entry(
         category = "debug",
-        short_name = "11",
+        short_name = "12",
     ),
     cq_mirrors_console_view = "mirrors",
     sheriff_rotations = args.ignore_default(None),

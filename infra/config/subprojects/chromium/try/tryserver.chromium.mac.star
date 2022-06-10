@@ -222,7 +222,7 @@ try_.builder(
     name = "mac_chromium_dbg_ng",
     mirrors = [
         "ci/Mac Builder (dbg)",
-        "ci/Mac11 Tests (dbg)",
+        "ci/Mac12 Tests (dbg)",
     ],
 )
 

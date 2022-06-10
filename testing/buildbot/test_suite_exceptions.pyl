@@ -290,7 +290,7 @@
           'quickrun_shards': 26,
         },
       },
-      'Mac11 Tests (dbg)': {
+      'Mac12 Tests (dbg)': {
         'experiment_percentage': 100,
         'args': [
           '--debug',
@@ -523,7 +523,7 @@
       # off CQ.
       'Mac10.13 Tests', # https://crbug.com/1042757
       'Mac10.15 Tests', # https://crbug.com/1042757
-      'Mac11 Tests (dbg)', # https://crbug.com/1201386
+      'Mac12 Tests (dbg)', # https://crbug.com/1201386
       'mac-code-coverage', # https://crbug.com/1201386
       'Linux TSan Tests',  # https://crbug.com/368525
       'Win10 Tests x64 (dbg)',
@@ -637,7 +637,7 @@
       'Mac11 Tests': {
         'ci_only': True,
       },
-      'Mac11 Tests (dbg)': {
+      'Mac12 Tests (dbg)': {
         # crbug.com/1042757
         'swarming': {
           'dimension_sets': [
@@ -1237,7 +1237,7 @@
           'quickrun_shards': 10,
         },
       },
-      'Mac11 Tests (dbg)': { # https://crbug.com/1279504
+      'Mac12 Tests (dbg)': { # https://crbug.com/1279504
         'swarming': {
           'shards': 18,
         },
@@ -1948,7 +1948,7 @@
           'quickrun_shards': 6,
         },
       },
-      'Mac11 Tests (dbg)': { # https://crbug.com/1265051
+      'Mac12 Tests (dbg)': { # https://crbug.com/1265051
         'experiment_percentage': 100,
       },
       'ToTLinuxTSan': {
@@ -2502,7 +2502,7 @@
   },
   'performance_test_suite': {
     'modifications': {
-      'Mac11 Tests (dbg)': {
+      'Mac12 Tests (dbg)': {
         'args': [
           '--browser=debug',
         ],
@@ -2885,7 +2885,7 @@
       'Mac10.13 Tests',
       'Mac10.15 Tests',
       # TODO crbug.com/1277277
-      'Mac11 Tests (dbg)',
+      'Mac12 Tests (dbg)',
       'Linux - Future (dbg)',  # client.v8.chromium
       'Win10 Tests x64',
       'Win10 Tests x64 (dbg)',
@@ -2970,7 +2970,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter',
         ],
       },
-      'Mac11 Tests (dbg)': {
+      'Mac12 Tests (dbg)': {
         'swarming': {
           'shards': 2,
         },
