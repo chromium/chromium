@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -258,6 +259,7 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
 
   // Find the first matching grammar.
   bool found_matching_grammar = false;
+  int grammar_id = 0;
   for (const PhoneGrammar& grammar : GetPhoneGrammars()) {
     std::fill(parsed_fields.begin(), parsed_fields.end(), nullptr);
     if (ParseGrammar(grammar, parsed_fields, scanner, page_language,
@@ -266,6 +268,7 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
       break;
     }
     scanner->RewindTo(start_cursor);
+    grammar_id++;
   }
   if (!found_matching_grammar)
     return nullptr;
@@ -273,17 +276,21 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
   DCHECK(parsed_fields[FIELD_PHONE] != nullptr);
 
   // Look for a suffix field using two different regex.
+  bool suffix_matched = false;
   if (!parsed_fields[FIELD_SUFFIX]) {
-    ParsePhoneField(scanner, kPhoneSuffixRe, &parsed_fields[FIELD_SUFFIX],
-                    {log_manager, "kPhoneSuffixRe"},
-                    /*is_country_code_field=*/false, "PHONE_SUFFIX",
-                    page_language, pattern_source) ||
+    suffix_matched =
+        ParsePhoneField(scanner, kPhoneSuffixRe, &parsed_fields[FIELD_SUFFIX],
+                        {log_manager, "kPhoneSuffixRe"},
+                        /*is_country_code_field=*/false, "PHONE_SUFFIX",
+                        page_language, pattern_source) ||
         ParsePhoneField(
             scanner, kPhoneSuffixSeparatorRe, &parsed_fields[FIELD_SUFFIX],
             {log_manager, "kPhoneSuffixSeparatorRe"},
             /*is_country_code_field=*/false, "PHONE_SUFFIX_SEPARATOR",
             page_language, pattern_source);
   }
+  AutofillMetrics::LogPhoneNumberGrammarMatched(grammar_id, suffix_matched);
+
   // Now look for an extension.
   // The extension is not actually used, so this just eats the field so other
   // parsers do not mistaken it for something else.

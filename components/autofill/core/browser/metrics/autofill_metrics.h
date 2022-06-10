@@ -2056,6 +2056,11 @@ class AutofillMetrics {
       bool with_variation_country_code,
       bool with_app_locale);
 
+  // Logs that local heuristics matched phone number fields using `grammar_id`.
+  // `suffix_matched` indicates if the special case handling for phone number
+  // suffixes was triggered.
+  static void LogPhoneNumberGrammarMatched(int grammar_id, bool suffix_matched);
+
   // Logs when the virtual card metadata for one card have been updated.
   static void LogVirtualCardMetadataSynced(bool existing_card);
 

@@ -3406,6 +3406,18 @@ void AutofillMetrics::LogPhoneNumberImportParsingResult(
           (with_variation_country_code << 1) | with_app_locale));
 }
 
+// static
+void AutofillMetrics::LogPhoneNumberGrammarMatched(int grammar_id,
+                                                   bool suffix_matched) {
+  // There are 18 phone number grammars.
+  DCHECK(0 <= grammar_id && grammar_id < 18);
+  // Add 1, because UmaHistogramExactLinear is 1-based. Thus, the maximum logged
+  // value becomes 2*17+1 + 1 = 36.
+  base::UmaHistogramExactLinear("Autofill.FieldPrediction.PhoneNumberGrammar",
+                                2 * grammar_id + suffix_matched + 1,
+                                /*exclusive_max=*/37);
+}
+
 void AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(
     const AutofillProfile& profile) {
   constexpr base::StringPiece base_histogram_name =

@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
@@ -256,6 +257,18 @@ TEST_P(PhoneFieldTest, EmptyLabels) {
   RunParsingTest({{"text", u"Phone", u"", PHONE_HOME_COUNTRY_CODE},
                   {"text", u"", u"", PHONE_HOME_CITY_CODE},
                   {"text", u"", u"", PHONE_HOME_NUMBER}});
+}
+
+// Tests that when a phone field is parsed, a metric indicating the used grammar
+// is emitted.
+TEST_P(PhoneFieldTest, GrammarMetrics) {
+  // PHONE_HOME_WHOLE_NUMBER corresponds to the last grammar. We thus expect
+  // that 2*17 + 1 = 35 is logged.
+  base::HistogramTester histogram_tester;
+  RunParsingTest({{"text", u"Phone", u"phone", PHONE_HOME_WHOLE_NUMBER}});
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.FieldPrediction.PhoneNumberGrammar"),
+              BucketsAre(base::Bucket(35, 1)));
 }
 
 TEST_P(PhoneFieldTest, TrunkPrefixTypes) {
