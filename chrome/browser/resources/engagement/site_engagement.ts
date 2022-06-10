@@ -2,102 +2,98 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {$, createElementWithClassName} from 'chrome://resources/js/util.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {createElementWithClassName} from 'chrome://resources/js/util.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {SiteEngagementDetails, SiteEngagementDetailsProvider, SiteEngagementDetailsProviderRemote} from './site_engagement_details.mojom-webui.js';
+import {SiteEngagementDetails, SiteEngagementDetailsProvider} from './site_engagement_details.mojom-webui.js';
 
-let resolvePageIsPopulated = null;
-const pageIsPopulatedPromise = new Promise((resolve, reject) => {
-  resolvePageIsPopulated = resolve;
-});
+declare const trustedTypes: {emptyHTML: string};
+
+const pageIsPopulatedResolver = new PromiseResolver<void>();
 
 const whenPageIsPopulatedForTest = function() {
-  return pageIsPopulatedPromise;
+  return pageIsPopulatedResolver.promise;
 };
 
 function initialize() {
   const engagementDetailsProvider = SiteEngagementDetailsProvider.getRemote();
 
-  /** @type {?HTMLElement} */
-  const engagementTableBody = $('engagement-table-body');
-  /** @type {?number} */
-  let updateInterval = null;
-  /** @type {?Array<!SiteEngagementDetails>} */
-  let info = null;
-  /** @type {string} */
-  let sortKey = 'totalScore';
-  /** @type {boolean} */
-  let sortReverse = true;
+  const engagementTableBody =
+      document.body.querySelector<HTMLElement>('#engagement-table-body')!;
+  let updateInterval: number|null = null;
+  let info: SiteEngagementDetails[]|null = null;
+  let sortKey: string = 'totalScore';
+  let sortReverse: boolean = true;
 
   // Set table header sort handlers.
-  const engagementTableHeader = $('engagement-table-header');
+  const engagementTableHeader =
+      document.body.querySelector<HTMLElement>('#engagement-table-header');
+  assert(engagementTableHeader);
   const headers = engagementTableHeader.children;
   for (let i = 0; i < headers.length; i++) {
-    headers[i].addEventListener('click', (e) => {
-      const newSortKey = e.target.getAttribute('sort-key');
+    headers[i]!.addEventListener('click', e => {
+      const target = e.target as HTMLElement;
+      const newSortKey = target.getAttribute('sort-key');
+      assert(newSortKey);
       if (sortKey === newSortKey) {
         sortReverse = !sortReverse;
       } else {
         sortKey = newSortKey;
         sortReverse = false;
       }
-      const oldSortColumn = document.querySelector('.sort-column');
+      const oldSortColumn = document.querySelector<HTMLElement>('.sort-column');
+      assert(oldSortColumn);
       oldSortColumn.classList.remove('sort-column');
-      e.target.classList.add('sort-column');
-      if (sortReverse) {
-        e.target.setAttribute('sort-reverse', '');
-      } else {
-        e.target.removeAttribute('sort-reverse');
-      }
+      target.classList.add('sort-column');
+      target.toggleAttribute('sort-reverse', sortReverse);
       renderTable();
     });
   }
 
   /**
    * Creates a single row in the engagement table.
-   * @param {SiteEngagementDetails} info The info to create the row from.
-   * @return {HTMLElement}
+   * @param info The info to create the row from.
    */
-  function createRow(info) {
+  function createRow(info: SiteEngagementDetails): HTMLElement {
     const originCell = createElementWithClassName('td', 'origin-cell');
     originCell.textContent = info.origin.url;
 
-    const baseScoreInput =
-        createElementWithClassName('input', 'base-score-input');
-    baseScoreInput.addEventListener(
-        'change', handleBaseScoreChange.bind(undefined, info.origin));
+    const baseScoreInput = createElementWithClassName(
+                               'input', 'base-score-input') as HTMLInputElement;
     baseScoreInput.addEventListener('focus', disableAutoupdate);
     baseScoreInput.addEventListener('blur', enableAutoupdate);
-    baseScoreInput.value = info.baseScore;
+    baseScoreInput.value = String(info.baseScore);
 
     const baseScoreCell = createElementWithClassName('td', 'base-score-cell');
     baseScoreCell.appendChild(baseScoreInput);
 
     const bonusScoreCell = createElementWithClassName('td', 'bonus-score-cell');
-    bonusScoreCell.textContent = info.installedBonus;
+    bonusScoreCell.textContent = String(info.installedBonus);
 
     const totalScoreCell = createElementWithClassName('td', 'total-score-cell');
-    totalScoreCell.textContent = info.totalScore;
+    totalScoreCell.textContent = String(info.totalScore);
 
-    const engagementBar = createElementWithClassName('div', 'engagement-bar');
+    const engagementBar =
+        createElementWithClassName('div', 'engagement-bar') as HTMLElement;
     engagementBar.style.width = (info.totalScore * 4) + 'px';
 
     const engagementBarCell =
-        createElementWithClassName('td', 'engagement-bar-cell');
+        createElementWithClassName('td', 'engagement-bar-cell') as HTMLElement;
     engagementBarCell.appendChild(engagementBar);
 
-    const row = /** @type {HTMLElement} */ (document.createElement('tr'));
+    const row = document.createElement('tr');
     row.appendChild(originCell);
     row.appendChild(baseScoreCell);
     row.appendChild(bonusScoreCell);
     row.appendChild(totalScoreCell);
     row.appendChild(engagementBarCell);
 
-    // Stores correspondent engagementBarCell to change it's length on
-    // scoreChange event.
-    baseScoreInput.barCellRef = engagementBar;
+    baseScoreInput.addEventListener(
+        'change',
+        handleBaseScoreChange.bind(undefined, info.origin, engagementBar));
+
     return row;
   }
 
@@ -119,14 +115,13 @@ function initialize() {
    * Sets the base engagement score when a score input is changed.
    * Resets the length of engagement-bar-cell to match the new score.
    * Also resets the update interval.
-   * @param {!Url} origin The origin of the engagement score to set.
-   * @param {Event} e
+   * @param origin The origin of the engagement score to set.
    */
-  function handleBaseScoreChange(origin, e) {
-    const baseScoreInput = e.target;
+  function handleBaseScoreChange(origin: Url, barCell: HTMLElement, e: Event) {
+    const baseScoreInput = e.target as HTMLInputElement;
     engagementDetailsProvider.setSiteEngagementBaseScoreForUrl(
-        origin, baseScoreInput.value);
-    baseScoreInput.barCellRef.style.width = (baseScoreInput.value * 4) + 'px';
+        origin, parseFloat(baseScoreInput.value));
+    barCell.style.width = (parseFloat(baseScoreInput.value) * 4) + 'px';
     baseScoreInput.blur();
     enableAutoupdate();
   }
@@ -142,6 +137,7 @@ function initialize() {
    * Sort the engagement info based on |sortKey| and |sortReverse|.
    */
   function sortInfo() {
+    assert(info);
     info.sort((a, b) => {
       return (sortReverse ? -1 : 1) * compareTableItem(sortKey, a, b);
     });
@@ -149,11 +145,12 @@ function initialize() {
 
   /**
    * Compares two SiteEngagementDetails objects based on |sortKey|.
-   * @param {string} sortKey The name of the property to sort by.
-   * @return {number} A negative number if |a| should be ordered before |b|, a
-   * positive number otherwise.
+   * @param sortKey The name of the property to sort by.
+   * @return A negative number if |a| should be ordered before |b|, a
+   *     positive number otherwise.
    */
-  function compareTableItem(sortKey, a, b) {
+  function compareTableItem(
+      sortKey: string, a: {[k: string]: any}, b: {[k: string]: any}): number {
     const val1 = a[sortKey];
     const val2 = b[sortKey];
 
@@ -168,15 +165,12 @@ function initialize() {
     }
 
     assertNotReached('Unsupported sort key: ' + sortKey);
-    return 0;
   }
 
   /**
    * Rounds the supplied value to two decimal places of accuracy.
-   * @param {number} score
-   * @return {number}
    */
-  function roundScore(score) {
+  function roundScore(score: number): number {
     return Number(Math.round(score * 100) / 100);
   }
 
@@ -187,6 +181,7 @@ function initialize() {
     clearTable();
     sortInfo();
 
+    assert(info);
     info.forEach((info) => {
       // Round all scores to 2 decimal places.
       info.baseScore = roundScore(info.baseScore);
@@ -204,7 +199,7 @@ function initialize() {
     // Populate engagement table.
     ({info} = await engagementDetailsProvider.getSiteEngagementDetails());
     renderTable();
-    resolvePageIsPopulated();
+    pageIsPopulatedResolver.resolve();
   }
 
   updateEngagementTable();
@@ -212,9 +207,11 @@ function initialize() {
 
   // We explicitly set these on the global Window object so test code can use
   // them.
-  window.whenPageIsPopulatedForTest = whenPageIsPopulatedForTest;
-  window.disableAutoupdateForTests = disableAutoupdate;
-  window.engagementDetailsProvider = engagementDetailsProvider;
+  Object.assign(window, {
+    whenPageIsPopulatedForTest,
+    disableAutoupdateForTests: disableAutoupdate,
+    engagementDetailsProvider,
+  });
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
