@@ -8,15 +8,11 @@
 
 #include "ash/components/disks/disk_mount_manager.h"
 #include "ash/components/disks/mock_disk_mount_manager.h"
-#include "base/base64.h"
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_test_helpers.h"
@@ -108,7 +104,7 @@ class GuestOsMountProviderTest : public testing::Test {
             Invoke(this, &GuestOsMountProviderTest::NotifyMountEvent));
   }
 
-  // guestos_${UserHash}_${base64(kContainerId.ToString())}. Note that UserHash
+  // guestos_${UserHash}_${encode(kContainerId.ToString())}. Note that UserHash
   // is an empty string in these tests.
   const crostini::ContainerId kContainerId =
       crostini::ContainerId("cow", "ptery/daccy");

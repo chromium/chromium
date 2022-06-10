@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chrome/browser/ash/borealis/borealis_capabilities.h"
-#include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/crostini/crostini_capabilities.h"
 #include "chrome/browser/ash/guest_os/guest_os_capabilities.h"
 #include "chrome/browser/ash/guest_os/infra/cached_callback.h"
@@ -19,8 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/vm_launch/launch.pb.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace guest_os {
 
