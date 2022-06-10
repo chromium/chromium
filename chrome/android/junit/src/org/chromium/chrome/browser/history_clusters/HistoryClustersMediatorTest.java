@@ -19,7 +19,6 @@ import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -295,18 +294,22 @@ public class HistoryClustersMediatorTest {
         PropertyModel clusterModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
         PropertyModel visitModel1 = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
         PropertyModel visitModel2 = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
-        List<ListItem> visitItems = Arrays.asList(new ListItem(ItemType.VISIT, visitModel1),
+        PropertyModel clusterModel2 = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+        List<ListItem> visitItemsToHide = Arrays.asList(new ListItem(ItemType.VISIT, visitModel1),
                 new ListItem(ItemType.VISIT, visitModel2));
+        mModelList.add(new ListItem(ItemType.CLUSTER, clusterModel));
+        mModelList.addAll(visitItemsToHide);
+        mModelList.add(new ListItem(ItemType.CLUSTER, clusterModel2));
 
-        mMediator.hideCluster(mCluster1, clusterModel, visitItems);
+        mMediator.hideCluster(clusterModel, visitItemsToHide);
+        assertEquals(mModelList.indexOf(visitItemsToHide.get(0)), -1);
+        assertEquals(mModelList.indexOf(visitItemsToHide.get(1)), -1);
+        assertEquals(2, mModelList.size());
 
-        assertEquals(visitModel1.get(HistoryClustersItemProperties.VISIBILITY), View.GONE);
-        assertEquals(visitModel2.get(HistoryClustersItemProperties.VISIBILITY), View.GONE);
-
-        mMediator.showCluster(mCluster1, clusterModel, visitItems);
-
-        assertEquals(visitModel1.get(HistoryClustersItemProperties.VISIBILITY), View.VISIBLE);
-        assertEquals(visitModel2.get(HistoryClustersItemProperties.VISIBILITY), View.VISIBLE);
+        mMediator.showCluster(clusterModel, visitItemsToHide, 1);
+        assertEquals(mModelList.indexOf(visitItemsToHide.get(0)), 1);
+        assertEquals(mModelList.indexOf(visitItemsToHide.get(1)), 2);
+        assertEquals(4, mModelList.size());
     }
 
     @Test

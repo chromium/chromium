@@ -254,7 +254,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             mModelList.addAll(visitsAndRelatedSearches);
 
             clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
-                    v -> hideCluster(cluster, clusterModel, visitsAndRelatedSearches));
+                    v -> hideCluster(clusterModel, visitsAndRelatedSearches));
             Drawable chevron = UiUtils.getTintedDrawable(mContext,
                     R.drawable.ic_expand_more_black_24dp, R.color.default_icon_color_tint_list);
             clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
@@ -268,30 +268,25 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     }
 
     @VisibleForTesting
-    void hideCluster(
-            HistoryCluster cluster, PropertyModel clusterModel, List<ListItem> itemsToHide) {
+    void hideCluster(PropertyModel clusterModel, List<ListItem> itemsToHide) {
+        int indexOfFirstVisit = mModelList.indexOf(itemsToHide.get(0));
         clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
-                (v) -> showCluster(cluster, clusterModel, itemsToHide));
+                (v) -> showCluster(clusterModel, itemsToHide, indexOfFirstVisit));
         Drawable chevron = UiUtils.getTintedDrawable(mContext, R.drawable.ic_expand_less_black_24dp,
                 R.color.default_icon_color_tint_list);
         clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
 
-        for (ListItem item : itemsToHide) {
-            item.model.set(HistoryClustersItemProperties.VISIBILITY, View.GONE);
-        }
+        mModelList.removeRange(indexOfFirstVisit, itemsToHide.size());
     }
 
     @VisibleForTesting
-    void showCluster(
-            HistoryCluster cluster, PropertyModel clusterModel, List<ListItem> itemsToShow) {
+    void showCluster(PropertyModel clusterModel, List<ListItem> itemsToShow, int insertionIndex) {
         clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
-                (v) -> hideCluster(cluster, clusterModel, itemsToShow));
+                (v) -> hideCluster(clusterModel, itemsToShow));
         Drawable chevron = UiUtils.getTintedDrawable(mContext, R.drawable.ic_expand_more_black_24dp,
                 R.color.default_icon_color_tint_list);
         clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
-        for (ListItem item : itemsToShow) {
-            item.model.set(HistoryClustersItemProperties.VISIBILITY, View.VISIBLE);
-        }
+        mModelList.addAll(itemsToShow, insertionIndex);
     }
 
     @VisibleForTesting
